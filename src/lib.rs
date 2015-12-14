@@ -1,5 +1,4 @@
 #![crate_type="lib"]
-#![feature(associated_consts)]
 
 pub use sys::Window;
 

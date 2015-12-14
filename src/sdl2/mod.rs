@@ -49,9 +49,9 @@ impl<'a> Drop for SdlRenderer<'a> {
 }
 
 pub struct Window {
-    ctx: sdl2::Sdl,
-    video_ctx: sdl2::VideoSubsystem,
-    ttf_context: sdl2_ttf::Sdl2TtfContext,
+    _ctx: sdl2::Sdl,
+    _video_ctx: sdl2::VideoSubsystem,
+    _ttf_context: sdl2_ttf::Sdl2TtfContext,
     events: sdl2::EventPump,
     font: sdl2_ttf::Font,
     inner: sdl2::render::Renderer<'static>,
@@ -71,9 +71,9 @@ impl Window {
         let events = ctx.event_pump().unwrap();
 
         Box::new(Window {
-            ctx: ctx,
-            video_ctx: video_ctx,
-            ttf_context: ttf_context,
+            _ctx: ctx,
+            _video_ctx: video_ctx,
+            _ttf_context: ttf_context,
             events: events,
             font: sdl2_ttf::Font::from_file(&Path::new("res/Unifont.ttf"), 16).unwrap(),
             inner: window.renderer().build().unwrap(),
