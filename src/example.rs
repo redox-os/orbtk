@@ -3,7 +3,7 @@ extern crate orbtk;
 use orbtk::*;
 
 fn main() {
-    let mut window = Window::new(Rect::new(0, 0, 400, 400), "OrbTK");
+    let mut window = Window::new(Rect::new(100, 100, 400, 400), "OrbTK");
 
     window.widgets.push(
         Label::new(Rect::new(20, 20, 80, 16), "Test Label")
