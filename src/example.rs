@@ -20,5 +20,13 @@ fn main() {
         }))
     );
 
+    window.widgets.push(
+        Button::new(Rect::new(20, 100, 100, 16), "Test Button")
+        .on_click(Box::new(|button: &mut Button, point: Point| {
+            button.text = format!("{:?}", point);
+            button.rect.width = button.text.chars().count() * 8;
+        }))
+    );
+
     window.exec();
 }
