@@ -41,7 +41,7 @@ impl Click for ProgressBar {
         }
     }
 
-    fn on_click(&mut self, func: Box<Fn(&mut Self, Point)>) -> &mut Self {
+    fn on_click(mut self: Box<Self>, func: Box<Fn(&mut Self, Point)>) -> Box<Self> {
         self.on_click = Some(Arc::new(func));
 
         self
