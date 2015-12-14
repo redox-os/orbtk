@@ -75,7 +75,7 @@ impl Window {
             video_ctx: video_ctx,
             ttf_context: ttf_context,
             events: events,
-            font: sdl2_ttf::Font::from_file(&Path::new("res/DroidSans-Mono.ttf"), 16).unwrap(),
+            font: sdl2_ttf::Font::from_file(&Path::new("res/Unifont.ttf"), 16).unwrap(),
             inner: window.renderer().build().unwrap(),
             widgets: Vec::new(),
             bg: Color::rgb(237, 233, 227),
