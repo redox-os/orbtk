@@ -1,0 +1,17 @@
+[package]
+name = "orbtk"
+description = "The Orbital Widget Toolkit"
+repository = "https://github.com/redox/orbtk"
+version = "0.0.1"
+license-file = "LICENSE"
+readme = "README.md"
+authors = ["Jeremy Soller <jackpot51@gmail.com>"]
+
+[lib]
+name = "orbtk"
+path = "src/lib.rs"
+
+[dependencies]
+sdl2 = "0.9"
+sdl2_image = "0.3"
+sdl2_ttf = "0.9"
