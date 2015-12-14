@@ -16,7 +16,7 @@ impl Label {
         Box::new(Label {
             rect: rect,
             text: text.to_string(),
-            bg: Color::rgb(255, 255, 255),
+            bg: Color::rgb(237, 233, 227),
             fg: Color::rgb(0, 0, 0),
             on_click: None,
             pressed: false,

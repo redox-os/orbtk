@@ -82,6 +82,10 @@ impl Window {
         })
     }
 
+    pub fn add(&mut self, widget: Box<Widget>){
+        self.widgets.push(widget);
+    }
+
     pub fn draw(&mut self) {
         let mut renderer = SdlRenderer::new(&mut self.font, &mut self.inner);
         renderer.clear(self.bg);

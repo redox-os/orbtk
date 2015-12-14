@@ -55,6 +55,10 @@ impl Window {
         })
     }
 
+    pub fn add(&mut self, widget: Box<Widget>){
+        self.widgets.push(widget);
+    }
+
     pub fn draw(&mut self) {
         let mut renderer = WindowRenderer::new(&mut self.inner);
         renderer.clear(self.bg);
