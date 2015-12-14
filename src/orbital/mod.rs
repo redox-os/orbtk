@@ -1,3 +1,5 @@
+use super::{Color, Event, Point, Rect, Renderer, Widget};
+
 extern crate orbital;
 
 pub struct WindowRenderer<'a> {
@@ -13,12 +15,22 @@ impl<'a> WindowRenderer<'a> {
 }
 
 impl<'a> Renderer for WindowRenderer<'a> {
+    fn clear(&mut self, color: Color) {
+        self.inner.set(orbital::Color {
+            data: color.data
+        });
+    }
+
     fn char(&mut self, pos: Point, c: char, color: Color) {
-        self.inner.char(pos.x, pos.y, c, color);
+        self.inner.char(pos.x, pos.y, c, orbital::Color {
+            data: color.data
+        });
     }
 
     fn rect(&mut self, rect: Rect, color: Color) {
-        self.inner.rect(rect.x, rect.y, rect.width, rect.height, color);
+        self.inner.rect(rect.x, rect.y, rect.width, rect.height, orbital::Color {
+            data: color.data
+        });
     }
 }
 
@@ -44,9 +56,8 @@ impl Window {
     }
 
     pub fn draw(&mut self) {
-        self.inner.set(self.bg);
-
         let mut renderer = WindowRenderer::new(&mut self.inner);
+        renderer.clear(self.bg);
         for widget in self.widgets.iter() {
             widget.draw(&mut renderer);
         }
@@ -66,7 +77,7 @@ impl Window {
             };
 
             for mut widget in self.widgets.iter_mut() {
-                widget.event(&event);
+                widget.event(event);
             }
 
             self.draw();
