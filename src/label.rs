@@ -1,4 +1,4 @@
-use super::{Click, Color, Event, EventOption, MouseEvent, Point, Rect, Renderer, Widget};
+use super::{Click, Color, Event, Point, Rect, Renderer, Widget};
 
 use std::sync::Arc;
 
@@ -8,7 +8,7 @@ pub struct Label {
     pub bg: Color,
     pub fg: Color,
     on_click: Option<Arc<Box<Fn(&mut Label, Point)>>>,
-    last_mouse: Option<MouseEvent>,
+    pressed: bool,
 }
 
 impl Label {
@@ -19,7 +19,7 @@ impl Label {
             bg: Color::rgb(255, 255, 255),
             fg: Color::rgb(0, 0, 0),
             on_click: None,
-            last_mouse: None,
+            pressed: false,
         })
     }
 }
@@ -56,26 +56,30 @@ impl Widget for Label {
         }
     }
 
-    fn event(&mut self, event: &Event) {
-        match event.to_option() {
-            EventOption::Mouse(mouse_event) => {
+    fn event(&mut self, event: Event) {
+        match event {
+            Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
 
-                if self.rect.contains(Point::new(mouse_event.x, mouse_event.y)){
-                    if let Some(last_mouse) = self.last_mouse {
-                        if last_mouse.left_button && ! mouse_event.left_button {
+                if self.rect.contains(point){
+                    if left_button {
+                        self.pressed = true;
+                    } else {
+                        if self.pressed {
                             click = true;
                         }
-                    }
 
-                    self.last_mouse = Some(mouse_event);
+                        self.pressed = false;
+                    }
                 } else {
-                    self.last_mouse = None;
+                    if ! left_button {
+                        self.pressed = false;
+                    }
                 }
 
                 if click {
-                    let point = Point::new(mouse_event.x - self.rect.x, mouse_event.y - self.rect.y);
-                    self.click(point);
+                    let click_point = Point::new(point.x - self.rect.x, point.y - self.rect.y);
+                    self.click(click_point);
                 }
             },
             _ => ()

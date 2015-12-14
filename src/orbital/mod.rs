@@ -1,4 +1,4 @@
-use super::{Color, Point, Rect, Renderer, Widget, orbital};
+extern crate orbital;
 
 pub struct WindowRenderer<'a> {
     inner: &'a mut Box<orbital::Window>
@@ -54,7 +54,17 @@ impl Window {
 
     pub fn exec(&mut self) {
         self.draw();
-        while let Some(event) = self.inner.poll() {
+        while let Some(orbital_event) = self.inner.poll() {
+            let event = match orbital_event.to_option() {
+                orbital::EventOption::Mouse(mouse_event) => Event::Mouse {
+                    point: Point::new(mouse_event.x, mouse_event.y),
+                    left_button: mouse_event.left_button,
+                    middle_button: mouse_event.middle_button,
+                    right_button: mouse_event.right_button,
+                },
+                _ => Event::Unknown
+            };
+
             for mut widget in self.widgets.iter_mut() {
                 widget.event(&event);
             }

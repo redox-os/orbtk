@@ -1,21 +1,32 @@
 #![crate_type="lib"]
+#![feature(associated_consts)]
 
-extern crate orbital;
-
-pub use orbital::{Color, Event, EventOption, KeyEvent, MouseEvent, Point, Size};
+pub use sys::Window;
 
 pub use click::Click;
+pub use color::Color;
+pub use event::Event;
 pub use label::Label;
+pub use point::Point;
 pub use progress_bar::ProgressBar;
 pub use rect::Rect;
 pub use renderer::Renderer;
 pub use widget::Widget;
-pub use window::Window;
 
 pub mod click;
+pub mod color;
+pub mod event;
 pub mod label;
+pub mod point;
 pub mod progress_bar;
 pub mod rect;
 pub mod renderer;
 pub mod widget;
-pub mod window;
+
+#[cfg(target_os = "redox")]
+#[path="orbital/mod.rs"]
+pub mod sys;
+
+#[cfg(not(target_os = "redox"))]
+#[path="sdl2/mod.rs"]
+pub mod sys;
