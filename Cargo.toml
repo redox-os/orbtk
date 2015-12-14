@@ -17,5 +17,4 @@ path = "src/example.rs"
 
 [dependencies]
 sdl2 = "0.9"
-sdl2_image = "0.3"
 sdl2_ttf = "0.9"

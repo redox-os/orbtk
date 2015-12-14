@@ -1,11 +1,9 @@
 language: rust
-addons:
-  apt:
-    packages:
-      - libsdl2-dev
-      - libsdl2-image-dev
-      - libsdl2-ttf-dev
-sudo: false
+sudo: required
+install:
+  - sudo add-apt-repository ppa:team-xbmc/ppa -y
+  - sudo apt-get update -q
+  - sudo apt-get install libsdl2-dev libsdl2-ttf-dev
 notifications:
   email: false
 
