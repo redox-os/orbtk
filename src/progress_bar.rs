@@ -1,36 +1,45 @@
-use super::{Click, Color, Event, Point, Rect, Renderer, Widget};
+use super::{Click, Color, Event, Point, Rect, Renderer, Widget, Window};
 
+use std::cell::Cell;
 use std::cmp::{min, max};
 use std::sync::Arc;
 
 pub struct ProgressBar {
     pub rect: Rect,
-    pub value: isize,
+    pub value: Cell<isize>,
     pub minimum: isize,
     pub maximum: isize,
     pub bg: Color,
     pub fg: Color,
-    on_click: Option<Arc<Box<Fn(&mut ProgressBar, Point)>>>,
-    pressed: bool,
+    on_click: Option<Arc<Fn(&ProgressBar, Point)>>,
+    pressed: Cell<bool>,
 }
 
 impl ProgressBar {
     pub fn new(rect: Rect, value: isize) -> Self {
         ProgressBar {
             rect: rect,
-            value: value,
+            value: Cell::new(value),
             minimum: 0,
             maximum: 100,
             bg: Color::rgb(255, 255, 255),
             fg: Color::rgb(65, 139, 212),
             on_click: None,
-            pressed: false,
+            pressed: Cell::new(false),
         }
+    }
+
+    pub fn place(self, window: &mut Window) -> Arc<Self> {
+        let arc = Arc::new(self);
+
+        window.widgets.push(arc.clone());
+
+        arc
     }
 }
 
 impl Click for ProgressBar {
-    fn click(&mut self, point: Point){
+    fn click(&self, point: Point){
         let on_click_option = match self.on_click {
             Some(ref on_click) => Some(on_click.clone()),
             None => None
@@ -41,8 +50,8 @@ impl Click for ProgressBar {
         }
     }
 
-    fn on_click<T: Fn(&mut Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.on_click = Some(Arc::new(Box::new(func)));
+    fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
+        self.on_click = Some(Arc::new(func));
 
         self
     }
@@ -54,29 +63,29 @@ impl Widget for ProgressBar {
         renderer.rect(Rect::new(
             self.rect.x,
             self.rect.y,
-            ((self.rect.width as isize * max(0, min(self.maximum, self.value - self.minimum)))/max(1, self.maximum - self.minimum)) as usize,
+            ((self.rect.width as isize * max(0, min(self.maximum, self.value.get() - self.minimum)))/max(1, self.maximum - self.minimum)) as usize,
             self.rect.height
         ), self.fg);
     }
 
-    fn event(&mut self, event: Event) {
+    fn event(&self, event: Event) {
         match event {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
 
                 if self.rect.contains(point){
                     if left_button {
-                        self.pressed = true;
+                        self.pressed.set(true);
                     } else {
-                        if self.pressed {
+                        if self.pressed.get() {
                             click = true;
                         }
 
-                        self.pressed = false;
+                        self.pressed.set(false);
                     }
                 } else {
                     if ! left_button {
-                        self.pressed = false;
+                        self.pressed.set(false);
                     }
                 }
 

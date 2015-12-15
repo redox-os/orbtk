@@ -1,5 +1,6 @@
-use super::{Click, Color, Event, Point, Rect, Renderer, Widget};
+use super::{Click, Color, Event, Point, Rect, Renderer, Widget, Window};
 
+use std::cell::Cell;
 use std::sync::Arc;
 
 pub struct Button {
@@ -8,8 +9,8 @@ pub struct Button {
     pub bg_up: Color,
     pub bg_down: Color,
     pub fg: Color,
-    on_click: Option<Arc<Box<Fn(&mut Button, Point)>>>,
-    pressed: bool,
+    on_click: Option<Arc<Fn(&Button, Point)>>,
+    pressed: Cell<bool>,
 }
 
 impl Button {
@@ -21,13 +22,21 @@ impl Button {
             bg_down: Color::rgb(203, 205, 210),
             fg: Color::rgb(0, 0, 0),
             on_click: None,
-            pressed: false,
+            pressed: Cell::new(false),
         }
+    }
+
+    pub fn place(self, window: &mut Window) -> Arc<Self> {
+        let rc = Arc::new(self);
+
+        window.widgets.push(rc.clone());
+
+        rc
     }
 }
 
 impl Click for Button {
-    fn click(&mut self, point: Point){
+    fn click(&self, point: Point){
         let on_click_option = match self.on_click {
             Some(ref on_click) => Some(on_click.clone()),
             None => None
@@ -38,8 +47,8 @@ impl Click for Button {
         }
     }
 
-    fn on_click<T: Fn(&mut Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.on_click = Some(Arc::new(Box::new(func)));
+    fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
+        self.on_click = Some(Arc::new(func));
 
         self
     }
@@ -47,7 +56,7 @@ impl Click for Button {
 
 impl Widget for Button {
     fn draw(&self, renderer: &mut Renderer) {
-        if self.pressed {
+        if self.pressed.get() {
             renderer.rect(self.rect, self.bg_down);
         } else {
             renderer.rect(self.rect, self.bg_up);
@@ -62,24 +71,24 @@ impl Widget for Button {
         }
     }
 
-    fn event(&mut self, event: Event) {
+    fn event(&self, event: Event) {
         match event {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
 
                 if self.rect.contains(point){
                     if left_button {
-                        self.pressed = true;
+                        self.pressed.set(true);
                     } else {
-                        if self.pressed {
+                        if self.pressed.get() {
                             click = true;
                         }
 
-                        self.pressed = false;
+                        self.pressed.set(false);
                     }
                 } else {
                     if ! left_button {
-                        self.pressed = false;
+                        self.pressed.set(false);
                     }
                 }
 

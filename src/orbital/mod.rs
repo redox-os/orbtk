@@ -1,5 +1,7 @@
 use super::{Color, Event, Point, Rect, Renderer, Widget};
 
+use std::sync::Arc;
+
 extern crate orbital;
 
 pub struct WindowRenderer<'a> {
@@ -42,7 +44,7 @@ impl<'a> Drop for WindowRenderer<'a> {
 
 pub struct Window {
     inner: Box<orbital::Window>,
-    pub widgets: Vec<Box<Widget>>,
+    pub widgets: Vec<Arc<Box<Widget>>>,
     pub bg: Color,
 }
 
@@ -53,10 +55,6 @@ impl Window {
             widgets: Vec::new(),
             bg: Color::rgb(237, 233, 227),
         })
-    }
-
-    pub fn add<T: Widget>(&mut self, widget: T){
-        self.widgets.push(Box::new(widget));
     }
 
     pub fn draw(&mut self) {

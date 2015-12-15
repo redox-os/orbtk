@@ -1,31 +1,40 @@
-use super::{Click, Color, Event, Point, Rect, Renderer, Widget};
+use super::{Click, Color, Event, Point, Rect, Renderer, Widget, Window};
 
+use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 pub struct Label {
-    pub rect: Rect,
-    pub text: String,
+    pub rect: Cell<Rect>,
+    pub text: RefCell<String>,
     pub bg: Color,
     pub fg: Color,
-    on_click: Option<Arc<Box<Fn(&mut Label, Point)>>>,
-    pressed: bool,
+    on_click: Option<Arc<Fn(&Label, Point)>>,
+    pressed: Cell<bool>,
 }
 
 impl Label {
     pub fn new(rect: Rect, text: &str) -> Self {
         Label {
-            rect: rect,
-            text: text.to_string(),
+            rect: Cell::new(rect),
+            text: RefCell::new(text.to_string()),
             bg: Color::rgb(237, 233, 227),
             fg: Color::rgb(0, 0, 0),
             on_click: None,
-            pressed: false,
+            pressed: Cell::new(false),
         }
+    }
+
+    pub fn place(self, window: &mut Window) -> Arc<Self> {
+        let arc = Arc::new(self);
+
+        window.widgets.push(arc.clone());
+
+        arc
     }
 }
 
 impl Click for Label {
-    fn click(&mut self, point: Point){
+    fn click(&self, point: Point){
         let on_click_option = match self.on_click {
             Some(ref on_click) => Some(on_click.clone()),
             None => None
@@ -36,8 +45,8 @@ impl Click for Label {
         }
     }
 
-    fn on_click<T: Fn(&mut Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.on_click = Some(Arc::new(Box::new(func)));
+    fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
+        self.on_click = Some(Arc::new(func));
 
         self
     }
@@ -45,40 +54,43 @@ impl Click for Label {
 
 impl Widget for Label {
     fn draw(&self, renderer: &mut Renderer) {
-        renderer.rect(self.rect, self.bg);
+        let rect = self.rect.get();
+        renderer.rect(rect, self.bg);
 
         let mut x = 0;
-        for c in self.text.chars() {
-            if x + 8 <= self.rect.width as isize {
-                renderer.char(Point::new(x + self.rect.x, self.rect.y), c, self.fg);
+        let text = self.text.borrow();
+        for c in text.chars() {
+            if x + 8 <= rect.width as isize {
+                renderer.char(Point::new(x + rect.x, rect.y), c, self.fg);
             }
             x += 8;
         }
     }
 
-    fn event(&mut self, event: Event) {
+    fn event(&self, event: Event) {
         match event {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
 
-                if self.rect.contains(point){
+                let rect = self.rect.get();
+                if rect.contains(point){
                     if left_button {
-                        self.pressed = true;
+                        self.pressed.set(true);
                     } else {
-                        if self.pressed {
+                        if self.pressed.get() {
                             click = true;
                         }
 
-                        self.pressed = false;
+                        self.pressed.set(false);
                     }
                 } else {
                     if ! left_button {
-                        self.pressed = false;
+                        self.pressed.set(false);
                     }
                 }
 
                 if click {
-                    let click_point = Point::new(point.x - self.rect.x, point.y - self.rect.y);
+                    let click_point = Point::new(point.x - rect.x, point.y - rect.y);
                     self.click(click_point);
                 }
             },

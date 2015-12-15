@@ -1,6 +1,6 @@
 use super::Point;
 
 pub trait Click {
-    fn click(&mut self, point: Point);
-    fn on_click<T: Fn(&mut Self, Point) + 'static>(mut self, func: T) -> Self;
+    fn click(&self, point: Point);
+    fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self;
 }

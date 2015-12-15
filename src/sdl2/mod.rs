@@ -1,6 +1,7 @@
 use super::{Color, Event, Point, Rect, Renderer, Widget};
 
 use std::path::Path;
+use std::sync::Arc;
 
 extern crate sdl2;
 extern crate sdl2_ttf;
@@ -55,7 +56,7 @@ pub struct Window {
     events: sdl2::EventPump,
     font: sdl2_ttf::Font,
     inner: sdl2::render::Renderer<'static>,
-    pub widgets: Vec<Box<Widget>>,
+    pub widgets: Vec<Arc<Widget>>,
     pub bg: Color,
 }
 
@@ -80,10 +81,6 @@ impl Window {
             widgets: Vec::new(),
             bg: Color::rgb(237, 233, 227),
         })
-    }
-
-    pub fn add<T: Widget>(&mut self, widget: T){
-        self.widgets.push(Box::new(widget));
     }
 
     pub fn draw(&mut self) {
