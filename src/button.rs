@@ -14,9 +14,9 @@ pub struct Button {
 }
 
 impl Button {
-    pub fn new(rect: Rect, text: &str) -> Self {
+    pub fn new(text: &str) -> Self {
         Button {
-            rect: rect,
+            rect: Rect::default(),
             text: text.to_string(),
             bg_up: Color::rgb(220, 222, 227),
             bg_down: Color::rgb(203, 205, 210),
@@ -65,7 +65,8 @@ impl Widget for Button {
         let mut x = 0;
         for c in self.text.chars() {
             if x + 8 <= self.rect.width as isize {
-                renderer.char(Point::new(x + self.rect.x, self.rect.y), c, self.fg);
+                let point = self.rect.get_point();
+                renderer.char(Point::new(x + point.x, point.y), c, self.fg);
             }
             x += 8;
         }
@@ -93,11 +94,16 @@ impl Widget for Button {
                 }
 
                 if click {
-                    let click_point = Point::new(point.x - self.rect.x, point.y - self.rect.y);
+                    let rect_point = self.rect.get_point();
+                    let click_point = Point::new(point.x - rect_point.x, point.y - rect_point.y);
                     self.click(click_point);
                 }
             },
             _ => ()
         }
+    }
+
+    pub fn position(&mut self, x: isize, y: isize) -> &mut Self {
+        self.rect.point = Some(Point {x: x, y: y});
     }
 }
