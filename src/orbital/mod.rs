@@ -70,7 +70,7 @@ impl Window {
         while let Some(orbital_event) = self.inner.poll() {
             let mut events = Vec::new();
 
-            let event = match orbital_event.to_option() {
+            match orbital_event.to_option() {
                 orbital::EventOption::Mouse(mouse_event) => events.push(Event::Mouse {
                     point: Point::new(mouse_event.x, mouse_event.y),
                     left_button: mouse_event.left_button,
