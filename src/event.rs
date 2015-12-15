@@ -8,5 +8,18 @@ pub enum Event {
         middle_button: bool,
         right_button: bool,
     },
+
+    Backspace,
+    Delete,
+
+    UpArrow,
+    DownArrow,
+    LeftArrow,
+    RightArrow,
+
+    Text {
+        c: char,
+    },
+
     Unknown
 }

@@ -75,6 +75,17 @@ impl Window {
                     middle_button: mouse_event.middle_button,
                     right_button: mouse_event.right_button,
                 },
+                orbital::EventOption::Key(key_event) => match key_event.scancode {
+                    orbital::K_BKSP => Event::Backspace,
+                    orbital::K_DEL => Event::Delete,
+                    orbital::K_UP => Event::UpArrow,
+                    orbital::K_DOWN => Event::DownArrow,
+                    orbital::K_LEFT => Event::LeftArrow,
+                    orbital::K_RIGHT => Event::RightArrow,
+                    _ => Event::Key {
+                        c: key_event.character
+                    }
+                },
                 _ => Event::Unknown
             };
 

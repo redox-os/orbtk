@@ -69,6 +69,8 @@ impl Window {
         let mut window = video_ctx.window(title, rect.width as u32, rect.height as u32).position(rect.x as i32, rect.y as i32).opengl().build().unwrap();
         window.show();
 
+        video_ctx.text_input().start();
+
         let events = ctx.event_pump().unwrap();
 
         Box::new(Window {
@@ -100,18 +102,20 @@ impl Window {
         self.draw();
         'event: loop {
             while let Some(sdl_event) = self.events.poll_event() {
-                let event = match sdl_event {
+                let mut events: Vec<Event> = Vec::new();
+
+                match sdl_event {
                     sdl2::event::Event::MouseMotion { mousestate, x, y, .. } => {
                         left_button = mousestate.left();
                         middle_button = mousestate.middle();
                         right_button = mousestate.right();
 
-                        Event::Mouse {
+                        events.push(Event::Mouse {
                             point: Point::new(x as isize, y as isize),
                             left_button: left_button,
                             middle_button: middle_button,
                             right_button: right_button,
-                        }
+                        });
                     },
                     sdl2::event::Event::MouseButtonDown { mouse_btn, x, y, .. } => {
                         match mouse_btn {
@@ -121,12 +125,12 @@ impl Window {
                             _ => ()
                         }
 
-                        Event::Mouse {
+                        events.push(Event::Mouse {
                             point: Point::new(x as isize, y as isize),
                             left_button: left_button,
                             middle_button: middle_button,
                             right_button: right_button,
-                        }
+                        });
                     },
                     sdl2::event::Event::MouseButtonUp { mouse_btn, x, y, .. } => {
                         match mouse_btn {
@@ -136,19 +140,40 @@ impl Window {
                             _ => ()
                         }
 
-                        Event::Mouse {
+                        events.push(Event::Mouse {
                             point: Point::new(x as isize, y as isize),
                             left_button: left_button,
                             middle_button: middle_button,
                             right_button: right_button,
+                        });
+                    },
+                    sdl2::event::Event::KeyDown { keycode, keymod, .. } => if let Some(key) = keycode {
+                        match key {
+                            sdl2::keyboard::Keycode::Backspace => events.push(Event::Backspace),
+                            sdl2::keyboard::Keycode::Delete => events.push(Event::Delete),
+                            sdl2::keyboard::Keycode::Up => events.push(Event::UpArrow),
+                            sdl2::keyboard::Keycode::Down => events.push(Event::DownArrow),
+                            sdl2::keyboard::Keycode::Left => events.push(Event::LeftArrow),
+                            sdl2::keyboard::Keycode::Right => events.push(Event::RightArrow),
+                            _ => ()
+                        }
+                    },
+                    sdl2::event::Event::TextInput { text, .. } => {
+                        println!("Input: '{}' {}", text, text.len());
+                        for c in text.chars() {
+                            events.push(Event::Text {
+                                c: c
+                            });
                         }
                     },
                     sdl2::event::Event::Quit {..} => break 'event,
-                    _ => Event::Unknown
+                    _ => ()
                 };
 
-                for widget in self.widgets.iter() {
-                    widget.event(event);
+                for event in events.iter() {
+                    for widget in self.widgets.iter() {
+                        widget.event(*event);
+                    }
                 }
 
                 self.draw();
