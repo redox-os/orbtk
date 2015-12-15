@@ -101,7 +101,7 @@ impl Widget for Label {
 
     pub fn position(&mut self, x: isize, y: isize) -> &mut Self {
         let mut rect = self.rect.get();
-        rect.point = Some(Point {x: x, y: y});
+        rect.point = Some(Point::new(x, y));
         self.rect.set(rect);
     }
 }

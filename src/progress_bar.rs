@@ -100,6 +100,6 @@ impl Widget for ProgressBar {
     }
 
     pub fn position(&mut self, x: isize, y: isize) -> &mut Self {
-        self.rect.point = Some(Point {x: x, y: y});
+        self.rect.point = Some(Point::new(x, y));
     }
 }
