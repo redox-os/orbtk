@@ -68,29 +68,37 @@ impl Window {
     pub fn exec(&mut self) {
         self.draw();
         while let Some(orbital_event) = self.inner.poll() {
+            let mut events = Vec::new();
+
             let event = match orbital_event.to_option() {
-                orbital::EventOption::Mouse(mouse_event) => Event::Mouse {
+                orbital::EventOption::Mouse(mouse_event) => events.push(Event::Mouse {
                     point: Point::new(mouse_event.x, mouse_event.y),
                     left_button: mouse_event.left_button,
                     middle_button: mouse_event.middle_button,
                     right_button: mouse_event.right_button,
-                },
-                orbital::EventOption::Key(key_event) => match key_event.scancode {
-                    orbital::K_BKSP => Event::Backspace,
-                    orbital::K_DEL => Event::Delete,
-                    orbital::K_UP => Event::UpArrow,
-                    orbital::K_DOWN => Event::DownArrow,
-                    orbital::K_LEFT => Event::LeftArrow,
-                    orbital::K_RIGHT => Event::RightArrow,
-                    _ => Event::Key {
-                        c: key_event.character
+                }),
+                orbital::EventOption::Key(key_event) => if key_event.pressed {
+                    match key_event.scancode {
+                        orbital::K_BKSP => events.push(Event::Backspace),
+                        orbital::K_DEL => events.push(Event::Delete),
+                        orbital::K_UP => events.push(Event::UpArrow),
+                        orbital::K_DOWN => events.push(Event::DownArrow),
+                        orbital::K_LEFT => events.push(Event::LeftArrow),
+                        orbital::K_RIGHT => events.push(Event::RightArrow),
+                        _ => if key_event.character != '\0' {
+                            events.push(Event::Text {
+                                c: key_event.character
+                            })
+                        }
                     }
                 },
-                _ => Event::Unknown
+                _ => ()
             };
 
-            for widget in self.widgets.iter() {
-                widget.event(event);
+            for event in events.iter() {
+                for widget in self.widgets.iter() {
+                    widget.event(*event);
+                }
             }
 
             self.draw();
