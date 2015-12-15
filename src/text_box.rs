@@ -15,10 +15,10 @@ pub struct TextBox {
 }
 
 impl TextBox {
-    pub fn new(text: &str) -> Self {
+    pub fn new() -> Self {
         TextBox {
             rect: CopyCell::new(Rect::default()),
-            text: CloneCell::new(text.to_string()),
+            text: CloneCell::new(String::new()),
             text_i: CopyCell::new(0),
             bg: Color::rgb(255, 255, 255),
             fg: Color::rgb(0, 0, 0),
@@ -29,11 +29,17 @@ impl TextBox {
     }
 
     pub fn place(self, window: &mut Window) -> Arc<Self> {
-        let rc = Arc::new(self);
+        let arc = Arc::new(self);
 
-        window.widgets.push(rc.clone());
+        window.widgets.push(arc.clone());
 
-        rc
+        arc
+    }
+
+    pub fn text(self, text: &str) -> Self {
+        self.text.set(text.to_string());
+        self.text_i.set(text.len());
+        self
     }
 }
 

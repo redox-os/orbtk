@@ -45,14 +45,16 @@ pub fn example() {
     let x = 20;
     let mut y = 20;
 
-    let label = Label::new("Test Label")
+    let label = Label::new()
+        .text("Test Label")
         .position(x, y)
         .size(80, 16)
         .place(&mut window);
 
     y += 16 + 10;
 
-    Button::new("Test Button")
+    Button::new()
+        .text("Test Button")
         .position(x, y)
         .size(88, 16)
         .on_click(move |_button: &Button, point: Point| {
@@ -68,7 +70,8 @@ pub fn example() {
 
     y += 16 + 10;
 
-    ProgressBar::new(50)
+    ProgressBar::new()
+        .value(50)
         .position(x, y)
         .size(300, 16)
         .on_click(|progress_bar: &ProgressBar, point: Point| {
@@ -78,12 +81,13 @@ pub fn example() {
 
     y += 16 + 10;
 
-    Label::new("Test Input")
+    Label::new()
+        .text("Test Input")
         .position(x, y)
         .size(80, 16)
         .place(&mut window);
 
-    TextBox::new("")
+    TextBox::new()
         .position(x + 80 + 10, y)
         .size(210, 16)
         .place(&mut window);

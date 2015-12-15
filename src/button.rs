@@ -13,10 +13,10 @@ pub struct Button {
 }
 
 impl Button {
-    pub fn new(text: &str) -> Self {
+    pub fn new() -> Self {
         Button {
             rect: CopyCell::new(Rect::default()),
-            text: CloneCell::new(text.to_string()),
+            text: CloneCell::new(String::new()),
             bg_up: Color::rgb(220, 222, 227),
             bg_down: Color::rgb(203, 205, 210),
             fg: Color::rgb(0, 0, 0),
@@ -26,11 +26,16 @@ impl Button {
     }
 
     pub fn place(self, window: &mut Window) -> Arc<Self> {
-        let rc = Arc::new(self);
+        let arc = Arc::new(self);
 
-        window.widgets.push(rc.clone());
+        window.widgets.push(arc.clone());
 
-        rc
+        arc
+    }
+
+    pub fn text(self, text: &str) -> Self {
+        self.text.set(text.to_string());
+        self
     }
 }
 

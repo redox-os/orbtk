@@ -15,10 +15,10 @@ pub struct ProgressBar {
 }
 
 impl ProgressBar {
-    pub fn new(value: isize) -> Self {
+    pub fn new() -> Self {
         ProgressBar {
             rect: CopyCell::new(Rect::default()),
-            value: CopyCell::new(value),
+            value: CopyCell::new(0),
             minimum: 0,
             maximum: 100,
             bg: Color::rgb(255, 255, 255),
@@ -34,6 +34,11 @@ impl ProgressBar {
         window.widgets.push(arc.clone());
 
         arc
+    }
+
+    pub fn value(self, value: isize) -> Self {
+        self.value.set(value);
+        self
     }
 }
 

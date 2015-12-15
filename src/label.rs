@@ -12,10 +12,10 @@ pub struct Label {
 }
 
 impl Label {
-    pub fn new(text: &str) -> Self {
+    pub fn new() -> Self {
         Label {
             rect: CopyCell::new(Rect::default()),
-            text: CloneCell::new(text.to_string()),
+            text: CloneCell::new(String::new()),
             bg: Color::rgb(237, 233, 227),
             fg: Color::rgb(0, 0, 0),
             on_click: None,
@@ -29,6 +29,11 @@ impl Label {
         window.widgets.push(arc.clone());
 
         arc
+    }
+
+    pub fn text(self, text: &str) -> Self {
+        self.text.set(text.to_string());
+        self
     }
 }
 
