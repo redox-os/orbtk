@@ -16,9 +16,9 @@ pub struct ProgressBar {
 }
 
 impl ProgressBar {
-    pub fn new(rect: Rect, value: isize) -> Self {
+    pub fn new(value: isize) -> Self {
         ProgressBar {
-            rect: rect,
+            rect: Rect::default(),
             value: Cell::new(value),
             minimum: 0,
             maximum: 100,
@@ -60,9 +60,10 @@ impl Click for ProgressBar {
 impl Widget for ProgressBar {
     fn draw(&self, renderer: &mut Renderer) {
         renderer.rect(self.rect, self.bg);
+        let point = self.rect.get_point();
         renderer.rect(Rect::new(
-            self.rect.x,
-            self.rect.y,
+            point.x,
+            point.y,
             ((self.rect.width as isize * max(0, min(self.maximum, self.value.get() - self.minimum)))/max(1, self.maximum - self.minimum)) as usize,
             self.rect.height
         ), self.fg);
@@ -90,11 +91,15 @@ impl Widget for ProgressBar {
                 }
 
                 if click {
-                    let click_point = Point::new(point.x - self.rect.x, point.y - self.rect.y);
+                    let click_point: Point = point - self.rect.get_point();
                     self.click(click_point);
                 }
             },
             _ => ()
         }
+    }
+
+    pub fn position(&mut self, x: isize, y: isize) -> &mut Self {
+        self.rect.point = Some(Point::new(x, y));
     }
 }

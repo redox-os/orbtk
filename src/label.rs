@@ -13,9 +13,9 @@ pub struct Label {
 }
 
 impl Label {
-    pub fn new(rect: Rect, text: &str) -> Self {
+    pub fn new(text: &str) -> Self {
         Label {
-            rect: Cell::new(rect),
+            rect: Cell::new(Rect::default()),
             text: RefCell::new(text.to_string()),
             bg: Color::rgb(237, 233, 227),
             fg: Color::rgb(0, 0, 0),
@@ -61,7 +61,8 @@ impl Widget for Label {
         let text = self.text.borrow();
         for c in text.chars() {
             if x + 8 <= rect.width as isize {
-                renderer.char(Point::new(x + rect.x, rect.y), c, self.fg);
+                let point = rect.get_point();
+                renderer.char(Point::new(x, 0) + point, c, self.fg);
             }
             x += 8;
         }
@@ -90,11 +91,17 @@ impl Widget for Label {
                 }
 
                 if click {
-                    let click_point = Point::new(point.x - rect.x, point.y - rect.y);
+                    let click_point: Point = point - rect.get_point();
                     self.click(click_point);
                 }
             },
             _ => ()
         }
+    }
+
+    pub fn position(&mut self, x: isize, y: isize) -> &mut Self {
+        let mut rect = self.rect.get();
+        rect.point = Some(Point::new(x, y));
+        self.rect.set(rect);
     }
 }

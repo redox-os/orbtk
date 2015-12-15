@@ -2,8 +2,11 @@ use super::Point;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Rect {
+    /*
     pub x: isize,
     pub y: isize,
+    */
+    pub point: Option<Point>,
     pub width: usize,
     pub height: usize,
 }
@@ -11,15 +14,22 @@ pub struct Rect {
 impl Rect {
     pub fn new(x: isize, y: isize, width: usize, height: usize) -> Rect {
         Rect {
-            x: x,
-            y: y,
+            point: Some(Point::new(x, y)),
             width: width,
             height: height,
         }
     }
 
     pub fn contains(&self, p: Point) -> bool {
-        p.x >= self.x && p.x < self.x + self.width as isize &&
-        p.y >= self.y && p.y < self.y + self.height as isize
+        if let Some(this) = self.point {
+            p.x >= this.x && p.x < this.x + self.width as isize &&
+            p.y >= this.y && p.y < this.y + self.height as isize
+        }
+
+        false
+    }
+
+    pub fn get_point(&self) -> Point {
+        self.point.unwrap_or(Point::new(0, 0))
     }
 }
