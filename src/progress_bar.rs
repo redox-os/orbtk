@@ -91,8 +91,7 @@ impl Widget for ProgressBar {
                 }
 
                 if click {
-                    let rect_point = self.rect.get_point();
-                    let click_point = Point::new(point.x - rect_point.x, point.y - rect_point.y);
+                    let click_point: Point = point - self.rect.get_point();
                     self.click(click_point);
                 }
             },

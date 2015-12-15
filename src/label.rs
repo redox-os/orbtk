@@ -62,7 +62,7 @@ impl Widget for Label {
         for c in text.chars() {
             if x + 8 <= rect.width as isize {
                 let point = rect.get_point();
-                renderer.char(Point::new(x + point.x, point.y), c, self.fg);
+                renderer.char(Point::new(x, 0) + point, c, self.fg);
             }
             x += 8;
         }
@@ -91,8 +91,7 @@ impl Widget for Label {
                 }
 
                 if click {
-                    let rect_point = rect.get_point();
-                    let click_point = Point::new(point.x - rect_point.x, point.y - rect_point.y);
+                    let click_point: Point = point - rect.get_point();
                     self.click(click_point);
                 }
             },
