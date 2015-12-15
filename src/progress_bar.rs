@@ -15,8 +15,8 @@ pub struct ProgressBar {
 }
 
 impl ProgressBar {
-    pub fn new(rect: Rect, value: isize) -> Box<Self> {
-        Box::new(ProgressBar {
+    pub fn new(rect: Rect, value: isize) -> Self {
+        ProgressBar {
             rect: rect,
             value: value,
             minimum: 0,
@@ -25,7 +25,7 @@ impl ProgressBar {
             fg: Color::rgb(65, 139, 212),
             on_click: None,
             pressed: false,
-        })
+        }
     }
 }
 
@@ -41,8 +41,8 @@ impl Click for ProgressBar {
         }
     }
 
-    fn on_click(mut self: Box<Self>, func: Box<Fn(&mut Self, Point)>) -> Box<Self> {
-        self.on_click = Some(Arc::new(func));
+    fn on_click<T: Fn(&mut Self, Point) + 'static>(mut self, func: T) -> Self {
+        self.on_click = Some(Arc::new(Box::new(func)));
 
         self
     }

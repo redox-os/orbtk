@@ -13,8 +13,8 @@ pub struct Button {
 }
 
 impl Button {
-    pub fn new(rect: Rect, text: &str) -> Box<Self> {
-        Box::new(Button {
+    pub fn new(rect: Rect, text: &str) -> Self {
+        Button {
             rect: rect,
             text: text.to_string(),
             bg_up: Color::rgb(220, 222, 227),
@@ -22,7 +22,7 @@ impl Button {
             fg: Color::rgb(0, 0, 0),
             on_click: None,
             pressed: false,
-        })
+        }
     }
 }
 
@@ -38,8 +38,8 @@ impl Click for Button {
         }
     }
 
-    fn on_click(mut self: Box<Self>, func: Box<Fn(&mut Self, Point)>) -> Box<Self> {
-        self.on_click = Some(Arc::new(func));
+    fn on_click<T: Fn(&mut Self, Point) + 'static>(mut self, func: T) -> Self {
+        self.on_click = Some(Arc::new(Box::new(func)));
 
         self
     }

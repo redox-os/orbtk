@@ -82,8 +82,8 @@ impl Window {
         })
     }
 
-    pub fn add(&mut self, widget: Box<Widget>){
-        self.widgets.push(widget);
+    pub fn add<T: Widget>(&mut self, widget: T){
+        self.widgets.push(Box::new(widget));
     }
 
     pub fn draw(&mut self) {
