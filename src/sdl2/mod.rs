@@ -147,7 +147,7 @@ impl Window {
                             right_button: right_button,
                         });
                     },
-                    sdl2::event::Event::KeyDown { keycode, keymod, .. } => if let Some(key) = keycode {
+                    sdl2::event::Event::KeyDown { keycode, .. } => if let Some(key) = keycode {
                         match key {
                             sdl2::keyboard::Keycode::Backspace => events.push(Event::Backspace),
                             sdl2::keyboard::Keycode::Delete => events.push(Event::Delete),
@@ -159,7 +159,6 @@ impl Window {
                         }
                     },
                     sdl2::event::Event::TextInput { text, .. } => {
-                        println!("Input: '{}' {}", text, text.len());
                         for c in text.chars() {
                             events.push(Event::Text {
                                 c: c

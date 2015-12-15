@@ -1,4 +1,5 @@
 #![crate_type="lib"]
+#![feature(str_char)]
 
 pub use sys::Window;
 

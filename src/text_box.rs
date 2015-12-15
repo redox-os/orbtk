@@ -1,10 +1,12 @@
 use super::{Click, CloneCell, Color, CopyCell, Event, Place, Point, Rect, Renderer, Widget, Window};
 
+use std::cmp::min;
 use std::sync::Arc;
 
 pub struct TextBox {
     pub rect: CopyCell<Rect>,
     pub text: CloneCell<String>,
+    pub text_i: CopyCell<usize>,
     pub bg: Color,
     pub fg: Color,
     pub fg_cursor: Color,
@@ -17,6 +19,7 @@ impl TextBox {
         TextBox {
             rect: CopyCell::new(Rect::default()),
             text: CloneCell::new(text.to_string()),
+            text_i: CopyCell::new(0),
             bg: Color::rgb(255, 255, 255),
             fg: Color::rgb(0, 0, 0),
             fg_cursor: Color::rgb(128, 128, 128),
@@ -54,7 +57,7 @@ impl Click for TextBox {
 }
 
 impl Place for TextBox {
-    fn position(mut self, x: isize, y: isize) -> Self {
+    fn position(self, x: isize, y: isize) -> Self {
         let mut rect = self.rect.get();
         rect.x = x;
         rect.y = y;
@@ -63,7 +66,7 @@ impl Place for TextBox {
         self
     }
 
-    fn size(mut self, width: usize, height: usize) -> Self {
+    fn size(self, width: usize, height: usize) -> Self {
         let mut rect = self.rect.get();
         rect.width = width;
         rect.height = height;
@@ -79,17 +82,23 @@ impl Widget for TextBox {
 
         renderer.rect(rect, self.bg);
 
-        let mut x = 0;
+        let text_i = self.text_i.get();
         let text = self.text.borrow();
-        for c in text.chars() {
+        let mut x = 0;
+        for (i, c) in text.char_indices() {
             if x + 8 <= rect.width as isize {
+                if i == text_i {
+                    renderer.rect(Rect::new(x + rect.x, rect.y, 8, 16), self.fg_cursor);
+                }
                 renderer.char(Point::new(x + rect.x, rect.y), c, self.fg);
             }
             x += 8;
         }
 
-        if x + 8 <= rect.width as isize {
-            renderer.rect(Rect::new(x + rect.x, rect.y, 8, 16), self.fg_cursor);
+        if text.len() == text_i {
+            if x + 8 <= rect.width as isize {
+                renderer.rect(Rect::new(x + rect.x, rect.y, 8, 16), self.fg_cursor);
+            }
         }
     }
 
@@ -121,10 +130,45 @@ impl Widget for TextBox {
                 }
             },
             Event::Text { c } => {
-                self.text.borrow_mut().push(c);
+                let mut text = self.text.borrow_mut();
+                let text_i = self.text_i.get();
+                if text.is_char_boundary(text_i) {
+                    text.insert(text_i, c);
+                    self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
+                }
             },
             Event::Backspace => {
-                self.text.borrow_mut().pop();
+                let mut text = self.text.borrow_mut();
+                let mut text_i = self.text_i.get();
+                if text.is_char_boundary(text_i) && text_i > 0 {
+                    text_i = min(text.char_range_at_reverse(text_i).next, text.len());
+                    if text.is_char_boundary(text_i) && text_i < text.len() {
+                        text.remove(text_i);
+                        self.text_i.set(min(text_i, text.len()));
+                    }
+                }
+            },
+            Event::Delete => {
+                let mut text = self.text.borrow_mut();
+                let text_i = self.text_i.get();
+                if text.is_char_boundary(text_i) && text_i < text.len() {
+                    text.remove(text_i);
+                    self.text_i.set(min(text_i, text.len()));
+                }
+            },
+            Event::LeftArrow => {
+                let text = self.text.borrow();
+                let text_i = self.text_i.get();
+                if text.is_char_boundary(text_i) && text_i > 0 {
+                    self.text_i.set(min(text.char_range_at_reverse(text_i).next, text.len()));
+                }
+            },
+            Event::RightArrow => {
+                let text = self.text.borrow();
+                let text_i = self.text_i.get();
+                if text.is_char_boundary(text_i) && text_i < text.len() {
+                    self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
+                }
             },
             _ => ()
         }

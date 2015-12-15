@@ -57,7 +57,7 @@ impl Click for ProgressBar {
 }
 
 impl Place for ProgressBar {
-    fn position(mut self, x: isize, y: isize) -> Self {
+    fn position(self, x: isize, y: isize) -> Self {
         let mut rect = self.rect.get();
         rect.x = x;
         rect.y = y;
@@ -66,7 +66,7 @@ impl Place for ProgressBar {
         self
     }
 
-    fn size(mut self, width: usize, height: usize) -> Self {
+    fn size(self, width: usize, height: usize) -> Self {
         let mut rect = self.rect.get();
         rect.width = width;
         rect.height = height;
