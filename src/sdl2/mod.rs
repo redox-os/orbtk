@@ -147,7 +147,7 @@ impl Window {
                     _ => Event::Unknown
                 };
 
-                for mut widget in self.widgets.iter_mut() {
+                for widget in self.widgets.iter() {
                     widget.event(event);
                 }
 
