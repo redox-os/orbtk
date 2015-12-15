@@ -126,6 +126,20 @@ impl Widget for TextBox {
 
                 if click {
                     let click_point = Point::new(point.x - rect.x, point.y - rect.y);
+                    {
+                        let text = self.text.borrow();
+                        let mut x = 0;
+                        for (i, _c) in text.char_indices() {
+                            if x + 8 <= rect.width as isize && click_point.x >= x && click_point.x < x + 8{
+                                self.text_i.set(i);
+                            }
+                            x += 8;
+                        }
+
+                        if x + 8 <= rect.width as isize && click_point.x >= x {
+                            self.text_i.set(text.len());
+                        }
+                    }
                     self.click(click_point);
                 }
             },
