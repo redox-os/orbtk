@@ -22,13 +22,13 @@ fn main() {
         .position(20, 100)
         .size(88, 16)
         .on_click(move |_button: &Button, point: Point| {
+            let text = format!("{:?}", point);
+
             let mut rect = label.rect.get();
-            rect.width = {
-                let mut text = label.text.borrow_mut();
-                *text = format!("{:?}", point);
-                text.chars().count() * 8
-            };
+            rect.width = text.chars().count() * 8;
             label.rect.set(rect);
+
+            label.text.set(text);
         })
         .place(&mut window);
 

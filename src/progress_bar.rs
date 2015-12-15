@@ -1,31 +1,30 @@
-use super::{Click, Color, Event, Place, Point, Rect, Renderer, Widget, Window};
+use super::{Click, Color, CopyCell, Event, Place, Point, Rect, Renderer, Widget, Window};
 
-use std::cell::Cell;
 use std::cmp::{min, max};
 use std::sync::Arc;
 
 pub struct ProgressBar {
-    pub rect: Cell<Rect>,
-    pub value: Cell<isize>,
+    pub rect: CopyCell<Rect>,
+    pub value: CopyCell<isize>,
     pub minimum: isize,
     pub maximum: isize,
     pub bg: Color,
     pub fg: Color,
     on_click: Option<Arc<Fn(&ProgressBar, Point)>>,
-    pressed: Cell<bool>,
+    pressed: CopyCell<bool>,
 }
 
 impl ProgressBar {
     pub fn new(value: isize) -> Self {
         ProgressBar {
-            rect: Cell::new(Rect::default()),
-            value: Cell::new(value),
+            rect: CopyCell::new(Rect::default()),
+            value: CopyCell::new(value),
             minimum: 0,
             maximum: 100,
             bg: Color::rgb(255, 255, 255),
             fg: Color::rgb(65, 139, 212),
             on_click: None,
-            pressed: Cell::new(false),
+            pressed: CopyCell::new(false),
         }
     }
 

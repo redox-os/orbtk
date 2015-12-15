@@ -3,6 +3,7 @@
 pub use sys::Window;
 
 pub use button::Button;
+pub use cell::{CopyCell, CloneCell};
 pub use click::Click;
 pub use color::Color;
 pub use event::Event;
@@ -15,6 +16,7 @@ pub use renderer::Renderer;
 pub use widget::Widget;
 
 pub mod button;
+pub mod cell;
 pub mod click;
 pub mod color;
 pub mod event;

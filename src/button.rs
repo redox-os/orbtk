@@ -1,28 +1,27 @@
-use super::{Click, Color, Event, Place, Point, Rect, Renderer, Widget, Window};
+use super::{Click, CloneCell, Color, CopyCell, Event, Place, Point, Rect, Renderer, Widget, Window};
 
-use std::cell::Cell;
 use std::sync::Arc;
 
 pub struct Button {
-    pub rect: Cell<Rect>,
-    pub text: String,
+    pub rect: CopyCell<Rect>,
+    pub text: CloneCell<String>,
     pub bg_up: Color,
     pub bg_down: Color,
     pub fg: Color,
     on_click: Option<Arc<Fn(&Button, Point)>>,
-    pressed: Cell<bool>,
+    pressed: CopyCell<bool>,
 }
 
 impl Button {
     pub fn new(text: &str) -> Self {
         Button {
-            rect: Cell::new(Rect::default()),
-            text: text.to_string(),
+            rect: CopyCell::new(Rect::default()),
+            text: CloneCell::new(text.to_string()),
             bg_up: Color::rgb(220, 222, 227),
             bg_down: Color::rgb(203, 205, 210),
             fg: Color::rgb(0, 0, 0),
             on_click: None,
-            pressed: Cell::new(false),
+            pressed: CopyCell::new(false),
         }
     }
 
@@ -85,7 +84,8 @@ impl Widget for Button {
         }
 
         let mut x = 0;
-        for c in self.text.chars() {
+        let text = self.text.borrow();
+        for c in text.chars() {
             if x + 8 <= rect.width as isize {
                 renderer.char(Point::new(x + rect.x, rect.y), c, self.fg);
             }
