@@ -1,4 +1,4 @@
-use super::{Click, Color, Event, Point, Rect, Renderer, Widget, Window};
+use super::{Click, Color, Event, Place, Point, Rect, Renderer, Widget, Window};
 
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
@@ -52,6 +52,26 @@ impl Click for Label {
     }
 }
 
+impl Place for Label {
+    fn position(mut self, x: isize, y: isize) -> Self {
+        let mut rect = self.rect.get();
+        rect.x = x;
+        rect.y = y;
+        self.rect.set(rect);
+
+        self
+    }
+
+    fn size(mut self, width: usize, height: usize) -> Self {
+        let mut rect = self.rect.get();
+        rect.width = width;
+        rect.height = height;
+        self.rect.set(rect);
+
+        self
+    }
+}
+
 impl Widget for Label {
     fn draw(&self, renderer: &mut Renderer) {
         let rect = self.rect.get();
@@ -61,8 +81,7 @@ impl Widget for Label {
         let text = self.text.borrow();
         for c in text.chars() {
             if x + 8 <= rect.width as isize {
-                let point = rect.get_point();
-                renderer.char(Point::new(x, 0) + point, c, self.fg);
+                renderer.char(Point::new(x + rect.x, rect.y), c, self.fg);
             }
             x += 8;
         }
@@ -91,17 +110,11 @@ impl Widget for Label {
                 }
 
                 if click {
-                    let click_point: Point = point - rect.get_point();
+                    let click_point = Point::new(point.x - rect.x, point.y - rect.y);
                     self.click(click_point);
                 }
             },
             _ => ()
         }
-    }
-
-    pub fn position(&mut self, x: isize, y: isize) -> &mut Self {
-        let mut rect = self.rect.get();
-        rect.point = Some(Point::new(x, y));
-        self.rect.set(rect);
     }
 }

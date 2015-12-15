@@ -36,11 +36,9 @@ impl<'a> Renderer for SdlRenderer<'a> {
     }
 
     fn rect(&mut self, rect: Rect, color: Color) {
-        if let Some(rect_point) = rect.point {
-            if let Some(sdl_rect) = sdl2::rect::Rect::new(rect_point.x as i32, rect_point.y as i32, rect.width as u32, rect.height as u32).unwrap() {
-                self.inner.set_draw_color(sdl2::pixels::Color::RGBA((color.data >> 16) as u8, (color.data >> 8) as u8, color.data as u8, (color.data >> 24) as u8));
-                self.inner.fill_rect(sdl_rect);
-            }
+        if let Some(sdl_rect) = sdl2::rect::Rect::new(rect.x as i32, rect.y as i32, rect.width as u32, rect.height as u32).unwrap() {
+            self.inner.set_draw_color(sdl2::pixels::Color::RGBA((color.data >> 16) as u8, (color.data >> 8) as u8, color.data as u8, (color.data >> 24) as u8));
+            self.inner.fill_rect(sdl_rect);
         }
     }
 }
@@ -68,9 +66,7 @@ impl Window {
         let video_ctx = ctx.video().unwrap();
         let ttf_context = sdl2_ttf::init().unwrap();
 
-        let point = rect.get_point();
-        let mut window = video_ctx.window(title, rect.width as u32, rect.height as u32).position(point.x as i32, point.y as i32).opengl().build().unwrap();
-        drop(point);
+        let mut window = video_ctx.window(title, rect.width as u32, rect.height as u32).position(rect.x as i32, rect.y as i32).opengl().build().unwrap();
         window.show();
 
         let events = ctx.event_pump().unwrap();

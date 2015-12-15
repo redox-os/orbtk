@@ -1,11 +1,11 @@
-use super::{Click, Color, Event, Point, Rect, Renderer, Widget, Window};
+use super::{Click, Color, Event, Place, Point, Rect, Renderer, Widget, Window};
 
 use std::cell::Cell;
 use std::cmp::{min, max};
 use std::sync::Arc;
 
 pub struct ProgressBar {
-    pub rect: Rect,
+    pub rect: Cell<Rect>,
     pub value: Cell<isize>,
     pub minimum: isize,
     pub maximum: isize,
@@ -18,7 +18,7 @@ pub struct ProgressBar {
 impl ProgressBar {
     pub fn new(value: isize) -> Self {
         ProgressBar {
-            rect: Rect::default(),
+            rect: Cell::new(Rect::default()),
             value: Cell::new(value),
             minimum: 0,
             maximum: 100,
@@ -57,15 +57,35 @@ impl Click for ProgressBar {
     }
 }
 
+impl Place for ProgressBar {
+    fn position(mut self, x: isize, y: isize) -> Self {
+        let mut rect = self.rect.get();
+        rect.x = x;
+        rect.y = y;
+        self.rect.set(rect);
+
+        self
+    }
+
+    fn size(mut self, width: usize, height: usize) -> Self {
+        let mut rect = self.rect.get();
+        rect.width = width;
+        rect.height = height;
+        self.rect.set(rect);
+
+        self
+    }
+}
+
 impl Widget for ProgressBar {
     fn draw(&self, renderer: &mut Renderer) {
-        renderer.rect(self.rect, self.bg);
-        let point = self.rect.get_point();
+        let rect = self.rect.get();
+        renderer.rect(rect, self.bg);
         renderer.rect(Rect::new(
-            point.x,
-            point.y,
-            ((self.rect.width as isize * max(0, min(self.maximum, self.value.get() - self.minimum)))/max(1, self.maximum - self.minimum)) as usize,
-            self.rect.height
+            rect.x,
+            rect.y,
+            ((rect.width as isize * max(0, min(self.maximum, self.value.get() - self.minimum)))/max(1, self.maximum - self.minimum)) as usize,
+            rect.height
         ), self.fg);
     }
 
@@ -74,7 +94,8 @@ impl Widget for ProgressBar {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
 
-                if self.rect.contains(point){
+                let rect = self.rect.get();
+                if rect.contains(point){
                     if left_button {
                         self.pressed.set(true);
                     } else {
@@ -91,15 +112,11 @@ impl Widget for ProgressBar {
                 }
 
                 if click {
-                    let click_point: Point = point - self.rect.get_point();
+                    let click_point = Point::new(point.x - rect.x, point.y - rect.y);
                     self.click(click_point);
                 }
             },
             _ => ()
         }
-    }
-
-    pub fn position(&mut self, x: isize, y: isize) -> &mut Self {
-        self.rect.point = Some(Point::new(x, y));
     }
 }

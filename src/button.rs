@@ -1,10 +1,10 @@
-use super::{Click, Color, Event, Point, Rect, Renderer, Widget, Window};
+use super::{Click, Color, Event, Place, Point, Rect, Renderer, Widget, Window};
 
 use std::cell::Cell;
 use std::sync::Arc;
 
 pub struct Button {
-    pub rect: Rect,
+    pub rect: Cell<Rect>,
     pub text: String,
     pub bg_up: Color,
     pub bg_down: Color,
@@ -16,7 +16,7 @@ pub struct Button {
 impl Button {
     pub fn new(text: &str) -> Self {
         Button {
-            rect: Rect::default(),
+            rect: Cell::new(Rect::default()),
             text: text.to_string(),
             bg_up: Color::rgb(220, 222, 227),
             bg_down: Color::rgb(203, 205, 210),
@@ -54,19 +54,40 @@ impl Click for Button {
     }
 }
 
+impl Place for Button {
+    fn position(mut self, x: isize, y: isize) -> Self {
+        let mut rect = self.rect.get();
+        rect.x = x;
+        rect.y = y;
+        self.rect.set(rect);
+
+        self
+    }
+
+    fn size(mut self, width: usize, height: usize) -> Self {
+        let mut rect = self.rect.get();
+        rect.width = width;
+        rect.height = height;
+        self.rect.set(rect);
+
+        self
+    }
+}
+
 impl Widget for Button {
     fn draw(&self, renderer: &mut Renderer) {
+        let rect = self.rect.get();
+
         if self.pressed.get() {
-            renderer.rect(self.rect, self.bg_down);
+            renderer.rect(rect, self.bg_down);
         } else {
-            renderer.rect(self.rect, self.bg_up);
+            renderer.rect(rect, self.bg_up);
         }
 
         let mut x = 0;
         for c in self.text.chars() {
-            if x + 8 <= self.rect.width as isize {
-                let point = self.rect.get_point();
-                renderer.char(Point::new(x, 0) + point, c, self.fg);
+            if x + 8 <= rect.width as isize {
+                renderer.char(Point::new(x + rect.x, rect.y), c, self.fg);
             }
             x += 8;
         }
@@ -77,7 +98,8 @@ impl Widget for Button {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
 
-                if self.rect.contains(point){
+                let rect = self.rect.get();
+                if rect.contains(point){
                     if left_button {
                         self.pressed.set(true);
                     } else {
@@ -94,15 +116,11 @@ impl Widget for Button {
                 }
 
                 if click {
-                    let click_point: Point = point - self.rect.get_point();
+                    let click_point = Point::new(point.x - rect.x, point.y - rect.y);
                     self.click(click_point);
                 }
             },
             _ => ()
         }
-    }
-
-    pub fn position(&mut self, x: isize, y: isize) -> &mut Self {
-        self.rect.point = Some(Point::new(x, y));
     }
 }

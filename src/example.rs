@@ -5,16 +5,22 @@ use orbtk::*;
 fn main() {
     let mut window = Window::new(Rect::new(100, 100, 400, 400), "OrbTK");
 
-    let label = Label::new(Rect::new(20, 20, 80, 16), "Test Label")
+    let label = Label::new("Test Label")
+        .position(20, 20)
+        .size(80, 16)
         .place(&mut window);
 
-    ProgressBar::new(Rect::new(20, 60, 200, 16), 50)
+    ProgressBar::new(50)
+        .position(20, 60)
+        .size(200, 16)
         .on_click(|progress_bar: &ProgressBar, point: Point| {
-            progress_bar.value.set(point.x * 100 / progress_bar.rect.width as isize);
+            progress_bar.value.set(point.x * 100 / progress_bar.rect.get().width as isize);
         })
         .place(&mut window);
 
-    Button::new(Rect::new(20, 100, 88, 16), "Test Button")
+    Button::new("Test Button")
+        .position(20, 100)
+        .size(88, 16)
         .on_click(move |_button: &Button, point: Point| {
             let mut rect = label.rect.get();
             rect.width = {

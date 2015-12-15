@@ -44,7 +44,7 @@ impl<'a> Drop for WindowRenderer<'a> {
 
 pub struct Window {
     inner: Box<orbital::Window>,
-    pub widgets: Vec<Arc<Box<Widget>>>,
+    pub widgets: Vec<Arc<Widget>>,
     pub bg: Color,
 }
 
