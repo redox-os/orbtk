@@ -93,7 +93,7 @@ impl Widget for ProgressBar {
         ), self.fg);
     }
 
-    fn event(&self, event: Event) {
+    fn event(&self, event: Event, focused: bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
@@ -122,5 +122,7 @@ impl Widget for ProgressBar {
             },
             _ => ()
         }
+
+        focused
     }
 }

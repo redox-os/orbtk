@@ -9,7 +9,7 @@ pub struct Button {
     pub bg_down: Color,
     pub fg: Color,
     on_click: Option<Arc<Fn(&Button, Point)>>,
-    pressed: CopyCell<bool>,
+    pressed: CopyCell<bool>
 }
 
 impl Button {
@@ -105,7 +105,7 @@ impl Widget for Button {
         }
     }
 
-    fn event(&self, event: Event) {
+    fn event(&self, event: Event, focused: bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
@@ -134,5 +134,7 @@ impl Widget for Button {
             },
             _ => ()
         }
+
+        focused
     }
 }

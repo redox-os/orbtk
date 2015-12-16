@@ -57,6 +57,7 @@ pub struct Window {
     font: sdl2_ttf::Font,
     inner: sdl2::render::Renderer<'static>,
     pub widgets: Vec<Arc<Widget>>,
+    pub widget_focus: usize,
     pub bg: Color,
 }
 
@@ -66,7 +67,7 @@ impl Window {
         let video_ctx = ctx.video().unwrap();
         let ttf_context = sdl2_ttf::init().unwrap();
 
-        let mut window = video_ctx.window(title, rect.width as u32, rect.height as u32).position(rect.x as i32, rect.y as i32).opengl().build().unwrap();
+        let mut window = video_ctx.window(title, rect.width as u32, rect.height as u32).position(rect.x as i32, rect.y as i32).opengl().resizable().build().unwrap();
         window.show();
 
         video_ctx.text_input().start();
@@ -81,6 +82,7 @@ impl Window {
             font: sdl2_ttf::Font::from_file(&Path::new("res/Unifont.ttf"), 16).unwrap(),
             inner: window.renderer().build().unwrap(),
             widgets: Vec::new(),
+            widget_focus: 0,
             bg: Color::rgb(237, 233, 227),
         })
     }
@@ -170,8 +172,12 @@ impl Window {
             };
 
             for event in events.iter() {
-                for widget in self.widgets.iter() {
-                    widget.event(*event);
+                for i in 0..self.widgets.len() {
+                    if let Some(widget) = self.widgets.get(i) {
+                        if widget.event(*event, self.widget_focus == i) {
+                            self.widget_focus = i;
+                        }
+                    }
                 }
             }
 

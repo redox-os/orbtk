@@ -12,6 +12,7 @@ pub struct TextBox {
     pub fg_cursor: Color,
     on_click: Option<Arc<Fn(&TextBox, Point)>>,
     pressed: CopyCell<bool>,
+    focused: CopyCell<bool>,
 }
 
 impl TextBox {
@@ -25,6 +26,7 @@ impl TextBox {
             fg_cursor: Color::rgb(128, 128, 128),
             on_click: None,
             pressed: CopyCell::new(false),
+            focused: CopyCell::new(false),
         }
     }
 
@@ -95,17 +97,15 @@ impl Widget for TextBox {
         let mut y = 0;
         for (i, c) in text.char_indices() {
             if c == '\n' {
-                if x + 8 <= rect.width as isize && y + 16 <= rect.height as isize {
-                    if i == text_i {
-                        renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
-                    }
+                if i == text_i && self.focused.get() && x + 8 <= rect.width as isize && y + 16 <= rect.height as isize {
+                    renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
                 }
 
                 x = 0;
                 y += 16;
             } else {
                 if x + 8 <= rect.width as isize && y + 16 <= rect.height as isize {
-                    if i == text_i {
+                    if i == text_i && self.focused.get() {
                         renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
                     }
                     renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
@@ -115,14 +115,12 @@ impl Widget for TextBox {
             }
         }
 
-        if text.len() == text_i {
-            if x + 8 <= rect.width as isize && y + 16 <= rect.height as isize {
-                renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
-            }
+        if text.len() == text_i && self.focused.get() && x + 8 <= rect.width as isize && y + 16 <= rect.height as isize {
+            renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
         }
     }
 
-    fn event(&self, event: Event) {
+    fn event(&self, event: Event, mut focused: bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
@@ -145,6 +143,8 @@ impl Widget for TextBox {
                 }
 
                 if click {
+                    focused = true;
+
                     let click_point: Point = point - rect.point();
                     {
                         let text = self.text.borrow();
@@ -173,7 +173,7 @@ impl Widget for TextBox {
                     self.click(click_point);
                 }
             },
-            Event::Text { c } => {
+            Event::Text { c } => if focused {
                 let mut text = self.text.borrow_mut();
                 let text_i = self.text_i.get();
                 if text.is_char_boundary(text_i) {
@@ -181,7 +181,7 @@ impl Widget for TextBox {
                     self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
                 }
             },
-            Event::Enter => {
+            Event::Enter => if focused {
                 let mut text = self.text.borrow_mut();
                 let text_i = self.text_i.get();
                 if text.is_char_boundary(text_i) {
@@ -189,7 +189,7 @@ impl Widget for TextBox {
                     self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
                 }
             },
-            Event::Backspace => {
+            Event::Backspace => if focused {
                 let mut text = self.text.borrow_mut();
                 let mut text_i = self.text_i.get();
                 if text.is_char_boundary(text_i) && text_i > 0 {
@@ -200,7 +200,7 @@ impl Widget for TextBox {
                     }
                 }
             },
-            Event::Delete => {
+            Event::Delete => if focused {
                 let mut text = self.text.borrow_mut();
                 let text_i = self.text_i.get();
                 if text.is_char_boundary(text_i) && text_i < text.len() {
@@ -208,14 +208,14 @@ impl Widget for TextBox {
                     self.text_i.set(min(text_i, text.len()));
                 }
             },
-            Event::LeftArrow => {
+            Event::LeftArrow => if focused {
                 let text = self.text.borrow();
                 let text_i = self.text_i.get();
                 if text.is_char_boundary(text_i) && text_i > 0 {
                     self.text_i.set(min(text.char_range_at_reverse(text_i).next, text.len()));
                 }
             },
-            Event::RightArrow => {
+            Event::RightArrow => if focused {
                 let text = self.text.borrow();
                 let text_i = self.text_i.get();
                 if text.is_char_boundary(text_i) && text_i < text.len() {
@@ -224,5 +224,9 @@ impl Widget for TextBox {
             },
             _ => ()
         }
+
+        self.focused.set(focused);
+
+        focused
     }
 }

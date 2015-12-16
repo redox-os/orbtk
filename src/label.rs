@@ -98,7 +98,7 @@ impl Widget for Label {
         }
     }
 
-    fn event(&self, event: Event) {
+    fn event(&self, event: Event, focused: bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
@@ -127,5 +127,7 @@ impl Widget for Label {
             },
             _ => ()
         }
+
+        focused
     }
 }
