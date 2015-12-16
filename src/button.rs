@@ -92,7 +92,7 @@ impl Widget for Button {
         let text = self.text.borrow();
         for c in text.chars() {
             if x + 8 <= rect.width as isize {
-                renderer.char(Point::new(x + rect.x, rect.y), c, self.fg);
+                renderer.char(Point::new(x, 0) + rect.point(), c, self.fg);
             }
             x += 8;
         }
@@ -121,7 +121,7 @@ impl Widget for Button {
                 }
 
                 if click {
-                    let click_point = Point::new(point.x - rect.x, point.y - rect.y);
+                    let click_point: Point = point - rect.point();
                     self.click(click_point);
                 }
             },

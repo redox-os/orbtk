@@ -22,4 +22,8 @@ impl Rect {
         p.x >= self.x && p.x < self.x + self.width as isize &&
         p.y >= self.y && p.y < self.y + self.height as isize
     }
+
+    pub fn point(&self) -> Point {
+        Point::new(self.x, self.y)
+    }
 }

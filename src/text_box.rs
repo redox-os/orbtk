@@ -96,7 +96,7 @@ impl Widget for TextBox {
                 if i == text_i {
                     renderer.rect(Rect::new(x + rect.x, rect.y, 8, 16), self.fg_cursor);
                 }
-                renderer.char(Point::new(x + rect.x, rect.y), c, self.fg);
+                renderer.char(Point::new(x, 0) + rect.point(), c, self.fg);
             }
             x += 8;
         }
@@ -131,7 +131,7 @@ impl Widget for TextBox {
                 }
 
                 if click {
-                    let click_point = Point::new(point.x - rect.x, point.y - rect.y);
+                    let click_point: Point = point - rect.point();
                     {
                         let text = self.text.borrow();
                         let mut x = 0;
