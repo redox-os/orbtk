@@ -85,8 +85,11 @@ impl Window {
                         orbital::K_DOWN => events.push(Event::DownArrow),
                         orbital::K_LEFT => events.push(Event::LeftArrow),
                         orbital::K_RIGHT => events.push(Event::RightArrow),
-                        _ => if key_event.character != '\0' {
-                            events.push(Event::Text {
+                        _ => match key_event.character {
+                            '\0' => (),
+                            '\x1B' => (),
+                            '\n' => events.push(Event::Enter),
+                            _ => events.push(Event::Text {
                                 c: key_event.character
                             })
                         }

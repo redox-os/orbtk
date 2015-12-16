@@ -148,6 +148,7 @@ impl Window {
                 },
                 sdl2::event::Event::KeyDown { keycode, .. } => if let Some(key) = keycode {
                     match key {
+                        sdl2::keyboard::Keycode::Return => events.push(Event::Enter),
                         sdl2::keyboard::Keycode::Backspace => events.push(Event::Backspace),
                         sdl2::keyboard::Keycode::Delete => events.push(Event::Delete),
                         sdl2::keyboard::Keycode::Up => events.push(Event::UpArrow),

@@ -90,20 +90,34 @@ impl Widget for TextBox {
 
         let text_i = self.text_i.get();
         let text = self.text.borrow();
+
         let mut x = 0;
+        let mut y = 0;
         for (i, c) in text.char_indices() {
-            if x + 8 <= rect.width as isize {
-                if i == text_i {
-                    renderer.rect(Rect::new(x + rect.x, rect.y, 8, 16), self.fg_cursor);
+            if c == '\n' {
+                if x + 8 <= rect.width as isize && y + 16 <= rect.height as isize {
+                    if i == text_i {
+                        renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
+                    }
                 }
-                renderer.char(Point::new(x, 0) + rect.point(), c, self.fg);
+
+                x = 0;
+                y += 16;
+            } else {
+                if x + 8 <= rect.width as isize && y + 16 <= rect.height as isize {
+                    if i == text_i {
+                        renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
+                    }
+                    renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
+                }
+
+                x += 8;
             }
-            x += 8;
         }
 
         if text.len() == text_i {
-            if x + 8 <= rect.width as isize {
-                renderer.rect(Rect::new(x + rect.x, rect.y, 8, 16), self.fg_cursor);
+            if x + 8 <= rect.width as isize && y + 16 <= rect.height as isize {
+                renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
             }
         }
     }
@@ -134,15 +148,25 @@ impl Widget for TextBox {
                     let click_point: Point = point - rect.point();
                     {
                         let text = self.text.borrow();
+
                         let mut x = 0;
-                        for (i, _c) in text.char_indices() {
-                            if x + 8 <= rect.width as isize && click_point.x >= x && click_point.x < x + 8{
-                                self.text_i.set(i);
+                        let mut y = 0;
+                        for (i, c) in text.char_indices() {
+                            if c == '\n' {
+                                if x + 8 <= rect.width as isize && click_point.x >= x && y + 16 <= rect.height as isize && click_point.y >= y && click_point.y < y + 16 {
+                                    self.text_i.set(i);
+                                }
+                                x = 0;
+                                y += 16;
+                            }else{
+                                if x + 8 <= rect.width as isize && click_point.x >= x && click_point.x < x + 8 && y + 16 <= rect.height as isize && click_point.y >= y && click_point.y < y + 16 {
+                                    self.text_i.set(i);
+                                }
+                                x += 8;
                             }
-                            x += 8;
                         }
 
-                        if x + 8 <= rect.width as isize && click_point.x >= x {
+                        if x + 8 <= rect.width as isize && click_point.x >= x &&  y + 16 <= rect.height as isize && click_point.y >= y || click_point.y >= y + 16 {
                             self.text_i.set(text.len());
                         }
                     }
@@ -154,6 +178,14 @@ impl Widget for TextBox {
                 let text_i = self.text_i.get();
                 if text.is_char_boundary(text_i) {
                     text.insert(text_i, c);
+                    self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
+                }
+            },
+            Event::Enter => {
+                let mut text = self.text.borrow_mut();
+                let text_i = self.text_i.get();
+                if text.is_char_boundary(text_i) {
+                    text.insert(text_i, '\n');
                     self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
                 }
             },

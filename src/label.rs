@@ -81,13 +81,20 @@ impl Widget for Label {
         let rect = self.rect.get();
         renderer.rect(rect, self.bg);
 
-        let mut x = 0;
         let text = self.text.borrow();
+
+        let mut x = 0;
+        let mut y = 0;
         for c in text.chars() {
-            if x + 8 <= rect.width as isize {
-                renderer.char(Point::new(x, 0) + rect.point(), c, self.fg);
+            if c == '\n' {
+                x = 0;
+                y += 16;
+            }else{
+                if x + 8 <= rect.width as isize && y + 16 <= rect.height as isize {
+                    renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
+                }
+                x += 8;
             }
-            x += 8;
         }
     }
 

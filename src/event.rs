@@ -9,6 +9,11 @@ pub enum Event {
         right_button: bool,
     },
 
+    Text {
+        c: char,
+    },
+    Enter,
+
     Backspace,
     Delete,
 
@@ -16,10 +21,6 @@ pub enum Event {
     DownArrow,
     LeftArrow,
     RightArrow,
-
-    Text {
-        c: char,
-    },
 
     Unknown
 }
