@@ -87,5 +87,20 @@ pub fn example() {
         })
         .place(&mut window);
 
+    y += 16 + 10;
+
+    Label::new()
+        .text("Multi-Line Text")
+        .position(x, y)
+        .size(400, 16)
+        .place(&mut window);
+
+    y += 16 + 10;
+
+    TextBox::new()
+        .position(x, y)
+        .size(400, 128)
+        .place(&mut window);
+
     window.exec();
 }
