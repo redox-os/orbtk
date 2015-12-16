@@ -1,4 +1,6 @@
 language: rust
+rust:
+  - nightly
 sudo: required
 install:
   - sudo add-apt-repository -y ppa:zoogie/sdl2-snapshots
