@@ -208,6 +208,36 @@ impl Widget for TextBox {
                     self.text_i.set(min(text_i, text.len()));
                 }
             },
+            Event::Home => if focused {
+                let text = self.text.borrow();
+                let mut text_i = self.text_i.get();
+                while text.is_char_boundary(text_i) && text_i > 0 {
+                    let range = text.char_range_at_reverse(text_i);
+                    if range.ch == '\n' {
+                        break;
+                    }
+                    text_i = range.next;
+                }
+                self.text_i.set(text_i);
+            },
+            Event::End => if focused {
+                let text = self.text.borrow();
+                let mut text_i = self.text_i.get();
+                while text.is_char_boundary(text_i) && text_i < text.len() {
+                    let range = text.char_range_at(text_i);
+                    if range.ch == '\n' {
+                        break;
+                    }
+                    text_i = range.next;
+                }
+                self.text_i.set(text_i);
+            },
+            Event::UpArrow => if focused {
+
+            },
+            Event::DownArrow => if focused {
+
+            },
             Event::LeftArrow => if focused {
                 let text = self.text.borrow();
                 let text_i = self.text_i.get();

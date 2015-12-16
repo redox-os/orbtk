@@ -17,6 +17,9 @@ pub enum Event {
     Backspace,
     Delete,
 
+    Home,
+    End,
+    
     UpArrow,
     DownArrow,
     LeftArrow,

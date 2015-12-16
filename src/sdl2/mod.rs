@@ -153,6 +153,8 @@ impl Window {
                         sdl2::keyboard::Keycode::Return => events.push(Event::Enter),
                         sdl2::keyboard::Keycode::Backspace => events.push(Event::Backspace),
                         sdl2::keyboard::Keycode::Delete => events.push(Event::Delete),
+                        sdl2::keyboard::Keycode::Home => events.push(Event::Home),
+                        sdl2::keyboard::Keycode::End => events.push(Event::End),
                         sdl2::keyboard::Keycode::Up => events.push(Event::UpArrow),
                         sdl2::keyboard::Keycode::Down => events.push(Event::DownArrow),
                         sdl2::keyboard::Keycode::Left => events.push(Event::LeftArrow),

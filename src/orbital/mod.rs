@@ -81,6 +81,8 @@ impl Window {
                     match key_event.scancode {
                         orbital::K_BKSP => events.push(Event::Backspace),
                         orbital::K_DEL => events.push(Event::Delete),
+                        orbital::K_HOME => events.push(Event::Home),
+                        orbital::K_END => events.push(Event::End),
                         orbital::K_UP => events.push(Event::UpArrow),
                         orbital::K_DOWN => events.push(Event::DownArrow),
                         orbital::K_LEFT => events.push(Event::LeftArrow),
