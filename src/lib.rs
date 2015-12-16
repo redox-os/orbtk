@@ -40,56 +40,51 @@ pub mod sys;
 pub mod sys;
 
 pub fn example() {
-    let mut window = Window::new(Rect::new(100, 100, 400, 400), "OrbTK");
+    let mut window = Window::new(Rect::new(100, 100, 420, 420), "OrbTK");
 
-    let x = 20;
-    let mut y = 20;
+    let x = 10;
+    let mut y = 10;
 
     let label = Label::new()
         .text("Test Label")
         .position(x, y)
-        .size(80, 16)
+        .size(400, 16)
         .place(&mut window);
 
     y += 16 + 10;
 
+    let text_box = TextBox::new()
+        .position(x, y)
+        .size(302, 16)
+        .place(&mut window);
+
     Button::new()
         .text("Test Button")
-        .position(x, y)
+        .position(x + 302 + 10, y)
         .size(88, 16)
-        .on_click(move |_button: &Button, point: Point| {
-            let text = format!("{:?}", point);
-
-            let mut rect = label.rect.get();
-            rect.width = text.chars().count() * 8;
-            label.rect.set(rect);
-
-            label.text.set(text);
+        .on_click(move |_button: &Button, _point: Point| {
+            label.text.set(format!("Input: {}", text_box.text.get()));
         })
+        .place(&mut window);
+
+    y += 16 + 10;
+
+    let progress_label = Label::new()
+        .text("Progress: 0%")
+        .position(x, y)
+        .size(400, 16)
         .place(&mut window);
 
     y += 16 + 10;
 
     ProgressBar::new()
-        .value(50)
         .position(x, y)
-        .size(300, 16)
-        .on_click(|progress_bar: &ProgressBar, point: Point| {
-            progress_bar.value.set(point.x * 100 / progress_bar.rect.get().width as isize);
+        .size(400, 16)
+        .on_click(move |progress_bar: &ProgressBar, point: Point| {
+            let progress = point.x * 100 / progress_bar.rect.get().width as isize;
+            progress_label.text.set(format!("Progress: {}%", progress));
+            progress_bar.value.set(progress);
         })
-        .place(&mut window);
-
-    y += 16 + 10;
-
-    Label::new()
-        .text("Test Input")
-        .position(x, y)
-        .size(80, 16)
-        .place(&mut window);
-
-    TextBox::new()
-        .position(x + 80 + 10, y)
-        .size(210, 16)
         .place(&mut window);
 
     window.exec();
