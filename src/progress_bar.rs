@@ -116,7 +116,7 @@ impl Widget for ProgressBar {
                 }
 
                 if click {
-                    let click_point = Point::new(point.x - rect.x, point.y - rect.y);
+                    let click_point: Point = point - rect.point();
                     self.click(click_point);
                 }
             },
