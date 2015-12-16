@@ -233,10 +233,76 @@ impl Widget for TextBox {
                 self.text_i.set(text_i);
             },
             Event::UpArrow => if focused {
+                let text = self.text.borrow();
+                let mut text_i = self.text_i.get();
 
+                //Count back to last newline
+                let mut offset = 0;
+                while text.is_char_boundary(text_i) && text_i > 0 {
+                    let range = text.char_range_at_reverse(text_i);
+                    text_i = range.next;
+                    if range.ch == '\n' {
+                        break;
+                    }
+                    offset += 1;
+                }
+
+                //Go to newline before last newline
+                while text.is_char_boundary(text_i) && text_i > 0 {
+                    let range = text.char_range_at_reverse(text_i);
+                    if range.ch == '\n' {
+                        break;
+                    }
+                    text_i = range.next;
+                }
+
+                //Add back offset
+                while text.is_char_boundary(text_i) && offset > 0 && text_i < text.len() {
+                    let range = text.char_range_at(text_i);
+                    if range.ch == '\n' {
+                        break;
+                    }
+                    text_i = range.next;
+                    offset -= 1;
+                }
+
+                self.text_i.set(text_i);
             },
             Event::DownArrow => if focused {
+                let text = self.text.borrow();
+                let mut text_i = self.text_i.get();
 
+                //Count back to last newline
+                let mut offset = 0;
+                while text.is_char_boundary(text_i) && text_i > 0 {
+                    let range = text.char_range_at_reverse(text_i);
+                    if range.ch == '\n' {
+                        break;
+                    }
+                    text_i = range.next;
+                    offset += 1;
+                }
+
+                //Go to next newline
+                while text.is_char_boundary(text_i) && text_i < text.len() {
+                    let range = text.char_range_at(text_i);
+                    text_i = range.next;
+                    if range.ch == '\n' {
+                        break;
+                    }
+                }
+
+                //Add back offset
+                while text.is_char_boundary(text_i) && offset > 0 && text_i < text.len() {
+                    let range = text.char_range_at(text_i);
+                    if range.ch == '\n' {
+                        break;
+                    }
+                    text_i = range.next;
+                    offset -= 1;
+                }
+
+                self.text_i.set(text_i);
             },
             Event::LeftArrow => if focused {
                 let text = self.text.borrow();
