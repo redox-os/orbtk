@@ -67,7 +67,7 @@ impl Window {
 
     pub fn exec(&mut self) {
         self.draw();
-        while let Some(orbital_event) = self.inner.poll() {
+        'event: while let Some(orbital_event) = self.inner.poll() {
             let mut events = Vec::new();
 
             match orbital_event.to_option() {
@@ -92,6 +92,7 @@ impl Window {
                         }
                     }
                 },
+                orbital::EventOption::Quit(_quit_event) => break 'event,
                 _ => ()
             };
 
