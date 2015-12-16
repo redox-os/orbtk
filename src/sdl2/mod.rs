@@ -101,82 +101,80 @@ impl Window {
 
         self.draw();
         'event: loop {
-            while let Some(sdl_event) = self.events.poll_event() {
-                let mut events: Vec<Event> = Vec::new();
+            let mut events: Vec<Event> = Vec::new();
 
-                match sdl_event {
-                    sdl2::event::Event::MouseMotion { mousestate, x, y, .. } => {
-                        left_button = mousestate.left();
-                        middle_button = mousestate.middle();
-                        right_button = mousestate.right();
+            match self.events.wait_event() {
+                sdl2::event::Event::MouseMotion { mousestate, x, y, .. } => {
+                    left_button = mousestate.left();
+                    middle_button = mousestate.middle();
+                    right_button = mousestate.right();
 
-                        events.push(Event::Mouse {
-                            point: Point::new(x as isize, y as isize),
-                            left_button: left_button,
-                            middle_button: middle_button,
-                            right_button: right_button,
-                        });
-                    },
-                    sdl2::event::Event::MouseButtonDown { mouse_btn, x, y, .. } => {
-                        match mouse_btn {
-                            sdl2::mouse::Mouse::Left => left_button = true,
-                            sdl2::mouse::Mouse::Middle => middle_button = true,
-                            sdl2::mouse::Mouse::Right => right_button = true,
-                            _ => ()
-                        }
-
-                        events.push(Event::Mouse {
-                            point: Point::new(x as isize, y as isize),
-                            left_button: left_button,
-                            middle_button: middle_button,
-                            right_button: right_button,
-                        });
-                    },
-                    sdl2::event::Event::MouseButtonUp { mouse_btn, x, y, .. } => {
-                        match mouse_btn {
-                            sdl2::mouse::Mouse::Left => left_button = false,
-                            sdl2::mouse::Mouse::Middle => middle_button = false,
-                            sdl2::mouse::Mouse::Right => right_button = false,
-                            _ => ()
-                        }
-
-                        events.push(Event::Mouse {
-                            point: Point::new(x as isize, y as isize),
-                            left_button: left_button,
-                            middle_button: middle_button,
-                            right_button: right_button,
-                        });
-                    },
-                    sdl2::event::Event::KeyDown { keycode, .. } => if let Some(key) = keycode {
-                        match key {
-                            sdl2::keyboard::Keycode::Backspace => events.push(Event::Backspace),
-                            sdl2::keyboard::Keycode::Delete => events.push(Event::Delete),
-                            sdl2::keyboard::Keycode::Up => events.push(Event::UpArrow),
-                            sdl2::keyboard::Keycode::Down => events.push(Event::DownArrow),
-                            sdl2::keyboard::Keycode::Left => events.push(Event::LeftArrow),
-                            sdl2::keyboard::Keycode::Right => events.push(Event::RightArrow),
-                            _ => ()
-                        }
-                    },
-                    sdl2::event::Event::TextInput { text, .. } => {
-                        for c in text.chars() {
-                            events.push(Event::Text {
-                                c: c
-                            });
-                        }
-                    },
-                    sdl2::event::Event::Quit {..} => break 'event,
-                    _ => ()
-                };
-
-                for event in events.iter() {
-                    for widget in self.widgets.iter() {
-                        widget.event(*event);
+                    events.push(Event::Mouse {
+                        point: Point::new(x as isize, y as isize),
+                        left_button: left_button,
+                        middle_button: middle_button,
+                        right_button: right_button,
+                    });
+                },
+                sdl2::event::Event::MouseButtonDown { mouse_btn, x, y, .. } => {
+                    match mouse_btn {
+                        sdl2::mouse::Mouse::Left => left_button = true,
+                        sdl2::mouse::Mouse::Middle => middle_button = true,
+                        sdl2::mouse::Mouse::Right => right_button = true,
+                        _ => ()
                     }
-                }
 
-                self.draw();
+                    events.push(Event::Mouse {
+                        point: Point::new(x as isize, y as isize),
+                        left_button: left_button,
+                        middle_button: middle_button,
+                        right_button: right_button,
+                    });
+                },
+                sdl2::event::Event::MouseButtonUp { mouse_btn, x, y, .. } => {
+                    match mouse_btn {
+                        sdl2::mouse::Mouse::Left => left_button = false,
+                        sdl2::mouse::Mouse::Middle => middle_button = false,
+                        sdl2::mouse::Mouse::Right => right_button = false,
+                        _ => ()
+                    }
+
+                    events.push(Event::Mouse {
+                        point: Point::new(x as isize, y as isize),
+                        left_button: left_button,
+                        middle_button: middle_button,
+                        right_button: right_button,
+                    });
+                },
+                sdl2::event::Event::KeyDown { keycode, .. } => if let Some(key) = keycode {
+                    match key {
+                        sdl2::keyboard::Keycode::Backspace => events.push(Event::Backspace),
+                        sdl2::keyboard::Keycode::Delete => events.push(Event::Delete),
+                        sdl2::keyboard::Keycode::Up => events.push(Event::UpArrow),
+                        sdl2::keyboard::Keycode::Down => events.push(Event::DownArrow),
+                        sdl2::keyboard::Keycode::Left => events.push(Event::LeftArrow),
+                        sdl2::keyboard::Keycode::Right => events.push(Event::RightArrow),
+                        _ => ()
+                    }
+                },
+                sdl2::event::Event::TextInput { text, .. } => {
+                    for c in text.chars() {
+                        events.push(Event::Text {
+                            c: c
+                        });
+                    }
+                },
+                sdl2::event::Event::Quit {..} => break 'event,
+                _ => ()
+            };
+
+            for event in events.iter() {
+                for widget in self.widgets.iter() {
+                    widget.event(*event);
+                }
             }
+
+            self.draw();
         }
     }
 }
