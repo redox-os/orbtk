@@ -45,6 +45,7 @@ impl<'a> Drop for WindowRenderer<'a> {
 pub struct Window {
     inner: Box<orbital::Window>,
     pub widgets: Vec<Arc<Widget>>,
+    pub widget_focus: usize,
     pub bg: Color,
 }
 
@@ -53,6 +54,7 @@ impl Window {
         Box::new(Window {
             inner: orbital::Window::new(rect.x, rect.y, rect.width, rect.height, title).unwrap(),
             widgets: Vec::new(),
+            widget_focus: 0,
             bg: Color::rgb(237, 233, 227),
         })
     }
@@ -102,8 +104,12 @@ impl Window {
             };
 
             for event in events.iter() {
-                for widget in self.widgets.iter() {
-                    widget.event(*event);
+                for i in 0..self.widgets.len() {
+                    if let Some(widget) = self.widgets.get(i) {
+                        if widget.event(*event, self.widget_focus == i) {
+                            self.widget_focus = i;
+                        }
+                    }
                 }
             }
 
