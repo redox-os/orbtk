@@ -8,7 +8,7 @@ pub struct Button {
     pub bg_up: Color,
     pub bg_down: Color,
     pub fg: Color,
-    on_click: Option<Arc<Fn(&Button, Point)>>,
+    click_callback: Option<Arc<Fn(&Button, Point)>>,
     pressed: CopyCell<bool>
 }
 
@@ -20,7 +20,7 @@ impl Button {
             bg_up: Color::rgb(220, 222, 227),
             bg_down: Color::rgb(203, 205, 210),
             fg: Color::rgb(0, 0, 0),
-            on_click: None,
+            click_callback: None,
             pressed: CopyCell::new(false),
         }
     }
@@ -40,14 +40,14 @@ impl Button {
 }
 
 impl Click for Button {
-    fn click(&self, point: Point){
-        if let Some(ref on_click) = self.on_click {
-            on_click(self, point);
+    fn trigger_click(&self, point: Point){
+        if let Some(ref click_callback) = self.click_callback {
+            click_callback(self, point);
         }
     }
 
     fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.on_click = Some(Arc::new(func));
+        self.click_callback = Some(Arc::new(func));
 
         self
     }
@@ -124,7 +124,7 @@ impl Widget for Button {
 
                 if click {
                     let click_point: Point = point - rect.point();
-                    self.click(click_point);
+                    self.trigger_click(click_point);
                 }
             },
             _ => ()

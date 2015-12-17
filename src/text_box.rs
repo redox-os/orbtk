@@ -1,4 +1,4 @@
-use super::{Click, CloneCell, Color, CopyCell, Event, Place, Point, Rect, Renderer, Widget, Window};
+use super::{Click, CloneCell, Color, CopyCell, Enter, Event, Place, Point, Rect, Renderer, Widget, Window};
 
 use std::cmp::min;
 use std::sync::Arc;
@@ -10,7 +10,8 @@ pub struct TextBox {
     pub bg: Color,
     pub fg: Color,
     pub fg_cursor: Color,
-    on_click: Option<Arc<Fn(&TextBox, Point)>>,
+    click_callback: Option<Arc<Fn(&TextBox, Point)>>,
+    enter_callback: Option<Arc<Fn(&TextBox) -> bool>>,
     pressed: CopyCell<bool>,
     focused: CopyCell<bool>,
 }
@@ -24,7 +25,8 @@ impl TextBox {
             bg: Color::rgb(255, 255, 255),
             fg: Color::rgb(0, 0, 0),
             fg_cursor: Color::rgb(128, 128, 128),
-            on_click: None,
+            click_callback: None,
+            enter_callback: None,
             pressed: CopyCell::new(false),
             focused: CopyCell::new(false),
         }
@@ -46,14 +48,30 @@ impl TextBox {
 }
 
 impl Click for TextBox {
-    fn click(&self, point: Point){
-        if let Some(ref on_click) = self.on_click {
-            on_click(self, point);
+    fn trigger_click(&self, point: Point){
+        if let Some(ref click_callback) = self.click_callback {
+            click_callback(self, point);
         }
     }
 
     fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.on_click = Some(Arc::new(func));
+        self.click_callback = Some(Arc::new(func));
+
+        self
+    }
+}
+
+impl Enter for TextBox {
+    fn trigger_enter(&self) -> bool {
+        if let Some(ref enter_callback) = self.enter_callback {
+            enter_callback(self)
+        } else {
+            true
+        }
+    }
+
+    fn on_enter<T: Fn(&Self) -> bool + 'static>(mut self, func: T) -> Self {
+        self.enter_callback = Some(Arc::new(func));
 
         self
     }
@@ -165,7 +183,7 @@ impl Widget for TextBox {
                             self.text_i.set(text.len());
                         }
                     }
-                    self.click(click_point);
+                    self.trigger_click(click_point);
                 }
             },
             Event::Text { c } => if focused {
@@ -177,11 +195,13 @@ impl Widget for TextBox {
                 }
             },
             Event::Enter => if focused {
-                let mut text = self.text.borrow_mut();
-                let text_i = self.text_i.get();
-                if text.is_char_boundary(text_i) {
-                    text.insert(text_i, '\n');
-                    self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
+                if self.trigger_enter() {
+                    let mut text = self.text.borrow_mut();
+                    let text_i = self.text_i.get();
+                    if text.is_char_boundary(text_i) {
+                        text.insert(text_i, '\n');
+                        self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
+                    }
                 }
             },
             Event::Backspace => if focused {
