@@ -47,9 +47,7 @@ impl TextBox {
 
 impl Click for TextBox {
     fn click(&self, point: Point){
-        let on_click_option = self.on_click.clone();
-
-        if let Some(on_click) = on_click_option {
+        if let Some(ref on_click) = self.on_click {
             on_click(self, point);
         }
     }
