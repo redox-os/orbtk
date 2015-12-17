@@ -162,25 +162,33 @@ impl Widget for TextBox {
                     {
                         let text = self.text.borrow();
 
+                        let mut new_text_i = None;
+
                         let mut x = 0;
                         let mut y = 0;
                         for (i, c) in text.char_indices() {
                             if c == '\n' {
                                 if x + 8 <= rect.width as isize && click_point.x >= x && y + 16 <= rect.height as isize && click_point.y >= y && click_point.y < y + 16 {
-                                    self.text_i.set(i);
+                                    new_text_i = Some(i);
+                                    break;
                                 }
                                 x = 0;
                                 y += 16;
                             }else{
                                 if x + 8 <= rect.width as isize && click_point.x >= x && click_point.x < x + 8 && y + 16 <= rect.height as isize && click_point.y >= y && click_point.y < y + 16 {
-                                    self.text_i.set(i);
+                                    new_text_i = Some(i);
+                                    break;
                                 }
                                 x += 8;
                             }
                         }
 
-                        if x + 8 <= rect.width as isize && click_point.x >= x &&  y + 16 <= rect.height as isize && click_point.y >= y || click_point.y >= y + 16 {
-                            self.text_i.set(text.len());
+                        if new_text_i.is_none() && x + 8 <= rect.width as isize && click_point.x >= x &&  y + 16 <= rect.height as isize && click_point.y >= y || click_point.y >= y + 16 {
+                            new_text_i = Some(text.len());
+                        }
+
+                        if let Some(text_i) = new_text_i {
+                            self.text_i.set(text_i);
                         }
                     }
                     self.trigger_click(click_point);
