@@ -19,7 +19,7 @@ pub enum Event {
 
     Home,
     End,
-    
+
     UpArrow,
     DownArrow,
     LeftArrow,

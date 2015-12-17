@@ -41,12 +41,7 @@ impl Button {
 
 impl Click for Button {
     fn click(&self, point: Point){
-        let on_click_option = match self.on_click {
-            Some(ref on_click) => Some(on_click.clone()),
-            None => None
-        };
-
-        if let Some(on_click) = on_click_option {
+        if let Some(ref on_click) = self.on_click {
             on_click(self, point);
         }
     }
