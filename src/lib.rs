@@ -48,23 +48,32 @@ pub fn example() {
     let mut y = 10;
 
     let label = Label::new()
-        .text("Test Label")
         .position(x, y)
         .size(400, 16)
+        .text("Test Label")
         .place(&mut window);
 
     y += label.rect.get().height as isize + 10;
 
     let text_box = TextBox::new()
         .position(x, y)
-        .size(302, 16)
+        .size(342, 16)
         .on_enter(move |text_box: &TextBox| -> bool {
             label.text.set(text_box.text.get());
             false
         })
         .place(&mut window);
 
-    y += text_box.rect.get().height as isize + 10;
+    let button = Button::new()
+        .position(x + text_box.rect.get().width as isize + 10, y)
+        .size(48, text_box.rect.get().height)
+        .text("Update")
+        .on_click(move |_button: &Button, _point: Point| {
+            text_box.trigger_enter();
+        })
+        .place(&mut window);
+
+    y += button.rect.get().height as isize + 10;
 
     let progress_label = Label::new()
         .text("Progress: 0%")
