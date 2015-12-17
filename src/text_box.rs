@@ -10,7 +10,7 @@ pub struct TextBox {
     pub bg: Color,
     pub fg: Color,
     pub fg_cursor: Color,
-    on_click: Option<Arc<Fn(&TextBox, Point)>>,
+    click_callback: Option<Arc<Fn(&TextBox, Point)>>,
     enter_callback: Option<Arc<Fn(&TextBox) -> bool>>,
     pressed: CopyCell<bool>,
     focused: CopyCell<bool>,
@@ -25,7 +25,7 @@ impl TextBox {
             bg: Color::rgb(255, 255, 255),
             fg: Color::rgb(0, 0, 0),
             fg_cursor: Color::rgb(128, 128, 128),
-            on_click: None,
+            click_callback: None,
             enter_callback: None,
             pressed: CopyCell::new(false),
             focused: CopyCell::new(false),
@@ -48,14 +48,14 @@ impl TextBox {
 }
 
 impl Click for TextBox {
-    fn click(&self, point: Point){
-        if let Some(ref on_click) = self.on_click {
-            on_click(self, point);
+    fn trigger_click(&self, point: Point){
+        if let Some(ref click_callback) = self.click_callback {
+            click_callback(self, point);
         }
     }
 
     fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.on_click = Some(Arc::new(func));
+        self.click_callback = Some(Arc::new(func));
 
         self
     }
@@ -183,7 +183,7 @@ impl Widget for TextBox {
                             self.text_i.set(text.len());
                         }
                     }
-                    self.click(click_point);
+                    self.trigger_click(click_point);
                 }
             },
             Event::Text { c } => if focused {

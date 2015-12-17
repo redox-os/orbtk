@@ -10,7 +10,7 @@ pub struct ProgressBar {
     pub maximum: isize,
     pub bg: Color,
     pub fg: Color,
-    on_click: Option<Arc<Fn(&ProgressBar, Point)>>,
+    click_callback: Option<Arc<Fn(&ProgressBar, Point)>>,
     pressed: CopyCell<bool>,
 }
 
@@ -23,7 +23,7 @@ impl ProgressBar {
             maximum: 100,
             bg: Color::rgb(255, 255, 255),
             fg: Color::rgb(65, 139, 212),
-            on_click: None,
+            click_callback: None,
             pressed: CopyCell::new(false),
         }
     }
@@ -43,14 +43,14 @@ impl ProgressBar {
 }
 
 impl Click for ProgressBar {
-    fn click(&self, point: Point){
-        if let Some(ref on_click) = self.on_click {
-            on_click(self, point);
+    fn trigger_click(&self, point: Point){
+        if let Some(ref click_callback) = self.click_callback {
+            click_callback(self, point);
         }
     }
 
     fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.on_click = Some(Arc::new(func));
+        self.click_callback = Some(Arc::new(func));
 
         self
     }
@@ -112,7 +112,7 @@ impl Widget for ProgressBar {
 
                 if click {
                     let click_point: Point = point - rect.point();
-                    self.click(click_point);
+                    self.trigger_click(click_point);
                 }
             },
             _ => ()

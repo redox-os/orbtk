@@ -7,7 +7,7 @@ pub struct Label {
     pub text: CloneCell<String>,
     pub bg: Color,
     pub fg: Color,
-    on_click: Option<Arc<Fn(&Label, Point)>>,
+    click_callback: Option<Arc<Fn(&Label, Point)>>,
     pressed: CopyCell<bool>,
 }
 
@@ -18,7 +18,7 @@ impl Label {
             text: CloneCell::new(String::new()),
             bg: Color::rgb(237, 233, 227),
             fg: Color::rgb(0, 0, 0),
-            on_click: None,
+            click_callback: None,
             pressed: CopyCell::new(false),
         }
     }
@@ -38,14 +38,14 @@ impl Label {
 }
 
 impl Click for Label {
-    fn click(&self, point: Point){
-        if let Some(ref on_click) = self.on_click {
-            on_click(self, point);
+    fn trigger_click(&self, point: Point){
+        if let Some(ref click_callback) = self.click_callback {
+            click_callback(self, point);
         }
     }
 
     fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.on_click = Some(Arc::new(func));
+        self.click_callback = Some(Arc::new(func));
 
         self
     }
@@ -117,7 +117,7 @@ impl Widget for Label {
 
                 if click {
                     let click_point: Point = point - rect.point();
-                    self.click(click_point);
+                    self.trigger_click(click_point);
                 }
             },
             _ => ()
