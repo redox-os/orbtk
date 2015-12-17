@@ -51,23 +51,23 @@ pub fn example() {
         .size(400, 32)
         .place(&mut window);
 
-    y += 32 + 10;
+    y += label.rect.get().height as isize + 10;
 
     let text_box = TextBox::new()
         .position(x, y)
         .size(302, 32)
         .place(&mut window);
 
-    Button::new()
+    let text_button = Button::new()
         .text("Test Button")
-        .position(x + 302 + 10, y)
+        .position(x + text_box.rect.get().width as isize + 10, y)
         .size(88, 32)
         .on_click(move |_button: &Button, _point: Point| {
             label.text.set(format!("Input: {}", text_box.text.get()));
         })
         .place(&mut window);
 
-    y += 32 + 10;
+    y += text_button.rect.get().height as isize + 10;
 
     let progress_label = Label::new()
         .text("Progress: 0%")
@@ -75,9 +75,9 @@ pub fn example() {
         .size(400, 16)
         .place(&mut window);
 
-    y += 16 + 10;
+    y += progress_label.rect.get().height as isize + 10;
 
-    ProgressBar::new()
+    let progress_bar = ProgressBar::new()
         .position(x, y)
         .size(400, 16)
         .on_click(move |progress_bar: &ProgressBar, point: Point| {
@@ -87,15 +87,15 @@ pub fn example() {
         })
         .place(&mut window);
 
-    y += 16 + 10;
+    y += progress_bar.rect.get().height as isize + 10;
 
-    Label::new()
+    let multi_line_label = Label::new()
         .text("Multi-Line Text")
         .position(x, y)
         .size(400, 16)
         .place(&mut window);
 
-    y += 16 + 10;
+    y += multi_line_label.rect.get().height as isize + 10;
 
     TextBox::new()
         .position(x, y)
