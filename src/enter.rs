@@ -1,4 +1,4 @@
 pub trait Enter {
-    fn trigger_enter(&self) -> bool;
-    fn on_enter<T: Fn(&Self) -> bool + 'static>(mut self, func: T) -> Self;
+    fn trigger_on_enter(&self);
+    fn on_enter<T: Fn(&Self) + 'static>(mut self, func: T) -> Self;
 }
