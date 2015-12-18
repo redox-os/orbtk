@@ -43,7 +43,7 @@ impl ProgressBar {
 }
 
 impl Click for ProgressBar {
-    fn trigger_click(&self, point: Point){
+    fn emit_click(&self, point: Point){
         if let Some(ref click_callback) = self.click_callback {
             click_callback(self, point);
         }
@@ -112,7 +112,7 @@ impl Widget for ProgressBar {
 
                 if click {
                     let click_point: Point = point - rect.point();
-                    self.trigger_click(click_point);
+                    self.emit_click(click_point);
                 }
             },
             _ => ()

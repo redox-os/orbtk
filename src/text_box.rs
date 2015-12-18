@@ -48,7 +48,7 @@ impl TextBox {
 }
 
 impl Click for TextBox {
-    fn trigger_click(&self, point: Point){
+    fn emit_click(&self, point: Point){
         if let Some(ref click_callback) = self.click_callback {
             click_callback(self, point);
         }
@@ -62,7 +62,7 @@ impl Click for TextBox {
 }
 
 impl Enter for TextBox {
-    fn trigger_on_enter(&self) {
+    fn emit_enter(&self) {
         if let Some(ref enter_callback) = self.enter_callback {
             enter_callback(self)
         }
@@ -189,7 +189,7 @@ impl Widget for TextBox {
                             self.text_i.set(text_i);
                         }
                     }
-                    self.trigger_click(click_point);
+                    self.emit_click(click_point);
                 }
             },
             Event::Text { c } => if focused {
@@ -202,7 +202,7 @@ impl Widget for TextBox {
             },
             Event::Enter => if focused {
                 if self.enter_callback.is_some() {
-                    self.trigger_on_enter();
+                    self.emit_enter();
                 } else {
                     let mut text = self.text.borrow_mut();
                     let text_i = self.text_i.get();
