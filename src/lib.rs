@@ -68,7 +68,7 @@ pub fn example() {
         .size(48, text_box.rect.get().height)
         .text("Update")
         .on_click(move |_button: &Button, _point: Point| {
-            text_box.trigger_on_enter();
+            text_box.emit_enter();
         })
         .place(&mut window);
 
