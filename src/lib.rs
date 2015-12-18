@@ -58,9 +58,8 @@ pub fn example() {
     let text_box = TextBox::new()
         .position(x, y)
         .size(342, 16)
-        .on_enter(move |text_box: &TextBox| -> bool {
+        .on_enter(move |text_box: &TextBox| {
             label.text.set(text_box.text.get());
-            false
         })
         .place(&mut window);
 
@@ -69,7 +68,7 @@ pub fn example() {
         .size(48, text_box.rect.get().height)
         .text("Update")
         .on_click(move |_button: &Button, _point: Point| {
-            text_box.trigger_enter();
+            text_box.trigger_on_enter();
         })
         .place(&mut window);
 

@@ -11,7 +11,7 @@ pub struct TextBox {
     pub fg: Color,
     pub fg_cursor: Color,
     click_callback: Option<Arc<Fn(&TextBox, Point)>>,
-    enter_callback: Option<Arc<Fn(&TextBox) -> bool>>,
+    enter_callback: Option<Arc<Fn(&TextBox)>>,
     pressed: CopyCell<bool>,
     focused: CopyCell<bool>,
 }
@@ -62,15 +62,13 @@ impl Click for TextBox {
 }
 
 impl Enter for TextBox {
-    fn trigger_enter(&self) -> bool {
+    fn trigger_on_enter(&self) {
         if let Some(ref enter_callback) = self.enter_callback {
             enter_callback(self)
-        } else {
-            true
         }
     }
 
-    fn on_enter<T: Fn(&Self) -> bool + 'static>(mut self, func: T) -> Self {
+    fn on_enter<T: Fn(&Self) + 'static>(mut self, func: T) -> Self {
         self.enter_callback = Some(Arc::new(func));
 
         self
@@ -203,7 +201,9 @@ impl Widget for TextBox {
                 }
             },
             Event::Enter => if focused {
-                if self.trigger_enter() {
+                if self.enter_callback.is_some() {
+                    self.trigger_on_enter();
+                } else {
                     let mut text = self.text.borrow_mut();
                     let text_i = self.text_i.get();
                     if text.is_char_boundary(text_i) {
