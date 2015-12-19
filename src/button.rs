@@ -54,7 +54,7 @@ impl Click for Button {
 }
 
 impl Place for Button {
-    fn position(self, x: isize, y: isize) -> Self {
+    fn position(self, x: i32, y: i32) -> Self {
         let mut rect = self.rect.get();
         rect.x = x;
         rect.y = y;
@@ -63,7 +63,7 @@ impl Place for Button {
         self
     }
 
-    fn size(self, width: usize, height: usize) -> Self {
+    fn size(self, width: u32, height: u32) -> Self {
         let mut rect = self.rect.get();
         rect.width = width;
         rect.height = height;
@@ -92,7 +92,7 @@ impl Widget for Button {
                 x = 0;
                 y += 16;
             }else{
-                if x + 8 <= rect.width as isize && y + 16 <= rect.height as isize {
+                if x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
                     renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
                 }
                 x += 8;

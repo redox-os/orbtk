@@ -5,9 +5,9 @@ use std::sync::Arc;
 
 pub struct ProgressBar {
     pub rect: CopyCell<Rect>,
-    pub value: CopyCell<isize>,
-    pub minimum: isize,
-    pub maximum: isize,
+    pub value: CopyCell<i32>,
+    pub minimum: i32,
+    pub maximum: i32,
     pub bg: Color,
     pub fg: Color,
     click_callback: Option<Arc<Fn(&ProgressBar, Point)>>,
@@ -36,7 +36,7 @@ impl ProgressBar {
         arc
     }
 
-    pub fn value(self, value: isize) -> Self {
+    pub fn value(self, value: i32) -> Self {
         self.value.set(value);
         self
     }
@@ -57,7 +57,7 @@ impl Click for ProgressBar {
 }
 
 impl Place for ProgressBar {
-    fn position(self, x: isize, y: isize) -> Self {
+    fn position(self, x: i32, y: i32) -> Self {
         let mut rect = self.rect.get();
         rect.x = x;
         rect.y = y;
@@ -66,7 +66,7 @@ impl Place for ProgressBar {
         self
     }
 
-    fn size(self, width: usize, height: usize) -> Self {
+    fn size(self, width: u32, height: u32) -> Self {
         let mut rect = self.rect.get();
         rect.width = width;
         rect.height = height;
@@ -83,7 +83,7 @@ impl Widget for ProgressBar {
         renderer.rect(Rect::new(
             rect.x,
             rect.y,
-            ((rect.width as isize * max(0, min(self.maximum, self.value.get() - self.minimum)))/max(1, self.maximum - self.minimum)) as usize,
+            ((rect.width as i32 * max(0, min(self.maximum, self.value.get() - self.minimum)))/max(1, self.maximum - self.minimum)) as u32,
             rect.height
         ), self.fg);
     }
