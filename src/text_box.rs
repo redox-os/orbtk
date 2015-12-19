@@ -76,7 +76,7 @@ impl Enter for TextBox {
 }
 
 impl Place for TextBox {
-    fn position(self, x: isize, y: isize) -> Self {
+    fn position(self, x: i32, y: i32) -> Self {
         let mut rect = self.rect.get();
         rect.x = x;
         rect.y = y;
@@ -85,7 +85,7 @@ impl Place for TextBox {
         self
     }
 
-    fn size(self, width: usize, height: usize) -> Self {
+    fn size(self, width: u32, height: u32) -> Self {
         let mut rect = self.rect.get();
         rect.width = width;
         rect.height = height;
@@ -108,14 +108,14 @@ impl Widget for TextBox {
         let mut y = 0;
         for (i, c) in text.char_indices() {
             if c == '\n' {
-                if i == text_i && self.focused.get() && x + 8 <= rect.width as isize && y + 16 <= rect.height as isize {
+                if i == text_i && self.focused.get() && x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
                     renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
                 }
 
                 x = 0;
                 y += 16;
             } else {
-                if x + 8 <= rect.width as isize && y + 16 <= rect.height as isize {
+                if x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
                     if i == text_i && self.focused.get() {
                         renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
                     }
@@ -126,7 +126,7 @@ impl Widget for TextBox {
             }
         }
 
-        if text.len() == text_i && self.focused.get() && x + 8 <= rect.width as isize && y + 16 <= rect.height as isize {
+        if text.len() == text_i && self.focused.get() && x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
             renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
         }
     }
@@ -166,14 +166,14 @@ impl Widget for TextBox {
                         let mut y = 0;
                         for (i, c) in text.char_indices() {
                             if c == '\n' {
-                                if x + 8 <= rect.width as isize && click_point.x >= x && y + 16 <= rect.height as isize && click_point.y >= y && click_point.y < y + 16 {
+                                if x + 8 <= rect.width as i32 && click_point.x >= x && y + 16 <= rect.height as i32 && click_point.y >= y && click_point.y < y + 16 {
                                     new_text_i = Some(i);
                                     break;
                                 }
                                 x = 0;
                                 y += 16;
                             }else{
-                                if x + 8 <= rect.width as isize && click_point.x >= x && click_point.x < x + 8 && y + 16 <= rect.height as isize && click_point.y >= y && click_point.y < y + 16 {
+                                if x + 8 <= rect.width as i32 && click_point.x >= x && click_point.x < x + 8 && y + 16 <= rect.height as i32 && click_point.y >= y && click_point.y < y + 16 {
                                     new_text_i = Some(i);
                                     break;
                                 }
@@ -181,7 +181,7 @@ impl Widget for TextBox {
                             }
                         }
 
-                        if new_text_i.is_none() && x + 8 <= rect.width as isize && click_point.x >= x &&  y + 16 <= rect.height as isize && click_point.y >= y || click_point.y >= y + 16 {
+                        if new_text_i.is_none() && x + 8 <= rect.width as i32 && click_point.x >= x &&  y + 16 <= rect.height as i32 && click_point.y >= y || click_point.y >= y + 16 {
                             new_text_i = Some(text.len());
                         }
 

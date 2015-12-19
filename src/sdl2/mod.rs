@@ -112,7 +112,7 @@ impl Window {
                     right_button = mousestate.right();
 
                     events.push(Event::Mouse {
-                        point: Point::new(x as isize, y as isize),
+                        point: Point::new(x, y),
                         left_button: left_button,
                         middle_button: middle_button,
                         right_button: right_button,
@@ -127,7 +127,7 @@ impl Window {
                     }
 
                     events.push(Event::Mouse {
-                        point: Point::new(x as isize, y as isize),
+                        point: Point::new(x, y),
                         left_button: left_button,
                         middle_button: middle_button,
                         right_button: right_button,
@@ -142,7 +142,7 @@ impl Window {
                     }
 
                     events.push(Event::Mouse {
-                        point: Point::new(x as isize, y as isize),
+                        point: Point::new(x, y),
                         left_button: left_button,
                         middle_button: middle_button,
                         right_button: right_button,
