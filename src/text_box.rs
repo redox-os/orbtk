@@ -1,4 +1,5 @@
-use super::{Click, CloneCell, Color, CopyCell, Enter, Event, Place, Point, Rect, Renderer, Widget, Window};
+use super::{CloneCell, Color, CopyCell, Event, Place, Point, Rect, Renderer, Widget, Window};
+use super::callback::{Click, Enter};
 
 use std::cmp::min;
 use std::sync::Arc;
