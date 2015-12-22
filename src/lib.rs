@@ -5,9 +5,7 @@ pub use sys::Window;
 
 pub use button::Button;
 pub use cell::{CopyCell, CloneCell};
-pub use click::Click;
 pub use color::Color;
-pub use enter::Enter;
 pub use event::Event;
 pub use label::Label;
 pub use place::Place;
@@ -20,9 +18,7 @@ pub use widget::Widget;
 
 pub mod button;
 pub mod cell;
-pub mod click;
 pub mod color;
-pub mod enter;
 pub mod event;
 pub mod label;
 pub mod place;
@@ -32,6 +28,9 @@ pub mod rect;
 pub mod renderer;
 pub mod text_box;
 pub mod widget;
+
+use callback::{Click, Enter};
+pub mod callback;
 
 #[cfg(target_os = "redox")]
 #[path="orbital/mod.rs"]
