@@ -101,9 +101,18 @@ pub fn example() {
 
     y += multi_line_label.rect.get().height as i32 + 10;
 
-    TextBox::new()
+    let multi_line_text_box = TextBox::new()
         .position(x, y)
         .size(400, 128)
+        .place(&mut window);
+
+    y += multi_line_text_box.rect.get().height as i32 + 10;
+
+    Label::new()
+        .position(x, y)
+        .size(400, 256)
+        .text("Test Offet")
+        .text_offset(50, 50)
         .place(&mut window);
 
     window.exec();

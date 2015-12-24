@@ -8,6 +8,7 @@ pub struct Label {
     pub text: CloneCell<String>,
     pub bg: Color,
     pub fg: Color,
+    text_offset: Point,
     click_callback: Option<Arc<Fn(&Label, Point)>>,
     pressed: CopyCell<bool>,
 }
@@ -19,6 +20,7 @@ impl Label {
             text: CloneCell::new(String::new()),
             bg: Color::rgb(237, 233, 227),
             fg: Color::rgb(0, 0, 0),
+            text_offset: Point::default(),
             click_callback: None,
             pressed: CopyCell::new(false),
         }
@@ -34,6 +36,11 @@ impl Label {
 
     pub fn text(self, text: &str) -> Self {
         self.text.set(text.to_string());
+        self
+    }
+
+    pub fn text_offset(mut self, x: i32, y: i32) -> Self {
+        self.text_offset = Point::new(x, y);
         self
     }
 }
@@ -79,8 +86,8 @@ impl Widget for Label {
 
         let text = self.text.borrow();
 
-        let mut x = 0;
-        let mut y = 0;
+        let mut x = self.text_offset.x;
+        let mut y = self.text_offset.y;
         for c in text.chars() {
             if c == '\n' {
                 x = 0;
