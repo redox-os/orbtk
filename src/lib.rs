@@ -111,7 +111,7 @@ pub fn example() {
     Label::new()
         .position(x, y)
         .size(400, 256)
-        .text("Test Offet")
+        .text("Test Offset")
         .text_offset(50, 50)
         .place(&mut window);
 

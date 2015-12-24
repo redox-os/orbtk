@@ -86,17 +86,16 @@ impl Widget for Label {
 
         let text = self.text.borrow();
 
-        let mut x = self.text_offset.x;
-        let mut y = self.text_offset.y;
+        let mut point = self.text_offset;
         for c in text.chars() {
             if c == '\n' {
-                x = 0;
-                y += 16;
+                point.x = 0;
+                point.y += 16;
             }else{
-                if x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
-                    renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
+                if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
+                    renderer.char(point + rect.point(), c, self.fg);
                 }
-                x += 8;
+                point.x += 8;
             }
         }
     }
