@@ -19,8 +19,8 @@ impl Rect {
     }
 
     pub fn contains(&self, p: Point) -> bool {
-        p.x >= self.x && p.x < self.x + self.width as i32 &&
-        p.y >= self.y && p.y < self.y + self.height as i32
+        p.x >= self.x && p.x < self.x + self.width as i32 && p.y >= self.y &&
+        p.y < self.y + self.height as i32
     }
 
     pub fn point(&self) -> Point {

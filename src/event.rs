@@ -25,5 +25,5 @@ pub enum Event {
     LeftArrow,
     RightArrow,
 
-    Unknown
+    Unknown,
 }
