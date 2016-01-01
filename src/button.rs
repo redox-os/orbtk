@@ -10,7 +10,7 @@ pub struct Button {
     pub bg_down: Color,
     pub fg: Color,
     click_callback: Option<Arc<Fn(&Button, Point)>>,
-    pressed: CopyCell<bool>
+    pressed: CopyCell<bool>,
 }
 
 impl Button {
@@ -41,7 +41,7 @@ impl Button {
 }
 
 impl Click for Button {
-    fn emit_click(&self, point: Point){
+    fn emit_click(&self, point: Point) {
         if let Some(ref click_callback) = self.click_callback {
             click_callback(self, point);
         }
@@ -92,7 +92,7 @@ impl Widget for Button {
             if c == '\n' {
                 x = 0;
                 y += 16;
-            }else{
+            } else {
                 if x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
                     renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
                 }
@@ -107,7 +107,7 @@ impl Widget for Button {
                 let mut click = false;
 
                 let rect = self.rect.get();
-                if rect.contains(point){
+                if rect.contains(point) {
                     if left_button {
                         self.pressed.set(true);
                     } else {
@@ -118,7 +118,7 @@ impl Widget for Button {
                         self.pressed.set(false);
                     }
                 } else {
-                    if ! left_button {
+                    if !left_button {
                         self.pressed.set(false);
                     }
                 }
@@ -127,8 +127,8 @@ impl Widget for Button {
                     let click_point: Point = point - rect.point();
                     self.emit_click(click_point);
                 }
-            },
-            _ => ()
+            }
+            _ => (),
         }
 
         focused

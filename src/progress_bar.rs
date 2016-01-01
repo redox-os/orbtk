@@ -44,7 +44,7 @@ impl ProgressBar {
 }
 
 impl Click for ProgressBar {
-    fn emit_click(&self, point: Point){
+    fn emit_click(&self, point: Point) {
         if let Some(ref click_callback) = self.click_callback {
             click_callback(self, point);
         }
@@ -81,12 +81,15 @@ impl Widget for ProgressBar {
     fn draw(&self, renderer: &mut Renderer) {
         let rect = self.rect.get();
         renderer.rect(rect, self.bg);
-        renderer.rect(Rect::new(
-            rect.x,
-            rect.y,
-            ((rect.width as i32 * max(0, min(self.maximum, self.value.get() - self.minimum)))/max(1, self.maximum - self.minimum)) as u32,
-            rect.height
-        ), self.fg);
+        renderer.rect(Rect::new(rect.x,
+                                rect.y,
+                                ((rect.width as i32 *
+                                  max(0, min(self.maximum, self.value.get() - self.minimum))) /
+                                 max(1,
+                                     self.maximum -
+                                     self.minimum)) as u32,
+                                rect.height),
+                      self.fg);
     }
 
     fn event(&self, event: Event, focused: bool) -> bool {
@@ -95,7 +98,7 @@ impl Widget for ProgressBar {
                 let mut click = false;
 
                 let rect = self.rect.get();
-                if rect.contains(point){
+                if rect.contains(point) {
                     if left_button {
                         self.pressed.set(true);
                     } else {
@@ -106,7 +109,7 @@ impl Widget for ProgressBar {
                         self.pressed.set(false);
                     }
                 } else {
-                    if ! left_button {
+                    if !left_button {
                         self.pressed.set(false);
                     }
                 }
@@ -115,8 +118,8 @@ impl Widget for ProgressBar {
                     let click_point: Point = point - rect.point();
                     self.emit_click(click_point);
                 }
-            },
-            _ => ()
+            }
+            _ => (),
         }
 
         focused

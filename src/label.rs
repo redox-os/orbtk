@@ -46,7 +46,7 @@ impl Label {
 }
 
 impl Click for Label {
-    fn emit_click(&self, point: Point){
+    fn emit_click(&self, point: Point) {
         if let Some(ref click_callback) = self.click_callback {
             click_callback(self, point);
         }
@@ -91,7 +91,7 @@ impl Widget for Label {
             if c == '\n' {
                 point.x = 0;
                 point.y += 16;
-            }else{
+            } else {
                 if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
                     renderer.char(point + rect.point(), c, self.fg);
                 }
@@ -106,7 +106,7 @@ impl Widget for Label {
                 let mut click = false;
 
                 let rect = self.rect.get();
-                if rect.contains(point){
+                if rect.contains(point) {
                     if left_button {
                         self.pressed.set(true);
                     } else {
@@ -117,7 +117,7 @@ impl Widget for Label {
                         self.pressed.set(false);
                     }
                 } else {
-                    if ! left_button {
+                    if !left_button {
                         self.pressed.set(false);
                     }
                 }
@@ -126,8 +126,8 @@ impl Widget for Label {
                     let click_point: Point = point - rect.point();
                     self.emit_click(click_point);
                 }
-            },
-            _ => ()
+            }
+            _ => (),
         }
 
         focused
