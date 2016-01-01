@@ -12,32 +12,52 @@ pub struct SdlRenderer<'a> {
 }
 
 impl<'a> SdlRenderer<'a> {
-    pub fn new(font: &'a mut sdl2_ttf::Font, inner: &'a mut sdl2::render::Renderer<'static>) -> SdlRenderer<'a> {
+    pub fn new(font: &'a mut sdl2_ttf::Font,
+               inner: &'a mut sdl2::render::Renderer<'static>)
+               -> SdlRenderer<'a> {
         SdlRenderer {
             font: font,
-            inner: inner
+            inner: inner,
         }
     }
 }
 
 impl<'a> Renderer for SdlRenderer<'a> {
     fn clear(&mut self, color: Color) {
-        self.inner.set_draw_color(sdl2::pixels::Color::RGBA((color.data >> 16) as u8, (color.data >> 8) as u8, color.data as u8, (color.data >> 24) as u8));
+        self.inner.set_draw_color(sdl2::pixels::Color::RGBA((color.data >> 16) as u8,
+                                                            (color.data >> 8) as u8,
+                                                            color.data as u8,
+                                                            (color.data >> 24) as u8));
         self.inner.clear();
     }
 
     fn char(&mut self, pos: Point, c: char, color: Color) {
-        let surface = self.font.render(c, sdl2_ttf::blended(sdl2::pixels::Color::RGBA((color.data >> 16) as u8, (color.data >> 8) as u8, color.data as u8, (color.data >> 24) as u8))).unwrap();
+        let surface =
+            self.font
+                .render(c,
+                        sdl2_ttf::blended(sdl2::pixels::Color::RGBA((color.data >> 16) as u8,
+                                                                    (color.data >> 8) as u8,
+                                                                    color.data as u8,
+                                                                    (color.data >> 24) as u8)))
+                .unwrap();
         let mut texture = self.inner.create_texture_from_surface(&surface).unwrap();
         let sdl2::render::TextureQuery { width, height, .. } = texture.query();
-        if let Some(rect) = sdl2::rect::Rect::new(pos.x as i32, pos.y as i32, width, height).unwrap() {
+        if let Some(rect) = sdl2::rect::Rect::new(pos.x as i32, pos.y as i32, width, height)
+                                .unwrap() {
             self.inner.copy(&mut texture, None, Some(rect));
         }
     }
 
     fn rect(&mut self, rect: Rect, color: Color) {
-        if let Some(sdl_rect) = sdl2::rect::Rect::new(rect.x as i32, rect.y as i32, rect.width as u32, rect.height as u32).unwrap() {
-            self.inner.set_draw_color(sdl2::pixels::Color::RGBA((color.data >> 16) as u8, (color.data >> 8) as u8, color.data as u8, (color.data >> 24) as u8));
+        if let Some(sdl_rect) = sdl2::rect::Rect::new(rect.x as i32,
+                                                      rect.y as i32,
+                                                      rect.width as u32,
+                                                      rect.height as u32)
+                                    .unwrap() {
+            self.inner.set_draw_color(sdl2::pixels::Color::RGBA((color.data >> 16) as u8,
+                                                                (color.data >> 8) as u8,
+                                                                color.data as u8,
+                                                                (color.data >> 24) as u8));
             self.inner.fill_rect(sdl_rect);
         }
     }
@@ -67,7 +87,12 @@ impl Window {
         let video_ctx = ctx.video().unwrap();
         let ttf_context = sdl2_ttf::init().unwrap();
 
-        let mut window = video_ctx.window(title, rect.width as u32, rect.height as u32).position(rect.x as i32, rect.y as i32).opengl().resizable().build().unwrap();
+        let mut window = video_ctx.window(title, rect.width as u32, rect.height as u32)
+                                  .position(rect.x as i32, rect.y as i32)
+                                  .opengl()
+                                  .resizable()
+                                  .build()
+                                  .unwrap();
         window.show();
 
         video_ctx.text_input().start();
@@ -96,7 +121,7 @@ impl Window {
     }
 
     pub fn exec(&mut self) {
-        //Keep track of mouse state
+        // Keep track of mouse state
         let mut left_button = false;
         let mut middle_button = false;
         let mut right_button = false;
@@ -117,13 +142,13 @@ impl Window {
                         middle_button: middle_button,
                         right_button: right_button,
                     });
-                },
+                }
                 sdl2::event::Event::MouseButtonDown { mouse_btn, x, y, .. } => {
                     match mouse_btn {
                         sdl2::mouse::Mouse::Left => left_button = true,
                         sdl2::mouse::Mouse::Middle => middle_button = true,
                         sdl2::mouse::Mouse::Right => right_button = true,
-                        _ => ()
+                        _ => (),
                     }
 
                     events.push(Event::Mouse {
@@ -132,13 +157,13 @@ impl Window {
                         middle_button: middle_button,
                         right_button: right_button,
                     });
-                },
+                }
                 sdl2::event::Event::MouseButtonUp { mouse_btn, x, y, .. } => {
                     match mouse_btn {
                         sdl2::mouse::Mouse::Left => left_button = false,
                         sdl2::mouse::Mouse::Middle => middle_button = false,
                         sdl2::mouse::Mouse::Right => right_button = false,
-                        _ => ()
+                        _ => (),
                     }
 
                     events.push(Event::Mouse {
@@ -147,30 +172,30 @@ impl Window {
                         middle_button: middle_button,
                         right_button: right_button,
                     });
-                },
-                sdl2::event::Event::KeyDown { keycode, .. } => if let Some(key) = keycode {
-                    match key {
-                        sdl2::keyboard::Keycode::Return => events.push(Event::Enter),
-                        sdl2::keyboard::Keycode::Backspace => events.push(Event::Backspace),
-                        sdl2::keyboard::Keycode::Delete => events.push(Event::Delete),
-                        sdl2::keyboard::Keycode::Home => events.push(Event::Home),
-                        sdl2::keyboard::Keycode::End => events.push(Event::End),
-                        sdl2::keyboard::Keycode::Up => events.push(Event::UpArrow),
-                        sdl2::keyboard::Keycode::Down => events.push(Event::DownArrow),
-                        sdl2::keyboard::Keycode::Left => events.push(Event::LeftArrow),
-                        sdl2::keyboard::Keycode::Right => events.push(Event::RightArrow),
-                        _ => ()
+                }
+                sdl2::event::Event::KeyDown { keycode, .. } => {
+                    if let Some(key) = keycode {
+                        match key {
+                            sdl2::keyboard::Keycode::Return => events.push(Event::Enter),
+                            sdl2::keyboard::Keycode::Backspace => events.push(Event::Backspace),
+                            sdl2::keyboard::Keycode::Delete => events.push(Event::Delete),
+                            sdl2::keyboard::Keycode::Home => events.push(Event::Home),
+                            sdl2::keyboard::Keycode::End => events.push(Event::End),
+                            sdl2::keyboard::Keycode::Up => events.push(Event::UpArrow),
+                            sdl2::keyboard::Keycode::Down => events.push(Event::DownArrow),
+                            sdl2::keyboard::Keycode::Left => events.push(Event::LeftArrow),
+                            sdl2::keyboard::Keycode::Right => events.push(Event::RightArrow),
+                            _ => (),
+                        }
                     }
-                },
+                }
                 sdl2::event::Event::TextInput { text, .. } => {
                     for c in text.chars() {
-                        events.push(Event::Text {
-                            c: c
-                        });
+                        events.push(Event::Text { c: c });
                     }
-                },
+                }
                 sdl2::event::Event::Quit {..} => break 'event,
-                _ => ()
+                _ => (),
             };
 
             for event in events.iter() {

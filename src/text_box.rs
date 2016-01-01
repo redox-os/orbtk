@@ -49,7 +49,7 @@ impl TextBox {
 }
 
 impl Click for TextBox {
-    fn emit_click(&self, point: Point){
+    fn emit_click(&self, point: Point) {
         if let Some(ref click_callback) = self.click_callback {
             click_callback(self, point);
         }
@@ -109,7 +109,8 @@ impl Widget for TextBox {
         let mut y = 0;
         for (i, c) in text.char_indices() {
             if c == '\n' {
-                if i == text_i && self.focused.get() && x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
+                if i == text_i && self.focused.get() && x + 8 <= rect.width as i32 &&
+                   y + 16 <= rect.height as i32 {
                     renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
                 }
 
@@ -127,7 +128,8 @@ impl Widget for TextBox {
             }
         }
 
-        if text.len() == text_i && self.focused.get() && x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
+        if text.len() == text_i && self.focused.get() && x + 8 <= rect.width as i32 &&
+           y + 16 <= rect.height as i32 {
             renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
         }
     }
@@ -138,7 +140,7 @@ impl Widget for TextBox {
                 let mut click = false;
 
                 let rect = self.rect.get();
-                if rect.contains(point){
+                if rect.contains(point) {
                     if left_button {
                         self.pressed.set(true);
                     } else {
@@ -149,7 +151,7 @@ impl Widget for TextBox {
                         self.pressed.set(false);
                     }
                 } else {
-                    if ! left_button {
+                    if !left_button {
                         self.pressed.set(false);
                     }
                 }
@@ -167,14 +169,21 @@ impl Widget for TextBox {
                         let mut y = 0;
                         for (i, c) in text.char_indices() {
                             if c == '\n' {
-                                if x + 8 <= rect.width as i32 && click_point.x >= x && y + 16 <= rect.height as i32 && click_point.y >= y && click_point.y < y + 16 {
+                                if x + 8 <= rect.width as i32 && click_point.x >= x &&
+                                   y + 16 <= rect.height as i32 &&
+                                   click_point.y >= y &&
+                                   click_point.y < y + 16 {
                                     new_text_i = Some(i);
                                     break;
                                 }
                                 x = 0;
                                 y += 16;
-                            }else{
-                                if x + 8 <= rect.width as i32 && click_point.x >= x && click_point.x < x + 8 && y + 16 <= rect.height as i32 && click_point.y >= y && click_point.y < y + 16 {
+                            } else {
+                                if x + 8 <= rect.width as i32 && click_point.x >= x &&
+                                   click_point.x < x + 8 &&
+                                   y + 16 <= rect.height as i32 &&
+                                   click_point.y >= y &&
+                                   click_point.y < y + 16 {
                                     new_text_i = Some(i);
                                     break;
                                 }
@@ -182,7 +191,11 @@ impl Widget for TextBox {
                             }
                         }
 
-                        if new_text_i.is_none() && x + 8 <= rect.width as i32 && click_point.x >= x &&  y + 16 <= rect.height as i32 && click_point.y >= y || click_point.y >= y + 16 {
+                        if new_text_i.is_none() && x + 8 <= rect.width as i32 &&
+                           click_point.x >= x &&
+                           y + 16 <= rect.height as i32 &&
+                           click_point.y >= y ||
+                           click_point.y >= y + 16 {
                             new_text_i = Some(text.len());
                         }
 
@@ -192,157 +205,177 @@ impl Widget for TextBox {
                     }
                     self.emit_click(click_point);
                 }
-            },
-            Event::Text { c } => if focused {
-                let mut text = self.text.borrow_mut();
-                let text_i = self.text_i.get();
-                if text.is_char_boundary(text_i) {
-                    text.insert(text_i, c);
-                    self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
-                }
-            },
-            Event::Enter => if focused {
-                if self.enter_callback.is_some() {
-                    self.emit_enter();
-                } else {
+            }
+            Event::Text { c } => {
+                if focused {
                     let mut text = self.text.borrow_mut();
                     let text_i = self.text_i.get();
                     if text.is_char_boundary(text_i) {
-                        text.insert(text_i, '\n');
+                        text.insert(text_i, c);
                         self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
                     }
                 }
-            },
-            Event::Backspace => if focused {
-                let mut text = self.text.borrow_mut();
-                let mut text_i = self.text_i.get();
-                if text.is_char_boundary(text_i) && text_i > 0 {
-                    text_i = min(text.char_range_at_reverse(text_i).next, text.len());
+            }
+            Event::Enter => {
+                if focused {
+                    if self.enter_callback.is_some() {
+                        self.emit_enter();
+                    } else {
+                        let mut text = self.text.borrow_mut();
+                        let text_i = self.text_i.get();
+                        if text.is_char_boundary(text_i) {
+                            text.insert(text_i, '\n');
+                            self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
+                        }
+                    }
+                }
+            }
+            Event::Backspace => {
+                if focused {
+                    let mut text = self.text.borrow_mut();
+                    let mut text_i = self.text_i.get();
+                    if text.is_char_boundary(text_i) && text_i > 0 {
+                        text_i = min(text.char_range_at_reverse(text_i).next, text.len());
+                        if text.is_char_boundary(text_i) && text_i < text.len() {
+                            text.remove(text_i);
+                            self.text_i.set(min(text_i, text.len()));
+                        }
+                    }
+                }
+            }
+            Event::Delete => {
+                if focused {
+                    let mut text = self.text.borrow_mut();
+                    let text_i = self.text_i.get();
                     if text.is_char_boundary(text_i) && text_i < text.len() {
                         text.remove(text_i);
                         self.text_i.set(min(text_i, text.len()));
                     }
                 }
-            },
-            Event::Delete => if focused {
-                let mut text = self.text.borrow_mut();
-                let text_i = self.text_i.get();
-                if text.is_char_boundary(text_i) && text_i < text.len() {
-                    text.remove(text_i);
-                    self.text_i.set(min(text_i, text.len()));
-                }
-            },
-            Event::Home => if focused {
-                let text = self.text.borrow();
-                let mut text_i = self.text_i.get();
-                while text.is_char_boundary(text_i) && text_i > 0 {
-                    let range = text.char_range_at_reverse(text_i);
-                    if range.ch == '\n' {
-                        break;
+            }
+            Event::Home => {
+                if focused {
+                    let text = self.text.borrow();
+                    let mut text_i = self.text_i.get();
+                    while text.is_char_boundary(text_i) && text_i > 0 {
+                        let range = text.char_range_at_reverse(text_i);
+                        if range.ch == '\n' {
+                            break;
+                        }
+                        text_i = range.next;
                     }
-                    text_i = range.next;
+                    self.text_i.set(text_i);
                 }
-                self.text_i.set(text_i);
-            },
-            Event::End => if focused {
-                let text = self.text.borrow();
-                let mut text_i = self.text_i.get();
-                while text.is_char_boundary(text_i) && text_i < text.len() {
-                    let range = text.char_range_at(text_i);
-                    if range.ch == '\n' {
-                        break;
+            }
+            Event::End => {
+                if focused {
+                    let text = self.text.borrow();
+                    let mut text_i = self.text_i.get();
+                    while text.is_char_boundary(text_i) && text_i < text.len() {
+                        let range = text.char_range_at(text_i);
+                        if range.ch == '\n' {
+                            break;
+                        }
+                        text_i = range.next;
                     }
-                    text_i = range.next;
+                    self.text_i.set(text_i);
                 }
-                self.text_i.set(text_i);
-            },
-            Event::UpArrow => if focused {
-                let text = self.text.borrow();
-                let mut text_i = self.text_i.get();
+            }
+            Event::UpArrow => {
+                if focused {
+                    let text = self.text.borrow();
+                    let mut text_i = self.text_i.get();
 
-                //Count back to last newline
-                let mut offset = 0;
-                while text.is_char_boundary(text_i) && text_i > 0 {
-                    let range = text.char_range_at_reverse(text_i);
-                    text_i = range.next;
-                    if range.ch == '\n' {
-                        break;
+                    // Count back to last newline
+                    let mut offset = 0;
+                    while text.is_char_boundary(text_i) && text_i > 0 {
+                        let range = text.char_range_at_reverse(text_i);
+                        text_i = range.next;
+                        if range.ch == '\n' {
+                            break;
+                        }
+                        offset += 1;
                     }
-                    offset += 1;
-                }
 
-                //Go to newline before last newline
-                while text.is_char_boundary(text_i) && text_i > 0 {
-                    let range = text.char_range_at_reverse(text_i);
-                    if range.ch == '\n' {
-                        break;
+                    // Go to newline before last newline
+                    while text.is_char_boundary(text_i) && text_i > 0 {
+                        let range = text.char_range_at_reverse(text_i);
+                        if range.ch == '\n' {
+                            break;
+                        }
+                        text_i = range.next;
                     }
-                    text_i = range.next;
-                }
 
-                //Add back offset
-                while text.is_char_boundary(text_i) && offset > 0 && text_i < text.len() {
-                    let range = text.char_range_at(text_i);
-                    if range.ch == '\n' {
-                        break;
+                    // Add back offset
+                    while text.is_char_boundary(text_i) && offset > 0 && text_i < text.len() {
+                        let range = text.char_range_at(text_i);
+                        if range.ch == '\n' {
+                            break;
+                        }
+                        text_i = range.next;
+                        offset -= 1;
                     }
-                    text_i = range.next;
-                    offset -= 1;
+
+                    self.text_i.set(text_i);
                 }
+            }
+            Event::DownArrow => {
+                if focused {
+                    let text = self.text.borrow();
+                    let mut text_i = self.text_i.get();
 
-                self.text_i.set(text_i);
-            },
-            Event::DownArrow => if focused {
-                let text = self.text.borrow();
-                let mut text_i = self.text_i.get();
-
-                //Count back to last newline
-                let mut offset = 0;
-                while text.is_char_boundary(text_i) && text_i > 0 {
-                    let range = text.char_range_at_reverse(text_i);
-                    if range.ch == '\n' {
-                        break;
+                    // Count back to last newline
+                    let mut offset = 0;
+                    while text.is_char_boundary(text_i) && text_i > 0 {
+                        let range = text.char_range_at_reverse(text_i);
+                        if range.ch == '\n' {
+                            break;
+                        }
+                        text_i = range.next;
+                        offset += 1;
                     }
-                    text_i = range.next;
-                    offset += 1;
-                }
 
-                //Go to next newline
-                while text.is_char_boundary(text_i) && text_i < text.len() {
-                    let range = text.char_range_at(text_i);
-                    text_i = range.next;
-                    if range.ch == '\n' {
-                        break;
+                    // Go to next newline
+                    while text.is_char_boundary(text_i) && text_i < text.len() {
+                        let range = text.char_range_at(text_i);
+                        text_i = range.next;
+                        if range.ch == '\n' {
+                            break;
+                        }
+                    }
+
+                    // Add back offset
+                    while text.is_char_boundary(text_i) && offset > 0 && text_i < text.len() {
+                        let range = text.char_range_at(text_i);
+                        if range.ch == '\n' {
+                            break;
+                        }
+                        text_i = range.next;
+                        offset -= 1;
+                    }
+
+                    self.text_i.set(text_i);
+                }
+            }
+            Event::LeftArrow => {
+                if focused {
+                    let text = self.text.borrow();
+                    let text_i = self.text_i.get();
+                    if text.is_char_boundary(text_i) && text_i > 0 {
+                        self.text_i.set(min(text.char_range_at_reverse(text_i).next, text.len()));
                     }
                 }
-
-                //Add back offset
-                while text.is_char_boundary(text_i) && offset > 0 && text_i < text.len() {
-                    let range = text.char_range_at(text_i);
-                    if range.ch == '\n' {
-                        break;
+            }
+            Event::RightArrow => {
+                if focused {
+                    let text = self.text.borrow();
+                    let text_i = self.text_i.get();
+                    if text.is_char_boundary(text_i) && text_i < text.len() {
+                        self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
                     }
-                    text_i = range.next;
-                    offset -= 1;
                 }
-
-                self.text_i.set(text_i);
-            },
-            Event::LeftArrow => if focused {
-                let text = self.text.borrow();
-                let text_i = self.text_i.get();
-                if text.is_char_boundary(text_i) && text_i > 0 {
-                    self.text_i.set(min(text.char_range_at_reverse(text_i).next, text.len()));
-                }
-            },
-            Event::RightArrow => if focused {
-                let text = self.text.borrow();
-                let text_i = self.text_i.get();
-                if text.is_char_boundary(text_i) && text_i < text.len() {
-                    self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
-                }
-            },
-            _ => ()
+            }
+            _ => (),
         }
 
         self.focused.set(focused);
