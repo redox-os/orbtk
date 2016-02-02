@@ -65,43 +65,45 @@ impl Window {
 
     pub fn exec(&mut self) {
         self.draw();
-        'event: while let Some(orbital_event) = self.inner.poll() {
+        'event: loop {
             let mut events = Vec::new();
 
-            match orbital_event.to_option() {
-                orbital::EventOption::Mouse(mouse_event) => {
-                    events.push(Event::Mouse {
-                        point: Point::new(mouse_event.x, mouse_event.y),
-                        left_button: mouse_event.left_button,
-                        middle_button: mouse_event.middle_button,
-                        right_button: mouse_event.right_button,
-                    })
-                }
-                orbital::EventOption::Key(key_event) => {
-                    if key_event.pressed {
-                        match key_event.scancode {
-                            orbital::K_BKSP => events.push(Event::Backspace),
-                            orbital::K_DEL => events.push(Event::Delete),
-                            orbital::K_HOME => events.push(Event::Home),
-                            orbital::K_END => events.push(Event::End),
-                            orbital::K_UP => events.push(Event::UpArrow),
-                            orbital::K_DOWN => events.push(Event::DownArrow),
-                            orbital::K_LEFT => events.push(Event::LeftArrow),
-                            orbital::K_RIGHT => events.push(Event::RightArrow),
-                            _ => {
-                                match key_event.character {
-                                    '\0' => (),
-                                    '\x1B' => (),
-                                    '\n' => events.push(Event::Enter),
-                                    _ => events.push(Event::Text { c: key_event.character }),
+            for orbital_event in self.inner.events() {
+                match orbital_event.to_option() {
+                    orbital::EventOption::Mouse(mouse_event) => {
+                        events.push(Event::Mouse {
+                            point: Point::new(mouse_event.x, mouse_event.y),
+                            left_button: mouse_event.left_button,
+                            middle_button: mouse_event.middle_button,
+                            right_button: mouse_event.right_button,
+                        })
+                    }
+                    orbital::EventOption::Key(key_event) => {
+                        if key_event.pressed {
+                            match key_event.scancode {
+                                orbital::K_BKSP => events.push(Event::Backspace),
+                                orbital::K_DEL => events.push(Event::Delete),
+                                orbital::K_HOME => events.push(Event::Home),
+                                orbital::K_END => events.push(Event::End),
+                                orbital::K_UP => events.push(Event::UpArrow),
+                                orbital::K_DOWN => events.push(Event::DownArrow),
+                                orbital::K_LEFT => events.push(Event::LeftArrow),
+                                orbital::K_RIGHT => events.push(Event::RightArrow),
+                                _ => {
+                                    match key_event.character {
+                                        '\0' => (),
+                                        '\x1B' => (),
+                                        '\n' => events.push(Event::Enter),
+                                        _ => events.push(Event::Text { c: key_event.character }),
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                orbital::EventOption::Quit(_quit_event) => break 'event,
-                _ => (),
-            };
+                    orbital::EventOption::Quit(_quit_event) => break 'event,
+                    _ => (),
+                };
+            }
 
             for event in events.iter() {
                 for i in 0..self.widgets.len() {
