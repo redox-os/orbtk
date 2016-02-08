@@ -2,25 +2,25 @@ use super::{Color, Event, Point, Rect, Renderer, Widget};
 
 use std::sync::Arc;
 
-extern crate orbital;
+extern crate orbclient;
 
 pub struct WindowRenderer<'a> {
-    inner: &'a mut Box<orbital::Window>,
+    inner: &'a mut Box<orbclient::Window>,
 }
 
 impl<'a> WindowRenderer<'a> {
-    pub fn new(inner: &'a mut Box<orbital::Window>) -> WindowRenderer {
+    pub fn new(inner: &'a mut Box<orbclient::Window>) -> WindowRenderer {
         WindowRenderer { inner: inner }
     }
 }
 
 impl<'a> Renderer for WindowRenderer<'a> {
     fn clear(&mut self, color: Color) {
-        self.inner.set(orbital::Color { data: color.data });
+        self.inner.set(orbclient::Color { data: color.data });
     }
 
     fn char(&mut self, pos: Point, c: char, color: Color) {
-        self.inner.char(pos.x, pos.y, c, orbital::Color { data: color.data });
+        self.inner.char(pos.x, pos.y, c, orbclient::Color { data: color.data });
     }
 
     fn rect(&mut self, rect: Rect, color: Color) {
@@ -28,7 +28,7 @@ impl<'a> Renderer for WindowRenderer<'a> {
                         rect.y,
                         rect.width,
                         rect.height,
-                        orbital::Color { data: color.data });
+                        orbclient::Color { data: color.data });
     }
 }
 
@@ -39,7 +39,7 @@ impl<'a> Drop for WindowRenderer<'a> {
 }
 
 pub struct Window {
-    inner: Box<orbital::Window>,
+    inner: Box<orbclient::Window>,
     pub widgets: Vec<Arc<Widget>>,
     pub widget_focus: usize,
     pub bg: Color,
@@ -48,7 +48,7 @@ pub struct Window {
 impl Window {
     pub fn new(rect: Rect, title: &str) -> Box<Self> {
         Box::new(Window {
-            inner: orbital::Window::new(rect.x, rect.y, rect.width, rect.height, title).unwrap(),
+            inner: orbclient::Window::new(rect.x, rect.y, rect.width, rect.height, title).unwrap(),
             widgets: Vec::new(),
             widget_focus: 0,
             bg: Color::rgb(237, 233, 227),
@@ -70,7 +70,7 @@ impl Window {
 
             for orbital_event in self.inner.events() {
                 match orbital_event.to_option() {
-                    orbital::EventOption::Mouse(mouse_event) => {
+                    orbclient::EventOption::Mouse(mouse_event) => {
                         events.push(Event::Mouse {
                             point: Point::new(mouse_event.x, mouse_event.y),
                             left_button: mouse_event.left_button,
@@ -78,17 +78,17 @@ impl Window {
                             right_button: mouse_event.right_button,
                         })
                     }
-                    orbital::EventOption::Key(key_event) => {
+                    orbclient::EventOption::Key(key_event) => {
                         if key_event.pressed {
                             match key_event.scancode {
-                                orbital::K_BKSP => events.push(Event::Backspace),
-                                orbital::K_DEL => events.push(Event::Delete),
-                                orbital::K_HOME => events.push(Event::Home),
-                                orbital::K_END => events.push(Event::End),
-                                orbital::K_UP => events.push(Event::UpArrow),
-                                orbital::K_DOWN => events.push(Event::DownArrow),
-                                orbital::K_LEFT => events.push(Event::LeftArrow),
-                                orbital::K_RIGHT => events.push(Event::RightArrow),
+                                orbclient::K_BKSP => events.push(Event::Backspace),
+                                orbclient::K_DEL => events.push(Event::Delete),
+                                orbclient::K_HOME => events.push(Event::Home),
+                                orbclient::K_END => events.push(Event::End),
+                                orbclient::K_UP => events.push(Event::UpArrow),
+                                orbclient::K_DOWN => events.push(Event::DownArrow),
+                                orbclient::K_LEFT => events.push(Event::LeftArrow),
+                                orbclient::K_RIGHT => events.push(Event::RightArrow),
                                 _ => {
                                     match key_event.character {
                                         '\0' => (),
@@ -100,7 +100,7 @@ impl Window {
                             }
                         }
                     }
-                    orbital::EventOption::Quit(_quit_event) => break 'event,
+                    orbclient::EventOption::Quit(_quit_event) => break 'event,
                     _ => (),
                 };
             }
