@@ -16,5 +16,5 @@ name = "example"
 path = "src/example.rs"
 
 [dependencies]
-orbclient = "*"
+orbclient = "0.0.1"
 
