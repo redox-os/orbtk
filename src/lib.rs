@@ -1,8 +1,6 @@
 #![crate_type="lib"]
 #![feature(str_char)]
 
-pub use sys::Window;
-
 pub use button::Button;
 pub use cell::{CopyCell, CloneCell};
 pub use color::Color;
@@ -15,6 +13,7 @@ pub use rect::Rect;
 pub use renderer::Renderer;
 pub use text_box::TextBox;
 pub use widget::Widget;
+pub use window::Window;
 
 pub mod button;
 pub mod cell;
@@ -28,17 +27,10 @@ pub mod rect;
 pub mod renderer;
 pub mod text_box;
 pub mod widget;
+pub mod window;
 
 use callback::{Click, Enter};
 pub mod callback;
-
-#[cfg(target_os = "redox")]
-#[path="orbital/mod.rs"]
-pub mod sys;
-
-#[cfg(not(target_os = "redox"))]
-#[path="sdl2/mod.rs"]
-pub mod sys;
 
 pub fn example() {
     let mut window = Window::new(Rect::new(100, 100, 420, 420), "OrbTK");

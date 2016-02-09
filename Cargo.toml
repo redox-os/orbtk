@@ -2,7 +2,7 @@
 name = "orbtk"
 description = "The Orbital Widget Toolkit"
 repository = "https://github.com/redox-os/orbtk"
-version = "0.0.6"
+version = "0.0.7"
 license-file = "LICENSE"
 readme = "README.md"
 authors = ["Jeremy Soller <jackpot51@gmail.com>"]
@@ -15,27 +15,6 @@ path = "src/lib.rs"
 name = "example"
 path = "src/example.rs"
 
-[target.i686-unknown-linux-gnu.dependencies]
-sdl2 = "0.9"
-sdl2_ttf = "0.9"
-
-[target.x86_64-unknown-linux-gnu.dependencies]
-sdl2 = "0.9"
-sdl2_ttf = "0.9"
-
-[target.i686-pc-windows-gnu.dependencies]
-sdl2 = "0.9"
-sdl2_ttf = "0.9"
-
-[target.x86_64-pc-windows-gnu.dependencies]
-sdl2 = "0.9"
-sdl2_ttf = "0.9"
-
-[target.i686-apple-darwin.dependencies]
-sdl2 = "0.9"
-sdl2_ttf = "0.9"
-
-[target.x86_64-apple-darwin.dependencies]
-sdl2 = "0.9"
-sdl2_ttf = "0.9"
+[dependencies]
+orbclient = "*"
 
