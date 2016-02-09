@@ -1,3 +1,4 @@
+#![crate_name="orbtk"]
 #![crate_type="lib"]
 #![feature(str_char)]
 
