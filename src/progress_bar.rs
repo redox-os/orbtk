@@ -1,5 +1,6 @@
 use super::{Color, CopyCell, Event, Place, Point, Rect, Renderer, Widget, Window};
 use super::callback::Click;
+use super::cell::CheckSet;
 
 use std::cmp::{min, max};
 use std::sync::Arc;
@@ -78,7 +79,7 @@ impl Place for ProgressBar {
 }
 
 impl Widget for ProgressBar {
-    fn draw(&self, renderer: &mut Renderer) {
+    fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.rect.get();
         renderer.rect(rect, self.bg);
         renderer.rect(Rect::new(rect.x,
@@ -92,7 +93,7 @@ impl Widget for ProgressBar {
                       self.fg);
     }
 
-    fn event(&self, event: Event, focused: bool) -> bool {
+    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
@@ -100,17 +101,20 @@ impl Widget for ProgressBar {
                 let rect = self.rect.get();
                 if rect.contains(point) {
                     if left_button {
-                        self.pressed.set(true);
-                    } else {
-                        if self.pressed.get() {
-                            click = true;
+                        if self.pressed.check_set(true) {
+                            *redraw = true;
                         }
-
-                        self.pressed.set(false);
+                    } else {
+                        if self.pressed.check_set(false) {
+                            click = true;
+                            *redraw = true;
+                        }
                     }
                 } else {
                     if !left_button {
-                        self.pressed.set(false);
+                        if self.pressed.check_set(false) {
+                            *redraw = true;
+                        }
                     }
                 }
 

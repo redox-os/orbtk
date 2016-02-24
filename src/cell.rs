@@ -2,6 +2,10 @@ pub use std::cell::Cell as CopyCell;
 
 use std::cell::{Ref, RefCell, RefMut};
 
+pub trait CheckSet<T> {
+    fn check_set(&self, value: T) -> bool;
+}
+
 pub struct CloneCell<T: Clone> {
     inner: RefCell<T>,
 }
@@ -25,5 +29,28 @@ impl<T: Clone> CloneCell<T> {
 
     pub fn set(&self, value: T) {
         *self.inner.borrow_mut() = value;
+    }
+}
+
+impl<T: Copy> CheckSet<T> for CopyCell<T> where T: PartialOrd {
+    fn check_set(&self, value: T) -> bool {
+        if value != self.get() {
+            self.set(value);
+            true
+        } else {
+            false
+        }
+    }
+}
+
+impl<T: Copy> CheckSet<T> for CloneCell<T> where T: PartialOrd {
+    fn check_set(&self, value: T) -> bool {
+        let mut borrow = self.inner.borrow_mut();
+        if value != *borrow {
+            *borrow = value;
+            true
+        } else {
+            false
+        }
     }
 }

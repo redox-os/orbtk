@@ -1,5 +1,6 @@
 use super::{CloneCell, Color, CopyCell, Event, Place, Point, Rect, Renderer, Widget, Window};
 use super::callback::{Click, Enter};
+use super::cell::CheckSet;
 
 use std::cmp::min;
 use std::sync::Arc;
@@ -14,7 +15,6 @@ pub struct TextBox {
     click_callback: Option<Arc<Fn(&TextBox, Point)>>,
     enter_callback: Option<Arc<Fn(&TextBox)>>,
     pressed: CopyCell<bool>,
-    focused: CopyCell<bool>,
 }
 
 impl TextBox {
@@ -29,7 +29,6 @@ impl TextBox {
             click_callback: None,
             enter_callback: None,
             pressed: CopyCell::new(false),
-            focused: CopyCell::new(false),
         }
     }
 
@@ -97,7 +96,7 @@ impl Place for TextBox {
 }
 
 impl Widget for TextBox {
-    fn draw(&self, renderer: &mut Renderer) {
+    fn draw(&self, renderer: &mut Renderer, focused: bool) {
         let rect = self.rect.get();
 
         renderer.rect(rect, self.bg);
@@ -109,7 +108,7 @@ impl Widget for TextBox {
         let mut y = 0;
         for (i, c) in text.char_indices() {
             if c == '\n' {
-                if i == text_i && self.focused.get() && x + 8 <= rect.width as i32 &&
+                if i == text_i && focused && x + 8 <= rect.width as i32 &&
                    y + 16 <= rect.height as i32 {
                     renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
                 }
@@ -118,7 +117,7 @@ impl Widget for TextBox {
                 y += 16;
             } else {
                 if x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
-                    if i == text_i && self.focused.get() {
+                    if i == text_i && focused {
                         renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
                     }
                     renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
@@ -128,13 +127,13 @@ impl Widget for TextBox {
             }
         }
 
-        if text.len() == text_i && self.focused.get() && x + 8 <= rect.width as i32 &&
+        if text.len() == text_i && focused && x + 8 <= rect.width as i32 &&
            y + 16 <= rect.height as i32 {
             renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
         }
     }
 
-    fn event(&self, event: Event, mut focused: bool) -> bool {
+    fn event(&self, event: Event, mut focused: bool, redraw: &mut bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
@@ -142,17 +141,20 @@ impl Widget for TextBox {
                 let rect = self.rect.get();
                 if rect.contains(point) {
                     if left_button {
-                        self.pressed.set(true);
-                    } else {
-                        if self.pressed.get() {
-                            click = true;
+                        if self.pressed.check_set(true) {
+                            *redraw = true;
                         }
-
-                        self.pressed.set(false);
+                    } else {
+                        if self.pressed.check_set(false) {
+                            click = true;
+                            *redraw = true;
+                        }
                     }
                 } else {
-                    if !left_button {
-                        self.pressed.set(false);
+                    if ! left_button {
+                        if self.pressed.check_set(false) {
+                            *redraw = true;
+                        }
                     }
                 }
 
@@ -214,6 +216,7 @@ impl Widget for TextBox {
                         text.insert(text_i, c);
                         self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
                     }
+                    *redraw = true;
                 }
             }
             Event::Enter => {
@@ -228,6 +231,7 @@ impl Widget for TextBox {
                             self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
                         }
                     }
+                    *redraw = true;
                 }
             }
             Event::Backspace => {
@@ -241,6 +245,7 @@ impl Widget for TextBox {
                             self.text_i.set(min(text_i, text.len()));
                         }
                     }
+                    *redraw = true;
                 }
             }
             Event::Delete => {
@@ -251,6 +256,7 @@ impl Widget for TextBox {
                         text.remove(text_i);
                         self.text_i.set(min(text_i, text.len()));
                     }
+                    *redraw = true;
                 }
             }
             Event::Home => {
@@ -265,6 +271,7 @@ impl Widget for TextBox {
                         text_i = range.next;
                     }
                     self.text_i.set(text_i);
+                    *redraw = true;
                 }
             }
             Event::End => {
@@ -279,6 +286,7 @@ impl Widget for TextBox {
                         text_i = range.next;
                     }
                     self.text_i.set(text_i);
+                    *redraw = true;
                 }
             }
             Event::UpArrow => {
@@ -317,6 +325,7 @@ impl Widget for TextBox {
                     }
 
                     self.text_i.set(text_i);
+                    *redraw = true;
                 }
             }
             Event::DownArrow => {
@@ -355,6 +364,7 @@ impl Widget for TextBox {
                     }
 
                     self.text_i.set(text_i);
+                    *redraw = true;
                 }
             }
             Event::LeftArrow => {
@@ -364,6 +374,7 @@ impl Widget for TextBox {
                     if text.is_char_boundary(text_i) && text_i > 0 {
                         self.text_i.set(min(text.char_range_at_reverse(text_i).next, text.len()));
                     }
+                    *redraw = true;
                 }
             }
             Event::RightArrow => {
@@ -373,12 +384,11 @@ impl Widget for TextBox {
                     if text.is_char_boundary(text_i) && text_i < text.len() {
                         self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
                     }
+                    *redraw = true;
                 }
             }
             _ => (),
         }
-
-        self.focused.set(focused);
 
         focused
     }

@@ -58,8 +58,11 @@ impl Window {
     pub fn draw(&mut self) {
         let mut renderer = WindowRenderer::new(&mut self.inner);
         renderer.clear(self.bg);
-        for widget in self.widgets.iter() {
-            widget.draw(&mut renderer);
+
+        for i in 0..self.widgets.len() {
+            if let Some(widget) = self.widgets.get(i) {
+                widget.draw(&mut renderer, self.widget_focus == i);
+            }
         }
     }
 
@@ -105,17 +108,23 @@ impl Window {
                 };
             }
 
+            let mut redraw = false;
             for event in events.iter() {
                 for i in 0..self.widgets.len() {
                     if let Some(widget) = self.widgets.get(i) {
-                        if widget.event(*event, self.widget_focus == i) {
-                            self.widget_focus = i;
+                        if widget.event(*event, self.widget_focus == i, &mut redraw) {
+                            if self.widget_focus != i {
+                                self.widget_focus = i;
+                                redraw = true;
+                            }
                         }
                     }
                 }
             }
 
-            self.draw();
+            if redraw {
+                self.draw();
+            }
         }
     }
 }
