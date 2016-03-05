@@ -36,7 +36,7 @@ impl Button {
     }
 
     pub fn text(self, text: &str) -> Self {
-        self.text.set(text.to_string());
+        self.text.set(text.to_owned());
         self
     }
 }
