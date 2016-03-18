@@ -6,9 +6,10 @@ use super::{CloneCell, Color, CopyCell, Event, Place, Point, Rect, Renderer, Wid
 use super::callback::Click;
 
 pub struct Menu {
-    rect: Rect,
+    rect: CopyCell<Rect>,
+    text: CloneCell<String>,
     fg: Color,
-    actions: Vec<Action>,
+    entries: Vec<Box<Entry>>,
 }
 
 pub struct Action {
@@ -21,17 +22,25 @@ pub struct Action {
     pressed: CopyCell<bool>,
 }
 
+pub struct Separator;
+
+pub trait Entry {
+    fn text<S: AsRef<str>>(&mut self) -> S;
+}
+
 impl Menu {
-    pub fn new() -> Self {
+    pub fn new(name: &str) -> Self {
         Menu {
             rect: Rect::default(),
+            text: CloneCell::new(name.to_owned()),
             fg: Color::rgb(0, 0, 0),
-            actions: Vec::with_capacity(1),
+            entries: Vec::with_capacity(10),
         }
     }
 
-    pub fn add_action(&mut self, name: &str, icon: Option<BmpFile>) {
-        self.actions.insert(Action::new(name), icon);
+    pub fn add_entry<E: Entry>(mut self, entry: E) -> Self {
+        self.actions.insert(entry);
+        self
     }
 }
 
@@ -51,5 +60,56 @@ impl Action {
     pub fn add_icon(mut self, icon: BmpFile) -> Self {
         self.icon = Some(icon);
         self
+    }
+}
+
+impl Widget for Action {
+    fn draw(&self, renderer: &mut Renderer, _focused: bool) {
+        let rect = self.rect.get();
+
+        if self.pressed.get() {
+            renderer.rect(rect, self.bg_down);
+        } else {
+            renderer.rect(rect, self.bg_up);
+        }
+
+        let text = self.text.borrow();
+
+        let mut x = 0;
+        let mut y = 0;
+        for c in text.chars() {
+            if c == '\n' {
+                x = 0;
+                y += 16;
+            } else {
+                if x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
+                    renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
+                }
+                x += 8;
+            }
+        }
+    }
+
+    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
+        match event {
+        }
+    }
+}
+
+impl Entry for Menu {
+    fn text<S: AsRef<str>>(&mut self) -> S {
+        self.text.get()
+    }
+}
+
+impl Entry for Action {
+    fn text<S: AsRef<str>>(&mut self) -> S {
+        self.text.get()
+    }
+}
+
+impl Entry for Separator {
+    fn text<S: AsRef<str>>(&mut self) -> S {
+        "separator"
     }
 }
