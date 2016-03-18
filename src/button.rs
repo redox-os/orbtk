@@ -10,6 +10,7 @@ pub struct Button {
     pub bg_up: Color,
     pub bg_down: Color,
     pub fg: Color,
+    pub text_offset: Point,
     click_callback: Option<Arc<Fn(&Button, Point)>>,
     pressed: CopyCell<bool>,
 }
@@ -22,6 +23,7 @@ impl Button {
             bg_up: Color::rgb(220, 222, 227),
             bg_down: Color::rgb(203, 205, 210),
             fg: Color::rgb(0, 0, 0),
+            text_offset: Point::default(),
             click_callback: None,
             pressed: CopyCell::new(false),
         }
@@ -37,6 +39,11 @@ impl Button {
 
     pub fn text(self, text: &str) -> Self {
         self.text.set(text.to_owned());
+        self
+    }
+
+    pub fn text_offset(mut self, x: i32, y: i32) -> Self {
+        self.text_offset = Point::new(x, y);
         self
     }
 }
@@ -87,17 +94,16 @@ impl Widget for Button {
 
         let text = self.text.borrow();
 
-        let mut x = 0;
-        let mut y = 0;
+        let mut point = self.text_offset;
         for c in text.chars() {
             if c == '\n' {
-                x = 0;
-                y += 16;
+                point.x = 0;
+                point.y += 16;
             } else {
-                if x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
-                    renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
+                if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
+                    renderer.char(point + rect.point(), c, self.fg);
                 }
-                x += 8;
+                point.x += 8;
             }
         }
     }

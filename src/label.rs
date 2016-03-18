@@ -9,7 +9,7 @@ pub struct Label {
     pub text: CloneCell<String>,
     pub bg: Color,
     pub fg: Color,
-    text_offset: Point,
+    pub text_offset: Point,
     click_callback: Option<Arc<Fn(&Label, Point)>>,
     pressed: CopyCell<bool>,
 }
