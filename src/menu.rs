@@ -10,6 +10,7 @@ pub struct Menu {
     text: CloneCell<String>,
     fg: Color,
     entries: Vec<Box<Entry>>,
+    activated: CopyCell<bool>,
 }
 
 pub struct Action {
@@ -35,12 +36,36 @@ impl Menu {
             text: CloneCell::new(name.to_owned()),
             fg: Color::rgb(0, 0, 0),
             entries: Vec::with_capacity(10),
+            activated: false,
         }
     }
 
-    pub fn add_entry<E: Entry>(mut self, entry: E) -> Self {
-        self.actions.insert(entry);
+    pub fn add_entry<E: Entry + Place>(mut self, mut entry: E) -> Self {
+        {
+            let entry_text_len = entry.text().len();
+            if self.rect.width < entry_text_len {
+                // TODO: consider the icon width and some padding
+                self.rect.width = entry_text_len;
+            }
+        }
+
+        if entry.text() == "separator" {
+            self.entries.insert(entry.size(self.rect.width, 10));
+        } else {
+            self.entries.insert(entry.size(self.rect.width, 30));
+        }
+
         self
+    }
+}
+
+impl Widget for Menu {
+    fn draw(&self, renderer: &mut Renderer, _focused: bool) {
+        let rect = self.rect.get();
+
+        if self.activated.get() {
+            renderer.rect(rect, self.fg);
+        }
     }
 }
 
@@ -63,6 +88,26 @@ impl Action {
     }
 }
 
+impl Place for Action {
+    fn position(self, x: i32, y: i32) -> Self {
+        let mut rect = self.rect.get();
+        rect.x = x;
+        rect.y = y;
+        self.rect.set(rect);
+
+        self
+    }
+
+    fn size(self, width: u32, height: u32) -> Self {
+        let mut rect = self.rect.get();
+        rect.width = width;
+        rect.height = height;
+        self.rect.set(rect);
+
+        self
+    }
+}
+
 impl Widget for Action {
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.rect.get();
@@ -73,25 +118,45 @@ impl Widget for Action {
             renderer.rect(rect, self.bg_up);
         }
 
-        let text = self.text.borrow();
+        //let text = self.text.borrow();
 
-        let mut x = 0;
-        let mut y = 0;
-        for c in text.chars() {
-            if c == '\n' {
-                x = 0;
-                y += 16;
-            } else {
-                if x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
-                    renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
-                }
-                x += 8;
-            }
-        }
+        //let mut x = 0;
+        //let mut y = 0;
+        //for c in text.chars() {
+        //    if c == '\n' {
+        //        x = 0;
+        //        y += 16;
+        //    } else {
+        //        if x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
+        //            renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
+        //        }
+        //        x += 8;
+        //    }
+        //}
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
         match event {
+            Event::Mouse { point, left_button, .. } => {
+                let mut click = false;
+                let rect = self.rect.get();
+
+                if rect.contains(point) {
+                    if left_button && self.pressed.check_set(true) {
+                        *redraw = true;
+                    } else if self.pressed.check_set(false) {
+                        *click = true;
+                        redraw = true;
+                    }
+                } else if !left_button && self.pressed.check_set(false) {
+                    *redraw = true;
+                }
+
+                if click {
+                    let click_point: Point = point - rect.point();
+                    self.emit_click(click_point);
+                }
+            }
         }
     }
 }
