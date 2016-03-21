@@ -10,6 +10,7 @@ pub struct Menu {
     text: CloneCell<String>,
     fg: Color,
     entries: Vec<Box<Entry>>,
+    click_callback: Option<Arc<Fn(&Menu, Point)>>,
     activated: CopyCell<bool>,
 }
 
@@ -19,7 +20,7 @@ pub struct Action {
     icon: Option<BmpFile>,
     bg_up: Color,
     bg_down: Color,
-    click_callback: Option<Arc<Fn()>>,
+    click_callback: Option<Arc<Fn(&Action, Point)>>,
     pressed: CopyCell<bool>,
 }
 
@@ -36,6 +37,7 @@ impl Menu {
             text: CloneCell::new(name.to_owned()),
             fg: Color::rgb(0, 0, 0),
             entries: Vec::with_capacity(10),
+            click_callback: None,
             activated: false,
         }
     }
@@ -49,13 +51,36 @@ impl Menu {
             }
         }
 
-        if entry.text() == "separator" {
+        if entry.text().is_empty() {
+            // Separator entry goes here
             self.entries.insert(entry.size(self.rect.width, 10));
+            self.rect.height += 10;
         } else {
             self.entries.insert(entry.size(self.rect.width, 30));
+            self.rect.height += 30;
         }
 
         self
+    }
+}
+
+impl Click for Menu {
+    fn emit_click(&self, point: Point) {
+        if let Some(ref click_callback) = self.click_callback {
+            click_callback(self, point);
+        }
+    }
+
+    fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
+        self.click_callback = Some(Arc::new(func));
+
+        self
+    }
+}
+
+impl Place for Menu {
+    fn rect(&self) -> &CopyCell<Rect> {
+        &self.rect
     }
 }
 
@@ -67,11 +92,23 @@ impl Widget for Menu {
             renderer.rect(rect, self.fg);
         }
     }
-}
 
-impl Place for Menu {
-    fn rect(&self) -> &CopyCell<Rect> {
-        &self.rect
+    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
+        match event {
+            Event::Mouse { point, left_button, .. } => {
+                let mut click = false;
+
+                let rect = self.rect.get();
+                if rect.contains(point) {
+                    if left_button && self.activated.check_set(true) {
+                        *redraw = true;
+                    } else if self.pressed.check_set(false) {
+                        click = true;
+                        *redraw = true;
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -167,6 +204,6 @@ impl Entry for Action {
 
 impl Entry for Separator {
     fn text<S: AsRef<str>>(&mut self) -> S {
-        "separator"
+        ""
     }
 }
