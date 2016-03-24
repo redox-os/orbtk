@@ -1,9 +1,12 @@
 extern crate orbclient;
 
-use orbclient::BmpFile;
+use self::orbclient::BmpFile;
 
-use super::{CloneCell, Color, CopyCell, Event, Place, Point, Rect, Renderer, Widget, Window};
+use super::{CloneCell, Color, CopyCell, Event, Place, Point, Rect, Renderer, Widget};
 use super::callback::Click;
+use super::cell::CheckSet;
+
+use std::sync::Arc;
 
 pub struct Menu {
     rect: CopyCell<Rect>,
@@ -27,39 +30,40 @@ pub struct Action {
 pub struct Separator;
 
 pub trait Entry {
-    fn text<S: AsRef<str>>(&mut self) -> S;
+    fn text(&mut self) -> String;
 }
 
 impl Menu {
     pub fn new(name: &str) -> Self {
         Menu {
-            rect: Rect::default(),
+            rect: CopyCell::new(Rect::default()),
             text: CloneCell::new(name.to_owned()),
             fg: Color::rgb(0, 0, 0),
             entries: Vec::with_capacity(10),
             click_callback: None,
-            activated: false,
+            activated: CopyCell::new(false),
         }
     }
 
-    pub fn add_entry<E: Entry + Place>(mut self, mut entry: E) -> Self {
-        {
-            let entry_text_len = entry.text().len();
-            if self.rect.width < entry_text_len {
-                // TODO: consider the icon width and some padding
-                self.rect.width = entry_text_len;
-            }
+    pub fn add_entry<E: 'static + Entry + Place>(mut self, mut entry: E) -> Self {
+        let mut rect = self.rect.get();
+        let entry_text = entry.text();
+        if rect.width < entry_text.len() as u32 {
+            // TODO: consider the icon width and some padding
+            rect.width = entry_text.len() as u32;
         }
 
-        if entry.text().is_empty() {
+        if entry_text.is_empty() {
             // Separator entry goes here
-            self.entries.insert(entry.size(self.rect.width, 10));
-            self.rect.height += 10;
+            entry = entry.size(rect.width, 10);
+            rect.height += 10;
         } else {
-            self.entries.insert(entry.size(self.rect.width, 30));
-            self.rect.height += 30;
+            entry = entry.size(rect.width, 30);
+            rect.height += 30;
         }
+        self.entries.push(Box::new(entry));
 
+        self.rect.set(rect);
         self
     }
 }
@@ -102,21 +106,23 @@ impl Widget for Menu {
                 if rect.contains(point) {
                     if left_button && self.activated.check_set(true) {
                         *redraw = true;
-                    } else if self.pressed.check_set(false) {
+                    } else if self.activated.check_set(false) {
                         click = true;
                         *redraw = true;
                     }
                 }
             }
+            _ => (),
         }
+        focused
     }
 }
 
 impl Action {
     pub fn new(text: &str) -> Self {
         Action {
-            rect: Rect::default(),
-            text: CloneCell::new(name.to_owned()),
+            rect: CopyCell::new(Rect::default()),
+            text: CloneCell::new(text.to_owned()),
             icon: None,
             bg_up: Color::rgb(220, 222, 227),
             bg_down: Color::rgb(203, 205, 210),
@@ -137,6 +143,7 @@ impl Place for Action {
     }
 }
 
+/*
 impl Widget for Action {
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.rect.get();
@@ -174,8 +181,8 @@ impl Widget for Action {
                     if left_button && self.pressed.check_set(true) {
                         *redraw = true;
                     } else if self.pressed.check_set(false) {
-                        *click = true;
-                        redraw = true;
+                        click = true;
+                        *redraw = true;
                     }
                 } else if !left_button && self.pressed.check_set(false) {
                     *redraw = true;
@@ -189,21 +196,22 @@ impl Widget for Action {
         }
     }
 }
+*/
 
 impl Entry for Menu {
-    fn text<S: AsRef<str>>(&mut self) -> S {
+    fn text(&mut self) -> String {
         self.text.get()
     }
 }
 
 impl Entry for Action {
-    fn text<S: AsRef<str>>(&mut self) -> S {
+    fn text(&mut self) -> String {
         self.text.get()
     }
 }
 
 impl Entry for Separator {
-    fn text<S: AsRef<str>>(&mut self) -> S {
-        ""
+    fn text(&mut self) -> String {
+        String::new()
     }
 }
