@@ -1,34 +1,35 @@
-use super::{CloneCell, Color, CopyCell, Event, Place, Point, Rect, Renderer, Widget, Window};
+use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget, Window};
 use super::callback::{Click, Enter};
 use super::cell::CheckSet;
 
+use std::cell::Cell;
 use std::cmp::min;
 use std::sync::Arc;
 
 pub struct TextBox {
-    pub rect: CopyCell<Rect>,
+    pub rect: Cell<Rect>,
     pub text: CloneCell<String>,
-    pub text_i: CopyCell<usize>,
+    pub text_i: Cell<usize>,
     pub bg: Color,
     pub fg: Color,
     pub fg_cursor: Color,
     click_callback: Option<Arc<Fn(&TextBox, Point)>>,
     enter_callback: Option<Arc<Fn(&TextBox)>>,
-    pressed: CopyCell<bool>,
+    pressed: Cell<bool>,
 }
 
 impl TextBox {
     pub fn new() -> Self {
         TextBox {
-            rect: CopyCell::new(Rect::default()),
+            rect: Cell::new(Rect::default()),
             text: CloneCell::new(String::new()),
-            text_i: CopyCell::new(0),
+            text_i: Cell::new(0),
             bg: Color::rgb(255, 255, 255),
             fg: Color::rgb(0, 0, 0),
             fg_cursor: Color::rgb(128, 128, 128),
             click_callback: None,
             enter_callback: None,
-            pressed: CopyCell::new(false),
+            pressed: Cell::new(false),
         }
     }
 
@@ -76,7 +77,7 @@ impl Enter for TextBox {
 }
 
 impl Place for TextBox {
-    fn rect(&self) -> &CopyCell<Rect> {
+    fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
 }

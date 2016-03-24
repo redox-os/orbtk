@@ -1,7 +1,8 @@
-use super::{CopyCell, Rect};
+use super::Rect;
+use std::cell::Cell;
 
 pub trait Place: Sized {
-    fn rect(&self) -> &CopyCell<Rect>;
+    fn rect(&self) -> &Cell<Rect>;
     fn position(self, x: i32, y: i32) -> Self {
         let mut rect = self.rect().get();
         rect.x = x;

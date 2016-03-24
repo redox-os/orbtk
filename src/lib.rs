@@ -3,10 +3,11 @@
 #![feature(str_char)]
 
 pub use button::Button;
-pub use cell::{CopyCell, CloneCell};
+pub use cell::CloneCell;
 pub use color::Color;
 pub use event::Event;
 pub use label::Label;
+pub use menu::Menu;
 pub use place::Place;
 pub use point::Point;
 pub use progress_bar::ProgressBar;
@@ -21,6 +22,7 @@ pub mod cell;
 pub mod color;
 pub mod event;
 pub mod label;
+pub mod menu;
 pub mod place;
 pub mod point;
 pub mod progress_bar;

@@ -1,31 +1,32 @@
-use super::{CloneCell, Color, CopyCell, Event, Place, Point, Rect, Renderer, Widget, Window};
+use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget, Window};
 use super::callback::Click;
 use super::cell::CheckSet;
 
+use std::cell::Cell;
 use std::sync::Arc;
 
 pub struct Button {
-    pub rect: CopyCell<Rect>,
+    pub rect: Cell<Rect>,
     pub text: CloneCell<String>,
     pub bg_up: Color,
     pub bg_down: Color,
     pub fg: Color,
     pub text_offset: Point,
     click_callback: Option<Arc<Fn(&Button, Point)>>,
-    pressed: CopyCell<bool>,
+    pressed: Cell<bool>,
 }
 
 impl Button {
     pub fn new() -> Self {
         Button {
-            rect: CopyCell::new(Rect::default()),
+            rect: Cell::new(Rect::default()),
             text: CloneCell::new(String::new()),
             bg_up: Color::rgb(220, 222, 227),
             bg_down: Color::rgb(203, 205, 210),
             fg: Color::rgb(0, 0, 0),
             text_offset: Point::default(),
             click_callback: None,
-            pressed: CopyCell::new(false),
+            pressed: Cell::new(false),
         }
     }
 
@@ -63,7 +64,7 @@ impl Click for Button {
 }
 
 impl Place for Button {
-    fn rect(&self) -> &CopyCell<Rect> {
+    fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
 }

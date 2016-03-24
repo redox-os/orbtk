@@ -1,6 +1,4 @@
-pub use std::cell::Cell as CopyCell;
-
-use std::cell::{Ref, RefCell, RefMut};
+use std::cell::{Cell, Ref, RefCell, RefMut};
 
 pub trait CheckSet<T> {
     fn check_set(&self, value: T) -> bool;
@@ -32,7 +30,7 @@ impl<T: Clone> CloneCell<T> {
     }
 }
 
-impl<T: Copy> CheckSet<T> for CopyCell<T> where T: PartialOrd {
+impl<T: Copy> CheckSet<T> for Cell<T> where T: PartialOrd {
     fn check_set(&self, value: T) -> bool {
         if value != self.get() {
             self.set(value);
