@@ -9,6 +9,7 @@ use super::cell::CheckSet;
 use std::cell::Cell;
 use std::sync::Arc;
 
+#[allow(dead_code)]
 pub struct Menu {
     rect: Cell<Rect>,
     text: CloneCell<String>,
@@ -18,6 +19,7 @@ pub struct Menu {
     activated: Cell<bool>,
 }
 
+#[allow(dead_code)]
 pub struct Action {
     rect: Cell<Rect>,
     text: CloneCell<String>,
@@ -101,14 +103,14 @@ impl Widget for Menu {
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {
-                let mut click = false;
+                //let mut click = false;
 
                 let rect = self.rect.get();
                 if rect.contains(point) {
                     if left_button && self.activated.check_set(true) {
                         *redraw = true;
                     } else if self.activated.check_set(false) {
-                        click = true;
+                        //click = true;
                         *redraw = true;
                     }
                 }

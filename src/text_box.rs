@@ -120,6 +120,7 @@ impl Widget for TextBox {
         }
     }
 
+    #[allow(deprecated)]
     fn event(&self, event: Event, mut focused: bool, redraw: &mut bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {

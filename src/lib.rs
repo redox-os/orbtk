@@ -1,5 +1,6 @@
 #![crate_name="orbtk"]
 #![crate_type="lib"]
+#![deny(warnings)]
 #![feature(str_char)]
 
 pub use button::Button;
