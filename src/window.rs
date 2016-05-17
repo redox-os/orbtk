@@ -3,14 +3,16 @@ use super::{Color, Event, Point, Rect, Renderer, Widget};
 use std::sync::Arc;
 
 extern crate orbclient;
+extern crate orbfont;
 
 pub struct WindowRenderer<'a> {
     inner: &'a mut Box<orbclient::Window>,
+    font: &'a Option<orbfont::Font>
 }
 
 impl<'a> WindowRenderer<'a> {
-    pub fn new(inner: &'a mut Box<orbclient::Window>) -> WindowRenderer {
-        WindowRenderer { inner: inner }
+    pub fn new(inner: &'a mut Box<orbclient::Window>, font: &'a Option<orbfont::Font>) -> WindowRenderer<'a> {
+        WindowRenderer { inner: inner, font: font }
     }
 }
 
@@ -20,7 +22,11 @@ impl<'a> Renderer for WindowRenderer<'a> {
     }
 
     fn char(&mut self, pos: Point, c: char, color: Color) {
-        self.inner.char(pos.x, pos.y, c, orbclient::Color { data: color.data });
+        if let Some(ref font) = *self.font {
+            font.render(&c.to_string(), 16.0).draw(&mut self.inner, pos.x, pos.y, orbclient::Color { data: color.data })
+        }else{
+            self.inner.char(pos.x, pos.y, c, orbclient::Color { data: color.data });
+        }
     }
 
     fn rect(&mut self, rect: Rect, color: Color) {
@@ -40,6 +46,7 @@ impl<'a> Drop for WindowRenderer<'a> {
 
 pub struct Window {
     inner: Box<orbclient::Window>,
+    font: Option<orbfont::Font>,
     pub widgets: Vec<Arc<Widget>>,
     pub widget_focus: usize,
     pub bg: Color,
@@ -49,6 +56,7 @@ impl Window {
     pub fn new(rect: Rect, title: &str) -> Box<Self> {
         Box::new(Window {
             inner: orbclient::Window::new(rect.x, rect.y, rect.width, rect.height, title).unwrap(),
+            font: orbfont::Font::from_path("/ui/fonts/UbuntuMono-Regular.ttf").ok(),
             widgets: Vec::new(),
             widget_focus: 0,
             bg: Color::rgb(237, 233, 227),
@@ -56,7 +64,7 @@ impl Window {
     }
 
     pub fn draw(&mut self) {
-        let mut renderer = WindowRenderer::new(&mut self.inner);
+        let mut renderer = WindowRenderer::new(&mut self.inner, &self.font);
         renderer.clear(self.bg);
 
         for i in 0..self.widgets.len() {
