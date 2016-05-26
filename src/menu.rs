@@ -1,6 +1,6 @@
-extern crate orbclient;
+extern crate orbimage;
 
-use self::orbclient::BmpFile;
+use self::orbimage::Image;
 
 use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget};
 use super::callback::Click;
@@ -23,7 +23,7 @@ pub struct Menu {
 pub struct Action {
     rect: Cell<Rect>,
     text: CloneCell<String>,
-    icon: Option<BmpFile>,
+    icon: Option<Image>,
     bg_up: Color,
     bg_down: Color,
     click_callback: Option<Arc<Fn(&Action, Point)>>,
@@ -134,7 +134,7 @@ impl Action {
         }
     }
 
-    pub fn add_icon(mut self, icon: BmpFile) -> Self {
+    pub fn add_icon(mut self, icon: Image) -> Self {
         self.icon = Some(icon);
         self
     }

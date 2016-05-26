@@ -6,12 +6,12 @@ extern crate orbclient;
 extern crate orbfont;
 
 pub struct WindowRenderer<'a> {
-    inner: &'a mut Box<orbclient::Window>,
+    inner: &'a mut orbclient::Window,
     font: &'a Option<orbfont::Font>
 }
 
 impl<'a> WindowRenderer<'a> {
-    pub fn new(inner: &'a mut Box<orbclient::Window>, font: &'a Option<orbfont::Font>) -> WindowRenderer<'a> {
+    pub fn new(inner: &'a mut orbclient::Window, font: &'a Option<orbfont::Font>) -> WindowRenderer<'a> {
         WindowRenderer { inner: inner, font: font }
     }
 }
@@ -45,7 +45,7 @@ impl<'a> Drop for WindowRenderer<'a> {
 }
 
 pub struct Window {
-    inner: Box<orbclient::Window>,
+    inner: orbclient::Window,
     font: Option<orbfont::Font>,
     pub widgets: Vec<Arc<Widget>>,
     pub widget_focus: usize,
@@ -53,14 +53,14 @@ pub struct Window {
 }
 
 impl Window {
-    pub fn new(rect: Rect, title: &str) -> Box<Self> {
-        Box::new(Window {
+    pub fn new(rect: Rect, title: &str) -> Self {
+        Window {
             inner: orbclient::Window::new(rect.x, rect.y, rect.width, rect.height, title).unwrap(),
             font: orbfont::Font::from_path("/ui/fonts/UbuntuMono-Regular.ttf").ok(),
             widgets: Vec::new(),
             widget_focus: 0,
             bg: Color::rgb(237, 233, 227),
-        })
+        }
     }
 
     pub fn draw(&mut self) {
