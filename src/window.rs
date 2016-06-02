@@ -56,7 +56,7 @@ impl Window {
     pub fn new(rect: Rect, title: &str) -> Self {
         Window {
             inner: orbclient::Window::new(rect.x, rect.y, rect.width, rect.height, title).unwrap(),
-            font: orbfont::Font::from_path("/ui/fonts/UbuntuMono-Regular.ttf").ok(),
+            font: orbfont::Font::find(None, None, None).ok(),
             widgets: Vec::new(),
             widget_focus: 0,
             bg: Color::rgb(237, 233, 227),
