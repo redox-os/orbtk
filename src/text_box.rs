@@ -102,6 +102,13 @@ impl Widget for TextBox {
 
                 x = 0;
                 y += 16;
+            } else if c == '\t' {
+                if x + 8 * 4 <= rect.width as i32 && y + 16 <= rect.height as i32 {
+                    if i == text_i && focused {
+                        renderer.rect(Rect::new(x + rect.x, y + rect.y, 8 * 4, 16), self.fg_cursor);
+                    }
+                }
+                x += 8 * 4;
             } else {
                 if x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
                     if i == text_i && focused {
@@ -168,6 +175,16 @@ impl Widget for TextBox {
                                 }
                                 x = 0;
                                 y += 16;
+                            } else if c == '\t' {
+                                if x + 8 * 4 <= rect.width as i32 && click_point.x >= x &&
+                                   click_point.x < x + 8 * 4 &&
+                                   y + 16 <= rect.height as i32 &&
+                                   click_point.y >= y &&
+                                   click_point.y < y + 16 {
+                                    new_text_i = Some(i);
+                                    break;
+                                }
+                                x += 8 * 4;
                             } else {
                                 if x + 8 <= rect.width as i32 && click_point.x >= x &&
                                    click_point.x < x + 8 &&
