@@ -36,6 +36,14 @@ impl<'a> Renderer for WindowRenderer<'a> {
                         rect.height,
                         orbclient::Color { data: color.data });
     }
+
+    fn line(&mut self, start: Point, end: Point, color: Color) {
+        self.inner.line(start.x,
+                        start.y,
+                        end.x,
+                        end.y,
+                        orbclient::Color { data: color.data });
+    }
 }
 
 impl<'a> Drop for WindowRenderer<'a> {

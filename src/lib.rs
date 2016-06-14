@@ -8,7 +8,7 @@ pub use cell::CloneCell;
 pub use color::Color;
 pub use event::Event;
 pub use label::Label;
-pub use menu::Menu;
+pub use menu::{Menu, Action};
 pub use place::Place;
 pub use point::Point;
 pub use progress_bar::ProgressBar;
@@ -40,7 +40,13 @@ pub fn example() {
     let mut window = Window::new(Rect::new(100, 100, 420, 420), "OrbTK");
 
     let x = 10;
-    let mut y = 10;
+    let mut y = 0;
+
+    let mut menu = Menu::new("Menu")
+        .position(x, y)
+        .size(32, 16);
+
+    y += menu.rect.get().height as i32 + 10;
 
     let label = Label::new()
         .position(x, y)
@@ -104,12 +110,41 @@ pub fn example() {
 
     y += multi_line_text_box.rect.get().height as i32 + 10;
 
-    Label::new()
+    let offset_label = Label::new()
         .position(x, y)
         .size(400, 256)
         .text("Test Offset")
         .text_offset(50, 50)
         .place(&mut window);
+
+    {
+        let offset_label_clone = offset_label.clone();
+        menu.add_action(Action::new("Label One")
+            .on_click(move |_action: &Action, _point: Point| {
+                offset_label_clone.text.set("One".to_owned());
+            }));
+    }
+
+    {
+        let offset_label_clone = offset_label.clone();
+        menu.add_action(Action::new("Label Two")
+            .on_click(move |_action: &Action, _point: Point| {
+                offset_label_clone.text.set("Two".to_owned());
+            }));
+    }
+
+    menu.add_separator();
+
+    {
+        let offset_label_clone = offset_label.clone();
+        menu.add_action(Action::new("Reset Label")
+            .on_click(move |_action: &Action, _point: Point| {
+                offset_label_clone.text.set("Text Offset".to_owned());
+            }));
+    }
+
+    // TODO: Don't require this to be placed last to be drawn last
+    menu.place(&mut window);
 
     window.exec();
 }
