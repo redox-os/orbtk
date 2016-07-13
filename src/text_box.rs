@@ -4,7 +4,20 @@ use super::cell::CheckSet;
 
 use std::cell::Cell;
 use std::cmp::min;
+use std::ops::Deref;
 use std::sync::Arc;
+
+/// Find next character index
+fn next_i(text: &str, text_i: usize) -> usize {
+    let slice = &text[text_i..];
+    slice.char_indices().skip(1).next().unwrap_or((slice.len(), '\0')).0 + text_i
+}
+
+/// Find last character index
+fn prev_i(text: &str, text_i: usize) -> usize {
+    let slice = &text[.. text_i];
+    slice.char_indices().rev().next().unwrap_or((0, '\0')).0
+}
 
 pub struct TextBox {
     pub rect: Cell<Rect>,
@@ -127,7 +140,6 @@ impl Widget for TextBox {
         }
     }
 
-    #[allow(deprecated)]
     fn event(&self, event: Event, mut focused: bool, redraw: &mut bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {
@@ -210,6 +222,7 @@ impl Widget for TextBox {
                             self.text_i.set(text_i);
                         }
                     }
+
                     self.emit_click(click_point);
                 }
             }
@@ -217,10 +230,8 @@ impl Widget for TextBox {
                 if focused {
                     let mut text = self.text.borrow_mut();
                     let text_i = self.text_i.get();
-                    if text.is_char_boundary(text_i) {
-                        text.insert(text_i, c);
-                        self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
-                    }
+                    text.insert(text_i, c);
+                    self.text_i.set(next_i(text.deref(), text_i));
                     *redraw = true;
                 }
             }
@@ -231,10 +242,8 @@ impl Widget for TextBox {
                     } else {
                         let mut text = self.text.borrow_mut();
                         let text_i = self.text_i.get();
-                        if text.is_char_boundary(text_i) {
-                            text.insert(text_i, '\n');
-                            self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
-                        }
+                        text.insert(text_i, '\n');
+                        self.text_i.set(next_i(text.deref(), text_i));
                     }
                     *redraw = true;
                 }
@@ -243,9 +252,9 @@ impl Widget for TextBox {
                 if focused {
                     let mut text = self.text.borrow_mut();
                     let mut text_i = self.text_i.get();
-                    if text.is_char_boundary(text_i) && text_i > 0 {
-                        text_i = min(text.char_range_at_reverse(text_i).next, text.len());
-                        if text.is_char_boundary(text_i) && text_i < text.len() {
+                    if text_i > 0 {
+                        text_i = prev_i(text.deref(), text_i);
+                        if text_i < text.len() {
                             text.remove(text_i);
                             self.text_i.set(min(text_i, text.len()));
                         }
@@ -257,7 +266,7 @@ impl Widget for TextBox {
                 if focused {
                     let mut text = self.text.borrow_mut();
                     let text_i = self.text_i.get();
-                    if text.is_char_boundary(text_i) && text_i < text.len() {
+                    if text_i < text.len() {
                         text.remove(text_i);
                         self.text_i.set(min(text_i, text.len()));
                     }
@@ -268,12 +277,11 @@ impl Widget for TextBox {
                 if focused {
                     let text = self.text.borrow();
                     let mut text_i = self.text_i.get();
-                    while text.is_char_boundary(text_i) && text_i > 0 {
-                        let range = text.char_range_at_reverse(text_i);
-                        if range.ch == '\n' {
+                    while text_i > 0 {
+                        if text[.. text_i].chars().rev().next() == Some('\n') {
                             break;
                         }
-                        text_i = range.next;
+                        text_i = prev_i(text.deref(), text_i);
                     }
                     self.text_i.set(text_i);
                     *redraw = true;
@@ -283,12 +291,11 @@ impl Widget for TextBox {
                 if focused {
                     let text = self.text.borrow();
                     let mut text_i = self.text_i.get();
-                    while text.is_char_boundary(text_i) && text_i < text.len() {
-                        let range = text.char_range_at(text_i);
-                        if range.ch == '\n' {
+                    while text_i < text.len() {
+                        if text[text_i ..].chars().next() == Some('\n') {
                             break;
                         }
-                        text_i = range.next;
+                        text_i = next_i(text.deref(), text_i);
                     }
                     self.text_i.set(text_i);
                     *redraw = true;
@@ -301,31 +308,29 @@ impl Widget for TextBox {
 
                     // Count back to last newline
                     let mut offset = 0;
-                    while text.is_char_boundary(text_i) && text_i > 0 {
-                        let range = text.char_range_at_reverse(text_i);
-                        text_i = range.next;
-                        if range.ch == '\n' {
+                    while text_i > 0 {
+                        let c = text[.. text_i].chars().rev().next();
+                        text_i = prev_i(text.deref(), text_i);
+                        if c == Some('\n') {
                             break;
                         }
                         offset += 1;
                     }
 
                     // Go to newline before last newline
-                    while text.is_char_boundary(text_i) && text_i > 0 {
-                        let range = text.char_range_at_reverse(text_i);
-                        if range.ch == '\n' {
+                    while text_i > 0 {
+                        if text[.. text_i].chars().rev().next() == Some('\n') {
                             break;
                         }
-                        text_i = range.next;
+                        text_i = prev_i(text.deref(), text_i);
                     }
 
                     // Add back offset
-                    while text.is_char_boundary(text_i) && offset > 0 && text_i < text.len() {
-                        let range = text.char_range_at(text_i);
-                        if range.ch == '\n' {
+                    while offset > 0 && text_i < text.len() {
+                        if text[text_i ..].chars().next() == Some('\n') {
                             break;
                         }
-                        text_i = range.next;
+                        text_i = next_i(text.deref(), text_i);
                         offset -= 1;
                     }
 
@@ -340,31 +345,29 @@ impl Widget for TextBox {
 
                     // Count back to last newline
                     let mut offset = 0;
-                    while text.is_char_boundary(text_i) && text_i > 0 {
-                        let range = text.char_range_at_reverse(text_i);
-                        if range.ch == '\n' {
+                    while text_i > 0 {
+                        if text[.. text_i].chars().rev().next() == Some('\n') {
                             break;
                         }
-                        text_i = range.next;
+                        text_i = prev_i(text.deref(), text_i);
                         offset += 1;
                     }
 
                     // Go to next newline
-                    while text.is_char_boundary(text_i) && text_i < text.len() {
-                        let range = text.char_range_at(text_i);
-                        text_i = range.next;
-                        if range.ch == '\n' {
+                    while text_i < text.len() {
+                        let c = text[text_i ..].chars().next();
+                        text_i = next_i(text.deref(), text_i);
+                        if c == Some('\n') {
                             break;
                         }
                     }
 
                     // Add back offset
-                    while text.is_char_boundary(text_i) && offset > 0 && text_i < text.len() {
-                        let range = text.char_range_at(text_i);
-                        if range.ch == '\n' {
+                    while offset > 0 && text_i < text.len() {
+                        if text[text_i ..].chars().next() == Some('\n') {
                             break;
                         }
-                        text_i = range.next;
+                        text_i = next_i(text.deref(), text_i);
                         offset -= 1;
                     }
 
@@ -376,8 +379,8 @@ impl Widget for TextBox {
                 if focused {
                     let text = self.text.borrow();
                     let text_i = self.text_i.get();
-                    if text.is_char_boundary(text_i) && text_i > 0 {
-                        self.text_i.set(min(text.char_range_at_reverse(text_i).next, text.len()));
+                    if text_i > 0 {
+                        self.text_i.set(prev_i(text.deref(), text_i));
                     }
                     *redraw = true;
                 }
@@ -386,8 +389,8 @@ impl Widget for TextBox {
                 if focused {
                     let text = self.text.borrow();
                     let text_i = self.text_i.get();
-                    if text.is_char_boundary(text_i) && text_i < text.len() {
-                        self.text_i.set(min(text.char_range_at(text_i).next, text.len()));
+                    if text_i < text.len() {
+                        self.text_i.set(next_i(text.deref(), text_i));
                     }
                     *redraw = true;
                 }
