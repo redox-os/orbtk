@@ -1,4 +1,4 @@
-use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget, Window};
+use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, Window};
 use super::callback::Click;
 use super::cell::CheckSet;
 
@@ -6,10 +6,8 @@ use std::cell::Cell;
 use std::sync::Arc;
 
 pub struct Label {
-    pub rect: Cell<Rect>,
+    pub core: WidgetCore,
     pub text: CloneCell<String>,
-    pub bg: Color,
-    pub fg: Color,
     pub text_offset: Point,
     click_callback: Option<Arc<Fn(&Label, Point)>>,
     pressed: Cell<bool>,
@@ -18,10 +16,8 @@ pub struct Label {
 impl Label {
     pub fn new() -> Self {
         Label {
-            rect: Cell::new(Rect::default()),
+            core: WidgetCore::new(Color::rgb(237, 233, 227), Color::black()),
             text: CloneCell::new(String::new()),
-            bg: Color::rgb(237, 233, 227),
-            fg: Color::rgb(0, 0, 0),
             text_offset: Point::default(),
             click_callback: None,
             pressed: Cell::new(false),
@@ -63,14 +59,14 @@ impl Click for Label {
 
 impl Place for Label {
     fn rect(&self) -> &Cell<Rect> {
-        &self.rect
+        &self.core.rect
     }
 }
 
 impl Widget for Label {
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.rect.get();
-        renderer.rect(rect, self.bg);
+        let rect = self.core.rect.get();
+        renderer.rect(rect, self.core.bg);
 
         let text = self.text.borrow();
 
@@ -81,7 +77,7 @@ impl Widget for Label {
                 point.y += 16;
             } else {
                 if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point + rect.point(), c, self.fg);
+                    renderer.char(point + rect.point(), c, self.core.fg);
                 }
                 point.x += 8;
             }
@@ -93,7 +89,7 @@ impl Widget for Label {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
 
-                let rect = self.rect.get();
+                let rect = self.core.rect.get();
                 if rect.contains(point) {
                     if left_button {
                         if self.pressed.check_set(true) {

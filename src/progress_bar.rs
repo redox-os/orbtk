@@ -1,4 +1,4 @@
-use super::{Color, Event, Place, Point, Rect, Renderer, Widget, Window};
+use super::{Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, Window};
 use super::callback::Click;
 use super::cell::CheckSet;
 
@@ -7,12 +7,10 @@ use std::cmp::{min, max};
 use std::sync::Arc;
 
 pub struct ProgressBar {
-    pub rect: Cell<Rect>,
+    pub core: WidgetCore,
     pub value: Cell<i32>,
     pub minimum: i32,
     pub maximum: i32,
-    pub bg: Color,
-    pub fg: Color,
     click_callback: Option<Arc<Fn(&ProgressBar, Point)>>,
     pressed: Cell<bool>,
 }
@@ -20,12 +18,10 @@ pub struct ProgressBar {
 impl ProgressBar {
     pub fn new() -> Self {
         ProgressBar {
-            rect: Cell::new(Rect::default()),
+            core: WidgetCore::new(Color::white(), Color::rgb(65, 139, 212)),
             value: Cell::new(0),
             minimum: 0,
             maximum: 100,
-            bg: Color::rgb(255, 255, 255),
-            fg: Color::rgb(65, 139, 212),
             click_callback: None,
             pressed: Cell::new(false),
         }
@@ -61,14 +57,14 @@ impl Click for ProgressBar {
 
 impl Place for ProgressBar {
     fn rect(&self) -> &Cell<Rect> {
-        &self.rect
+        &self.core.rect
     }
 }
 
 impl Widget for ProgressBar {
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.rect.get();
-        renderer.rect(rect, self.bg);
+        let rect = self.core.rect.get();
+        renderer.rect(rect, self.core.bg);
         renderer.rect(Rect::new(rect.x,
                                 rect.y,
                                 ((rect.width as i32 *
@@ -77,7 +73,7 @@ impl Widget for ProgressBar {
                                      self.maximum -
                                      self.minimum)) as u32,
                                 rect.height),
-                      self.fg);
+                      self.core.fg);
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
@@ -85,7 +81,7 @@ impl Widget for ProgressBar {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
 
-                let rect = self.rect.get();
+                let rect = self.core.rect.get();
                 if rect.contains(point) {
                     if left_button {
                         if self.pressed.check_set(true) {

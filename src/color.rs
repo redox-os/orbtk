@@ -14,4 +14,19 @@ impl Color {
     pub fn rgba(r: u8, g: u8, b: u8, a: u8) -> Self {
         Color { data: ((a as u32) << 24) | ((r as u32) << 16) | ((g as u32) << 8) | (b as u32) }
     }
+
+    /// Create a new black color
+    pub fn black() -> Self {
+        Color { data: 0xFF000000 }
+    }
+
+    /// Create a new white color
+    pub fn white() -> Self {
+        Color { data: 0xFFFFFFFF }
+    }
+
+    /// Create a new gray color
+    pub fn gray() -> Self {
+        Color { data: 0xFF808080 }
+    }
 }
