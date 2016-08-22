@@ -1,6 +1,7 @@
 use super::{Color, Event, Point, Rect, Renderer, Widget};
 
 use std::sync::Arc;
+use std::cell::{Cell, RefCell};
 
 extern crate orbclient;
 extern crate orbfont;
@@ -55,9 +56,10 @@ impl<'a> Drop for WindowRenderer<'a> {
 pub struct Window {
     inner: orbclient::Window,
     font: Option<orbfont::Font>,
-    pub widgets: Vec<Arc<Widget>>,
+    pub widgets: RefCell<Vec<Arc<Widget>>>,
     pub widget_focus: usize,
     pub bg: Color,
+    pub running: Cell<bool>
 }
 
 impl Window {
@@ -65,9 +67,10 @@ impl Window {
         Window {
             inner: orbclient::Window::new(rect.x, rect.y, rect.width, rect.height, title).unwrap(),
             font: orbfont::Font::find(None, None, None).ok(),
-            widgets: Vec::new(),
+            widgets: RefCell::new(Vec::new()),
             widget_focus: 0,
             bg: Color::rgb(237, 233, 227),
+            running: Cell::new(true),
         }
     }
 
@@ -75,8 +78,8 @@ impl Window {
         let mut renderer = WindowRenderer::new(&mut self.inner, &self.font);
         renderer.clear(self.bg);
 
-        for i in 0..self.widgets.len() {
-            if let Some(widget) = self.widgets.get(i) {
+        for i in 0..self.widgets.borrow().len() {
+            if let Some(widget) = self.widgets.borrow().get(i) {
                 widget.draw(&mut renderer, self.widget_focus == i);
             }
         }
@@ -84,7 +87,7 @@ impl Window {
 
     pub fn exec(&mut self) {
         self.draw();
-        'event: loop {
+        'event: while self.running.get() {
             let mut events = Vec::new();
 
             for orbital_event in self.inner.events() {
@@ -126,8 +129,8 @@ impl Window {
 
             let mut redraw = false;
             for event in events.iter() {
-                for i in 0..self.widgets.len() {
-                    if let Some(widget) = self.widgets.get(i) {
+                for i in 0..self.widgets.borrow().len() {
+                    if let Some(widget) = self.widgets.borrow().get(i) {
                         if widget.event(*event, self.widget_focus == i, &mut redraw) {
                             if self.widget_focus != i {
                                 self.widget_focus = i;
