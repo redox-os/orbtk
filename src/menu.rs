@@ -41,10 +41,10 @@ pub trait Entry: Widget {
 }
 
 impl Menu {
-    pub fn new(name: &str) -> Self {
+    pub fn new<S: Into<String>>(name: S) -> Self {
         Menu {
             core: WidgetCore::new(Color::rgb(220, 222, 227), Color::rgb(0, 0, 0)),
-            text: CloneCell::new(name.to_owned()),
+            text: CloneCell::new(name.into()),
             bg_pressed: Color::rgb(203, 205, 210),
             text_offset: Point::default(),
             entries: Vec::with_capacity(10),
@@ -106,8 +106,8 @@ impl Menu {
         arc
     }
 
-    pub fn text(self, text: &str) -> Self {
-        self.text.set(text.to_owned());
+    pub fn text<S: Into<String>>(self, text: S) -> Self {
+        self.text.set(text.into());
         self
     }
 
@@ -226,10 +226,10 @@ impl Widget for Menu {
 }
 
 impl Action {
-    pub fn new(text: &str) -> Self {
+    pub fn new<S: Into<String>>(text: S) -> Self {
         Action {
             core: WidgetCore::new(Color::rgb(220, 222, 227), Color::rgb(0, 0, 0)),
-            text: CloneCell::new(text.to_owned()),
+            text: CloneCell::new(text.into()),
             icon: None,
             bg_pressed: Color::rgb(203, 205, 210),
             text_offset: Point::default(),
