@@ -32,8 +32,8 @@ impl Label {
         arc
     }
 
-    pub fn text(self, text: &str) -> Self {
-        self.text.set(text.to_owned());
+    pub fn text<S: Into<String>>(self, text: S) -> Self {
+        self.text.set(text.into());
         self
     }
 

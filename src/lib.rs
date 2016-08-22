@@ -45,7 +45,7 @@ pub fn example() {
         .position(x, y)
         .size(32, 16);
 
-    y += menu.rect.get().height as i32 + 10;
+    y += menu.core.rect.get().height as i32 + 10;
 
     let label = Label::new()
         .position(x, y)
