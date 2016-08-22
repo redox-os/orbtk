@@ -2,7 +2,7 @@ extern crate orbimage;
 
 use self::orbimage::Image;
 
-use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, Window};
+use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, WidgetPlace};
 use super::callback::Click;
 use super::cell::CheckSet;
 
@@ -98,14 +98,6 @@ impl Menu {
         self.entries.push(Box::new(separator));
     }
 
-    pub fn place(self, window: &mut Window) -> Arc<Self> {
-        let arc = Arc::new(self);
-
-        window.widgets.push(arc.clone());
-
-        arc
-    }
-
     pub fn text<S: Into<String>>(self, text: S) -> Self {
         self.text.set(text.into());
         self
@@ -136,6 +128,8 @@ impl Place for Menu {
         &self.core.rect
     }
 }
+
+impl WidgetPlace for Menu {}
 
 impl Widget for Menu {
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {

@@ -1,4 +1,4 @@
-use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, Window};
+use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, WidgetPlace};
 use super::callback::{Click, Enter};
 use super::cell::CheckSet;
 
@@ -42,14 +42,6 @@ impl TextBox {
         }
     }
 
-    pub fn place(self, window: &mut Window) -> Arc<Self> {
-        let arc = Arc::new(self);
-
-        window.widgets.push(arc.clone());
-
-        arc
-    }
-
     pub fn text<S: Into<String>>(self, text: S) -> Self {
         let text = text.into();
         self.text_i.set(text.len());
@@ -91,6 +83,8 @@ impl Place for TextBox {
         &self.core.rect
     }
 }
+
+impl WidgetPlace for TextBox {}
 
 impl Widget for TextBox {
     fn draw(&self, renderer: &mut Renderer, focused: bool) {

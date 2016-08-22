@@ -1,4 +1,4 @@
-use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, Window};
+use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, WidgetPlace};
 use super::callback::Click;
 use super::cell::CheckSet;
 
@@ -22,14 +22,6 @@ impl Label {
             click_callback: None,
             pressed: Cell::new(false),
         }
-    }
-
-    pub fn place(self, window: &mut Window) -> Arc<Self> {
-        let arc = Arc::new(self);
-
-        window.widgets.push(arc.clone());
-
-        arc
     }
 
     pub fn text<S: Into<String>>(self, text: S) -> Self {
@@ -62,6 +54,8 @@ impl Place for Label {
         &self.core.rect
     }
 }
+
+impl WidgetPlace for Label {}
 
 impl Widget for Label {
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
