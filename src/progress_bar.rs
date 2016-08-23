@@ -1,4 +1,4 @@
-use super::{Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, Window};
+use super::{Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, WidgetPlace};
 use super::callback::Click;
 use super::cell::CheckSet;
 
@@ -27,14 +27,6 @@ impl ProgressBar {
         }
     }
 
-    pub fn place(self, window: &mut Window) -> Arc<Self> {
-        let arc = Arc::new(self);
-
-        window.widgets.push(arc.clone());
-
-        arc
-    }
-
     pub fn value(self, value: i32) -> Self {
         self.value.set(value);
         self
@@ -60,6 +52,8 @@ impl Place for ProgressBar {
         &self.core.rect
     }
 }
+
+impl WidgetPlace for ProgressBar {}
 
 impl Widget for ProgressBar {
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
