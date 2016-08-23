@@ -36,7 +36,7 @@ use callback::{Click, Enter};
 pub mod callback;
 
 pub fn example() {
-    let mut window = Window::new(Rect::new(100, 100, 420, 420), "OrbTK");
+    let window = Window::new(Rect::new(100, 100, 420, 420), "OrbTK");
 
     let x = 10;
     let mut y = 0;
@@ -51,7 +51,7 @@ pub fn example() {
         .position(x, y)
         .size(400, 16)
         .text("Test Label")
-        .place(&mut window);
+        .place(&window);
 
     y += label.core.rect.get().height as i32 + 10;
 
@@ -61,7 +61,7 @@ pub fn example() {
         .on_enter(move |text_box: &TextBox| {
             label.text.set(text_box.text.get());
         })
-        .place(&mut window);
+        .place(&window);
 
     let button = Button::new()
         .position(x + text_box.core.rect.get().width as i32 + 10, y)
@@ -70,7 +70,7 @@ pub fn example() {
         .on_click(move |_button: &Button, _point: Point| {
             text_box.emit_enter();
         })
-        .place(&mut window);
+        .place(&window);
 
     y += button.core.rect.get().height as i32 + 10;
 
@@ -78,7 +78,7 @@ pub fn example() {
         .text("Progress: 0%")
         .position(x, y)
         .size(400, 16)
-        .place(&mut window);
+        .place(&window);
 
     y += progress_label.core.rect.get().height as i32 + 10;
 
@@ -90,7 +90,7 @@ pub fn example() {
             progress_label.text.set(format!("Progress: {}%", progress));
             progress_bar.value.set(progress);
         })
-        .place(&mut window);
+        .place(&window);
 
     y += progress_bar.core.rect.get().height as i32 + 10;
 
@@ -98,14 +98,14 @@ pub fn example() {
         .text("Multi-Line Text")
         .position(x, y)
         .size(400, 16)
-        .place(&mut window);
+        .place(&window);
 
     y += multi_line_label.core.rect.get().height as i32 + 10;
 
     let multi_line_text_box = TextBox::new()
         .position(x, y)
         .size(400, 128)
-        .place(&mut window);
+        .place(&window);
 
     y += multi_line_text_box.core.rect.get().height as i32 + 10;
 
@@ -114,7 +114,7 @@ pub fn example() {
         .size(400, 256)
         .text("Test Offset")
         .text_offset(50, 50)
-        .place(&mut window);
+        .place(&window);
 
     {
         let offset_label_clone = offset_label.clone();
@@ -143,7 +143,7 @@ pub fn example() {
     }
 
     // TODO: Don't require this to be placed last to be drawn last
-    menu.place(&mut window);
+    menu.place(&window);
 
     window.exec();
 }

@@ -54,10 +54,10 @@ impl<'a> Drop for WindowRenderer<'a> {
 }
 
 pub struct Window {
-    inner: orbclient::Window,
+    inner: RefCell<orbclient::Window>,
     font: Option<orbfont::Font>,
     pub widgets: RefCell<Vec<Arc<Widget>>>,
-    pub widget_focus: usize,
+    pub widget_focus: Cell<usize>,
     pub bg: Color,
     pub running: Cell<bool>
 }
@@ -65,32 +65,37 @@ pub struct Window {
 impl Window {
     pub fn new(rect: Rect, title: &str) -> Self {
         Window {
-            inner: orbclient::Window::new(rect.x, rect.y, rect.width, rect.height, title).unwrap(),
+            inner: RefCell::new(orbclient::Window::new(rect.x, rect.y, rect.width, rect.height, title).unwrap()),
             font: orbfont::Font::find(None, None, None).ok(),
             widgets: RefCell::new(Vec::new()),
-            widget_focus: 0,
+            widget_focus: Cell::new(0),
             bg: Color::rgb(237, 233, 227),
             running: Cell::new(true),
         }
     }
 
-    pub fn draw(&mut self) {
-        let mut renderer = WindowRenderer::new(&mut self.inner, &self.font);
+    pub fn close(&self) {
+        self.running.set(false);
+    }
+
+    pub fn draw(&self) {
+        let mut inner = self.inner.borrow_mut();
+        let mut renderer = WindowRenderer::new(&mut *inner, &self.font);
         renderer.clear(self.bg);
 
         for i in 0..self.widgets.borrow().len() {
             if let Some(widget) = self.widgets.borrow().get(i) {
-                widget.draw(&mut renderer, self.widget_focus == i);
+                widget.draw(&mut renderer, self.widget_focus.get() == i);
             }
         }
     }
 
-    pub fn exec(&mut self) {
+    pub fn exec(&self) {
         self.draw();
         'event: while self.running.get() {
             let mut events = Vec::new();
 
-            for orbital_event in self.inner.events() {
+            for orbital_event in self.inner.borrow_mut().events() {
                 match orbital_event.to_option() {
                     orbclient::EventOption::Mouse(mouse_event) => {
                         events.push(Event::Mouse {
@@ -131,9 +136,9 @@ impl Window {
             for event in events.iter() {
                 for i in 0..self.widgets.borrow().len() {
                     if let Some(widget) = self.widgets.borrow().get(i) {
-                        if widget.event(*event, self.widget_focus == i, &mut redraw) {
-                            if self.widget_focus != i {
-                                self.widget_focus = i;
+                        if widget.event(*event, self.widget_focus.get() == i, &mut redraw) {
+                            if self.widget_focus.get() != i {
+                                self.widget_focus.set(i);
                                 redraw = true;
                             }
                         }
