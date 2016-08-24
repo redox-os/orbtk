@@ -1,8 +1,22 @@
-use super::Rect;
-use std::cell::Cell;
+use super::{Rect, Widget, Window};
 
-pub trait Place: Sized {
+use std::cell::Cell;
+use std::sync::Arc;
+
+pub trait RectExt {
     fn rect(&self) -> &Cell<Rect>;
+}
+
+pub trait Placeable: Sized + RectExt + Widget {
+    fn place(self, window: &Window) -> Arc<Self> {
+        let arc = Arc::new(self);
+        let mut widgets = window.widgets.borrow_mut();
+
+        widgets.push(arc.clone());
+
+        arc
+    }
+
     fn position(self, x: i32, y: i32) -> Self {
         let mut rect = self.rect().get();
         rect.x = x;
