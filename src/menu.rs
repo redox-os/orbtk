@@ -37,7 +37,6 @@ pub struct Separator {
 
 pub trait Entry: Widget {
     fn text(&mut self) -> String;
-    fn rect(&self) -> &Cell<Rect>;
 }
 
 impl Menu {
@@ -333,10 +332,6 @@ impl Entry for Action {
     fn text(&mut self) -> String {
         self.text.get()
     }
-
-    fn rect(&self) -> &Cell<Rect> {
-        &self.core.rect
-    }
 }
 
 impl Separator {
@@ -376,9 +371,5 @@ impl Widget for Separator {
 impl Entry for Separator {
     fn text(&mut self) -> String {
         String::new()
-    }
-
-    fn rect(&self) -> &Cell<Rect> {
-        &self.core.rect
     }
 }
