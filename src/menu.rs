@@ -42,7 +42,8 @@ pub trait Entry: Widget + RectExt {
 impl Menu {
     pub fn new<S: Into<String>>(name: S) -> Self {
         Menu {
-            core: WidgetCore::new(Color::rgb(220, 222, 227), Color::black()),
+            core: WidgetCore::new()
+                    .bg(Color::rgb(220, 222, 227)),
             text: CloneCell::new(name.into()),
             bg_pressed: Color::rgb(203, 205, 210),
             text_offset: Point::default(),
@@ -221,7 +222,8 @@ impl Widget for Menu {
 impl Action {
     pub fn new<S: Into<String>>(text: S) -> Self {
         Action {
-            core: WidgetCore::new(Color::rgb(220, 222, 227), Color::black()),
+            core: WidgetCore::new()
+                    .bg(Color::rgb(220, 222, 227)),
             text: CloneCell::new(text.into()),
             icon: None,
             bg_pressed: Color::rgb(203, 205, 210),
@@ -343,7 +345,8 @@ impl Entry for Action {
 impl Separator {
     pub fn new() -> Self {
         Separator {
-            core: WidgetCore::new(Color::rgb(220, 222, 227), Color::black()),
+            core: WidgetCore::new()
+                    .bg(Color::rgb(220, 222, 227)),
         }
     }
 }

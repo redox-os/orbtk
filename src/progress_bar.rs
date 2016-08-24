@@ -18,7 +18,8 @@ pub struct ProgressBar {
 impl ProgressBar {
     pub fn new() -> Self {
         ProgressBar {
-            core: WidgetCore::new(Color::white(), Color::rgb(65, 139, 212)),
+            core: WidgetCore::new()
+                    .fg(Color::rgb(65, 139, 212)),
             value: Cell::new(0),
             minimum: 0,
             maximum: 100,

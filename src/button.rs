@@ -17,7 +17,8 @@ pub struct Button {
 impl Button {
     pub fn new() -> Self {
         Button {
-            core: WidgetCore::new(Color::rgb(220, 222, 227), Color::black()),
+            core: WidgetCore::new()
+                    .bg(Color::rgb(220, 222, 227)),
             text: CloneCell::new(String::new()),
             bg_pressed: Color::rgb(203, 205, 210),
             text_offset: Point::default(),

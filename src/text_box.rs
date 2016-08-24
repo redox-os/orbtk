@@ -32,7 +32,7 @@ pub struct TextBox {
 impl TextBox {
     pub fn new() -> Self {
         TextBox {
-            core: WidgetCore::new(Color::white(), Color::black()),
+            core: WidgetCore::new(),
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
             fg_cursor: Color::gray(),

@@ -16,7 +16,8 @@ pub struct Label {
 impl Label {
     pub fn new() -> Self {
         Label {
-            core: WidgetCore::new(Color::rgb(237, 233, 227), Color::black()),
+            core: WidgetCore::new()
+                    .bg(Color::rgb(237, 233, 227)),
             text: CloneCell::new(String::new()),
             text_offset: Point::default(),
             click_callback: None,
