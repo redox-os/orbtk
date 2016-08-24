@@ -1,4 +1,4 @@
-use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, WidgetPlace};
+use super::{CloneCell, Color, Event, Placeable, Point, Rect, RectExt, Renderer, Widget, WidgetCore};
 use super::callback::Click;
 use super::cell::CheckSet;
 
@@ -51,13 +51,13 @@ impl Click for Button {
     }
 }
 
-impl Place for Button {
+impl RectExt for Button {
     fn rect(&self) -> &Cell<Rect> {
         &self.core.rect
     }
 }
 
-impl WidgetPlace for Button {}
+impl Placeable for Button {}
 
 impl Widget for Button {
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {

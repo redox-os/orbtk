@@ -8,13 +8,13 @@ pub use color::Color;
 pub use event::Event;
 pub use label::Label;
 pub use menu::{Menu, Action};
-pub use place::Place;
+pub use place::{RectExt, Placeable};
 pub use point::Point;
 pub use progress_bar::ProgressBar;
 pub use rect::Rect;
 pub use renderer::Renderer;
 pub use text_box::TextBox;
-pub use widget::{Widget, WidgetCore, WidgetPlace};
+pub use widget::{Widget, WidgetCore};
 pub use window::Window;
 
 pub mod button;

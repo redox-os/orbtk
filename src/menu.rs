@@ -2,7 +2,7 @@ extern crate orbimage;
 
 use self::orbimage::Image;
 
-use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, WidgetPlace};
+use super::{CloneCell, Color, Event, Placeable, Point, Rect, RectExt, Renderer, Widget, WidgetCore};
 use super::callback::Click;
 use super::cell::CheckSet;
 
@@ -35,7 +35,7 @@ pub struct Separator {
     core: WidgetCore,
 }
 
-pub trait Entry: Widget {
+pub trait Entry: Widget + RectExt {
     fn text(&mut self) -> String;
 }
 
@@ -122,13 +122,13 @@ impl Click for Menu {
     }
 }
 
-impl Place for Menu {
+impl RectExt for Menu {
     fn rect(&self) -> &Cell<Rect> {
         &self.core.rect
     }
 }
 
-impl WidgetPlace for Menu {}
+impl Placeable for Menu {}
 
 impl Widget for Menu {
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
@@ -328,6 +328,12 @@ impl Widget for Action {
     }
 }
 
+impl RectExt for Action {
+    fn rect(&self) -> &Cell<Rect> {
+        &self.core.rect
+    }
+}
+
 impl Entry for Action {
     fn text(&mut self) -> String {
         self.text.get()
@@ -365,6 +371,12 @@ impl Widget for Separator {
             _ => (),
         }
         ignore_event
+    }
+}
+
+impl RectExt for Separator {
+    fn rect(&self) -> &Cell<Rect> {
+        &self.core.rect
     }
 }
 

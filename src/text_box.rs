@@ -1,4 +1,4 @@
-use super::{CloneCell, Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, WidgetPlace};
+use super::{CloneCell, Color, Event, Placeable, Point, Rect, RectExt, Renderer, Widget, WidgetCore};
 use super::callback::{Click, Enter};
 use super::cell::CheckSet;
 
@@ -78,13 +78,13 @@ impl Enter for TextBox {
     }
 }
 
-impl Place for TextBox {
+impl RectExt for TextBox {
     fn rect(&self) -> &Cell<Rect> {
         &self.core.rect
     }
 }
 
-impl WidgetPlace for TextBox {}
+impl Placeable for TextBox {}
 
 impl Widget for TextBox {
     fn draw(&self, renderer: &mut Renderer, focused: bool) {
