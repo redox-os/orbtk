@@ -43,7 +43,7 @@ pub trait Entry: Widget {
 impl Menu {
     pub fn new<S: Into<String>>(name: S) -> Self {
         Menu {
-            core: WidgetCore::new(Color::rgb(220, 222, 227), Color::rgb(0, 0, 0)),
+            core: WidgetCore::new(Color::rgb(220, 222, 227), Color::black()),
             text: CloneCell::new(name.into()),
             bg_pressed: Color::rgb(203, 205, 210),
             text_offset: Point::default(),
@@ -222,7 +222,7 @@ impl Widget for Menu {
 impl Action {
     pub fn new<S: Into<String>>(text: S) -> Self {
         Action {
-            core: WidgetCore::new(Color::rgb(220, 222, 227), Color::rgb(0, 0, 0)),
+            core: WidgetCore::new(Color::rgb(220, 222, 227), Color::black()),
             text: CloneCell::new(text.into()),
             icon: None,
             bg_pressed: Color::rgb(203, 205, 210),
@@ -342,7 +342,7 @@ impl Entry for Action {
 impl Separator {
     pub fn new() -> Self {
         Separator {
-            core: WidgetCore::new(Color::rgb(220, 222, 227), Color::rgb(0, 0, 0)),
+            core: WidgetCore::new(Color::rgb(220, 222, 227), Color::black()),
         }
     }
 }
