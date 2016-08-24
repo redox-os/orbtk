@@ -10,12 +10,22 @@ pub struct WidgetCore {
 }
 
 impl WidgetCore {
-    pub fn new(bg: Color, fg: Color) -> Self {
+    pub fn new() -> Self {
         WidgetCore {
             rect: Cell::new(Rect::default()),
-            bg: bg,
-            fg: fg,
+            bg: Color::white(),
+            fg: Color::black(),
         }
+    }
+
+    pub fn bg(mut self, color: Color) -> Self {
+        self.bg = color;
+        self
+    }
+
+    pub fn fg(mut self, color: Color) -> Self {
+        self.fg = color;
+        self
     }
 }
 
