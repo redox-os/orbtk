@@ -8,7 +8,7 @@ pub use color::Color;
 pub use event::Event;
 pub use label::Label;
 pub use menu::{Menu, Action};
-pub use place::{RectExt, Placeable};
+pub use place::Placeable;
 pub use point::Point;
 pub use progress_bar::ProgressBar;
 pub use rect::Rect;

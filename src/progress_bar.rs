@@ -1,4 +1,4 @@
-use super::{Color, Event, Placeable, Point, Rect, RectExt, Renderer, Widget, WidgetCore};
+use super::{Color, Event, Placeable, Point, Rect, Renderer, Widget, WidgetCore};
 use super::callback::Click;
 use super::cell::CheckSet;
 
@@ -48,15 +48,13 @@ impl Click for ProgressBar {
     }
 }
 
-impl RectExt for ProgressBar {
-    fn rect(&self) -> &Cell<Rect> {
-        &self.core.rect
-    }
-}
-
 impl Placeable for ProgressBar {}
 
 impl Widget for ProgressBar {
+    fn rect(&self) -> &Cell<Rect> {
+        &self.core.rect
+    }
+
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.core.rect.get();
         renderer.rect(rect, self.core.bg);
