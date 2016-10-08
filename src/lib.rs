@@ -4,6 +4,7 @@
 
 pub use button::Button;
 pub use cell::CloneCell;
+pub use canvas::Canvas;
 pub use color::Color;
 pub use event::Event;
 pub use label::Label;
@@ -18,6 +19,7 @@ pub use widget::{Widget, WidgetCore, WidgetPlace};
 pub use window::Window;
 
 pub mod button;
+pub mod canvas;
 pub mod cell;
 pub mod color;
 pub mod event;
