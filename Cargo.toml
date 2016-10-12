@@ -2,7 +2,7 @@
 name = "orbtk"
 description = "The Orbital Widget Toolkit"
 repository = "https://github.com/redox-os/orbtk"
-version = "0.1.4"
+version = "0.1.5"
 license-file = "LICENSE"
 readme = "README.md"
 authors = ["Jeremy Soller <jackpot51@gmail.com>"]
@@ -18,4 +18,4 @@ path = "src/example.rs"
 [dependencies]
 orbclient = "0.1"
 orbfont = "0.1"
-orbimage = { git = "https://github.com/redox-os/orbimage.git" }
+orbimage = "0.1"
