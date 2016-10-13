@@ -40,12 +40,49 @@ impl Canvas {
         let rect = self.rect().get();
         if let Some(color_ref) = self.data.borrow_mut().get_mut((point.y*rect.width as i32 + point.x) as usize) {
             *color_ref = color;
-        }
+        } 
     }
 
-    /*pub fn line(&self, start: Point, end: Point, color: Color) {
-        unimplemented!()
-    }*/
+    pub fn line(&self, start: Point, end: Point, color: Color) {
+        let x0 = start.x;
+        let y0 = start.y;
+        let x1 = end.x;
+        let y1 = end.y;
+
+        let dx = (x1 - x0).abs();
+        let dy = (y1 - y0).abs();
+
+        let (mut x, mut y) = (x0, y0);
+
+        let sx = if x0 > x1 { -1 } else { 1 };
+        let sy = if y0 > y1 { -1 } else { 1 };
+
+        if dx > dy {
+            let mut err = dx as f32 / 2.0;
+            while x != x1 {
+                self.pixel(Point::new(x, y), color);
+                err -= dy as f32;
+                if err < 0.0 {
+                    y += sy;
+                    err += dx as f32;
+                }
+                x += sx;
+            }
+        } else {
+            let mut err = dy as f32 / 2.0;
+            while y != y1 {
+                self.pixel(Point::new(x, y), color);
+                err -= dx as f32;
+                if err < 0.0 {
+                    x += sx;
+                    err += dy as f32;
+                }
+                y += sy;
+            }
+        }
+
+        self.pixel(Point::new(x, y), color);
+    }
 }
 
 impl Click for Canvas {
@@ -61,7 +98,22 @@ impl Click for Canvas {
     }
 }
 
-impl Placeable for Canvas {}
+impl Placeable for Canvas {
+    // override default implementation because data 
+    // must be initialized to proper width and height.
+    fn size(self, width: u32, height: u32) -> Self {
+        *(self.data.borrow_mut()) = vec![self.core.bg; (width*height) as usize];
+
+        // code below should be the same as default 
+        // Place::size() implementation
+        let mut rect = self.rect().get();
+        rect.width = width;
+        rect.height = height;
+        self.rect().set(rect);
+
+        self
+    }
+}
 
 impl Widget for Canvas {
     fn rect(&self) -> &Cell<Rect> {
