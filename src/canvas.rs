@@ -1,4 +1,4 @@
-use super::{Color, Event, Place, Point, Rect, Renderer, Widget, WidgetCore, WidgetPlace};
+use super::{Color, Event, Placeable, Point, Rect, Renderer, Widget, WidgetCore};
 use super::callback::{Click};
 
 use std::cell::{Cell, RefCell};
@@ -13,7 +13,7 @@ pub struct Canvas {
 impl Canvas {
     pub fn new() -> Self {
         Canvas {
-            core: WidgetCore::new(Color::white(), Color::black()),
+            core: WidgetCore::new().bg(Color::white()).fg(Color::black()),
             data: RefCell::new(vec![]),
             click_callback: None
         }
@@ -21,12 +21,12 @@ impl Canvas {
 
     pub fn clear(&self, color: Color) {
         let rect = self.rect().get();
-        
+
         *(self.data.borrow_mut()) = vec![color; (rect.width*rect.height) as usize];
     }
 
     // TODO(ca1ek): implement the commented out functions,
-    // I would keep them uncommented, but the lint 
+    // I would keep them uncommented, but the lint
     // level disallows this.
     /*pub fn char(&self, pos: Point, c: char, color: Color) {
         unimplemented!()
@@ -40,7 +40,7 @@ impl Canvas {
         let rect = self.rect().get();
         if let Some(color_ref) = self.data.borrow_mut().get_mut((point.y*rect.width as i32 + point.x) as usize) {
             *color_ref = color;
-        } 
+        }
     }
 
     /*pub fn line(&self, start: Point, end: Point, color: Color) {
@@ -61,30 +61,13 @@ impl Click for Canvas {
     }
 }
 
-impl Place for Canvas {
+impl Placeable for Canvas {}
+
+impl Widget for Canvas {
     fn rect(&self) -> &Cell<Rect> {
         &self.core.rect
     }
 
-    // override default implementation because data 
-    // must be initialized to proper width and height.
-    fn size(self, width: u32, height: u32) -> Self {
-        *(self.data.borrow_mut()) = vec![self.core.bg; (width*height) as usize];
-
-        // code below should be the same as default 
-        // Place::size() implementation
-        let mut rect = self.rect().get();
-        rect.width = width;
-        rect.height = height;
-        self.rect().set(rect);
-
-        self
-    }
-}
-
-impl WidgetPlace for Canvas {}
-
-impl Widget for Canvas {
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.core.rect.get();
         renderer.rect(rect, self.core.bg);
@@ -113,7 +96,7 @@ impl Widget for Canvas {
                     let click_point: Point = point - rect.point();
                     self.emit_click(click_point);
                     *redraw = true;
-                } 
+                }
             }
             _ => (),
         }
