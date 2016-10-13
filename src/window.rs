@@ -38,6 +38,11 @@ impl<'a> Renderer for WindowRenderer<'a> {
                         orbclient::Color { data: color.data });
     }
 
+    fn pixel(&mut self, point: Point, color: Color) {
+        self.inner.pixel(point.x, point.y,
+                         orbclient::Color { data: color.data });
+    }
+
     fn line(&mut self, start: Point, end: Point, color: Color) {
         self.inner.line(start.x,
                         start.y,
