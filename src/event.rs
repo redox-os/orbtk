@@ -2,6 +2,8 @@ use super::Point;
 
 #[derive(Copy, Clone, Debug)]
 pub enum Event {
+    Init,
+
     Mouse {
         point: Point,
         left_button: bool,

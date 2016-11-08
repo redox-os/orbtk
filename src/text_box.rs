@@ -2,7 +2,7 @@ use super::{CloneCell, Color, Event, Placeable, Point, Rect, Renderer, Widget, W
 use super::callback::{Click, Enter};
 use super::cell::CheckSet;
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::cmp::min;
 use std::ops::Deref;
 use std::sync::Arc;
@@ -24,8 +24,9 @@ pub struct TextBox {
     pub text: CloneCell<String>,
     pub text_i: Cell<usize>,
     pub fg_cursor: Color,
-    click_callback: Option<Arc<Fn(&TextBox, Point)>>,
-    enter_callback: Option<Arc<Fn(&TextBox)>>,
+    pub grab_focus: Cell<bool>,
+    pub on_click: RefCell<Option<Arc<Fn(&TextBox, Point)>>>,
+    pub on_enter: RefCell<Option<Arc<Fn(&TextBox)>>>,
     pressed: Cell<bool>,
 }
 
@@ -36,10 +37,16 @@ impl TextBox {
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
             fg_cursor: Color::gray(),
-            click_callback: None,
-            enter_callback: None,
+            on_click: RefCell::new(None),
+            on_enter: RefCell::new(None),
+            grab_focus: Cell::new(false),
             pressed: Cell::new(false),
         }
+    }
+
+    pub fn grab_focus(self, grab_focus: bool) -> Self {
+        self.grab_focus.set(grab_focus);
+        self
     }
 
     pub fn text<S: Into<String>>(self, text: S) -> Self {
@@ -52,13 +59,13 @@ impl TextBox {
 
 impl Click for TextBox {
     fn emit_click(&self, point: Point) {
-        if let Some(ref click_callback) = self.click_callback {
-            click_callback(self, point);
+        if let Some(ref on_click) = *self.on_click.borrow() {
+            on_click(self, point);
         }
     }
 
-    fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.click_callback = Some(Arc::new(func));
+    fn on_click<T: Fn(&Self, Point) + 'static>(self, func: T) -> Self {
+        *self.on_click.borrow_mut() = Some(Arc::new(func));
 
         self
     }
@@ -66,13 +73,13 @@ impl Click for TextBox {
 
 impl Enter for TextBox {
     fn emit_enter(&self) {
-        if let Some(ref enter_callback) = self.enter_callback {
-            enter_callback(self)
+        if let Some(ref on_enter) = *self.on_enter.borrow() {
+            on_enter(self)
         }
     }
 
-    fn on_enter<T: Fn(&Self) + 'static>(mut self, func: T) -> Self {
-        self.enter_callback = Some(Arc::new(func));
+    fn on_enter<T: Fn(&Self) + 'static>(self, func: T) -> Self {
+        *self.on_enter.borrow_mut() = Some(Arc::new(func));
 
         self
     }
@@ -226,7 +233,7 @@ impl Widget for TextBox {
             }
             Event::Enter => {
                 if focused {
-                    if self.enter_callback.is_some() {
+                    if self.on_enter.borrow().is_some() {
                         self.emit_enter();
                     } else {
                         let mut text = self.text.borrow_mut();
@@ -385,6 +392,11 @@ impl Widget for TextBox {
                 }
             }
             _ => (),
+        }
+
+        if self.grab_focus.check_set(false) {
+            focused = true;
+            *redraw = true;
         }
 
         focused

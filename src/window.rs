@@ -96,9 +96,29 @@ impl Window {
     }
 
     pub fn exec(&self) {
-        self.draw();
+        let mut events = Vec::new();
+        events.push(Event::Init);
+
+        let mut redraw = true;
+
         'event: while self.running.get() {
-            let mut events = Vec::new();
+            for event in events.drain(..) {
+                for i in 0..self.widgets.borrow().len() {
+                    if let Some(widget) = self.widgets.borrow().get(i) {
+                        if widget.event(event, self.widget_focus.get() == i, &mut redraw) {
+                            if self.widget_focus.get() != i {
+                                self.widget_focus.set(i);
+                                redraw = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if redraw {
+                self.draw();
+                redraw = false;
+            }
 
             for orbital_event in self.inner.borrow_mut().events() {
                 match orbital_event.to_option() {
@@ -135,24 +155,6 @@ impl Window {
                     orbclient::EventOption::Quit(_quit_event) => break 'event,
                     _ => (),
                 };
-            }
-
-            let mut redraw = false;
-            for event in events.iter() {
-                for i in 0..self.widgets.borrow().len() {
-                    if let Some(widget) = self.widgets.borrow().get(i) {
-                        if widget.event(*event, self.widget_focus.get() == i, &mut redraw) {
-                            if self.widget_focus.get() != i {
-                                self.widget_focus.set(i);
-                                redraw = true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if redraw {
-                self.draw();
             }
         }
     }
