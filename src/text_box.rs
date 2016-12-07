@@ -1,8 +1,8 @@
 use super::{CloneCell, Color, Event, Placeable, Point, Rect, Renderer, Widget, WidgetCore};
-use super::callback::{Click, Enter};
+use super::callback::{Click, Enter, EventFilter};
 use super::cell::CheckSet;
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::cmp::min;
 use std::ops::Deref;
 use std::sync::Arc;
@@ -24,8 +24,19 @@ pub struct TextBox {
     pub text: CloneCell<String>,
     pub text_i: Cell<usize>,
     pub fg_cursor: Color,
-    click_callback: Option<Arc<Fn(&TextBox, Point)>>,
-    enter_callback: Option<Arc<Fn(&TextBox)>>,
+    pub mask_char: Cell<Option<char>>,
+    pub grab_focus: Cell<bool>,
+    pub on_click: RefCell<Option<Arc<Fn(&TextBox, Point)>>>,
+    pub on_enter: RefCell<Option<Arc<Fn(&TextBox)>>>,
+    /// If event_filter is defined, all of the events will go trough it
+    /// Instead of the default behavior. This allows defining fields that
+    /// ex. will only accept numbers and ignore all else, or add some
+    /// special behavior for some keys.
+    ///
+    /// The closure should return None if the event was manually handled,
+    /// or should return the event it received if it wants the default
+    /// handler deal with it.
+    pub event_filter: RefCell<Option<Arc<Fn(&TextBox, Event, &mut bool, &mut bool) -> Option<Event>>>>,
     pressed: Cell<bool>,
 }
 
@@ -36,10 +47,23 @@ impl TextBox {
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
             fg_cursor: Color::gray(),
-            click_callback: None,
-            enter_callback: None,
+            mask_char: Cell::new(None),
+            grab_focus: Cell::new(false),
+            on_click: RefCell::new(None),
+            on_enter: RefCell::new(None),
+            event_filter: RefCell::new(None),
             pressed: Cell::new(false),
         }
+    }
+
+    pub fn grab_focus(self, grab_focus: bool) -> Self {
+        self.grab_focus.set(grab_focus);
+        self
+    }
+
+    pub fn mask_char(self, mask_char: Option<char>) -> Self {
+        self.mask_char.set(mask_char);
+        self
     }
 
     pub fn text<S: Into<String>>(self, text: S) -> Self {
@@ -52,13 +76,13 @@ impl TextBox {
 
 impl Click for TextBox {
     fn emit_click(&self, point: Point) {
-        if let Some(ref click_callback) = self.click_callback {
-            click_callback(self, point);
+        if let Some(ref on_click) = *self.on_click.borrow() {
+            on_click(self, point);
         }
     }
 
-    fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.click_callback = Some(Arc::new(func));
+    fn on_click<T: Fn(&Self, Point) + 'static>(self, func: T) -> Self {
+        *self.on_click.borrow_mut() = Some(Arc::new(func));
 
         self
     }
@@ -66,19 +90,35 @@ impl Click for TextBox {
 
 impl Enter for TextBox {
     fn emit_enter(&self) {
-        if let Some(ref enter_callback) = self.enter_callback {
-            enter_callback(self)
+        if let Some(ref on_enter) = *self.on_enter.borrow() {
+            on_enter(self)
         }
     }
 
-    fn on_enter<T: Fn(&Self) + 'static>(mut self, func: T) -> Self {
-        self.enter_callback = Some(Arc::new(func));
+    fn on_enter<T: Fn(&Self) + 'static>(self, func: T) -> Self {
+        *self.on_enter.borrow_mut() = Some(Arc::new(func));
 
         self
     }
 }
 
 impl Placeable for TextBox {}
+
+impl EventFilter for TextBox {
+    fn handle_event(&self, event: Event, focused: &mut bool, redraw: &mut bool) -> Option<Event> {
+        if let Some(ref event_filter) = *self.event_filter.borrow() {
+            event_filter(self, event, focused, redraw)
+        } else {
+            Some(event)
+        }
+    }
+
+    fn event_filter<T: Fn(&Self, Event, &mut bool, &mut bool) -> Option<Event> + 'static>(self, func: T) -> Self {
+        *self.event_filter.borrow_mut() = Some(Arc::new(func));
+
+        self
+    }
+}
 
 impl Widget for TextBox {
     fn rect(&self) -> &Cell<Rect> {
@@ -116,7 +156,11 @@ impl Widget for TextBox {
                     if i == text_i && focused {
                         renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
                     }
-                    renderer.char(Point::new(x, y) + rect.point(), c, self.core.fg);
+                    if let Some(mask_c) = self.mask_char.get() {
+                        renderer.char(Point::new(x, y) + rect.point(), mask_c, self.core.fg);
+                    } else {
+                        renderer.char(Point::new(x, y) + rect.point(), c, self.core.fg);
+                    }
                 }
 
                 x += 8;
@@ -130,263 +174,270 @@ impl Widget for TextBox {
     }
 
     fn event(&self, event: Event, mut focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse { point, left_button, .. } => {
-                let mut click = false;
+        // If the event wasn't handled by the custom handler.
+        if let Some(event) = self.handle_event(event, &mut focused, redraw) {
+            match event {
+                Event::Mouse { point, left_button, .. } => {
+                    let mut click = false;
 
-                let rect = self.core.rect.get();
-                if rect.contains(point) {
-                    if left_button {
-                        if self.pressed.check_set(true) {
-                            *redraw = true;
+                    let rect = self.core.rect.get();
+                    if rect.contains(point) {
+                        if left_button {
+                            if self.pressed.check_set(true) {
+                                *redraw = true;
+                            }
+                        } else {
+                            if self.pressed.check_set(false) {
+                                click = true;
+                                *redraw = true;
+                            }
                         }
                     } else {
-                        if self.pressed.check_set(false) {
-                            click = true;
-                            *redraw = true;
+                        if ! left_button {
+                            if self.pressed.check_set(false) {
+                                *redraw = true;
+                            }
                         }
                     }
-                } else {
-                    if ! left_button {
-                        if self.pressed.check_set(false) {
-                            *redraw = true;
-                        }
-                    }
-                }
 
-                if click {
-                    focused = true;
+                    if click {
+                        focused = true;
 
-                    let click_point: Point = point - rect.point();
-                    {
-                        let text = self.text.borrow();
+                        let click_point: Point = point - rect.point();
+                        {
+                            let text = self.text.borrow();
 
-                        let mut new_text_i = None;
+                            let mut new_text_i = None;
 
-                        let mut x = 0;
-                        let mut y = 0;
-                        for (i, c) in text.char_indices() {
-                            if c == '\n' {
-                                if x + 8 <= rect.width as i32 && click_point.x >= x &&
-                                   y + 16 <= rect.height as i32 &&
-                                   click_point.y >= y &&
-                                   click_point.y < y + 16 {
-                                    new_text_i = Some(i);
-                                    break;
+                            let mut x = 0;
+                            let mut y = 0;
+                            for (i, c) in text.char_indices() {
+                                if c == '\n' {
+                                    if x + 8 <= rect.width as i32 && click_point.x >= x &&
+                                    y + 16 <= rect.height as i32 &&
+                                    click_point.y >= y &&
+                                    click_point.y < y + 16 {
+                                        new_text_i = Some(i);
+                                        break;
+                                    }
+                                    x = 0;
+                                    y += 16;
+                                } else if c == '\t' {
+                                    if x + 8 * 4 <= rect.width as i32 && click_point.x >= x &&
+                                    click_point.x < x + 8 * 4 &&
+                                    y + 16 <= rect.height as i32 &&
+                                    click_point.y >= y &&
+                                    click_point.y < y + 16 {
+                                        new_text_i = Some(i);
+                                        break;
+                                    }
+                                    x += 8 * 4;
+                                } else {
+                                    if x + 8 <= rect.width as i32 && click_point.x >= x &&
+                                    click_point.x < x + 8 &&
+                                    y + 16 <= rect.height as i32 &&
+                                    click_point.y >= y &&
+                                    click_point.y < y + 16 {
+                                        new_text_i = Some(i);
+                                        break;
+                                    }
+                                    x += 8;
                                 }
-                                x = 0;
-                                y += 16;
-                            } else if c == '\t' {
-                                if x + 8 * 4 <= rect.width as i32 && click_point.x >= x &&
-                                   click_point.x < x + 8 * 4 &&
-                                   y + 16 <= rect.height as i32 &&
-                                   click_point.y >= y &&
-                                   click_point.y < y + 16 {
-                                    new_text_i = Some(i);
-                                    break;
-                                }
-                                x += 8 * 4;
-                            } else {
-                                if x + 8 <= rect.width as i32 && click_point.x >= x &&
-                                   click_point.x < x + 8 &&
-                                   y + 16 <= rect.height as i32 &&
-                                   click_point.y >= y &&
-                                   click_point.y < y + 16 {
-                                    new_text_i = Some(i);
-                                    break;
-                                }
-                                x += 8;
+                            }
+
+                            if new_text_i.is_none() && x + 8 <= rect.width as i32 &&
+                            click_point.x >= x &&
+                            y + 16 <= rect.height as i32 &&
+                            click_point.y >= y ||
+                            click_point.y >= y + 16 {
+                                new_text_i = Some(text.len());
+                            }
+
+                            if let Some(text_i) = new_text_i {
+                                self.text_i.set(text_i);
                             }
                         }
 
-                        if new_text_i.is_none() && x + 8 <= rect.width as i32 &&
-                           click_point.x >= x &&
-                           y + 16 <= rect.height as i32 &&
-                           click_point.y >= y ||
-                           click_point.y >= y + 16 {
-                            new_text_i = Some(text.len());
-                        }
-
-                        if let Some(text_i) = new_text_i {
-                            self.text_i.set(text_i);
-                        }
+                        self.emit_click(click_point);
                     }
-
-                    self.emit_click(click_point);
                 }
-            }
-            Event::Text { c } => {
-                if focused {
-                    let mut text = self.text.borrow_mut();
-                    let text_i = self.text_i.get();
-                    text.insert(text_i, c);
-                    self.text_i.set(next_i(text.deref(), text_i));
-                    *redraw = true;
-                }
-            }
-            Event::Enter => {
-                if focused {
-                    if self.enter_callback.is_some() {
-                        self.emit_enter();
-                    } else {
+                Event::Text { c } => {
+                    if focused {
                         let mut text = self.text.borrow_mut();
                         let text_i = self.text_i.get();
-                        text.insert(text_i, '\n');
+                        text.insert(text_i, c);
                         self.text_i.set(next_i(text.deref(), text_i));
+                        *redraw = true;
                     }
-                    *redraw = true;
                 }
-            }
-            Event::Backspace => {
-                if focused {
-                    let mut text = self.text.borrow_mut();
-                    let mut text_i = self.text_i.get();
-                    if text_i > 0 {
-                        text_i = prev_i(text.deref(), text_i);
+                Event::Enter => {
+                    if focused {
+                        if self.on_enter.borrow().is_some() {
+                            self.emit_enter();
+                        } else {
+                            let mut text = self.text.borrow_mut();
+                            let text_i = self.text_i.get();
+                            text.insert(text_i, '\n');
+                            self.text_i.set(next_i(text.deref(), text_i));
+                        }
+                        *redraw = true;
+                    }
+                }
+                Event::Backspace => {
+                    if focused {
+                        let mut text = self.text.borrow_mut();
+                        let mut text_i = self.text_i.get();
+                        if text_i > 0 {
+                            text_i = prev_i(text.deref(), text_i);
+                            if text_i < text.len() {
+                                text.remove(text_i);
+                                self.text_i.set(min(text_i, text.len()));
+                            }
+                        }
+                        *redraw = true;
+                    }
+                }
+                Event::Delete => {
+                    if focused {
+                        let mut text = self.text.borrow_mut();
+                        let text_i = self.text_i.get();
                         if text_i < text.len() {
                             text.remove(text_i);
                             self.text_i.set(min(text_i, text.len()));
                         }
+                        *redraw = true;
                     }
-                    *redraw = true;
                 }
-            }
-            Event::Delete => {
-                if focused {
-                    let mut text = self.text.borrow_mut();
-                    let text_i = self.text_i.get();
-                    if text_i < text.len() {
-                        text.remove(text_i);
-                        self.text_i.set(min(text_i, text.len()));
+                Event::Home => {
+                    if focused {
+                        let text = self.text.borrow();
+                        let mut text_i = self.text_i.get();
+                        while text_i > 0 {
+                            if text[.. text_i].chars().rev().next() == Some('\n') {
+                                break;
+                            }
+                            text_i = prev_i(text.deref(), text_i);
+                        }
+                        self.text_i.set(text_i);
+                        *redraw = true;
                     }
-                    *redraw = true;
                 }
-            }
-            Event::Home => {
-                if focused {
-                    let text = self.text.borrow();
-                    let mut text_i = self.text_i.get();
-                    while text_i > 0 {
-                        if text[.. text_i].chars().rev().next() == Some('\n') {
-                            break;
+                Event::End => {
+                    if focused {
+                        let text = self.text.borrow();
+                        let mut text_i = self.text_i.get();
+                        while text_i < text.len() {
+                            if text[text_i ..].chars().next() == Some('\n') {
+                                break;
+                            }
+                            text_i = next_i(text.deref(), text_i);
                         }
-                        text_i = prev_i(text.deref(), text_i);
+                        self.text_i.set(text_i);
+                        *redraw = true;
                     }
-                    self.text_i.set(text_i);
-                    *redraw = true;
                 }
-            }
-            Event::End => {
-                if focused {
-                    let text = self.text.borrow();
-                    let mut text_i = self.text_i.get();
-                    while text_i < text.len() {
-                        if text[text_i ..].chars().next() == Some('\n') {
-                            break;
+                Event::UpArrow => {
+                    if focused {
+                        let text = self.text.borrow();
+                        let mut text_i = self.text_i.get();
+
+                        // Count back to last newline
+                        let mut offset = 0;
+                        while text_i > 0 {
+                            let c = text[.. text_i].chars().rev().next();
+                            text_i = prev_i(text.deref(), text_i);
+                            if c == Some('\n') {
+                                break;
+                            }
+                            offset += 1;
                         }
-                        text_i = next_i(text.deref(), text_i);
+
+                        // Go to newline before last newline
+                        while text_i > 0 {
+                            if text[.. text_i].chars().rev().next() == Some('\n') {
+                                break;
+                            }
+                            text_i = prev_i(text.deref(), text_i);
+                        }
+
+                        // Add back offset
+                        while offset > 0 && text_i < text.len() {
+                            if text[text_i ..].chars().next() == Some('\n') {
+                                break;
+                            }
+                            text_i = next_i(text.deref(), text_i);
+                            offset -= 1;
+                        }
+
+                        self.text_i.set(text_i);
+                        *redraw = true;
                     }
-                    self.text_i.set(text_i);
-                    *redraw = true;
                 }
-            }
-            Event::UpArrow => {
-                if focused {
-                    let text = self.text.borrow();
-                    let mut text_i = self.text_i.get();
+                Event::DownArrow => {
+                    if focused {
+                        let text = self.text.borrow();
+                        let mut text_i = self.text_i.get();
 
-                    // Count back to last newline
-                    let mut offset = 0;
-                    while text_i > 0 {
-                        let c = text[.. text_i].chars().rev().next();
-                        text_i = prev_i(text.deref(), text_i);
-                        if c == Some('\n') {
-                            break;
+                        // Count back to last newline
+                        let mut offset = 0;
+                        while text_i > 0 {
+                            if text[.. text_i].chars().rev().next() == Some('\n') {
+                                break;
+                            }
+                            text_i = prev_i(text.deref(), text_i);
+                            offset += 1;
                         }
-                        offset += 1;
-                    }
 
-                    // Go to newline before last newline
-                    while text_i > 0 {
-                        if text[.. text_i].chars().rev().next() == Some('\n') {
-                            break;
+                        // Go to next newline
+                        while text_i < text.len() {
+                            let c = text[text_i ..].chars().next();
+                            text_i = next_i(text.deref(), text_i);
+                            if c == Some('\n') {
+                                break;
+                            }
                         }
-                        text_i = prev_i(text.deref(), text_i);
-                    }
 
-                    // Add back offset
-                    while offset > 0 && text_i < text.len() {
-                        if text[text_i ..].chars().next() == Some('\n') {
-                            break;
+                        // Add back offset
+                        while offset > 0 && text_i < text.len() {
+                            if text[text_i ..].chars().next() == Some('\n') {
+                                break;
+                            }
+                            text_i = next_i(text.deref(), text_i);
+                            offset -= 1;
                         }
-                        text_i = next_i(text.deref(), text_i);
-                        offset -= 1;
-                    }
 
-                    self.text_i.set(text_i);
-                    *redraw = true;
+                        self.text_i.set(text_i);
+                        *redraw = true;
+                    }
                 }
-            }
-            Event::DownArrow => {
-                if focused {
-                    let text = self.text.borrow();
-                    let mut text_i = self.text_i.get();
-
-                    // Count back to last newline
-                    let mut offset = 0;
-                    while text_i > 0 {
-                        if text[.. text_i].chars().rev().next() == Some('\n') {
-                            break;
+                Event::LeftArrow => {
+                    if focused {
+                        let text = self.text.borrow();
+                        let text_i = self.text_i.get();
+                        if text_i > 0 {
+                            self.text_i.set(prev_i(text.deref(), text_i));
                         }
-                        text_i = prev_i(text.deref(), text_i);
-                        offset += 1;
+                        *redraw = true;
                     }
-
-                    // Go to next newline
-                    while text_i < text.len() {
-                        let c = text[text_i ..].chars().next();
-                        text_i = next_i(text.deref(), text_i);
-                        if c == Some('\n') {
-                            break;
+                }
+                Event::RightArrow => {
+                    if focused {
+                        let text = self.text.borrow();
+                        let text_i = self.text_i.get();
+                        if text_i < text.len() {
+                            self.text_i.set(next_i(text.deref(), text_i));
                         }
+                        *redraw = true;
                     }
+                }
+                _ => (),
+            }
 
-                    // Add back offset
-                    while offset > 0 && text_i < text.len() {
-                        if text[text_i ..].chars().next() == Some('\n') {
-                            break;
-                        }
-                        text_i = next_i(text.deref(), text_i);
-                        offset -= 1;
-                    }
-
-                    self.text_i.set(text_i);
-                    *redraw = true;
-                }
+            if self.grab_focus.check_set(false) {
+                focused = true;
+                *redraw = true;
             }
-            Event::LeftArrow => {
-                if focused {
-                    let text = self.text.borrow();
-                    let text_i = self.text_i.get();
-                    if text_i > 0 {
-                        self.text_i.set(prev_i(text.deref(), text_i));
-                    }
-                    *redraw = true;
-                }
-            }
-            Event::RightArrow => {
-                if focused {
-                    let text = self.text.borrow();
-                    let text_i = self.text_i.get();
-                    if text_i < text.len() {
-                        self.text_i.set(next_i(text.deref(), text_i));
-                    }
-                    *redraw = true;
-                }
-            }
-            _ => (),
         }
-
         focused
     }
 }
