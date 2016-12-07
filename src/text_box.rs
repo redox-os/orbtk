@@ -24,13 +24,14 @@ pub struct TextBox {
     pub text: CloneCell<String>,
     pub text_i: Cell<usize>,
     pub fg_cursor: Color,
+    pub mask_char: Cell<Option<char>>,
     pub grab_focus: Cell<bool>,
     pub on_click: RefCell<Option<Arc<Fn(&TextBox, Point)>>>,
     pub on_enter: RefCell<Option<Arc<Fn(&TextBox)>>>,
     /// If event_filter is defined, all of the events will go trough it
     /// Instead of the default behavior. This allows defining fields that
-    /// ex. will only accept numbers and ignore all else, or add some 
-    /// special behavior for some keys. 
+    /// ex. will only accept numbers and ignore all else, or add some
+    /// special behavior for some keys.
     ///
     /// The closure should return None if the event was manually handled,
     /// or should return the event it received if it wants the default
@@ -46,16 +47,22 @@ impl TextBox {
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
             fg_cursor: Color::gray(),
+            mask_char: Cell::new(None),
+            grab_focus: Cell::new(false),
             on_click: RefCell::new(None),
             on_enter: RefCell::new(None),
             event_filter: RefCell::new(None),
-            grab_focus: Cell::new(false),
             pressed: Cell::new(false),
         }
     }
 
     pub fn grab_focus(self, grab_focus: bool) -> Self {
         self.grab_focus.set(grab_focus);
+        self
+    }
+
+    pub fn mask_char(self, mask_char: Option<char>) -> Self {
+        self.mask_char.set(mask_char);
         self
     }
 
@@ -149,7 +156,11 @@ impl Widget for TextBox {
                     if i == text_i && focused {
                         renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
                     }
-                    renderer.char(Point::new(x, y) + rect.point(), c, self.core.fg);
+                    if let Some(mask_c) = self.mask_char.get() {
+                        renderer.char(Point::new(x, y) + rect.point(), mask_c, self.core.fg);
+                    } else {
+                        renderer.char(Point::new(x, y) + rect.point(), c, self.core.fg);
+                    }
                 }
 
                 x += 8;
@@ -164,7 +175,7 @@ impl Widget for TextBox {
 
     fn event(&self, event: Event, mut focused: bool, redraw: &mut bool) -> bool {
         // If the event wasn't handled by the custom handler.
-        if let Some(event) = self.handle_event(event, &mut focused, redraw) {   
+        if let Some(event) = self.handle_event(event, &mut focused, redraw) {
             match event {
                 Event::Mouse { point, left_button, .. } => {
                     let mut click = false;
