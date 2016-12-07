@@ -24,6 +24,7 @@ pub struct TextBox {
     pub text: CloneCell<String>,
     pub text_i: Cell<usize>,
     pub fg_cursor: Color,
+    pub mask_char: Cell<Option<char>>,
     pub grab_focus: Cell<bool>,
     pub on_click: RefCell<Option<Arc<Fn(&TextBox, Point)>>>,
     pub on_enter: RefCell<Option<Arc<Fn(&TextBox)>>>,
@@ -37,15 +38,21 @@ impl TextBox {
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
             fg_cursor: Color::gray(),
+            mask_char: Cell::new(None),
+            grab_focus: Cell::new(false),
             on_click: RefCell::new(None),
             on_enter: RefCell::new(None),
-            grab_focus: Cell::new(false),
             pressed: Cell::new(false),
         }
     }
 
     pub fn grab_focus(self, grab_focus: bool) -> Self {
         self.grab_focus.set(grab_focus);
+        self
+    }
+
+    pub fn mask_char(self, mask_char: Option<char>) -> Self {
+        self.mask_char.set(mask_char);
         self
     }
 
@@ -123,7 +130,11 @@ impl Widget for TextBox {
                     if i == text_i && focused {
                         renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
                     }
-                    renderer.char(Point::new(x, y) + rect.point(), c, self.core.fg);
+                    if let Some(mask_c) = self.mask_char.get() {
+                        renderer.char(Point::new(x, y) + rect.point(), mask_c, self.core.fg);
+                    } else {
+                        renderer.char(Point::new(x, y) + rect.point(), c, self.core.fg);
+                    }
                 }
 
                 x += 8;
