@@ -32,9 +32,10 @@ fn main() {
         .place(&window);
 
     let button = Button::new()
-        .position(x + text_box.core.rect.get().width as i32 + 10, y)
-        .size(48, text_box.core.rect.get().height)
+        .position(x + text_box.core.rect.get().width as i32 + 10 - 2, y - 2)
+        .size(48 + 4, 48)//text_box.core.rect.get().height + 4)
         .text("Update")
+        .text_offset(2, 2)
         .on_click(move |_button: &Button, _point: Point| {
             text_box.emit_enter();
         })

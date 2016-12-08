@@ -30,17 +30,24 @@ impl<'a> Renderer for WindowRenderer<'a> {
         }
     }
 
-    fn rect(&mut self, rect: Rect, color: Color) {
-        self.inner.rect(rect.x,
-                        rect.y,
-                        rect.width,
-                        rect.height,
-                        orbclient::Color { data: color.data });
-    }
-
     fn pixel(&mut self, point: Point, color: Color) {
         self.inner.pixel(point.x, point.y,
                          orbclient::Color { data: color.data });
+    }
+
+    fn arc(&mut self, center: Point, radius: i32, parts: u8, color: Color) {
+        self.inner.arc(center.x,
+                       center.y,
+                       radius,
+                       parts,
+                       orbclient::Color { data: color.data });
+    }
+
+    fn circle(&mut self, center: Point, radius: i32, color: Color) {
+        self.inner.circle(center.x,
+                          center.y,
+                          radius,
+                          orbclient::Color { data: color.data });
     }
 
     fn line(&mut self, start: Point, end: Point, color: Color) {
@@ -48,6 +55,14 @@ impl<'a> Renderer for WindowRenderer<'a> {
                         start.y,
                         end.x,
                         end.y,
+                        orbclient::Color { data: color.data });
+    }
+
+    fn rect(&mut self, rect: Rect, color: Color) {
+        self.inner.rect(rect.x,
+                        rect.y,
+                        rect.width,
+                        rect.height,
                         orbclient::Color { data: color.data });
     }
 }
