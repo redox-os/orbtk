@@ -89,7 +89,7 @@ impl Window {
             font: orbfont::Font::find(None, None, None).ok(),
             widgets: RefCell::new(Vec::new()),
             widget_focus: Cell::new(0),
-            bg: Color::rgb(237, 233, 227),
+            bg: Color::rgb(232, 232, 231),
             running: Cell::new(true),
         }
     }

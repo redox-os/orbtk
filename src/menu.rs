@@ -13,6 +13,7 @@ pub struct Menu {
     pub core: WidgetCore,
     text: CloneCell<String>,
     bg_pressed: Color,
+    fg_border: Color,
     text_offset: Point,
     entries: Vec<Box<Entry>>,
     click_callback: Option<Arc<Fn(&Menu, Point)>>,
@@ -43,9 +44,10 @@ impl Menu {
     pub fn new<S: Into<String>>(name: S) -> Self {
         Menu {
             core: WidgetCore::new()
-                    .bg(Color::rgb(220, 222, 227)),
+                    .bg(Color::rgb(234, 234, 234)),
             text: CloneCell::new(name.into()),
-            bg_pressed: Color::rgb(203, 205, 210),
+            bg_pressed: Color::rgb(210, 210, 208),
+            fg_border: Color::rgb(209, 209, 208),
             text_offset: Point::default(),
             entries: Vec::with_capacity(10),
             click_callback: None,
@@ -153,6 +155,8 @@ impl Widget for Menu {
             }
         }
 
+        renderer.rect(Rect::new(rect.x, rect.y + rect.height as i32 - 1, rect.width, 1), self.fg_border);
+
         if self.activated.get() {
             for entry in self.entries.iter() {
                 entry.draw(renderer, _focused);
@@ -221,10 +225,10 @@ impl Action {
     pub fn new<S: Into<String>>(text: S) -> Self {
         Action {
             core: WidgetCore::new()
-                    .bg(Color::rgb(220, 222, 227)),
+                    .bg(Color::rgb(234, 234, 234)),
             text: CloneCell::new(text.into()),
             icon: None,
-            bg_pressed: Color::rgb(203, 205, 210),
+            bg_pressed: Color::rgb(210, 210, 208),
             text_offset: Point::default(),
             click_callback: None,
             pressed: Cell::new(false),
@@ -342,7 +346,7 @@ impl Separator {
     pub fn new() -> Self {
         Separator {
             core: WidgetCore::new()
-                    .bg(Color::rgb(220, 222, 227)),
+                    .bg(Color::rgb(234, 234, 234)),
         }
     }
 }
