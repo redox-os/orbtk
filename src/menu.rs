@@ -21,17 +21,6 @@ pub struct Menu {
     activated: Cell<bool>,
 }
 
-pub struct Action {
-    core: WidgetCore,
-    text: CloneCell<String>,
-    icon: Option<Image>,
-    bg_pressed: Color,
-    text_offset: Point,
-    click_callback: Option<Arc<Fn(&Action, Point)>>,
-    pressed: Cell<bool>,
-    hover: Cell<bool>,
-}
-
 pub struct Separator {
     core: WidgetCore,
 }
@@ -221,14 +210,25 @@ impl Widget for Menu {
     }
 }
 
+pub struct Action {
+    core: WidgetCore,
+    text: CloneCell<String>,
+    icon: Option<Image>,
+    bg_pressed: Color,
+    text_offset: Point,
+    click_callback: Option<Arc<Fn(&Action, Point)>>,
+    pressed: Cell<bool>,
+    hover: Cell<bool>,
+}
+
 impl Action {
     pub fn new<S: Into<String>>(text: S) -> Self {
         Action {
             core: WidgetCore::new()
-                    .bg(Color::rgb(234, 234, 234)),
+                    .bg(Color::rgb(255, 255, 255)),
             text: CloneCell::new(text.into()),
             icon: None,
-            bg_pressed: Color::rgb(210, 210, 208),
+            bg_pressed: Color::rgb(74, 144, 217),
             text_offset: Point::default(),
             click_callback: None,
             pressed: Cell::new(false),
@@ -269,11 +269,13 @@ impl Widget for Action {
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.core.rect.get();
 
-        if self.hover.get() {
-            renderer.rect(rect, self.bg_pressed);
+        let (bg, fg) = if self.hover.get() {
+            (self.bg_pressed, self.core.bg)
         } else {
-            renderer.rect(rect, self.core.bg);
-        }
+            (self.core.bg, self.core.fg)
+        };
+
+        renderer.rect(rect, bg);
 
         let text = self.text.borrow();
         let mut point = self.text_offset;
@@ -283,7 +285,7 @@ impl Widget for Action {
                 point.y += 16;
             } else {
                 if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point + rect.point(), c, self.core.fg);
+                    renderer.char(point + rect.point(), c, fg);
                 }
                 point.x += 8;
             }
@@ -346,7 +348,7 @@ impl Separator {
     pub fn new() -> Self {
         Separator {
             core: WidgetCore::new()
-                    .bg(Color::rgb(234, 234, 234)),
+                    .bg(Color::rgb(255, 255, 255)),
         }
     }
 }
