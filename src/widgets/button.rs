@@ -8,16 +8,18 @@ use point::Point;
 use rect::Rect;
 use renderer::Renderer;
 use theme::{BUTTON_BACKGROUND, BUTTON_FOREGROUND, BUTTON_SELECTION, BUTTON_BORDER};
-use traits::{Click, Place, Text};
+use traits::{Border, Click, Place, Text};
 use widgets::Widget;
 
 pub struct Button {
     pub rect: Cell<Rect>,
     pub bg: Color,
-    pub fg: Color,
-    pub text: CloneCell<String>,
     pub bg_pressed: Color,
+    pub fg: Color,
     pub fg_border: Color,
+    pub border: Cell<bool>,
+    pub border_radius: Cell<u32>,
+    pub text: CloneCell<String>,
     pub text_offset: Cell<Point>,
     click_callback: RefCell<Option<Arc<Fn(&Button, Point)>>>,
     pressed: Cell<bool>,
@@ -28,14 +30,28 @@ impl Button {
         Arc::new(Button {
             rect: Cell::new(Rect::default()),
             bg: BUTTON_BACKGROUND,
-            fg: BUTTON_FOREGROUND,
-            text: CloneCell::new(String::new()),
             bg_pressed: BUTTON_SELECTION,
+            fg: BUTTON_FOREGROUND,
             fg_border: BUTTON_BORDER,
+            border: Cell::new(true),
+            border_radius: Cell::new(0),
+            text: CloneCell::new(String::new()),
             text_offset: Cell::new(Point::default()),
             click_callback: RefCell::new(None),
             pressed: Cell::new(false),
         })
+    }
+}
+
+impl Border for Button {
+    fn border(&self, enabled: bool) -> &Self {
+        self.border.set(enabled);
+        self
+    }
+
+    fn border_radius(&self, radius: u32) -> &Self {
+        self.border_radius.set(radius);
+        self
     }
 }
 
@@ -85,11 +101,11 @@ impl Widget for Button {
             self.bg
         };
 
-        // Border radius
-        let b_r = 2;
-
-        renderer.rounded_rect(rect, -b_r, bg);
-        renderer.rounded_rect(rect, b_r, self.fg_border);
+        let b_r = self.border_radius.get();
+        renderer.rounded_rect(rect, b_r, true, bg);
+        if self.border.get() {
+            renderer.rounded_rect(rect, b_r, false, self.fg_border);
+        }
 
         let text = self.text.borrow();
 

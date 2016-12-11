@@ -33,10 +33,10 @@ fn main() {
     window.add(&text_box);
 
     let button = Button::new();
-    button.position(x + text_box.rect.get().width as i32 + 10 - 8, y - 4)
-        .size(48 + 8, text_box.rect.get().height + 8)
+    button.position(x + text_box.rect.get().width as i32 + 8, y)
+        .size(48 + 2, text_box.rect.get().height)
         .text("Update")
-        .text_offset(4, 4)
+        .text_offset(1, 1)
         .on_click(move |_button: &Button, _point: Point| {
             text_box.emit_enter();
         });

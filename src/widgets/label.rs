@@ -7,14 +7,17 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use renderer::Renderer;
-use theme::{LABEL_BACKGROUND, LABEL_FOREGROUND};
-use traits::{Click, Place, Text};
+use theme::{LABEL_BACKGROUND, LABEL_BORDER, LABEL_FOREGROUND};
+use traits::{Border, Click, Place, Text};
 use widgets::Widget;
 
 pub struct Label {
     pub rect: Cell<Rect>,
     pub bg: Color,
     pub fg: Color,
+    pub fg_border: Color,
+    pub border: Cell<bool>,
+    pub border_radius: Cell<u32>,
     pub text: CloneCell<String>,
     pub text_offset: Cell<Point>,
     click_callback: RefCell<Option<Arc<Fn(&Label, Point)>>>,
@@ -27,11 +30,26 @@ impl Label {
             rect: Cell::new(Rect::default()),
             bg: LABEL_BACKGROUND,
             fg: LABEL_FOREGROUND,
+            fg_border: LABEL_BORDER,
+            border: Cell::new(false),
+            border_radius: Cell::new(0),
             text: CloneCell::new(String::new()),
             text_offset: Cell::new(Point::default()),
             click_callback: RefCell::new(None),
             pressed: Cell::new(false),
         })
+    }
+}
+
+impl Border for Label {
+    fn border(&self, enabled: bool) -> &Self {
+        self.border.set(enabled);
+        self
+    }
+
+    fn border_radius(&self, radius: u32) -> &Self {
+        self.border_radius.set(radius);
+        self
     }
 }
 
@@ -69,7 +87,12 @@ impl Widget for Label {
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.rect.get();
-        renderer.rect(rect, self.bg);
+
+        let b_r = self.border_radius.get();
+        renderer.rounded_rect(rect, b_r, true, self.bg);
+        if self.border.get() {
+            renderer.rounded_rect(rect, b_r, false, self.fg_border);
+        }
 
         let text = self.text.borrow();
 

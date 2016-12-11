@@ -3,6 +3,7 @@ use orbclient::Color;
 pub static WINDOW_BACKGROUND: Color = Color::rgb(232, 232, 231);
 
 pub static LABEL_BACKGROUND: Color = Color::rgb(232, 232, 231);
+pub static LABEL_BORDER: Color = Color::rgb(158, 158, 154);
 pub static LABEL_FOREGROUND: Color = Color::rgb(0, 0, 0);
 
 pub static BUTTON_BACKGROUND: Color = Color::rgb(234, 234, 234);

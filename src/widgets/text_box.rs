@@ -10,7 +10,7 @@ use point::Point;
 use rect::Rect;
 use renderer::Renderer;
 use theme::{TEXT_BACKGROUND, TEXT_BORDER, TEXT_FOREGROUND, TEXT_SELECTION};
-use traits::{Click, Enter, EventFilter, Place, Text};
+use traits::{Border, Click, Enter, EventFilter, Place, Text};
 use widgets::Widget;
 
 /// Find next character index
@@ -31,6 +31,8 @@ pub struct TextBox {
     pub fg: Color,
     pub fg_border: Color,
     pub fg_cursor: Color,
+    pub border: Cell<bool>,
+    pub border_radius: Cell<u32>,
     pub text: CloneCell<String>,
     pub text_i: Cell<usize>,
     pub text_offset: Cell<Point>,
@@ -58,6 +60,8 @@ impl TextBox {
             fg: TEXT_FOREGROUND,
             fg_border: TEXT_BORDER,
             fg_cursor: TEXT_SELECTION,
+            border: Cell::new(true),
+            border_radius: Cell::new(0),
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
             text_offset: Cell::new(Point::default()),
@@ -77,6 +81,18 @@ impl TextBox {
 
     pub fn mask_char(&self, mask_char: Option<char>) -> &Self {
         self.mask_char.set(mask_char);
+        self
+    }
+}
+
+impl Border for TextBox {
+    fn border(&self, enabled: bool) -> &Self {
+        self.border.set(enabled);
+        self
+    }
+
+    fn border_radius(&self, radius: u32) -> &Self {
+        self.border_radius.set(radius);
         self
     }
 }
@@ -146,8 +162,11 @@ impl Widget for TextBox {
     fn draw(&self, renderer: &mut Renderer, focused: bool) {
         let rect = self.rect.get();
 
-        renderer.rect(rect, self.bg);
-        renderer.rounded_rect(rect, 0, self.fg_border);
+        let b_r = self.border_radius.get();
+        renderer.rounded_rect(rect, b_r, true, self.bg);
+        if self.border.get() {
+            renderer.rounded_rect(rect, b_r, false, self.fg_border);
+        }
 
         let text_i = self.text_i.get();
         let text = self.text.borrow();

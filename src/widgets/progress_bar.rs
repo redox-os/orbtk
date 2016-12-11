@@ -9,7 +9,7 @@ use point::Point;
 use rect::Rect;
 use renderer::Renderer;
 use theme::{ITEM_BACKGROUND, ITEM_BORDER, ITEM_SELECTION};
-use traits::{Click, Place};
+use traits::{Border, Click, Place};
 use widgets::Widget;
 
 pub struct ProgressBar {
@@ -17,6 +17,8 @@ pub struct ProgressBar {
     pub bg: Color,
     pub fg: Color,
     pub fg_border: Color,
+    pub border: Cell<bool>,
+    pub border_radius: Cell<u32>,
     pub value: Cell<i32>,
     pub minimum: i32,
     pub maximum: i32,
@@ -31,6 +33,8 @@ impl ProgressBar {
             bg: ITEM_BACKGROUND,
             fg: ITEM_SELECTION,
             fg_border: ITEM_BORDER,
+            border: Cell::new(true),
+            border_radius: Cell::new(0),
             value: Cell::new(0),
             minimum: 0,
             maximum: 100,
@@ -41,6 +45,18 @@ impl ProgressBar {
 
     pub fn value(&self, value: i32) -> &Self {
         self.value.set(value);
+        self
+    }
+}
+
+impl Border for ProgressBar {
+    fn border(&self, enabled: bool) -> &Self {
+        self.border.set(enabled);
+        self
+    }
+
+    fn border_radius(&self, radius: u32) -> &Self {
+        self.border_radius.set(radius);
         self
     }
 }
@@ -75,9 +91,15 @@ impl Widget for ProgressBar {
                                      self.maximum -
                                      self.minimum)) as u32,
                                 rect.height);
-        renderer.rect(rect, self.bg);
-        renderer.rect(progress_rect, self.fg);
-        renderer.rounded_rect(rect, 0, self.fg_border);
+
+        let b_r = self.border_radius.get();
+        renderer.rounded_rect(rect, b_r, true, self.bg);
+        if progress_rect.width >= b_r * 2 {
+            renderer.rounded_rect(progress_rect, b_r, true, self.fg);
+        }
+        if self.border.get() {
+            renderer.rounded_rect(rect, b_r, false, self.fg_border);
+        }
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
