@@ -18,7 +18,7 @@ pub struct Canvas {
 impl Canvas {
     pub fn new() -> Arc<Self> {
         Arc::new(Canvas {
-            core: WidgetCore::new().bg(Color::rgb(255, 255, 255)).fg(Color::rgb(0, 0, 0)),
+            core: WidgetCore::new(Color::rgb(255, 255, 255), Color::rgb(0, 0, 0)),
             data: RefCell::new(vec![]),
             click_callback: RefCell::new(None)
         })

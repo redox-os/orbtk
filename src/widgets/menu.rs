@@ -35,9 +35,7 @@ pub trait Entry: Widget {
 impl Menu {
     pub fn new<S: Into<String>>(name: S) -> Arc<Self> {
         Arc::new(Menu {
-            core: WidgetCore::new()
-                    .bg(BUTTON_BACKGROUND)
-                    .fg(BUTTON_FOREGROUND),
+            core: WidgetCore::new(BUTTON_BACKGROUND, BUTTON_FOREGROUND),
             text: CloneCell::new(name.into()),
             bg_pressed: BUTTON_SELECTION,
             fg_border: BUTTON_BORDER,
@@ -208,9 +206,7 @@ pub struct Action {
 impl Action {
     pub fn new<S: Into<String>>(text: S) -> Arc<Self> {
         Arc::new(Action {
-            core: WidgetCore::new()
-                    .bg(ITEM_BACKGROUND)
-                    .fg(ITEM_FOREGROUND),
+            core: WidgetCore::new(ITEM_BACKGROUND, ITEM_FOREGROUND),
             text: CloneCell::new(text.into()),
             bg_pressed: ITEM_SELECTION,
             text_offset: Cell::new(Point::default()),
@@ -332,9 +328,7 @@ impl Entry for Action {
 impl Separator {
     pub fn new() -> Arc<Self> {
         Arc::new(Separator {
-            core: WidgetCore::new()
-                    .bg(ITEM_BACKGROUND)
-                    .fg(ITEM_FOREGROUND),
+            core: WidgetCore::new(ITEM_BACKGROUND, ITEM_FOREGROUND),
         })
     }
 }

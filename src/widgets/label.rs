@@ -6,7 +6,7 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use renderer::Renderer;
-use theme::WINDOW_BACKGROUND;
+use theme::{LABEL_BACKGROUND, LABEL_FOREGROUND};
 use traits::{Click, Place, Text};
 use widgets::{Widget, WidgetCore};
 
@@ -21,8 +21,7 @@ pub struct Label {
 impl Label {
     pub fn new() -> Arc<Self> {
         Arc::new(Label {
-            core: WidgetCore::new()
-                    .bg(WINDOW_BACKGROUND),
+            core: WidgetCore::new(LABEL_BACKGROUND, LABEL_FOREGROUND),
             text: CloneCell::new(String::new()),
             text_offset: Cell::new(Point::default()),
             click_callback: RefCell::new(None),

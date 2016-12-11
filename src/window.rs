@@ -5,7 +5,6 @@ use std::sync::Arc;
 use super::{Event, Point, Rect, Renderer, Widget};
 use theme::WINDOW_BACKGROUND;
 
-
 extern crate orbfont;
 
 pub struct WindowRenderer<'a> {

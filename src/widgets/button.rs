@@ -24,9 +24,7 @@ pub struct Button {
 impl Button {
     pub fn new() -> Arc<Self> {
         Arc::new(Button {
-            core: WidgetCore::new()
-                    .bg(BUTTON_BACKGROUND)
-                    .fg(BUTTON_FOREGROUND),
+            core: WidgetCore::new(BUTTON_BACKGROUND, BUTTON_FOREGROUND),
             text: CloneCell::new(String::new()),
             bg_pressed: BUTTON_SELECTION,
             fg_border: BUTTON_BORDER,

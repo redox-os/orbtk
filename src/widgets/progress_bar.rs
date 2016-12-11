@@ -23,9 +23,7 @@ pub struct ProgressBar {
 impl ProgressBar {
     pub fn new() -> Arc<Self> {
         Arc::new(ProgressBar {
-            core: WidgetCore::new()
-                    .bg(ITEM_BACKGROUND)
-                    .fg(ITEM_SELECTION),
+            core: WidgetCore::new(ITEM_BACKGROUND, ITEM_SELECTION),
             value: Cell::new(0),
             minimum: 0,
             maximum: 100,

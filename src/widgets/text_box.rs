@@ -49,9 +49,7 @@ pub struct TextBox {
 impl TextBox {
     pub fn new() -> Arc<Self> {
         Arc::new(TextBox {
-            core: WidgetCore::new()
-                    .bg(TEXT_BACKGROUND)
-                    .fg(TEXT_FOREGROUND),
+            core: WidgetCore::new(TEXT_BACKGROUND, TEXT_FOREGROUND),
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
             fg_cursor: TEXT_SELECTION,
