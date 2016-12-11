@@ -98,6 +98,13 @@ impl Window {
         self.running.set(false);
     }
 
+    pub fn add<T: Widget>(&self, widget: &Arc<T>) -> usize {
+        let mut widgets = self.widgets.borrow_mut();
+        let id = widgets.len();
+        widgets.push(widget.clone());
+        id
+    }
+
     pub fn draw(&self) {
         let mut inner = self.inner.borrow_mut();
         let mut renderer = WindowRenderer::new(&mut *inner, &self.font);

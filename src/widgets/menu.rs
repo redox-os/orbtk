@@ -1,12 +1,13 @@
-extern crate orbimage;
+use cell::{CloneCell, CheckSet};
+use color::Color;
+use event::Event;
+use point::Point;
+use rect::Rect;
+use renderer::Renderer;
+use traits::{Click, Place, Text};
+use widgets::{Widget, WidgetCore};
 
-use self::orbimage::Image;
-
-use super::{CloneCell, Color, Event, Placeable, Point, Rect, Renderer, Widget, WidgetCore};
-use super::callback::Click;
-use super::cell::CheckSet;
-
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 pub struct Menu {
@@ -14,9 +15,9 @@ pub struct Menu {
     text: CloneCell<String>,
     bg_pressed: Color,
     fg_border: Color,
-    text_offset: Point,
-    entries: Vec<Box<Entry>>,
-    click_callback: Option<Arc<Fn(&Menu, Point)>>,
+    text_offset: Cell<Point>,
+    entries: RefCell<Vec<Arc<Entry>>>,
+    click_callback: RefCell<Option<Arc<Fn(&Menu, Point)>>>,
     pressed: Cell<bool>,
     activated: Cell<bool>,
 }
@@ -26,95 +27,76 @@ pub struct Separator {
 }
 
 pub trait Entry: Widget {
-    fn text(&mut self) -> String;
+    fn entry_text(&self) -> String;
 }
 
 impl Menu {
-    pub fn new<S: Into<String>>(name: S) -> Self {
-        Menu {
+    pub fn new<S: Into<String>>(name: S) -> Arc<Self> {
+        Arc::new(Menu {
             core: WidgetCore::new()
                     .bg(Color::rgb(234, 234, 234)),
             text: CloneCell::new(name.into()),
             bg_pressed: Color::rgb(210, 210, 208),
             fg_border: Color::rgb(209, 209, 208),
-            text_offset: Point::default(),
-            entries: Vec::with_capacity(10),
-            click_callback: None,
+            text_offset: Cell::new(Point::default()),
+            entries: RefCell::new(Vec::new()),
+            click_callback: RefCell::new(None),
             pressed: Cell::new(false),
             activated: Cell::new(false),
-        }
+        })
     }
 
-    pub fn add_action(&mut self, mut action: Action) {
-        let mut action_rect = self.core.rect.get();
-        let action_text_width = action.text().len() as u32 * 8;
-        if action_rect.width < action_text_width {
-            // TODO: consider the icon width and some padding
-            action_rect.width = action_text_width;
+    pub fn add<T: Entry>(&self, new_entry: &Arc<T>) {
+        let mut rect = self.core.rect.get();
+        let text_width = new_entry.entry_text().len() as u32 * 8;
+        if rect.width < text_width {
+            rect.width = text_width;
         }
 
-        let mut y = action_rect.y + action_rect.height as i32;
-        for entry in self.entries.iter() {
+        let mut y = rect.y + rect.height as i32;
+        for entry in self.entries.borrow().iter() {
             let mut entry_rect = entry.rect().get();
             y += entry_rect.height as i32;
 
-            if entry_rect.width < action_rect.width {
-                entry_rect.width = action_rect.width;
+            if entry_rect.width < rect.width {
+                entry_rect.width = rect.width;
                 entry.rect().set(entry_rect);
             } else {
-                action_rect.width = entry_rect.width;
+                rect.width = entry_rect.width;
             }
         }
-        action_rect.y = y;
-        action.rect().set(action_rect);
-        self.entries.push(Box::new(action));
+        rect.y = y;
+        new_entry.rect().set(rect);
+        self.entries.borrow_mut().push(new_entry.clone());
     }
+}
 
-    pub fn add_separator(&mut self) {
-        let mut sep_rect = self.core.rect.get();
-
-        let mut y = sep_rect.y + sep_rect.height as i32;
-        for entry in self.entries.iter() {
-            let entry_rect = entry.rect().get();
-            y += entry_rect.height as i32;
-
-            if entry_rect.width > sep_rect.width {
-                sep_rect.width = entry_rect.width;
-            }
-        }
-        sep_rect.y = y;
-
-        let separator = Separator::new();
-        separator.rect().set(sep_rect);
-        self.entries.push(Box::new(separator));
-    }
-
-    pub fn text<S: Into<String>>(self, text: S) -> Self {
+impl Text for Menu {
+    fn text<S: Into<String>>(&self, text: S) -> &Self {
         self.text.set(text.into());
         self
     }
 
-    pub fn text_offset(mut self, x: i32, y: i32) -> Self {
-        self.text_offset = Point::new(x, y);
+    fn text_offset(&self, x: i32, y: i32) -> &Self {
+        self.text_offset.set(Point::new(x, y));
         self
     }
 }
 
 impl Click for Menu {
     fn emit_click(&self, point: Point) {
-        if let Some(ref click_callback) = self.click_callback {
+        if let Some(ref click_callback) = *self.click_callback.borrow() {
             click_callback(self, point);
         }
     }
 
-    fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.click_callback = Some(Arc::new(func));
-
+    fn on_click<T: Fn(&Self, Point) + 'static>(&self, func: T) -> &Self {
+        *self.click_callback.borrow_mut() = Some(Arc::new(func));
         self
     }
 }
 
-impl Placeable for Menu {}
+impl Place for Menu {}
 
 impl Widget for Menu {
     fn rect(&self) -> &Cell<Rect> {
@@ -131,7 +113,7 @@ impl Widget for Menu {
         }
 
         let text = self.text.borrow();
-        let mut point = self.text_offset;
+        let mut point = self.text_offset.get();
         for c in text.chars() {
             if c == '\n' {
                 point.x = 0;
@@ -147,7 +129,7 @@ impl Widget for Menu {
         renderer.rect(Rect::new(rect.x, rect.y + rect.height as i32 - 1, rect.width, 1), self.fg_border);
 
         if self.activated.get() {
-            for entry in self.entries.iter() {
+            for entry in self.entries.borrow().iter() {
                 entry.draw(renderer, _focused);
             }
         }
@@ -156,7 +138,7 @@ impl Widget for Menu {
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
         let mut ignore_event = false;
         if self.activated.get() {
-            for entry in self.entries.iter() {
+            for entry in self.entries.borrow().iter() {
                 if entry.event(event, focused, redraw) {
                     ignore_event = true;
                     self.pressed.set(true);
@@ -213,50 +195,49 @@ impl Widget for Menu {
 pub struct Action {
     core: WidgetCore,
     text: CloneCell<String>,
-    icon: Option<Image>,
     bg_pressed: Color,
-    text_offset: Point,
-    click_callback: Option<Arc<Fn(&Action, Point)>>,
+    text_offset: Cell<Point>,
+    click_callback: RefCell<Option<Arc<Fn(&Action, Point)>>>,
     pressed: Cell<bool>,
     hover: Cell<bool>,
 }
 
 impl Action {
-    pub fn new<S: Into<String>>(text: S) -> Self {
-        Action {
+    pub fn new<S: Into<String>>(text: S) -> Arc<Self> {
+        Arc::new(Action {
             core: WidgetCore::new()
                     .bg(Color::rgb(255, 255, 255)),
             text: CloneCell::new(text.into()),
-            icon: None,
             bg_pressed: Color::rgb(74, 144, 217),
-            text_offset: Point::default(),
-            click_callback: None,
+            text_offset: Cell::new(Point::default()),
+            click_callback: RefCell::new(None),
             pressed: Cell::new(false),
             hover: Cell::new(false),
-        }
-    }
-
-    pub fn add_icon(mut self, icon: Image) -> Self {
-        self.icon = Some(icon);
-        self
-    }
-
-    pub fn text_offset(mut self, x: i32, y: i32) -> Self {
-        self.text_offset = Point::new(x, y);
-        self
+        })
     }
 }
 
 impl Click for Action {
     fn emit_click(&self, point: Point) {
-        if let Some(ref click_callback) = self.click_callback {
+        if let Some(ref click_callback) = *self.click_callback.borrow() {
             click_callback(self, point);
         }
     }
 
-    fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.click_callback = Some(Arc::new(func));
+    fn on_click<T: Fn(&Self, Point) + 'static>(&self, func: T) -> &Self {
+        *self.click_callback.borrow_mut() = Some(Arc::new(func));
+        self
+    }
+}
 
+impl Text for Action {
+    fn text<S: Into<String>>(&self, text: S) -> &Self {
+        self.text.set(text.into());
+        self
+    }
+
+    fn text_offset(&self, x: i32, y: i32) -> &Self {
+        self.text_offset.set(Point::new(x, y));
         self
     }
 }
@@ -278,7 +259,7 @@ impl Widget for Action {
         renderer.rect(rect, bg);
 
         let text = self.text.borrow();
-        let mut point = self.text_offset;
+        let mut point = self.text_offset.get();
         for c in text.chars() {
             if c == '\n' {
                 point.x = 0;
@@ -339,17 +320,17 @@ impl Widget for Action {
 }
 
 impl Entry for Action {
-    fn text(&mut self) -> String {
+    fn entry_text(&self) -> String {
         self.text.get()
     }
 }
 
 impl Separator {
-    pub fn new() -> Self {
-        Separator {
+    pub fn new() -> Arc<Self> {
+        Arc::new(Separator {
             core: WidgetCore::new()
                     .bg(Color::rgb(255, 255, 255)),
-        }
+        })
     }
 }
 
@@ -384,7 +365,7 @@ impl Widget for Separator {
 }
 
 impl Entry for Separator {
-    fn text(&mut self) -> String {
+    fn entry_text(&self) -> String {
         String::new()
     }
 }

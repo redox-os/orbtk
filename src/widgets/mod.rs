@@ -1,7 +1,24 @@
-use super::{Color, Event, Rect, Renderer};
-
 use std::any::Any;
 use std::cell::Cell;
+
+use color::Color;
+use event::Event;
+use rect::Rect;
+use renderer::Renderer;
+
+pub use self::button::Button;
+pub use self::canvas::Canvas;
+pub use self::label::Label;
+pub use self::menu::{Menu, Action, Separator};
+pub use self::progress_bar::ProgressBar;
+pub use self::text_box::TextBox;
+
+mod button;
+mod canvas;
+mod label;
+mod menu;
+mod progress_bar;
+mod text_box;
 
 pub struct WidgetCore {
     pub rect: Cell<Rect>,

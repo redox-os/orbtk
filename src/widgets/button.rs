@@ -1,8 +1,13 @@
-use super::{CloneCell, Color, Event, Placeable, Point, Rect, Renderer, Widget, WidgetCore};
-use super::callback::Click;
-use super::cell::CheckSet;
+use cell::{CloneCell, CheckSet};
+use color::Color;
+use event::Event;
+use point::Point;
+use rect::Rect;
+use renderer::Renderer;
+use traits::{Click, Place, Text};
+use widgets::{Widget, WidgetCore};
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 pub struct Button {
@@ -10,51 +15,52 @@ pub struct Button {
     pub text: CloneCell<String>,
     pub bg_pressed: Color,
     pub fg_border: Color,
-    pub text_offset: Point,
-    click_callback: Option<Arc<Fn(&Button, Point)>>,
+    pub text_offset: Cell<Point>,
+    click_callback: RefCell<Option<Arc<Fn(&Button, Point)>>>,
     pressed: Cell<bool>,
 }
 
 impl Button {
-    pub fn new() -> Self {
-        Button {
+    pub fn new() -> Arc<Self> {
+        Arc::new(Button {
             core: WidgetCore::new()
                     .bg(Color::rgb(234, 234, 234)),
             text: CloneCell::new(String::new()),
             bg_pressed: Color::rgb(210, 210, 208),
             fg_border: Color::rgb(158, 158, 154),
-            text_offset: Point::default(),
-            click_callback: None,
+            text_offset: Cell::new(Point::default()),
+            click_callback: RefCell::new(None),
             pressed: Cell::new(false),
-        }
-    }
-
-    pub fn text<S: Into<String>>(self, text: S) -> Self {
-        self.text.set(text.into());
-        self
-    }
-
-    pub fn text_offset(mut self, x: i32, y: i32) -> Self {
-        self.text_offset = Point::new(x, y);
-        self
+        })
     }
 }
 
 impl Click for Button {
     fn emit_click(&self, point: Point) {
-        if let Some(ref click_callback) = self.click_callback {
+        if let Some(ref click_callback) = *self.click_callback.borrow() {
             click_callback(self, point);
         }
     }
 
-    fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.click_callback = Some(Arc::new(func));
-
+    fn on_click<T: Fn(&Self, Point) + 'static>(&self, func: T) -> &Self {
+        *self.click_callback.borrow_mut() = Some(Arc::new(func));
         self
     }
 }
 
-impl Placeable for Button {}
+impl Place for Button {}
+
+impl Text for Button {
+    fn text<S: Into<String>>(&self, text: S) -> &Self {
+        self.text.set(text.into());
+        self
+    }
+
+    fn text_offset(&self, x: i32, y: i32) -> &Self {
+        self.text_offset.set(Point::new(x, y));
+        self
+    }
+}
 
 impl Widget for Button {
     fn rect(&self) -> &Cell<Rect> {
@@ -107,7 +113,7 @@ impl Widget for Button {
 
         let text = self.text.borrow();
 
-        let mut point = self.text_offset;
+        let mut point = self.text_offset.get();
         for c in text.chars() {
             if c == '\n' {
                 point.x = 0;

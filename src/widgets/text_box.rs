@@ -1,6 +1,11 @@
-use super::{CloneCell, Color, Event, Placeable, Point, Rect, Renderer, Widget, WidgetCore};
-use super::callback::{Click, Enter, EventFilter};
-use super::cell::CheckSet;
+use cell::{CloneCell, CheckSet};
+use color::Color;
+use event::Event;
+use point::Point;
+use rect::Rect;
+use renderer::Renderer;
+use traits::{Click, Enter, EventFilter, Place};
+use widgets::{Widget, WidgetCore};
 
 use std::cell::{Cell, RefCell};
 use std::cmp::min;
@@ -26,8 +31,8 @@ pub struct TextBox {
     pub fg_cursor: Color,
     pub mask_char: Cell<Option<char>>,
     pub grab_focus: Cell<bool>,
-    pub on_click: RefCell<Option<Arc<Fn(&TextBox, Point)>>>,
-    pub on_enter: RefCell<Option<Arc<Fn(&TextBox)>>>,
+    pub click_callback: RefCell<Option<Arc<Fn(&TextBox, Point)>>>,
+    pub enter_callback: RefCell<Option<Arc<Fn(&TextBox)>>>,
     /// If event_filter is defined, all of the events will go trough it
     /// Instead of the default behavior. This allows defining fields that
     /// ex. will only accept numbers and ignore all else, or add some
@@ -41,32 +46,32 @@ pub struct TextBox {
 }
 
 impl TextBox {
-    pub fn new() -> Self {
-        TextBox {
+    pub fn new() -> Arc<Self> {
+        Arc::new(TextBox {
             core: WidgetCore::new(),
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
             fg_cursor: Color::gray(),
             mask_char: Cell::new(None),
             grab_focus: Cell::new(false),
-            on_click: RefCell::new(None),
-            on_enter: RefCell::new(None),
+            click_callback: RefCell::new(None),
+            enter_callback: RefCell::new(None),
             event_filter: RefCell::new(None),
             pressed: Cell::new(false),
-        }
+        })
     }
 
-    pub fn grab_focus(self, grab_focus: bool) -> Self {
+    pub fn grab_focus(&self, grab_focus: bool) -> &Self {
         self.grab_focus.set(grab_focus);
         self
     }
 
-    pub fn mask_char(self, mask_char: Option<char>) -> Self {
+    pub fn mask_char(&self, mask_char: Option<char>) -> &Self {
         self.mask_char.set(mask_char);
         self
     }
 
-    pub fn text<S: Into<String>>(self, text: S) -> Self {
+    pub fn text<S: Into<String>>(&self, text: S) -> &Self {
         let text = text.into();
         self.text_i.set(text.len());
         self.text.set(text);
@@ -76,33 +81,29 @@ impl TextBox {
 
 impl Click for TextBox {
     fn emit_click(&self, point: Point) {
-        if let Some(ref on_click) = *self.on_click.borrow() {
-            on_click(self, point);
+        if let Some(ref click_callback) = *self.click_callback.borrow() {
+            click_callback(self, point);
         }
     }
 
-    fn on_click<T: Fn(&Self, Point) + 'static>(self, func: T) -> Self {
-        *self.on_click.borrow_mut() = Some(Arc::new(func));
-
+    fn on_click<T: Fn(&Self, Point) + 'static>(&self, func: T) -> &Self {
+        *self.click_callback.borrow_mut() = Some(Arc::new(func));
         self
     }
 }
 
 impl Enter for TextBox {
     fn emit_enter(&self) {
-        if let Some(ref on_enter) = *self.on_enter.borrow() {
-            on_enter(self)
+        if let Some(ref enter_callback) = *self.enter_callback.borrow() {
+            enter_callback(self)
         }
     }
 
-    fn on_enter<T: Fn(&Self) + 'static>(self, func: T) -> Self {
-        *self.on_enter.borrow_mut() = Some(Arc::new(func));
-
+    fn on_enter<T: Fn(&Self) + 'static>(&self, func: T) -> &Self {
+        *self.enter_callback.borrow_mut() = Some(Arc::new(func));
         self
     }
 }
-
-impl Placeable for TextBox {}
 
 impl EventFilter for TextBox {
     fn handle_event(&self, event: Event, focused: &mut bool, redraw: &mut bool) -> Option<Event> {
@@ -113,12 +114,13 @@ impl EventFilter for TextBox {
         }
     }
 
-    fn event_filter<T: Fn(&Self, Event, &mut bool, &mut bool) -> Option<Event> + 'static>(self, func: T) -> Self {
+    fn event_filter<T: Fn(&Self, Event, &mut bool, &mut bool) -> Option<Event> + 'static>(&self, func: T) -> &Self {
         *self.event_filter.borrow_mut() = Some(Arc::new(func));
-
         self
     }
 }
+
+impl Place for TextBox {}
 
 impl Widget for TextBox {
     fn rect(&self) -> &Cell<Rect> {
@@ -272,7 +274,7 @@ impl Widget for TextBox {
                 }
                 Event::Enter => {
                     if focused {
-                        if self.on_enter.borrow().is_some() {
+                        if self.enter_callback.borrow().is_some() {
                             self.emit_enter();
                         } else {
                             let mut text = self.text.borrow_mut();

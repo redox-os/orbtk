@@ -1,8 +1,13 @@
-use super::{Color, Event, Placeable, Point, Rect, Renderer, Widget, WidgetCore};
-use super::callback::Click;
-use super::cell::CheckSet;
+use cell::CheckSet;
+use color::Color;
+use event::Event;
+use point::Point;
+use rect::Rect;
+use renderer::Renderer;
+use traits::{Click, Place};
+use widgets::{Widget, WidgetCore};
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::cmp::{min, max};
 use std::sync::Arc;
 
@@ -11,24 +16,24 @@ pub struct ProgressBar {
     pub value: Cell<i32>,
     pub minimum: i32,
     pub maximum: i32,
-    click_callback: Option<Arc<Fn(&ProgressBar, Point)>>,
+    click_callback: RefCell<Option<Arc<Fn(&ProgressBar, Point)>>>,
     pressed: Cell<bool>,
 }
 
 impl ProgressBar {
-    pub fn new() -> Self {
-        ProgressBar {
+    pub fn new() -> Arc<Self> {
+        Arc::new(ProgressBar {
             core: WidgetCore::new()
                     .fg(Color::rgb(74, 144, 217)),
             value: Cell::new(0),
             minimum: 0,
             maximum: 100,
-            click_callback: None,
+            click_callback: RefCell::new(None),
             pressed: Cell::new(false),
-        }
+        })
     }
 
-    pub fn value(self, value: i32) -> Self {
+    pub fn value(&self, value: i32) -> &Self {
         self.value.set(value);
         self
     }
@@ -36,19 +41,18 @@ impl ProgressBar {
 
 impl Click for ProgressBar {
     fn emit_click(&self, point: Point) {
-        if let Some(ref click_callback) = self.click_callback {
+        if let Some(ref click_callback) = *self.click_callback.borrow() {
             click_callback(self, point);
         }
     }
 
-    fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.click_callback = Some(Arc::new(func));
-
+    fn on_click<T: Fn(&Self, Point) + 'static>(&self, func: T) -> &Self {
+        *self.click_callback.borrow_mut() = Some(Arc::new(func));
         self
     }
 }
 
-impl Placeable for ProgressBar {}
+impl Place for ProgressBar {}
 
 impl Widget for ProgressBar {
     fn rect(&self) -> &Cell<Rect> {
