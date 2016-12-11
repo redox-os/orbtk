@@ -7,6 +7,7 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use renderer::Renderer;
+use theme::{BUTTON_BACKGROUND, BUTTON_FOREGROUND, BUTTON_SELECTION, BUTTON_BORDER};
 use traits::{Click, Place, Text};
 use widgets::{Widget, WidgetCore};
 
@@ -24,10 +25,11 @@ impl Button {
     pub fn new() -> Arc<Self> {
         Arc::new(Button {
             core: WidgetCore::new()
-                    .bg(Color::rgb(234, 234, 234)),
+                    .bg(BUTTON_BACKGROUND)
+                    .fg(BUTTON_FOREGROUND),
             text: CloneCell::new(String::new()),
-            bg_pressed: Color::rgb(210, 210, 208),
-            fg_border: Color::rgb(158, 158, 154),
+            bg_pressed: BUTTON_SELECTION,
+            fg_border: BUTTON_BORDER,
             text_offset: Cell::new(Point::default()),
             click_callback: RefCell::new(None),
             pressed: Cell::new(false),

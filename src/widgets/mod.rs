@@ -5,6 +5,7 @@ use std::cell::Cell;
 use event::Event;
 use rect::Rect;
 use renderer::Renderer;
+use theme::{TEXT_BACKGROUND, TEXT_FOREGROUND};
 
 pub use self::button::Button;
 pub use self::canvas::Canvas;
@@ -30,8 +31,8 @@ impl WidgetCore {
     pub fn new() -> Self {
         WidgetCore {
             rect: Cell::new(Rect::default()),
-            bg: Color::rgb(255, 255, 255),
-            fg: Color::rgb(0, 0, 0),
+            bg: TEXT_BACKGROUND,
+            fg: TEXT_FOREGROUND,
         }
     }
 

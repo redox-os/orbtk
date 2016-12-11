@@ -3,6 +3,7 @@ use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 use super::{Event, Point, Rect, Renderer, Widget};
+use theme::WINDOW_BACKGROUND;
 
 
 extern crate orbfont;
@@ -74,7 +75,7 @@ impl Window {
             font: orbfont::Font::find(None, None, None).ok(),
             widgets: RefCell::new(Vec::new()),
             widget_focus: Cell::new(0),
-            bg: Color::rgb(232, 232, 231),
+            bg: WINDOW_BACKGROUND,
             running: Cell::new(true),
         }
     }

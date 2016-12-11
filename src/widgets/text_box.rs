@@ -9,6 +9,7 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use renderer::Renderer;
+use theme::{TEXT_SELECTION, TEXT_BACKGROUND, TEXT_FOREGROUND};
 use traits::{Click, Enter, EventFilter, Place};
 use widgets::{Widget, WidgetCore};
 
@@ -48,10 +49,12 @@ pub struct TextBox {
 impl TextBox {
     pub fn new() -> Arc<Self> {
         Arc::new(TextBox {
-            core: WidgetCore::new(),
+            core: WidgetCore::new()
+                    .bg(TEXT_BACKGROUND)
+                    .fg(TEXT_FOREGROUND),
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
-            fg_cursor: Color::rgb(128, 128, 128),
+            fg_cursor: TEXT_SELECTION,
             mask_char: Cell::new(None),
             grab_focus: Cell::new(false),
             click_callback: RefCell::new(None),

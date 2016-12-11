@@ -1,4 +1,3 @@
-use orbclient::Color;
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
@@ -7,6 +6,7 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use renderer::Renderer;
+use theme::WINDOW_BACKGROUND;
 use traits::{Click, Place, Text};
 use widgets::{Widget, WidgetCore};
 
@@ -22,7 +22,7 @@ impl Label {
     pub fn new() -> Arc<Self> {
         Arc::new(Label {
             core: WidgetCore::new()
-                    .bg(Color::rgb(232, 232, 231)),
+                    .bg(WINDOW_BACKGROUND),
             text: CloneCell::new(String::new()),
             text_offset: Cell::new(Point::default()),
             click_callback: RefCell::new(None),

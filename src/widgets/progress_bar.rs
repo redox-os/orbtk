@@ -1,4 +1,3 @@
-use orbclient::Color;
 use std::cell::{Cell, RefCell};
 use std::cmp::{min, max};
 use std::sync::Arc;
@@ -8,6 +7,7 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use renderer::Renderer;
+use theme::{ITEM_BACKGROUND, ITEM_SELECTION};
 use traits::{Click, Place};
 use widgets::{Widget, WidgetCore};
 
@@ -24,7 +24,8 @@ impl ProgressBar {
     pub fn new() -> Arc<Self> {
         Arc::new(ProgressBar {
             core: WidgetCore::new()
-                    .fg(Color::rgb(74, 144, 217)),
+                    .bg(ITEM_BACKGROUND)
+                    .fg(ITEM_SELECTION),
             value: Cell::new(0),
             minimum: 0,
             maximum: 100,
