@@ -134,6 +134,14 @@ fn main() {
     label.size(32, 16).text("Test");
     grid.add(1, 0, &label);
 
+    let label = Label::new();
+    label.size(32, 16).text("With");
+    grid.add(2, 0, &label);
+
+    let label = Label::new();
+    label.size(48, 16).text("Resize");
+    grid.add(3, 0, &label);
+
     let mut i = 0;
     for row in 1..6 {
         for col in 0..5 {
