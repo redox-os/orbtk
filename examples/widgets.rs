@@ -84,7 +84,10 @@ fn main() {
     offset_label.position(x, y)
         .size(400, 256)
         .text("Test Offset")
-        .text_offset(50, 50);
+        .text_offset(50, 50)
+        .on_click(|label: &Label, _point: Point| {
+            label.text("Clicked");
+        });
     window.add(&offset_label);
 
     {
