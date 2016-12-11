@@ -1,13 +1,13 @@
-use color::Color;
+use orbclient::Color;
+use std::cell::{Cell, RefCell};
+use std::sync::Arc;
+
 use event::Event;
 use point::Point;
 use rect::Rect;
 use renderer::Renderer;
 use traits::{Click, Place};
 use widgets::{Widget, WidgetCore};
-
-use std::cell::{Cell, RefCell};
-use std::sync::Arc;
 
 pub struct Canvas {
     pub core: WidgetCore,
@@ -18,7 +18,7 @@ pub struct Canvas {
 impl Canvas {
     pub fn new() -> Arc<Self> {
         Arc::new(Canvas {
-            core: WidgetCore::new().bg(Color::white()).fg(Color::black()),
+            core: WidgetCore::new().bg(Color::rgb(255, 255, 255)).fg(Color::rgb(0, 0, 0)),
             data: RefCell::new(vec![]),
             click_callback: RefCell::new(None)
         })

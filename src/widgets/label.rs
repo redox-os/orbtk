@@ -1,14 +1,14 @@
+use orbclient::Color;
+use std::cell::{Cell, RefCell};
+use std::sync::Arc;
+
 use cell::{CloneCell, CheckSet};
-use color::Color;
 use event::Event;
 use point::Point;
 use rect::Rect;
 use renderer::Renderer;
 use traits::{Click, Place, Text};
 use widgets::{Widget, WidgetCore};
-
-use std::cell::{Cell, RefCell};
-use std::sync::Arc;
 
 pub struct Label {
     pub core: WidgetCore,

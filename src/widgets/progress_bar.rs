@@ -1,15 +1,15 @@
+use orbclient::Color;
+use std::cell::{Cell, RefCell};
+use std::cmp::{min, max};
+use std::sync::Arc;
+
 use cell::CheckSet;
-use color::Color;
 use event::Event;
 use point::Point;
 use rect::Rect;
 use renderer::Renderer;
 use traits::{Click, Place};
 use widgets::{Widget, WidgetCore};
-
-use std::cell::{Cell, RefCell};
-use std::cmp::{min, max};
-use std::sync::Arc;
 
 pub struct ProgressBar {
     pub core: WidgetCore,

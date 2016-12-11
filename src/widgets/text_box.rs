@@ -1,16 +1,16 @@
+use orbclient::Color;
+use std::cell::{Cell, RefCell};
+use std::cmp::min;
+use std::ops::Deref;
+use std::sync::Arc;
+
 use cell::{CloneCell, CheckSet};
-use color::Color;
 use event::Event;
 use point::Point;
 use rect::Rect;
 use renderer::Renderer;
 use traits::{Click, Enter, EventFilter, Place};
 use widgets::{Widget, WidgetCore};
-
-use std::cell::{Cell, RefCell};
-use std::cmp::min;
-use std::ops::Deref;
-use std::sync::Arc;
 
 /// Find next character index
 fn next_i(text: &str, text_i: usize) -> usize {
@@ -51,7 +51,7 @@ impl TextBox {
             core: WidgetCore::new(),
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
-            fg_cursor: Color::gray(),
+            fg_cursor: Color::rgb(128, 128, 128),
             mask_char: Cell::new(None),
             grab_focus: Cell::new(false),
             click_callback: RefCell::new(None),

@@ -1,7 +1,7 @@
+use orbclient::Color;
 use std::any::Any;
 use std::cell::Cell;
 
-use color::Color;
 use event::Event;
 use rect::Rect;
 use renderer::Renderer;
@@ -30,8 +30,8 @@ impl WidgetCore {
     pub fn new() -> Self {
         WidgetCore {
             rect: Cell::new(Rect::default()),
-            bg: Color::white(),
-            fg: Color::black(),
+            bg: Color::rgb(255, 255, 255),
+            fg: Color::rgb(0, 0, 0),
         }
     }
 

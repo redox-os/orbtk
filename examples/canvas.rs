@@ -20,7 +20,7 @@ fn main() {
                 let mut prev_opt = click.borrow_mut();
 
                 if let Some(prev_position) = *prev_opt {
-                    canvas.line(prev_position, point, orbtk::Color::black());
+                    canvas.line(prev_position, point, orbtk::Color::rgb(0, 0, 0));
                     *prev_opt = Some(point);
                 } else {
                     *prev_opt = Some(point);

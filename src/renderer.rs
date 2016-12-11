@@ -1,4 +1,6 @@
-use super::{Color, Point, Rect};
+use orbclient::Color;
+
+use super::{Point, Rect};
 
 pub trait Renderer {
     fn clear(&mut self, color: Color);
