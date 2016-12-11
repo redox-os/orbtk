@@ -9,6 +9,7 @@ pub struct Button {
     pub core: WidgetCore,
     pub text: CloneCell<String>,
     pub bg_pressed: Color,
+    pub fg_border: Color,
     pub text_offset: Point,
     click_callback: Option<Arc<Fn(&Button, Point)>>,
     pressed: Cell<bool>,
@@ -18,9 +19,10 @@ impl Button {
     pub fn new() -> Self {
         Button {
             core: WidgetCore::new()
-                    .bg(Color::rgb(220, 222, 227)),
+                    .bg(Color::rgb(234, 234, 234)),
             text: CloneCell::new(String::new()),
-            bg_pressed: Color::rgb(203, 205, 210),
+            bg_pressed: Color::rgb(210, 210, 208),
+            fg_border: Color::rgb(158, 158, 154),
             text_offset: Point::default(),
             click_callback: None,
             pressed: Cell::new(false),
@@ -62,11 +64,46 @@ impl Widget for Button {
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.core.rect.get();
 
-        if self.pressed.get() {
-            renderer.rect(rect, self.bg_pressed);
+        let x = rect.x;
+        let y = rect.y;
+        let w = rect.width as i32;
+        let h = rect.height as i32;
+
+        let fg = self.core.fg;
+
+        let bg = if self.pressed.get() {
+            self.bg_pressed
         } else {
-            renderer.rect(rect, self.core.bg);
-        }
+            self.core.bg
+        };
+
+        // Border radius
+        let b_r = 2;
+
+        let b_fg = self.fg_border;
+
+        // Draw inside corners
+        renderer.arc(Point::new(x + b_r, y + b_r), -b_r, 1 << 4 | 1 << 6, bg);
+        renderer.arc(Point::new(x + w - 1 - b_r, y + b_r), -b_r, 1 << 5 | 1 << 7, bg);
+        renderer.arc(Point::new(x + b_r, y + h - 1 - b_r), -b_r, 1 << 0 | 1 << 2, bg);
+        renderer.arc(Point::new(x + w - 1 - b_r, y + h - 1 - b_r), -b_r, 1 << 1 | 1 << 3, bg);
+
+        // Draw inside rectangles
+        renderer.rect(Rect::new(x + b_r, y, (w - 1 - b_r * 2) as u32, b_r as u32 + 1), bg);
+        renderer.rect(Rect::new(x + b_r, y + h - 1 - b_r, (w - 1 - b_r * 2) as u32, b_r as u32 + 1), bg);
+        renderer.rect(Rect::new(x, y + b_r + 1, w as u32, (h - 2 - b_r * 2) as u32), bg);
+
+        // Draw outside corners
+        renderer.arc(Point::new(x + b_r, y + b_r), b_r, 1 << 4 | 1 << 6, b_fg);
+        renderer.arc(Point::new(x + w - 1 - b_r, y + b_r), b_r, 1 << 5 | 1 << 7, b_fg);
+        renderer.arc(Point::new(x + b_r, y + h - 1 - b_r), b_r, 1 << 0 | 1 << 2, b_fg);
+        renderer.arc(Point::new(x + w - 1 - b_r, y + h - 1 - b_r), b_r, 1 << 1 | 1 << 3, b_fg);
+
+        // Draw outside rectangles
+        renderer.rect(Rect::new(x + b_r + 1, y, (w - 2 - b_r * 2) as u32, 1), b_fg);
+        renderer.rect(Rect::new(x + b_r + 1, y + h - 1, (w - 2 - b_r * 2) as u32, 1), b_fg);
+        renderer.rect(Rect::new(x, y + b_r + 1, 1, (h - 2 - b_r * 2) as u32), b_fg);
+        renderer.rect(Rect::new(x + w - 1, y + b_r + 1, 1, (h - 2 - b_r * 2) as u32), b_fg);
 
         let text = self.text.borrow();
 
@@ -76,8 +113,8 @@ impl Widget for Button {
                 point.x = 0;
                 point.y += 16;
             } else {
-                if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point + rect.point(), c, self.core.fg);
+                if point.x + 8 <= w && point.y + 16 <= h {
+                    renderer.char(point + rect.point(), c, fg);
                 }
                 point.x += 8;
             }

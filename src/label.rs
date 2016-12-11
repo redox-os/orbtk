@@ -17,7 +17,7 @@ impl Label {
     pub fn new() -> Self {
         Label {
             core: WidgetCore::new()
-                    .bg(Color::rgb(237, 233, 227)),
+                    .bg(Color::rgb(232, 232, 231)),
             text: CloneCell::new(String::new()),
             text_offset: Point::default(),
             click_callback: None,

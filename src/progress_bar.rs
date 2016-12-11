@@ -19,7 +19,7 @@ impl ProgressBar {
     pub fn new() -> Self {
         ProgressBar {
             core: WidgetCore::new()
-                    .fg(Color::rgb(65, 139, 212)),
+                    .fg(Color::rgb(74, 144, 217)),
             value: Cell::new(0),
             minimum: 0,
             maximum: 100,
