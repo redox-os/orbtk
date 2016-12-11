@@ -2,6 +2,7 @@ use std::cell::{Cell, RefCell};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
+use cell::CheckSet;
 use event::Event;
 use rect::Rect;
 use renderer::Renderer;
@@ -12,7 +13,8 @@ pub struct Grid {
     pub rect: Cell<Rect>,
     space_x: Cell<i32>,
     space_y: Cell<i32>,
-    entries: RefCell<BTreeMap<(usize, usize), Arc<Widget>>>
+    entries: RefCell<BTreeMap<(usize, usize), Arc<Widget>>>,
+    focused: Cell<Option<(usize, usize)>>
 }
 
 impl Grid {
@@ -21,13 +23,14 @@ impl Grid {
             rect: Cell::new(Rect::default()),
             space_x: Cell::new(0),
             space_y: Cell::new(0),
-            entries: RefCell::new(BTreeMap::new())
+            entries: RefCell::new(BTreeMap::new()),
+            focused: Cell::new(None)
         })
     }
 
     pub fn add<T: Widget>(&self, col: usize, row: usize, entry: &Arc<T>) {
         self.entries.borrow_mut().insert((col, row), entry.clone());
-        self.arrange();
+        self.arrange(false);
     }
 
     pub fn spacing(&self, x: i32, y: i32) -> &Self {
@@ -36,7 +39,7 @@ impl Grid {
         self
     }
 
-    fn arrange(&self) {
+    pub fn arrange(&self, resize: bool) {
         let mut cols = Vec::new();
         let mut rows = Vec::new();
         for (&(col, row), entry) in self.entries.borrow().iter() {
@@ -81,6 +84,10 @@ impl Grid {
             let mut rect = entry.rect().get();
             rect.x = cols[col].x;
             rect.y = rows[row].y;
+            if resize {
+                rect.width = cols[col].width;
+                rect.height = rows[row].height;
+            }
             entry.rect().set(rect);
         }
     }
@@ -93,7 +100,7 @@ impl Place for Grid {
         rect.y = y;
         self.rect().set(rect);
 
-        self.arrange();
+        self.arrange(false);
 
         self
     }
@@ -105,12 +112,24 @@ impl Widget for Grid {
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        for (&(_col, _row), entry) in self.entries.borrow().iter() {
-            entry.draw(renderer, false);
+        for (&(col, row), entry) in self.entries.borrow().iter() {
+            entry.draw(renderer, self.focused.get() == Some((col, row)));
         }
     }
 
-    fn event(&self, _event: Event, focused: bool, _redraw: &mut bool) -> bool {
+    fn event(&self, event: Event, mut focused: bool, redraw: &mut bool) -> bool {
+        for (&(col, row), entry) in self.entries.borrow().iter() {
+            let is_focused = self.focused.get() == Some((col, row));
+            if entry.event(event, focused && is_focused, redraw) {
+                if self.focused.check_set(Some((col, row))) || ! focused {
+                    focused = true;
+                    *redraw = true;
+                }
+            } else if is_focused {
+                self.focused.set(None);
+            }
+        }
+
         focused
     }
 }

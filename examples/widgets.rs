@@ -137,13 +137,14 @@ fn main() {
     let mut i = 0;
     for row in 1..6 {
         for col in 0..5 {
-            let label = Label::new();
+            let cell = TextBox::new();
             let text = format!("{}: {}, {}", i, col, row);
-            label.size(text.len() as u32 * 8 + 2, 18).text(text).text_offset(1, 1).border(true);
-            grid.add(col, row, &label);
+            cell.size(text.len() as u32 * 8 + 2, 18).text(text).text_offset(1, 1);
+            grid.add(col, row, &cell);
             i += 1;
         }
     }
+    grid.arrange(true);
 
     window.add(&grid);
 
