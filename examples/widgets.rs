@@ -1,10 +1,10 @@
 extern crate orbtk;
 
-use orbtk::{Action, Button, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
-use orbtk::traits::{Click, Enter, Place, Text};
+use orbtk::{Action, Button, Grid, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
+use orbtk::traits::{Border, Click, Enter, Place, Text};
 
 fn main() {
-    let window = Window::new(Rect::new(100, 100, 420, 420), "OrbTK");
+    let window = Window::new(Rect::new(100, 100, 420, 720), "OrbTK");
 
     let x = 10;
     let mut y = 0;
@@ -90,6 +90,8 @@ fn main() {
         });
     window.add(&offset_label);
 
+    y += offset_label.rect.get().height as i32 + 10;
+
     {
         let action = Action::new("Label One");
         let offset_label_clone = offset_label.clone();
@@ -119,7 +121,32 @@ fn main() {
         menu.add(&action);
     }
 
-    // TODO: Don't require this to be placed last to be drawn last
+    let grid = Grid::new();
+    grid.position(x, y)
+        .spacing(8, 8);
+
+    let label = Label::new();
+    label.size(32, 16).text("Grid");
+    grid.add(0, 0, &label);
+
+    let label = Label::new();
+    label.size(32, 16).text("Test");
+    grid.add(1, 0, &label);
+
+    let mut i = 0;
+    for row in 1..6 {
+        for col in 0..5 {
+            let label = Label::new();
+            let text = format!("{}: {}, {}", i, col, row);
+            label.size(text.len() as u32 * 8 + 2, 18).text(text).text_offset(1, 1).border(true);
+            grid.add(col, row, &label);
+            i += 1;
+        }
+    }
+
+    window.add(&grid);
+
+    // Add this last to put it on top
     window.add(&menu);
 
     window.exec();

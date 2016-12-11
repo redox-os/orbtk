@@ -7,6 +7,7 @@ use renderer::Renderer;
 
 pub use self::button::Button;
 pub use self::canvas::Canvas;
+pub use self::grid::Grid;
 pub use self::label::Label;
 pub use self::menu::{Menu, Action, Separator};
 pub use self::progress_bar::ProgressBar;
@@ -14,6 +15,7 @@ pub use self::text_box::TextBox;
 
 mod button;
 mod canvas;
+mod grid;
 mod label;
 mod menu;
 mod progress_bar;
