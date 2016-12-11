@@ -83,6 +83,7 @@ fn main() {
     let offset_label = Label::new();
     offset_label.position(x, y)
         .size(400, 256)
+        .border(true)
         .text("Test Offset")
         .text_offset(50, 50)
         .on_click(|label: &Label, _point: Point| {
