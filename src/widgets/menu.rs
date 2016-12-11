@@ -10,10 +10,12 @@ use renderer::Renderer;
 use theme::{BUTTON_BACKGROUND, BUTTON_FOREGROUND, BUTTON_SELECTION, BUTTON_BORDER,
             ITEM_BACKGROUND, ITEM_FOREGROUND, ITEM_SELECTION};
 use traits::{Click, Place, Text};
-use widgets::{Widget, WidgetCore};
+use widgets::Widget;
 
 pub struct Menu {
-    pub core: WidgetCore,
+    pub rect: Cell<Rect>,
+    pub bg: Color,
+    pub fg: Color,
     text: CloneCell<String>,
     bg_pressed: Color,
     fg_border: Color,
@@ -25,7 +27,9 @@ pub struct Menu {
 }
 
 pub struct Separator {
-    core: WidgetCore,
+    pub rect: Cell<Rect>,
+    pub bg: Color,
+    pub fg: Color,
 }
 
 pub trait Entry: Widget {
@@ -35,7 +39,9 @@ pub trait Entry: Widget {
 impl Menu {
     pub fn new<S: Into<String>>(name: S) -> Arc<Self> {
         Arc::new(Menu {
-            core: WidgetCore::new(BUTTON_BACKGROUND, BUTTON_FOREGROUND),
+            rect: Cell::new(Rect::default()),
+            bg: BUTTON_BACKGROUND,
+            fg: BUTTON_FOREGROUND,
             text: CloneCell::new(name.into()),
             bg_pressed: BUTTON_SELECTION,
             fg_border: BUTTON_BORDER,
@@ -48,7 +54,7 @@ impl Menu {
     }
 
     pub fn add<T: Entry>(&self, new_entry: &Arc<T>) {
-        let mut rect = self.core.rect.get();
+        let mut rect = self.rect.get();
         let text_width = new_entry.entry_text().len() as u32 * 8;
         if rect.width < text_width {
             rect.width = text_width;
@@ -101,16 +107,16 @@ impl Place for Menu {}
 
 impl Widget for Menu {
     fn rect(&self) -> &Cell<Rect> {
-        &self.core.rect
+        &self.rect
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.core.rect.get();
+        let rect = self.rect.get();
 
         if self.activated.get() {
             renderer.rect(rect, self.bg_pressed);
         } else {
-            renderer.rect(rect, self.core.bg);
+            renderer.rect(rect, self.bg);
         }
 
         let text = self.text.borrow();
@@ -121,7 +127,7 @@ impl Widget for Menu {
                 point.y += 16;
             } else {
                 if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point + rect.point(), c, self.core.fg);
+                    renderer.char(point + rect.point(), c, self.fg);
                 }
                 point.x += 8;
             }
@@ -151,7 +157,7 @@ impl Widget for Menu {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
 
-                let rect = self.core.rect.get();
+                let rect = self.rect.get();
                 if rect.contains(point) {
                     if left_button {
                         self.pressed.set(!self.pressed.get());
@@ -194,7 +200,9 @@ impl Widget for Menu {
 }
 
 pub struct Action {
-    core: WidgetCore,
+    rect: Cell<Rect>,
+    bg: Color,
+    fg: Color,
     text: CloneCell<String>,
     bg_pressed: Color,
     text_offset: Cell<Point>,
@@ -206,7 +214,9 @@ pub struct Action {
 impl Action {
     pub fn new<S: Into<String>>(text: S) -> Arc<Self> {
         Arc::new(Action {
-            core: WidgetCore::new(ITEM_BACKGROUND, ITEM_FOREGROUND),
+            rect: Cell::new(Rect::default()),
+            bg: ITEM_BACKGROUND,
+            fg: ITEM_FOREGROUND,
             text: CloneCell::new(text.into()),
             bg_pressed: ITEM_SELECTION,
             text_offset: Cell::new(Point::default()),
@@ -244,16 +254,16 @@ impl Text for Action {
 
 impl Widget for Action {
     fn rect(&self) -> &Cell<Rect> {
-        &self.core.rect
+        &self.rect
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.core.rect.get();
+        let rect = self.rect.get();
 
         let (bg, fg) = if self.hover.get() {
-            (self.bg_pressed, self.core.bg)
+            (self.bg_pressed, self.bg)
         } else {
-            (self.core.bg, self.core.fg)
+            (self.bg, self.fg)
         };
 
         renderer.rect(rect, bg);
@@ -277,7 +287,7 @@ impl Widget for Action {
         match event {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
-                let rect = self.core.rect.get();
+                let rect = self.rect.get();
 
                 if rect.contains(point) {
                     if self.hover.check_set(true) {
@@ -328,31 +338,33 @@ impl Entry for Action {
 impl Separator {
     pub fn new() -> Arc<Self> {
         Arc::new(Separator {
-            core: WidgetCore::new(ITEM_BACKGROUND, ITEM_FOREGROUND),
+            rect: Cell::new(Rect::default()),
+            bg: ITEM_BACKGROUND,
+            fg: ITEM_FOREGROUND,
         })
     }
 }
 
 impl Widget for Separator {
     fn rect(&self) -> &Cell<Rect> {
-        &self.core.rect
+        &self.rect
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.core.rect.get();
-        renderer.rect(rect, self.core.bg);
+        let rect = self.rect.get();
+        renderer.rect(rect, self.bg);
 
         let line_y = rect.y + rect.height as i32 / 2;
         let start = Point::new(rect.x, line_y);
         let end = Point::new(rect.x + rect.width as i32, line_y);
-        renderer.line(start, end, self.core.fg);
+        renderer.line(start, end, self.fg);
     }
 
     fn event(&self, event: Event, _focused: bool, _redraw: &mut bool) -> bool {
         let mut ignore_event = false;
         match event {
             Event::Mouse { point, .. } => {
-                let rect = self.core.rect.get();
+                let rect = self.rect.get();
                 if rect.contains(point) {
                     ignore_event = true;
                 }

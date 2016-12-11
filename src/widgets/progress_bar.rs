@@ -1,3 +1,4 @@
+use orbclient::Color;
 use std::cell::{Cell, RefCell};
 use std::cmp::{min, max};
 use std::sync::Arc;
@@ -9,10 +10,12 @@ use rect::Rect;
 use renderer::Renderer;
 use theme::{ITEM_BACKGROUND, ITEM_SELECTION};
 use traits::{Click, Place};
-use widgets::{Widget, WidgetCore};
+use widgets::Widget;
 
 pub struct ProgressBar {
-    pub core: WidgetCore,
+    pub rect: Cell<Rect>,
+    pub bg: Color,
+    pub fg: Color,
     pub value: Cell<i32>,
     pub minimum: i32,
     pub maximum: i32,
@@ -23,7 +26,9 @@ pub struct ProgressBar {
 impl ProgressBar {
     pub fn new() -> Arc<Self> {
         Arc::new(ProgressBar {
-            core: WidgetCore::new(ITEM_BACKGROUND, ITEM_SELECTION),
+            rect: Cell::new(Rect::default()),
+            bg: ITEM_BACKGROUND,
+            fg: ITEM_SELECTION,
             value: Cell::new(0),
             minimum: 0,
             maximum: 100,
@@ -55,12 +60,12 @@ impl Place for ProgressBar {}
 
 impl Widget for ProgressBar {
     fn rect(&self) -> &Cell<Rect> {
-        &self.core.rect
+        &self.rect
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.core.rect.get();
-        renderer.rect(rect, self.core.bg);
+        let rect = self.rect.get();
+        renderer.rect(rect, self.bg);
         renderer.rect(Rect::new(rect.x,
                                 rect.y,
                                 ((rect.width as i32 *
@@ -69,7 +74,7 @@ impl Widget for ProgressBar {
                                      self.maximum -
                                      self.minimum)) as u32,
                                 rect.height),
-                      self.core.fg);
+                      self.fg);
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
@@ -77,7 +82,7 @@ impl Widget for ProgressBar {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
 
-                let rect = self.core.rect.get();
+                let rect = self.rect.get();
                 if rect.contains(point) {
                     if left_button {
                         if self.pressed.check_set(true) {

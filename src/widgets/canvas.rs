@@ -7,10 +7,12 @@ use point::Point;
 use rect::Rect;
 use renderer::Renderer;
 use traits::{Click, Place};
-use widgets::{Widget, WidgetCore};
+use widgets::Widget;
 
 pub struct Canvas {
-    pub core: WidgetCore,
+    pub rect: Cell<Rect>,
+    pub bg: Color,
+    pub fg: Color,
     data: RefCell<Vec<Color>>,
     click_callback: RefCell<Option<Arc<Fn(&Canvas, Point)>>>,
 }
@@ -18,7 +20,9 @@ pub struct Canvas {
 impl Canvas {
     pub fn new() -> Arc<Self> {
         Arc::new(Canvas {
-            core: WidgetCore::new(Color::rgb(255, 255, 255), Color::rgb(0, 0, 0)),
+            rect: Cell::new(Rect::default()),
+            bg: Color::rgb(255, 255, 255),
+            fg: Color::rgb(0, 0, 0),
             data: RefCell::new(vec![]),
             click_callback: RefCell::new(None)
         })
@@ -107,7 +111,7 @@ impl Place for Canvas {
     // override default implementation because data
     // must be initialized to proper width and height.
     fn size(&self, width: u32, height: u32) -> &Self {
-        *(self.data.borrow_mut()) = vec![self.core.bg; (width*height) as usize];
+        *(self.data.borrow_mut()) = vec![self.bg; (width*height) as usize];
 
         // code below should be the same as default
         // Place::size() implementation
@@ -121,12 +125,12 @@ impl Place for Canvas {
 
 impl Widget for Canvas {
     fn rect(&self) -> &Cell<Rect> {
-        &self.core.rect
+        &self.rect
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.core.rect.get();
-        renderer.rect(rect, self.core.bg);
+        let rect = self.rect.get();
+        renderer.rect(rect, self.bg);
 
         let data = self.data.borrow();
 
@@ -142,7 +146,7 @@ impl Widget for Canvas {
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {
-                let rect = self.core.rect.get();
+                let rect = self.rect.get();
 
                 // if mouse is in canvas and LMB is pressed
                 if rect.contains(point) && left_button {

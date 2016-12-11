@@ -1,4 +1,3 @@
-use orbclient::Color;
 use std::any::Any;
 use std::cell::Cell;
 
@@ -19,22 +18,6 @@ mod label;
 mod menu;
 mod progress_bar;
 mod text_box;
-
-pub struct WidgetCore {
-    pub rect: Cell<Rect>,
-    pub bg: Color,
-    pub fg: Color,
-}
-
-impl WidgetCore {
-    pub fn new(bg: Color, fg: Color) -> Self {
-        WidgetCore {
-            rect: Cell::new(Rect::default()),
-            bg: bg,
-            fg: fg,
-        }
-    }
-}
 
 pub trait Widget : Any {
     fn rect(&self) -> &Cell<Rect>;

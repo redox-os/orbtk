@@ -9,10 +9,12 @@ use rect::Rect;
 use renderer::Renderer;
 use theme::{BUTTON_BACKGROUND, BUTTON_FOREGROUND, BUTTON_SELECTION, BUTTON_BORDER};
 use traits::{Click, Place, Text};
-use widgets::{Widget, WidgetCore};
+use widgets::Widget;
 
 pub struct Button {
-    pub core: WidgetCore,
+    pub rect: Cell<Rect>,
+    pub bg: Color,
+    pub fg: Color,
     pub text: CloneCell<String>,
     pub bg_pressed: Color,
     pub fg_border: Color,
@@ -24,7 +26,9 @@ pub struct Button {
 impl Button {
     pub fn new() -> Arc<Self> {
         Arc::new(Button {
-            core: WidgetCore::new(BUTTON_BACKGROUND, BUTTON_FOREGROUND),
+            rect: Cell::new(Rect::default()),
+            bg: BUTTON_BACKGROUND,
+            fg: BUTTON_FOREGROUND,
             text: CloneCell::new(String::new()),
             bg_pressed: BUTTON_SELECTION,
             fg_border: BUTTON_BORDER,
@@ -64,23 +68,23 @@ impl Text for Button {
 
 impl Widget for Button {
     fn rect(&self) -> &Cell<Rect> {
-        &self.core.rect
+        &self.rect
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.core.rect.get();
+        let rect = self.rect.get();
 
         let x = rect.x;
         let y = rect.y;
         let w = rect.width as i32;
         let h = rect.height as i32;
 
-        let fg = self.core.fg;
+        let fg = self.fg;
 
         let bg = if self.pressed.get() {
             self.bg_pressed
         } else {
-            self.core.bg
+            self.bg
         };
 
         // Border radius
@@ -132,7 +136,7 @@ impl Widget for Button {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
 
-                let rect = self.core.rect.get();
+                let rect = self.rect.get();
                 if rect.contains(point) {
                     if left_button {
                         if self.pressed.check_set(true) {

@@ -11,7 +11,7 @@ use rect::Rect;
 use renderer::Renderer;
 use theme::{TEXT_SELECTION, TEXT_BACKGROUND, TEXT_FOREGROUND};
 use traits::{Click, Enter, EventFilter, Place};
-use widgets::{Widget, WidgetCore};
+use widgets::Widget;
 
 /// Find next character index
 fn next_i(text: &str, text_i: usize) -> usize {
@@ -26,7 +26,9 @@ fn prev_i(text: &str, text_i: usize) -> usize {
 }
 
 pub struct TextBox {
-    pub core: WidgetCore,
+    pub rect: Cell<Rect>,
+    pub bg: Color,
+    pub fg: Color,
     pub text: CloneCell<String>,
     pub text_i: Cell<usize>,
     pub fg_cursor: Color,
@@ -49,7 +51,9 @@ pub struct TextBox {
 impl TextBox {
     pub fn new() -> Arc<Self> {
         Arc::new(TextBox {
-            core: WidgetCore::new(TEXT_BACKGROUND, TEXT_FOREGROUND),
+            rect: Cell::new(Rect::default()),
+            bg: TEXT_BACKGROUND,
+            fg: TEXT_FOREGROUND,
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
             fg_cursor: TEXT_SELECTION,
@@ -125,13 +129,13 @@ impl Place for TextBox {}
 
 impl Widget for TextBox {
     fn rect(&self) -> &Cell<Rect> {
-        &self.core.rect
+        &self.rect
     }
 
     fn draw(&self, renderer: &mut Renderer, focused: bool) {
-        let rect = self.core.rect.get();
+        let rect = self.rect.get();
 
-        renderer.rect(rect, self.core.bg);
+        renderer.rect(rect, self.bg);
 
         let text_i = self.text_i.get();
         let text = self.text.borrow();
@@ -160,9 +164,9 @@ impl Widget for TextBox {
                         renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
                     }
                     if let Some(mask_c) = self.mask_char.get() {
-                        renderer.char(Point::new(x, y) + rect.point(), mask_c, self.core.fg);
+                        renderer.char(Point::new(x, y) + rect.point(), mask_c, self.fg);
                     } else {
-                        renderer.char(Point::new(x, y) + rect.point(), c, self.core.fg);
+                        renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
                     }
                 }
 
@@ -183,7 +187,7 @@ impl Widget for TextBox {
                 Event::Mouse { point, left_button, .. } => {
                     let mut click = false;
 
-                    let rect = self.core.rect.get();
+                    let rect = self.rect.get();
                     if rect.contains(point) {
                         if left_button {
                             if self.pressed.check_set(true) {

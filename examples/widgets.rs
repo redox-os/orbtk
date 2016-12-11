@@ -13,7 +13,7 @@ fn main() {
     menu.position(x, y)
         .size(32, 16);
 
-    y += menu.core.rect.get().height as i32 + 10;
+    y += menu.rect.get().height as i32 + 10;
 
     let label = Label::new();
     label.position(x, y)
@@ -21,7 +21,7 @@ fn main() {
         .text("Test Label");
     window.add(&label);
 
-    y += label.core.rect.get().height as i32 + 10;
+    y += label.rect.get().height as i32 + 10;
 
     let text_box = TextBox::new();
     text_box.position(x, y)
@@ -32,8 +32,8 @@ fn main() {
     window.add(&text_box);
 
     let button = Button::new();
-    button.position(x + text_box.core.rect.get().width as i32 + 10 - 8, y - 4)
-        .size(48 + 8, text_box.core.rect.get().height + 8)
+    button.position(x + text_box.rect.get().width as i32 + 10 - 8, y - 4)
+        .size(48 + 8, text_box.rect.get().height + 8)
         .text("Update")
         .text_offset(4, 4)
         .on_click(move |_button: &Button, _point: Point| {
@@ -41,7 +41,7 @@ fn main() {
         });
     window.add(&button);
 
-    y += button.core.rect.get().height as i32 + 10;
+    y += button.rect.get().height as i32 + 10;
 
     let progress_label = Label::new();
     progress_label.text("Progress: 0%")
@@ -49,19 +49,19 @@ fn main() {
         .size(400, 16);
     window.add(&progress_label);
 
-    y += progress_label.core.rect.get().height as i32 + 10;
+    y += progress_label.rect.get().height as i32 + 10;
 
     let progress_bar = ProgressBar::new();
     progress_bar.position(x, y)
         .size(400, 16)
         .on_click(move |progress_bar: &ProgressBar, point: Point| {
-            let progress = point.x * 100 / progress_bar.core.rect.get().width as i32;
+            let progress = point.x * 100 / progress_bar.rect.get().width as i32;
             progress_label.text.set(format!("Progress: {}%", progress));
             progress_bar.value.set(progress);
         });
     window.add(&progress_bar);
 
-    y += progress_bar.core.rect.get().height as i32 + 10;
+    y += progress_bar.rect.get().height as i32 + 10;
 
     let multi_line_label = Label::new();
     multi_line_label.text("Multi-Line Text")
@@ -69,14 +69,14 @@ fn main() {
         .size(400, 16);
     window.add(&multi_line_label);
 
-    y += multi_line_label.core.rect.get().height as i32 + 10;
+    y += multi_line_label.rect.get().height as i32 + 10;
 
     let multi_line_text_box = TextBox::new();
     multi_line_text_box.position(x, y)
         .size(400, 128);
     window.add(&multi_line_text_box);
 
-    y += multi_line_text_box.core.rect.get().height as i32 + 10;
+    y += multi_line_text_box.rect.get().height as i32 + 10;
 
     let offset_label = Label::new();
     offset_label.position(x, y)
