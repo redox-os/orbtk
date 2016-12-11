@@ -8,7 +8,7 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use renderer::Renderer;
-use theme::{ITEM_BACKGROUND, ITEM_SELECTION};
+use theme::{ITEM_BACKGROUND, ITEM_BORDER, ITEM_SELECTION};
 use traits::{Click, Place};
 use widgets::Widget;
 
@@ -16,6 +16,7 @@ pub struct ProgressBar {
     pub rect: Cell<Rect>,
     pub bg: Color,
     pub fg: Color,
+    pub fg_border: Color,
     pub value: Cell<i32>,
     pub minimum: i32,
     pub maximum: i32,
@@ -29,6 +30,7 @@ impl ProgressBar {
             rect: Cell::new(Rect::default()),
             bg: ITEM_BACKGROUND,
             fg: ITEM_SELECTION,
+            fg_border: ITEM_BORDER,
             value: Cell::new(0),
             minimum: 0,
             maximum: 100,
@@ -65,16 +67,17 @@ impl Widget for ProgressBar {
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.rect.get();
-        renderer.rect(rect, self.bg);
-        renderer.rect(Rect::new(rect.x,
+        let progress_rect = Rect::new(rect.x,
                                 rect.y,
                                 ((rect.width as i32 *
                                   max(0, min(self.maximum, self.value.get() - self.minimum))) /
                                  max(1,
                                      self.maximum -
                                      self.minimum)) as u32,
-                                rect.height),
-                      self.fg);
+                                rect.height);
+        renderer.rect(rect, self.bg);
+        renderer.rect(progress_rect, self.fg);
+        renderer.rounded_rect(rect, 0, self.fg_border);
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {

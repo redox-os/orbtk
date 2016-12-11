@@ -9,8 +9,8 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use renderer::Renderer;
-use theme::{TEXT_SELECTION, TEXT_BACKGROUND, TEXT_FOREGROUND};
-use traits::{Click, Enter, EventFilter, Place};
+use theme::{TEXT_BACKGROUND, TEXT_BORDER, TEXT_FOREGROUND, TEXT_SELECTION};
+use traits::{Click, Enter, EventFilter, Place, Text};
 use widgets::Widget;
 
 /// Find next character index
@@ -29,9 +29,11 @@ pub struct TextBox {
     pub rect: Cell<Rect>,
     pub bg: Color,
     pub fg: Color,
+    pub fg_border: Color,
+    pub fg_cursor: Color,
     pub text: CloneCell<String>,
     pub text_i: Cell<usize>,
-    pub fg_cursor: Color,
+    pub text_offset: Cell<Point>,
     pub mask_char: Cell<Option<char>>,
     pub grab_focus: Cell<bool>,
     pub click_callback: RefCell<Option<Arc<Fn(&TextBox, Point)>>>,
@@ -54,9 +56,11 @@ impl TextBox {
             rect: Cell::new(Rect::default()),
             bg: TEXT_BACKGROUND,
             fg: TEXT_FOREGROUND,
+            fg_border: TEXT_BORDER,
+            fg_cursor: TEXT_SELECTION,
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
-            fg_cursor: TEXT_SELECTION,
+            text_offset: Cell::new(Point::default()),
             mask_char: Cell::new(None),
             grab_focus: Cell::new(false),
             click_callback: RefCell::new(None),
@@ -73,13 +77,6 @@ impl TextBox {
 
     pub fn mask_char(&self, mask_char: Option<char>) -> &Self {
         self.mask_char.set(mask_char);
-        self
-    }
-
-    pub fn text<S: Into<String>>(&self, text: S) -> &Self {
-        let text = text.into();
-        self.text_i.set(text.len());
-        self.text.set(text);
         self
     }
 }
@@ -127,6 +124,20 @@ impl EventFilter for TextBox {
 
 impl Place for TextBox {}
 
+impl Text for TextBox {
+    fn text<S: Into<String>>(&self, text: S) -> &Self {
+        let text = text.into();
+        self.text_i.set(text.len());
+        self.text.set(text);
+        self
+    }
+
+    fn text_offset(&self, x: i32, y: i32) -> &Self {
+        self.text_offset.set(Point::new(x, y));
+        self
+    }
+}
+
 impl Widget for TextBox {
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
@@ -136,12 +147,14 @@ impl Widget for TextBox {
         let rect = self.rect.get();
 
         renderer.rect(rect, self.bg);
+        renderer.rounded_rect(rect, 0, self.fg_border);
 
         let text_i = self.text_i.get();
         let text = self.text.borrow();
 
-        let mut x = 0;
-        let mut y = 0;
+        let text_offset = self.text_offset.get();
+        let mut x = text_offset.x;
+        let mut y = text_offset.y;
         for (i, c) in text.char_indices() {
             if c == '\n' {
                 if i == text_i && focused && x + 8 <= rect.width as i32 &&
@@ -216,8 +229,9 @@ impl Widget for TextBox {
 
                             let mut new_text_i = None;
 
-                            let mut x = 0;
-                            let mut y = 0;
+                            let text_offset = self.text_offset.get();
+                            let mut x = text_offset.x;
+                            let mut y = text_offset.y;
                             for (i, c) in text.char_indices() {
                                 if c == '\n' {
                                     if x + 8 <= rect.width as i32 && click_point.x >= x &&

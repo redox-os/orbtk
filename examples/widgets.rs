@@ -25,7 +25,8 @@ fn main() {
 
     let text_box = TextBox::new();
     text_box.position(x, y)
-        .size(342, 16)
+        .size(342, 18)
+        .text_offset(1, 1)
         .on_enter(move |text_box: &TextBox| {
             label.text.set(text_box.text.get());
         });
@@ -73,7 +74,8 @@ fn main() {
 
     let multi_line_text_box = TextBox::new();
     multi_line_text_box.position(x, y)
-        .size(400, 128);
+        .size(400, 130)
+        .text_offset(1, 1);
     window.add(&multi_line_text_box);
 
     y += multi_line_text_box.rect.get().height as i32 + 10;
