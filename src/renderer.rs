@@ -1,10 +1,12 @@
 use orbclient::Color;
+use orbimage::Image;
 
 use super::{Point, Rect};
 
 pub trait Renderer {
     fn clear(&mut self, color: Color);
     fn char(&mut self, pos: Point, c: char, color: Color);
+    fn image(&mut self, pos: Point, image: &Image);
     fn pixel(&mut self, point: Point, color: Color);
     fn arc(&mut self, center: Point, radius: i32, parts: u8, color: Color);
     fn circle(&mut self, center: Point, radius: i32, color: Color);

@@ -1,4 +1,5 @@
 use orbclient::{self, Color};
+use orbimage::Image;
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
@@ -29,6 +30,10 @@ impl<'a> Renderer for WindowRenderer<'a> {
         }else{
             self.inner.char(pos.x, pos.y, c, color);
         }
+    }
+
+    fn image(&mut self, pos: Point, image: &Image) {
+        image.draw(&mut self.inner, pos.x, pos.y);
     }
 
     fn pixel(&mut self, point: Point, color: Color) {

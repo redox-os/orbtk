@@ -4,6 +4,7 @@
 #![feature(const_fn)]
 
 extern crate orbclient;
+extern crate orbimage;
 
 pub use orbclient::Color;
 

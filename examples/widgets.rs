@@ -1,6 +1,6 @@
 extern crate orbtk;
 
-use orbtk::{Action, Button, Grid, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
+use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
 use orbtk::traits::{Border, Click, Enter, Place, Text};
 
 fn main() {
@@ -82,7 +82,7 @@ fn main() {
 
     let offset_label = Label::new();
     offset_label.position(x, y)
-        .size(400, 256)
+        .size(400, 120)
         .border(true)
         .text("Test Offset")
         .text_offset(50, 50)
@@ -92,6 +92,24 @@ fn main() {
     window.add(&offset_label);
 
     y += offset_label.rect.get().height as i32 + 10;
+
+    match Image::from_path("res/icon_small.png") {
+        Ok(image) => {
+            image.position(x, y);
+            window.add(&image);
+
+            y += image.rect.get().height as i32 + 10;
+        },
+        Err(err) => {
+            let label = Label::new();
+            label.position(x, y)
+                .size(400, 16)
+                .text(err);
+            window.add(&label);
+
+            y += label.rect.get().height as i32 + 10;
+        }
+    }
 
     {
         let action = Action::new("Label One");
