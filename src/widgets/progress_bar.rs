@@ -1,72 +1,105 @@
-use super::{Color, Event, Placeable, Point, Rect, Renderer, Widget, WidgetCore};
-use super::callback::Click;
-use super::cell::CheckSet;
-
-use std::cell::Cell;
+use orbclient::Color;
+use std::cell::{Cell, RefCell};
 use std::cmp::{min, max};
 use std::sync::Arc;
 
+use cell::CheckSet;
+use event::Event;
+use point::Point;
+use rect::Rect;
+use renderer::Renderer;
+use theme::{ITEM_BACKGROUND, ITEM_BORDER, ITEM_SELECTION};
+use traits::{Border, Click, Place};
+use widgets::Widget;
+
 pub struct ProgressBar {
-    pub core: WidgetCore,
+    pub rect: Cell<Rect>,
+    pub bg: Color,
+    pub fg: Color,
+    pub fg_border: Color,
+    pub border: Cell<bool>,
+    pub border_radius: Cell<u32>,
     pub value: Cell<i32>,
     pub minimum: i32,
     pub maximum: i32,
-    click_callback: Option<Arc<Fn(&ProgressBar, Point)>>,
+    click_callback: RefCell<Option<Arc<Fn(&ProgressBar, Point)>>>,
     pressed: Cell<bool>,
 }
 
 impl ProgressBar {
-    pub fn new() -> Self {
-        ProgressBar {
-            core: WidgetCore::new()
-                    .fg(Color::rgb(74, 144, 217)),
+    pub fn new() -> Arc<Self> {
+        Arc::new(ProgressBar {
+            rect: Cell::new(Rect::default()),
+            bg: ITEM_BACKGROUND,
+            fg: ITEM_SELECTION,
+            fg_border: ITEM_BORDER,
+            border: Cell::new(true),
+            border_radius: Cell::new(0),
             value: Cell::new(0),
             minimum: 0,
             maximum: 100,
-            click_callback: None,
+            click_callback: RefCell::new(None),
             pressed: Cell::new(false),
-        }
+        })
     }
 
-    pub fn value(self, value: i32) -> Self {
+    pub fn value(&self, value: i32) -> &Self {
         self.value.set(value);
+        self
+    }
+}
+
+impl Border for ProgressBar {
+    fn border(&self, enabled: bool) -> &Self {
+        self.border.set(enabled);
+        self
+    }
+
+    fn border_radius(&self, radius: u32) -> &Self {
+        self.border_radius.set(radius);
         self
     }
 }
 
 impl Click for ProgressBar {
     fn emit_click(&self, point: Point) {
-        if let Some(ref click_callback) = self.click_callback {
+        if let Some(ref click_callback) = *self.click_callback.borrow() {
             click_callback(self, point);
         }
     }
 
-    fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.click_callback = Some(Arc::new(func));
-
+    fn on_click<T: Fn(&Self, Point) + 'static>(&self, func: T) -> &Self {
+        *self.click_callback.borrow_mut() = Some(Arc::new(func));
         self
     }
 }
 
-impl Placeable for ProgressBar {}
+impl Place for ProgressBar {}
 
 impl Widget for ProgressBar {
     fn rect(&self) -> &Cell<Rect> {
-        &self.core.rect
+        &self.rect
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.core.rect.get();
-        renderer.rect(rect, self.core.bg);
-        renderer.rect(Rect::new(rect.x,
+        let rect = self.rect.get();
+        let progress_rect = Rect::new(rect.x,
                                 rect.y,
                                 ((rect.width as i32 *
                                   max(0, min(self.maximum, self.value.get() - self.minimum))) /
                                  max(1,
                                      self.maximum -
                                      self.minimum)) as u32,
-                                rect.height),
-                      self.core.fg);
+                                rect.height);
+
+        let b_r = self.border_radius.get();
+        renderer.rounded_rect(rect, b_r, true, self.bg);
+        if progress_rect.width >= b_r * 2 {
+            renderer.rounded_rect(progress_rect, b_r, true, self.fg);
+        }
+        if self.border.get() {
+            renderer.rounded_rect(rect, b_r, false, self.fg_border);
+        }
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
@@ -74,7 +107,7 @@ impl Widget for ProgressBar {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
 
-                let rect = self.core.rect.get();
+                let rect = self.rect.get();
                 if rect.contains(point) {
                     if left_button {
                         if self.pressed.check_set(true) {

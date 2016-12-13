@@ -1,118 +1,181 @@
 extern crate orbtk;
 
-use orbtk::{Action, Button, Label, Menu, Placeable, Point, ProgressBar, Rect, TextBox, Window};
-use orbtk::callback::{Click, Enter};
+use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
+use orbtk::traits::{Border, Click, Enter, Place, Text};
 
 fn main() {
-    let window = Window::new(Rect::new(100, 100, 420, 420), "OrbTK");
+    let window = Window::new(Rect::new(100, 100, 420, 720), "OrbTK");
 
     let x = 10;
     let mut y = 0;
 
-    let mut menu = Menu::new("Menu")
-        .position(x, y)
+    let menu = Menu::new("Menu");
+    menu.position(x, y)
         .size(32, 16);
 
-    y += menu.core.rect.get().height as i32 + 10;
+    y += menu.rect.get().height as i32 + 10;
 
-    let label = Label::new()
-        .position(x, y)
+    let label = Label::new();
+    label.position(x, y)
         .size(400, 16)
-        .text("Test Label")
-        .place(&window);
+        .text("Test Label");
+    window.add(&label);
 
-    y += label.core.rect.get().height as i32 + 10;
+    y += label.rect.get().height as i32 + 10;
 
-    let text_box = TextBox::new()
-        .position(x, y)
-        .size(342, 16)
+    let text_box = TextBox::new();
+    text_box.position(x, y)
+        .size(342, 18)
+        .text_offset(1, 1)
         .on_enter(move |text_box: &TextBox| {
             label.text.set(text_box.text.get());
-        })
-        .place(&window);
+        });
+    window.add(&text_box);
 
-    let button = Button::new()
-        .position(x + text_box.core.rect.get().width as i32 + 10 - 8, y - 4)
-        .size(48 + 8, text_box.core.rect.get().height + 8)
+    let button = Button::new();
+    button.position(x + text_box.rect.get().width as i32 + 8, y)
+        .size(48 + 2, text_box.rect.get().height)
         .text("Update")
-        .text_offset(4, 4)
+        .text_offset(1, 1)
         .on_click(move |_button: &Button, _point: Point| {
             text_box.emit_enter();
-        })
-        .place(&window);
+        });
+    window.add(&button);
 
-    y += button.core.rect.get().height as i32 + 10;
+    y += button.rect.get().height as i32 + 10;
 
-    let progress_label = Label::new()
-        .text("Progress: 0%")
+    let progress_label = Label::new();
+    progress_label.text("Progress: 0%")
         .position(x, y)
-        .size(400, 16)
-        .place(&window);
+        .size(400, 16);
+    window.add(&progress_label);
 
-    y += progress_label.core.rect.get().height as i32 + 10;
+    y += progress_label.rect.get().height as i32 + 10;
 
-    let progress_bar = ProgressBar::new()
-        .position(x, y)
+    let progress_bar = ProgressBar::new();
+    progress_bar.position(x, y)
         .size(400, 16)
         .on_click(move |progress_bar: &ProgressBar, point: Point| {
-            let progress = point.x * 100 / progress_bar.core.rect.get().width as i32;
+            let progress = point.x * 100 / progress_bar.rect.get().width as i32;
             progress_label.text.set(format!("Progress: {}%", progress));
             progress_bar.value.set(progress);
-        })
-        .place(&window);
+        });
+    window.add(&progress_bar);
 
-    y += progress_bar.core.rect.get().height as i32 + 10;
+    y += progress_bar.rect.get().height as i32 + 10;
 
-    let multi_line_label = Label::new()
-        .text("Multi-Line Text")
+    let multi_line_label = Label::new();
+    multi_line_label.text("Multi-Line Text")
         .position(x, y)
-        .size(400, 16)
-        .place(&window);
+        .size(400, 16);
+    window.add(&multi_line_label);
 
-    y += multi_line_label.core.rect.get().height as i32 + 10;
+    y += multi_line_label.rect.get().height as i32 + 10;
 
-    let multi_line_text_box = TextBox::new()
-        .position(x, y)
-        .size(400, 128)
-        .place(&window);
+    let multi_line_text_box = TextBox::new();
+    multi_line_text_box.position(x, y)
+        .size(400, 130)
+        .text_offset(1, 1);
+    window.add(&multi_line_text_box);
 
-    y += multi_line_text_box.core.rect.get().height as i32 + 10;
+    y += multi_line_text_box.rect.get().height as i32 + 10;
 
-    let offset_label = Label::new()
-        .position(x, y)
-        .size(400, 256)
+    let offset_label = Label::new();
+    offset_label.position(x, y)
+        .size(400, 120)
+        .border(true)
         .text("Test Offset")
         .text_offset(50, 50)
-        .place(&window);
+        .on_click(|label: &Label, _point: Point| {
+            label.text("Clicked");
+        });
+    window.add(&offset_label);
 
-    {
-        let offset_label_clone = offset_label.clone();
-        menu.add_action(Action::new("Label One")
-            .on_click(move |_action: &Action, _point: Point| {
-                offset_label_clone.text.set("One".to_owned());
-            }));
+    y += offset_label.rect.get().height as i32 + 10;
+
+    match Image::from_path("res/icon_small.png") {
+        Ok(image) => {
+            image.position(x, y);
+            window.add(&image);
+
+            y += image.rect.get().height as i32 + 10;
+        },
+        Err(err) => {
+            let label = Label::new();
+            label.position(x, y)
+                .size(400, 16)
+                .text(err);
+            window.add(&label);
+
+            y += label.rect.get().height as i32 + 10;
+        }
     }
 
     {
+        let action = Action::new("Label One");
         let offset_label_clone = offset_label.clone();
-        menu.add_action(Action::new("Label Two")
-            .on_click(move |_action: &Action, _point: Point| {
-                offset_label_clone.text.set("Two".to_owned());
-            }));
+        action.on_click(move |_action: &Action, _point: Point| {
+            offset_label_clone.text.set("One".to_owned());
+        });
+        menu.add(&action);
     }
-
-    menu.add_separator();
 
     {
+        let action = Action::new("Label Two");
         let offset_label_clone = offset_label.clone();
-        menu.add_action(Action::new("Reset Label")
-            .on_click(move |_action: &Action, _point: Point| {
-                offset_label_clone.text.set("Text Offset".to_owned());
-            }));
+        action.on_click(move |_action: &Action, _point: Point| {
+            offset_label_clone.text.set("Two".to_owned());
+        });
+        menu.add(&action);
     }
 
-    // TODO: Don't require this to be placed last to be drawn last
-    menu.place(&window);
+    menu.add(&Separator::new());
+
+    {
+        let action = Action::new("Reset Label");
+        let offset_label_clone = offset_label.clone();
+        action.on_click(move |_action: &Action, _point: Point| {
+            offset_label_clone.text.set("Text Offset".to_owned());
+        });
+        menu.add(&action);
+    }
+
+    let grid = Grid::new();
+    grid.position(x, y)
+        .spacing(8, 8);
+
+    let label = Label::new();
+    label.size(32, 16).text("Grid");
+    grid.add(0, 0, &label);
+
+    let label = Label::new();
+    label.size(32, 16).text("Test");
+    grid.add(1, 0, &label);
+
+    let label = Label::new();
+    label.size(32, 16).text("With");
+    grid.add(2, 0, &label);
+
+    let label = Label::new();
+    label.size(48, 16).text("Resize");
+    grid.add(3, 0, &label);
+
+    let mut i = 0;
+    for row in 1..6 {
+        for col in 0..5 {
+            let cell = TextBox::new();
+            let text = format!("{}: {}, {}", i, col, row);
+            cell.size(text.len() as u32 * 8 + 2, 18).text(text).text_offset(1, 1);
+            grid.add(col, row, &cell);
+            i += 1;
+        }
+    }
+    grid.arrange(true);
+
+    window.add(&grid);
+
+    // Add this last to put it on top
+    window.add(&menu);
 
     window.exec();
 }

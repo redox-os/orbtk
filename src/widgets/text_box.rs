@@ -1,11 +1,17 @@
-use super::{CloneCell, Color, Event, Placeable, Point, Rect, Renderer, Widget, WidgetCore};
-use super::callback::{Click, Enter, EventFilter};
-use super::cell::CheckSet;
-
+use orbclient::Color;
 use std::cell::{Cell, RefCell};
 use std::cmp::min;
 use std::ops::Deref;
 use std::sync::Arc;
+
+use cell::{CloneCell, CheckSet};
+use event::Event;
+use point::Point;
+use rect::Rect;
+use renderer::Renderer;
+use theme::{TEXT_BACKGROUND, TEXT_BORDER, TEXT_FOREGROUND, TEXT_SELECTION};
+use traits::{Border, Click, Enter, EventFilter, Place, Text};
+use widgets::Widget;
 
 /// Find next character index
 fn next_i(text: &str, text_i: usize) -> usize {
@@ -20,14 +26,20 @@ fn prev_i(text: &str, text_i: usize) -> usize {
 }
 
 pub struct TextBox {
-    pub core: WidgetCore,
+    pub rect: Cell<Rect>,
+    pub bg: Color,
+    pub fg: Color,
+    pub fg_border: Color,
+    pub fg_cursor: Color,
+    pub border: Cell<bool>,
+    pub border_radius: Cell<u32>,
     pub text: CloneCell<String>,
     pub text_i: Cell<usize>,
-    pub fg_cursor: Color,
+    pub text_offset: Cell<Point>,
     pub mask_char: Cell<Option<char>>,
     pub grab_focus: Cell<bool>,
-    pub on_click: RefCell<Option<Arc<Fn(&TextBox, Point)>>>,
-    pub on_enter: RefCell<Option<Arc<Fn(&TextBox)>>>,
+    pub click_callback: RefCell<Option<Arc<Fn(&TextBox, Point)>>>,
+    pub enter_callback: RefCell<Option<Arc<Fn(&TextBox)>>>,
     /// If event_filter is defined, all of the events will go trough it
     /// Instead of the default behavior. This allows defining fields that
     /// ex. will only accept numbers and ignore all else, or add some
@@ -41,68 +53,75 @@ pub struct TextBox {
 }
 
 impl TextBox {
-    pub fn new() -> Self {
-        TextBox {
-            core: WidgetCore::new(),
+    pub fn new() -> Arc<Self> {
+        Arc::new(TextBox {
+            rect: Cell::new(Rect::default()),
+            bg: TEXT_BACKGROUND,
+            fg: TEXT_FOREGROUND,
+            fg_border: TEXT_BORDER,
+            fg_cursor: TEXT_SELECTION,
+            border: Cell::new(true),
+            border_radius: Cell::new(0),
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
-            fg_cursor: Color::gray(),
+            text_offset: Cell::new(Point::default()),
             mask_char: Cell::new(None),
             grab_focus: Cell::new(false),
-            on_click: RefCell::new(None),
-            on_enter: RefCell::new(None),
+            click_callback: RefCell::new(None),
+            enter_callback: RefCell::new(None),
             event_filter: RefCell::new(None),
             pressed: Cell::new(false),
-        }
+        })
     }
 
-    pub fn grab_focus(self, grab_focus: bool) -> Self {
+    pub fn grab_focus(&self, grab_focus: bool) -> &Self {
         self.grab_focus.set(grab_focus);
         self
     }
 
-    pub fn mask_char(self, mask_char: Option<char>) -> Self {
+    pub fn mask_char(&self, mask_char: Option<char>) -> &Self {
         self.mask_char.set(mask_char);
         self
     }
+}
 
-    pub fn text<S: Into<String>>(self, text: S) -> Self {
-        let text = text.into();
-        self.text_i.set(text.len());
-        self.text.set(text);
+impl Border for TextBox {
+    fn border(&self, enabled: bool) -> &Self {
+        self.border.set(enabled);
+        self
+    }
+
+    fn border_radius(&self, radius: u32) -> &Self {
+        self.border_radius.set(radius);
         self
     }
 }
 
 impl Click for TextBox {
     fn emit_click(&self, point: Point) {
-        if let Some(ref on_click) = *self.on_click.borrow() {
-            on_click(self, point);
+        if let Some(ref click_callback) = *self.click_callback.borrow() {
+            click_callback(self, point);
         }
     }
 
-    fn on_click<T: Fn(&Self, Point) + 'static>(self, func: T) -> Self {
-        *self.on_click.borrow_mut() = Some(Arc::new(func));
-
+    fn on_click<T: Fn(&Self, Point) + 'static>(&self, func: T) -> &Self {
+        *self.click_callback.borrow_mut() = Some(Arc::new(func));
         self
     }
 }
 
 impl Enter for TextBox {
     fn emit_enter(&self) {
-        if let Some(ref on_enter) = *self.on_enter.borrow() {
-            on_enter(self)
+        if let Some(ref enter_callback) = *self.enter_callback.borrow() {
+            enter_callback(self)
         }
     }
 
-    fn on_enter<T: Fn(&Self) + 'static>(self, func: T) -> Self {
-        *self.on_enter.borrow_mut() = Some(Arc::new(func));
-
+    fn on_enter<T: Fn(&Self) + 'static>(&self, func: T) -> &Self {
+        *self.enter_callback.borrow_mut() = Some(Arc::new(func));
         self
     }
 }
-
-impl Placeable for TextBox {}
 
 impl EventFilter for TextBox {
     fn handle_event(&self, event: Event, focused: &mut bool, redraw: &mut bool) -> Option<Event> {
@@ -113,28 +132,48 @@ impl EventFilter for TextBox {
         }
     }
 
-    fn event_filter<T: Fn(&Self, Event, &mut bool, &mut bool) -> Option<Event> + 'static>(self, func: T) -> Self {
+    fn event_filter<T: Fn(&Self, Event, &mut bool, &mut bool) -> Option<Event> + 'static>(&self, func: T) -> &Self {
         *self.event_filter.borrow_mut() = Some(Arc::new(func));
+        self
+    }
+}
 
+impl Place for TextBox {}
+
+impl Text for TextBox {
+    fn text<S: Into<String>>(&self, text: S) -> &Self {
+        let text = text.into();
+        self.text_i.set(text.len());
+        self.text.set(text);
+        self
+    }
+
+    fn text_offset(&self, x: i32, y: i32) -> &Self {
+        self.text_offset.set(Point::new(x, y));
         self
     }
 }
 
 impl Widget for TextBox {
     fn rect(&self) -> &Cell<Rect> {
-        &self.core.rect
+        &self.rect
     }
 
     fn draw(&self, renderer: &mut Renderer, focused: bool) {
-        let rect = self.core.rect.get();
+        let rect = self.rect.get();
 
-        renderer.rect(rect, self.core.bg);
+        let b_r = self.border_radius.get();
+        renderer.rounded_rect(rect, b_r, true, self.bg);
+        if self.border.get() {
+            renderer.rounded_rect(rect, b_r, false, self.fg_border);
+        }
 
         let text_i = self.text_i.get();
         let text = self.text.borrow();
 
-        let mut x = 0;
-        let mut y = 0;
+        let text_offset = self.text_offset.get();
+        let mut x = text_offset.x;
+        let mut y = text_offset.y;
         for (i, c) in text.char_indices() {
             if c == '\n' {
                 if i == text_i && focused && x + 8 <= rect.width as i32 &&
@@ -157,9 +196,9 @@ impl Widget for TextBox {
                         renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
                     }
                     if let Some(mask_c) = self.mask_char.get() {
-                        renderer.char(Point::new(x, y) + rect.point(), mask_c, self.core.fg);
+                        renderer.char(Point::new(x, y) + rect.point(), mask_c, self.fg);
                     } else {
-                        renderer.char(Point::new(x, y) + rect.point(), c, self.core.fg);
+                        renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
                     }
                 }
 
@@ -180,7 +219,7 @@ impl Widget for TextBox {
                 Event::Mouse { point, left_button, .. } => {
                     let mut click = false;
 
-                    let rect = self.core.rect.get();
+                    let rect = self.rect.get();
                     if rect.contains(point) {
                         if left_button {
                             if self.pressed.check_set(true) {
@@ -209,8 +248,9 @@ impl Widget for TextBox {
 
                             let mut new_text_i = None;
 
-                            let mut x = 0;
-                            let mut y = 0;
+                            let text_offset = self.text_offset.get();
+                            let mut x = text_offset.x;
+                            let mut y = text_offset.y;
                             for (i, c) in text.char_indices() {
                                 if c == '\n' {
                                     if x + 8 <= rect.width as i32 && click_point.x >= x &&
@@ -272,7 +312,7 @@ impl Widget for TextBox {
                 }
                 Event::Enter => {
                     if focused {
-                        if self.on_enter.borrow().is_some() {
+                        if self.enter_callback.borrow().is_some() {
                             self.emit_enter();
                         } else {
                             let mut text = self.text.borrow_mut();

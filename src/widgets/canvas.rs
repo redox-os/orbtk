@@ -1,22 +1,31 @@
-use super::{Color, Event, Placeable, Point, Rect, Renderer, Widget, WidgetCore};
-use super::callback::{Click};
-
+use orbclient::Color;
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
+use event::Event;
+use point::Point;
+use rect::Rect;
+use renderer::Renderer;
+use traits::{Click, Place};
+use widgets::Widget;
+
 pub struct Canvas {
-    pub core: WidgetCore,
+    pub rect: Cell<Rect>,
+    pub bg: Color,
+    pub fg: Color,
     data: RefCell<Vec<Color>>,
-    click_callback: Option<Arc<Fn(&Canvas, Point)>>,
+    click_callback: RefCell<Option<Arc<Fn(&Canvas, Point)>>>,
 }
 
 impl Canvas {
-    pub fn new() -> Self {
-        Canvas {
-            core: WidgetCore::new().bg(Color::white()).fg(Color::black()),
+    pub fn new() -> Arc<Self> {
+        Arc::new(Canvas {
+            rect: Cell::new(Rect::default()),
+            bg: Color::rgb(255, 255, 255),
+            fg: Color::rgb(0, 0, 0),
             data: RefCell::new(vec![]),
-            click_callback: None
-        }
+            click_callback: RefCell::new(None)
+        })
     }
 
     pub fn clear(&self, color: Color) {
@@ -40,7 +49,7 @@ impl Canvas {
         let rect = self.rect().get();
         if let Some(color_ref) = self.data.borrow_mut().get_mut((point.y*rect.width as i32 + point.x) as usize) {
             *color_ref = color;
-        } 
+        }
     }
 
     pub fn line(&self, start: Point, end: Point, color: Color) {
@@ -87,42 +96,41 @@ impl Canvas {
 
 impl Click for Canvas {
     fn emit_click(&self, point: Point) {
-        if let Some(ref click_callback) = self.click_callback {
+        if let Some(ref click_callback) = *self.click_callback.borrow() {
             click_callback(self, point);
         }
     }
 
-    fn on_click<T: Fn(&Self, Point) + 'static>(mut self, func: T) -> Self {
-        self.click_callback = Some(Arc::new(func));
+    fn on_click<T: Fn(&Self, Point) + 'static>(&self, func: T) -> &Self {
+        *self.click_callback.borrow_mut() = Some(Arc::new(func));
         self
     }
 }
 
-impl Placeable for Canvas {
-    // override default implementation because data 
+impl Place for Canvas {
+    // override default implementation because data
     // must be initialized to proper width and height.
-    fn size(self, width: u32, height: u32) -> Self {
-        *(self.data.borrow_mut()) = vec![self.core.bg; (width*height) as usize];
+    fn size(&self, width: u32, height: u32) -> &Self {
+        *(self.data.borrow_mut()) = vec![self.bg; (width*height) as usize];
 
-        // code below should be the same as default 
+        // code below should be the same as default
         // Place::size() implementation
         let mut rect = self.rect().get();
         rect.width = width;
         rect.height = height;
         self.rect().set(rect);
-
         self
     }
 }
 
 impl Widget for Canvas {
     fn rect(&self) -> &Cell<Rect> {
-        &self.core.rect
+        &self.rect
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.core.rect.get();
-        renderer.rect(rect, self.core.bg);
+        let rect = self.rect.get();
+        renderer.rect(rect, self.bg);
 
         let data = self.data.borrow();
 
@@ -138,7 +146,7 @@ impl Widget for Canvas {
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {
-                let rect = self.core.rect.get();
+                let rect = self.rect.get();
 
                 // if mouse is in canvas and LMB is pressed
                 if rect.contains(point) && left_button {

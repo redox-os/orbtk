@@ -1,9 +1,11 @@
-use super::{Color, Event, Point, Rect, Renderer, Widget};
-
-use std::sync::Arc;
+use orbclient::{self, Color};
+use orbimage::Image;
 use std::cell::{Cell, RefCell};
+use std::sync::Arc;
 
-extern crate orbclient;
+use super::{Event, Point, Rect, Renderer, Widget};
+use theme::WINDOW_BACKGROUND;
+
 extern crate orbfont;
 
 pub struct WindowRenderer<'a> {
@@ -19,51 +21,39 @@ impl<'a> WindowRenderer<'a> {
 
 impl<'a> Renderer for WindowRenderer<'a> {
     fn clear(&mut self, color: Color) {
-        self.inner.set(orbclient::Color { data: color.data });
+        self.inner.set(color);
     }
 
     fn char(&mut self, pos: Point, c: char, color: Color) {
         if let Some(ref font) = *self.font {
             font.render(&c.to_string(), 16.0).draw(&mut self.inner, pos.x, pos.y, orbclient::Color { data: color.data })
         }else{
-            self.inner.char(pos.x, pos.y, c, orbclient::Color { data: color.data });
+            self.inner.char(pos.x, pos.y, c, color);
         }
     }
 
+    fn image(&mut self, pos: Point, image: &Image) {
+        image.draw(&mut self.inner, pos.x, pos.y);
+    }
+
     fn pixel(&mut self, point: Point, color: Color) {
-        self.inner.pixel(point.x, point.y,
-                         orbclient::Color { data: color.data });
+        self.inner.pixel(point.x, point.y, color);
     }
 
     fn arc(&mut self, center: Point, radius: i32, parts: u8, color: Color) {
-        self.inner.arc(center.x,
-                       center.y,
-                       radius,
-                       parts,
-                       orbclient::Color { data: color.data });
+        self.inner.arc(center.x, center.y, radius, parts, color);
     }
 
     fn circle(&mut self, center: Point, radius: i32, color: Color) {
-        self.inner.circle(center.x,
-                          center.y,
-                          radius,
-                          orbclient::Color { data: color.data });
+        self.inner.circle(center.x, center.y, radius, color);
     }
 
     fn line(&mut self, start: Point, end: Point, color: Color) {
-        self.inner.line(start.x,
-                        start.y,
-                        end.x,
-                        end.y,
-                        orbclient::Color { data: color.data });
+        self.inner.line(start.x, start.y, end.x, end.y, color);
     }
 
     fn rect(&mut self, rect: Rect, color: Color) {
-        self.inner.rect(rect.x,
-                        rect.y,
-                        rect.width,
-                        rect.height,
-                        orbclient::Color { data: color.data });
+        self.inner.rect(rect.x, rect.y, rect.width, rect.height, color);
     }
 }
 
@@ -89,13 +79,20 @@ impl Window {
             font: orbfont::Font::find(None, None, None).ok(),
             widgets: RefCell::new(Vec::new()),
             widget_focus: Cell::new(0),
-            bg: Color::rgb(232, 232, 231),
+            bg: WINDOW_BACKGROUND,
             running: Cell::new(true),
         }
     }
 
     pub fn close(&self) {
         self.running.set(false);
+    }
+
+    pub fn add<T: Widget>(&self, widget: &Arc<T>) -> usize {
+        let mut widgets = self.widgets.borrow_mut();
+        let id = widgets.len();
+        widgets.push(widget.clone());
+        id
     }
 
     pub fn draw(&self) {
