@@ -28,7 +28,7 @@ impl Grid {
         })
     }
 
-    pub fn add<T: Widget>(&self, col: usize, row: usize, entry: &Arc<T>) {
+    pub fn insert<T: Widget>(&self, col: usize, row: usize, entry: &Arc<T>) {
         self.entries.borrow_mut().insert((col, row), entry.clone());
         self.arrange(false);
     }
