@@ -146,19 +146,19 @@ fn main() {
 
     let label = Label::new();
     label.size(32, 16).text("Grid");
-    grid.add(0, 0, &label);
+    grid.insert(0, 0, &label);
 
     let label = Label::new();
     label.size(32, 16).text("Test");
-    grid.add(1, 0, &label);
+    grid.insert(1, 0, &label);
 
     let label = Label::new();
     label.size(32, 16).text("With");
-    grid.add(2, 0, &label);
+    grid.insert(2, 0, &label);
 
     let label = Label::new();
     label.size(48, 16).text("Resize");
-    grid.add(3, 0, &label);
+    grid.insert(3, 0, &label);
 
     let mut i = 0;
     for row in 1..6 {
@@ -166,7 +166,7 @@ fn main() {
             let cell = TextBox::new();
             let text = format!("{}: {}, {}", i, col, row);
             cell.size(text.len() as u32 * 8 + 2, 18).text(text).text_offset(1, 1);
-            grid.add(col, row, &cell);
+            grid.insert(col, row, &cell);
             i += 1;
         }
     }
