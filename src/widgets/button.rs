@@ -7,14 +7,14 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use renderer::Renderer;
-use theme::{BUTTON_BACKGROUND, BUTTON_FOREGROUND, BUTTON_SELECTION, BUTTON_BORDER};
+use theme::{BUTTON_BACKGROUND, BUTTON_FOREGROUND, BUTTON_GRADIENT_STOP, BUTTON_BORDER};
 use traits::{Border, Click, Place, Text};
 use widgets::Widget;
 
 pub struct Button {
     pub rect: Cell<Rect>,
     pub bg: Color,
-    pub bg_pressed: Color,
+    pub bg_gradient_stop: Color,
     pub fg: Color,
     pub fg_border: Color,
     pub border: Cell<bool>,
@@ -30,7 +30,7 @@ impl Button {
         Arc::new(Button {
             rect: Cell::new(Rect::default()),
             bg: BUTTON_BACKGROUND,
-            bg_pressed: BUTTON_SELECTION,
+            bg_gradient_stop: BUTTON_GRADIENT_STOP,
             fg: BUTTON_FOREGROUND,
             fg_border: BUTTON_BORDER,
             border: Cell::new(true),
@@ -95,14 +95,13 @@ impl Widget for Button {
 
         let fg = self.fg;
 
-        let bg = if self.pressed.get() {
-            self.bg_pressed
-        } else {
-            self.bg
-        };
-
         let b_r = self.border_radius.get();
-        renderer.rounded_rect(rect, b_r, true, bg);
+        renderer.rounded_rect(rect, b_r, true, self.bg);
+
+        if ! self.pressed.get() {
+            renderer.linear_gradient(rect, Point::new(rect.x, rect.y), Point::new(0, rect.y + rect.height as i32),
+                                     self.bg, self.bg_gradient_stop);
+        }
         if self.border.get() {
             renderer.rounded_rect(rect, b_r, false, self.fg_border);
         }

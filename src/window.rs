@@ -55,6 +55,11 @@ impl<'a> Renderer for WindowRenderer<'a> {
     fn rect(&mut self, rect: Rect, color: Color) {
         self.inner.rect(rect.x, rect.y, rect.width, rect.height, color);
     }
+
+    fn linear_gradient(&mut self, bounding_area: Rect, start: Point, end: Point, start_color: Color, end_color: Color) {
+        self.inner.linear_gradient(bounding_area.x, bounding_area.y, bounding_area.width, bounding_area.height,
+                                   start.x, start.y, end.x, end.y, start_color, end_color);
+    }
 }
 
 impl<'a> Drop for WindowRenderer<'a> {

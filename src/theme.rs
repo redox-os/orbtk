@@ -7,6 +7,7 @@ pub static LABEL_BORDER: Color = Color::rgb(158, 158, 154);
 pub static LABEL_FOREGROUND: Color = Color::rgb(0, 0, 0);
 
 pub static BUTTON_BACKGROUND: Color = Color::rgb(234, 234, 234);
+pub static BUTTON_GRADIENT_STOP: Color = Color::rgb(128, 128, 128);
 pub static BUTTON_BORDER: Color = Color::rgb(158, 158, 154);
 pub static BUTTON_FOREGROUND: Color = Color::rgb(0, 0, 0);
 pub static BUTTON_SELECTION: Color = Color::rgb(210, 210, 208);
