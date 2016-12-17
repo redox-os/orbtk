@@ -99,7 +99,7 @@ impl Widget for Button {
         renderer.rounded_rect(rect, b_r, true, self.bg);
 
         if ! self.pressed.get() {
-            renderer.linear_gradient(rect, Point::new(rect.x, rect.y), Point::new(0, rect.y + rect.height as i32),
+            renderer.linear_gradient(rect, Point::new(rect.x, rect.y), Point::new(rect.x, rect.y + rect.height as i32),
                                      self.bg, self.bg_gradient_stop);
         }
         if self.border.get() {
