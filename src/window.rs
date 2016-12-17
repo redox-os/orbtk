@@ -1,9 +1,11 @@
-use orbclient::{self, Color};
+use orbclient::{self, Renderer};
+use orbclient::color::Color;
 use orbimage::Image;
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
-use super::{Event, Point, Rect, Renderer, Widget};
+use super::{Event, Point, Rect, Widget};
+use renderer;
 use theme::WINDOW_BACKGROUND;
 
 extern crate orbfont;
@@ -19,14 +21,14 @@ impl<'a> WindowRenderer<'a> {
     }
 }
 
-impl<'a> Renderer for WindowRenderer<'a> {
+impl<'a> renderer::Renderer for WindowRenderer<'a> {
     fn clear(&mut self, color: Color) {
         self.inner.set(color);
     }
 
     fn char(&mut self, pos: Point, c: char, color: Color) {
         if let Some(ref font) = *self.font {
-            font.render(&c.to_string(), 16.0).draw(&mut self.inner, pos.x, pos.y, orbclient::Color { data: color.data })
+            font.render(&c.to_string(), 16.0).draw(&mut self.inner, pos.x, pos.y, color)
         }else{
             self.inner.char(pos.x, pos.y, c, color);
         }
@@ -102,9 +104,9 @@ impl Window {
 
     pub fn draw(&self) {
         let mut inner = self.inner.borrow_mut();
-        let mut renderer = WindowRenderer::new(&mut *inner, &self.font);
-        renderer.clear(self.bg);
+        inner.set(self.bg);
 
+        let mut renderer = WindowRenderer::new(&mut *inner, &self.font);
         for i in 0..self.widgets.borrow().len() {
             if let Some(widget) = self.widgets.borrow().get(i) {
                 widget.draw(&mut renderer, self.widget_focus.get() == i);

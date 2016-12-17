@@ -6,7 +6,7 @@
 extern crate orbclient;
 extern crate orbimage;
 
-pub use orbclient::Color;
+pub use orbclient::color::Color;
 
 pub use cell::CloneCell;
 pub use event::Event;
