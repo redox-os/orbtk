@@ -1,11 +1,10 @@
-use orbclient::Color;
+use orbclient::{Color, Renderer};
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 use event::Event;
 use point::Point;
 use rect::Rect;
-use renderer::Renderer;
 use traits::{Click, Place};
 use widgets::Widget;
 
@@ -130,17 +129,10 @@ impl Widget for Canvas {
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.rect.get();
-        renderer.rect(rect, self.bg);
+        renderer.rect(rect.x, rect.y, rect.width, rect.height, self.bg);
 
         let data = self.data.borrow();
-
-        for x in 0..rect.width {
-            for y in 0..rect.height {
-                if let Some(pixel) = data.get((y*rect.width + x) as usize) {
-                    renderer.pixel(Point::new(rect.x + x as i32, rect.y + y as i32), pixel.clone());
-                }
-            }
-        }
+        renderer.image(rect.x, rect.y, rect.width, rect.height, &data);
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {

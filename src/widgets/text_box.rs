@@ -1,4 +1,4 @@
-use orbclient::Color;
+use orbclient::{Color, Renderer};
 use std::cell::{Cell, RefCell};
 use std::cmp::min;
 use std::ops::Deref;
@@ -8,7 +8,6 @@ use cell::{CloneCell, CheckSet};
 use event::Event;
 use point::Point;
 use rect::Rect;
-use renderer::Renderer;
 use theme::{TEXT_BACKGROUND, TEXT_BORDER, TEXT_FOREGROUND, TEXT_SELECTION};
 use traits::{Border, Click, Enter, EventFilter, Place, Text};
 use widgets::Widget;
@@ -163,9 +162,9 @@ impl Widget for TextBox {
         let rect = self.rect.get();
 
         let b_r = self.border_radius.get();
-        renderer.rounded_rect(rect, b_r, true, self.bg);
+        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg);
         if self.border.get() {
-            renderer.rounded_rect(rect, b_r, false, self.fg_border);
+            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
         }
 
         let text_i = self.text_i.get();
@@ -178,7 +177,7 @@ impl Widget for TextBox {
             if c == '\n' {
                 if i == text_i && focused && x + 8 <= rect.width as i32 &&
                    y + 16 <= rect.height as i32 {
-                    renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
+                    renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
                 }
 
                 x = 0;
@@ -186,19 +185,19 @@ impl Widget for TextBox {
             } else if c == '\t' {
                 if x + 8 * 4 <= rect.width as i32 && y + 16 <= rect.height as i32 {
                     if i == text_i && focused {
-                        renderer.rect(Rect::new(x + rect.x, y + rect.y, 8 * 4, 16), self.fg_cursor);
+                        renderer.rect(x + rect.x, y + rect.y, 8 * 4, 16, self.fg_cursor);
                     }
                 }
                 x += 8 * 4;
             } else {
                 if x + 8 <= rect.width as i32 && y + 16 <= rect.height as i32 {
                     if i == text_i && focused {
-                        renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
+                        renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
                     }
                     if let Some(mask_c) = self.mask_char.get() {
-                        renderer.char(Point::new(x, y) + rect.point(), mask_c, self.fg);
+                        renderer.char(x + rect.x, y + rect.y, mask_c, self.fg);
                     } else {
-                        renderer.char(Point::new(x, y) + rect.point(), c, self.fg);
+                        renderer.char(x + rect.x, y + rect.y, c, self.fg);
                     }
                 }
 
@@ -208,7 +207,7 @@ impl Widget for TextBox {
 
         if text.len() == text_i && focused && x + 8 <= rect.width as i32 &&
            y + 16 <= rect.height as i32 {
-            renderer.rect(Rect::new(x + rect.x, y + rect.y, 8, 16), self.fg_cursor);
+            renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
         }
     }
 

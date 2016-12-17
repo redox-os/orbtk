@@ -1,11 +1,9 @@
 use orbclient::{self, Renderer};
 use orbclient::color::Color;
-use orbimage::Image;
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 use super::{Event, Point, Rect, Widget};
-use renderer;
 use theme::WINDOW_BACKGROUND;
 
 extern crate orbfont;
@@ -21,46 +19,33 @@ impl<'a> WindowRenderer<'a> {
     }
 }
 
-impl<'a> renderer::Renderer for WindowRenderer<'a> {
-    fn clear(&mut self, color: Color) {
-        self.inner.set(color);
+impl<'a> Renderer for WindowRenderer<'a> {
+    fn width(&self) -> u32 {
+        self.inner.width()
     }
 
-    fn char(&mut self, pos: Point, c: char, color: Color) {
+    fn height(&self) -> u32 {
+        self.inner.height()
+    }
+
+    fn data(&self) -> &[Color] {
+        self.inner.data()
+    }
+
+    fn data_mut(&mut self) -> &mut [Color] {
+        self.inner.data_mut()
+    }
+
+    fn sync(&mut self) -> bool {
+        self.inner.sync()
+    }
+
+    fn char(&mut self, x: i32, y: i32, c: char, color: Color) {
         if let Some(ref font) = *self.font {
-            font.render(&c.to_string(), 16.0).draw(&mut self.inner, pos.x, pos.y, color)
+            font.render(&c.to_string(), 16.0).draw(&mut self.inner, x, y, color)
         }else{
-            self.inner.char(pos.x, pos.y, c, color);
+            self.inner.char(x, y, c, color);
         }
-    }
-
-    fn image(&mut self, pos: Point, image: &Image) {
-        image.draw(&mut self.inner, pos.x, pos.y);
-    }
-
-    fn pixel(&mut self, point: Point, color: Color) {
-        self.inner.pixel(point.x, point.y, color);
-    }
-
-    fn arc(&mut self, center: Point, radius: i32, parts: u8, color: Color) {
-        self.inner.arc(center.x, center.y, radius, parts, color);
-    }
-
-    fn circle(&mut self, center: Point, radius: i32, color: Color) {
-        self.inner.circle(center.x, center.y, radius, color);
-    }
-
-    fn line(&mut self, start: Point, end: Point, color: Color) {
-        self.inner.line(start.x, start.y, end.x, end.y, color);
-    }
-
-    fn rect(&mut self, rect: Rect, color: Color) {
-        self.inner.rect(rect.x, rect.y, rect.width, rect.height, color);
-    }
-
-    fn linear_gradient(&mut self, bounding_area: Rect, start: Point, end: Point, start_color: Color, end_color: Color) {
-        self.inner.linear_gradient(bounding_area.x, bounding_area.y, bounding_area.width, bounding_area.height,
-                                   start.x, start.y, end.x, end.y, start_color, end_color);
     }
 }
 

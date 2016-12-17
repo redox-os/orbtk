@@ -1,3 +1,4 @@
+use orbclient::Renderer;
 use orbimage;
 use std::cell::{Cell, RefCell};
 use std::path::Path;
@@ -6,7 +7,6 @@ use std::sync::Arc;
 use event::Event;
 use point::Point;
 use rect::Rect;
-use renderer::Renderer;
 use traits::{Click, Place};
 use widgets::Widget;
 
@@ -48,7 +48,9 @@ impl Widget for Image {
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        renderer.image(self.rect.get().point(), &self.image.borrow());
+        let rect = self.rect.get();
+        let image = self.image.borrow();
+        renderer.image(rect.x, rect.y, image.width(), image.height(), image.data());
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {

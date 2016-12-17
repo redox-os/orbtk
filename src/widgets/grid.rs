@@ -1,3 +1,4 @@
+use orbclient::Renderer;
 use std::cell::{Cell, RefCell};
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -5,7 +6,6 @@ use std::sync::Arc;
 use cell::CheckSet;
 use event::Event;
 use rect::Rect;
-use renderer::Renderer;
 use traits::Place;
 use widgets::Widget;
 

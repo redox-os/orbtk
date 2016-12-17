@@ -1,4 +1,4 @@
-use orbclient::Color;
+use orbclient::{Color, Renderer};
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
@@ -6,7 +6,6 @@ use cell::{CloneCell, CheckSet};
 use event::Event;
 use point::Point;
 use rect::Rect;
-use renderer::Renderer;
 use theme::{BUTTON_BACKGROUND, BUTTON_FOREGROUND, BUTTON_SELECTION, BUTTON_BORDER,
             ITEM_BACKGROUND, ITEM_FOREGROUND, ITEM_SELECTION};
 use traits::{Click, Place, Text};
@@ -114,9 +113,9 @@ impl Widget for Menu {
         let rect = self.rect.get();
 
         if self.activated.get() {
-            renderer.rect(rect, self.bg_pressed);
+            renderer.rect(rect.x, rect.y, rect.width, rect.height, self.bg_pressed);
         } else {
-            renderer.rect(rect, self.bg);
+            renderer.rect(rect.x, rect.y, rect.width, rect.height, self.bg);
         }
 
         let text = self.text.borrow();
@@ -127,13 +126,13 @@ impl Widget for Menu {
                 point.y += 16;
             } else {
                 if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point + rect.point(), c, self.fg);
+                    renderer.char(point.x + rect.x, point.y + rect.y, c, self.fg);
                 }
                 point.x += 8;
             }
         }
 
-        renderer.rect(Rect::new(rect.x, rect.y + rect.height as i32 - 1, rect.width, 1), self.fg_border);
+        renderer.rect(rect.x, rect.y + rect.height as i32 - 1, rect.width, 1, self.fg_border);
 
         if self.activated.get() {
             for entry in self.entries.borrow().iter() {
@@ -266,7 +265,7 @@ impl Widget for Action {
             (self.bg, self.fg)
         };
 
-        renderer.rect(rect, bg);
+        renderer.rect(rect.x, rect.y, rect.width, rect.height, bg);
 
         let text = self.text.borrow();
         let mut point = self.text_offset.get();
@@ -276,7 +275,7 @@ impl Widget for Action {
                 point.y += 16;
             } else {
                 if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point + rect.point(), c, fg);
+                    renderer.char(point.x + rect.x, point.y + rect.y, c, fg);
                 }
                 point.x += 8;
             }
@@ -352,12 +351,10 @@ impl Widget for Separator {
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.rect.get();
-        renderer.rect(rect, self.bg);
+        renderer.rect(rect.x, rect.y, rect.width, rect.height, self.bg);
 
         let line_y = rect.y + rect.height as i32 / 2;
-        let start = Point::new(rect.x, line_y);
-        let end = Point::new(rect.x + rect.width as i32, line_y);
-        renderer.line(start, end, self.fg);
+        renderer.rect(rect.x, line_y, rect.width, 1, self.fg);
     }
 
     fn event(&self, event: Event, _focused: bool, _redraw: &mut bool) -> bool {

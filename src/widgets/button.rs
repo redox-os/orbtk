@@ -1,4 +1,4 @@
-use orbclient::Color;
+use orbclient::{Color, Renderer};
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
@@ -6,7 +6,6 @@ use cell::{CloneCell, CheckSet};
 use event::Event;
 use point::Point;
 use rect::Rect;
-use renderer::Renderer;
 use theme::{BUTTON_BACKGROUND, BUTTON_FOREGROUND, BUTTON_GRADIENT_STOP, BUTTON_BORDER};
 use traits::{Border, Click, Place, Text};
 use widgets::Widget;
@@ -96,14 +95,14 @@ impl Widget for Button {
         let fg = self.fg;
 
         let b_r = self.border_radius.get();
-        renderer.rounded_rect(rect, b_r, true, self.bg);
+        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg);
 
         if ! self.pressed.get() {
-            renderer.linear_gradient(rect, Point::new(rect.x, rect.y), Point::new(rect.x, rect.y + rect.height as i32),
+            renderer.linear_gradient(rect.x, rect.y, rect.width, rect.height, rect.x, rect.y, rect.x, rect.y + h,
                                      self.bg, self.bg_gradient_stop);
         }
         if self.border.get() {
-            renderer.rounded_rect(rect, b_r, false, self.fg_border);
+            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
         }
 
         let text = self.text.borrow();
@@ -115,7 +114,7 @@ impl Widget for Button {
                 point.y += 16;
             } else {
                 if point.x + 8 <= w && point.y + 16 <= h {
-                    renderer.char(point + rect.point(), c, fg);
+                    renderer.char(point.x + rect.x, point.y + rect.y, c, fg);
                 }
                 point.x += 8;
             }

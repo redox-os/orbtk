@@ -1,9 +1,9 @@
+use orbclient::Renderer;
 use std::any::Any;
 use std::cell::Cell;
 
 use event::Event;
 use rect::Rect;
-use renderer::Renderer;
 
 pub use self::button::Button;
 pub use self::canvas::Canvas;

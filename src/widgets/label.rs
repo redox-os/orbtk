@@ -1,4 +1,4 @@
-use orbclient::Color;
+use orbclient::{Color, Renderer};
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
@@ -6,7 +6,6 @@ use cell::{CloneCell, CheckSet};
 use event::Event;
 use point::Point;
 use rect::Rect;
-use renderer::Renderer;
 use theme::{LABEL_BACKGROUND, LABEL_BORDER, LABEL_FOREGROUND};
 use traits::{Border, Click, Place, Text};
 use widgets::Widget;
@@ -89,9 +88,9 @@ impl Widget for Label {
         let rect = self.rect.get();
 
         let b_r = self.border_radius.get();
-        renderer.rounded_rect(rect, b_r, true, self.bg);
+        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg);
         if self.border.get() {
-            renderer.rounded_rect(rect, b_r, false, self.fg_border);
+            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
         }
 
         let text = self.text.borrow();
@@ -103,7 +102,7 @@ impl Widget for Label {
                 point.y += 16;
             } else {
                 if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point + rect.point(), c, self.fg);
+                    renderer.char(point.x + rect.x, point.y + rect.y, c, self.fg);
                 }
                 point.x += 8;
             }

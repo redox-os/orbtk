@@ -1,4 +1,4 @@
-use orbclient::Color;
+use orbclient::{Color, Renderer};
 use std::cell::{Cell, RefCell};
 use std::cmp::{min, max};
 use std::sync::Arc;
@@ -7,7 +7,6 @@ use cell::CheckSet;
 use event::Event;
 use point::Point;
 use rect::Rect;
-use renderer::Renderer;
 use theme::{ITEM_BACKGROUND, ITEM_BORDER, ITEM_SELECTION};
 use traits::{Border, Click, Place};
 use widgets::Widget;
@@ -93,12 +92,14 @@ impl Widget for ProgressBar {
                                 rect.height);
 
         let b_r = self.border_radius.get();
-        renderer.rounded_rect(rect, b_r, true, self.bg);
+        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg);
         if progress_rect.width >= b_r * 2 {
-            renderer.rounded_rect(progress_rect, b_r, true, self.fg);
+            renderer.rounded_rect(progress_rect.x, progress_rect.y,
+                                  progress_rect.width, progress_rect.height,
+                                  b_r, true, self.fg);
         }
         if self.border.get() {
-            renderer.rounded_rect(rect, b_r, false, self.fg_border);
+            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
         }
     }
 
