@@ -12,6 +12,7 @@ pub trait Renderer {
     fn circle(&mut self, center: Point, radius: i32, color: Color);
     fn line(&mut self, start: Point, end: Point, color: Color);
     fn rect(&mut self, rect: Rect, color: Color);
+    fn linear_gradient(&mut self, bounded_area: Rect, start: Point, end: Point, start_color: Color, end_color: Color);
 
     fn rounded_rect(&mut self, rect: Rect, radius: u32, filled: bool, color: Color) {
         let x = rect.x;
