@@ -2,7 +2,7 @@
 name = "orbtk"
 description = "The Orbital Widget Toolkit"
 repository = "https://github.com/redox-os/orbtk"
-version = "0.2.1"
+version = "0.2.2"
 license-file = "LICENSE"
 readme = "README.md"
 authors = ["Jeremy Soller <jackpot51@gmail.com>"]
