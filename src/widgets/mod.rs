@@ -6,7 +6,6 @@ use event::Event;
 use rect::Rect;
 
 pub use self::button::Button;
-pub use self::canvas::Canvas;
 pub use self::grid::Grid;
 pub use self::image::Image;
 pub use self::label::Label;
@@ -15,7 +14,6 @@ pub use self::progress_bar::ProgressBar;
 pub use self::text_box::TextBox;
 
 mod button;
-mod canvas;
 mod grid;
 mod image;
 mod label;

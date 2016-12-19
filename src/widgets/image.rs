@@ -1,4 +1,4 @@
-use orbclient::Renderer;
+use orbclient::{Color, Renderer};
 use orbimage;
 use std::cell::{Cell, RefCell};
 use std::path::Path;
@@ -17,13 +17,24 @@ pub struct Image {
 }
 
 impl Image {
-    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Arc<Self>, String> {
-        let image = orbimage::Image::from_path(path)?;
-        Ok(Arc::new(Image {
+    pub fn new(width: u32, height: u32) -> Arc<Self> {
+        Self::from_image(orbimage::Image::new(width, height))
+    }
+
+    pub fn from_color(width: u32, height: u32, color: Color) -> Arc<Self> {
+        Self::from_image(orbimage::Image::from_color(width, height, color))
+    }
+
+    pub fn from_image(image: orbimage::Image) -> Arc<Self> {
+        Arc::new(Image {
             rect: Cell::new(Rect::new(0, 0, image.width(), image.height())),
             image: RefCell::new(image),
             click_callback: RefCell::new(None)
-        }))
+        })
+    }
+
+    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Arc<Self>, String> {
+        Ok(Self::from_image(orbimage::Image::from_path(path)?))
     }
 }
 
