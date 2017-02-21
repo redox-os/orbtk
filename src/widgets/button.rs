@@ -6,15 +6,16 @@ use cell::{CloneCell, CheckSet};
 use event::Event;
 use point::Point;
 use rect::Rect;
-use theme::{BUTTON_BACKGROUND, BUTTON_FOREGROUND, BUTTON_GRADIENT_STOP, BUTTON_BORDER};
+use theme::{BUTTON_BACKGROUND, BUTTON_BG_SELECTION, BUTTON_FOREGROUND, BUTTON_FG_SELECTION, BUTTON_BORDER};
 use traits::{Border, Click, Place, Text};
 use widgets::Widget;
 
 pub struct Button {
     pub rect: Cell<Rect>,
     pub bg: Color,
-    pub bg_gradient_stop: Color,
+    pub bg_selected: Color,
     pub fg: Color,
+    pub fg_selected: Color,
     pub fg_border: Color,
     pub border: Cell<bool>,
     pub border_radius: Cell<u32>,
@@ -29,11 +30,12 @@ impl Button {
         Arc::new(Button {
             rect: Cell::new(Rect::default()),
             bg: BUTTON_BACKGROUND,
-            bg_gradient_stop: BUTTON_GRADIENT_STOP,
+            bg_selected: BUTTON_BG_SELECTION,
             fg: BUTTON_FOREGROUND,
+            fg_selected: BUTTON_FG_SELECTION,
             fg_border: BUTTON_BORDER,
             border: Cell::new(true),
-            border_radius: Cell::new(0),
+            border_radius: Cell::new(2),
             text: CloneCell::new(String::new()),
             text_offset: Cell::new(Point::default()),
             click_callback: RefCell::new(None),
@@ -92,15 +94,16 @@ impl Widget for Button {
         let w = rect.width as i32;
         let h = rect.height as i32;
 
-        let fg = self.fg;
+        let (fg, bg) = if self.pressed.get() {
+            (self.fg_selected, self.bg_selected)
+        } else {
+            (self.fg, self.bg)
+        };
 
         let b_r = self.border_radius.get();
-        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg);
 
-        if ! self.pressed.get() {
-            renderer.linear_gradient(rect.x, rect.y, rect.width, rect.height, rect.x, rect.y, rect.x, rect.y + h,
-                                     self.bg, self.bg_gradient_stop);
-        }
+        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, bg);
+
         if self.border.get() {
             renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
         }

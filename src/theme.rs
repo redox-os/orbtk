@@ -1,23 +1,34 @@
 use orbclient::Color;
 
-pub static WINDOW_BACKGROUND: Color = Color::rgb(232, 232, 231);
+const fn hex(data: u32) -> Color {
+    Color { data: 0xFF000000 | data }
+}
 
-pub static LABEL_BACKGROUND: Color = Color::rgb(232, 232, 231);
-pub static LABEL_BORDER: Color = Color::rgb(158, 158, 154);
-pub static LABEL_FOREGROUND: Color = Color::rgb(0, 0, 0);
+const BLACK: Color = hex(0x000000);
+const SELECT_BLUE: Color = hex(0x5294E2);
+const BORDER_GREY: Color = hex(0xCFD6E6);
+const WINDOW_GREY: Color = hex(0xF5F6F7);
+const BUTTON_WHITE: Color = hex(0xFBFBFC);
+const WHITE: Color = hex(0xFFFFFF);
 
-pub static BUTTON_BACKGROUND: Color = Color::rgb(234, 234, 234);
-pub static BUTTON_GRADIENT_STOP: Color = Color::rgb(128, 128, 128);
-pub static BUTTON_BORDER: Color = Color::rgb(158, 158, 154);
-pub static BUTTON_FOREGROUND: Color = Color::rgb(0, 0, 0);
-pub static BUTTON_SELECTION: Color = Color::rgb(210, 210, 208);
+pub static WINDOW_BACKGROUND: Color = WINDOW_GREY;
 
-pub static ITEM_BACKGROUND: Color = Color::rgb(255, 255, 255);
-pub static ITEM_BORDER: Color = Color::rgb(158, 158, 154);
-pub static ITEM_FOREGROUND: Color = Color::rgb(0, 0, 0);
-pub static ITEM_SELECTION: Color = Color::rgb(74, 144, 217);
+pub static LABEL_BACKGROUND: Color = WINDOW_GREY;
+pub static LABEL_BORDER: Color = BORDER_GREY;
+pub static LABEL_FOREGROUND: Color = BLACK;
 
-pub static TEXT_BACKGROUND: Color = Color::rgb(255, 255, 255);
-pub static TEXT_BORDER: Color = Color::rgb(158, 158, 154);
-pub static TEXT_FOREGROUND: Color = Color::rgb(0, 0, 0);
-pub static TEXT_SELECTION: Color = Color::rgb(158, 158, 154);
+pub static BUTTON_BACKGROUND: Color = BUTTON_WHITE;
+pub static BUTTON_BG_SELECTION: Color = SELECT_BLUE;
+pub static BUTTON_BORDER: Color = BORDER_GREY;
+pub static BUTTON_FOREGROUND: Color = BLACK;
+pub static BUTTON_FG_SELECTION: Color = WHITE;
+
+pub static ITEM_BACKGROUND: Color = WHITE;
+pub static ITEM_BORDER: Color = BORDER_GREY;
+pub static ITEM_FOREGROUND: Color = BLACK;
+pub static ITEM_SELECTION: Color = SELECT_BLUE;
+
+pub static TEXT_BACKGROUND: Color = WHITE;
+pub static TEXT_BORDER: Color = BORDER_GREY;
+pub static TEXT_FOREGROUND: Color = BLACK;
+pub static TEXT_SELECTION: Color = SELECT_BLUE;

@@ -4,7 +4,7 @@ use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, 
 use orbtk::traits::{Border, Click, Enter, Place, Text};
 
 fn main() {
-    let window = Window::new(Rect::new(100, 100, 420, 720), "OrbTK");
+    let window = Window::new(Rect::new(100, 100, 420, 730), "OrbTK");
 
     let x = 10;
     let mut y = 0;
@@ -25,8 +25,8 @@ fn main() {
 
     let text_box = TextBox::new();
     text_box.position(x, y)
-        .size(342, 18)
-        .text_offset(1, 1)
+        .size(332, 28)
+        .text_offset(6, 6)
         .on_enter(move |text_box: &TextBox| {
             label.text.set(text_box.text.get());
         });
@@ -34,9 +34,9 @@ fn main() {
 
     let button = Button::new();
     button.position(x + text_box.rect.get().width as i32 + 8, y)
-        .size(48 + 2, text_box.rect.get().height)
+        .size(48 + 12, text_box.rect.get().height)
         .text("Update")
-        .text_offset(1, 1)
+        .text_offset(6, 6)
         .on_click(move |_button: &Button, _point: Point| {
             text_box.emit_enter();
         });

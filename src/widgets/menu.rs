@@ -6,7 +6,7 @@ use cell::{CloneCell, CheckSet};
 use event::Event;
 use point::Point;
 use rect::Rect;
-use theme::{BUTTON_BACKGROUND, BUTTON_FOREGROUND, BUTTON_SELECTION, BUTTON_BORDER,
+use theme::{BUTTON_BACKGROUND, BUTTON_BG_SELECTION, BUTTON_FOREGROUND, BUTTON_BORDER,
             ITEM_BACKGROUND, ITEM_FOREGROUND, ITEM_SELECTION};
 use traits::{Click, Place, Text};
 use widgets::Widget;
@@ -42,7 +42,7 @@ impl Menu {
             bg: BUTTON_BACKGROUND,
             fg: BUTTON_FOREGROUND,
             text: CloneCell::new(name.into()),
-            bg_pressed: BUTTON_SELECTION,
+            bg_pressed: BUTTON_BG_SELECTION,
             fg_border: BUTTON_BORDER,
             text_offset: Cell::new(Point::default()),
             entries: RefCell::new(Vec::new()),
