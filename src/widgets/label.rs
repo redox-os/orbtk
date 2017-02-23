@@ -12,9 +12,9 @@ use widgets::Widget;
 
 pub struct Label {
     pub rect: Cell<Rect>,
-    pub bg: Color,
-    pub fg: Color,
-    pub fg_border: Color,
+    pub bg: Cell<Color>,
+    pub fg: Cell<Color>,
+    pub fg_border: Cell<Color>,
     pub border: Cell<bool>,
     pub border_radius: Cell<u32>,
     pub text: CloneCell<String>,
@@ -27,9 +27,9 @@ impl Label {
     pub fn new() -> Arc<Self> {
         Arc::new(Label {
             rect: Cell::new(Rect::default()),
-            bg: LABEL_BACKGROUND,
-            fg: LABEL_FOREGROUND,
-            fg_border: LABEL_BORDER,
+            bg: Cell::new(LABEL_BACKGROUND),
+            fg: Cell::new(LABEL_FOREGROUND),
+            fg_border: Cell::new(LABEL_BORDER),
             border: Cell::new(false),
             border_radius: Cell::new(0),
             text: CloneCell::new(String::new()),
@@ -88,11 +88,12 @@ impl Widget for Label {
         let rect = self.rect.get();
 
         let b_r = self.border_radius.get();
-        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg);
+        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg.get());
         if self.border.get() {
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
+            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border.get());
         }
 
+        let fg = self.fg.get();
         let text = self.text.borrow();
 
         let mut point = self.text_offset.get();
@@ -102,7 +103,7 @@ impl Widget for Label {
                 point.y += 16;
             } else {
                 if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point.x + rect.x, point.y + rect.y, c, self.fg);
+                    renderer.char(point.x + rect.x, point.y + rect.y, c, fg);
                 }
                 point.x += 8;
             }
