@@ -180,7 +180,7 @@ impl Widget for TextBox {
                     renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
                 }
 
-                x = 0;
+                x = text_offset.x;
                 y += 16;
             } else if c == '\t' {
                 if x + 8 * 4 <= rect.width as i32 && y + 16 <= rect.height as i32 {
@@ -259,7 +259,7 @@ impl Widget for TextBox {
                                         new_text_i = Some(i);
                                         break;
                                     }
-                                    x = 0;
+                                    x = text_offset.x;
                                     y += 16;
                                 } else if c == '\t' {
                                     if x + 8 * 4 <= rect.width as i32 && click_point.x >= x &&
