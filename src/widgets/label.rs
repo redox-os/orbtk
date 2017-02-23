@@ -99,7 +99,7 @@ impl Widget for Label {
         let mut point = self.text_offset.get();
         for c in text.chars() {
             if c == '\n' {
-                point.x = 0;
+                point.x = self.text_offset.get().x;
                 point.y += 16;
             } else {
                 if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
