@@ -42,7 +42,8 @@ impl<'a> Renderer for WindowRenderer<'a> {
 
     fn char(&mut self, x: i32, y: i32, c: char, color: Color) {
         if let Some(ref font) = *self.font {
-            font.render(&c.to_string(), 16.0).draw(self.inner, x, y, color)
+            let mut buf = [0; 4];
+            font.render(&c.encode_utf8(&mut buf), 16.0).draw(self.inner, x, y, color)
         }else{
             self.inner.char(x, y, c, color);
         }
