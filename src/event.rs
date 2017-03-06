@@ -11,6 +11,11 @@ pub enum Event {
         right_button: bool,
     },
 
+    Scroll {
+        x: i32,
+        y: i32,
+    },
+
     Text {
         c: char,
     },

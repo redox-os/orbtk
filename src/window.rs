@@ -61,8 +61,10 @@ pub struct Window {
     font: Option<orbfont::Font>,
     pub widgets: RefCell<Vec<Arc<Widget>>>,
     pub widget_focus: Cell<usize>,
-    pub bg: Color,
-    pub running: Cell<bool>
+    pub bg: Cell<Color>,
+    pub running: Cell<bool>,
+    events: Vec<Event>,
+    redraw: bool,
 }
 
 impl Window {
@@ -72,9 +74,21 @@ impl Window {
             font: orbfont::Font::find(None, None, None).ok(),
             widgets: RefCell::new(Vec::new()),
             widget_focus: Cell::new(0),
-            bg: WINDOW_BACKGROUND,
+            bg: Cell::new(WINDOW_BACKGROUND),
             running: Cell::new(true),
+            events: vec![Event::Init],
+            redraw: true,
         }
+    }
+
+    pub fn set_size(&self, width: u32, height: u32) {
+        let mut inner = self.inner.borrow_mut();
+        (*inner).set_size(width, height);
+    }
+
+    pub fn set_title(&self, title: &str) {
+        let mut inner = self.inner.borrow_mut();
+        (*inner).set_title(title);
     }
 
     pub fn close(&self) {
@@ -90,7 +104,7 @@ impl Window {
 
     pub fn draw(&self) {
         let mut inner = self.inner.borrow_mut();
-        inner.set(self.bg);
+        inner.set(self.bg.get());
 
         let mut renderer = WindowRenderer::new(&mut *inner, &self.font);
         for i in 0..self.widgets.borrow().len() {
@@ -100,67 +114,88 @@ impl Window {
         }
     }
 
-    pub fn exec(&self) {
-        let mut events = Vec::new();
-        events.push(Event::Init);
+    pub fn step(&mut self) {
+        self.drain_orbital_events();
+        self.drain_events();
+    }
 
-        let mut redraw = true;
-
-        'event: while self.running.get() {
-            for event in events.drain(..) {
-                for i in 0..self.widgets.borrow().len() {
-                    if let Some(widget) = self.widgets.borrow().get(i) {
-                        if widget.event(event, self.widget_focus.get() == i, &mut redraw) {
-                            if self.widget_focus.get() != i {
-                                self.widget_focus.set(i);
-                                redraw = true;
-                            }
+    pub fn drain_events(&mut self) {
+        for event in self.events.drain(..) {
+            for i in 0..self.widgets.borrow().len() {
+                if let Some(widget) = self.widgets.borrow().get(i) {
+                    if widget.event(event, self.widget_focus.get() == i, &mut self.redraw) {
+                        if self.widget_focus.get() != i {
+                            self.widget_focus.set(i);
+                            self.redraw = true;
                         }
                     }
                 }
             }
+        }
+    }
 
-            if redraw {
-                self.draw();
-                redraw = false;
-            }
-
-            for orbital_event in self.inner.borrow_mut().events() {
-                match orbital_event.to_option() {
-                    orbclient::EventOption::Mouse(mouse_event) => {
-                        events.push(Event::Mouse {
-                            point: Point::new(mouse_event.x, mouse_event.y),
-                            left_button: mouse_event.left_button,
-                            middle_button: mouse_event.middle_button,
-                            right_button: mouse_event.right_button,
-                        })
-                    }
-                    orbclient::EventOption::Key(key_event) => {
-                        if key_event.pressed {
-                            match key_event.scancode {
-                                orbclient::K_BKSP => events.push(Event::Backspace),
-                                orbclient::K_DEL => events.push(Event::Delete),
-                                orbclient::K_HOME => events.push(Event::Home),
-                                orbclient::K_END => events.push(Event::End),
-                                orbclient::K_UP => events.push(Event::UpArrow),
-                                orbclient::K_DOWN => events.push(Event::DownArrow),
-                                orbclient::K_LEFT => events.push(Event::LeftArrow),
-                                orbclient::K_RIGHT => events.push(Event::RightArrow),
-                                _ => {
-                                    match key_event.character {
-                                        '\0' => (),
-                                        '\x1B' => (),
-                                        '\n' => events.push(Event::Enter),
-                                        _ => events.push(Event::Text { c: key_event.character }),
-                                    }
+    pub fn drain_orbital_events(&mut self) {
+        for orbital_event in self.inner.borrow_mut().events() {
+            match orbital_event.to_option() {
+                orbclient::EventOption::Mouse(mouse_event) => {
+                    self.events.push(Event::Mouse {
+                        point: Point::new(mouse_event.x, mouse_event.y),
+                        left_button: mouse_event.left_button,
+                        middle_button: mouse_event.middle_button,
+                        right_button: mouse_event.right_button,
+                    })
+                }
+                orbclient::EventOption::Scroll(scroll_event) => {
+                    self.events.push(Event::Scroll {
+                        x: scroll_event.x,
+                        y: scroll_event.y,
+                    })
+                }
+                orbclient::EventOption::Key(key_event) => {
+                    if key_event.pressed {
+                        match key_event.scancode {
+                            orbclient::K_BKSP => self.events.push(Event::Backspace),
+                            orbclient::K_DEL => self.events.push(Event::Delete),
+                            orbclient::K_HOME => self.events.push(Event::Home),
+                            orbclient::K_END => self.events.push(Event::End),
+                            orbclient::K_UP => self.events.push(Event::UpArrow),
+                            orbclient::K_DOWN => self.events.push(Event::DownArrow),
+                            orbclient::K_LEFT => self.events.push(Event::LeftArrow),
+                            orbclient::K_RIGHT => self.events.push(Event::RightArrow),
+                            _ => {
+                                match key_event.character {
+                                    '\0' => (),
+                                    '\x1B' => (),
+                                    '\n' => self.events.push(Event::Enter),
+                                    _ => self.events.push(Event::Text { c: key_event.character }),
                                 }
                             }
                         }
                     }
-                    orbclient::EventOption::Quit(_quit_event) => break 'event,
-                    _ => (),
-                };
-            }
+                }
+                orbclient::EventOption::Quit(_quit_event) => { self.running.set(false); },
+                _ => (),
+            };
+        }
+
+    }
+
+    pub fn exec(&mut self) {
+        'event: while self.running.get() {
+            self.drain_events();
+            self.draw_if_needed();
+            self.drain_orbital_events();
+        }
+    }
+
+    pub fn needs_redraw(&mut self) {
+        self.redraw = true;
+    }
+
+    pub fn draw_if_needed(&mut self) {
+        if self.redraw {
+            self.draw();
+            self.redraw = false;
         }
     }
 }
