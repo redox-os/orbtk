@@ -63,7 +63,7 @@ pub struct List {
     current_height: Cell<u32>,
     entries: RefCell<Vec<Arc<Entry>>>,
     pressed: Cell<bool>,
-    selected: Cell<i32>,
+    selected: Cell<Option<u32>>,
 }
 
 impl List {
@@ -74,7 +74,7 @@ impl List {
             current_height: Cell::new(0),
             entries: RefCell::new(vec![]),
             pressed: Cell::new(false),
-            selected: Cell::new(-1),
+            selected: Cell::new(None),
         })
     }
 
@@ -86,7 +86,7 @@ impl List {
 
     // Given absolute coordinates, returns the list entry index
     // drawn at that point.
-    fn get_entry_index(&self, p: Point) -> i32 {
+    fn get_entry_index(&self, p: Point) -> Option<u32> {
         if self.rect.get().contains(p) {
             let mut current_y = 0;
             let x = self.rect.get().x;
@@ -96,15 +96,13 @@ impl List {
 
             for (i, entry) in self.entries.borrow().iter().enumerate() {
                 if Rect::new(x, y+current_y-scroll, width, entry.height.get()).contains(p) {
-                    return i as i32
+                    return Some(i as u32)
                 }
                 current_y += entry.height.get() as i32
             }
-
-            -1
-        } else {
-            -1
         }
+
+        None
     }
 
     pub fn scroll(&self, y: i32) {
@@ -117,14 +115,22 @@ impl List {
         self.v_scroll.set(set_to);
     }
 
-    fn change_selection(&self, i: i32) {
-        if let Some(entry) = self.entries.borrow().get(self.selected.get() as usize) {
-            entry.highlighted.set(false);
+    fn change_selection(&self, i: u32) {
+        match self.selected.get() {
+            Some(i) => {
+                match self.entries.borrow().get(i as usize) {
+                    Some(entry) => {
+                        entry.highlighted.set(false);
+                    },
+                    None => {},
+                }
+            },
+            _ => {},
         }
 
         if let Some(entry) = self.entries.borrow().get(i as usize) {
             entry.highlighted.set(true);
-            self.selected.set(i);
+            self.selected.set(Some(i));
 
             let mut y = 0;
 
@@ -205,43 +211,53 @@ impl Widget for List {
                     }
                 }
 
-                let i = self.get_entry_index(point);
-
-                if i >= 0 {
+                if let Some(i) = self.get_entry_index(point) {
                     if click {
                         if let Some(entry) = self.entries.borrow().get(i as usize) {
                             entry.emit_click(point);
                         }
                     }
 
-                    if self.selected.get() != i {
-                        if self.selected.get() != -1 {
-                            if let Some(entry) = self.entries.borrow().get(self.selected.get() as usize) {
-                                entry.highlighted.set(false);
+                    match self.selected.get() {
+                        None => {
+                            self.change_selection(i);
+                            *redraw = true;
+                        },
+                        Some(selected) => {
+                            if selected != i {
+                                self.change_selection(i);
+                                *redraw = true;
                             }
-                        }
-
-                        if let Some(entry) = self.entries.borrow().get(i as usize) {
-                            entry.highlighted.set(true);
-                            self.selected.set(i);
-                        }
-                        *redraw = true
+                        },
                     }
                 }
             },
             Event::UpArrow => {
-                if self.selected.get() > 0 {
-                    self.change_selection(self.selected.get() - 1);
-                    *redraw = true
-                } else if self.selected.get() == -1 {
-                    self.change_selection(0);
-                    *redraw = true
+                match self.selected.get() {
+                    None => {
+                        self.change_selection(0);
+                        *redraw = true;
+                    },
+                    Some(i) => {
+                        if i > 0 {
+                            self.change_selection(i - 1);
+                            *redraw = true;
+                        }
+                    }
                 }
             },
             Event::DownArrow => {
-                if self.selected.get() < self.entries.borrow().len() as i32 - 1 {
-                    self.change_selection(self.selected.get() + 1);
-                    *redraw = true
+                match self.selected.get() {
+                    None => {
+                        self.change_selection(0);
+                        *redraw = true;
+                    },
+                    Some(i) => {
+                        if i < self.entries.borrow().len() as u32 - 1 {
+                            self.change_selection(i + 1);
+                            *redraw = true;
+                        }
+                    }
                 }
             },
             Event::Home => {
@@ -249,14 +265,20 @@ impl Widget for List {
                 *redraw = true
             },
             Event::End => {
-                self.change_selection(self.entries.borrow().len() as i32 - 1);
+                self.change_selection(self.entries.borrow().len() as u32 - 1);
                 *redraw = true
             },
             Event::Enter => {
-                let i = self.selected.get();
-
-                if let Some(entry) = self.entries.borrow().get(i as usize) {
-                    entry.emit_click(Point { x: 0, y: 0});
+                match self.selected.get() {
+                    Some(i) => {
+                        match self.entries.borrow().get(i as usize) {
+                            Some(entry) => {
+                                entry.emit_click(Point { x: 0, y: 0});
+                            },
+                            None => {},
+                        }
+                    },
+                    _ => {},
                 }
             },
             Event::Scroll { y, .. } => {
