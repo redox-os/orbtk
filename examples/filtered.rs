@@ -4,7 +4,7 @@ use orbtk::{Window, TextBox, Rect, Label, Event};
 use orbtk::traits::{EventFilter, Place, Text};
 
 fn main() {
-    let window = Window::new(Rect::new(100, 100, 420, 420), "Filtered Textbox");
+    let mut window = Window::new(Rect::new(100, 100, 420, 420), "Filtered Textbox");
 
     let label = Label::new();
     label.text("Field below will ignore all 'e' chars.")

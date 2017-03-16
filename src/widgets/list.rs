@@ -1,4 +1,4 @@
-use orbclient::Renderer;
+use orbclient::{Renderer, Color};
 use orbimage;
 use std::cell::{ Cell, RefCell };
 use std::sync::Arc;
@@ -7,16 +7,19 @@ use cell::CheckSet;
 use event::Event;
 use point::Point;
 use rect::Rect;
-use theme::{ ITEM_BACKGROUND, WINDOW_BACKGROUND };
+use theme::{ ITEM_BACKGROUND, WINDOW_BACKGROUND, ITEM_SELECTION };
 use traits::{ Click, Place };
 use widgets::Widget;
+use std::ops::Index;
 
 /// An entry in a list
 /// Each entry stores widgets within. 
 pub struct Entry {
     pub height: Cell<u32>,
     click_callback: RefCell<Option<Arc<Fn(&Entry, Point)>>>,
-    widgets: RefCell<Vec<Arc<Widget>>>
+    widgets: RefCell<Vec<Arc<Widget>>>,
+    pub highlight: Cell<Color>,
+    highlighted: Cell<bool>,
 }
 
 impl Entry {
@@ -25,6 +28,8 @@ impl Entry {
             height: Cell::new(h),
             click_callback: RefCell::new(None),
             widgets: RefCell::new(vec![]),
+            highlight: Cell::new(ITEM_SELECTION),
+            highlighted: Cell::new(false),
         })
     }
 
@@ -57,7 +62,8 @@ pub struct List {
     v_scroll: Cell<i32>,
     current_height: Cell<u32>,
     entries: RefCell<Vec<Arc<Entry>>>,
-    pressed: Cell<bool>
+    pressed: Cell<bool>,
+    selected: Cell<Option<u32>>,
 }
 
 impl List {
@@ -68,6 +74,7 @@ impl List {
             current_height: Cell::new(0),
             entries: RefCell::new(vec![]),
             pressed: Cell::new(false),
+            selected: Cell::new(None),
         })
     }
 
@@ -77,9 +84,9 @@ impl List {
         self.current_height.set(self.current_height.get() + h);
     }
 
-    // Given absolute coordinates, returns the list entry
+    // Given absolute coordinates, returns the list entry index
     // drawn at that point.
-    fn get_entry(&self, p: Point) -> Option<Arc<Entry>> {
+    fn get_entry_index(&self, p: Point) -> Option<u32> {
         if self.rect.get().contains(p) {
             let mut current_y = 0;
             let x = self.rect.get().x;
@@ -87,18 +94,16 @@ impl List {
             let width = self.rect.get().width;
             let scroll = self.v_scroll.get();
 
-            for entry in self.entries.borrow().iter() {
+            for (i, entry) in self.entries.borrow().iter().enumerate() {
                 if Rect::new(x, y+current_y-scroll, width, entry.height.get()).contains(p) {
-                    return Some(entry.clone());
+                    return Some(i as u32)
                 }
                 current_y += entry.height.get() as i32
             }
-
-            None
-        } else {
-            None
         }
-    } 
+
+        None
+    }
 
     pub fn scroll(&self, y: i32) {
         let mut set_to = self.v_scroll.get() + y;
@@ -108,6 +113,39 @@ impl List {
             set_to = self.v_scroll.get() as i32;
         }
         self.v_scroll.set(set_to);
+    }
+
+    fn change_selection(&self, i: u32) {
+        match self.selected.get() {
+            Some(i) => {
+                match self.entries.borrow().get(i as usize) {
+                    Some(entry) => {
+                        entry.highlighted.set(false);
+                    },
+                    None => {},
+                }
+            },
+            _ => {},
+        }
+
+        if let Some(entry) = self.entries.borrow().get(i as usize) {
+            entry.highlighted.set(true);
+            self.selected.set(Some(i));
+
+            let mut y = 0;
+
+            for e in self.entries.borrow().index(0..(i as usize)) {
+                y += e.height.get();
+            }
+
+            let v_scroll = self.v_scroll.get();
+
+            if y < v_scroll as u32 {
+                self.scroll(y as i32 - v_scroll);
+            } else if (y + entry.height.get() as u32) > (v_scroll as u32 + self.rect.get().height) {
+                self.scroll((y + entry.height.get()) as i32 - (v_scroll + self.rect.get().height as i32));
+            }
+        }
     }
 }
 
@@ -128,14 +166,19 @@ impl Widget for List {
 
         for entry in self.entries.borrow().iter() {
             let mut image = orbimage::Image::new(width, entry.height.get());
-            image.set(ITEM_BACKGROUND);
+
+            if entry.highlighted.get() {
+                image.set(entry.highlight.get());
+            } else {
+                image.set(ITEM_BACKGROUND);
+            }
 
             for widget in entry.widgets().borrow().iter() {
                 widget.draw(&mut image, false)
             }
-            
+
             let image = image.data();
-            target.image(x, y+current_y-self.v_scroll.get(), width, entry.height.get(), &image);
+            target.image(x, current_y-self.v_scroll.get(), width, entry.height.get(), &image);
 
             current_y += entry.height.get() as i32
         }
@@ -168,16 +211,80 @@ impl Widget for List {
                     }
                 }
 
-                if click {
-                    if let Some(entry) = self.get_entry(point) { 
-                        entry.emit_click(point)
+                if let Some(i) = self.get_entry_index(point) {
+                    if click {
+                        if let Some(entry) = self.entries.borrow().get(i as usize) {
+                            entry.emit_click(point);
+                        }
+                    }
+
+                    match self.selected.get() {
+                        None => {
+                            self.change_selection(i);
+                            *redraw = true;
+                        },
+                        Some(selected) => {
+                            if selected != i {
+                                self.change_selection(i);
+                                *redraw = true;
+                            }
+                        },
                     }
                 }
             },
-
-            Event::UpArrow => { self.scroll(10); *redraw = true }
-            Event::DownArrow => { self.scroll(-10); *redraw = true }
-
+            Event::UpArrow => {
+                match self.selected.get() {
+                    None => {
+                        self.change_selection(0);
+                        *redraw = true;
+                    },
+                    Some(i) => {
+                        if i > 0 {
+                            self.change_selection(i - 1);
+                            *redraw = true;
+                        }
+                    }
+                }
+            },
+            Event::DownArrow => {
+                match self.selected.get() {
+                    None => {
+                        self.change_selection(0);
+                        *redraw = true;
+                    },
+                    Some(i) => {
+                        if i < self.entries.borrow().len() as u32 - 1 {
+                            self.change_selection(i + 1);
+                            *redraw = true;
+                        }
+                    }
+                }
+            },
+            Event::Home => {
+                self.change_selection(0);
+                *redraw = true
+            },
+            Event::End => {
+                self.change_selection(self.entries.borrow().len() as u32 - 1);
+                *redraw = true
+            },
+            Event::Enter => {
+                match self.selected.get() {
+                    Some(i) => {
+                        match self.entries.borrow().get(i as usize) {
+                            Some(entry) => {
+                                entry.emit_click(Point { x: 0, y: 0});
+                            },
+                            None => {},
+                        }
+                    },
+                    _ => {},
+                }
+            },
+            Event::Scroll { y, .. } => {
+                self.scroll(y * 2);
+                *redraw = true;
+            },
             _ => {}
         }
         focused
