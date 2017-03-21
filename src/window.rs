@@ -63,6 +63,10 @@ pub struct Window {
     pub widget_focus: Cell<usize>,
     pub bg: Cell<Color>,
     pub running: Cell<bool>,
+    mouse_point: Point,
+    mouse_left: bool,
+    mouse_middle: bool,
+    mouse_right: bool,
     events: Vec<Event>,
     redraw: bool,
 }
@@ -76,6 +80,10 @@ impl Window {
             widget_focus: Cell::new(0),
             bg: Cell::new(WINDOW_BACKGROUND),
             running: Cell::new(true),
+            mouse_point: Point::new(0, 0),
+            mouse_left: false,
+            mouse_right: false,
+            mouse_middle: false,
             events: vec![Event::Init],
             redraw: true,
         }
@@ -138,11 +146,26 @@ impl Window {
         for orbital_event in self.inner.borrow_mut().events() {
             match orbital_event.to_option() {
                 orbclient::EventOption::Mouse(mouse_event) => {
+                    self.mouse_point.x = mouse_event.x;
+                    self.mouse_point.y = mouse_event.y;
+                    
                     self.events.push(Event::Mouse {
-                        point: Point::new(mouse_event.x, mouse_event.y),
-                        left_button: mouse_event.left_button,
-                        middle_button: mouse_event.middle_button,
-                        right_button: mouse_event.right_button,
+                        point: self.mouse_point,
+                        left_button: self.mouse_left,
+                        middle_button: self.mouse_middle,
+                        right_button: self.mouse_right,
+                    })
+                }
+                orbclient::EventOption::Button(button_event) => {
+                    self.mouse_left = button_event.left;
+                    self.mouse_middle = button_event.middle;
+                    self.mouse_right = button_event.right;
+
+                    self.events.push(Event::Mouse {
+                        point: self.mouse_point,
+                        left_button: self.mouse_left,
+                        middle_button: self.mouse_middle,
+                        right_button: self.mouse_right,
                     })
                 }
                 orbclient::EventOption::Scroll(scroll_event) => {
