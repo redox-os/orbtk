@@ -106,7 +106,7 @@ impl List {
     }
 
     pub fn scroll(&self, y: i32) {
-        let mut set_to = self.v_scroll.get() + y;
+        let mut set_to = self.v_scroll.get() - y;
         if set_to < 0 {
             set_to = 0;
         } else if self.rect.get().height as i32 + set_to > self.current_height.get() as i32 {
