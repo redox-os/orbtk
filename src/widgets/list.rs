@@ -106,7 +106,7 @@ impl List {
     }
 
     pub fn scroll(&self, y: i32) {
-        let mut set_to = self.v_scroll.get() - y * 48;
+        let mut set_to = self.v_scroll.get() + y;
         if set_to < 0 {
             set_to = 0;
         } else if self.rect.get().height as i32 + set_to > self.current_height.get() as i32 {
@@ -282,7 +282,7 @@ impl Widget for List {
                 }
             },
             Event::Scroll { y, .. } => {
-                self.scroll(y * 2);
+                self.scroll(y * -96);
                 *redraw = true;
             },
             _ => {}
