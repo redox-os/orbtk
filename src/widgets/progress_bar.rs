@@ -82,14 +82,12 @@ impl Widget for ProgressBar {
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.rect.get();
-        let progress_rect = Rect::new(rect.x,
-                                rect.y,
-                                ((rect.width as i32 *
-                                  max(0, min(self.maximum, self.value.get() - self.minimum))) /
-                                 max(1,
-                                     self.maximum -
-                                     self.minimum)) as u32,
-                                rect.height);
+        let progress_rect = Rect{
+                                width: (rect.width as i32 *
+                                        max(0, min(self.maximum, self.value.get() - self.minimum)) /
+                                        max(1, self.maximum - self.minimum)) as u32,
+                                ..self.rect.get()
+                            };
 
         let b_r = self.border_radius.get();
         renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg);
