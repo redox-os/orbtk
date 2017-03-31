@@ -4,7 +4,7 @@ use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, 
 use orbtk::traits::{Border, Click, Enter, Place, Text};
 
 fn main() {
-    let mut window = Window::new(Rect::new(100, 100, 420, 730), "OrbTK");
+    let mut window = Window::new(Rect::new(100, 100, 420, 730), "OrbTK", &[]);
 
     let x = 10;
     let mut y = 0;

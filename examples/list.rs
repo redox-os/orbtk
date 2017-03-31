@@ -4,7 +4,7 @@ use orbtk::{ Window, List, Rect, Entry, Button };
 use orbtk::traits::{ Place, Text, Click };
 
 fn main() {
-    let mut window = Window::new(Rect::new(100, 100, 420, 500), "OrbTK");
+    let mut window = Window::new(Rect::new(100, 100, 420, 500), "OrbTK", &[]);
 
     let list = List::new();
     list.position(5, 5).size(400, 400);
