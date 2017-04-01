@@ -72,7 +72,24 @@ pub struct Window {
 }
 
 impl Window {
-    pub fn new(rect: Rect, title: &str, flags: &[WindowFlag]) -> Self {
+    pub fn new(rect: Rect, title: &str) -> Self {
+        Window {
+            inner: RefCell::new(orbclient::Window::new(rect.x, rect.y, rect.width, rect.height, title).unwrap()),
+            font: orbfont::Font::find(None, None, None).ok(),
+            widgets: RefCell::new(Vec::new()),
+            widget_focus: Cell::new(0),
+            bg: Cell::new(WINDOW_BACKGROUND),
+            running: Cell::new(true),
+            mouse_point: Point::new(0, 0),
+            mouse_left: false,
+            mouse_right: false,
+            mouse_middle: false,
+            events: vec![Event::Init],
+            redraw: true,
+        }
+    }
+
+    pub fn new_flags(rect: Rect, title: &str, flags: &[WindowFlag]) -> Self {
         Window {
             inner: RefCell::new(orbclient::Window::new_flags(rect.x, rect.y, rect.width, rect.height, title, flags).unwrap()),
             font: orbfont::Font::find(None, None, None).ok(),

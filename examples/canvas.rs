@@ -7,7 +7,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 
 fn main() {
-    let mut window = Window::new(Rect::new(100, 100, 420, 420), "Canvas", &[]);
+    let mut window = Window::new(Rect::new(100, 100, 420, 420), "Canvas");
 
     let click_pos: Rc<RefCell<Option<Point>>>= Rc::new(RefCell::new(None));
 
