@@ -1,4 +1,4 @@
-use orbclient::{self, Renderer};
+use orbclient::{self, Renderer, WindowFlag};
 use orbclient::color::Color;
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
@@ -73,8 +73,12 @@ pub struct Window {
 
 impl Window {
     pub fn new(rect: Rect, title: &str) -> Self {
+        Window::new_flags(rect, title, &[])
+    }
+
+    pub fn new_flags(rect: Rect, title: &str, flags: &[WindowFlag]) -> Self {
         Window {
-            inner: RefCell::new(orbclient::Window::new(rect.x, rect.y, rect.width, rect.height, title).unwrap()),
+            inner: RefCell::new(orbclient::Window::new_flags(rect.x, rect.y, rect.width, rect.height, title, flags).unwrap()),
             font: orbfont::Font::find(None, None, None).ok(),
             widgets: RefCell::new(Vec::new()),
             widget_focus: Cell::new(0),
