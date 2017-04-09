@@ -1,5 +1,6 @@
 use orbclient::{self, Renderer, WindowFlag};
 use orbclient::color::Color;
+use orbclient::keycode::*;
 use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
 use std::sync::Arc;
@@ -236,15 +237,15 @@ impl Window {
                 },
                 orbclient::EventOption::Key(key_event) => {
                     if key_event.pressed {
-                        match key_event.scancode {
-                            orbclient::K_BKSP => self.events.push_back(Event::Backspace),
-                            orbclient::K_DEL => self.events.push_back(Event::Delete),
-                            orbclient::K_HOME => self.events.push_back(Event::Home),
-                            orbclient::K_END => self.events.push_back(Event::End),
-                            orbclient::K_UP => self.events.push_back(Event::UpArrow),
-                            orbclient::K_DOWN => self.events.push_back(Event::DownArrow),
-                            orbclient::K_LEFT => self.events.push_back(Event::LeftArrow),
-                            orbclient::K_RIGHT => self.events.push_back(Event::RightArrow),
+                        match key_event.keycode {
+                            KC_BKSP => self.events.push_back(Event::Backspace),
+                            KC_DEL => self.events.push_back(Event::Delete),
+                            KC_HOME => self.events.push_back(Event::Home),
+                            KC_END => self.events.push_back(Event::End),
+                            KC_UP => self.events.push_back(Event::UpArrow),
+                            KC_DOWN => self.events.push_back(Event::DownArrow),
+                            KC_LEFT => self.events.push_back(Event::LeftArrow),
+                            KC_RIGHT => self.events.push_back(Event::RightArrow),
                             _ => {
                                 match key_event.character {
                                     '\0' => (),
