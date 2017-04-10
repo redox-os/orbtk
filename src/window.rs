@@ -1,10 +1,12 @@
 use orbclient::{self, Renderer, WindowFlag};
 use orbclient::color::Color;
 use std::cell::{Cell, RefCell};
+use std::collections::VecDeque;
 use std::sync::Arc;
 
 use super::{Event, Point, Rect, Widget};
 use theme::WINDOW_BACKGROUND;
+use traits::Resize;
 
 extern crate orbfont;
 
@@ -63,12 +65,26 @@ pub struct Window {
     pub widget_focus: Cell<usize>,
     pub bg: Cell<Color>,
     pub running: Cell<bool>,
+    resize_callback: RefCell<Option<Arc<Fn(&Window, u32, u32)>>>,
     mouse_point: Point,
     mouse_left: bool,
     mouse_middle: bool,
     mouse_right: bool,
-    events: Vec<Event>,
+    events: VecDeque<Event>,
     redraw: bool,
+}
+
+impl Resize for Window {
+    fn emit_resize(&self, width: u32, height: u32) {
+        if let Some(ref resize_callback) = *self.resize_callback.borrow() {
+            resize_callback(self, width, height);
+        }
+    }
+
+    fn on_resize<T: Fn(&Self, u32, u32) + 'static>(&self, func: T) -> &Self {
+        *self.resize_callback.borrow_mut() = Some(Arc::new(func));
+        self
+    }
 }
 
 impl Window {
@@ -77,6 +93,8 @@ impl Window {
     }
 
     pub fn new_flags(rect: Rect, title: &str, flags: &[WindowFlag]) -> Self {
+        let mut events = VecDeque::new();
+        events.push_back(Event::Init);
         Window {
             inner: RefCell::new(orbclient::Window::new_flags(rect.x, rect.y, rect.width, rect.height, title, flags).unwrap()),
             font: orbfont::Font::find(None, None, None).ok(),
@@ -84,11 +102,12 @@ impl Window {
             widget_focus: Cell::new(0),
             bg: Cell::new(WINDOW_BACKGROUND),
             running: Cell::new(true),
+            resize_callback: RefCell::new(None),
             mouse_point: Point::new(0, 0),
             mouse_left: false,
             mouse_right: false,
             mouse_middle: false,
-            events: vec![Event::Init],
+            events: events,
             redraw: true,
         }
     }
@@ -132,7 +151,14 @@ impl Window {
     }
 
     pub fn drain_events(&mut self) {
-        for event in self.events.drain(..) {
+        while let Some(event) = self.events.pop_front() {
+            match event {
+                Event::Resize { width, height } => {
+                    self.emit_resize(width, height);
+                },
+                _ => ()
+            }
+
             for i in 0..self.widgets.borrow().len() {
                 if let Some(widget) = self.widgets.borrow().get(i) {
                     if widget.event(event, self.widget_focus.get() == i, &mut self.redraw) {
@@ -153,7 +179,7 @@ impl Window {
                     self.mouse_point.x = mouse_event.x;
                     self.mouse_point.y = mouse_event.y;
 
-                    self.events.push(Event::Mouse {
+                    self.events.push_back(Event::Mouse {
                         point: self.mouse_point,
                         left_button: self.mouse_left,
                         middle_button: self.mouse_middle,
@@ -165,7 +191,7 @@ impl Window {
                     self.mouse_middle = button_event.middle;
                     self.mouse_right = button_event.right;
 
-                    self.events.push(Event::Mouse {
+                    self.events.push_back(Event::Mouse {
                         point: self.mouse_point,
                         left_button: self.mouse_left,
                         middle_button: self.mouse_middle,
@@ -173,7 +199,7 @@ impl Window {
                     })
                 },
                 orbclient::EventOption::Scroll(scroll_event) => {
-                    self.events.push(Event::Scroll {
+                    self.events.push_back(Event::Scroll {
                         x: scroll_event.x,
                         y: scroll_event.y,
                     })
@@ -181,27 +207,31 @@ impl Window {
                 orbclient::EventOption::Key(key_event) => {
                     if key_event.pressed {
                         match key_event.scancode {
-                            orbclient::K_BKSP => self.events.push(Event::Backspace),
-                            orbclient::K_DEL => self.events.push(Event::Delete),
-                            orbclient::K_HOME => self.events.push(Event::Home),
-                            orbclient::K_END => self.events.push(Event::End),
-                            orbclient::K_UP => self.events.push(Event::UpArrow),
-                            orbclient::K_DOWN => self.events.push(Event::DownArrow),
-                            orbclient::K_LEFT => self.events.push(Event::LeftArrow),
-                            orbclient::K_RIGHT => self.events.push(Event::RightArrow),
+                            orbclient::K_BKSP => self.events.push_back(Event::Backspace),
+                            orbclient::K_DEL => self.events.push_back(Event::Delete),
+                            orbclient::K_HOME => self.events.push_back(Event::Home),
+                            orbclient::K_END => self.events.push_back(Event::End),
+                            orbclient::K_UP => self.events.push_back(Event::UpArrow),
+                            orbclient::K_DOWN => self.events.push_back(Event::DownArrow),
+                            orbclient::K_LEFT => self.events.push_back(Event::LeftArrow),
+                            orbclient::K_RIGHT => self.events.push_back(Event::RightArrow),
                             _ => {
                                 match key_event.character {
                                     '\0' => (),
                                     '\x1B' => (),
-                                    '\n' => self.events.push(Event::Enter),
-                                    _ => self.events.push(Event::Text { c: key_event.character }),
+                                    '\n' => self.events.push_back(Event::Enter),
+                                    _ => self.events.push_back(Event::Text { c: key_event.character }),
                                 }
                             }
                         }
                     }
                 },
-                orbclient::EventOption::Resize(_resize_event) => {
+                orbclient::EventOption::Resize(resize_event) => {
                     self.redraw = true;
+                    self.events.push_back(Event::Resize {
+                        width: resize_event.width,
+                        height: resize_event.height,
+                    });
                 },
                 orbclient::EventOption::Quit(_quit_event) => {
                     self.running.set(false);
