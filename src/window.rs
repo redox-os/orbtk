@@ -152,14 +152,14 @@ impl Window {
                 orbclient::EventOption::Mouse(mouse_event) => {
                     self.mouse_point.x = mouse_event.x;
                     self.mouse_point.y = mouse_event.y;
-                    
+
                     self.events.push(Event::Mouse {
                         point: self.mouse_point,
                         left_button: self.mouse_left,
                         middle_button: self.mouse_middle,
                         right_button: self.mouse_right,
                     })
-                }
+                },
                 orbclient::EventOption::Button(button_event) => {
                     self.mouse_left = button_event.left;
                     self.mouse_middle = button_event.middle;
@@ -171,13 +171,13 @@ impl Window {
                         middle_button: self.mouse_middle,
                         right_button: self.mouse_right,
                     })
-                }
+                },
                 orbclient::EventOption::Scroll(scroll_event) => {
                     self.events.push(Event::Scroll {
                         x: scroll_event.x,
                         y: scroll_event.y,
                     })
-                }
+                },
                 orbclient::EventOption::Key(key_event) => {
                     if key_event.pressed {
                         match key_event.scancode {
@@ -199,8 +199,13 @@ impl Window {
                             }
                         }
                     }
-                }
-                orbclient::EventOption::Quit(_quit_event) => { self.running.set(false); },
+                },
+                orbclient::EventOption::Resize(_resize_event) => {
+                    self.redraw = true;
+                },
+                orbclient::EventOption::Quit(_quit_event) => {
+                    self.running.set(false);
+                },
                 _ => (),
             };
         }
