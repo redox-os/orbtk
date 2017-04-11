@@ -112,6 +112,36 @@ impl Window {
         }
     }
 
+    pub fn x(&self) -> i32 {
+        let inner = self.inner.borrow();
+        (*inner).x()
+    }
+
+    pub fn y(&self) -> i32 {
+        let inner = self.inner.borrow();
+        (*inner).y()
+    }
+
+    pub fn width(&self) -> u32 {
+        let inner = self.inner.borrow();
+        (*inner).width()
+    }
+
+    pub fn height(&self) -> u32 {
+        let inner = self.inner.borrow();
+        (*inner).height()
+    }
+
+    pub fn title(&self) -> String {
+        let inner = self.inner.borrow();
+        (*inner).title()
+    }
+
+    pub fn set_pos(&self, x: i32, y: i32) {
+        let mut inner = self.inner.borrow_mut();
+        (*inner).set_pos(x, y);
+    }
+
     pub fn set_size(&self, width: u32, height: u32) {
         let mut inner = self.inner.borrow_mut();
         (*inner).set_size(width, height);
