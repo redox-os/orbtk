@@ -179,7 +179,7 @@ impl Widget for TextBox {
         let mut y = text_offset.y - scroll_offset.1 * 16;
         let start_x = x;
         for (i, c) in text.char_indices() {
-            let mut c_r = Rect::new(x, y, 8, 16);
+            let mut c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
             if c == '\n' {
                 if focused && i == text_i && rect.intersects(&c_r) {
                     renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
@@ -211,7 +211,7 @@ impl Widget for TextBox {
             }
         }
 
-        let c_r = Rect::new(x, y, 8, 16);
+        let c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
         if focused && text.len() == text_i && rect.intersects(&c_r) {
             renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
         }
