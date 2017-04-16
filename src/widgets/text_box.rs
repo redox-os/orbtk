@@ -181,7 +181,7 @@ impl Widget for TextBox {
         for (i, c) in text.char_indices() {
             let mut c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
             if c == '\n' {
-                if focused && i == text_i && rect.intersects(&c_r) {
+                if focused && i == text_i && rect.contains_rect(&c_r) {
                     renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
                 }
 
@@ -190,13 +190,13 @@ impl Widget for TextBox {
             } else if c == '\t' {
                 c_r.width = 8 * 4;
 
-                if focused && i == text_i && rect.intersects(&c_r) {
+                if focused && i == text_i && rect.contains_rect(&c_r) {
                     renderer.rect(x + rect.x, y + rect.y, 8 * 4, 16, self.fg_cursor);
                 }
 
                 x += c_r.width as i32;
             } else {
-                if rect.intersects(&c_r) {
+                if rect.contains_rect(&c_r) {
                     if i == text_i && focused {
                         renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
                     }
@@ -212,7 +212,7 @@ impl Widget for TextBox {
         }
 
         let c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
-        if focused && text.len() == text_i && rect.intersects(&c_r) {
+        if focused && text.len() == text_i && rect.contains_rect(&c_r) {
             renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
         }
     }

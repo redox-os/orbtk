@@ -18,21 +18,31 @@ impl Rect {
         }
     }
 
-    pub fn intersects(&self, r: &Rect) -> bool {
-        ! (
-            r.x > (self.x + self.width as i32) ||
-            (r.x + r.width as i32) < self.x ||
-            r.y > (self.y + self.height as i32) ||
-            (r.y + r.height as i32) < self.y
-        )
+    // Get the top left point of this rect
+    pub fn point(&self) -> Point {
+        Point::new(self.x, self.y)
     }
 
+    // Check if this rect contains a point
     pub fn contains(&self, p: Point) -> bool {
         p.x >= self.x && p.x < self.x + self.width as i32 && p.y >= self.y &&
         p.y < self.y + self.height as i32
     }
 
-    pub fn point(&self) -> Point {
-        Point::new(self.x, self.y)
+    // Check if this rect contains another rect
+    pub fn contains_rect(&self, r: &Rect) -> bool {
+        let p1 = r.point();
+        let p2 = p1 + Point::new(r.width as i32, r.height as i32);
+        self.contains(p1) && self.contains(p2)
+    }
+
+    // Check if this rect intersects another rect
+    pub fn intersects(&self, r: &Rect) -> bool {
+        ! (
+            r.x >= (self.x + self.width as i32) ||
+            self.x >= (r.x + r.width as i32) ||
+            r.y >= (self.y + self.height as i32) ||
+            self.y >= (r.y + r.height as i32)
+        )
     }
 }
