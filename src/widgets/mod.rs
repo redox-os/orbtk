@@ -9,10 +9,10 @@ pub use self::button::Button;
 pub use self::grid::Grid;
 pub use self::image::Image;
 pub use self::label::Label;
-pub use self::menu::{ Menu, Action, Separator };
+pub use self::menu::{Menu, Action, Separator};
 pub use self::progress_bar::ProgressBar;
 pub use self::text_box::TextBox;
-pub use self::list::{ List, Entry };
+pub use self::list::{List, Entry};
 
 mod button;
 mod grid;
@@ -23,7 +23,7 @@ mod progress_bar;
 mod text_box;
 mod list;
 
-pub trait Widget : Any {
+pub trait Widget: Any {
     fn rect(&self) -> &Cell<Rect>;
     fn draw(&self, renderer: &mut Renderer, focused: bool);
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool;

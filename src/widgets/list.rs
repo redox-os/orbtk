@@ -1,19 +1,19 @@
 use orbclient::{Renderer, Color};
 use orbimage;
-use std::cell::{ Cell, RefCell };
+use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 use cell::CheckSet;
 use event::Event;
 use point::Point;
 use rect::Rect;
-use theme::{ ITEM_BACKGROUND, WINDOW_BACKGROUND, ITEM_SELECTION };
-use traits::{ Click, Place };
+use theme::{ITEM_BACKGROUND, WINDOW_BACKGROUND, ITEM_SELECTION};
+use traits::{Click, Place};
 use widgets::Widget;
 use std::ops::Index;
 
 /// An entry in a list
-/// Each entry stores widgets within. 
+/// Each entry stores widgets within.
 pub struct Entry {
     pub height: Cell<u32>,
     click_callback: RefCell<Option<Arc<Fn(&Entry, Point)>>>,
@@ -25,12 +25,12 @@ pub struct Entry {
 impl Entry {
     pub fn new(h: u32) -> Arc<Self> {
         Arc::new(Entry {
-            height: Cell::new(h),
-            click_callback: RefCell::new(None),
-            widgets: RefCell::new(vec![]),
-            highlight: Cell::new(ITEM_SELECTION),
-            highlighted: Cell::new(false),
-        })
+                     height: Cell::new(h),
+                     click_callback: RefCell::new(None),
+                     widgets: RefCell::new(vec![]),
+                     highlight: Cell::new(ITEM_SELECTION),
+                     highlighted: Cell::new(false),
+                 })
     }
 
     /// Adds a widget to the entry
@@ -69,13 +69,13 @@ pub struct List {
 impl List {
     pub fn new() -> Arc<Self> {
         Arc::new(List {
-            rect: Cell::new(Rect::default()),
-            v_scroll: Cell::new(0),
-            current_height: Cell::new(0),
-            entries: RefCell::new(vec![]),
-            pressed: Cell::new(false),
-            selected: Cell::new(None),
-        })
+                     rect: Cell::new(Rect::default()),
+                     v_scroll: Cell::new(0),
+                     current_height: Cell::new(0),
+                     entries: RefCell::new(vec![]),
+                     pressed: Cell::new(false),
+                     selected: Cell::new(None),
+                 })
     }
 
     pub fn push(&self, entry: &Arc<Entry>) {
@@ -95,8 +95,8 @@ impl List {
             let scroll = self.v_scroll.get();
 
             for (i, entry) in self.entries.borrow().iter().enumerate() {
-                if Rect::new(x, y+current_y-scroll, width, entry.height.get()).contains(p) {
-                    return Some(i as u32)
+                if Rect::new(x, y + current_y - scroll, width, entry.height.get()).contains(p) {
+                    return Some(i as u32);
                 }
                 current_y += entry.height.get() as i32
             }
@@ -121,11 +121,11 @@ impl List {
                 match self.entries.borrow().get(i as usize) {
                     Some(entry) => {
                         entry.highlighted.set(false);
-                    },
-                    None => {},
+                    }
+                    None => {}
                 }
-            },
-            _ => {},
+            }
+            _ => {}
         }
 
         if let Some(entry) = self.entries.borrow().get(i as usize) {
@@ -143,7 +143,8 @@ impl List {
             if y < v_scroll as u32 {
                 self.scroll(y as i32 - v_scroll);
             } else if (y + entry.height.get() as u32) > (v_scroll as u32 + self.rect.get().height) {
-                self.scroll((y + entry.height.get()) as i32 - (v_scroll + self.rect.get().height as i32));
+                self.scroll((y + entry.height.get()) as i32 -
+                            (v_scroll + self.rect.get().height as i32));
             }
         }
     }
@@ -178,7 +179,11 @@ impl Widget for List {
             }
 
             let image = image.data();
-            target.image(x, current_y-self.v_scroll.get(), width, entry.height.get(), &image);
+            target.image(x,
+                         current_y - self.v_scroll.get(),
+                         width,
+                         entry.height.get(),
+                         &image);
 
             current_y += entry.height.get() as i32
         }
@@ -222,22 +227,22 @@ impl Widget for List {
                         None => {
                             self.change_selection(i);
                             *redraw = true;
-                        },
+                        }
                         Some(selected) => {
                             if selected != i {
                                 self.change_selection(i);
                                 *redraw = true;
                             }
-                        },
+                        }
                     }
                 }
-            },
+            }
             Event::UpArrow => {
                 match self.selected.get() {
                     None => {
                         self.change_selection(0);
                         *redraw = true;
-                    },
+                    }
                     Some(i) => {
                         if i > 0 {
                             self.change_selection(i - 1);
@@ -245,13 +250,13 @@ impl Widget for List {
                         }
                     }
                 }
-            },
+            }
             Event::DownArrow => {
                 match self.selected.get() {
                     None => {
                         self.change_selection(0);
                         *redraw = true;
-                    },
+                    }
                     Some(i) => {
                         if i < self.entries.borrow().len() as u32 - 1 {
                             self.change_selection(i + 1);
@@ -259,32 +264,32 @@ impl Widget for List {
                         }
                     }
                 }
-            },
+            }
             Event::Home => {
                 self.change_selection(0);
                 *redraw = true
-            },
+            }
             Event::End => {
                 self.change_selection(self.entries.borrow().len() as u32 - 1);
                 *redraw = true
-            },
+            }
             Event::Enter => {
                 match self.selected.get() {
                     Some(i) => {
                         match self.entries.borrow().get(i as usize) {
                             Some(entry) => {
-                                entry.emit_click(Point { x: 0, y: 0});
-                            },
-                            None => {},
+                                entry.emit_click(Point { x: 0, y: 0 });
+                            }
+                            None => {}
                         }
-                    },
-                    _ => {},
+                    }
+                    _ => {}
                 }
-            },
+            }
             Event::Scroll { y, .. } => {
                 self.scroll(y * -96);
                 *redraw = true;
-            },
+            }
             _ => {}
         }
         focused
@@ -292,4 +297,3 @@ impl Widget for List {
 }
 
 impl Place for List {}
-

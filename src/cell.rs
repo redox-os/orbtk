@@ -30,7 +30,9 @@ impl<T: Clone> CloneCell<T> {
     }
 }
 
-impl<T: Copy> CheckSet<T> for Cell<T> where T: PartialOrd {
+impl<T: Copy> CheckSet<T> for Cell<T>
+    where T: PartialOrd
+{
     fn check_set(&self, value: T) -> bool {
         if value != self.get() {
             self.set(value);
@@ -41,7 +43,9 @@ impl<T: Copy> CheckSet<T> for Cell<T> where T: PartialOrd {
     }
 }
 
-impl<T: Copy> CheckSet<T> for CloneCell<T> where T: PartialOrd {
+impl<T: Copy> CheckSet<T> for CloneCell<T>
+    where T: PartialOrd
+{
     fn check_set(&self, value: T) -> bool {
         let mut borrow = self.inner.borrow_mut();
         if value != *borrow {

@@ -14,22 +14,24 @@ pub struct Grid {
     space_x: Cell<i32>,
     space_y: Cell<i32>,
     entries: RefCell<BTreeMap<(usize, usize), Arc<Widget>>>,
-    focused: Cell<Option<(usize, usize)>>
+    focused: Cell<Option<(usize, usize)>>,
 }
 
 impl Grid {
     pub fn new() -> Arc<Self> {
         Arc::new(Grid {
-            rect: Cell::new(Rect::default()),
-            space_x: Cell::new(0),
-            space_y: Cell::new(0),
-            entries: RefCell::new(BTreeMap::new()),
-            focused: Cell::new(None)
-        })
+                     rect: Cell::new(Rect::default()),
+                     space_x: Cell::new(0),
+                     space_y: Cell::new(0),
+                     entries: RefCell::new(BTreeMap::new()),
+                     focused: Cell::new(None),
+                 })
     }
 
     pub fn insert<T: Widget>(&self, col: usize, row: usize, entry: &Arc<T>) {
-        self.entries.borrow_mut().insert((col, row), entry.clone());
+        self.entries
+            .borrow_mut()
+            .insert((col, row), entry.clone());
         self.arrange(false);
     }
 
@@ -121,7 +123,7 @@ impl Widget for Grid {
         for (&(col, row), entry) in self.entries.borrow().iter() {
             let is_focused = self.focused.get() == Some((col, row));
             if entry.event(event, focused && is_focused, redraw) {
-                if self.focused.check_set(Some((col, row))) || ! focused {
+                if self.focused.check_set(Some((col, row))) || !focused {
                     focused = true;
                     *redraw = true;
                 }

@@ -38,18 +38,18 @@ pub trait Entry: Widget {
 impl Menu {
     pub fn new<S: Into<String>>(name: S) -> Arc<Self> {
         Arc::new(Menu {
-            rect: Cell::new(Rect::default()),
-            bg: BUTTON_BACKGROUND,
-            fg: BUTTON_FOREGROUND,
-            text: CloneCell::new(name.into()),
-            bg_pressed: BUTTON_BG_SELECTION,
-            fg_border: BUTTON_BORDER,
-            text_offset: Cell::new(Point::default()),
-            entries: RefCell::new(Vec::new()),
-            click_callback: RefCell::new(None),
-            pressed: Cell::new(false),
-            activated: Cell::new(false),
-        })
+                     rect: Cell::new(Rect::default()),
+                     bg: BUTTON_BACKGROUND,
+                     fg: BUTTON_FOREGROUND,
+                     text: CloneCell::new(name.into()),
+                     bg_pressed: BUTTON_BG_SELECTION,
+                     fg_border: BUTTON_BORDER,
+                     text_offset: Cell::new(Point::default()),
+                     entries: RefCell::new(Vec::new()),
+                     click_callback: RefCell::new(None),
+                     pressed: Cell::new(false),
+                     activated: Cell::new(false),
+                 })
     }
 
     pub fn add<T: Entry>(&self, new_entry: &Arc<T>) {
@@ -132,7 +132,11 @@ impl Widget for Menu {
             }
         }
 
-        renderer.rect(rect.x, rect.y + rect.height as i32 - 1, rect.width, 1, self.fg_border);
+        renderer.rect(rect.x,
+                      rect.y + rect.height as i32 - 1,
+                      rect.width,
+                      1,
+                      self.fg_border);
 
         if self.activated.get() {
             for entry in self.entries.borrow().iter() {
@@ -213,16 +217,16 @@ pub struct Action {
 impl Action {
     pub fn new<S: Into<String>>(text: S) -> Arc<Self> {
         Arc::new(Action {
-            rect: Cell::new(Rect::default()),
-            bg: ITEM_BACKGROUND,
-            fg: ITEM_FOREGROUND,
-            text: CloneCell::new(text.into()),
-            bg_pressed: ITEM_SELECTION,
-            text_offset: Cell::new(Point::default()),
-            click_callback: RefCell::new(None),
-            pressed: Cell::new(false),
-            hover: Cell::new(false),
-        })
+                     rect: Cell::new(Rect::default()),
+                     bg: ITEM_BACKGROUND,
+                     fg: ITEM_FOREGROUND,
+                     text: CloneCell::new(text.into()),
+                     bg_pressed: ITEM_SELECTION,
+                     text_offset: Cell::new(Point::default()),
+                     click_callback: RefCell::new(None),
+                     pressed: Cell::new(false),
+                     hover: Cell::new(false),
+                 })
     }
 }
 
@@ -337,10 +341,10 @@ impl Entry for Action {
 impl Separator {
     pub fn new() -> Arc<Self> {
         Arc::new(Separator {
-            rect: Cell::new(Rect::default()),
-            bg: ITEM_BACKGROUND,
-            fg: ITEM_FOREGROUND,
-        })
+                     rect: Cell::new(Rect::default()),
+                     bg: ITEM_BACKGROUND,
+                     fg: ITEM_FOREGROUND,
+                 })
     }
 }
 
