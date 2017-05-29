@@ -27,10 +27,10 @@ impl Image {
 
     pub fn from_image(image: orbimage::Image) -> Arc<Self> {
         Arc::new(Image {
-            rect: Cell::new(Rect::new(0, 0, image.width(), image.height())),
-            image: RefCell::new(image),
-            click_callback: RefCell::new(None)
-        })
+                     rect: Cell::new(Rect::new(0, 0, image.width(), image.height())),
+                     image: RefCell::new(image),
+                     click_callback: RefCell::new(None),
+                 })
     }
 
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Arc<Self>, String> {

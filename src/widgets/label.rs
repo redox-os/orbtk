@@ -26,17 +26,17 @@ pub struct Label {
 impl Label {
     pub fn new() -> Arc<Self> {
         Arc::new(Label {
-            rect: Cell::new(Rect::default()),
-            bg: Cell::new(LABEL_BACKGROUND),
-            fg: Cell::new(LABEL_FOREGROUND),
-            fg_border: Cell::new(LABEL_BORDER),
-            border: Cell::new(false),
-            border_radius: Cell::new(0),
-            text: CloneCell::new(String::new()),
-            text_offset: Cell::new(Point::default()),
-            click_callback: RefCell::new(None),
-            pressed: Cell::new(false),
-        })
+                     rect: Cell::new(Rect::default()),
+                     bg: Cell::new(LABEL_BACKGROUND),
+                     fg: Cell::new(LABEL_FOREGROUND),
+                     fg_border: Cell::new(LABEL_BORDER),
+                     border: Cell::new(false),
+                     border_radius: Cell::new(0),
+                     text: CloneCell::new(String::new()),
+                     text_offset: Cell::new(Point::default()),
+                     click_callback: RefCell::new(None),
+                     pressed: Cell::new(false),
+                 })
     }
 }
 
@@ -88,9 +88,21 @@ impl Widget for Label {
         let rect = self.rect.get();
 
         let b_r = self.border_radius.get();
-        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg.get());
+        renderer.rounded_rect(rect.x,
+                              rect.y,
+                              rect.width,
+                              rect.height,
+                              b_r,
+                              true,
+                              self.bg.get());
         if self.border.get() {
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border.get());
+            renderer.rounded_rect(rect.x,
+                                  rect.y,
+                                  rect.width,
+                                  rect.height,
+                                  b_r,
+                                  false,
+                                  self.fg_border.get());
         }
 
         let fg = self.fg.get();

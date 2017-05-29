@@ -28,18 +28,18 @@ pub struct ProgressBar {
 impl ProgressBar {
     pub fn new() -> Arc<Self> {
         Arc::new(ProgressBar {
-            rect: Cell::new(Rect::default()),
-            bg: ITEM_BACKGROUND,
-            fg: ITEM_SELECTION,
-            fg_border: ITEM_BORDER,
-            border: Cell::new(true),
-            border_radius: Cell::new(0),
-            value: Cell::new(0),
-            minimum: 0,
-            maximum: 100,
-            click_callback: RefCell::new(None),
-            pressed: Cell::new(false),
-        })
+                     rect: Cell::new(Rect::default()),
+                     bg: ITEM_BACKGROUND,
+                     fg: ITEM_SELECTION,
+                     fg_border: ITEM_BORDER,
+                     border: Cell::new(true),
+                     border_radius: Cell::new(0),
+                     value: Cell::new(0),
+                     minimum: 0,
+                     maximum: 100,
+                     click_callback: RefCell::new(None),
+                     pressed: Cell::new(false),
+                 })
     }
 
     pub fn value(&self, value: i32) -> &Self {
@@ -82,22 +82,31 @@ impl Widget for ProgressBar {
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.rect.get();
-        let progress_rect = Rect{
-                                width: (rect.width as i32 *
-                                        max(0, min(self.maximum, self.value.get() - self.minimum)) /
-                                        max(1, self.maximum - self.minimum)) as u32,
-                                ..self.rect.get()
-                            };
+        let progress_rect = Rect {
+            width: (rect.width as i32 * max(0, min(self.maximum, self.value.get() - self.minimum)) /
+                    max(1, self.maximum - self.minimum)) as u32,
+            ..self.rect.get()
+        };
 
         let b_r = self.border_radius.get();
         renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg);
         if progress_rect.width >= b_r * 2 {
-            renderer.rounded_rect(progress_rect.x, progress_rect.y,
-                                  progress_rect.width, progress_rect.height,
-                                  b_r, true, self.fg);
+            renderer.rounded_rect(progress_rect.x,
+                                  progress_rect.y,
+                                  progress_rect.width,
+                                  progress_rect.height,
+                                  b_r,
+                                  true,
+                                  self.fg);
         }
         if self.border.get() {
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
+            renderer.rounded_rect(rect.x,
+                                  rect.y,
+                                  rect.width,
+                                  rect.height,
+                                  b_r,
+                                  false,
+                                  self.fg_border);
         }
     }
 

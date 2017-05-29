@@ -15,13 +15,23 @@ use widgets::Widget;
 /// Find next character index
 fn next_i(text: &str, text_i: usize) -> usize {
     let slice = &text[text_i..];
-    slice.char_indices().skip(1).next().unwrap_or((slice.len(), '\0')).0 + text_i
+    slice
+        .char_indices()
+        .skip(1)
+        .next()
+        .unwrap_or((slice.len(), '\0'))
+        .0 + text_i
 }
 
 /// Find last character index
 fn prev_i(text: &str, text_i: usize) -> usize {
-    let slice = &text[.. text_i];
-    slice.char_indices().rev().next().unwrap_or((0, '\0')).0
+    let slice = &text[..text_i];
+    slice
+        .char_indices()
+        .rev()
+        .next()
+        .unwrap_or((0, '\0'))
+        .0
 }
 
 pub struct TextBox {
@@ -48,31 +58,32 @@ pub struct TextBox {
     /// The closure should return None if the event was manually handled,
     /// or should return the event it received if it wants the default
     /// handler deal with it.
-    pub event_filter: RefCell<Option<Arc<Fn(&TextBox, Event, &mut bool, &mut bool) -> Option<Event>>>>,
+    pub event_filter:
+        RefCell<Option<Arc<Fn(&TextBox, Event, &mut bool, &mut bool) -> Option<Event>>>>,
     pressed: Cell<bool>,
 }
 
 impl TextBox {
     pub fn new() -> Arc<Self> {
         Arc::new(TextBox {
-            rect: Cell::new(Rect::default()),
-            bg: TEXT_BACKGROUND,
-            fg: TEXT_FOREGROUND,
-            fg_border: TEXT_BORDER,
-            fg_cursor: TEXT_SELECTION,
-            border: Cell::new(true),
-            border_radius: Cell::new(0),
-            text: CloneCell::new(String::new()),
-            text_i: Cell::new(0),
-            text_offset: Cell::new(Point::default()),
-            scroll_offset: Cell::new((0, 0)),
-            mask_char: Cell::new(None),
-            grab_focus: Cell::new(false),
-            click_callback: RefCell::new(None),
-            enter_callback: RefCell::new(None),
-            event_filter: RefCell::new(None),
-            pressed: Cell::new(false),
-        })
+                     rect: Cell::new(Rect::default()),
+                     bg: TEXT_BACKGROUND,
+                     fg: TEXT_FOREGROUND,
+                     fg_border: TEXT_BORDER,
+                     fg_cursor: TEXT_SELECTION,
+                     border: Cell::new(true),
+                     border_radius: Cell::new(0),
+                     text: CloneCell::new(String::new()),
+                     text_i: Cell::new(0),
+                     text_offset: Cell::new(Point::default()),
+                     scroll_offset: Cell::new((0, 0)),
+                     mask_char: Cell::new(None),
+                     grab_focus: Cell::new(false),
+                     click_callback: RefCell::new(None),
+                     enter_callback: RefCell::new(None),
+                     event_filter: RefCell::new(None),
+                     pressed: Cell::new(false),
+                 })
     }
 
     pub fn grab_focus(&self, grab_focus: bool) -> &Self {
@@ -133,7 +144,10 @@ impl EventFilter for TextBox {
         }
     }
 
-    fn event_filter<T: Fn(&Self, Event, &mut bool, &mut bool) -> Option<Event> + 'static>(&self, func: T) -> &Self {
+    fn event_filter<T: Fn(&Self, Event, &mut bool, &mut bool) -> Option<Event> + 'static>
+        (&self,
+         func: T)
+         -> &Self {
         *self.event_filter.borrow_mut() = Some(Arc::new(func));
         self
     }
@@ -166,7 +180,13 @@ impl Widget for TextBox {
         let b_r = self.border_radius.get();
         renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg);
         if self.border.get() {
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
+            renderer.rounded_rect(rect.x,
+                                  rect.y,
+                                  rect.width,
+                                  rect.height,
+                                  b_r,
+                                  false,
+                                  self.fg_border);
         }
 
         let text_i = self.text_i.get();
@@ -238,7 +258,7 @@ impl Widget for TextBox {
                             }
                         }
                     } else {
-                        if ! left_button {
+                        if !left_button {
                             if self.pressed.check_set(false) {
                                 *redraw = true;
                             }
@@ -261,7 +281,8 @@ impl Widget for TextBox {
                             for (i, c) in text.char_indices() {
                                 let mut c_r = Rect::new(x, y, 8, 16);
                                 if c == '\n' {
-                                    if click_point.x >= x && click_point.y >= y && click_point.y < (y + c_r.height as i32) {
+                                    if click_point.x >= x && click_point.y >= y &&
+                                       click_point.y < (y + c_r.height as i32) {
                                         new_text_i = Some(i);
                                         break;
                                     }
@@ -288,7 +309,8 @@ impl Widget for TextBox {
                             }
 
                             let c_r = Rect::new(x, y, 8, 16);
-                            if (new_text_i.is_none() && click_point.x >= x && click_point.y >= y) || click_point.y >= (y + c_r.height as i32) {
+                            if (new_text_i.is_none() && click_point.x >= x && click_point.y >= y) ||
+                               click_point.y >= (y + c_r.height as i32) {
                                 new_text_i = Some(text.len());
                             }
                         }
@@ -298,7 +320,7 @@ impl Widget for TextBox {
                 }
                 Event::Scroll { y, .. } => {
                     let lines = self.text.borrow().lines().count() as i32;
-                    let rows = (self.rect.get().height as i32 - self.text_offset.get().y)/16;
+                    let rows = (self.rect.get().height as i32 - self.text_offset.get().y) / 16;
 
                     let mut scroll_offset = self.scroll_offset.get();
                     scroll_offset.1 = min(lines - rows, max(0, scroll_offset.1 - y * 3));
@@ -357,7 +379,7 @@ impl Widget for TextBox {
                         let mut text_i = self.text_i.get();
 
                         while text_i > 0 {
-                            if text[.. text_i].chars().rev().next() == Some('\n') {
+                            if text[..text_i].chars().rev().next() == Some('\n') {
                                 break;
                             }
                             text_i = prev_i(text.deref(), text_i);
@@ -372,7 +394,7 @@ impl Widget for TextBox {
                         let mut text_i = self.text_i.get();
 
                         while text_i < text.len() {
-                            if text[text_i ..].chars().next() == Some('\n') {
+                            if text[text_i..].chars().next() == Some('\n') {
                                 break;
                             }
                             text_i = next_i(text.deref(), text_i);
@@ -389,7 +411,7 @@ impl Widget for TextBox {
                         // Count back to last newline
                         let mut offset = 0;
                         while text_i > 0 {
-                            let c = text[.. text_i].chars().rev().next();
+                            let c = text[..text_i].chars().rev().next();
                             text_i = prev_i(text.deref(), text_i);
                             if c == Some('\n') {
                                 break;
@@ -399,7 +421,7 @@ impl Widget for TextBox {
 
                         // Go to newline before last newline
                         while text_i > 0 {
-                            if text[.. text_i].chars().rev().next() == Some('\n') {
+                            if text[..text_i].chars().rev().next() == Some('\n') {
                                 break;
                             }
                             text_i = prev_i(text.deref(), text_i);
@@ -407,7 +429,7 @@ impl Widget for TextBox {
 
                         // Add back offset
                         while offset > 0 && text_i < text.len() {
-                            if text[text_i ..].chars().next() == Some('\n') {
+                            if text[text_i..].chars().next() == Some('\n') {
                                 break;
                             }
                             text_i = next_i(text.deref(), text_i);
@@ -425,7 +447,7 @@ impl Widget for TextBox {
                         // Count back to last newline
                         let mut offset = 0;
                         while text_i > 0 {
-                            if text[.. text_i].chars().rev().next() == Some('\n') {
+                            if text[..text_i].chars().rev().next() == Some('\n') {
                                 break;
                             }
                             text_i = prev_i(text.deref(), text_i);
@@ -434,7 +456,7 @@ impl Widget for TextBox {
 
                         // Go to next newline
                         while text_i < text.len() {
-                            let c = text[text_i ..].chars().next();
+                            let c = text[text_i..].chars().next();
                             text_i = next_i(text.deref(), text_i);
                             if c == Some('\n') {
                                 break;
@@ -443,7 +465,7 @@ impl Widget for TextBox {
 
                         // Add back offset
                         while offset > 0 && text_i < text.len() {
-                            if text[text_i ..].chars().next() == Some('\n') {
+                            if text[text_i..].chars().next() == Some('\n') {
                                 break;
                             }
                             text_i = next_i(text.deref(), text_i);
@@ -510,8 +532,8 @@ impl Widget for TextBox {
                 }
 
                 let rect = self.rect.get();
-                let cols = (rect.width as i32 - text_offset.x)/8;
-                let rows = (rect.height as i32 - text_offset.y)/16;
+                let cols = (rect.width as i32 - text_offset.x) / 8;
+                let rows = (rect.height as i32 - text_offset.y) / 16;
 
                 if col < scroll_offset.0 {
                     scroll_offset.0 = col;

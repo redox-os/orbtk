@@ -11,14 +11,9 @@ pub enum Event {
         right_button: bool,
     },
 
-    Scroll {
-        x: i32,
-        y: i32,
-    },
+    Scroll { x: i32, y: i32 },
 
-    Text {
-        c: char,
-    },
+    Text { c: char },
     Enter,
 
     Backspace,
@@ -32,10 +27,7 @@ pub enum Event {
     LeftArrow,
     RightArrow,
 
-    Resize {
-        width: u32,
-        height: u32,
-    },
+    Resize { width: u32, height: u32 },
 
     Unknown,
 }

@@ -6,7 +6,8 @@ use cell::{CloneCell, CheckSet};
 use event::Event;
 use point::Point;
 use rect::Rect;
-use theme::{BUTTON_BACKGROUND, BUTTON_BG_SELECTION, BUTTON_FOREGROUND, BUTTON_FG_SELECTION, BUTTON_BORDER};
+use theme::{BUTTON_BACKGROUND, BUTTON_BG_SELECTION, BUTTON_FOREGROUND, BUTTON_FG_SELECTION,
+            BUTTON_BORDER};
 use traits::{Border, Click, Place, Text};
 use widgets::Widget;
 
@@ -28,19 +29,19 @@ pub struct Button {
 impl Button {
     pub fn new() -> Arc<Self> {
         Arc::new(Button {
-            rect: Cell::new(Rect::default()),
-            bg: BUTTON_BACKGROUND,
-            bg_selected: BUTTON_BG_SELECTION,
-            fg: BUTTON_FOREGROUND,
-            fg_selected: BUTTON_FG_SELECTION,
-            fg_border: BUTTON_BORDER,
-            border: Cell::new(true),
-            border_radius: Cell::new(2),
-            text: CloneCell::new(String::new()),
-            text_offset: Cell::new(Point::default()),
-            click_callback: RefCell::new(None),
-            pressed: Cell::new(false),
-        })
+                     rect: Cell::new(Rect::default()),
+                     bg: BUTTON_BACKGROUND,
+                     bg_selected: BUTTON_BG_SELECTION,
+                     fg: BUTTON_FOREGROUND,
+                     fg_selected: BUTTON_FG_SELECTION,
+                     fg_border: BUTTON_BORDER,
+                     border: Cell::new(true),
+                     border_radius: Cell::new(2),
+                     text: CloneCell::new(String::new()),
+                     text_offset: Cell::new(Point::default()),
+                     click_callback: RefCell::new(None),
+                     pressed: Cell::new(false),
+                 })
     }
 }
 
@@ -105,7 +106,13 @@ impl Widget for Button {
         renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, bg);
 
         if self.border.get() {
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
+            renderer.rounded_rect(rect.x,
+                                  rect.y,
+                                  rect.width,
+                                  rect.height,
+                                  b_r,
+                                  false,
+                                  self.fg_border);
         }
 
         let text = self.text.borrow();

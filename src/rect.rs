@@ -38,11 +38,7 @@ impl Rect {
 
     // Check if this rect intersects another rect
     pub fn intersects(&self, r: &Rect) -> bool {
-        ! (
-            r.x >= (self.x + self.width as i32) ||
-            self.x >= (r.x + r.width as i32) ||
-            r.y >= (self.y + self.height as i32) ||
-            self.y >= (r.y + r.height as i32)
-        )
+        !(r.x >= (self.x + self.width as i32) || self.x >= (r.x + r.width as i32) ||
+          r.y >= (self.y + self.height as i32) || self.y >= (r.y + r.height as i32))
     }
 }
