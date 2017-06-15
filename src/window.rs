@@ -162,6 +162,11 @@ impl Window {
         widgets.push(widget.clone());
         id
     }
+    
+    pub fn del(&self, id: usize){
+    let mut widgets = self.widgets.borrow_mut();
+    widgets.remove(id);
+    }
 
     pub fn draw(&self) {
         let mut inner = self.inner.borrow_mut();
