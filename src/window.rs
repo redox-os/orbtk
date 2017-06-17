@@ -163,7 +163,7 @@ impl Window {
         id
     }
     
-    pub fn del(&self, id: usize){
+    pub fn remove(&self, id: usize){
     let mut widgets = self.widgets.borrow_mut();
     widgets.remove(id);
     }
