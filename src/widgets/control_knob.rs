@@ -1,52 +1,56 @@
 use orbclient::{Color, Renderer};
 use std::cell::{Cell, RefCell};
+//use std::cmp::{min, max};
 use std::sync::Arc;
 
-use cell::{CloneCell, CheckSet};
+use cell::CheckSet;
 use event::Event;
 use point::Point;
 use rect::Rect;
-use theme::{BUTTON_BACKGROUND, BUTTON_BG_SELECTION, BUTTON_FOREGROUND, BUTTON_FG_SELECTION, BUTTON_BORDER};
-use traits::{Border, Click, Place, Text};
+use theme::{ITEM_BACKGROUND, ITEM_BORDER, ITEM_SELECTION};
+use traits::{Border, Click, Place};
 use widgets::Widget;
 
-pub struct Button {
+pub struct ControlKnob {
     pub rect: Cell<Rect>,
-    pub bg: Color,
-    pub bg_selected: Color,
-    pub fg: Color,
-    pub fg_selected: Color,
+    pub bg: Cell<Color>,
+    pub fg: Cell<Color>,
     pub fg_border: Color,
     pub border: Cell<bool>,
     pub border_radius: Cell<u32>,
-    pub text: CloneCell<String>,
-    pub text_offset: Cell<Point>,
-    click_callback: RefCell<Option<Arc<Fn(&Button, Point)>>>,
+    pub value: Cell<Point>,
+    pub minimum: Cell<i32>,
+    pub maximum: Cell<i32>,
+    click_callback: RefCell<Option<Arc<Fn(&ControlKnob, Point)>>>,
     pressed: Cell<bool>,
     pub visible: Cell<bool>,
 }
 
-impl Button {
+impl ControlKnob {
     pub fn new() -> Arc<Self> {
-        Arc::new(Button {
+        Arc::new(ControlKnob {
             rect: Cell::new(Rect::default()),
-            bg: BUTTON_BACKGROUND,
-            bg_selected: BUTTON_BG_SELECTION,
-            fg: BUTTON_FOREGROUND,
-            fg_selected: BUTTON_FG_SELECTION,
-            fg_border: BUTTON_BORDER,
+            bg: Cell::new(ITEM_BACKGROUND),
+            fg: Cell::new(ITEM_SELECTION),
+            fg_border: ITEM_BORDER,
             border: Cell::new(true),
-            border_radius: Cell::new(2),
-            text: CloneCell::new(String::new()),
-            text_offset: Cell::new(Point::default()),
+            border_radius: Cell::new(0),
+            value: Cell::new(Point::new(0,0)),
+            minimum: Cell::new(0),
+            maximum: Cell::new(100),
             click_callback: RefCell::new(None),
             pressed: Cell::new(false),
             visible: Cell::new(true),
         })
     }
+
+    pub fn value(&self, value: Point) -> &Self {
+        self.value.set(value);
+        self
+    }
 }
 
-impl Border for Button {
+impl Border for ControlKnob {
     fn border(&self, enabled: bool) -> &Self {
         self.border.set(enabled);
         self
@@ -58,7 +62,7 @@ impl Border for Button {
     }
 }
 
-impl Click for Button {
+impl Click for ControlKnob {
     fn emit_click(&self, point: Point) {
         if let Some(ref click_callback) = *self.click_callback.borrow() {
             click_callback(self, point);
@@ -71,58 +75,40 @@ impl Click for Button {
     }
 }
 
-impl Place for Button {}
+impl Place for ControlKnob {}
 
-impl Text for Button {
-    fn text<S: Into<String>>(&self, text: S) -> &Self {
-        self.text.set(text.into());
-        self
-    }
-
-    fn text_offset(&self, x: i32, y: i32) -> &Self {
-        self.text_offset.set(Point::new(x, y));
-        self
-    }
-}
-
-impl Widget for Button {
+impl Widget for ControlKnob {
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         let rect = self.rect.get();
-
-        let w = rect.width as i32;
-        let h = rect.height as i32;
-
-        let (fg, bg) = if self.pressed.get() {
-            (self.fg_selected, self.bg_selected)
-        } else {
-            (self.fg, self.bg)
-        };
-
-        let b_r = self.border_radius.get();
-
-        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, bg);
-
-        if self.border.get() {
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
+        /*
+        let progress_rect = Rect{
+                                width: (rect.width as i32 *
+                                        max(0, min(self.maximum.get(), self.value.get() - self.minimum.get())) /
+                                        max(1, self.maximum.get() - self.minimum.get())) as u32,
+                                ..self.rect.get()
+                            };
+        */
+        let progress_rect = self.value.get();
+        
+        let b_r = self.border_radius.get() as i32;
+        
+        renderer.circle(rect.x, rect.y, -(rect.width as i32), self.bg.get());
+        renderer.circle(rect.x, rect.y, 1+rect.width as i32, self.fg_border);
+        //println!("x:{} y:{}", progress_rect.x,progress_rect.y);
+        if progress_rect.x >= b_r * 2 {
+            //renderer.rounded_rect(progress_rect.x, progress_rect.y,
+            //                      progress_rect.width, progress_rect.height,
+            //                      b_r, true, self.fg.get());
+           
+            
+            renderer.line(rect.x,rect.y,rect.x+progress_rect.x, rect.y+progress_rect.y, self.fg.get());                
         }
-
-        let text = self.text.borrow();
-
-        let mut point = self.text_offset.get();
-        for c in text.chars() {
-            if c == '\n' {
-                point.x = self.text_offset.get().x;
-                point.y += 16;
-            } else {
-                if point.x + 8 <= w && point.y + 16 <= h {
-                    renderer.char(point.x + rect.x, point.y + rect.y, c, fg);
-                }
-                point.x += 8;
-            }
+        if self.border.get() {
+            renderer.circle(rect.x, rect.y, 1+rect.width as i32, self.bg.get());
         }
     }
 
@@ -164,5 +150,5 @@ impl Widget for Button {
     
     fn visible(&self, flag: bool){
         self.visible.set(flag);
-    }    
+    }
 }

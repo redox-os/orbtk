@@ -64,6 +64,7 @@ pub struct List {
     entries: RefCell<Vec<Arc<Entry>>>,
     pressed: Cell<bool>,
     selected: Cell<Option<u32>>,
+    pub visible: Cell<bool>,
 }
 
 impl List {
@@ -75,6 +76,7 @@ impl List {
             entries: RefCell::new(vec![]),
             pressed: Cell::new(false),
             selected: Cell::new(None),
+            visible: Cell::new(true),
         })
     }
 
@@ -288,6 +290,10 @@ impl Widget for List {
             _ => {}
         }
         focused
+    }
+    
+    fn visible(&self, flag: bool){
+        self.visible.set(flag);
     }
 }
 

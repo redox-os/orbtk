@@ -23,6 +23,7 @@ pub struct ProgressBar {
     pub maximum: Cell<i32>,
     click_callback: RefCell<Option<Arc<Fn(&ProgressBar, Point)>>>,
     pressed: Cell<bool>,
+    pub visible: Cell<bool>,
 }
 
 impl ProgressBar {
@@ -39,6 +40,7 @@ impl ProgressBar {
             maximum: Cell::new(100),
             click_callback: RefCell::new(None),
             pressed: Cell::new(false),
+            visible: Cell::new(true),
         })
     }
 
@@ -81,59 +83,67 @@ impl Widget for ProgressBar {
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.rect.get();
-        let progress_rect = Rect{
-                                width: (rect.width as i32 *
-                                        max(0, min(self.maximum.get(), self.value.get() - self.minimum.get())) /
-                                        max(1, self.maximum.get() - self.minimum.get())) as u32,
-                                ..self.rect.get()
-                            };
-
-        let b_r = self.border_radius.get();
-        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg.get());
-        if progress_rect.width >= b_r * 2 {
-            renderer.rounded_rect(progress_rect.x, progress_rect.y,
-                                  progress_rect.width, progress_rect.height,
-                                  b_r, true, self.fg.get());
-        }
-        if self.border.get() {
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
+        if self.visible.get(){
+            let rect = self.rect.get();
+            let progress_rect = Rect{
+                                    width: (rect.width as i32 *
+                                            max(0, min(self.maximum.get(), self.value.get() - self.minimum.get())) /
+                                            max(1, self.maximum.get() - self.minimum.get())) as u32,
+                                    ..self.rect.get()
+                                };
+    
+            let b_r = self.border_radius.get();
+            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg.get());
+            if progress_rect.width >= b_r * 2 {
+                renderer.rounded_rect(progress_rect.x, progress_rect.y,
+                                      progress_rect.width, progress_rect.height,
+                                      b_r, true, self.fg.get());
+            }
+            if self.border.get() {
+                renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
+            }
         }
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse { point, left_button, .. } => {
-                let mut click = false;
+        if self.visible.get(){
+            match event {
+                Event::Mouse { point, left_button, .. } => {
+                    let mut click = false;
 
-                let rect = self.rect.get();
-                if rect.contains(point) {
-                    if left_button {
-                        if self.pressed.check_set(true) {
-                            *redraw = true;
+                    let rect = self.rect.get();
+                    if rect.contains(point) {
+                        if left_button {
+                            if self.pressed.check_set(true) {
+                                *redraw = true;
+                            }
+                        } else {
+                            if self.pressed.check_set(false) {
+                                click = true;
+                                *redraw = true;
+                            }
                         }
                     } else {
-                        if self.pressed.check_set(false) {
-                            click = true;
-                            *redraw = true;
+                        if !left_button {
+                            if self.pressed.check_set(false) {
+                                *redraw = true;
+                            }
                         }
                     }
-                } else {
-                    if !left_button {
-                        if self.pressed.check_set(false) {
-                            *redraw = true;
-                        }
-                    }
-                }
 
-                if click {
-                    let click_point: Point = point - rect.point();
-                    self.emit_click(click_point);
+                    if click {
+                        let click_point: Point = point - rect.point();
+                        self.emit_click(click_point);
+                    }
                 }
+                _ => (),
             }
-            _ => (),
         }
-
         focused
     }
+    
+    fn visible(&self, flag: bool){
+        self.visible.set(flag);
+    }
+    
 }

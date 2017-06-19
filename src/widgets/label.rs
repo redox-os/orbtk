@@ -21,6 +21,7 @@ pub struct Label {
     pub text_offset: Cell<Point>,
     click_callback: RefCell<Option<Arc<Fn(&Label, Point)>>>,
     pressed: Cell<bool>,
+    pub visible: Cell<bool>,
 }
 
 impl Label {
@@ -36,6 +37,7 @@ impl Label {
             text_offset: Cell::new(Point::default()),
             click_callback: RefCell::new(None),
             pressed: Cell::new(false),
+            visible: Cell::new(true),
         })
     }
 }
@@ -85,27 +87,29 @@ impl Widget for Label {
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.rect.get();
+        if self.visible.get(){
+            let rect = self.rect.get();
 
-        let b_r = self.border_radius.get();
-        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg.get());
-        if self.border.get() {
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border.get());
-        }
+            let b_r = self.border_radius.get();
+            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg.get());
+            if self.border.get() {
+                renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border.get());
+            }
 
-        let fg = self.fg.get();
-        let text = self.text.borrow();
+            let fg = self.fg.get();
+            let text = self.text.borrow();
 
-        let mut point = self.text_offset.get();
-        for c in text.chars() {
-            if c == '\n' {
-                point.x = self.text_offset.get().x;
-                point.y += 16;
-            } else {
-                if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point.x + rect.x, point.y + rect.y, c, fg);
+            let mut point = self.text_offset.get();
+            for c in text.chars() {
+                if c == '\n' {
+                    point.x = self.text_offset.get().x;
+                    point.y += 16;
+                } else {
+                    if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
+                        renderer.char(point.x + rect.x, point.y + rect.y, c, fg);
+                    }
+                    point.x += 8;
                 }
-                point.x += 8;
             }
         }
     }
@@ -144,5 +148,9 @@ impl Widget for Label {
         }
 
         focused
+    }
+    
+    fn visible(&self, flag: bool){
+        self.visible.set(flag);
     }
 }

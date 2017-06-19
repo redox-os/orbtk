@@ -164,8 +164,16 @@ impl Window {
     }
     
     pub fn remove(&self, id: usize){
-    let mut widgets = self.widgets.borrow_mut();
-    widgets.remove(id);
+        //let mut widgets = self.widgets.borrow_mut();
+        //widgets.remove(id); //FIXME removing a widget changes the id for the remaining widgets!!
+        //try to make invisible instead, not really remove, hide only
+        if let Some(widget) = self.widgets.borrow().get(id){
+            widget.visible(false);
+        }
+        else{
+            println!("Can't remove widget, not found..");
+        }
+    
     }
 
     pub fn draw(&self) {
@@ -287,6 +295,10 @@ impl Window {
 
     pub fn needs_redraw(&mut self) {
         self.redraw = true;
+    }
+
+    pub fn stop_redraw(&mut self) {
+        self.redraw = false;
     }
 
     pub fn draw_if_needed(&mut self) {

@@ -50,6 +50,7 @@ pub struct TextBox {
     /// handler deal with it.
     pub event_filter: RefCell<Option<Arc<Fn(&TextBox, Event, &mut bool, &mut bool) -> Option<Event>>>>,
     pressed: Cell<bool>,
+    pub visible: Cell<bool>,
 }
 
 impl TextBox {
@@ -72,6 +73,7 @@ impl TextBox {
             enter_callback: RefCell::new(None),
             event_filter: RefCell::new(None),
             pressed: Cell::new(false),
+            visible: Cell::new(true),
         })
     }
 
@@ -536,4 +538,8 @@ impl Widget for TextBox {
         }
         focused
     }
+    fn visible(&self, flag: bool){
+        self.visible.set(flag);
+    }
+
 }
