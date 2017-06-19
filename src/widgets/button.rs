@@ -91,72 +91,76 @@ impl Widget for Button {
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.rect.get();
+        if self.visible.get(){
+            let rect = self.rect.get();
 
-        let w = rect.width as i32;
-        let h = rect.height as i32;
+            let w = rect.width as i32;
+            let h = rect.height as i32;
 
-        let (fg, bg) = if self.pressed.get() {
-            (self.fg_selected, self.bg_selected)
-        } else {
-            (self.fg, self.bg)
-        };
-
-        let b_r = self.border_radius.get();
-
-        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, bg);
-
-        if self.border.get() {
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
-        }
-
-        let text = self.text.borrow();
-
-        let mut point = self.text_offset.get();
-        for c in text.chars() {
-            if c == '\n' {
-                point.x = self.text_offset.get().x;
-                point.y += 16;
+            let (fg, bg) = if self.pressed.get() {
+                (self.fg_selected, self.bg_selected)
             } else {
-                if point.x + 8 <= w && point.y + 16 <= h {
-                    renderer.char(point.x + rect.x, point.y + rect.y, c, fg);
+                (self.fg, self.bg)
+            };
+
+            let b_r = self.border_radius.get();
+
+            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, bg);
+
+            if self.border.get() {
+                renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
+            }
+
+            let text = self.text.borrow();
+
+            let mut point = self.text_offset.get();
+            for c in text.chars() {
+                if c == '\n' {
+                    point.x = self.text_offset.get().x;
+                    point.y += 16;
+                } else {
+                    if point.x + 8 <= w && point.y + 16 <= h {
+                        renderer.char(point.x + rect.x, point.y + rect.y, c, fg);
+                    }
+                    point.x += 8;
                 }
-                point.x += 8;
             }
         }
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse { point, left_button, .. } => {
-                let mut click = false;
+        if self.visible.get(){
+            match event {
+                Event::Mouse { point, left_button, .. } => {
+                    let mut click = false;
 
-                let rect = self.rect.get();
-                if rect.contains(point) {
-                    if left_button {
-                        if self.pressed.check_set(true) {
-                            *redraw = true;
+                    let rect = self.rect.get();
+                    if rect.contains(point) {
+                        if left_button {
+                            if self.pressed.check_set(true) {
+                                *redraw = true;
+                            }
+                        } else {
+                            if self.pressed.check_set(false) {
+                                click = true;
+                                *redraw = true;
+                            }
                         }
                     } else {
-                        if self.pressed.check_set(false) {
-                            click = true;
-                            *redraw = true;
+                        if !left_button {
+                            if self.pressed.check_set(false) {
+                                *redraw = true;
+                            }
                         }
                     }
-                } else {
-                    if !left_button {
-                        if self.pressed.check_set(false) {
-                            *redraw = true;
-                        }
-                    }
-                }
 
-                if click {
-                    let click_point: Point = point - rect.point();
-                    self.emit_click(click_point);
+                    if click {
+                        let click_point: Point = point - rect.point();
+                        self.emit_click(click_point);
+                    }
                 }
+                _ => (),
             }
-            _ => (),
         }
 
         focused

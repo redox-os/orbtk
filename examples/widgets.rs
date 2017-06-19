@@ -1,6 +1,6 @@
 extern crate orbtk;
 
-use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
+use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window, ControlKnob};
 use orbtk::traits::{Border, Click, Enter, Place, Text};
 
 fn main() {
@@ -53,6 +53,7 @@ fn main() {
     y += progress_label.rect.get().height as i32 + 10;
 
     let progress_bar = ProgressBar::new();
+    progress_bar.fg.set(orbtk::Color::rgb(0,255,0));  //set foreground color
     progress_bar.position(x, y)
         .size(400, 16)
         .on_click(move |progress_bar: &ProgressBar, point: Point| {
@@ -63,6 +64,11 @@ fn main() {
     window.add(&progress_bar);
 
     y += progress_bar.rect.get().height as i32 + 10;
+
+
+
+
+
 
     let multi_line_label = Label::new();
     multi_line_label.text("Multi-Line Text")
@@ -110,6 +116,39 @@ fn main() {
             y += label.rect.get().height as i32 + 10;
         }
     }
+
+    let volume_label = Label::new();
+    volume_label.text("Volume: ").position(x+250, y-100).size(128, 16);
+    volume_label.fg.set(orbtk::Color::rgb(0,0,255));  //set foreground color
+    window.add(&volume_label);
+
+    let volume = ControlKnob::new(); 
+    let volume_label_clone = volume_label.clone();
+    volume.border.set(true);
+    volume.position(x+280, y-80)
+        .size(40, 40)   //size.x must be equal to size.y so the circle is exactly inside the rect 
+        .on_click(move |volume: &ControlKnob, point: Point| {
+                      let progress = Point{ x: point.x ,
+                                            y:point.y};
+                      volume_label_clone.text.set(format!("Volume: {} {}", progress.x , progress.y));
+                      volume.value.set(progress);
+                  });
+    window.add(&volume);
+
+
+    let hidebutton = Button::new();
+    let hidebutton_clone=hidebutton.clone();
+    hidebutton.position(x + 120 + 8, y-100)
+        .size(72 , 36)
+        .text("Hide me")
+        .text_offset(6, 6)
+        .on_click(move |_button: &Button, _point: Point| {
+            hidebutton_clone.visible.set(false);
+        });
+    window.add(&hidebutton);
+
+
+
 
     {
         let action = Action::new("Label One");

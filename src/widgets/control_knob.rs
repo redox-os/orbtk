@@ -95,20 +95,19 @@ impl Widget for ControlKnob {
         let progress_rect = self.value.get();
         
         let b_r = self.border_radius.get() as i32;
-        
-        renderer.circle(rect.x, rect.y, -(rect.width as i32), self.bg.get());
-        renderer.circle(rect.x, rect.y, 1+rect.width as i32, self.fg_border);
+        let center = Point{ x: rect.x+rect.width as i32 /2,
+                            y: rect.y+rect.height as i32 /2
+                            };
+        let r = rect.width as i32 /2;
+        renderer.circle(center.x, center.y, -r, self.bg.get());
+        renderer.circle(center.x, center.y, 1+r, self.fg_border);
         //println!("x:{} y:{}", progress_rect.x,progress_rect.y);
-        if progress_rect.x >= b_r * 2 {
-            //renderer.rounded_rect(progress_rect.x, progress_rect.y,
-            //                      progress_rect.width, progress_rect.height,
-            //                      b_r, true, self.fg.get());
-           
+        if progress_rect.x + progress_rect.y >= b_r * 2 {
             
-            renderer.line(rect.x,rect.y,rect.x+progress_rect.x, rect.y+progress_rect.y, self.fg.get());                
+            renderer.line(center.x,center.y,rect.x+progress_rect.x, rect.y+progress_rect.y, self.fg.get());                
         }
         if self.border.get() {
-            renderer.circle(rect.x, rect.y, 1+rect.width as i32, self.bg.get());
+            renderer.circle(center.x, center.y, 1+r, self.fg_border);
         }
     }
 
