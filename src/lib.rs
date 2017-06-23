@@ -5,6 +5,9 @@
 
 extern crate orbclient;
 extern crate orbimage;
+extern crate cssparser;
+#[macro_use]
+extern crate lazy_static;
 
 pub use orbclient::color::Color;
 pub use orbclient::renderer::Renderer;
@@ -25,3 +28,4 @@ pub mod theme;
 pub mod traits;
 pub mod widgets;
 pub mod window;
+pub mod draw;

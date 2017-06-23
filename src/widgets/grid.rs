@@ -6,6 +6,7 @@ use std::sync::Arc;
 use cell::CheckSet;
 use event::Event;
 use rect::Rect;
+use theme::{Theme};
 use traits::Place;
 use widgets::Widget;
 
@@ -107,13 +108,17 @@ impl Place for Grid {
 }
 
 impl Widget for Grid {
+    fn name(&self) -> &str {
+        "Grid"
+    }
+
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool) {
+    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
         for (&(col, row), entry) in self.entries.borrow().iter() {
-            entry.draw(renderer, self.focused.get() == Some((col, row)));
+            entry.draw(renderer, self.focused.get() == Some((col, row)), theme);
         }
     }
 

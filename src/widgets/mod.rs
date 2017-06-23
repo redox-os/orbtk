@@ -4,6 +4,7 @@ use std::cell::Cell;
 
 use event::Event;
 use rect::Rect;
+use theme::Theme;
 
 pub use self::button::Button;
 pub use self::grid::Grid;
@@ -25,6 +26,7 @@ mod list;
 
 pub trait Widget : Any {
     fn rect(&self) -> &Cell<Rect>;
-    fn draw(&self, renderer: &mut Renderer, focused: bool);
+    fn draw(&self, renderer: &mut Renderer, focused: bool, theme: &Theme);
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool;
+    fn name(&self) -> &str;
 }

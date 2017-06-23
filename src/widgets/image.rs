@@ -7,6 +7,7 @@ use std::sync::Arc;
 use event::Event;
 use point::Point;
 use rect::Rect;
+use theme::{Theme};
 use traits::{Click, Place};
 use widgets::Widget;
 
@@ -54,11 +55,15 @@ impl Click for Image {
 impl Place for Image {}
 
 impl Widget for Image {
+    fn name(&self) -> &str {
+        "Image"
+    }
+
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool) {
+    fn draw(&self, renderer: &mut Renderer, _focused: bool, _theme: &Theme) {
         let rect = self.rect.get();
         let image = self.image.borrow();
         renderer.image(rect.x, rect.y, image.width(), image.height(), image.data());
