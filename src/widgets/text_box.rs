@@ -163,59 +163,61 @@ impl Widget for TextBox {
     }
 
     fn draw(&self, renderer: &mut Renderer, focused: bool) {
-        let rect = self.rect.get();
+        if self.visible.get(){
+            let rect = self.rect.get();
 
-        let b_r = self.border_radius.get();
-        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg);
-        if self.border.get() {
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
-        }
+            let b_r = self.border_radius.get();
+            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg);
+            if self.border.get() {
+                renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
+            }
 
-        let text_i = self.text_i.get();
-        let text = self.text.borrow();
+            let text_i = self.text_i.get();
+            let text = self.text.borrow();
 
-        let text_offset = self.text_offset.get();
-        let scroll_offset = self.scroll_offset.get();
+            let text_offset = self.text_offset.get();
+            let scroll_offset = self.scroll_offset.get();
 
-        let mut x = text_offset.x - scroll_offset.0 * 8;
-        let mut y = text_offset.y - scroll_offset.1 * 16;
-        let start_x = x;
-        for (i, c) in text.char_indices() {
-            let mut c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
-            if c == '\n' {
-                if focused && i == text_i && rect.contains_rect(&c_r) {
-                    renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
-                }
-
-                x = start_x;
-                y += c_r.height as i32;
-            } else if c == '\t' {
-                c_r.width = 8 * 4;
-
-                if focused && i == text_i && rect.contains_rect(&c_r) {
-                    renderer.rect(x + rect.x, y + rect.y, 8 * 4, 16, self.fg_cursor);
-                }
-
-                x += c_r.width as i32;
-            } else {
-                if rect.contains_rect(&c_r) {
-                    if i == text_i && focused {
+            let mut x = text_offset.x - scroll_offset.0 * 8;
+            let mut y = text_offset.y - scroll_offset.1 * 16;
+            let start_x = x;
+            for (i, c) in text.char_indices() {
+                let mut c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
+                if c == '\n' {
+                    if focused && i == text_i && rect.contains_rect(&c_r) {
                         renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
                     }
-                    if let Some(mask_c) = self.mask_char.get() {
-                        renderer.char(x + rect.x, y + rect.y, mask_c, self.fg);
-                    } else {
-                        renderer.char(x + rect.x, y + rect.y, c, self.fg);
+
+                    x = start_x;
+                    y += c_r.height as i32;
+                } else if c == '\t' {
+                    c_r.width = 8 * 4;
+
+                    if focused && i == text_i && rect.contains_rect(&c_r) {
+                        renderer.rect(x + rect.x, y + rect.y, 8 * 4, 16, self.fg_cursor);
                     }
+
+                    x += c_r.width as i32;
+                } else {
+                    if rect.contains_rect(&c_r) {
+                        if i == text_i && focused {
+                            renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
+                        }
+                        if let Some(mask_c) = self.mask_char.get() {
+                            renderer.char(x + rect.x, y + rect.y, mask_c, self.fg);
+                        } else {
+                            renderer.char(x + rect.x, y + rect.y, c, self.fg);
+                        }
+                    }
+
+                    x += c_r.width as i32;
                 }
-
-                x += c_r.width as i32;
             }
-        }
 
-        let c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
-        if focused && text.len() == text_i && rect.contains_rect(&c_r) {
-            renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
+            let c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
+            if focused && text.len() == text_i && rect.contains_rect(&c_r) {
+                renderer.rect(x + rect.x, y + rect.y, 8, 16, self.fg_cursor);
+            }
         }
     }
 

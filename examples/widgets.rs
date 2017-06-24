@@ -65,11 +65,6 @@ fn main() {
 
     y += progress_bar.rect.get().height as i32 + 10;
 
-
-
-
-
-
     let multi_line_label = Label::new();
     multi_line_label.text("Multi-Line Text")
         .position(x, y)
@@ -135,20 +130,31 @@ fn main() {
                   });
     window.add(&volume);
 
-
-    let hidebutton = Button::new();
-    let hidebutton_clone=hidebutton.clone();
-    hidebutton.position(x + 120 + 8, y-100)
+    let hide_button = Button::new();
+    let hide_button_clone=hide_button.clone();
+    hide_button.position(x + 120 + 8, y-100)
         .size(72 , 36)
         .text("Hide me")
         .text_offset(6, 6)
         .on_click(move |_button: &Button, _point: Point| {
-            hidebutton_clone.visible.set(false);
+            //hide by setting visible property
+            hide_button_clone.visible.set(false);
         });
-    window.add(&hidebutton);
+    window.add(&hide_button);
 
-
-
+    let hideid_button = Button::new();
+    let window_clone = &mut window as *mut Window;
+    hideid_button.position(x + 120 + 8, y-50)
+        .size(128 , 36)
+        .text("Unhide + remove")
+        .text_offset(6, 6)
+        .on_click(move |_button: &Button, _point: Point| {
+            //remove widget by id
+            unsafe{(&mut *window_clone).remove(2);}
+            //unhide widget by id
+            unsafe{(&mut *window_clone).unhide(11);}
+        });
+    window.add(&hideid_button);
 
     {
         let action = Action::new("Label One");
