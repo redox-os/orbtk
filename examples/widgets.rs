@@ -1,6 +1,6 @@
 extern crate orbtk;
 
-use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
+use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window, Checkbox};
 use orbtk::traits::{Border, Click, Enter, Place, Text};
 
 fn main() {
@@ -111,6 +111,16 @@ fn main() {
         }
     }
 
+    let checkbox = Checkbox::new();
+    checkbox.position((x + 300),(y - 80))
+        .size(16, 16);
+    window.add(&checkbox); 
+    let img_checkbox = Checkbox::from_paths("res/unchecked.png", "res/checked.png").unwrap();
+    img_checkbox.position((x + 300), (y - 100))
+        .size(16, 16);
+    window.add(&img_checkbox);
+
+
     {
         let action = Action::new("Label One");
         let offset_label_clone = offset_label.clone();
@@ -174,8 +184,10 @@ fn main() {
 
     window.add(&grid);
 
+
     // Add this last to put it on top
     window.add(&menu);
 
     window.exec();
 }
+

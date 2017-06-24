@@ -5,6 +5,8 @@ pub use self::event_filter::EventFilter;
 pub use self::place::Place;
 pub use self::resize::Resize;
 pub use self::text::Text;
+pub use self::container::Container;
+pub use self::container::Side;
 
 mod border;
 mod click;
@@ -13,3 +15,4 @@ mod event_filter;
 mod place;
 mod resize;
 mod text;
+mod container;
