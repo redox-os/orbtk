@@ -13,6 +13,7 @@ pub use self::menu::{ Menu, Action, Separator };
 pub use self::progress_bar::ProgressBar;
 pub use self::text_box::TextBox;
 pub use self::list::{ List, Entry };
+pub use self::checkbox::Checkbox;
 
 mod button;
 mod grid;
@@ -22,6 +23,7 @@ mod menu;
 mod progress_bar;
 mod text_box;
 mod list;
+mod checkbox;
 
 pub trait Widget : Any {
     fn rect(&self) -> &Cell<Rect>;
