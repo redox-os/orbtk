@@ -14,6 +14,7 @@ pub use self::progress_bar::ProgressBar;
 pub use self::text_box::TextBox;
 pub use self::list::{ List, Entry };
 pub use self::control_knob::ControlKnob;
+pub use self::toolbar::Toolbar;
 
 mod button;
 mod grid;
@@ -24,10 +25,15 @@ mod progress_bar;
 mod text_box;
 mod list;
 mod control_knob;
+mod toolbar;
 
 pub trait Widget : Any {
     fn rect(&self) -> &Cell<Rect>;
     fn draw(&self, renderer: &mut Renderer, focused: bool);
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool;
     fn visible(&self, flag: bool);
+}
+
+pub trait ToolbarWidget : Any {
+    fn selected(&self, flag: bool);
 }
