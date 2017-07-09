@@ -318,6 +318,7 @@ impl Widget for TextBox {
                     if focused {
                         if self.enter_callback.borrow().is_some() {
                             self.emit_enter();
+                            *redraw = true;
                         } else {
                             let mut text = self.text.borrow_mut();
                             let text_i = self.text_i.get();
