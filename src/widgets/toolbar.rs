@@ -6,7 +6,7 @@ use std::cell::{Cell, RefCell};
 use cell::CloneCell;
 use std::path::Path;
 use std::sync::Arc;
-
+use theme::{LABEL_BACKGROUND, LABEL_BORDER, LABEL_FOREGROUND};
 use event::Event;
 use point::Point;
 use rect::Rect;
@@ -20,8 +20,15 @@ pub struct Toolbar {
     click_callback: RefCell<Option<Arc<Fn(&Toolbar, Point)>>>,
     pub visible: Cell<bool>,
     pub selected: Cell<bool>,
-    pub tooltip: CloneCell<String>,
+    pub tooltip: Cell<bool>,
+    pub tooltip_text: CloneCell<String>,
     pub tooltip_offset: Cell<Point>,
+    pub bg: Cell<Color>,
+    pub fg: Cell<Color>,
+    pub fg_border: Cell<Color>,
+    pub border: Cell<bool>,
+    pub border_radius: Cell<u32>,
+ 
 }
 
 impl Toolbar {
@@ -40,8 +47,14 @@ impl Toolbar {
             click_callback: RefCell::new(None),
             visible: Cell::new(true),
             selected: Cell::new(false),
-            tooltip: CloneCell::new(String::new()),
+            tooltip: Cell::new(false),
+            tooltip_text: CloneCell::new(String::new()),
             tooltip_offset: Cell::new(Point::default()),
+            bg: Cell::new(LABEL_BACKGROUND),
+            fg: Cell::new(LABEL_FOREGROUND),
+            fg_border: Cell::new(LABEL_BORDER),
+            border: Cell::new(false),
+            border_radius: Cell::new(0),
         })
     }
 
@@ -72,7 +85,7 @@ impl Place for Toolbar {}
 // TODO create new traits Tooltip , for now workaround using Text
 impl Text for Toolbar {
     fn text<S: Into<String>>(&self, text: S) -> &Self {
-        self.tooltip.set(text.into());
+        self.tooltip_text.set(text.into());
         self
     }
 
@@ -95,6 +108,33 @@ impl Widget for Toolbar {
             if self.selected.get(){
                 renderer.rounded_rect(rect.x,rect.y, image.width()+1,image.height()+1,3,false,Color::rgb(0, 0, 0));
             }
+        
+    
+    //draw tooltip
+            
+        if self.tooltip.get(){
+            let b_r = self.border_radius.get();
+            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg.get());
+            if self.border.get() {
+                renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border.get());
+            }
+
+            let fg = self.fg.get();
+            let text = self.tooltip_text.borrow();
+
+            let mut point = self.tooltip_offset.get();
+            for c in text.chars() {
+                if c == '\n' {
+                    point.x = self.tooltip_offset.get().x;
+                    point.y += 16;
+                } else {
+                    if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
+                        renderer.char(point.x + rect.x, point.y + rect.y, c, fg);
+                    }
+                    point.x += 8;
+                }
+            }
+         }
         }
     }
 
@@ -118,8 +158,12 @@ impl Widget for Toolbar {
                         *redraw = true;
                     }
                     if rect.contains(point) {
-                        //TODO after 1 sec show up tooltip
-                        //println!("Mouse hovering toolbar at {} {}",point.x,point.y);
+                        //TODO after 1 sec show up tooltip if point is unchanged
+                        //println!("Mouse hovering toolbar at {} {} ",point.x,point.y);
+                        
+                        println!("Tooltip: {}",self.tooltip_text.get());
+                        //self.tooltip.set(true);
+                        //*redraw = true;
                     }
                 }
                 
@@ -135,12 +179,4 @@ impl Widget for Toolbar {
     }
 }
 
-/*
-impl ToolbarWidget for Toolbar {
-    fn selected(&self, flag: bool) {
-        self.selected.set(flag);
-    }
-}
 
-        
-*/
