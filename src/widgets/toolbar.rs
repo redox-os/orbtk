@@ -125,7 +125,8 @@ impl Widget for ToolbarIcon {
     //draw tooltip
             
         if self.tooltip.get(){
-            rect = Rect::new(rect.x, rect.y+25, 150, 16); //FIXME variable width
+            let text = self.tooltip_text.borrow();
+            rect = Rect::new(rect.x, rect.y+rect.height as i32, 8* text.len() as u32, 16); 
             let b_r = self.border_radius.get();
             renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg.get());
             if self.border.get() {
@@ -133,7 +134,7 @@ impl Widget for ToolbarIcon {
             }
 
             let fg = self.fg.get();
-            let text = self.tooltip_text.borrow();
+            
 
             let mut point = self.tooltip_offset.get();
             for c in text.chars() {
