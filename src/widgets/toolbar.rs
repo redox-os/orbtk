@@ -12,12 +12,20 @@ use point::Point;
 use rect::Rect;
 use traits::{Click, Place, Text}; //TODO create traits Tooltip , for now use Text
 use widgets::Widget;
-//use widgets::ToolbarWidget;
+#[allow(unused_imports)]
+use std::time::{Duration, Instant};
 
+#[allow(dead_code)]
 pub struct Toolbar {
+    pub items : RefCell<Vec<Arc<ToolbarIcon>>>,
+    pub visible: Cell<bool>,
+    pub selected: Cell<bool>,
+}
+
+pub struct ToolbarIcon {
     pub rect: Cell<Rect>,
     pub image: RefCell<orbimage::Image>,
-    click_callback: RefCell<Option<Arc<Fn(&Toolbar, Point)>>>,
+    click_callback: RefCell<Option<Arc<Fn(&ToolbarIcon, Point)>>>,
     pub visible: Cell<bool>,
     pub selected: Cell<bool>,
     pub tooltip: Cell<bool>,
@@ -28,10 +36,12 @@ pub struct Toolbar {
     pub fg_border: Cell<Color>,
     pub border: Cell<bool>,
     pub border_radius: Cell<u32>,
+    tooltip_time : Cell<Option<Instant>>,
+    
  
 }
 
-impl Toolbar {
+impl ToolbarIcon {
     pub fn new(width: u32, height: u32) -> Arc<Self> {
         Self::from_image(orbimage::Image::new(width, height))
     }
@@ -41,7 +51,7 @@ impl Toolbar {
     }
 
     pub fn from_image(image: orbimage::Image) -> Arc<Self> {
-        Arc::new(Toolbar {
+        Arc::new(ToolbarIcon {
             rect: Cell::new(Rect::new(0, 0, image.width(), image.height())),
             image: RefCell::new(image),
             click_callback: RefCell::new(None),
@@ -53,8 +63,10 @@ impl Toolbar {
             bg: Cell::new(LABEL_BACKGROUND),
             fg: Cell::new(LABEL_FOREGROUND),
             fg_border: Cell::new(LABEL_BORDER),
-            border: Cell::new(false),
+            border: Cell::new(true),
             border_radius: Cell::new(0),
+            tooltip_time : Cell::new(None),
+            
         })
     }
 
@@ -67,7 +79,7 @@ impl Toolbar {
     }
 }
 
-impl Click for Toolbar {
+impl Click for ToolbarIcon {
     fn emit_click(&self, point: Point) {
         if let Some(ref click_callback) = *self.click_callback.borrow() {
             click_callback(self, point);
@@ -80,10 +92,10 @@ impl Click for Toolbar {
     }
 }
 
-impl Place for Toolbar {}
+impl Place for ToolbarIcon {}
 
 // TODO create new traits Tooltip , for now workaround using Text
-impl Text for Toolbar {
+impl Text for ToolbarIcon {
     fn text<S: Into<String>>(&self, text: S) -> &Self {
         self.tooltip_text.set(text.into());
         self
@@ -95,14 +107,14 @@ impl Text for Toolbar {
     }
 }
 
-impl Widget for Toolbar {
+impl Widget for ToolbarIcon {
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
         if self.visible.get(){
-            let rect = self.rect.get();
+            let mut rect = self.rect.get();
             let image = self.image.borrow();
             renderer.image(rect.x, rect.y, image.width(), image.height(), image.data());
             if self.selected.get(){
@@ -113,6 +125,7 @@ impl Widget for Toolbar {
     //draw tooltip
             
         if self.tooltip.get(){
+            rect = Rect::new(rect.x, rect.y+25, 150, 16); //FIXME variable width
             let b_r = self.border_radius.get();
             renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg.get());
             if self.border.get() {
@@ -158,12 +171,28 @@ impl Widget for Toolbar {
                         *redraw = true;
                     }
                     if rect.contains(point) {
-                        //TODO after 1 sec show up tooltip if point is unchanged
+                        //TODO after 2 sec show up tooltip if point is unchanged
                         //println!("Mouse hovering toolbar at {} {} ",point.x,point.y);
-                        
-                        println!("Tooltip: {}",self.tooltip_text.get());
+                            
+                            
+                            match self.tooltip_time.get() {
+                                Some(time) => {
+                                                if !self.tooltip.get(){
+                                                    if (Instant::now()-time) > Duration::new(2,0){
+                                                        //println!("Tooltip: {} time:{:?}",self.tooltip_text.get(),time);
+                                                        self.tooltip.set(true);
+                                                        *redraw = true;
+                                                        }
+                                                    }
+                                                },
+                                None       => self.tooltip_time.set(Some(Instant::now())),
+                            }
                         //self.tooltip.set(true);
                         //*redraw = true;
+                    }else{
+                        self.tooltip_time.set(None);
+                        self.tooltip.set(false);
+                        *redraw = true;
                     }
                 }
                 

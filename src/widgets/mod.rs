@@ -14,7 +14,7 @@ pub use self::progress_bar::ProgressBar;
 pub use self::text_box::TextBox;
 pub use self::list::{ List, Entry };
 pub use self::control_knob::ControlKnob;
-pub use self::toolbar::Toolbar;
+pub use self::toolbar::ToolbarIcon;
 
 mod button;
 mod grid;
