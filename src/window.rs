@@ -59,7 +59,7 @@ impl<'a> Drop for WindowRenderer<'a> {
 }
 
 pub struct Window {
-    inner: RefCell<orbclient::Window>,
+    pub inner: RefCell<orbclient::Window>,
     font: Option<orbfont::Font>,
     pub widgets: RefCell<Vec<Arc<Widget>>>,
     pub widget_focus: Cell<usize>,
