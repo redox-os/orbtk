@@ -12,15 +12,61 @@ use point::Point;
 use rect::Rect;
 use traits::{Click, Place, Text}; //TODO create traits Tooltip , for now use Text
 use widgets::Widget;
+use window::Window;
+
 #[allow(unused_imports)]
 use std::time::{Duration, Instant};
 
 #[allow(dead_code)]
+#[derive(Clone)]
 pub struct Toolbar {
+    //parent : RefCell<*mut Window>,
     pub items : RefCell<Vec<Arc<ToolbarIcon>>>,
     pub visible: Cell<bool>,
     pub selected: Cell<bool>,
+    //pub rect: Cell<Rect>,
+    
 }
+#[allow(dead_code)]
+impl Toolbar {
+    pub fn new() -> Self {
+        Toolbar{
+            items : RefCell::new(Vec::new()),
+            visible: Cell::new(true),
+            selected : Cell::new(true)
+        }
+    }
+    
+    pub fn add(&self, toolbar_icon: &Arc<ToolbarIcon>, window:*mut Window ) -> usize {
+        let mut items = self.items.borrow_mut();
+        let id = items.len();
+        items.push(toolbar_icon.clone());
+        //add also to parent window
+        unsafe{(&mut *window).add(&toolbar_icon.clone());}
+        id
+    }
+    
+    pub fn visible (&self, v: bool) {
+        //set visibility for all items of toolbar 
+        let items = self.items.borrow_mut();
+        for i in 0..items.len(){
+            if let Some(tolbar_icon) = items.get(i) {
+                tolbar_icon.visible.set(v);
+            }
+        }
+    }
+    
+    pub fn toggle (&self) {
+        //deselect all items from toolbar 
+        let items = self.items.borrow_mut();
+        for i in 0..items.len(){
+            if let Some(toolbar_icon) = items.get(i) {
+                toolbar_icon.selected(false);
+            }
+        }
+    }    
+}
+
 
 pub struct ToolbarIcon {
     pub rect: Cell<Rect>,
@@ -172,10 +218,7 @@ impl Widget for ToolbarIcon {
                         *redraw = true;
                     }
                     if rect.contains(point) {
-                        //TODO after 2 sec show up tooltip if point is unchanged
-                        //println!("Mouse hovering toolbar at {} {} ",point.x,point.y);
-                            
-                            
+                        //FIXME after 2 sec shows up tooltip but only if mouse is moved 
                             match self.tooltip_time.get() {
                                 Some(time) => {
                                                 if !self.tooltip.get(){
@@ -196,7 +239,6 @@ impl Widget for ToolbarIcon {
                         *redraw = true;
                     }
                 }
-                
                     
                 _ => (),
             }
