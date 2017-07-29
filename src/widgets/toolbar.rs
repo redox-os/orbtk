@@ -174,7 +174,8 @@ impl Widget for ToolbarIcon {
             let text = self.tooltip_text.borrow();
             rect = Rect::new(rect.x, rect.y+rect.height as i32, 8* text.len() as u32, 16); 
             let b_r = self.border_radius.get();
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg.get());
+            let bg = Color::rgb(255,255,100); //yellow tooltip background
+            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, bg);
             if self.border.get() {
                 renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border.get());
             }
