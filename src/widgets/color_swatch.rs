@@ -48,6 +48,9 @@ impl ColorSwatch {
     pub fn color(&self, color: Color) {
         self.bg.set(color);
     }
+    pub fn read(&self) -> Color {
+        self.bg.get()
+    }
 }
 
 impl Border for ColorSwatch {
