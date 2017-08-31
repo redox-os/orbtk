@@ -93,10 +93,19 @@ impl Window {
     }
 
     pub fn new_flags(rect: Rect, title: &str, flags: &[WindowFlag]) -> Self {
+        Window::from_inner(
+            orbclient::Window::new_flags(
+                rect.x, rect.y, rect.width, rect.height,
+                title, flags
+            ).unwrap()
+        )
+    }
+
+    pub fn from_inner(inner: orbclient::Window) -> Self {
         let mut events = VecDeque::new();
         events.push_back(Event::Init);
         Window {
-            inner: RefCell::new(orbclient::Window::new_flags(rect.x, rect.y, rect.width, rect.height, title, flags).unwrap()),
+            inner: RefCell::new(inner),
             font: orbfont::Font::find(None, None, None).ok(),
             widgets: RefCell::new(Vec::new()),
             widget_focus: Cell::new(0),
@@ -110,6 +119,10 @@ impl Window {
             events: events,
             redraw: true,
         }
+    }
+
+    pub fn into_inner(self) -> orbclient::Window {
+        self.inner.into_inner()
     }
 
     pub fn x(&self) -> i32 {
