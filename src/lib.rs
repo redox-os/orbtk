@@ -10,14 +10,16 @@ pub use orbclient::color::Color;
 pub use orbclient::renderer::Renderer;
 
 pub use cell::CloneCell;
+pub use dialogs::*;
 pub use event::Event;
 pub use point::Point;
 pub use rect::Rect;
 pub use traits::*;
 pub use widgets::*;
-pub use window::Window;
+pub use window::{InnerWindow, Window};
 
 pub mod cell;
+pub mod dialogs;
 pub mod event;
 pub mod point;
 pub mod rect;
