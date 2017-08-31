@@ -1,3 +1,5 @@
+extern crate orbfont;
+
 use orbclient::{self, Renderer, WindowFlag};
 use orbclient::color::Color;
 use std::cell::{Cell, RefCell};
@@ -8,15 +10,15 @@ use super::{Event, Point, Rect, Widget};
 use theme::WINDOW_BACKGROUND;
 use traits::Resize;
 
-extern crate orbfont;
+pub use orbclient::Window as InnerWindow;
 
 pub struct WindowRenderer<'a> {
-    inner: &'a mut orbclient::Window,
+    inner: &'a mut InnerWindow,
     font: &'a Option<orbfont::Font>
 }
 
 impl<'a> WindowRenderer<'a> {
-    pub fn new(inner: &'a mut orbclient::Window, font: &'a Option<orbfont::Font>) -> WindowRenderer<'a> {
+    pub fn new(inner: &'a mut InnerWindow, font: &'a Option<orbfont::Font>) -> WindowRenderer<'a> {
         WindowRenderer { inner: inner, font: font }
     }
 }
@@ -93,10 +95,19 @@ impl Window {
     }
 
     pub fn new_flags(rect: Rect, title: &str, flags: &[WindowFlag]) -> Self {
+        Window::from_inner(
+            InnerWindow::new_flags(
+                rect.x, rect.y, rect.width, rect.height,
+                title, flags
+            ).unwrap()
+        )
+    }
+
+    pub fn from_inner(inner: InnerWindow) -> Self {
         let mut events = VecDeque::new();
         events.push_back(Event::Init);
         Window {
-            inner: RefCell::new(orbclient::Window::new_flags(rect.x, rect.y, rect.width, rect.height, title, flags).unwrap()),
+            inner: RefCell::new(inner),
             font: orbfont::Font::find(None, None, None).ok(),
             widgets: RefCell::new(Vec::new()),
             widget_focus: Cell::new(0),
@@ -110,6 +121,10 @@ impl Window {
             events: events,
             redraw: true,
         }
+    }
+
+    pub fn into_inner(self) -> InnerWindow {
+        self.inner.into_inner()
     }
 
     pub fn x(&self) -> i32 {
