@@ -120,7 +120,6 @@ fn file_dialog<P: AsRef<Path>>(path: P) -> Option<PathBuf> {
                         let window = window.deref() as *const Window;
                         let path_opt = path_opt.clone();
                         entry.on_click(move |_, _| {
-                            println!("{}", item.name);
                             *path_opt.borrow_mut() = Some(item.path.clone());
                             unsafe { (*window).close(); }
                         });
