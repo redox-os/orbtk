@@ -1,19 +1,68 @@
 extern crate orbtk;
 
-use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window, ControlKnob};
+use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window, ControlKnob, Toolbar, ToolbarIcon};
 use orbtk::traits::{Border, Click, Enter, Place, Text};
 
 fn main() {
     let mut window = Window::new(Rect::new(100, 100, 420, 730), "OrbTK");
+    
+    let parent_window = &mut window as *mut Window;  //pointer to the parent window to be used with toolbar widget
+    
+    //populate toolbar with  icon and action
+    let mut toolbar = Toolbar::new();  // create new empty toolbar
+    
+    let mut x = 10;
+    let mut y = 20;
+    
+    //populate toolbar with first icon and action
+    match ToolbarIcon::from_path("res/toolbar_icon.png") {
+        Ok(item) => {
+            let toolbar_clone = &mut toolbar as *mut Toolbar;
+            item.position(x, y)
+                 .text("Tooltip text here".to_owned())
+                 .on_click(move |_image: &ToolbarIcon, _point: Point| {
+                               unsafe{(&mut *toolbar_clone).toggle();} //toggle item 
+                               println!("You have clicked on Toolbar icon 1!"); 
+                               });
 
-    let x = 10;
-    let mut y = 0;
+            toolbar.add(&item,parent_window);  //add item to toolbar and show icon on window
+            
+            x += item.rect.get().width as i32 + 2; // uncomment for next toolbar icon
+        }
+        Err(err) => {
+            println!("Error loading toolbar element {}",err);
+        }
+    }
+    
+    //populate toolbar with second icon and action
+    match ToolbarIcon::from_path("res/toolbar_icon.png") {
+        Ok(item) => {
+            let toolbar_clone = &mut toolbar as *mut Toolbar;
+            item.position(x, y)
+                 .text("Tooltip text here".to_owned())
+                 .on_click(move |_image: &ToolbarIcon, _point: Point| {
+                                unsafe{(&mut *toolbar_clone).toggle();} //toggle item
+                               println!("You have clicked on Toolbar icon 2!"); 
+                               });
+
+            toolbar.add(&item,parent_window);  //add item to toolbar and show icon on window
+            
+            //x += item.rect.get().width as i32 + 2; // uncomment for next toolbar icon
+        }
+        Err(err) => {
+            println!("Error loading toolbar element {}",err);
+        }
+    }
+
+    x = 10;
+    y = 0;
+    
 
     let menu = Menu::new("Menu");
     menu.position(x, y)
         .size(32, 16);
 
-    y += menu.rect.get().height as i32 + 10;
+    y += menu.rect.get().height as i32 + 50;
 
     let label = Label::new();
     label.position(x, y)
@@ -152,7 +201,7 @@ fn main() {
             //remove widget by id
             unsafe{(&mut *window_clone).remove(2);}
             //unhide widget by id
-            unsafe{(&mut *window_clone).unhide(11);}
+            unsafe{(&mut *window_clone).unhide(13);}
         });
     window.add(&hideid_button);
 
