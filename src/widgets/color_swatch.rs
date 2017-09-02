@@ -24,6 +24,7 @@ pub struct ColorSwatch {
     click_callback: RefCell<Option<Arc<Fn(&ColorSwatch, Point)>>>,
     pressed: Cell<bool>,
     pub visible: Cell<bool>,
+    pub id:Cell<usize>,
 }
 
 impl ColorSwatch {
@@ -42,6 +43,7 @@ impl ColorSwatch {
             click_callback: RefCell::new(None),
             pressed: Cell::new(false),
             visible: Cell::new(true),
+            id: Cell::new(0),
         })
     }
     
@@ -50,6 +52,12 @@ impl ColorSwatch {
     }
     pub fn read(&self) -> Color {
         self.bg.get()
+    }
+    pub fn id(&self, id: usize) {
+        self.id.set(id);
+    }
+    pub fn get_id(&self) ->usize {
+        self.id.get()
     }
 }
 
