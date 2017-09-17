@@ -302,7 +302,6 @@ impl Widget for TextBox {
 
                     let mut scroll_offset = self.scroll_offset.get();
                     scroll_offset.1 = max(0, min(lines - rows, scroll_offset.1 - y * 3));
-                    println!("{:?}", scroll_offset);
                     self.scroll_offset.set(scroll_offset);
 
                     *redraw = true;
