@@ -201,6 +201,7 @@ impl Widget for ToolbarIcon {
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
         if self.visible.get(){
+            
             match event {
                 Event::Mouse { point, left_button, right_button, .. } => {
                     let rect = self.rect.get();

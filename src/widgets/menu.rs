@@ -1,5 +1,6 @@
 use orbclient::{Color, Renderer};
 use std::cell::{Cell, RefCell};
+use std::cmp::max;
 use std::sync::Arc;
 
 use cell::{CloneCell, CheckSet};
@@ -137,6 +138,17 @@ impl Widget for Menu {
         renderer.rect(rect.x, rect.y + rect.height as i32 - 1, rect.width, 1, self.fg_border);
 
         if self.activated.get() {
+            let mut max_width = 0;
+            let mut max_height = 0;
+
+            for entry in self.entries.borrow().iter() {
+                let r = entry.rect().get();
+                max_width = max(max_width, r.x + r.width as i32 - rect.x);
+                max_height = max(max_height, r.y + r.height as i32 - rect.y - rect.height as i32);
+            }
+
+            renderer.rect(rect.x - 1, rect.y + rect.height as i32 - 1, max_width as u32 + 2, max_height as u32 + 2, self.fg_border);
+
             for entry in self.entries.borrow().iter() {
                 entry.draw(renderer, _focused);
             }
