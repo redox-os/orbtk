@@ -16,6 +16,7 @@ pub use self::list::{ List, Entry };
 pub use self::control_knob::ControlKnob;
 pub use self::toolbar::{Toolbar,ToolbarIcon};
 pub use self::color_swatch::ColorSwatch;
+pub use self::marquee::Marquee;
 
 mod button;
 mod grid;
@@ -28,6 +29,7 @@ mod list;
 mod control_knob;
 mod toolbar;
 mod color_swatch;
+mod marquee;
 
 pub trait Widget : Any {
     fn rect(&self) -> &Cell<Rect>;
