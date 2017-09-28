@@ -106,27 +106,19 @@ impl Widget for Marquee {
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
+
+
+
         if self.visible.get(){
             let rect = self.rect.get();
 
             let w = rect.width as i32;
             let h = rect.height as i32;
 
-            /*
-            let (fg, bg) = if self.pressed.get() {
-                (self.fg_selected, self.bg_selected)
-            } else {
-                (self.fg, self.bg)
-            };
-            */
-            
-            let b_r = self.border_radius.get();
-
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg.get());
-
-            if self.border.get() {
-                renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
-            }
+            ant_line(renderer,rect.x, rect.y, rect.x, rect.y+rect.height as i32, Color::rgba(200,0,0,255),2);
+            ant_line(renderer,rect.x, rect.y+rect.height as i32, rect.x+rect.width as i32, rect.y+rect.height as i32, Color::rgba(200,0,0,255),2);
+            ant_line(renderer,rect.x+rect.width as i32, rect.y , rect.x+rect.width as i32, rect.y+rect.height as i32 , Color::rgba(200,0,0,255),2);
+            ant_line(renderer,rect.x, rect.y, rect.x+rect.width as i32, rect.y as i32, Color::rgba(200,0,0,255),2);
 
             let text = self.text.borrow();
 
@@ -143,6 +135,39 @@ impl Widget for Marquee {
                 }
             }
         }
+        /// Draws ant_line - - -   
+        fn ant_line(renderer :&mut Renderer, argx1: i32, argy1: i32, argx2: i32, argy2: i32, color: Color, style: i32) {
+            let mut x = argx1;
+            let mut y = argy1;
+                    
+            let dx = if argx1 > argx2 { argx1 - argx2 } else { argx2 - argx1 };
+            let dy = if argy1 > argy2 { argy1 - argy2 } else { argy2 - argy1 };
+
+            let sx = if argx1 < argx2 { 1 } else { -1 };
+            let sy = if argy1 < argy2 { 1 } else { -1 };
+
+            let mut err = if dx > dy { dx } else {-dy} / 2;
+            let mut err_tolerance;
+
+            let mut ct = 0;
+
+            loop {
+                if ct == 0 {
+
+                renderer.pixel(x,y,color); 
+                }
+                
+                if x == argx2 && y == argy2 { break };
+
+                err_tolerance = 2 * err;
+
+                if err_tolerance > -dx { err -= dy; x += sx; }
+                if err_tolerance < dy { err += dx; y += sy; }
+                
+                if ct<style {ct += 1;}   //3
+                else {ct = 0;}            
+            }
+        }    
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
