@@ -36,6 +36,7 @@ pub trait Widget : Any {
     fn draw(&self, renderer: &mut Renderer, focused: bool);
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool;
     fn visible(&self, flag: bool);
+    fn name(&self) -> Option<&'static str>;
 }
 
 pub trait ToolbarWidget : Any {

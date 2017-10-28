@@ -56,6 +56,15 @@ impl Toolbar {
         }
     }
     
+    pub fn enabled (&self, e: bool) {
+        let items = self.items.borrow_mut();
+        for i in 0..items.len(){
+            if let Some(tolbar_icon) = items.get(i) {
+                tolbar_icon.enabled.set(e);
+            }
+        }
+    }
+    
     pub fn toggle (&self) {
         //deselect all items from toolbar 
         let items = self.items.borrow_mut();
@@ -73,6 +82,7 @@ pub struct ToolbarIcon {
     pub image: RefCell<orbimage::Image>,
     click_callback: RefCell<Option<Arc<Fn(&ToolbarIcon, Point)>>>,
     pub visible: Cell<bool>,
+    pub enabled: Cell<bool>,
     pub selected: Cell<bool>,
     pub tooltip: Cell<bool>,
     pub tooltip_text: CloneCell<String>,
@@ -102,6 +112,7 @@ impl ToolbarIcon {
             image: RefCell::new(image),
             click_callback: RefCell::new(None),
             visible: Cell::new(true),
+            enabled: Cell::new(true),
             selected: Cell::new(false),
             tooltip: Cell::new(false),
             tooltip_text: CloneCell::new(String::new()),
@@ -122,6 +133,10 @@ impl ToolbarIcon {
     
     pub fn selected(&self, flag: bool) {
         self.selected.set(flag);
+    }
+    
+    pub fn enabled(&self, flag: bool) {
+        self.enabled.set(flag);
     }
 }
 
@@ -200,7 +215,7 @@ impl Widget for ToolbarIcon {
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        if self.visible.get(){
+        if self.visible.get() & self.enabled.get() {
             
             match event {
                 Event::Mouse { point, left_button, right_button, .. } => {
@@ -250,6 +265,10 @@ impl Widget for ToolbarIcon {
     
     fn visible(&self, flag: bool) {
         self.visible.set(flag);
+    }
+    
+    fn name(&self) -> Option<&'static str> {
+        Some("ToolbarIcon")
     }
 }
 

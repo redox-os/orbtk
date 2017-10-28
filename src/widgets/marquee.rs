@@ -210,5 +210,9 @@ impl Widget for Marquee {
     
     fn visible(&self, flag: bool){
         self.visible.set(flag);
-    }    
+    }
+
+    fn name(&self) -> Option<&'static str> {
+        Some("Marquee")
+    }
 }

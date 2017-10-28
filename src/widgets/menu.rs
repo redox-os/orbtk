@@ -214,6 +214,15 @@ impl Widget for Menu {
     fn visible(&self, flag: bool){
         self.visible.set(flag);
     }
+    
+    fn name(&self) -> Option<&'static str> {
+        if self.activated.get() {
+            Some("MenuActivated")
+        }else{
+            Some("Menu")
+        }
+        
+    }
 
 }
 
@@ -345,8 +354,13 @@ impl Widget for Action {
 
         false
     }
+    
     fn visible(&self, flag: bool){
      !flag;
+    }
+
+    fn name(&self) -> Option<&'static str> {
+        Some("Action")
     }
 }
 
@@ -392,10 +406,14 @@ impl Widget for Separator {
         }
         ignore_event
     }
+    
     fn visible(&self, flag: bool){
         !flag;
     }
 
+    fn name(&self) -> Option<&'static str> {
+        Some("Separator")
+    }
 }
 
 impl Entry for Separator {

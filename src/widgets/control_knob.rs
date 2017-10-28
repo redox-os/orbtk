@@ -144,4 +144,8 @@ impl Widget for ControlKnob {
     fn visible(&self, flag: bool){
         self.visible.set(flag);
     }
+
+    fn name(&self) -> Option<&'static str> {
+        Some("ControlKnob")
+    }
 }
