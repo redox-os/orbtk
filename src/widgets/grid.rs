@@ -33,6 +33,10 @@ impl Grid {
         self.arrange(false);
     }
 
+    pub fn clear(&self) {
+        self.entries.borrow_mut().clear();
+    }
+
     pub fn spacing(&self, x: i32, y: i32) -> &Self {
         self.space_x.set(x);
         self.space_y.set(y);
