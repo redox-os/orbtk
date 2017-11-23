@@ -65,6 +65,7 @@ pub struct List {
     entries: RefCell<Vec<Arc<Entry>>>,
     pressed: Cell<bool>,
     selected: Cell<Option<u32>>,
+    pub visible: Cell<bool>,
 }
 
 impl List {
@@ -76,6 +77,7 @@ impl List {
             entries: RefCell::new(vec![]),
             pressed: Cell::new(false),
             selected: Cell::new(None),
+            visible: Cell::new(true),
         })
     }
 
@@ -159,139 +161,151 @@ impl Widget for List {
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let mut current_y = 0;
-        let x = self.rect.get().x;
-        let y = self.rect.get().y;
-        let width = self.rect.get().width;
-        let height = self.rect.get().height;
+        if self.visible.get(){
+            let mut current_y = 0;
+            let x = self.rect.get().x;
+            let y = self.rect.get().y;
+            let width = self.rect.get().width;
+            let height = self.rect.get().height;
 
-        let mut target = orbimage::Image::new(width, height);
-        target.set(WINDOW_BACKGROUND);
+            let mut target = orbimage::Image::new(width, height);
+            target.set(WINDOW_BACKGROUND);
 
-        for entry in self.entries.borrow().iter() {
-            let mut image = orbimage::Image::new(width, entry.height.get());
+            for entry in self.entries.borrow().iter() {
+                let mut image = orbimage::Image::new(width, entry.height.get());
 
-            if entry.highlighted.get() {
-                image.set(entry.highlight.get());
-            } else {
-                image.set(ITEM_BACKGROUND);
-            }
+                if entry.highlighted.get() {
+                    image.set(entry.highlight.get());
+                } else {
+                    image.set(ITEM_BACKGROUND);
+                }
 
-            for widget in entry.widgets().borrow().iter() {
-                widget.draw(&mut image, false)
-            }
+                for widget in entry.widgets().borrow().iter() {
+                    widget.draw(&mut image, false)
+                }
 
             let image = image.data();
             target.image(0, current_y-self.v_scroll.get(), width, entry.height.get(), &image);
 
-            current_y += entry.height.get() as i32
+                current_y += entry.height.get() as i32
+            }
+            let target = target.data();
+            renderer.image(x, y, width, height, &target)
         }
-        let target = target.data();
-        renderer.image(x, y, width, height, &target)
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse { point, left_button, .. } => {
-                let mut click = false;
+        if self.visible.get(){
+            match event {
+                Event::Mouse { point, left_button, .. } => {
+                    let mut click = false;
 
-                let rect = self.rect.get();
-                if rect.contains(point) {
-                    if left_button {
-                        if self.pressed.check_set(true) {
-                            *redraw = true;
-                        }
-                    } else {
-                        if self.pressed.check_set(false) {
-                            click = true;
-                            *redraw = true;
-                        }
-                    }
-                } else {
-                    if !left_button {
-                        if self.pressed.check_set(false) {
-                            *redraw = true;
-                        }
-                    }
-                }
-
-                if let Some(i) = self.get_entry_index(point) {
-                    if click {
-                        if let Some(entry) = self.entries.borrow().get(i as usize) {
-                            entry.emit_click(point);
-                        }
-                    }
-
-                    match self.selected.get() {
-                        None => {
-                            self.change_selection(i);
-                            *redraw = true;
-                        },
-                        Some(selected) => {
-                            if selected != i {
-                                self.change_selection(i);
+                    let rect = self.rect.get();
+                    if rect.contains(point) {
+                        if left_button {
+                            if self.pressed.check_set(true) {
                                 *redraw = true;
                             }
-                        },
-                    }
-                }
-            },
-            Event::UpArrow => {
-                match self.selected.get() {
-                    None => {
-                        self.change_selection(0);
-                        *redraw = true;
-                    },
-                    Some(i) => {
-                        if i > 0 {
-                            self.change_selection(i - 1);
-                            *redraw = true;
+                        } else {
+                            if self.pressed.check_set(false) {
+                                click = true;
+                                *redraw = true;
+                            }
+                        }
+                    } else {
+                        if !left_button {
+                            if self.pressed.check_set(false) {
+                                *redraw = true;
+                            }
                         }
                     }
-                }
-            },
-            Event::DownArrow => {
-                match self.selected.get() {
-                    None => {
-                        self.change_selection(0);
-                        *redraw = true;
-                    },
-                    Some(i) => {
-                        if i < self.entries.borrow().len() as u32 - 1 {
-                            self.change_selection(i + 1);
-                            *redraw = true;
+
+                    if let Some(i) = self.get_entry_index(point) {
+                        if click {
+                            if let Some(entry) = self.entries.borrow().get(i as usize) {
+                                entry.emit_click(point);
+                            }
                         }
-                    }
-                }
-            },
-            Event::Home => {
-                self.change_selection(0);
-                *redraw = true
-            },
-            Event::End => {
-                self.change_selection(self.entries.borrow().len() as u32 - 1);
-                *redraw = true
-            },
-            Event::Enter => {
-                match self.selected.get() {
-                    Some(i) => {
-                        match self.entries.borrow().get(i as usize) {
-                            Some(entry) => {
-                                entry.emit_click(Point { x: 0, y: 0});
+
+                        match self.selected.get() {
+                            None => {
+                                self.change_selection(i);
+                                *redraw = true;
                             },
-                            None => {},
+                            Some(selected) => {
+                                if selected != i {
+                                    self.change_selection(i);
+                                    *redraw = true;
+                                }
+                            },
                         }
-                    },
-                    _ => {},
-                }
-            },
-            Event::Scroll { y, .. } => {
-                self.scroll(y * -96);
-                *redraw = true;
-            },
-            _ => {}
+                    }
+                },
+                Event::UpArrow => {
+                    match self.selected.get() {
+                        None => {
+                            self.change_selection(0);
+                            *redraw = true;
+                        },
+                        Some(i) => {
+                            if i > 0 {
+                                self.change_selection(i - 1);
+                                *redraw = true;
+                            }
+                        }
+                    }
+                },
+                Event::DownArrow => {
+                    match self.selected.get() {
+                        None => {
+                            self.change_selection(0);
+                            *redraw = true;
+                        },
+                        Some(i) => {
+                            if i < self.entries.borrow().len() as u32 - 1 {
+                                self.change_selection(i + 1);
+                                *redraw = true;
+                            }
+                        }
+                    }
+                },
+                Event::Home => {
+                    self.change_selection(0);
+                    *redraw = true
+                },
+                Event::End => {
+                    self.change_selection(self.entries.borrow().len() as u32 - 1);
+                    *redraw = true
+                },
+                Event::Enter => {
+                    match self.selected.get() {
+                        Some(i) => {
+                            match self.entries.borrow().get(i as usize) {
+                                Some(entry) => {
+                                    entry.emit_click(Point { x: 0, y: 0});
+                                },
+                                None => {},
+                            }
+                        },
+                        _ => {},
+                    }
+                },
+                Event::Scroll { y, .. } => {
+                    self.scroll(y * -96);
+                    *redraw = true;
+                },
+                _ => {}
+            }
         }
         focused
+    }
+    
+    fn visible(&self, flag: bool){
+        self.visible.set(flag);
+    }
+    
+    fn name(&self) -> Option<&'static str> {
+        Some("List")
     }
 }
 

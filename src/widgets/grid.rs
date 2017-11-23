@@ -14,7 +14,8 @@ pub struct Grid {
     space_x: Cell<i32>,
     space_y: Cell<i32>,
     entries: RefCell<BTreeMap<(usize, usize), Arc<Widget>>>,
-    focused: Cell<Option<(usize, usize)>>
+    focused: Cell<Option<(usize, usize)>>,
+    pub visible: Cell<bool>,
 }
 
 impl Grid {
@@ -24,7 +25,8 @@ impl Grid {
             space_x: Cell::new(0),
             space_y: Cell::new(0),
             entries: RefCell::new(BTreeMap::new()),
-            focused: Cell::new(None)
+            focused: Cell::new(None),
+            visible: Cell::new(true),
         })
     }
 
@@ -136,4 +138,13 @@ impl Widget for Grid {
 
         focused
     }
+
+    fn visible(&self, flag: bool){
+        self.visible.set(flag);
+    }
+
+    fn name(&self) -> Option<&'static str> {
+        Some("Grid")
+    }
+
 }

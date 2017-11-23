@@ -61,7 +61,7 @@ impl<'a> Drop for WindowRenderer<'a> {
 }
 
 pub struct Window {
-    inner: RefCell<InnerWindow>,
+    pub inner: RefCell<orbclient::Window>,
     font: Option<orbfont::Font>,
     pub widgets: RefCell<Vec<Arc<Widget>>>,
     pub widget_focus: Cell<usize>,
@@ -177,6 +177,29 @@ impl Window {
         widgets.push(widget.clone());
         id
     }
+    
+    pub fn remove(&self, id: usize) {
+        //hide widget actually, not removing from widgets Vector
+        //so references to other widgets'id are kept valid
+        if let Some(widget) = self.widgets.borrow().get(id){
+            widget.visible(false);
+        }
+        else{
+            println!("Can't remove widget, not found..");
+        }
+    
+    }
+
+    pub fn unhide(&self, id: usize) {
+        //show up widget removed by id 
+        if let Some(widget) = self.widgets.borrow().get(id){
+            widget.visible(true);
+        }
+        else{
+            println!("Can't unhide widget, not found..");
+        }
+    
+    }
 
     pub fn draw(&self) {
         let mut inner = self.inner.borrow_mut();
@@ -204,7 +227,8 @@ impl Window {
                 _ => ()
             }
 
-            for i in 0..self.widgets.borrow().len() {
+            //reversed order here to give priority to menu widgets as they are added usually at last to the window
+            for i in (0..self.widgets.borrow().len()).rev() {
                 if let Some(widget) = self.widgets.borrow().get(i) {
                     if widget.event(event, self.widget_focus.get() == i, &mut self.redraw) {
                         if self.widget_focus.get() != i {
@@ -212,6 +236,8 @@ impl Window {
                             self.redraw = true;
                         }
                     }
+                    //if widget Menu is activated then break to avoid clicking also on widgets under the unfolded menu
+                    if widget.name().unwrap() == "MenuActivated" {break;} 
                 }
             }
         }

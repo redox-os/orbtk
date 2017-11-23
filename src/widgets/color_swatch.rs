@@ -10,9 +10,9 @@ use theme::{BUTTON_BACKGROUND, BUTTON_BG_SELECTION, BUTTON_FOREGROUND, BUTTON_FG
 use traits::{Border, Click, Place, Text};
 use widgets::Widget;
 
-pub struct Button {
+pub struct ColorSwatch {
     pub rect: Cell<Rect>,
-    pub bg: Color,
+    pub bg: Cell<Color>,
     pub bg_selected: Color,
     pub fg: Color,
     pub fg_selected: Color,
@@ -21,16 +21,17 @@ pub struct Button {
     pub border_radius: Cell<u32>,
     pub text: CloneCell<String>,
     pub text_offset: Cell<Point>,
-    click_callback: RefCell<Option<Arc<Fn(&Button, Point)>>>,
+    click_callback: RefCell<Option<Arc<Fn(&ColorSwatch, Point)>>>,
     pressed: Cell<bool>,
     pub visible: Cell<bool>,
+    pub id:Cell<usize>,
 }
 
-impl Button {
+impl ColorSwatch {
     pub fn new() -> Arc<Self> {
-        Arc::new(Button {
+        Arc::new(ColorSwatch {
             rect: Cell::new(Rect::default()),
-            bg: BUTTON_BACKGROUND,
+            bg: Cell::new(BUTTON_BACKGROUND),
             bg_selected: BUTTON_BG_SELECTION,
             fg: BUTTON_FOREGROUND,
             fg_selected: BUTTON_FG_SELECTION,
@@ -42,11 +43,25 @@ impl Button {
             click_callback: RefCell::new(None),
             pressed: Cell::new(false),
             visible: Cell::new(true),
+            id: Cell::new(0),
         })
+    }
+    
+    pub fn color(&self, color: Color) {
+        self.bg.set(color);
+    }
+    pub fn read(&self) -> Color {
+        self.bg.get()
+    }
+    pub fn id(&self, id: usize) {
+        self.id.set(id);
+    }
+    pub fn get_id(&self) ->usize {
+        self.id.get()
     }
 }
 
-impl Border for Button {
+impl Border for ColorSwatch {
     fn border(&self, enabled: bool) -> &Self {
         self.border.set(enabled);
         self
@@ -58,7 +73,7 @@ impl Border for Button {
     }
 }
 
-impl Click for Button {
+impl Click for ColorSwatch {
     fn emit_click(&self, point: Point) {
         if let Some(ref click_callback) = *self.click_callback.borrow() {
             click_callback(self, point);
@@ -71,9 +86,9 @@ impl Click for Button {
     }
 }
 
-impl Place for Button {}
+impl Place for ColorSwatch {}
 
-impl Text for Button {
+impl Text for ColorSwatch {
     fn text<S: Into<String>>(&self, text: S) -> &Self {
         self.text.set(text.into());
         self
@@ -85,7 +100,7 @@ impl Text for Button {
     }
 }
 
-impl Widget for Button {
+impl Widget for ColorSwatch {
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
@@ -97,15 +112,17 @@ impl Widget for Button {
             let w = rect.width as i32;
             let h = rect.height as i32;
 
+            /*
             let (fg, bg) = if self.pressed.get() {
                 (self.fg_selected, self.bg_selected)
             } else {
                 (self.fg, self.bg)
             };
-
+            */
+            
             let b_r = self.border_radius.get();
 
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, bg);
+            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg.get());
 
             if self.border.get() {
                 renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
@@ -120,7 +137,7 @@ impl Widget for Button {
                     point.y += 16;
                 } else {
                     if point.x + 8 <= w && point.y + 16 <= h {
-                        renderer.char(point.x + rect.x, point.y + rect.y, c, fg);
+                        renderer.char(point.x + rect.x, point.y + rect.y, c, self.fg);
                     }
                     point.x += 8;
                 }
@@ -171,6 +188,6 @@ impl Widget for Button {
     }
     
     fn name(&self) -> Option<&'static str> {
-        Some("Button")
+        Some("ColorSwatch")
     }
 }

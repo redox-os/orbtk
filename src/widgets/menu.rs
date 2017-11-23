@@ -24,6 +24,7 @@ pub struct Menu {
     click_callback: RefCell<Option<Arc<Fn(&Menu, Point)>>>,
     pressed: Cell<bool>,
     activated: Cell<bool>,
+    visible: Cell<bool>,
 }
 
 pub struct Separator {
@@ -50,6 +51,7 @@ impl Menu {
             click_callback: RefCell::new(None),
             pressed: Cell::new(false),
             activated: Cell::new(false),
+            visible: Cell::new(true),
         })
     }
 
@@ -208,6 +210,20 @@ impl Widget for Menu {
         }
         focused
     }
+    
+    fn visible(&self, flag: bool){
+        self.visible.set(flag);
+    }
+    
+    fn name(&self) -> Option<&'static str> {
+        if self.activated.get() {
+            Some("MenuActivated")
+        }else{
+            Some("Menu")
+        }
+        
+    }
+
 }
 
 pub struct Action {
@@ -338,6 +354,14 @@ impl Widget for Action {
 
         false
     }
+    
+    fn visible(&self, flag: bool){
+     !flag;
+    }
+
+    fn name(&self) -> Option<&'static str> {
+        Some("Action")
+    }
 }
 
 impl Entry for Action {
@@ -381,6 +405,14 @@ impl Widget for Separator {
             _ => (),
         }
         ignore_event
+    }
+    
+    fn visible(&self, flag: bool){
+        !flag;
+    }
+
+    fn name(&self) -> Option<&'static str> {
+        Some("Separator")
     }
 }
 

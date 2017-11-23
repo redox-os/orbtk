@@ -14,6 +14,7 @@ pub struct Image {
     pub rect: Cell<Rect>,
     pub image: RefCell<orbimage::Image>,
     click_callback: RefCell<Option<Arc<Fn(&Image, Point)>>>,
+    pub visible: Cell<bool>,
 }
 
 impl Image {
@@ -29,7 +30,8 @@ impl Image {
         Arc::new(Image {
             rect: Cell::new(Rect::new(0, 0, image.width(), image.height())),
             image: RefCell::new(image),
-            click_callback: RefCell::new(None)
+            click_callback: RefCell::new(None),
+            visible: Cell::new(true),
         })
     }
 
@@ -59,24 +61,35 @@ impl Widget for Image {
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool) {
-        let rect = self.rect.get();
-        let image = self.image.borrow();
-        renderer.image(rect.x, rect.y, image.width(), image.height(), image.data());
+        if self.visible.get(){
+            let rect = self.rect.get();
+            let image = self.image.borrow();
+            renderer.image(rect.x, rect.y, image.width(), image.height(), image.data());
+        }
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse { point, left_button, .. } => {
-                let rect = self.rect.get();
-                if rect.contains(point) && left_button {
-                    let click_point: Point = point - rect.point();
-                    self.emit_click(click_point);
-                    *redraw = true;
+        if self.visible.get(){
+            match event {
+                Event::Mouse { point, left_button, .. } => {
+                    let rect = self.rect.get();
+                    if rect.contains(point) && left_button {
+                        let click_point: Point = point - rect.point();
+                        self.emit_click(click_point);
+                        *redraw = true;
+                    }
                 }
+                _ => (),
             }
-            _ => (),
         }
-
         focused
+    }
+    
+    fn visible(&self, flag: bool){
+        self.visible.set(flag);
+    }
+    
+    fn name(&self) -> Option<&'static str> {
+        Some("Image")
     }
 }
