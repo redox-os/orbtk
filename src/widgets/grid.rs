@@ -37,6 +37,10 @@ impl Grid {
         self.entries.borrow_mut().clear();
     }
 
+    pub fn remove(&self, col: usize, row: usize) {
+        self.entries.borrow_mut().remove(&(col, row));
+    }
+
     pub fn spacing(&self, x: i32, y: i32) -> &Self {
         self.space_x.set(x);
         self.space_y.set(y);

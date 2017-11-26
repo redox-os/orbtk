@@ -4,7 +4,7 @@ use orbtk::{Button, Grid, Label, Window, Rect};
 use orbtk::traits::{Click, Place, Text};
 
 fn main() {
-    let mut window = Window::new(Rect::new(100, 100, 400, 400), "Grid example");
+    let mut window = Window::new(Rect::new(100, 100, 430, 400), "Grid example");
 
     let grid = Grid::new();
     grid.spacing(8, 8)
@@ -38,10 +38,13 @@ fn main() {
         window.add(&btn_add);
     }
 
+    let btn_clear = Button::new();
+
     {
         let _grid = grid.clone();
-        let btn_clear = Button::new();
-        btn_clear.size(11 + 14*8 + 11, 35)
+
+        btn_clear
+            .size(11 + 14 * 8 + 11, 35)
             .position(10 + btn_add.rect.get().width as i32 + 10, 10)
             .text("Clear elements")
             .text_offset(11, 11)
@@ -49,6 +52,18 @@ fn main() {
                 _grid.clear();
             });
         window.add(&btn_clear);
+    }
+
+    {
+        let _grid = grid.clone();
+        let btn_remove = Button::new();
+        btn_remove
+            .size(11 + 14 * 8 + 11, 35)
+            .position(btn_clear.rect.get().x + btn_clear.rect.get().width as i32 + 10, 10)
+            .text("Remove element")
+            .text_offset(11, 11)
+            .on_click(move |_, _| _grid.remove(1, 0));
+        window.add(&btn_remove);
     }
 
     window.exec();
