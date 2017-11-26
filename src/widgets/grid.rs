@@ -13,6 +13,9 @@ pub struct Grid {
     pub rect: Cell<Rect>,
     space_x: Cell<i32>,
     space_y: Cell<i32>,
+    columns: Cell<usize>,
+    row_count: Cell<usize>,
+    column_count: Cell<usize>,
     entries: RefCell<BTreeMap<(usize, usize), Arc<Widget>>>,
     focused: Cell<Option<(usize, usize)>>
 }
@@ -23,9 +26,28 @@ impl Grid {
             rect: Cell::new(Rect::default()),
             space_x: Cell::new(0),
             space_y: Cell::new(0),
+            columns: Cell::new(0),
+            row_count: Cell::new(0),
+            column_count: Cell::new(0),
             entries: RefCell::new(BTreeMap::new()),
-            focused: Cell::new(None)
+            focused: Cell::new(None),
         })
+    }
+
+    pub fn columns(&self, columns: usize) -> &Self {
+        self.columns.set(columns);
+        self
+    }
+
+    pub fn add<T: Widget>(&self, entry: &Arc<T>) {
+        if self.column_count.get() == self.columns.get() {
+            self.row_count.set(self.row_count.get() + 1);
+            self.column_count.set(0);
+        }
+
+        self.entries.borrow_mut().insert((self.column_count.get(), self.row_count.get()), entry.clone());
+        self.column_count.set(self.column_count.get() + 1);
+        self.arrange(false);
     }
 
     pub fn insert<T: Widget>(&self, col: usize, row: usize, entry: &Arc<T>) {
@@ -35,6 +57,10 @@ impl Grid {
 
     pub fn clear(&self) {
         self.entries.borrow_mut().clear();
+    }
+
+    pub fn remove(&self, col: usize, row: usize) {
+        self.entries.borrow_mut().remove(&(col, row));
     }
 
     pub fn spacing(&self, x: i32, y: i32) -> &Self {
