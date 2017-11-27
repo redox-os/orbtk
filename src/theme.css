@@ -54,3 +54,7 @@ text-box {
     background: white;
     border-radius: 2;
 }
+
+text-box :focus {
+    border-color: #5294E2;
+}

@@ -144,7 +144,13 @@ impl Widget for TextBox {
     fn draw(&self, renderer: &mut Renderer, focused: bool, theme: &Theme) {
         let rect = self.rect.get();
 
-        draw_box(renderer, rect, theme, &Selector::new(Some("text-box")));
+        let mut selector = Selector::new(Some("text-box"));
+
+        if focused {
+            selector = selector.with_pseudo_class("focus");
+        }
+
+        draw_box(renderer, rect, theme, &selector);
 
         let text_i = self.text_i.get();
         let text = self.text.borrow();
