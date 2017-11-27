@@ -5,48 +5,7 @@ use std::sync::Arc;
 use std::mem;
 use std::ops::Add;
 
-static DEFAULT_THEME_CSS: &'static str = r"
-/* Every element */
-* {
-    background: #F5F6F7;
-    border-thickness: 1;
-    border-color: #CFD6E6;
-    color: black;
-}
-
-text-box {
-    background: white;
-}
-
-/* The filled bit of the progress bar */
-progress {
-    background: #5294E2;
-    border-color: gray;
-}
-
-menu-button, action, separator {
-    background: #FBFBFC;
-    border-thickness: 0;
-}
-
-menu-button :active, action :active {
-    background: #5294E2;
-}
-
-selection {
-    background: #5294E2;
-    border-thickness: 0;
-}
-
-button {
-    background: white;
-}
-
-button :active {
-    background: #5294E2;
-    color: white;
-}
-";
+static DEFAULT_THEME_CSS: &'static str = include_str!("theme.css");
 
 lazy_static! {
     static ref DEFAULT_THEME: Arc<Theme> = {
