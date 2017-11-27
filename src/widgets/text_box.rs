@@ -184,9 +184,9 @@ impl Widget for TextBox {
                         draw_box(renderer, Rect::new(x + rect.x, y + rect.y, 8, 16), theme, &"selection".into());
                     }
                     if let Some(mask_c) = self.mask_char.get() {
-                        renderer.char(x + rect.x, y + rect.y, mask_c, theme.color("color", &"text-box".into()));
+                        renderer.char(x + rect.x, y + rect.y, mask_c, theme.color("color", &selector));
                     } else {
-                        renderer.char(x + rect.x, y + rect.y, c, theme.color("color", &"text-box".into()));
+                        renderer.char(x + rect.x, y + rect.y, c, theme.color("color", &selector));
                     }
                 }
 
