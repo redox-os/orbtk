@@ -1,4 +1,4 @@
-use { Color, InnerWindow, Window, List, Entry, Label };
+use { InnerWindow, Window, List, Entry, Label };
 use traits::{ Place, Text, Click };
 
 use std::{fs, io};
@@ -125,7 +125,7 @@ impl FileDialog {
 
                             let label = Label::new();
                             label.position(2, 2).size(w - 8, 20).text_offset(2, 2);
-                            label.bg.set(Color::rgb(255, 255, 255));
+                            //label.bg.set(Color::rgb(255, 255, 255));
                             label.text(name);
                             entry.add(&label);
 
@@ -143,7 +143,7 @@ impl FileDialog {
 
                             let label = Label::new();
                             label.position(2, 2).size(w - 8, 20).text_offset(2, 2);
-                            label.bg.set(Color::rgb(242, 222, 222));
+                            //label.bg.set(Color::rgb(242, 222, 222));
                             label.text(err);
                             entry.add(&label);
 
@@ -156,7 +156,7 @@ impl FileDialog {
 
                     let label = Label::new();
                     label.position(2, 2).size(w - 8, 20).text_offset(2, 2);
-                    label.bg.set(Color::rgb(242, 222, 222));
+                    //label.bg.set(Color::rgb(242, 222, 222));
                     label.text(format!("{}", err));
                     entry.add(&label);
 
