@@ -278,7 +278,7 @@ impl Widget for TextBox {
                     let rows = (self.rect.get().height as i32 - self.text_offset.get().y)/16;
 
                     let mut scroll_offset = self.scroll_offset.get();
-                    scroll_offset.1 = min(lines - rows, max(0, scroll_offset.1 - y * 3));
+                    scroll_offset.1 = max(0, min(lines - rows, scroll_offset.1 - y * 3));
                     self.scroll_offset.set(scroll_offset);
 
                     *redraw = true;
@@ -295,6 +295,7 @@ impl Widget for TextBox {
                     if focused {
                         if self.enter_callback.borrow().is_some() {
                             self.emit_enter();
+                            *redraw = true;
                         } else {
                             let mut text = self.text.borrow_mut();
                             let text_i = self.text_i.get();

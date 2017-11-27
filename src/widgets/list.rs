@@ -1,6 +1,7 @@
 use orbclient::Renderer;
 use orbimage;
 use std::cell::{ Cell, RefCell };
+use std::cmp;
 use std::sync::Arc;
 
 use cell::CheckSet;
@@ -105,11 +106,14 @@ impl List {
 
     pub fn scroll(&self, y: i32) {
         let mut set_to = self.v_scroll.get() + y;
+
+        let max = cmp::max(0, self.current_height.get() as i32 - self.rect.get().height as i32);
         if set_to < 0 {
             set_to = 0;
-        } else if self.rect.get().height as i32 + set_to > self.current_height.get() as i32 {
-            set_to = self.v_scroll.get() as i32;
+        } else if set_to > max {
+            set_to = max;
         }
+
         self.v_scroll.set(set_to);
     }
 
@@ -186,7 +190,7 @@ impl Widget for List {
             }
 
             let image = image.data();
-            target.image(x, current_y-self.v_scroll.get(), width, entry.height.get(), &image);
+            target.image(0, current_y-self.v_scroll.get(), width, entry.height.get(), &image);
 
             current_y += entry.height.get() as i32
         }
