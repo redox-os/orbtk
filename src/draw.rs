@@ -10,7 +10,7 @@ pub fn draw_box(renderer: &mut Renderer, rect: Rect, theme: &Theme, selector: &S
 
     renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, fill);
 
-    if theme.uint("border-thickness", selector) > 0 {
+    if theme.uint("border-width", selector) > 0 {
         let border_color = theme.color("border-color", selector);
 
         renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, border_color);

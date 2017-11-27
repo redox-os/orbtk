@@ -55,6 +55,7 @@ fn main() {
     let progress_bar = ProgressBar::new();
     progress_bar.position(x, y)
         .size(400, 16)
+        .value(100)
         .on_click(move |progress_bar: &ProgressBar, point: Point| {
             let progress = point.x * 100 / progress_bar.rect.get().width as i32;
             progress_label.text.set(format!("Progress: {}%", progress));

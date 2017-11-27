@@ -77,7 +77,7 @@ impl Widget for ProgressBar {
         draw_box(renderer, rect, theme, &selector);
 
         let b_r = theme.get("border-radius", &selector).map(|v| v.uint().unwrap()).unwrap_or(1);
-        let b_t = theme.get("border-thickness", &selector).map(|v| v.uint().unwrap()).unwrap_or(0);
+        let b_t = theme.get("border-width", &selector).map(|v| v.uint().unwrap()).unwrap_or(0);
 
 
         if progress_rect.width >=  b_t + b_r * 2 {

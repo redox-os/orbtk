@@ -340,7 +340,7 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
 
             "background" | "foreground" => Value::Color(parse_basic_color(input)?),
 
-            "border-radius" | "border-thickness" => {
+            "border-radius" | "border-width" => {
                 match input.next()? {
                     Token::Number { int_value: Some(x), has_sign, .. } if !has_sign && x >= 0 => Value::UInt(x as u32),
                     t => return Err(BasicParseError::UnexpectedToken(t).into())

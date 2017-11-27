@@ -124,7 +124,7 @@ impl Widget for Menu {
                 max_width as u32 + 2, max_height as u32 + 2,
             );
 
-            draw_box(renderer, entries_rect, theme, &Selector::new(Some("menu-button")).with_pseudo_class("active"));
+            draw_box(renderer, entries_rect, theme, &Selector::new(Some("menu")).with_pseudo_class("active"));
         } else {
             draw_box(renderer, rect, theme, &Selector::new(Some("menu-button")).with_pseudo_class("inactive"));
         }

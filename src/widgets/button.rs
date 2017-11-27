@@ -13,11 +13,10 @@ use widgets::Widget;
 
 pub struct Button {
     pub rect: Cell<Rect>,
-    pub border: Cell<bool>,
-    pub border_radius: Cell<u32>,
     pub text: CloneCell<String>,
     pub text_offset: Cell<Point>,
     click_callback: RefCell<Option<Arc<Fn(&Button, Point)>>>,
+    hover: Cell<bool>,
     pressed: Cell<bool>,
 }
 
@@ -25,11 +24,10 @@ impl Button {
     pub fn new() -> Arc<Self> {
         Arc::new(Button {
             rect: Cell::new(Rect::default()),
-            border: Cell::new(true),
-            border_radius: Cell::new(2),
             text: CloneCell::new(String::new()),
             text_offset: Cell::new(Point::default()),
             click_callback: RefCell::new(None),
+            hover: Cell::new(false),
             pressed: Cell::new(false),
         })
     }
@@ -72,13 +70,17 @@ impl Widget for Button {
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
-        let selector = Selector::new(Some("button")).with_pseudo_class(
+        let mut selector = Selector::new(Some("button")).with_pseudo_class(
             if self.pressed.get() {
                 "active"
             } else {
                 "inactive"
             }
         );
+
+        if self.hover.get() {
+            selector = selector.with_pseudo_class("hover");
+        }
 
         let rect = self.rect.get();
 
@@ -110,6 +112,10 @@ impl Widget for Button {
 
                 let rect = self.rect.get();
                 if rect.contains(point) {
+                    if self.hover.check_set(true) {
+                        *redraw = true;
+                    }
+
                     if left_button {
                         if self.pressed.check_set(true) {
                             *redraw = true;
@@ -121,6 +127,10 @@ impl Widget for Button {
                         }
                     }
                 } else {
+                    if self.hover.check_set(false) {
+                        *redraw = true;
+                    }
+
                     if !left_button {
                         if self.pressed.check_set(false) {
                             *redraw = true;
