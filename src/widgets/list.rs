@@ -1,4 +1,4 @@
-use orbclient::{Renderer, Color};
+use orbclient::Renderer;
 use orbimage;
 use std::cell::{ Cell, RefCell };
 use std::cmp;
@@ -8,7 +8,7 @@ use cell::CheckSet;
 use event::Event;
 use point::Point;
 use rect::Rect;
-use theme::{ ITEM_BACKGROUND, WINDOW_BACKGROUND, ITEM_SELECTION };
+use theme::{ Theme, Selector };
 use traits::{ Click, Place };
 use widgets::Widget;
 use std::ops::Index;
@@ -19,7 +19,6 @@ pub struct Entry {
     pub height: Cell<u32>,
     click_callback: RefCell<Option<Arc<Fn(&Entry, Point)>>>,
     widgets: RefCell<Vec<Arc<Widget>>>,
-    pub highlight: Cell<Color>,
     highlighted: Cell<bool>,
 }
 
@@ -29,7 +28,6 @@ impl Entry {
             height: Cell::new(h),
             click_callback: RefCell::new(None),
             widgets: RefCell::new(vec![]),
-            highlight: Cell::new(ITEM_SELECTION),
             highlighted: Cell::new(false),
         })
     }
@@ -154,31 +152,41 @@ impl List {
 }
 
 impl Widget for List {
+    fn name(&self) -> &str {
+        "List"
+    }
+
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool) {
+    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
         let mut current_y = 0;
         let x = self.rect.get().x;
         let y = self.rect.get().y;
         let width = self.rect.get().width;
         let height = self.rect.get().height;
 
+        let selector = "list".into();
+
         let mut target = orbimage::Image::new(width, height);
-        target.set(WINDOW_BACKGROUND);
+        target.set(theme.color("background", &selector));
 
         for entry in self.entries.borrow().iter() {
             let mut image = orbimage::Image::new(width, entry.height.get());
 
-            if entry.highlighted.get() {
-                image.set(entry.highlight.get());
-            } else {
-                image.set(ITEM_BACKGROUND);
-            }
+            let entry_selector = Selector::new(Some("entry")).with_pseudo_class(
+                if entry.highlighted.get() {
+                    "active"
+                } else {
+                    "inactive"
+                }
+            );
+
+            image.set(theme.color("background", &entry_selector));
 
             for widget in entry.widgets().borrow().iter() {
-                widget.draw(&mut image, false)
+                widget.draw(&mut image, false, theme)
             }
 
             let image = image.data();

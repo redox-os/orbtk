@@ -1,24 +1,20 @@
-use orbclient::{Color, Renderer};
+use orbclient::Renderer;
 use std::cell::{Cell, RefCell};
 use std::cmp::max;
 use std::sync::Arc;
 
 use cell::{CloneCell, CheckSet};
+use draw::draw_box;
 use event::Event;
 use point::Point;
 use rect::Rect;
-use theme::{BUTTON_BACKGROUND, BUTTON_BG_SELECTION, BUTTON_FOREGROUND, BUTTON_BORDER,
-            ITEM_BACKGROUND, ITEM_FOREGROUND, ITEM_SELECTION};
+use theme::{Theme, Selector};
 use traits::{Click, Place, Text};
 use widgets::Widget;
 
 pub struct Menu {
     pub rect: Cell<Rect>,
-    pub bg: Color,
-    pub fg: Color,
     text: CloneCell<String>,
-    bg_pressed: Color,
-    fg_border: Color,
     text_offset: Cell<Point>,
     entries: RefCell<Vec<Arc<Entry>>>,
     click_callback: RefCell<Option<Arc<Fn(&Menu, Point)>>>,
@@ -28,8 +24,6 @@ pub struct Menu {
 
 pub struct Separator {
     pub rect: Cell<Rect>,
-    pub bg: Color,
-    pub fg: Color,
 }
 
 pub trait Entry: Widget {
@@ -40,11 +34,7 @@ impl Menu {
     pub fn new<S: Into<String>>(name: S) -> Arc<Self> {
         Arc::new(Menu {
             rect: Cell::new(Rect::default()),
-            bg: BUTTON_BACKGROUND,
-            fg: BUTTON_FOREGROUND,
             text: CloneCell::new(name.into()),
-            bg_pressed: BUTTON_BG_SELECTION,
-            fg_border: BUTTON_BORDER,
             text_offset: Cell::new(Point::default()),
             entries: RefCell::new(Vec::new()),
             click_callback: RefCell::new(None),
@@ -106,17 +96,21 @@ impl Click for Menu {
 impl Place for Menu {}
 
 impl Widget for Menu {
+    fn name(&self) -> &str {
+        "Menu"
+    }
+
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool) {
+    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect.get();
 
         if self.activated.get() {
-            renderer.rect(rect.x, rect.y, rect.width, rect.height, self.bg_pressed);
+            draw_box(renderer, rect, theme, &Selector::new(Some("menu-button")).with_pseudo_class("active"));
         } else {
-            renderer.rect(rect.x, rect.y, rect.width, rect.height, self.bg);
+            draw_box(renderer, rect, theme, &Selector::new(Some("menu-button")).with_pseudo_class("inactive"));
         }
 
         let text = self.text.borrow();
@@ -127,13 +121,11 @@ impl Widget for Menu {
                 point.y += 16;
             } else {
                 if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point.x + rect.x, point.y + rect.y, c, self.fg);
+                    renderer.char(point.x + rect.x, point.y + rect.y, c, theme.color("color", &"button".into()));
                 }
                 point.x += 8;
             }
         }
-
-        renderer.rect(rect.x, rect.y + rect.height as i32 - 1, rect.width, 1, self.fg_border);
 
         if self.activated.get() {
             let mut max_width = 0;
@@ -148,7 +140,7 @@ impl Widget for Menu {
             renderer.rect(rect.x - 1, rect.y + rect.height as i32 - 1, max_width as u32 + 2, max_height as u32 + 2, self.fg_border);
 
             for entry in self.entries.borrow().iter() {
-                entry.draw(renderer, _focused);
+                entry.draw(renderer, _focused, theme);
             }
         }
     }
@@ -212,10 +204,7 @@ impl Widget for Menu {
 
 pub struct Action {
     rect: Cell<Rect>,
-    bg: Color,
-    fg: Color,
     text: CloneCell<String>,
-    bg_pressed: Color,
     text_offset: Cell<Point>,
     click_callback: RefCell<Option<Arc<Fn(&Action, Point)>>>,
     pressed: Cell<bool>,
@@ -226,10 +215,7 @@ impl Action {
     pub fn new<S: Into<String>>(text: S) -> Arc<Self> {
         Arc::new(Action {
             rect: Cell::new(Rect::default()),
-            bg: ITEM_BACKGROUND,
-            fg: ITEM_FOREGROUND,
             text: CloneCell::new(text.into()),
-            bg_pressed: ITEM_SELECTION,
             text_offset: Cell::new(Point::default()),
             click_callback: RefCell::new(None),
             pressed: Cell::new(false),
@@ -264,20 +250,20 @@ impl Text for Action {
 }
 
 impl Widget for Action {
+    fn name(&self) -> &str {
+        "Action"
+    }
+
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool) {
+    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect.get();
 
-        let (bg, fg) = if self.hover.get() {
-            (self.bg_pressed, self.bg)
-        } else {
-            (self.bg, self.fg)
-        };
+        let pseudo_class = if self.hover.get() { "active" } else { "inactive" };
 
-        renderer.rect(rect.x, rect.y, rect.width, rect.height, bg);
+        draw_box(renderer, rect, theme, &Selector::new(Some("action")).with_pseudo_class(pseudo_class));
 
         let text = self.text.borrow();
         let mut point = self.text_offset.get();
@@ -287,7 +273,7 @@ impl Widget for Action {
                 point.y += 16;
             } else {
                 if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point.x + rect.x, point.y + rect.y, c, fg);
+                    renderer.char(point.x + rect.x, point.y + rect.y, c, theme.color("color", &"action".into()));
                 }
                 point.x += 8;
             }
@@ -350,23 +336,25 @@ impl Separator {
     pub fn new() -> Arc<Self> {
         Arc::new(Separator {
             rect: Cell::new(Rect::default()),
-            bg: ITEM_BACKGROUND,
-            fg: ITEM_FOREGROUND,
         })
     }
 }
 
 impl Widget for Separator {
+    fn name(&self) -> &str {
+        "Separator"
+    }
+
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool) {
+    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect.get();
-        renderer.rect(rect.x, rect.y, rect.width, rect.height, self.bg);
+        draw_box(renderer, rect, theme, &"separator".into());
 
         let line_y = rect.y + rect.height as i32 / 2;
-        renderer.rect(rect.x, line_y, rect.width, 1, self.fg);
+        renderer.rect(rect.x, line_y, rect.width, 1, theme.color("color", &"separator".into()));
     }
 
     fn event(&self, event: Event, _focused: bool, _redraw: &mut bool) -> bool {

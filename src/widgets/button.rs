@@ -1,22 +1,18 @@
-use orbclient::{Color, Renderer};
+use orbclient::Renderer;
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 use cell::{CloneCell, CheckSet};
+use draw::draw_box;
 use event::Event;
 use point::Point;
 use rect::Rect;
-use theme::{BUTTON_BACKGROUND, BUTTON_BG_SELECTION, BUTTON_FOREGROUND, BUTTON_FG_SELECTION, BUTTON_BORDER};
-use traits::{Border, Click, Place, Text};
+use theme::{Selector, Theme};
+use traits::{Click, Place, Text};
 use widgets::Widget;
 
 pub struct Button {
     pub rect: Cell<Rect>,
-    pub bg: Color,
-    pub bg_selected: Color,
-    pub fg: Color,
-    pub fg_selected: Color,
-    pub fg_border: Color,
     pub border: Cell<bool>,
     pub border_radius: Cell<u32>,
     pub text: CloneCell<String>,
@@ -29,11 +25,6 @@ impl Button {
     pub fn new() -> Arc<Self> {
         Arc::new(Button {
             rect: Cell::new(Rect::default()),
-            bg: BUTTON_BACKGROUND,
-            bg_selected: BUTTON_BG_SELECTION,
-            fg: BUTTON_FOREGROUND,
-            fg_selected: BUTTON_FG_SELECTION,
-            fg_border: BUTTON_BORDER,
             border: Cell::new(true),
             border_radius: Cell::new(2),
             text: CloneCell::new(String::new()),
@@ -41,18 +32,6 @@ impl Button {
             click_callback: RefCell::new(None),
             pressed: Cell::new(false),
         })
-    }
-}
-
-impl Border for Button {
-    fn border(&self, enabled: bool) -> &Self {
-        self.border.set(enabled);
-        self
-    }
-
-    fn border_radius(&self, radius: u32) -> &Self {
-        self.border_radius.set(radius);
-        self
     }
 }
 
@@ -84,29 +63,29 @@ impl Text for Button {
 }
 
 impl Widget for Button {
+    fn name(&self) -> &str {
+        "Button"
+    }
+
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool) {
+    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+        let selector = Selector::new(Some("button")).with_pseudo_class(
+            if self.pressed.get() {
+                "active"
+            } else {
+                "inactive"
+            }
+        );
+
         let rect = self.rect.get();
 
         let w = rect.width as i32;
         let h = rect.height as i32;
 
-        let (fg, bg) = if self.pressed.get() {
-            (self.fg_selected, self.bg_selected)
-        } else {
-            (self.fg, self.bg)
-        };
-
-        let b_r = self.border_radius.get();
-
-        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, bg);
-
-        if self.border.get() {
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
-        }
+        draw_box(renderer, rect, theme, &selector);
 
         let text = self.text.borrow();
 
@@ -117,7 +96,7 @@ impl Widget for Button {
                 point.y += 16;
             } else {
                 if point.x + 8 <= w && point.y + 16 <= h {
-                    renderer.char(point.x + rect.x, point.y + rect.y, c, fg);
+                    renderer.char(point.x + rect.x, point.y + rect.y, c, theme.color("color", &selector));
                 }
                 point.x += 8;
             }

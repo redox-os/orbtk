@@ -1,23 +1,19 @@
-use orbclient::{Color, Renderer};
+use orbclient::Renderer;
 use std::cell::{Cell, RefCell};
 use std::cmp::{min, max};
 use std::sync::Arc;
 
 use cell::CheckSet;
+use draw::draw_box;
 use event::Event;
 use point::Point;
 use rect::Rect;
-use theme::{ITEM_BACKGROUND, ITEM_BORDER, ITEM_SELECTION};
-use traits::{Border, Click, Place};
+use theme::{Theme, Selector};
+use traits::{Click, Place};
 use widgets::Widget;
 
 pub struct ProgressBar {
     pub rect: Cell<Rect>,
-    pub bg: Color,
-    pub fg: Color,
-    pub fg_border: Color,
-    pub border: Cell<bool>,
-    pub border_radius: Cell<u32>,
     pub value: Cell<i32>,
     pub minimum: i32,
     pub maximum: i32,
@@ -29,11 +25,6 @@ impl ProgressBar {
     pub fn new() -> Arc<Self> {
         Arc::new(ProgressBar {
             rect: Cell::new(Rect::default()),
-            bg: ITEM_BACKGROUND,
-            fg: ITEM_SELECTION,
-            fg_border: ITEM_BORDER,
-            border: Cell::new(true),
-            border_radius: Cell::new(0),
             value: Cell::new(0),
             minimum: 0,
             maximum: 100,
@@ -44,18 +35,6 @@ impl ProgressBar {
 
     pub fn value(&self, value: i32) -> &Self {
         self.value.set(value);
-        self
-    }
-}
-
-impl Border for ProgressBar {
-    fn border(&self, enabled: bool) -> &Self {
-        self.border.set(enabled);
-        self
-    }
-
-    fn border_radius(&self, radius: u32) -> &Self {
-        self.border_radius.set(radius);
         self
     }
 }
@@ -76,11 +55,15 @@ impl Click for ProgressBar {
 impl Place for ProgressBar {}
 
 impl Widget for ProgressBar {
+    fn name(&self) -> &str {
+        "ProgressBar"
+    }
+
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool) {
+    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect.get();
         let progress_rect = Rect{
                                 width: (rect.width as i32 *
@@ -89,15 +72,16 @@ impl Widget for ProgressBar {
                                 ..self.rect.get()
                             };
 
-        let b_r = self.border_radius.get();
-        renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, true, self.bg);
-        if progress_rect.width >= b_r * 2 {
-            renderer.rounded_rect(progress_rect.x, progress_rect.y,
-                                  progress_rect.width, progress_rect.height,
-                                  b_r, true, self.fg);
-        }
-        if self.border.get() {
-            renderer.rounded_rect(rect.x, rect.y, rect.width, rect.height, b_r, false, self.fg_border);
+        let selector = Selector::new(Some("progress-bar"));
+
+        draw_box(renderer, rect, theme, &selector);
+
+        let b_r = theme.get("border-radius", &selector).map(|v| v.uint().unwrap()).unwrap_or(1);
+        let b_t = theme.get("border-thickness", &selector).map(|v| v.uint().unwrap()).unwrap_or(0);
+
+
+        if progress_rect.width >=  b_t + b_r * 2 {
+            draw_box(renderer, progress_rect, theme, &Selector::new(Some("progress")));
         }
     }
 

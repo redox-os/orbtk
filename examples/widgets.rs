@@ -1,7 +1,7 @@
 extern crate orbtk;
 
 use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
-use orbtk::traits::{Border, Click, Enter, Place, Text};
+use orbtk::traits::{Click, Enter, Place, Text};
 
 fn main() {
     let mut window = Window::new(Rect::new(100, 100, 420, 730), "OrbTK");
@@ -83,7 +83,6 @@ fn main() {
     let offset_label = Label::new();
     offset_label.position(x, y)
         .size(400, 120)
-        .border(true)
         .text("Test Offset")
         .text_offset(50, 50)
         .on_click(|label: &Label, _point: Point| {

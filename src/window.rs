@@ -7,7 +7,7 @@ use std::collections::VecDeque;
 use std::sync::Arc;
 
 use super::{Event, Point, Rect, Widget};
-use theme::WINDOW_BACKGROUND;
+use theme::Theme;
 use traits::Resize;
 
 pub use orbclient::Window as InnerWindow;
@@ -65,8 +65,8 @@ pub struct Window {
     font: Option<orbfont::Font>,
     pub widgets: RefCell<Vec<Arc<Widget>>>,
     pub widget_focus: Cell<usize>,
-    pub bg: Cell<Color>,
     pub running: Cell<bool>,
+    pub theme: Theme,
     resize_callback: RefCell<Option<Arc<Fn(&Window, u32, u32)>>>,
     mouse_point: Point,
     mouse_left: bool,
@@ -111,8 +111,8 @@ impl Window {
             font: orbfont::Font::find(None, None, None).ok(),
             widgets: RefCell::new(Vec::new()),
             widget_focus: Cell::new(0),
-            bg: Cell::new(WINDOW_BACKGROUND),
             running: Cell::new(true),
+            theme: Theme::new(),
             resize_callback: RefCell::new(None),
             mouse_point: Point::new(0, 0),
             mouse_left: false,
@@ -180,12 +180,12 @@ impl Window {
 
     pub fn draw(&self) {
         let mut inner = self.inner.borrow_mut();
-        inner.set(self.bg.get());
+        inner.set(self.theme.color("background", &"window".into()));
 
         let mut renderer = WindowRenderer::new(&mut *inner, &self.font);
         for i in 0..self.widgets.borrow().len() {
             if let Some(widget) = self.widgets.borrow().get(i) {
-                widget.draw(&mut renderer, self.widget_focus.get() == i);
+                widget.draw(&mut renderer, self.widget_focus.get() == i, &self.theme);
             }
         }
     }
