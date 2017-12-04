@@ -190,7 +190,7 @@ impl Window {
         }
     }
 
-    pub fn change_theme(&mut self, theme: Theme) {
+    pub fn set_theme(&mut self, theme: Theme) {
         self.theme = theme;
     }
 
@@ -309,4 +309,73 @@ impl Window {
             self.redraw = false;
         }
     }
+}
+
+pub struct WindowBuilder<'a> {
+    rect: Rect,
+    title: &'a str,
+    font: Option<orbfont::Font>,
+    theme: Option<Theme>,
+    flags: Option<&'a [WindowFlag]>,
+}
+
+impl<'a> WindowBuilder<'a> {
+    pub fn new(rect: Rect, title: &'a str) -> Self {
+        WindowBuilder{rect: rect, title: title, font: None, theme: None, flags: None}
+    }
+    
+    pub fn font(mut self, font: orbfont::Font) -> Self {
+        self.font = Some(font);
+        self
+    }
+
+    pub fn theme(mut self, theme: Theme) -> Self {
+        self.theme = Some(theme);
+        self
+    }
+
+    pub fn flags(mut self, flags: &'a [WindowFlag]) -> Self {
+        self.flags = Some(flags);
+        self
+    }
+
+    pub fn build(self) -> Window {
+        let (rect, title, font) = (self.rect, self.title, self.font);
+
+        let flags = match self.flags {
+            Some(flags) => flags,
+            None => &[],
+        };
+
+        let inner = InnerWindow::new_flags(
+            rect.x, rect.y, rect.width, rect.height,
+            title, flags,
+        ).unwrap();
+
+        let theme = match self.theme {
+            Some(theme) => theme,
+            None => Theme::new(),
+        };
+
+        let mut events = VecDeque::new();
+        events.push_back(Event::Init);
+
+        Window {
+            inner: RefCell::new(inner),
+            font: font,
+            widgets: RefCell::new(Vec::new()),
+            widget_focus: Cell::new(0),
+            running: Cell::new(true),
+            theme: theme,
+            resize_callback: RefCell::new(None),
+            mouse_point: Point::new(0, 0),
+            mouse_left: false,
+            mouse_right: false,
+            mouse_middle: false,
+            events: events,
+            redraw: true,
+        }
+
+    }
+
 }

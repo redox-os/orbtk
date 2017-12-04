@@ -48,7 +48,8 @@ impl Theme {
 
     fn all_rules(&self) -> Vec<Rule> {
         if let Some(ref parent) = self.parent {
-            parent.rules.iter().chain(self.rules.iter()).cloned().collect()
+            self.rules.iter().chain(parent.rules.iter()).cloned().collect()
+            //parent.rules.iter().chain(self.rules.iter()).cloned().collect()
         } else {
             self.rules.clone()
         }
