@@ -190,6 +190,10 @@ impl Window {
         }
     }
 
+    pub fn change_theme(&mut self, theme: Theme) {
+        self.theme = theme;
+    }
+
     pub fn step(&mut self) {
         self.drain_orbital_events();
         self.drain_events();
