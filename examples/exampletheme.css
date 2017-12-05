@@ -1,0 +1,60 @@
+/* Every element */
+* {
+    background: #3c4c55;
+    border-color: #7fc1ca;
+    border-radius: 0;
+    border-width: 1;
+    color: #899ba6;
+}
+
+button {
+    background: #4d5d66;
+    border-radius: 2;
+}
+
+button :active {
+    background: #8fd2db;
+    color: white;
+}
+
+button :hover {
+  background: #CFD6E6;
+}
+
+label {
+    border-width: 0;
+}
+
+menu {}
+
+menu-button, action, separator {
+    border-width: 0;
+}
+
+menu-button :active, action :active {
+    background: #8fd2db;
+}
+
+progress {
+    background: #9a93e1;
+    border-color: #899ba6;
+    border-radius: 2;
+}
+
+progress-bar {
+    border-radius: 2;
+}
+
+selection {
+    background: #5294E2;
+    border-width: 0;
+}
+
+text-box {
+    background: #3c4c55;
+    border-radius: 2;
+}
+
+text-box :focus {
+    border-color: #5294E2;
+}

@@ -4,6 +4,11 @@ use std::collections::HashSet;
 use std::sync::Arc;
 use std::mem;
 use std::ops::Add;
+use std::path::Path;
+
+use std::fs::File;
+use std::io::BufReader;
+use std::io::Read;
 
 static DEFAULT_THEME_CSS: &'static str = include_str!("theme.css");
 
@@ -30,9 +35,20 @@ impl Theme {
         }
     }
 
+    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Theme, String> {
+        let file = try!(File::open(path).map_err(|err| format!("failed to open css: {}", err)));
+        let mut reader = BufReader::new(file);
+        let mut css = String::new();
+        let res = reader.read_to_string(&mut css).map_err(|err| format!("failed to read css: {}", err));
+        match res {
+            Ok(_) => Ok(Theme::parse(&css)),
+            Err(err) => Err(err),
+        }
+    }
+
     fn all_rules(&self) -> Vec<Rule> {
         if let Some(ref parent) = self.parent {
-            parent.rules.iter().chain(self.rules.iter()).cloned().collect()
+            self.rules.iter().chain(parent.rules.iter()).cloned().collect()
         } else {
             self.rules.clone()
         }
