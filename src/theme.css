@@ -50,11 +50,28 @@ selection {
     border-width: 0;
 }
 
-text-box {
+text-box, combo-box, combo-box-toggle {
     background: white;
     border-radius: 2;
 }
 
 text-box :focus {
     border-color: #5294E2;
+}
+
+combo-box-toggle :active {
+    background: #5294E2;
+}
+
+combo-box-entry {
+    border-radius: 0;
+}
+
+combo-box-entry :hover {
+    background: #CFD6E6;
+}
+
+combo-box-entry :active {
+    background: #5294E2;
+    color: white;
 }

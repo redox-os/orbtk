@@ -1,10 +1,10 @@
 extern crate orbtk;
 
-use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
+use orbtk::{Action, Button, ComboBox, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
 use orbtk::traits::{Click, Enter, Place, Text};
 
 fn main() {
-    let mut window = Window::new(Rect::new(100, 100, 420, 730), "OrbTK");
+    let mut window = Window::new(Rect::new(100, 100, 420, 768), "OrbTK");
 
     let x = 10;
     let mut y = 0;
@@ -64,6 +64,15 @@ fn main() {
     window.add(&progress_bar);
 
     y += progress_bar.rect.get().height as i32 + 10;
+
+    let combo_box = ComboBox::new();
+    combo_box.position(x, y);
+
+    for i in 1..11 {
+        combo_box.push(&format!("Entry {}", i));
+    }   
+
+    y += combo_box.rect.get().height as i32 + 10;
 
     let multi_line_label = Label::new();
     multi_line_label.text("Multi-Line Text")
@@ -174,6 +183,7 @@ fn main() {
 
     window.add(&grid);
 
+    window.add(&combo_box);
     // Add this last to put it on top
     window.add(&menu);
 

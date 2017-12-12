@@ -7,6 +7,7 @@ use rect::Rect;
 use theme::Theme;
 
 pub use self::button::Button;
+pub use self::combo_box::ComboBox;
 pub use self::grid::Grid;
 pub use self::image::Image;
 pub use self::label::Label;
@@ -16,6 +17,7 @@ pub use self::text_box::TextBox;
 pub use self::list::{ List, Entry };
 
 mod button;
+mod combo_box;
 mod grid;
 mod image;
 mod label;
