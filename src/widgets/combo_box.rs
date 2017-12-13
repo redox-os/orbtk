@@ -4,13 +4,16 @@ use std::sync::Arc;
 use orbimage;
 
 use cell::{CheckSet, CloneCell};
-use widgets::Widget;
+use widgets::{Image, Widget};
 use draw::draw_box;
 use event::Event;
 use rect::Rect;
 use point::Point;
 use theme::{Selector, Theme};
 use traits::{Place, Text};
+
+static TOGGLE_ICON: &'static [u8; 703] = include_bytes!("../../res/icon-down-black.png");
+static TOGGLE_ICON_ACTIVE: &'static [u8; 706] = include_bytes!("../../res/icon-down-white.png");
 
 struct Entry {
     pub rect: Cell<Rect>,
@@ -133,7 +136,7 @@ impl Widget for Entry {
     }
 
     fn name(&self) -> &str {
-        "ComboBoxItem"
+        "ComboBoxEntry"
     }
 }
 
@@ -146,10 +149,22 @@ pub struct ComboBox {
     entries: RefCell<Vec<Arc<Entry>>>,
     text: CloneCell<String>,
     flyout_height: Cell<u32>,
+    toggle_icon: RefCell<Option<Arc<Image>>>,
+    toggle_icon_active: RefCell<Option<Arc<Image>>>,
 }
 
 impl ComboBox {
     pub fn new() -> Arc<ComboBox> {
+        let toggle_icon = RefCell::new(None);
+        if let Ok(icon) = orbimage::parse_png(TOGGLE_ICON) {
+            *toggle_icon.borrow_mut() = Some(Image::from_image(icon))
+        };
+
+        let toggle_icon_active = RefCell::new(None);
+        if let Ok(icon) = orbimage::parse_png(TOGGLE_ICON_ACTIVE) {
+            *toggle_icon_active.borrow_mut() = Some(Image::from_image(icon))
+        };
+
         Arc::new(ComboBox {
             rect: Cell::new(Rect::new(0, 0, 332, 28)),
             pressed: Cell::new(false),
@@ -159,6 +174,8 @@ impl ComboBox {
             entries: RefCell::new(vec![]),
             text: CloneCell::new(String::new()),
             flyout_height: Cell::new(0),
+            toggle_icon,
+            toggle_icon_active,
         })
     }
 
@@ -180,7 +197,8 @@ impl ComboBox {
             rect.height,
         ));
         entry.text_offset(self.offset.get().x, self.offset.get().y);
-        self.flyout_height.set(self.flyout_height.get() + rect.height);
+        self.flyout_height
+            .set(self.flyout_height.get() + rect.height);
 
         self.entries.borrow_mut().push(entry);
 
@@ -218,20 +236,6 @@ impl ComboBox {
     pub fn text_offset(&self, x: i32, y: i32) -> &Self {
         self.offset.set(Point::new(x, y));
         self
-    }
-
-    fn draw_icon(renderer: &mut Renderer, toggle_rect: &Rect, path: &str) {
-        match orbimage::Image::from_path(path) {
-            Ok(image) => {
-                let icon_x =
-                    toggle_rect.x + toggle_rect.width as i32 / 2 - image.width() as i32 / 2;
-                let icon_y =
-                    toggle_rect.y + toggle_rect.height as i32 / 2 - image.height() as i32 / 2;
-
-                renderer.image(icon_x, icon_y, image.width(), image.height(), image.data());
-            }
-            _ => {}
-        }
     }
 }
 
@@ -296,6 +300,19 @@ impl Widget for ComboBox {
 
         draw_box(renderer, toggle_rect, theme, &selector);
 
+        // draw the toggle icon
+        if activated {
+            if let Some(ref icon) = *self.toggle_icon_active.borrow() {
+                icon.position(toggle_rect.x, toggle_rect.y);
+                icon.draw(renderer, _focused, theme)
+            }
+        } else {
+            if let Some(ref icon) = *self.toggle_icon.borrow() {
+                icon.position(toggle_rect.x, toggle_rect.y);
+                icon.draw(renderer, _focused, theme)
+            }
+        }
+
         // draw selected text
         let mut point = Point::new(rect.x + offset.x - 8, rect.y + rect.height as i32 / 2 - 8);
         for c in self.text.get().chars() {
@@ -308,13 +325,6 @@ impl Widget for ComboBox {
                 );
             }
             point.x += 8;
-        }
-
-        // draw the toggle icon
-        if activated {
-            ComboBox::draw_icon(renderer, &toggle_rect, "res/icon-down-white.png")
-        } else {
-            ComboBox::draw_icon(renderer, &toggle_rect, "res/icon-down-black.png")
         }
     }
 
@@ -399,7 +409,7 @@ impl Widget for ComboBox {
                     self.pressed.set(false);
                     *redraw = true;
                 }
-            },
+            }
             _ => {}
         }
 
