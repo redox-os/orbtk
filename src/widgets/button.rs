@@ -131,10 +131,8 @@ impl Widget for Button {
                         *redraw = true;
                     }
 
-                    if !left_button {
-                        if self.pressed.check_set(false) {
-                            *redraw = true;
-                        }
+                    if self.pressed.check_set(false) {
+                        *redraw = true;
                     }
                 }
 
