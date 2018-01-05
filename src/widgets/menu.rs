@@ -9,7 +9,7 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use theme::{Theme, Selector};
-use traits::{Click, Place, Text};
+use traits::{Click, Place, Text, Style};
 use widgets::Widget;
 
 pub struct Menu {
@@ -209,6 +209,7 @@ impl Widget for Menu {
 
 pub struct Action {
     rect: Cell<Rect>,
+    selector: CloneCell<Selector>,
     text: CloneCell<String>,
     text_offset: Cell<Point>,
     click_callback: RefCell<Option<Arc<Fn(&Action, Point)>>>,
@@ -220,6 +221,7 @@ impl Action {
     pub fn new<S: Into<String>>(text: S) -> Arc<Self> {
         Arc::new(Action {
             rect: Cell::new(Rect::default()),
+            selector: CloneCell::new(Selector::new(Some("action"))),
             text: CloneCell::new(text.into()),
             text_offset: Cell::new(Point::default()),
             click_callback: RefCell::new(None),
@@ -254,6 +256,18 @@ impl Text for Action {
     }
 }
 
+impl Style for Action {
+    fn with_class<S: Into<String>>(&self, class: S) -> &Self {
+        self.selector.set(self.selector.get().with_class(class));
+        self
+    }
+
+    fn with_pseudo_class<S: Into<String>>(&self, pseudo_class: S) -> &Self {
+        self.selector.set(self.selector.get().with_pseudo_class(pseudo_class));
+        self
+    }
+}
+
 impl Widget for Action {
     fn name(&self) -> &str {
         "Action"
@@ -267,8 +281,9 @@ impl Widget for Action {
         let rect = self.rect.get();
 
         let pseudo_class = if self.hover.get() { "active" } else { "inactive" };
+        let selector = &self.selector.get().with_pseudo_class(pseudo_class);
 
-        draw_box(renderer, rect, theme, &Selector::new(Some("action")).with_pseudo_class(pseudo_class));
+        draw_box(renderer, rect, theme, selector);
 
         let text = self.text.borrow();
         let mut point = self.text_offset.get();
@@ -278,7 +293,7 @@ impl Widget for Action {
                 point.y += 16;
             } else {
                 if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point.x + rect.x, point.y + rect.y, c, theme.color("color", &"action".into()));
+                    renderer.char(point.x + rect.x, point.y + rect.y, c, theme.color("color", selector));
                 }
                 point.x += 8;
             }

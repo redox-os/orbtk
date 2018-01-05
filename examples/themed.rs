@@ -1,7 +1,7 @@
 extern crate orbtk;
 use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window, WindowBuilder};
 use orbtk::theme::Theme;
-use orbtk::traits::{Click, Enter, Place, Text};
+use orbtk::traits::{Click, Enter, Place, Text, Style};
 
 fn main() {
     let theme = Theme::from_path("examples/exampletheme.css").unwrap();
@@ -89,8 +89,11 @@ fn main() {
         .size(400, 120)
         .text("Test Offset")
         .text_offset(50, 50)
+        .with_class("padded")
         .on_click(|label: &Label, _point: Point| {
-            label.text("Clicked");
+            label
+                .text("Clicked")
+                .with_pseudo_class("clicked");
         });
     window.add(&offset_label);
 
@@ -125,6 +128,7 @@ fn main() {
 
     {
         let action = Action::new("Label Two");
+        action.with_class("critical");
         let offset_label_clone = offset_label.clone();
         action.on_click(move |_action: &Action, _point: Point| {
             offset_label_clone.text.set("Two".to_owned());

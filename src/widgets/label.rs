@@ -8,11 +8,12 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use theme::{Theme, Selector};
-use traits::{Click, Place, Text};
+use traits::{Click, Place, Text, Style};
 use widgets::Widget;
 
 pub struct Label {
     pub rect: Cell<Rect>,
+    pub selector: CloneCell<Selector>,
     pub border: Cell<bool>,
     pub border_radius: Cell<u32>,
     pub text: CloneCell<String>,
@@ -25,6 +26,7 @@ impl Label {
     pub fn new() -> Arc<Self> {
         Arc::new(Label {
             rect: Cell::new(Rect::default()),
+            selector: CloneCell::new(Selector::new(Some("label"))),
             border: Cell::new(false),
             border_radius: Cell::new(0),
             text: CloneCell::new(String::new()),
@@ -62,6 +64,18 @@ impl Text for Label {
     }
 }
 
+impl Style for Label {
+    fn with_class<S: Into<String>>(&self, class: S) -> &Self {
+        self.selector.set(self.selector.get().with_class(class));
+        self
+    }
+
+    fn with_pseudo_class<S: Into<String>>(&self, pseudo_class: S) -> &Self {
+        self.selector.set(self.selector.get().with_pseudo_class(pseudo_class));
+        self
+    }
+}
+
 impl Widget for Label {
     fn name(&self) -> &str {
         "Label"
@@ -73,8 +87,9 @@ impl Widget for Label {
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect.get();
+        let selector = &self.selector.get();
 
-        draw_box(renderer, rect, theme, &Selector::new(Some("label")));
+        draw_box(renderer, rect, theme, selector);
 
         let text = self.text.borrow();
 
@@ -85,7 +100,7 @@ impl Widget for Label {
                 point.y += 16;
             } else {
                 if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point.x + rect.x, point.y + rect.y, c, theme.color("color", &"label".into()));
+                    renderer.char(point.x + rect.x, point.y + rect.y, c, theme.color("color", selector));
                 }
                 point.x += 8;
             }
