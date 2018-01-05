@@ -25,14 +25,32 @@ label {
     border-width: 0;
 }
 
+label.padded {
+    border-width: 1;
+    border-radius: 20;
+}
+
+label.padded :clicked {
+    background: #FFC945;
+}
+
 menu {}
 
 menu-button, action, separator {
     border-width: 0;
 }
 
+action.critical {
+    background: #D93636;
+    color: #000000;
+}
+
 menu-button :active, action :active {
     background: #8fd2db;
+}
+
+action.critical :active {
+    background: #F18282;
 }
 
 progress {
