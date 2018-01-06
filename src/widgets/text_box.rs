@@ -10,7 +10,7 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use theme::{Theme, Selector};
-use traits::{Click, Enter, EventFilter, Place, Text};
+use traits::{Click, Enter, EventFilter, Place, Text, Style};
 use widgets::Widget;
 
 /// Find next character index
@@ -27,6 +27,7 @@ fn prev_i(text: &str, text_i: usize) -> usize {
 
 pub struct TextBox {
     pub rect: Cell<Rect>,
+    pub selector: CloneCell<Selector>,
     pub text: CloneCell<String>,
     pub text_i: Cell<usize>,
     pub text_offset: Cell<Point>,
@@ -51,6 +52,7 @@ impl TextBox {
     pub fn new() -> Arc<Self> {
         Arc::new(TextBox {
             rect: Cell::new(Rect::default()),
+            selector: CloneCell::new(Selector::new(Some("text-box"))),
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
             text_offset: Cell::new(Point::default()),
@@ -132,6 +134,12 @@ impl Text for TextBox {
     }
 }
 
+impl Style for TextBox {
+    fn selector(&self) -> &CloneCell<Selector> {
+        &self.selector
+    }
+}
+
 impl Widget for TextBox {
     fn name(&self) -> &str {
         "TextBox"
@@ -144,7 +152,7 @@ impl Widget for TextBox {
     fn draw(&self, renderer: &mut Renderer, focused: bool, theme: &Theme) {
         let rect = self.rect.get();
 
-        let mut selector = Selector::new(Some("text-box"));
+        let mut selector = self.selector.get();
 
         if focused {
             selector = selector.with_pseudo_class("focus");
@@ -165,6 +173,7 @@ impl Widget for TextBox {
             let mut c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
             if c == '\n' {
                 if focused && i == text_i && rect.contains_rect(&c_r) {
+                    //TODO: set this selector as the child of self.selector
                     draw_box(renderer, Rect::new(x + rect.x, y + rect.y, 8, 16), theme, &"selection".into());
                 }
 
@@ -174,6 +183,7 @@ impl Widget for TextBox {
                 c_r.width = 8 * 4;
 
                 if focused && i == text_i && rect.contains_rect(&c_r) {
+                    //TODO: set this selector as the child of self.selector
                     draw_box(renderer, Rect::new(x + rect.x, y + rect.y, 8 * 4, 16), theme, &"selection".into());
                 }
 
@@ -181,6 +191,7 @@ impl Widget for TextBox {
             } else {
                 if rect.contains_rect(&c_r) {
                     if i == text_i && focused {
+                        //TODO: set this selector as the child of self.selector
                         draw_box(renderer, Rect::new(x + rect.x, y + rect.y, 8, 16), theme, &"selection".into());
                     }
                     if let Some(mask_c) = self.mask_char.get() {
@@ -196,6 +207,7 @@ impl Widget for TextBox {
 
         let c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
         if focused && text.len() == text_i && rect.contains_rect(&c_r) {
+            //TODO: set this selector as the child of self.selector
             draw_box(renderer, Rect::new(x + rect.x, y + rect.y, 8, 16), theme, &"selection".into());
         }
     }

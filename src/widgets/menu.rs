@@ -14,6 +14,7 @@ use widgets::Widget;
 
 pub struct Menu {
     pub rect: Cell<Rect>,
+    selector: CloneCell<Selector>,
     text: CloneCell<String>,
     text_offset: Cell<Point>,
     entries: RefCell<Vec<Arc<Entry>>>,
@@ -24,6 +25,7 @@ pub struct Menu {
 
 pub struct Separator {
     pub rect: Cell<Rect>,
+    selector: CloneCell<Selector>,
 }
 
 pub trait Entry: Widget {
@@ -34,6 +36,7 @@ impl Menu {
     pub fn new<S: Into<String>>(name: S) -> Arc<Self> {
         Arc::new(Menu {
             rect: Cell::new(Rect::default()),
+            selector: CloneCell::new(Selector::new(Some("menu"))),
             text: CloneCell::new(name.into()),
             text_offset: Cell::new(Point::default()),
             entries: RefCell::new(Vec::new()),
@@ -95,6 +98,12 @@ impl Click for Menu {
 
 impl Place for Menu {}
 
+impl Style for Menu {
+    fn selector(&self) -> &CloneCell<Selector> {
+        &self.selector
+    }
+}
+
 impl Widget for Menu {
     fn name(&self) -> &str {
         "Menu"
@@ -108,6 +117,7 @@ impl Widget for Menu {
         let rect = self.rect.get();
 
         if self.activated.get() {
+            //TODO: set this selector as the child of self.selector
             draw_box(renderer, rect, theme, &Selector::new(Some("menu-button")).with_pseudo_class("active"));
 
             let mut max_width = 0;
@@ -124,8 +134,9 @@ impl Widget for Menu {
                 max_width as u32 + 2, max_height as u32 + 2,
             );
 
-            draw_box(renderer, entries_rect, theme, &Selector::new(Some("menu")).with_pseudo_class("active"));
+            draw_box(renderer, entries_rect, theme, &self.selector.get().with_pseudo_class("active"));
         } else {
+            //TODO: set this selector as the child of self.selector
             draw_box(renderer, rect, theme, &Selector::new(Some("menu-button")).with_pseudo_class("inactive"));
         }
 
@@ -257,14 +268,8 @@ impl Text for Action {
 }
 
 impl Style for Action {
-    fn with_class<S: Into<String>>(&self, class: S) -> &Self {
-        self.selector.set(self.selector.get().with_class(class));
-        self
-    }
-
-    fn with_pseudo_class<S: Into<String>>(&self, pseudo_class: S) -> &Self {
-        self.selector.set(self.selector.get().with_pseudo_class(pseudo_class));
-        self
+    fn selector(&self) -> &CloneCell<Selector> {
+        &self.selector
     }
 }
 
@@ -356,7 +361,14 @@ impl Separator {
     pub fn new() -> Arc<Self> {
         Arc::new(Separator {
             rect: Cell::new(Rect::default()),
+            selector: CloneCell::new(Selector::new(Some("separator"))),
         })
+    }
+}
+
+impl Style for Separator {
+    fn selector(&self) -> &CloneCell<Selector> {
+        &self.selector
     }
 }
 
@@ -371,10 +383,11 @@ impl Widget for Separator {
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect.get();
-        draw_box(renderer, rect, theme, &"separator".into());
+        let selector = &self.selector.get();
+        draw_box(renderer, rect, theme, selector);
 
         let line_y = rect.y + rect.height as i32 / 2;
-        renderer.rect(rect.x, line_y, rect.width, 1, theme.color("color", &"separator".into()));
+        renderer.rect(rect.x, line_y, rect.width, 1, theme.color("color", selector));
     }
 
     fn event(&self, event: Event, _focused: bool, _redraw: &mut bool) -> bool {

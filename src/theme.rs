@@ -176,8 +176,18 @@ impl Selector {
         self
     }
 
+    pub fn without_class<S: Into<String>>(mut self, class: S) -> Self {
+        self.classes.remove(&class.into());
+        self
+    }
+
     pub fn with_pseudo_class<S: Into<String>>(mut self, pseudo_class: S) -> Self {
         self.pseudo_classes.insert(pseudo_class.into());
+        self
+    }
+
+    pub fn without_pseudo_class<S: Into<String>>(mut self, pseudo_class: S) -> Self {
+        self.pseudo_classes.remove(&pseudo_class.into());
         self
     }
 }

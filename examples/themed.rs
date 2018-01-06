@@ -143,6 +143,7 @@ fn main() {
         let offset_label_clone = offset_label.clone();
         action.on_click(move |_action: &Action, _point: Point| {
             offset_label_clone.text.set("Text Offset".to_owned());
+            offset_label_clone.without_pseudo_class("clicked");
         });
         menu.add(&action);
     }

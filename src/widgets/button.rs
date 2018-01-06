@@ -8,11 +8,12 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use theme::{Selector, Theme};
-use traits::{Click, Place, Text};
+use traits::{Click, Place, Text, Style};
 use widgets::Widget;
 
 pub struct Button {
     pub rect: Cell<Rect>,
+    pub selector: CloneCell<Selector>,
     pub text: CloneCell<String>,
     pub text_offset: Cell<Point>,
     click_callback: RefCell<Option<Arc<Fn(&Button, Point)>>>,
@@ -24,6 +25,7 @@ impl Button {
     pub fn new() -> Arc<Self> {
         Arc::new(Button {
             rect: Cell::new(Rect::default()),
+            selector: CloneCell::new(Selector::new(Some("button"))),
             text: CloneCell::new(String::new()),
             text_offset: Cell::new(Point::default()),
             click_callback: RefCell::new(None),
@@ -60,6 +62,12 @@ impl Text for Button {
     }
 }
 
+impl Style for Button {
+    fn selector(&self) -> &CloneCell<Selector> {
+        &self.selector
+    }
+}
+
 impl Widget for Button {
     fn name(&self) -> &str {
         "Button"
@@ -70,7 +78,7 @@ impl Widget for Button {
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
-        let mut selector = Selector::new(Some("button")).with_pseudo_class(
+        let mut selector = self.selector.get().with_pseudo_class(
             if self.pressed.get() {
                 "active"
             } else {

@@ -10,13 +10,14 @@ use event::Event;
 use rect::Rect;
 use point::Point;
 use theme::{Selector, Theme};
-use traits::{Place, Text};
+use traits::{Place, Text, Style};
 
 static TOGGLE_ICON: &'static [u8; 703] = include_bytes!("../../res/icon-down-black.png");
 static TOGGLE_ICON_ACTIVE: &'static [u8; 706] = include_bytes!("../../res/icon-down-white.png");
 
 struct Entry {
     pub rect: Cell<Rect>,
+    pub selector: CloneCell<Selector>,
     pub text: CloneCell<String>,
     pub text_offset: Cell<Point>,
     hover: Cell<bool>,
@@ -29,6 +30,7 @@ impl Entry {
     fn new(text: &str, index: u32) -> Arc<Self> {
         Arc::new(Entry {
             rect: Cell::new(Rect::default()),
+            selector: CloneCell::new(Selector::new(Some("combo-box-entry"))),
             text: CloneCell::new(String::from(text)),
             text_offset: Cell::new(Point::default()),
             hover: Cell::new(false),
@@ -51,6 +53,12 @@ impl Text for Entry {
     }
 }
 
+impl Style for Entry {
+    fn selector(&self) -> &CloneCell<Selector> {
+        &self.selector
+    }
+}
+
 impl Widget for Entry {
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
@@ -58,10 +66,9 @@ impl Widget for Entry {
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect.get();
         let offset = self.text_offset.get();
+        let mut selector = self.selector.get();
 
         if self.hover.get() || self.active.get() {
-            let mut selector = Selector::new(Some("combo-box-entry"));
-
             if self.active.get() {
                 selector = selector.with_pseudo_class("active");
             } else {
@@ -79,12 +86,6 @@ impl Widget for Entry {
         let mut point = Point::new(rect.x + offset.x, rect.y + rect.height as i32 / 2 - 8);
         for c in self.text.get().chars() {
             if point.x + 8 <= rect.width as i32 - 2 * offset.x {
-                let mut selector = Selector::new(Some("combo-box-entry"));
-
-                if self.active.get() {
-                    selector = selector.with_pseudo_class("active");
-                }
-
                 renderer.char(point.x, point.y, c, theme.color("color", &selector));
             }
             point.x += 8;
@@ -142,6 +143,7 @@ impl Widget for Entry {
 
 pub struct ComboBox {
     pub rect: Cell<Rect>,
+    pub selector: CloneCell<Selector>,
     pressed: Cell<bool>,
     activated: Cell<bool>,
     pub offset: Cell<Point>,
@@ -167,6 +169,7 @@ impl ComboBox {
 
         Arc::new(ComboBox {
             rect: Cell::new(Rect::new(0, 0, 332, 28)),
+            selector: CloneCell::new(Selector::new(Some("combo-box"))),
             pressed: Cell::new(false),
             activated: Cell::new(false),
             offset: Cell::new(Point::new(4, 4)),
@@ -239,6 +242,12 @@ impl ComboBox {
     }
 }
 
+impl Style for ComboBox {
+    fn selector(&self) -> &CloneCell<Selector> {
+        &self.selector
+    }
+}
+
 impl Widget for ComboBox {
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
@@ -251,6 +260,7 @@ impl Widget for ComboBox {
 
         // draw flyout
         if activated {
+            //TODO: set this selector as the child of self.selector
             let selector = Selector::new(Some("combo-box-flyout"));
 
             let flyout_rect = Rect::new(
@@ -274,7 +284,7 @@ impl Widget for ComboBox {
         }
 
         // draw the combobox
-        let mut selector = Selector::new(Some("combo-box"));
+        let mut selector = self.selector.get();
 
         if activated {
             selector = selector.with_pseudo_class("active");
@@ -283,6 +293,7 @@ impl Widget for ComboBox {
         draw_box(renderer, rect, theme, &selector);
 
         // draw toggle indicator
+        //TODO: set this selector as the child of self.selector
         selector = Selector::new(Some("combo-box-toggle"));
 
         if activated {

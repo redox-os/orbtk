@@ -65,14 +65,8 @@ impl Text for Label {
 }
 
 impl Style for Label {
-    fn with_class<S: Into<String>>(&self, class: S) -> &Self {
-        self.selector.set(self.selector.get().with_class(class));
-        self
-    }
-
-    fn with_pseudo_class<S: Into<String>>(&self, pseudo_class: S) -> &Self {
-        self.selector.set(self.selector.get().with_pseudo_class(pseudo_class));
-        self
+    fn selector(&self) -> &CloneCell<Selector> {
+        &self.selector
     }
 }
 
