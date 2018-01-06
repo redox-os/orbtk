@@ -4,12 +4,12 @@ use std::cell::{ Cell, RefCell };
 use std::cmp;
 use std::sync::Arc;
 
-use cell::CheckSet;
+use cell::{CloneCell, CheckSet};
 use event::Event;
 use point::Point;
 use rect::Rect;
 use theme::{ Theme, Selector };
-use traits::{ Click, Place };
+use traits::{ Click, Place, Style };
 use widgets::Widget;
 use std::ops::Index;
 
@@ -58,6 +58,7 @@ impl Click for Entry {
 
 pub struct List {
     pub rect: Cell<Rect>,
+    pub selector: CloneCell<Selector>,
     v_scroll: Cell<i32>,
     current_height: Cell<u32>,
     entries: RefCell<Vec<Arc<Entry>>>,
@@ -69,6 +70,7 @@ impl List {
     pub fn new() -> Arc<Self> {
         Arc::new(List {
             rect: Cell::new(Rect::default()),
+            selector: CloneCell::new(Selector::new(Some("list"))),
             v_scroll: Cell::new(0),
             current_height: Cell::new(0),
             entries: RefCell::new(vec![]),
@@ -151,6 +153,12 @@ impl List {
     }
 }
 
+impl Style for List {
+    fn selector(&self) -> &CloneCell<Selector> {
+        &self.selector
+    }
+}
+
 impl Widget for List {
     fn name(&self) -> &str {
         "List"
@@ -167,14 +175,13 @@ impl Widget for List {
         let width = self.rect.get().width;
         let height = self.rect.get().height;
 
-        let selector = "list".into();
-
         let mut target = orbimage::Image::new(width, height);
-        target.set(theme.color("background", &selector));
+        target.set(theme.color("background", &self.selector.get()));
 
         for entry in self.entries.borrow().iter() {
             let mut image = orbimage::Image::new(width, entry.height.get());
 
+            //TODO: set this selector as the child of self.selector
             let entry_selector = Selector::new(Some("entry")).with_pseudo_class(
                 if entry.highlighted.get() {
                     "active"

@@ -3,17 +3,18 @@ use std::cell::{Cell, RefCell};
 use std::cmp::{min, max};
 use std::sync::Arc;
 
-use cell::CheckSet;
+use cell::{CloneCell, CheckSet};
 use draw::draw_box;
 use event::Event;
 use point::Point;
 use rect::Rect;
 use theme::{Theme, Selector};
-use traits::{Click, Place};
+use traits::{Click, Place, Style};
 use widgets::Widget;
 
 pub struct ProgressBar {
     pub rect: Cell<Rect>,
+    pub selector: CloneCell<Selector>,
     pub value: Cell<i32>,
     pub minimum: i32,
     pub maximum: i32,
@@ -25,6 +26,7 @@ impl ProgressBar {
     pub fn new() -> Arc<Self> {
         Arc::new(ProgressBar {
             rect: Cell::new(Rect::default()),
+            selector: CloneCell::new(Selector::new(Some("progress-bar"))),
             value: Cell::new(0),
             minimum: 0,
             maximum: 100,
@@ -54,6 +56,12 @@ impl Click for ProgressBar {
 
 impl Place for ProgressBar {}
 
+impl Style for ProgressBar {
+    fn selector(&self) -> &CloneCell<Selector> {
+        &self.selector
+    }
+}
+
 impl Widget for ProgressBar {
     fn name(&self) -> &str {
         "ProgressBar"
@@ -72,15 +80,16 @@ impl Widget for ProgressBar {
                                 ..self.rect.get()
                             };
 
-        let selector = Selector::new(Some("progress-bar"));
+        let selector = &self.selector.get();
 
-        draw_box(renderer, rect, theme, &selector);
+        draw_box(renderer, rect, theme, selector);
 
-        let b_r = theme.get("border-radius", &selector).map(|v| v.uint().unwrap()).unwrap_or(1);
-        let b_t = theme.get("border-width", &selector).map(|v| v.uint().unwrap()).unwrap_or(0);
+        let b_r = theme.get("border-radius", selector).map(|v| v.uint().unwrap()).unwrap_or(1);
+        let b_t = theme.get("border-width", selector).map(|v| v.uint().unwrap()).unwrap_or(0);
 
 
         if progress_rect.width >=  b_t + b_r * 2 {
+            //TODO: set this selector as the child of self.selector
             draw_box(renderer, progress_rect, theme, &Selector::new(Some("progress")));
         }
     }
