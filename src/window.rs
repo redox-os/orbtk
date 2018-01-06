@@ -321,7 +321,13 @@ pub struct WindowBuilder<'a> {
 
 impl<'a> WindowBuilder<'a> {
     pub fn new(rect: Rect, title: &'a str) -> Self {
-        WindowBuilder{rect: rect, title: title, font: None, theme: None, flags: None}
+        WindowBuilder {
+            rect: rect,
+            title: title,
+            font: orbfont::Font::find(None, None, None).ok(),
+            theme: None,
+            flags: None
+        }
     }
     
     pub fn font(mut self, font: orbfont::Font) -> Self {
