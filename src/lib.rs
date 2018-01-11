@@ -14,7 +14,7 @@ pub use orbclient::renderer::Renderer;
 
 pub use cell::CloneCell;
 pub use dialogs::*;
-pub use event::Event;
+pub use event::{Event, KeyEvent};
 pub use point::Point;
 pub use rect::Rect;
 pub use traits::*;

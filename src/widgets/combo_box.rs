@@ -2,6 +2,7 @@ use orbclient::Renderer;
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 use orbimage;
+use orbclient;
 
 use cell::{CheckSet, CloneCell};
 use widgets::{Image, Widget};
@@ -10,7 +11,7 @@ use event::Event;
 use rect::Rect;
 use point::Point;
 use theme::{Selector, Theme};
-use traits::{Place, Text, Style};
+use traits::{Place, Style, Text};
 
 static TOGGLE_ICON: &'static [u8; 703] = include_bytes!("../../res/icon-down-black.png");
 static TOGGLE_ICON_ACTIVE: &'static [u8; 706] = include_bytes!("../../res/icon-down-white.png");
@@ -387,40 +388,34 @@ impl Widget for ComboBox {
                     }
                 }
             }
-            Event::UpArrow => match self.selected.get() {
-                None => {
-                    self.change_selection(0);
-                    *redraw = true;
-                }
-                Some(i) => {
-                    if i > 0 {
-                        self.change_selection(i - 1);
+            Event::KeyPressed(key_event) => match key_event.scancode {
+                orbclient::K_UP => match self.selected.get() {
+                    None => {
+                        self.change_selection(0);
                         *redraw = true;
                     }
-                }
-            },
-            Event::DownArrow => {
-                if self.activated.get() {
-                    match self.selected.get() {
-                        None => {
-                            self.change_selection(0);
-                            *redraw = true;
-                        }
-                        Some(i) => {
-                            if i < self.entries.borrow().len() as u32 - 1 {
-                                self.change_selection(i + 1);
-                                *redraw = true;
-                            }
-                        }
+                    Some(i) => if i > 0 {
+                        self.change_selection(i - 1);
+                        *redraw = true;
+                    },
+                },
+                orbclient::K_DOWN => match self.selected.get() {
+                    None => {
+                        self.change_selection(0);
+                        *redraw = true;
                     }
-                }
-            }
-            Event::Enter => {
-                if self.activated.check_set(false) {
+                    Some(i) => if i < self.entries.borrow().len() as u32 - 1 {
+                        self.change_selection(i + 1);
+                        *redraw = true;
+                    },
+                },
+                orbclient::K_ENTER => if self.activated.check_set(false) {
                     self.pressed.set(false);
                     *redraw = true;
-                }
-            }
+                },
+                _ => {}
+            },
+
             _ => {}
         }
 
