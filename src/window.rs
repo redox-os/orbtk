@@ -6,7 +6,7 @@ use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
 use std::sync::Arc;
 
-use super::{Event, Point, Rect, Widget};
+use super::{Event, KeyEvent, Point, Rect, Widget};
 use theme::Theme;
 use traits::Resize;
 
@@ -14,12 +14,15 @@ pub use orbclient::Window as InnerWindow;
 
 pub struct WindowRenderer<'a> {
     inner: &'a mut InnerWindow,
-    font: &'a Option<orbfont::Font>
+    font: &'a Option<orbfont::Font>,
 }
 
 impl<'a> WindowRenderer<'a> {
     pub fn new(inner: &'a mut InnerWindow, font: &'a Option<orbfont::Font>) -> WindowRenderer<'a> {
-        WindowRenderer { inner: inner, font: font }
+        WindowRenderer {
+            inner: inner,
+            font: font,
+        }
     }
 }
 
@@ -47,8 +50,9 @@ impl<'a> Renderer for WindowRenderer<'a> {
     fn char(&mut self, x: i32, y: i32, c: char, color: Color) {
         if let Some(ref font) = *self.font {
             let mut buf = [0; 4];
-            font.render(&c.encode_utf8(&mut buf), 16.0).draw(self.inner, x, y, color)
-        }else{
+            font.render(&c.encode_utf8(&mut buf), 16.0)
+                .draw(self.inner, x, y, color)
+        } else {
             self.inner.char(x, y, c, color);
         }
     }
@@ -96,10 +100,7 @@ impl Window {
 
     pub fn new_flags(rect: Rect, title: &str, flags: &[WindowFlag]) -> Self {
         Window::from_inner(
-            InnerWindow::new_flags(
-                rect.x, rect.y, rect.width, rect.height,
-                title, flags
-            ).unwrap()
+            InnerWindow::new_flags(rect.x, rect.y, rect.width, rect.height, title, flags).unwrap(),
         )
     }
 
@@ -204,8 +205,8 @@ impl Window {
             match event {
                 Event::Resize { width, height } => {
                     self.emit_resize(width, height);
-                },
-                _ => ()
+                }
+                _ => (),
             }
 
             for i in 0..self.widgets.borrow().len() {
@@ -234,7 +235,7 @@ impl Window {
                         middle_button: self.mouse_middle,
                         right_button: self.mouse_right,
                     })
-                },
+                }
                 orbclient::EventOption::Button(button_event) => {
                     self.mouse_left = button_event.left;
                     self.mouse_middle = button_event.middle;
@@ -246,49 +247,33 @@ impl Window {
                         middle_button: self.mouse_middle,
                         right_button: self.mouse_right,
                     })
-                },
+                }
                 orbclient::EventOption::Scroll(scroll_event) => {
                     self.events.push_back(Event::Scroll {
                         x: scroll_event.x,
                         y: scroll_event.y,
                     })
-                },
-                orbclient::EventOption::Key(key_event) => {
-                    if key_event.pressed {
-                        match key_event.scancode {
-                            orbclient::K_BKSP => self.events.push_back(Event::Backspace),
-                            orbclient::K_DEL => self.events.push_back(Event::Delete),
-                            orbclient::K_HOME => self.events.push_back(Event::Home),
-                            orbclient::K_END => self.events.push_back(Event::End),
-                            orbclient::K_UP => self.events.push_back(Event::UpArrow),
-                            orbclient::K_DOWN => self.events.push_back(Event::DownArrow),
-                            orbclient::K_LEFT => self.events.push_back(Event::LeftArrow),
-                            orbclient::K_RIGHT => self.events.push_back(Event::RightArrow),
-                            _ => {
-                                match key_event.character {
-                                    '\0' => (),
-                                    '\x1B' => (),
-                                    '\n' => self.events.push_back(Event::Enter),
-                                    _ => self.events.push_back(Event::Text { c: key_event.character }),
-                                }
-                            }
-                        }
-                    }
-                },
+                }
+                orbclient::EventOption::Key(key_event) => {    
+                        if key_event.pressed {
+                            self.events.push_back(Event::KeyPressed(KeyEvent::from_orbital_key_event(key_event)));
+                        } else {
+                            self.events.push_back(Event::KeyReleased(KeyEvent::from_orbital_key_event(key_event)));
+                        }             
+                }
                 orbclient::EventOption::Resize(resize_event) => {
                     self.redraw = true;
                     self.events.push_back(Event::Resize {
                         width: resize_event.width,
                         height: resize_event.height,
                     });
-                },
+                }
                 orbclient::EventOption::Quit(_quit_event) => {
                     self.running.set(false);
-                },
+                }
                 _ => (),
             };
         }
-
     }
 
     pub fn exec(&mut self) {
@@ -326,10 +311,10 @@ impl<'a> WindowBuilder<'a> {
             title: title,
             font: orbfont::Font::find(None, None, None).ok(),
             theme: None,
-            flags: None
+            flags: None,
         }
     }
-    
+
     pub fn font(mut self, font: orbfont::Font) -> Self {
         self.font = Some(font);
         self
@@ -353,10 +338,8 @@ impl<'a> WindowBuilder<'a> {
             None => &[],
         };
 
-        let inner = InnerWindow::new_flags(
-            rect.x, rect.y, rect.width, rect.height,
-            title, flags,
-        ).unwrap();
+        let inner =
+            InnerWindow::new_flags(rect.x, rect.y, rect.width, rect.height, title, flags).unwrap();
 
         let theme = match self.theme {
             Some(theme) => theme,
@@ -381,7 +364,5 @@ impl<'a> WindowBuilder<'a> {
             events: events,
             redraw: true,
         }
-
     }
-
 }

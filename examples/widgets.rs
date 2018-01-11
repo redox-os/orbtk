@@ -26,10 +26,7 @@ fn main() {
     let text_box = TextBox::new();
     text_box.position(x, y)
         .size(332, 28)
-        .text_offset(6, 6)
-        .on_enter(move |text_box: &TextBox| {
-            label.text.set(text_box.text.get());
-        });
+        .text_offset(6, 6);
     window.add(&text_box);
 
     let button = Button::new();
