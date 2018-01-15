@@ -6,7 +6,7 @@ use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
 use std::sync::Arc;
 
-use super::{Event, KeyEvent, Point, Rect, Widget};
+use super::{Event, KeyEvent, Point, Rect, Widget, FocusManager};
 use theme::Theme;
 use traits::Resize;
 
@@ -68,7 +68,6 @@ pub struct Window {
     inner: RefCell<InnerWindow>,
     font: Option<orbfont::Font>,
     pub widgets: RefCell<Vec<Arc<Widget>>>,
-    pub widget_focus: Cell<usize>,
     pub running: Cell<bool>,
     pub theme: Theme,
     resize_callback: RefCell<Option<Arc<Fn(&Window, u32, u32)>>>,
@@ -78,6 +77,8 @@ pub struct Window {
     mouse_right: bool,
     events: VecDeque<Event>,
     redraw: bool,
+    focus_manager: FocusManager,
+    
 }
 
 impl Resize for Window {
@@ -111,7 +112,6 @@ impl Window {
             inner: RefCell::new(inner),
             font: orbfont::Font::find(None, None, None).ok(),
             widgets: RefCell::new(Vec::new()),
-            widget_focus: Cell::new(0),
             running: Cell::new(true),
             theme: Theme::new(),
             resize_callback: RefCell::new(None),
@@ -121,6 +121,7 @@ impl Window {
             mouse_middle: false,
             events: events,
             redraw: true,
+            focus_manager: FocusManager::new(),
         }
     }
 
@@ -176,6 +177,11 @@ impl Window {
         let mut widgets = self.widgets.borrow_mut();
         let id = widgets.len();
         widgets.push(widget.clone());
+
+        if id == 0 {
+            self.focus_manager.request_focus(&widgets[id]);
+        }
+
         id
     }
 
@@ -186,8 +192,16 @@ impl Window {
         let mut renderer = WindowRenderer::new(&mut *inner, &self.font);
         for i in 0..self.widgets.borrow().len() {
             if let Some(widget) = self.widgets.borrow().get(i) {
-                widget.draw(&mut renderer, self.widget_focus.get() == i, &self.theme);
+                self.draw_widget(&mut renderer, self.focus_manager.focused(&widget), widget);
             }
+        }
+    }
+
+    fn draw_widget(&self, renderer: &mut Renderer, focused: bool, widget: &Arc<Widget>) {
+        widget.draw(renderer, focused, &self.theme);
+
+        for child in &*widget.children().borrow_mut() {
+            self.draw_widget(renderer, focused, child);
         }
     }
 
@@ -211,15 +225,28 @@ impl Window {
 
             for i in 0..self.widgets.borrow().len() {
                 if let Some(widget) = self.widgets.borrow().get(i) {
-                    if widget.event(event, self.widget_focus.get() == i, &mut self.redraw) {
-                        if self.widget_focus.get() != i {
-                            self.widget_focus.set(i);
-                            self.redraw = true;
-                        }
-                    }
+                    self.redraw = self.drain_event(event, self.focus_manager.focused(&widget), self.redraw, widget);
                 }
             }
         }
+    }
+
+    fn drain_event(&self, event: Event, focused: bool, redraw: bool, widget: &Arc<Widget>) -> bool {
+        let mut redraw = redraw;
+        let mut children_redraw = false;
+
+        if widget.event(event, focused, &mut redraw) {
+            if !self.focus_manager.focused(&widget) {
+                self.focus_manager.request_focus(&widget);
+                redraw = true;
+            }
+        }
+
+        for child in &*widget.children().borrow_mut() {
+            children_redraw = self.drain_event(event, focused, redraw, child);
+        }
+
+        redraw || children_redraw
     }
 
     pub fn drain_orbital_events(&mut self) {
@@ -353,7 +380,6 @@ impl<'a> WindowBuilder<'a> {
             inner: RefCell::new(inner),
             font: font,
             widgets: RefCell::new(Vec::new()),
-            widget_focus: Cell::new(0),
             running: Cell::new(true),
             theme: theme,
             resize_callback: RefCell::new(None),
@@ -363,6 +389,7 @@ impl<'a> WindowBuilder<'a> {
             mouse_middle: false,
             events: events,
             redraw: true,
+            focus_manager: FocusManager::new(),
         }
     }
 }

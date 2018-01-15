@@ -1,6 +1,6 @@
 extern crate orbtk;
 
-use orbtk::{Action, Button, ComboBox, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
+use orbtk::{Action, Button, ComboBox, TestButton, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
 use orbtk::traits::{Click, Enter, Place, Text};
 
 fn main() {
@@ -29,12 +29,12 @@ fn main() {
         .text_offset(6, 6);
     window.add(&text_box);
 
-    let button = Button::new();
+    let button = TestButton::new();
     button.position(x + text_box.rect.get().width as i32 + 8, y)
         .size(48 + 12, text_box.rect.get().height)
         .text("Update")
         .text_offset(6, 6)
-        .on_click(move |_button: &Button, _point: Point| {
+        .on_click(move |_button: &TestButton, _point: Point| {
             text_box.emit_enter();
         });
     window.add(&button);

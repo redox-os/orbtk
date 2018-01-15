@@ -9,10 +9,14 @@ use point::Point;
 use rect::Rect;
 use theme::{Theme};
 use traits::{Click, Place};
-use widgets::Widget;
+use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
 
 pub struct Image {
     pub rect: Cell<Rect>,
+    local_position: Cell<Point>,
+    vertical_placement: Cell<VerticalPlacement>,
+    horizontal_placement: Cell<HorizontalPlacement>,
+    children: RefCell<Vec<Arc<Widget>>>,
     pub image: RefCell<orbimage::Image>,
     click_callback: RefCell<Option<Arc<Fn(&Image, Point)>>>,
 }
@@ -29,6 +33,10 @@ impl Image {
     pub fn from_image(image: orbimage::Image) -> Arc<Self> {
         Arc::new(Image {
             rect: Cell::new(Rect::new(0, 0, image.width(), image.height())),
+            local_position: Cell::new(Point::new(0, 0)),
+            vertical_placement: Cell::new(VerticalPlacement::Absolute),
+            horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            children: RefCell::new(vec![]),
             image: RefCell::new(image),
             click_callback: RefCell::new(None)
         })
@@ -63,6 +71,18 @@ impl Widget for Image {
         &self.rect
     }
 
+    fn vertical_placement(&self) -> &Cell<VerticalPlacement> {
+        &self.vertical_placement
+    }
+
+    fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
+        &self.horizontal_placement
+    }
+
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
+    }
+
     fn draw(&self, renderer: &mut Renderer, _focused: bool, _theme: &Theme) {
         let rect = self.rect.get();
         let image = self.image.borrow();
@@ -83,5 +103,9 @@ impl Widget for Image {
         }
 
         focused
+    }
+    
+    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+        &self.children
     }
 }

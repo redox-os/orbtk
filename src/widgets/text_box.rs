@@ -12,7 +12,7 @@ use point::Point;
 use rect::Rect;
 use theme::{Selector, Theme};
 use traits::{Click, Enter, EventFilter, Place, Style, Text};
-use widgets::Widget;
+use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
 
 /// Find next character index
 fn next_i(text: &str, text_i: usize) -> usize {
@@ -33,6 +33,10 @@ fn prev_i(text: &str, text_i: usize) -> usize {
 
 pub struct TextBox {
     pub rect: Cell<Rect>,
+    children: RefCell<Vec<Arc<Widget>>>,
+    local_position: Cell<Point>,
+    vertical_placement: Cell<VerticalPlacement>,
+    horizontal_placement: Cell<HorizontalPlacement>,
     pub selector: CloneCell<Selector>,
     pub text: CloneCell<String>,
     pub text_i: Cell<usize>,
@@ -59,6 +63,10 @@ impl TextBox {
     pub fn new() -> Arc<Self> {
         Arc::new(TextBox {
             rect: Cell::new(Rect::default()),
+            local_position: Cell::new(Point::new(0, 0)),
+            vertical_placement: Cell::new(VerticalPlacement::Absolute),
+            horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("text-box"))),
             text: CloneCell::new(String::new()),
             text_i: Cell::new(0),
@@ -157,6 +165,18 @@ impl Widget for TextBox {
 
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
+    }
+
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
+    }
+
+    fn vertical_placement(&self) -> &Cell<VerticalPlacement> {
+        &self.vertical_placement
+    }
+
+    fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
+        &self.horizontal_placement
     }
 
     fn draw(&self, renderer: &mut Renderer, focused: bool, theme: &Theme) {
@@ -560,5 +580,9 @@ impl Widget for TextBox {
             }
         }
         focused
+    }
+
+    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+        &self.children
     }
 }

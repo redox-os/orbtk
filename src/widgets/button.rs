@@ -9,10 +9,14 @@ use point::Point;
 use rect::Rect;
 use theme::{Selector, Theme};
 use traits::{Click, Place, Text, Style};
-use widgets::Widget;
+use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
 
 pub struct Button {
     pub rect: Cell<Rect>,
+    children: RefCell<Vec<Arc<Widget>>>,
+    local_position: Cell<Point>,
+    vertical_placement: Cell<VerticalPlacement>,
+    horizontal_placement: Cell<HorizontalPlacement>,
     pub selector: CloneCell<Selector>,
     pub text: CloneCell<String>,
     pub text_offset: Cell<Point>,
@@ -25,6 +29,10 @@ impl Button {
     pub fn new() -> Arc<Self> {
         Arc::new(Button {
             rect: Cell::new(Rect::default()),
+            local_position: Cell::new(Point::new(0, 0)),
+            vertical_placement: Cell::new(VerticalPlacement::Absolute),
+            horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("button"))),
             text: CloneCell::new(String::new()),
             text_offset: Cell::new(Point::default()),
@@ -75,6 +83,18 @@ impl Widget for Button {
 
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
+    }
+
+    fn vertical_placement(&self) -> &Cell<VerticalPlacement> {
+        &self.vertical_placement
+    }
+
+    fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
+        &self.horizontal_placement
+    }
+
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
@@ -153,5 +173,9 @@ impl Widget for Button {
         }
 
         focused
+    }
+
+    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+        &self.children
     }
 }

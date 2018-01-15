@@ -5,7 +5,8 @@ use orbimage;
 use orbclient;
 
 use cell::{CheckSet, CloneCell};
-use widgets::{Image, Widget};
+use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
+use primitives::Image;
 use draw::draw_box;
 use event::Event;
 use rect::Rect;
@@ -18,6 +19,10 @@ static TOGGLE_ICON_ACTIVE: &'static [u8; 706] = include_bytes!("../../res/icon-d
 
 struct Entry {
     pub rect: Cell<Rect>,
+    local_position: Cell<Point>,
+    vertical_placement: Cell<VerticalPlacement>,
+    horizontal_placement: Cell<HorizontalPlacement>,
+    children: RefCell<Vec<Arc<Widget>>>,
     pub selector: CloneCell<Selector>,
     pub text: CloneCell<String>,
     pub text_offset: Cell<Point>,
@@ -31,6 +36,10 @@ impl Entry {
     fn new(text: &str, index: u32) -> Arc<Self> {
         Arc::new(Entry {
             rect: Cell::new(Rect::default()),
+            local_position: Cell::new(Point::new(0, 0)),
+            vertical_placement: Cell::new(VerticalPlacement::Absolute),
+            horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("combo-box-entry"))),
             text: CloneCell::new(String::from(text)),
             text_offset: Cell::new(Point::default()),
@@ -64,6 +73,19 @@ impl Widget for Entry {
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
     }
+
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
+    }
+
+    fn vertical_placement(&self) -> &Cell<VerticalPlacement> {
+        &self.vertical_placement
+    }
+
+    fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
+        &self.horizontal_placement
+    }
+
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect.get();
         let offset = self.text_offset.get();
@@ -140,10 +162,18 @@ impl Widget for Entry {
     fn name(&self) -> &str {
         "ComboBoxEntry"
     }
+
+    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+        &self.children
+    }
 }
 
 pub struct ComboBox {
     pub rect: Cell<Rect>,
+    children: RefCell<Vec<Arc<Widget>>>,
+    local_position: Cell<Point>,
+    vertical_placement: Cell<VerticalPlacement>,
+    horizontal_placement: Cell<HorizontalPlacement>,
     pub selector: CloneCell<Selector>,
     pressed: Cell<bool>,
     activated: Cell<bool>,
@@ -170,6 +200,10 @@ impl ComboBox {
 
         Arc::new(ComboBox {
             rect: Cell::new(Rect::new(0, 0, 332, 28)),
+            local_position: Cell::new(Point::new(0, 0)),
+            vertical_placement: Cell::new(VerticalPlacement::Absolute),
+            horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("combo-box"))),
             pressed: Cell::new(false),
             activated: Cell::new(false),
@@ -252,6 +286,18 @@ impl Style for ComboBox {
 impl Widget for ComboBox {
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
+    }
+
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
+    }
+
+    fn vertical_placement(&self) -> &Cell<VerticalPlacement> {
+        &self.vertical_placement
+    }
+
+    fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
+        &self.horizontal_placement
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
@@ -420,6 +466,10 @@ impl Widget for ComboBox {
         }
 
         focused
+    }
+
+    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+        &self.children
     }
 
     fn name(&self) -> &str {

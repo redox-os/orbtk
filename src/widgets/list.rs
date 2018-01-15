@@ -11,7 +11,7 @@ use point::Point;
 use rect::Rect;
 use theme::{Selector, Theme};
 use traits::{Click, Place, Style};
-use widgets::Widget;
+use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
 use std::ops::Index;
 
 /// An entry in a list
@@ -59,6 +59,10 @@ impl Click for Entry {
 
 pub struct List {
     pub rect: Cell<Rect>,
+    local_position: Cell<Point>,
+    vertical_placement: Cell<VerticalPlacement>,
+    horizontal_placement: Cell<HorizontalPlacement>,
+    children: RefCell<Vec<Arc<Widget>>>,
     pub selector: CloneCell<Selector>,
     v_scroll: Cell<i32>,
     current_height: Cell<u32>,
@@ -71,6 +75,10 @@ impl List {
     pub fn new() -> Arc<Self> {
         Arc::new(List {
             rect: Cell::new(Rect::default()),
+            local_position: Cell::new(Point::new(0, 0)),
+            vertical_placement: Cell::new(VerticalPlacement::Absolute),
+            horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("list"))),
             v_scroll: Cell::new(0),
             current_height: Cell::new(0),
@@ -170,6 +178,18 @@ impl Widget for List {
 
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
+    }
+
+    fn vertical_placement(&self) -> &Cell<VerticalPlacement> {
+        &self.vertical_placement
+    }
+
+    fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
+        &self.horizontal_placement
+    }
+
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
@@ -307,6 +327,10 @@ impl Widget for List {
             _ => {}
         }
         focused
+    }
+
+    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+        &self.children
     }
 }
 

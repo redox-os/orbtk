@@ -10,10 +10,14 @@ use point::Point;
 use rect::Rect;
 use theme::{Theme, Selector};
 use traits::{Click, Place, Text, Style};
-use widgets::Widget;
+use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
 
 pub struct Menu {
     pub rect: Cell<Rect>,
+    local_position: Cell<Point>,
+    vertical_placement: Cell<VerticalPlacement>,
+    horizontal_placement: Cell<HorizontalPlacement>,
+    children: RefCell<Vec<Arc<Widget>>>,
     selector: CloneCell<Selector>,
     text: CloneCell<String>,
     text_offset: Cell<Point>,
@@ -25,6 +29,10 @@ pub struct Menu {
 
 pub struct Separator {
     pub rect: Cell<Rect>,
+    vertical_placement: Cell<VerticalPlacement>,
+    horizontal_placement: Cell<HorizontalPlacement>,
+    local_position: Cell<Point>,
+    children: RefCell<Vec<Arc<Widget>>>,
     selector: CloneCell<Selector>,
 }
 
@@ -36,6 +44,10 @@ impl Menu {
     pub fn new<S: Into<String>>(name: S) -> Arc<Self> {
         Arc::new(Menu {
             rect: Cell::new(Rect::default()),
+            local_position: Cell::new(Point::new(0, 0)),
+            vertical_placement: Cell::new(VerticalPlacement::Absolute),
+            horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("menu"))),
             text: CloneCell::new(name.into()),
             text_offset: Cell::new(Point::default()),
@@ -111,6 +123,18 @@ impl Widget for Menu {
 
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
+    }
+
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
+    }
+
+    fn vertical_placement(&self) -> &Cell<VerticalPlacement> {
+        &self.vertical_placement
+    }
+
+    fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
+        &self.horizontal_placement
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
@@ -216,10 +240,18 @@ impl Widget for Menu {
         }
         focused
     }
+
+    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+        &self.children
+    }
 }
 
 pub struct Action {
     rect: Cell<Rect>,
+    local_position: Cell<Point>,
+    vertical_placement: Cell<VerticalPlacement>,
+    horizontal_placement: Cell<HorizontalPlacement>,
+    children: RefCell<Vec<Arc<Widget>>>,
     selector: CloneCell<Selector>,
     text: CloneCell<String>,
     text_offset: Cell<Point>,
@@ -232,6 +264,10 @@ impl Action {
     pub fn new<S: Into<String>>(text: S) -> Arc<Self> {
         Arc::new(Action {
             rect: Cell::new(Rect::default()),
+            local_position: Cell::new(Point::new(0, 0)),
+            vertical_placement: Cell::new(VerticalPlacement::Absolute),
+            horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("action"))),
             text: CloneCell::new(text.into()),
             text_offset: Cell::new(Point::default()),
@@ -280,6 +316,18 @@ impl Widget for Action {
 
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
+    }
+
+    fn vertical_placement(&self) -> &Cell<VerticalPlacement> {
+        &self.vertical_placement
+    }
+
+    fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
+        &self.horizontal_placement
+    }
+
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
@@ -349,6 +397,10 @@ impl Widget for Action {
 
         false
     }
+
+    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+        &self.children
+    }
 }
 
 impl Entry for Action {
@@ -361,6 +413,10 @@ impl Separator {
     pub fn new() -> Arc<Self> {
         Arc::new(Separator {
             rect: Cell::new(Rect::default()),
+            local_position: Cell::new(Point::new(0, 0)),
+            vertical_placement: Cell::new(VerticalPlacement::Absolute),
+            horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("separator"))),
         })
     }
@@ -379,6 +435,18 @@ impl Widget for Separator {
 
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
+    }
+
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
+    }
+
+    fn vertical_placement(&self) -> &Cell<VerticalPlacement> {
+        &self.vertical_placement
+    }
+
+    fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
+        &self.horizontal_placement
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
@@ -402,6 +470,10 @@ impl Widget for Separator {
             _ => (),
         }
         ignore_event
+    }
+
+    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+        &self.children
     }
 }
 
