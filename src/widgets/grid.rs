@@ -7,6 +7,7 @@ use cell::CheckSet;
 use event::Event;
 use rect::Rect;
 use point::Point;
+use thickness::Thickness;
 use theme::{Theme};
 use traits::Place;
 use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
@@ -16,6 +17,7 @@ pub struct Grid {
     local_position: Cell<Point>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
     children: RefCell<Vec<Arc<Widget>>>,
     space_x: Cell<i32>,
     space_y: Cell<i32>,
@@ -33,6 +35,7 @@ impl Grid {
             local_position: Cell::new(Point::new(0, 0)),
             vertical_placement: Cell::new(VerticalPlacement::Absolute),
             horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            margin: Cell::new(Thickness::default()),
             children: RefCell::new(vec![]),
             space_x: Cell::new(0),
             space_y: Cell::new(0),
@@ -165,6 +168,10 @@ impl Widget for Grid {
 
     fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
         &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {

@@ -11,6 +11,7 @@ use draw::draw_box;
 use event::Event;
 use rect::Rect;
 use point::Point;
+use thickness::Thickness;
 use theme::{Selector, Theme};
 use traits::{Place, Style, Text};
 
@@ -22,6 +23,7 @@ struct Entry {
     local_position: Cell<Point>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
     children: RefCell<Vec<Arc<Widget>>>,
     pub selector: CloneCell<Selector>,
     pub text: CloneCell<String>,
@@ -39,6 +41,7 @@ impl Entry {
             local_position: Cell::new(Point::new(0, 0)),
             vertical_placement: Cell::new(VerticalPlacement::Absolute),
             horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            margin: Cell::new(Thickness::default()),
             children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("combo-box-entry"))),
             text: CloneCell::new(String::from(text)),
@@ -84,6 +87,10 @@ impl Widget for Entry {
 
     fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
         &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
@@ -174,6 +181,7 @@ pub struct ComboBox {
     local_position: Cell<Point>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
     pub selector: CloneCell<Selector>,
     pressed: Cell<bool>,
     activated: Cell<bool>,
@@ -203,6 +211,7 @@ impl ComboBox {
             local_position: Cell::new(Point::new(0, 0)),
             vertical_placement: Cell::new(VerticalPlacement::Absolute),
             horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            margin: Cell::new(Thickness::default()),
             children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("combo-box"))),
             pressed: Cell::new(false),
@@ -298,6 +307,10 @@ impl Widget for ComboBox {
 
     fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
         &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {

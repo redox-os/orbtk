@@ -7,6 +7,7 @@ use std::sync::Arc;
 use event::Event;
 use point::Point;
 use rect::Rect;
+use thickness::Thickness;
 use theme::{Theme};
 use traits::{Click, Place};
 use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
@@ -16,6 +17,7 @@ pub struct Image {
     local_position: Cell<Point>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
     children: RefCell<Vec<Arc<Widget>>>,
     pub image: RefCell<orbimage::Image>,
     click_callback: RefCell<Option<Arc<Fn(&Image, Point)>>>,
@@ -36,6 +38,7 @@ impl Image {
             local_position: Cell::new(Point::new(0, 0)),
             vertical_placement: Cell::new(VerticalPlacement::Absolute),
             horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            margin: Cell::new(Thickness::default()),
             children: RefCell::new(vec![]),
             image: RefCell::new(image),
             click_callback: RefCell::new(None)
@@ -77,6 +80,10 @@ impl Widget for Image {
 
     fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
         &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
     }
 
     fn local_position(&self) -> &Cell<Point> {

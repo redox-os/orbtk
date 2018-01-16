@@ -1,24 +1,24 @@
-use orbclient::Renderer;
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 use cell::{CheckSet, CloneCell};
-use draw::draw_box;
 use event::Event;
 use point::Point;
 use rect::Rect;
-use theme::{Selector, Theme};
+use thickness::Thickness;
+use theme::Selector;
 use traits::{Click, Place, Style, Text};
-use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
+use widgets::{HorizontalPlacement, VerticalPlacement, Widget};
 
- use primitives::Rectangle;
-use primitives::Text as TextWidget;
+use primitives::Rectangle;
+use primitives::TextWidget;
 
 pub struct TestButton {
     pub rect: Cell<Rect>,
     local_position: Cell<Point>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
     children: RefCell<Vec<Arc<Widget>>>,
     pub selector: CloneCell<Selector>,
     pub text: CloneCell<String>,
@@ -30,31 +30,37 @@ pub struct TestButton {
 
 impl TestButton {
     pub fn new() -> Arc<Self> {
-        
-
+        let inner_text = CloneCell::new(String::new());
 
         let text = TextWidget::new();
-        text.text("Button");
+        text.inner_text().bind(&inner_text);
+        text.placement(VerticalPlacement::Center, HorizontalPlacement::Center);
 
         let border = Rectangle::new();
-        border.size(50, 28);
-        (*border.children().borrow_mut()).push(text);
-
-        let children: RefCell<Vec<Arc<Widget>>> =  RefCell::new(vec![border]);
+        border.placement(VerticalPlacement::Stretch, HorizontalPlacement::Stretch);
+        border.add(text);
 
         Arc::new(TestButton {
-            rect: Cell::new(Rect::default()),
+            rect: Cell::new(Rect::new(0, 0, 0, 28)),
             local_position: Cell::new(Point::new(0, 0)),
             vertical_placement: Cell::new(VerticalPlacement::Absolute),
             horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
-            children,
+            margin: Cell::new(Thickness::default()),
+            children: RefCell::new(vec![border]),
             selector: CloneCell::new(Selector::new(Some("TestButton"))),
-            text: CloneCell::new(String::new()),
-            text_offset: Cell::new(Point::default()),
+            text: inner_text,
+            text_offset: Cell::new(Point::new(6, 6)),
             click_callback: RefCell::new(None),
             hover: Cell::new(false),
             pressed: Cell::new(false),
         })
+    }
+
+    fn adjust_size(&self) {
+        self.size(
+            self.text.get().len() as u32 * 8 + 2 * self.text_offset.get().x as u32,
+            16 + 2 * self.text_offset.get().y as u32,
+        );
     }
 }
 
@@ -76,11 +82,13 @@ impl Place for TestButton {}
 impl Text for TestButton {
     fn text<S: Into<String>>(&self, text: S) -> &Self {
         self.text.set(text.into());
+        self.adjust_size();
         self
     }
 
     fn text_offset(&self, x: i32, y: i32) -> &Self {
         self.text_offset.set(Point::new(x, y));
+        self.adjust_size();
         self
     }
 }
@@ -108,57 +116,18 @@ impl Widget for TestButton {
         &self.horizontal_placement
     }
 
-    fn local_position(&self) -> &Cell<Point> {
-        &self.local_position
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
-        let mut selector = self.selector
-            .get()
-            .with_pseudo_class(if self.pressed.get() {
-                "active"
-            } else {
-                "inactive"
-            });
-
-        if self.hover.get() {
-            selector = selector.with_pseudo_class("hover");
-        }
-
-        let rect = self.rect.get();
-
-        let w = rect.width as i32;
-        let h = rect.height as i32;
-
-        draw_box(renderer, rect, theme, &selector);
-
-        let text = self.text.borrow();
-
-        let mut point = self.text_offset.get();
-        for c in text.chars() {
-            if c == '\n' {
-                point.x = self.text_offset.get().x;
-                point.y += 16;
-            } else {
-                if point.x + 8 <= w && point.y + 16 <= h {
-                    renderer.char(
-                        point.x + rect.x,
-                        point.y + rect.y,
-                        c,
-                        theme.color("color", &selector),
-                    );
-                }
-                point.x += 8;
-            }
-        }
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
         match event {
             Event::Mouse {
-                point,
-                left_button,
-                ..
+                point, left_button, ..
             } => {
                 let mut click = false;
 

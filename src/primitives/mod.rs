@@ -1,7 +1,7 @@
 pub use self::image::Image;
 pub use self::rectangle::Rectangle;
-pub use self::text::Text;
+pub use self::text_widget::TextWidget;
 
 mod image;
 mod rectangle;
-mod text;
+mod text_widget;

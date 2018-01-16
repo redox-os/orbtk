@@ -20,6 +20,7 @@ pub use self::focus_manager::FocusManager;
 pub use point::Point;
 pub use rect::Rect;
 pub use traits::*;
+pub use thickness::Thickness;
 pub use widgets::*;
 pub use window::{InnerWindow, Window, WindowBuilder};
 
@@ -35,3 +36,4 @@ pub mod widgets;
 pub mod window;
 pub mod draw;
 pub mod theme;
+pub mod thickness;

@@ -3,6 +3,8 @@ extern crate orbtk;
 use orbtk::{Action, Button, ComboBox, TestButton, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
 use orbtk::traits::{Click, Enter, Place, Text};
 
+// commit: children placement / arrangement, focus manager focused widget, add child 
+
 fn main() {
     let mut window = Window::new(Rect::new(100, 100, 420, 768), "OrbTK");
 
@@ -31,9 +33,7 @@ fn main() {
 
     let button = TestButton::new();
     button.position(x + text_box.rect.get().width as i32 + 8, y)
-        .size(48 + 12, text_box.rect.get().height)
         .text("Update")
-        .text_offset(6, 6)
         .on_click(move |_button: &TestButton, _point: Point| {
             text_box.emit_enter();
         });

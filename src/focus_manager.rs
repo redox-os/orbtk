@@ -26,4 +26,8 @@ impl FocusManager {
 
         false
     }
+
+    pub fn focused_widget(&self) -> &RefCell<Option<Arc<Widget>>> {
+        &self.focused_widget
+    }
 }

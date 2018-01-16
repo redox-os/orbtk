@@ -8,6 +8,7 @@ use draw::draw_box;
 use event::Event;
 use point::Point;
 use rect::Rect;
+use thickness::Thickness;
 use theme::{Theme, Selector};
 use traits::{Click, Place, Text, Style};
 use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
@@ -17,6 +18,7 @@ pub struct Menu {
     local_position: Cell<Point>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
     children: RefCell<Vec<Arc<Widget>>>,
     selector: CloneCell<Selector>,
     text: CloneCell<String>,
@@ -31,6 +33,7 @@ pub struct Separator {
     pub rect: Cell<Rect>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
     local_position: Cell<Point>,
     children: RefCell<Vec<Arc<Widget>>>,
     selector: CloneCell<Selector>,
@@ -47,6 +50,7 @@ impl Menu {
             local_position: Cell::new(Point::new(0, 0)),
             vertical_placement: Cell::new(VerticalPlacement::Absolute),
             horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            margin: Cell::new(Thickness::default()),
             children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("menu"))),
             text: CloneCell::new(name.into()),
@@ -135,6 +139,10 @@ impl Widget for Menu {
 
     fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
         &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
@@ -251,6 +259,7 @@ pub struct Action {
     local_position: Cell<Point>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
     children: RefCell<Vec<Arc<Widget>>>,
     selector: CloneCell<Selector>,
     text: CloneCell<String>,
@@ -267,6 +276,7 @@ impl Action {
             local_position: Cell::new(Point::new(0, 0)),
             vertical_placement: Cell::new(VerticalPlacement::Absolute),
             horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            margin: Cell::new(Thickness::default()),
             children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("action"))),
             text: CloneCell::new(text.into()),
@@ -324,6 +334,10 @@ impl Widget for Action {
 
     fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
         &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
     }
 
     fn local_position(&self) -> &Cell<Point> {
@@ -416,6 +430,7 @@ impl Separator {
             local_position: Cell::new(Point::new(0, 0)),
             vertical_placement: Cell::new(VerticalPlacement::Absolute),
             horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            margin: Cell::new(Thickness::default()),
             children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("separator"))),
         })
@@ -447,6 +462,10 @@ impl Widget for Separator {
 
     fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
         &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {

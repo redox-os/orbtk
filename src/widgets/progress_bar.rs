@@ -8,6 +8,7 @@ use draw::draw_box;
 use event::Event;
 use point::Point;
 use rect::Rect;
+use thickness::Thickness;
 use theme::{Theme, Selector};
 use traits::{Click, Place, Style};
 use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
@@ -18,6 +19,7 @@ pub struct ProgressBar {
     local_position: Cell<Point>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
     pub selector: CloneCell<Selector>,
     pub value: Cell<i32>,
     pub minimum: i32,
@@ -33,6 +35,7 @@ impl ProgressBar {
             local_position: Cell::new(Point::new(0, 0)),
             vertical_placement: Cell::new(VerticalPlacement::Absolute),
             horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            margin: Cell::new(Thickness::default()),
             children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("progress-bar"))),
             value: Cell::new(0),
@@ -85,6 +88,10 @@ impl Widget for ProgressBar {
 
     fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
         &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
     }
 
     fn local_position(&self) -> &Cell<Point> {

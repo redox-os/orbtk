@@ -7,6 +7,7 @@ use draw::draw_box;
 use event::Event;
 use point::Point;
 use rect::Rect;
+use thickness::Thickness;
 use theme::{Selector, Theme};
 use traits::{Click, Place, Text, Style};
 use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
@@ -17,6 +18,7 @@ pub struct Button {
     local_position: Cell<Point>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
     pub selector: CloneCell<Selector>,
     pub text: CloneCell<String>,
     pub text_offset: Cell<Point>,
@@ -32,6 +34,7 @@ impl Button {
             local_position: Cell::new(Point::new(0, 0)),
             vertical_placement: Cell::new(VerticalPlacement::Absolute),
             horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            margin: Cell::new(Thickness::default()),
             children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("button"))),
             text: CloneCell::new(String::new()),
@@ -91,6 +94,10 @@ impl Widget for Button {
 
     fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
         &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
     }
 
     fn local_position(&self) -> &Cell<Point> {

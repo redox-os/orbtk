@@ -6,6 +6,7 @@ use cell::CloneCell;
 use draw::draw_box;
 use rect::{Rect};
 use point::Point;
+use thickness::Thickness;
 use theme::{Selector, Theme};
 use traits::{Place, Style};
 use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
@@ -15,6 +16,7 @@ pub struct Rectangle {
     local_position: Cell<Point>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
     children: RefCell<Vec<Arc<Widget>>>,
     pub selector: CloneCell<Selector>,
 }
@@ -26,6 +28,7 @@ impl Rectangle {
             local_position: Cell::new(Point::new(0, 0)),
             vertical_placement: Cell::new(VerticalPlacement::Absolute),
             horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            margin: Cell::new(Thickness::default()),
             children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("Rectangle"))),
         })
@@ -55,6 +58,10 @@ impl Widget for Rectangle {
 
     fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
         &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
     }
 
     fn local_position(&self) -> &Cell<Point> {
