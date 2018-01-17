@@ -6,7 +6,7 @@ use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
 use std::sync::Arc;
 
-use super::{Event, KeyEvent, Point, Rect, Widget, FocusManager};
+use super::{Event, FocusManager, KeyEvent, Point, Rect, Widget};
 use theme::Theme;
 use traits::Resize;
 
@@ -78,7 +78,6 @@ pub struct Window {
     events: VecDeque<Event>,
     redraw: bool,
     focus_manager: FocusManager,
-    
 }
 
 impl Resize for Window {
@@ -190,18 +189,17 @@ impl Window {
         inner.set(self.theme.color("background", &"window".into()));
 
         let mut renderer = WindowRenderer::new(&mut *inner, &self.font);
-        for i in 0..self.widgets.borrow().len() {
-            if let Some(widget) = self.widgets.borrow().get(i) {
-                self.draw_widget(&mut renderer, self.focus_manager.focused(&widget), widget);
-            }
+        for widget in self.widgets.borrow().iter() {
+            self.draw_widget(&mut renderer, self.focus_manager.focused(&widget), widget);
         }
     }
 
     fn draw_widget(&self, renderer: &mut Renderer, focused: bool, widget: &Arc<Widget>) {
+        widget.update();
         widget.draw(renderer, focused, &self.theme);
 
-        for child in &*widget.children().borrow_mut() {
-            self.draw_widget(renderer, focused, child);
+        for child in widget.children().borrow().iter() {
+            self.draw_widget(renderer, self.focus_manager.focused(&child), child);
         }
     }
 
@@ -223,30 +221,30 @@ impl Window {
                 _ => (),
             }
 
-            for i in 0..self.widgets.borrow().len() {
-                if let Some(widget) = self.widgets.borrow().get(i) {
-                    self.redraw = self.drain_event(event, self.focus_manager.focused(&widget), self.redraw, widget);
-                }
+            for widget in self.widgets.borrow().iter() {
+                self.redraw = self.drain_event(event, self.redraw, widget);
             }
         }
     }
 
-    fn drain_event(&self, event: Event, focused: bool, redraw: bool, widget: &Arc<Widget>) -> bool {
+    fn drain_event(&self, event: Event, redraw: bool, widget: &Arc<Widget>) -> bool {
         let mut redraw = redraw;
-        let mut children_redraw = false;
+        //let mut children_redraw = false;
 
-        if widget.event(event, focused, &mut redraw) {
+        if widget.event(event, self.focus_manager.focused(&widget), &mut redraw) {
             if !self.focus_manager.focused(&widget) {
                 self.focus_manager.request_focus(&widget);
                 redraw = true;
             }
         }
 
-        for child in &*widget.children().borrow_mut() {
-            children_redraw = self.drain_event(event, focused, redraw, child);
-        }
+        redraw
 
-        redraw || children_redraw
+        // for child in &*widget.children().borrow_mut() {
+        //     children_redraw = self.drain_event(event, redraw, child);
+        // }
+
+        // redraw || children_redraw
     }
 
     pub fn drain_orbital_events(&mut self) {
@@ -281,13 +279,15 @@ impl Window {
                         y: scroll_event.y,
                     })
                 }
-                orbclient::EventOption::Key(key_event) => {    
-                        if key_event.pressed {
-                            self.events.push_back(Event::KeyPressed(KeyEvent::from_orbital_key_event(key_event)));
-                        } else {
-                            self.events.push_back(Event::KeyReleased(KeyEvent::from_orbital_key_event(key_event)));
-                        }             
-                }
+                orbclient::EventOption::Key(key_event) => if key_event.pressed {
+                    self.events.push_back(Event::KeyPressed(
+                        KeyEvent::from_orbital_key_event(key_event),
+                    ));
+                } else {
+                    self.events.push_back(Event::KeyReleased(
+                        KeyEvent::from_orbital_key_event(key_event),
+                    ));
+                },
                 orbclient::EventOption::Resize(resize_event) => {
                     self.redraw = true;
                     self.events.push_back(Event::Resize {

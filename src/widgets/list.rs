@@ -1,6 +1,4 @@
-use orbclient::Renderer;
 use orbclient;
-use orbimage;
 use std::cell::{Cell, RefCell};
 use std::cmp;
 use std::sync::Arc;
@@ -10,38 +8,93 @@ use event::Event;
 use point::Point;
 use rect::Rect;
 use thickness::Thickness;
-use theme::{Selector, Theme};
+use theme::Selector;
 use traits::{Click, Place, Style};
-use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
+use widgets::{HorizontalPlacement, VerticalPlacement, Widget};
 use std::ops::Index;
+use primitives::Rectangle;
 
 /// An entry in a list
 /// Each entry stores widgets within.
 pub struct Entry {
-    pub height: Cell<u32>,
+    pub rect: Cell<Rect>,
+    local_position: Cell<Point>,
+    vertical_placement: Cell<VerticalPlacement>,
+    horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
+    children: RefCell<Vec<Arc<Widget>>>,
     click_callback: RefCell<Option<Arc<Fn(&Entry, Point)>>>,
-    widgets: RefCell<Vec<Arc<Widget>>>,
     highlighted: Cell<bool>,
+    selector: CloneCell<Selector>,
 }
 
 impl Entry {
     pub fn new(h: u32) -> Arc<Self> {
+        // todo: this selector as child of list selector
+        let selector = CloneCell::new(Selector::new(Some("entry")));
+
+        let background = Rectangle::new();
+        background.placement(VerticalPlacement::Stretch, HorizontalPlacement::Stretch);
+        background.selector().bind(&selector);
+
         Arc::new(Entry {
-            height: Cell::new(h),
+            rect: Cell::new(Rect::new(0, 0, 0, h)),
+            local_position: Cell::new(Point::new(0, 0)),
+            vertical_placement: Cell::new(VerticalPlacement::Absolute),
+            horizontal_placement: Cell::new(HorizontalPlacement::Stretch),
+            margin: Cell::new(Thickness::default()),
+            children: RefCell::new(vec![background]),
             click_callback: RefCell::new(None),
-            widgets: RefCell::new(vec![]),
             highlighted: Cell::new(false),
+            selector,
         })
     }
 
     /// Adds a widget to the entry
     pub fn add<T: Widget>(&self, widget: &Arc<T>) {
-        let mut widgets = self.widgets.borrow_mut();
-        widgets.push(widget.clone());
+        if let Some(background) = (*self.children().borrow()).get(0) {
+            background.add(widget.clone());
+        }
+    }
+}
+
+impl Widget for Entry {
+    fn name(&self) -> &str {
+        "Rectangle"
     }
 
-    fn widgets(&self) -> &RefCell<Vec<Arc<Widget>>> {
-        &self.widgets
+    fn rect(&self) -> &Cell<Rect> {
+        &self.rect
+    }
+
+    fn vertical_placement(&self) -> &Cell<VerticalPlacement> {
+        &self.vertical_placement
+    }
+
+    fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
+        &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
+    }
+
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
+    }
+
+    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+        &self.children
+    }
+
+    fn update(&self) {
+        let selector = Selector::new(Some("entry")).with_pseudo_class(if self.highlighted.get() {
+            "active"
+        } else {
+            "inactive"
+        });
+
+        self.selector.set(selector);
     }
 }
 
@@ -75,14 +128,20 @@ pub struct List {
 
 impl List {
     pub fn new() -> Arc<Self> {
+        let selector = CloneCell::new(Selector::new(Some("list")));
+
+        let background = Rectangle::new();
+        background.placement(VerticalPlacement::Stretch, HorizontalPlacement::Stretch);
+        background.selector().bind(&selector);
+
         Arc::new(List {
             rect: Cell::new(Rect::default()),
             local_position: Cell::new(Point::new(0, 0)),
             vertical_placement: Cell::new(VerticalPlacement::Absolute),
             horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
             margin: Cell::new(Thickness::default()),
-            children: RefCell::new(vec![]),
-            selector: CloneCell::new(Selector::new(Some("list"))),
+            children: RefCell::new(vec![background]),
+            selector,
             v_scroll: Cell::new(0),
             current_height: Cell::new(0),
             entries: RefCell::new(vec![]),
@@ -92,9 +151,13 @@ impl List {
     }
 
     pub fn push(&self, entry: &Arc<Entry>) {
-        let h = entry.height.get();
+        let h = entry.rect().get().height;
         self.entries.borrow_mut().push(entry.clone());
         self.current_height.set(self.current_height.get() + h);
+        if let Some(background) = (*self.children().borrow()).get(0) {
+            background.add(entry.clone());
+        }
+        self.arrange();
     }
 
     // Given absolute coordinates, returns the list entry index
@@ -108,10 +171,12 @@ impl List {
             let scroll = self.v_scroll.get();
 
             for (i, entry) in self.entries.borrow().iter().enumerate() {
-                if Rect::new(x, y + current_y - scroll, width, entry.height.get()).contains(p) {
+                if Rect::new(x, y + current_y - scroll, width, entry.rect().get().height)
+                    .contains(p)
+                {
                     return Some(i as u32);
                 }
-                current_y += entry.height.get() as i32
+                current_y += entry.rect().get().height as i32
             }
         }
 
@@ -152,16 +217,19 @@ impl List {
             let mut y = 0;
 
             for e in self.entries.borrow().index(0..(i as usize)) {
-                y += e.height.get();
+                y += e.rect().get().height;
             }
 
             let v_scroll = self.v_scroll.get();
 
             if y < v_scroll as u32 {
                 self.scroll(y as i32 - v_scroll);
-            } else if (y + entry.height.get() as u32) > (v_scroll as u32 + self.rect.get().height) {
+            } else if (y + entry.rect().get().height as u32)
+                > (v_scroll as u32 + self.rect.get().height)
+            {
                 self.scroll(
-                    (y + entry.height.get()) as i32 - (v_scroll + self.rect.get().height as i32),
+                    (y + entry.rect().get().height) as i32
+                        - (v_scroll + self.rect.get().height as i32),
                 );
             }
         }
@@ -197,48 +265,6 @@ impl Widget for List {
 
     fn local_position(&self) -> &Cell<Point> {
         &self.local_position
-    }
-
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
-        let mut current_y = 0;
-        let x = self.rect.get().x;
-        let y = self.rect.get().y;
-        let width = self.rect.get().width;
-        let height = self.rect.get().height;
-
-        let mut target = orbimage::Image::new(width, height);
-        target.set(theme.color("background", &self.selector.get()));
-
-        for entry in self.entries.borrow().iter() {
-            let mut image = orbimage::Image::new(width, entry.height.get());
-
-            //TODO: set this selector as the child of self.selector
-            let entry_selector =
-                Selector::new(Some("entry")).with_pseudo_class(if entry.highlighted.get() {
-                    "active"
-                } else {
-                    "inactive"
-                });
-
-            image.set(theme.color("background", &entry_selector));
-
-            for widget in entry.widgets().borrow().iter() {
-                widget.draw(&mut image, false, theme)
-            }
-
-            let image = image.data();
-            target.image(
-                0,
-                current_y - self.v_scroll.get(),
-                width,
-                entry.height.get(),
-                &image,
-            );
-
-            current_y += entry.height.get() as i32
-        }
-        let target = target.data();
-        renderer.image(x, y, width, height, &target)
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
@@ -330,6 +356,7 @@ impl Widget for List {
             Event::Scroll { y, .. } => {
                 self.scroll(y * -96);
                 *redraw = true;
+                self.arrange();
             }
             _ => {}
         }
@@ -338,6 +365,21 @@ impl Widget for List {
 
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
         &self.children
+    }
+
+    fn arrange(&self) {
+        if let Some(background) = (self.children.borrow()).get(0) {
+            let mut current_y = self.rect().get().y;
+            background.rect().set(self.rect().get());
+
+            for entry in background.children().borrow().iter() {
+                let mut entry_rect = entry.rect().get();
+                entry_rect.y = current_y - self.v_scroll.get();
+                current_y += entry_rect.height as i32;
+                entry.rect().set(entry_rect);
+                entry.arrange();
+            }
+        }
     }
 }
 

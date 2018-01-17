@@ -1,16 +1,17 @@
-use orbclient::Renderer;
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 use cell::{CloneCell, CheckSet};
-use draw::draw_box;
 use event::Event;
 use point::Point;
 use rect::Rect;
 use thickness::Thickness;
-use theme::{Theme, Selector};
+use theme::Selector;
 use traits::{Click, Place, Text, Style};
 use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
+use primitives::{TextWidget, Rectangle};
+
+const LABEL_SELECTOR: &str = "label";
 
 pub struct Label {
     pub rect: Cell<Rect>,
@@ -30,21 +31,41 @@ pub struct Label {
 
 impl Label {
     pub fn new() -> Arc<Self> {
+        let selector = CloneCell::new(Selector::new(Some(LABEL_SELECTOR)));
+        let inner_text = CloneCell::new(String::new());
+
+        let text_widget = TextWidget::new();
+        text_widget.inner_text().bind(&inner_text);
+        text_widget.selector().bind(&selector);
+        text_widget.placement(VerticalPlacement::Center, HorizontalPlacement::Center);
+
+        let background = Rectangle::new();
+        background.selector().bind(&selector);
+        background.placement(VerticalPlacement::Stretch, HorizontalPlacement::Stretch);
+        background.add(text_widget);
+
         Arc::new(Label {
             rect: Cell::new(Rect::default()),
             local_position: Cell::new(Point::new(0, 0)),
             vertical_placement: Cell::new(VerticalPlacement::Absolute),
             horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
             margin: Cell::new(Thickness::default()),
-            children: RefCell::new(vec![]),
-            selector: CloneCell::new(Selector::new(Some("label"))),
+            children: RefCell::new(vec![background]),
+            selector,
             border: Cell::new(false),
             border_radius: Cell::new(0),
-            text: CloneCell::new(String::new()),
+            text: inner_text,
             text_offset: Cell::new(Point::default()),
             click_callback: RefCell::new(None),
             pressed: Cell::new(false),
         })
+    }
+
+    fn adjust_size(&self) {
+        self.size(
+            self.text.get().len() as u32 * 8 + 2 * self.text_offset.get().x as u32,
+            16 + 2 * self.text_offset.get().y as u32,
+        );
     }
 }
 
@@ -66,11 +87,13 @@ impl Place for Label {}
 impl Text for Label {
     fn text<S: Into<String>>(&self, text: S) -> &Self {
         self.text.set(text.into());
+        self.adjust_size();
         self
     }
 
     fn text_offset(&self, x: i32, y: i32) -> &Self {
         self.text_offset.set(Point::new(x, y));
+        self.adjust_size();
         self
     }
 }
@@ -104,28 +127,6 @@ impl Widget for Label {
 
     fn margin(&self) -> &Cell<Thickness> {
         &self.margin
-    }
-
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
-        let rect = self.rect.get();
-        let selector = &self.selector.get();
-
-        draw_box(renderer, rect, theme, selector);
-
-        let text = self.text.borrow();
-
-        let mut point = self.text_offset.get();
-        for c in text.chars() {
-            if c == '\n' {
-                point.x = self.text_offset.get().x;
-                point.y += 16;
-            } else {
-                if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point.x + rect.x, point.y + rect.y, c, theme.color("color", selector));
-                }
-                point.x += 8;
-            }
-        }
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {

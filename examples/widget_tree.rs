@@ -1,117 +1,88 @@
 extern crate orbtk;
 
-use orbtk::{Action, Button, ComboBox, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window};
+use orbtk::{Action, Button, ComboBox, Grid, Image, Label, Menu, Orientation, Point, ProgressBar,
+            Rect, Separator, StackLayout, TextBox, Widget, Window};
 use orbtk::traits::{Click, Enter, Place, Text};
+
+// commit: widgets (update, button, label, list, remove test_button, start documentation), widget tree example, css updae
 
 fn main() {
     let mut window = Window::new(Rect::new(100, 100, 420, 768), "OrbTK");
 
-    let x = 10;
-    let mut y = 0;
+    let stack_layout = StackLayout::new(Orientation::Vertical);
+    stack_layout.position(10, 0).size(400, 768).spacing(10);
 
     let menu = Menu::new("Menu");
-    menu.position(x, y)
-        .size(32, 16);
-
-    y += menu.rect.get().height as i32 + 10;
+    menu.size(32, 16);
+    stack_layout.add(menu.clone());
 
     let label = Label::new();
-    label.position(x, y)
-        .size(400, 16)
-        .text("Test Label");
-    window.add(&label);
+    label.size(400, 16).text("Test Label");
+    stack_layout.add(label);
 
-    y += label.rect.get().height as i32 + 10;
+    let horizontal_stack_layout = StackLayout::new(Orientation::Horizontal);
+    horizontal_stack_layout.size(400, 28).spacing(10);
+    stack_layout.add(horizontal_stack_layout.clone());
 
     let text_box = TextBox::new();
-    text_box.position(x, y)
-        .size(332, 28)
-        .text_offset(6, 6);
-    window.add(&text_box);
+    text_box.size(332, 28).text_offset(6, 6);
+    horizontal_stack_layout.add(text_box.clone());
 
     let button = Button::new();
-    button.position(x + text_box.rect.get().width as i32 + 8, y)
-        .size(48 + 12, text_box.rect.get().height)
+    button
         .text("Update")
-        .text_offset(6, 6)
         .on_click(move |_button: &Button, _point: Point| {
             text_box.emit_enter();
         });
-    window.add(&button);
-
-    y += button.rect.get().height as i32 + 10;
+    horizontal_stack_layout.add(button);
 
     let progress_label = Label::new();
-    progress_label.text("Progress: 0%").position(x, y);
-    window.add(&progress_label);
-
-    y += progress_label.rect.get().height as i32 + 10;
+    progress_label.text("Progress: 0%");
+    stack_layout.add(progress_label.clone());
 
     let progress_bar = ProgressBar::new();
-    progress_bar.position(x, y)
-        .size(400, 16)
-        .value(100)
-        .on_click(move |progress_bar: &ProgressBar, point: Point| {
+    progress_bar.size(400, 16).value(50).on_click(
+        move |progress_bar: &ProgressBar, point: Point| {
             let progress = point.x * 100 / progress_bar.rect.get().width as i32;
             progress_label.text.set(format!("Progress: {}%", progress));
             progress_bar.value.set(progress);
-        });
-    window.add(&progress_bar);
-
-    y += progress_bar.rect.get().height as i32 + 10;
+        },
+    );
+    stack_layout.add(progress_bar);
 
     let combo_box = ComboBox::new();
-    combo_box.position(x, y);
+    stack_layout.add(combo_box.clone());
 
     for i in 1..11 {
         combo_box.push(&format!("Entry {}", i));
-    }   
-
-    y += combo_box.rect.get().height as i32 + 10;
+    }
 
     let multi_line_label = Label::new();
-    multi_line_label.text("Multi-Line Text")
-        .position(x, y)
-        .size(400, 16);
-    window.add(&multi_line_label);
-
-    y += multi_line_label.rect.get().height as i32 + 10;
+    multi_line_label.text("Multi-Line Text").size(400, 16);
+    stack_layout.add(multi_line_label);
 
     let multi_line_text_box = TextBox::new();
-    multi_line_text_box.position(x, y)
-        .size(400, 130)
-        .text_offset(1, 1);
-    window.add(&multi_line_text_box);
-
-    y += multi_line_text_box.rect.get().height as i32 + 10;
+    multi_line_text_box.size(400, 130).text_offset(1, 1);
+    stack_layout.add(multi_line_text_box);
 
     let offset_label = Label::new();
-    offset_label.position(x, y)
+    offset_label
         .size(400, 120)
         .text("Test Offset")
         .text_offset(50, 50)
         .on_click(|label: &Label, _point: Point| {
             label.text("Clicked");
         });
-    window.add(&offset_label);
-
-    y += offset_label.rect.get().height as i32 + 10;
+    stack_layout.add(offset_label.clone());
 
     match Image::from_path("res/icon_small.png") {
         Ok(image) => {
-            image.position(x, y);
-            window.add(&image);
-
-            y += image.rect.get().height as i32 + 10;
-        },
+            stack_layout.add(image.clone());
+        }
         Err(err) => {
             let label = Label::new();
-            label.position(x, y)
-                .size(400, 16)
-                .text(err);
-            window.add(&label);
-
-            y += label.rect.get().height as i32 + 10;
+            label.size(400, 16).text(err);
+            stack_layout.add(label.clone());
         }
     }
 
@@ -145,8 +116,7 @@ fn main() {
     }
 
     let grid = Grid::new();
-    grid.position(x, y)
-        .spacing(8, 8);
+    grid.spacing(8, 8);
 
     let label = Label::new();
     label.size(32, 16).text("Grid");
@@ -169,18 +139,18 @@ fn main() {
         for col in 0..5 {
             let cell = TextBox::new();
             let text = format!("{}: {}, {}", i, col, row);
-            cell.size(text.len() as u32 * 8 + 2, 18).text(text).text_offset(1, 1);
+            cell.size(text.len() as u32 * 8 + 2, 18)
+                .text(text)
+                .text_offset(1, 1);
             grid.insert(col, row, &cell);
             i += 1;
         }
     }
+
+    stack_layout.add(grid.clone());
     grid.arrange(true);
 
-    window.add(&grid);
-
-    window.add(&combo_box);
-    // Add this last to put it on top
-    window.add(&menu);
+    window.add(&stack_layout);
 
     window.exec();
 }

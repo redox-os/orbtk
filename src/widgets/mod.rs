@@ -1,3 +1,8 @@
+//! Widgets are the primary elements to create user interfaces with orbtk.
+//!
+//! This module contains base structures to create widgets and a set of
+//! default widgets.
+
 use orbclient::Renderer;
 use std::any::Any;
 use std::cell::{Cell, RefCell};
@@ -11,26 +16,21 @@ use thickness::Thickness;
 
 pub use self::button::Button;
 pub use self::combo_box::ComboBox;
-pub use self::grid::Grid;
 pub use self::label::Label;
 pub use self::menu::{Action, Menu, Separator};
 pub use self::progress_bar::ProgressBar;
 pub use self::text_box::TextBox;
 pub use self::list::{Entry, List};
 
-pub use self::test_button::TestButton;
-
 mod button;
 mod combo_box;
-mod grid;
 mod label;
 mod menu;
 mod progress_bar;
 mod text_box;
 mod list;
 
-mod test_button;
-
+/// Describes the vertical placement of a widget.
 #[derive(PartialEq, Copy, Clone)]
 pub enum VerticalPlacement {
     Top,
@@ -40,6 +40,7 @@ pub enum VerticalPlacement {
     Stretch,
 }
 
+/// Describes the horizontal placement of a widget.
 #[derive(PartialEq, Copy, Clone)]
 pub enum HorizontalPlacement {
     Left,
@@ -49,22 +50,54 @@ pub enum HorizontalPlacement {
     Stretch,
 }
 
+/// Represents the base of all widgets.
 pub trait Widget: Any {
+    /// Borrow the render rect of the widget.
     fn rect(&self) -> &Cell<Rect>;
+
+    /// Borrow the local position of the widget. The local position describes position of the widget relative to it's parent.
     fn local_position(&self) -> &Cell<Point>;
+
+    /// Borrow the vertical placement of the widget.
     fn vertical_placement(&self) -> &Cell<VerticalPlacement>;
+
+    /// Borrow the horizontal placement of the widget.
     fn horizontal_placement(&self) -> &Cell<HorizontalPlacement>;
+
+    /// Borrow the margin of the widget.
     fn margin(&self) -> &Cell<Thickness>;
+
+    /// Used to draw the widget by render code.
     fn draw(&self, _renderer: &mut Renderer, _focused: bool, _theme: &Theme) {}
+
+    /// Handle the incoming events by tunneling from parent to child.
+    /// Must have overwritten to create a custom tunneling event handling.
+    fn preview_event(&self, _event: Event, _focused: bool, _redraw: &mut bool, _handled: bool) -> bool {
+        _focused
+    }
+
+    /// Handle the incoming events by bubbling from child to parent. 
+    /// Must have overwritten to create a custom bubbling event handling.
     fn event(&self, _event: Event, _focused: bool, _redraw: &mut bool) -> bool {
         _focused
     }
+
+    /// Return the name of the widget.
     fn name(&self) -> &str;
+
+    /// Borrow the children of the widget.
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>>;
+
+    /// Add a child to the widget.
     fn add(&self, widget: Arc<Widget>) {
         (*self.children().borrow_mut()).push(widget);
+        self.arrange();
     }
 
+    /// Used to update the state of the widget. Could be used to update the selector.
+    fn update(&self) {}
+
+    /// Arrange the children of the widget. Could be override to create a custom layout.
     fn arrange(&self) {
         let parent_rect = self.rect().get();
 
