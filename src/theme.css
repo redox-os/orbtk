@@ -8,12 +8,12 @@
 }
 
 list {
-    border-width: 0
+    border-width: 0;
 }
 
 entry {
     background: white;
-    border-width: 0
+    border-width: 0;
 }
 
 button {
