@@ -6,7 +6,7 @@ use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
 use std::sync::Arc;
 
-use super::{Event, KeyEvent, Point, Rect, Widget};
+use super::{Event, FocusManager, KeyEvent, Point, Rect, Widget};
 use theme::Theme;
 use traits::Resize;
 
@@ -68,7 +68,6 @@ pub struct Window {
     inner: RefCell<InnerWindow>,
     font: Option<orbfont::Font>,
     pub widgets: RefCell<Vec<Arc<Widget>>>,
-    pub widget_focus: Cell<usize>,
     pub running: Cell<bool>,
     pub theme: Theme,
     resize_callback: RefCell<Option<Arc<Fn(&Window, u32, u32)>>>,
@@ -78,6 +77,7 @@ pub struct Window {
     mouse_right: bool,
     events: VecDeque<Event>,
     redraw: bool,
+    focus_manager: FocusManager,
 }
 
 impl Resize for Window {
@@ -111,7 +111,6 @@ impl Window {
             inner: RefCell::new(inner),
             font: orbfont::Font::find(None, None, None).ok(),
             widgets: RefCell::new(Vec::new()),
-            widget_focus: Cell::new(0),
             running: Cell::new(true),
             theme: Theme::new(),
             resize_callback: RefCell::new(None),
@@ -121,6 +120,7 @@ impl Window {
             mouse_middle: false,
             events: events,
             redraw: true,
+            focus_manager: FocusManager::new(),
         }
     }
 
@@ -176,6 +176,11 @@ impl Window {
         let mut widgets = self.widgets.borrow_mut();
         let id = widgets.len();
         widgets.push(widget.clone());
+
+        if id == 0 {
+            self.focus_manager.request_focus(&widgets[id]);
+        }
+
         id
     }
 
@@ -184,10 +189,17 @@ impl Window {
         inner.set(self.theme.color("background", &"window".into()));
 
         let mut renderer = WindowRenderer::new(&mut *inner, &self.font);
-        for i in 0..self.widgets.borrow().len() {
-            if let Some(widget) = self.widgets.borrow().get(i) {
-                widget.draw(&mut renderer, self.widget_focus.get() == i, &self.theme);
-            }
+        for widget in self.widgets.borrow().iter() {
+            self.draw_widget(&mut renderer, self.focus_manager.focused(&widget), widget);
+        }
+    }
+
+    fn draw_widget(&self, renderer: &mut Renderer, focused: bool, widget: &Arc<Widget>) {
+        widget.update();
+        widget.draw(renderer, focused, &self.theme);
+
+        for child in widget.children().borrow().iter() {
+            self.draw_widget(renderer, self.focus_manager.focused(&child), child);
         }
     }
 
@@ -209,17 +221,30 @@ impl Window {
                 _ => (),
             }
 
-            for i in 0..self.widgets.borrow().len() {
-                if let Some(widget) = self.widgets.borrow().get(i) {
-                    if widget.event(event, self.widget_focus.get() == i, &mut self.redraw) {
-                        if self.widget_focus.get() != i {
-                            self.widget_focus.set(i);
-                            self.redraw = true;
-                        }
-                    }
-                }
+            for widget in self.widgets.borrow().iter() {
+                self.redraw = self.drain_event(event, self.redraw, widget);
             }
         }
+    }
+
+    fn drain_event(&self, event: Event, redraw: bool, widget: &Arc<Widget>) -> bool {
+        let mut redraw = redraw;
+        //let mut children_redraw = false;
+
+        if widget.event(event, self.focus_manager.focused(&widget), &mut redraw) {
+            if !self.focus_manager.focused(&widget) {
+                self.focus_manager.request_focus(&widget);
+                redraw = true;
+            }
+        }
+
+        redraw
+
+        // for child in &*widget.children().borrow_mut() {
+        //     children_redraw = self.drain_event(event, redraw, child);
+        // }
+
+        // redraw || children_redraw
     }
 
     pub fn drain_orbital_events(&mut self) {
@@ -254,13 +279,15 @@ impl Window {
                         y: scroll_event.y,
                     })
                 }
-                orbclient::EventOption::Key(key_event) => {    
-                        if key_event.pressed {
-                            self.events.push_back(Event::KeyPressed(KeyEvent::from_orbital_key_event(key_event)));
-                        } else {
-                            self.events.push_back(Event::KeyReleased(KeyEvent::from_orbital_key_event(key_event)));
-                        }             
-                }
+                orbclient::EventOption::Key(key_event) => if key_event.pressed {
+                    self.events.push_back(Event::KeyPressed(
+                        KeyEvent::from_orbital_key_event(key_event),
+                    ));
+                } else {
+                    self.events.push_back(Event::KeyReleased(
+                        KeyEvent::from_orbital_key_event(key_event),
+                    ));
+                },
                 orbclient::EventOption::Resize(resize_event) => {
                     self.redraw = true;
                     self.events.push_back(Event::Resize {
@@ -353,7 +380,6 @@ impl<'a> WindowBuilder<'a> {
             inner: RefCell::new(inner),
             font: font,
             widgets: RefCell::new(Vec::new()),
-            widget_focus: Cell::new(0),
             running: Cell::new(true),
             theme: theme,
             resize_callback: RefCell::new(None),
@@ -363,6 +389,7 @@ impl<'a> WindowBuilder<'a> {
             mouse_middle: false,
             events: events,
             redraw: true,
+            focus_manager: FocusManager::new(),
         }
     }
 }

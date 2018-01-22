@@ -7,6 +7,15 @@
     color: black;
 }
 
+list {
+    border-width: 0;
+}
+
+entry {
+    background: white;
+    border-width: 0;
+}
+
 button {
     background: white;
     border-radius: 2;

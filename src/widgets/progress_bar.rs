@@ -8,12 +8,18 @@ use draw::draw_box;
 use event::Event;
 use point::Point;
 use rect::Rect;
+use thickness::Thickness;
 use theme::{Theme, Selector};
 use traits::{Click, Place, Style};
-use widgets::Widget;
+use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
 
 pub struct ProgressBar {
     pub rect: Cell<Rect>,
+    children: RefCell<Vec<Arc<Widget>>>,
+    local_position: Cell<Point>,
+    vertical_placement: Cell<VerticalPlacement>,
+    horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
     pub selector: CloneCell<Selector>,
     pub value: Cell<i32>,
     pub minimum: i32,
@@ -26,6 +32,11 @@ impl ProgressBar {
     pub fn new() -> Arc<Self> {
         Arc::new(ProgressBar {
             rect: Cell::new(Rect::default()),
+            local_position: Cell::new(Point::new(0, 0)),
+            vertical_placement: Cell::new(VerticalPlacement::Absolute),
+            horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            margin: Cell::new(Thickness::default()),
+            children: RefCell::new(vec![]),
             selector: CloneCell::new(Selector::new(Some("progress-bar"))),
             value: Cell::new(0),
             minimum: 0,
@@ -69,6 +80,22 @@ impl Widget for ProgressBar {
 
     fn rect(&self) -> &Cell<Rect> {
         &self.rect
+    }
+
+    fn vertical_placement(&self) -> &Cell<VerticalPlacement> {
+        &self.vertical_placement
+    }
+
+    fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
+        &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
+    }
+
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
@@ -128,5 +155,9 @@ impl Widget for ProgressBar {
         }
 
         focused
+    }
+
+    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+        &self.children
     }
 }

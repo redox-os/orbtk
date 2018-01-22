@@ -1,18 +1,27 @@
-use orbclient::Renderer;
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
-use cell::{CloneCell, CheckSet};
-use draw::draw_box;
+use cell::{CheckSet, CloneCell};
 use event::Event;
 use point::Point;
 use rect::Rect;
-use theme::{Selector, Theme};
-use traits::{Click, Place, Text, Style};
-use widgets::Widget;
+use thickness::Thickness;
+use theme::Selector;
+use traits::{Click, Place, Style, Text};
+use widgets::{HorizontalPlacement, VerticalPlacement, Widget};
+
+use primitives::Rectangle;
+use primitives::TextWidget;
+
+const BUTTON_SELECTOR: &str = "button";
 
 pub struct Button {
     pub rect: Cell<Rect>,
+    local_position: Cell<Point>,
+    vertical_placement: Cell<VerticalPlacement>,
+    horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
+    children: RefCell<Vec<Arc<Widget>>>,
     pub selector: CloneCell<Selector>,
     pub text: CloneCell<String>,
     pub text_offset: Cell<Point>,
@@ -23,15 +32,40 @@ pub struct Button {
 
 impl Button {
     pub fn new() -> Arc<Self> {
+        let selector = CloneCell::new(Selector::new(Some(BUTTON_SELECTOR)));
+        let inner_text = CloneCell::new(String::new());
+
+        let text_widget = TextWidget::new();
+        text_widget.inner_text().bind(&inner_text);
+        text_widget.selector().bind(&selector);
+        text_widget.placement(VerticalPlacement::Center, HorizontalPlacement::Center);
+
+        let background = Rectangle::new();
+        background.selector().bind(&selector);
+        background.placement(VerticalPlacement::Stretch, HorizontalPlacement::Stretch);
+        background.add(text_widget);
+
         Arc::new(Button {
-            rect: Cell::new(Rect::default()),
-            selector: CloneCell::new(Selector::new(Some("button"))),
-            text: CloneCell::new(String::new()),
-            text_offset: Cell::new(Point::default()),
+            rect: Cell::new(Rect::new(0, 0, 0, 28)),
+            local_position: Cell::new(Point::new(0, 0)),
+            vertical_placement: Cell::new(VerticalPlacement::Absolute),
+            horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            margin: Cell::new(Thickness::default()),
+            children: RefCell::new(vec![background]),
+            selector,
+            text: inner_text,
+            text_offset: Cell::new(Point::new(6, 6)),
             click_callback: RefCell::new(None),
             hover: Cell::new(false),
             pressed: Cell::new(false),
         })
+    }
+
+    fn adjust_size(&self) {
+        self.size(
+            self.text.get().len() as u32 * 8 + 2 * self.text_offset.get().x as u32,
+            16 + 2 * self.text_offset.get().y as u32,
+        );
     }
 }
 
@@ -53,11 +87,13 @@ impl Place for Button {}
 impl Text for Button {
     fn text<S: Into<String>>(&self, text: S) -> &Self {
         self.text.set(text.into());
+        self.adjust_size();
         self
     }
 
     fn text_offset(&self, x: i32, y: i32) -> &Self {
         self.text_offset.set(Point::new(x, y));
+        self.adjust_size();
         self
     }
 }
@@ -77,8 +113,24 @@ impl Widget for Button {
         &self.rect
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
-        let mut selector = self.selector.get().with_pseudo_class(
+    fn vertical_placement(&self) -> &Cell<VerticalPlacement> {
+        &self.vertical_placement
+    }
+
+    fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
+        &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
+    }
+
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
+    }
+
+    fn update(&self) {
+        let mut selector = Selector::new(Some(BUTTON_SELECTOR)).with_pseudo_class(
             if self.pressed.get() {
                 "active"
             } else {
@@ -90,32 +142,14 @@ impl Widget for Button {
             selector = selector.with_pseudo_class("hover");
         }
 
-        let rect = self.rect.get();
-
-        let w = rect.width as i32;
-        let h = rect.height as i32;
-
-        draw_box(renderer, rect, theme, &selector);
-
-        let text = self.text.borrow();
-
-        let mut point = self.text_offset.get();
-        for c in text.chars() {
-            if c == '\n' {
-                point.x = self.text_offset.get().x;
-                point.y += 16;
-            } else {
-                if point.x + 8 <= w && point.y + 16 <= h {
-                    renderer.char(point.x + rect.x, point.y + rect.y, c, theme.color("color", &selector));
-                }
-                point.x += 8;
-            }
-        }
+        self.selector().set(selector);
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
         match event {
-            Event::Mouse { point, left_button, .. } => {
+            Event::Mouse {
+                point, left_button, ..
+            } => {
                 let mut click = false;
 
                 let rect = self.rect.get();
@@ -153,5 +187,9 @@ impl Widget for Button {
         }
 
         focused
+    }
+
+    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+        &self.children
     }
 }

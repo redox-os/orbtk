@@ -6,12 +6,19 @@ use std::sync::Arc;
 use cell::CheckSet;
 use event::Event;
 use rect::Rect;
+use point::Point;
+use thickness::Thickness;
 use theme::{Theme};
 use traits::Place;
-use widgets::Widget;
+use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
 
 pub struct Grid {
     pub rect: Cell<Rect>,
+    local_position: Cell<Point>,
+    vertical_placement: Cell<VerticalPlacement>,
+    horizontal_placement: Cell<HorizontalPlacement>,
+    margin: Cell<Thickness>,
+    children: RefCell<Vec<Arc<Widget>>>,
     space_x: Cell<i32>,
     space_y: Cell<i32>,
     columns: Cell<usize>,
@@ -25,6 +32,11 @@ impl Grid {
     pub fn new() -> Arc<Self> {
         Arc::new(Grid {
             rect: Cell::new(Rect::default()),
+            local_position: Cell::new(Point::new(0, 0)),
+            vertical_placement: Cell::new(VerticalPlacement::Absolute),
+            horizontal_placement: Cell::new(HorizontalPlacement::Absolute),
+            margin: Cell::new(Thickness::default()),
+            children: RefCell::new(vec![]),
             space_x: Cell::new(0),
             space_y: Cell::new(0),
             columns: Cell::new(0),
@@ -146,6 +158,22 @@ impl Widget for Grid {
         &self.rect
     }
 
+    fn local_position(&self) -> &Cell<Point> {
+        &self.local_position
+    }
+
+    fn vertical_placement(&self) -> &Cell<VerticalPlacement> {
+        &self.vertical_placement
+    }
+
+    fn horizontal_placement(&self) -> &Cell<HorizontalPlacement> {
+        &self.horizontal_placement
+    }
+
+    fn margin(&self) -> &Cell<Thickness> {
+        &self.margin
+    }
+
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
         for (&(col, row), entry) in self.entries.borrow().iter() {
             entry.draw(renderer, self.focused.get() == Some((col, row)), theme);
@@ -166,5 +194,9 @@ impl Widget for Grid {
         }
 
         focused
+    }
+
+    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+        &self.children
     }
 }
