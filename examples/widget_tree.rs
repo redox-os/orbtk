@@ -152,5 +152,7 @@ fn main() {
 
     window.add(&stack_layout);
 
+    println!("{:?}", window);
+
     window.exec();
 }

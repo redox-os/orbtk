@@ -7,6 +7,7 @@ use orbclient::Renderer;
 use std::any::Any;
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
+use std::fmt;
 
 use event::Event;
 use rect::Rect;
@@ -153,5 +154,9 @@ pub trait Widget: Any {
             child.rect().set(child_rect);
             child.arrange();
         }
+    }
+
+    fn format(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "| - {}", self.name())
     }
 }

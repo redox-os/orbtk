@@ -5,6 +5,7 @@ use orbclient::color::Color;
 use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
 use std::sync::Arc;
+use std::fmt;
 
 use super::{Event, FocusManager, KeyEvent, Point, Rect, Widget};
 use theme::Theme;
@@ -93,6 +94,18 @@ impl Resize for Window {
     }
 }
 
+impl fmt::Debug for Window {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Window (OrbTK)")?;
+
+        for widget in &*self.widgets.borrow() {
+            self.fmt_widget(f, widget, "")?;
+        }
+
+        Ok(())
+    }
+}
+
 impl Window {
     pub fn new(rect: Rect, title: &str) -> Self {
         Window::new_flags(rect, title, &[])
@@ -102,6 +115,20 @@ impl Window {
         Window::from_inner(
             InnerWindow::new_flags(rect.x, rect.y, rect.width, rect.height, title, flags).unwrap(),
         )
+    }
+
+    fn fmt_widget(&self, f: &mut fmt::Formatter, widget: &Arc<Widget>, spacer: &str) -> fmt::Result {
+        write!(f, "\n{}", spacer)?;
+        widget.format(f)?;
+
+        let mut spacer = String::from(spacer);
+        spacer.push_str("|    ");
+
+        for child in &*widget.children().borrow() {
+            self.fmt_widget(f, child, &spacer)?;
+        }
+
+        Ok(())
     }
 
     pub fn from_inner(inner: InnerWindow) -> Self {
@@ -279,15 +306,17 @@ impl Window {
                         y: scroll_event.y,
                     })
                 }
-                orbclient::EventOption::Key(key_event) => if key_event.pressed {
-                    self.events.push_back(Event::KeyPressed(
-                        KeyEvent::from_orbital_key_event(key_event),
-                    ));
-                } else {
-                    self.events.push_back(Event::KeyReleased(
-                        KeyEvent::from_orbital_key_event(key_event),
-                    ));
-                },
+                orbclient::EventOption::Key(key_event) => {
+                    if key_event.pressed {
+                        self.events.push_back(Event::KeyPressed(
+                            KeyEvent::from_orbital_key_event(key_event),
+                        ));
+                    } else {
+                        self.events.push_back(Event::KeyReleased(
+                            KeyEvent::from_orbital_key_event(key_event),
+                        ));
+                    }
+                }
                 orbclient::EventOption::Resize(resize_event) => {
                     self.redraw = true;
                     self.events.push_back(Event::Resize {
