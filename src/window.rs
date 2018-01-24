@@ -117,7 +117,12 @@ impl Window {
         )
     }
 
-    fn fmt_widget(&self, f: &mut fmt::Formatter, widget: &Arc<Widget>, spacer: &str) -> fmt::Result {
+    fn fmt_widget(
+        &self,
+        f: &mut fmt::Formatter,
+        widget: &Arc<Widget>,
+        spacer: &str,
+    ) -> fmt::Result {
         write!(f, "\n{}", spacer)?;
         widget.format(f)?;
 
@@ -249,29 +254,14 @@ impl Window {
             }
 
             for widget in self.widgets.borrow().iter() {
-                self.redraw = self.drain_event(event, self.redraw, widget);
+                if widget.event(event, self.focus_manager.focused(&widget), &mut self.redraw) {
+                    if !self.focus_manager.focused(&widget) {
+                        self.focus_manager.request_focus(&widget);
+                        self.redraw = true;
+                    }
+                }
             }
         }
-    }
-
-    fn drain_event(&self, event: Event, redraw: bool, widget: &Arc<Widget>) -> bool {
-        let mut redraw = redraw;
-        //let mut children_redraw = false;
-
-        if widget.event(event, self.focus_manager.focused(&widget), &mut redraw) {
-            if !self.focus_manager.focused(&widget) {
-                self.focus_manager.request_focus(&widget);
-                redraw = true;
-            }
-        }
-
-        redraw
-
-        // for child in &*widget.children().borrow_mut() {
-        //     children_redraw = self.drain_event(event, redraw, child);
-        // }
-
-        // redraw || children_redraw
     }
 
     pub fn drain_orbital_events(&mut self) {

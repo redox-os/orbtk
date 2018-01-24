@@ -105,6 +105,8 @@ impl Grid {
             if rect.height >= rows[row].height {
                 rows[row as usize].height = rect.height;
             }
+
+            entry.arrange();
         }
 
         let rect = self.rect.get();
@@ -132,6 +134,16 @@ impl Grid {
                 rect.height = rows[row].height;
             }
             entry.rect().set(rect);
+            entry.arrange();
+        }
+    }
+
+    // used as temp fix
+    fn draw_entry(&self, entry: &Arc<Widget>, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+        entry.draw(renderer, _focused, theme);
+
+        for child in entry.children().borrow().iter() {
+            self.draw_entry(child, renderer, _focused, theme);
         }
     }
 }
@@ -176,7 +188,7 @@ impl Widget for Grid {
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
         for (&(col, row), entry) in self.entries.borrow().iter() {
-            entry.draw(renderer, self.focused.get() == Some((col, row)), theme);
+            self.draw_entry(entry, renderer, self.focused.get() == Some((col, row)), theme);
         }
     }
 
