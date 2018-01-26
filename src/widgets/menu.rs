@@ -194,58 +194,58 @@ impl Widget for Menu {
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        let mut ignore_event = false;
-        if self.activated.get() {
-            for entry in self.entries.borrow().iter() {
-                if entry.event(event, focused, redraw) {
-                    ignore_event = true;
-                    self.pressed.set(true);
-                }
-            }
-        }
+        // let mut ignore_event = false;
+        // if self.activated.get() {
+        //     for entry in self.entries.borrow().iter() {
+        //         if entry.event(event, focused, redraw) {
+        //             ignore_event = true;
+        //             self.pressed.set(true);
+        //         }
+        //     }
+        // }
 
-        match event {
-            Event::Mouse { point, left_button, .. } => {
-                let mut click = false;
+        // match event {
+        //     Event::Mouse { point, left_button, .. } => {
+        //         let mut click = false;
 
-                let rect = self.rect.get();
-                if rect.contains(point) {
-                    if left_button {
-                        self.pressed.set(!self.pressed.get());
+        //         let rect = self.rect.get();
+        //         if rect.contains(point) {
+        //             if left_button {
+        //                 self.pressed.set(!self.pressed.get());
 
-                        if self.activated.check_set(true) {
-                            click = true;
-                            *redraw = true;
-                        }
-                    } else {
-                        if !self.pressed.get() {
-                            if self.activated.check_set(false) {
-                                click = true;
-                                *redraw = true;
-                            }
-                        }
-                    }
-                } else {
-                    if !ignore_event {
-                        if left_button {
-                            self.pressed.set(false);
-                        } else {
-                            if !self.pressed.get() {
-                                if self.activated.check_set(false) {
-                                    *redraw = true;
-                                }
-                            }
-                        }
-                    }
-                }
+        //                 if self.activated.check_set(true) {
+        //                     click = true;
+        //                     *redraw = true;
+        //                 }
+        //             } else {
+        //                 if !self.pressed.get() {
+        //                     if self.activated.check_set(false) {
+        //                         click = true;
+        //                         *redraw = true;
+        //                     }
+        //                 }
+        //             }
+        //         } else {
+        //             if !ignore_event {
+        //                 if left_button {
+        //                     self.pressed.set(false);
+        //                 } else {
+        //                     if !self.pressed.get() {
+        //                         if self.activated.check_set(false) {
+        //                             *redraw = true;
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
 
-                if click {
-                    let click_point: Point = point - rect.point();
-                    self.emit_click(click_point);
-                }
-            }
-            _ => (),
-        }
+        //         if click {
+        //             let click_point: Point = point - rect.point();
+        //             self.emit_click(click_point);
+        //         }
+        //     }
+        //     _ => (),
+        // }
         focused
     }
 

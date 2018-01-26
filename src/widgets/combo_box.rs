@@ -407,14 +407,14 @@ impl Widget for ComboBox {
                 let mut ignore_event = false;
                 if self.activated.get() {
                     for entry in self.entries.borrow().iter() {
-                        if entry.event(event, focused, redraw) {
-                            ignore_event = true;
+                        // if entry.event(event, focused, redraw) {
+                        //     ignore_event = true;
 
-                            self.change_selection(entry.index);
-                            if self.activated.check_set(false) {
-                                *redraw = true;
-                            }
-                        }
+                        //     self.change_selection(entry.index);
+                        //     if self.activated.check_set(false) {
+                        //         *redraw = true;
+                        //     }
+                        // }
                     }
                 }
 

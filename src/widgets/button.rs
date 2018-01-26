@@ -2,7 +2,7 @@ use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 use cell::{CheckSet, CloneCell};
-use event::Event;
+use event::{Event, MouseEventArgs, Handleable, MouseButton, MouseMoveEventArgs};
 use point::Point;
 use rect::Rect;
 use thickness::Thickness;
@@ -143,6 +143,33 @@ impl Widget for Button {
         }
 
         self.selector().set(selector);
+    }
+
+    fn on_mouse_down(&self, args: &MouseEventArgs) {    
+        self.pressed.set(true);
+        args.handled().set(true);
+    }
+
+    fn on_mouse_up(&self, args: &MouseEventArgs) {
+        if !self.pressed.get() {
+            return
+        }
+
+        if self.rect().get().contains(args.point) {
+            self.emit_click(args.point);
+        }   
+        self.pressed.set(false);
+        args.handled().set(true);
+    }
+
+    fn on_mouse_enter(&self, args: &MouseMoveEventArgs) {
+        self.hover.set(true);
+        args.handled().set(true);
+    }
+
+    fn on_mouse_leave(&self, args: &MouseMoveEventArgs) {
+        self.hover.set(false);
+        args.handled().set(true);
     }
 
     fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {

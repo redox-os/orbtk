@@ -193,17 +193,17 @@ impl Widget for Grid {
     }
 
     fn event(&self, event: Event, mut focused: bool, redraw: &mut bool) -> bool {
-        for (&(col, row), entry) in self.entries.borrow().iter() {
-            let is_focused = self.focused.get() == Some((col, row));
-            if entry.event(event, focused && is_focused, redraw) {
-                if self.focused.check_set(Some((col, row))) || ! focused {
-                    focused = true;
-                    *redraw = true;
-                }
-            } else if is_focused {
-                self.focused.set(None);
-            }
-        }
+        // for (&(col, row), entry) in self.entries.borrow().iter() {
+        //     let is_focused = self.focused.get() == Some((col, row));
+        //     if entry.event(event, focused && is_focused, redraw) {
+        //         if self.focused.check_set(Some((col, row))) || ! focused {
+        //             focused = true;
+        //             *redraw = true;
+        //         }
+        //     } else if is_focused {
+        //         self.focused.set(None);
+        //     }
+        // }
 
         focused
     }

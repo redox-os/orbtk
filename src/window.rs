@@ -6,8 +6,10 @@ use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
 use std::sync::Arc;
 use std::fmt;
+use std::cmp::PartialEq;
 
-use super::{Event, FocusManager, KeyEvent, Point, Rect, Widget};
+use super::{Event, FocusManager, KeyEventArgs, MouseButton, MouseEventArgs, MouseMoveEventArgs,
+            Point, Rect, ScrollEventArgs, Widget, Handleable};
 use theme::Theme;
 use traits::Resize;
 
@@ -79,6 +81,7 @@ pub struct Window {
     events: VecDeque<Event>,
     redraw: bool,
     focus_manager: FocusManager,
+    mouse_over_widget: RefCell<Option<Arc<Widget>>>,
 }
 
 impl Resize for Window {
@@ -153,6 +156,7 @@ impl Window {
             events: events,
             redraw: true,
             focus_manager: FocusManager::new(),
+            mouse_over_widget: RefCell::new(None),
         }
     }
 
@@ -254,14 +258,74 @@ impl Window {
             }
 
             for widget in self.widgets.borrow().iter() {
-                if widget.event(event, self.focus_manager.focused(&widget), &mut self.redraw) {
-                    if !self.focus_manager.focused(&widget) {
-                        self.focus_manager.request_focus(&widget);
-                        self.redraw = true;
-                    }
-                }
+                self.redraw = self.redraw || self.bubble_event(&event, widget);
+                // if widget.event(event, self.focus_manager.focused(&widget), &mut self.redraw) {
+                //     if !self.focus_manager.focused(&widget) {
+                //         self.focus_manager.request_focus(&widget);
+                //         self.redraw = true;
+                //     }
+                // }
             }
         }
+    }
+
+    pub fn bubble_event(&self, event: &Event, widget: &Arc<Widget>) -> bool {
+        match event.clone() {
+            Event::KeyDownEvent(args) => {
+                if !self.focus_manager.focused(widget) {
+                    return false
+                }
+                widget.on_key_down(&args);
+                return args.handled().get()
+            }
+            Event::KeyUpEvent(args) => {
+                widget.on_key_up(&args);
+                return args.handled().get()
+            }
+            Event::MouseDownEvent(args) => {
+                if !widget.rect().get().contains(args.point) {
+                    return false
+                }
+                widget.on_mouse_down(&args);
+                return args.handled().get()
+            }
+            Event::MouseUpEvent(args) => {
+                widget.on_mouse_up(&args);
+                return args.handled().get()
+            }
+            Event::MouseMoveEvent(args) => {
+                let mut mouse_leave = false;
+
+                if let Some(ref mouse_over_widget) = *self.mouse_over_widget.borrow() {
+                    if Arc::ptr_eq(mouse_over_widget, widget) {
+                        widget.on_mouse_leave(&args);
+                        mouse_leave = false;
+                    }
+                }
+
+                if mouse_leave {
+                    *self.mouse_over_widget.borrow_mut() = None;
+                }
+
+                if widget.rect().get().contains(args.point) {
+                    widget.on_mouse_enter(&args);
+                    *self.mouse_over_widget.borrow_mut() = Some(widget.clone());
+                }
+
+                return args.handled().get()
+            }
+            Event::ScrollEvent(args) => {
+                if !widget.rect().get().contains(args.point) {
+                    return false;
+                }
+
+                widget.on_scroll(&args);
+                return args.handled().get()
+            }
+            _ => {}
+        }
+
+        false
     }
 
     pub fn drain_orbital_events(&mut self) {
@@ -271,24 +335,49 @@ impl Window {
                     self.mouse_point.x = mouse_event.x;
                     self.mouse_point.y = mouse_event.y;
 
-                    self.events.push_back(Event::Mouse {
-                        point: self.mouse_point,
-                        left_button: self.mouse_left,
-                        middle_button: self.mouse_middle,
-                        right_button: self.mouse_right,
-                    })
+                    self.events
+                        .push_back(Event::MouseMoveEvent(MouseMoveEventArgs::new(
+                            self.mouse_point,
+                        )))
                 }
                 orbclient::EventOption::Button(button_event) => {
+                    let old_mouse_left = self.mouse_left;
+                    let old_mouse_right = self.mouse_right;
                     self.mouse_left = button_event.left;
                     self.mouse_middle = button_event.middle;
                     self.mouse_right = button_event.right;
 
-                    self.events.push_back(Event::Mouse {
-                        point: self.mouse_point,
-                        left_button: self.mouse_left,
-                        middle_button: self.mouse_middle,
-                        right_button: self.mouse_right,
-                    })
+                    if self.mouse_left || self.mouse_middle || self.mouse_right {
+                        let button: MouseButton = {
+                            if old_mouse_left && !self.mouse_left {
+                                MouseButton::Left
+                            } else if old_mouse_right && !self.mouse_right {
+                                MouseButton::Right
+                            } else {
+                                MouseButton::Middle
+                            }
+                        };
+                        self.events
+                            .push_back(Event::MouseDownEvent(MouseEventArgs::new(
+                                self.mouse_point,
+                                button,
+                            )))
+                    } else {
+                        let button: MouseButton = {
+                            if old_mouse_left && !self.mouse_left {
+                                MouseButton::Left
+                            } else if old_mouse_right && !self.mouse_right {
+                                MouseButton::Right
+                            } else {
+                                MouseButton::Middle
+                            }
+                        };
+                        self.events
+                            .push_back(Event::MouseUpEvent(MouseEventArgs::new(
+                                self.mouse_point,
+                                button,
+                            )))
+                    }
                 }
                 orbclient::EventOption::Scroll(scroll_event) => {
                     self.events.push_back(Event::Scroll {
@@ -298,12 +387,12 @@ impl Window {
                 }
                 orbclient::EventOption::Key(key_event) => {
                     if key_event.pressed {
-                        self.events.push_back(Event::KeyPressed(
-                            KeyEvent::from_orbital_key_event(key_event),
+                        self.events.push_back(Event::KeyDownEvent(
+                            KeyEventArgs::from_orbital_key_event(key_event),
                         ));
                     } else {
-                        self.events.push_back(Event::KeyReleased(
-                            KeyEvent::from_orbital_key_event(key_event),
+                        self.events.push_back(Event::KeyUpEvent(
+                            KeyEventArgs::from_orbital_key_event(key_event),
                         ));
                     }
                 }
@@ -409,6 +498,7 @@ impl<'a> WindowBuilder<'a> {
             events: events,
             redraw: true,
             focus_manager: FocusManager::new(),
+            mouse_over_widget: RefCell::new(None),
         }
     }
 }

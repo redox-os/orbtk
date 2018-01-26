@@ -1,6 +1,6 @@
 #![crate_name="orbtk"]
 #![crate_type="lib"]
-#![deny(warnings)]
+// #![deny(warnings)]
 #![feature(const_fn)]
 
 extern crate orbclient;
@@ -16,7 +16,7 @@ pub use cell::CloneCell;
 pub use dialogs::*;
 pub use layouts::*;
 pub use primitives::*;
-pub use event::{Event, KeyEvent};
+pub use event::*;
 pub use self::focus_manager::FocusManager;
 pub use point::Point;
 pub use rect::Rect;
