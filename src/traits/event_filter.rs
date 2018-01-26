@@ -1,4 +1,4 @@
-use event::Event;
+use events::Event;
 
 pub trait EventFilter {
     fn handle_event(&self, event: Event, focused: &mut bool, redraw: &mut bool) -> Option<Event>;

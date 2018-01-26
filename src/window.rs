@@ -6,10 +6,9 @@ use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
 use std::sync::Arc;
 use std::fmt;
-use std::cmp::PartialEq;
 
 use super::{Event, FocusManager, KeyEventArgs, MouseButton, MouseEventArgs, MouseMoveEventArgs,
-            Point, Rect, ScrollEventArgs, Widget, Handleable};
+            Point, Rect, ScrollEventArgs, Widget, Handleable, EventManager};
 use theme::Theme;
 use traits::Resize;
 
@@ -80,8 +79,7 @@ pub struct Window {
     mouse_right: bool,
     events: VecDeque<Event>,
     redraw: bool,
-    focus_manager: FocusManager,
-    mouse_over_widget: RefCell<Option<Arc<Widget>>>,
+    event_manager: EventManager,
 }
 
 impl Resize for Window {
@@ -155,8 +153,7 @@ impl Window {
             mouse_middle: false,
             events: events,
             redraw: true,
-            focus_manager: FocusManager::new(),
-            mouse_over_widget: RefCell::new(None),
+            event_manager: EventManager::new(),
         }
     }
 
@@ -213,9 +210,10 @@ impl Window {
         let id = widgets.len();
         widgets.push(widget.clone());
 
-        if id == 0 {
-            self.focus_manager.request_focus(&widgets[id]);
-        }
+        // todo: set focus on first focusable widget
+        // if id == 0 {
+        //     self.focus_manager.request_focus(&widgets[id]);
+        // }
 
         id
     }
@@ -226,16 +224,16 @@ impl Window {
 
         let mut renderer = WindowRenderer::new(&mut *inner, &self.font);
         for widget in self.widgets.borrow().iter() {
-            self.draw_widget(&mut renderer, self.focus_manager.focused(&widget), widget);
+            self.draw_widget(&mut renderer, widget);
         }
     }
 
-    fn draw_widget(&self, renderer: &mut Renderer, focused: bool, widget: &Arc<Widget>) {
+    fn draw_widget(&self, renderer: &mut Renderer, widget: &Arc<Widget>) {
         widget.update();
-        widget.draw(renderer, focused, &self.theme);
+        widget.draw(renderer, &self.theme);
 
         for child in widget.children().borrow().iter() {
-            self.draw_widget(renderer, self.focus_manager.focused(&child), child);
+            self.draw_widget(renderer, child);
         }
     }
 
@@ -256,76 +254,9 @@ impl Window {
                 }
                 _ => (),
             }
-
-            for widget in self.widgets.borrow().iter() {
-                self.redraw = self.redraw || self.bubble_event(&event, widget);
-                // if widget.event(event, self.focus_manager.focused(&widget), &mut self.redraw) {
-                //     if !self.focus_manager.focused(&widget) {
-                //         self.focus_manager.request_focus(&widget);
-                //         self.redraw = true;
-                //     }
-                // }
-            }
-        }
-    }
-
-    pub fn bubble_event(&self, event: &Event, widget: &Arc<Widget>) -> bool {
-        match event.clone() {
-            Event::KeyDownEvent(args) => {
-                if !self.focus_manager.focused(widget) {
-                    return false
-                }
-                widget.on_key_down(&args);
-                return args.handled().get()
-            }
-            Event::KeyUpEvent(args) => {
-                widget.on_key_up(&args);
-                return args.handled().get()
-            }
-            Event::MouseDownEvent(args) => {
-                if !widget.rect().get().contains(args.point) {
-                    return false
-                }
-                widget.on_mouse_down(&args);
-                return args.handled().get()
-            }
-            Event::MouseUpEvent(args) => {
-                widget.on_mouse_up(&args);
-                return args.handled().get()
-            }
-            Event::MouseMoveEvent(args) => {
-                let mut mouse_leave = false;
-
-                if let Some(ref mouse_over_widget) = *self.mouse_over_widget.borrow() {
-                    if Arc::ptr_eq(mouse_over_widget, widget) {
-                        widget.on_mouse_leave(&args);
-                        mouse_leave = false;
-                    }
-                }
-
-                if mouse_leave {
-                    *self.mouse_over_widget.borrow_mut() = None;
-                }
-
-                if widget.rect().get().contains(args.point) {
-                    widget.on_mouse_enter(&args);
-                    *self.mouse_over_widget.borrow_mut() = Some(widget.clone());
-                }
-
-                return args.handled().get()
-            }
-            Event::ScrollEvent(args) => {
-                if !widget.rect().get().contains(args.point) {
-                    return false;
-                }
-
-                widget.on_scroll(&args);
-                return args.handled().get()
-            }
-            _ => {}
         }
 
-        false
+        self.redraw = self.redraw || self.event_manager.drain_events(&*self.widgets.borrow());
     }
 
     pub fn drain_orbital_events(&mut self) {
@@ -335,7 +266,7 @@ impl Window {
                     self.mouse_point.x = mouse_event.x;
                     self.mouse_point.y = mouse_event.y;
 
-                    self.events
+                    self.event_manager
                         .push_back(Event::MouseMoveEvent(MouseMoveEventArgs::new(
                             self.mouse_point,
                         )))
@@ -357,7 +288,7 @@ impl Window {
                                 MouseButton::Middle
                             }
                         };
-                        self.events
+                        self.event_manager
                             .push_back(Event::MouseDownEvent(MouseEventArgs::new(
                                 self.mouse_point,
                                 button,
@@ -372,7 +303,7 @@ impl Window {
                                 MouseButton::Middle
                             }
                         };
-                        self.events
+                        self.event_manager
                             .push_back(Event::MouseUpEvent(MouseEventArgs::new(
                                 self.mouse_point,
                                 button,
@@ -380,18 +311,18 @@ impl Window {
                     }
                 }
                 orbclient::EventOption::Scroll(scroll_event) => {
-                    self.events.push_back(Event::Scroll {
+                    self.event_manager.push_back(Event::Scroll {
                         x: scroll_event.x,
                         y: scroll_event.y,
                     })
                 }
                 orbclient::EventOption::Key(key_event) => {
                     if key_event.pressed {
-                        self.events.push_back(Event::KeyDownEvent(
+                        self.event_manager.push_back(Event::KeyDownEvent(
                             KeyEventArgs::from_orbital_key_event(key_event),
                         ));
                     } else {
-                        self.events.push_back(Event::KeyUpEvent(
+                        self.event_manager.push_back(Event::KeyUpEvent(
                             KeyEventArgs::from_orbital_key_event(key_event),
                         ));
                     }
@@ -497,8 +428,7 @@ impl<'a> WindowBuilder<'a> {
             mouse_middle: false,
             events: events,
             redraw: true,
-            focus_manager: FocusManager::new(),
-            mouse_over_widget: RefCell::new(None),
+            event_manager: EventManager::new(),
         }
     }
 }

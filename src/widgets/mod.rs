@@ -9,7 +9,7 @@ use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 use std::fmt;
 
-use event::{Event, KeyEventArgs, MouseEventArgs, MouseMoveEventArgs, ScrollEventArgs};
+use events::{Event, KeyEventArgs, MouseEventArgs, MouseMoveEventArgs, ScrollEventArgs};
 use rect::Rect;
 use point::Point;
 use theme::Theme;
@@ -69,19 +69,7 @@ pub trait Widget: Any {
     fn margin(&self) -> &Cell<Thickness>;
 
     /// Used to draw the widget by render code.
-    fn draw(&self, _renderer: &mut Renderer, _focused: bool, _theme: &Theme) {}
-
-    /// Handle the incoming events by tunneling from parent to child.
-    /// Must have overwritten to create a custom tunneling event handling.
-    fn preview_event(&self, _event: Event, _focused: bool, _redraw: &mut bool, _handled: bool) -> bool {
-        _focused
-    }
-
-    /// Handle the incoming events by bubbling from child to parent. 
-    /// Must have overwritten to create a custom bubbling event handling.
-    fn event(&self, _event: Event, _focused: bool, _redraw: &mut bool) -> bool {
-        _focused
-    }
+    fn draw(&self, _renderer: &mut Renderer, _theme: &Theme) {}
 
     fn on_preview_key_down(&self, _args: &KeyEventArgs) {}
     fn on_preview_key_up(&self, _args: &KeyEventArgs) {}

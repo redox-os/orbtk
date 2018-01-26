@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use cell::CheckSet;
-use event::Event;
+use events::Event;
 use rect::Rect;
 use point::Point;
 use thickness::Thickness;
@@ -139,12 +139,12 @@ impl Grid {
     }
 
     // used as temp fix
-    fn draw_entry(&self, entry: &Arc<Widget>, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
-        entry.draw(renderer, _focused, theme);
+    fn draw_entry(&self, entry: &Arc<Widget>, renderer: &mut Renderer, theme: &Theme) {
+        // entry.draw(renderer, _focused, theme);
 
-        for child in entry.children().borrow().iter() {
-            self.draw_entry(child, renderer, _focused, theme);
-        }
+        // for child in entry.children().borrow().iter() {
+        //     self.draw_entry(child, renderer, _focused, theme);
+        // }
     }
 }
 
@@ -186,27 +186,27 @@ impl Widget for Grid {
         &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
-        for (&(col, row), entry) in self.entries.borrow().iter() {
-            self.draw_entry(entry, renderer, self.focused.get() == Some((col, row)), theme);
-        }
-    }
+    // fn draw(&self, renderer: &mut Renderer, theme: &Theme) {
+    //     for (&(col, row), entry) in self.entries.borrow().iter() {
+    //         self.draw_entry(entry, renderer, self.focused.get() == Some((col, row)), theme);
+    //     }
+    // }
 
-    fn event(&self, event: Event, mut focused: bool, redraw: &mut bool) -> bool {
-        // for (&(col, row), entry) in self.entries.borrow().iter() {
-        //     let is_focused = self.focused.get() == Some((col, row));
-        //     if entry.event(event, focused && is_focused, redraw) {
-        //         if self.focused.check_set(Some((col, row))) || ! focused {
-        //             focused = true;
-        //             *redraw = true;
-        //         }
-        //     } else if is_focused {
-        //         self.focused.set(None);
-        //     }
-        // }
+    // fn event(&self, event: Event, mut redraw: &mut bool) -> bool {
+    //     // for (&(col, row), entry) in self.entries.borrow().iter() {
+    //     //     let is_focused = self.focused.get() == Some((col, row));
+    //     //     if entry.event(event, focused && is_focused, redraw) {
+    //     //         if self.focused.check_set(Some((col, row))) || ! focused {
+    //     //             focused = true;
+    //     //             *redraw = true;
+    //     //         }
+    //     //     } else if is_focused {
+    //     //         self.focused.set(None);
+    //     //     }
+    //     // }
 
-        focused
-    }
+    //     focused
+    // }
 
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
         &self.children

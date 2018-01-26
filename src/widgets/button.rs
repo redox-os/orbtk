@@ -2,7 +2,7 @@ use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 use cell::{CheckSet, CloneCell};
-use event::{Event, MouseEventArgs, Handleable, MouseButton, MouseMoveEventArgs};
+use events::{Event, MouseEventArgs, Handleable, MouseButton, MouseMoveEventArgs};
 use point::Point;
 use rect::Rect;
 use thickness::Thickness;
@@ -170,50 +170,6 @@ impl Widget for Button {
     fn on_mouse_leave(&self, args: &MouseMoveEventArgs) {
         self.hover.set(false);
         args.handled().set(true);
-    }
-
-    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse {
-                point, left_button, ..
-            } => {
-                let mut click = false;
-
-                let rect = self.rect.get();
-                if rect.contains(point) {
-                    if self.hover.check_set(true) {
-                        *redraw = true;
-                    }
-
-                    if left_button {
-                        if self.pressed.check_set(true) {
-                            *redraw = true;
-                        }
-                    } else {
-                        if self.pressed.check_set(false) {
-                            click = true;
-                            *redraw = true;
-                        }
-                    }
-                } else {
-                    if self.hover.check_set(false) {
-                        *redraw = true;
-                    }
-
-                    if self.pressed.check_set(false) {
-                        *redraw = true;
-                    }
-                }
-
-                if click {
-                    let click_point: Point = point - rect.point();
-                    self.emit_click(click_point);
-                }
-            }
-            _ => (),
-        }
-
-        focused
     }
 
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {

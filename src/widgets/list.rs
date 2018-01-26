@@ -4,7 +4,7 @@ use std::cmp;
 use std::sync::Arc;
 
 use cell::{CheckSet, CloneCell};
-use event::Event;
+use events::Event;
 use point::Point;
 use rect::Rect;
 use thickness::Thickness;
@@ -267,101 +267,101 @@ impl Widget for List {
         &self.local_position
     }
 
-    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse {
-                point, left_button, ..
-            } => {
-                let mut click = false;
+    // fn event(&self, event: Event, redraw: &mut bool) -> bool {
+    //     match event {
+    //         Event::Mouse {
+    //             point, left_button, ..
+    //         } => {
+    //             let mut click = false;
 
-                let rect = self.rect.get();
-                if rect.contains(point) {
-                    if left_button {
-                        if self.pressed.check_set(true) {
-                            *redraw = true;
-                        }
-                    } else {
-                        if self.pressed.check_set(false) {
-                            click = true;
-                            *redraw = true;
-                        }
-                    }
-                } else {
-                    if !left_button {
-                        if self.pressed.check_set(false) {
-                            *redraw = true;
-                        }
-                    }
-                }
+    //             let rect = self.rect.get();
+    //             if rect.contains(point) {
+    //                 if left_button {
+    //                     if self.pressed.check_set(true) {
+    //                         *redraw = true;
+    //                     }
+    //                 } else {
+    //                     if self.pressed.check_set(false) {
+    //                         click = true;
+    //                         *redraw = true;
+    //                     }
+    //                 }
+    //             } else {
+    //                 if !left_button {
+    //                     if self.pressed.check_set(false) {
+    //                         *redraw = true;
+    //                     }
+    //                 }
+    //             }
 
-                if let Some(i) = self.get_entry_index(point) {
-                    if click {
-                        if let Some(entry) = self.entries.borrow().get(i as usize) {
-                            entry.emit_click(point);
-                        }
-                    }
+    //             if let Some(i) = self.get_entry_index(point) {
+    //                 if click {
+    //                     if let Some(entry) = self.entries.borrow().get(i as usize) {
+    //                         entry.emit_click(point);
+    //                     }
+    //                 }
 
-                    match self.selected.get() {
-                        None => {
-                            self.change_selection(i);
-                            *redraw = true;
-                        }
-                        Some(selected) => if selected != i {
-                            self.change_selection(i);
-                            *redraw = true;
-                        },
-                    }
-                }
-            }
-            Event::KeyPressed(key_event) => match key_event.scancode {
-                orbclient::K_UP => match self.selected.get() {
-                    None => {
-                        self.change_selection(0);
-                        *redraw = true;
-                    }
-                    Some(i) => if i > 0 {
-                        self.change_selection(i - 1);
-                        *redraw = true;
-                    },
-                },
-                orbclient::K_DOWN => match self.selected.get() {
-                    None => {
-                        self.change_selection(0);
-                        *redraw = true;
-                    }
-                    Some(i) => if i < self.entries.borrow().len() as u32 - 1 {
-                        self.change_selection(i + 1);
-                        *redraw = true;
-                    },
-                },
-                orbclient::K_HOME => {
-                    self.change_selection(0);
-                    *redraw = true
-                }
-                orbclient::K_END => {
-                    self.change_selection(self.entries.borrow().len() as u32 - 1);
-                    *redraw = true
-                }
-                orbclient::K_ENTER => match self.selected.get() {
-                    Some(i) => match self.entries.borrow().get(i as usize) {
-                        Some(entry) => {
-                            entry.emit_click(Point { x: 0, y: 0 });
-                        }
-                        None => {}
-                    },
-                    _ => {}
-                },
-                _ => {}
-            },
-            Event::Scroll { y, .. } => {
-                self.scroll(y * -96);
-                *redraw = true;
-                self.arrange();
-            }
-            _ => {}
-        }
-        focused
-    }
+    //                 match self.selected.get() {
+    //                     None => {
+    //                         self.change_selection(i);
+    //                         *redraw = true;
+    //                     }
+    //                     Some(selected) => if selected != i {
+    //                         self.change_selection(i);
+    //                         *redraw = true;
+    //                     },
+    //                 }
+    //             }
+    //         }
+    //         Event::KeyPressed(key_event) => match key_event.scancode {
+    //             orbclient::K_UP => match self.selected.get() {
+    //                 None => {
+    //                     self.change_selection(0);
+    //                     *redraw = true;
+    //                 }
+    //                 Some(i) => if i > 0 {
+    //                     self.change_selection(i - 1);
+    //                     *redraw = true;
+    //                 },
+    //             },
+    //             orbclient::K_DOWN => match self.selected.get() {
+    //                 None => {
+    //                     self.change_selection(0);
+    //                     *redraw = true;
+    //                 }
+    //                 Some(i) => if i < self.entries.borrow().len() as u32 - 1 {
+    //                     self.change_selection(i + 1);
+    //                     *redraw = true;
+    //                 },
+    //             },
+    //             orbclient::K_HOME => {
+    //                 self.change_selection(0);
+    //                 *redraw = true
+    //             }
+    //             orbclient::K_END => {
+    //                 self.change_selection(self.entries.borrow().len() as u32 - 1);
+    //                 *redraw = true
+    //             }
+    //             orbclient::K_ENTER => match self.selected.get() {
+    //                 Some(i) => match self.entries.borrow().get(i as usize) {
+    //                     Some(entry) => {
+    //                         entry.emit_click(Point { x: 0, y: 0 });
+    //                     }
+    //                     None => {}
+    //                 },
+    //                 _ => {}
+    //             },
+    //             _ => {}
+    //         },
+    //         Event::Scroll { y, .. } => {
+    //             self.scroll(y * -96);
+    //             *redraw = true;
+    //             self.arrange();
+    //         }
+    //         _ => {}
+    //     }
+    //     focused
+    // }
 
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
         &self.children

@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use cell::{CloneCell, CheckSet};
 use draw::draw_box;
-use event::Event;
+use events::Event;
 use point::Point;
 use rect::Rect;
 use thickness::Thickness;
@@ -145,109 +145,55 @@ impl Widget for Menu {
         &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
-        let rect = self.rect.get();
+    // fn draw(&self, renderer: &mut Renderer, theme: &Theme) {
+    //     let rect = self.rect.get();
 
-        if self.activated.get() {
-            //TODO: set this selector as the child of self.selector
-            draw_box(renderer, rect, theme, &Selector::new(Some("menu-button")).with_pseudo_class("active"));
+    //     if self.activated.get() {
+    //         //TODO: set this selector as the child of self.selector
+    //         draw_box(renderer, rect, theme, &Selector::new(Some("menu-button")).with_pseudo_class("active"));
 
-            let mut max_width = 0;
-            let mut max_height = 0;
+    //         let mut max_width = 0;
+    //         let mut max_height = 0;
 
-            for entry in self.entries.borrow().iter() {
-                let r = entry.rect().get();
-                max_width = max(max_width, r.x + r.width as i32 - rect.x);
-                max_height = max(max_height, r.y + r.height as i32 - rect.y - rect.height as i32);
-            }
+    //         for entry in self.entries.borrow().iter() {
+    //             let r = entry.rect().get();
+    //             max_width = max(max_width, r.x + r.width as i32 - rect.x);
+    //             max_height = max(max_height, r.y + r.height as i32 - rect.y - rect.height as i32);
+    //         }
 
-            let entries_rect = Rect::new(
-                rect.x - 1, rect.y + rect.height as i32 - 1,
-                max_width as u32 + 2, max_height as u32 + 2,
-            );
+    //         let entries_rect = Rect::new(
+    //             rect.x - 1, rect.y + rect.height as i32 - 1,
+    //             max_width as u32 + 2, max_height as u32 + 2,
+    //         );
 
-            draw_box(renderer, entries_rect, theme, &self.selector.get().with_pseudo_class("active"));
-        } else {
-            //TODO: set this selector as the child of self.selector
-            draw_box(renderer, rect, theme, &Selector::new(Some("menu-button")).with_pseudo_class("inactive"));
-        }
+    //         draw_box(renderer, entries_rect, theme, &self.selector.get().with_pseudo_class("active"));
+    //     } else {
+    //         //TODO: set this selector as the child of self.selector
+    //         draw_box(renderer, rect, theme, &Selector::new(Some("menu-button")).with_pseudo_class("inactive"));
+    //     }
 
-        let text = self.text.borrow();
-        let mut point = self.text_offset.get();
-        for c in text.chars() {
-            if c == '\n' {
-                point.x = self.text_offset.get().x;
-                point.y += 16;
-            } else {
-                if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
-                    renderer.char(point.x + rect.x, point.y + rect.y, c, theme.color("color", &"button".into()));
-                }
-                point.x += 8;
-            }
-        }
+    //     let text = self.text.borrow();
+    //     let mut point = self.text_offset.get();
+    //     for c in text.chars() {
+    //         if c == '\n' {
+    //             point.x = self.text_offset.get().x;
+    //             point.y += 16;
+    //         } else {
+    //             if point.x + 8 <= rect.width as i32 && point.y + 16 <= rect.height as i32 {
+    //                 renderer.char(point.x + rect.x, point.y + rect.y, c, theme.color("color", &"button".into()));
+    //             }
+    //             point.x += 8;
+    //         }
+    //     }
 
-        if self.activated.get() {
-            for entry in self.entries.borrow().iter() {
-                entry.draw(renderer, _focused, theme);
-            }
-        }
-    }
+    //     if self.activated.get() {
+    //         for entry in self.entries.borrow().iter() {
+    //             entry.draw(renderer, _focused, theme);
+    //         }
+    //     }
+    // }
 
-    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        // let mut ignore_event = false;
-        // if self.activated.get() {
-        //     for entry in self.entries.borrow().iter() {
-        //         if entry.event(event, focused, redraw) {
-        //             ignore_event = true;
-        //             self.pressed.set(true);
-        //         }
-        //     }
-        // }
-
-        // match event {
-        //     Event::Mouse { point, left_button, .. } => {
-        //         let mut click = false;
-
-        //         let rect = self.rect.get();
-        //         if rect.contains(point) {
-        //             if left_button {
-        //                 self.pressed.set(!self.pressed.get());
-
-        //                 if self.activated.check_set(true) {
-        //                     click = true;
-        //                     *redraw = true;
-        //                 }
-        //             } else {
-        //                 if !self.pressed.get() {
-        //                     if self.activated.check_set(false) {
-        //                         click = true;
-        //                         *redraw = true;
-        //                     }
-        //                 }
-        //             }
-        //         } else {
-        //             if !ignore_event {
-        //                 if left_button {
-        //                     self.pressed.set(false);
-        //                 } else {
-        //                     if !self.pressed.get() {
-        //                         if self.activated.check_set(false) {
-        //                             *redraw = true;
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         }
-
-        //         if click {
-        //             let click_point: Point = point - rect.point();
-        //             self.emit_click(click_point);
-        //         }
-        //     }
-        //     _ => (),
-        // }
-        focused
-    }
+    // 5
 
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
         &self.children
@@ -344,7 +290,7 @@ impl Widget for Action {
         &self.local_position
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut Renderer, theme: &Theme) {
         let rect = self.rect.get();
 
         let pseudo_class = if self.hover.get() { "active" } else { "inactive" };
@@ -367,50 +313,50 @@ impl Widget for Action {
         }
     }
 
-    fn event(&self, event: Event, _focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse { point, left_button, .. } => {
-                let mut click = false;
-                let rect = self.rect.get();
+    // fn event(&self, event: Event, redraw: &mut bool) -> bool {
+    //     match event {
+    //         Event::Mouse { point, left_button, .. } => {
+    //             let mut click = false;
+    //             let rect = self.rect.get();
 
-                if rect.contains(point) {
-                    if self.hover.check_set(true) {
-                        *redraw = true;
-                    }
+    //             if rect.contains(point) {
+    //                 if self.hover.check_set(true) {
+    //                     *redraw = true;
+    //                 }
 
-                    if left_button {
-                        if self.pressed.check_set(true) {
-                            *redraw = true;
-                        }
-                    } else {
-                        if self.pressed.check_set(false) {
-                            click = true;
-                            self.hover.set(false);
-                            *redraw = true;
-                        }
-                    }
-                } else {
-                    if self.hover.check_set(false) {
-                        *redraw = true;
-                    }
+    //                 if left_button {
+    //                     if self.pressed.check_set(true) {
+    //                         *redraw = true;
+    //                     }
+    //                 } else {
+    //                     if self.pressed.check_set(false) {
+    //                         click = true;
+    //                         self.hover.set(false);
+    //                         *redraw = true;
+    //                     }
+    //                 }
+    //             } else {
+    //                 if self.hover.check_set(false) {
+    //                     *redraw = true;
+    //                 }
 
-                    if !left_button {
-                        if self.pressed.check_set(false) {
-                            *redraw = true;
-                        }
-                    }
-                }
+    //                 if !left_button {
+    //                     if self.pressed.check_set(false) {
+    //                         *redraw = true;
+    //                     }
+    //                 }
+    //             }
 
-                if click {
-                    let click_point: Point = point - rect.point();
-                    self.emit_click(click_point);
-                }
-            }
-            _ => (),
-        }
+    //             if click {
+    //                 let click_point: Point = point - rect.point();
+    //                 self.emit_click(click_point);
+    //             }
+    //         }
+    //         _ => (),
+    //     }
 
-        false
-    }
+    //     false
+    // }
 
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
         &self.children
@@ -468,7 +414,7 @@ impl Widget for Separator {
         &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut Renderer, theme: &Theme) {
         let rect = self.rect.get();
         let selector = &self.selector.get();
         draw_box(renderer, rect, theme, selector);
@@ -477,19 +423,19 @@ impl Widget for Separator {
         renderer.rect(rect.x, line_y, rect.width, 1, theme.color("color", selector));
     }
 
-    fn event(&self, event: Event, _focused: bool, _redraw: &mut bool) -> bool {
-        let mut ignore_event = false;
-        match event {
-            Event::Mouse { point, .. } => {
-                let rect = self.rect.get();
-                if rect.contains(point) {
-                    ignore_event = true;
-                }
-            }
-            _ => (),
-        }
-        ignore_event
-    }
+    // fn event(&self, event: Event, _redraw: &mut bool) -> bool {
+    //     let mut ignore_event = false;
+    //     match event {
+    //         Event::Mouse { point, .. } => {
+    //             let rect = self.rect.get();
+    //             if rect.contains(point) {
+    //                 ignore_event = true;
+    //             }
+    //         }
+    //         _ => (),
+    //     }
+    //     ignore_event
+    // }
 
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
         &self.children

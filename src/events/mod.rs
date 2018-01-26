@@ -4,6 +4,10 @@ use super::Point;
 
 use orbclient;
 
+pub use self::event_manager::*;
+
+mod event_manager;
+
 pub trait Handleable {
     fn handled(&self) -> &Cell<bool>;
 }
