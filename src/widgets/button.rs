@@ -1,8 +1,8 @@
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
-use cell::{CheckSet, CloneCell};
-use events::{Event, MouseEventArgs, Handleable, MouseButton, MouseMoveEventArgs};
+use cell::CloneCell;
+use events::{FocusManager, MouseEventArgs, Handleable, MouseMoveEventArgs};
 use point::Point;
 use rect::Rect;
 use thickness::Thickness;
@@ -145,7 +145,7 @@ impl Widget for Button {
         self.selector().set(selector);
     }
 
-    fn on_mouse_down(&self, args: &MouseEventArgs) {    
+    fn on_mouse_down(&self, args: &MouseEventArgs, _focus_manager: &FocusManager) {    
         self.pressed.set(true);
         args.handled().set(true);
     }

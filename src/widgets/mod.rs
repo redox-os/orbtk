@@ -9,7 +9,7 @@ use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 use std::fmt;
 
-use events::{Event, KeyEventArgs, MouseEventArgs, MouseMoveEventArgs, ScrollEventArgs};
+use events::{FocusManager, KeyEventArgs, MouseEventArgs, MouseMoveEventArgs, ScrollEventArgs};
 use rect::Rect;
 use point::Point;
 use theme::Theme;
@@ -73,7 +73,7 @@ pub trait Widget: Any {
 
     fn on_preview_key_down(&self, _args: &KeyEventArgs) {}
     fn on_preview_key_up(&self, _args: &KeyEventArgs) {}
-    fn on_preview_mouse_down(&self, _args: &MouseEventArgs) {}
+    fn on_preview_mouse_down(&self, _args: &MouseEventArgs, _focus_manager: &FocusManager) {}
     fn on_preview_mouse_up(&self, _args: &MouseEventArgs) {}
     fn on_preview_mouse_enter(&self, _args: &MouseMoveEventArgs){}
     fn on_preview_mouse_leave(&self, _args: &MouseMoveEventArgs){}
@@ -81,7 +81,7 @@ pub trait Widget: Any {
 
     fn on_key_down(&self, _args: &KeyEventArgs) {}
     fn on_key_up(&self, _args: &KeyEventArgs) {}
-    fn on_mouse_down(&self, _args: &MouseEventArgs) {}
+    fn on_mouse_down(&self, _args: &MouseEventArgs, _focus_manager: &FocusManager) {}
     fn on_mouse_up(&self, _args: &MouseEventArgs) {}
     fn on_mouse_enter(&self, _args: &MouseMoveEventArgs) {}
     fn on_mouse_leave(&self, _args: &MouseMoveEventArgs) {}
