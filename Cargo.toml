@@ -18,8 +18,8 @@ name = "orbtk"
 path = "src/lib.rs"
 
 [dependencies]
-orbclient = "0.3.11"
+orbclient = "0.3.13"
 orbfont = "0.1.8"
-orbimage = "0.1.15"
+orbimage = "0.1.16"
 cssparser = "0.16.0"
 lazy_static = "0.2.8"
