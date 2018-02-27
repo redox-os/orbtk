@@ -1,6 +1,6 @@
 extern crate orbfont;
 
-use orbclient::{self, Renderer, WindowFlag};
+use orbclient::{self, Renderer, Mode, WindowFlag};
 use orbclient::color::Color;
 use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
@@ -45,6 +45,10 @@ impl<'a> Renderer for WindowRenderer<'a> {
 
     fn sync(&mut self) -> bool {
         self.inner.sync()
+    }
+    
+    fn mode(&self) -> &Cell<Mode> {
+        &self.inner.mode()
     }
 
     fn char(&mut self, x: i32, y: i32, c: char, color: Color) {
