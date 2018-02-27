@@ -18,7 +18,7 @@ name = "orbtk"
 path = "src/lib.rs"
 
 [dependencies]
-orbclient = { git = "https://github.com/redox-os/orbclient.git" }
+orbclient = "0.3.13"
 orbfont = "0.1.8"
 orbimage = { git = "https://github.com/redox-os/orbimage.git" }
 cssparser = "0.16.0"
