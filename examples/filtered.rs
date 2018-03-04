@@ -16,15 +16,15 @@ fn main() {
         match event {
             Event::KeyPressed(key_event) => {
                 if let Some(character) = key_event.character {
-                    if character == 'e' {
-                        return None
+                    if character != 'e' {
+                        return Some(event)
                     }
                 }
             }
             _ => {}
         }
 
-        Some(event)
+        None
     });
     text_field.text_offset(6, 6);
     window.add(&text_field);
