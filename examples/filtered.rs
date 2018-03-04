@@ -16,15 +16,15 @@ fn main() {
         match event {
             Event::KeyPressed(key_event) => {
                 if let Some(character) = key_event.character {
-                    if character != 'e' {
-                        return Some(event)
+                    if character == 'e' {
+                        return None
                     }
                 }
             }
             _ => {}
         }
 
-        None
+        Some(event)
     });
     text_field.text_offset(6, 6);
     window.add(&text_field);
@@ -39,15 +39,15 @@ fn main() {
        match event {
             Event::KeyPressed (key_event) => {
                 if let Some(character) = key_event.character {
-                    if character.is_numeric() {
-                        return Some(event)
+                    if !character.is_numeric() {
+                        return None
                     }       
                 } 
             },
             _ => {}
         }
 
-        None
+        Some(event)
     });
 
     text_field.text_offset(6, 6);
