@@ -47,7 +47,7 @@ fn main() {
             _ => {}
         }
 
-        Some(event)
+        None
     });
 
     text_field.text_offset(6, 6);
