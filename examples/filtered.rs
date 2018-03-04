@@ -39,8 +39,8 @@ fn main() {
        match event {
             Event::KeyPressed (key_event) => {
                 if let Some(character) = key_event.character {
-                    if character.is_numeric() {
-                        return Some(event)
+                    if !character.is_numeric() {
+                        return None
                     }       
                 } 
             },
