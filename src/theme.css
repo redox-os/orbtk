@@ -21,12 +21,12 @@ button {
     border-radius: 2;
 }
 
-button :active {
+button:active {
     background: #5294E2;
     color: white;
 }
 
-button :hover {
+button:hover {
   background: #CFD6E6;
 }
 
