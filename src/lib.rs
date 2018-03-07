@@ -23,7 +23,7 @@ pub use rect::Rect;
 pub use traits::*;
 pub use thickness::Thickness;
 //pub use widgets::*;
-pub use window::{InnerWindow, Window, WindowBuilder};
+pub use window::{InnerWindow, Window, Application};
 pub use react::*;
 
 
