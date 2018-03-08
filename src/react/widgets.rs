@@ -16,6 +16,9 @@ impl Widget for Text {
     fn types(&self) -> Vec<WidgetType> {
         vec![WidgetType::Drawable(TextDrawable::new("Test"))]
     }
+    fn element(&self) -> &str {
+        "text"
+    }
 }
 
 pub struct Button {}
@@ -35,6 +38,10 @@ impl Widget for Button {
         let center = Center::new();
         center.child(&Text::new());
         Content::Single(center)
+    }
+
+    fn element(&self) -> &str {
+        "button"
     }
 
     // maybe use callbacks instead (see eventhandler)

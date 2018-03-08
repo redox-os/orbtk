@@ -6,7 +6,7 @@ use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
 use std::sync::Arc;
 
-use super::{Content, Event, Point, Rect, Widget};
+use super::{Content, Event, Point, Rect, Widget, Node};
 use theme::Theme;
 use traits::Resize;
 
@@ -326,44 +326,9 @@ impl Window {
     }
 }
 
-pub struct Node {
-    widget: Arc<Widget>,
-    parent: Option<Arc<Node>>,
-    children: RefCell<Vec<Arc<Node>>>,
-    // todo: maybe rect, ...
-}
 
-impl Node {
-    pub fn new_root(widget: &Arc<Widget>) -> Arc<Self> {
-        Arc::new(Node {
-            widget: widget.clone(),
-            parent: None,
-            children: RefCell::new(vec![]),
-        })
-    }
 
-    pub fn new(widget: &Arc<Widget>, parent: &Arc<Node>) -> Arc<Self> {
-        Arc::new(Node {
-            widget: widget.clone(),
-            parent: Some(parent.clone()),
-            children: RefCell::new(vec![]),
-        })
-    }
-
-    pub fn widget(&self) -> &Arc<Widget> {
-        &self.widget
-    }
-
-    pub fn parent(&self) -> &Option<Arc<Node>> {
-        &self.parent
-    }
-
-    pub fn push(&self, child: &Arc<Node>) {
-        self.children.borrow_mut().push(child.clone());
-    }
-}
-
-fn build_tree(root: &Option<Arc<Node>>, widget: &Arc<Widget>) {
+fn build_tree(root: &Option<Arc<Node>>, widget: &Arc<Widget>) -> Option<Arc<Node>> {
     let node = {
         if let Some(ref root) = *root {
             Some(Node::new(widget, root))
@@ -374,12 +339,12 @@ fn build_tree(root: &Option<Arc<Node>>, widget: &Arc<Widget>) {
 
     if let Some(ref root) = *root {
         if let Some(ref node) = node {
-            root.children.borrow_mut().push(node.clone())
+            root.children().borrow_mut().push(node.clone())
         }
     }
 
     match widget.build() {
-        Content::Zero => return,
+        Content::Zero => return None,
         Content::Single(child) => {
             build_tree(&node, &child);
         }
@@ -387,6 +352,8 @@ fn build_tree(root: &Option<Arc<Node>>, widget: &Arc<Widget>) {
             build_tree(&node, &child);
         },
     }
+
+    node
 }
 
 pub struct Application<'a> {
@@ -396,6 +363,7 @@ pub struct Application<'a> {
     theme: Option<Theme>,
     flags: Option<&'a [WindowFlag]>,
     root: Option<Arc<Widget>>,
+    tree: Option<Arc<Node>>,
 }
 
 impl<'a> Application<'a> {
@@ -407,6 +375,7 @@ impl<'a> Application<'a> {
             theme: None,
             flags: None,
             root: None,
+            tree: None,
         }
     }
 
@@ -427,6 +396,9 @@ impl<'a> Application<'a> {
 
     pub fn root<W: 'static + Widget>(mut self, root: &Arc<W>) -> Self {
         self.root = Some(root.clone());
+        if let Some(ref root) = self.root {
+            self.tree = build_tree(&None, root);
+        }
         self
     }
 
@@ -449,10 +421,6 @@ impl<'a> Application<'a> {
         let mut events = VecDeque::new();
         events.push_back(Event::Init);
 
-        if let Some(root) = self.root {
-            build_tree(&None, &root);
-        }
-
         Window {
             inner: RefCell::new(inner),
             font: font,
@@ -467,6 +435,26 @@ impl<'a> Application<'a> {
             events: events,
             redraw: true,
             //            focus_manager: FocusManager::new(),
+        }
+    }
+
+    pub fn print_tree(self) -> Self {
+        if let Some(ref root) = self.tree {
+            println!("Window (OrbTK)");
+            self.print_node(root, "");
+        } else {
+            println!("Tree is empty.");
+        }
+
+        self
+    }
+
+    fn print_node(&self, root: &Arc<Node>, spacer: &str) {
+        println!("{}|- {}", spacer, root.widget().element());
+        let mut spacer = String::from(spacer);
+        spacer.push_str("|    ");
+        for child in root.children().borrow().iter() {
+            self.print_node(child, &spacer);
         }
     }
 
