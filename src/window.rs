@@ -1,12 +1,12 @@
 extern crate orbfont;
 
-use orbclient::{self, Renderer, Mode, WindowFlag};
+use orbclient::{self, Mode, Renderer, WindowFlag};
 use orbclient::color::Color;
 use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
 use std::sync::Arc;
 
-use super::{Event, FocusManager, KeyEvent, Point, Rect, Widget};
+use super::{Content, Event, Point, Rect, Widget, Node};
 use theme::Theme;
 use traits::Resize;
 
@@ -46,7 +46,7 @@ impl<'a> Renderer for WindowRenderer<'a> {
     fn sync(&mut self) -> bool {
         self.inner.sync()
     }
-    
+
     fn mode(&self) -> &Cell<Mode> {
         &self.inner.mode()
     }
@@ -71,17 +71,16 @@ impl<'a> Drop for WindowRenderer<'a> {
 pub struct Window {
     inner: RefCell<InnerWindow>,
     font: Option<orbfont::Font>,
-    pub widgets: RefCell<Vec<Arc<Widget>>>,
+    //    pub widgets: RefCell<Vec<Arc<Widget>>>,
     pub running: Cell<bool>,
     pub theme: Theme,
     resize_callback: RefCell<Option<Arc<Fn(&Window, u32, u32)>>>,
-    mouse_point: Point,
-    mouse_left: bool,
-    mouse_middle: bool,
-    mouse_right: bool,
+    _mouse_point: Point,
+    _mouse_left: bool,
+    _mouse_middle: bool,
+    _mouse_right: bool,
     events: VecDeque<Event>,
     redraw: bool,
-    focus_manager: FocusManager,
 }
 
 impl Resize for Window {
@@ -114,17 +113,17 @@ impl Window {
         Window {
             inner: RefCell::new(inner),
             font: orbfont::Font::find(None, None, None).ok(),
-            widgets: RefCell::new(Vec::new()),
+            //            widgets: RefCell::new(Vec::new()),
             running: Cell::new(true),
             theme: Theme::new(),
             resize_callback: RefCell::new(None),
-            mouse_point: Point::new(0, 0),
-            mouse_left: false,
-            mouse_right: false,
-            mouse_middle: false,
+            _mouse_point: Point::new(0, 0),
+            _mouse_left: false,
+            _mouse_right: false,
+            _mouse_middle: false,
             events: events,
             redraw: true,
-            focus_manager: FocusManager::new(),
+            //            focus_manager: FocusManager::new(),
         }
     }
 
@@ -176,36 +175,36 @@ impl Window {
         self.running.set(false);
     }
 
-    pub fn add<T: Widget>(&self, widget: &Arc<T>) -> usize {
-        let mut widgets = self.widgets.borrow_mut();
-        let id = widgets.len();
-        widgets.push(widget.clone());
-
-        if id == 0 {
-            self.focus_manager.request_focus(&widgets[id]);
-        }
-
-        id
-    }
+    //    pub fn add<T: Widget>(&self, widget: &Arc<T>) -> usize {
+    //        let mut widgets = self.widgets.borrow_mut();
+    //        let id = widgets.len();
+    //        widgets.push(widget.clone());
+    //
+    //        if id == 0 {
+    //            self.focus_manager.request_focus(&widgets[id]);
+    //        }
+    //
+    //        id
+    //    }
 
     pub fn draw(&self) {
         let mut inner = self.inner.borrow_mut();
         inner.set(self.theme.color("background", &"window".into()));
 
-        let mut renderer = WindowRenderer::new(&mut *inner, &self.font);
-        for widget in self.widgets.borrow().iter() {
-            self.draw_widget(&mut renderer, self.focus_manager.focused(&widget), widget);
-        }
+        let mut _renderer = WindowRenderer::new(&mut *inner, &self.font);
+        //        for widget in self.widgets.borrow().iter() {
+        //            self.draw_widget(&mut renderer, self.focus_manager.focused(&widget), widget);
+        //        }
     }
 
-    fn draw_widget(&self, renderer: &mut Renderer, focused: bool, widget: &Arc<Widget>) {
-        widget.update();
-        widget.draw(renderer, focused, &self.theme);
-
-        for child in widget.children().borrow().iter() {
-            self.draw_widget(renderer, self.focus_manager.focused(&child), child);
-        }
-    }
+    //    fn draw_widget(&self, renderer: &mut Renderer, focused: bool, widget: &Arc<Widget>) {
+    //        widget.update();
+    //        widget.draw(renderer, focused, &self.theme);
+    //
+    //        for child in widget.children().borrow().iter() {
+    //            self.draw_widget(renderer, self.focus_manager.focused(&child), child);
+    //        }
+    //    }
 
     pub fn set_theme(&mut self, theme: Theme) {
         self.theme = theme;
@@ -225,73 +224,36 @@ impl Window {
                 _ => (),
             }
 
-            for widget in self.widgets.borrow().iter() {
-                self.redraw = self.drain_event(event, self.redraw, widget);
-            }
+            //            for widget in self.widgets.borrow().iter() {
+            //                self.redraw = self.drain_event(event, self.redraw, widget);
+            //            }
         }
     }
 
-    fn drain_event(&self, event: Event, redraw: bool, widget: &Arc<Widget>) -> bool {
-        let mut redraw = redraw;
-        //let mut children_redraw = false;
-
-        if widget.event(event, self.focus_manager.focused(&widget), &mut redraw) {
-            if !self.focus_manager.focused(&widget) {
-                self.focus_manager.request_focus(&widget);
-                redraw = true;
-            }
-        }
-
-        redraw
-
-        // for child in &*widget.children().borrow_mut() {
-        //     children_redraw = self.drain_event(event, redraw, child);
-        // }
-
-        // redraw || children_redraw
-    }
+    //    fn drain_event(&self, event: Event, redraw: bool, widget: &Arc<Widget>) -> bool {
+    //        let mut redraw = redraw;
+    //        //let mut children_redraw = false;
+    //
+    //        if widget.event(event, self.focus_manager.focused(&widget), &mut redraw) {
+    //            if !self.focus_manager.focused(&widget) {
+    //                self.focus_manager.request_focus(&widget);
+    //                redraw = true;
+    //            }
+    //        }
+    //
+    //        redraw
+    //
+    //        // for child in &*widget.children().borrow_mut() {
+    //        //     children_redraw = self.drain_event(event, redraw, child);
+    //        // }
+    //
+    //        // redraw || children_redraw
+    //    }
 
     pub fn drain_orbital_events(&mut self) {
         for orbital_event in self.inner.borrow_mut().events() {
             match orbital_event.to_option() {
-                orbclient::EventOption::Mouse(mouse_event) => {
-                    self.mouse_point.x = mouse_event.x;
-                    self.mouse_point.y = mouse_event.y;
-
-                    self.events.push_back(Event::Mouse {
-                        point: self.mouse_point,
-                        left_button: self.mouse_left,
-                        middle_button: self.mouse_middle,
-                        right_button: self.mouse_right,
-                    })
-                }
-                orbclient::EventOption::Button(button_event) => {
-                    self.mouse_left = button_event.left;
-                    self.mouse_middle = button_event.middle;
-                    self.mouse_right = button_event.right;
-
-                    self.events.push_back(Event::Mouse {
-                        point: self.mouse_point,
-                        left_button: self.mouse_left,
-                        middle_button: self.mouse_middle,
-                        right_button: self.mouse_right,
-                    })
-                }
-                orbclient::EventOption::Scroll(scroll_event) => {
-                    self.events.push_back(Event::Scroll {
-                        x: scroll_event.x,
-                        y: scroll_event.y,
-                    })
-                }
-                orbclient::EventOption::Key(key_event) => if key_event.pressed {
-                    self.events.push_back(Event::KeyPressed(
-                        KeyEvent::from_orbital_key_event(key_event),
-                    ));
-                } else {
-                    self.events.push_back(Event::KeyReleased(
-                        KeyEvent::from_orbital_key_event(key_event),
-                    ));
-                },
+                
                 orbclient::EventOption::Resize(resize_event) => {
                     self.redraw = true;
                     self.events.push_back(Event::Resize {
@@ -327,22 +289,56 @@ impl Window {
     }
 }
 
-pub struct WindowBuilder<'a> {
+
+
+fn build_tree(root: &Option<Arc<Node>>, widget: &Arc<Widget>) -> Option<Arc<Node>> {
+    let node = {
+        if let Some(ref root) = *root {
+            Some(Node::new(widget, root))
+        } else {
+            Some(Node::new_root(widget))
+        }
+    };
+
+    if let Some(ref root) = *root {
+        if let Some(ref node) = node {
+            root.children().borrow_mut().push(node.clone())
+        }
+    }
+
+    match widget.build() {
+        Content::Zero => return None,
+        Content::Single(child) => {
+            build_tree(&node, &child);
+        }
+        Content::Multi(children) => for child in children {
+            build_tree(&node, &child);
+        },
+    }
+
+    node
+}
+
+pub struct Application<'a> {
     rect: Rect,
     title: &'a str,
     font: Option<orbfont::Font>,
     theme: Option<Theme>,
     flags: Option<&'a [WindowFlag]>,
+    root: Option<Arc<Widget>>,
+    tree: Option<Arc<Node>>,
 }
 
-impl<'a> WindowBuilder<'a> {
+impl<'a> Application<'a> {
     pub fn new(rect: Rect, title: &'a str) -> Self {
-        WindowBuilder {
+        Application {
             rect: rect,
             title: title,
             font: orbfont::Font::find(None, None, None).ok(),
             theme: None,
             flags: None,
+            root: None,
+            tree: None,
         }
     }
 
@@ -361,7 +357,15 @@ impl<'a> WindowBuilder<'a> {
         self
     }
 
-    pub fn build(self) -> Window {
+    pub fn root<W: 'static + Widget>(mut self, root: &Arc<W>) -> Self {
+        self.root = Some(root.clone());
+        if let Some(ref root) = self.root {
+            self.tree = build_tree(&None, root);
+        }
+        self
+    }
+
+    fn build(self) -> Window {
         let (rect, title, font) = (self.rect, self.title, self.font);
 
         let flags = match self.flags {
@@ -383,17 +387,41 @@ impl<'a> WindowBuilder<'a> {
         Window {
             inner: RefCell::new(inner),
             font: font,
-            widgets: RefCell::new(Vec::new()),
+            //            widgets: RefCell::new(Vec::new()),
             running: Cell::new(true),
             theme: theme,
             resize_callback: RefCell::new(None),
-            mouse_point: Point::new(0, 0),
-            mouse_left: false,
-            mouse_right: false,
-            mouse_middle: false,
+            _mouse_point: Point::new(0, 0),
+            _mouse_left: false,
+            _mouse_right: false,
+            _mouse_middle: false,
             events: events,
             redraw: true,
-            focus_manager: FocusManager::new(),
+            //            focus_manager: FocusManager::new(),
         }
+    }
+
+    pub fn print_tree(self) -> Self {
+        if let Some(ref root) = self.tree {
+            println!("Window (OrbTK)");
+            self.print_node(root, "");
+        } else {
+            println!("Tree is empty.");
+        }
+
+        self
+    }
+
+    fn print_node(&self, root: &Arc<Node>, spacer: &str) {
+        println!("{}|- {}", spacer, root.widget().element());
+        let mut spacer = String::from(spacer);
+        spacer.push_str("|    ");
+        for child in root.children().borrow().iter() {
+            self.print_node(child, &spacer);
+        }
+    }
+
+    pub fn run(self) {
+        self.build().exec();
     }
 }
