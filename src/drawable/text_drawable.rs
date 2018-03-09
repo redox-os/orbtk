@@ -1,15 +1,11 @@
-use std::any::Any;
 use std::sync::Arc;
 
 use theme::{Selector, Theme};
 use super::{CloneCell, Rect};
-use draw::draw_box;
 
 use orbclient::Renderer;
 
-pub trait Drawable: Any {
-    fn draw(&self, rect: &Rect, _renderer: &mut Renderer, _focused: bool, _theme: &Theme);
-}
+use drawable::Drawable;
 
 pub struct TextDrawable {
     text: String,
@@ -50,23 +46,5 @@ impl Drawable for TextDrawable {
                 current_rect.x += 8;
             }
         }
-    }
-}
-
-pub struct RectangleDrawable {
-    selector: CloneCell<Selector>,
-}
-
-impl RectangleDrawable {
-    pub fn new() -> Arc<Self> {
-        Arc::new(RectangleDrawable {
-            selector: CloneCell::new(Selector::new(Some("rectangle"))),
-        })
-    }
-}
-
-impl Drawable for RectangleDrawable {
-    fn draw(&self, rect: &Rect, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
-        draw_box(renderer, rect.clone(), theme, &self.selector.get());
     }
 }

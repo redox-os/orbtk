@@ -253,44 +253,7 @@ impl Window {
     pub fn drain_orbital_events(&mut self) {
         for orbital_event in self.inner.borrow_mut().events() {
             match orbital_event.to_option() {
-                //                orbclient::EventOption::Mouse(mouse_event) => {
-                //                    self.mouse_point.x = mouse_event.x;
-                //                    self.mouse_point.y = mouse_event.y;
-                //
-                //                    self.events.push_back(Event::Mouse {
-                //                        point: self.mouse_point,
-                //                        left_button: self.mouse_left,
-                //                        middle_button: self.mouse_middle,
-                //                        right_button: self.mouse_right,
-                //                    })
-                //                }
-                //                orbclient::EventOption::Button(button_event) => {
-                //                    self.mouse_left = button_event.left;
-                //                    self.mouse_middle = button_event.middle;
-                //                    self.mouse_right = button_event.right;
-                //
-                //                    self.events.push_back(Event::Mouse {
-                //                        point: self.mouse_point,
-                //                        left_button: self.mouse_left,
-                //                        middle_button: self.mouse_middle,
-                //                        right_button: self.mouse_right,
-                //                    })
-                //                }
-                //                orbclient::EventOption::Scroll(scroll_event) => {
-                //                    self.events.push_back(Event::Scroll {
-                //                        x: scroll_event.x,
-                //                        y: scroll_event.y,
-                //                    })
-                //                }
-                //                orbclient::EventOption::Key(key_event) => if key_event.pressed {
-                //                    self.events.push_back(Event::KeyPressed(
-                //                        KeyEvent::from_orbital_key_event(key_event),
-                //                    ));
-                //                } else {
-                //                    self.events.push_back(Event::KeyReleased(
-                //                        KeyEvent::from_orbital_key_event(key_event),
-                //                    ));
-                //                },
+                
                 orbclient::EventOption::Resize(resize_event) => {
                     self.redraw = true;
                     self.events.push_back(Event::Resize {

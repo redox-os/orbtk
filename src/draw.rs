@@ -1,7 +1,7 @@
 use orbclient::Renderer;
 
 use theme::{Theme, Selector};
-use rect::Rect;
+use super::Rect;
 
 pub fn draw_box(renderer: &mut Renderer, rect: Rect, theme: &Theme, selector: &Selector) {
     let b_r = theme.uint("border-radius", selector);
