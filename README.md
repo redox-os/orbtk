@@ -12,7 +12,7 @@ To include orbtk in your project, just add the dependency
 line to your `Cargo.toml` file:
 
 ```text
-orbtk = "0.2.26"
+orbtk = "0.2.27"
 ```
 
 However you also need to have the SDL2 libraries installed on your
@@ -25,7 +25,7 @@ You will also need to use the [nightly build of Rust](https://github.com/rust-la
 
 You find the examples in the `examples/` directory.
 
-You can start the adventure example by executing the following command:
+You can start the widgets example by executing the following command:
 
 ```text
 cargo run --example widgets
