@@ -3,7 +3,7 @@ use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 use cell::CloneCell;
-use event::Event;
+use events::Event;
 use rect::Rect;
 use point::Point;
 use thickness::Thickness;
@@ -93,7 +93,7 @@ impl Widget for TextWidget {
         &self.local_position
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut Renderer, theme: &Theme) {
         let rect = self.rect().get();
         let mut current_rect = self.rect().get();
         let x = rect.x;
@@ -118,10 +118,6 @@ impl Widget for TextWidget {
                 current_rect.x += 8;
             }
         }
-    }
-
-    fn event(&self, _event: Event, _focused: bool, _redraw: &mut bool) -> bool {
-        _focused
     }
 
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {

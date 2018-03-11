@@ -8,7 +8,7 @@ use cell::{CheckSet, CloneCell};
 use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
 use primitives::Image;
 use draw::draw_box;
-use event::Event;
+use events::Event;
 use rect::Rect;
 use point::Point;
 use thickness::Thickness;
@@ -93,7 +93,7 @@ impl Widget for Entry {
         &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut Renderer, theme: &Theme) {
         let rect = self.rect.get();
         let offset = self.text_offset.get();
         let mut selector = self.selector.get();
@@ -121,50 +121,50 @@ impl Widget for Entry {
             point.x += 8;
         }
     }
-    fn event(&self, event: Event, _focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse {
-                point, left_button, ..
-            } => {
-                let mut click = false;
+    // fn event(&self, event: Event, redraw: &mut bool) -> bool {
+    //     match event {
+    //         Event::Mouse {
+    //             point, left_button, ..
+    //         } => {
+    //             let mut click = false;
 
-                let rect = self.rect.get();
-                if rect.contains(point) {
-                    if self.hover.check_set(true) {
-                        *redraw = true;
-                    }
+    //             let rect = self.rect.get();
+    //             if rect.contains(point) {
+    //                 if self.hover.check_set(true) {
+    //                     *redraw = true;
+    //                 }
 
-                    if left_button {
-                        if self.pressed.check_set(true) {
-                            *redraw = true;
-                        }
-                    } else {
-                        if self.pressed.check_set(false) {
-                            click = true;
-                            *redraw = true;
-                        }
-                    }
-                } else {
-                    if self.hover.check_set(false) {
-                        *redraw = true;
-                    }
+    //                 if left_button {
+    //                     if self.pressed.check_set(true) {
+    //                         *redraw = true;
+    //                     }
+    //                 } else {
+    //                     if self.pressed.check_set(false) {
+    //                         click = true;
+    //                         *redraw = true;
+    //                     }
+    //                 }
+    //             } else {
+    //                 if self.hover.check_set(false) {
+    //                     *redraw = true;
+    //                 }
 
-                    if !left_button {
-                        if self.pressed.check_set(false) {
-                            *redraw = true;
-                        }
-                    }
-                }
+    //                 if !left_button {
+    //                     if self.pressed.check_set(false) {
+    //                         *redraw = true;
+    //                     }
+    //                 }
+    //             }
 
-                if click {
-                    return true;
-                }
-            }
-            _ => (),
-        }
+    //             if click {
+    //                 return true;
+    //             }
+    //         }
+    //         _ => (),
+    //     }
 
-        _focused
-    }
+    //     _focused
+    // }
 
     fn name(&self) -> &str {
         "ComboBoxEntry"
@@ -313,173 +313,173 @@ impl Widget for ComboBox {
         &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
-        let rect = self.rect.get();
-        let activated = self.activated.get();
-        let offset = self.offset.get();
+    // fn draw(&self, renderer: &mut Renderer, theme: &Theme) {
+    //     let rect = self.rect.get();
+    //     let activated = self.activated.get();
+    //     let offset = self.offset.get();
 
-        // draw flyout
-        if activated {
-            //TODO: set this selector as the child of self.selector
-            let selector = Selector::new(Some("combo-box-flyout"));
+    //     // draw flyout
+    //     if activated {
+    //         //TODO: set this selector as the child of self.selector
+    //         let selector = Selector::new(Some("combo-box-flyout"));
 
-            let flyout_rect = Rect::new(
-                rect.x,
-                rect.y + rect.height as i32 - 2,
-                rect.width,
-                self.flyout_height.get() + 2,
-            );
-            draw_box(renderer, flyout_rect, theme, &selector);
+    //         let flyout_rect = Rect::new(
+    //             rect.x,
+    //             rect.y + rect.height as i32 - 2,
+    //             rect.width,
+    //             self.flyout_height.get() + 2,
+    //         );
+    //         draw_box(renderer, flyout_rect, theme, &selector);
 
-            // draw entries
-            for entry in self.entries.borrow().iter() {
-                let mut point = Point::new(entry.rect.get().x, entry.rect.get().y);
+    //         // draw entries
+    //         for entry in self.entries.borrow().iter() {
+    //             let mut point = Point::new(entry.rect.get().x, entry.rect.get().y);
 
-                if point.y >= rect.y
-                    && point.y + rect.height as i32 <= flyout_rect.y + flyout_rect.height as i32
-                {
-                    entry.draw(renderer, _focused, theme);
-                }
-            }
-        }
+    //             if point.y >= rect.y
+    //                 && point.y + rect.height as i32 <= flyout_rect.y + flyout_rect.height as i32
+    //             {
+    //                 // entry.draw(renderer, _focused, theme);
+    //             }
+    //         }
+    //     }
 
-        // draw the combobox
-        let mut selector = self.selector.get();
+    //     // draw the combobox
+    //     let mut selector = self.selector.get();
 
-        if activated {
-            selector = selector.with_pseudo_class("active");
-        }
+    //     if activated {
+    //         selector = selector.with_pseudo_class("active");
+    //     }
 
-        draw_box(renderer, rect, theme, &selector);
+    //     draw_box(renderer, rect, theme, &selector);
 
-        // draw toggle indicator
-        //TODO: set this selector as the child of self.selector
-        selector = Selector::new(Some("combo-box-toggle"));
+    //     // draw toggle indicator
+    //     //TODO: set this selector as the child of self.selector
+    //     selector = Selector::new(Some("combo-box-toggle"));
 
-        if activated {
-            selector = selector.with_pseudo_class("active");
-        }
+    //     if activated {
+    //         selector = selector.with_pseudo_class("active");
+    //     }
 
-        let toggle_size = rect.height - 2 * offset.y as u32;
+    //     let toggle_size = rect.height - 2 * offset.y as u32;
 
-        let toggle_rect = Rect::new(
-            rect.x + rect.width as i32 - toggle_size as i32 - offset.y,
-            rect.y + offset.y,
-            toggle_size,
-            toggle_size,
-        );
+    //     let toggle_rect = Rect::new(
+    //         rect.x + rect.width as i32 - toggle_size as i32 - offset.y,
+    //         rect.y + offset.y,
+    //         toggle_size,
+    //         toggle_size,
+    //     );
 
-        draw_box(renderer, toggle_rect, theme, &selector);
+    //     draw_box(renderer, toggle_rect, theme, &selector);
 
-        // draw the toggle icon
-        if activated {
-            if let Some(ref icon) = *self.toggle_icon_active.borrow() {
-                icon.position(toggle_rect.x, toggle_rect.y);
-                icon.draw(renderer, _focused, theme)
-            }
-        } else {
-            if let Some(ref icon) = *self.toggle_icon.borrow() {
-                icon.position(toggle_rect.x, toggle_rect.y);
-                icon.draw(renderer, _focused, theme)
-            }
-        }
+    //     // draw the toggle icon
+    //     if activated {
+    //         if let Some(ref icon) = *self.toggle_icon_active.borrow() {
+    //             icon.position(toggle_rect.x, toggle_rect.y);
+    //             icon.draw(renderer, _focused, theme)
+    //         }
+    //     } else {
+    //         if let Some(ref icon) = *self.toggle_icon.borrow() {
+    //             icon.position(toggle_rect.x, toggle_rect.y);
+    //             icon.draw(renderer, _focused, theme)
+    //         }
+    //     }
 
-        // draw selected text
-        let mut point = Point::new(rect.x + offset.x, rect.y + rect.height as i32 / 2 - 8);
-        for c in self.text.get().chars() {
-            if point.x + 8 <= rect.x + rect.width as i32 - toggle_rect.width as i32 - 2 * offset.x {
-                renderer.char(
-                    point.x,
-                    point.y,
-                    c,
-                    theme.color("color", &"label".into()),
-                );
-            }
-            point.x += 8;
-        }
-    }
+    //     // draw selected text
+    //     let mut point = Point::new(rect.x + offset.x, rect.y + rect.height as i32 / 2 - 8);
+    //     for c in self.text.get().chars() {
+    //         if point.x + 8 <= rect.x + rect.width as i32 - toggle_rect.width as i32 - 2 * offset.x {
+    //             renderer.char(
+    //                 point.x,
+    //                 point.y,
+    //                 c,
+    //                 theme.color("color", &"label".into()),
+    //             );
+    //         }
+    //         point.x += 8;
+    //     }
+    // }
 
-    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse {
-                point, left_button, ..
-            } => {
-                let mut ignore_event = false;
-                if self.activated.get() {
-                    for entry in self.entries.borrow().iter() {
-                        if entry.event(event, focused, redraw) {
-                            ignore_event = true;
+    // fn event(&self, event: Event, redraw: &mut bool) -> bool {
+    //     match event {
+    //         Event::Mouse {
+    //             point, left_button, ..
+    //         } => {
+    //             let mut ignore_event = false;
+    //             if self.activated.get() {
+    //                 for entry in self.entries.borrow().iter() {
+    //                     // if entry.event(event, focused, redraw) {
+    //                     //     ignore_event = true;
 
-                            self.change_selection(entry.index);
-                            if self.activated.check_set(false) {
-                                *redraw = true;
-                            }
-                        }
-                    }
-                }
+    //                     //     self.change_selection(entry.index);
+    //                     //     if self.activated.check_set(false) {
+    //                     //         *redraw = true;
+    //                     //     }
+    //                     // }
+    //                 }
+    //             }
 
-                let rect = self.rect.get();
-                if rect.contains(point) {
-                    if left_button {
-                        self.pressed.set(!self.pressed.get());
+    //             let rect = self.rect.get();
+    //             if rect.contains(point) {
+    //                 if left_button {
+    //                     self.pressed.set(!self.pressed.get());
 
-                        if self.activated.check_set(true) {
-                            *redraw = true;
-                        }
-                    } else {
-                        if !self.pressed.get() {
-                            if self.activated.check_set(false) {
-                                *redraw = true;
-                            }
-                        }
-                    }
-                } else {
-                    if !ignore_event {
-                        if left_button {
-                            self.pressed.set(false);
-                        } else {
-                            if !self.pressed.get() {
-                                if self.activated.check_set(false) {
-                                    *redraw = true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            Event::KeyPressed(key_event) => match key_event.scancode {
-                orbclient::K_UP => match self.selected.get() {
-                    None => {
-                        self.change_selection(0);
-                        *redraw = true;
-                    }
-                    Some(i) => if i > 0 {
-                        self.change_selection(i - 1);
-                        *redraw = true;
-                    },
-                },
-                orbclient::K_DOWN => match self.selected.get() {
-                    None => {
-                        self.change_selection(0);
-                        *redraw = true;
-                    }
-                    Some(i) => if i < self.entries.borrow().len() as u32 - 1 {
-                        self.change_selection(i + 1);
-                        *redraw = true;
-                    },
-                },
-                orbclient::K_ENTER => if self.activated.check_set(false) {
-                    self.pressed.set(false);
-                    *redraw = true;
-                },
-                _ => {}
-            },
+    //                     if self.activated.check_set(true) {
+    //                         *redraw = true;
+    //                     }
+    //                 } else {
+    //                     if !self.pressed.get() {
+    //                         if self.activated.check_set(false) {
+    //                             *redraw = true;
+    //                         }
+    //                     }
+    //                 }
+    //             } else {
+    //                 if !ignore_event {
+    //                     if left_button {
+    //                         self.pressed.set(false);
+    //                     } else {
+    //                         if !self.pressed.get() {
+    //                             if self.activated.check_set(false) {
+    //                                 *redraw = true;
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         Event::KeyPressed(key_event) => match key_event.scancode {
+    //             orbclient::K_UP => match self.selected.get() {
+    //                 None => {
+    //                     self.change_selection(0);
+    //                     *redraw = true;
+    //                 }
+    //                 Some(i) => if i > 0 {
+    //                     self.change_selection(i - 1);
+    //                     *redraw = true;
+    //                 },
+    //             },
+    //             orbclient::K_DOWN => match self.selected.get() {
+    //                 None => {
+    //                     self.change_selection(0);
+    //                     *redraw = true;
+    //                 }
+    //                 Some(i) => if i < self.entries.borrow().len() as u32 - 1 {
+    //                     self.change_selection(i + 1);
+    //                     *redraw = true;
+    //                 },
+    //             },
+    //             orbclient::K_ENTER => if self.activated.check_set(false) {
+    //                 self.pressed.set(false);
+    //                 *redraw = true;
+    //             },
+    //             _ => {}
+    //         },
 
-            _ => {}
-        }
+    //         _ => {}
+    //     }
 
-        focused
-    }
+    //     focused
+    // }
 
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
         &self.children

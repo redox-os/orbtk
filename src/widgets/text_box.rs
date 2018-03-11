@@ -7,7 +7,7 @@ use orbclient;
 
 use cell::{CheckSet, CloneCell};
 use draw::draw_box;
-use event::Event;
+use events::Event;
 use point::Point;
 use rect::Rect;
 use thickness::Thickness;
@@ -186,408 +186,408 @@ impl Widget for TextBox {
         &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, focused: bool, theme: &Theme) {
-        let rect = self.rect.get();
+    fn draw(&self, renderer: &mut Renderer, theme: &Theme) {
+        // let rect = self.rect.get();
 
-        let mut selector = self.selector.get();
+        // let mut selector = self.selector.get();
 
-        if focused {
-            selector = selector.with_pseudo_class("focus");
-        }
+        // // if focused {
+        // //     selector = selector.with_pseudo_class("focus");
+        // // }
 
-        draw_box(renderer, rect, theme, &selector);
+        // draw_box(renderer, rect, theme, &selector);
 
-        let text_i = self.text_i.get();
-        let text = self.text.borrow();
+        // let text_i = self.text_i.get();
+        // let text = self.text.borrow();
 
-        let text_offset = self.text_offset.get();
-        let scroll_offset = self.scroll_offset.get();
+        // let text_offset = self.text_offset.get();
+        // let scroll_offset = self.scroll_offset.get();
 
-        let mut x = text_offset.x - scroll_offset.0 * 8;
-        let mut y = text_offset.y - scroll_offset.1 * 16;
-        let start_x = x;
-        for (i, c) in text.char_indices() {
-            let mut c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
-            if c == '\n' {
-                if focused && i == text_i && rect.contains_rect(&c_r) {
-                    //TODO: set this selector as the child of self.selector
-                    draw_box(
-                        renderer,
-                        Rect::new(x + rect.x, y + rect.y, 8, 16),
-                        theme,
-                        &"selection".into(),
-                    );
-                }
+        // let mut x = text_offset.x - scroll_offset.0 * 8;
+        // let mut y = text_offset.y - scroll_offset.1 * 16;
+        // let start_x = x;
+        // for (i, c) in text.char_indices() {
+        //     let mut c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
+        //     if c == '\n' {
+        //         if focused && i == text_i && rect.contains_rect(&c_r) {
+        //             //TODO: set this selector as the child of self.selector
+        //             draw_box(
+        //                 renderer,
+        //                 Rect::new(x + rect.x, y + rect.y, 8, 16),
+        //                 theme,
+        //                 &"selection".into(),
+        //             );
+        //         }
 
-                x = start_x;
-                y += c_r.height as i32;
-            } else if c == '\t' {
-                c_r.width = 8 * 4;
+        //         x = start_x;
+        //         y += c_r.height as i32;
+        //     } else if c == '\t' {
+        //         c_r.width = 8 * 4;
 
-                if focused && i == text_i && rect.contains_rect(&c_r) {
-                    //TODO: set this selector as the child of self.selector
-                    draw_box(
-                        renderer,
-                        Rect::new(x + rect.x, y + rect.y, 8 * 4, 16),
-                        theme,
-                        &"selection".into(),
-                    );
-                }
+        //         if focused && i == text_i && rect.contains_rect(&c_r) {
+        //             //TODO: set this selector as the child of self.selector
+        //             draw_box(
+        //                 renderer,
+        //                 Rect::new(x + rect.x, y + rect.y, 8 * 4, 16),
+        //                 theme,
+        //                 &"selection".into(),
+        //             );
+        //         }
 
-                x += c_r.width as i32;
-            } else {
-                if rect.contains_rect(&c_r) {
-                    if i == text_i && focused {
-                        //TODO: set this selector as the child of self.selector
-                        draw_box(
-                            renderer,
-                            Rect::new(x + rect.x, y + rect.y, 8, 16),
-                            theme,
-                            &"selection".into(),
-                        );
-                    }
-                    if let Some(mask_c) = self.mask_char.get() {
-                        renderer.char(
-                            x + rect.x,
-                            y + rect.y,
-                            mask_c,
-                            theme.color("color", &selector),
-                        );
-                    } else {
-                        renderer.char(x + rect.x, y + rect.y, c, theme.color("color", &selector));
-                    }
-                }
+        //         x += c_r.width as i32;
+        //     } else {
+        //         if rect.contains_rect(&c_r) {
+        //             if i == text_i && focused {
+        //                 //TODO: set this selector as the child of self.selector
+        //                 draw_box(
+        //                     renderer,
+        //                     Rect::new(x + rect.x, y + rect.y, 8, 16),
+        //                     theme,
+        //                     &"selection".into(),
+        //                 );
+        //             }
+        //             if let Some(mask_c) = self.mask_char.get() {
+        //                 renderer.char(
+        //                     x + rect.x,
+        //                     y + rect.y,
+        //                     mask_c,
+        //                     theme.color("color", &selector),
+        //                 );
+        //             } else {
+        //                 renderer.char(x + rect.x, y + rect.y, c, theme.color("color", &selector));
+        //             }
+        //         }
 
-                x += c_r.width as i32;
-            }
-        }
+        //         x += c_r.width as i32;
+        //     }
+        // }
 
-        let c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
-        if focused && text.len() == text_i && rect.contains_rect(&c_r) {
-            //TODO: set this selector as the child of self.selector
-            draw_box(
-                renderer,
-                Rect::new(x + rect.x, y + rect.y, 8, 16),
-                theme,
-                &"selection".into(),
-            );
-        }
+        // let c_r = Rect::new(x + rect.x, y + rect.y, 8, 16);
+        // if focused && text.len() == text_i && rect.contains_rect(&c_r) {
+        //     //TODO: set this selector as the child of self.selector
+        //     draw_box(
+        //         renderer,
+        //         Rect::new(x + rect.x, y + rect.y, 8, 16),
+        //         theme,
+        //         &"selection".into(),
+        //     );
+        // }
     }
 
-    fn event(&self, event: Event, mut focused: bool, redraw: &mut bool) -> bool {
-        // If the event wasn't handled by the custom handler.
-        if let Some(event) = self.handle_event(event, &mut focused, redraw) {
-            let mut new_text_i = None;
-            match event {
-                Event::Mouse {
-                    point, left_button, ..
-                } => {
-                    let mut click = false;
+    // fn event(&self, event: Event, mut redraw: &mut bool) -> bool {
+    //     // If the event wasn't handled by the custom handler.
+    //     if let Some(event) = self.handle_event(event, &mut focused, redraw) {
+    //         let mut new_text_i = None;
+    //         match event {
+    //             Event::Mouse {
+    //                 point, left_button, ..
+    //             } => {
+    //                 let mut click = false;
 
-                    let rect = self.rect.get();
-                    if rect.contains(point) {
-                        if left_button {
-                            if self.pressed.check_set(true) {
-                                *redraw = true;
-                            }
-                        } else {
-                            if self.pressed.check_set(false) {
-                                click = true;
-                                *redraw = true;
-                            }
-                        }
-                    } else {
-                        if !left_button {
-                            if self.pressed.check_set(false) {
-                                *redraw = true;
-                            }
-                        }
-                    }
+    //                 let rect = self.rect.get();
+    //                 if rect.contains(point) {
+    //                     if left_button {
+    //                         if self.pressed.check_set(true) {
+    //                             *redraw = true;
+    //                         }
+    //                     } else {
+    //                         if self.pressed.check_set(false) {
+    //                             click = true;
+    //                             *redraw = true;
+    //                         }
+    //                     }
+    //                 } else {
+    //                     if !left_button {
+    //                         if self.pressed.check_set(false) {
+    //                             *redraw = true;
+    //                         }
+    //                     }
+    //                 }
 
-                    if click {
-                        focused = true;
+    //                 if click {
+    //                     focused = true;
 
-                        let click_point: Point = point - rect.point();
-                        {
-                            let text = self.text.borrow();
+    //                     let click_point: Point = point - rect.point();
+    //                     {
+    //                         let text = self.text.borrow();
 
-                            let text_offset = self.text_offset.get();
-                            let scroll_offset = self.scroll_offset.get();
+    //                         let text_offset = self.text_offset.get();
+    //                         let scroll_offset = self.scroll_offset.get();
 
-                            let mut x = text_offset.x - scroll_offset.0 * 8;
-                            let mut y = text_offset.y - scroll_offset.1 * 16;
-                            let start_x = x;
-                            for (i, c) in text.char_indices() {
-                                let mut c_r = Rect::new(x, y, 8, 16);
-                                if c == '\n' {
-                                    if click_point.x >= x && click_point.y >= y
-                                        && click_point.y < (y + c_r.height as i32)
-                                    {
-                                        new_text_i = Some(i);
-                                        break;
-                                    }
+    //                         let mut x = text_offset.x - scroll_offset.0 * 8;
+    //                         let mut y = text_offset.y - scroll_offset.1 * 16;
+    //                         let start_x = x;
+    //                         for (i, c) in text.char_indices() {
+    //                             let mut c_r = Rect::new(x, y, 8, 16);
+    //                             if c == '\n' {
+    //                                 if click_point.x >= x && click_point.y >= y
+    //                                     && click_point.y < (y + c_r.height as i32)
+    //                                 {
+    //                                     new_text_i = Some(i);
+    //                                     break;
+    //                                 }
 
-                                    x = start_x;
-                                    y += c_r.height as i32;
-                                } else if c == '\t' {
-                                    c_r.width = 8 * 4;
+    //                                 x = start_x;
+    //                                 y += c_r.height as i32;
+    //                             } else if c == '\t' {
+    //                                 c_r.width = 8 * 4;
 
-                                    if c_r.contains(click_point) {
-                                        new_text_i = Some(i);
-                                        break;
-                                    }
+    //                                 if c_r.contains(click_point) {
+    //                                     new_text_i = Some(i);
+    //                                     break;
+    //                                 }
 
-                                    x += c_r.width as i32;
-                                } else {
-                                    if c_r.contains(click_point) {
-                                        new_text_i = Some(i);
-                                        break;
-                                    }
+    //                                 x += c_r.width as i32;
+    //                             } else {
+    //                                 if c_r.contains(click_point) {
+    //                                     new_text_i = Some(i);
+    //                                     break;
+    //                                 }
 
-                                    x += c_r.width as i32;
-                                }
-                            }
+    //                                 x += c_r.width as i32;
+    //                             }
+    //                         }
 
-                            let c_r = Rect::new(x, y, 8, 16);
-                            if (new_text_i.is_none() && click_point.x >= x && click_point.y >= y)
-                                || click_point.y >= (y + c_r.height as i32)
-                            {
-                                new_text_i = Some(text.len());
-                            }
-                        }
+    //                         let c_r = Rect::new(x, y, 8, 16);
+    //                         if (new_text_i.is_none() && click_point.x >= x && click_point.y >= y)
+    //                             || click_point.y >= (y + c_r.height as i32)
+    //                         {
+    //                             new_text_i = Some(text.len());
+    //                         }
+    //                     }
 
-                        self.emit_click(click_point);
-                    }
-                }
-                Event::Scroll { y, .. } => {
-                    let lines = self.text.borrow().lines().count() as i32;
-                    let rows = (self.rect.get().height as i32 - self.text_offset.get().y) / 16;
+    //                     self.emit_click(click_point);
+    //                 }
+    //             }
+    //             Event::Scroll { y, .. } => {
+    //                 let lines = self.text.borrow().lines().count() as i32;
+    //                 let rows = (self.rect.get().height as i32 - self.text_offset.get().y) / 16;
 
-                    let mut scroll_offset = self.scroll_offset.get();
-                    scroll_offset.1 = max(0, min(lines - rows, scroll_offset.1 - y * 3));
-                    self.scroll_offset.set(scroll_offset);
+    //                 let mut scroll_offset = self.scroll_offset.get();
+    //                 scroll_offset.1 = max(0, min(lines - rows, scroll_offset.1 - y * 3));
+    //                 self.scroll_offset.set(scroll_offset);
 
-                    *redraw = true;
-                }
-                Event::KeyPressed(key_event) => match key_event.scancode {
-                    orbclient::K_ENTER => if focused {
-                        if self.enter_callback.borrow().is_some() {
-                            self.emit_enter();
-                            *redraw = true;
-                        } else {
-                            let mut text = self.text.borrow_mut();
-                            let text_i = self.text_i.get();
-                            text.insert(text_i, '\n');
-                            new_text_i = Some(next_i(text.deref(), text_i));
-                        }
-                    },
-                    orbclient::K_BKSP => if focused {
-                        let mut text = self.text.borrow_mut();
-                        let mut text_i = self.text_i.get();
+    //                 *redraw = true;
+    //             }
+    //             Event::KeyPressed(key_event) => match key_event.scancode {
+    //                 orbclient::K_ENTER => if focused {
+    //                     if self.enter_callback.borrow().is_some() {
+    //                         self.emit_enter();
+    //                         *redraw = true;
+    //                     } else {
+    //                         let mut text = self.text.borrow_mut();
+    //                         let text_i = self.text_i.get();
+    //                         text.insert(text_i, '\n');
+    //                         new_text_i = Some(next_i(text.deref(), text_i));
+    //                     }
+    //                 },
+    //                 orbclient::K_BKSP => if focused {
+    //                     let mut text = self.text.borrow_mut();
+    //                     let mut text_i = self.text_i.get();
 
-                        if text_i > 0 {
-                            text_i = prev_i(text.deref(), text_i);
-                            if text_i < text.len() {
-                                text.remove(text_i);
-                                new_text_i = Some(min(text_i, text.len()));
-                            }
-                        }
-                    },
-                    orbclient::K_DEL => if focused {
-                        let mut text = self.text.borrow_mut();
-                        let text_i = self.text_i.get();
+    //                     if text_i > 0 {
+    //                         text_i = prev_i(text.deref(), text_i);
+    //                         if text_i < text.len() {
+    //                             text.remove(text_i);
+    //                             new_text_i = Some(min(text_i, text.len()));
+    //                         }
+    //                     }
+    //                 },
+    //                 orbclient::K_DEL => if focused {
+    //                     let mut text = self.text.borrow_mut();
+    //                     let text_i = self.text_i.get();
 
-                        if text_i < text.len() {
-                            text.remove(text_i);
-                            new_text_i = Some(min(text_i, text.len()));
-                        }
-                    },
-                    orbclient::K_HOME => if focused {
-                        let text = self.text.borrow();
-                        let mut text_i = self.text_i.get();
+    //                     if text_i < text.len() {
+    //                         text.remove(text_i);
+    //                         new_text_i = Some(min(text_i, text.len()));
+    //                     }
+    //                 },
+    //                 orbclient::K_HOME => if focused {
+    //                     let text = self.text.borrow();
+    //                     let mut text_i = self.text_i.get();
 
-                        while text_i > 0 {
-                            if text[..text_i].chars().rev().next() == Some('\n') {
-                                break;
-                            }
-                            text_i = prev_i(text.deref(), text_i);
-                        }
+    //                     while text_i > 0 {
+    //                         if text[..text_i].chars().rev().next() == Some('\n') {
+    //                             break;
+    //                         }
+    //                         text_i = prev_i(text.deref(), text_i);
+    //                     }
 
-                        new_text_i = Some(text_i);
-                    },
-                    orbclient::K_END => if focused {
-                        let text = self.text.borrow();
-                        let mut text_i = self.text_i.get();
+    //                     new_text_i = Some(text_i);
+    //                 },
+    //                 orbclient::K_END => if focused {
+    //                     let text = self.text.borrow();
+    //                     let mut text_i = self.text_i.get();
 
-                        while text_i < text.len() {
-                            if text[text_i..].chars().next() == Some('\n') {
-                                break;
-                            }
-                            text_i = next_i(text.deref(), text_i);
-                        }
+    //                     while text_i < text.len() {
+    //                         if text[text_i..].chars().next() == Some('\n') {
+    //                             break;
+    //                         }
+    //                         text_i = next_i(text.deref(), text_i);
+    //                     }
 
-                        new_text_i = Some(text_i);
-                    },
-                    orbclient::K_UP => {
-                        if focused {
-                            let text = self.text.borrow();
-                            let mut text_i = self.text_i.get();
+    //                     new_text_i = Some(text_i);
+    //                 },
+    //                 orbclient::K_UP => {
+    //                     if focused {
+    //                         let text = self.text.borrow();
+    //                         let mut text_i = self.text_i.get();
 
-                            // Count back to last newline
-                            let mut offset = 0;
-                            while text_i > 0 {
-                                let c = text[..text_i].chars().rev().next();
-                                text_i = prev_i(text.deref(), text_i);
-                                if c == Some('\n') {
-                                    break;
-                                }
-                                offset += 1;
-                            }
+    //                         // Count back to last newline
+    //                         let mut offset = 0;
+    //                         while text_i > 0 {
+    //                             let c = text[..text_i].chars().rev().next();
+    //                             text_i = prev_i(text.deref(), text_i);
+    //                             if c == Some('\n') {
+    //                                 break;
+    //                             }
+    //                             offset += 1;
+    //                         }
 
-                            // Go to newline before last newline
-                            while text_i > 0 {
-                                if text[..text_i].chars().rev().next() == Some('\n') {
-                                    break;
-                                }
-                                text_i = prev_i(text.deref(), text_i);
-                            }
+    //                         // Go to newline before last newline
+    //                         while text_i > 0 {
+    //                             if text[..text_i].chars().rev().next() == Some('\n') {
+    //                                 break;
+    //                             }
+    //                             text_i = prev_i(text.deref(), text_i);
+    //                         }
 
-                            // Add back offset
-                            while offset > 0 && text_i < text.len() {
-                                if text[text_i..].chars().next() == Some('\n') {
-                                    break;
-                                }
-                                text_i = next_i(text.deref(), text_i);
-                                offset -= 1;
-                            }
+    //                         // Add back offset
+    //                         while offset > 0 && text_i < text.len() {
+    //                             if text[text_i..].chars().next() == Some('\n') {
+    //                                 break;
+    //                             }
+    //                             text_i = next_i(text.deref(), text_i);
+    //                             offset -= 1;
+    //                         }
 
-                            new_text_i = Some(text_i);
-                        }
-                    }
-                    orbclient::K_DOWN => {
-                        if focused {
-                            let text = self.text.borrow();
-                            let mut text_i = self.text_i.get();
+    //                         new_text_i = Some(text_i);
+    //                     }
+    //                 }
+    //                 orbclient::K_DOWN => {
+    //                     if focused {
+    //                         let text = self.text.borrow();
+    //                         let mut text_i = self.text_i.get();
 
-                            // Count back to last newline
-                            let mut offset = 0;
-                            while text_i > 0 {
-                                if text[..text_i].chars().rev().next() == Some('\n') {
-                                    break;
-                                }
-                                text_i = prev_i(text.deref(), text_i);
-                                offset += 1;
-                            }
+    //                         // Count back to last newline
+    //                         let mut offset = 0;
+    //                         while text_i > 0 {
+    //                             if text[..text_i].chars().rev().next() == Some('\n') {
+    //                                 break;
+    //                             }
+    //                             text_i = prev_i(text.deref(), text_i);
+    //                             offset += 1;
+    //                         }
 
-                            // Go to next newline
-                            while text_i < text.len() {
-                                let c = text[text_i..].chars().next();
-                                text_i = next_i(text.deref(), text_i);
-                                if c == Some('\n') {
-                                    break;
-                                }
-                            }
+    //                         // Go to next newline
+    //                         while text_i < text.len() {
+    //                             let c = text[text_i..].chars().next();
+    //                             text_i = next_i(text.deref(), text_i);
+    //                             if c == Some('\n') {
+    //                                 break;
+    //                             }
+    //                         }
 
-                            // Add back offset
-                            while offset > 0 && text_i < text.len() {
-                                if text[text_i..].chars().next() == Some('\n') {
-                                    break;
-                                }
-                                text_i = next_i(text.deref(), text_i);
-                                offset -= 1;
-                            }
+    //                         // Add back offset
+    //                         while offset > 0 && text_i < text.len() {
+    //                             if text[text_i..].chars().next() == Some('\n') {
+    //                                 break;
+    //                             }
+    //                             text_i = next_i(text.deref(), text_i);
+    //                             offset -= 1;
+    //                         }
 
-                            new_text_i = Some(text_i);
-                        }
-                    }
-                    orbclient::K_LEFT => if focused {
-                        let text = self.text.borrow();
-                        let text_i = self.text_i.get();
+    //                         new_text_i = Some(text_i);
+    //                     }
+    //                 }
+    //                 orbclient::K_LEFT => if focused {
+    //                     let text = self.text.borrow();
+    //                     let text_i = self.text_i.get();
 
-                        if text_i > 0 {
-                            new_text_i = Some(prev_i(text.deref(), text_i));
-                        }
-                    },
-                    orbclient::K_RIGHT => if focused {
-                        let text = self.text.borrow();
-                        let text_i = self.text_i.get();
-                        if text_i < text.len() {
-                            new_text_i = Some(next_i(text.deref(), text_i));
-                        }
-                    },
-                    _ => if focused {
-                        if let Some(character) = key_event.character {
-                            let mut text = self.text.borrow_mut();
-                            let text_i = self.text_i.get();
-                            text.insert(text_i, character);
-                            new_text_i = Some(next_i(text.deref(), text_i));
-                        }
-                    },
-                },
-                _ => (),
-            }
+    //                     if text_i > 0 {
+    //                         new_text_i = Some(prev_i(text.deref(), text_i));
+    //                     }
+    //                 },
+    //                 orbclient::K_RIGHT => if focused {
+    //                     let text = self.text.borrow();
+    //                     let text_i = self.text_i.get();
+    //                     if text_i < text.len() {
+    //                         new_text_i = Some(next_i(text.deref(), text_i));
+    //                     }
+    //                 },
+    //                 _ => if focused {
+    //                     if let Some(character) = key_event.character {
+    //                         let mut text = self.text.borrow_mut();
+    //                         let text_i = self.text_i.get();
+    //                         text.insert(text_i, character);
+    //                         new_text_i = Some(next_i(text.deref(), text_i));
+    //                     }
+    //                 },
+    //             },
+    //             _ => (),
+    //         }
 
-            if let Some(text_i) = new_text_i {
-                self.text_i.set(text_i);
-                *redraw = true;
+    //         if let Some(text_i) = new_text_i {
+    //             self.text_i.set(text_i);
+    //             *redraw = true;
 
-                let text = self.text.borrow();
+    //             let text = self.text.borrow();
 
-                let text_offset = self.text_offset.get();
-                let mut scroll_offset = self.scroll_offset.get();
+    //             let text_offset = self.text_offset.get();
+    //             let mut scroll_offset = self.scroll_offset.get();
 
-                let mut col = 0;
-                let mut row = 0;
-                for (i, c) in text.char_indices() {
-                    if c == '\n' {
-                        if i == text_i {
-                            break;
-                        }
+    //             let mut col = 0;
+    //             let mut row = 0;
+    //             for (i, c) in text.char_indices() {
+    //                 if c == '\n' {
+    //                     if i == text_i {
+    //                         break;
+    //                     }
 
-                        col = 0;
-                        row += 1;
-                    } else if c == '\t' {
-                        if i == text_i {
-                            break;
-                        }
+    //                     col = 0;
+    //                     row += 1;
+    //                 } else if c == '\t' {
+    //                     if i == text_i {
+    //                         break;
+    //                     }
 
-                        col += 4;
-                    } else {
-                        if i == text_i {
-                            break;
-                        }
+    //                     col += 4;
+    //                 } else {
+    //                     if i == text_i {
+    //                         break;
+    //                     }
 
-                        col += 1;
-                    }
-                }
+    //                     col += 1;
+    //                 }
+    //             }
 
-                let rect = self.rect.get();
-                let cols = (rect.width as i32 - text_offset.x) / 8;
-                let rows = (rect.height as i32 - text_offset.y) / 16;
+    //             let rect = self.rect.get();
+    //             let cols = (rect.width as i32 - text_offset.x) / 8;
+    //             let rows = (rect.height as i32 - text_offset.y) / 16;
 
-                if col < scroll_offset.0 {
-                    scroll_offset.0 = col;
-                }
-                if col >= scroll_offset.0 + cols {
-                    scroll_offset.0 = col + 1 - cols;
-                }
-                if row < scroll_offset.1 {
-                    scroll_offset.1 = row;
-                }
-                if row >= scroll_offset.1 + rows {
-                    scroll_offset.1 = row + 1 - rows;
-                }
+    //             if col < scroll_offset.0 {
+    //                 scroll_offset.0 = col;
+    //             }
+    //             if col >= scroll_offset.0 + cols {
+    //                 scroll_offset.0 = col + 1 - cols;
+    //             }
+    //             if row < scroll_offset.1 {
+    //                 scroll_offset.1 = row;
+    //             }
+    //             if row >= scroll_offset.1 + rows {
+    //                 scroll_offset.1 = row + 1 - rows;
+    //             }
 
-                self.scroll_offset.set(scroll_offset);
-            }
+    //             self.scroll_offset.set(scroll_offset);
+    //         }
 
-            if self.grab_focus.check_set(false) {
-                focused = true;
-                *redraw = true;
-            }
-        }
-        focused
-    }
+    //         if self.grab_focus.check_set(false) {
+    //             focused = true;
+    //             *redraw = true;
+    //         }
+    //     }
+    //     focused
+    // }
 
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
         &self.children

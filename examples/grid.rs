@@ -16,8 +16,7 @@ fn main() {
     let btn_insert = Button::new();
     {
         let _grid = grid.clone();
-        btn_insert.size(11 + 15*8 + 11, 35)
-            .position(10, 10)
+        btn_insert.position(10, 10)
             .text("Insert elements")
             .text_offset(11, 11)
             .on_click(move |_, _| {
@@ -46,7 +45,6 @@ fn main() {
         let _grid = grid.clone();
 
         btn_clear
-            .size(11 + 14 * 8 + 11, 35)
             .position(10 + btn_insert.rect.get().width as i32 + 10, 10)
             .text("Clear elements")
             .text_offset(11, 11)
@@ -60,7 +58,6 @@ fn main() {
         let _grid = grid.clone();
         let btn_remove = Button::new();
         btn_remove
-            .size(11 + 14 * 8 + 11, 35)
             .position(btn_clear.rect.get().x + btn_clear.rect.get().width as i32 + 10, 10)
             .text("Remove element")
             .text_offset(11, 11)
@@ -79,14 +76,13 @@ fn main() {
         let _grid = column_grid.clone();
         let element_counter = Cell::new(0);
 
-        btn_add.size(11 + 12*8 + 11, 35)
-            .position(10, 200)
+        btn_add.position(10, 200)
             .text("Add elements")
             .text_offset(11, 11)
             .on_click(move |_, _| {
                 let _element_counter = element_counter.get();
                 let label = Label::new();
-                label.size(80, 16).text(format!("Element {}",_element_counter));
+                label.text(format!("Element {}",_element_counter));
                 _grid.add(&label);
                 element_counter.set(_element_counter + 1);
             });

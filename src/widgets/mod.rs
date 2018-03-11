@@ -7,8 +7,9 @@ use orbclient::Renderer;
 use std::any::Any;
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
+use std::fmt;
 
-use event::Event;
+use events::{FocusManager, KeyEventArgs, MouseEventArgs, MouseMoveEventArgs, ScrollEventArgs};
 use rect::Rect;
 use point::Point;
 use theme::Theme;
@@ -68,19 +69,24 @@ pub trait Widget: Any {
     fn margin(&self) -> &Cell<Thickness>;
 
     /// Used to draw the widget by render code.
-    fn draw(&self, _renderer: &mut Renderer, _focused: bool, _theme: &Theme) {}
+    fn draw(&self, _renderer: &mut Renderer, _theme: &Theme) {}
 
-    /// Handle the incoming events by tunneling from parent to child.
-    /// Must have overwritten to create a custom tunneling event handling.
-    fn preview_event(&self, _event: Event, _focused: bool, _redraw: &mut bool, _handled: bool) -> bool {
-        _focused
-    }
+    fn on_preview_key_down(&self, _args: &KeyEventArgs) {}
+    fn on_preview_key_up(&self, _args: &KeyEventArgs) {}
+    fn on_preview_mouse_down(&self, _args: &MouseEventArgs, _focus_manager: &FocusManager) {}
+    fn on_preview_mouse_up(&self, _args: &MouseEventArgs) {}
+    fn on_preview_mouse_enter(&self, _args: &MouseMoveEventArgs){}
+    fn on_preview_mouse_leave(&self, _args: &MouseMoveEventArgs){}
+    fn on_preview_scroll(&self, _args: &ScrollEventArgs) {}
 
-    /// Handle the incoming events by bubbling from child to parent. 
-    /// Must have overwritten to create a custom bubbling event handling.
-    fn event(&self, _event: Event, _focused: bool, _redraw: &mut bool) -> bool {
-        _focused
-    }
+    fn on_key_down(&self, _args: &KeyEventArgs) {}
+    fn on_key_up(&self, _args: &KeyEventArgs) {}
+    fn on_mouse_down(&self, _args: &MouseEventArgs, _focus_manager: &FocusManager) {}
+    fn on_mouse_up(&self, _args: &MouseEventArgs) {}
+    fn on_mouse_enter(&self, _args: &MouseMoveEventArgs) {}
+    fn on_mouse_leave(&self, _args: &MouseMoveEventArgs) {}
+    fn on_scroll(&self, _args: &ScrollEventArgs) {}
+
 
     /// Return the name of the widget.
     fn name(&self) -> &str;
@@ -153,5 +159,9 @@ pub trait Widget: Any {
             child.rect().set(child_rect);
             child.arrange();
         }
+    }
+
+    fn format(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "| - {}", self.name())
     }
 }

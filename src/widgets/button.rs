@@ -1,8 +1,8 @@
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
-use cell::{CheckSet, CloneCell};
-use event::Event;
+use cell::CloneCell;
+use events::{FocusManager, MouseEventArgs, Handleable, MouseMoveEventArgs};
 use point::Point;
 use rect::Rect;
 use thickness::Thickness;
@@ -145,48 +145,31 @@ impl Widget for Button {
         self.selector().set(selector);
     }
 
-    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse {
-                point, left_button, ..
-            } => {
-                let mut click = false;
+    fn on_mouse_down(&self, args: &MouseEventArgs, _focus_manager: &FocusManager) {    
+        self.pressed.set(true);
+        args.handled().set(true);
+    }
 
-                let rect = self.rect.get();
-                if rect.contains(point) {
-                    if self.hover.check_set(true) {
-                        *redraw = true;
-                    }
-
-                    if left_button {
-                        if self.pressed.check_set(true) {
-                            *redraw = true;
-                        }
-                    } else {
-                        if self.pressed.check_set(false) {
-                            click = true;
-                            *redraw = true;
-                        }
-                    }
-                } else {
-                    if self.hover.check_set(false) {
-                        *redraw = true;
-                    }
-
-                    if self.pressed.check_set(false) {
-                        *redraw = true;
-                    }
-                }
-
-                if click {
-                    let click_point: Point = point - rect.point();
-                    self.emit_click(click_point);
-                }
-            }
-            _ => (),
+    fn on_mouse_up(&self, args: &MouseEventArgs) {
+        if !self.pressed.get() {
+            return
         }
 
-        focused
+        if self.rect().get().contains(args.point) {
+            self.emit_click(args.point);
+        }   
+        self.pressed.set(false);
+        args.handled().set(true);
+    }
+
+    fn on_mouse_enter(&self, args: &MouseMoveEventArgs) {
+        self.hover.set(true);
+        args.handled().set(true);
+    }
+
+    fn on_mouse_leave(&self, args: &MouseMoveEventArgs) {
+        self.hover.set(false);
+        args.handled().set(true);
     }
 
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {

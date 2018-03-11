@@ -4,7 +4,7 @@ use std::cell::{Cell, RefCell};
 use std::path::Path;
 use std::sync::Arc;
 
-use event::Event;
+use events::Event;
 use point::Point;
 use rect::Rect;
 use thickness::Thickness;
@@ -90,27 +90,27 @@ impl Widget for Image {
         &self.local_position
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, _theme: &Theme) {
+    fn draw(&self, renderer: &mut Renderer, _theme: &Theme) {
         let rect = self.rect.get();
         let image = self.image.borrow();
         renderer.image(rect.x, rect.y, image.width(), image.height(), image.data());
     }
 
-    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse { point, left_button, .. } => {
-                let rect = self.rect.get();
-                if rect.contains(point) && left_button {
-                    let click_point: Point = point - rect.point();
-                    self.emit_click(click_point);
-                    *redraw = true;
-                }
-            }
-            _ => (),
-        }
+    // fn event(&self, event: Event, redraw: &mut bool) -> bool {
+    //     match event {
+    //         Event::Mouse { point, left_button, .. } => {
+    //             let rect = self.rect.get();
+    //             if rect.contains(point) && left_button {
+    //                 let click_point: Point = point - rect.point();
+    //                 self.emit_click(click_point);
+    //                 *redraw = true;
+    //             }
+    //         }
+    //         _ => (),
+    //     }
 
-        focused
-    }
+    //     focused
+    // }
     
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
         &self.children

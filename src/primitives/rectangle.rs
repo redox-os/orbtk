@@ -68,7 +68,7 @@ impl Widget for Rectangle {
         &self.local_position
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut Renderer, theme: &Theme) {
         draw_box(renderer, self.rect().get(), theme, &self.selector().get());
     }
 

@@ -2,7 +2,7 @@ use std::cell::{Cell, RefCell};
 use std::sync::Arc;
 
 use cell::{CloneCell, CheckSet};
-use event::Event;
+use events::Event;
 use point::Point;
 use rect::Rect;
 use thickness::Thickness;
@@ -129,41 +129,41 @@ impl Widget for Label {
         &self.margin
     }
 
-    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse { point, left_button, .. } => {
-                let mut click = false;
+    // fn event(&self, event: Event, redraw: &mut bool) -> bool {
+    //     match event {
+    //         Event::Mouse { point, left_button, .. } => {
+    //             let mut click = false;
 
-                let rect = self.rect.get();
-                if rect.contains(point) {
-                    if left_button {
-                        if self.pressed.check_set(true) {
-                            *redraw = true;
-                        }
-                    } else {
-                        if self.pressed.check_set(false) {
-                            click = true;
-                            *redraw = true;
-                        }
-                    }
-                } else {
-                    if !left_button {
-                        if self.pressed.check_set(false) {
-                            *redraw = true;
-                        }
-                    }
-                }
+    //             let rect = self.rect.get();
+    //             if rect.contains(point) {
+    //                 if left_button {
+    //                     if self.pressed.check_set(true) {
+    //                         *redraw = true;
+    //                     }
+    //                 } else {
+    //                     if self.pressed.check_set(false) {
+    //                         click = true;
+    //                         *redraw = true;
+    //                     }
+    //                 }
+    //             } else {
+    //                 if !left_button {
+    //                     if self.pressed.check_set(false) {
+    //                         *redraw = true;
+    //                     }
+    //                 }
+    //             }
 
-                if click {
-                    let click_point: Point = point - rect.point();
-                    self.emit_click(click_point);
-                }
-            }
-            _ => (),
-        }
+    //             if click {
+    //                 let click_point: Point = point - rect.point();
+    //                 self.emit_click(click_point);
+    //             }
+    //         }
+    //         _ => (),
+    //     }
 
-        focused
-    }
+    //     focused
+    // }
 
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
         &self.children

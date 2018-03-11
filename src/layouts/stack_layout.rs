@@ -1,5 +1,6 @@
 use std::cell::{Cell, RefCell};
 use std::sync::Arc;
+use std::fmt;
 
 use rect::Rect;
 use point::Point;
@@ -157,5 +158,16 @@ impl Widget for StackLayout {
             child.rect().set(child_rect);
             child.arrange();
         }
+    }
+
+    fn format(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let orientation = {
+            match self.orientation().get() {
+                Orientation::Vertical => String::from("Vertical"),
+                Orientation::Horizontal => String::from("Horizontal"),
+            }
+        };
+
+        write!(f, "| - {} ({})", self.name(), orientation)
     }
 }
