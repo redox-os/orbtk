@@ -19,6 +19,8 @@ However you also need to have the SDL2 libraries installed on your
 system.  The best way to do this is documented [by the SDL2
 crate](https://github.com/AngryLawyer/rust-sdl2#user-content-requirements).
 
+You will also need to use the [nightly build of Rust](https://github.com/rust-lang-nursery/rustup.rs/blob/master/README.md#working-with-nightly-rust) to use orbtk. 
+
 ## Examples
 
 You find the examples in the `examples/` directory.
