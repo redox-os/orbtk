@@ -30,3 +30,4 @@ You can start the adventure example by executing the following command:
 ```text
 cargo run --example widgets
 ```
+
