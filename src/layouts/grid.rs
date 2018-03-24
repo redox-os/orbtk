@@ -1,16 +1,12 @@
-use orbclient::Renderer;
 use std::cell::{Cell, RefCell};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-use cell::CheckSet;
-use event::Event;
-use rect::Rect;
 use point::Point;
+use rect::Rect;
 use thickness::Thickness;
-use theme::{Theme};
 use traits::Place;
-use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
+use widgets::{HorizontalPlacement, VerticalPlacement, Widget};
 
 pub struct Grid {
     pub rect: Cell<Rect>,
@@ -24,8 +20,7 @@ pub struct Grid {
     columns: Cell<usize>,
     row_count: Cell<usize>,
     column_count: Cell<usize>,
-    entries: RefCell<BTreeMap<(usize, usize), Arc<Widget>>>,
-    focused: Cell<Option<(usize, usize)>>
+    entries: RefCell<BTreeMap<(usize, usize), usize>>,
 }
 
 impl Grid {
@@ -43,7 +38,6 @@ impl Grid {
             row_count: Cell::new(0),
             column_count: Cell::new(0),
             entries: RefCell::new(BTreeMap::new()),
-            focused: Cell::new(None),
         })
     }
 
@@ -58,22 +52,53 @@ impl Grid {
             self.column_count.set(0);
         }
 
-        self.entries.borrow_mut().insert((self.column_count.get(), self.row_count.get()), entry.clone());
+        self.children().borrow_mut().push(entry.clone());
+        self.entries.borrow_mut().insert(
+            (self.column_count.get(), self.row_count.get()),
+            self.children.borrow().len() - 1,
+        );
         self.column_count.set(self.column_count.get() + 1);
-        self.arrange(false);
+        self.arrange_children(false);
     }
 
     pub fn insert<T: Widget>(&self, col: usize, row: usize, entry: &Arc<T>) {
-        self.entries.borrow_mut().insert((col, row), entry.clone());
-        self.arrange(false);
+        self.children().borrow_mut().push(entry.clone());
+        self.entries
+            .borrow_mut()
+            .insert((col, row), self.children.borrow().len() - 1);
+        self.arrange_children(false);
     }
 
     pub fn clear(&self) {
         self.entries.borrow_mut().clear();
+        self.children.borrow_mut().clear();
     }
 
     pub fn remove(&self, col: usize, row: usize) {
-        self.entries.borrow_mut().remove(&(col, row));
+        if self.children.borrow().len() == 0 || !self.entries.borrow_mut().contains_key(&(col, row))
+        {
+            return;
+        }
+
+        let mut entries = self.entries.borrow_mut().clone();
+        let mut removed_index = 0;
+
+        if let Some(index) = self.entries.borrow_mut().get(&(col, row)) {
+            self.children.borrow_mut().remove(*index);
+            entries.remove(&(col, row));
+
+            removed_index = *index;
+        }
+
+        self.entries.borrow_mut().clear();
+
+        for (&(col, row), old_index) in entries.iter() {
+            if *old_index > removed_index {
+                self.entries.borrow_mut().insert((col, row), old_index - 1);
+            } else {
+                self.entries.borrow_mut().insert((col, row), *old_index);
+            }
+        }
     }
 
     pub fn spacing(&self, x: i32, y: i32) -> &Self {
@@ -82,28 +107,32 @@ impl Grid {
         self
     }
 
-    pub fn arrange(&self, resize: bool) {
+    pub fn arrange_children(&self, resize: bool) {
         let mut cols = Vec::new();
         let mut rows = Vec::new();
-        for (&(col, row), entry) in self.entries.borrow().iter() {
-            while col >= cols.len() {
-                cols.push(Rect::default());
-            }
-            while row >= rows.len() {
-                rows.push(Rect::default());
-            }
-            let rect = entry.rect().get();
-            if rect.width >= cols[col].width {
-                cols[col as usize].width = rect.width;
-            }
-            if rect.width >= rows[row].width {
-                rows[row as usize].width = rect.width;
-            }
-            if rect.height >= cols[col].height {
-                cols[col as usize].height = rect.height;
-            }
-            if rect.height >= rows[row].height {
-                rows[row as usize].height = rect.height;
+        for (&(col, row), index) in self.entries.borrow().iter() {
+            if let Some(entry) = self.children().borrow().get(*index) {
+                while col >= cols.len() {
+                    cols.push(Rect::default());
+                }
+                while row >= rows.len() {
+                    rows.push(Rect::default());
+                }
+                let rect = entry.rect().get();
+                if rect.width >= cols[col].width {
+                    cols[col as usize].width = rect.width;
+                }
+                if rect.width >= rows[row].width {
+                    rows[row as usize].width = rect.width;
+                }
+                if rect.height >= cols[col].height {
+                    cols[col as usize].height = rect.height;
+                }
+                if rect.height >= rows[row].height {
+                    rows[row as usize].height = rect.height;
+                }
+
+                entry.arrange();
             }
         }
 
@@ -123,15 +152,18 @@ impl Grid {
             y += row.height as i32 + space_y;
         }
 
-        for (&(col, row), entry) in self.entries.borrow().iter() {
-            let mut rect = entry.rect().get();
-            rect.x = cols[col].x;
-            rect.y = rows[row].y;
-            if resize {
-                rect.width = cols[col].width;
-                rect.height = rows[row].height;
+        for (&(col, row), index) in self.entries.borrow().iter() {
+            if let Some(entry) = self.children().borrow().get(*index) {
+                let mut rect = entry.rect().get();
+                rect.x = cols[col].x;
+                rect.y = rows[row].y;
+                if resize {
+                    rect.width = cols[col].width;
+                    rect.height = rows[row].height;
+                }
+                entry.rect().set(rect);
+                entry.arrange();
             }
-            entry.rect().set(rect);
         }
     }
 }
@@ -143,7 +175,7 @@ impl Place for Grid {
         rect.y = y;
         self.rect().set(rect);
 
-        self.arrange(false);
+        self.arrange_children(false);
 
         self
     }
@@ -172,28 +204,6 @@ impl Widget for Grid {
 
     fn margin(&self) -> &Cell<Thickness> {
         &self.margin
-    }
-
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
-        for (&(col, row), entry) in self.entries.borrow().iter() {
-            entry.draw(renderer, self.focused.get() == Some((col, row)), theme);
-        }
-    }
-
-    fn event(&self, event: Event, mut focused: bool, redraw: &mut bool) -> bool {
-        for (&(col, row), entry) in self.entries.borrow().iter() {
-            let is_focused = self.focused.get() == Some((col, row));
-            if entry.event(event, focused && is_focused, redraw) {
-                if self.focused.check_set(Some((col, row))) || ! focused {
-                    focused = true;
-                    *redraw = true;
-                }
-            } else if is_focused {
-                self.focused.set(None);
-            }
-        }
-
-        focused
     }
 
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
