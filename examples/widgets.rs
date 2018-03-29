@@ -174,7 +174,7 @@ fn main() {
             i += 1;
         }
     }
-    grid.arrange(true);
+    grid.arrange_children(true);
 
     window.add(&grid);
 
