@@ -1,5 +1,5 @@
 extern crate orbtk;
-use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window, WindowBuilder};
+use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox/*, Window*/, WindowBuilder};
 use orbtk::theme::Theme;
 use orbtk::traits::{Click, Enter, Place, Text, Style};
 
@@ -178,7 +178,7 @@ fn main() {
             i += 1;
         }
     }
-    grid.arrange(true);
+    grid.arrange_children(true);
 
     window.add(&grid);
 

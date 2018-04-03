@@ -148,7 +148,7 @@ fn main() {
     }
 
     stack_layout.add(grid.clone());
-    grid.arrange(true);
+    grid.arrange_children(true);
 
     window.add(&stack_layout);
 
