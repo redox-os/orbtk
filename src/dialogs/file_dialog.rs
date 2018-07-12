@@ -72,16 +72,21 @@ impl FolderItem {
     }
 }
 
+
+
 pub struct FileDialog {
     pub title: String,
     pub path: PathBuf,
+    curpath: Rc<RefCell<PathBuf>>,
     pub hidden: bool,
 }
 
 impl FileDialog {
     pub fn new() -> Self {
+        use std;
         FileDialog {
             title: "File Dialog".to_string(),
+            curpath: Rc::new(RefCell::new(std::env::current_dir().unwrap())),
             path: PathBuf::from("."),
             hidden: false,
         }
@@ -112,6 +117,26 @@ impl FileDialog {
             let list = List::new();
             list.position(2, 2).size(w - 4, h - 4);
 
+            //TODO: let the user specify the path with a textbox and change upon pressing enter - error -> popup window
+            {
+                //add label with current dir path to UI
+                let curdir = Label::new();
+                curdir.position(2, 2).size(w - 8, 20).text_offset(2, 2);
+                let entry = Entry::new(24);
+                let curpath = self.curpath.clone();
+                curdir.text(curpath.borrow().to_str().unwrap().to_string());
+                entry.add(&curdir);
+                list.push(&entry);
+                //whitespace label
+                let whitespace = Label::new();
+                whitespace.position(2, 2).size(w - 8, 20).text_offset(2, 2);
+                let entry = Entry::new(24);
+                whitespace.text("");
+                entry.add(&whitespace);
+                list.push(&entry);
+            }
+
+
             match FolderItem::scan(&path) {
                 Ok(items) => for item_res in items {
                     match item_res {
@@ -121,6 +146,9 @@ impl FileDialog {
                                 name.push('/');
                             }
 
+                            //TODO: currently a new window is created for content change
+                            //      -> change content from current window without constructing a new one(if possible)
+                            // might lead to performance increase
                             let entry = Entry::new(24);
 
                             let label = Label::new();
@@ -131,10 +159,19 @@ impl FileDialog {
 
                             let window = window.deref() as *const Window;
                             let path_opt = path_opt.clone();
+
+                            //copy the Rc
+                            let curpath = self.curpath.clone();
+
                             entry.on_click(move |_, _| {
+                                //change the current path
+                                let buf_path = curpath.borrow().join(&item.path).canonicalize().unwrap();
+                                *curpath.borrow_mut() = buf_path;
+
                                 *path_opt.borrow_mut() = Some(item.path.clone());
                                 unsafe { (*window).close(); }
                             });
+
 
                             list.push(&entry);
                         },
@@ -152,6 +189,7 @@ impl FileDialog {
                     }
                 },
                 Err(err) => {
+                    //add label with error text
                     let entry = Entry::new(24);
 
                     let label = Label::new();
@@ -163,6 +201,7 @@ impl FileDialog {
                     list.push(&entry);
                 }
             }
+
 
             window.add(&list);
 

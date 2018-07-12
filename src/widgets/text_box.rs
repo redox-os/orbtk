@@ -32,6 +32,7 @@ fn prev_i(text: &str, text_i: usize) -> usize {
     slice.char_indices().rev().next().unwrap_or((0, '\0')).0
 }
 
+//TODO: cannot modify a textbox which is inside an entry
 pub struct TextBox {
     pub rect: Cell<Rect>,
     children: RefCell<Vec<Arc<Widget>>>,
