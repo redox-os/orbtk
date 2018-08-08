@@ -1,12 +1,12 @@
 extern crate orbfont;
 
-use orbclient::{self, Mode, Renderer, WindowFlag};
 use orbclient::color::Color;
+use orbclient::{self, Mode, Renderer, WindowFlag};
 use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
 use std::sync::Arc;
 
-use super::{Content, Event, Point, Rect, Widget, Node};
+use super::{Event, Point, Rect, Tree, TreeBuilder, TreeRenderer, Widget};
 use theme::Theme;
 use traits::Resize;
 
@@ -71,7 +71,8 @@ impl<'a> Drop for WindowRenderer<'a> {
 pub struct Window {
     inner: RefCell<InnerWindow>,
     font: Option<orbfont::Font>,
-    //    pub widgets: RefCell<Vec<Arc<Widget>>>,
+    tree: Option<Tree>,
+    tree_renderer: Option<Arc<TreeRenderer>>,
     pub running: Cell<bool>,
     pub theme: Theme,
     resize_callback: RefCell<Option<Arc<Fn(&Window, u32, u32)>>>,
@@ -113,7 +114,8 @@ impl Window {
         Window {
             inner: RefCell::new(inner),
             font: orbfont::Font::find(None, None, None).ok(),
-            //            widgets: RefCell::new(Vec::new()),
+            tree: None,
+            tree_renderer: None,
             running: Cell::new(true),
             theme: Theme::new(),
             resize_callback: RefCell::new(None),
@@ -123,7 +125,6 @@ impl Window {
             _mouse_middle: false,
             events: events,
             redraw: true,
-            //            focus_manager: FocusManager::new(),
         }
     }
 
@@ -175,36 +176,17 @@ impl Window {
         self.running.set(false);
     }
 
-    //    pub fn add<T: Widget>(&self, widget: &Arc<T>) -> usize {
-    //        let mut widgets = self.widgets.borrow_mut();
-    //        let id = widgets.len();
-    //        widgets.push(widget.clone());
-    //
-    //        if id == 0 {
-    //            self.focus_manager.request_focus(&widgets[id]);
-    //        }
-    //
-    //        id
-    //    }
-
     pub fn draw(&self) {
         let mut inner = self.inner.borrow_mut();
         inner.set(self.theme.color("background", &"window".into()));
 
-        let mut _renderer = WindowRenderer::new(&mut *inner, &self.font);
-        //        for widget in self.widgets.borrow().iter() {
-        //            self.draw_widget(&mut renderer, self.focus_manager.focused(&widget), widget);
-        //        }
+        let mut renderer = WindowRenderer::new(&mut *inner, &self.font);
+        if let Some(ref tree_renderer) = self.tree_renderer {
+            if let Some(ref tree) = self.tree {
+                tree_renderer.render(tree, &mut renderer, &self.theme);
+            }
+        }
     }
-
-    //    fn draw_widget(&self, renderer: &mut Renderer, focused: bool, widget: &Arc<Widget>) {
-    //        widget.update();
-    //        widget.draw(renderer, focused, &self.theme);
-    //
-    //        for child in widget.children().borrow().iter() {
-    //            self.draw_widget(renderer, self.focus_manager.focused(&child), child);
-    //        }
-    //    }
 
     pub fn set_theme(&mut self, theme: Theme) {
         self.theme = theme;
@@ -223,37 +205,12 @@ impl Window {
                 }
                 _ => (),
             }
-
-            //            for widget in self.widgets.borrow().iter() {
-            //                self.redraw = self.drain_event(event, self.redraw, widget);
-            //            }
         }
     }
-
-    //    fn drain_event(&self, event: Event, redraw: bool, widget: &Arc<Widget>) -> bool {
-    //        let mut redraw = redraw;
-    //        //let mut children_redraw = false;
-    //
-    //        if widget.event(event, self.focus_manager.focused(&widget), &mut redraw) {
-    //            if !self.focus_manager.focused(&widget) {
-    //                self.focus_manager.request_focus(&widget);
-    //                redraw = true;
-    //            }
-    //        }
-    //
-    //        redraw
-    //
-    //        // for child in &*widget.children().borrow_mut() {
-    //        //     children_redraw = self.drain_event(event, redraw, child);
-    //        // }
-    //
-    //        // redraw || children_redraw
-    //    }
 
     pub fn drain_orbital_events(&mut self) {
         for orbital_event in self.inner.borrow_mut().events() {
             match orbital_event.to_option() {
-                
                 orbclient::EventOption::Resize(resize_event) => {
                     self.redraw = true;
                     self.events.push_back(Event::Resize {
@@ -287,36 +244,14 @@ impl Window {
             self.redraw = false;
         }
     }
-}
 
-
-
-fn build_tree(root: &Option<Arc<Node>>, widget: &Arc<Widget>) -> Option<Arc<Node>> {
-    let node = {
-        if let Some(ref root) = *root {
-            Some(Node::new(widget, root))
-        } else {
-            Some(Node::new_root(widget))
+    pub fn print_tree(self) -> Self {
+        if let Some(ref tree) = self.tree {
+            tree.print();
         }
-    };
 
-    if let Some(ref root) = *root {
-        if let Some(ref node) = node {
-            root.children().borrow_mut().push(node.clone())
-        }
+        self
     }
-
-    match widget.build() {
-        Content::Zero => return None,
-        Content::Single(child) => {
-            build_tree(&node, &child);
-        }
-        Content::Multi(children) => for child in children {
-            build_tree(&node, &child);
-        },
-    }
-
-    node
 }
 
 pub struct Application<'a> {
@@ -326,7 +261,6 @@ pub struct Application<'a> {
     theme: Option<Theme>,
     flags: Option<&'a [WindowFlag]>,
     root: Option<Arc<Widget>>,
-    tree: Option<Arc<Node>>,
 }
 
 impl<'a> Application<'a> {
@@ -338,7 +272,6 @@ impl<'a> Application<'a> {
             theme: None,
             flags: None,
             root: None,
-            tree: None,
         }
     }
 
@@ -359,9 +292,7 @@ impl<'a> Application<'a> {
 
     pub fn root<W: 'static + Widget>(mut self, root: &Arc<W>) -> Self {
         self.root = Some(root.clone());
-        if let Some(ref root) = self.root {
-            self.tree = build_tree(&None, root);
-        }
+
         self
     }
 
@@ -384,10 +315,20 @@ impl<'a> Application<'a> {
         let mut events = VecDeque::new();
         events.push_back(Event::Init);
 
+        let tree_builder = TreeBuilder::new();
+        let tree_renderer = TreeRenderer::new();
+        let mut tree = None;
+
+        if let Some(widget) = self.root {
+            tree = Some(tree_builder.build(&widget));
+            // tree_builder.layout_tree(rect.width, rect.height, &theme);
+        }
+
         Window {
             inner: RefCell::new(inner),
             font: font,
-            //            widgets: RefCell::new(Vec::new()),
+            tree,
+            tree_renderer: Some(tree_renderer),
             running: Cell::new(true),
             theme: theme,
             resize_callback: RefCell::new(None),
@@ -397,31 +338,10 @@ impl<'a> Application<'a> {
             _mouse_middle: false,
             events: events,
             redraw: true,
-            //            focus_manager: FocusManager::new(),
-        }
-    }
-
-    pub fn print_tree(self) -> Self {
-        if let Some(ref root) = self.tree {
-            println!("Window (OrbTK)");
-            self.print_node(root, "");
-        } else {
-            println!("Tree is empty.");
-        }
-
-        self
-    }
-
-    fn print_node(&self, root: &Arc<Node>, spacer: &str) {
-        println!("{}|- {}", spacer, root.widget().element());
-        let mut spacer = String::from(spacer);
-        spacer.push_str("|    ");
-        for child in root.children().borrow().iter() {
-            self.print_node(child, &spacer);
         }
     }
 
     pub fn run(self) {
-        self.build().exec();
+        self.build().print_tree().exec();
     }
 }

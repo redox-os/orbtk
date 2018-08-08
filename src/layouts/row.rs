@@ -2,8 +2,7 @@ use std::sync::Arc;
 use std::cell::RefCell;
 
 use widgets::{Content, Widget, WidgetType};
-use drawable::RectangleDrawable;
-use tree::Node;
+use tree::{Constraint};
 
 pub struct Row {
     children: RefCell<Vec<Arc<Widget>>>,
@@ -28,8 +27,9 @@ impl Row {
 impl Widget for Row {
     fn types(&self) -> Vec<WidgetType> {
         vec![
-            WidgetType::MultiChildrenLayout(Arc::new(|_children: Vec<&Arc<Node>>| {})),
-            WidgetType::Drawable(RectangleDrawable::new()),
+            WidgetType::Layout(Arc::new(|_owener: &Arc<Widget>, _constraint: &Option<Constraint>| -> Constraint {
+                Constraint::default()
+            })),
         ]
     }
 
@@ -37,7 +37,7 @@ impl Widget for Row {
         if self.children.borrow().len() > 0 {
             Content::Multi(self.children.borrow_mut().clone())
         } else {
-            Content::Zero
+            Content::None
         }
     }
 
