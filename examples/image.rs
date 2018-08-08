@@ -3,7 +3,6 @@ extern crate orbtk;
 use std::sync::Arc;
 
 use orbtk::{Application, Button, Center, Container, Content, Rect, Row, Thickness, Label, Widget};
-use orbtk::theme::{Style, Selector};
 
 struct MainView {}
 
@@ -35,12 +34,7 @@ impl Widget for MainView {
                 )
             )
         */
-        let container = Container::new();
-        container.selector().set(Selector::new(Some("button")));
-        let root = Container::new();
-        root.padding().set(Thickness::new(32, 32, 32, 32));
-        root.child(&container);
-        Content::Single(root)
+        Content::Single(Button::new())
         // let center = Center::new();
         // // let row = Row::new();
         // // let left_container = Container::new();

@@ -10,6 +10,10 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::Read;
 
+pub use self::style::Style;
+
+mod style;
+
 static DEFAULT_THEME_CSS: &'static str = include_str!("theme.css");
 
 lazy_static! {
@@ -366,7 +370,7 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
 
             "background" | "foreground" => Value::Color(parse_basic_color(input)?),
 
-            "border-radius" | "border-width" => {
+            "border-radius" | "border-width" | "width" | "height" | "min-width" | "min-height"  | "max-width" | "max-height" => {
                 match input.next()? {
                     Token::Number { int_value: Some(x), has_sign, .. } if !has_sign && x >= 0 => Value::UInt(x as u32),
                     t => return Err(BasicParseError::UnexpectedToken(t).into())
@@ -445,9 +449,6 @@ fn parse_basic_color<'i, 't>(input: &mut Parser<'i, 't>) -> Result<Color, ParseE
         }
     })
 }
-
-
-
 
 fn parse(s: &str) -> Vec<Rule> {
     let mut input = ParserInput::new(s);

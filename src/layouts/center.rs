@@ -2,8 +2,7 @@ use std::sync::Arc;
 use std::cell::RefCell;
 
 use widgets::{Content, Widget, WidgetType};
-use drawable::RectangleDrawable;
-use tree::Node;
+use tree::{Constraint};
 
 pub struct Center {
     child: RefCell<Option<Arc<Widget>>>,
@@ -28,8 +27,9 @@ impl Center {
 impl Widget for Center {
     fn types(&self) -> Vec<WidgetType> {
         vec![
-            WidgetType::SingleChildLayout(Arc::new(|_child: &Arc<Node>| {})),
-            WidgetType::Drawable(RectangleDrawable::new()),
+            WidgetType::Layout(Arc::new(|_owener: &Arc<Widget>, _constraint: &Option<Constraint>| -> Constraint {
+                Constraint::default()
+            })),
         ]
     }
 
@@ -38,7 +38,7 @@ impl Widget for Center {
             return Content::Single(child.clone());
         }
 
-        Content::Zero
+        Content::None
     }
 
     fn element(&self) -> &str {

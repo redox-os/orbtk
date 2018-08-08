@@ -1,0 +1,13 @@
+/* Every element */
+* {
+    /* background: #F5F6F7; */
+    background: green;
+}
+
+button {
+    /* min-width: 60; */
+    /* height: 40; */
+    background: white;
+    color: black;
+    /* border-radius: 4; */
+}

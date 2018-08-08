@@ -13,3 +13,4 @@ Cargo.lock
 
 .idea
 *.iml
+.vscode

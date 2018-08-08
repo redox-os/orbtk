@@ -12,9 +12,9 @@ pub struct RectangleDrawable {
 }
 
 impl RectangleDrawable {
-    pub fn new() -> Arc<Self> {
+    pub fn new(selector: Selector) -> Arc<Self> {
         Arc::new(RectangleDrawable {
-            selector: CloneCell::new(Selector::new(Some("rectangle"))),
+            selector: CloneCell::new(selector),
         })
     }
 }

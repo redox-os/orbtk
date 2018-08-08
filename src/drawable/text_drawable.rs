@@ -13,10 +13,10 @@ pub struct TextDrawable {
 }
 
 impl TextDrawable {
-    pub fn new(text: &str) -> Arc<Self> {
+    pub fn new(text: &str, selector: Selector) -> Arc<Self> {
         Arc::new(TextDrawable {
             text: String::from(text),
-            selector: CloneCell::new(Selector::new(Some("text"))),
+            selector: CloneCell::new(selector),
         })
     }
 }
