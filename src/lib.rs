@@ -149,10 +149,11 @@ impl Label {
 impl Widget for Label {
     fn components(&self) -> Vec<ComponentBox> {
         vec![
+            ComponentBox::new(String::from("Label")),
             ComponentBox::new(Selector::new(Some("button"))),
             ComponentBox::new(Drawable::new(Box::new(
                 |_bounds: &Rect, selector: &Selector, renderer: &mut Box<Backend>| {
-                    renderer.render_rectangle(&Rect::new(5, 5, 60, 12), selector);
+                    renderer.render_text("text", &Rect::new(5, 5, 60, 40), selector);
                 },
             ))),
         ]
@@ -262,7 +263,7 @@ impl Application {
             root: None,
             renderer: Box::new(OrbitalBackend::new(
                 OrbWindow::new_flags(0, 0, 0, 0, "", &[]).unwrap(),
-                orbfont::Font::find(None, None, None).ok(),
+                orbfont::Font::find(Some("MONO"), Some("Serif"), Some("REGULAR")).ok(),
                 theme,
             )),
         }
@@ -353,6 +354,7 @@ pub trait Backend {
     fn render(&mut self);
     fn update(&mut self);
     fn render_rectangle(&mut self, bounds: &Rect, selector: &Selector);
+    fn render_text(&mut self, text: &str, bounds: &Rect, selector: &Selector);
     fn bounds(&mut self, bounds: &Rect);
 }
 
@@ -416,6 +418,7 @@ impl Drop for OrbitalBackend {
 
 impl Backend for OrbitalBackend {
     fn render(&mut self) {
+        // render window background
         self.inner
             .set(self.theme.color("background", &"window".into()));
 
@@ -466,6 +469,36 @@ impl Backend for OrbitalBackend {
                 false,
                 border_color,
             );
+        }
+    }
+
+    fn render_text(&mut self, text: &str, bounds: &Rect, selector: &Selector) {
+        if let Some(font) = &self.font {
+            let line = font.render(text, 64.0);
+            line.draw(&mut self.inner, 20, 20, Color::rgb(0, 0, 0));
+        } else {
+            let rect = Rect::new(bounds.x, bounds.y, bounds.width, bounds.height);
+            let mut current_rect = Rect::new(bounds.x, bounds.y, bounds.width, bounds.height);
+            let x = rect.x;
+
+            for c in text.chars() {
+                if c == '\n' {
+                    current_rect.x = x;
+                    current_rect.y += 16;
+                } else {
+                    if current_rect.x + 8 <= rect.x + rect.width as i32
+                        && current_rect.y + 16 <= rect.y + rect.height as i32
+                    {
+                        self.inner.char(
+                            current_rect.x,
+                            current_rect.y,
+                            c,
+                            self.theme.color("color", selector),
+                        );
+                    }
+                    current_rect.x += 8;
+                }
+            }
         }
     }
 
