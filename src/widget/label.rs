@@ -1,8 +1,6 @@
-use backend::Backend;
-use dces::ComponentBox;
 use structs::Rect;
 use theme::Selector;
-use {Drawable, Widget};
+use {Backend, ComponentBox, Drawable, Entity, EntityComponentManager, Widget};
 
 pub struct Label {
     pub selector: ComponentBox,
@@ -22,8 +20,14 @@ impl Widget for Label {
             ComponentBox::new(String::from("Label")),
             ComponentBox::new(Selector::new(Some("button"))),
             ComponentBox::new(Drawable::new(Box::new(
-                |_bounds: &Rect, selector: &Selector, renderer: &mut Box<Backend>| {
-                    renderer.render_text("text", &Rect::new(5, 5, 60, 40), selector);
+                |entity: Entity, ecm: &EntityComponentManager, renderer: &mut Box<Backend>| {
+                    if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
+                        if let Ok(bounds) = ecm.borrow_component::<Rect>(entity) {
+                            if let Ok(text) = ecm.borrow_component::<String>(entity) {
+                                renderer.render_text(text, bounds, selector);
+                            }
+                        }
+                    }
                 },
             ))),
         ]

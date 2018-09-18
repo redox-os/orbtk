@@ -1,10 +1,9 @@
-use dces::ComponentBox;
 use std::sync::Arc;
 
 use backend::Backend;
 use structs::Rect;
 use theme::Selector;
-use {Drawable, Template, Widget};
+use {ComponentBox, Drawable, Entity, EntityComponentManager, Template, Widget};
 
 #[derive(Default)]
 pub struct Container {
@@ -34,8 +33,12 @@ impl Widget for Container {
         vec![
             ComponentBox::new(Selector::new(Some("border"))),
             ComponentBox::new(Drawable::new(Box::new(
-                |bounds: &Rect, selector: &Selector, renderer: &mut Box<Backend>| {
-                    renderer.render_rectangle(bounds, selector);
+                |entity: Entity, ecm: &EntityComponentManager, renderer: &mut Box<Backend>| {
+                    if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
+                        if let Ok(bounds) = ecm.borrow_component::<Rect>(entity) {
+                            renderer.render_rectangle(bounds, selector);
+                        }
+                    }
                 },
             ))),
         ]
