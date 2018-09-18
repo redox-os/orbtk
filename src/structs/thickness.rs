@@ -1,4 +1,3 @@
-
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Thickness {
     pub left: i32,

@@ -1,10 +1,13 @@
-use cssparser::{self, BasicParseError, CompactCowStr, DeclarationListParser, Parser, ParseError, ParserInput, Token};
+use cssparser::{
+    self, BasicParseError, CompactCowStr, DeclarationListParser, ParseError, Parser, ParserInput,
+    Token,
+};
 use orbclient::Color;
 use std::collections::HashSet;
-use std::sync::Arc;
 use std::mem;
 use std::ops::Add;
 use std::path::Path;
+use std::sync::Arc;
 
 use std::fs::File;
 use std::io::BufReader;
@@ -18,7 +21,10 @@ static DEFAULT_THEME_CSS: &'static str = include_str!("theme.css");
 
 lazy_static! {
     static ref DEFAULT_THEME: Arc<Theme> = {
-        Arc::new(Theme {parent: None, rules: parse(DEFAULT_THEME_CSS)})
+        Arc::new(Theme {
+            parent: None,
+            rules: parse(DEFAULT_THEME_CSS),
+        })
     };
 }
 
@@ -43,7 +49,9 @@ impl Theme {
         let file = try!(File::open(path).map_err(|err| format!("failed to open css: {}", err)));
         let mut reader = BufReader::new(file);
         let mut css = String::new();
-        let res = reader.read_to_string(&mut css).map_err(|err| format!("failed to read css: {}", err));
+        let res = reader
+            .read_to_string(&mut css)
+            .map_err(|err| format!("failed to read css: {}", err));
         match res {
             Ok(_) => Ok(Theme::parse(&css)),
             Err(err) => Err(err),
@@ -52,7 +60,11 @@ impl Theme {
 
     fn all_rules(&self) -> Vec<Rule> {
         if let Some(ref parent) = self.parent {
-            self.rules.iter().chain(parent.rules.iter()).cloned().collect()
+            self.rules
+                .iter()
+                .chain(parent.rules.iter())
+                .cloned()
+                .collect()
         } else {
             self.rules.clone()
         }
@@ -62,11 +74,23 @@ impl Theme {
         let mut matches: Vec<(bool, Specificity, Value)> = Vec::new();
 
         for rule in self.all_rules().iter().rev() {
-            let matching_selectors = rule.selectors.iter().filter(|x| x.matches(query)).collect::<Vec<_>>();
+            let matching_selectors = rule
+                .selectors
+                .iter()
+                .filter(|x| x.matches(query))
+                .collect::<Vec<_>>();
 
             if matching_selectors.len() > 0 {
-                if let Some(decl) = rule.declarations.iter().find(|decl| decl.property == property) {
-                    let highest_specifity = matching_selectors.iter().map(|sel| sel.specificity()).max().unwrap();
+                if let Some(decl) = rule
+                    .declarations
+                    .iter()
+                    .find(|decl| decl.property == property)
+                {
+                    let highest_specifity = matching_selectors
+                        .iter()
+                        .map(|sel| sel.specificity())
+                        .max()
+                        .unwrap();
                     matches.push((decl.important, highest_specifity, decl.value.clone()));
                 }
             }
@@ -78,11 +102,15 @@ impl Theme {
 
     pub fn color(&self, property: &str, query: &Selector) -> Color {
         let default = Color { data: 0 };
-        self.get(property, query).map(|v| v.color().unwrap_or(default)).unwrap_or(default)
+        self.get(property, query)
+            .map(|v| v.color().unwrap_or(default))
+            .unwrap_or(default)
     }
 
     pub fn uint(&self, property: &str, query: &Selector) -> u32 {
-        self.get(property, query).map(|v| v.uint().unwrap_or(0)).unwrap_or(0)
+        self.get(property, query)
+            .map(|v| v.uint().unwrap_or(0))
+            .unwrap_or(0)
     }
 }
 
@@ -147,12 +175,14 @@ impl Selector {
         let s = Specificity([
             0,
             (self.classes.len() + self.pseudo_classes.len()) as u8,
-            if self.element.is_some() { 1 } else { 0 }
+            if self.element.is_some() { 1 } else { 0 },
         ]);
 
         if let Some(ref relation) = self.relation {
             match **relation {
-                SelectorRelation::Ancestor(ref x) | SelectorRelation::Parent(ref x) => return x.specificity() + s,
+                SelectorRelation::Ancestor(ref x) | SelectorRelation::Parent(ref x) => {
+                    return x.specificity() + s
+                }
             }
         }
 
@@ -256,21 +286,26 @@ impl<'i> cssparser::QualifiedRuleParser<'i> for RuleParser {
     type QualifiedRule = Rule;
     type Error = CustomParseError;
 
-    fn parse_prelude<'t>(&mut self, input: &mut Parser<'i, 't>)
-        -> Result<Self::Prelude, ParseError<'i, Self::Error>> {
+    fn parse_prelude<'t>(
+        &mut self,
+        input: &mut Parser<'i, 't>,
+    ) -> Result<Self::Prelude, ParseError<'i, Self::Error>> {
         let res = parse_selectors(input)?;
         Ok(res)
     }
 
-    fn parse_block<'t>(&mut self, selectors: Self::Prelude, input: &mut Parser<'i, 't>)
-        -> Result<Self::QualifiedRule, ParseError<'i, Self::Error>> {
+    fn parse_block<'t>(
+        &mut self,
+        selectors: Self::Prelude,
+        input: &mut Parser<'i, 't>,
+    ) -> Result<Self::QualifiedRule, ParseError<'i, Self::Error>> {
         let decl_parser = DeclarationParser {};
 
         let decls = DeclarationListParser::new(input, decl_parser).collect::<Vec<_>>();
 
         for decl in &decls {
             match *decl {
-                Ok(_) => {},
+                Ok(_) => {}
                 Err(ref e) => {
                     match e.error {
                         ParseError::Basic(ref e) => eprintln!("{:?}", e),
@@ -296,7 +331,9 @@ impl<'i> cssparser::AtRuleParser<'i> for RuleParser {
     type Error = CustomParseError;
 }
 
-fn parse_selectors<'i, 't>(input: &mut Parser<'i, 't>) -> Result<Vec<Selector>, ParseError<'i, CustomParseError>> {
+fn parse_selectors<'i, 't>(
+    input: &mut Parser<'i, 't>,
+) -> Result<Vec<Selector>, ParseError<'i, CustomParseError>> {
     let mut selectors = Vec::new();
 
     let mut selector = Selector::default();
@@ -325,10 +362,16 @@ fn parse_selectors<'i, 't>(input: &mut Parser<'i, 't>) -> Result<Vec<Selector>, 
             Token::Delim('*') => {}
 
             // Class
-            Token::Delim('.') => {selector.classes.insert(input.expect_ident()?.into_owned());}
+            Token::Delim('.') => {
+                selector.classes.insert(input.expect_ident()?.into_owned());
+            }
 
             // Pseudo-class
-            Token::Colon => {selector.pseudo_classes.insert(input.expect_ident()?.into_owned());}
+            Token::Colon => {
+                selector
+                    .pseudo_classes
+                    .insert(input.expect_ident()?.into_owned());
+            }
 
             // This selector is done, on to the next one
             Token::Comma => {
@@ -356,26 +399,35 @@ fn parse_selectors<'i, 't>(input: &mut Parser<'i, 't>) -> Result<Vec<Selector>, 
     Ok(selectors)
 }
 
-
-
 struct DeclarationParser;
 
 impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
     type Declaration = Declaration;
     type Error = CustomParseError;
 
-    fn parse_value<'t>(&mut self, name: CompactCowStr<'i>, input: &mut Parser<'i, 't>) -> Result<Self::Declaration, ParseError<'i, Self::Error>> {
+    fn parse_value<'t>(
+        &mut self,
+        name: CompactCowStr<'i>,
+        input: &mut Parser<'i, 't>,
+    ) -> Result<Self::Declaration, ParseError<'i, Self::Error>> {
         let value = match &*name {
             "color" | "border-color" => Value::Color(parse_basic_color(input)?),
 
             "background" | "foreground" => Value::Color(parse_basic_color(input)?),
 
-            "border-radius" | "border-width" | "width" | "height" | "min-width" | "min-height"  | "max-width" | "max-height" => {
-                match input.next()? {
-                    Token::Number { int_value: Some(x), has_sign, .. } if !has_sign && x >= 0 => Value::UInt(x as u32),
-                    t => return Err(BasicParseError::UnexpectedToken(t).into())
+            "border-radius" | "border-width" | "width" | "height" | "min-width" | "min-height"
+            | "max-width" | "max-height" => match input.next()? {
+                Token::Number {
+                    int_value: Some(x),
+                    has_sign,
+                    ..
                 }
-            }
+                    if !has_sign && x >= 0 =>
+                {
+                    Value::UInt(x as u32)
+                }
+                t => return Err(BasicParseError::UnexpectedToken(t).into()),
+            },
 
             _ => return Err(BasicParseError::UnexpectedToken(input.next()?).into()),
         };
@@ -383,7 +435,7 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
         Ok(Declaration {
             property: name.into_owned(),
             value: value,
-            important: input.try(cssparser::parse_important).is_ok()
+            important: input.try(cssparser::parse_important).is_ok(),
         })
     }
 }
@@ -418,30 +470,32 @@ fn css_color(name: &str) -> Option<Color> {
     }))
 }
 
-fn parse_basic_color<'i, 't>(input: &mut Parser<'i, 't>) -> Result<Color, ParseError<'i, CustomParseError>> {
+fn parse_basic_color<'i, 't>(
+    input: &mut Parser<'i, 't>,
+) -> Result<Color, ParseError<'i, CustomParseError>> {
     Ok(match input.next()? {
         Token::Ident(s) => match css_color(&s) {
             Some(color) => color,
             None => return Err(CustomParseError::InvalidColorName(s.into_owned()).into()),
         },
 
-        Token::IDHash(hash) | Token::Hash(hash) => {
-            match hash.len() {
-                6 | 8 => {
-                    let mut x = match u32::from_str_radix(&hash, 16) {
-                        Ok(x) => x,
-                        Err(_) => return Err(CustomParseError::InvalidColorHex(hash.into_owned()).into()),
-                    };
-
-                    if hash.len() == 6 {
-                        x |= 0xFF000000;
+        Token::IDHash(hash) | Token::Hash(hash) => match hash.len() {
+            6 | 8 => {
+                let mut x = match u32::from_str_radix(&hash, 16) {
+                    Ok(x) => x,
+                    Err(_) => {
+                        return Err(CustomParseError::InvalidColorHex(hash.into_owned()).into())
                     }
+                };
 
-                    Color { data: x }
-                },
-                _ => return Err(CustomParseError::InvalidColorHex(hash.into_owned()).into()),
+                if hash.len() == 6 {
+                    x |= 0xFF000000;
+                }
+
+                Color { data: x }
             }
-        }
+            _ => return Err(CustomParseError::InvalidColorHex(hash.into_owned()).into()),
+        },
 
         t => {
             let basic_error = BasicParseError::UnexpectedToken(t);
@@ -456,13 +510,14 @@ fn parse(s: &str) -> Vec<Rule> {
     let rule_parser = RuleParser::new();
 
     let rules = {
-        let rule_list_parser = cssparser::RuleListParser::new_for_stylesheet(&mut parser, rule_parser);
+        let rule_list_parser =
+            cssparser::RuleListParser::new_for_stylesheet(&mut parser, rule_parser);
         rule_list_parser.collect::<Vec<_>>()
     };
 
     for rule in &rules {
         match *rule {
-            Ok(_) => {},
+            Ok(_) => {}
             Err(ref e) => {
                 match e.error {
                     ParseError::Basic(ref e) => eprintln!("{:?}", e),
@@ -477,5 +532,7 @@ fn parse(s: &str) -> Vec<Rule> {
 }
 
 const fn hex(data: u32) -> Color {
-    Color { data: 0xFF000000 | data }
+    Color {
+        data: 0xFF000000 | data,
+    }
 }
