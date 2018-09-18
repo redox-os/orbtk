@@ -11,3 +11,8 @@ button {
     color: black;
     /* border-radius: 4; */
 }
+
+border {
+    background: black;
+    border-radius: 4;
+}

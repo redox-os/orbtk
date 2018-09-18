@@ -43,20 +43,20 @@ pub mod theme;
 // pub mod widgets;
 
 struct RenderSystem {
-    renderer: RefCell<Box<RenderBackend>>,
+    renderer: RefCell<Box<Backend>>,
 }
 
 pub struct Drawable {
-    draw_fn: Box<Fn(&Selector)>,
+    draw_fn: Box<Fn(&Rect, &Selector, &mut Box<Backend>)>,
 }
 
 impl Drawable {
-    pub fn new(draw_fn: Box<Fn(&Selector)>) -> Self {
+    pub fn new(draw_fn: Box<Fn(&Rect, &Selector, &mut Box<Backend>)>) -> Self {
         Drawable { draw_fn }
     }
 
-    pub fn draw(&self, selector: &Selector) {
-        (self.draw_fn)(selector)
+    pub fn draw(&self, bounds: &Rect, selector: &Selector, renderer: &mut Box<Backend>) {
+        (self.draw_fn)(bounds, selector, renderer)
     }
 }
 
@@ -66,7 +66,9 @@ impl System for RenderSystem {
         for entity in entities {
             if let Ok(drawable) = ecm.borrow_component::<Drawable>(*entity) {
                 if let Ok(selector) = ecm.borrow_component::<Selector>(*entity) {
-                    drawable.draw(selector);
+                    if let Ok(bounds) = ecm.borrow_component::<Rect>(*entity) {
+                        drawable.draw(bounds, selector, &mut *self.renderer.borrow_mut());
+                    }
                 }
             }
 
@@ -76,6 +78,8 @@ impl System for RenderSystem {
                 println!("No {}", entity);
             }
         }
+
+        self.renderer.borrow_mut().update();
     }
 }
 
@@ -95,11 +99,11 @@ pub trait Widget: Any {
 }
 
 #[derive(Default)]
-pub struct Border {
+pub struct Container {
     child: Option<Arc<Widget>>,
 }
 
-impl Border {
+impl Container {
     pub fn new() -> Self {
         Default::default()
     }
@@ -109,7 +113,7 @@ impl Border {
     }
 }
 
-impl Widget for Border {
+impl Widget for Container {
     fn template(&self) -> Template {
         if let Some(child) = &self.child {
             Template::Single(child.clone())
@@ -119,9 +123,14 @@ impl Widget for Border {
     }
 
     fn components(&self) -> Vec<ComponentBox> {
-        vec![ComponentBox::new(Drawable::new(Box::new(
-            |_selector: &Selector| println!("Draw border"),
-        )))]
+        vec![
+            ComponentBox::new(Selector::new(Some("border"))),
+            ComponentBox::new(Drawable::new(Box::new(
+                |bounds: &Rect, selector: &Selector, renderer: &mut Box<Backend>| {
+                    renderer.render_rectangle(bounds, selector);
+                },
+            ))),
+        ]
     }
 }
 
@@ -147,7 +156,7 @@ pub struct Button;
 
 impl Widget for Button {
     fn template(&self) -> Template {
-        Template::Single(Arc::new(Border::new()))
+        Template::Single(Arc::new(Container::new()))
     }
 
     fn components(&self) -> Vec<ComponentBox> {
@@ -161,7 +170,7 @@ pub struct WidgetManager {
 }
 
 impl WidgetManager {
-    pub fn new(renderer: RefCell<Box<RenderBackend>>) -> Self {
+    pub fn new(renderer: RefCell<Box<Backend>>) -> Self {
         let mut world = World::new();
         world
             .create_system(RenderSystem { renderer })
@@ -190,7 +199,7 @@ impl WidgetManager {
             }
 
             // add bounds
-            entity_builder.with(Rect::new(0, 0, 200, 50)).build();
+            entity_builder.with(Rect::new(10, 10, 200, 50)).build();
         }
     }
 
@@ -263,7 +272,7 @@ pub struct WindowBuilder<'a> {
     pub title: String,
     pub theme: Arc<Theme>,
     pub root: Option<Arc<Widget>>,
-    pub renderer: Box<RenderBackend>,
+    pub renderer: Box<Backend>,
 }
 
 impl<'a> WindowBuilder<'a> {
@@ -287,7 +296,7 @@ impl<'a> WindowBuilder<'a> {
         self
     }
 
-    pub fn with_renderer(mut self, renderer: Box<RenderBackend>) -> Self {
+    pub fn with_renderer(mut self, renderer: Box<Backend>) -> Self {
         self.renderer = renderer;
         self
     }
@@ -306,6 +315,7 @@ impl<'a> WindowBuilder<'a> {
             bounds: self.bounds,
             title: self.title,
             theme,
+            running: true,
         })
     }
 }
@@ -315,20 +325,25 @@ pub struct Window {
     pub bounds: Rect,
     pub title: String,
     pub theme: Arc<Theme>,
+    pub running: bool,
 }
 
 impl Window {
     pub fn run(&mut self) {
-        self.widget_manager.run();
+        'event: while self.running {
+            self.widget_manager.run();
+        }
     }
 }
 
 pub use orbclient::Window as OrbWindow;
-use orbclient::{EventOption, Mode, Renderer};
+use orbclient::{Mode, Renderer};
 use std::cell::Cell;
 
-pub trait RenderBackend {
+pub trait Backend {
     fn render(&mut self);
+    fn update(&mut self);
+    fn render_rectangle(&mut self, bounds: &Rect, selector: &Selector);
     fn bounds(&mut self, bounds: &Rect);
 }
 
@@ -390,28 +405,61 @@ impl Drop for OrbitalBackend {
     }
 }
 
-impl RenderBackend for OrbitalBackend {
+impl Backend for OrbitalBackend {
     fn render(&mut self) {
         self.inner
             .set(self.theme.color("background", &"window".into()));
-        self.inner
-            .rect(250, 200, 80, 80, Color::rgba(100, 100, 100, 100));
-        self.inner.sync();
 
-        'events: loop {
-            for event in self.inner.events() {
-                match event.to_option() {
-                    EventOption::Quit(_quit_event) => break 'events,
-                    EventOption::Mouse(evt) => println!(
-                        "At position {:?} pixel color is : {:?}",
-                        (evt.x, evt.y),
-                        self.inner.getpixel(evt.x, evt.y)
-                    ),
-                    event_option => println!("{:?}", event_option),
-                }
-            }
+        // 'events: loop {
+        //     for event in self.inner.events() {
+        //         match event.to_option() {
+        //             EventOption::Quit(_quit_event) => break 'events,
+        //             EventOption::Mouse(evt) => println!(
+        //                 "At position {:?} pixel color is : {:?}",
+        //                 (evt.x, evt.y),
+        //                 self.inner.getpixel(evt.x, evt.y)
+        //             ),
+        //             event_option => println!("{:?}", event_option),
+        //         }
+        //     }
+        // }
+    }
+
+    fn update(&mut self) {
+        self.inner.sync();
+        for _event in self.inner.events() {}
+    }
+
+    fn render_rectangle(&mut self, bounds: &Rect, selector: &Selector) {
+        let b_r = self.theme.uint("border-radius", selector);
+
+        let fill = self.theme.color("background", selector);
+
+        self.inner.rounded_rect(
+            bounds.x,
+            bounds.y,
+            bounds.width,
+            bounds.height,
+            b_r,
+            true,
+            fill,
+        );
+
+        if self.theme.uint("border-width", selector) > 0 {
+            let border_color = self.theme.color("border-color", selector);
+
+            self.inner.rounded_rect(
+                bounds.x,
+                bounds.y,
+                bounds.width,
+                bounds.height,
+                b_r,
+                false,
+                border_color,
+            );
         }
     }
+
     fn bounds(&mut self, bounds: &Rect) {
         self.inner.set_pos(bounds.x, bounds.y);
         self.inner.set_size(bounds.width, bounds.height);
