@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use dces::World;
 
-use {Backend, Drawable, Rect, RenderSystem, Template, Widget};
+use {Backend, Drawable, LayoutSystem, Rect, RenderSystem, Template, Widget};
 
 pub struct EntityId(u32);
 
@@ -17,8 +17,30 @@ impl WidgetManager {
     pub fn new(renderer: RefCell<Box<Backend>>) -> Self {
         let mut world = World::new();
         world
-            .create_system(RenderSystem { renderer })
+            .create_system(LayoutSystem {})
             .with_priority(0)
+            .with_sort(|comp_a, comp_b| {
+                let id_a;
+                let id_b;
+
+                if let Some(id) = comp_a.downcast_ref::<EntityId>() {
+                    id_a = id;
+                } else {
+                    return None;
+                }
+
+                if let Some(id) = comp_b.downcast_ref::<EntityId>() {
+                    id_b = id;
+                } else {
+                    return None;
+                }
+
+                Some(id_b.0.cmp(&id_a.0))
+            }).build();
+
+        world
+            .create_system(RenderSystem { renderer })
+            .with_priority(1)
             .with_sort(|comp_a, comp_b| {
                 let id_a;
                 let id_b;
