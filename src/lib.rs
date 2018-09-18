@@ -7,16 +7,17 @@ extern crate dces;
 
 pub use dces::prelude::*;
 use std::any::Any;
+use std::cell::RefCell;
 use std::sync::Arc;
 
 extern crate cssparser;
 extern crate orbclient;
+extern crate orbfont;
 extern crate orbimage;
 #[macro_use]
 extern crate lazy_static;
 
 pub use orbclient::color::Color;
-pub use orbclient::renderer::Renderer;
 
 pub use cell::CloneCell;
 // pub use drawable::*;
@@ -41,7 +42,9 @@ pub mod theme;
 // pub mod tree;
 // pub mod widgets;
 
-struct RenderSystem;
+struct RenderSystem {
+    renderer: RefCell<Box<RenderBackend>>,
+}
 
 pub struct Drawable {
     draw_fn: Box<Fn(&Selector)>,
@@ -59,6 +62,7 @@ impl Drawable {
 
 impl System for RenderSystem {
     fn run(&self, entities: &Vec<Entity>, ecm: &mut EntityComponentManager) {
+        self.renderer.borrow_mut().render();
         for entity in entities {
             if let Ok(drawable) = ecm.borrow_component::<Drawable>(*entity) {
                 if let Ok(selector) = ecm.borrow_component::<Selector>(*entity) {
@@ -157,16 +161,10 @@ pub struct WidgetManager {
 }
 
 impl WidgetManager {
-    pub fn new() -> Self {
-        Default::default()
-    }
-
-    pub fn root(&mut self, root: Arc<Widget>) {
-        let mut widgets = vec![];
-        self.expand(root, &mut widgets);
-
-        self.world
-            .create_system(RenderSystem)
+    pub fn new(renderer: RefCell<Box<RenderBackend>>) -> Self {
+        let mut world = World::new();
+        world
+            .create_system(RenderSystem { renderer })
             .with_priority(0)
             .with_filter(|comp| {
                 for co in comp {
@@ -176,6 +174,13 @@ impl WidgetManager {
                 }
                 false
             }).build();
+
+        WidgetManager { world }
+    }
+
+    pub fn root(&mut self, root: Arc<Widget>) {
+        let mut widgets = vec![];
+        self.expand(root, &mut widgets);
 
         for widget in widgets {
             let mut entity_builder = self.world.create_entity();
@@ -235,8 +240,13 @@ impl Application {
             application: self,
             bounds: Rect::default(),
             title: String::from(""),
-            theme,
+            theme: theme.clone(),
             root: None,
+            renderer: Box::new(OrbitalBackend::new(
+                OrbWindow::new_flags(0, 0, 0, 0, "", &[]).unwrap(),
+                orbfont::Font::find(None, None, None).ok(),
+                theme,
+            )),
         }
     }
 
@@ -253,6 +263,7 @@ pub struct WindowBuilder<'a> {
     pub title: String,
     pub theme: Arc<Theme>,
     pub root: Option<Arc<Widget>>,
+    pub renderer: Box<RenderBackend>,
 }
 
 impl<'a> WindowBuilder<'a> {
@@ -276,8 +287,14 @@ impl<'a> WindowBuilder<'a> {
         self
     }
 
-    pub fn build(self) {
-        let mut widget_manager = WidgetManager::new();
+    pub fn with_renderer(mut self, renderer: Box<RenderBackend>) -> Self {
+        self.renderer = renderer;
+        self
+    }
+
+    pub fn build(mut self) {
+        self.renderer.bounds(&self.bounds);
+        let mut widget_manager = WidgetManager::new(RefCell::new(self.renderer));
 
         if let Some(root) = self.root {
             widget_manager.root(root.clone());
@@ -298,11 +315,105 @@ pub struct Window {
     pub bounds: Rect,
     pub title: String,
     pub theme: Arc<Theme>,
-    // size
 }
 
 impl Window {
     pub fn run(&mut self) {
         self.widget_manager.run();
+    }
+}
+
+pub use orbclient::Window as OrbWindow;
+use orbclient::{EventOption, Mode, Renderer};
+use std::cell::Cell;
+
+pub trait RenderBackend {
+    fn render(&mut self);
+    fn bounds(&mut self, bounds: &Rect);
+}
+
+pub struct OrbitalBackend {
+    inner: OrbWindow,
+    font: Option<orbfont::Font>,
+    theme: Arc<Theme>,
+}
+
+impl OrbitalBackend {
+    pub fn new(inner: OrbWindow, font: Option<orbfont::Font>, theme: Arc<Theme>) -> OrbitalBackend {
+        OrbitalBackend {
+            inner: inner,
+            font: font,
+            theme,
+        }
+    }
+}
+
+impl Renderer for OrbitalBackend {
+    fn width(&self) -> u32 {
+        self.inner.width()
+    }
+
+    fn height(&self) -> u32 {
+        self.inner.height()
+    }
+
+    fn data(&self) -> &[Color] {
+        self.inner.data()
+    }
+
+    fn data_mut(&mut self) -> &mut [Color] {
+        self.inner.data_mut()
+    }
+
+    fn sync(&mut self) -> bool {
+        self.inner.sync()
+    }
+
+    fn mode(&self) -> &Cell<Mode> {
+        &self.inner.mode()
+    }
+
+    fn char(&mut self, x: i32, y: i32, c: char, color: Color) {
+        if let Some(ref font) = self.font {
+            let mut buf = [0; 4];
+            font.render(&c.encode_utf8(&mut buf), 16.0)
+                .draw(&mut self.inner, x, y, color)
+        } else {
+            self.inner.char(x, y, c, color);
+        }
+    }
+}
+
+impl Drop for OrbitalBackend {
+    fn drop(&mut self) {
+        self.inner.sync();
+    }
+}
+
+impl RenderBackend for OrbitalBackend {
+    fn render(&mut self) {
+        self.inner
+            .set(self.theme.color("background", &"window".into()));
+        self.inner
+            .rect(250, 200, 80, 80, Color::rgba(100, 100, 100, 100));
+        self.inner.sync();
+
+        'events: loop {
+            for event in self.inner.events() {
+                match event.to_option() {
+                    EventOption::Quit(_quit_event) => break 'events,
+                    EventOption::Mouse(evt) => println!(
+                        "At position {:?} pixel color is : {:?}",
+                        (evt.x, evt.y),
+                        self.inner.getpixel(evt.x, evt.y)
+                    ),
+                    event_option => println!("{:?}", event_option),
+                }
+            }
+        }
+    }
+    fn bounds(&mut self, bounds: &Rect) {
+        self.inner.set_pos(bounds.x, bounds.y);
+        self.inner.set_size(bounds.width, bounds.height);
     }
 }
