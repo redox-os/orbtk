@@ -148,7 +148,14 @@ impl Label {
 
 impl Widget for Label {
     fn components(&self) -> Vec<ComponentBox> {
-        vec![]
+        vec![
+            ComponentBox::new(Selector::new(Some("button"))),
+            ComponentBox::new(Drawable::new(Box::new(
+                |_bounds: &Rect, selector: &Selector, renderer: &mut Box<Backend>| {
+                    renderer.render_rectangle(&Rect::new(5, 5, 60, 12), selector);
+                },
+            ))),
+        ]
     }
 }
 
@@ -156,7 +163,9 @@ pub struct Button;
 
 impl Widget for Button {
     fn template(&self) -> Template {
-        Template::Single(Arc::new(Container::new()))
+        let mut container = Container::new();
+        container.child(Arc::new(Label::new(Selector::new(Some("button")))));
+        Template::Single(Arc::new(container))
     }
 
     fn components(&self) -> Vec<ComponentBox> {
