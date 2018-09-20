@@ -1,6 +1,10 @@
+use std::collections::HashMap;
 use structs::Rect;
 use theme::Selector;
-use {Backend, ComponentBox, Drawable, Entity, EntityComponentManager, Widget};
+use {
+    Backend, BoxConstraints, ComponentBox, Drawable, Entity, EntityComponentManager, Layout,
+    LayoutResult, Widget,
+};
 
 pub struct Label {
     pub selector: ComponentBox,
@@ -28,6 +32,16 @@ impl Widget for Label {
                             }
                         }
                     }
+                },
+            ))),
+            ComponentBox::new(Layout::new(Box::new(
+                |_entity: Entity,
+                 _ecm: &EntityComponentManager,
+                 bc: &BoxConstraints,
+                 _children: &[Entity],
+                 _children_pos: &mut HashMap<Entity, (i32, i32)>,
+                 _size: Option<(u32, u32)>| {
+                    LayoutResult::Size(bc.constrain((100, 17)))
                 },
             ))),
         ]

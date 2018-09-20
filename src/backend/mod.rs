@@ -1,9 +1,7 @@
 use {Rect, Selector};
 
-pub use self::drawable::*;
 pub use self::orbital::*;
 
-mod drawable;
 mod orbital;
 
 pub trait Backend {

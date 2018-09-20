@@ -1,23 +1,28 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::sync::Arc;
 
-use dces::World;
-
-use {Backend, Drawable, LayoutSystem, Rect, RenderSystem, Template, Widget};
+use {
+    Backend, BoxConstraints, Drawable, Entity, EntityComponentManager, Layout, LayoutResult,
+    LayoutSystem, Rect, RenderSystem, Template, Tree, Widget, World,
+};
 
 pub struct EntityId(u32);
 
 #[derive(Default)]
 pub struct WidgetManager {
     world: World,
-    entity_counter: u32,
+    _entity_counter: u32,
+    tree: Arc<RefCell<Tree>>,
 }
 
 impl WidgetManager {
     pub fn new(renderer: RefCell<Box<Backend>>) -> Self {
         let mut world = World::new();
+        let tree = Arc::new(RefCell::new(Tree::default()));
+
         world
-            .create_system(LayoutSystem {})
+            .create_system(LayoutSystem { tree: tree.clone() })
             .with_priority(0)
             .with_sort(|comp_a, comp_b| {
                 let id_a;
@@ -69,47 +74,74 @@ impl WidgetManager {
 
         WidgetManager {
             world,
-            entity_counter: 0,
+            _entity_counter: 0,
+            tree,
         }
     }
 
     pub fn root(&mut self, root: Arc<Widget>) {
-        let mut widgets = vec![];
-        self.expand(root, &mut widgets);
+        fn expand(
+            world: &mut World,
+            tree: &Arc<RefCell<Tree>>,
+            widget: Arc<Widget>,
+            parent: Entity,
+        ) -> Entity {
+            let entity = {
+                // add bounds and default layout
 
-        for widget in widgets {
-            let mut entity_builder = self.world.create_entity();
+                // todo: find better place for default components
+                let mut entity_builder = world
+                    .create_entity()
+                    .with(Rect::new(10, 10, 200, 50))
+                    .with(Layout::new(Box::new(
+                        |_entity: Entity,
+                         _ecm: &EntityComponentManager,
+                         bc: &BoxConstraints,
+                         children: &[Entity],
+                         children_pos: &mut HashMap<Entity, (i32, i32)>,
+                         size: Option<(u32, u32)>|
+                         -> LayoutResult {
+                            if let Some(size) = size {
+                                children_pos.insert(children[0], (0, 0));
+                                LayoutResult::Size(size)
+                            } else {
+                                if children.len() == 0 {
+                                    return LayoutResult::Size((0, 0));
+                                }
+                                LayoutResult::RequestChild(children[0], *bc)
+                            }
+                        },
+                    ))).with(EntityId(0));
 
-            for component in widget.components() {
-                entity_builder = entity_builder.with_box(component);
-            }
-
-            // add bounds
-            entity_builder
-                .with(Rect::new(10, 10, 200, 50))
-                .with(EntityId(self.entity_counter))
-                .build();
-            self.entity_counter += 1;
-        }
-    }
-
-    fn expand(&mut self, widget: Arc<Widget>, widgets: &mut Vec<Arc<Widget>>) {
-        match widget.template() {
-            Template::Empty => {
-                widgets.push(widget);
-                return;
-            }
-            Template::Single(child) => {
-                self.expand(child, widgets);
-            }
-            Template::Mutli(children) => {
-                for child in children {
-                    self.expand(child, widgets);
+                for component in widget.components() {
+                    entity_builder = entity_builder.with_box(component);
                 }
+
+                let entity = entity_builder.build();
+
+                tree.borrow_mut().register_node(entity);
+
+                entity
+            };
+
+            match widget.template() {
+                Template::Single(child) => {
+                    let child = expand(world, tree, child, parent);
+                    let _result = tree.borrow_mut().append_child(entity, child);
+                }
+                Template::Mutli(children) => {
+                    for child in children {
+                        let child = expand(world, tree, child, parent);
+                        let _result = tree.borrow_mut().append_child(entity, child);
+                    }
+                }
+                _ => {}
             }
+
+            entity
         }
 
-        widgets.push(widget);
+        expand(&mut self.world, &self.tree, root, 0);
     }
 
     pub fn run(&mut self) {
