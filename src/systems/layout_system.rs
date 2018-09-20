@@ -95,7 +95,8 @@ impl System for LayoutSystem {
             bc: &BoxConstraints,
             entity: Entity,
         ) -> (u32, u32) {
-            let mut size = None;
+            let mut size : Option<(u32, u32)> = None;
+
             loop {
                 let mut children_pos = HashMap::new();
                 let layout_result = {
@@ -140,6 +141,6 @@ impl System for LayoutSystem {
         let root = self.tree.borrow().root;
 
         // todo: use widnow size!!!
-        layout_rec(ecm, &self.tree, &BoxConstraints::tight((200, 200)), root);
+        layout_rec(ecm, &self.tree, &BoxConstraints { min_width: 0, min_height: 0, max_width: 400, max_height: 300}, root);
     }
 }

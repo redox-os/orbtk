@@ -106,7 +106,7 @@ impl WidgetManager {
                                 LayoutResult::Size(size)
                             } else {
                                 if children.len() == 0 {
-                                    return LayoutResult::Size((0, 0));
+                                    return LayoutResult::Size((bc.min_width, bc.min_height));
                                 }
                                 LayoutResult::RequestChild(children[0], *bc)
                             }
