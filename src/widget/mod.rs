@@ -3,12 +3,16 @@ use std::sync::Arc;
 
 use dces::ComponentBox;
 
+use Rect;
+
 pub use self::button::*;
 pub use self::container::*;
+pub use self::flex::*;
 pub use self::label::*;
 
 mod button;
 mod container;
+mod flex;
 mod label;
 
 pub enum Template {
@@ -24,4 +28,8 @@ pub trait Widget: Any {
     fn components(&self) -> Vec<ComponentBox> {
         vec![]
     }
+    fn properties(&self) -> ComponentBox {
+        ComponentBox::new(Rect::default())
+    }
+
 }

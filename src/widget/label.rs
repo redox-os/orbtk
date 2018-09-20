@@ -6,6 +6,11 @@ use {
     LayoutResult, Widget,
 };
 
+pub struct LabelProperties {
+    pub label: String,
+    pub selector: Selector,
+}
+
 pub struct Label {
     pub selector: ComponentBox,
 }
@@ -19,17 +24,20 @@ impl Label {
 }
 
 impl Widget for Label {
+    fn properties(&self) -> ComponentBox {
+        ComponentBox::new(LabelProperties {
+            label: String::from("Label"),
+            selector: Selector::new(Some("button")),
+        })
+    }
+
     fn components(&self) -> Vec<ComponentBox> {
         vec![
-            ComponentBox::new(String::from("Label")),
-            ComponentBox::new(Selector::new(Some("button"))),
             ComponentBox::new(Drawable::new(Box::new(
                 |entity: Entity, ecm: &EntityComponentManager, renderer: &mut Box<Backend>| {
-                    if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
+                    if let Ok(props) = ecm.borrow_component::<LabelProperties>(entity) {
                         if let Ok(bounds) = ecm.borrow_component::<Rect>(entity) {
-                            if let Ok(text) = ecm.borrow_component::<String>(entity) {
-                                renderer.render_text(text, bounds, selector);
-                            }
+                             renderer.render_text(&props.label, bounds, &props.selector);
                         }
                     }
                 },

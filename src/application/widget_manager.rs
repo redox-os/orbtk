@@ -117,6 +117,9 @@ impl WidgetManager {
                     entity_builder = entity_builder.with_box(component);
                 }
 
+                 entity_builder = entity_builder.with_box(widget.properties());
+
+
                 let entity = entity_builder.build();
 
                 tree.borrow_mut().register_node(entity);
