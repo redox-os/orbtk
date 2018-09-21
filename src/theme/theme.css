@@ -1,20 +1,20 @@
 /* Every element */
 * {
     /* background: #F5F6F7; */
-    background: green;
+    background: #4D5A6D;
 }
 
 button {
     /* min-width: 60; */
     /* height: 40; */
-    background: white;
-    color: black;
-    border-radius: 4;
-    padding: 4;
+    background: #6C7A90;
+    color: white;
+    border-radius: 2;
+    padding: 12;
 }
 
 container {
-    background: blue;
+    background: transparent;
     padding: 20;
 }
 

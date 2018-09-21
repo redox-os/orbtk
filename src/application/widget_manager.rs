@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use {
     Backend, BoxConstraints, Drawable, Entity, EntityComponentManager, Layout, LayoutResult,
-    LayoutSystem, Rect, RenderSystem, Template, Tree, Widget, World,
+    LayoutSystem, Rect, RenderSystem, Template, Tree, Widget, World, Theme
 };
 
 pub struct EntityId(u32);
@@ -17,12 +17,12 @@ pub struct WidgetManager {
 }
 
 impl WidgetManager {
-    pub fn new(renderer: RefCell<Box<Backend>>) -> Self {
+    pub fn new(renderer: RefCell<Box<Backend>>, theme: Arc<Theme>) -> Self {
         let mut world = World::new();
         let tree = Arc::new(RefCell::new(Tree::default()));
 
         world
-            .create_system(LayoutSystem { tree: tree.clone() })
+            .create_system(LayoutSystem { tree: tree.clone(), theme: theme.clone() })
             .with_priority(0)
             .build();
 
@@ -83,7 +83,8 @@ impl WidgetManager {
                          bc: &BoxConstraints,
                          children: &[Entity],
                          children_pos: &mut HashMap<Entity, (i32, i32)>,
-                         size: Option<(u32, u32)>|
+                         size: Option<(u32, u32)>,
+                         _theme: &Arc<Theme>|
                          -> LayoutResult {
                             if let Some(size) = size {
                                 children_pos.insert(children[0], (0, 0));

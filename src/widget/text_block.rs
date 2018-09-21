@@ -1,9 +1,10 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 use structs::Rect;
 use theme::Selector;
 use {
     Backend, BoxConstraints, ComponentBox, Drawable, Entity, EntityComponentManager, Layout,
-    LayoutResult, Widget, Property
+    LayoutResult, Widget, Property, Theme
 };
 
 
@@ -49,7 +50,8 @@ impl Widget for TextBlock {
                  bc: &BoxConstraints,
                  _children: &[Entity],
                  _children_pos: &mut HashMap<Entity, (i32, i32)>,
-                 _size: Option<(u32, u32)>| {
+                 _size: Option<(u32, u32)>,
+                 _theme: &Arc<Theme> | {
                      if let Ok(label) = ecm.borrow_component::<Label>(entity) {
                          return LayoutResult::Size(bc.constrain((label.0.len() as u32 * 8 + 2, 18)))
                      }

@@ -2,14 +2,19 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use dces::{Entity, EntityComponentManager, System};
-
-use {Rect, Tree};
+use {Entity, EntityComponentManager, Rect, System, Theme, Tree};
 
 pub struct Layout {
     pub layout_fn: Box<
-        Fn(Entity, &EntityComponentManager, &BoxConstraints, &[Entity], &mut HashMap<Entity, (i32, i32)>, Option<(u32, u32)>)
-            -> LayoutResult,
+        Fn(
+            Entity,
+            &EntityComponentManager,
+            &BoxConstraints,
+            &[Entity],
+            &mut HashMap<Entity, (i32, i32)>,
+            Option<(u32, u32)>,
+            &Arc<Theme>,
+        ) -> LayoutResult,
     >,
 }
 
@@ -23,6 +28,7 @@ impl Layout {
                 &[Entity],
                 &mut HashMap<Entity, (i32, i32)>,
                 Option<(u32, u32)>,
+                &Arc<Theme>,
             ) -> LayoutResult,
         >,
     ) -> Self {
@@ -37,8 +43,9 @@ impl Layout {
         children: &[Entity],
         children_pos: &mut HashMap<Entity, (i32, i32)>,
         size: Option<(u32, u32)>,
+        theme: &Arc<Theme>,
     ) -> LayoutResult {
-        (self.layout_fn)(entity, ecm, bc, children, children_pos, size)
+        (self.layout_fn)(entity, ecm, bc, children, children_pos, size, theme)
     }
 }
 
@@ -85,6 +92,7 @@ pub enum LayoutResult {
 
 pub struct LayoutSystem {
     pub tree: Arc<RefCell<Tree>>,
+    pub theme: Arc<Theme>,
 }
 
 impl System for LayoutSystem {
@@ -94,8 +102,9 @@ impl System for LayoutSystem {
             tree: &Arc<RefCell<Tree>>,
             bc: &BoxConstraints,
             entity: Entity,
+            theme: &Arc<Theme>,
         ) -> (u32, u32) {
-            let mut size : Option<(u32, u32)> = None;
+            let mut size: Option<(u32, u32)> = None;
 
             loop {
                 let mut children_pos = HashMap::new();
@@ -109,6 +118,7 @@ impl System for LayoutSystem {
                             &tree.borrow().children.get(&entity).unwrap(),
                             &mut children_pos,
                             size,
+                            theme,
                         );
                     }
 
@@ -132,7 +142,7 @@ impl System for LayoutSystem {
                         return size;
                     }
                     LayoutResult::RequestChild(child, child_bc) => {
-                        size = Some(layout_rec(ecm, tree, &child_bc, child));
+                        size = Some(layout_rec(ecm, tree, &child_bc, child, theme));
                     }
                 }
             }
@@ -141,6 +151,17 @@ impl System for LayoutSystem {
         let root = self.tree.borrow().root;
 
         // todo: use widnow size!!!
-        layout_rec(ecm, &self.tree, &BoxConstraints { min_width: 0, min_height: 0, max_width: 400, max_height: 300}, root);
+        layout_rec(
+            ecm,
+            &self.tree,
+            &BoxConstraints {
+                min_width: 0,
+                min_height: 0,
+                max_width: 400,
+                max_height: 300,
+            },
+            root,
+            &self.theme,
+        );
     }
 }

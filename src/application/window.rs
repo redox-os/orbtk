@@ -56,7 +56,7 @@ impl<'a> WindowBuilder<'a> {
 
     pub fn build(mut self) {
         self.renderer.bounds(&self.bounds);
-        let mut widget_manager = WidgetManager::new(RefCell::new(self.renderer));
+        let mut widget_manager = WidgetManager::new(RefCell::new(self.renderer), self.theme.clone());
 
         if let Some(root) = self.root {
             widget_manager.root(root.clone());

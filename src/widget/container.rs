@@ -6,7 +6,7 @@ use structs::Rect;
 use theme::Selector;
 use {
     BoxConstraints, ComponentBox, Drawable, Entity, EntityComponentManager, Layout, LayoutResult,
-    Property, Template, Thickness, Widget,
+    Property, Template, Theme, Thickness, Widget,
 };
 
 pub struct Container {
@@ -51,11 +51,23 @@ impl Widget for Container {
                  bc: &BoxConstraints,
                  children: &[Entity],
                  children_pos: &mut HashMap<Entity, (i32, i32)>,
-                 size: Option<(u32, u32)>| {
+                 size: Option<(u32, u32)>,
+                 theme: &Arc<Theme>| {
                     let padding = {
                         let mut padding = Thickness::new(0, 0, 0, 0);
-                        if let Ok(pad) = ecm.borrow_component::<Thickness>(entity) {
-                            padding = *pad;
+                        if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
+                            let pad = theme.uint("padding", selector) as i32;
+
+                            if pad > 0 {
+                                padding = Thickness::new(pad, pad, pad, pad)
+                            } else {
+                                padding = Thickness::new(
+                                    theme.uint("padding-left", selector) as i32,
+                                    theme.uint("padding-top", selector) as i32,
+                                    theme.uint("padding-right", selector) as i32,
+                                    theme.uint("padding-bottom", selector) as i32,
+                                )
+                            }
                         };
 
                         padding
