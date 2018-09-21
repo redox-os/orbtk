@@ -416,7 +416,8 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
             "background" | "foreground" => Value::Color(parse_basic_color(input)?),
 
             "border-radius" | "border-width" | "width" | "height" | "min-width" | "min-height"
-            | "max-width" | "max-height" => match input.next()? {
+            | "max-width" | "max-height" | "padding-top" | "padding-right" | "padding-bottom"
+            | "padding-left" | "padding" => match input.next()? {
                 Token::Number {
                     int_value: Some(x),
                     has_sign,

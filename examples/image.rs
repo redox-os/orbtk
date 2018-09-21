@@ -2,7 +2,7 @@ extern crate orbtk;
 
 // use std::sync::Arc;
 
-// use orbtk::{Application, Button, Center, Container, Content, Rect, Row, Thickness, Label, Widget};
+// use orbtk::{Application, Button, Center, Container, Content, Rect, Row, Thickness, TextBlock, Widget};
 
 // struct MainView {}
 
@@ -45,7 +45,7 @@ extern crate orbtk;
 //         // // right_container.padding().set(Thickness::new(8, 8, 8, 8));
 //         // // right_container.child(&Button::new());
 //         // // row.push(&right_container);
-//         // let label = Label::new("Test");
+//         // let label = TextBlock::new("Test");
 //         // center.child(&label);
 //         // Content::Single(center)
 //     }

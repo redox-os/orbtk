@@ -12,7 +12,7 @@ pub struct EntityId(u32);
 #[derive(Default)]
 pub struct WidgetManager {
     world: World,
-    _entity_counter: u32,
+    entity_counter: u32,
     tree: Arc<RefCell<Tree>>,
 }
 
@@ -24,24 +24,7 @@ impl WidgetManager {
         world
             .create_system(LayoutSystem { tree: tree.clone() })
             .with_priority(0)
-            .with_sort(|comp_a, comp_b| {
-                let id_a;
-                let id_b;
-
-                if let Some(id) = comp_a.downcast_ref::<EntityId>() {
-                    id_a = id;
-                } else {
-                    return None;
-                }
-
-                if let Some(id) = comp_b.downcast_ref::<EntityId>() {
-                    id_b = id;
-                } else {
-                    return None;
-                }
-
-                Some(id_b.0.cmp(&id_a.0))
-            }).build();
+            .build();
 
         world
             .create_system(RenderSystem { renderer })
@@ -62,7 +45,7 @@ impl WidgetManager {
                     return None;
                 }
 
-                Some(id_b.0.cmp(&id_a.0))
+                Some(id_a.0.cmp(&id_b.0))
             }).with_filter(|comp| {
                 for co in comp {
                     if let Some(_) = co.downcast_ref::<Drawable>() {
@@ -74,7 +57,7 @@ impl WidgetManager {
 
         WidgetManager {
             world,
-            _entity_counter: 0,
+            entity_counter: 0,
             tree,
         }
     }
@@ -85,6 +68,7 @@ impl WidgetManager {
             tree: &Arc<RefCell<Tree>>,
             widget: Arc<Widget>,
             parent: Entity,
+            entity_counter: &mut u32,
         ) -> Entity {
             let entity = {
                 // add bounds and default layout
@@ -111,14 +95,13 @@ impl WidgetManager {
                                 LayoutResult::RequestChild(children[0], *bc)
                             }
                         },
-                    ))).with(EntityId(0));
+                    ))).with(EntityId(*entity_counter));
 
-                for component in widget.components() {
-                    entity_builder = entity_builder.with_box(component);
+                *entity_counter += 1;
+
+                for property in widget.properties() {
+                    entity_builder = entity_builder.with_box(property);
                 }
-
-                 entity_builder = entity_builder.with_box(widget.properties());
-
 
                 let entity = entity_builder.build();
 
@@ -129,12 +112,12 @@ impl WidgetManager {
 
             match widget.template() {
                 Template::Single(child) => {
-                    let child = expand(world, tree, child, parent);
+                    let child = expand(world, tree, child, parent, entity_counter);
                     let _result = tree.borrow_mut().append_child(entity, child);
                 }
                 Template::Mutli(children) => {
                     for child in children {
-                        let child = expand(world, tree, child, parent);
+                        let child = expand(world, tree, child, parent, entity_counter);
                         let _result = tree.borrow_mut().append_child(entity, child);
                     }
                 }
@@ -144,7 +127,13 @@ impl WidgetManager {
             entity
         }
 
-        expand(&mut self.world, &self.tree, root, 0);
+        expand(
+            &mut self.world,
+            &self.tree,
+            root,
+            0,
+            &mut self.entity_counter,
+        );
     }
 
     pub fn run(&mut self) {

@@ -1,19 +1,34 @@
-use dces::ComponentBox;
 use std::sync::Arc;
 
 use theme::Selector;
-use {Container, Label, Template, Widget};
+use {Container, Property, Template, TextBlock, Widget};
 
-pub struct Button;
+pub struct Button {
+    pub label: String,
+    pub class: String,
+}
+
+impl Default for Button {
+    fn default() -> Button {
+        Button {
+            label: String::from("Button"),
+            class: String::from("button"),
+        }
+    }
+}
 
 impl Widget for Button {
     fn template(&self) -> Template {
-        let mut container = Container::new();
-        container.child(Arc::new(Label::new(Selector::new(Some("button")))));
-        Template::Single(Arc::new(container))
+        Template::Single(Arc::new(Container {
+            class: self.class.clone(),
+            child: Some(Arc::new(TextBlock {
+                label: self.label.clone(),
+                class: self.class.clone(),
+            })),
+        }))
     }
 
-    fn components(&self) -> Vec<ComponentBox> {
-        vec![ComponentBox::new(Selector::new(Some("button")))]
+    fn properties(&self) -> Vec<Property> {
+        vec![Property::new(Selector::new(Some(self.class.clone())))]
     }
 }

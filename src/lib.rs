@@ -7,6 +7,8 @@ extern crate dces;
 
 pub use dces::prelude::*;
 
+pub use ComponentBox as Property;
+
 extern crate cssparser;
 extern crate orbclient;
 extern crate orbfont;

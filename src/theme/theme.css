@@ -9,10 +9,15 @@ button {
     /* height: 40; */
     background: white;
     color: black;
-    /* border-radius: 4; */
+    border-radius: 4;
+    padding: 4;
 }
 
-border {
-    background: white;
-    border-radius: 4;
+container {
+    background: blue;
+    padding: 20;
+}
+
+textblock {
+    color: black;
 }

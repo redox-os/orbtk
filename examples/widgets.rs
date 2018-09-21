@@ -7,10 +7,18 @@ struct MainView;
 
 impl Widget for MainView {
     fn template(&self) -> Template {
-        Template::Single(Arc::new(Button))
+        Template::Single(Arc::new(Container {
+            child: Some(
+                Arc::new(Button {
+                    label: String::from("Click me"),
+                    ..Default::default()
+                }),
+            ),
+            ..Default::default()
+        }))
     }
 
-    fn components(&self) -> Vec<ComponentBox> {
+    fn properties(&self) -> Vec<Property> {
         vec![]
     }
 }
