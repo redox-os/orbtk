@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use {
-    Backend, BoxConstraints, Drawable, Entity, EntityComponentManager, Layout, LayoutResult,
-    LayoutSystem, Rect, RenderSystem, Template, Tree, Widget, World, Theme
+    Backend, Drawable, Entity, LayoutObject, LayoutSystem, Rect, RenderObject, RenderSystem,
+    Template, Theme, Tree, Widget, World,
 };
 
 pub struct EntityId(u32);
@@ -14,21 +14,31 @@ pub struct WidgetManager {
     world: World,
     entity_counter: u32,
     tree: Arc<RefCell<Tree>>,
+    backend: Option<Arc<RefCell<Backend>>>,
+    render_objects: Arc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
+    layout_objects: Arc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
 }
 
 impl WidgetManager {
-    pub fn new(renderer: RefCell<Box<Backend>>, theme: Arc<Theme>) -> Self {
+    pub fn new(backend: Arc<RefCell<Backend>>, theme: Arc<Theme>) -> Self {
         let mut world = World::new();
         let tree = Arc::new(RefCell::new(Tree::default()));
+        let render_objects = Arc::new(RefCell::new(HashMap::new()));
+        let layout_objects = Arc::new(RefCell::new(HashMap::new()));
 
         world
-            .create_system(LayoutSystem { tree: tree.clone(), theme: theme.clone() })
-            .with_priority(0)
+            .create_system(LayoutSystem {
+                tree: tree.clone(),
+                theme: theme.clone(),
+                layout_objects: layout_objects.clone(),
+            }).with_priority(0)
             .build();
 
         world
-            .create_system(RenderSystem { renderer })
-            .with_priority(1)
+            .create_system(RenderSystem {
+                backend: backend.clone(),
+                render_objects: render_objects.clone(),
+            }).with_priority(1)
             .with_sort(|comp_a, comp_b| {
                 let id_a;
                 let id_b;
@@ -59,6 +69,9 @@ impl WidgetManager {
             world,
             entity_counter: 0,
             tree,
+            backend: Some(backend),
+            render_objects,
+            layout_objects,
         }
     }
 
@@ -66,6 +79,8 @@ impl WidgetManager {
         fn expand(
             world: &mut World,
             tree: &Arc<RefCell<Tree>>,
+            render_objects: &Arc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
+            layout_objects: &Arc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
             widget: Arc<Widget>,
             parent: Entity,
             entity_counter: &mut u32,
@@ -77,34 +92,24 @@ impl WidgetManager {
                 let mut entity_builder = world
                     .create_entity()
                     .with(Rect::new(10, 10, 200, 50))
-                    .with(Layout::new(Box::new(
-                        |_entity: Entity,
-                         _ecm: &EntityComponentManager,
-                         bc: &BoxConstraints,
-                         children: &[Entity],
-                         children_pos: &mut HashMap<Entity, (i32, i32)>,
-                         size: Option<(u32, u32)>,
-                         _theme: &Arc<Theme>|
-                         -> LayoutResult {
-                            if let Some(size) = size {
-                                children_pos.insert(children[0], (0, 0));
-                                LayoutResult::Size(size)
-                            } else {
-                                if children.len() == 0 {
-                                    return LayoutResult::Size((bc.min_width, bc.min_height));
-                                }
-                                LayoutResult::RequestChild(children[0], *bc)
-                            }
-                        },
-                    ))).with(EntityId(*entity_counter));
+                    .with(EntityId(*entity_counter));
 
                 *entity_counter += 1;
 
-                for property in widget.properties() {
+                for property in widget.all_properties() {
                     entity_builder = entity_builder.with_box(property);
                 }
 
                 let entity = entity_builder.build();
+
+                // todo: use one render / layout object per widget type
+                if let Some(render_object) = widget.render_object() {
+                    render_objects.borrow_mut().insert(entity, render_object);
+                }
+
+                layout_objects
+                    .borrow_mut()
+                    .insert(entity, widget.layout_object());
 
                 tree.borrow_mut().register_node(entity);
 
@@ -113,12 +118,28 @@ impl WidgetManager {
 
             match widget.template() {
                 Template::Single(child) => {
-                    let child = expand(world, tree, child, parent, entity_counter);
+                    let child = expand(
+                        world,
+                        tree,
+                        render_objects,
+                        layout_objects,
+                        child,
+                        parent,
+                        entity_counter,
+                    );
                     let _result = tree.borrow_mut().append_child(entity, child);
                 }
                 Template::Mutli(children) => {
                     for child in children {
-                        let child = expand(world, tree, child, parent, entity_counter);
+                        let child = expand(
+                            world,
+                            tree,
+                            render_objects,
+                            layout_objects,
+                            child,
+                            parent,
+                            entity_counter,
+                        );
                         let _result = tree.borrow_mut().append_child(entity, child);
                     }
                 }
@@ -131,6 +152,8 @@ impl WidgetManager {
         expand(
             &mut self.world,
             &self.tree,
+            &self.render_objects,
+            &self.layout_objects,
             root,
             0,
             &mut self.entity_counter,
@@ -140,5 +163,9 @@ impl WidgetManager {
     pub fn run(&mut self) {
         self.world.apply_filter_and_sort();
         self.world.run();
+
+        if let Some(backend) = &self.backend {
+            backend.borrow_mut().update();
+        }
     }
 }

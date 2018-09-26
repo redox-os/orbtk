@@ -25,7 +25,7 @@ pub struct WindowBuilder<'a> {
     pub title: String,
     pub theme: Arc<Theme>,
     pub root: Option<Arc<Widget>>,
-    pub renderer: Box<Backend>,
+    pub backend: Arc<RefCell<Backend>>,
 }
 
 impl<'a> WindowBuilder<'a> {
@@ -49,14 +49,14 @@ impl<'a> WindowBuilder<'a> {
         self
     }
 
-    pub fn with_renderer(mut self, renderer: Box<Backend>) -> Self {
-        self.renderer = renderer;
+    pub fn with_backend(mut self, backend: Arc<RefCell<Backend>>) -> Self {
+        self.backend = backend;
         self
     }
 
-    pub fn build(mut self) {
-        self.renderer.bounds(&self.bounds);
-        let mut widget_manager = WidgetManager::new(RefCell::new(self.renderer), self.theme.clone());
+    pub fn build(self) {
+        self.backend.borrow_mut().bounds(&self.bounds);
+        let mut widget_manager = WidgetManager::new(self.backend, self.theme.clone());
 
         if let Some(root) = self.root {
             widget_manager.root(root.clone());

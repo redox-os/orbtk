@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::cell::RefCell;
 
 use orbclient::Window as OrbWindow;
 use orbfont;
@@ -34,11 +35,11 @@ impl Application {
             title: String::from(""),
             theme: theme.clone(),
             root: None,
-            renderer: Box::new(OrbitalBackend::new(
+            backend: Arc::new(RefCell::new(OrbitalBackend::new(
                 OrbWindow::new_flags(0, 0, 0, 0, "", &[]).unwrap(),
                 orbfont::Font::find(Some("MONO"), Some("Serif"), Some("REGULAR")).ok(),
                 theme,
-            )),
+            ))),
         }
     }
 

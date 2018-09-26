@@ -2,52 +2,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use {Entity, EntityComponentManager, Rect, System, Theme, Tree};
-
-pub struct Layout {
-    pub layout_fn: Box<
-        Fn(
-            Entity,
-            &EntityComponentManager,
-            &BoxConstraints,
-            &[Entity],
-            &mut HashMap<Entity, (i32, i32)>,
-            Option<(u32, u32)>,
-            &Arc<Theme>,
-        ) -> LayoutResult,
-    >,
-}
-
-impl Layout {
-    pub fn new(
-        layout_fn: Box<
-            Fn(
-                Entity,
-                &EntityComponentManager,
-                &BoxConstraints,
-                &[Entity],
-                &mut HashMap<Entity, (i32, i32)>,
-                Option<(u32, u32)>,
-                &Arc<Theme>,
-            ) -> LayoutResult,
-        >,
-    ) -> Self {
-        Layout { layout_fn }
-    }
-
-    pub fn layout(
-        &self,
-        entity: Entity,
-        ecm: &EntityComponentManager,
-        bc: &BoxConstraints,
-        children: &[Entity],
-        children_pos: &mut HashMap<Entity, (i32, i32)>,
-        size: Option<(u32, u32)>,
-        theme: &Arc<Theme>,
-    ) -> LayoutResult {
-        (self.layout_fn)(entity, ecm, bc, children, children_pos, size, theme)
-    }
-}
+use {Entity, EntityComponentManager, LayoutObject, Rect, System, Theme, Tree};
 
 #[derive(Clone, Copy)]
 pub struct BoxConstraints {
@@ -93,6 +48,7 @@ pub enum LayoutResult {
 pub struct LayoutSystem {
     pub tree: Arc<RefCell<Tree>>,
     pub theme: Arc<Theme>,
+    pub layout_objects: Arc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
 }
 
 impl System for LayoutSystem {
@@ -103,6 +59,7 @@ impl System for LayoutSystem {
             bc: &BoxConstraints,
             entity: Entity,
             theme: &Arc<Theme>,
+            layout_objects: &Arc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
         ) -> (u32, u32) {
             let mut size: Option<(u32, u32)> = None;
 
@@ -110,7 +67,7 @@ impl System for LayoutSystem {
                 let mut children_pos = HashMap::new();
                 let layout_result = {
                     let mut result = LayoutResult::Size((32, 32));
-                    if let Ok(layout) = ecm.borrow_component::<Layout>(entity) {
+                    if let Some(layout) = layout_objects.borrow().get(&entity) {
                         result = layout.layout(
                             entity,
                             ecm,
@@ -142,7 +99,7 @@ impl System for LayoutSystem {
                         return size;
                     }
                     LayoutResult::RequestChild(child, child_bc) => {
-                        size = Some(layout_rec(ecm, tree, &child_bc, child, theme));
+                        size = Some(layout_rec(ecm, tree, &child_bc, child, theme, layout_objects));
                     }
                 }
             }
@@ -162,6 +119,7 @@ impl System for LayoutSystem {
             },
             root,
             &self.theme,
+            &self.layout_objects,
         );
     }
 }

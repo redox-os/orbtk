@@ -20,6 +20,8 @@ pub use orbclient::color::Color;
 
 pub use application::*;
 pub use backend::*;
+pub use layout_object::*;
+pub use render_object::*;
 pub use cell::CloneCell;
 pub use error::*;
 pub use structs::*;
@@ -30,6 +32,8 @@ pub use widget::*;
 
 pub mod application;
 pub mod backend;
+pub mod layout_object;
+pub mod render_object;
 pub mod cell;
 pub mod error;
 pub mod structs;
