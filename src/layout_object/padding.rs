@@ -15,7 +15,7 @@ impl LayoutObject for PaddingLayoutObject {
         ecm: &EntityComponentManager,
         bc: &BoxConstraints,
         children: &[Entity],
-        children_pos: &mut HashMap<Entity, (i32, i32)>,
+        children_pos: &mut Option<HashMap<Entity, (i32, i32)>>,
         size: Option<(u32, u32)>,
         theme: &Arc<Theme>,
     ) -> LayoutResult {
@@ -40,7 +40,13 @@ impl LayoutObject for PaddingLayoutObject {
         };
 
         if let Some(size) = size {
-            children_pos.insert(children[0], (padding.left, padding.top));
+            if let None = children_pos {
+                *children_pos = Some(HashMap::new());
+            }
+            if let Some(children_pos) = children_pos {
+                children_pos.insert(children[0], (padding.left, padding.top));
+            }
+
             LayoutResult::Size((
                 size.0 + padding.left as u32 + padding.right as u32,
                 size.1 + padding.top as u32 + padding.bottom as u32,

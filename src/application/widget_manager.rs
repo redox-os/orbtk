@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use {
-    Backend, Drawable, Entity, LayoutObject, LayoutSystem, Rect, RenderObject, RenderSystem,
+    Backend, Entity, LayoutObject, LayoutSystem, Rect, RenderObject, RenderSystem,
     Template, Theme, Tree, Widget, World,
 };
 
@@ -31,14 +31,17 @@ impl WidgetManager {
                 tree: tree.clone(),
                 theme: theme.clone(),
                 layout_objects: layout_objects.clone(),
-            }).with_priority(0)
+            })
+            .with_priority(0)
             .build();
 
         world
             .create_system(RenderSystem {
+                tree: tree.clone(),
                 backend: backend.clone(),
                 render_objects: render_objects.clone(),
-            }).with_priority(1)
+            })
+            .with_priority(1)
             .with_sort(|comp_a, comp_b| {
                 let id_a;
                 let id_b;
@@ -56,14 +59,17 @@ impl WidgetManager {
                 }
 
                 Some(id_a.0.cmp(&id_b.0))
-            }).with_filter(|comp| {
-                for co in comp {
-                    if let Some(_) = co.downcast_ref::<Drawable>() {
-                        return true;
-                    }
-                }
-                false
-            }).build();
+            })
+            .build();
+
+        //  ).with_filter(|comp| {
+        //     for co in comp {
+        //         if let Some(_) = co.downcast_ref::<Drawable>() {
+        //             return true;
+        //         }
+        //     }
+        //     false
+        // }
 
         WidgetManager {
             world,
@@ -91,7 +97,7 @@ impl WidgetManager {
                 // todo: find better place for default components
                 let mut entity_builder = world
                     .create_entity()
-                    .with(Rect::new(10, 10, 200, 50))
+                    .with(Rect::new(0, 0, 200, 50))
                     .with(EntityId(*entity_counter));
 
                 *entity_counter += 1;

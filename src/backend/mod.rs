@@ -13,8 +13,8 @@ pub struct RenderContext<'a> {
 
 pub trait Renderer {
     fn render(&mut self, theme: &Arc<Theme>);
-    fn render_rectangle(&mut self, theme: &Arc<Theme>, bounds: &Rect, selector: &Selector);
-    fn render_text(&mut self, theme: &Arc<Theme>, text: &str, bounds: &Rect, selector: &Selector);
+    fn render_rectangle(&mut self, theme: &Arc<Theme>, bounds: &Rect, selector: &Selector, offset: (i32, i32));
+    fn render_text(&mut self, theme: &Arc<Theme>, text: &str, bounds: &Rect, selector: &Selector, offset: (i32, i32));
 }
 
 pub trait Backend {

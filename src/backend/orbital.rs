@@ -33,14 +33,14 @@ impl Renderer for OrbWindow {
         // }
     }
 
-    fn render_rectangle(&mut self, theme: &Arc<Theme>, bounds: &Rect, selector: &Selector) {
+    fn render_rectangle(&mut self, theme: &Arc<Theme>, bounds: &Rect, selector: &Selector, offset: (i32, i32)) {
         let b_r = theme.uint("border-radius", selector);
 
         let fill = theme.color("background", selector);
 
         self.rounded_rect(
-            bounds.x,
-            bounds.y,
+            bounds.x + offset.0,
+            bounds.y + offset.1,
             bounds.width,
             bounds.height,
             b_r,
@@ -52,8 +52,8 @@ impl Renderer for OrbWindow {
             let border_color = theme.color("border-color", selector);
 
             self.rounded_rect(
-                bounds.x,
-                bounds.y,
+                bounds.x + offset.0,
+                bounds.y + offset.1,
                 bounds.width,
                 bounds.height,
                 b_r,
@@ -63,13 +63,13 @@ impl Renderer for OrbWindow {
         }
     }
 
-    fn render_text(&mut self, theme: &Arc<Theme>, text: &str, bounds: &Rect, selector: &Selector) {
+    fn render_text(&mut self, theme: &Arc<Theme>, text: &str, bounds: &Rect, selector: &Selector, offset: (i32, i32)) {
         // if let Some(font) = &self.font {
         //     let line = font.render(text, 64.0);
         //     line.draw(&mut self.inner, 20, 20, Color::rgb(0, 0, 0));
         // } else {
-            let rect = Rect::new(bounds.x, bounds.y, bounds.width, bounds.height);
-            let mut current_rect = Rect::new(bounds.x, bounds.y, bounds.width, bounds.height);
+            let rect = Rect::new(bounds.x + offset.0, bounds.y + offset.1, bounds.width, bounds.height);
+            let mut current_rect = Rect::new(bounds.x + offset.0, bounds.y + offset.1, bounds.width, bounds.height);
             let x = rect.x;
 
             for c in text.chars() {
@@ -165,7 +165,7 @@ impl Backend for OrbitalBackend {
     fn render_context(&mut self) -> RenderContext {
         RenderContext {
             renderer: &mut self.inner,
-            theme:  self.theme.clone()
+            theme:  self.theme.clone(),
         }
     }
 }

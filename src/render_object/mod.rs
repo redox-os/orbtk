@@ -15,5 +15,6 @@ pub trait RenderObject {
         ecm: &EntityComponentManager,
         renderer: &mut Renderer,
         theme: &Arc<Theme>,
+        offset: (i32, i32),
     );
 }

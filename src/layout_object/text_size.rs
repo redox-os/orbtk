@@ -12,7 +12,7 @@ impl LayoutObject for TextSizeLayoutObject {
         ecm: &EntityComponentManager,
         bc: &BoxConstraints,
         _children: &[Entity],
-        _children_pos: &mut HashMap<Entity, (i32, i32)>,
+        _children_pos: &mut Option<HashMap<Entity, (i32, i32)>>,
         _size: Option<(u32, u32)>,
         _theme: &Arc<Theme>,
     ) -> LayoutResult {

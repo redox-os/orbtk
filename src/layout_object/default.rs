@@ -12,12 +12,11 @@ impl LayoutObject for DefaultLayoutObject {
         _ecm: &EntityComponentManager,
         bc: &BoxConstraints,
         children: &[Entity],
-        children_pos: &mut HashMap<Entity, (i32, i32)>,
+        _children_pos: &mut Option<HashMap<Entity, (i32, i32)>>,
         size: Option<(u32, u32)>,
         _theme: &Arc<Theme>,
     ) -> LayoutResult {
         if let Some(size) = size {
-            children_pos.insert(children[0], (0, 0));
             LayoutResult::Size(size)
         } else {
             if children.len() == 0 {

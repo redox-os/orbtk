@@ -3,7 +3,7 @@ use std::sync::Arc;
 use theme::Selector;
 use {
     ComponentBox, LayoutObject, PaddingLayoutObject, Property, RectangleRenderObject, RenderObject,
-    Template, Thickness, Widget,
+    Template, Widget,
 };
 
 pub struct Container {
@@ -31,7 +31,6 @@ impl Widget for Container {
 
     fn properties(&self) -> Vec<Property> {
         vec![
-            ComponentBox::new(Thickness::new(2, 2, 2, 2)),
             ComponentBox::new(Selector::new(Some(self.class.clone()))),
         ]
     }

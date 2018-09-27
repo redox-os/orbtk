@@ -17,15 +17,9 @@ impl Widget for MainView {
             ..Default::default()
         }))
     }
-
-    fn properties(&self) -> Vec<Property> {
-        vec![]
-    }
 }
 
 fn main() {
-    println!("Widget example");
-
     let mut application = Application::new();
     application
         .create_window()
