@@ -4,11 +4,15 @@ use std::sync::Arc;
 use {Property, RenderObject, LayoutObject, DefaultLayoutObject};
 
 pub use self::button::*;
+pub use self::column::*;
 pub use self::container::*;
+pub use self::row::*;
 pub use self::text_block::*;
 
 mod button;
+mod column;
 mod container;
+mod row;
 mod text_block;
 
 pub struct Drawable;

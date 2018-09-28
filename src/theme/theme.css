@@ -14,8 +14,13 @@ button {
 }
 
 container {
-    background: transparent;
-    padding: 20;
+    background: yellow;
+    padding: 8;
+}
+
+blue {
+    background: blue;
+    padding: 8;
 }
 
 textblock {

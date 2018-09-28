@@ -149,14 +149,11 @@ impl Drop for OrbitalBackend {
 }
 
 impl Backend for OrbitalBackend {
-    
-
     fn update(&mut self) {
         self.inner.sync();
         for _event in self.inner.events() {}
     }
-
-    
+   
     fn bounds(&mut self, bounds: &Rect) {
         self.inner.set_pos(bounds.x, bounds.y);
         self.inner.set_size(bounds.width, bounds.height);

@@ -2,47 +2,11 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use {Entity, EntityComponentManager, LayoutObject, Rect, System, Theme, Tree};
-
-#[derive(Clone, Copy)]
-pub struct BoxConstraints {
-    pub min_width: u32,
-    pub max_width: u32,
-    pub min_height: u32,
-    pub max_height: u32,
-}
-
-impl BoxConstraints {
-    pub fn tight(size: (u32, u32)) -> BoxConstraints {
-        BoxConstraints {
-            min_width: size.0,
-            max_width: size.0,
-            min_height: size.1,
-            max_height: size.1,
-        }
-    }
-
-    pub fn constrain(&self, size: (u32, u32)) -> (u32, u32) {
-        (
-            clamp(size.0, self.min_width, self.max_width),
-            clamp(size.1, self.min_height, self.max_height),
-        )
-    }
-}
-
-fn clamp(val: u32, min: u32, max: u32) -> u32 {
-    if val < min {
-        min
-    } else if val > max {
-        max
-    } else {
-        val
-    }
-}
+use {Constraint, Entity, EntityComponentManager, LayoutObject, Rect, System, Theme, Tree};
 
 pub enum LayoutResult {
     Size((u32, u32)),
-    RequestChild(Entity, BoxConstraints),
+    RequestChild(Entity, Constraint),
 }
 
 pub struct LayoutSystem {
@@ -56,7 +20,7 @@ impl System for LayoutSystem {
         fn layout_rec(
             ecm: &mut EntityComponentManager,
             tree: &Arc<RefCell<Tree>>,
-            bc: &BoxConstraints,
+            constraint: &Constraint,
             entity: Entity,
             theme: &Arc<Theme>,
             layout_objects: &Arc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
@@ -71,7 +35,7 @@ impl System for LayoutSystem {
                         result = layout.layout(
                             entity,
                             ecm,
-                            bc,
+                            constraint,
                             &tree.borrow().children.get(&entity).unwrap(),
                             &mut children_pos,
                             size,
@@ -120,7 +84,7 @@ impl System for LayoutSystem {
         layout_rec(
             ecm,
             &self.tree,
-            &BoxConstraints {
+            &Constraint {
                 min_width: 0,
                 min_height: 0,
                 max_width: 400,

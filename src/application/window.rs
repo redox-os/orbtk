@@ -1,10 +1,10 @@
 use std::cell::RefCell;
 use std::sync::Arc;
 
-use {Application, Backend, Rect, Theme, Widget, WidgetManager};
+use {Application, Backend, Rect, Theme, Widget, TreeManager};
 
 pub struct Window {
-    pub widget_manager: WidgetManager,
+    pub tree_manager: TreeManager,
     pub bounds: Rect,
     pub title: String,
     pub theme: Arc<Theme>,
@@ -14,7 +14,7 @@ pub struct Window {
 impl Window {
     pub fn run(&mut self) {
         'event: while self.running {
-            self.widget_manager.run();
+            self.tree_manager.run();
         }
     }
 }
@@ -56,15 +56,15 @@ impl<'a> WindowBuilder<'a> {
 
     pub fn build(self) {
         self.backend.borrow_mut().bounds(&self.bounds);
-        let mut widget_manager = WidgetManager::new(self.backend, self.theme.clone());
+        let mut tree_manager = TreeManager::new(self.backend, self.theme.clone());
 
         if let Some(root) = self.root {
-            widget_manager.root(root.clone());
+            tree_manager.root(root.clone());
         }
 
         let theme = self.theme.clone();
         self.application.windows.push(Window {
-            widget_manager,
+            tree_manager,
             bounds: self.bounds,
             title: self.title,
             theme,

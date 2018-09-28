@@ -6,12 +6,12 @@ use orbfont;
 
 use {OrbitalBackend, Rect, Theme};
 
-pub use self::widget_manager::*;
+pub use self::tree_manager::*;
 pub use self::window::*;
 
-mod widget_manager;
+mod tree_manager;
 mod window;
-
+ 
 pub struct Application {
     // list of windows
     // theme

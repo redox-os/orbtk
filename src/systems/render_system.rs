@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use dces::{Entity, EntityComponentManager, System};
 
-use {Backend, Rect, RenderObject, Tree, RenderContext};
+use {Backend, Rect, RenderObject, Tree};
 
 pub struct RenderSystem {
     pub tree: Arc<RefCell<Tree>>,
@@ -14,35 +14,37 @@ pub struct RenderSystem {
 
 impl System for RenderSystem {
     fn run(&self, _entities: &Vec<Entity>, ecm: &mut EntityComponentManager) {
+        let mut backend = self.backend.borrow_mut();
+        let render_context = backend.render_context();
+             
+        let tree = self.tree.borrow();
 
-        fn render(tree: &Arc<RefCell<Tree>>, root: Entity, pos: (i32, i32),ecm: &mut EntityComponentManager,render_objects: &Arc<RefCell<HashMap<Entity, Box<RenderObject>>>>, render_context: &mut RenderContext) {
-            if let Some(render_object) = render_objects.borrow().get(&root) {
+        let mut offsets = HashMap::new();
+        offsets.insert(tree.root, (0, 0));
+
+        // render window background
+        render_context.renderer.render(&render_context.theme);
+
+        for node in tree.into_iter() {
+            let mut current_offset = (0, 0);
+
+            if let Some(offset) = offsets.get(&tree.parent.get(&node).unwrap()) {
+                current_offset = *offset;
+            }
+
+            if let Some(render_object) = self.render_objects.borrow().get(&node) {
                 render_object.render(
-                    root,
+                    node,
                     ecm,
                     render_context.renderer,
                     &render_context.theme,
-                    pos,
+                    current_offset,
                 );
             }
 
-            let mut current_pos = pos;
-
-            if let Ok(bounds) = ecm.borrow_component::<Rect>(root) {
-                current_pos.0 += bounds.x;
-                current_pos.1 += bounds.y;
-            }
-
-            for entity in tree.borrow().children.get(&root).unwrap(){
-                render(tree, *entity, current_pos, ecm, render_objects, render_context);
+            if let Ok(bounds) = ecm.borrow_component::<Rect>(node) {
+                offsets.insert(node, (current_offset.0 + bounds.x, current_offset.1 + bounds.y));
             }
         }
-
-
-        let mut backend = self.backend.borrow_mut();
-        let mut render_context = backend.render_context();
-        render_context.renderer.render(&render_context.theme);
-
-        render(&self.tree, self.tree.borrow().root, (0, 0), ecm, &self.render_objects, &mut render_context);
     }
 }

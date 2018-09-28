@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use {BoxConstraints, Entity, EntityComponentManager, LayoutObject, LayoutResult, Theme};
+use {Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult, Theme};
 
 pub struct DefaultLayoutObject;
 
@@ -10,7 +10,7 @@ impl LayoutObject for DefaultLayoutObject {
         &self,
         _entity: Entity,
         _ecm: &EntityComponentManager,
-        bc: &BoxConstraints,
+        constraint: &Constraint,
         children: &[Entity],
         _children_pos: &mut Option<HashMap<Entity, (i32, i32)>>,
         size: Option<(u32, u32)>,
@@ -20,9 +20,9 @@ impl LayoutObject for DefaultLayoutObject {
             LayoutResult::Size(size)
         } else {
             if children.len() == 0 {
-                return LayoutResult::Size((bc.min_width, bc.min_height));
+                return LayoutResult::Size((constraint.min_width, constraint.min_height));
             }
-            LayoutResult::RequestChild(children[0], *bc)
+            LayoutResult::RequestChild(children[0], *constraint)
         }
     }
 }

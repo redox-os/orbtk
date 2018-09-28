@@ -10,16 +10,15 @@ use {
 pub struct EntityId(u32);
 
 #[derive(Default)]
-pub struct WidgetManager {
+pub struct TreeManager {
     world: World,
-    entity_counter: u32,
     tree: Arc<RefCell<Tree>>,
     backend: Option<Arc<RefCell<Backend>>>,
     render_objects: Arc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
     layout_objects: Arc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
 }
 
-impl WidgetManager {
+impl TreeManager {
     pub fn new(backend: Arc<RefCell<Backend>>, theme: Arc<Theme>) -> Self {
         let mut world = World::new();
         let tree = Arc::new(RefCell::new(Tree::default()));
@@ -71,9 +70,8 @@ impl WidgetManager {
         //     false
         // }
 
-        WidgetManager {
+        TreeManager {
             world,
-            entity_counter: 0,
             tree,
             backend: Some(backend),
             render_objects,
@@ -89,7 +87,6 @@ impl WidgetManager {
             layout_objects: &Arc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
             widget: Arc<Widget>,
             parent: Entity,
-            entity_counter: &mut u32,
         ) -> Entity {
             let entity = {
                 // add bounds and default layout
@@ -97,10 +94,7 @@ impl WidgetManager {
                 // todo: find better place for default components
                 let mut entity_builder = world
                     .create_entity()
-                    .with(Rect::new(0, 0, 200, 50))
-                    .with(EntityId(*entity_counter));
-
-                *entity_counter += 1;
+                    .with(Rect::new(0, 0, 200, 50));
 
                 for property in widget.all_properties() {
                     entity_builder = entity_builder.with_box(property);
@@ -131,7 +125,6 @@ impl WidgetManager {
                         layout_objects,
                         child,
                         parent,
-                        entity_counter,
                     );
                     let _result = tree.borrow_mut().append_child(entity, child);
                 }
@@ -144,7 +137,6 @@ impl WidgetManager {
                             layout_objects,
                             child,
                             parent,
-                            entity_counter,
                         );
                         let _result = tree.borrow_mut().append_child(entity, child);
                     }
@@ -162,8 +154,11 @@ impl WidgetManager {
             &self.layout_objects,
             root,
             0,
-            &mut self.entity_counter,
         );
+
+        for node in self.tree.borrow().into_iter() {
+            println!("Node: {}", node);
+        }
     }
 
     pub fn run(&mut self) {

@@ -7,13 +7,25 @@ struct MainView;
 
 impl Widget for MainView {
     fn template(&self) -> Template {
-        Template::Single(Arc::new(Container {
-            child: Some(
-                Arc::new(Button {
-                    label: String::from("Click me"),
+        Template::Single(Arc::new(Row {
+            children: vec![
+                Arc::new(Container {
+                    child: Some(Arc::new(Button {
+                        label: String::from("Click me"),
+                        ..Default::default()
+                    })),
                     ..Default::default()
                 }),
-            ),
+                Arc::new(Container {
+                    class: String::from("blue"),
+                    child: Some(Arc::new(Button {
+                        
+                        label: String::from("Click me 2"),
+                        ..Default::default()
+                    })),
+                    ..Default::default()
+                }),
+            ],
             ..Default::default()
         }))
     }

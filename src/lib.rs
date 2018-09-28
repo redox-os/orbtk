@@ -20,6 +20,7 @@ pub use orbclient::color::Color;
 
 pub use application::*;
 pub use backend::*;
+pub use enums::*;
 pub use layout_object::*;
 pub use render_object::*;
 pub use cell::CloneCell;
@@ -32,6 +33,7 @@ pub use widget::*;
 
 pub mod application;
 pub mod backend;
+pub mod enums;
 pub mod layout_object;
 pub mod render_object;
 pub mod cell;
