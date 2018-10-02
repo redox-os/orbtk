@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use {
-    Backend, Entity, LayoutObject, LayoutSystem, Rect, RenderObject, RenderSystem, Template, Theme,
-    Tree, Widget, World,
+    Backend, Entity, EventSystem, LayoutObject, LayoutSystem, Rect, RenderObject, RenderSystem,
+    Template, Theme, Tree, Widget, World, EventManager,
 };
 
 #[derive(Default)]
@@ -14,6 +14,7 @@ pub struct TreeManager {
     render_objects: Arc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
     layout_objects: Arc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
     window_size: Arc<Cell<(u32, u32)>>,
+    event_manager: EventManager,
 }
 
 impl TreeManager {
@@ -25,12 +26,19 @@ impl TreeManager {
         let window_size = Arc::new(Cell::new(size));
 
         world
+            .create_system(EventSystem {
+                _backend: backend.clone(),
+            })
+            .with_priority(0)
+            .build();
+
+        world
             .create_system(LayoutSystem {
                 theme: theme.clone(),
                 layout_objects: layout_objects.clone(),
                 window_size: window_size.clone(),
             })
-            .with_priority(0)
+            .with_priority(1)
             .build();
 
         world
@@ -38,7 +46,7 @@ impl TreeManager {
                 backend: backend.clone(),
                 render_objects: render_objects.clone(),
             })
-            .with_priority(1)
+            .with_priority(2)
             .build();
 
         TreeManager {
@@ -47,6 +55,7 @@ impl TreeManager {
             render_objects,
             layout_objects,
             window_size: window_size,
+            event_manager: EventManager::default(),
         }
     }
 
@@ -108,15 +117,19 @@ impl TreeManager {
         }
     }
 
-    pub fn run(&mut self) {    
+    pub fn run(&mut self) -> bool {
+        let mut running = true;
+        
         if let Some(backend) = &self.backend {
             self.window_size.set(backend.borrow().size());
         }
-       
+
         self.world.run();
 
         if let Some(backend) = &self.backend {
-            backend.borrow_mut().update();
+            running = backend.borrow_mut().drain_events(&mut self.event_manager);
         }
+
+        running
     }
 }

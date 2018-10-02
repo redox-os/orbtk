@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use {Rect, Selector, Theme};
+use {Rect, Selector, Theme, EventManager};
 
 pub use self::orbital::*;
 
@@ -18,7 +18,7 @@ pub trait Renderer {
 }
 
 pub trait Backend {
-    fn update(&mut self);
+    fn drain_events(&mut self, event_manager: &mut EventManager) -> bool;
     fn bounds(&mut self, bounds: &Rect);
     fn size(&self) -> (u32, u32);
     fn render_context(&mut self) -> RenderContext;

@@ -5,7 +5,7 @@ use std::sync::Arc;
 use orbclient::{Color, Window as OrbWindow};
 use orbclient::{Mode, Renderer as OrbRenderer};
 
-use {Backend, Rect, RenderContext, Renderer, Selector, Theme};
+use {Backend, Rect, RenderContext, Renderer, Selector, Theme, EventManager};
 
 pub struct OrbitalBackend {
     inner: OrbWindow,
@@ -16,20 +16,6 @@ impl Renderer for OrbWindow {
     fn render(&mut self, theme: &Arc<Theme>) {
         // render window background
         self.set(theme.color("background", &"window".into()));
-
-        // 'events: loop {
-        //     for event in self.inner.events() {
-        //         match event.to_option() {
-        //             EventOption::Quit(_quit_event) => break 'events,
-        //             EventOption::Mouse(evt) => println!(
-        //                 "At position {:?} pixel color is : {:?}",
-        //                 (evt.x, evt.y),
-        //                 self.inner.getpixel(evt.x, evt.y)
-        //             ),
-        //             event_option => println!("{:?}", event_option),
-        //         }
-        //     }
-        // }
     }
 
     fn render_rectangle(
@@ -168,9 +154,20 @@ impl Drop for OrbitalBackend {
 }
 
 impl Backend for OrbitalBackend {
-    fn update(&mut self) {
+    fn drain_events(&mut self, _event_manager: &mut EventManager) -> bool {
         self.inner.sync();
-        for _event in self.inner.events() {}
+        let mut running = true;
+
+        for event in self.inner.events() {
+            match event.to_option() {
+                orbclient::EventOption::Quit(_quit_event) => {
+                    running = false;
+                },
+                _ => {}
+            }
+        }
+
+        running
     }
 
     fn size(&self) -> (u32, u32) {

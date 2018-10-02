@@ -13,8 +13,10 @@ pub struct Window {
 
 impl Window {
     pub fn run(&mut self) {
-        'event: while self.running {
-            self.tree_manager.run();
+        loop {
+            if !self.tree_manager.run() {
+                break;
+            }
         }
     }
 }
