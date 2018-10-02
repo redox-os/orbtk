@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 
-use {Entity, NotFound};
+use {Entity, NotFound, EntityContainer};
 
 #[derive(Default)]
 pub struct Tree {
@@ -29,24 +29,35 @@ impl Tree {
     }
 }
 
+impl EntityContainer for Tree {
+    fn register_entity(&mut self, entity: Entity) {
+        self.register_node(entity);
+    }
+
+    fn remove_entity(&mut self, entity: Entity) {
+        self.children.remove(&entity);
+        self.parent.remove(&entity);
+    }
+}
+
 impl<'a> IntoIterator for &'a Tree {
     type Item = Entity;
-    type IntoIter = TreeIntoIterator<'a>;
+    type IntoIter = TreeIterator<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
-        TreeIntoIterator {
+        TreeIterator {
             tree: self,
             path: RefCell::new(vec![]),
         }
     }
 }
 
-pub struct TreeIntoIterator<'a> {
+pub struct TreeIterator<'a> {
     tree: &'a Tree,
     path: RefCell<Vec<Entity>>,
 }
 
-impl<'a> Iterator for TreeIntoIterator<'a> {
+impl<'a> Iterator for TreeIterator<'a> {
     type Item = Entity;
 
     fn next(&mut self) -> Option<Entity> {

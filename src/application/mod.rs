@@ -1,8 +1,5 @@
-use std::sync::Arc;
 use std::cell::RefCell;
-
-use orbclient::Window as OrbWindow;
-use orbfont;
+use std::sync::Arc;
 
 use {OrbitalBackend, Rect, Theme};
 
@@ -11,7 +8,7 @@ pub use self::window::*;
 
 mod tree_manager;
 mod window;
- 
+
 pub struct Application {
     // list of windows
     // theme
@@ -35,11 +32,7 @@ impl Application {
             title: String::from(""),
             theme: theme.clone(),
             root: None,
-            backend: Arc::new(RefCell::new(OrbitalBackend::new(
-                OrbWindow::new_flags(0, 0, 0, 0, "", &[]).unwrap(),
-                orbfont::Font::find(Some("MONO"), Some("Serif"), Some("REGULAR")).ok(),
-                theme,
-            ))),
+            backend: Arc::new(RefCell::new(OrbitalBackend::new(theme))),
         }
     }
 

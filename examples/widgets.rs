@@ -17,9 +17,7 @@ impl Widget for MainView {
                     ..Default::default()
                 }),
                 Arc::new(Container {
-                    class: String::from("blue"),
                     child: Some(Arc::new(Button {
-                        
                         label: String::from("Click me 2"),
                         ..Default::default()
                     })),

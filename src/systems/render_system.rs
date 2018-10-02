@@ -7,17 +7,14 @@ use dces::{Entity, EntityComponentManager, System};
 use {Backend, Rect, RenderObject, Tree};
 
 pub struct RenderSystem {
-    pub tree: Arc<RefCell<Tree>>,
     pub backend: Arc<RefCell<Backend>>,
     pub render_objects: Arc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
 }
 
-impl System for RenderSystem {
-    fn run(&self, _entities: &Vec<Entity>, ecm: &mut EntityComponentManager) {
+impl System<Tree> for RenderSystem {
+    fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
         let mut backend = self.backend.borrow_mut();
         let render_context = backend.render_context();
-             
-        let tree = self.tree.borrow();
 
         let mut offsets = HashMap::new();
         offsets.insert(tree.root, (0, 0));

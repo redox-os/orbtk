@@ -1,18 +1,23 @@
+use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::sync::Arc;
-use std::cell::Cell;
 
-use {
-    Alignment, Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult, Theme
-};
+use {Alignment, Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult, Theme};
 
 pub struct FlexLayoutObject {
-    pub direction: Alignment,
+    orientation: Alignment,
+    current_child: Cell<usize>,
+    current_position: RefCell<Vec<u32>>,
+}
 
-    // layout continuation state
-    pub ix: Cell<usize>,
-    pub major_per_flex: Cell<u32>,
-    pub minor: Cell<u32>,
+impl FlexLayoutObject {
+    pub fn new(orientation: Alignment) -> Self {
+        FlexLayoutObject {
+            orientation,
+            current_child: Cell::new(0),
+            current_position: RefCell::new(vec![]),
+        }
+    }
 }
 
 impl LayoutObject for FlexLayoutObject {
@@ -27,51 +32,66 @@ impl LayoutObject for FlexLayoutObject {
         _theme: &Arc<Theme>,
     ) -> LayoutResult {
         if let Some(size) = size {
-            let minor = self.direction.minor(size);
-            self.minor.set(self.minor.get().max(minor));
-            self.ix.set(self.ix.get() + 1);
-            if self.ix.get() == children.len() {
-                // measured all children
-                let mut major = 0;
+            self.current_child.set(self.current_child.get() + 1);
+
+            match self.orientation {
+                Alignment::Horizontal => {
+                    self.current_position.borrow_mut().push(size.0);
+                }
+                Alignment::Vertical => {
+                    self.current_position.borrow_mut().push(size.1);
+                }
+            }
+
+            if self.current_child.get() == children.len() {
+                let mut counter = 0;
+
                 for child in children {
-                    // top-align, could do center etc. based on child height
+                    if counter == self.current_position.borrow().len() {
+                        break;
+                    }
 
                     if let None = children_pos {
                         *children_pos = Some(HashMap::new());
                     }
                     if let Some(children_pos) = children_pos {
-                        let pos = self.direction.pack(major, 0);
-                        children_pos.insert(*child, (pos.0 as i32, pos.1 as i32));
-                    }
+                        match self.orientation {
+                            Alignment::Horizontal => {
+                                children_pos.insert(
+                                    *child,
+                                    (self.current_position.borrow()[counter] as i32, 0),
+                                );
+                            }
+                            Alignment::Vertical => {
+                                children_pos.insert(
+                                    *child,
+                                    (0, self.current_position.borrow()[counter] as i32),
+                                );
+                            }
+                        }
 
-                    major += self.major_per_flex.get();
+                        counter += 1;
+                    }
                 }
-                let max_major = self.direction.major((constraint.max_width as u32, constraint.max_height as u32));
-                return LayoutResult::Size(self.direction.pack(max_major, self.minor.get()));
+
+                return LayoutResult::Size((constraint.max_width, constraint.max_height));
             }
         } else {
             if children.is_empty() {
                 return LayoutResult::Size((constraint.min_width, constraint.min_height));
             }
-            self.ix.set(0);
-            self.minor.set(self.direction.minor((constraint.min_width, constraint.min_height)));
-            let max_major = self.direction.major((constraint.max_width, constraint.max_height));
-            self.major_per_flex.set(max_major / children.len() as u32);
+            self.current_position.borrow_mut().clear();
+            self.current_position.borrow_mut().push(0);
+            self.current_child.set(0);
         }
-        let child_bc = match self.direction {
-            Alignment::Horizontal => Constraint {
-                min_width: self.major_per_flex.get(),
-                max_width: self.major_per_flex.get(),
-                min_height: constraint.min_height,
-                max_height: constraint.max_height,
-            },
-            Alignment::Vertical => Constraint {
-                min_width: constraint.min_width,
-                max_width: constraint.max_width,
-                min_height: self.major_per_flex.get(),
-                max_height: self.major_per_flex.get(),
-            },
+
+        let child_bc = Constraint {
+            min_width: constraint.min_width,
+            max_width: constraint.max_width,
+            min_height: constraint.min_height,
+            max_height: constraint.max_height,
         };
-        LayoutResult::RequestChild(children[self.ix.get()], child_bc)
+
+        LayoutResult::RequestChild(children[self.current_child.get()], child_bc)
     }
 }

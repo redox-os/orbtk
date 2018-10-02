@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -10,16 +10,16 @@ pub enum LayoutResult {
 }
 
 pub struct LayoutSystem {
-    pub tree: Arc<RefCell<Tree>>,
     pub theme: Arc<Theme>,
     pub layout_objects: Arc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+    pub window_size: Arc<Cell<(u32, u32)>>,
 }
 
-impl System for LayoutSystem {
-    fn run(&self, _entities: &Vec<Entity>, ecm: &mut EntityComponentManager) {
+impl System<Tree> for LayoutSystem {
+    fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
         fn layout_rec(
             ecm: &mut EntityComponentManager,
-            tree: &Arc<RefCell<Tree>>,
+            tree: &Tree,
             constraint: &Constraint,
             entity: Entity,
             theme: &Arc<Theme>,
@@ -36,7 +36,7 @@ impl System for LayoutSystem {
                             entity,
                             ecm,
                             constraint,
-                            &tree.borrow().children.get(&entity).unwrap(),
+                            &tree.children.get(&entity).unwrap(),
                             &mut children_pos,
                             size,
                             theme,
@@ -78,17 +78,16 @@ impl System for LayoutSystem {
             }
         }
 
-        let root = self.tree.borrow().root;
+        let root = tree.root;
 
-        // todo: use widnow size!!!
         layout_rec(
             ecm,
-            &self.tree,
+            &tree,
             &Constraint {
                 min_width: 0,
                 min_height: 0,
-                max_width: 400,
-                max_height: 300,
+                max_width: self.window_size.get().0,
+                max_height: self.window_size.get().1,
             },
             root,
             &self.theme,

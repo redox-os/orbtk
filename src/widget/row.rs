@@ -1,11 +1,7 @@
-use std::cell::Cell;
 use std::sync::Arc;
 
 use theme::Selector;
-use {
-    Alignment, ComponentBox, FlexLayoutObject, LayoutObject, Property, RectangleRenderObject,
-    RenderObject, Template, Widget,
-};
+use {Alignment, ComponentBox, FlexLayoutObject, LayoutObject, Property, Template, Widget};
 
 pub struct Row {
     pub children: Vec<Arc<Widget>>,
@@ -16,7 +12,7 @@ impl Default for Row {
     fn default() -> Row {
         Row {
             children: vec![],
-            class: String::from("container"),
+            class: String::from("row"),
         }
     }
 }
@@ -36,16 +32,7 @@ impl Widget for Row {
         vec![ComponentBox::new(Selector::new(Some(self.class.clone())))]
     }
 
-    fn render_object(&self) -> Option<Box<RenderObject>> {
-        Some(Box::new(RectangleRenderObject))
-    }
-
     fn layout_object(&self) -> Box<LayoutObject> {
-        Box::new(FlexLayoutObject {
-            direction: Alignment::Horizontal,
-            ix: Cell::new(0),
-            major_per_flex: Cell::new(0),
-            minor: Cell::new(0),
-        })
+        Box::new(FlexLayoutObject::new(Alignment::Horizontal))
     }
 }

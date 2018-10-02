@@ -17,6 +17,7 @@ impl LayoutObject for TextSizeLayoutObject {
         _theme: &Arc<Theme>,
     ) -> LayoutResult {
         if let Ok(label) = ecm.borrow_component::<Label>(entity) {
+            let _blub = constraint.perform((label.0.len() as u32 * 8 + 2, 18));
             return LayoutResult::Size(constraint.perform((label.0.len() as u32 * 8 + 2, 18)));
         }
 

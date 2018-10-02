@@ -1,22 +1,21 @@
-use orbfont;
+// use orbfont;
 use std::cell::Cell;
 use std::sync::Arc;
 
 use orbclient::{Color, Window as OrbWindow};
 use orbclient::{Mode, Renderer as OrbRenderer};
 
-use {Backend, Rect, Renderer, RenderContext, Selector, Theme};
+use {Backend, Rect, RenderContext, Renderer, Selector, Theme};
 
 pub struct OrbitalBackend {
     inner: OrbWindow,
-    font: Option<orbfont::Font>,
     theme: Arc<Theme>,
 }
 
 impl Renderer for OrbWindow {
     fn render(&mut self, theme: &Arc<Theme>) {
         // render window background
-        self            .set(theme.color("background", &"window".into()));
+        self.set(theme.color("background", &"window".into()));
 
         // 'events: loop {
         //     for event in self.inner.events() {
@@ -33,7 +32,13 @@ impl Renderer for OrbWindow {
         // }
     }
 
-    fn render_rectangle(&mut self, theme: &Arc<Theme>, bounds: &Rect, selector: &Selector, offset: (i32, i32)) {
+    fn render_rectangle(
+        &mut self,
+        theme: &Arc<Theme>,
+        bounds: &Rect,
+        selector: &Selector,
+        offset: (i32, i32),
+    ) {
         let b_r = theme.uint("border-radius", selector);
 
         let fill = theme.color("background", selector);
@@ -63,44 +68,58 @@ impl Renderer for OrbWindow {
         }
     }
 
-    fn render_text(&mut self, theme: &Arc<Theme>, text: &str, bounds: &Rect, selector: &Selector, offset: (i32, i32)) {
+    fn render_text(
+        &mut self,
+        theme: &Arc<Theme>,
+        text: &str,
+        bounds: &Rect,
+        selector: &Selector,
+        offset: (i32, i32),
+    ) {
         // if let Some(font) = &self.font {
         //     let line = font.render(text, 64.0);
         //     line.draw(&mut self.inner, 20, 20, Color::rgb(0, 0, 0));
         // } else {
-            let rect = Rect::new(bounds.x + offset.0, bounds.y + offset.1, bounds.width, bounds.height);
-            let mut current_rect = Rect::new(bounds.x + offset.0, bounds.y + offset.1, bounds.width, bounds.height);
-            let x = rect.x;
+        let rect = Rect::new(
+            bounds.x + offset.0,
+            bounds.y + offset.1,
+            bounds.width,
+            bounds.height,
+        );
+        let mut current_rect = Rect::new(
+            bounds.x + offset.0,
+            bounds.y + offset.1,
+            bounds.width,
+            bounds.height,
+        );
+        let x = rect.x;
 
-            for c in text.chars() {
-                if c == '\n' {
-                    current_rect.x = x;
-                    current_rect.y += 16;
-                } else {
-                    if current_rect.x + 8 <= rect.x + rect.width as i32
-                        && current_rect.y + 16 <= rect.y + rect.height as i32
-                    {
-                        self.char(
-                            current_rect.x,
-                            current_rect.y,
-                            c,
-                            theme.color("color", selector),
-                        );
-                    }
-                    current_rect.x += 8;
+        for c in text.chars() {
+            if c == '\n' {
+                current_rect.x = x;
+                current_rect.y += 16;
+            } else {
+                if current_rect.x + 8 <= rect.x + rect.width as i32
+                    && current_rect.y + 16 <= rect.y + rect.height as i32
+                {
+                    self.char(
+                        current_rect.x,
+                        current_rect.y,
+                        c,
+                        theme.color("color", selector),
+                    );
                 }
+                current_rect.x += 8;
             }
+        }
         // }
     }
-
 }
 
-
 impl OrbitalBackend {
-    pub fn new(inner: OrbWindow, font: Option<orbfont::Font>, theme: Arc<Theme>) -> OrbitalBackend {
+    pub fn new(theme: Arc<Theme>) -> OrbitalBackend {
         OrbitalBackend {
-            inner: inner,
-            font: font,
+            inner: OrbWindow::new_flags(0, 0, 0, 0, "", &[]).unwrap(),
             theme,
         }
     }
@@ -132,13 +151,13 @@ impl OrbRenderer for OrbitalBackend {
     }
 
     fn char(&mut self, x: i32, y: i32, c: char, color: Color) {
-        if let Some(ref font) = self.font {
-            let mut buf = [0; 4];
-            font.render(&c.encode_utf8(&mut buf), 16.0)
-                .draw(&mut self.inner, x, y, color)
-        } else {
+        // if let Some(ref font) = self.font {
+        //     let mut buf = [0; 4];
+        //     font.render(&c.encode_utf8(&mut buf), 16.0)
+        //         .draw(&mut self.inner, x, y, color)
+        // } else {
             self.inner.char(x, y, c, color);
-        }
+        // }
     }
 }
 
@@ -153,7 +172,11 @@ impl Backend for OrbitalBackend {
         self.inner.sync();
         for _event in self.inner.events() {}
     }
-   
+
+    fn size(&self) -> (u32, u32) {
+        (self.width(), self.height())
+    }
+
     fn bounds(&mut self, bounds: &Rect) {
         self.inner.set_pos(bounds.x, bounds.y);
         self.inner.set_size(bounds.width, bounds.height);
@@ -162,7 +185,7 @@ impl Backend for OrbitalBackend {
     fn render_context(&mut self) -> RenderContext {
         RenderContext {
             renderer: &mut self.inner,
-            theme:  self.theme.clone(),
+            theme: self.theme.clone(),
         }
     }
 }
