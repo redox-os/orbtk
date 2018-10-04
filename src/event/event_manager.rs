@@ -1,4 +1,5 @@
 use std::any::{Any, TypeId};
+use std::sync::Arc;
 
 #[derive(Debug)]
 pub enum EventError {
@@ -6,25 +7,27 @@ pub enum EventError {
 }
 
 pub struct EventBox {
-    pub event: Box<Any>,
+    pub event: Arc<dyn Any + Send + Sync>,
     pub event_type: TypeId,
 }
 
 impl EventBox {
-    pub fn new<E: Any>(event: E) -> Self {
+    pub fn new<E: Any + Send + Sync>(event: E) -> Self {
         EventBox {
-            event: Box::new(event),
+            event: Arc::new(event),
             event_type: TypeId::of::<E>(),
         }
     }
 
-    pub fn is_type<E: Any>(&self) -> bool {
+    pub fn is_type<E: Any + Send + Sync>(&self) -> bool {
         self.event_type == TypeId::of::<E>()
     }
 
-    pub fn downcast<E: Any>(self) -> Result<E, EventError> {
+    pub fn downcast<E: Any + Send + Sync>(self) -> Result<Arc<E>, EventError> {
         if self.event_type == TypeId::of::<E>() {
-            return Ok(*self.event.downcast::<E>().unwrap())
+            if let Ok(event) = self.event.downcast::<E>() {
+                return Ok(event)
+            }   
         }
         
         Err(EventError::WrongType(TypeId::of::<E>()))
@@ -37,7 +40,7 @@ pub struct EventManager {
 }
 
 impl EventManager {
-    pub fn register_event<E: Any>(&mut self, event: E) {
+    pub fn register_event<E: Any + Send + Sync>(&mut self, event: E) {
         self.event_queue.push(EventBox::new::<E>(event));
     }
 

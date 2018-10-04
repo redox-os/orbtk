@@ -35,8 +35,8 @@ impl Widget for Container {
         ]
     }
 
-    fn render_object(&self) -> Option<Box<RenderObject>> {
-        Some(Box::new(RectangleRenderObject))
+    fn render_object(&self) -> Option<Arc<RenderObject>> {
+        Some(Arc::new(RectangleRenderObject))
     }
 
     fn layout_object(&self) -> Box<LayoutObject> {

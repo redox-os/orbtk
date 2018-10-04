@@ -2,7 +2,13 @@ use cssparser::{
     self, BasicParseError, CompactCowStr, DeclarationListParser, ParseError, Parser, ParserInput,
     Token,
 };
+
+#[cfg(target_arch = "wasm32")]
+use structs::color::Color;
+
+#[cfg(not(target_arch = "wasm32"))]
 use orbclient::Color;
+
 use std::collections::HashSet;
 use std::mem;
 use std::ops::Add;

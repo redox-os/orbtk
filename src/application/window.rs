@@ -1,23 +1,45 @@
-use std::cell::RefCell;
-use std::sync::Arc;
+use std::sync::{mpsc, Arc};
+use std::thread::JoinHandle;
 
-use {Application, Backend, Rect, Theme, Widget, TreeManager};
+use {Application, Backend, EventManager, Rect, RenderContainer, Theme, TreeManager, Widget};
 
 pub struct Window {
-    pub tree_manager: TreeManager,
-    pub bounds: Rect,
-    pub title: String,
-    pub theme: Arc<Theme>,
-    pub running: bool,
+    bounds: Rect,
+    _title: String,
+    theme: Arc<Theme>,
+    _running: bool,
+    backend: Box<Backend>,
+    tree_manager: Option<JoinHandle<()>>,
+    root: Option<Arc<Widget>>,
 }
 
 impl Window {
     pub fn run(&mut self) {
-        loop {
-            if !self.tree_manager.run() {
-                break;
-            }
-        }
+        let (event_sender, event_receiver): (
+            mpsc::Sender<EventManager>,
+            mpsc::Receiver<EventManager>,
+        ) = mpsc::channel();
+
+        let (render_sender, render_receiver): (
+            mpsc::Sender<Vec<RenderContainer>>,
+            mpsc::Receiver<Vec<RenderContainer>>,
+        ) = mpsc::channel();
+
+        self.backend.bounds(&self.bounds);
+        self.backend.event_sender(event_sender.clone());
+        self.backend.render_receiver(render_receiver);
+
+        let tree_manager = TreeManager::new(
+            self.theme.clone(),
+            self.root.clone(),
+            Some(event_receiver),
+            render_sender.clone(),
+            (self.bounds.width, self.bounds.height),
+        );
+
+        self.tree_manager = Some(tree_manager);
+
+        self.backend.run();
     }
 }
 
@@ -27,7 +49,7 @@ pub struct WindowBuilder<'a> {
     pub title: String,
     pub theme: Arc<Theme>,
     pub root: Option<Arc<Widget>>,
-    pub backend: Arc<RefCell<Backend>>,
+    pub backend: Box<Backend>,
 }
 
 impl<'a> WindowBuilder<'a> {
@@ -51,26 +73,21 @@ impl<'a> WindowBuilder<'a> {
         self
     }
 
-    pub fn with_backend(mut self, backend: Arc<RefCell<Backend>>) -> Self {
+    pub fn with_backend(mut self, backend: Box<Backend>) -> Self {
         self.backend = backend;
         self
     }
 
     pub fn build(self) {
-        self.backend.borrow_mut().bounds(&self.bounds);
-        let mut tree_manager = TreeManager::new(self.backend, self.theme.clone());
-
-        if let Some(root) = self.root {
-            tree_manager.root(root.clone());
-        }
-
         let theme = self.theme.clone();
         self.application.windows.push(Window {
-            tree_manager,
             bounds: self.bounds,
-            title: self.title,
-            theme,
-            running: true,
+            root: self.root,
+            _title: self.title,
+            theme: theme.clone(),
+            _running: true,
+            backend: self.backend,
+            tree_manager: None,
         })
     }
 }

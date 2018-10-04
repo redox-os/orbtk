@@ -7,3 +7,6 @@ mod constraint;
 mod point;
 mod rect;
 mod thickness;
+
+#[cfg(target_arch = "wasm32")]
+pub mod color;

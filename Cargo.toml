@@ -18,9 +18,12 @@ name = "orbtk"
 path = "src/lib.rs"
 
 [dependencies]
-orbclient = "0.3.13"
-orbfont = "0.1.8"
-orbimage = "0.1.16"
 cssparser = "0.16.0"
 lazy_static = "0.2.8"
 dces = { git = "https://gitlab.com/orbtk/dces-rust" }
+stdweb = "0.4.9"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+orbclient = "0.3.13"
+orbfont = "0.1.8"
+orbimage = "0.1.16"
