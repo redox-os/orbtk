@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use {
     Backend, Entity, EventSystem, LayoutObject, LayoutSystem, Rect, RenderObject, RenderSystem,
-    Template, Theme, Tree, Widget, World, EventManager,
+    Template, Theme, Tree, Widget, World, EventManager, MouseEvent, SystemEvent
 };
 
 #[derive(Default)]
@@ -119,6 +119,28 @@ impl TreeManager {
 
     pub fn run(&mut self) -> bool {
         let mut running = true;
+        while let Some(event) = self.event_manager.dequeue() {
+            let _blub = event.is_type::<MouseEvent>();
+            if event.is_type::<MouseEvent>() {
+                match event.downcast::<MouseEvent>().unwrap() {
+                    MouseEvent::Move(mouse) => {
+                        println!("{}, {}", mouse.0, mouse.1);
+                    },
+                    MouseEvent::Down(_mouse) => {
+                        println!("Down");
+                    },
+                    MouseEvent::Up(_mouse) => {
+                        println!("Up");
+                    },
+                }
+            } else if event.is_type::<SystemEvent>() {
+                match event.downcast::<SystemEvent>().unwrap() {
+                    SystemEvent::Quit => {
+                        running = false;
+                    }
+                }
+            }
+        }
         
         if let Some(backend) = &self.backend {
             self.window_size.set(backend.borrow().size());
@@ -127,7 +149,7 @@ impl TreeManager {
         self.world.run();
 
         if let Some(backend) = &self.backend {
-            running = backend.borrow_mut().drain_events(&mut self.event_manager);
+            backend.borrow_mut().drain_events(&mut self.event_manager);
         }
 
         running

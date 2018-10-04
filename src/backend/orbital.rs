@@ -5,11 +5,12 @@ use std::sync::Arc;
 use orbclient::{Color, Window as OrbWindow};
 use orbclient::{Mode, Renderer as OrbRenderer};
 
-use {Backend, Rect, RenderContext, Renderer, Selector, Theme, EventManager};
+use {Backend, Rect, RenderContext, Renderer, Selector, Theme, EventManager, MouseEvent, SystemEvent, MouseButton};
 
 pub struct OrbitalBackend {
     inner: OrbWindow,
     theme: Arc<Theme>,
+    mouse_buttons: (bool, bool, bool),
 }
 
 impl Renderer for OrbWindow {
@@ -107,6 +108,7 @@ impl OrbitalBackend {
         OrbitalBackend {
             inner: OrbWindow::new_flags(0, 0, 0, 0, "", &[]).unwrap(),
             theme,
+            mouse_buttons: (false, false, false),
         }
     }
 }
@@ -154,20 +156,50 @@ impl Drop for OrbitalBackend {
 }
 
 impl Backend for OrbitalBackend {
-    fn drain_events(&mut self, _event_manager: &mut EventManager) -> bool {
+    fn drain_events(&mut self, event_manager: &mut EventManager) {
         self.inner.sync();
-        let mut running = true;
 
         for event in self.inner.events() {
             match event.to_option() {
+                orbclient::EventOption::Mouse(mouse) => {
+                    event_manager.register_event(MouseEvent::Move((mouse.x, mouse.y)));
+                },
+                orbclient::EventOption::Button(button) => {
+                    
+
+                    if !button.left && !button.middle && !button.right {
+
+                        let button = {
+                            if self.mouse_buttons.0 {
+                                MouseButton::Left
+                            } else if self.mouse_buttons.1 {
+                                MouseButton::Middle
+                            } else {
+                                MouseButton::Right
+                            }
+                        };
+                        event_manager.register_event(MouseEvent::Up(button))
+                    } else {
+                         let button = {
+                            if button.left {
+                                MouseButton::Left
+                            } else if button.middle {
+                                MouseButton::Middle
+                            } else {
+                                MouseButton::Right
+                            }
+                        };
+                        event_manager.register_event(MouseEvent::Down(button))
+                    }
+
+                    self.mouse_buttons = (button.left, button.middle, button.right);
+                },
                 orbclient::EventOption::Quit(_quit_event) => {
-                    running = false;
+                    event_manager.register_event(SystemEvent::Quit);
                 },
                 _ => {}
             }
         }
-
-        running
     }
 
     fn size(&self) -> (u32, u32) {
