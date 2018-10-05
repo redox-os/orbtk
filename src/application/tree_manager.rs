@@ -1,86 +1,68 @@
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
-use std::sync::{mpsc::Receiver, mpsc::Sender, Arc};
-use std::thread;
+use std::sync::Arc;
 
 use {
-    Entity, EventManager, LayoutObject, LayoutSystem, MouseEvent, Rect, RenderContainer,
-    RenderObject, RenderSystem, SystemEvent, Template, Theme, Tree, Widget, WindowEvent, World,
+    Backend, Entity, EventSystem, LayoutObject, LayoutSystem, Rect, RenderObject, RenderSystem,
+    Template, Theme, Tree, Widget, World, EventManager, MouseEvent, SystemEvent
 };
 
 #[derive(Default)]
 pub struct TreeManager {
     world: World<Tree>,
-    // backend: Option<Arc<Backend>>,
-    render_objects: Arc<RefCell<HashMap<Entity, Arc<RenderObject>>>>,
+    backend: Option<Arc<RefCell<Backend>>>,
+    render_objects: Arc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
     layout_objects: Arc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
     window_size: Arc<Cell<(u32, u32)>>,
-    _event_manager: EventManager,
-    running: bool,
-    event_receiver: Option<Receiver<EventManager>>,
+    event_manager: EventManager,
 }
 
 impl TreeManager {
-    pub fn new(
-        theme: Arc<Theme>,
-        root: Option<Arc<Widget>>,
-        event_receiver: Option<Receiver<EventManager>>,
-        render_sender: Sender<Vec<RenderContainer>>,
-        window_size: (u32, u32),
-    ) -> thread::JoinHandle<()> {
-        thread::spawn(move || {
-            let mut world = World::from_container(Tree::default());
-            let render_objects = Arc::new(RefCell::new(HashMap::new()));
-            let layout_objects = Arc::new(RefCell::new(HashMap::new()));
-            // let size = backend.borrow().size();
-            let window_size = Arc::new(Cell::new(window_size));
+    pub fn new(backend: Arc<RefCell<Backend>>, theme: Arc<Theme>) -> Self {
+        let mut world = World::from_container(Tree::default());
+        let render_objects = Arc::new(RefCell::new(HashMap::new()));
+        let layout_objects = Arc::new(RefCell::new(HashMap::new()));
+        let size = backend.borrow().size();
+        let window_size = Arc::new(Cell::new(size));
 
-            // world
-            //     .create_system(EventSystem {
-            //         _backend: backend.clone(),
-            //     })
-            //     .with_priority(0)
-            //     .build();
+        world
+            .create_system(EventSystem {
+                _backend: backend.clone(),
+            })
+            .with_priority(0)
+            .build();
 
-            world
-                .create_system(LayoutSystem {
-                    theme: theme.clone(),
-                    layout_objects: layout_objects.clone(),
-                    window_size: window_size.clone(),
-                })
-                .with_priority(1)
-                .build();
+        world
+            .create_system(LayoutSystem {
+                theme: theme.clone(),
+                layout_objects: layout_objects.clone(),
+                window_size: window_size.clone(),
+            })
+            .with_priority(1)
+            .build();
 
-            world
-                .create_system(RenderSystem {
-                    render_objects: render_objects.clone(),
-                    render_sender,
-                })
-                .with_priority(2)
-                .build();
+        world
+            .create_system(RenderSystem {
+                backend: backend.clone(),
+                render_objects: render_objects.clone(),
+            })
+            .with_priority(2)
+            .build();
 
-            let mut tree_manager = TreeManager {
-                world,
-                render_objects,
-                layout_objects,
-                window_size,
-                _event_manager: EventManager::default(),
-                running: false,
-                event_receiver,
-            };
-
-            if let Some(root) = root {
-                tree_manager.root(root);
-            }
-
-            tree_manager.run();
-        })
+        TreeManager {
+            world,
+            backend: Some(backend),
+            render_objects,
+            layout_objects,
+            window_size: window_size,
+            event_manager: EventManager::default(),
+        }
     }
 
     pub fn root(&mut self, root: Arc<Widget>) {
         fn expand(
             world: &mut World<Tree>,
-            render_objects: &Arc<RefCell<HashMap<Entity, Arc<RenderObject>>>>,
+            render_objects: &Arc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
             layout_objects: &Arc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
             widget: Arc<Widget>,
             parent: Entity,
@@ -135,47 +117,41 @@ impl TreeManager {
         }
     }
 
-    pub fn run(&mut self) {
-        self.running = true;
-
-        while self.running {
-            //    println!("Events");
-
-            if let Some(events) = &self.event_receiver {
-                let mut events = events.try_recv();
-
-                if let Ok(events) = &mut events {
-                    while let Some(event) = events.dequeue() {
-                        if event.is_type::<MouseEvent>() {
-                            match &*event.downcast::<MouseEvent>().unwrap() {
-                                MouseEvent::Move(mouse) => {
-                                    println!("{}, {}", mouse.0, mouse.1);
-                                }
-                                MouseEvent::Down(_mouse) => {
-                                    println!("Down");
-                                }
-                                MouseEvent::Up(_mouse) => {
-                                    println!("Up");
-                                }
-                            }
-                        } else if event.is_type::<SystemEvent>() {
-                            match &*event.downcast::<SystemEvent>().unwrap() {
-                                SystemEvent::Quit => {
-                                    self.running = false;
-                                }
-                            }
-                        } else if event.is_type::<WindowEvent>() {
-                            match &*event.downcast::<WindowEvent>().unwrap() {
-                                WindowEvent::Resize(size) => {
-                                    self.window_size.set(*size);
-                                }
-                            }
-                        }
+    pub fn run(&mut self) -> bool {
+        let mut running = true;
+        while let Some(event) = self.event_manager.dequeue() {
+            let _blub = event.is_type::<MouseEvent>();
+            if event.is_type::<MouseEvent>() {
+                match event.downcast::<MouseEvent>().unwrap() {
+                    MouseEvent::Move(mouse) => {
+                        println!("{}, {}", mouse.0, mouse.1);
+                    },
+                    MouseEvent::Down(_mouse) => {
+                        println!("Down");
+                    },
+                    MouseEvent::Up(_mouse) => {
+                        println!("Up");
+                    },
+                }
+            } else if event.is_type::<SystemEvent>() {
+                match event.downcast::<SystemEvent>().unwrap() {
+                    SystemEvent::Quit => {
+                        running = false;
                     }
                 }
             }
-
-            self.world.run();
         }
+        
+        if let Some(backend) = &self.backend {
+            self.window_size.set(backend.borrow().size());
+        }
+
+        self.world.run();
+
+        if let Some(backend) = &self.backend {
+            backend.borrow_mut().drain_events(&mut self.event_manager);
+        }
+
+        running
     }
 }

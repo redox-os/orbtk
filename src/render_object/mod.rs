@@ -1,7 +1,6 @@
-use std::any::Any;
 use std::sync::Arc;
 
-use { Rect, Renderer, Selector, Theme};
+use {Entity, EntityComponentManager, Renderer, Theme};
 
 pub use self::rectangle::*;
 pub use self::text::*;
@@ -9,22 +8,13 @@ pub use self::text::*;
 mod rectangle;
 mod text;
 
-pub trait RenderObject: Send + Sync {
+pub trait RenderObject {
     fn render(
         &self,
-        bounds: &Rect,
-        selector: &Selector,
+        entity: Entity,
+        ecm: &EntityComponentManager,
         renderer: &mut Renderer,
-        offset: (i32, i32),
         theme: &Arc<Theme>,
-        content: Option<Arc<Any + Send + Sync>>,
+        offset: (i32, i32),
     );
-}
-
-pub struct RenderContainer {
-    pub bounds: Rect,
-    pub selector: Selector,
-    pub render_object: Arc<RenderObject>,
-    pub offset: (i32, i32),
-    pub content: Option<Arc<Any + Send + Sync>>,
 }

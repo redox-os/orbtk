@@ -1,23 +1,23 @@
-use std::any::Any;
 use std::sync::Arc;
 
-use {Rect, RenderObject, Renderer, Selector, Theme};
+use {Entity, EntityComponentManager, Label, Rect, RenderObject, Renderer, Selector, Theme};
 
 pub struct TextRenderObject;
 
 impl RenderObject for TextRenderObject {
     fn render(
-       &self,
-        bounds: &Rect,
-        selector: &Selector,
+        &self,
+        entity: Entity,
+        ecm: &EntityComponentManager,
         renderer: &mut Renderer,
-        offset: (i32, i32),
         theme: &Arc<Theme>,
-        content: Option<Arc<Any + Send + Sync>>,
+        offset: (i32, i32),
     ) {
-        if let Some(label) = content {
-            if let Ok(label) = label.downcast::<String>() {
-                renderer.render_text(&label, &bounds, &selector, offset, &theme);
+        if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
+            if let Ok(bounds) = ecm.borrow_component::<Rect>(entity) {
+                if let Ok(label) = ecm.borrow_component::<Label>(entity) {
+                    renderer.render_text(theme, &label.0, bounds, selector, offset);
+                }
             }
         }
     }

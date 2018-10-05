@@ -1,11 +1,10 @@
+use std::cell::RefCell;
 use std::sync::Arc;
 
-use {Rect, Theme};
+use {OrbitalBackend, Rect, Theme};
+
 pub use self::tree_manager::*;
-
 pub use self::window::*;
-
-use self::default_backend::default_backend;
 
 mod tree_manager;
 mod window;
@@ -27,14 +26,13 @@ impl Application {
 
     pub fn create_window(&mut self) -> WindowBuilder {
         let theme = self.theme.clone();
-
         WindowBuilder {
             application: self,
             bounds: Rect::default(),
             title: String::from(""),
             theme: theme.clone(),
             root: None,
-            backend: default_backend(theme),
+            backend: Arc::new(RefCell::new(OrbitalBackend::new(theme))),
         }
     }
 
@@ -44,11 +42,3 @@ impl Application {
         }
     }
 }
-
-#[cfg(not(target_arch = "wasm32"))]
-#[path="default_backend/orbital.rs"]
-mod default_backend;
-
-#[cfg(target_arch = "wasm32")]
-#[path="default_backend/wasm.rs"]
-mod default_backend;

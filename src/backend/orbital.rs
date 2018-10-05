@@ -1,22 +1,16 @@
 // use orbfont;
 use std::cell::Cell;
-use std::sync::{mpsc::Receiver, mpsc::Sender, Arc};
+use std::sync::Arc;
 
 use orbclient::{Color, Window as OrbWindow};
 use orbclient::{Mode, Renderer as OrbRenderer};
 
-use {
-    Backend, EventManager, MouseButton, MouseEvent, Rect, RenderContainer, Renderer,
-    Selector, SystemEvent, Theme, WindowEvent
-};
+use {Backend, Rect, RenderContext, Renderer, Selector, Theme, EventManager, MouseEvent, SystemEvent, MouseButton};
 
 pub struct OrbitalBackend {
     inner: OrbWindow,
     theme: Arc<Theme>,
     mouse_buttons: (bool, bool, bool),
-    event_sender: Option<Sender<EventManager>>,
-    render_receiver: Option<Receiver<Vec<RenderContainer>>>,
-    running: bool,
 }
 
 impl Renderer for OrbWindow {
@@ -27,10 +21,10 @@ impl Renderer for OrbWindow {
 
     fn render_rectangle(
         &mut self,
+        theme: &Arc<Theme>,
         bounds: &Rect,
         selector: &Selector,
         offset: (i32, i32),
-        theme: &Arc<Theme>,
     ) {
         let b_r = theme.uint("border-radius", selector);
 
@@ -63,11 +57,11 @@ impl Renderer for OrbWindow {
 
     fn render_text(
         &mut self,
+        theme: &Arc<Theme>,
         text: &str,
         bounds: &Rect,
         selector: &Selector,
         offset: (i32, i32),
-        theme: &Arc<Theme>,
     ) {
         // if let Some(font) = &self.font {
         //     let line = font.render(text, 64.0);
@@ -115,9 +109,6 @@ impl OrbitalBackend {
             inner: OrbWindow::new_flags(0, 0, 0, 0, "", &[]).unwrap(),
             theme,
             mouse_buttons: (false, false, false),
-            event_sender: None,
-            render_receiver: None,
-            running: false,
         }
     }
 }
@@ -153,7 +144,7 @@ impl OrbRenderer for OrbitalBackend {
         //     font.render(&c.encode_utf8(&mut buf), 16.0)
         //         .draw(&mut self.inner, x, y, color)
         // } else {
-        self.inner.char(x, y, c, color);
+            self.inner.char(x, y, c, color);
         // }
     }
 }
@@ -165,19 +156,19 @@ impl Drop for OrbitalBackend {
 }
 
 impl Backend for OrbitalBackend {
-    fn drain_events(&mut self) {
+    fn drain_events(&mut self, event_manager: &mut EventManager) {
         self.inner.sync();
-
-        let mut event_manager = EventManager::default();
-        let mut running = self.running;
 
         for event in self.inner.events() {
             match event.to_option() {
                 orbclient::EventOption::Mouse(mouse) => {
                     event_manager.register_event(MouseEvent::Move((mouse.x, mouse.y)));
-                }
+                },
                 orbclient::EventOption::Button(button) => {
+                    
+
                     if !button.left && !button.middle && !button.right {
+
                         let button = {
                             if self.mouse_buttons.0 {
                                 MouseButton::Left
@@ -189,7 +180,7 @@ impl Backend for OrbitalBackend {
                         };
                         event_manager.register_event(MouseEvent::Up(button))
                     } else {
-                        let button = {
+                         let button = {
                             if button.left {
                                 MouseButton::Left
                             } else if button.middle {
@@ -202,25 +193,13 @@ impl Backend for OrbitalBackend {
                     }
 
                     self.mouse_buttons = (button.left, button.middle, button.right);
-                }
-                orbclient::EventOption::Resize(resize) => {
-                    event_manager.register_event(WindowEvent::Resize((resize.width, resize.height)));
                 },
                 orbclient::EventOption::Quit(_quit_event) => {
                     event_manager.register_event(SystemEvent::Quit);
-                    running = false;
-                }
+                },
                 _ => {}
             }
         }
-
-        if let Some(event_sender) = &self.event_sender {
-            if let Err(err) = event_sender.send(event_manager) {
-                println!("Orbital Backend: {}", err);
-            }
-        }
-
-        self.running = running;
     }
 
     fn size(&self) -> (u32, u32) {
@@ -232,35 +211,10 @@ impl Backend for OrbitalBackend {
         self.inner.set_size(bounds.width, bounds.height);
     }
 
-    fn run(&mut self) {
-        self.running = true;
-        while self.running {
-            self.inner.render(&self.theme);
-
-            if let Some(render_receiver) = &self.render_receiver {
-                if let Ok(render_containers) = render_receiver.recv() {
-                    for container in render_containers {
-                        container.render_object.render(
-                            &container.bounds,
-                            &container.selector,
-                            &mut self.inner,
-                            container.offset,
-                            &self.theme,
-                            container.content,
-                        );
-                    }
-                }
-            }
-
-            self.drain_events();
+    fn render_context(&mut self) -> RenderContext {
+        RenderContext {
+            renderer: &mut self.inner,
+            theme: self.theme.clone(),
         }
-    }
-
-    fn event_sender(&mut self, event_sender: Sender<EventManager>) {
-        self.event_sender = Some(event_sender);
-    }
-
-    fn render_receiver(&mut self, render_receiver: Receiver<Vec<RenderContainer>>) {
-        self.render_receiver = Some(render_receiver);
     }
 }

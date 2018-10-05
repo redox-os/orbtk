@@ -30,7 +30,7 @@ pub enum Template {
     Mutli(Vec<Arc<Widget>>),
 }
 
-pub trait Widget: Any + Send + Sync {
+pub trait Widget: Any {
     fn template(&self) -> Template {
         Template::Empty
     }
@@ -46,7 +46,7 @@ pub trait Widget: Any + Send + Sync {
     fn properties(&self) -> Vec<Property> {
         vec![]
     }
-    fn render_object(&self) -> Option<Arc<RenderObject>> {
+    fn render_object(&self) -> Option<Box<RenderObject>> {
         None
     }
     fn layout_object(&self) -> Box<LayoutObject> {

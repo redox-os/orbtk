@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use theme::Selector;
 use {
     ComponentBox, LayoutObject, Property, RenderObject, TextRenderObject, TextSizeLayoutObject,
@@ -30,8 +28,8 @@ impl Widget for TextBlock {
         ]
     }
 
-    fn render_object(&self) -> Option<Arc<RenderObject>> {
-        Some(Arc::new(TextRenderObject))
+    fn render_object(&self) -> Option<Box<RenderObject>> {
+        Some(Box::new(TextRenderObject))
     }
 
     fn layout_object(&self) -> Box<LayoutObject> {
