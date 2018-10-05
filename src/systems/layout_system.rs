@@ -1,8 +1,8 @@
-use std::cell::{Cell, RefCell};
+use std::cell::RefCell;
 use std::collections::HashMap;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use {Constraint, Entity, EntityComponentManager, LayoutObject, Rect, System, Theme, Tree};
+use {Constraint, Entity, EntityComponentManager, LayoutObject, Rect, System, Theme, Tree, Backend};
 
 pub enum LayoutResult {
     Size((u32, u32)),
@@ -10,9 +10,8 @@ pub enum LayoutResult {
 }
 
 pub struct LayoutSystem {
-    pub theme: Arc<Theme>,
-    pub layout_objects: Arc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
-    pub window_size: Arc<Cell<(u32, u32)>>,
+    pub layout_objects: Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+    pub backend: Rc<RefCell<Backend>>,
 }
 
 impl System<Tree> for LayoutSystem {
@@ -22,8 +21,8 @@ impl System<Tree> for LayoutSystem {
             tree: &Tree,
             constraint: &Constraint,
             entity: Entity,
-            theme: &Arc<Theme>,
-            layout_objects: &Arc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+            theme: &Theme,
+            layout_objects: &Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
         ) -> (u32, u32) {
             let mut size: Option<(u32, u32)> = None;
 
@@ -80,17 +79,20 @@ impl System<Tree> for LayoutSystem {
 
         let root = tree.root;
 
+        let mut backend = self.backend.borrow_mut();
+        let layout_context = backend.layout_context();
+
         layout_rec(
             ecm,
             &tree,
             &Constraint {
                 min_width: 0,
                 min_height: 0,
-                max_width: self.window_size.get().0,
-                max_height: self.window_size.get().1,
+                max_width: layout_context.window_size.0,
+                max_height: layout_context.window_size.1,
             },
             root,
-            &self.theme,
+            &layout_context.theme,
             &self.layout_objects,
         );
     }

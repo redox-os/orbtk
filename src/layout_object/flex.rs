@@ -1,6 +1,5 @@
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
-use std::sync::Arc;
 
 use {Alignment, Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult, Theme};
 
@@ -29,7 +28,7 @@ impl LayoutObject for FlexLayoutObject {
         children: &[Entity],
         children_pos: &mut Option<HashMap<Entity, (i32, i32)>>,
         size: Option<(u32, u32)>,
-        _theme: &Arc<Theme>,
+        _theme: &Theme,
     ) -> LayoutResult {
         if let Some(size) = size {
             self.current_child.set(self.current_child.get() + 1);

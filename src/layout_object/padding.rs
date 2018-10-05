@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::sync::Arc;
 
 use {
     Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult, Selector, Theme,
@@ -17,7 +16,7 @@ impl LayoutObject for PaddingLayoutObject {
         children: &[Entity],
         children_pos: &mut Option<HashMap<Entity, (i32, i32)>>,
         size: Option<(u32, u32)>,
-        theme: &Arc<Theme>,
+        theme: &Theme,
     ) -> LayoutResult {
         let padding = {
             let mut padding = Thickness::new(0, 0, 0, 0);

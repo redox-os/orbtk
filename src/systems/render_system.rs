@@ -1,14 +1,14 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::sync::Arc;
+use std::rc::Rc;
 
 use dces::{Entity, EntityComponentManager, System};
 
 use {Backend, Rect, RenderObject, Tree};
 
 pub struct RenderSystem {
-    pub backend: Arc<RefCell<Backend>>,
-    pub render_objects: Arc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
+    pub render_objects: Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
+    pub backend: Rc<RefCell<Backend>>,
 }
 
 impl System<Tree> for RenderSystem {
@@ -40,7 +40,10 @@ impl System<Tree> for RenderSystem {
             }
 
             if let Ok(bounds) = ecm.borrow_component::<Rect>(node) {
-                offsets.insert(node, (current_offset.0 + bounds.x, current_offset.1 + bounds.y));
+                offsets.insert(
+                    node,
+                    (current_offset.0 + bounds.x, current_offset.1 + bounds.y),
+                );
             }
         }
     }

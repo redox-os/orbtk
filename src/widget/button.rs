@@ -1,6 +1,5 @@
-use std::sync::Arc;
-
 use theme::Selector;
+use std::rc::Rc;
 use {Container, Property, Template, TextBlock, Widget};
 
 pub struct Button {
@@ -19,9 +18,9 @@ impl Default for Button {
 
 impl Widget for Button {
     fn template(&self) -> Template {
-        Template::Single(Arc::new(Container {
+        Template::Single(Rc::new(Container {
             class: self.class.clone(),
-            child: Some(Arc::new(TextBlock {
+            child: Some(Rc::new(TextBlock {
                 label: self.label.clone(),
                 class: self.class.clone(),
             })),

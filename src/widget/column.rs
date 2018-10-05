@@ -1,10 +1,9 @@
-use std::sync::Arc;
-
 use theme::Selector;
+use std::rc::Rc;
 use {Alignment, ComponentBox, FlexLayoutObject, LayoutObject, Property, Template, Widget};
 
 pub struct Column {
-    pub children: Vec<Arc<Widget>>,
+    pub children: Vec<Rc<Widget>>,
     pub class: String,
 }
 

@@ -10,13 +10,8 @@ pub use dces::prelude::*;
 pub use ComponentBox as Property;
 
 extern crate cssparser;
-extern crate orbclient;
-extern crate orbfont;
-extern crate orbimage;
 #[macro_use]
 extern crate lazy_static;
-
-pub use orbclient::color::Color;
 
 pub use application::*;
 pub use backend::*;
@@ -45,3 +40,16 @@ pub mod systems;
 pub mod theme;
 pub mod tree;
 pub mod widget;
+
+#[cfg(target_arch = "wasm32")]
+// #[macro_use]
+extern crate stdweb;
+
+#[cfg(not(target_arch = "wasm32"))]
+extern crate orbclient;
+#[cfg(not(target_arch = "wasm32"))]
+extern crate orbfont;
+#[cfg(not(target_arch = "wasm32"))]
+extern crate orbimage;
+#[cfg(not(target_arch = "wasm32"))]
+pub use orbclient::color::Color;

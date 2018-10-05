@@ -1,5 +1,5 @@
 use std::any::Any;
-use std::sync::Arc;
+use std::rc::Rc;
 
 use {Property, RenderObject, LayoutObject, DefaultLayoutObject};
 
@@ -26,8 +26,8 @@ pub struct Padding {
 
 pub enum Template {
     Empty,
-    Single(Arc<Widget>),
-    Mutli(Vec<Arc<Widget>>),
+    Single(Rc<Widget>),
+    Mutli(Vec<Rc<Widget>>),
 }
 
 pub trait Widget: Any {

@@ -1,27 +1,37 @@
 // use orbfont;
-use std::cell::Cell;
-use std::sync::Arc;
+use std::cell::{Cell, RefCell};
+use std::rc::Rc;
 
 use orbclient::{Color, Window as OrbWindow};
 use orbclient::{Mode, Renderer as OrbRenderer};
 
-use {Backend, Rect, RenderContext, Renderer, Selector, Theme, EventManager, MouseEvent, SystemEvent, MouseButton};
+use {
+    Backend, BackendRunner, EventContext, EventQueue, LayoutContext, MouseButton, MouseEvent, Rect,
+    RenderContext, Renderer, Selector, SystemEvent, Theme, Tree, World,
+};
 
 pub struct OrbitalBackend {
     inner: OrbWindow,
-    theme: Arc<Theme>,
+    theme: Theme,
     mouse_buttons: (bool, bool, bool),
+    event_queue: EventQueue,
+    running: bool,
 }
 
 impl Renderer for OrbWindow {
-    fn render(&mut self, theme: &Arc<Theme>) {
+    fn render(&mut self, theme: &Theme) {
         // render window background
+     let col = theme.color("background", &"window".into());
+        let blub = col.data;
+        let mut _color = format!("#{:x}", blub);
+        _color.remove(0);
+        _color.remove(0);
         self.set(theme.color("background", &"window".into()));
     }
 
     fn render_rectangle(
         &mut self,
-        theme: &Arc<Theme>,
+        theme: &Theme,
         bounds: &Rect,
         selector: &Selector,
         offset: (i32, i32),
@@ -57,7 +67,7 @@ impl Renderer for OrbWindow {
 
     fn render_text(
         &mut self,
-        theme: &Arc<Theme>,
+        theme: &Theme,
         text: &str,
         bounds: &Rect,
         selector: &Selector,
@@ -104,11 +114,13 @@ impl Renderer for OrbWindow {
 }
 
 impl OrbitalBackend {
-    pub fn new(theme: Arc<Theme>) -> OrbitalBackend {
+    pub fn new(theme: Theme, inner: OrbWindow) -> OrbitalBackend {
         OrbitalBackend {
-            inner: OrbWindow::new_flags(0, 0, 0, 0, "", &[]).unwrap(),
+            inner,
             theme,
             mouse_buttons: (false, false, false),
+            event_queue: EventQueue::default(),
+            running: false,
         }
     }
 }
@@ -144,7 +156,7 @@ impl OrbRenderer for OrbitalBackend {
         //     font.render(&c.encode_utf8(&mut buf), 16.0)
         //         .draw(&mut self.inner, x, y, color)
         // } else {
-            self.inner.char(x, y, c, color);
+        self.inner.char(x, y, c, color);
         // }
     }
 }
@@ -156,19 +168,17 @@ impl Drop for OrbitalBackend {
 }
 
 impl Backend for OrbitalBackend {
-    fn drain_events(&mut self, event_manager: &mut EventManager) {
+    fn drain_events(&mut self) {
         self.inner.sync();
 
         for event in self.inner.events() {
             match event.to_option() {
                 orbclient::EventOption::Mouse(mouse) => {
-                    event_manager.register_event(MouseEvent::Move((mouse.x, mouse.y)));
-                },
+                    self.event_queue
+                        .register_event(MouseEvent::Move((mouse.x, mouse.y)));
+                }
                 orbclient::EventOption::Button(button) => {
-                    
-
                     if !button.left && !button.middle && !button.right {
-
                         let button = {
                             if self.mouse_buttons.0 {
                                 MouseButton::Left
@@ -178,9 +188,9 @@ impl Backend for OrbitalBackend {
                                 MouseButton::Right
                             }
                         };
-                        event_manager.register_event(MouseEvent::Up(button))
+                        self.event_queue.register_event(MouseEvent::Up(button))
                     } else {
-                         let button = {
+                        let button = {
                             if button.left {
                                 MouseButton::Left
                             } else if button.middle {
@@ -189,14 +199,15 @@ impl Backend for OrbitalBackend {
                                 MouseButton::Right
                             }
                         };
-                        event_manager.register_event(MouseEvent::Down(button))
+                        self.event_queue.register_event(MouseEvent::Down(button))
                     }
 
                     self.mouse_buttons = (button.left, button.middle, button.right);
-                },
+                }
                 orbclient::EventOption::Quit(_quit_event) => {
-                    event_manager.register_event(SystemEvent::Quit);
-                },
+                    self.event_queue.register_event(SystemEvent::Quit);
+                    self.running = false;
+                }
                 _ => {}
             }
         }
@@ -214,7 +225,48 @@ impl Backend for OrbitalBackend {
     fn render_context(&mut self) -> RenderContext {
         RenderContext {
             renderer: &mut self.inner,
-            theme: self.theme.clone(),
+            theme: &self.theme,
+        }
+    }
+
+    fn layout_context(&mut self) -> LayoutContext {
+        LayoutContext {
+            window_size: self.size(),
+            theme: &self.theme,
+        }
+    }
+
+    fn event_context(&mut self) -> EventContext {
+        EventContext {
+            event_queue: &mut self.event_queue,
+        }
+    }
+}
+
+pub struct OrbitalBackendRunner {
+    pub world: Option<World<Tree>>,
+    pub backend: Rc<RefCell<OrbitalBackend>>,
+}
+
+impl BackendRunner for OrbitalBackendRunner {
+    fn world(&mut self, world: World<Tree>) {
+        self.world = Some(world);
+    }
+    fn run(&mut self) {
+        self.backend.borrow_mut().running = true;
+
+        loop {
+            let running = self.backend.borrow().running;
+
+            if !running {
+                break;
+            }
+
+            if let Some(world) = &mut self.world {
+                world.run();
+            }
+
+            self.backend.borrow_mut().drain_events();
         }
     }
 }

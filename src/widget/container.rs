@@ -1,13 +1,12 @@
-use std::sync::Arc;
-
 use theme::Selector;
+use std::rc::Rc;
 use {
     ComponentBox, LayoutObject, PaddingLayoutObject, Property, RectangleRenderObject, RenderObject,
     Template, Widget,
 };
 
 pub struct Container {
-    pub child: Option<Arc<Widget>>,
+    pub child: Option<Rc<Widget>>,
     pub class: String,
 }
 

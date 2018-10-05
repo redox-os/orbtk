@@ -32,11 +32,11 @@ impl EventBox {
 }
 
 #[derive(Default)]
-pub struct EventManager {
+pub struct EventQueue {
     event_queue: Vec<EventBox>,
 }
 
-impl EventManager {
+impl EventQueue {
     pub fn register_event<E: Any>(&mut self, event: E) {
         self.event_queue.push(EventBox::new::<E>(event));
     }

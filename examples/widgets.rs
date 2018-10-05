@@ -1,23 +1,23 @@
 extern crate orbtk;
 use orbtk::*;
 
-use std::sync::Arc;
+use std::rc::Rc;
 
 struct MainView;
 
 impl Widget for MainView {
     fn template(&self) -> Template {
-        Template::Single(Arc::new(Row {
+        Template::Single(Rc::new(Row {
             children: vec![
-                Arc::new(Container {
-                    child: Some(Arc::new(Button {
+                Rc::new(Container {
+                    child: Some(Rc::new(Button {
                         label: String::from("Click me"),
                         ..Default::default()
                     })),
                     ..Default::default()
                 }),
-                Arc::new(Container {
-                    child: Some(Arc::new(Button {
+                Rc::new(Container {
+                    child: Some(Rc::new(Button {
                         label: String::from("Click me 2"),
                         ..Default::default()
                     })),

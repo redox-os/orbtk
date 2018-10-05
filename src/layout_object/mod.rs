@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::sync::Arc;
 
 use {Entity, EntityComponentManager, Theme, Constraint, LayoutResult};
 
@@ -22,6 +21,6 @@ pub trait LayoutObject {
         children: &[Entity],
         children_pos: &mut Option<HashMap<Entity, (i32, i32)>>,
         size: Option<(u32, u32)>,
-        theme: &Arc<Theme>,
+        theme: &Theme,
     ) -> LayoutResult;
 }

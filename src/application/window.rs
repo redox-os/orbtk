@@ -1,23 +1,26 @@
 use std::cell::RefCell;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use {Application, Backend, Rect, Theme, Widget, TreeManager};
+use std::collections::HashMap;
+
+use {
+    target_backend, Application, Entity, EventSystem, LayoutObject, LayoutSystem, Rect,
+    RenderObject, RenderSystem, Template, Theme, Tree, Widget, World, BackendRunner
+};
 
 pub struct Window {
-    pub tree_manager: TreeManager,
-    pub bounds: Rect,
-    pub title: String,
-    pub theme: Arc<Theme>,
-    pub running: bool,
+    pub backend_runner: Box<BackendRunner>,
+
+    pub render_objects: Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
+
+    pub layout_objects: Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+
+    pub root: Option<Rc<Widget>>,
 }
 
 impl Window {
     pub fn run(&mut self) {
-        loop {
-            if !self.tree_manager.run() {
-                break;
-            }
-        }
+        self.backend_runner.run();
     }
 }
 
@@ -25,9 +28,8 @@ pub struct WindowBuilder<'a> {
     pub application: &'a mut Application,
     pub bounds: Rect,
     pub title: String,
-    pub theme: Arc<Theme>,
-    pub root: Option<Arc<Widget>>,
-    pub backend: Arc<RefCell<Backend>>,
+    pub theme: Theme,
+    pub root: Option<Rc<Widget>>,
 }
 
 impl<'a> WindowBuilder<'a> {
@@ -42,35 +44,112 @@ impl<'a> WindowBuilder<'a> {
     }
 
     pub fn with_theme(mut self, theme: Theme) -> Self {
-        self.theme = Arc::new(theme);
+        self.theme = theme;
         self
     }
 
     pub fn with_root<W: Widget>(mut self, root: W) -> Self {
-        self.root = Some(Arc::new(root));
-        self
-    }
-
-    pub fn with_backend(mut self, backend: Arc<RefCell<Backend>>) -> Self {
-        self.backend = backend;
+        self.root = Some(Rc::new(root));
         self
     }
 
     pub fn build(self) {
-        self.backend.borrow_mut().bounds(&self.bounds);
-        let mut tree_manager = TreeManager::new(self.backend, self.theme.clone());
+        let (mut runner, backend) = target_backend(&self.title, self.bounds, self.theme);
+        let mut world = World::from_container(Tree::default());
+        let render_objects = Rc::new(RefCell::new(HashMap::new()));
+        let layout_objects = Rc::new(RefCell::new(HashMap::new()));
 
-        if let Some(root) = self.root {
-            tree_manager.root(root.clone());
+        if let Some(root) = &self.root {
+            build_tree(root, &mut world, &render_objects, &layout_objects);
         }
 
-        let theme = self.theme.clone();
+        world
+            .create_system(EventSystem {
+                _backend: backend.clone(),
+            })
+            .with_priority(0)
+            .build();
+
+        world
+            .create_system(LayoutSystem {
+                backend: backend.clone(),
+                layout_objects: layout_objects.clone(),
+            })
+            .with_priority(1)
+            .build();
+
+        world
+            .create_system(RenderSystem {
+                backend: backend.clone(),
+                render_objects: render_objects.clone(),
+            })
+            .with_priority(2)
+            .build();
+
+        runner.world(world);
+
         self.application.windows.push(Window {
-            tree_manager,
-            bounds: self.bounds,
-            title: self.title,
-            theme,
-            running: true,
+            backend_runner: runner,
+            render_objects,
+            layout_objects,
+            root: self.root,
         })
     }
 }
+
+fn build_tree(
+        root: &Rc<Widget>,
+        world: &mut World<Tree>,
+        render_objects: &Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
+        layout_objects: &Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+    ) {
+        fn expand(
+            world: &mut World<Tree>,
+            render_objects: &Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
+            layout_objects: &Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+            widget: &Rc<Widget>,
+            parent: Entity,
+        ) -> Entity {
+            let entity = {
+                let mut entity_builder = world.create_entity().with(Rect::default());
+
+                for property in widget.all_properties() {
+                    entity_builder = entity_builder.with_box(property);
+                }
+
+                let entity = entity_builder.build();
+
+                if let Some(render_object) = widget.render_object() {
+                    render_objects.borrow_mut().insert(entity, render_object);
+                }
+
+                layout_objects
+                    .borrow_mut()
+                    .insert(entity, widget.layout_object());
+
+                entity
+            };
+
+            match widget.template() {
+                Template::Single(child) => {
+                    let child = expand(world, render_objects, layout_objects, &child, parent);
+                    let _result = world.entity_container().append_child(entity, child);
+                }
+                Template::Mutli(children) => {
+                    for child in children {
+                        let child = expand(world, render_objects, layout_objects, &child, parent);
+                        let _result = world.entity_container().append_child(entity, child);
+                    }
+                }
+                _ => {}
+            }
+
+            entity
+        }
+
+        expand(world, render_objects, layout_objects, root, 0);
+
+        for node in world.entity_container().into_iter() {
+            println!("Node: {}", node);
+        }
+    }

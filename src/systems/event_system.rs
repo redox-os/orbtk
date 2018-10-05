@@ -1,12 +1,12 @@
 use std::cell::RefCell;
-use std::sync::Arc;
+use std::rc::Rc;
 
 use dces::{EntityComponentManager, System};
 
 use {Backend, Tree};
 
 pub struct EventSystem {
-    pub _backend: Arc<RefCell<Backend>>,
+    pub _backend: Rc<RefCell<Backend>>,
 }
 
 impl System<Tree> for EventSystem {

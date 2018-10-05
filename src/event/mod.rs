@@ -1,7 +1,7 @@
-pub use self::event_manager::*;
+pub use self::event_queue::*;
 pub use self::mouse::*;
 pub use self::system::*;
 
-mod event_manager;
+mod event_queue;
 mod mouse;
 mod system;

@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use {Entity, EntityComponentManager, Rect, RenderObject, Renderer, Selector, Theme};
 
 pub struct RectangleRenderObject;
@@ -10,7 +8,7 @@ impl RenderObject for RectangleRenderObject {
         entity: Entity,
         ecm: &EntityComponentManager,
         renderer: &mut Renderer,
-        theme: &Arc<Theme>,
+        theme: &Theme,
         offset: (i32, i32),
     ) {
         if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {

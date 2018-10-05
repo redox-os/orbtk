@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::sync::Arc;
 
 use {Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult, Theme};
 
@@ -14,7 +13,7 @@ impl LayoutObject for DefaultLayoutObject {
         children: &[Entity],
         _children_pos: &mut Option<HashMap<Entity, (i32, i32)>>,
         size: Option<(u32, u32)>,
-        _theme: &Arc<Theme>,
+        _theme: &Theme,
     ) -> LayoutResult {
         if let Some(size) = size {
             LayoutResult::Size(size)

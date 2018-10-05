@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use {Entity, EntityComponentManager, Renderer, Theme};
 
 pub use self::rectangle::*;
@@ -14,7 +12,7 @@ pub trait RenderObject {
         entity: Entity,
         ecm: &EntityComponentManager,
         renderer: &mut Renderer,
-        theme: &Arc<Theme>,
+        theme: &Theme,
         offset: (i32, i32),
     );
 }
