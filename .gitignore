@@ -13,7 +13,7 @@ Cargo.lock
 
 .idea
 *.iml
-.vscode
+#.vscode
 
 # Brainstorming files
 brain_*.rs
