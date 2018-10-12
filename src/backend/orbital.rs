@@ -6,8 +6,9 @@ use orbclient::{Color, Window as OrbWindow};
 use orbclient::{Mode, Renderer as OrbRenderer};
 
 use {
-    Backend, BackendRunner, EventContext, EventQueue, LayoutContext, MouseButton, MouseEvent, Rect,
-    RenderContext, Renderer, Selector, SystemEvent, Theme, Tree, World,
+    Backend, BackendRunner, EventContext, EventQueue, LayoutContext, MouseButton, MouseDownEvent,
+    MouseEvent, MouseUpEvent, Rect, RenderContext, Renderer, Selector, SystemEvent, Theme, Tree,
+    World,
 };
 
 pub struct OrbitalBackend {
@@ -22,7 +23,7 @@ pub struct OrbitalBackend {
 impl Renderer for OrbWindow {
     fn render(&mut self, theme: &Theme) {
         // render window background
-     let col = theme.color("background", &"window".into());
+        let col = theme.color("background", &"window".into());
         let blub = col.data;
         let mut _color = format!("#{:x}", blub);
         _color.remove(0);
@@ -177,7 +178,8 @@ impl Backend for OrbitalBackend {
             match event.to_option() {
                 orbclient::EventOption::Mouse(mouse) => {
                     self.mouse_position = (mouse.x, mouse.y);
-                    self.event_queue.borrow_mut()
+                    self.event_queue
+                        .borrow_mut()
                         .register_event(MouseEvent::Move((mouse.x, mouse.y)));
                 }
                 orbclient::EventOption::Button(button) => {
@@ -191,7 +193,10 @@ impl Backend for OrbitalBackend {
                                 MouseButton::Right
                             }
                         };
-                        self.event_queue.borrow_mut().register_event(MouseEvent::Up(button))
+                        self.event_queue.borrow_mut().register_event(MouseUpEvent {
+                            button,
+                            position: self.mouse_position,
+                        })
                     } else {
                         let button = {
                             if button.left {
@@ -202,13 +207,20 @@ impl Backend for OrbitalBackend {
                                 MouseButton::Right
                             }
                         };
-                        self.event_queue.borrow_mut().register_event(MouseEvent::Down(button, self.mouse_position))
+                        self.event_queue
+                            .borrow_mut()
+                            .register_event(MouseDownEvent {
+                                button,
+                                position: self.mouse_position,
+                            })
                     }
 
                     self.mouse_buttons = (button.left, button.middle, button.right);
                 }
                 orbclient::EventOption::Quit(_quit_event) => {
-                    self.event_queue.borrow_mut().register_event(SystemEvent::Quit);
+                    self.event_queue
+                        .borrow_mut()
+                        .register_event(SystemEvent::Quit);
                     self.running = false;
                 }
                 _ => {}
