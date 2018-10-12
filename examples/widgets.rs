@@ -12,6 +12,9 @@ impl Widget for MainView {
                 Rc::new(Container {
                     child: Some(Rc::new(Button {
                         label: String::from("Click me"),
+                        on_mouse_down: Rc::new(|| {
+                            println!("Button mouse down");
+                        }),
                         ..Default::default()
                     })),
                     ..Default::default()

@@ -1,7 +1,7 @@
 use std::any::Any;
 use std::rc::Rc;
 
-use {Property, RenderObject, LayoutObject, DefaultLayoutObject};
+use {EventHandler, Property, RenderObject, LayoutObject, DefaultLayoutObject};
 
 pub use self::button::*;
 pub use self::column::*;
@@ -46,10 +46,16 @@ pub trait Widget: Any {
     fn properties(&self) -> Vec<Property> {
         vec![]
     }
+
     fn render_object(&self) -> Option<Box<RenderObject>> {
         None
     }
+
     fn layout_object(&self) -> Box<LayoutObject> {
         Box::new(DefaultLayoutObject)
+    }
+
+    fn event_handlers(&self) -> Vec<Rc<EventHandler>> {
+        vec![]
     }
 }

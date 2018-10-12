@@ -1,10 +1,11 @@
 use theme::Selector;
 use std::rc::Rc;
-use {Container, Property, Template, TextBlock, Widget};
+use {Container, EventHandler, OnMouseDown, MouseDownHandler, Property, Template, TextBlock, Widget};
 
 pub struct Button {
     pub label: String,
     pub class: String,
+    pub on_mouse_down: OnMouseDown,
 }
 
 impl Default for Button {
@@ -12,6 +13,7 @@ impl Default for Button {
         Button {
             label: String::from("Button"),
             class: String::from("button"),
+            on_mouse_down: Rc::new(|| {}),
         }
     }
 }
@@ -29,5 +31,11 @@ impl Widget for Button {
 
     fn properties(&self) -> Vec<Property> {
         vec![Property::new(Selector::new(Some(self.class.clone())))]
+    }
+
+    fn event_handlers(&self) -> Vec<Rc<EventHandler>> {
+        vec![
+            MouseDownHandler::new(self.on_mouse_down.clone())
+        ]
     }
 }

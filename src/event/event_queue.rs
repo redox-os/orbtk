@@ -22,9 +22,21 @@ impl EventBox {
         self.event_type == TypeId::of::<E>()
     }
 
+    pub fn event_type(&self) -> TypeId {
+        self.event_type
+    }
+
     pub fn downcast<E: Any>(self) -> Result<E, EventError> {
         if self.event_type == TypeId::of::<E>() {
             return Ok(*self.event.downcast::<E>().unwrap())
+        }
+        
+        Err(EventError::WrongType(TypeId::of::<E>()))
+    }
+
+    pub fn downcast_ref<E: Any>(&self) -> Result<&E, EventError> {
+        if self.event_type == TypeId::of::<E>() {
+            return Ok(&*self.event.downcast_ref::<E>().unwrap())
         }
         
         Err(EventError::WrongType(TypeId::of::<E>()))
@@ -47,6 +59,29 @@ impl EventQueue {
         }
 
         None
+    }
+}
+
+impl<'a> IntoIterator for &'a mut EventQueue {
+    type Item = EventBox;
+    type IntoIter = EventQeueIterator<'a>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        EventQeueIterator {
+            event_queue: self,
+        }
+    }
+}
+
+pub struct EventQeueIterator<'a> {
+    event_queue: &'a mut EventQueue,
+}
+
+impl<'a> Iterator for EventQeueIterator<'a> {
+    type Item = EventBox;
+
+    fn next(&mut self) -> Option<EventBox> {
+        self.event_queue.dequeue()
     }
 }
 

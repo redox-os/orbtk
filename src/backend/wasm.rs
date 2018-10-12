@@ -9,6 +9,8 @@ use stdweb::web::event::ResizeEvent;
 
 use stdweb::web::html_element::CanvasElement;
 
+// todo: workspace e.g. backend, strict spliting of world and backend
+
 // Shamelessly stolen from webplatform's TodoMVC example.
 macro_rules! enclose {
     ( ($( $x:ident ),*) $y:expr ) => {

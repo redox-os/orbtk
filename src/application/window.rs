@@ -1,3 +1,4 @@
+use std::any::TypeId;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -5,7 +6,7 @@ use std::collections::HashMap;
 
 use {
     target_backend, Application, Entity, EventSystem, LayoutObject, LayoutSystem, Rect,
-    RenderObject, RenderSystem, Template, Theme, Tree, Widget, World, BackendRunner
+    RenderObject, RenderSystem, Template, Theme, Tree, Widget, World, BackendRunner, EventHandler,
 };
 
 pub struct Window {
@@ -16,6 +17,8 @@ pub struct Window {
     pub layout_objects: Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
 
     pub root: Option<Rc<Widget>>,
+
+    pub event_handlers: Rc<RefCell<HashMap<TypeId, RefCell<HashMap<Entity, Rc<EventHandler>>>>>>,
 }
 
 impl Window {
@@ -58,14 +61,16 @@ impl<'a> WindowBuilder<'a> {
         let mut world = World::from_container(Tree::default());
         let render_objects = Rc::new(RefCell::new(HashMap::new()));
         let layout_objects = Rc::new(RefCell::new(HashMap::new()));
+        let event_handlers = Rc::new(RefCell::new(HashMap::new()));
 
         if let Some(root) = &self.root {
-            build_tree(root, &mut world, &render_objects, &layout_objects);
+            build_tree(root, &mut world, &render_objects, &layout_objects, &event_handlers);
         }
 
         world
             .create_system(EventSystem {
-                _backend: backend.clone(),
+                backend: backend.clone(),
+                event_handlers: event_handlers.clone(),
             })
             .with_priority(0)
             .build();
@@ -93,6 +98,7 @@ impl<'a> WindowBuilder<'a> {
             render_objects,
             layout_objects,
             root: self.root,
+            event_handlers
         })
     }
 }
@@ -102,11 +108,13 @@ fn build_tree(
         world: &mut World<Tree>,
         render_objects: &Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
         layout_objects: &Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+        event_handlers: &Rc<RefCell<HashMap<TypeId, RefCell<HashMap<Entity, Rc<EventHandler>>>>>>,
     ) {
         fn expand(
             world: &mut World<Tree>,
             render_objects: &Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
             layout_objects: &Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+            event_handlers: &Rc<RefCell<HashMap<TypeId, RefCell<HashMap<Entity, Rc<EventHandler>>>>>>,
             widget: &Rc<Widget>,
             parent: Entity,
         ) -> Entity {
@@ -123,6 +131,19 @@ fn build_tree(
                     render_objects.borrow_mut().insert(entity, render_object);
                 }
 
+                for event_handler in widget.event_handlers() {
+                    let event_type = event_handler.event_type();
+                    let contains_type = event_handlers.borrow().contains_key(&event_type);
+
+                    if !contains_type {
+                        event_handlers.borrow_mut().insert(event_type, RefCell::new(HashMap::new()));
+                    }
+
+                    let mut map = &event_handlers.borrow_mut()[&event_type];
+                    map.borrow_mut().insert(entity, event_handler.clone());
+           
+                }
+
                 layout_objects
                     .borrow_mut()
                     .insert(entity, widget.layout_object());
@@ -132,12 +153,12 @@ fn build_tree(
 
             match widget.template() {
                 Template::Single(child) => {
-                    let child = expand(world, render_objects, layout_objects, &child, parent);
+                    let child = expand(world, render_objects, layout_objects, event_handlers, &child, parent);
                     let _result = world.entity_container().append_child(entity, child);
                 }
                 Template::Mutli(children) => {
                     for child in children {
-                        let child = expand(world, render_objects, layout_objects, &child, parent);
+                        let child = expand(world, render_objects, layout_objects, event_handlers, &child, parent);
                         let _result = world.entity_container().append_child(entity, child);
                     }
                 }
@@ -147,7 +168,7 @@ fn build_tree(
             entity
         }
 
-        expand(world, render_objects, layout_objects, root, 0);
+        expand(world, render_objects, layout_objects, event_handlers, root, 0);
 
         for node in world.entity_container().into_iter() {
             println!("Node: {}", node);

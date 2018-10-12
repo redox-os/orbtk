@@ -1,3 +1,4 @@
+use std::cell::RefCell;
 
 use {Rect, Selector, Theme, EventQueue, World, Tree};
 
@@ -22,7 +23,7 @@ pub struct LayoutContext<'a> {
 }
 
 pub struct EventContext<'a> {
-    pub event_queue: &'a EventQueue,
+    pub event_queue: &'a RefCell<EventQueue>,
 }
 
 pub trait Renderer {

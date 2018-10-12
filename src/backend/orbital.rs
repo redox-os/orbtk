@@ -14,7 +14,8 @@ pub struct OrbitalBackend {
     inner: OrbWindow,
     theme: Theme,
     mouse_buttons: (bool, bool, bool),
-    event_queue: EventQueue,
+    mouse_position: (i32, i32),
+    event_queue: RefCell<EventQueue>,
     running: bool,
 }
 
@@ -119,7 +120,8 @@ impl OrbitalBackend {
             inner,
             theme,
             mouse_buttons: (false, false, false),
-            event_queue: EventQueue::default(),
+            mouse_position: (0, 0),
+            event_queue: RefCell::new(EventQueue::default()),
             running: false,
         }
     }
@@ -174,7 +176,8 @@ impl Backend for OrbitalBackend {
         for event in self.inner.events() {
             match event.to_option() {
                 orbclient::EventOption::Mouse(mouse) => {
-                    self.event_queue
+                    self.mouse_position = (mouse.x, mouse.y);
+                    self.event_queue.borrow_mut()
                         .register_event(MouseEvent::Move((mouse.x, mouse.y)));
                 }
                 orbclient::EventOption::Button(button) => {
@@ -188,7 +191,7 @@ impl Backend for OrbitalBackend {
                                 MouseButton::Right
                             }
                         };
-                        self.event_queue.register_event(MouseEvent::Up(button))
+                        self.event_queue.borrow_mut().register_event(MouseEvent::Up(button))
                     } else {
                         let button = {
                             if button.left {
@@ -199,13 +202,13 @@ impl Backend for OrbitalBackend {
                                 MouseButton::Right
                             }
                         };
-                        self.event_queue.register_event(MouseEvent::Down(button))
+                        self.event_queue.borrow_mut().register_event(MouseEvent::Down(button, self.mouse_position))
                     }
 
                     self.mouse_buttons = (button.left, button.middle, button.right);
                 }
                 orbclient::EventOption::Quit(_quit_event) => {
-                    self.event_queue.register_event(SystemEvent::Quit);
+                    self.event_queue.borrow_mut().register_event(SystemEvent::Quit);
                     self.running = false;
                 }
                 _ => {}
@@ -238,7 +241,7 @@ impl Backend for OrbitalBackend {
 
     fn event_context(&mut self) -> EventContext {
         EventContext {
-            event_queue: &mut self.event_queue,
+            event_queue: &self.event_queue,
         }
     }
 }
