@@ -13,7 +13,7 @@ impl Widget for MainView {
                     child: Some(Rc::new(Button {
                         label: String::from("Click me"),
                         on_mouse_down: Rc::new(|| {
-                            println!("Button mouse down");
+                            println!("Button 1 mouse down");
                         }),
                         ..Default::default()
                     })),
@@ -22,6 +22,9 @@ impl Widget for MainView {
                 Rc::new(Container {
                     child: Some(Rc::new(Button {
                         label: String::from("Click me 2"),
+                        on_mouse_down: Rc::new(|| {
+                            println!("Button 2 mouse down");
+                        }),
                         ..Default::default()
                     })),
                     ..Default::default()

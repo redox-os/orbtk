@@ -4,7 +4,7 @@ use std::rc::Rc;
 
 use dces::{Entity, EntityComponentManager, System};
 
-use {Backend, Rect, RenderObject, Tree};
+use {Backend, Point, Rect, RenderObject, Tree};
 
 pub struct RenderSystem {
     pub render_objects: Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
@@ -39,11 +39,16 @@ impl System<Tree> for RenderSystem {
                 );
             }
 
+            let mut global_pos = (0, 0);
+
             if let Ok(bounds) = ecm.borrow_component::<Rect>(node) {
-                offsets.insert(
-                    node,
-                    (current_offset.0 + bounds.x, current_offset.1 + bounds.y),
-                );
+                global_pos = (current_offset.0 + bounds.x, current_offset.1 + bounds.y);
+                offsets.insert(node, global_pos);
+            }
+
+            if let Ok(g_pos) = ecm.borrow_mut_component::<Point>(node) {
+                g_pos.x = global_pos.0;
+                g_pos.y = global_pos.1;
             }
         }
     }

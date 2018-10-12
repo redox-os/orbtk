@@ -1,6 +1,6 @@
 use theme::Selector;
 use std::rc::Rc;
-use {Container, EventHandler, OnMouseDown, MouseDownHandler, Property, Template, TextBlock, Widget};
+use {Container, PressedState, EventHandler, OnMouseDown, MouseDownHandler, Property, Template, TextBlock, Widget};
 
 pub struct Button {
     pub label: String,
@@ -35,7 +35,8 @@ impl Widget for Button {
 
     fn event_handlers(&self) -> Vec<Rc<EventHandler>> {
         vec![
-            MouseDownHandler::new(self.on_mouse_down.clone())
+            MouseDownHandler::new(Box::new(PressedState {}), self.on_mouse_down.clone())
         ]
     }
 }
+

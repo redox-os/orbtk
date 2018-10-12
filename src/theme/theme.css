@@ -13,6 +13,10 @@ button {
     padding: 6;
 }
 
+button:active {
+    background: green;
+}
+
 container {
     background: transparent;
     padding: 8;

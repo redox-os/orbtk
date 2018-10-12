@@ -14,6 +14,9 @@ pub struct EventSystem {
 }
 
 // todo event stratety bubble, ...
+// better splitting of mouse events, ... 
+// todo: ouse offset
+// todo: mutable handlers
 
 impl System<Tree> for EventSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
@@ -35,6 +38,7 @@ impl System<Tree> for EventSystem {
                         let handler = &handler_map.borrow()[&node];
 
                         if handler.check_condition(&event_box, node, ecm) {
+                            handler.update(node, tree, ecm);
                             handler.emit();
                         }                    
                     }

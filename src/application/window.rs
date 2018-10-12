@@ -5,7 +5,7 @@ use std::rc::Rc;
 use std::collections::HashMap;
 
 use {
-    target_backend, Application, Entity, EventSystem, LayoutObject, LayoutSystem, Rect,
+    target_backend, Application, Entity, EventSystem, LayoutObject, LayoutSystem, Rect, Point,
     RenderObject, RenderSystem, Template, Theme, Tree, Widget, World, BackendRunner, EventHandler,
 };
 
@@ -119,7 +119,7 @@ fn build_tree(
             parent: Entity,
         ) -> Entity {
             let entity = {
-                let mut entity_builder = world.create_entity().with(Rect::default());
+                let mut entity_builder = world.create_entity().with(Rect::default()).with(Point::default());
 
                 for property in widget.all_properties() {
                     entity_builder = entity_builder.with_box(property);
