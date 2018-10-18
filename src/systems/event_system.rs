@@ -1,4 +1,3 @@
-use std::any::TypeId;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -6,43 +5,64 @@ use std::collections::HashMap;
 
 use dces::{Entity, EntityComponentManager, System};
 
-use {Backend, EventHandler, Tree};
+use {Backend, EventStrategy, State, Tree};
 
 pub struct EventSystem {
     pub backend: Rc<RefCell<Backend>>,
-    pub event_handlers: Rc<RefCell<HashMap<TypeId, RefCell<HashMap<Entity, Rc<EventHandler>>>>>>,
+    pub states: Rc<RefCell<HashMap<Entity, Rc<State>>>>,
 }
-
-// todo event stratety bubble, ...
-// better splitting of mouse events, ... 
-// todo: ouse offset
-// todo: mutable handlers
 
 impl System<Tree> for EventSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-       
         let mut backend = self.backend.borrow_mut();
         let event_context = backend.event_context();
+        let mut target_node = None;
 
         let mut offsets = HashMap::new();
         offsets.insert(tree.root, (0, 0));
 
         for event_box in event_context.event_queue.borrow_mut().into_iter() {
             for node in tree.into_iter() {
-                let event_type = event_box.event_type();
+                let entity_has_state = self.states.borrow().contains_key(&node);
 
-                if self.event_handlers.borrow().contains_key(&event_type) {
-                    let handler_map = &self.event_handlers.borrow()[&event_type];
+                if entity_has_state {
+                    let handles_event =
+                        self.states.borrow()[&node].handles_event(&event_box, node, ecm);
 
-                    if handler_map.borrow().contains_key(&node) {
-                        let handler = &handler_map.borrow()[&node];
-
-                        if handler.check_condition(&event_box, node, ecm) {
-                            handler.update(node, tree, ecm);
-                            handler.emit();
-                        }                    
+                    if handles_event {
+                        if event_box.strategy == EventStrategy::TopDown {
+                            target_node = Some(node);
+                        } else {
+                            // bottom up
+                            if self.states.borrow_mut()[&node].update(&event_box, node, tree, ecm) {
+                                break;
+                            }
+                        }
                     }
-                }              
+                }
+            }
+
+            // top down
+            if let Some(target_node) = target_node {
+                let mut target_node = target_node;
+                loop {
+                    let entity_has_state = self.states.borrow_mut().contains_key(&target_node);
+
+                    if entity_has_state && self.states.borrow_mut()[&target_node].update(
+                        &event_box,
+                        target_node,
+                        tree,
+                        ecm,
+                    ) {
+                        break;
+                    }
+
+                    if target_node == tree.root {
+                        break;
+                    }
+
+                    target_node = tree.parent[&target_node];
+                }
             }
         }
     }

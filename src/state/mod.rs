@@ -1,9 +1,26 @@
-use {Entity, EntityComponentManager, Tree};
-
-pub use self::pressed::*;
-
-mod pressed;
+use {Entity, EntityComponentManager, Property, EventBox, Tree};
 
 pub trait State {
-    fn update(&self, entity: Entity, tree: &Tree, ecm: &mut EntityComponentManager);
+    fn handles_event(
+        &self,
+        _event: &EventBox,
+        _entity: Entity,
+        _ecm: &mut EntityComponentManager,
+    ) -> bool {
+        false
+    }
+
+    fn update(
+        &self,
+        _event: &EventBox,
+        _entity: Entity,
+        _tree: &Tree,
+        _ecm: &mut EntityComponentManager,
+    ) -> bool {
+        false
+    }
+
+    fn properties(&self) -> Vec<Property> {
+        vec![]
+    }
 }

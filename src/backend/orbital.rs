@@ -7,7 +7,7 @@ use orbclient::{Mode, Renderer as OrbRenderer};
 
 use {
     Backend, BackendRunner, EventContext, EventQueue, LayoutContext, MouseButton, MouseDownEvent,
-    MouseEvent, MouseUpEvent, Rect, RenderContext, Renderer, Selector, SystemEvent, Theme, Tree,
+    MouseMouveEvent, MouseUpEvent, Rect, RenderContext, Renderer, Selector, SystemEvent, Theme, Tree,
     World,
 };
 
@@ -180,7 +180,7 @@ impl Backend for OrbitalBackend {
                     self.mouse_position = (mouse.x, mouse.y);
                     self.event_queue
                         .borrow_mut()
-                        .register_event(MouseEvent::Move((mouse.x, mouse.y)));
+                        .register_event(MouseMouveEvent { position: self.mouse_position });
                 }
                 orbclient::EventOption::Button(button) => {
                     if !button.left && !button.middle && !button.right {

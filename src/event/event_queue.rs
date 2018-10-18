@@ -1,24 +1,28 @@
 use std::any::{Any, TypeId};
 
+use {Event, EventStrategy};
+
 #[derive(Debug)]
 pub enum EventError {
     WrongType(TypeId)
 }
 
 pub struct EventBox {
-    pub event: Box<Any>,
-    pub event_type: TypeId,
+    event: Box<Any>,
+    event_type: TypeId,
+    pub strategy: EventStrategy,
 }
 
 impl EventBox {
-    pub fn new<E: Any>(event: E) -> Self {
+    pub fn new<E: Event>(event: E, strategy: EventStrategy) -> Self {
         EventBox {
             event: Box::new(event),
             event_type: TypeId::of::<E>(),
+            strategy,
         }
     }
 
-    pub fn is_type<E: Any>(&self) -> bool {
+    pub fn is_type<E: Event>(&self) -> bool {
         self.event_type == TypeId::of::<E>()
     }
 
@@ -26,7 +30,7 @@ impl EventBox {
         self.event_type
     }
 
-    pub fn downcast<E: Any>(self) -> Result<E, EventError> {
+    pub fn downcast<E: Event>(self) -> Result<E, EventError> {
         if self.event_type == TypeId::of::<E>() {
             return Ok(*self.event.downcast::<E>().unwrap())
         }
@@ -49,8 +53,12 @@ pub struct EventQueue {
 }
 
 impl EventQueue {
-    pub fn register_event<E: Any>(&mut self, event: E) {
-        self.event_queue.push(EventBox::new::<E>(event));
+    pub fn register_event_width_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
+        self.event_queue.push(EventBox::new::<E>(event, strategy));
+    }
+
+    pub fn register_event<E: Event>(&mut self, event: E) {
+        self.event_queue.push(EventBox::new::<E>(event, EventStrategy::TopDown));
     }
 
     pub fn dequeue(&mut self) -> Option<EventBox> {

@@ -1,12 +1,11 @@
-use std::any::TypeId;
 use std::cell::RefCell;
 use std::rc::Rc;
 
 use std::collections::HashMap;
 
 use {
-    target_backend, Application, Entity, EventSystem, LayoutObject, LayoutSystem, Rect, Point,
-    RenderObject, RenderSystem, Template, Theme, Tree, Widget, World, BackendRunner, EventHandler,
+    target_backend, Application, BackendRunner, Entity, EventSystem, LayoutObject, LayoutSystem,
+    Point, Rect, RenderObject, RenderSystem, State, Template, Theme, Tree, Widget, World,
 };
 
 pub struct Window {
@@ -18,7 +17,7 @@ pub struct Window {
 
     pub root: Option<Rc<Widget>>,
 
-    pub event_handlers: Rc<RefCell<HashMap<TypeId, RefCell<HashMap<Entity, Rc<EventHandler>>>>>>,
+    pub states: Rc<RefCell<HashMap<Entity, Rc<State>>>>,
 }
 
 impl Window {
@@ -61,16 +60,16 @@ impl<'a> WindowBuilder<'a> {
         let mut world = World::from_container(Tree::default());
         let render_objects = Rc::new(RefCell::new(HashMap::new()));
         let layout_objects = Rc::new(RefCell::new(HashMap::new()));
-        let event_handlers = Rc::new(RefCell::new(HashMap::new()));
+        let states = Rc::new(RefCell::new(HashMap::new()));
 
         if let Some(root) = &self.root {
-            build_tree(root, &mut world, &render_objects, &layout_objects, &event_handlers);
+            build_tree(root, &mut world, &render_objects, &layout_objects, &states);
         }
 
         world
             .create_system(EventSystem {
                 backend: backend.clone(),
-                event_handlers: event_handlers.clone(),
+                states: states.clone(),
             })
             .with_priority(0)
             .build();
@@ -98,79 +97,87 @@ impl<'a> WindowBuilder<'a> {
             render_objects,
             layout_objects,
             root: self.root,
-            event_handlers
+            states,
         })
     }
 }
 
 fn build_tree(
-        root: &Rc<Widget>,
+    root: &Rc<Widget>,
+    world: &mut World<Tree>,
+    render_objects: &Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
+    layout_objects: &Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+    states: &Rc<RefCell<HashMap<Entity, Rc<State>>>>,
+) {
+    fn expand(
         world: &mut World<Tree>,
         render_objects: &Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
         layout_objects: &Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
-        event_handlers: &Rc<RefCell<HashMap<TypeId, RefCell<HashMap<Entity, Rc<EventHandler>>>>>>,
-    ) {
-        fn expand(
-            world: &mut World<Tree>,
-            render_objects: &Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
-            layout_objects: &Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
-            event_handlers: &Rc<RefCell<HashMap<TypeId, RefCell<HashMap<Entity, Rc<EventHandler>>>>>>,
-            widget: &Rc<Widget>,
-            parent: Entity,
-        ) -> Entity {
-            let entity = {
-                let mut entity_builder = world.create_entity().with(Rect::default()).with(Point::default());
+        states: &Rc<RefCell<HashMap<Entity, Rc<State>>>>,
+        widget: &Rc<Widget>,
+        parent: Entity,
+    ) -> Entity {
+        let entity = {
+            let mut entity_builder = world
+                .create_entity()
+                .with(Rect::default())
+                .with(Point::default());
 
-                for property in widget.all_properties() {
-                    entity_builder = entity_builder.with_box(property);
-                }
-
-                let entity = entity_builder.build();
-
-                if let Some(render_object) = widget.render_object() {
-                    render_objects.borrow_mut().insert(entity, render_object);
-                }
-
-                for event_handler in widget.event_handlers() {
-                    let event_type = event_handler.event_type();
-                    let contains_type = event_handlers.borrow().contains_key(&event_type);
-
-                    if !contains_type {
-                        event_handlers.borrow_mut().insert(event_type, RefCell::new(HashMap::new()));
-                    }
-
-                    let mut map = &event_handlers.borrow_mut()[&event_type];
-                    map.borrow_mut().insert(entity, event_handler.clone());
-           
-                }
-
-                layout_objects
-                    .borrow_mut()
-                    .insert(entity, widget.layout_object());
-
-                entity
-            };
-
-            match widget.template() {
-                Template::Single(child) => {
-                    let child = expand(world, render_objects, layout_objects, event_handlers, &child, parent);
-                    let _result = world.entity_container().append_child(entity, child);
-                }
-                Template::Mutli(children) => {
-                    for child in children {
-                        let child = expand(world, render_objects, layout_objects, event_handlers, &child, parent);
-                        let _result = world.entity_container().append_child(entity, child);
-                    }
-                }
-                _ => {}
+            for property in widget.all_properties() {
+                entity_builder = entity_builder.with_box(property);
             }
 
+            let entity = entity_builder.build();
+
+            if let Some(render_object) = widget.render_object() {
+                render_objects.borrow_mut().insert(entity, render_object);
+            }
+
+            if let Some(state) = widget.state() {
+                states.borrow_mut().insert(entity, state.clone());
+            }
+
+            layout_objects
+                .borrow_mut()
+                .insert(entity, widget.layout_object());
+
             entity
+        };
+
+        match widget.template() {
+            Template::Single(child) => {
+                let child = expand(
+                    world,
+                    render_objects,
+                    layout_objects,
+                    states,
+                    &child,
+                    parent,
+                );
+                let _result = world.entity_container().append_child(entity, child);
+            }
+            Template::Mutli(children) => {
+                for child in children {
+                    let child = expand(
+                        world,
+                        render_objects,
+                        layout_objects,
+                        states,
+                        &child,
+                        parent,
+                    );
+                    let _result = world.entity_container().append_child(entity, child);
+                }
+            }
+            _ => {}
         }
 
-        expand(world, render_objects, layout_objects, event_handlers, root, 0);
-
-        for node in world.entity_container().into_iter() {
-            println!("Node: {}", node);
-        }
+        entity
     }
+
+    expand(world, render_objects, layout_objects, states, root, 0);
+
+    for node in world.entity_container().into_iter() {
+        println!("Node: {}", node);
+    }
+}

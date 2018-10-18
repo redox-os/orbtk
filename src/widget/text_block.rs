@@ -1,7 +1,7 @@
 use theme::Selector;
 use {
-    ComponentBox, LayoutObject, Property, RenderObject, TextRenderObject, TextSizeLayoutObject,
-    Widget,
+    LayoutObject, Property, RenderObject, TextRenderObject, TextSizeLayoutObject,
+    Widget, Key,
 };
 
 pub struct Label(pub String);
@@ -9,6 +9,7 @@ pub struct Label(pub String);
 pub struct TextBlock {
     pub label: String,
     pub class: String,
+    pub key: String,
 }
 
 impl Default for TextBlock {
@@ -16,6 +17,7 @@ impl Default for TextBlock {
         TextBlock {
             label: String::from("TextBlock"),
             class: String::from("textblock"),
+            key: String::from("TextBlock"),
         }
     }
 }
@@ -23,8 +25,9 @@ impl Default for TextBlock {
 impl Widget for TextBlock {
     fn properties(&self) -> Vec<Property> {
         vec![
-            ComponentBox::new(Label(self.label.clone())),
-            ComponentBox::new(Selector::new(Some(self.class.clone()))),
+            Property::new(Label(self.label.clone())),
+            Property::new(Selector::new(Some(self.class.clone()))),
+            Property::new(Key(self.key.clone())),
         ]
     }
 

@@ -1,4 +1,4 @@
-use std::any::TypeId;
+use std::any::{Any, TypeId};
 
 use {Entity, EntityComponentManager, Tree};
 
@@ -23,4 +23,17 @@ pub trait EventHandler {
         entity: Entity,
         ecm: &mut EntityComponentManager,
     ) -> bool;
+}
+
+#[derive(PartialEq)]
+pub enum EventStrategy {
+    TopDown,
+    BottomUp,
+    Direct
+}
+
+pub trait Event : Any {
+    fn strategy(&self) -> EventStrategy {
+        EventStrategy::TopDown
+    }
 }

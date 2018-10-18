@@ -1,7 +1,8 @@
+use state::State;
 use std::any::Any;
 use std::rc::Rc;
 
-use {EventHandler, Property, RenderObject, LayoutObject, DefaultLayoutObject};
+use {Property, RenderObject, LayoutObject, DefaultLayoutObject};
 
 pub use self::button::*;
 pub use self::column::*;
@@ -16,6 +17,8 @@ mod row;
 mod text_block;
 
 pub struct Drawable;
+
+pub struct Key(pub String);
 
 pub struct Padding {
     pub left: u32,
@@ -40,6 +43,10 @@ pub trait Widget: Any {
         if let Some(_) = self.render_object() {
             properties.push(Property::new(Drawable));
         }
+
+        if let Some(state) = self.state() {
+            properties.append(&mut state.properties());
+        }
         properties
     }
 
@@ -55,7 +62,7 @@ pub trait Widget: Any {
         Box::new(DefaultLayoutObject)
     }
 
-    fn event_handlers(&self) -> Vec<Rc<EventHandler>> {
-        vec![]
+    fn state(&self) -> Option<Rc<State>> {
+        None
     }
 }
