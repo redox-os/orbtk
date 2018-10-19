@@ -2,7 +2,13 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use {Constraint, Entity, EntityComponentManager, LayoutObject, Rect, System, Theme, Tree, Backend};
+use dces::{Entity, EntityComponentManager, System};
+
+use backend::Backend;
+use layout_object::LayoutObject;
+use structs::{Constraint, Rect};
+use theme::{Selector, Theme};
+use tree::Tree;
 
 pub enum LayoutResult {
     Size((u32, u32)),
@@ -26,6 +32,48 @@ impl System<Tree> for LayoutSystem {
         ) -> (u32, u32) {
             let mut size: Option<(u32, u32)> = None;
 
+            let mut constraint = Constraint {
+                min_width: constraint.min_width,
+                min_height: constraint.min_height,
+                max_width: constraint.max_width,
+                max_height: constraint.max_height,
+            };
+
+            if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
+                let min_width = theme.uint("min-width", selector);
+                let max_width = theme.uint("min-width", selector);
+                let min_height = theme.uint("min_height", selector);
+                let max_height = theme.uint("max_height", selector);
+                let width = theme.uint("width", selector);
+                let height = theme.uint("height", selector);
+
+                if min_width > 0 {
+                    constraint.min_width = min_width;
+                }
+
+                if max_width > 0 {
+                    constraint.max_width = max_width;
+                }
+
+                if min_height > 0 {
+                    constraint.min_height = min_height;
+                }
+
+                if max_height > 0 {
+                    constraint.max_height = max_height;
+                }
+
+                if width > 0 {
+                    constraint.min_width = width;
+                    constraint.max_width = width;
+                }
+
+                if height > 0 {
+                    constraint.min_height = height;
+                    constraint.max_height = height;
+                }
+            }
+
             loop {
                 let mut children_pos = None;
                 let layout_result = {
@@ -34,7 +82,7 @@ impl System<Tree> for LayoutSystem {
                         result = layout.layout(
                             entity,
                             ecm,
-                            constraint,
+                            &constraint,
                             &tree.children.get(&entity).unwrap(),
                             &mut children_pos,
                             size,

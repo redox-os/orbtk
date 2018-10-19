@@ -1,0 +1,37 @@
+/* Every element */
+* {
+    /* background: #F5F6F7; */
+    background: #fafafa;
+    color: black;
+}
+
+button {
+    /* min-width: 60; */
+    /* height: 40; */
+    background: #e5e5e5;
+    border-radius: 2;
+    padding: 6;
+}
+
+button:active {
+    background: #d6d6d6;
+}
+
+container {
+    background: transparent;
+    padding: 8;
+}
+
+textbox {
+    min-width: 100;
+    max-width: 100;
+    background: white;
+    border-color: #d1d1d1;
+    border-width: 1;
+    border-radius: 2;
+    padding: 6;
+}
+
+textbox:active {
+    border-color: #2a94db;
+}

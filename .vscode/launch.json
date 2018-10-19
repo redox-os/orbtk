@@ -7,7 +7,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug widgets in orbtk",
+            "name": "Debug widgets",
             "program": "${workspaceFolder}/target/debug/examples/widgets",
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build-widget",
@@ -18,7 +18,18 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug tests in orbtk",
+            "name": "Debug light theme",
+            "program": "${workspaceFolder}/target/debug/examples/light-theme",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build-widget",
+            "sourceLanguages": [
+                "rust"
+            ]
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug tests",
             "cargo": {
                 "args": [
                     "test",

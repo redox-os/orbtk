@@ -1,6 +1,6 @@
 use std::ops::{Add, Sub};
 
-/// A point
+/// This struct represents a non visual point.
 #[derive(Copy, Clone, Debug, Default)]
 pub struct Point {
     pub x: i32,
@@ -8,7 +8,7 @@ pub struct Point {
 }
 
 impl Point {
-    /// Create a new point
+    /// Creates a new point.
     pub fn new(x: i32, y: i32) -> Self {
         Point { x: x, y: y }
     }
@@ -17,6 +17,7 @@ impl Point {
 impl Add for Point {
     type Output = Point;
 
+    /// Adds the given `other` point to self point.
     fn add(self, other: Point) -> Self::Output {
         Point {
             x: self.x + other.x,
@@ -28,6 +29,7 @@ impl Add for Point {
 impl Sub for Point {
     type Output = Point;
 
+    /// Subs the given `other` point from self point.
     fn sub(self, other: Point) -> Self::Output {
         Point {
             x: self.x - other.x,

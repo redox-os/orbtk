@@ -1,12 +1,17 @@
 use std::any::TypeId;
 use std::rc::Rc;
-use theme::Selector;
-use {
-    check_mouse_condition, Container, Entity, EntityComponentManager, EventBox, MouseDownEvent,
-    MouseHandler, MouseUpEvent, Property, State, Template, TextBlock, Tree, Widget,
-};
 
-struct Pressed(bool);
+use dces::{Entity, EntityComponentManager};
+
+use super::Property;
+use event::{check_mouse_condition, EventBox, MouseDownEvent, MouseHandler, MouseUpEvent};
+use state::State;
+use theme::Selector;
+use tree::Tree;
+use widget::{Container, Template, TextBlock, Widget};
+
+
+pub struct Pressed(pub bool);
 
 #[derive(Default)]
 pub struct ButtonState {
@@ -125,7 +130,6 @@ impl Widget for Button {
             child: Some(Rc::new(TextBlock {
                 label: self.label.clone(),
                 class: self.class.clone(),
-                key: String::from("Label"),
             })),
         }))
     }

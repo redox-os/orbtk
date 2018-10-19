@@ -5,17 +5,22 @@ use std::rc::Rc;
 use orbclient::{Color, Window as OrbWindow};
 use orbclient::{Mode, Renderer as OrbRenderer};
 
-use {
-    Backend, BackendRunner, EventContext, EventQueue, LayoutContext, MouseButton, MouseDownEvent,
-    MouseMouveEvent, MouseUpEvent, Rect, RenderContext, Renderer, Selector, SystemEvent, Theme, Tree,
-    World,
+use dces::World;
+
+use backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext, Renderer};
+use event::{
+    EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseMouveEvent,
+    MouseUpEvent, SystemEvent,
 };
+use structs::{Point, Rect};
+use theme::{Selector, Theme};
+use tree::Tree;
 
 pub struct OrbitalBackend {
     inner: OrbWindow,
     theme: Theme,
     mouse_buttons: (bool, bool, bool),
-    mouse_position: (i32, i32),
+    mouse_position: Point,
     event_queue: RefCell<EventQueue>,
     running: bool,
 }
@@ -121,7 +126,7 @@ impl OrbitalBackend {
             inner,
             theme,
             mouse_buttons: (false, false, false),
-            mouse_position: (0, 0),
+            mouse_position: Point::default(),
             event_queue: RefCell::new(EventQueue::default()),
             running: false,
         }
@@ -177,10 +182,13 @@ impl Backend for OrbitalBackend {
         for event in self.inner.events() {
             match event.to_option() {
                 orbclient::EventOption::Mouse(mouse) => {
-                    self.mouse_position = (mouse.x, mouse.y);
+                    self.mouse_position.x = mouse.x;
+                    self.mouse_position.y = mouse.y;
                     self.event_queue
                         .borrow_mut()
-                        .register_event(MouseMouveEvent { position: self.mouse_position });
+                        .register_event(MouseMouveEvent {
+                            position: self.mouse_position,
+                        });
                 }
                 orbclient::EventOption::Button(button) => {
                     if !button.left && !button.middle && !button.right {
@@ -212,10 +220,35 @@ impl Backend for OrbitalBackend {
                             .register_event(MouseDownEvent {
                                 button,
                                 position: self.mouse_position,
-                            })
+                            });
                     }
 
                     self.mouse_buttons = (button.left, button.middle, button.right);
+                }
+                orbclient::EventOption::Key(key_event) => {
+                    let key = {
+                        match key_event.scancode {
+                            orbclient::K_BKSP => Key::Backspace,
+                            orbclient::K_UP => Key::Up,
+                            orbclient::K_DOWN => Key::Down,
+                            orbclient::K_LEFT => Key::Left,
+                            orbclient::K_RIGHT => Key::Right,
+                            _ => match key_event.character {
+                                '\n' => Key::Enter,
+                                _ => Key::from(key_event.character),
+                            },
+                        }
+                    };
+
+                    if key_event.pressed {
+                        self.event_queue
+                            .borrow_mut()
+                            .register_event(KeyUpEvent { key });
+                    } else {
+                         self.event_queue
+                            .borrow_mut()
+                            .register_event(KeyDownEvent { key });
+                    }
                 }
                 orbclient::EventOption::Quit(_quit_event) => {
                     self.event_queue

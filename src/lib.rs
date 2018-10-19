@@ -55,3 +55,7 @@ extern crate orbfont;
 extern crate orbimage;
 #[cfg(not(target_arch = "wasm32"))]
 pub use orbclient::color::Color;
+
+// todo workspace -> backend, core, widgets
+
+// todo: Use entity 0 to store singelton values like focues entity 

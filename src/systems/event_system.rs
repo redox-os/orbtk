@@ -5,7 +5,10 @@ use std::collections::HashMap;
 
 use dces::{Entity, EntityComponentManager, System};
 
-use {Backend, EventStrategy, State, Tree};
+use backend::Backend;
+use event::EventStrategy;
+use tree::Tree;
+use state::State;
 
 pub struct EventSystem {
     pub backend: Rc<RefCell<Backend>>,

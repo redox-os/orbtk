@@ -1,14 +1,14 @@
 /* Every element */
 * {
     /* background: #F5F6F7; */
-    background: #4D5A6D;
+    background: #475b6e;
+    color: white;
 }
 
 button {
     /* min-width: 60; */
     /* height: 40; */
     background: #6C7A90;
-    color: white;
     border-radius: 2;
     padding: 6;
 }
@@ -22,11 +22,16 @@ container {
     padding: 8;
 }
 
-blue {
-    background: blue;
-    padding: 8;
+textbox {
+    min-width: 100;
+    max-width: 100;
+    background: #3b434a;
+    border-color: #647b91;
+    border-width: 1;
+    border-radius: 2;
+    padding: 6;
 }
 
-textblock {
-    color: black;
+textbox:active {
+    border-color: #8cafd1;
 }

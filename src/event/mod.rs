@@ -1,29 +1,14 @@
-use std::any::{Any, TypeId};
-
-use {Entity, EntityComponentManager, Tree};
+use std::any::Any;
 
 pub use self::event_queue::*;
+pub use self::key::*;
 pub use self::mouse::*;
 pub use self::system::*;
 
 mod event_queue;
+mod key;
 mod mouse;
 mod system;
-
-pub trait EventHandler {
-    fn emit(&self) -> bool;
-
-    fn update(&self, entity: Entity, tree: &Tree, ecm: &mut EntityComponentManager);
-
-    fn event_type(&self) -> TypeId;
-
-    fn check_condition(
-        &self,
-        event: &EventBox,
-        entity: Entity,
-        ecm: &mut EntityComponentManager,
-    ) -> bool;
-}
 
 #[derive(PartialEq)]
 pub enum EventStrategy {
@@ -37,3 +22,5 @@ pub trait Event : Any {
         EventStrategy::TopDown
     }
 }
+
+// todo focuse moved event!!!

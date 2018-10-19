@@ -23,7 +23,8 @@ pub use self::style::Style;
 
 mod style;
 
-static DEFAULT_THEME_CSS: &'static str = include_str!("theme.css");
+static DEFAULT_THEME_CSS: &'static str = include_str!("dark.css");
+pub static LIGHT_THEME_CSS: &'static str = include_str!("light.css");
 
 lazy_static! {
     static ref DEFAULT_THEME: Arc<Theme> = {

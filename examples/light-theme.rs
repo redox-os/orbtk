@@ -45,6 +45,7 @@ fn main() {
         .with_bounds(Rect::new(0, 0, 420, 730))
         .with_title("Orbtk")
         .with_root(MainView)
+        .with_theme(Theme::parse(theme::LIGHT_THEME_CSS))
         .build();
     application.run();
 }
