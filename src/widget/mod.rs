@@ -74,29 +74,29 @@ pub trait Widget: Any {
     }
 }
 
-pub struct WidgetWrapper<'a> {
-    entity: Entity,
+pub struct WidgetContainer<'a> {
+    _root: Entity,
     ecm: &'a mut EntityComponentManager,
     _tree: &'a Tree,
-    _current_child: Entity,
+    current_node: Entity,
 }
 
-impl<'a> WidgetWrapper<'a> {
-    pub fn new(entity: Entity, ecm: &'a mut EntityComponentManager, _tree: &'a Tree) -> Self {
-        WidgetWrapper {
-            entity, 
+impl<'a> WidgetContainer<'a> {
+    pub fn new(_root: Entity, ecm: &'a mut EntityComponentManager, _tree: &'a Tree) -> Self {
+        WidgetContainer {
+            _root, 
             ecm,
             _tree,
-            _current_child: entity,
+            current_node: _root,
         }
     }
 
     pub fn borrow_property<P: Component>(&self) -> Result<&P, NotFound> {
-        self.ecm.borrow_component::<P>(self.entity)
+        self.ecm.borrow_component::<P>(self.current_node)
     }
 
     pub fn borrow_mut_property<P: Component>(&mut self) -> Result<&mut P, NotFound> {
-        self.ecm.borrow_mut_component::<P>(self.entity)
+        self.ecm.borrow_mut_component::<P>(self.current_node)
     }
 
     pub fn next(&mut self) {

@@ -3,10 +3,18 @@ use std::rc::Rc;
 
 use std::collections::HashMap;
 
-use {
-    target_backend, Application, BackendRunner, Entity, EventSystem, LayoutObject, LayoutSystem,
-    Point, Rect, RenderObject, RenderSystem, State, Template, Theme, Tree, Widget, World,
-};
+use dces::{Entity, World};
+
+use application::Application;
+use backend::{target_backend, BackendRunner};
+use layout_object::LayoutObject;
+use render_object::RenderObject;
+use state::State;
+use structs::{Point, Rect};
+use systems::{EventSystem, LayoutSystem, RenderSystem};
+use theme::Theme;
+use tree::Tree;
+use widget::{Template, Widget};
 
 pub struct Window {
     pub backend_runner: Box<BackendRunner>,

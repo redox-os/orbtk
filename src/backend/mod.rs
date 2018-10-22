@@ -1,16 +1,11 @@
 use std::cell::RefCell;
 
-use {Rect, Selector, Theme, EventQueue, World, Tree};
+use dces::World;
 
-#[cfg(target_arch = "wasm32")]
-pub use self::wasm::*;
-#[cfg(target_arch = "wasm32")]
-mod wasm;
-
-#[cfg(not(target_arch = "wasm32"))]
-pub use self::orbital::*;
-#[cfg(not(target_arch = "wasm32"))]
-mod orbital;
+use event::EventQueue;
+use structs::Rect;
+use theme::{Selector, Theme};
+use tree::Tree;
 
 pub struct RenderContext<'a> {
     pub renderer: &'a mut Renderer,
@@ -28,8 +23,21 @@ pub struct EventContext<'a> {
 
 pub trait Renderer {
     fn render(&mut self, theme: &Theme);
-    fn render_rectangle(&mut self, theme: &Theme, bounds: &Rect, selector: &Selector, offset: (i32, i32));
-    fn render_text(&mut self, theme: &Theme, text: &str, bounds: &Rect, selector: &Selector, offset: (i32, i32));
+    fn render_rectangle(
+        &mut self,
+        theme: &Theme,
+        bounds: &Rect,
+        selector: &Selector,
+        offset: (i32, i32),
+    );
+    fn render_text(
+        &mut self,
+        theme: &Theme,
+        text: &str,
+        bounds: &Rect,
+        selector: &Selector,
+        offset: (i32, i32),
+    );
 }
 
 pub trait Backend {
@@ -49,9 +57,9 @@ pub trait BackendRunner {
 pub use self::target::target_backend;
 
 #[cfg(not(target_arch = "wasm32"))]
-#[path="target/orbital.rs"]
+#[path = "orbital/mod.rs"]
 mod target;
 
 #[cfg(target_arch = "wasm32")]
-#[path="target/wasm.rs"]
+#[path = "wasm/mod.rs"]
 mod target;

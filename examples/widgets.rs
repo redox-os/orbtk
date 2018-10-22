@@ -5,6 +5,31 @@ use std::rc::Rc;
 
 struct MainView;
 
+/*
+    template!(
+        Row {
+            children: [
+                Container {
+                    child: Button {
+                        label: "Click me",
+                        state: ButtonState {
+                            on_mouse_up: || {
+                                println!("Button 1 mouse up");
+                            }
+                        }
+                    }
+                },
+                Container {
+                    child: TextBox {
+                        label: "Insert",
+                        state: TextBoxState {}
+                    }
+                }
+            ]
+        }
+    )
+*/
+
 impl Widget for MainView {
     fn template(&self) -> Template {
         Template::Single(Rc::new(Row {
