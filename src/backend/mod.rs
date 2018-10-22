@@ -28,6 +28,7 @@ pub trait Renderer {
         theme: &Theme,
         bounds: &Rect,
         selector: &Selector,
+        boundery: (u32, u32),
         offset: (i32, i32),
     );
     fn render_text(
@@ -36,6 +37,7 @@ pub trait Renderer {
         text: &str,
         bounds: &Rect,
         selector: &Selector,
+        boundery: (u32, u32),
         offset: (i32, i32),
     );
 }

@@ -1,16 +1,17 @@
 use std::rc::Rc;
 
-use {Entity, EntityComponentManager, Event, Point, Rect};
+use widget::WidgetContainer;
+use event::Event;
+use structs::{Rect, Point};
 
 pub fn check_mouse_condition(
     position: Point,
-    entity: Entity,
-    ecm: &mut EntityComponentManager,
+    widget: &WidgetContainer,
 ) -> bool {
-    if let Ok(bounds) = ecm.borrow_component::<Rect>(entity) {
+    if let Ok(bounds) = widget.borrow_property::<Rect>() {
         let mut rect = Rect::new(0, 0, bounds.width, bounds.height);
 
-        if let Ok(g_pos) = ecm.borrow_component::<Point>(entity) {
+        if let Ok(g_pos) = widget.borrow_property::<Point>() {
             rect.x = g_pos.x;
             rect.y = g_pos.y;
         }

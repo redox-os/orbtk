@@ -1,20 +1,20 @@
-use theme::Selector;
 use std::rc::Rc;
-use {
-    ComponentBox, LayoutObject, PaddingLayoutObject, Property, RectangleRenderObject, RenderObject,
-    Template, Widget,
-};
+
+use layout_object::{LayoutObject, PaddingLayoutObject};
+use render_object::{RectangleRenderObject, RenderObject};
+use theme::Selector;
+use widget::{Property, PropertyResult, Template, Widget};
 
 pub struct Container {
     pub child: Option<Rc<Widget>>,
-    pub class: String,
+    pub selector: Property<Selector>,
 }
 
 impl Default for Container {
     fn default() -> Container {
         Container {
             child: None,
-            class: String::from("container"),
+            selector: Property::new(Selector::new(Some(String::from("container")))),
         }
     }
 }
@@ -28,10 +28,8 @@ impl Widget for Container {
         }
     }
 
-    fn properties(&self) -> Vec<Property> {
-        vec![
-            ComponentBox::new(Selector::new(Some(self.class.clone()))),
-        ]
+    fn properties(&self) -> Vec<PropertyResult> {
+        vec![self.selector.build()]
     }
 
     fn render_object(&self) -> Option<Box<RenderObject>> {

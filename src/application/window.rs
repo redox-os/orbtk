@@ -14,7 +14,7 @@ use structs::{Point, Rect};
 use systems::{EventSystem, LayoutSystem, RenderSystem};
 use theme::Theme;
 use tree::Tree;
-use widget::{Template, Widget};
+use widget::{Template, Widget, PropertyResult};
 
 pub struct Window {
     pub backend_runner: Box<BackendRunner>,
@@ -132,7 +132,16 @@ fn build_tree(
                 .with(Point::default());
 
             for property in widget.all_properties() {
-                entity_builder = entity_builder.with_box(property);
+                match property {
+                    PropertyResult::Property(property, source) => {
+                        entity_builder = entity_builder.with_box(property);
+                        source.set(Some(entity_builder.entity));
+                    },
+                    PropertyResult::Source(source) => {
+                        entity_builder = entity_builder.with_shared_box(source);
+                    },
+                    PropertyResult::PropertyNotFound => {},
+                }      
             }
 
             let entity = entity_builder.build();

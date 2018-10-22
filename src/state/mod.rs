@@ -1,11 +1,11 @@
-use {Entity, EntityComponentManager, Property, EventBox, Tree};
+use event::EventBox;
+use widget::{WidgetContainer, PropertyResult};
 
 pub trait State {
     fn handles_event(
         &self,
         _event: &EventBox,
-        _entity: Entity,
-        _ecm: &mut EntityComponentManager,
+        _widget: &WidgetContainer,
     ) -> bool {
         false
     }
@@ -13,14 +13,12 @@ pub trait State {
     fn update(
         &self,
         _event: &EventBox,
-        _entity: Entity,
-        _tree: &Tree,
-        _ecm: &mut EntityComponentManager,
+        _widget: &mut WidgetContainer,
     ) -> bool {
         false
     }
 
-    fn properties(&self) -> Vec<Property> {
+    fn properties(&self) -> Vec<PropertyResult> {
         vec![]
     }
 }

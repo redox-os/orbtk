@@ -66,6 +66,7 @@ impl Renderer for CanvasRenderer {
         _theme: &Theme,
         _bounds: &Rect,
         _selector: &Selector,
+        _boundery: (u32, u32)
         _offset: (i32, i32),
     ) {
         // let b_r = theme.uint("border-radius", selector);
@@ -139,6 +140,7 @@ impl Renderer for CanvasRenderer {
         _text: &str,
         _bounds: &Rect,
         _selector: &Selector,
+        _boundery: (u32, u32),
         _offset: (i32, i32),
     ) {
         let fill = _theme.color("color", _selector);

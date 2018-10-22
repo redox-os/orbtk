@@ -1,17 +1,21 @@
 use std::rc::Rc;
+
+use layout_object::{FlexLayoutObject, LayoutObject};
+use enums::Alignment;
 use theme::Selector;
-use {Alignment, ComponentBox, FlexLayoutObject, LayoutObject, Property, Template, Widget};
+use widget::{Property, PropertyResult, Template, Widget};
+
 
 pub struct Row {
     pub children: Vec<Rc<Widget>>,
-    pub class: String,
+    pub selector: Property<Selector>,
 }
 
 impl Default for Row {
     fn default() -> Row {
         Row {
             children: vec![],
-            class: String::from("row"),
+            selector: Property::new(Selector::new(Some(String::from("column")))),
         }
     }
 }
@@ -27,8 +31,8 @@ impl Widget for Row {
         }
     }
 
-    fn properties(&self) -> Vec<Property> {
-        vec![ComponentBox::new(Selector::new(Some(self.class.clone())))]
+    fn properties(&self) -> Vec<PropertyResult> {
+        vec![self.selector.build()]
     }
 
     fn layout_object(&self) -> Box<LayoutObject> {

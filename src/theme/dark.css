@@ -25,6 +25,7 @@ container {
 textbox {
     min-width: 100;
     max-width: 100;
+    height: 32;
     background: #3b434a;
     border-color: #647b91;
     border-width: 1;

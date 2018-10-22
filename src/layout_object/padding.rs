@@ -1,9 +1,11 @@
 use std::collections::HashMap;
 
-use {
-    Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult, Selector, Theme,
-    Thickness,
-};
+use dces::{Entity, EntityComponentManager};
+
+use layout_object::LayoutObject;
+use structs::{Constraint, Thickness};
+use systems::LayoutResult;
+use theme::{Selector, Theme};
 
 pub struct PaddingLayoutObject;
 
@@ -52,10 +54,14 @@ impl LayoutObject for PaddingLayoutObject {
             ))
         } else {
             let child_bc = Constraint {
-                min_width: (constraint.min_width as i32 - (padding.left + padding.right)).max(0) as u32,
-                max_width: (constraint.max_width as i32 - (padding.left + padding.right)).max(0) as u32,
-                min_height: (constraint.min_height as i32 - (padding.top + padding.bottom)).max(0) as u32,
-                max_height: (constraint.max_height as i32 - (padding.top + padding.bottom)).max(0) as u32,
+                min_width: (constraint.min_width as i32 - (padding.left + padding.right)).max(0)
+                    as u32,
+                max_width: (constraint.max_width as i32 - (padding.left + padding.right)).max(0)
+                    as u32,
+                min_height: (constraint.min_height as i32 - (padding.top + padding.bottom)).max(0)
+                    as u32,
+                max_height: (constraint.max_height as i32 - (padding.top + padding.bottom)).max(0)
+                    as u32,
             };
             LayoutResult::RequestChild(children[0], child_bc)
         }

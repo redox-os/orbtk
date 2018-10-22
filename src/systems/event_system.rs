@@ -7,8 +7,9 @@ use dces::{Entity, EntityComponentManager, System};
 
 use backend::Backend;
 use event::EventStrategy;
-use tree::Tree;
 use state::State;
+use tree::Tree;
+use widget::WidgetContainer;
 
 pub struct EventSystem {
     pub backend: Rc<RefCell<Backend>>,
@@ -29,15 +30,17 @@ impl System<Tree> for EventSystem {
                 let entity_has_state = self.states.borrow().contains_key(&node);
 
                 if entity_has_state {
+                    let mut widget = WidgetContainer::new(node, ecm);
+
                     let handles_event =
-                        self.states.borrow()[&node].handles_event(&event_box, node, ecm);
+                        self.states.borrow()[&node].handles_event(&event_box, &widget);
 
                     if handles_event {
                         if event_box.strategy == EventStrategy::TopDown {
                             target_node = Some(node);
                         } else {
                             // bottom up
-                            if self.states.borrow_mut()[&node].update(&event_box, node, tree, ecm) {
+                            if self.states.borrow_mut()[&node].update(&event_box, &mut widget) {
                                 break;
                             }
                         }
@@ -49,14 +52,12 @@ impl System<Tree> for EventSystem {
             if let Some(target_node) = target_node {
                 let mut target_node = target_node;
                 loop {
+                    let mut widget = WidgetContainer::new(target_node, ecm);
                     let entity_has_state = self.states.borrow_mut().contains_key(&target_node);
 
-                    if entity_has_state && self.states.borrow_mut()[&target_node].update(
-                        &event_box,
-                        target_node,
-                        tree,
-                        ecm,
-                    ) {
+                    if entity_has_state
+                        && self.states.borrow_mut()[&target_node].update(&event_box, &mut widget)
+                    {
                         break;
                     }
 

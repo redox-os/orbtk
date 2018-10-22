@@ -20,6 +20,7 @@ impl Renderer for OrbWindow {
         theme: &Theme,
         bounds: &Rect,
         selector: &Selector,
+        _boundery: (u32, u32),
         offset: (i32, i32),
     ) {
         let b_r = theme.uint("border-radius", selector);
@@ -57,24 +58,15 @@ impl Renderer for OrbWindow {
         text: &str,
         bounds: &Rect,
         selector: &Selector,
+        boundery: (u32, u32),
         offset: (i32, i32),
     ) {
         // if let Some(font) = &self.font {
         //     let line = font.render(text, 64.0);
         //     line.draw(&mut self.inner, 20, 20, Color::rgb(0, 0, 0));
         // } else {
-        let rect = Rect::new(
-            bounds.x + offset.0,
-            bounds.y + offset.1,
-            bounds.width,
-            bounds.height,
-        );
-        let mut current_rect = Rect::new(
-            bounds.x + offset.0,
-            bounds.y + offset.1,
-            bounds.width,
-            bounds.height,
-        );
+        let rect = Rect::new(bounds.x, bounds.y, bounds.width, bounds.height);
+        let mut current_rect = Rect::new(bounds.x, bounds.y, bounds.width, bounds.height);
         let x = rect.x;
 
         for c in text.chars() {
@@ -82,12 +74,14 @@ impl Renderer for OrbWindow {
                 current_rect.x = x;
                 current_rect.y += 16;
             } else {
-                if current_rect.x + 8 <= rect.x + rect.width as i32
-                    && current_rect.y + 16 <= rect.y + rect.height as i32
+                if current_rect.x + 8 <= rect.x + boundery.0 as i32
+                    && current_rect.y + 16 <= rect.y + boundery.1 as i32
+                    && current_rect.x >= 0
+                    && current_rect.y >= 0
                 {
                     self.char(
-                        current_rect.x,
-                        current_rect.y,
+                        current_rect.x + offset.0,
+                        current_rect.y + offset.1,
                         c,
                         theme.color("color", selector),
                     );
@@ -95,6 +89,5 @@ impl Renderer for OrbWindow {
                 current_rect.x += 8;
             }
         }
-        // }
     }
 }

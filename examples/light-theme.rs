@@ -11,7 +11,7 @@ impl Widget for MainView {
             children: vec![
                 Rc::new(Container {
                     child: Some(Rc::new(Button {
-                        label: String::from("Click me"),
+                        label: Property::new(Label(String::from("Click me"))),
                         state: Rc::new(ButtonState {
                             on_mouse_up: Some(Rc::new(|| {
                                 println!("Button 1 mouse up");
@@ -24,7 +24,7 @@ impl Widget for MainView {
                 }),
                 Rc::new(Container {
                     child: Some(Rc::new(TextBox {
-                        label: String::from("Insert"),
+                        label: Property::new(Label(String::from("Insert"))),
                         state: Rc::new(TextBoxState {
                             ..Default::default()
                         }),

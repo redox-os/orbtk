@@ -5,9 +5,7 @@
 
 extern crate dces;
 
-pub use dces::prelude::*;
-
-pub use ComponentBox as Property;
+pub use dces::prelude::*; 
 
 extern crate cssparser;
 #[macro_use]
@@ -15,12 +13,12 @@ extern crate lazy_static;
 
 pub use application::*;
 pub use backend::*;
+pub use cell::CloneCell;
 pub use enums::*;
+pub use error::*;
 pub use event::*;
 pub use layout_object::*;
 pub use render_object::*;
-pub use cell::CloneCell;
-pub use error::*;
 pub use state::*;
 pub use structs::*;
 pub use systems::*;
@@ -30,12 +28,12 @@ pub use widget::*;
 
 pub mod application;
 pub mod backend;
+pub mod cell;
 pub mod enums;
+pub mod error;
 pub mod event;
 pub mod layout_object;
 pub mod render_object;
-pub mod cell;
-pub mod error;
 pub mod state;
 pub mod structs;
 pub mod systems;
@@ -58,4 +56,4 @@ pub use orbclient::color::Color;
 
 // todo workspace -> backend, core, widgets
 
-// todo: Use entity 0 to store singelton values like focues entity 
+// todo: Use entity 0 to store singelton values like focues entity

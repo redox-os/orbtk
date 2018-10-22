@@ -1,18 +1,19 @@
-use state::State;
 use std::any::Any;
+use std::cell::Cell;
 use std::rc::Rc;
 
-use dces::{Component, NotFound, Entity, EntityComponentManager};
+use dces::{Component, ComponentBox, Entity, EntityComponentManager, NotFound, SharedComponentBox};
 
-use super::Property;
-use render_object::RenderObject;
 use layout_object::{DefaultLayoutObject, LayoutObject};
-use tree::Tree;
+use render_object::RenderObject;
+use theme::Selector;
+use state::State;
 
 pub use self::button::*;
 pub use self::column::*;
 pub use self::container::*;
 pub use self::row::*;
+pub use self::scroll_viewer::*;
 pub use self::text_block::*;
 pub use self::text_box::*;
 
@@ -20,9 +21,11 @@ mod button;
 mod column;
 mod container;
 mod row;
+mod scroll_viewer;
 mod text_block;
 mod text_box;
 
+#[derive(Copy, Clone)]
 pub struct Drawable;
 
 // pub struct Key(pub String);
@@ -45,10 +48,10 @@ pub trait Widget: Any {
         Template::Empty
     }
 
-    fn all_properties(&self) -> Vec<Property> {
+    fn all_properties(&self) -> Vec<PropertyResult> {
         let mut properties = self.properties();
         if let Some(_) = self.render_object() {
-            properties.push(Property::new(Drawable));
+            properties.push(Property::new(Drawable).build());
         }
 
         if let Some(state) = self.state() {
@@ -57,7 +60,7 @@ pub trait Widget: Any {
         properties
     }
 
-    fn properties(&self) -> Vec<Property> {
+    fn properties(&self) -> Vec<PropertyResult> {
         vec![]
     }
 
@@ -75,19 +78,15 @@ pub trait Widget: Any {
 }
 
 pub struct WidgetContainer<'a> {
-    _root: Entity,
     ecm: &'a mut EntityComponentManager,
-    _tree: &'a Tree,
     current_node: Entity,
 }
 
 impl<'a> WidgetContainer<'a> {
-    pub fn new(_root: Entity, ecm: &'a mut EntityComponentManager, _tree: &'a Tree) -> Self {
+    pub fn new(root: Entity, ecm: &'a mut EntityComponentManager) -> Self {
         WidgetContainer {
-            _root, 
             ecm,
-            _tree,
-            current_node: _root,
+            current_node: root,
         }
     }
 
@@ -98,12 +97,66 @@ impl<'a> WidgetContainer<'a> {
     pub fn borrow_mut_property<P: Component>(&mut self) -> Result<&mut P, NotFound> {
         self.ecm.borrow_mut_component::<P>(self.current_node)
     }
+}
 
-    pub fn next(&mut self) {
-        // todo: set to child
+pub fn add_selector_to_widget(pseudo_class: &str, widget: &mut WidgetContainer) {
+    if let Ok(selector) = widget.borrow_mut_property::<Selector>() {
+        selector.pseudo_classes.insert(String::from(pseudo_class));
+    }
+}
+
+pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContainer) {
+    if let Ok(selector) = widget.borrow_mut_property::<Selector>() {
+        selector.pseudo_classes.remove(pseudo_class);
+    }
+}
+
+pub enum PropertyResult {
+    Property(ComponentBox, Rc<Cell<Option<Entity>>>),
+    Source(SharedComponentBox),
+    PropertyNotFound,
+}
+
+pub struct Property<C>
+where
+    C: Component + Clone,
+{
+    pub source: Rc<Cell<Option<Entity>>>,
+    property: Option<C>,
+}
+
+impl<C> Property<C>
+where
+    C: Component + Clone,
+{
+    pub fn new(property: C) -> Self {
+        Property {
+            source: Rc::new(Cell::new(None)),
+            property: Some(property),
+        }
     }
 
-    pub fn reset(&mut self) {
-        // todo: reset to root
+    pub fn build(&self) -> PropertyResult {
+        if let Some(source) = self.source.get() {
+            return PropertyResult::Source(SharedComponentBox::new::<C>(source));
+        }
+
+        if let Some(property) = &self.property {
+            return PropertyResult::Property(ComponentBox::new(property.clone()), self.source.clone())
+        }
+
+        PropertyResult::PropertyNotFound
+    }
+}
+
+impl<C> Clone for Property<C>
+where
+    C: Component + Clone,
+{
+    fn clone(&self) -> Self {
+        Property {
+            source: self.source.clone(),
+            property: None,
+        }
     }
 }

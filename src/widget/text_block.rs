@@ -1,31 +1,28 @@
+use render_object::{RenderObject, TextRenderObject};
 use theme::Selector;
-use {
-    LayoutObject, Property, RenderObject, TextRenderObject, TextSizeLayoutObject,
-    Widget, 
-};
+use widget::{Property, PropertyResult, Widget};
+use layout_object::{LayoutObject, TextSizeLayoutObject};
 
+#[derive(Clone)]
 pub struct Label(pub String);
 
 pub struct TextBlock {
-    pub label: String,
-    pub class: String,
+    pub label: Property<Label>,
+    pub selector: Property<Selector>,
 }
 
 impl Default for TextBlock {
     fn default() -> TextBlock {
         TextBlock {
-            label: String::from("TextBlock"),
-            class: String::from("textblock"),
+            label: Property::new(Label(String::from("TextBlock"))),
+            selector: Property::new(Selector::new(Some(String::from("textblock")))),
         }
     }
 }
 
 impl Widget for TextBlock {
-    fn properties(&self) -> Vec<Property> {
-        vec![
-            Property::new(Label(self.label.clone())),
-            Property::new(Selector::new(Some(self.class.clone()))),
-        ]
+    fn properties(&self) -> Vec<PropertyResult> {
+        vec![self.selector.build(), self.label.build()]
     }
 
     fn render_object(&self) -> Option<Box<RenderObject>> {

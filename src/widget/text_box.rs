@@ -1,20 +1,20 @@
 use std::any::TypeId;
 use std::rc::Rc;
 
-use dces::{Entity, EntityComponentManager};
-
 use super::Property;
-use event::{check_mouse_condition, EventBox, KeyDownEvent, Key, MouseDownEvent};
+use event::{check_mouse_condition, EventBox, Key, KeyDownEvent, MouseDownEvent};
 use state::State;
 use theme::Selector;
-use tree::Tree;
-use widget::{Container, Label, Template, TextBlock, Widget};
+use widget::{
+    add_selector_to_widget, Container, Label, PropertyResult, ScrollViewer, Template, TextBlock,
+    HorizontalOffset, Widget, WidgetContainer,
+};
 
 // todo: cursor struct with position and selection length
-
+#[derive(Clone, Copy)]
 pub struct Focused(pub bool);
 
-#[derive(Default)]
+#[derive(Clone, Copy, Default)]
 pub struct TextCursor {
     pub position: u32,
     pub start: Option<u32>,
@@ -25,23 +25,18 @@ pub struct TextCursor {
 pub struct TextBoxState {}
 
 impl State for TextBoxState {
-    fn handles_event(
-        &self,
-        event: &EventBox,
-        entity: Entity,
-        ecm: &mut EntityComponentManager,
-    ) -> bool {
+    fn handles_event(&self, event: &EventBox, widget: &WidgetContainer) -> bool {
         if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
             let mut focused = false;
-            if let Ok(foc) = ecm.borrow_component::<Focused>(entity) {
+            if let Ok(foc) = widget.borrow_property::<Focused>() {
                 focused = foc.0;
             }
 
-            return !focused && check_mouse_condition(event.position, entity, ecm);
+            return !focused && check_mouse_condition(event.position, widget);
         }
 
         if event.event_type() == TypeId::of::<KeyDownEvent>() {
-            if let Ok(foc) = ecm.borrow_component::<Focused>(entity) {
+            if let Ok(foc) = widget.borrow_property::<Focused>() {
                 return foc.0;
             }
         }
@@ -49,96 +44,67 @@ impl State for TextBoxState {
         false
     }
 
-    fn update(
-        &self,
-        event: &EventBox,
-        entity: Entity,
-        tree: &Tree,
-        ecm: &mut EntityComponentManager,
-    ) -> bool {
-        fn add_selector(
-            pseudo_class: &str,
-            entity: Entity,
-            tree: &Tree,
-            ecm: &mut EntityComponentManager,
-        ) {
-            if let Ok(selector) = ecm.borrow_mut_component::<Selector>(entity) {
-                selector.pseudo_classes.insert(String::from(pseudo_class));
-            }
+    fn update(&self, event: &EventBox, widget: &mut WidgetContainer) -> bool {
+        fn update_label(key: &Key, widget: &mut WidgetContainer) {
+            let mut label_offset = 0;
+            if let Ok(label) = widget.borrow_mut_property::<Label>() {
+                let old_label_width = label.0.len() * 8;
 
-            for child in &tree.children[&entity] {
-                add_selector(pseudo_class, *child, tree, ecm);
-            }
-        }
-
-        fn update_label(key: &Key, entity: Entity, tree: &Tree, ecm: &mut EntityComponentManager) {
-            if let Ok(label) = ecm.borrow_mut_component::<Label>(entity) {
                 if key.to_string() != "" {
                     label.0.push_str(&key.to_string());
                 } else {
                     match *key {
                         Key::Backspace => {
                             label.0.pop();
-                        },
+                        }
                         _ => {}
                     }
                 }
+
+                label_offset = label.0.len() as i32 * 8 - old_label_width as i32;
             }
 
-            for child in &tree.children[&entity] {
-                update_label(key, *child, tree, ecm);
+            if let Ok(horizontal_offset) = widget.borrow_mut_property::<HorizontalOffset>() {
+                horizontal_offset.0 = (horizontal_offset.0 - label_offset).min(0);
             }
         }
 
-        // fn remove_selector(
-        //     pseudo_class: &str,
-        //     entity: Entity,
-        //     tree: &Tree,
-        //     ecm: &mut EntityComponentManager,
-        // ) {
-        //     if let Ok(selector) = ecm.borrow_mut_component::<Selector>(entity) {
-        //         selector.pseudo_classes.remove(&String::from(pseudo_class));
-        //     }
-
-        //     for child in &tree.children[&entity] {
-        //         remove_selector(pseudo_class, *child, tree, ecm);
-        //     }
-        // }
-
         if event.event_type() == TypeId::of::<MouseDownEvent>() {
-            add_selector("active", entity, tree, ecm);
-            ecm.borrow_mut_component::<Focused>(entity).unwrap().0 = true;
+            add_selector_to_widget("active", widget);
+            widget.borrow_mut_property::<Focused>().unwrap().0 = true;
 
             return true;
         }
 
         if let Ok(key_event) = event.downcast_ref::<KeyDownEvent>() {
-            update_label(&key_event.key, entity, tree, ecm);
+            update_label(&key_event.key, widget);
             return true;
         }
 
         false
     }
 
-    fn properties(&self) -> Vec<Property> {
+    fn properties(&self) -> Vec<PropertyResult> {
         vec![
-            Property::new(Focused(false)),
-            Property::new(TextCursor::default()),
+            Property::new(Focused(false)).build(),
+            Property::new(TextCursor::default()).build(),
         ]
     }
 }
 
 pub struct TextBox {
-    pub label: String,
-    pub class: String,
+    pub label: Property<Label>,
+    pub selector: Property<Selector>,
     pub state: Rc<State>,
+    pub horizontal_offset: Property<HorizontalOffset>,
 }
 
 impl Default for TextBox {
     fn default() -> TextBox {
         TextBox {
-            label: String::from("TextBox"),
-            class: String::from("textbox"),
+            label: Property::new(Label(String::from("TextBox"))),
+            selector: Property::new(Selector::new(Some(String::from("textbox")))),
+            horizontal_offset: Property::new(HorizontalOffset(0)),
             state: Rc::new(TextBoxState {
                 ..Default::default()
             }),
@@ -149,16 +115,24 @@ impl Default for TextBox {
 impl Widget for TextBox {
     fn template(&self) -> Template {
         Template::Single(Rc::new(Container {
-            class: self.class.clone(),
-            child: Some(Rc::new(TextBlock {
-                label: self.label.clone(),
-                class: self.class.clone(),
+            selector: self.selector.clone(),
+            child: Some(Rc::new(ScrollViewer {
+                child: Some(Rc::new(TextBlock {
+                    label: self.label.clone(),
+                    selector: self.selector.clone(),
+                })),
+                horizontal_offset: self.horizontal_offset.clone(),
+                ..Default::default()
             })),
         }))
     }
 
-    fn properties(&self) -> Vec<Property> {
-        vec![Property::new(Selector::new(Some(self.class.clone())))]
+    fn properties(&self) -> Vec<PropertyResult> {
+        vec![
+            self.label.build(),
+            self.selector.build(),
+            self.horizontal_offset.build(),
+        ]
     }
 
     fn state(&self) -> Option<Rc<State>> {

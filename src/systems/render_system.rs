@@ -4,7 +4,11 @@ use std::rc::Rc;
 
 use dces::{Entity, EntityComponentManager, System};
 
-use {Backend, Point, Rect, RenderObject, Tree};
+use backend::Backend;
+use render_object::RenderObject;
+use structs::{Point, Rect};
+use tree::Tree;
+use widget::WidgetContainer;
 
 pub struct RenderSystem {
     pub render_objects: Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
@@ -24,6 +28,11 @@ impl System<Tree> for RenderSystem {
 
         for node in tree.into_iter() {
             let mut current_offset = (0, 0);
+            let mut boundery = (0, 0);
+
+            if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(tree.parent[&node]) {
+                boundery = (bounds.width, bounds.height);
+            }
 
             if let Some(offset) = offsets.get(&tree.parent.get(&node).unwrap()) {
                 current_offset = *offset;
@@ -31,10 +40,10 @@ impl System<Tree> for RenderSystem {
 
             if let Some(render_object) = self.render_objects.borrow().get(&node) {
                 render_object.render(
-                    node,
-                    ecm,
                     render_context.renderer,
+                    &WidgetContainer::new(node, ecm),
                     &render_context.theme,
+                    boundery,
                     current_offset,
                 );
             }
