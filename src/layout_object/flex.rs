@@ -7,6 +7,8 @@ pub struct FlexLayoutObject {
     orientation: Alignment,
     current_child: Cell<usize>,
     current_position: RefCell<Vec<u32>>,
+    width: Cell<u32>,
+    height: Cell<u32>,
 }
 
 impl FlexLayoutObject {
@@ -15,6 +17,8 @@ impl FlexLayoutObject {
             orientation,
             current_child: Cell::new(0),
             current_position: RefCell::new(vec![]),
+            width: Cell::new(0),
+            height: Cell::new(0),
         }
     }
 }
@@ -33,12 +37,28 @@ impl LayoutObject for FlexLayoutObject {
         if let Some(size) = size {
             self.current_child.set(self.current_child.get() + 1);
 
-            match self.orientation {
-                Alignment::Horizontal => {
-                    self.current_position.borrow_mut().push(size.0);
-                }
-                Alignment::Vertical => {
-                    self.current_position.borrow_mut().push(size.1);
+            if self.current_child.get() < children.len() {
+                match self.orientation {
+                    Alignment::Horizontal => {
+                        self.current_position.borrow_mut().push(size.0);
+
+                        if size.1 > self.height.get()
+                            && size.1 < constraint.max_height
+                            && size.1 > constraint.min_height
+                        {
+                            self.height.set(size.1);
+                        }
+                    }
+                    Alignment::Vertical => {
+                        self.current_position.borrow_mut().push(size.1);
+
+                        if size.0 > self.width.get()
+                            && size.0 < constraint.max_width
+                            && size.0 > constraint.min_width
+                        {
+                            self.width.set(size.0);
+                        }
+                    }
                 }
             }
 
@@ -46,8 +66,10 @@ impl LayoutObject for FlexLayoutObject {
                 let mut counter = 0;
 
                 for child in children {
-                    if counter == self.current_position.borrow().len() {
-                        break;
+                    let mut current_pos = 0;
+
+                    for i in 0..counter {
+                        current_pos += self.current_position.borrow()[i];
                     }
 
                     if let None = children_pos {
@@ -56,16 +78,10 @@ impl LayoutObject for FlexLayoutObject {
                     if let Some(children_pos) = children_pos {
                         match self.orientation {
                             Alignment::Horizontal => {
-                                children_pos.insert(
-                                    *child,
-                                    (self.current_position.borrow()[counter] as i32, 0),
-                                );
+                                children_pos.insert(*child, (current_pos as i32, 0));
                             }
                             Alignment::Vertical => {
-                                children_pos.insert(
-                                    *child,
-                                    (0, self.current_position.borrow()[counter] as i32),
-                                );
+                                children_pos.insert(*child, (0, current_pos as i32));
                             }
                         }
 
@@ -73,15 +89,23 @@ impl LayoutObject for FlexLayoutObject {
                     }
                 }
 
-                return LayoutResult::Size((constraint.max_width, constraint.max_height));
+                match self.orientation {
+                    Alignment::Horizontal => {
+                        return LayoutResult::Size((constraint.max_width, self.height.get()));
+                    }
+                    Alignment::Vertical => {
+                        return LayoutResult::Size((self.width.get(), constraint.max_height));
+                    }
+                }
             }
         } else {
             if children.is_empty() {
                 return LayoutResult::Size((constraint.min_width, constraint.min_height));
             }
             self.current_position.borrow_mut().clear();
-            self.current_position.borrow_mut().push(0);
             self.current_child.set(0);
+            self.width.set(0);
+            self.height.set(0);
         }
 
         let child_bc = Constraint {

@@ -41,7 +41,7 @@ impl System<Tree> for RenderSystem {
             if let Some(render_object) = self.render_objects.borrow().get(&node) {
                 render_object.render(
                     render_context.renderer,
-                    &WidgetContainer::new(node, ecm),
+                    &WidgetContainer::new(node, ecm, tree),
                     &render_context.theme,
                     boundery,
                     current_offset,

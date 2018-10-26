@@ -1,3 +1,7 @@
+use std::rc::Rc;
+
+use widget::WidgetContainer;
+
 use Event;
 
 pub enum Key {
@@ -209,3 +213,5 @@ pub struct KeyUpEvent {
 }
 
 impl Event for KeyUpEvent {}
+
+pub type KeyHandler = Rc<Fn(&Key, &mut WidgetContainer) -> bool + 'static>;

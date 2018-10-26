@@ -1,5 +1,6 @@
 use std::rc::Rc;
 
+use state::State;
 use layout_object::{LayoutObject, PaddingLayoutObject};
 use render_object::{RectangleRenderObject, RenderObject};
 use theme::Selector;
@@ -8,6 +9,7 @@ use widget::{Property, PropertyResult, Template, Widget};
 pub struct Container {
     pub child: Option<Rc<Widget>>,
     pub selector: Property<Selector>,
+    pub state: Rc<State>,
 }
 
 impl Default for Container {
@@ -15,6 +17,7 @@ impl Default for Container {
         Container {
             child: None,
             selector: Property::new(Selector::new(Some(String::from("container")))),
+            state: Rc::new(State::default()),
         }
     }
 }
@@ -38,5 +41,9 @@ impl Widget for Container {
 
     fn layout_object(&self) -> Box<LayoutObject> {
         Box::new(PaddingLayoutObject)
+    }
+
+    fn state(&self) -> Option<Rc<State>> {
+        Some(self.state.clone())
     }
 }

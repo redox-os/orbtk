@@ -32,6 +32,6 @@ textbox {
     padding: 6;
 }
 
-textbox:active {
+textbox:focus {
     border-color: #2a94db;
 }

@@ -18,12 +18,12 @@ name = "orbtk"
 path = "src/lib.rs"
 
 [dependencies]
-cssparser = "0.16.0"
-lazy_static = "0.2.8"
+cssparser = "0.17.0"
+lazy_static = "1.1.0"
 dces = { path = "/Users/florian.blasius/Projects/Focus-Time/dces-rust/" }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-stdweb = "0.4.9"
+stdweb = "0.4.10"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 orbclient = "0.3.17"

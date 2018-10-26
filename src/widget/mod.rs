@@ -8,6 +8,7 @@ use layout_object::{DefaultLayoutObject, LayoutObject};
 use render_object::RenderObject;
 use theme::Selector;
 use state::State;
+use tree::Tree;
 
 pub use self::button::*;
 pub use self::column::*;
@@ -54,9 +55,9 @@ pub trait Widget: Any {
             properties.push(Property::new(Drawable).build());
         }
 
-        if let Some(state) = self.state() {
-            properties.append(&mut state.properties());
-        }
+        // if let Some(state) = self.state() {
+        //     properties.append(&mut state.properties());
+        // }
         properties
     }
 
@@ -78,13 +79,15 @@ pub trait Widget: Any {
 }
 
 pub struct WidgetContainer<'a> {
+    tree: &'a Tree,
     ecm: &'a mut EntityComponentManager,
     current_node: Entity,
 }
 
 impl<'a> WidgetContainer<'a> {
-    pub fn new(root: Entity, ecm: &'a mut EntityComponentManager) -> Self {
+    pub fn new(root: Entity, ecm: &'a mut EntityComponentManager, tree: &'a Tree) -> Self {
         WidgetContainer {
+            tree,
             ecm,
             current_node: root,
         }
@@ -96,6 +99,14 @@ impl<'a> WidgetContainer<'a> {
 
     pub fn borrow_mut_property<P: Component>(&mut self) -> Result<&mut P, NotFound> {
         self.ecm.borrow_mut_component::<P>(self.current_node)
+    }
+
+    pub fn borrow_parent_property<P: Component>(&self) -> Result<&P, NotFound> {
+        self.ecm.borrow_component::<P>(self.tree.parent[&self.current_node])
+    }
+
+    pub fn borrow_mut_parent_property<P: Component>(&mut self) -> Result<&mut P, NotFound> {
+        self.ecm.borrow_mut_component::<P>(self.tree.parent[&self.current_node])
     }
 }
 

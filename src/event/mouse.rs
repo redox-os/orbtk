@@ -48,6 +48,6 @@ pub struct MouseDownEvent {
 
 impl Event for MouseDownEvent {}
 
-pub type MouseHandler = Rc<Fn() + 'static>;
+pub type MouseHandler = Rc<Fn(Point, &mut WidgetContainer) -> bool + 'static>;
 
 pub type OnMouseUp = Rc<Fn() + 'static>;

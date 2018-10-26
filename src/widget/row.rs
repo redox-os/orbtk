@@ -15,7 +15,7 @@ impl Default for Row {
     fn default() -> Row {
         Row {
             children: vec![],
-            selector: Property::new(Selector::new(Some(String::from("column")))),
+            selector: Property::new(Selector::new(Some(String::from("row")))),
         }
     }
 }

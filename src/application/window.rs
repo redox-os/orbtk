@@ -194,7 +194,17 @@ fn build_tree(
 
     expand(world, render_objects, layout_objects, states, root, 0);
 
-    for node in world.entity_container().into_iter() {
-        println!("Node: {}", node);
-    }
+    // let mut nodes = vec![];
+
+    // for node in world.entity_container().into_iter() {
+    //     nodes.push(node);
+    // }
+
+    // for node in nodes {
+    //     let mut class = "";
+    //     if let Ok(ok) =  world.entity_component_manager.borrow_component::<Selector>(node) {
+
+    //     }
+    //     println!("Node: {}", node);
+    // }
 }

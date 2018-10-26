@@ -30,7 +30,7 @@ impl System<Tree> for EventSystem {
                 let entity_has_state = self.states.borrow().contains_key(&node);
 
                 if entity_has_state {
-                    let mut widget = WidgetContainer::new(node, ecm);
+                    let mut widget = WidgetContainer::new(node, ecm, tree);
 
                     let handles_event =
                         self.states.borrow()[&node].handles_event(&event_box, &widget);
@@ -40,7 +40,7 @@ impl System<Tree> for EventSystem {
                             target_node = Some(node);
                         } else {
                             // bottom up
-                            if self.states.borrow_mut()[&node].update(&event_box, &mut widget) {
+                            if self.states.borrow_mut()[&node].handle_event(&event_box, &mut widget) {
                                 break;
                             }
                         }
@@ -52,11 +52,11 @@ impl System<Tree> for EventSystem {
             if let Some(target_node) = target_node {
                 let mut target_node = target_node;
                 loop {
-                    let mut widget = WidgetContainer::new(target_node, ecm);
+                    let mut widget = WidgetContainer::new(target_node, ecm, tree);
                     let entity_has_state = self.states.borrow_mut().contains_key(&target_node);
 
                     if entity_has_state
-                        && self.states.borrow_mut()[&target_node].update(&event_box, &mut widget)
+                        && self.states.borrow_mut()[&target_node].handle_event(&event_box, &mut widget)
                     {
                         break;
                     }
