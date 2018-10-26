@@ -53,8 +53,6 @@ struct MainView {
     counter: Property<Label>,
 }
 
-
-
 impl Widget for MainView {
     fn template(&self) -> Template {
         let state = self.state.clone();
