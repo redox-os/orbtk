@@ -4,10 +4,11 @@ use std::rc::Rc;
 
 use dces::{Component, ComponentBox, Entity, EntityComponentManager, NotFound, SharedComponentBox};
 
+use state::State;
 use layout_object::{DefaultLayoutObject, LayoutObject};
 use render_object::RenderObject;
 use theme::Selector;
-use state::State;
+use event::Handler;
 use tree::Tree;
 
 pub use self::button::*;
@@ -55,8 +56,8 @@ pub trait Widget: Any {
             properties.push(Property::new(Drawable).build());
         }
 
-        // if let Some(state) = self.state() {
-        //     properties.append(&mut state.properties());
+        // if let Some(handler) = self.handler() {
+        //     properties.append(&mut handler.properties());
         // }
         properties
     }
@@ -71,6 +72,10 @@ pub trait Widget: Any {
 
     fn layout_object(&self) -> Box<LayoutObject> {
         Box::new(DefaultLayoutObject)
+    }
+
+    fn handler(&self) -> Option<Rc<Handler>> {
+        None
     }
 
     fn state(&self) -> Option<Rc<State>> {

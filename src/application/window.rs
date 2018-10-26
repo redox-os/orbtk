@@ -7,14 +7,15 @@ use dces::{Entity, World};
 
 use application::Application;
 use backend::{target_backend, BackendRunner};
+use event::Handler;
 use layout_object::LayoutObject;
 use render_object::RenderObject;
 use state::State;
 use structs::{Point, Rect};
-use systems::{EventSystem, LayoutSystem, RenderSystem};
+use systems::{EventSystem, LayoutSystem, RenderSystem, StateSystem};
 use theme::Theme;
 use tree::Tree;
-use widget::{Template, Widget, PropertyResult};
+use widget::{PropertyResult, Template, Widget};
 
 pub struct Window {
     pub backend_runner: Box<BackendRunner>,
@@ -24,6 +25,8 @@ pub struct Window {
     pub layout_objects: Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
 
     pub root: Option<Rc<Widget>>,
+
+    pub handlers: Rc<RefCell<HashMap<Entity, Rc<Handler>>>>,
 
     pub states: Rc<RefCell<HashMap<Entity, Rc<State>>>>,
 }
@@ -68,18 +71,33 @@ impl<'a> WindowBuilder<'a> {
         let mut world = World::from_container(Tree::default());
         let render_objects = Rc::new(RefCell::new(HashMap::new()));
         let layout_objects = Rc::new(RefCell::new(HashMap::new()));
+        let handlers = Rc::new(RefCell::new(HashMap::new()));
         let states = Rc::new(RefCell::new(HashMap::new()));
 
         if let Some(root) = &self.root {
-            build_tree(root, &mut world, &render_objects, &layout_objects, &states);
+            build_tree(
+                root,
+                &mut world,
+                &render_objects,
+                &layout_objects,
+                &handlers,
+                &states,
+            );
         }
 
         world
             .create_system(EventSystem {
                 backend: backend.clone(),
-                states: states.clone(),
+                handlers: handlers.clone(),
             })
             .with_priority(0)
+            .build();
+
+        world
+            .create_system(StateSystem {
+                states: states.clone(),
+            })
+            .with_priority(1)
             .build();
 
         world
@@ -87,7 +105,7 @@ impl<'a> WindowBuilder<'a> {
                 backend: backend.clone(),
                 layout_objects: layout_objects.clone(),
             })
-            .with_priority(1)
+            .with_priority(2)
             .build();
 
         world
@@ -95,7 +113,7 @@ impl<'a> WindowBuilder<'a> {
                 backend: backend.clone(),
                 render_objects: render_objects.clone(),
             })
-            .with_priority(2)
+            .with_priority(3)
             .build();
 
         runner.world(world);
@@ -105,6 +123,7 @@ impl<'a> WindowBuilder<'a> {
             render_objects,
             layout_objects,
             root: self.root,
+            handlers,
             states,
         })
     }
@@ -115,12 +134,14 @@ fn build_tree(
     world: &mut World<Tree>,
     render_objects: &Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
     layout_objects: &Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+    handlers: &Rc<RefCell<HashMap<Entity, Rc<Handler>>>>,
     states: &Rc<RefCell<HashMap<Entity, Rc<State>>>>,
 ) {
     fn expand(
         world: &mut World<Tree>,
         render_objects: &Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
         layout_objects: &Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+        handlers: &Rc<RefCell<HashMap<Entity, Rc<Handler>>>>,
         states: &Rc<RefCell<HashMap<Entity, Rc<State>>>>,
         widget: &Rc<Widget>,
         parent: Entity,
@@ -136,18 +157,22 @@ fn build_tree(
                     PropertyResult::Property(property, source) => {
                         entity_builder = entity_builder.with_box(property);
                         source.set(Some(entity_builder.entity));
-                    },
+                    }
                     PropertyResult::Source(source) => {
                         entity_builder = entity_builder.with_shared_box(source);
-                    },
-                    PropertyResult::PropertyNotFound => {},
-                }      
+                    }
+                    PropertyResult::PropertyNotFound => {}
+                }
             }
 
             let entity = entity_builder.build();
 
             if let Some(render_object) = widget.render_object() {
                 render_objects.borrow_mut().insert(entity, render_object);
+            }
+
+            if let Some(handler) = widget.handler() {
+                handlers.borrow_mut().insert(entity, handler.clone());
             }
 
             if let Some(state) = widget.state() {
@@ -167,6 +192,7 @@ fn build_tree(
                     world,
                     render_objects,
                     layout_objects,
+                    handlers,
                     states,
                     &child,
                     parent,
@@ -179,6 +205,7 @@ fn build_tree(
                         world,
                         render_objects,
                         layout_objects,
+                        handlers,
                         states,
                         &child,
                         parent,
@@ -192,7 +219,15 @@ fn build_tree(
         entity
     }
 
-    expand(world, render_objects, layout_objects, states, root, 0);
+    expand(
+        world,
+        render_objects,
+        layout_objects,
+        handlers,
+        states,
+        root,
+        0,
+    );
 
     // let mut nodes = vec![];
 

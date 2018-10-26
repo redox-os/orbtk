@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use state::State;
+use event::Handler;
 use structs::Point;
 use theme::Selector;
 use widget::{
@@ -14,7 +14,7 @@ pub struct Pressed(pub bool);
 pub struct Button {
     pub label: Property<Label>,
     pub selector: Property<Selector>,
-    pub state: Rc<State>,
+    pub handler: Rc<Handler>,
 }
 
 impl Default for Button {
@@ -22,7 +22,7 @@ impl Default for Button {
         Button {
             label: Property::new(Label(String::from("label"))),
             selector: Property::new(Selector::new(Some(String::from("button")))),
-            state: Rc::new(State::default()),
+            handler: Rc::new(Handler::default()),
         }
     }
 }
@@ -35,7 +35,7 @@ impl Widget for Button {
                 label: self.label.clone(),
                 selector: self.selector.clone(),
             })),
-            state: Rc::new(State {
+            handler: Rc::new(Handler {
                 on_mouse_down: Some(Rc::new(|_pos: Point, widget: &mut WidgetContainer|  -> bool {
                     add_selector_to_widget("active", widget);
                     false
@@ -53,7 +53,7 @@ impl Widget for Button {
         vec![self.selector.build(), self.label.build()]
     }
 
-    fn state(&self) -> Option<Rc<State>> {
-        Some(self.state.clone())
+    fn handler(&self) -> Option<Rc<Handler>> {
+        Some(self.handler.clone())
     }
 }

@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use super::Property;
 use event::Key;
-use state::State;
+use event::Handler;
 use structs::Point;
 use theme::Selector;
 use widget::{
@@ -37,7 +37,7 @@ fn update_label(key: &Key, widget: &mut WidgetContainer) {
 pub struct TextBox {
     pub label: Property<Label>,
     pub selector: Property<Selector>,
-    pub state: Rc<State>,
+    pub handler: Rc<Handler>,
     pub horizontal_offset: Property<HorizontalOffset>,
 }
 
@@ -47,7 +47,7 @@ impl Default for TextBox {
             label: Property::new(Label(String::from("TextBox"))),
             selector: Property::new(Selector::new(Some(String::from("textbox")))),
             horizontal_offset: Property::new(HorizontalOffset(0)),
-            state: Rc::new(State::default()),
+            handler: Rc::new(Handler::default()),
         }
     }
 }
@@ -64,7 +64,7 @@ impl Widget for TextBox {
                 horizontal_offset: self.horizontal_offset.clone(),
                 ..Default::default()
             })),
-            state: Rc::new(State {
+            handler: Rc::new(Handler {
                 on_mouse_down: Some(Rc::new(
                     |_pos: Point, widget: &mut WidgetContainer| -> bool {
                         add_selector_to_widget("focus", widget);
@@ -91,7 +91,7 @@ impl Widget for TextBox {
         ]
     }
 
-    fn state(&self) -> Option<Rc<State>> {
-        Some(self.state.clone())
+    fn handler(&self) -> Option<Rc<Handler>> {
+        Some(self.handler.clone())
     }
 }

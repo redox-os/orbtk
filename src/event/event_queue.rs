@@ -93,4 +93,4 @@ impl<'a> Iterator for EventQeueIterator<'a> {
     }
 }
 
-// todo state as component include other components and change it.
+// todo handler as component include other components and change it.

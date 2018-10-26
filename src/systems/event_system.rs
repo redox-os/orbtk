@@ -6,14 +6,13 @@ use std::collections::HashMap;
 use dces::{Entity, EntityComponentManager, System};
 
 use backend::Backend;
-use event::EventStrategy;
-use state::State;
+use event::{EventStrategy, Handler};
 use tree::Tree;
 use widget::WidgetContainer;
 
 pub struct EventSystem {
     pub backend: Rc<RefCell<Backend>>,
-    pub states: Rc<RefCell<HashMap<Entity, Rc<State>>>>,
+    pub handlers: Rc<RefCell<HashMap<Entity, Rc<Handler>>>>,
 }
 
 impl System<Tree> for EventSystem {
@@ -27,20 +26,21 @@ impl System<Tree> for EventSystem {
 
         for event_box in event_context.event_queue.borrow_mut().into_iter() {
             for node in tree.into_iter() {
-                let entity_has_state = self.states.borrow().contains_key(&node);
+                let entity_has_handler = self.handlers.borrow().contains_key(&node);
 
-                if entity_has_state {
+                if entity_has_handler {
                     let mut widget = WidgetContainer::new(node, ecm, tree);
 
                     let handles_event =
-                        self.states.borrow()[&node].handles_event(&event_box, &widget);
+                        self.handlers.borrow()[&node].handles_event(&event_box, &widget);
 
                     if handles_event {
                         if event_box.strategy == EventStrategy::TopDown {
                             target_node = Some(node);
                         } else {
                             // bottom up
-                            if self.states.borrow_mut()[&node].handle_event(&event_box, &mut widget) {
+                            if self.handlers.borrow_mut()[&node].handle_event(&event_box, &mut widget)
+                            {
                                 break;
                             }
                         }
@@ -53,10 +53,11 @@ impl System<Tree> for EventSystem {
                 let mut target_node = target_node;
                 loop {
                     let mut widget = WidgetContainer::new(target_node, ecm, tree);
-                    let entity_has_state = self.states.borrow_mut().contains_key(&target_node);
+                    let entity_has_handler = self.handlers.borrow_mut().contains_key(&target_node);
 
-                    if entity_has_state
-                        && self.states.borrow_mut()[&target_node].handle_event(&event_box, &mut widget)
+                    if entity_has_handler
+                        && self.handlers.borrow_mut()[&target_node]
+                            .handle_event(&event_box, &mut widget)
                     {
                         break;
                     }
