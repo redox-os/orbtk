@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use dces::{Entity, EntityComponentManager, System};
 
@@ -12,7 +12,7 @@ use widget::WidgetContainer;
 
 pub struct EventSystem {
     pub backend: Rc<RefCell<Backend>>,
-    pub handlers: Rc<RefCell<HashMap<Entity, Rc<Handler>>>>,
+    pub handlers: Rc<RefCell<BTreeMap<Entity, Rc<Handler>>>>,
 }
 
 impl System<Tree> for EventSystem {
@@ -21,28 +21,22 @@ impl System<Tree> for EventSystem {
         let event_context = backend.event_context();
         let mut target_node = None;
 
-        let mut offsets = HashMap::new();
+        let mut offsets = BTreeMap::new();
         offsets.insert(tree.root, (0, 0));
 
         for event_box in event_context.event_queue.borrow_mut().into_iter() {
-            for node in tree.into_iter() {
-                let entity_has_handler = self.handlers.borrow().contains_key(&node);
+            for (node, handler) in &*self.handlers.borrow() {
+                let mut widget = WidgetContainer::new(*node, ecm, tree);
 
-                if entity_has_handler {
-                    let mut widget = WidgetContainer::new(node, ecm, tree);
+                let handles_event = handler.handles_event(&event_box, &widget);
 
-                    let handles_event =
-                        self.handlers.borrow()[&node].handles_event(&event_box, &widget);
-
-                    if handles_event {
-                        if event_box.strategy == EventStrategy::TopDown {
-                            target_node = Some(node);
-                        } else {
-                            // bottom up
-                            if self.handlers.borrow_mut()[&node].handle_event(&event_box, &mut widget)
-                            {
-                                break;
-                            }
+                if handles_event {
+                    if event_box.strategy == EventStrategy::TopDown {
+                        target_node = Some(*node);
+                    } else {
+                        // bottom up
+                        if handler.handle_event(&event_box, &mut widget) {
+                            break;
                         }
                     }
                 }

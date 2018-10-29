@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::rc::Rc;
 
 use dces::{Entity, EntityComponentManager, System};
@@ -11,7 +11,7 @@ use tree::Tree;
 use widget::WidgetContainer;
 
 pub struct RenderSystem {
-    pub render_objects: Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
+    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
     pub backend: Rc<RefCell<Backend>>,
 }
 
@@ -20,7 +20,7 @@ impl System<Tree> for RenderSystem {
         let mut backend = self.backend.borrow_mut();
         let render_context = backend.render_context();
 
-        let mut offsets = HashMap::new();
+        let mut offsets = BTreeMap::new();
         offsets.insert(tree.root, (0, 0));
 
         // render window background

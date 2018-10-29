@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use dces::{Entity, EntityComponentManager, System};
 
@@ -10,7 +10,7 @@ use tree::Tree;
 use widget::WidgetContainer;
 
 pub struct StateSystem {
-    pub states: Rc<RefCell<HashMap<Entity, Rc<State>>>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
 }
 
 impl System<Tree> for StateSystem {

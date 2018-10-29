@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use dces::{Entity, World};
 
@@ -20,15 +20,15 @@ use widget::{PropertyResult, Template, Widget};
 pub struct Window {
     pub backend_runner: Box<BackendRunner>,
 
-    pub render_objects: Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
+    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
 
-    pub layout_objects: Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+    pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
 
     pub root: Option<Rc<Widget>>,
 
-    pub handlers: Rc<RefCell<HashMap<Entity, Rc<Handler>>>>,
+    pub handlers: Rc<RefCell<BTreeMap<Entity, Rc<Handler>>>>,
 
-    pub states: Rc<RefCell<HashMap<Entity, Rc<State>>>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
 }
 
 impl Window {
@@ -69,10 +69,10 @@ impl<'a> WindowBuilder<'a> {
     pub fn build(self) {
         let (mut runner, backend) = target_backend(&self.title, self.bounds, self.theme);
         let mut world = World::from_container(Tree::default());
-        let render_objects = Rc::new(RefCell::new(HashMap::new()));
-        let layout_objects = Rc::new(RefCell::new(HashMap::new()));
-        let handlers = Rc::new(RefCell::new(HashMap::new()));
-        let states = Rc::new(RefCell::new(HashMap::new()));
+        let render_objects = Rc::new(RefCell::new(BTreeMap::new()));
+        let layout_objects = Rc::new(RefCell::new(BTreeMap::new()));
+        let handlers = Rc::new(RefCell::new(BTreeMap::new()));
+        let states = Rc::new(RefCell::new(BTreeMap::new()));
 
         if let Some(root) = &self.root {
             build_tree(
@@ -132,17 +132,17 @@ impl<'a> WindowBuilder<'a> {
 fn build_tree(
     root: &Rc<Widget>,
     world: &mut World<Tree>,
-    render_objects: &Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
-    layout_objects: &Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
-    handlers: &Rc<RefCell<HashMap<Entity, Rc<Handler>>>>,
-    states: &Rc<RefCell<HashMap<Entity, Rc<State>>>>,
+    render_objects: &Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
+    layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
+    handlers: &Rc<RefCell<BTreeMap<Entity, Rc<Handler>>>>,
+    states: &Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
 ) {
     fn expand(
         world: &mut World<Tree>,
-        render_objects: &Rc<RefCell<HashMap<Entity, Box<RenderObject>>>>,
-        layout_objects: &Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
-        handlers: &Rc<RefCell<HashMap<Entity, Rc<Handler>>>>,
-        states: &Rc<RefCell<HashMap<Entity, Rc<State>>>>,
+        render_objects: &Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
+        layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
+        handlers: &Rc<RefCell<BTreeMap<Entity, Rc<Handler>>>>,
+        states: &Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
         widget: &Rc<Widget>,
         parent: Entity,
     ) -> Entity {

@@ -20,7 +20,7 @@ path = "src/lib.rs"
 [dependencies]
 cssparser = "0.17.0"
 lazy_static = "1.1.0"
-dces = { path = "/Users/florian.blasius/Projects/Focus-Time/dces-rust/" }
+dces = { git = "https://gitlab.com/orbtk/dces-rust.git", branch = "shared" }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 stdweb = "0.4.10"

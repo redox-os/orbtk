@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::rc::Rc;
 
 use dces::{Entity, EntityComponentManager, System};
@@ -16,7 +16,7 @@ pub enum LayoutResult {
 }
 
 pub struct LayoutSystem {
-    pub layout_objects: Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+    pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
     pub backend: Rc<RefCell<Backend>>,
 }
 
@@ -28,7 +28,7 @@ impl System<Tree> for LayoutSystem {
             constraint: &Constraint,
             entity: Entity,
             theme: &Theme,
-            layout_objects: &Rc<RefCell<HashMap<Entity, Box<LayoutObject>>>>,
+            layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
         ) -> (u32, u32) {
             let mut size: Option<(u32, u32)> = None;
 
