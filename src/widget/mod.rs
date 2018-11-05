@@ -8,7 +8,7 @@ use state::State;
 use layout_object::{DefaultLayoutObject, LayoutObject};
 use render_object::RenderObject;
 use theme::Selector;
-use event::Handler;
+use event::EventHandler;
 use tree::Tree;
 
 pub use self::button::*;
@@ -22,6 +22,7 @@ pub use self::text_box::*;
 mod button;
 mod column;
 mod container;
+mod macros;
 mod row;
 mod scroll_viewer;
 mod text_block;
@@ -56,9 +57,6 @@ pub trait Widget: Any {
             properties.push(Property::new(Drawable).build());
         }
 
-        // if let Some(handler) = self.handler() {
-        //     properties.append(&mut handler.properties());
-        // }
         properties
     }
 
@@ -74,8 +72,8 @@ pub trait Widget: Any {
         Box::new(DefaultLayoutObject)
     }
 
-    fn handler(&self) -> Option<Rc<Handler>> {
-        None
+    fn event_handlers(&self) -> Vec<Rc<EventHandler>> {
+        vec![]
     }
 
     fn state(&self) -> Option<Rc<State>> {

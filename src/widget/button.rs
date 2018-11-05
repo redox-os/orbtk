@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use event::Handler;
+use event::{EventHandler, MouseEventHandler};
 use structs::Point;
 use theme::Selector;
 use widget::{
@@ -14,7 +14,7 @@ pub struct Pressed(pub bool);
 pub struct Button {
     pub label: Property<Label>,
     pub selector: Property<Selector>,
-    pub handler: Rc<Handler>,
+    pub event_handlers: Vec<Rc<EventHandler>>,
 }
 
 impl Default for Button {
@@ -22,7 +22,7 @@ impl Default for Button {
         Button {
             label: Property::new(Label(String::from("label"))),
             selector: Property::new(Selector::new(Some(String::from("button")))),
-            handler: Rc::new(Handler::default()),
+            event_handlers: vec![],
         }
     }
 }
@@ -35,7 +35,7 @@ impl Widget for Button {
                 label: self.label.clone(),
                 selector: self.selector.clone(),
             })),
-            handler: Rc::new(Handler {
+            event_handlers: vec![Rc::new(MouseEventHandler {
                 on_mouse_down: Some(Rc::new(|_pos: Point, widget: &mut WidgetContainer|  -> bool {
                     add_selector_to_widget("active", widget);
                     false
@@ -45,7 +45,7 @@ impl Widget for Button {
                     false
                 })),
                 ..Default::default()
-            }),
+            })],
         }))
     }
 
@@ -53,7 +53,7 @@ impl Widget for Button {
         vec![self.selector.build(), self.label.build()]
     }
 
-    fn handler(&self) -> Option<Rc<Handler>> {
-        Some(self.handler.clone())
+    fn event_handlers(&self) -> Vec<Rc<EventHandler>> {
+        self.event_handlers.iter().by_ref().map(|handler| handler.clone()).collect()
     }
 }

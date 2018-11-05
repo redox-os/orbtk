@@ -1,8 +1,10 @@
 use std::rc::Rc;
+use std::any::TypeId;
 
 use widget::WidgetContainer;
 
-use Event;
+use {Event, EventBox, EventHandler};
+use theme::Selector;
 
 pub enum Key {
     Unknown,
@@ -215,3 +217,60 @@ pub struct KeyUpEvent {
 impl Event for KeyUpEvent {}
 
 pub type KeyHandler = Rc<Fn(&Key, &mut WidgetContainer) -> bool + 'static>;
+
+#[derive(Default)]
+pub struct KeyEventHandler {
+    pub on_key_up: Option<KeyHandler>,
+    pub on_key_down: Option<KeyHandler>,
+}
+
+impl EventHandler for KeyEventHandler {
+    fn handles_event(&self, event: &EventBox, widget: &WidgetContainer) -> bool {
+
+        if let Some(_) = self.on_key_down {
+            if event.event_type() == TypeId::of::<KeyDownEvent>() {
+                let mut is_focused = false;
+
+                if let Ok(selector) = widget.borrow_property::<Selector>() {
+                    if selector.pseudo_classes.contains("focus") {
+                        is_focused = true;
+                    }
+                }
+
+                return is_focused;
+            }
+        }
+
+        if let Some(_) = self.on_key_up {
+            if event.event_type() == TypeId::of::<KeyUpEvent>() {
+                let mut is_focused = false;
+
+                if let Ok(selector) = widget.borrow_property::<Selector>() {
+                    if selector.pseudo_classes.contains("focus") {
+                        is_focused = true;
+                    }
+                }
+
+                return is_focused;
+            }
+        }
+
+        false
+    }
+
+    fn handle_event(&self, event: &EventBox, widget: &mut WidgetContainer) -> bool {
+        if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
+            if let Some(handler) = &self.on_key_down {
+                return (handler)(&event.key, widget);
+            }
+        }
+
+        if let Ok(event) = event.downcast_ref::<KeyUpEvent>() {
+            if let Some(handler) = &self.on_key_up {
+                return (handler)(&event.key, widget);
+            }
+        }
+
+        false
+    }
+}

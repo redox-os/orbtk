@@ -7,7 +7,7 @@ use dces::{Entity, World};
 
 use application::Application;
 use backend::{target_backend, BackendRunner};
-use event::Handler;
+use event::EventHandler;
 use layout_object::LayoutObject;
 use render_object::RenderObject;
 use state::State;
@@ -26,7 +26,7 @@ pub struct Window {
 
     pub root: Option<Rc<Widget>>,
 
-    pub handlers: Rc<RefCell<BTreeMap<Entity, Rc<Handler>>>>,
+    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
 
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
 }
@@ -134,14 +134,14 @@ fn build_tree(
     world: &mut World<Tree>,
     render_objects: &Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
     layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
-    handlers: &Rc<RefCell<BTreeMap<Entity, Rc<Handler>>>>,
+    handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
     states: &Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
 ) {
     fn expand(
         world: &mut World<Tree>,
         render_objects: &Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
         layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
-        handlers: &Rc<RefCell<BTreeMap<Entity, Rc<Handler>>>>,
+        handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
         states: &Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
         widget: &Rc<Widget>,
         parent: Entity,
@@ -171,8 +171,16 @@ fn build_tree(
                 render_objects.borrow_mut().insert(entity, render_object);
             }
 
-            if let Some(handler) = widget.handler() {
-                handlers.borrow_mut().insert(entity, handler.clone());
+            let widget_handlers = widget.event_handlers();
+
+            if widget_handlers.len() > 0 {
+                let mut event_handlers = vec![];
+
+                for handler in widget_handlers {
+                    event_handlers.push(handler.clone());
+                }
+
+                handlers.borrow_mut().insert(entity, event_handlers);
             }
 
             if let Some(state) = widget.state() {

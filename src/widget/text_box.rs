@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use super::Property;
 use event::Key;
-use event::Handler;
+use event::{EventHandler, MouseEventHandler, KeyEventHandler};
 use structs::Point;
 use theme::Selector;
 use widget::{
@@ -37,7 +37,7 @@ fn update_label(key: &Key, widget: &mut WidgetContainer) {
 pub struct TextBox {
     pub label: Property<Label>,
     pub selector: Property<Selector>,
-    pub handler: Rc<Handler>,
+    pub event_handlers: Vec<Rc<EventHandler>>,
     pub horizontal_offset: Property<HorizontalOffset>,
 }
 
@@ -47,7 +47,7 @@ impl Default for TextBox {
             label: Property::new(Label(String::from("TextBox"))),
             selector: Property::new(Selector::new(Some(String::from("textbox")))),
             horizontal_offset: Property::new(HorizontalOffset(0)),
-            handler: Rc::new(Handler::default()),
+            event_handlers: vec![],
         }
     }
 }
@@ -64,13 +64,16 @@ impl Widget for TextBox {
                 horizontal_offset: self.horizontal_offset.clone(),
                 ..Default::default()
             })),
-            handler: Rc::new(Handler {
+            event_handlers: vec![Rc::new(MouseEventHandler {
                 on_mouse_down: Some(Rc::new(
                     |_pos: Point, widget: &mut WidgetContainer| -> bool {
                         add_selector_to_widget("focus", widget);
                         false
                     },
                 )),
+                ..Default::default()
+            }),
+            Rc::new(KeyEventHandler {
                 on_key_down: Some(Rc::new(
                     |key: &Key, widget: &mut WidgetContainer| -> bool {
                         update_label(key, widget);
@@ -78,7 +81,7 @@ impl Widget for TextBox {
                     },
                 )),
                 ..Default::default()
-            }),
+            })],
             ..Default::default()
         }))
     }
@@ -91,7 +94,7 @@ impl Widget for TextBox {
         ]
     }
 
-    fn handler(&self) -> Option<Rc<Handler>> {
-        Some(self.handler.clone())
+    fn event_handlers(&self) -> Vec<Rc<EventHandler>> {
+        self.event_handlers.iter().by_ref().map(|handler| handler.clone()).collect()
     }
 }

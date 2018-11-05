@@ -23,39 +23,39 @@ impl State for MainViewState {
     }
 }
 
+// struct Blub {
+
+// }
+
+// impl Widget for Blub {
+//     template!(Container {
+//         child: Some(Row)
+//     });
+//     // ,
+//     // Container {
+
+//     // });
+// }
+
 struct MainView {
     state: Rc<MainViewState>,
     counter: Property<Label>,
 }
 
-/*
-    template!(
-        Row {
-            children: [
-                Container {
-                    child: Button {
-                        label: "Click me",
-                        handler: ButtonHandler {
-                            on_mouse_up: || {
-                                println!("Button 1 mouse up");
-                            }
-                        }
-                    }
-                },
-                Container {
-                    child: TextBox {
-                        label: "Insert",
-                        handler: TextBoxHandler {}
-                    }
-                }
-            ]
-        }
-    )
-*/
-
 impl Widget for MainView {
     fn template(&self) -> Template {
         let state = self.state.clone();
+
+        //  let blub = impl_template!(Box::new(Row));
+
+        // let abc = template!(Container {
+        //     child: (Some(Row)),
+        //     selector: (Property::new(Selector::new(Some(String::from("container")))))
+        // });
+
+        // let blub: Option<Rc<Widget>> = impl_template!((Some(Row)));
+        // let mut test = Container::default();
+        // test.child = Some(Rc::new(Row::default()));
 
         Template::Single(Rc::new(Column {
             children: vec![
@@ -64,7 +64,7 @@ impl Widget for MainView {
                         Rc::new(Container {
                             child: Some(Rc::new(Button {
                                 label: Property::new(Label(String::from("Click me"))),
-                                handler: Rc::new(Handler {
+                                event_handlers: vec![Rc::new(MouseEventHandler {
                                     on_mouse_up: Some(Rc::new(
                                         move |pos: Point, widget: &mut WidgetContainer| -> bool {
                                             if check_mouse_condition(pos, widget) {
@@ -76,7 +76,7 @@ impl Widget for MainView {
                                         },
                                     )),
                                     ..Default::default()
-                                }),
+                                })],
                                 ..Default::default()
                             })),
                             ..Default::default()

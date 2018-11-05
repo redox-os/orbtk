@@ -1,13 +1,13 @@
 use std::any::Any;
 
+pub use self::event_handler::*;
 pub use self::event_queue::*;
-pub use self::handler::*;
 pub use self::key::*;
 pub use self::mouse::*;
 pub use self::system::*;
 
+mod event_handler;
 mod event_queue;
-mod handler;
 mod key;
 mod mouse;
 mod system;

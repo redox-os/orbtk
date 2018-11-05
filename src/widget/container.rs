@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use event::Handler;
+use event::{EventHandler};
 use layout_object::{LayoutObject, PaddingLayoutObject};
 use render_object::{RectangleRenderObject, RenderObject};
 use theme::Selector;
@@ -9,7 +9,7 @@ use widget::{Property, PropertyResult, Template, Widget};
 pub struct Container {
     pub child: Option<Rc<Widget>>,
     pub selector: Property<Selector>,
-    pub handler: Rc<Handler>,
+    pub event_handlers: Vec<Rc<EventHandler>>,
 }
 
 impl Default for Container {
@@ -17,7 +17,7 @@ impl Default for Container {
         Container {
             child: None,
             selector: Property::new(Selector::new(Some(String::from("container")))),
-            handler: Rc::new(Handler::default()),
+            event_handlers: vec![],
         }
     }
 }
@@ -43,7 +43,7 @@ impl Widget for Container {
         Box::new(PaddingLayoutObject)
     }
 
-    fn handler(&self) -> Option<Rc<Handler>> {
-        Some(self.handler.clone())
+    fn event_handlers(&self) -> Vec<Rc<EventHandler>> {
+        self.event_handlers.iter().by_ref().map(|handler| handler.clone()).collect()
     }
 }
