@@ -1,13 +1,16 @@
 use std::rc::Rc;
 
+use event::{Event, EventBox, EventHandler};
+use structs::{Point, Rect};
 use widget::WidgetContainer;
-use event::{Event, EventHandler, EventBox};
-use structs::{Rect, Point};
 
-pub fn check_mouse_condition(
-    position: Point,
-    widget: &WidgetContainer,
-) -> bool {
+#[derive(Default, Copy, Clone)]
+pub struct Pressed(pub bool);
+
+#[derive(Default, Copy, Clone)]
+pub struct Focused(pub bool);
+
+pub fn check_mouse_condition(position: Point, widget: &WidgetContainer) -> bool {
     if let Ok(bounds) = widget.borrow_property::<Rect>() {
         let mut rect = Rect::new(0, 0, bounds.width, bounds.height);
 
@@ -16,10 +19,10 @@ pub fn check_mouse_condition(
             rect.y = g_pos.y;
         }
 
-        return rect.contains(position)
+        return rect.contains(position);
     }
 
-    false  
+    false
 }
 
 pub enum MouseButton {
@@ -59,22 +62,6 @@ pub struct MouseEventHandler {
 }
 
 impl EventHandler for MouseEventHandler {
-    fn handles_event(&self, event: &EventBox, widget: &WidgetContainer) -> bool {
-        if let Some(_) = self.on_mouse_down {
-            if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
-                return check_mouse_condition(event.position, widget);
-            }
-        }
-
-        if let Some(_) = self.on_mouse_up {
-            if let Ok(event) = event.downcast_ref::<MouseUpEvent>() {
-                return check_mouse_condition(event.position, widget);
-            }
-        }
-
-        false
-    }
-
     fn handle_event(&self, event: &EventBox, widget: &mut WidgetContainer) -> bool {
         if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
             if let Some(handler) = &self.on_mouse_down {
@@ -84,7 +71,8 @@ impl EventHandler for MouseEventHandler {
 
         if let Ok(event) = event.downcast_ref::<MouseUpEvent>() {
             if let Some(handler) = &self.on_mouse_up {
-                return (handler)(event.position, widget);
+                (handler)(event.position, widget);
+                return true;
             }
         }
 

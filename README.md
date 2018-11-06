@@ -1,23 +1,29 @@
 # OrbTk
 
-> OrbTk 0.4.0 is under heavy development.
-
-The Orbital Widget Toolkit. Create scalable User Interfaces.
-
 [![Build status](https://gitlab.com/orbtk/orbtk/badges/master/build.svg)](https://gitlab.com/orbtk/orbtk/pipelines)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![crates.io](https://img.shields.io/badge/crates.io-v0.2.27-orange.svg)](https://crates.io/crates/orbtk)
 [![docs.rs](https://docs.rs/orbtk/badge.svg)](https://docs.rs/orbtk)
 
+> OrbTk 0.3.0 is under heavy development and it's not compatible to earlier releases.
+
+The Orbital Widget Toolkit is an (G)UI toolkit for building scalable user interfaces with the programming language Rust. It's based
+on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity%E2%80%93component%E2%80%93system) and provides a functional-reactive API. 
+
+The main goals of OrbTk are fast peformance, easy to use and the platform indipendence.
+
+OrbTk is being developed as cooperation project of [OrbTk Focus Time Group](https://gitlab.com/orbtk) and [Redox OS](https://www.redox-os.org/).
+
 ## Features:
 
-* Modern [Flutter](https://flutter.io/), [React](https://reactjs.org/) like API
+* Modern [Flutter](https://flutter.io/), [React](https://reactjs.org/), [Redux](https://redux.js.org/) like API
 * Uses the Entity Component System library [DCES](https://gitlab.com/orbtk/dces-rust) for widget and properties handling
 * Updating instead of rebuling subtrees
 * Small DSL for custom widget creation on macro base
 * Flexible event system
 * Widget state management
 * Platform Independent: Redox OS, Linux, macOS, Window and WebAssembly
+* CSS theming
 
 ## Usage
 
@@ -44,7 +50,7 @@ You can start the widgets example by executing the following command:
 cargo run --example widgets
 ```
 
-## Future features
+## Planned features
 
 * Style guide
 * More default widgets

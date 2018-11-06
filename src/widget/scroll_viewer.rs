@@ -27,6 +27,7 @@ impl Default for ScrollViewer {
 
 impl Widget for ScrollViewer {
     fn template(&self) -> Template {
+        print!("ScrollViewer -> ");
         if let Some(child) = &self.child {
             Template::Single(child.clone())
         } else {

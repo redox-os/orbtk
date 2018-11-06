@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use std::collections::BTreeMap;
@@ -29,11 +29,13 @@ pub struct Window {
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
 
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
+
+    pub update: Rc<Cell<bool>>,
 }
 
 impl Window {
     pub fn run(&mut self) {
-        self.backend_runner.run();
+        self.backend_runner.run(self.update.clone());
     }
 }
 
@@ -73,6 +75,7 @@ impl<'a> WindowBuilder<'a> {
         let layout_objects = Rc::new(RefCell::new(BTreeMap::new()));
         let handlers = Rc::new(RefCell::new(BTreeMap::new()));
         let states = Rc::new(RefCell::new(BTreeMap::new()));
+        let update = Rc::new(Cell::new(true));
 
         if let Some(root) = &self.root {
             build_tree(
@@ -89,6 +92,7 @@ impl<'a> WindowBuilder<'a> {
             .create_system(EventSystem {
                 backend: backend.clone(),
                 handlers: handlers.clone(),
+                update: update.clone(),
             })
             .with_priority(0)
             .build();
@@ -96,6 +100,7 @@ impl<'a> WindowBuilder<'a> {
         world
             .create_system(StateSystem {
                 states: states.clone(),
+                update: update.clone(),
             })
             .with_priority(1)
             .build();
@@ -104,6 +109,7 @@ impl<'a> WindowBuilder<'a> {
             .create_system(LayoutSystem {
                 backend: backend.clone(),
                 layout_objects: layout_objects.clone(),
+                update: update.clone(),
             })
             .with_priority(2)
             .build();
@@ -112,6 +118,7 @@ impl<'a> WindowBuilder<'a> {
             .create_system(RenderSystem {
                 backend: backend.clone(),
                 render_objects: render_objects.clone(),
+                update: update.clone(),
             })
             .with_priority(3)
             .build();
@@ -125,6 +132,7 @@ impl<'a> WindowBuilder<'a> {
             root: self.root,
             handlers,
             states,
+            update,
         })
     }
 }
@@ -144,7 +152,6 @@ fn build_tree(
         handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
         states: &Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
         widget: &Rc<Widget>,
-        parent: Entity,
     ) -> Entity {
         let entity = {
             let mut entity_builder = world
@@ -196,6 +203,7 @@ fn build_tree(
 
         match widget.template() {
             Template::Single(child) => {
+                println!("Node ID: {}", entity);
                 let child = expand(
                     world,
                     render_objects,
@@ -203,11 +211,11 @@ fn build_tree(
                     handlers,
                     states,
                     &child,
-                    parent,
                 );
                 let _result = world.entity_container().append_child(entity, child);
             }
             Template::Mutli(children) => {
+                println!("Node ID: {}", entity);
                 for child in children {
                     let child = expand(
                         world,
@@ -216,17 +224,19 @@ fn build_tree(
                         handlers,
                         states,
                         &child,
-                        parent,
                     );
                     let _result = world.entity_container().append_child(entity, child);
                 }
             }
-            _ => {}
+            _ => {
+                println!("Node ID: {}", entity);
+            }
         }
 
         entity
     }
 
+    println!("------ Start build tree ------\n");
     expand(
         world,
         render_objects,
@@ -234,20 +244,7 @@ fn build_tree(
         handlers,
         states,
         root,
-        0,
     );
 
-    // let mut nodes = vec![];
-
-    // for node in world.entity_container().into_iter() {
-    //     nodes.push(node);
-    // }
-
-    // for node in nodes {
-    //     let mut class = "";
-    //     if let Ok(ok) =  world.entity_component_manager.borrow_component::<Selector>(node) {
-
-    //     }
-    //     println!("Node: {}", node);
-    // }
+    println!("\n------  End build tree  ------ ");
 }

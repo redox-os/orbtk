@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::BTreeMap;
 use std::rc::Rc;
 
@@ -13,10 +13,15 @@ use widget::WidgetContainer;
 pub struct RenderSystem {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
     pub backend: Rc<RefCell<Backend>>,
+    pub update: Rc<Cell<bool>>,
 }
 
 impl System<Tree> for RenderSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
+        if !self.update.get() {
+            return;
+        }
+
         let mut backend = self.backend.borrow_mut();
         let render_context = backend.render_context();
 

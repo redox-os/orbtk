@@ -12,6 +12,7 @@ use event::EventHandler;
 use tree::Tree;
 
 pub use self::button::*;
+pub use self::center::*;
 pub use self::column::*;
 pub use self::container::*;
 pub use self::row::*;
@@ -20,6 +21,7 @@ pub use self::text_block::*;
 pub use self::text_box::*;
 
 mod button;
+mod center;
 mod column;
 mod container;
 mod macros;
@@ -121,7 +123,7 @@ pub fn add_selector_to_widget(pseudo_class: &str, widget: &mut WidgetContainer) 
 
 pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContainer) {
     if let Ok(selector) = widget.borrow_mut_property::<Selector>() {
-        selector.pseudo_classes.remove(pseudo_class);
+        selector.pseudo_classes.remove (pseudo_class);
     }
 }
 

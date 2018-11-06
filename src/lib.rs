@@ -22,7 +22,7 @@ pub use render_object::*;
 pub use state::*;
 pub use structs::*;
 pub use systems::*;
-pub use theme::{Selector, Theme};
+pub use theme::{Selector, Theme, DEFAULT_THEME_CSS, LIGHT_THEME_CSS};
 pub use tree::*;
 pub use widget::*;
 

@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::BTreeMap;
 use std::rc::Rc;
 
@@ -18,6 +18,7 @@ pub enum LayoutResult {
 pub struct LayoutSystem {
     pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
     pub backend: Rc<RefCell<Backend>>,
+    pub update: Rc<Cell<bool>>,
 }
 
 impl System<Tree> for LayoutSystem {
@@ -123,6 +124,10 @@ impl System<Tree> for LayoutSystem {
                     }
                 }
             }
+        }
+
+        if !self.update.get() {
+            return;
         }
 
         let root = tree.root;

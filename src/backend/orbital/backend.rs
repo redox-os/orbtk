@@ -7,7 +7,7 @@ use dces::World;
 
 use backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext};
 use event::{
-    EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseMouveEvent,
+    EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent,
     MouseUpEvent, SystemEvent,
 };
 use structs::{Point, Rect};
@@ -87,11 +87,11 @@ impl Backend for OrbitalBackend {
                 orbclient::EventOption::Mouse(mouse) => {
                     self.mouse_position.x = mouse.x;
                     self.mouse_position.y = mouse.y;
-                    self.event_queue
-                        .borrow_mut()
-                        .register_event(MouseMouveEvent {
-                            position: self.mouse_position,
-                        });
+                    // self.event_queue
+                    //     .borrow_mut()
+                    //     .register_event(MouseMouveEvent {
+                    //         position: self.mouse_position,
+                    //     });
                 }
                 orbclient::EventOption::Button(button) => {
                     if !button.left && !button.middle && !button.right {
@@ -203,7 +203,7 @@ impl BackendRunner for OrbitalBackendRunner {
     fn world(&mut self, world: World<Tree>) {
         self.world = Some(world);
     }
-    fn run(&mut self) {
+    fn run(&mut self, update: Rc<Cell<bool>>) {
         self.backend.borrow_mut().running = true;
 
         loop {
@@ -216,6 +216,8 @@ impl BackendRunner for OrbitalBackendRunner {
             if let Some(world) = &mut self.world {
                 world.run();
             }
+
+            update.set(false);
 
             self.backend.borrow_mut().drain_events();
         }

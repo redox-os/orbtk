@@ -21,7 +21,7 @@ pub enum EventStrategy {
 
 pub trait Event : Any {
     fn strategy(&self) -> EventStrategy {
-        EventStrategy::TopDown
+        EventStrategy::BottomUp
     }
 }
 

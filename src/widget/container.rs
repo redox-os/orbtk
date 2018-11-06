@@ -24,6 +24,7 @@ impl Default for Container {
 
 impl Widget for Container {
     fn template(&self) -> Template {
+        print!("Container -> ");
         if let Some(child) = &self.child {
             Template::Single(child.clone())
         } else {

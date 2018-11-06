@@ -1,4 +1,5 @@
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
+use std::rc::Rc;
 
 use dces::World;
 
@@ -53,7 +54,7 @@ pub trait Backend {
 
 pub trait BackendRunner {
     fn world(&mut self, world: World<Tree>);
-    fn run(&mut self);
+    fn run(&mut self, update: Rc<Cell<bool>>);
 }
 
 pub use self::target::target_backend;

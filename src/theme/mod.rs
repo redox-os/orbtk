@@ -23,7 +23,7 @@ pub use self::style::Style;
 
 mod style;
 
-static DEFAULT_THEME_CSS: &'static str = include_str!("dark.css");
+pub static DEFAULT_THEME_CSS: &'static str = include_str!("dark.css");
 pub static LIGHT_THEME_CSS: &'static str = include_str!("light.css");
 
 lazy_static! {
@@ -512,7 +512,7 @@ fn parse_basic_color<'i, 't>(
     })
 }
 
-fn parse(s: &str) -> Vec<Rule> {
+pub fn parse(s: &str) -> Vec<Rule> {
     let mut input = ParserInput::new(s);
     let mut parser = Parser::new(&mut input);
     let rule_parser = RuleParser::new();

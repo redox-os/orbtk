@@ -1,11 +1,10 @@
 use std::rc::Rc;
-use std::any::TypeId;
 
 use widget::WidgetContainer;
 
 use {Event, EventBox, EventHandler};
-use theme::Selector;
 
+#[derive(Copy, Clone)]
 pub enum Key {
     Unknown,
     Backspace,
@@ -225,39 +224,6 @@ pub struct KeyEventHandler {
 }
 
 impl EventHandler for KeyEventHandler {
-    fn handles_event(&self, event: &EventBox, widget: &WidgetContainer) -> bool {
-
-        if let Some(_) = self.on_key_down {
-            if event.event_type() == TypeId::of::<KeyDownEvent>() {
-                let mut is_focused = false;
-
-                if let Ok(selector) = widget.borrow_property::<Selector>() {
-                    if selector.pseudo_classes.contains("focus") {
-                        is_focused = true;
-                    }
-                }
-
-                return is_focused;
-            }
-        }
-
-        if let Some(_) = self.on_key_up {
-            if event.event_type() == TypeId::of::<KeyUpEvent>() {
-                let mut is_focused = false;
-
-                if let Ok(selector) = widget.borrow_property::<Selector>() {
-                    if selector.pseudo_classes.contains("focus") {
-                        is_focused = true;
-                    }
-                }
-
-                return is_focused;
-            }
-        }
-
-        false
-    }
-
     fn handle_event(&self, event: &EventBox, widget: &mut WidgetContainer) -> bool {
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
             if let Some(handler) = &self.on_key_down {

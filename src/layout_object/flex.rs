@@ -43,8 +43,8 @@ impl LayoutObject for FlexLayoutObject {
                         self.current_position.borrow_mut().push(size.0);
 
                         if size.1 > self.height.get()
-                            && size.1 < constraint.max_height
-                            && size.1 > constraint.min_height
+                            && size.1 <= constraint.max_height
+                            && size.1 >= constraint.min_height
                         {
                             self.height.set(size.1);
                         }
@@ -53,8 +53,8 @@ impl LayoutObject for FlexLayoutObject {
                         self.current_position.borrow_mut().push(size.1);
 
                         if size.0 > self.width.get()
-                            && size.0 < constraint.max_width
-                            && size.0 > constraint.min_width
+                            && size.0 <= constraint.max_width
+                            && size.0 >= constraint.min_width
                         {
                             self.width.set(size.0);
                         }

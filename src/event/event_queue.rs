@@ -58,7 +58,7 @@ impl EventQueue {
     }
 
     pub fn register_event<E: Event>(&mut self, event: E) {
-        self.event_queue.push(EventBox::new::<E>(event, EventStrategy::TopDown));
+        self.event_queue.push(EventBox::new::<E>(event, EventStrategy::BottomUp));
     }
 
     pub fn dequeue(&mut self) -> Option<EventBox> {

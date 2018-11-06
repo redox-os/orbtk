@@ -1,7 +1,7 @@
+use layout_object::{LayoutObject, TextSizeLayoutObject};
 use render_object::{RenderObject, TextRenderObject};
 use theme::Selector;
-use widget::{Property, PropertyResult, Widget};
-use layout_object::{LayoutObject, TextSizeLayoutObject};
+use widget::{Property, PropertyResult, Template, Widget};
 
 #[derive(Clone)]
 pub struct Label(pub String);
@@ -21,6 +21,10 @@ impl Default for TextBlock {
 }
 
 impl Widget for TextBlock {
+    fn template(&self) -> Template {
+        print!("TextBlock -> ");
+        Template::Empty
+    }
     fn properties(&self) -> Vec<PropertyResult> {
         vec![self.selector.build(), self.label.build()]
     }

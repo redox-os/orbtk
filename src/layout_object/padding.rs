@@ -48,10 +48,10 @@ impl LayoutObject for PaddingLayoutObject {
                 children_pos.insert(children[0], (padding.left, padding.top));
             }
 
-            LayoutResult::Size((
+            LayoutResult::Size(constraint.perform((
                 size.0 + padding.left as u32 + padding.right as u32,
                 size.1 + padding.top as u32 + padding.bottom as u32,
-            ))
+            )))
         } else {
             let child_bc = Constraint {
                 min_width: (constraint.min_width as i32 - (padding.left + padding.right)).max(0)
