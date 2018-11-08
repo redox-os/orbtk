@@ -56,6 +56,8 @@ impl State for TextBoxState {
                 horizontal_offset.0 = (horizontal_offset.0 - label_offset).min(0);
             }
         }
+
+        self.input_key.set(None);
     }
 }
 
