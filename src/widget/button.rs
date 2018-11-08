@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use event::{EventHandler, Pressed};
+use event::{EventHandler, Pressed, MouseOver};
 use state::State;
 use theme::Selector;
 use widget::{
@@ -62,6 +62,7 @@ impl Widget for Button {
             self.selector.build(),
             self.label.build(),
             Property::new(Pressed::default()).build(),
+            Property::new(MouseOver::default()).build(),
         ]
     }
 

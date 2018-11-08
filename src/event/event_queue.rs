@@ -53,6 +53,10 @@ pub struct EventQueue {
 }
 
 impl EventQueue {
+    pub fn append(&mut self, other: &mut Vec<EventBox>) {
+        self.event_queue.append(other);
+    }
+
     pub fn register_event_width_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
         self.event_queue.push(EventBox::new::<E>(event, strategy));
     }

@@ -121,6 +121,8 @@ impl Widget for TextBox {
                         if !focused.0 {
                             return false;
                         }
+                    } else {
+                        return false;
                     }
                     state.update_label(key);
                     true

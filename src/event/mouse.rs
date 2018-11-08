@@ -10,6 +10,9 @@ pub struct Pressed(pub bool);
 #[derive(Default, Copy, Clone)]
 pub struct Focused(pub bool);
 
+#[derive(Default, Copy, Clone)]
+pub struct MouseOver(pub bool);
+
 pub fn check_mouse_condition(position: Point, widget: &WidgetContainer) -> bool {
     if let Ok(bounds) = widget.borrow_property::<Rect>() {
         let mut rect = Rect::new(0, 0, bounds.width, bounds.height);
@@ -44,6 +47,12 @@ pub struct MouseUpEvent {
 
 impl Event for MouseUpEvent {}
 
+pub struct ClickEvent {
+    pub position: Point,
+}
+
+impl Event for ClickEvent {}
+
 pub struct MouseDownEvent {
     pub button: MouseButton,
     pub position: Point,
@@ -59,10 +68,17 @@ pub type OnMouseUp = Rc<Fn() + 'static>;
 pub struct MouseEventHandler {
     pub on_mouse_up: Option<MouseHandler>,
     pub on_mouse_down: Option<MouseHandler>,
+    pub on_click: Option<MouseHandler>,
 }
 
 impl EventHandler for MouseEventHandler {
     fn handle_event(&self, event: &EventBox, widget: &mut WidgetContainer) -> bool {
+        if let Ok(event) = event.downcast_ref::<ClickEvent>() {
+            if let Some(handler) = &self.on_click {
+                return (handler)(event.position, widget);
+            }
+        }
+
         if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
             if let Some(handler) = &self.on_mouse_down {
                 return (handler)(event.position, widget);

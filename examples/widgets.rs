@@ -91,14 +91,10 @@ impl Widget for MainView {
                             child: Some(Rc::new(Button {
                                 label: Property::new(Label(String::from("Click me"))),
                                 event_handlers: vec![Rc::new(MouseEventHandler {
-                                    on_mouse_up: Some(Rc::new(
-                                        move |pos: Point, widget: &mut WidgetContainer| -> bool {
-                                            if check_mouse_condition(pos, widget) {
-                                                state.increment();
-                                                return true;
-                                            }
-
-                                            false
+                                    on_click: Some(Rc::new(
+                                        move |_pos: Point, _widget: &mut WidgetContainer| -> bool {
+                                            state.increment();
+                                            true
                                         },
                                     )),
                                     ..Default::default()
@@ -117,12 +113,23 @@ impl Widget for MainView {
                     ],
                     ..Default::default()
                 }),
-                Rc::new(Container {
-                    child: Some(Rc::new(TextBlock {
-                        label: self.counter.clone(),
-                        ..Default::default()
-                    })),
-                    ..Default::default()
+                Rc::new(Row {
+                    children: vec![
+                        Rc::new(Container {
+                            child: Some(Rc::new(TextBlock {
+                                label: self.counter.clone(),
+                                ..Default::default()
+                            })),
+                            ..Default::default()
+                        }),
+                        Rc::new(Container {
+                            child: Some(Rc::new(TextBox {
+                                label: Property::new(Label(String::from("Insert Insert"))),
+                                ..Default::default()
+                            })),
+                            ..Default::default()
+                        }),
+                    ],
                 }),
             ],
 

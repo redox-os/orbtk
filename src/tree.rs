@@ -27,6 +27,10 @@ impl Tree {
 
         Ok(child)
     }
+
+    pub fn len(&self) -> usize {
+        self.children.len()
+    }
 }
 
 impl EntityContainer for Tree {

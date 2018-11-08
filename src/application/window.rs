@@ -8,7 +8,7 @@ use dces::{Entity, World};
 use application::Application;
 use backend::{target_backend, BackendRunner};
 use event::EventHandler;
-use layout_object::LayoutObject;
+use layout_object::{LayoutObject, DefaultLayoutObject};
 use render_object::RenderObject;
 use state::State;
 use structs::{Point, Rect};
@@ -16,6 +16,7 @@ use systems::{EventSystem, LayoutSystem, RenderSystem, StateSystem};
 use theme::Theme;
 use tree::Tree;
 use widget::{PropertyResult, Template, Widget};
+use Global;
 
 pub struct Window {
     pub backend_runner: Box<BackendRunner>,
@@ -153,6 +154,20 @@ fn build_tree(
         states: &Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
         widget: &Rc<Widget>,
     ) -> Entity {
+        // register window as entity with global properties
+        if world.entity_container().len() == 0 {
+            let root = world
+                .create_entity()
+                .with(Global::default())
+                .with(Rect::default())
+                .with(Point::default())
+                .build();
+
+            layout_objects
+                .borrow_mut()
+                .insert(root, Box::new(DefaultLayoutObject));
+        }
+
         let entity = {
             let mut entity_builder = world
                 .create_entity()
@@ -200,6 +215,11 @@ fn build_tree(
 
             entity
         };
+
+        if world.entity_container().len() == 2 {
+            let root = world.entity_container().root;
+            let _result = world.entity_container().append_child(root, entity);
+        }
 
         match widget.template() {
             Template::Single(child) => {

@@ -1,7 +1,9 @@
 use {Rect, Theme};
 
+pub use self::global::*;
 pub use self::window::*;
 
+mod global;
 mod window;
 
 pub struct Application {
