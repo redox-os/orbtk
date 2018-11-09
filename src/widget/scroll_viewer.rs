@@ -7,6 +7,7 @@ use layout_object::{LayoutObject, ScrollLayoutObject};
 #[derive(Default, Clone, Copy)]
 pub struct Offset(pub i32, pub i32);
 
+/// This layout widget orders its children vertical.
 pub struct ScrollViewer {
     pub child: Option<Rc<Widget>>,
     pub offset: Property<Offset>,
