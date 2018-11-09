@@ -1,4 +1,4 @@
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use super::Property;
@@ -6,58 +6,65 @@ use event::{EventHandler, KeyEventHandler};
 use event::{Focused, Key};
 use theme::Selector;
 use widget::{
-    add_selector_to_widget, remove_selector_from_widget, Container, HorizontalOffset, Label,
-    PropertyResult, ScrollViewer, State, Template, TextBlock, Widget, WidgetContainer,
+    add_selector_to_widget, remove_selector_from_widget, Container, Label, Offset, PropertyResult,
+    ScrollViewer, State, Template, TextBlock, Widget, WidgetContainer,
 };
 
+#[derive(Default)]
 pub struct TextBoxState {
-    input_key: Cell<Option<Key>>,
+    text: RefCell<String>,
+    focused: Cell<bool>,
+    updated: Cell<bool>,
 }
 
 impl TextBoxState {
-    fn update_label(&self, key: &Key) {
-        self.input_key.set(Some(key.clone()));
+    fn update_text(&self, key: &Key) -> bool {
+        if !self.focused.get() {
+            return false;
+        }
+
+        if key.to_string() != "" {
+            (*self.text.borrow_mut()).push_str(&key.to_string());
+        } else {
+            match key {
+                Key::Backspace => {
+                    (*self.text.borrow_mut()).pop();
+                }
+                _ => {}
+            }
+        }
+
+        self.updated.set(true);
+
+        true
     }
 }
 
 impl State for TextBoxState {
     fn update(&self, widget: &mut WidgetContainer) {
-        let mut focused = false;
-        if let Ok(focu) = widget.borrow_mut_property::<Focused>() {
-            focused = focu.0;
+        if let Ok(focused) = widget.borrow_property::<Focused>() {
+            self.focused.set(focused.0);
         }
 
-        if focused {
+        if self.focused.get() {
             add_selector_to_widget("focus", widget);
         } else {
             remove_selector_from_widget("focus", widget);
         }
 
-        if let Some(key) = self.input_key.get() {
-            let mut label_offset = 0;
-            if let Ok(label) = widget.borrow_mut_property::<Label>() {
-                let old_label_width = label.0.len() * 8;
-
-                if key.to_string() != "" {
-                    label.0.push_str(&key.to_string());
-                } else {
-                    match key {
-                        Key::Backspace => {
-                            label.0.pop();
-                        }
-                        _ => {}
-                    }
-                }
-
-                label_offset = label.0.len() as i32 * 8 - old_label_width as i32;
+        if let Ok(label) = widget.borrow_mut_property::<Label>() {
+            if label.0 == *self.text.borrow() {
+                return;
             }
 
-            if let Ok(horizontal_offset) = widget.borrow_mut_property::<HorizontalOffset>() {
-                horizontal_offset.0 = (horizontal_offset.0 - label_offset).min(0);
+            if self.updated.get() {
+                label.0 = self.text.borrow().clone();
+            } else {
+                *self.text.borrow_mut() = label.0.clone();
             }
+
+            self.updated.set(false);
         }
-
-        self.input_key.set(None);
     }
 }
 
@@ -65,7 +72,7 @@ pub struct TextBox {
     pub label: Property<Label>,
     pub selector: Property<Selector>,
     pub event_handlers: Vec<Rc<EventHandler>>,
-    pub horizontal_offset: Property<HorizontalOffset>,
+    pub offset: Property<Offset>,
     pub state: Rc<TextBoxState>,
 }
 
@@ -74,11 +81,9 @@ impl Default for TextBox {
         TextBox {
             label: Property::new(Label(String::from("TextBox"))),
             selector: Property::new(Selector::new(Some(String::from("textbox")))),
-            horizontal_offset: Property::new(HorizontalOffset(0)),
+            offset: Property::new(Offset::default()),
             event_handlers: vec![],
-            state: Rc::new(TextBoxState {
-                input_key: Cell::new(None),
-            }),
+            state: Rc::new(TextBoxState::default()),
         }
     }
 }
@@ -87,6 +92,11 @@ impl Widget for TextBox {
     fn template(&self) -> Template {
         print!("TextBox -> ");
 
+        // Initial set state text to textbox label.
+        if let Some(text) = &self.label.property {
+            *self.state.text.borrow_mut() = text.0.clone();
+        }
+
         Template::Single(Rc::new(Container {
             selector: self.selector.clone(),
             child: Some(Rc::new(ScrollViewer {
@@ -94,7 +104,7 @@ impl Widget for TextBox {
                     label: self.label.clone(),
                     selector: self.selector.clone(),
                 })),
-                horizontal_offset: self.horizontal_offset.clone(),
+                offset: self.offset.clone(),
                 ..Default::default()
             })),
             ..Default::default()
@@ -105,7 +115,7 @@ impl Widget for TextBox {
         vec![
             self.label.build(),
             self.selector.build(),
-            self.horizontal_offset.build(),
+            self.offset.build(),
             Property::new(Focused(false)).build(),
         ]
     }
@@ -118,17 +128,7 @@ impl Widget for TextBox {
         let state = self.state.clone();
         vec![Rc::new(KeyEventHandler {
             on_key_down: Some(Rc::new(
-                move |key: &Key, widget: &mut WidgetContainer| -> bool {
-                    if let Ok(focused) = widget.borrow_mut_property::<Focused>() {
-                        if !focused.0 {
-                            return false;
-                        }
-                    } else {
-                        return false;
-                    }
-                    state.update_label(key);
-                    true
-                },
+                move |key: &Key, _widget: &mut WidgetContainer| -> bool { state.update_text(key) },
             )),
             ..Default::default()
         })]

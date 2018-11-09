@@ -7,13 +7,15 @@ use dces::{Entity, EntityComponentManager, System};
 use backend::Backend;
 use render_object::RenderObject;
 use structs::{Point, Rect};
+use theme::Selector;
 use tree::Tree;
-use widget::WidgetContainer;
+use widget::{Offset, WidgetContainer};
 
 pub struct RenderSystem {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
     pub backend: Rc<RefCell<Backend>>,
     pub update: Rc<Cell<bool>>,
+    pub debug_flag: Rc<Cell<bool>>,
 }
 
 impl System<Tree> for RenderSystem {
@@ -32,15 +34,36 @@ impl System<Tree> for RenderSystem {
         render_context.renderer.render(&render_context.theme);
 
         for node in tree.into_iter() {
-            let mut current_offset = (0, 0);
-            let mut boundery = (0, 0);
-
-            if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(tree.parent[&node]) {
-                boundery = (bounds.width, bounds.height);
-            }
+            let mut global_position = Point::default();
 
             if let Some(offset) = offsets.get(&tree.parent.get(&node).unwrap()) {
-                current_offset = *offset;
+                global_position = Point::new(offset.0, offset.1);
+            }
+
+            let offset = {
+                // get offset from scrollable parent
+                if let Ok(offset) = ecm.borrow_component::<Offset>(*tree.parent.get(&node).unwrap())
+                {
+                    Point::new(offset.0, offset.1)
+                } else {
+                    Point::default()
+                }
+            };
+
+            // render debug border for each widget
+            if self.debug_flag.get() {
+                if let Ok(bounds) = ecm.borrow_component::<Rect>(node) {
+                    if let Ok(parent_bounds) = ecm.borrow_component::<Rect>(tree.parent[&node]) {
+                        render_context.renderer.render_rectangle(
+                            &render_context.theme,
+                            bounds,
+                            parent_bounds,
+                            &Selector::new(Some(String::from("debugborder"))),
+                            &offset,
+                            &global_position,
+                        );
+                    }
+                }
             }
 
             if let Some(render_object) = self.render_objects.borrow().get(&node) {
@@ -48,15 +71,15 @@ impl System<Tree> for RenderSystem {
                     render_context.renderer,
                     &WidgetContainer::new(node, ecm, tree),
                     &render_context.theme,
-                    boundery,
-                    current_offset,
+                    &offset,
+                    &global_position,
                 );
             }
 
             let mut global_pos = (0, 0);
 
             if let Ok(bounds) = ecm.borrow_component::<Rect>(node) {
-                global_pos = (current_offset.0 + bounds.x, current_offset.1 + bounds.y);
+                global_pos = (global_position.x + bounds.x, global_position.y + bounds.y);
                 offsets.insert(node, global_pos);
             }
 

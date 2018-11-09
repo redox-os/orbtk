@@ -1,7 +1,7 @@
 use orbclient::{Renderer as OrbRenderer, Window as OrbWindow};
 
 use backend::Renderer;
-use structs::Rect;
+use structs::{Point, Rect};
 use theme::{Selector, Theme};
 
 impl Renderer for OrbWindow {
@@ -19,17 +19,18 @@ impl Renderer for OrbWindow {
         &mut self,
         theme: &Theme,
         bounds: &Rect,
+        _parent_bounds: &Rect,
         selector: &Selector,
-        _boundery: (u32, u32),
-        offset: (i32, i32),
+        _offset: &Point,
+        global_position: &Point,
     ) {
         let b_r = theme.uint("border-radius", selector);
 
         let fill = theme.color("background", selector);
 
         self.rounded_rect(
-            bounds.x + offset.0,
-            bounds.y + offset.1,
+            bounds.x + global_position.x,
+            bounds.y + global_position.y,
             bounds.width,
             bounds.height,
             b_r,
@@ -41,8 +42,8 @@ impl Renderer for OrbWindow {
             let border_color = theme.color("border-color", selector);
 
             self.rounded_rect(
-                bounds.x + offset.0,
-                bounds.y + offset.1,
+                bounds.x + global_position.x,
+                bounds.y + global_position.y,
                 bounds.width,
                 bounds.height,
                 b_r,
@@ -57,16 +58,22 @@ impl Renderer for OrbWindow {
         theme: &Theme,
         text: &str,
         bounds: &Rect,
+        parent_bounds: &Rect,
         selector: &Selector,
-        boundery: (u32, u32),
-        offset: (i32, i32),
+        offset: &Point,
+        global_position: &Point,
     ) {
         // if let Some(font) = &self.font {
         //     let line = font.render(text, 64.0);
         //     line.draw(&mut self.inner, 20, 20, Color::rgb(0, 0, 0));
         // } else {
         let rect = Rect::new(bounds.x, bounds.y, bounds.width, bounds.height);
-        let mut current_rect = Rect::new(bounds.x, bounds.y, bounds.width, bounds.height);
+        let mut current_rect = Rect::new(
+            bounds.x + offset.x,
+            bounds.y + offset.y,
+            bounds.width,
+            bounds.height,
+        );
         let x = rect.x;
 
         for c in text.chars() {
@@ -74,14 +81,14 @@ impl Renderer for OrbWindow {
                 current_rect.x = x;
                 current_rect.y += 16;
             } else {
-                if current_rect.x + 8 <= rect.x + boundery.0 as i32
-                    && current_rect.y + 16 <= rect.y + boundery.1 as i32
-                    && current_rect.x >= 0
-                    && current_rect.y >= 0
+                if current_rect.x + 8 >= parent_bounds.x
+                    && current_rect.y + 16 >= parent_bounds.y
+                    && current_rect.x + 8 < parent_bounds.x + parent_bounds.width as i32
+                    && current_rect.y < parent_bounds.y + parent_bounds.height as i32
                 {
                     self.char(
-                        current_rect.x + offset.0,
-                        current_rect.y + offset.1,
+                        current_rect.x + global_position.x,
+                        current_rect.y + global_position.y,
                         c,
                         theme.color("color", selector),
                     );

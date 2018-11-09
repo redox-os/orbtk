@@ -10,10 +10,9 @@ use event::{
     check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, Focused,
     MouseDownEvent, MouseUpEvent, Pressed,
 };
-use Global;
-// use structs::Point;
 use tree::Tree;
 use widget::WidgetContainer;
+use Global;
 
 pub struct EventSystem {
     pub backend: Rc<RefCell<Backend>>,
@@ -136,8 +135,6 @@ impl EventSystem {
                 break;
             }
         }
-
-        // todo: filter key input by focus or someting
 
         // remove focus from previes focues entity
         let mut old_focused_entity = None;

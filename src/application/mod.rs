@@ -24,6 +24,7 @@ impl Application {
             title: String::from(""),
             theme: Theme::new(),
             root: None,
+            debug_flag: false,
         }
     }
 

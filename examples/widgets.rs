@@ -113,24 +113,24 @@ impl Widget for MainView {
                     ],
                     ..Default::default()
                 }),
-                Rc::new(Row {
-                    children: vec![
-                        Rc::new(Container {
-                            child: Some(Rc::new(TextBlock {
-                                label: self.counter.clone(),
-                                ..Default::default()
-                            })),
-                            ..Default::default()
-                        }),
-                        Rc::new(Container {
-                            child: Some(Rc::new(TextBox {
-                                label: Property::new(Label(String::from("Insert Insert"))),
-                                ..Default::default()
-                            })),
-                            ..Default::default()
-                        }),
-                    ],
-                }),
+                // Rc::new(Row {
+                //     children: vec![
+                //         Rc::new(Container {
+                //             child: Some(Rc::new(TextBlock {
+                //                 label: self.counter.clone(),
+                //                 ..Default::default()
+                //             })),
+                //             ..Default::default()
+                //         }),
+                //         Rc::new(Container {
+                //             child: Some(Rc::new(TextBox {
+                //                 label: Property::new(Label(String::from("Insert Insert"))),
+                //                 ..Default::default()
+                //             })),
+                //             ..Default::default()
+                //         }),
+                //     ],
+                // }),
             ],
 
             ..Default::default()
@@ -156,6 +156,7 @@ fn main() {
             state: Rc::new(MainViewState::default()),
             counter: Property::new(Label(String::from("Button count: 0"))),
         })
+        .with_debug_flag(true)
         .build();
     application.run();
 }

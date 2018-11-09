@@ -4,7 +4,7 @@ use std::rc::Rc;
 use dces::World;
 
 use event::EventQueue;
-use structs::Rect;
+use structs::{Point, Rect};
 use theme::{Selector, Theme};
 use tree::Tree;
 
@@ -28,18 +28,20 @@ pub trait Renderer {
         &mut self,
         theme: &Theme,
         bounds: &Rect,
+        parent_bounds: &Rect,
         selector: &Selector,
-        boundery: (u32, u32),
-        offset: (i32, i32),
+        offset: &Point,
+        global_position: &Point,
     );
     fn render_text(
         &mut self,
         theme: &Theme,
         text: &str,
         bounds: &Rect,
+        parent_bounds: &Rect,
         selector: &Selector,
-        boundery: (u32, u32),
-        offset: (i32, i32),
+        offset: &Point,
+        global_position: &Point,
     );
 }
 
@@ -59,10 +61,5 @@ pub trait BackendRunner {
 
 pub use self::target::target_backend;
 
-#[cfg(not(target_arch = "wasm32"))]
 #[path = "orbital/mod.rs"]
-mod target;
-
-#[cfg(target_arch = "wasm32")]
-#[path = "wasm/mod.rs"]
 mod target;

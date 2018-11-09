@@ -8,7 +8,7 @@ use dces::{Entity, World};
 use application::Application;
 use backend::{target_backend, BackendRunner};
 use event::EventHandler;
-use layout_object::{LayoutObject, DefaultLayoutObject};
+use layout_object::{DefaultLayoutObject, LayoutObject};
 use render_object::RenderObject;
 use state::State;
 use structs::{Point, Rect};
@@ -32,6 +32,8 @@ pub struct Window {
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
 
     pub update: Rc<Cell<bool>>,
+
+    pub debug_flag: Rc<Cell<bool>>,
 }
 
 impl Window {
@@ -46,6 +48,7 @@ pub struct WindowBuilder<'a> {
     pub title: String,
     pub theme: Theme,
     pub root: Option<Rc<Widget>>,
+    pub debug_flag: bool,
 }
 
 impl<'a> WindowBuilder<'a> {
@@ -69,6 +72,11 @@ impl<'a> WindowBuilder<'a> {
         self
     }
 
+    pub fn with_debug_flag(mut self, debug: bool) -> Self {
+        self.debug_flag = debug;
+        self
+    }
+
     pub fn build(self) {
         let (mut runner, backend) = target_backend(&self.title, self.bounds, self.theme);
         let mut world = World::from_container(Tree::default());
@@ -77,6 +85,7 @@ impl<'a> WindowBuilder<'a> {
         let handlers = Rc::new(RefCell::new(BTreeMap::new()));
         let states = Rc::new(RefCell::new(BTreeMap::new()));
         let update = Rc::new(Cell::new(true));
+        let debug_flag = Rc::new(Cell::new(self.debug_flag));
 
         if let Some(root) = &self.root {
             build_tree(
@@ -86,6 +95,7 @@ impl<'a> WindowBuilder<'a> {
                 &layout_objects,
                 &handlers,
                 &states,
+                &debug_flag,
             );
         }
 
@@ -120,6 +130,7 @@ impl<'a> WindowBuilder<'a> {
                 backend: backend.clone(),
                 render_objects: render_objects.clone(),
                 update: update.clone(),
+                debug_flag: debug_flag.clone(),
             })
             .with_priority(3)
             .build();
@@ -134,6 +145,7 @@ impl<'a> WindowBuilder<'a> {
             handlers,
             states,
             update,
+            debug_flag,
         })
     }
 }
@@ -145,6 +157,7 @@ fn build_tree(
     layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
     handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
     states: &Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
+    debug_flag: &Rc<Cell<bool>>,
 ) {
     fn expand(
         world: &mut World<Tree>,
@@ -153,6 +166,7 @@ fn build_tree(
         handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
         states: &Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
         widget: &Rc<Widget>,
+        debug_flag: &Rc<Cell<bool>>,
     ) -> Entity {
         // register window as entity with global properties
         if world.entity_container().len() == 0 {
@@ -223,7 +237,9 @@ fn build_tree(
 
         match widget.template() {
             Template::Single(child) => {
-                println!("Node ID: {}", entity);
+                if debug_flag.get() {
+                    println!("Node ID: {}", entity);
+                }
                 let child = expand(
                     world,
                     render_objects,
@@ -231,11 +247,14 @@ fn build_tree(
                     handlers,
                     states,
                     &child,
+                    debug_flag,
                 );
                 let _result = world.entity_container().append_child(entity, child);
             }
             Template::Mutli(children) => {
-                println!("Node ID: {}", entity);
+                if debug_flag.get() {
+                    println!("Node ID: {}", entity);
+                }
                 for child in children {
                     let child = expand(
                         world,
@@ -244,19 +263,25 @@ fn build_tree(
                         handlers,
                         states,
                         &child,
+                        debug_flag,
                     );
                     let _result = world.entity_container().append_child(entity, child);
                 }
             }
             _ => {
-                println!("Node ID: {}", entity);
+                if debug_flag.get() {
+                    println!("Node ID: {}", entity);
+                }
             }
         }
 
         entity
     }
 
-    println!("------ Start build tree ------\n");
+    if debug_flag.get() {
+        println!("------ Start build tree ------\n");
+    }
+
     expand(
         world,
         render_objects,
@@ -264,7 +289,10 @@ fn build_tree(
         handlers,
         states,
         root,
+        debug_flag,
     );
 
-    println!("\n------  End build tree  ------ ");
+    if debug_flag.get() {
+        println!("\n------  End build tree  ------ ");
+    }
 }

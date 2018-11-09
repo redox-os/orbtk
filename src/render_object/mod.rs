@@ -1,6 +1,7 @@
 use backend::Renderer;
 use theme::Theme;
 use widget::WidgetContainer;
+use structs::Point;
 
 pub use self::rectangle::*;
 pub use self::text::*;
@@ -14,7 +15,7 @@ pub trait RenderObject {
         renderer: &mut Renderer,
         widget: &WidgetContainer,
         theme: &Theme,
-        boundery: (u32, u32),
-        offset: (i32, i32),
+        offset: &Point,
+        global_position: &Point,
     );
 }

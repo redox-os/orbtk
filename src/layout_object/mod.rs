@@ -10,14 +10,14 @@ pub use self::center::*;
 pub use self::default::*;
 pub use self::flex::*;
 pub use self::padding::*;
-pub use self::scroll::*;
+pub use self::stretch::*;
 pub use self::text_size::*;
 
 mod center;
 mod default;
 mod flex;
 mod padding;
-mod scroll;
+mod stretch;
 mod text_size;
 
 pub trait LayoutObject {

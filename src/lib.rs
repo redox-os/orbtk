@@ -41,17 +41,9 @@ pub mod theme;
 pub mod tree;
 pub mod widget;
 
-#[cfg(target_arch = "wasm32")]
-// #[macro_use]
-extern crate stdweb;
-
-#[cfg(not(target_arch = "wasm32"))]
 extern crate orbclient;
-#[cfg(not(target_arch = "wasm32"))]
 extern crate orbfont;
-#[cfg(not(target_arch = "wasm32"))]
 extern crate orbimage;
-#[cfg(not(target_arch = "wasm32"))]
 pub use orbclient::color::Color;
 
 // todo workspace -> backend, core, widgets

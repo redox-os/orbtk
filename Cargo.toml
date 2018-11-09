@@ -21,11 +21,6 @@ path = "src/lib.rs"
 cssparser = "0.17.0"
 lazy_static = "1.2.0"
 dces = { git = "https://gitlab.com/orbtk/dces-rust.git", branch = "shared" }
-
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-stdweb = "0.4.10"
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 orbclient = "0.3.17"
 orbfont = "0.1.8"
 orbimage = "0.1.16"

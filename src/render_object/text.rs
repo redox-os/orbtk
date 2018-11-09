@@ -1,6 +1,6 @@
 use backend::Renderer;
 use render_object::RenderObject;
-use structs::Rect;
+use structs::{Point, Rect};
 use theme::{Selector, Theme};
 use widget::{Label, WidgetContainer};
 
@@ -12,13 +12,23 @@ impl RenderObject for TextRenderObject {
         renderer: &mut Renderer,
         widget: &WidgetContainer,
         theme: &Theme,
-        boundery: (u32, u32),
-        offset: (i32, i32),
+        offset: &Point,
+        global_position: &Point,
     ) {
         if let Ok(selector) = widget.borrow_property::<Selector>() {
             if let Ok(bounds) = widget.borrow_property::<Rect>() {
                 if let Ok(label) = widget.borrow_property::<Label>() {
-                    renderer.render_text(theme, &label.0, bounds, selector, boundery, offset);
+                    if let Ok(parent_bounds) = widget.borrow_parent_property::<Rect>() {
+                        renderer.render_text(
+                            theme,
+                            &label.0,
+                            bounds,
+                            parent_bounds,
+                            selector,
+                            offset,
+                            global_position,
+                        );
+                    }
                 }
             }
         }

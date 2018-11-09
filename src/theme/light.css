@@ -35,3 +35,10 @@ textbox {
 textbox:focus {
     border-color: #2a94db;
 }
+
+debugborder {
+    border-width: 1;
+    border-radius: 2;
+    border-color: blue;
+    background: transparent;
+}

@@ -1,4 +1,4 @@
-use std::any::Any;
+use std::any::{Any, TypeId};
 use std::cell::Cell;
 use std::rc::Rc;
 
@@ -112,6 +112,22 @@ impl<'a> WidgetContainer<'a> {
 
     pub fn borrow_mut_parent_property<P: Component>(&mut self) -> Result<&mut P, NotFound> {
         self.ecm.borrow_mut_component::<P>(self.tree.parent[&self.current_node])
+    }
+
+    pub fn borrow_child_property<P: Component>(&self, index: usize) -> Result<&P, NotFound> {
+        if index >= self.tree.children[&self.current_node].len() {
+            return Result::Err(NotFound::Component(TypeId::of::<P>()))
+        }
+        
+        self.ecm.borrow_component::<P>(self.tree.children[&self.current_node][index])
+    }
+
+    pub fn borrow_mut_child_property<P: Component>(&mut self, index: usize) -> Result<&mut P, NotFound> {
+         if index >= self.tree.children[&self.current_node].len() {
+            return Result::Err(NotFound::Component(TypeId::of::<P>()))
+        }
+        
+        self.ecm.borrow_mut_component::<P>(self.tree.children[&self.current_node][index])
     }
 }
 

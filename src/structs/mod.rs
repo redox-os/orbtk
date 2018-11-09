@@ -13,8 +13,5 @@ mod thickness;
 #[cfg(test)]
 mod tests;
 
-#[cfg(target_arch = "wasm32")]
-pub use self::color::Color;
-
-#[cfg(target_arch = "wasm32")]
-pub mod color;
+// pub use self::color::Color;
+// pub mod color;
