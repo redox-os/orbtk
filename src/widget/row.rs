@@ -4,7 +4,7 @@ use layout_object::{FlexLayoutObject, LayoutObject};
 use enums::Alignment;
 use widget::{Template, Widget};
 
-
+/// This layout widget orders its children horizontal.
 pub struct Row {
     pub children: Vec<Rc<Widget>>,
 }

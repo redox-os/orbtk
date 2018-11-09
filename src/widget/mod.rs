@@ -1,3 +1,5 @@
+//! Contains concret implementations of OrbTk's default widgets. It contains also layout widgets.
+
 use std::any::{Any, TypeId};
 use std::cell::Cell;
 use std::rc::Rc;
@@ -17,6 +19,7 @@ pub use self::column::*;
 pub use self::container::*;
 pub use self::row::*;
 pub use self::scroll_viewer::*;
+pub use self::stack::*;
 pub use self::text_block::*;
 pub use self::text_box::*;
 
@@ -27,6 +30,7 @@ mod container;
 mod macros;
 mod row;
 mod scroll_viewer;
+mod stack;
 mod text_block;
 mod text_box;
 

@@ -7,12 +7,12 @@
 
 > OrbTk 0.3.0 is under heavy development and it's not compatible to earlier releases.
 
-The Orbital Widget Toolkit is an (G)UI toolkit for building scalable user interfaces with the programming language Rust. It's based
+The Orbital Widget Toolkit is a multi platform (G)UI toolkit for building scalable user interfaces with the programming language Rust. It's based
 on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity%E2%80%93component%E2%80%93system) and provides a functional-reactive API. 
 
 The main goals of OrbTk are fast peformance, easy to use and the platform indipendence.
 
-OrbTk is being developed as cooperation project of [OrbTk Focus Time Group](https://gitlab.com/orbtk) and [Redox OS](https://www.redox-os.org/).
+OrbTk is a project of [Redox OS](https://www.redox-os.org/) and [OrbTk Focus Time Group](https://gitlab.com/orbtk).
 
 ## Features:
 

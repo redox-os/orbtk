@@ -6,6 +6,7 @@ use render_object::{RectangleRenderObject, RenderObject};
 use theme::Selector;
 use widget::{Property, PropertyResult, Template, Widget};
 
+/// The `Container` layout surrounds its child with a padding. Draws a box arround the child.
 pub struct Container {
     pub child: Option<Rc<Widget>>,
     pub selector: Property<Selector>,

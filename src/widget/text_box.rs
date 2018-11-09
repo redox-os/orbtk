@@ -7,9 +7,10 @@ use event::{Focused, Key};
 use theme::Selector;
 use widget::{
     add_selector_to_widget, remove_selector_from_widget, Container, Label, PropertyResult,
-    ScrollViewer, State, Template, TextBlock, Widget, WidgetContainer,
+    ScrollViewer, Stack, State, Template, TextBlock, Widget, WidgetContainer,
 };
 
+/// The `TextBoxState`handles the text processing of the `TextBox` widget.
 #[derive(Default)]
 pub struct TextBoxState {
     text: RefCell<String>,
@@ -68,6 +69,7 @@ impl State for TextBoxState {
     }
 }
 
+/// A single line text input widget.
 pub struct TextBox {
     pub label: Property<Label>,
     pub selector: Property<Selector>,
@@ -97,12 +99,21 @@ impl Widget for TextBox {
 
         Template::Single(Rc::new(Container {
             selector: self.selector.clone(),
-            child: Some(Rc::new(ScrollViewer {
-                child: Some(Rc::new(TextBlock {
-                    label: self.label.clone(),
-                    selector: self.selector.clone(),
-                })),
-                ..Default::default()
+            child: Some(Rc::new(Stack {
+                children: vec![
+                    Rc::new(ScrollViewer {
+                        child: Some(Rc::new(TextBlock {
+                            label: self.label.clone(),
+                            selector: self.selector.clone(),
+                        })),
+                        ..Default::default()
+                    }),
+                    // todo: Cursor as rectangle -> predifined bounds
+                    // scroll handling by cursor
+                    // Rc::new(TextBlock {
+                    //     ..Default::default()
+                    // }),
+                ],
             })),
             ..Default::default()
         }))
@@ -122,11 +133,18 @@ impl Widget for TextBox {
 
     fn event_handlers(&self) -> Vec<Rc<EventHandler>> {
         let state = self.state.clone();
-        vec![Rc::new(KeyEventHandler {
+
+        let mut event_handlers: Vec<Rc<EventHandler>> = vec![Rc::new(KeyEventHandler {
             on_key_down: Some(Rc::new(
                 move |key: &Key, _widget: &mut WidgetContainer| -> bool { state.update_text(key) },
             )),
             ..Default::default()
-        })]
+        })];
+
+        for handler in &self.event_handlers {
+            event_handlers.push(handler.clone());
+        }
+
+        event_handlers
     }
 }

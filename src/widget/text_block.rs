@@ -3,9 +3,11 @@ use render_object::{RenderObject, TextRenderObject};
 use theme::Selector;
 use widget::{Property, PropertyResult, Template, Widget};
 
+/// The `Label` struct represents a string used for text drawing.
 #[derive(Clone)]
 pub struct Label(pub String);
 
+/// The `TextBlock` widget is used to draw text.
 pub struct TextBlock {
     pub label: Property<Label>,
     pub selector: Property<Selector>,

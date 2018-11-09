@@ -7,6 +7,8 @@ use widget::{
     add_selector_to_widget, remove_selector_from_widget, Center, Container, Label, Property,
     PropertyResult, Template, TextBlock, Widget, WidgetContainer,
 };
+
+/// The `ButtonState` handles the pressed state of the `Button` widget.
 #[derive(Default)]
 pub struct ButtonState;
 impl State for ButtonState {
@@ -24,6 +26,7 @@ impl State for ButtonState {
     }
 }
 
+/// The `Button` struct represents a widget that can be clicked by user. It's used to peform an action.
 pub struct Button {
     pub label: Property<Label>,
     pub selector: Property<Selector>,

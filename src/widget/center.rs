@@ -3,6 +3,7 @@ use std::rc::Rc;
 use layout_object::{CenterLayoutObject, LayoutObject};
 use widget::{Template, Widget};
 
+/// This layout widget centers its children within itself.
 pub struct Center {
     pub child: Option<Rc<Widget>>,
 }

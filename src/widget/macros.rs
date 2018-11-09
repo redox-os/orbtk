@@ -1,3 +1,5 @@
+// This is only a early concept of the template macro!!!
+
 // use std::rc::Rc;
 #[macro_export]
 macro_rules! impl_template {

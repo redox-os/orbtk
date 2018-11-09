@@ -1,25 +1,21 @@
 use std::rc::Rc;
 
-use layout_object::{FlexLayoutObject, LayoutObject};
-use enums::Alignment;
 use widget::{Template, Widget};
 
-/// This layout widget orders its children vertical.
-pub struct Column {
+/// Use this layout widget to overlay its children (on z axis).
+pub struct Stack {
     pub children: Vec<Rc<Widget>>,
 }
 
-impl Default for Column {
-    fn default() -> Column {
-        Column {
-            children: vec![],
-        }
+impl Default for Stack {
+    fn default() -> Stack {
+        Stack { children: vec![] }
     }
 }
 
-impl Widget for Column {
+impl Widget for Stack {
     fn template(&self) -> Template {
-        print!("Column -> ");
+        print!("Stack -> ");
         if self.children.len() == 0 {
             Template::Empty
         } else if self.children.len() == 1 {
@@ -27,9 +23,5 @@ impl Widget for Column {
         } else {
             Template::Mutli(self.children.iter().map(|child| child.clone()).collect())
         }
-    }
-
-    fn layout_object(&self) -> Box<LayoutObject> {
-        Box::new(FlexLayoutObject::new(Alignment::Vertical))
     }
 }
