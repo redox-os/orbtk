@@ -6,7 +6,7 @@ use event::{EventHandler, KeyEventHandler};
 use event::{Focused, Key};
 use theme::Selector;
 use widget::{
-    add_selector_to_widget, remove_selector_from_widget, Container, Label, Offset, PropertyResult,
+    add_selector_to_widget, remove_selector_from_widget, Container, Label, PropertyResult,
     ScrollViewer, State, Template, TextBlock, Widget, WidgetContainer,
 };
 
@@ -72,7 +72,6 @@ pub struct TextBox {
     pub label: Property<Label>,
     pub selector: Property<Selector>,
     pub event_handlers: Vec<Rc<EventHandler>>,
-    pub offset: Property<Offset>,
     pub state: Rc<TextBoxState>,
 }
 
@@ -81,7 +80,6 @@ impl Default for TextBox {
         TextBox {
             label: Property::new(Label(String::from("TextBox"))),
             selector: Property::new(Selector::new(Some(String::from("textbox")))),
-            offset: Property::new(Offset::default()),
             event_handlers: vec![],
             state: Rc::new(TextBoxState::default()),
         }
@@ -104,7 +102,6 @@ impl Widget for TextBox {
                     label: self.label.clone(),
                     selector: self.selector.clone(),
                 })),
-                offset: self.offset.clone(),
                 ..Default::default()
             })),
             ..Default::default()
@@ -115,7 +112,6 @@ impl Widget for TextBox {
         vec![
             self.label.build(),
             self.selector.build(),
-            self.offset.build(),
             Property::new(Focused(false)).build(),
         ]
     }

@@ -19,37 +19,26 @@ impl Renderer for OrbWindow {
         &mut self,
         theme: &Theme,
         bounds: &Rect,
-        _parent_bounds: &Rect,
+        parent_bounds: &Rect,
         selector: &Selector,
-        _offset: &Point,
+        offset: &Point,
         global_position: &Point,
     ) {
         let b_r = theme.uint("border-radius", selector);
 
         let fill = theme.color("background", selector);
 
-        self.rounded_rect(
-            bounds.x + global_position.x,
-            bounds.y + global_position.y,
-            bounds.width,
-            bounds.height,
-            b_r,
-            true,
-            fill,
-        );
+        let x = (bounds.x + global_position.x + offset.x).max(parent_bounds.x);
+        let y = (bounds.y + global_position.y + offset.y).max(parent_bounds.y);
+        let width = (bounds.width as i32 + offset.x).min(parent_bounds.width as i32) as u32;
+        let height = (bounds.height as i32 + offset.y).min(parent_bounds.height as i32) as u32;
+
+        self.rounded_rect(x, y, width, height, b_r, true, fill);
 
         if theme.uint("border-width", selector) > 0 {
             let border_color = theme.color("border-color", selector);
 
-            self.rounded_rect(
-                bounds.x + global_position.x,
-                bounds.y + global_position.y,
-                bounds.width,
-                bounds.height,
-                b_r,
-                false,
-                border_color,
-            );
+            self.rounded_rect(x, y, width, height, b_r, false, border_color);
         }
     }
 

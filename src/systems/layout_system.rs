@@ -76,7 +76,6 @@ impl System<Tree> for LayoutSystem {
             }
 
             loop {
-                let mut children_pos = None;
                 let layout_result = {
                     let mut result = LayoutResult::Size((32, 32));
                     if let Some(layout) = layout_objects.borrow().get(&entity) {
@@ -85,7 +84,6 @@ impl System<Tree> for LayoutSystem {
                             ecm,
                             &constraint,
                             &tree.children.get(&entity).unwrap(),
-                            &mut children_pos,
                             size,
                             theme,
                         );
@@ -93,15 +91,6 @@ impl System<Tree> for LayoutSystem {
 
                     result
                 };
-
-                if let Some(children_pos) = children_pos {
-                    for (entity, pos) in children_pos {
-                        if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(entity) {
-                            bounds.x = pos.0;
-                            bounds.y = pos.1;
-                        }
-                    }
-                }
 
                 match layout_result {
                     LayoutResult::Size(size) => {

@@ -1,6 +1,7 @@
-use std::collections::HashMap;
-
-use {Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult, Theme};
+use dces::{Entity, EntityComponentManager};
+use layout_object::{LayoutObject, LayoutResult};
+use structs::Constraint;
+use theme::Theme;
 
 pub struct DefaultLayoutObject;
 
@@ -8,10 +9,9 @@ impl LayoutObject for DefaultLayoutObject {
     fn layout(
         &self,
         _entity: Entity,
-        _ecm: &EntityComponentManager,
+        _ecm: &mut EntityComponentManager,
         constraint: &Constraint,
         children: &[Entity],
-        _children_pos: &mut Option<HashMap<Entity, (i32, i32)>>,
         size: Option<(u32, u32)>,
         _theme: &Theme,
     ) -> LayoutResult {

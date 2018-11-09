@@ -1,7 +1,11 @@
 use std::cell::{Cell, RefCell};
-use std::collections::HashMap;
 
-use {Alignment, Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult, Theme};
+use dces::{Entity, EntityComponentManager};
+use layout_object::{LayoutObject, LayoutResult};
+use theme::Theme;
+
+use enums::Alignment;
+use structs::{Constraint, Rect};
 
 pub struct FlexLayoutObject {
     orientation: Alignment,
@@ -27,10 +31,9 @@ impl LayoutObject for FlexLayoutObject {
     fn layout(
         &self,
         _entity: Entity,
-        _ecm: &EntityComponentManager,
+        ecm: &mut EntityComponentManager,
         constraint: &Constraint,
         children: &[Entity],
-        children_pos: &mut Option<HashMap<Entity, (i32, i32)>>,
         size: Option<(u32, u32)>,
         _theme: &Theme,
     ) -> LayoutResult {
@@ -72,16 +75,15 @@ impl LayoutObject for FlexLayoutObject {
                         current_pos += self.current_position.borrow()[i];
                     }
 
-                    if let None = children_pos {
-                        *children_pos = Some(HashMap::new());
-                    }
-                    if let Some(children_pos) = children_pos {
+                    if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(*child) {
                         match self.orientation {
                             Alignment::Horizontal => {
-                                children_pos.insert(*child, (current_pos as i32, 0));
+                                bounds.x = current_pos as i32;
+                                bounds.y = 0;
                             }
                             Alignment::Vertical => {
-                                children_pos.insert(*child, (0, current_pos as i32));
+                                bounds.x = 0;
+                                bounds.y = current_pos as i32;
                             }
                         }
 
