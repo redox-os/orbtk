@@ -24,6 +24,7 @@ impl Renderer for OrbWindow {
         offset: &Point,
         global_position: &Point,
     ) {
+        let is_debug = selector.element.as_ref().map_or(false, |e| e == "debugborder");
         let b_r = theme.uint("border-radius", selector);
 
         let fill = theme.color("background", selector);
@@ -33,13 +34,15 @@ impl Renderer for OrbWindow {
         let width = (bounds.width as i32 + offset.x).min(parent_bounds.width as i32) as u32;
         let height = (bounds.height as i32 + offset.y).min(parent_bounds.height as i32) as u32;
 
-        self.rounded_rect(x, y, width, height, b_r, true, fill);
+        let border_width = theme.uint("border-width", selector);
+        let border_half = (border_width / 2) as i32;
 
-        if theme.uint("border-width", selector) > 0 {
+        if border_width > 0 {
             let border_color = theme.color("border-color", selector);
-
-            self.rounded_rect(x, y, width, height, b_r, false, border_color);
+            self.rounded_rect(x, y, width + border_width, height + border_width, b_r, !is_debug, border_color);
         }
+
+        self.rounded_rect(x + border_half, y + border_half, width, height, b_r, !is_debug, fill);
     }
 
     fn render_text(

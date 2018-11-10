@@ -21,13 +21,15 @@ impl LayoutObject for PaddingLayoutObject {
             let mut padding = Thickness::new(0, 0, 0, 0);
             if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
                 let pad = theme.uint("padding", selector) as i32;
+                let border_width = theme.uint("border-width", selector) as i32;
+                let half = border_width / 2;
 
                 if pad > 0 {
-                    padding = Thickness::new(pad, pad, pad, pad)
+                    padding = Thickness::new(pad + border_width, pad + half, pad, pad)
                 } else {
                     padding = Thickness::new(
-                        theme.uint("padding-left", selector) as i32,
-                        theme.uint("padding-top", selector) as i32,
+                        theme.uint("padding-left", selector) as i32 + border_width,
+                        theme.uint("padding-top", selector) as i32 + half,
                         theme.uint("padding-right", selector) as i32,
                         theme.uint("padding-bottom", selector) as i32,
                     )
