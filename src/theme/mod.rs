@@ -119,6 +119,52 @@ impl Theme {
             .map(|v| v.uint().unwrap_or(0))
             .unwrap_or(0)
     }
+
+    pub fn border_dimensions(&self, query: &Selector) -> (u32, u32, u32, u32) {
+        let border_width = self.uint("border-width", query);
+
+        let (left, top, right, bottom) = normalize_dimensions(
+            border_width,
+            self.uint("border-left-width", query),
+            self.uint("border-top-width", query),
+            self.uint("border-right-width", query),
+            self.uint("border-bottom-width", query),
+        );
+
+        (left, top, right, bottom)
+    }
+
+    pub fn padding_dimensions(&self, query: &Selector) -> (u32, u32, u32, u32) {
+        let pad = self.uint("padding", query);
+        let (bleft, btop, _, _) = self.border_dimensions(query);
+
+        let (left, top, right, bottom) = normalize_dimensions(
+            pad,
+            self.uint("padding-left", query),
+            self.uint("padding-top", query),
+            self.uint("padding-right", query),
+            self.uint("padding-bottom", query),
+        );
+
+        (left + bleft, top + btop, right, bottom)
+    }
+}
+
+fn normalize_dimensions(
+    pad: u32,
+    mut left: u32,
+    mut top: u32,
+    mut right: u32,
+    mut bottom: u32
+) -> (u32, u32, u32, u32) {
+    if pad > 0 {
+        left = if left == 0 { pad } else { left };
+        top = if top == 0 { pad } else { top };
+        right = if right == 0 { pad } else { right };
+        bottom = if bottom == 0 { pad } else { bottom };
+    }
+
+    (left, top, right, bottom)
 }
 
 #[derive(Clone, Debug)]
@@ -422,9 +468,10 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
 
             "background" | "foreground" => Value::Color(parse_basic_color(input)?),
 
-            "border-radius" | "border-width" | "width" | "height" | "min-width" | "min-height"
-            | "max-width" | "max-height" | "padding-top" | "padding-right" | "padding-bottom"
-            | "padding-left" | "padding" => match input.next()? {
+            "border-radius" | "border-width" | "border-left-width" | "border-top-width"
+            | "border-right-width" | "border-bottom-width" | "width" | "height" | "min-width"
+            | "min-height" | "max-width" | "max-height" | "padding-top" | "padding-right"
+            | "padding-bottom" | "padding-left" | "padding" => match input.next()? {
                 Token::Number {
                     int_value: Some(x),
                     has_sign,

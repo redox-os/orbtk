@@ -34,15 +34,18 @@ impl Renderer for OrbWindow {
         let width = (bounds.width as i32 + offset.x).min(parent_bounds.width as i32) as u32;
         let height = (bounds.height as i32 + offset.y).min(parent_bounds.height as i32) as u32;
 
-        let border_width = theme.uint("border-width", selector);
-        let border_half = (border_width / 2) as i32;
+        let (border_left, border_top, border_right, border_bottom) =
+            theme.border_dimensions(selector);
+
+        let border_width = border_left + border_right;
+        let border_height = border_bottom + border_top;
 
         if border_width > 0 {
             let border_color = theme.color("border-color", selector);
-            self.rounded_rect(x, y, width + border_width, height + border_width, b_r, !is_debug, border_color);
+            self.rounded_rect(x, y, width + border_width, height + border_height, b_r, !is_debug, border_color);
         }
 
-        self.rounded_rect(x + border_half, y + border_half, width, height, b_r, !is_debug, fill);
+        self.rounded_rect(x + border_left as i32, y + border_top as i32, width, height, b_r, !is_debug, fill);
     }
 
     fn render_text(
