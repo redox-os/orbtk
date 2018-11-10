@@ -63,16 +63,27 @@ impl Renderer for OrbWindow {
         //     line.draw(&mut self.inner, 20, 20, Color::rgb(0, 0, 0));
         // } else {
         let borders = theme.border_dimensions(selector);
-        let base_x = bounds.x + borders.0 as i32;
-        let base_y = bounds.y + borders.1 as i32;
-        let width = bounds.width + borders.0 + borders.2;
-        let height = bounds.height + borders.1 + borders.3;
-        let rect = Rect::new(base_x, base_y, width, height);
+        let bwidth = borders.0 + borders.2;
+        let bheight = borders.1 + borders.3;
+
+        let mut bounds = *bounds;
+        bounds.x += borders.0 as i32;
+        bounds.y += borders.1 as i32;
+        bounds.width += bwidth;
+        bounds.height += bheight;
+
+        let mut parent_bounds = *parent_bounds;
+        parent_bounds.x += borders.0 as i32;
+        parent_bounds.y += borders.1 as i32;
+        parent_bounds.width += bwidth;
+        parent_bounds.height += bheight;
+
+        let rect = Rect::new(bounds.x, bounds.y, bounds.width, bounds.height);
         let mut current_rect = Rect::new(
-            base_x + offset.x,
-            base_y + offset.y,
-            width,
-            height,
+            bounds.x + offset.x,
+            bounds.y + offset.y,
+            bounds.width,
+            bounds.height,
         );
         let x = rect.x;
 
