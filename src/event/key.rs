@@ -295,7 +295,7 @@ pub struct KeyUpEvent {
 
 impl Event for KeyUpEvent {}
 
-pub type KeyHandler = Rc<Fn(&Key, &mut WidgetContainer) -> bool + 'static>;
+pub type KeyHandler = Rc<Fn(Key, &mut WidgetContainer) -> bool + 'static>;
 
 #[derive(Default)]
 pub struct KeyEventHandler {
@@ -307,13 +307,13 @@ impl EventHandler for KeyEventHandler {
     fn handle_event(&self, event: &EventBox, widget: &mut WidgetContainer) -> bool {
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
             if let Some(handler) = &self.on_key_down {
-                return (handler)(&event.key, widget);
+                return (handler)(event.key, widget);
             }
         }
 
         if let Ok(event) = event.downcast_ref::<KeyUpEvent>() {
             if let Some(handler) = &self.on_key_up {
-                return (handler)(&event.key, widget);
+                return (handler)(event.key, widget);
             }
         }
 

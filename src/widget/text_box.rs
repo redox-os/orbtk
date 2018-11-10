@@ -19,12 +19,12 @@ pub struct TextBoxState {
 }
 
 impl TextBoxState {
-    fn update_text(&self, key: &Key) -> bool {
+    fn update_text(&self, key: Key) -> bool {
         if !self.focused.get() {
             return false;
         }
 
-        match <Option<u8>>::from(*key) {
+        match <Option<u8>>::from(key) {
             Some(byte) => {
                 (*self.text.borrow_mut()).push(byte as char);
             },
@@ -137,7 +137,7 @@ impl Widget for TextBox {
 
         let mut event_handlers: Vec<Rc<EventHandler>> = vec![Rc::new(KeyEventHandler {
             on_key_down: Some(Rc::new(
-                move |key: &Key, _widget: &mut WidgetContainer| -> bool { state.update_text(key) },
+                move |key: Key, _widget: &mut WidgetContainer| -> bool { state.update_text(key) },
             )),
             ..Default::default()
         })];
