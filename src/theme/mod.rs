@@ -136,7 +136,6 @@ impl Theme {
 
     pub fn padding_dimensions(&self, query: &Selector) -> (u32, u32, u32, u32) {
         let pad = self.uint("padding", query);
-        let (bleft, btop, _, _) = self.border_dimensions(query);
 
         let (left, top, right, bottom) = normalize_dimensions(
             pad,
@@ -146,7 +145,7 @@ impl Theme {
             self.uint("padding-bottom", query),
         );
 
-        (left + bleft, top + btop, right, bottom)
+        (left, top, right, bottom)
     }
 }
 

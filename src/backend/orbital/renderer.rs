@@ -26,8 +26,8 @@ impl Renderer for OrbWindow {
     ) {
         let is_debug = selector.element.as_ref().map_or(false, |e| e == "debugborder");
         let b_r = theme.uint("border-radius", selector);
-
         let fill = theme.color("background", selector);
+
 
         let x = (bounds.x + global_position.x + offset.x).max(parent_bounds.x);
         let y = (bounds.y + global_position.y + offset.y).max(parent_bounds.y);
@@ -62,12 +62,17 @@ impl Renderer for OrbWindow {
         //     let line = font.render(text, 64.0);
         //     line.draw(&mut self.inner, 20, 20, Color::rgb(0, 0, 0));
         // } else {
-        let rect = Rect::new(bounds.x, bounds.y, bounds.width, bounds.height);
+        let borders = theme.border_dimensions(selector);
+        let base_x = bounds.x + borders.0 as i32;
+        let base_y = bounds.y + borders.1 as i32;
+        let width = bounds.width + borders.0 + borders.2;
+        let height = bounds.height + borders.1 + borders.3;
+        let rect = Rect::new(base_x, base_y, width, height);
         let mut current_rect = Rect::new(
-            bounds.x + offset.x,
-            bounds.y + offset.y,
-            bounds.width,
-            bounds.height,
+            base_x + offset.x,
+            base_y + offset.y,
+            width,
+            height,
         );
         let x = rect.x;
 
