@@ -24,10 +24,11 @@ impl TextBoxState {
             return false;
         }
 
-        if key.to_string() != "" {
-            (*self.text.borrow_mut()).push_str(&key.to_string());
-        } else {
-            match key {
+        match <Option<u8>>::from(*key) {
+            Some(byte) => {
+                (*self.text.borrow_mut()).push(byte as char);
+            },
+            None => match key {
                 Key::Backspace => {
                     (*self.text.borrow_mut()).pop();
                 }

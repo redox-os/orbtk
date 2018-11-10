@@ -20,8 +20,7 @@ path = "src/lib.rs"
 [dependencies]
 cssparser = "0.17.0"
 lazy_static = "1.2.0"
-dces = { git = "https://gitlab.com/orbtk/dces-rust.git", branch = "shared" }
+dces = { git = "https://gitlab.com/orbtk/dces-rust.git" }
 orbclient = "0.3.17"
 orbfont = "0.1.8"
 orbimage = "0.1.16"
-
