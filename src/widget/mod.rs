@@ -59,7 +59,7 @@ pub trait Widget: Any {
 
     fn all_properties(&self) -> Vec<PropertyResult> {
         let mut properties = self.properties();
-        if let Some(_) = self.render_object() {
+        if self.render_object().is_some() {
             properties.push(Property::new(Drawable).build());
         }
 
@@ -122,7 +122,7 @@ impl<'a> WidgetContainer<'a> {
         if index >= self.tree.children[&self.current_node].len() {
             return Result::Err(NotFound::Component(TypeId::of::<P>()))
         }
-        
+
         self.ecm.borrow_component::<P>(self.tree.children[&self.current_node][index])
     }
 
@@ -130,7 +130,7 @@ impl<'a> WidgetContainer<'a> {
          if index >= self.tree.children[&self.current_node].len() {
             return Result::Err(NotFound::Component(TypeId::of::<P>()))
         }
-        
+
         self.ecm.borrow_mut_component::<P>(self.tree.children[&self.current_node][index])
     }
 }

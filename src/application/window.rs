@@ -169,7 +169,7 @@ fn build_tree(
         debug_flag: &Rc<Cell<bool>>,
     ) -> Entity {
         // register window as entity with global properties
-        if world.entity_container().len() == 0 {
+        if world.entity_container().is_empty() {
             let root = world
                 .create_entity()
                 .with(Global::default())
@@ -209,7 +209,7 @@ fn build_tree(
 
             let widget_handlers = widget.event_handlers();
 
-            if widget_handlers.len() > 0 {
+            if ! widget_handlers.is_empty() {
                 let mut event_handlers = vec![];
 
                 for handler in widget_handlers {

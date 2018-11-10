@@ -24,7 +24,7 @@ impl LayoutObject for ScrollLayoutObject {
 
             LayoutResult::Size((constraint.max_width, constraint.max_height))
         } else {
-            if children.len() == 0 {
+            if children.is_empty() {
                 return LayoutResult::Size((constraint.max_width, constraint.max_height));
             }
             LayoutResult::RequestChild(children[0], *constraint)

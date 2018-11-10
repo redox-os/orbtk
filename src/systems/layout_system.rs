@@ -83,7 +83,7 @@ impl System<Tree> for LayoutSystem {
                             entity,
                             ecm,
                             &constraint,
-                            &tree.children.get(&entity).unwrap(),
+                            &tree.children[&entity],
                             size,
                             theme,
                         );

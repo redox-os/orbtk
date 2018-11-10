@@ -36,13 +36,13 @@ impl System<Tree> for RenderSystem {
         for node in tree.into_iter() {
             let mut global_position = Point::default();
 
-            if let Some(offset) = offsets.get(&tree.parent.get(&node).unwrap()) {
+            if let Some(offset) = offsets.get(&tree.parent[&node]) {
                 global_position = Point::new(offset.0, offset.1);
             }
 
             let offset = {
                 // get offset from scrollable parent
-                if let Ok(offset) = ecm.borrow_component::<Offset>(*tree.parent.get(&node).unwrap())
+                if let Ok(offset) = ecm.borrow_component::<Offset>(tree.parent[&node])
                 {
                     Point::new(offset.0, offset.1)
                 } else {

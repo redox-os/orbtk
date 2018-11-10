@@ -31,6 +31,10 @@ impl Tree {
     pub fn len(&self) -> usize {
         self.children.len()
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
 impl EntityContainer for Tree {
@@ -68,25 +72,25 @@ impl<'a> Iterator for TreeIterator<'a> {
         let mut path = self.path.borrow_mut();
         let mut result = None;
 
-        if path.len() == 0 {
+        if path.is_empty() {
             result = Some(self.tree.root);
         } else {
             let mut current_node = path[path.len() - 1];
 
             // if current node has children return the first child
-            if self.tree.children.get(&current_node).unwrap().len() > 0 {
-                result = Some(self.tree.children.get(&current_node).unwrap()[0]);
+            if ! self.tree.children[&current_node].is_empty() {
+                result = Some(self.tree.children[&current_node][0]);
             } else {
                 // if the node doesn't have kids check its siblings
                 loop {
                     path.pop();
 
-                    if path.len() == 0 {
+                    if path.is_empty() {
                         break;
                     }
 
-                    let parent = self.tree.parent.get(&current_node).unwrap();
-                    let siblings = self.tree.children.get(parent).unwrap();
+                    let parent = self.tree.parent[&current_node];
+                    let siblings = &self.tree.children[&parent];
                     let sibling_index =
                         siblings.iter().position(|&r| r == current_node).unwrap() + 1;
 
@@ -94,7 +98,7 @@ impl<'a> Iterator for TreeIterator<'a> {
                         result = Some(siblings[sibling_index]);
                         break;
                     } else {
-                        current_node = *parent;
+                        current_node = parent;
                     }
                 }
             }
