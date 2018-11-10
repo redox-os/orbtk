@@ -1,7 +1,7 @@
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
-use orbclient::{Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
+use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
 
 use dces::World;
 
