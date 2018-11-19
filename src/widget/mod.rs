@@ -196,3 +196,105 @@ where
         }
     }
 }
+
+pub struct PbProperty
+{
+    pub source: Rc<Cell<Option<Entity>>>,
+    property: Option<Box<Component>>,
+}
+
+impl PbProperty
+{
+    pub fn new(property: Box<Component>) -> Self {
+        PbProperty {
+            source: Rc::new(Cell::new(None)),
+            property: Some(property),
+        }
+    }
+
+    pub fn build(&self) -> PropertyResult {
+        if let Some(source) = self.source.get() {
+            return PropertyResult::Source(SharedComponentBox::new::<C>(source));
+        }
+
+        if let Some(property) = &self.property {
+            return PropertyResult::Property(ComponentBox::new(property.clone()), self.source.clone())
+        }
+
+        PropertyResult::PropertyNotFound
+    }
+}
+
+impl Clone for PbProperty
+{
+    fn clone(&self) -> Self {
+        PbProperty {
+            source: self.source.clone(),
+            property: None,
+        }
+    }
+}
+
+
+
+pub struct PbTemplate {
+    pub properties: Vec<PropertyResult>,
+    pub event_handlers: Vec<Box<EventHandler>>,
+    pub layout_object: Box<LayoutObject>,
+    pub render_object: Option<Box<RenderObject>>,
+    pub state: Option<Box<State>>,
+    pub children: Vec<PbTemplate>,
+}
+
+impl Default for PbTemplate {
+    fn default() -> Self {
+        PbTemplate {
+            properties: vec![],
+            event_handlers: vec![],
+            layout_object: Box::new(DefaultLayoutObject),
+            render_object: None,
+            state: None,
+            children: vec![],
+        }
+    }
+}
+
+pub trait PbWidget {
+    fn template(&self) -> PbTemplate;
+}
+
+pub struct PbText {
+
+}
+
+impl PbWidget for PbText {
+    fn template(&self) -> PbTemplate {
+        PbTemplate {
+            ..Default::default()
+        }
+    }
+}
+
+pub struct PbContainer {
+
+}
+
+impl PbWidget for PbContainer {
+    fn template(&self) -> PbTemplate {
+        PbTemplate {
+            ..Default::default()
+        }
+    }
+}
+
+pub struct PbButton {
+
+}
+
+impl PbWidget for PbButton {
+    fn template(&self) -> PbTemplate {
+        PbTemplate {
+            ..Default::default()
+        }
+    }
+}
