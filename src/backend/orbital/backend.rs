@@ -7,8 +7,8 @@ use dces::World;
 
 use backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext};
 use event::{
-    EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent,
-    MouseUpEvent, SystemEvent,
+    EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
+    SystemEvent,
 };
 use structs::{Point, Rect};
 use theme::Theme;

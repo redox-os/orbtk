@@ -3,10 +3,6 @@ use cssparser::{
     Token,
 };
 
-#[cfg(target_arch = "wasm32")]
-use Color;
-
-#[cfg(not(target_arch = "wasm32"))]
 use orbclient::Color;
 
 use std::collections::HashSet;
@@ -24,7 +20,9 @@ pub use self::style::Style;
 mod style;
 
 pub static DEFAULT_THEME_CSS: &'static str = include_str!("dark.css");
-pub static LIGHT_THEME_CSS: &'static str = include_str!("light.css");
+pub static LIGHT_THEME_EXTENSION_CSS: &'static str = include_str!("light.css");
+pub static MATERIAL_ICONS_REGULAR_FONT: &'static [u8; 128180] = include_bytes!("MaterialIcons-Regular.ttf");
+pub static ROBOTO_REGULAR_FONT: &'static [u8; 145348] = include_bytes!("Roboto-Regular.ttf");
 
 lazy_static! {
     static ref DEFAULT_THEME: Arc<Theme> = {
@@ -33,6 +31,10 @@ lazy_static! {
             rules: parse(DEFAULT_THEME_CSS),
         })
     };
+}
+
+lazy_static! {
+    pub static ref LIGHT_THEME_CSS: String = format!("{}{}", LIGHT_THEME_EXTENSION_CSS, DEFAULT_THEME_CSS);
 }
 
 pub struct Theme {
@@ -424,7 +426,7 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
 
             "border-radius" | "border-width" | "width" | "height" | "min-width" | "min-height"
             | "max-width" | "max-height" | "padding-top" | "padding-right" | "padding-bottom"
-            | "padding-left" | "padding" => match input.next()? {
+            | "padding-left" | "padding" | "font-size" => match input.next()? {
                 Token::Number {
                     int_value: Some(x),
                     has_sign,

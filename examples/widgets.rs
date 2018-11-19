@@ -156,7 +156,7 @@ fn main() {
             state: Rc::new(MainViewState::default()),
             counter: Property::new(Label(String::from("Button count: 0"))),
         })
-        .with_debug_flag(true)
+        .with_debug_flag(false)
         .build();
     application.run();
 }
