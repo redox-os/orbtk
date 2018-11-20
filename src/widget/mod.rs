@@ -59,7 +59,7 @@ pub trait Widget: Any {
 
     fn all_properties(&self) -> Vec<PropertyResult> {
         let mut properties = self.properties();
-        if let Some(_) = self.render_object() {
+        if self.render_object().is_some() {
             properties.push(Property::new(Drawable).build());
         }
 

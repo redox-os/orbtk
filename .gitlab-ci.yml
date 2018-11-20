@@ -8,8 +8,8 @@ before_script:
 
 linux:
   script:
+    - rustup default nightly
     - cargo build
-    - make tests
   cache:
     paths:
       - cargo/

@@ -121,7 +121,7 @@ impl Widget for MainView {
 }
 
 fn main() {
-    let mut application = Application::new();
+    let mut application = Application::default();
     application
         .create_window()
         .with_bounds(Rect::new(0, 0, 420, 730))
