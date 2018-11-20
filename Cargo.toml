@@ -22,6 +22,7 @@ cssparser = "0.17.0"
 lazy_static = "1.2.0"
 dces = { git = "https://gitlab.com/orbtk/dces-rust.git", branch = "shared" }
 orbclient = "0.3.17"
-orbfont = "0.1.8"
+orbfont = { git = "https://gitlab.redox-os.org/redox-os/orbfont.git" }
+# orbfont = { path = "/Users/florian.blasius/Projects/Focus-Time/orbfont/" }
 orbimage = "0.1.16"
 

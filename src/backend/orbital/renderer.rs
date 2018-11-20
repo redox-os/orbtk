@@ -25,11 +25,12 @@ impl OrbFontRenderer {
     ) {
         if let Some(font) = &self.font {
             let line = font.render(text, theme.uint("font-size", selector) as f32);
-            line.draw(
+            line.draw_clipped(
                 renderer,
                 bounds.x + offset.x + global_position.x,
                 bounds.y + offset.y + global_position.y,
                 theme.color("color", selector),
+                (global_position.x + parent_bounds.x, global_position.y + parent_bounds.y, parent_bounds.width, parent_bounds.height)
             );
         } else {
             let rect = Rect::new(bounds.x, bounds.y, bounds.width, bounds.height);
