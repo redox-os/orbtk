@@ -12,17 +12,15 @@ on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity%E2
 
 The main goals of OrbTk are fast peformance, easy to use and the platform indipendence.
 
-OrbTk is a project of [Redox OS](https://www.redox-os.org/) and [OrbTk Focus Time Group](https://gitlab.com/orbtk).
-
 ## Features:
 
 * Modern [Flutter](https://flutter.io/), [React](https://reactjs.org/), [Redux](https://redux.js.org/) like API
 * Uses the Entity Component System library [DCES](https://gitlab.com/orbtk/dces-rust) for widget and properties handling
 * Updating instead of rebuling subtrees
-* Small DSL for custom widget creation on macro base
+* Small DSL for custom widget creation on macro base (WIP)
 * Flexible event system
 * Widget state management
-* Platform Independent: Redox OS, Linux, macOS, Window and WebAssembly
+* Platform Independent: Redox OS, Linux, macOS, Windows
 * CSS theming
 
 ## Usage
@@ -32,6 +30,13 @@ line to your `Cargo.toml` file:
 
 ```text
 orbtk = "0.2.27"
+```
+
+To use OrbTk 0.3, , just add the dependency
+line to your `Cargo.toml` file:
+
+```text
+orbtk = { git = https://gitlab.com/orbtk/orbtk.git }
 ```
 
 However you also need to have the SDL2 libraries installed on your
@@ -60,6 +65,8 @@ cargo run --example widgets
 * Exchange views / widgets / screens on runtime
 * Split application in modules
 * Theme update
+* Support for Android, iOS and WebAssembly
+* Vulkan / OpenGl Support 
 
 ## Inspirations
 
