@@ -15,7 +15,7 @@ The main goals of OrbTk are fast peformance, easy to use and the platform indipe
 ## Features:
 
 * Modern [Flutter](https://flutter.io/), [React](https://reactjs.org/), [Redux](https://redux.js.org/) like API
-* Uses the Entity Component System library [DCES](https://gitlab.com/orbtk/dces-rust) for widget and properties handling
+* Uses the Entity Component System library [DCES](https://gitlab.redox-os.org/redox-os/dces-rust) for widget and properties handling
 * Updating instead of rebuling subtrees
 * Small DSL for custom widget creation on macro base (WIP)
 * Flexible event system
