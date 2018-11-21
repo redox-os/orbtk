@@ -1,7 +1,10 @@
 [package]
 name = "orbtk"
 version = "0.3.0"
-authors = ["OrbTk Focus Time Group, Redox OS Developers"]
+authors = [
+    "Florian Blasius <flovanpt@posteo.de>",
+    "Jeremy Soller <jackpot51@gmail.com>"
+]
 description = "The Orbital Widget Toolkit"
 documentation = "https://docs.rs/orbtk"
 repository = "https://gitlab.redox-os.org/redox-os/orbtk"
