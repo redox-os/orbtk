@@ -66,7 +66,7 @@ cargo run --example widgets
 * Split application in modules
 * Theme update
 * Support for Android, iOS and WebAssembly
-* Vulkan / OpenGl Support 
+* Vulkan / OpenGL Support 
 
 ## Inspirations
 
