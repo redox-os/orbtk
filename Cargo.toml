@@ -1,7 +1,7 @@
 [package]
 name = "orbtk"
-version = "0.2.27"
-authors = ["Jeremy Soller <jackpot51@gmail.com>"]
+version = "0.3.0"
+authors = ["OrbTk Focus Time Group, Redox OS Developers"]
 description = "The Orbital Widget Toolkit"
 documentation = "https://docs.rs/orbtk"
 repository = "https://gitlab.redox-os.org/redox-os/orbtk"
@@ -18,8 +18,10 @@ name = "orbtk"
 path = "src/lib.rs"
 
 [dependencies]
-orbclient = "0.3.13"
-orbfont = "0.1.8"
+cssparser = "0.17.0"
+lazy_static = "1.2.0"
+dces = { git = "https://gitlab.com/orbtk/dces-rust.git" }
+orbclient = "0.3.17"
+orbfont = { git = "https://gitlab.redox-os.org/redox-os/orbfont.git" }
+# orbfont = { path = "/Users/florian.blasius/Projects/Focus-Time/orbfont/" }
 orbimage = "0.1.16"
-cssparser = "0.16.0"
-lazy_static = "0.2.8"

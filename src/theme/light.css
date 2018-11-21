@@ -1,0 +1,34 @@
+/* Every element */
+* {
+    /* background: #F5F6F7; */
+    background: #fafafa;
+    color: black;
+}
+
+button {
+    /* min-width: 60; */
+    /* height: 40; */
+    background: #e5e5e5;
+}
+
+button:active {
+    background: #d6d6d6;
+}
+
+container {
+    background: transparent;
+}
+
+textbox {
+    background: white;
+    border-color: #d1d1d1;
+}
+
+textbox:focus {
+    border-color: #2a94db;
+}
+
+debugborder {
+    border-color: blue;
+    background: transparent;
+}

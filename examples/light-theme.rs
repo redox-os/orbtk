@@ -1,34 +1,8 @@
-#[macro_use]
 extern crate orbtk;
 use orbtk::*;
 
 use std::cell::Cell;
 use std::rc::Rc;
-
-/*
-    template!(
-        Row {
-            children: [
-                Container {
-                    child: Button {
-                        label: "Click me",
-                        handler: ButtonHandler {
-                            on_mouse_up: || {
-                                println!("Button 1 mouse up");
-                            }
-                        }
-                    }
-                },
-                Container {
-                    child: TextBox {
-                        label: "Insert",
-                        handler: TextBoxHandler {}
-                    }
-                }
-            ]
-        }
-    )
-*/
 
 #[derive(Default)]
 struct MainViewState {
@@ -156,7 +130,7 @@ fn main() {
             state: Rc::new(MainViewState::default()),
             counter: Property::new(Label(String::from("Button count: 0"))),
         })
-        .with_debug_flag(true)
+        .with_theme(Theme::parse(&theme::LIGHT_THEME_CSS))
         .build();
     application.run();
 }

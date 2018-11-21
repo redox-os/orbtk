@@ -1,0 +1,46 @@
+/* Every element */
+* {
+    /* background: #F5F6F7; */
+    background: #475b6e;
+    color: white;
+    font-size: 16;
+}
+
+button {
+    /* min-width: 60; */
+    /* height: 40; */
+    height: 32;
+    background: #6C7A90;
+    border-radius: 2;
+    padding: 6;
+}
+
+button:active {
+    background: #8cafd1;
+}
+
+container {
+    background: transparent;
+    padding: 8;
+}
+
+textbox {
+    min-width: 100;
+    height: 32;
+    background: #3b434a;
+    border-color: #647b91;
+    border-width: 1;
+    border-radius: 2;
+    padding: 6;
+}
+
+textbox:focus {
+    border-color: #8cafd1;
+}
+
+debugborder {
+    border-width: 1;
+    border-radius: 2;
+    border-color: blue;
+    background: transparent;
+}
