@@ -34,7 +34,7 @@ impl EventBox {
         if self.event_type == TypeId::of::<E>() {
             return Ok(*self.event.downcast::<E>().unwrap())
         }
-        
+
         Err(EventError::WrongType(TypeId::of::<E>()))
     }
 
@@ -42,7 +42,7 @@ impl EventBox {
         if self.event_type == TypeId::of::<E>() {
             return Ok(&*self.event.downcast_ref::<E>().unwrap())
         }
-        
+
         Err(EventError::WrongType(TypeId::of::<E>()))
     }
 }
@@ -66,7 +66,7 @@ impl EventQueue {
     }
 
     pub fn dequeue(&mut self) -> Option<EventBox> {
-        if self.event_queue.len() > 0 {
+        if ! self.event_queue.is_empty() {
             return Some(self.event_queue.remove(0));
         }
 

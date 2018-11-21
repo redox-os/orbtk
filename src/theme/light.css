@@ -9,8 +9,6 @@ button {
     /* min-width: 60; */
     /* height: 40; */
     background: #e5e5e5;
-    border-radius: 2;
-    padding: 6;
 }
 
 button:active {
@@ -19,17 +17,11 @@ button:active {
 
 container {
     background: transparent;
-    padding: 8;
 }
 
 textbox {
-    min-width: 100;
-    max-width: 100;
     background: white;
     border-color: #d1d1d1;
-    border-width: 1;
-    border-radius: 2;
-    padding: 6;
 }
 
 textbox:focus {
@@ -37,8 +29,6 @@ textbox:focus {
 }
 
 debugborder {
-    border-width: 1;
-    border-radius: 2;
     border-color: blue;
     background: transparent;
 }

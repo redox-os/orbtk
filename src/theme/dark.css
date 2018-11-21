@@ -3,11 +3,13 @@
     /* background: #F5F6F7; */
     background: #475b6e;
     color: white;
+    font-size: 16;
 }
 
 button {
     /* min-width: 60; */
     /* height: 40; */
+    height: 32;
     background: #6C7A90;
     border-radius: 2;
     padding: 6;

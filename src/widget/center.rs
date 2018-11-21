@@ -30,3 +30,7 @@ impl Widget for Center {
         Box::new(CenterLayoutObject)
     }
 }
+
+pub struct PbCenter {
+    
+}

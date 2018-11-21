@@ -46,6 +46,6 @@ impl Widget for Container {
     }
 
     fn event_handlers(&self) -> Vec<Rc<EventHandler>> {
-        self.event_handlers.iter().by_ref().map(|handler| handler.clone()).collect()
+        self.event_handlers.to_vec()
     }
 }

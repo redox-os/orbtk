@@ -65,14 +65,10 @@ impl Widget for MainView {
                             child: Some(Rc::new(Button {
                                 label: Property::new(Label(String::from("Click me"))),
                                 event_handlers: vec![Rc::new(MouseEventHandler {
-                                    on_mouse_up: Some(Rc::new(
-                                        move |pos: Point, widget: &mut WidgetContainer| -> bool {
-                                            if check_mouse_condition(pos, widget) {
-                                                state.increment();
-                                                return true;
-                                            }
-
-                                            false
+                                    on_click: Some(Rc::new(
+                                        move |_pos: Point, _widget: &mut WidgetContainer| -> bool {
+                                            state.increment();
+                                            true
                                         },
                                     )),
                                     ..Default::default()
@@ -91,13 +87,24 @@ impl Widget for MainView {
                     ],
                     ..Default::default()
                 }),
-                Rc::new(Container {
-                    child: Some(Rc::new(TextBlock {
-                        label: self.counter.clone(),
-                        ..Default::default()
-                    })),
-                    ..Default::default()
-                }),
+                // Rc::new(Row {
+                //     children: vec![
+                //         Rc::new(Container {
+                //             child: Some(Rc::new(TextBlock {
+                //                 label: self.counter.clone(),
+                //                 ..Default::default()
+                //             })),
+                //             ..Default::default()
+                //         }),
+                //         Rc::new(Container {
+                //             child: Some(Rc::new(TextBox {
+                //                 label: Property::new(Label(String::from("Insert Insert"))),
+                //                 ..Default::default()
+                //             })),
+                //             ..Default::default()
+                //         }),
+                //     ],
+                // }),
             ],
 
             ..Default::default()
@@ -114,7 +121,7 @@ impl Widget for MainView {
 }
 
 fn main() {
-    let mut application = Application::new();
+    let mut application = Application::default();
     application
         .create_window()
         .with_bounds(Rect::new(0, 0, 420, 730))
@@ -123,7 +130,7 @@ fn main() {
             state: Rc::new(MainViewState::default()),
             counter: Property::new(Label(String::from("Button count: 0"))),
         })
-        .with_theme(Theme::parse(theme::LIGHT_THEME_CSS))
+        .with_theme(Theme::parse(&theme::LIGHT_THEME_CSS))
         .build();
     application.run();
 }

@@ -3,10 +3,6 @@ use cssparser::{
     Token,
 };
 
-#[cfg(target_arch = "wasm32")]
-use Color;
-
-#[cfg(not(target_arch = "wasm32"))]
 use orbclient::Color;
 
 use std::collections::HashSet;
@@ -24,7 +20,9 @@ pub use self::style::Style;
 mod style;
 
 pub static DEFAULT_THEME_CSS: &'static str = include_str!("dark.css");
-pub static LIGHT_THEME_CSS: &'static str = include_str!("light.css");
+pub static LIGHT_THEME_EXTENSION_CSS: &'static str = include_str!("light.css");
+pub static MATERIAL_ICONS_REGULAR_FONT: &'static [u8; 128180] = include_bytes!("MaterialIcons-Regular.ttf");
+pub static ROBOTO_REGULAR_FONT: &'static [u8; 145348] = include_bytes!("Roboto-Regular.ttf");
 
 lazy_static! {
     static ref DEFAULT_THEME: Arc<Theme> = {
@@ -35,6 +33,11 @@ lazy_static! {
     };
 }
 
+lazy_static! {
+    pub static ref LIGHT_THEME_CSS: String = format!("{}{}", LIGHT_THEME_EXTENSION_CSS, DEFAULT_THEME_CSS);
+}
+
+#[derive(Debug, Default, Clone)]
 pub struct Theme {
     parent: Option<Arc<Theme>>,
     rules: Vec<Rule>,
@@ -87,7 +90,7 @@ impl Theme {
                 .filter(|x| x.matches(query))
                 .collect::<Vec<_>>();
 
-            if matching_selectors.len() > 0 {
+            if ! matching_selectors.is_empty() {
                 if let Some(decl) = rule
                     .declarations
                     .iter()
@@ -470,7 +473,7 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
             "border-radius" | "border-width" | "border-left-width" | "border-top-width"
             | "border-right-width" | "border-bottom-width" | "width" | "height" | "min-width"
             | "min-height" | "max-width" | "max-height" | "padding-top" | "padding-right"
-            | "padding-bottom" | "padding-left" | "padding" => match input.next()? {
+            | "padding-bottom" | "padding-left" | "padding" | "font-size" => match input.next()? {
                 Token::Number {
                     int_value: Some(x),
                     has_sign,
@@ -504,22 +507,22 @@ fn css_color(name: &str) -> Option<Color> {
     Some(hex(match name {
         "transparent" => return Some(Color { data: 0 }),
 
-        "black" => 0x000000,
-        "silver" => 0xc0c0c0,
-        "gray" | "grey" => 0x808080,
-        "white" => 0xffffff,
-        "maroon" => 0x800000,
-        "red" => 0xff0000,
-        "purple" => 0x800080,
-        "fuchsia" => 0xff00ff,
-        "green" => 0x008000,
-        "lime" => 0x00ff00,
-        "olive" => 0x808000,
-        "yellow" => 0xffff00,
-        "navy" => 0x000080,
-        "blue" => 0x0000ff,
-        "teal" => 0x008080,
-        "aqua" => 0x00ffff,
+        "black" => 0x000_000,
+        "silver" => 0xc0c_0c0,
+        "gray" | "grey" => 0x808_080,
+        "white" => 0xfff_fff,
+        "maroon" => 0x800_000,
+        "red" => 0xff0_000,
+        "purple" => 0x800_080,
+        "fuchsia" => 0xff0_0ff,
+        "green" => 0x008_000,
+        "lime" => 0x00f_f00,
+        "olive" => 0x808_000,
+        "yellow" => 0xfff_f00,
+        "navy" => 0x000_080,
+        "blue" => 0x000_0ff,
+        "teal" => 0x008_080,
+        "aqua" => 0x00f_fff,
         _ => return None,
     }))
 }
@@ -543,7 +546,7 @@ fn parse_basic_color<'i, 't>(
                 };
 
                 if hash.len() == 6 {
-                    x |= 0xFF000000;
+                    x |= 0xFF_000_000;
                 }
 
                 Color { data: x }
@@ -587,6 +590,6 @@ pub fn parse(s: &str) -> Vec<Rule> {
 
 const fn hex(data: u32) -> Color {
     Color {
-        data: 0xFF000000 | data,
+        data: 0xFF_000_000 | data,
     }
 }

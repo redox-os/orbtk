@@ -6,11 +6,11 @@ use std::rc::Rc;
 
 use dces::{Component, ComponentBox, Entity, EntityComponentManager, NotFound, SharedComponentBox};
 
-use state::State;
+use event::EventHandler;
 use layout_object::{DefaultLayoutObject, LayoutObject};
 use render_object::RenderObject;
+use state::State;
 use theme::Selector;
-use event::EventHandler;
 use tree::Tree;
 
 pub use self::button::*;
@@ -59,7 +59,7 @@ pub trait Widget: Any {
 
     fn all_properties(&self) -> Vec<PropertyResult> {
         let mut properties = self.properties();
-        if let Some(_) = self.render_object() {
+        if self.render_object().is_some() {
             properties.push(Property::new(Drawable).build());
         }
 
@@ -111,27 +111,34 @@ impl<'a> WidgetContainer<'a> {
     }
 
     pub fn borrow_parent_property<P: Component>(&self) -> Result<&P, NotFound> {
-        self.ecm.borrow_component::<P>(self.tree.parent[&self.current_node])
+        self.ecm
+            .borrow_component::<P>(self.tree.parent[&self.current_node])
     }
 
     pub fn borrow_mut_parent_property<P: Component>(&mut self) -> Result<&mut P, NotFound> {
-        self.ecm.borrow_mut_component::<P>(self.tree.parent[&self.current_node])
+        self.ecm
+            .borrow_mut_component::<P>(self.tree.parent[&self.current_node])
     }
 
     pub fn borrow_child_property<P: Component>(&self, index: usize) -> Result<&P, NotFound> {
         if index >= self.tree.children[&self.current_node].len() {
-            return Result::Err(NotFound::Component(TypeId::of::<P>()))
+            return Result::Err(NotFound::Component(TypeId::of::<P>()));
         }
-        
-        self.ecm.borrow_component::<P>(self.tree.children[&self.current_node][index])
+
+        self.ecm
+            .borrow_component::<P>(self.tree.children[&self.current_node][index])
     }
 
-    pub fn borrow_mut_child_property<P: Component>(&mut self, index: usize) -> Result<&mut P, NotFound> {
-         if index >= self.tree.children[&self.current_node].len() {
-            return Result::Err(NotFound::Component(TypeId::of::<P>()))
+    pub fn borrow_mut_child_property<P: Component>(
+        &mut self,
+        index: usize,
+    ) -> Result<&mut P, NotFound> {
+        if index >= self.tree.children[&self.current_node].len() {
+            return Result::Err(NotFound::Component(TypeId::of::<P>()));
         }
-        
-        self.ecm.borrow_mut_component::<P>(self.tree.children[&self.current_node][index])
+
+        self.ecm
+            .borrow_mut_component::<P>(self.tree.children[&self.current_node][index])
     }
 }
 
@@ -143,7 +150,7 @@ pub fn add_selector_to_widget(pseudo_class: &str, widget: &mut WidgetContainer) 
 
 pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContainer) {
     if let Ok(selector) = widget.borrow_mut_property::<Selector>() {
-        selector.pseudo_classes.remove (pseudo_class);
+        selector.pseudo_classes.remove(pseudo_class);
     }
 }
 
@@ -178,7 +185,10 @@ where
         }
 
         if let Some(property) = &self.property {
-            return PropertyResult::Property(ComponentBox::new(property.clone()), self.source.clone())
+            return PropertyResult::Property(
+                ComponentBox::new(property.clone()),
+                self.source.clone(),
+            );
         }
 
         PropertyResult::PropertyNotFound

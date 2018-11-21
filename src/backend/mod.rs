@@ -59,7 +59,13 @@ pub trait BackendRunner {
     fn run(&mut self, update: Rc<Cell<bool>>);
 }
 
+pub trait FontMeasure {
+    fn measure(&self, text: &str, font_size: u32) -> (u32, u32);
+}
+
 pub use self::target::target_backend;
+pub use self::target::FONT_MEASURE;
 
 #[path = "orbital/mod.rs"]
 mod target;
+

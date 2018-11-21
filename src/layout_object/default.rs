@@ -18,7 +18,7 @@ impl LayoutObject for DefaultLayoutObject {
         if let Some(size) = size {
             LayoutResult::Size(size)
         } else {
-            if children.len() == 0 {
+            if children.is_empty() {
                 return LayoutResult::Size((constraint.min_width, constraint.min_height));
             }
             LayoutResult::RequestChild(children[0], *constraint)

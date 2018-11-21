@@ -1,14 +1,14 @@
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
-use orbclient::{Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
+use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
 
 use dces::World;
 
 use backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext};
 use event::{
-    EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent,
-    MouseUpEvent, SystemEvent,
+    EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
+    SystemEvent,
 };
 use structs::{Point, Rect};
 use theme::Theme;
