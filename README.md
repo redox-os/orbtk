@@ -1,6 +1,6 @@
 # OrbTk
 
-[![Build status](https://gitlab.com/orbtk/orbtk/badges/master/build.svg)](https://gitlab.com/orbtk/orbtk/pipelines)
+[![Build status](https://gitlab.redox-os.org/redox-os/orbtk/badges/master/build.svg)](https://gitlab.redox-os.org/redox-os/orbtk/pipelines)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![crates.io](https://img.shields.io/badge/crates.io-v0.2.27-orange.svg)](https://crates.io/crates/orbtk)
 [![docs.rs](https://docs.rs/orbtk/badge.svg)](https://docs.rs/orbtk)
@@ -36,7 +36,7 @@ To use OrbTk 0.3, just add the dependency
 line to your `Cargo.toml` file:
 
 ```text
-orbtk = { git = https://gitlab.com/orbtk/orbtk.git }
+orbtk = { git = https://gitlab.redox-os.org/redox-os/orbtk.git }
 ```
 
 However you also need to have the SDL2 libraries installed on your
