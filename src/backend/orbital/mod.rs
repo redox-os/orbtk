@@ -42,7 +42,7 @@ impl FontMeasure for OrbFontMeasure {
             return (text.width(), text.height())
         } 
 
-        (text.len() as u32 * 8 + 2, 18)
+        (text.chars().count() as u32 * 8 + 2, 18)
     }
 }
 
