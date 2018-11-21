@@ -32,7 +32,7 @@ line to your `Cargo.toml` file:
 orbtk = "0.2.27"
 ```
 
-To use OrbTk 0.3, , just add the dependency
+To use OrbTk 0.3, just add the dependency
 line to your `Cargo.toml` file:
 
 ```text
