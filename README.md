@@ -43,9 +43,42 @@ However you also need to have the SDL2 libraries installed on your
 system.  The best way to do this is documented [by the SDL2
 crate](https://github.com/AngryLawyer/rust-sdl2#user-content-requirements).
 
-You will also need to use the [nightly build of Rust](https://github.com/rust-lang-nursery/rustup.rs/blob/master/README.md#working-with-nightly-rust) to use OrbTk. 
+## Minimal Example
 
-## Examples
+> A macro to simplify the definition of widgets is in development.
+
+```rust
+extern crate orbtk;
+use orbtk::*;
+use std::rc::Rc;
+
+struct MainView;
+
+impl Widget for MainView {
+    fn template(&self) -> Template {
+        Template::Single(Rc::new(Container {
+            child: Some(Rc::new(TextBlock {
+                label: Property::new(Label(String::from("OrbTk"))),
+                ..Default::default()
+            })),
+                ..Default::default()
+        }))
+    }
+}
+
+fn main() {
+    let mut application = Application::default();
+    application
+        .create_window()
+        .with_bounds(Rect::new(0, 0, 420, 730))
+        .with_title("Orbtk")
+        .with_root(MainView)
+        .build();
+    application.run();
+}
+```
+
+## Additional Examples
 
 You find the examples in the `examples/` directory.
 

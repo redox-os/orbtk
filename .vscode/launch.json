@@ -10,7 +10,7 @@
             "name": "Debug widgets",
             "program": "${workspaceFolder}/target/debug/examples/widgets",
             "cwd": "${workspaceFolder}",
-            "preLaunchTask": "build-widget",
+            "preLaunchTask": "build",
             "sourceLanguages": [
                 "rust"
             ]
@@ -21,7 +21,19 @@
             "name": "Debug light theme",
             "program": "${workspaceFolder}/target/debug/examples/light-theme",
             "cwd": "${workspaceFolder}",
-            "preLaunchTask": "build-widget",
+            "preLaunchTask": "build",
+            "sourceLanguages": [
+                "rust"
+            ]
+        },
+
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug minimal",
+            "program": "${workspaceFolder}/target/debug/examples/minimal",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build",
             "sourceLanguages": [
                 "rust"
             ]

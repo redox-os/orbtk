@@ -4,11 +4,11 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build-widget",
+            "label": "build",
             "command": "cargo",
             "type": "shell",
             "args": [
-                "+nightly",
+                
                 "build",
                 "--examples=widgets"
             ],
