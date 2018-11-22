@@ -12,7 +12,7 @@ on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity%E2
 
 The main goals of OrbTk are fast peformance, easy to use and the platform indipendence.
 
-<img alt="Redox" height="150" src="https://gitlab.redox-os.org/redox-os/assets/raw/master/screenshots/Calculator.png">
+<img alt="Redox" height="300" src="https://gitlab.redox-os.org/redox-os/assets/raw/master/screenshots/Calculator.png">
 
 ## Features:
 
