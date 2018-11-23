@@ -9,9 +9,9 @@ pub struct TextBlock;
 impl Widget for TextBlock {
     fn template() -> Template {
         Template::default()
-            .with_property(Label(String::from("")))
-            .with_property(Selector::new(Some(String::from("textblock"))))
-            .with_layout_object(Box::new(TextSizeLayoutObject))
-            .with_render_object(Box::new(TextRenderObject))
+            .with_property(Label::from("TextBlock"))
+            .with_property(Selector::new().with("textblock"))
+            .with_layout_object(TextSizeLayoutObject)
+            .with_render_object(TextRenderObject)
     }
 }

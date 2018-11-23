@@ -6,6 +6,12 @@ use widget::WidgetContainer;
 
 pub struct RectangleRenderObject;
 
+impl Into<Box<RenderObject>> for RectangleRenderObject {
+    fn into(self) -> Box<RenderObject> {
+        Box::new(self)
+    }
+}
+
 impl RenderObject for RectangleRenderObject {
     fn render(
         &self,

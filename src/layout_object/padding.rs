@@ -7,6 +7,12 @@ use theme::{Selector, Theme};
 
 pub struct PaddingLayoutObject;
 
+impl Into<Box<LayoutObject>> for PaddingLayoutObject {
+    fn into(self) -> Box<LayoutObject> {
+        Box::new(self)
+    }
+}
+
 impl LayoutObject for PaddingLayoutObject {
     fn layout(
         &self,

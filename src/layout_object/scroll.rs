@@ -6,6 +6,12 @@ use widget::Offset;
 
 pub struct ScrollLayoutObject;
 
+impl Into<Box<LayoutObject>> for ScrollLayoutObject {
+    fn into(self) -> Box<LayoutObject> {
+        Box::new(self)
+    }
+}
+
 impl LayoutObject for ScrollLayoutObject {
     fn layout(
         &self,

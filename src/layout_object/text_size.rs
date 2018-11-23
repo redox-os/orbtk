@@ -8,6 +8,12 @@ use {Label, LayoutResult};
 
 pub struct TextSizeLayoutObject;
 
+impl Into<Box<LayoutObject>> for TextSizeLayoutObject {
+    fn into(self) -> Box<LayoutObject> {
+         Box::new(self)
+    }
+}
+
 impl LayoutObject for TextSizeLayoutObject {
     fn layout(
         &self,

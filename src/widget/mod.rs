@@ -46,6 +46,19 @@ pub struct Offset(pub i32, pub i32);
 #[derive(Clone)]
 pub struct Label(pub String);
 
+impl From<&str> for Label {
+    fn from (s: &str) -> Label {
+        Label(s.to_string())
+    }
+}
+
+impl From<String> for Label {
+    fn from (s: String) -> Label {
+        Label(s)
+    }
+}
+
+
 
 // pub struct Key(pub String);
 

@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use std::collections::BTreeMap;
 
-use dces::{ComponentBox, Component, Entity, World};
+use dces::{Component, ComponentBox, Entity, World};
 
 use application::Application;
 use backend::{target_backend, BackendRunner};
@@ -21,8 +21,8 @@ use Global;
 pub struct Template {
     children: Vec<Template>,
     parent_type: ParentType,
-    state: Option<Box<State>>,
-    event_handlers: Vec<Box<EventHandler>>,
+    state: Option<Rc<State>>,
+    event_handlers: Vec<Rc<EventHandler>>,
     render_object: Option<Box<RenderObject>>,
     layout_object: Box<LayoutObject>,
 
@@ -65,23 +65,23 @@ impl Template {
         self
     }
 
-    pub fn with_state(mut self, state: Box<State>) -> Self {
-        self.state = Some(state);
+    pub fn with_state(mut self, state: impl Into<Rc<dyn State>>) -> Self {
+        self.state = Some(state.into());
         self
     }
 
-    pub fn with_event_handler(mut self, handler: Box<EventHandler>) -> Self {
-        self.event_handlers.push(handler);
+    pub fn with_event_handler(mut self, handler: impl Into<Rc<dyn EventHandler>>) -> Self {
+        self.event_handlers.push(handler.into());
         self
     }
 
-    pub fn with_render_object(mut self, render_object: Box<RenderObject>) -> Self {
-        self.render_object = Some(render_object);
+    pub fn with_render_object(mut self, render_object: impl Into<Box<dyn RenderObject>>) -> Self {
+        self.render_object = Some(render_object.into());
         self
     }
 
-    pub fn with_layout_object(mut self, layout_object: Box<LayoutObject>) -> Self {
-        self.layout_object = layout_object;
+    pub fn with_layout_object(mut self, layout_object: impl Into<Box<dyn LayoutObject>>) -> Self {
+        self.layout_object = layout_object.into();
         self
     }
 
@@ -99,8 +99,6 @@ pub struct Window {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
 
     pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
-
-    pub root: Option<Template>,
 
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
 
@@ -152,7 +150,7 @@ impl<'a> WindowBuilder<'a> {
         self
     }
 
-    pub fn build(mut self) {
+    pub fn build(self) {
         let (mut runner, backend) = target_backend(&self.title, self.bounds, self.theme);
         let mut world = World::from_container(Tree::default());
         let render_objects = Rc::new(RefCell::new(BTreeMap::new()));
@@ -162,7 +160,7 @@ impl<'a> WindowBuilder<'a> {
         let update = Rc::new(Cell::new(true));
         let debug_flag = Rc::new(Cell::new(self.debug_flag));
 
-        if let Some(root) = &mut self.root {
+        if let Some(root) = self.root {
             build_tree(
                 root,
                 &mut world,
@@ -216,7 +214,6 @@ impl<'a> WindowBuilder<'a> {
             backend_runner: runner,
             render_objects,
             layout_objects,
-            root: self.root,
             handlers,
             states,
             update,
@@ -226,7 +223,7 @@ impl<'a> WindowBuilder<'a> {
 }
 
 fn build_tree(
-    root: &mut Template,
+    root: Template,
     world: &mut World<Tree>,
     render_objects: &Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
     layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
@@ -240,7 +237,7 @@ fn build_tree(
         layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
         handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
         states: &Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
-        template: &mut Template,
+        template: Template,
         debug_flag: &Rc<Cell<bool>>,
     ) -> Entity {
         // register window as entity with global properties
@@ -257,6 +254,8 @@ fn build_tree(
                 .insert(root, Box::new(DefaultLayoutObject));
         }
 
+        let mut template = template;
+
         let entity = {
             let mut entity_builder = world
                 .create_entity()
@@ -264,48 +263,35 @@ fn build_tree(
                 .with(Point::default());
 
             // todo: shared properties / components
-            // for propety in template.properties {
-
-            // }
-
-            // for property in widget.all_properties() {
-            //     match property {
-            //         PropertyResult::Property(property, source) => {
-            //             entity_builder = entity_builder.with_box(property);
-            //             source.set(Some(entity_builder.entity));
-            //         }
-            //         PropertyResult::Source(source) => {
-            //             entity_builder = entity_builder.with_shared_box(source);
-            //         }
-            //         PropertyResult::PropertyNotFound => {}
-            //     }
-            // }
+            while !template.properties.is_empty() {
+                entity_builder = entity_builder.with_box(template.properties.pop().unwrap())
+            }
 
             let entity = entity_builder.build();
 
-            // if let Some(render_object) = widget.render_object() {
-            //     render_objects.borrow_mut().insert(entity, render_object);
-            // }
+            if let Some(render_object) = template.render_object {
+                render_objects.borrow_mut().insert(entity, render_object);
+            }
 
-            // let widget_handlers = widget.event_handlers();
+            layout_objects
+                .borrow_mut()
+                .insert(entity, template.layout_object);
 
-            // if ! widget_handlers.is_empty() {
-            //     let mut event_handlers = vec![];
+            let widget_handlers = template.event_handlers;
 
-            //     for handler in widget_handlers {
-            //         event_handlers.push(handler.clone());
-            //     }
+            if !widget_handlers.is_empty() {
+                let mut event_handlers = vec![];
 
-            //     handlers.borrow_mut().insert(entity, event_handlers);
-            // }
+                for handler in widget_handlers {
+                    event_handlers.push(handler.clone());
+                }
 
-            // if let Some(state) = widget.state() {
-            //     states.borrow_mut().insert(entity, state.clone());
-            // }
+                handlers.borrow_mut().insert(entity, event_handlers);
+            }
 
-            // layout_objects
-            //     .borrow_mut()
-            //     .insert(entity, widget.layout_object());
+            if let Some(state) = template.state {
+                states.borrow_mut().insert(entity, state.clone());
+            }
 
             entity
         };
@@ -313,6 +299,19 @@ fn build_tree(
         if world.entity_container().len() == 2 {
             let root = world.entity_container().root;
             let _result = world.entity_container().append_child(root, entity);
+        }
+
+        while !template.children.is_empty() {
+            let child = expand(
+                world,
+                render_objects,
+                layout_objects,
+                handlers,
+                states,
+                template.children.pop().unwrap(),
+                debug_flag,
+            );
+            let _result = world.entity_container().append_child(entity, child);
         }
 
         // match widget.template() {

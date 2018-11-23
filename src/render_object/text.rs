@@ -6,6 +6,12 @@ use widget::{Label, WidgetContainer};
 
 pub struct TextRenderObject;
 
+impl Into<Box<RenderObject>> for TextRenderObject {
+    fn into(self) -> Box<RenderObject> {
+        Box::new(self)
+    }
+}
+
 impl RenderObject for TextRenderObject {
     fn render(
         &self,

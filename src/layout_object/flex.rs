@@ -15,6 +15,12 @@ pub struct FlexLayoutObject {
     height: Cell<u32>,
 }
 
+impl Into<Box<LayoutObject>> for FlexLayoutObject {
+    fn into(self) -> Box<LayoutObject> {
+        Box::new(self)
+    }
+}
+
 impl FlexLayoutObject {
     pub fn new(orientation: Alignment) -> Self {
         FlexLayoutObject {

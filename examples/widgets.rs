@@ -149,7 +149,9 @@ struct MainView;
 
 impl Widget for MainView {
     fn template() -> Template {
-        Container::template().with_child(TextBlock::template())
+        Container::template()
+            .as_parent_type(ParentType::Single)
+            .with_child(TextBlock::template())
     }
 }
 

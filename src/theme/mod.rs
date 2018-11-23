@@ -21,7 +21,8 @@ mod style;
 
 pub static DEFAULT_THEME_CSS: &'static str = include_str!("dark.css");
 pub static LIGHT_THEME_EXTENSION_CSS: &'static str = include_str!("light.css");
-pub static MATERIAL_ICONS_REGULAR_FONT: &'static [u8; 128180] = include_bytes!("MaterialIcons-Regular.ttf");
+pub static MATERIAL_ICONS_REGULAR_FONT: &'static [u8; 128180] =
+    include_bytes!("MaterialIcons-Regular.ttf");
 pub static ROBOTO_REGULAR_FONT: &'static [u8; 145348] = include_bytes!("Roboto-Regular.ttf");
 
 lazy_static! {
@@ -34,7 +35,8 @@ lazy_static! {
 }
 
 lazy_static! {
-    pub static ref LIGHT_THEME_CSS: String = format!("{}{}", LIGHT_THEME_EXTENSION_CSS, DEFAULT_THEME_CSS);
+    pub static ref LIGHT_THEME_CSS: String =
+        format!("{}{}", LIGHT_THEME_EXTENSION_CSS, DEFAULT_THEME_CSS);
 }
 
 #[derive(Debug, Default, Clone)]
@@ -90,7 +92,7 @@ impl Theme {
                 .filter(|x| x.matches(query))
                 .collect::<Vec<_>>();
 
-            if ! matching_selectors.is_empty() {
+            if !matching_selectors.is_empty() {
                 if let Some(decl) = rule
                     .declarations
                     .iter()
@@ -138,7 +140,7 @@ pub enum SelectorRelation {
 
 impl<T: Into<String>> From<T> for Selector {
     fn from(t: T) -> Self {
-        Selector::new(Some(t.into()))
+        Selector::new().with(t.into())
     }
 }
 
@@ -172,9 +174,9 @@ pub struct Selector {
 }
 
 impl Selector {
-    pub fn new<S: Into<String>>(element: Option<S>) -> Self {
+    pub fn new() -> Self {
         Selector {
-            element: element.map(|s| s.into()),
+            element: None,
             classes: HashSet::new(),
             pseudo_classes: HashSet::new(),
             relation: None,
@@ -217,6 +219,11 @@ impl Selector {
 
     pub fn with_class<S: Into<String>>(mut self, class: S) -> Self {
         self.classes.insert(class.into());
+        self
+    }
+
+    pub fn with<S: Into<String>>(mut self, element: S) -> Self {
+        self.element = Some(element.into());
         self
     }
 
@@ -356,14 +363,14 @@ fn parse_selectors<'i, 't>(
                 if first_token_in_selector {
                     selector.element = Some(element_name.to_string())
                 } else {
-                    let mut old_selector = Selector::new(Some(element_name.to_string()));
+                    let mut old_selector = Selector::new().with(element_name.to_string());
                     mem::swap(&mut old_selector, &mut selector);
                     selector.relation = Some(Box::new(SelectorRelation::Ancestor(old_selector)));
                 }
             }
 
             Token::Delim('>') => {
-                let mut old_selector = Selector::new(Some(input.expect_ident()?.to_string()));
+                let mut old_selector = Selector::new().with(input.expect_ident()?.to_string());
                 mem::swap(&mut old_selector, &mut selector);
                 selector.relation = Some(Box::new(SelectorRelation::Parent(old_selector)));
             }
@@ -432,11 +439,7 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
                     int_value: Some(x),
                     has_sign,
                     ..
-                }
-                    if !has_sign && x >= 0 =>
-                {
-                    Value::UInt(x as u32)
-                }
+                } if !has_sign && x >= 0 => Value::UInt(x as u32),
                 t => return Err(BasicParseError::UnexpectedToken(t).into()),
             },
 

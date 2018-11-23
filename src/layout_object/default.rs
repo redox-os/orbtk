@@ -5,6 +5,12 @@ use theme::Theme;
 
 pub struct DefaultLayoutObject;
 
+impl Into<Box<LayoutObject>> for DefaultLayoutObject {
+    fn into(self) -> Box<LayoutObject> {
+        Box::new(self)
+    }
+}
+
 impl LayoutObject for DefaultLayoutObject {
     fn layout(
         &self,

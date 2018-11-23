@@ -58,7 +58,7 @@ impl System<Tree> for RenderSystem {
                             &render_context.theme,
                             bounds,
                             parent_bounds,
-                            &Selector::new(Some(String::from("debugborder"))),
+                            &Selector::new().with("debugborder"),
                             &offset,
                             &global_position,
                         );

@@ -5,6 +5,12 @@ use theme::Theme;
 
 pub struct StretchLayoutObject;
 
+impl Into<Box<LayoutObject>> for StretchLayoutObject {
+    fn into(self) -> Box<LayoutObject> {
+        Box::new(self)
+    }
+}
+
 impl LayoutObject for StretchLayoutObject {
     fn layout(
         &self,
