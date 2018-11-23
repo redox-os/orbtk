@@ -3,6 +3,9 @@ use std::rc::Rc;
 use widget::{Property, PropertyResult, Template, Widget};
 use layout_object::{LayoutObject, ScrollLayoutObject};
 
+/// `Offset` is used to move an widget along the x- and y-axis.
+#[derive(Default, Clone, Copy)]
+pub struct Offset(pub i32, pub i32);
 
 /// This layout widget orders its children vertical.
 pub struct ScrollViewer {

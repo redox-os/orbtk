@@ -12,30 +12,40 @@ use render_object::RenderObject;
 use state::State;
 use theme::Selector;
 use tree::Tree;
+use application::Template;
 
-pub use self::button::*;
-pub use self::center::*;
-pub use self::column::*;
+// pub use self::button::*;
+// pub use self::center::*;
+// pub use self::column::*;
 pub use self::container::*;
-pub use self::row::*;
-pub use self::scroll_viewer::*;
-pub use self::stack::*;
+// pub use self::row::*;
+// pub use self::scroll_viewer::*;
+// pub use self::stack::*;
 pub use self::text_block::*;
-pub use self::text_box::*;
+// pub use self::text_box::*;
 
-mod button;
-mod center;
-mod column;
+// mod button;
+// mod center;
+// mod column;
 mod container;
-mod macros;
-mod row;
-mod scroll_viewer;
-mod stack;
+// mod macros;
+// mod row;
+// mod scroll_viewer;
+// mod stack;
 mod text_block;
-mod text_box;
+//mod text_box;
 
 #[derive(Copy, Clone)]
 pub struct Drawable;
+
+/// `Offset` is used to move an widget along the x- and y-axis.
+#[derive(Default, Clone, Copy)]
+pub struct Offset(pub i32, pub i32);
+
+/// The `Label` struct represents a string used for text drawing.
+#[derive(Clone)]
+pub struct Label(pub String);
+
 
 // pub struct Key(pub String);
 
@@ -44,47 +54,6 @@ pub struct Padding {
     pub top: u32,
     pub right: u32,
     pub bottom: u32,
-}
-
-pub enum Template {
-    Empty,
-    Single(Rc<Widget>),
-    Mutli(Vec<Rc<Widget>>),
-}
-
-pub trait Widget: Any {
-    fn template(&self) -> Template {
-        Template::Empty
-    }
-
-    fn all_properties(&self) -> Vec<PropertyResult> {
-        let mut properties = self.properties();
-        if self.render_object().is_some() {
-            properties.push(Property::new(Drawable).build());
-        }
-
-        properties
-    }
-
-    fn properties(&self) -> Vec<PropertyResult> {
-        vec![]
-    }
-
-    fn render_object(&self) -> Option<Box<RenderObject>> {
-        None
-    }
-
-    fn layout_object(&self) -> Box<LayoutObject> {
-        Box::new(DefaultLayoutObject)
-    }
-
-    fn event_handlers(&self) -> Vec<Rc<EventHandler>> {
-        vec![]
-    }
-
-    fn state(&self) -> Option<Rc<State>> {
-        None
-    }
 }
 
 pub struct WidgetContainer<'a> {
@@ -154,55 +123,53 @@ pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContai
     }
 }
 
-pub enum PropertyResult {
-    Property(ComponentBox, Rc<Cell<Option<Entity>>>),
-    Source(SharedComponentBox),
-    PropertyNotFound,
+// pub enum PropertyResult {
+//     Property(ComponentBox, Rc<Cell<Option<Entity>>>),
+//     Source(SharedComponentBox),
+//     PropertyNotFound,
+// }
+
+// pub struct Property<C>
+// where
+//     C: Component + Clone,
+// {
+//     pub source: Rc<Cell<Option<Entity>>>,
+//     property: Option<C>,
+// }
+
+// impl<C> Property<C>
+// where
+//     C: Component + Clone,
+// {
+//     pub fn new(property: C) -> Self {
+//         Property {
+//             source: Rc::new(Cell::new(None)),
+//             property: Some(property),
+//         }
+//     }
+
+//     pub fn build(&self) -> PropertyResult {
+//         if let Some(source) = self.source.get() {
+//             return PropertyResult::Source(SharedComponentBox::new::<C>(source));
+//         }
+
+//         if let Some(property) = &self.property {
+//             return PropertyResult::Property(
+//                 ComponentBox::new(property.clone()),
+//                 self.source.clone(),
+//             );
+//         }
+
+//         PropertyResult::PropertyNotFound
+//     }
+// }
+
+pub struct Property {
+
 }
 
-pub struct Property<C>
-where
-    C: Component + Clone,
-{
-    pub source: Rc<Cell<Option<Entity>>>,
-    property: Option<C>,
-}
 
-impl<C> Property<C>
-where
-    C: Component + Clone,
-{
-    pub fn new(property: C) -> Self {
-        Property {
-            source: Rc::new(Cell::new(None)),
-            property: Some(property),
-        }
-    }
 
-    pub fn build(&self) -> PropertyResult {
-        if let Some(source) = self.source.get() {
-            return PropertyResult::Source(SharedComponentBox::new::<C>(source));
-        }
-
-        if let Some(property) = &self.property {
-            return PropertyResult::Property(
-                ComponentBox::new(property.clone()),
-                self.source.clone(),
-            );
-        }
-
-        PropertyResult::PropertyNotFound
-    }
-}
-
-impl<C> Clone for Property<C>
-where
-    C: Component + Clone,
-{
-    fn clone(&self) -> Self {
-        Property {
-            source: self.source.clone(),
-            property: None,
-        }
-    }
+pub trait Widget {
+    fn template() -> Template;
 }

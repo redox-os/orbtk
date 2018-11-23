@@ -20,7 +20,7 @@ pub struct RenderSystem {
 
 impl System<Tree> for RenderSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-        if !self.update.get() {
+        if !self.update.get() || tree.parent.is_empty() {
             return;
         }
 
