@@ -2,14 +2,15 @@
 use layout_object::PaddingLayoutObject;
 use render_object::{RectangleRenderObject};
 use theme::Selector;
-use widget::Widget;
+use widget::{Template, Widget};
 use enums::ParentType;
-use application::Template;
 
+/// The `Container` layout surrounds its child with a padding. Draws a box arround the child.
 pub struct Container;
 
 impl Widget for Container {
     fn template() -> Template {
+        print!("Container -> ");
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_property(Selector::new().with("container"))

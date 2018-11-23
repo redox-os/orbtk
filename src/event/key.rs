@@ -299,20 +299,38 @@ pub type KeyHandler = Rc<Fn(Key, &mut WidgetContainer) -> bool + 'static>;
 
 #[derive(Default)]
 pub struct KeyEventHandler {
-    pub on_key_up: Option<KeyHandler>,
-    pub on_key_down: Option<KeyHandler>,
+    key_up: Option<KeyHandler>,
+    key_down: Option<KeyHandler>,
+}
+
+impl KeyEventHandler {
+    pub fn on_key_up(mut self, handler: KeyHandler) -> Self {
+        self.key_up = Some(handler);
+        self
+    } 
+
+    pub fn on_key_down(mut self, handler: KeyHandler) -> Self {
+        self.key_down = Some(handler);
+        self
+    } 
+}
+
+impl Into<Rc<EventHandler>> for KeyEventHandler {
+    fn into(self) -> Rc<EventHandler> {
+        Rc::new(self)
+    }
 }
 
 impl EventHandler for KeyEventHandler {
     fn handle_event(&self, event: &EventBox, widget: &mut WidgetContainer) -> bool {
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
-            if let Some(handler) = &self.on_key_down {
+            if let Some(handler) = &self.key_down {
                 return (handler)(event.key, widget);
             }
         }
 
         if let Ok(event) = event.downcast_ref::<KeyUpEvent>() {
-            if let Some(handler) = &self.on_key_up {
+            if let Some(handler) = &self.key_up {
                 return (handler)(event.key, widget);
             }
         }

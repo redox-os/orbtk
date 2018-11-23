@@ -1,39 +1,37 @@
 //! Contains concret implementations of OrbTk's default widgets. It contains also layout widgets.
 
-use std::any::{Any, TypeId};
-use std::cell::Cell;
+use std::any::TypeId;
 use std::rc::Rc;
 
 use dces::{Component, ComponentBox, Entity, EntityComponentManager, NotFound, SharedComponentBox};
 
+use enums::ParentType;
 use event::EventHandler;
-use layout_object::{DefaultLayoutObject, LayoutObject};
+use layout_object::LayoutObject;
 use render_object::RenderObject;
 use state::State;
 use theme::Selector;
 use tree::Tree;
-use application::Template;
 
-// pub use self::button::*;
-// pub use self::center::*;
-// pub use self::column::*;
+pub use self::button::*;
+pub use self::center::*;
+pub use self::column::*;
 pub use self::container::*;
-// pub use self::row::*;
-// pub use self::scroll_viewer::*;
-// pub use self::stack::*;
+pub use self::row::*;
+pub use self::scroll_viewer::*;
+pub use self::stack::*;
 pub use self::text_block::*;
-// pub use self::text_box::*;
+pub use self::text_box::*;
 
-// mod button;
-// mod center;
-// mod column;
+mod button;
+mod center;
+mod column;
 mod container;
-// mod macros;
-// mod row;
-// mod scroll_viewer;
-// mod stack;
+mod row;
+mod scroll_viewer;
+mod stack;
 mod text_block;
-//mod text_box;
+mod text_box;
 
 #[derive(Copy, Clone)]
 pub struct Drawable;
@@ -47,18 +45,16 @@ pub struct Offset(pub i32, pub i32);
 pub struct Label(pub String);
 
 impl From<&str> for Label {
-    fn from (s: &str) -> Label {
+    fn from(s: &str) -> Label {
         Label(s.to_string())
     }
 }
 
 impl From<String> for Label {
-    fn from (s: String) -> Label {
+    fn from(s: String) -> Label {
         Label(s)
     }
 }
-
-
 
 // pub struct Key(pub String);
 
@@ -67,6 +63,22 @@ pub struct Padding {
     pub top: u32,
     pub right: u32,
     pub bottom: u32,
+}
+
+pub struct Template {
+    pub children: Vec<Template>,
+    pub parent_type: ParentType,
+    pub state: Option<Rc<State>>,
+    pub event_handlers: Vec<Rc<EventHandler>>,
+    pub render_object: Option<Box<RenderObject>>,
+    pub layout_object: Box<LayoutObject>,
+
+    // todo: only one prop type per widget.
+    pub properties: Vec<ComponentBox>,
+}
+
+pub trait Widget {
+    fn template() -> Template;
 }
 
 pub struct WidgetContainer<'a> {
@@ -177,12 +189,4 @@ pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContai
 //     }
 // }
 
-pub struct Property {
-
-}
-
-
-
-pub trait Widget {
-    fn template() -> Template;
-}
+pub struct Property {}

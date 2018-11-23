@@ -1,39 +1,16 @@
-use std::rc::Rc;
+use enums::ParentType;
+use layout_object::ScrollLayoutObject;
+use widget::{Offset, Template, Widget};
 
-use widget::{Property, PropertyResult, Template, Widget};
-use layout_object::{LayoutObject, ScrollLayoutObject};
-
-
-/// This layout widget orders its children vertical.
-pub struct ScrollViewer {
-    pub child: Option<Rc<Widget>>,
-    pub offset: Property<Offset>,
-}
-
-impl Default for ScrollViewer {
-    fn default() -> ScrollViewer {
-        ScrollViewer {
-            child: None,
-            offset: Property::new(Offset::default()),
-        }
-    }
-}
+/// Use to scroll its content.
+pub struct ScrollViewer;
 
 impl Widget for ScrollViewer {
-    fn template(&self) -> Template {
+    fn template() -> Template {
         print!("ScrollViewer -> ");
-        if let Some(child) = &self.child {
-            Template::Single(child.clone())
-        } else {
-            Template::Empty
-        }
-    }
-
-    fn properties(&self) -> Vec<PropertyResult> {
-        vec![self.offset.build()]
-    }
-
-    fn layout_object(&self) -> Box<LayoutObject> {
-        Box::new(ScrollLayoutObject)
+        Template::default()
+            .as_parent_type(ParentType::Single)
+            .with_property(Offset::default())
+            .with_layout_object(ScrollLayoutObject)
     }
 }

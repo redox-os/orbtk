@@ -17,18 +17,7 @@ use systems::{EventSystem, LayoutSystem, RenderSystem, StateSystem};
 use theme::Theme;
 use tree::Tree;
 use Global;
-
-pub struct Template {
-    children: Vec<Template>,
-    parent_type: ParentType,
-    state: Option<Rc<State>>,
-    event_handlers: Vec<Rc<EventHandler>>,
-    render_object: Option<Box<RenderObject>>,
-    layout_object: Box<LayoutObject>,
-
-    // todo: only one prop type per widget.
-    properties: Vec<ComponentBox>,
-}
+use widget::Template;
 
 impl Default for Template {
     fn default() -> Self {
