@@ -12,6 +12,8 @@ before_script:
 
 build:linux:
   stage: build
+  before_script:
+    - apt-get update && apt-get -y install cmake
   script:
     - cargo build
     - make tests
