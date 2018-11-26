@@ -43,6 +43,8 @@ build:redox:
 
 test:linux:
     stage: test
+    before_script:
+    - apt-get update && apt-get -y install cmake
     dependencies:
         - build:linux
     script:
