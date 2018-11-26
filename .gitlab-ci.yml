@@ -15,8 +15,8 @@ build:linux:
   before_script:
     - apt-get update && apt-get -y install cmake
   script:
+    - rustup default nightly
     - cargo build
-    - make tests
   cache:
     paths:
       - cargo/
