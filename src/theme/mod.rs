@@ -1,3 +1,5 @@
+//! This module contains all css theming releated resources.
+
 use cssparser::{
     self, BasicParseError, CompactCowStr, DeclarationListParser, ParseError, Parser, ParserInput,
     Token,

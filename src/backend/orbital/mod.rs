@@ -1,3 +1,5 @@
+//! This module contains the concrete implementation of the OrbClient based backend.
+
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;

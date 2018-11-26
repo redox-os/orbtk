@@ -1,3 +1,5 @@
+//! This module contains all resources to call and handle events.
+
 use std::any::Any;
 
 pub use self::event_handler::*;

@@ -1,8 +1,8 @@
-
 use dces::Entity;
 
 #[derive(Default)]
+/// The `Global` struct is used to define global `properties` that could be accsed application width.
 pub struct Global {
-    pub focused_entity: Option<Entity>,
-    pub mouse_over_entity: Option<Entity>,
+    /// Contains the current focues widget.
+    pub focused_widget: Option<Entity>,
 }

@@ -1,8 +1,8 @@
 use backend::Renderer;
 use render_object::RenderObject;
-use structs::{Point, Rect};
+use structs::{Label, Point, Rect};
 use theme::{Selector, Theme};
-use widget::{Label, WidgetContainer};
+use widget::WidgetContainer;
 
 pub struct TextRenderObject;
 

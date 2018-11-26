@@ -3,11 +3,10 @@ use std::rc::Rc;
 
 use std::collections::BTreeMap;
 
-use dces::{Component, ComponentBox, Entity, World};
+use dces::{Entity, World};
 
 use application::Application;
 use backend::{target_backend, BackendRunner};
-use enums::ParentType;
 use event::EventHandler;
 use layout_object::{DefaultLayoutObject, LayoutObject};
 use render_object::RenderObject;
@@ -16,94 +15,28 @@ use structs::{Point, Rect};
 use systems::{EventSystem, LayoutSystem, RenderSystem, StateSystem};
 use theme::Theme;
 use tree::Tree;
+use widget::{PropertyResult, Template};
 use Global;
-use widget::Template;
 
-impl Default for Template {
-    fn default() -> Self {
-        Template {
-            children: vec![],
-            parent_type: ParentType::None,
-            state: None,
-            event_handlers: vec![],
-            render_object: None,
-            layout_object: Box::new(DefaultLayoutObject),
-            properties: vec![],
-        }
-    }
-}
-
-impl Template {
-    pub fn as_parent_type(mut self, parent_type: ParentType) -> Self {
-        self.parent_type = parent_type;
-        self
-    }
-
-    pub fn with_child(mut self, child: Template) -> Self {
-        match self.parent_type {
-            ParentType::Single => {
-                self.children.clear();
-                self.children.push(child);
-            }
-            ParentType::Multi => {
-                self.children.push(child);
-            }
-            _ => return self,
-        }
-
-        self
-    }
-
-    pub fn with_state(mut self, state: impl Into<Rc<dyn State>>) -> Self {
-        self.state = Some(state.into());
-        self
-    }
-
-    pub fn with_event_handler(mut self, handler: impl Into<Rc<dyn EventHandler>>) -> Self {
-        self.event_handlers.push(handler.into());
-        self
-    }
-
-    pub fn with_render_object(mut self, render_object: impl Into<Box<dyn RenderObject>>) -> Self {
-        self.render_object = Some(render_object.into());
-        self
-    }
-
-    pub fn with_layout_object(mut self, layout_object: impl Into<Box<dyn LayoutObject>>) -> Self {
-        self.layout_object = layout_object.into();
-        self
-    }
-
-    // todo shared component
-
-    pub fn with_property<C: Component>(mut self, property: C) -> Self {
-        self.properties.push(ComponentBox::new::<C>(property));
-        self
-    }
-}
-
+/// Represents a window. Each window has its own tree, event pipline and backend.
 pub struct Window {
     pub backend_runner: Box<BackendRunner>,
-
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
-
     pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
-
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
-
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
-
     pub update: Rc<Cell<bool>>,
-
     pub debug_flag: Rc<Cell<bool>>,
 }
 
 impl Window {
+    /// Executes the given window unitl quit is requested.
     pub fn run(&mut self) {
         self.backend_runner.run(self.update.clone());
     }
 }
 
+/// The `WindowBuilder` is used to define and build a `Window`.
 pub struct WindowBuilder<'a> {
     pub application: &'a mut Application,
     pub bounds: Rect,
@@ -114,31 +47,38 @@ pub struct WindowBuilder<'a> {
 }
 
 impl<'a> WindowBuilder<'a> {
+    /// Used to define the render `bounds` of the window.
     pub fn with_bounds(mut self, bounds: Rect) -> Self {
         self.bounds = bounds;
         self
     }
 
+    /// Used to set the `title` of the window.
     pub fn with_title<S: Into<String>>(mut self, title: S) -> Self {
         self.title = title.into();
         self
     }
 
+    /// Used to set the css `theme` of the window.
     pub fn with_theme(mut self, theme: Theme) -> Self {
         self.theme = theme;
         self
     }
 
+    /// Used to set the `root` template of the window.
     pub fn with_root(mut self, root: Template) -> Self {
         self.root = Some(root);
         self
     }
 
+    /// Used to set the `debug` flag of the window.
+    /// If the flag is set to `ture` debug informations will be printed to the console.
     pub fn with_debug_flag(mut self, debug: bool) -> Self {
         self.debug_flag = debug;
         self
     }
 
+    /// Creates the window with the given properties and builds its widget tree.
     pub fn build(self) {
         let (mut runner, backend) = target_backend(&self.title, self.bounds, self.theme);
         let mut world = World::from_container(Tree::default());
@@ -148,6 +88,10 @@ impl<'a> WindowBuilder<'a> {
         let states = Rc::new(RefCell::new(BTreeMap::new()));
         let update = Rc::new(Cell::new(true));
         let debug_flag = Rc::new(Cell::new(self.debug_flag));
+
+        if debug_flag.get() {
+            println!("------ Start build tree ------\n");
+        }
 
         if let Some(root) = self.root {
             build_tree(
@@ -211,6 +155,7 @@ impl<'a> WindowBuilder<'a> {
     }
 }
 
+// Builds the widget tree.
 fn build_tree(
     root: Template,
     world: &mut World<Tree>,
@@ -251,9 +196,23 @@ fn build_tree(
                 .with(Rect::default())
                 .with(Point::default());
 
-            // todo: shared properties / components
-            while !template.properties.is_empty() {
-                entity_builder = entity_builder.with_box(template.properties.pop().unwrap())
+            // normal properties
+            for (_, value) in template.properties.drain() {
+                entity_builder = entity_builder.with_box(value);
+            }
+
+            // shared property
+            for (_, value) in template.shared_properties {
+                match value.build() {
+                    PropertyResult::Property(property, source) => {
+                        entity_builder = entity_builder.with_box(property);
+                        source.set(Some(entity_builder.entity));
+                    }
+                    PropertyResult::Source(source) => {
+                        entity_builder = entity_builder.with_shared_box(source);
+                    }
+                    PropertyResult::PropertyNotFound => {}
+                }
             }
 
             let entity = entity_builder.build();
@@ -285,69 +244,34 @@ fn build_tree(
             entity
         };
 
+        if debug_flag.get() {
+            println!(
+                "{} (id = {}, children_lenght = {})",
+                template.debug_name,
+                entity,
+                template.children.len()
+            );
+        }
+
         if world.entity_container().len() == 2 {
             let root = world.entity_container().root;
             let _result = world.entity_container().append_child(root, entity);
         }
 
-        while !template.children.is_empty() {
+        for child in template.children.drain(0..) {
             let child = expand(
                 world,
                 render_objects,
                 layout_objects,
                 handlers,
                 states,
-                template.children.pop().unwrap(),
+                child,
                 debug_flag,
             );
             let _result = world.entity_container().append_child(entity, child);
         }
 
-        // match widget.template() {
-        //     Template::Single(child) => {
-        //         if debug_flag.get() {
-        //             println!("Node ID: {}", entity);
-        //         }
-        //         let child = expand(
-        //             world,
-        //             render_objects,
-        //             layout_objects,
-        //             handlers,
-        //             states,
-        //             &child,
-        //             debug_flag,
-        //         );
-        //         let _result = world.entity_container().append_child(entity, child);
-        //     }
-        //     Template::Mutli(children) => {
-        //         if debug_flag.get() {
-        //             println!("Node ID: {}", entity);
-        //         }
-        //         for child in children {
-        //             let child = expand(
-        //                 world,
-        //                 render_objects,
-        //                 layout_objects,
-        //                 handlers,
-        //                 states,
-        //                 &child,
-        //                 debug_flag,
-        //             );
-        //             let _result = world.entity_container().append_child(entity, child);
-        //         }
-        //     }
-        //     _ => {
-        //         if debug_flag.get() {
-        //             println!("Node ID: {}", entity);
-        //         }
-        //     }
-        // }
-
         entity
-    }
-
-    if debug_flag.get() {
-        println!("------ Start build tree ------\n");
     }
 
     expand(

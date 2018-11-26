@@ -1,8 +1,7 @@
 use dces::{Entity, EntityComponentManager};
 use layout_object::{LayoutObject, LayoutResult};
-use structs::Constraint;
+use structs::{Constraint, Offset};
 use theme::Theme;
-use widget::Offset;
 
 pub struct ScrollLayoutObject;
 

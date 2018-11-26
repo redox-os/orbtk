@@ -7,10 +7,10 @@ use enums::ParentType;
 pub struct Column;
 
 impl Widget for Column {
-    fn template() -> Template {
-        print!("Column -> ");
+    fn create() -> Template {
         Template::default()
             .as_parent_type(ParentType::Multi)
             .with_layout_object(FlexLayoutObject::new(Alignment::Vertical)) 
+            .with_debug_name("Column")
     }
 }

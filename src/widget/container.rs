@@ -9,12 +9,12 @@ use enums::ParentType;
 pub struct Container;
 
 impl Widget for Container {
-    fn template() -> Template {
-        print!("Container -> ");
+    fn create() -> Template {
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_property(Selector::new().with("container"))
             .with_render_object(RectangleRenderObject)
             .with_layout_object(PaddingLayoutObject) 
+            .with_debug_name("Container")
     }
 }

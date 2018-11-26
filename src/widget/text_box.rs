@@ -1,13 +1,15 @@
-use event::{Focused, Key};
+use enums::ParentType;
+use event::{Focused, Key, KeyEventHandler};
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
+use structs::Label;
 use theme::Selector;
 use widget::{
-    add_selector_to_widget, remove_selector_from_widget, Container, Label, ScrollViewer, Stack,
-    State, Template, TextBlock, Widget, WidgetContainer,
+    add_selector_to_widget, remove_selector_from_widget, Container, ScrollViewer, SharedProperty,
+    Stack, State, Template, TextBlock, Widget, WidgetContainer,
 };
 
-/// The `TextBoxState`handles the text processing of the `TextBox` widget.
+/// The `TextBoxState` handles the text processing of the `TextBox` widget.
 #[derive(Default)]
 pub struct TextBoxState {
     text: RefCell<String>,
@@ -77,21 +79,33 @@ impl State for TextBoxState {
 pub struct TextBox;
 
 impl Widget for TextBox {
-    fn template() -> Template {
-        print!("TextBox -> ");
+    fn create() -> Template {
+        let label = SharedProperty::new(Label::from("TextBox"));
+        let selector = SharedProperty::new(Selector::new().with("textbox"));
+        let state = Rc::new(TextBoxState::default());
+
         Template::default()
-            .with_property(Label::from("TextBox"))
-            .with_property(Selector::new().with("textbox"))
+            .as_parent_type(ParentType::Single)
             .with_property(Focused(false))
             .with_child(
-                Container::template().with_child(
-                    Stack::template()
-                        .with_child(ScrollViewer::template().with_child(TextBlock::template())),
-                ),
+                Container::create()
+                    .with_child(
+                        Stack::create().with_child(
+                            ScrollViewer::create().with_child(
+                                TextBlock::create()
+                                    .with_shared_property(label.clone())
+                                    .with_shared_property(selector.clone()),
+                            ),
+                        ),
+                    )
+                    .with_shared_property(selector.clone()),
             )
-            .with_state(TextBoxState::default())
-        // .with_event_handler(KeyEventHandler::default().on_key_down(Rc::new(
-        //     move |key: Key, _widget: &mut WidgetContainer| -> bool { state.update_text(key) },
-        // )))
+            .with_state(state.clone())
+            .with_debug_name("TextBox")
+            .with_shared_property(label)
+            .with_shared_property(selector)
+            .with_event_handler(KeyEventHandler::default().on_key_down(Rc::new(
+                move |key: Key, _widget: &mut WidgetContainer| -> bool { state.update_text(key) },
+            )))
     }
 }

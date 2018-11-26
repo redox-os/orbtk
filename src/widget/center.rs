@@ -6,10 +6,10 @@ use enums::ParentType;
 pub struct Center;
 
 impl Widget for Center {
-    fn template() -> Template {
-        print!("Center -> ");
+    fn create() -> Template {
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_layout_object(CenterLayoutObject) 
+            .with_debug_name("Center")
     }
 }

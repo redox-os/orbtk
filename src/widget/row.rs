@@ -7,10 +7,10 @@ use enums::ParentType;
 pub struct Row;
 
 impl Widget for Row {
-    fn template() -> Template {
-        print!("Row -> ");
+    fn create() -> Template {
         Template::default()
             .as_parent_type(ParentType::Multi)
             .with_layout_object(FlexLayoutObject::new(Alignment::Horizontal)) 
+            .with_debug_name("Row")
     }
 }

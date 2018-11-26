@@ -5,9 +5,9 @@ use enums::ParentType;
 pub struct Stack;
 
 impl Widget for Stack {
-    fn template() -> Template {
-        print!("Stack -> ");
+    fn create() -> Template {
         Template::default()
             .as_parent_type(ParentType::Multi)
+            .with_debug_name("Stack")
     }
 }

@@ -15,6 +15,15 @@ button:active {
     background: #d6d6d6;
 }
 
+squarebutton {
+    background: #e5e5e5;
+    color: black;
+}
+
+squarebutton:active {
+    background: #d6d6d6;
+}
+
 container {
     background: transparent;
 }

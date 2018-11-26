@@ -19,10 +19,9 @@ The main goals of OrbTk are fast peformance, easy to use and the platform indipe
 * Modern [Flutter](https://flutter.io/), [React](https://reactjs.org/), [Redux](https://redux.js.org/) like API
 * Uses the Entity Component System library [DCES](https://gitlab.redox-os.org/redox-os/dces-rust) for widget and properties handling
 * Updating instead of rebuling subtrees
-* Small DSL for custom widget creation on macro base (WIP)
 * Flexible event system
 * Widget state management
-* Platform Independent: Redox OS, Linux, macOS, Windows
+* Cross platform: Redox OS, Linux, macOS, Windows
 * CSS theming
 
 ## Usage
@@ -47,8 +46,6 @@ crate](https://github.com/AngryLawyer/rust-sdl2#user-content-requirements).
 
 ## Minimal Example
 
-> A macro to simplify the definition of widgets is in development.
-
 ```rust
 extern crate orbtk;
 use orbtk::*;
@@ -56,10 +53,15 @@ use orbtk::*;
 struct MainView;
 
 impl Widget for MainView {
-    fn template() -> Template {
-        Container::template()
+    fn create() -> Template {
+        Template::default()
             .as_parent_type(ParentType::Single)
-            .with_child(TextBlock::template())
+            .with_debug_name("MainView")
+            .with_child(
+                Container::create()
+                    .as_parent_type(ParentType::Single)
+                    .with_child(TextBlock::create().with_property(Label::from("OrbTk"))),
+            )
     }
 }
 
@@ -69,7 +71,7 @@ fn main() {
         .create_window()
         .with_bounds(Rect::new(0, 0, 420, 730))
         .with_title("Orbtk")
-        .with_root(MainView::template())
+        .with_root(MainView::create())
         .with_debug_flag(true)
         .build();
     application.run();
@@ -83,7 +85,15 @@ You find the examples in the `examples/` directory.
 You can start the widgets example by executing the following command:
 
 ```text
-cargo run --example widgets
+cargo run --example widgets --release
+```
+
+## Build and run documenation
+
+You can build and run the latest documentation y executing the following command:
+
+```text
+cargo doc --no-deps --open
 ```
 
 ## Planned features
@@ -98,6 +108,14 @@ cargo run --example widgets
 * Theme update
 * Support for Android, iOS and WebAssembly
 * Vulkan / OpenGL Support 
+
+## Dependencies
+
+* [OrbClient](https://gitlab.redox-os.org/redox-os/orbclient): window creation, drawing, window events
+* [OrbFont](https://gitlab.redox-os.org/redox-os/orbfont): font rendering
+* [OrbImage](https://gitlab.redox-os.org/redox-os/orbimage/tree/master/src): image loading
+* [DCES](https://gitlab.redox-os.org/redox-os/dces-rust): Entity Component System
+* [rust-cssparser](https://github.com/servo/rust-cssparser): CSS parsing
 
 ## Inspirations
 
