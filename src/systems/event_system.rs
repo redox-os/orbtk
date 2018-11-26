@@ -74,7 +74,7 @@ impl EventSystem {
         }
 
         let mut handled = false;
-        let mut new_focused_entity = None;
+        let mut new_focused_widget = None;
         // let mut new_mouse_over_entity = None;
 
         for node in matching_nodes.iter().rev() {
@@ -94,7 +94,7 @@ impl EventSystem {
             if event.event_type() == TypeId::of::<MouseDownEvent>() {
                 if let Ok(focused) = widget.borrow_mut_property::<Focused>() {
                     focused.0 = true;
-                    new_focused_entity = Some(*node);
+                    new_focused_widget = Some(*node);
                     self.update.set(true);
                     break;
                 }
@@ -137,21 +137,21 @@ impl EventSystem {
         }
 
         // remove focus from previes focues entity
-        let mut old_focused_entity = None;
+        let mut old_focused_widget = None;
 
         if let Ok(global) = ecm.borrow_mut_component::<Global>(tree.root) {
-            if let Some(new_focused_entity) = new_focused_entity {
-                if let Some(focused_entity) = global.focused_entity {
-                    if focused_entity != new_focused_entity {
-                        old_focused_entity = Some(focused_entity);
+            if let Some(new_focused_widget) = new_focused_widget {
+                if let Some(focused_widget) = global.focused_widget {
+                    if focused_widget != new_focused_widget {
+                        old_focused_widget = Some(focused_widget);
                     }
                 }
-                global.focused_entity = Some(new_focused_entity);
+                global.focused_widget = Some(new_focused_widget);
             }
         }
 
-        if let Some(old_focused_entity) = old_focused_entity {
-            if let Ok(focused) = ecm.borrow_mut_component::<Focused>(old_focused_entity) {
+        if let Some(old_focused_widget) = old_focused_widget {
+            if let Ok(focused) = ecm.borrow_mut_component::<Focused>(old_focused_widget) {
                 focused.0 = false;
                 self.update.set(true);
             }

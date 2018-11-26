@@ -6,10 +6,10 @@ use dces::{Entity, EntityComponentManager, System};
 
 use backend::Backend;
 use render_object::RenderObject;
-use structs::{Point, Rect};
+use structs::{Offset, Point, Rect};
 use theme::Selector;
 use tree::Tree;
-use widget::{Offset, WidgetContainer};
+use widget::WidgetContainer;
 
 pub struct RenderSystem {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
@@ -20,7 +20,7 @@ pub struct RenderSystem {
 
 impl System<Tree> for RenderSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-        if !self.update.get() {
+        if !self.update.get() || tree.parent.is_empty() {
             return;
         }
 
@@ -42,8 +42,7 @@ impl System<Tree> for RenderSystem {
 
             let offset = {
                 // get offset from scrollable parent
-                if let Ok(offset) = ecm.borrow_component::<Offset>(tree.parent[&node])
-                {
+                if let Ok(offset) = ecm.borrow_component::<Offset>(tree.parent[&node]) {
                     Point::new(offset.0, offset.1)
                 } else {
                     Point::default()
@@ -58,7 +57,7 @@ impl System<Tree> for RenderSystem {
                             &render_context.theme,
                             bounds,
                             parent_bounds,
-                            &Selector::new(Some(String::from("debugborder"))),
+                            &Selector::new().with("debugborder"),
                             &offset,
                             &global_position,
                         );

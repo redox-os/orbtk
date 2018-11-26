@@ -1,35 +1,16 @@
-use std::rc::Rc;
-
-use layout_object::{FlexLayoutObject, LayoutObject};
+use layout_object::FlexLayoutObject;
 use enums::Alignment;
 use widget::{Template, Widget};
+use enums::ParentType;
 
 /// This layout widget orders its children horizontal.
-pub struct Row {
-    pub children: Vec<Rc<Widget>>,
-}
-
-impl Default for Row {
-    fn default() -> Row {
-        Row {
-            children: vec![],
-        }
-    }
-}
+pub struct Row;
 
 impl Widget for Row {
-    fn template(&self) -> Template {
-        print!("Row -> ");
-        if self.children.is_empty() {
-            Template::Empty
-        } else if self.children.len() == 1 {
-            Template::Single(self.children[0].clone())
-        } else {
-            Template::Mutli(self.children.to_vec())
-        }
-    }
-
-    fn layout_object(&self) -> Box<LayoutObject> {
-        Box::new(FlexLayoutObject::new(Alignment::Horizontal))
+    fn create() -> Template {
+        Template::default()
+            .as_parent_type(ParentType::Multi)
+            .with_layout_object(FlexLayoutObject::new(Alignment::Horizontal)) 
+            .with_debug_name("Row")
     }
 }

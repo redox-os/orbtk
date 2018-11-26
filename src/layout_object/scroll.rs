@@ -1,10 +1,15 @@
 use dces::{Entity, EntityComponentManager};
 use layout_object::{LayoutObject, LayoutResult};
-use structs::Constraint;
+use structs::{Constraint, Offset};
 use theme::Theme;
-use widget::Offset;
 
 pub struct ScrollLayoutObject;
+
+impl Into<Box<LayoutObject>> for ScrollLayoutObject {
+    fn into(self) -> Box<LayoutObject> {
+        Box::new(self)
+    }
+}
 
 impl LayoutObject for ScrollLayoutObject {
     fn layout(

@@ -4,6 +4,13 @@ use structs::Rect;
 
 pub struct CenterLayoutObject;
 
+impl Into<Box<LayoutObject>> for CenterLayoutObject {
+    fn into(self) -> Box<LayoutObject> {
+        Box::new(self)
+    }
+}
+
+
 impl LayoutObject for CenterLayoutObject {
     fn layout(
         &self,

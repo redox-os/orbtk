@@ -19,6 +19,17 @@ button:active {
     background: #8cafd1;
 }
 
+squarebutton {
+    background: #6C7A90;
+    border-radius: 2;
+    width: 40;
+    height: 40;
+}
+
+squarebutton:active {
+    background: #8cafd1;
+}
+
 container {
     background: transparent;
     padding: 8;

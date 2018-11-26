@@ -19,6 +19,7 @@ impl System<Tree> for StateSystem {
         if !self.update.get() {
             return;
         }
+
         for (node, state) in &*self.states.borrow() {
             let mut widget = WidgetContainer::new(*node, ecm, tree);
             state.update(&mut widget);

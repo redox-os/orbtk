@@ -1,10 +1,16 @@
 use backend::Renderer;
 use render_object::RenderObject;
-use structs::{Point, Rect};
+use structs::{Label, Point, Rect};
 use theme::{Selector, Theme};
-use widget::{Label, WidgetContainer};
+use widget::WidgetContainer;
 
 pub struct TextRenderObject;
+
+impl Into<Box<RenderObject>> for TextRenderObject {
+    fn into(self) -> Box<RenderObject> {
+        Box::new(self)
+    }
+}
 
 impl RenderObject for TextRenderObject {
     fn render(

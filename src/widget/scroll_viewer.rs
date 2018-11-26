@@ -1,42 +1,17 @@
-use std::rc::Rc;
+use enums::ParentType;
+use layout_object::ScrollLayoutObject;
+use widget::{Template, Widget};
+use structs::Offset;
 
-use widget::{Property, PropertyResult, Template, Widget};
-use layout_object::{LayoutObject, ScrollLayoutObject};
-
-/// `Offset` is used to move an widget along the x- and y-axis.
-#[derive(Default, Clone, Copy)]
-pub struct Offset(pub i32, pub i32);
-
-/// This layout widget orders its children vertical.
-pub struct ScrollViewer {
-    pub child: Option<Rc<Widget>>,
-    pub offset: Property<Offset>,
-}
-
-impl Default for ScrollViewer {
-    fn default() -> ScrollViewer {
-        ScrollViewer {
-            child: None,
-            offset: Property::new(Offset::default()),
-        }
-    }
-}
+/// Use to scroll its content.
+pub struct ScrollViewer;
 
 impl Widget for ScrollViewer {
-    fn template(&self) -> Template {
-        print!("ScrollViewer -> ");
-        if let Some(child) = &self.child {
-            Template::Single(child.clone())
-        } else {
-            Template::Empty
-        }
-    }
-
-    fn properties(&self) -> Vec<PropertyResult> {
-        vec![self.offset.build()]
-    }
-
-    fn layout_object(&self) -> Box<LayoutObject> {
-        Box::new(ScrollLayoutObject)
+    fn create() -> Template {
+        Template::default()
+            .as_parent_type(ParentType::Single)
+            .with_property(Offset::default())
+            .with_layout_object(ScrollLayoutObject)
+            .with_debug_name("ScrollViewer")
     }
 }

@@ -1,3 +1,7 @@
+//! This module contains all resources to build a backend for OrbTk.
+//! A backend is used to open a window, draw on the screen and to call events.
+//! This module contains also an `OrbClient` based backend.
+
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 

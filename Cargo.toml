@@ -23,7 +23,7 @@ path = "src/lib.rs"
 [dependencies]
 cssparser = "0.17.0"
 lazy_static = "1.2.0"
-dces = { git = "https://gitlab.com/orbtk/dces-rust.git" }
+dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }
 orbclient = "0.3.17"
 orbfont = { git = "https://gitlab.redox-os.org/redox-os/orbfont.git" }
 # orbfont = { path = "/Users/florian.blasius/Projects/Focus-Time/orbfont/" }
