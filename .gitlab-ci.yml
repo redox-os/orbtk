@@ -45,7 +45,7 @@ test:linux:
     stage: test
     before_script:
     - apt-get update && apt-get -y install cmake
-    - apt-get install libsdl2-dev
+    - apt-get install libsdl2-dev -y
     dependencies:
         - build:linux
     script:
