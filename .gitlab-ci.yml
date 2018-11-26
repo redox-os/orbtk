@@ -48,4 +48,5 @@ test:linux:
     dependencies:
         - build:linux
     script:
+      - rustup default nightly
       - cargo test
