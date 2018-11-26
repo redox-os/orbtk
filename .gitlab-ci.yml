@@ -1,5 +1,9 @@
 image: 'rust:latest'
 
+stages:
+    - build
+    - test
+
 variables:
     CARGO_HOME: $CI_PROJECT_DIR/cargo
 before_script:
