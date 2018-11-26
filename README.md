@@ -10,7 +10,7 @@
 The Orbital Widget Toolkit is a multi platform (G)UI toolkit for building scalable user interfaces with the programming language Rust. It's based
 on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity%E2%80%93component%E2%80%93system) and provides a functional-reactive API. 
 
-The main goals of OrbTk are fast peformance, easy to use and the platform indipendence.
+The main goals of OrbTk are fast performance, easy to use and the platform independence.
 
 <img alt="Redox" height="300" src="https://gitlab.redox-os.org/redox-os/assets/raw/master/screenshots/Calculator.png">
 
@@ -18,7 +18,7 @@ The main goals of OrbTk are fast peformance, easy to use and the platform indipe
 
 * Modern [Flutter](https://flutter.io/), [React](https://reactjs.org/), [Redux](https://redux.js.org/) like API
 * Uses the Entity Component System library [DCES](https://gitlab.redox-os.org/redox-os/dces-rust) for widget and properties handling
-* Updating instead of rebuling subtrees
+* Updating instead of rebuilding subtrees
 * Small DSL for custom widget creation on macro base (WIP)
 * Flexible event system
 * Widget state management
