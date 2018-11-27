@@ -17,8 +17,10 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::Read;
 
+pub use self::cell::CloneCell;
 pub use self::style::Style;
 
+mod cell;
 mod style;
 
 pub static DEFAULT_THEME_CSS: &'static str = include_str!("dark.css");

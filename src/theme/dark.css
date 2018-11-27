@@ -55,3 +55,7 @@ debugborder {
     border-color: blue;
     background: transparent;
 }
+
+watermark {
+    color: #9E9E9E
+}

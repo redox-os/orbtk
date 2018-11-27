@@ -4,17 +4,18 @@ use std::rc::Rc;
 
 use dces::{Entity, EntityComponentManager, System};
 
+use application::Tree;
 use backend::Backend;
 use layout_object::LayoutObject;
 use structs::{Constraint, Rect};
 use theme::{Selector, Theme};
-use tree::Tree;
 
 pub enum LayoutResult {
     Size((u32, u32)),
     RequestChild(Entity, Constraint),
 }
 
+/// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calulated by the layout objects of layout widgets.
 pub struct LayoutSystem {
     pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
     pub backend: Rc<RefCell<Backend>>,

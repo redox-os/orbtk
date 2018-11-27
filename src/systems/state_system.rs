@@ -5,10 +5,10 @@ use std::collections::BTreeMap;
 
 use dces::{Entity, EntityComponentManager, System};
 
-use state::State;
-use tree::Tree;
-use widget::WidgetContainer;
+use application::Tree;
+use widget::{State, WidgetContainer};
 
+/// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
     pub update: Rc<Cell<bool>>,

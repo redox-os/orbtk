@@ -5,17 +5,15 @@ use std::collections::BTreeMap;
 
 use dces::{Entity, World};
 
-use application::Application;
+use application::{Application, Tree};
 use backend::{target_backend, BackendRunner};
 use event::EventHandler;
 use layout_object::{DefaultLayoutObject, LayoutObject};
 use render_object::RenderObject;
-use state::State;
 use structs::{Point, Rect};
 use systems::{EventSystem, LayoutSystem, RenderSystem, StateSystem};
 use theme::Theme;
-use tree::Tree;
-use widget::{PropertyResult, Template};
+use widget::{PropertyResult, State, Template};
 use Global;
 
 /// Represents a window. Each window has its own tree, event pipline and backend.

@@ -2,12 +2,11 @@ use std::rc::Rc;
 
 use enums::ParentType;
 use event::Pressed;
-use state::State;
 use structs::Label;
 use theme::Selector;
 use widget::{
     add_selector_to_widget, remove_selector_from_widget, Center, Container, SharedProperty,
-    Template, TextBlock, Widget, WidgetContainer,
+    Template, TextBlock, Widget, WidgetContainer, State
 };
 
 /// The `ButtonState` handles the pressed state of the `Button` widget.

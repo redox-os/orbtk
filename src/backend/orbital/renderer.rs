@@ -25,27 +25,22 @@ impl OrbFontRenderer {
     ) {
         if let Some(font) = &self.font {
             let line = font.render(text, theme.uint("font-size", selector) as f32);
-            // line.draw_clipped(
-            //     renderer,
-            //     bounds.x + offset.x + global_position.x,
-            //     bounds.y + offset.y + global_position.y,
-            //     theme.color("color", selector),
-            //     (global_position.x + parent_bounds.x, global_position.y + parent_bounds.y, parent_bounds.width, parent_bounds.height)
-            // );
-            line.draw(
+            line.draw_clipped(
                 renderer,
-                bounds.x + offset.x + global_position.x,
-                bounds.y + offset.y + global_position.y,
+                global_position.x + bounds.x + offset.x,
+                global_position.y + bounds.y + offset.y,
+                global_position.x,
+                parent_bounds.width,
                 theme.color("color", selector),
             );
         } else {
-            let rect = Rect::new(bounds.x, bounds.y, bounds.width, bounds.height);
-            let mut current_rect = Rect::new(
-                bounds.x + offset.x,
-                bounds.y + offset.y,
+            let rect = Rect::new(
+                global_position.x + bounds.x + offset.x,
+                global_position.y + bounds.y + offset.y,
                 bounds.width,
                 bounds.height,
             );
+            let mut current_rect = Rect::new(rect.x, rect.y, rect.width, rect.height);
             let x = rect.x;
 
             for c in text.chars() {
@@ -53,14 +48,14 @@ impl OrbFontRenderer {
                     current_rect.x = x;
                     current_rect.y += 16;
                 } else {
-                    if current_rect.x + 8 >= parent_bounds.x
-                        && current_rect.y + 16 >= parent_bounds.y
-                        && current_rect.x + 8 < parent_bounds.x + parent_bounds.width as i32
-                        && current_rect.y < parent_bounds.y + parent_bounds.height as i32
+                    if current_rect.x + 8 >= global_position.x
+                        && current_rect.y + 16 >= global_position.y
+                        && current_rect.x + 8 < global_position.x + parent_bounds.width as i32
+                        && current_rect.y < global_position.y + parent_bounds.height as i32
                     {
                         renderer.char(
-                            current_rect.x + global_position.x,
-                            current_rect.y + global_position.y,
+                            current_rect.x,
+                            current_rect.y,
                             c,
                             theme.color("color", selector),
                         );
@@ -144,6 +139,15 @@ impl Renderer for OrbWindow {
         offset: &Point,
         global_position: &Point,
     ) {
-        FONT_RENDERER.render(theme, text, bounds, parent_bounds, selector, offset, global_position, self);
+        FONT_RENDERER.render(
+            theme,
+            text,
+            bounds,
+            parent_bounds,
+            selector,
+            offset,
+            global_position,
+            self,
+        );
     }
 }

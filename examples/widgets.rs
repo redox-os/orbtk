@@ -45,7 +45,7 @@ impl Widget for MainView {
                                 ),
                             )
                             .with_child(Container::create().with_child(
-                                TextBox::create().with_property(Label::from("Insert text")),
+                                TextBox::create().with_property(WaterMark::from("Placeholder")),
                             )),
                     )
                     .with_child(

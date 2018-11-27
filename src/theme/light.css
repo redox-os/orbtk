@@ -41,3 +41,7 @@ debugborder {
     border-color: blue;
     background: transparent;
 }
+
+watermark {
+    color: #BDBDBD
+}

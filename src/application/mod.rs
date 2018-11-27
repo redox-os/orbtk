@@ -3,9 +3,11 @@
 use {Rect, Theme};
 
 pub use self::global::*;
+pub use self::tree::*;
 pub use self::window::*;
 
 mod global;
+mod tree;
 mod window;
 
 #[derive(Default)]

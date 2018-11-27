@@ -1,8 +1,10 @@
 //! This module contains the collection of important enums used in OrbTk.
-pub use self::alignment::*;
-pub use self::direction::*;
-pub use self::parent_type::*;
+pub use self::alignment::Alignment;
+pub use self::error::*;
+pub use self::parent_type::ParentType;
+pub use self::visibility::Visibility;
 
 mod alignment;
-mod direction;
+mod error;
 mod parent_type;
+mod visibility;

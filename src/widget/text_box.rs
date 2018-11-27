@@ -2,11 +2,11 @@ use enums::ParentType;
 use event::{Focused, Key, KeyEventHandler};
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
-use structs::Label;
+use structs::{Label, WaterMark};
 use theme::Selector;
 use widget::{
     add_selector_to_widget, remove_selector_from_widget, Container, ScrollViewer, SharedProperty,
-    Stack, State, Template, TextBlock, Widget, WidgetContainer,
+    Stack, State, Template, TextBlock, WaterMarkTextBlock, Widget, WidgetContainer,
 };
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
@@ -75,12 +75,13 @@ impl State for TextBoxState {
     }
 }
 
-/// The `TextBoxState`handles the text processing of the `TextBox` widget.
+/// The `TextBoxState` handles the text processing of the `TextBox` widget.
 pub struct TextBox;
 
 impl Widget for TextBox {
     fn create() -> Template {
-        let label = SharedProperty::new(Label::from("TextBox"));
+        let label = SharedProperty::new(Label::from(""));
+        let water_mark = SharedProperty::new(WaterMark::from(""));
         let selector = SharedProperty::new(Selector::new().with("textbox"));
         let state = Rc::new(TextBoxState::default());
 
@@ -90,13 +91,19 @@ impl Widget for TextBox {
             .with_child(
                 Container::create()
                     .with_child(
-                        Stack::create().with_child(
-                            ScrollViewer::create().with_child(
-                                TextBlock::create()
-                                    .with_shared_property(label.clone())
-                                    .with_shared_property(selector.clone()),
+                        Stack::create()
+                            .with_child(
+                                ScrollViewer::create().with_child(
+                                    TextBlock::create()
+                                        .with_shared_property(label.clone())
+                                        .with_shared_property(selector.clone()),
+                                ),
+                            )
+                            .with_child(
+                                WaterMarkTextBlock::create()
+                                    .with_shared_property(water_mark.clone())
+                                    .with_shared_property(label.clone()),
                             ),
-                        ),
                     )
                     .with_shared_property(selector.clone()),
             )
@@ -104,6 +111,7 @@ impl Widget for TextBox {
             .with_debug_name("TextBox")
             .with_shared_property(label)
             .with_shared_property(selector)
+            .with_shared_property(water_mark)
             .with_event_handler(KeyEventHandler::default().on_key_down(Rc::new(
                 move |key: Key, _widget: &mut WidgetContainer| -> bool { state.update_text(key) },
             )))

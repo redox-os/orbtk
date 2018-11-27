@@ -14,17 +14,22 @@ mod key;
 mod mouse;
 mod system;
 
+/// Defines the strategy a event moves through the tree.
 #[derive(PartialEq)]
 pub enum EventStrategy {
+    /// From root to leaf.
     TopDown,
+
+    /// From leaf to root.
     BottomUp,
+
+    /// Occures direct.
     Direct
 }
 
+/// Used to define an event.
 pub trait Event : Any {
     fn strategy(&self) -> EventStrategy {
         EventStrategy::BottomUp
     }
 }
-
-// todo focuse moved event!!!

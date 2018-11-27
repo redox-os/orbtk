@@ -4,13 +4,13 @@ use std::rc::Rc;
 
 use std::collections::BTreeMap;
 
+use application::Tree;
 use backend::Backend;
 use dces::{Entity, EntityComponentManager, System};
 use event::{
     check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, Focused,
     MouseDownEvent, MouseUpEvent, Pressed,
 };
-use tree::Tree;
 use widget::WidgetContainer;
 use Global;
 
@@ -20,6 +20,7 @@ pub struct EventSystem {
     pub update: Rc<Cell<bool>>,
 }
 
+/// The `EventSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets.
 impl EventSystem {
     fn process_top_down_event(
         &self,

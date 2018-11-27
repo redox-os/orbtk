@@ -7,13 +7,12 @@ use std::rc::Rc;
 
 use dces::{Component, ComponentBox, Entity, EntityComponentManager, NotFound, SharedComponentBox};
 
+use application::Tree;
 use enums::ParentType;
 use event::EventHandler;
 use layout_object::{DefaultLayoutObject, LayoutObject};
 use render_object::RenderObject;
-use state::State;
 use theme::Selector;
-use tree::Tree;
 
 pub use self::button::*;
 pub use self::center::*;
@@ -24,6 +23,7 @@ pub use self::scroll_viewer::*;
 pub use self::stack::*;
 pub use self::text_block::*;
 pub use self::text_box::*;
+pub use self::water_mark_text_block::WaterMarkTextBlock;
 
 mod button;
 mod center;
@@ -34,6 +34,7 @@ mod scroll_viewer;
 mod stack;
 mod text_block;
 mod text_box;
+mod water_mark_text_block;
 
 /// The `PropertyResult` enum is used to create concrete shared properties for a widget on run time from `SharedProperty` struct.
 pub enum PropertyResult {
@@ -73,7 +74,8 @@ impl SharedProperty {
             return PropertyResult::Property(property, self.source_chain.borrow()[0].clone());
         }
 
-        if let Some(source) = self.source_chain.borrow()[self.source_chain.borrow().len() - 1].get() {
+        if let Some(source) = self.source_chain.borrow()[self.source_chain.borrow().len() - 1].get()
+        {
             return PropertyResult::Source(SharedComponentBox::new(self.type_id, source));
         }
 
@@ -91,6 +93,12 @@ impl Clone for SharedProperty {
     }
 }
 
+/// Used to define a state of a widget. A state is used to customize properties of a widget.
+pub trait State {
+    /// Updates the state for the given `widget`.
+    fn update(&self, widget: &mut WidgetContainer);
+}
+
 /// `Template` is used to define the inner structure of a widget.
 /// Intern it is used to create an entity with components for the widget.
 pub struct Template {
@@ -103,6 +111,7 @@ pub struct Template {
     pub properties: HashMap<TypeId, ComponentBox>,
     pub shared_properties: HashMap<TypeId, SharedProperty>,
     pub debug_name: String,
+    pub key: Option<String>,
 }
 
 impl Default for Template {
@@ -117,6 +126,7 @@ impl Default for Template {
             properties: HashMap::new(),
             shared_properties: HashMap::new(),
             debug_name: String::default(),
+            key: None,
         }
     }
 }
@@ -208,8 +218,12 @@ impl Template {
             self.shared_properties
                 .get_mut(&type_id)
                 .unwrap()
-                .source_chain.borrow_mut()
-                .push(property.source_chain.borrow()[property.source_chain.borrow().len() - 1].clone());
+                .source_chain
+                .borrow_mut()
+                .push(
+                    property.source_chain.borrow()[property.source_chain.borrow().len() - 1]
+                        .clone(),
+                );
         } else {
             self.shared_properties.insert(property.type_id, property);
         }

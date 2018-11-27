@@ -10,7 +10,7 @@
 The Orbital Widget Toolkit is a multi platform (G)UI toolkit for building scalable user interfaces with the programming language Rust. It's based
 on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity%E2%80%93component%E2%80%93system) and provides a functional-reactive API. 
 
-The main goals of OrbTk are fast peformance, easy to use and the platform indipendence.
+The main goals of OrbTk are fast peformance, easy to use and cross platform.
 
 <img alt="Redox" height="300" src="https://gitlab.redox-os.org/redox-os/assets/raw/master/screenshots/Calculator.png">
 
@@ -56,7 +56,6 @@ impl Widget for MainView {
     fn create() -> Template {
         Template::default()
             .as_parent_type(ParentType::Single)
-            .with_debug_name("MainView")
             .with_child(
                 Container::create()
                     .as_parent_type(ParentType::Single)
@@ -72,7 +71,6 @@ fn main() {
         .with_bounds(Rect::new(0, 0, 420, 730))
         .with_title("Orbtk")
         .with_root(MainView::create())
-        .with_debug_flag(true)
         .build();
     application.run();
 }

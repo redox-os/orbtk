@@ -96,5 +96,3 @@ impl<'a> Iterator for EventQeueIterator<'a> {
         self.event_queue.dequeue()
     }
 }
-
-// todo handler as component include other components and change it.

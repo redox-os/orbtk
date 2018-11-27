@@ -7,6 +7,7 @@ pub use self::padding::Padding;
 pub use self::point::Point;
 pub use self::rect::*;
 pub use self::thickness::Thickness;
+pub use self::water_mark::WaterMark;
 
 mod constraint;
 mod label;
@@ -15,6 +16,7 @@ mod padding;
 mod point;
 mod rect;
 mod thickness;
+mod water_mark;
 
 #[cfg(test)]
 mod tests;

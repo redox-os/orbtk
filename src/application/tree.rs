@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 
 use {Entity, NotFound, EntityContainer};
 
+/// Base data structure to manage the widget entities of a window in a tree based structure.
 #[derive(Default)]
 pub struct Tree {
     pub root: Entity,
@@ -11,11 +12,14 @@ pub struct Tree {
 }
 
 impl Tree {
+    /// Registers a new widget `entity` as node.
     pub fn register_node(&mut self, entity: Entity) {
         self.children.insert(entity, vec![]);
         self.parent.insert(entity, entity);
     }
 
+    /// Appends a `child` entity to the given `parent` entity.
+    /// Raised `NotFound` error if the parent is not part of the tree.
     pub fn append_child(&mut self, parent: Entity, child: Entity) -> Result<Entity, NotFound> {
         if let Some(p) = self.children.get_mut(&parent) {
             p.push(child);
@@ -28,10 +32,12 @@ impl Tree {
         Ok(child)
     }
 
+    /// Returns the number of all entities in the tree.
     pub fn len(&self) -> usize {
         self.children.len()
     }
 
+    /// Returns true if the tree has no entities.
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
@@ -60,6 +66,7 @@ impl<'a> IntoIterator for &'a Tree {
     }
 }
 
+/// Used to create an iterator for the tree.
 pub struct TreeIterator<'a> {
     tree: &'a Tree,
     path: RefCell<Vec<Entity>>,

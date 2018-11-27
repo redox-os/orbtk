@@ -1,5 +1,4 @@
-use cell::CloneCell;
-use theme::Selector;
+use theme::{CloneCell, Selector};
 
 pub trait Style {
     fn selector(&self) -> &CloneCell<Selector>;

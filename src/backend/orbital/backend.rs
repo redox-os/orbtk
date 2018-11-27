@@ -5,6 +5,7 @@ use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow}
 
 use dces::World;
 
+use application::Tree;
 use backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext};
 use event::{
     EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
@@ -12,8 +13,8 @@ use event::{
 };
 use structs::{Point, Rect};
 use theme::Theme;
-use tree::Tree;
 
+/// Implemenation of the OrbClient based backend.
 pub struct OrbitalBackend {
     inner: OrbWindow,
     theme: Theme,
@@ -194,6 +195,7 @@ impl Backend for OrbitalBackend {
     }
 }
 
+/// Implementation of the OrbClient based backend runner.
 pub struct OrbitalBackendRunner {
     pub world: Option<World<Tree>>,
     pub backend: Rc<RefCell<OrbitalBackend>>,
