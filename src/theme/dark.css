@@ -47,6 +47,10 @@ textbox {
     padding: 6;
 }
 
+textbox:watermark {
+    color: #9E9E9E
+}
+
 textbox:focus {
     border-color: #F8DE4C;
 }
@@ -56,8 +60,4 @@ debugborder {
     border-radius: 2;
     border-color: blue;
     background: transparent;
-}
-
-watermark {
-    color: #9E9E9E
 }

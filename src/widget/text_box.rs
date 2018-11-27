@@ -94,16 +94,12 @@ impl Widget for TextBox {
                         Stack::create()
                             .with_child(
                                 ScrollViewer::create().with_child(
-                                    TextBlock::create()
+                                    WaterMarkTextBlock::create()
                                         .with_shared_property(label.clone())
-                                        .with_shared_property(selector.clone()),
+                                        .with_shared_property(selector.clone())
+                                        .with_shared_property(water_mark.clone())
                                 ),
                             )
-                            .with_child(
-                                WaterMarkTextBlock::create()
-                                    .with_shared_property(water_mark.clone())
-                                    .with_shared_property(label.clone()),
-                            ),
                     )
                     .with_shared_property(selector.clone()),
             )

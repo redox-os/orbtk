@@ -24,27 +24,28 @@ impl RenderObject for TextRenderObject {
         if let Ok(selector) = widget.borrow_property::<Selector>() {
             if let Ok(bounds) = widget.borrow_property::<Rect>() {
                 if let Ok(parent_bounds) = widget.borrow_parent_property::<Rect>() {
-                    // WaterMark property has precedence over Label property
-                    if let Ok(label) = widget.borrow_property::<WaterMark>() {
-                        renderer.render_text(
-                            theme,
-                            &label.0,
-                            bounds,
-                            parent_bounds,
-                            selector,
-                            offset,
-                            global_position,
-                        );
-                    } else if let Ok(label) = widget.borrow_property::<Label>() {
-                        renderer.render_text(
-                            theme,
-                            &label.0,
-                            bounds,
-                            parent_bounds,
-                            selector,
-                            offset,
-                            global_position,
-                        );
+                    if let Ok(label) = widget.borrow_property::<Label>() {
+                        if !label.0.is_empty() {
+                            renderer.render_text(
+                                theme,
+                                &label.0,
+                                bounds,
+                                parent_bounds,
+                                selector,
+                                offset,
+                                global_position,
+                            );
+                        } else if let Ok(label) = widget.borrow_property::<WaterMark>() {
+                            renderer.render_text(
+                                theme,
+                                &label.0,
+                                bounds,
+                                parent_bounds,
+                                selector,
+                                offset,
+                                global_position,
+                            );
+                        }
                     }
                 }
             }

@@ -2,7 +2,7 @@ use enums::Visibility;
 use std::rc::Rc;
 use structs::{Label, WaterMark};
 use theme::Selector;
-use widget::{State, Template, TextBlock, Widget, WidgetContainer};
+use widget::{State, Template, TextBlock, Widget, WidgetContainer, add_selector_to_widget, remove_selector_from_widget};
 
 /// The `WaterMarkTextBlockState` handles the text processing of the `WaterMarkTextBlock` widget.
 #[derive(Default)]
@@ -23,12 +23,18 @@ impl State for WaterMarkTextBlockState {
             is_label_empty = label.0.is_empty();
         }
 
+        if is_label_empty {
+             add_selector_to_widget("watermark", widget);
+        } else {
+             remove_selector_from_widget("watermark", widget);
+        }
+
         if let Ok(label) = widget.borrow_property::<WaterMark>() {
             is_water_mark_empty = label.0.is_empty();
         }
 
         if let Ok(visibility) = widget.borrow_mut_property::<Visibility>() {
-            if is_water_mark_empty || !is_label_empty {
+            if is_water_mark_empty && !is_label_empty {
                 *visibility = Visibility::Hidden;
             } else {
                 *visibility = Visibility::Visible;
