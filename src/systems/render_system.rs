@@ -82,7 +82,7 @@ impl System<Tree> for RenderSystem {
 
             // hide hidden widget
             if let Ok(visibility) = ecm.borrow_component::<Visibility>(node) {
-                if *visibility == Visibility::Hidden {
+                if *visibility != Visibility::Visible {
                     current_hidden_parent = Some(node);
                      continue;
                 }             

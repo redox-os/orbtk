@@ -16,18 +16,20 @@ button {
 }
 
 button:active {
-    background: #8cafd1;
+    color: #637F92;
+    background: #F8DE4C;
 }
 
-squarebutton {
+button.square {
     background: #6C7A90;
     border-radius: 2;
     width: 40;
     height: 40;
 }
 
-squarebutton:active {
-    background: #8cafd1;
+button.square:active {
+    color: #637F92;
+    background: #F8DE4C;
 }
 
 container {
@@ -46,7 +48,7 @@ textbox {
 }
 
 textbox:focus {
-    border-color: #8cafd1;
+    border-color: #F8DE4C;
 }
 
 debugborder {

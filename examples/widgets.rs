@@ -38,7 +38,8 @@ impl Widget for MainView {
                     .with_child(
                         Row::create()
                             .with_child(
-                                Container::create().with_child(
+                                Container::create()
+                                .with_child(
                                     Button::create()
                                         .with_property(Label::from("Click me"))
                                         .with_event_handler(MouseEventHandler::default().on_click(Rc::new( move |_pos: Point, _widget: &mut WidgetContainer| -> bool { state.increment(); true }))),

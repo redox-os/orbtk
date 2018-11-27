@@ -6,6 +6,7 @@ use dces::{Entity, EntityComponentManager, System};
 
 use application::Tree;
 use backend::Backend;
+use enums::Visibility;
 use layout_object::LayoutObject;
 use structs::{Constraint, Rect};
 use theme::{Selector, Theme};
@@ -103,6 +104,11 @@ impl System<Tree> for LayoutSystem {
                         return size;
                     }
                     LayoutResult::RequestChild(child, child_bc) => {
+                        if let Ok(visibility) = ecm.borrow_component::<Visibility>(entity) {
+                            if *visibility == Visibility::Collapsed {
+                                return (0, 0);
+                            }
+                        }
                         size = Some(layout_rec(
                             ecm,
                             tree,

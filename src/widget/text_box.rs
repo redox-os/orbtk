@@ -80,8 +80,8 @@ pub struct TextBox;
 
 impl Widget for TextBox {
     fn create() -> Template {
-        let label = SharedProperty::new(Label::from(""));
-        let water_mark = SharedProperty::new(WaterMark::from(""));
+        let label = SharedProperty::new(Label::default());
+        let water_mark = SharedProperty::new(WaterMark::default());
         let selector = SharedProperty::new(Selector::new().with("textbox"));
         let state = Rc::new(TextBoxState::default());
 

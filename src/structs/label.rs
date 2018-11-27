@@ -1,5 +1,5 @@
 /// The `Label` struct represents a string used for text drawing.
-#[derive(Clone)]
+#[derive(Default, Clone)]
 pub struct Label(pub String);
 
 impl From<&str> for Label {

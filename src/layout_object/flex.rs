@@ -46,7 +46,7 @@ impl LayoutObject for FlexLayoutObject {
         if let Some(size) = size {
             self.current_child.set(self.current_child.get() + 1);
 
-            if self.current_child.get() < children.len() {
+            if self.current_child.get() <= children.len() {
                 match self.orientation {
                     Alignment::Horizontal => {
                         self.current_position.borrow_mut().push(size.0);

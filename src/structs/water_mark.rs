@@ -1,5 +1,5 @@
 /// The `WaterMark` struct represents a string used as placeholder text.
-#[derive(Clone)]
+#[derive(Default, Clone)]
 pub struct WaterMark(pub String);
 
 impl From<&str> for WaterMark {
