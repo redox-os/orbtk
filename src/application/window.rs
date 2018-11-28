@@ -244,7 +244,7 @@ fn build_tree(
 
         if debug_flag.get() {
             println!(
-                "{} (id = {}, children_lenght = {})",
+                "{} (id = {}, children_length = {})",
                 template.debug_name,
                 entity,
                 template.children.len()

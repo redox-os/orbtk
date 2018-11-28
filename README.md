@@ -37,7 +37,7 @@ To use OrbTk 0.3, just add the dependency
 line to your `Cargo.toml` file:
 
 ```text
-orbtk = { git = https://gitlab.redox-os.org/redox-os/orbtk.git }
+orbtk = { git = "https://gitlab.redox-os.org/redox-os/orbtk.git" }
 ```
 
 However you also need to have the SDL2 libraries installed on your
