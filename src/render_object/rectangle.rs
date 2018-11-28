@@ -25,12 +25,14 @@ impl RenderObject for RectangleRenderObject {
             if let Ok(bounds) = widget.borrow_property::<Rect>() {
                 if let Ok(parent_bounds) = widget.borrow_parent_property::<Rect>() {
                     renderer.render_rectangle(
-                        theme,
                         bounds,
                         parent_bounds,
-                        selector,
                         offset,
                         global_position,
+                        theme.uint("border-radius", selector),
+                        theme.color("background", selector),
+                        theme.uint("border-width", selector),
+                        theme.color("border-color", selector),
                     );
                 }
             }

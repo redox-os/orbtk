@@ -3,7 +3,12 @@ use enums::Alignment;
 use widget::{Template, Widget};
 use enums::ParentType;
 
-/// This layout widget orders its children horizontal.
+/// The `Row` represents a layout that orders its children horizontal.
+/// 
+/// # Others
+/// 
+/// * `ParentType`- Multi.
+/// * `FlexLayoutObject` - Used to layout the widget.
 pub struct Row;
 
 impl Widget for Row {

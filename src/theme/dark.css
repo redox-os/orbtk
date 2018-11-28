@@ -4,6 +4,11 @@
     background: #475b6e;
     color: white;
     font-size: 16;
+    font-family: "Roboto Regular";
+    icon-size: 16;
+    icon-color: white;
+    icon-margin: 2;
+    icon-font-family: "Material Icons Regular";
 }
 
 button {
@@ -17,7 +22,12 @@ button {
 
 button:active {
     color: #637F92;
+    icon-color:  #637F92;
     background: #F8DE4C;
+}
+
+button:disabled {
+    background: #36516b;
 }
 
 button.square {
@@ -53,6 +63,11 @@ textbox:watermark {
 
 textbox:focus {
     border-color: #F8DE4C;
+}
+
+cursor {
+    stroke: white;
+    width: 1;
 }
 
 debugborder {

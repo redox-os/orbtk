@@ -10,7 +10,6 @@ impl Into<Box<LayoutObject>> for CenterLayoutObject {
     }
 }
 
-
 impl LayoutObject for CenterLayoutObject {
     fn layout(
         &self,
@@ -24,15 +23,31 @@ impl LayoutObject for CenterLayoutObject {
         if let Some(size) = size {
             let requested_size = constraint.perform((size.0, size.1));
 
+            let width = {
+                if constraint.width > 0 {
+                    constraint.max_width
+                } else {
+                    size.0
+                }
+            };
+
+            let height = {
+                if constraint.height > 0 {
+                    constraint.max_height
+                } else {
+                    size.1
+                }
+            };
+
             if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(children[0]) {
-                bounds.x = (requested_size.0 - size.0) as i32 / 2;
-                bounds.y = (requested_size.1 - size.1) as i32 / 2;
+                bounds.x = (width - requested_size.0) as i32 / 2;
+                bounds.y = (height - requested_size.1) as i32 / 2;
             }
 
-            LayoutResult::Size(requested_size)
+            LayoutResult::Size((width, height))
         } else {
             if children.is_empty() {
-                return LayoutResult::Size((constraint.max_width, constraint.max_height));
+                return LayoutResult::Size((constraint.min_width, constraint.min_height));
             }
             LayoutResult::RequestChild(children[0], *constraint)
         }

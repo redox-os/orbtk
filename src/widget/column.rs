@@ -3,7 +3,12 @@ use enums::Alignment;
 use widget::{Template, Widget};
 use enums::ParentType;
 
-/// This layout widget orders its children vertical.
+/// The `Column` represents a layout that orders its children vertical.
+/// 
+/// # Others
+/// 
+/// * `ParentType`- Multi.
+/// * `FlexLayoutObject` - Used to layout the widget.
 pub struct Column;
 
 impl Widget for Column {

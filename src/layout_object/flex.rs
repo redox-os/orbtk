@@ -99,10 +99,10 @@ impl LayoutObject for FlexLayoutObject {
 
                 match self.orientation {
                     Alignment::Horizontal => {
-                        return LayoutResult::Size((constraint.max_width, self.height.get()));
+                        return LayoutResult::Size(constraint.perform((self.current_position.borrow().iter().sum(), self.height.get())));
                     }
                     Alignment::Vertical => {
-                        return LayoutResult::Size((self.width.get(), constraint.max_height));
+                        return LayoutResult::Size(constraint.perform((self.width.get(), self.current_position.borrow().iter().sum())));
                     }
                 }
             }
@@ -121,6 +121,8 @@ impl LayoutObject for FlexLayoutObject {
             max_width: constraint.max_width,
             min_height: constraint.min_height,
             max_height: constraint.max_height,
+            width: constraint.width,
+            height: constraint.height,
         };
 
         LayoutResult::RequestChild(children[self.current_child.get()], child_bc)

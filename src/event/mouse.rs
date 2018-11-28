@@ -4,15 +4,6 @@ use event::{Event, EventBox, EventHandler};
 use structs::{Point, Rect};
 use widget::WidgetContainer;
 
-#[derive(Default, Copy, Clone)]
-pub struct Pressed(pub bool);
-
-#[derive(Default, Copy, Clone)]
-pub struct Focused(pub bool);
-
-#[derive(Default, Copy, Clone)]
-pub struct MouseOver(pub bool);
-
 pub fn check_mouse_condition(position: Point, widget: &WidgetContainer) -> bool {
     if let Ok(bounds) = widget.borrow_property::<Rect>() {
         let mut rect = Rect::new(0, 0, bounds.width, bounds.height);

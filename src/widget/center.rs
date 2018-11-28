@@ -2,7 +2,12 @@ use layout_object::CenterLayoutObject;
 use widget::{Template, Widget};
 use enums::ParentType;
 
-/// This layout widget centers its children within itself.
+/// The `Center` represents a layout widget that center its child inside of it.
+/// 
+/// # Others
+/// 
+/// * `ParentType`- Single.
+/// * `CenterLayoutObject` - Used to layout the widget.
 pub struct Center;
 
 impl Widget for Center {

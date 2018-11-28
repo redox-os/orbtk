@@ -5,6 +5,8 @@ pub struct Constraint {
     pub max_width: u32,
     pub min_height: u32,
     pub max_height: u32,
+    pub width: u32,
+    pub height: u32,
 }
 
 impl Constraint {

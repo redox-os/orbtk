@@ -40,6 +40,8 @@ impl System<Tree> for LayoutSystem {
                 min_height: constraint.min_height,
                 max_width: constraint.max_width,
                 max_height: constraint.max_height,
+                width: constraint.width,
+                height: constraint.height,
             };
 
             if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
@@ -67,13 +69,13 @@ impl System<Tree> for LayoutSystem {
                 }
 
                 if width > 0 {
-                    constraint.min_width = width;
                     constraint.max_width = width;
+                    constraint.width = width;
                 }
 
                 if height > 0 {
-                    constraint.min_height = height;
                     constraint.max_height = height;
+                    constraint.height = height;
                 }
             }
 
@@ -139,6 +141,8 @@ impl System<Tree> for LayoutSystem {
                 min_height: 0,
                 max_width: layout_context.window_size.0,
                 max_height: layout_context.window_size.1,
+                width: 0,
+                height: 0,
             },
             root,
             &layout_context.theme,

@@ -1,12 +1,12 @@
 use enums::ParentType;
-use event::{Focused, Key, KeyEventHandler};
+use event::{Key, KeyEventHandler};
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
-use structs::{Label, WaterMark};
+use structs::{Focused, Label, WaterMark};
 use theme::Selector;
 use widget::{
-    add_selector_to_widget, remove_selector_from_widget, Container, ScrollViewer, SharedProperty,
-    Stack, State, Template, TextBlock, WaterMarkTextBlock, Widget, WidgetContainer,
+    Container, Cursor, ScrollViewer, SharedProperty, Stack, State, Template, WaterMarkTextBlock,
+    Widget, WidgetContainer,
 };
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
@@ -53,12 +53,6 @@ impl State for TextBoxState {
             self.focused.set(focused.0);
         }
 
-        if self.focused.get() {
-            add_selector_to_widget("focus", widget);
-        } else {
-            remove_selector_from_widget("focus", widget);
-        }
-
         if let Ok(label) = widget.borrow_mut_property::<Label>() {
             if label.0 == *self.text.borrow() {
                 return;
@@ -75,7 +69,22 @@ impl State for TextBoxState {
     }
 }
 
-/// The `TextBoxState` handles the text processing of the `TextBox` widget.
+/// The `TextBox` represents a single line text input widget.
+/// 
+/// # Shared Properties
+/// 
+/// * `Label` - String used to display the text of the text box.
+/// * `Watermark` - String used to display a placeholder text if `Label` string is empty.
+/// * `Selector` - CSS selector used to request the theme of the widget.
+/// 
+/// # Properties
+/// 
+/// * `Focused` - Defines if the widget is focues and handles the current text input.
+/// 
+/// # Others
+/// 
+/// * `TextBoxState` - Handles the inner state of the widget.
+/// * `KeyEventHandler` - Process the text input of the control if it is focuesd.
 pub struct TextBox;
 
 impl Widget for TextBox {
@@ -97,9 +106,10 @@ impl Widget for TextBox {
                                     WaterMarkTextBlock::create()
                                         .with_shared_property(label.clone())
                                         .with_shared_property(selector.clone())
-                                        .with_shared_property(water_mark.clone())
+                                        .with_shared_property(water_mark.clone()),
                                 ),
                             )
+                            .with_child(Cursor::create()),
                     )
                     .with_shared_property(selector.clone()),
             )

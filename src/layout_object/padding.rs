@@ -54,6 +54,10 @@ impl LayoutObject for PaddingLayoutObject {
                 size.1 + padding.top as u32 + padding.bottom as u32,
             )))
         } else {
+            if children.is_empty() {
+                return LayoutResult::Size((constraint.min_width, constraint.min_height));
+            }
+
             let child_bc = Constraint {
                 min_width: (constraint.min_width as i32 - (padding.left + padding.right)).max(0)
                     as u32,
@@ -63,11 +67,9 @@ impl LayoutObject for PaddingLayoutObject {
                     as u32,
                 max_height: (constraint.max_height as i32 - (padding.top + padding.bottom)).max(0)
                     as u32,
+                width: constraint.width,
+                height: constraint.height,
             };
-
-            if children.is_empty() {
-                return LayoutResult::Size((child_bc.min_width, child_bc.min_height));
-            }
 
             LayoutResult::RequestChild(children[0], child_bc)
         }

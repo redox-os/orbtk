@@ -36,7 +36,7 @@ impl System<Tree> for RenderSystem {
         offsets.insert(tree.root, (0, 0));
 
         // render window background
-        render_context.renderer.render(&render_context.theme);
+        render_context.renderer.render(render_context.theme.color("background", &"window".into()));
 
         for node in tree.into_iter() {
             let mut global_position = Point::default();
@@ -62,19 +62,23 @@ impl System<Tree> for RenderSystem {
                 } else {
                     current_hidden_parent = None;
                 }
-            }
+            } 
 
             // render debug border for each widget
             if self.debug_flag.get() {
                 if let Ok(bounds) = ecm.borrow_component::<Rect>(node) {
                     if let Ok(parent_bounds) = ecm.borrow_component::<Rect>(tree.parent[&node]) {
+                        let selector = Selector::new().with("debugborder");
+
                         render_context.renderer.render_rectangle(
-                            &render_context.theme,
                             bounds,
                             parent_bounds,
-                            &Selector::new().with("debugborder"),
                             &offset,
                             &global_position,
+                            render_context.theme.uint("border-radius", &selector),
+                            render_context.theme.color("background", &selector),
+                            render_context.theme.uint("border-width", &selector),
+                            render_context.theme.color("border-color", &selector),
                         );
                     }
                 }

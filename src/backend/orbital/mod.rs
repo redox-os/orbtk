@@ -5,12 +5,12 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use orbclient::Window as OrbWindow;
-use orbfont::Font;
 
 use self::backend::{OrbitalBackend, OrbitalBackendRunner};
+use self::renderer::FONT_RENDERER;
 use backend::{Backend, FontMeasure};
 use structs::Rect;
-use theme::{Theme, ROBOTO_REGULAR_FONT};
+use theme::Theme;
 
 mod backend;
 mod renderer;
@@ -33,16 +33,14 @@ pub fn target_backend(
     (backend_runner, backend)
 }
 
-pub struct OrbFontMeasure {
-    font: Option<Font>
-}
+pub struct OrbFontMeasure;
 
 impl FontMeasure for OrbFontMeasure {
-    fn measure(&self, text: &str, font_size: u32) -> (u32, u32) {
-        if let Some(font) = &self.font {
+    fn measure(&self, text: &str, font: &str, font_size: u32) -> (u32, u32) {
+        if let Some(font) = &FONT_RENDERER.fonts.get(font) {
             let text = font.render(text, font_size as f32);
-            return (text.width(), text.height())
-        } 
+            return (text.width(), text.height());
+        }
 
         (text.chars().count() as u32 * 8 + 2, 18)
     }
@@ -50,16 +48,6 @@ impl FontMeasure for OrbFontMeasure {
 
 lazy_static! {
     pub static ref FONT_MEASURE: Arc<OrbFontMeasure> = {
-        let font = {
-            if let Ok(font) = Font::from_data(ROBOTO_REGULAR_FONT.to_vec().into_boxed_slice()) {
-                Some(font)
-            } else {
-                None
-            }
-        };
-
-        Arc::new(OrbFontMeasure {
-            font
-        })
+        Arc::new(OrbFontMeasure)
     };
 }

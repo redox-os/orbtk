@@ -7,6 +7,8 @@ fn test_perform() {
         min_height: 10,
         max_width: 50,
         max_height: 60,
+        width: 0,
+        height: 0,
     };
 
     assert_eq!(constraint.perform((10, 59)), (10, 59));

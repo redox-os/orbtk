@@ -10,7 +10,7 @@ pub struct TextSizeLayoutObject;
 
 impl Into<Box<LayoutObject>> for TextSizeLayoutObject {
     fn into(self) -> Box<LayoutObject> {
-         Box::new(self)
+        Box::new(self)
     }
 }
 
@@ -26,10 +26,11 @@ impl LayoutObject for TextSizeLayoutObject {
     ) -> LayoutResult {
         if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
             if let Ok(label) = ecm.borrow_component::<Label>(entity) {
-               return LayoutResult::Size(FONT_MEASURE.measure(
+                return LayoutResult::Size(FONT_MEASURE.measure(
                     &label.0,
+                    &theme.string("font-family", selector),
                     theme.uint("font-size", selector),
-                ))
+                ));
             }
         }
 

@@ -1,37 +1,39 @@
+use std::collections::HashMap;
 use std::sync::Arc;
 
-use orbclient::{Renderer as OrbRenderer, Window as OrbWindow};
+use orbclient::{Color, Renderer as OrbRenderer, Window as OrbWindow};
 use orbfont::Font;
 
 use backend::Renderer;
 use structs::{Point, Rect};
-use theme::{Selector, Theme, ROBOTO_REGULAR_FONT};
+use theme::{ROBOTO_REGULAR_FONT, material_font_icons::MATERIAL_ICONS_REGULAR_FONT};
 
-struct OrbFontRenderer {
-    font: Option<Font>,
+pub struct OrbFontRenderer {
+    pub fonts: HashMap<&'static str, Font>,
 }
 
 impl OrbFontRenderer {
     fn render(
         &self,
-        theme: &Theme,
         text: &str,
         bounds: &Rect,
         parent_bounds: &Rect,
-        selector: &Selector,
         offset: &Point,
         global_position: &Point,
         renderer: &mut OrbWindow,
+        font_size: f32,
+        color: Color,
+        font: &str,
     ) {
-        if let Some(font) = &self.font {
-            let line = font.render(text, theme.uint("font-size", selector) as f32);
+        if let Some(font) = &self.fonts.get(font) {
+            let line = font.render(text, font_size);
             line.draw_clipped(
                 renderer,
                 global_position.x + bounds.x + offset.x,
                 global_position.y + bounds.y + offset.y,
                 global_position.x,
                 parent_bounds.width,
-                theme.color("color", selector),
+                color,
             );
         } else {
             let rect = Rect::new(
@@ -53,12 +55,7 @@ impl OrbFontRenderer {
                         && current_rect.x + 8 < global_position.x + parent_bounds.width as i32
                         && current_rect.y < global_position.y + parent_bounds.height as i32
                     {
-                        renderer.char(
-                            current_rect.x,
-                            current_rect.y,
-                            c,
-                            theme.color("color", selector),
-                        );
+                        renderer.char(current_rect.x, current_rect.y, c, color);
                     }
                     current_rect.x += 8;
                 }
@@ -68,86 +65,73 @@ impl OrbFontRenderer {
 }
 
 lazy_static! {
-    static ref FONT_RENDERER: Arc<OrbFontRenderer> = {
-        let font = {
-            if let Ok(font) = Font::from_data(ROBOTO_REGULAR_FONT.to_vec().into_boxed_slice()) {
-                Some(font)
-            } else {
-                None
-            }
-        };
+    pub static ref FONT_RENDERER: Arc<OrbFontRenderer> = {
+        let mut fonts = HashMap::new();
 
-        Arc::new(OrbFontRenderer { font })
+        if let Ok(font) = Font::from_data(ROBOTO_REGULAR_FONT.to_vec().into_boxed_slice()) {
+            fonts.insert("Roboto Regular", font);
+        }
+
+        if let Ok(font) = Font::from_data(MATERIAL_ICONS_REGULAR_FONT.to_vec().into_boxed_slice()) {
+            fonts.insert("Material Icons Regular", font);
+        }
+
+        Arc::new(OrbFontRenderer {
+            fonts
+        })
     };
 }
 
-// lazy_static! {
-//     static ref DEFAULT_FONT: Result<Font>> = {
-//         if let Ok(font) = Font::from_data(ROBOTO_REGULAR_FONT.to_vec().into_boxed_slice()) {
-//             Arc::new(Some(font))
-//         } else {
-//             Arc::new(None)
-//         }
-//     };
-// }
-
 impl Renderer for OrbWindow {
-    fn render(&mut self, theme: &Theme) {
+    fn render(&mut self, background: Color) {
         // render window background
-        let col = theme.color("background", &"window".into());
-        let blub = col.data;
-        let mut _color = format!("#{:x}", blub);
-        _color.remove(0);
-        _color.remove(0);
-        self.set(theme.color("background", &"window".into()));
+        self.set(background);
     }
 
     fn render_rectangle(
         &mut self,
-        theme: &Theme,
         bounds: &Rect,
         parent_bounds: &Rect,
-        selector: &Selector,
         offset: &Point,
         global_position: &Point,
+        border_radius: u32,
+        background: Color,
+        border_width: u32,
+        border_color: Color,
     ) {
-        let b_r = theme.uint("border-radius", selector);
-
-        let fill = theme.color("background", selector);
-
         let x = (bounds.x + global_position.x + offset.x).max(parent_bounds.x);
         let y = (bounds.y + global_position.y + offset.y).max(parent_bounds.y);
         let width = (bounds.width as i32 + offset.x).min(parent_bounds.width as i32) as u32;
         let height = (bounds.height as i32 + offset.y).min(parent_bounds.height as i32) as u32;
 
-        self.rounded_rect(x, y, width, height, b_r, true, fill);
+        self.rounded_rect(x, y, width, height, border_radius, true, background);
 
-        if theme.uint("border-width", selector) > 0 {
-            let border_color = theme.color("border-color", selector);
-
-            self.rounded_rect(x, y, width, height, b_r, false, border_color);
+        if border_width > 0 {
+            self.rounded_rect(x, y, width, height, border_radius, false, border_color);
         }
     }
 
     fn render_text(
         &mut self,
-        theme: &Theme,
         text: &str,
         bounds: &Rect,
         parent_bounds: &Rect,
-        selector: &Selector,
         offset: &Point,
         global_position: &Point,
+        font_size: u32,
+        color: Color,
+        font: &str,
     ) {
         FONT_RENDERER.render(
-            theme,
             text,
             bounds,
             parent_bounds,
-            selector,
             offset,
             global_position,
             self,
+            font_size as f32,
+            color,
+            font,
         );
     }
 }

@@ -7,17 +7,19 @@ use structs::Constraint;
 use systems::LayoutResult;
 use theme::Theme;
 
-pub use self::center::*;
-pub use self::default::*;
-pub use self::flex::*;
-pub use self::padding::*;
-pub use self::scroll::*;
-pub use self::stretch::*;
-pub use self::text_size::*;
+pub use self::center::CenterLayoutObject;
+pub use self::default::DefaultLayoutObject;
+pub use self::flex::FlexLayoutObject;
+pub use self::font_icon_size::FontIconSizeLayoutObject;
+pub use self::padding::PaddingLayoutObject;
+pub use self::scroll::ScrollLayoutObject;
+pub use self::stretch::StretchLayoutObject;
+pub use self::text_size::TextSizeLayoutObject;
 
 mod center;
 mod default;
 mod flex;
+mod font_icon_size;
 mod padding;
 mod scroll;
 mod stretch;

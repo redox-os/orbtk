@@ -8,10 +8,11 @@ use application::Tree;
 use backend::Backend;
 use dces::{Entity, EntityComponentManager, System};
 use event::{
-    check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, Focused,
-    MouseDownEvent, MouseUpEvent, Pressed,
+    check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, 
+    MouseDownEvent, MouseUpEvent,
 };
 use widget::WidgetContainer;
+use structs::{Enabled, Focused, Pressed};
 use Global;
 
 pub struct EventSystem {
@@ -76,9 +77,25 @@ impl EventSystem {
 
         let mut handled = false;
         let mut new_focused_widget = None;
+        let mut disabled_parent = None;
         // let mut new_mouse_over_entity = None;
 
         for node in matching_nodes.iter().rev() {
+            if let Some(dp) = disabled_parent {
+                if tree.parent[&node] == dp {
+                    disabled_parent = Some(*node);
+                    continue;
+                } else {
+                    disabled_parent = None;
+                }
+            }
+
+            if let Ok(enabled) = ecm.borrow_component::<Enabled>(*node) {
+                if !enabled.0 {
+                    disabled_parent = Some(*node);
+                    continue;
+                }
+            }
             let mut widget = WidgetContainer::new(*node, ecm, tree);
 
             if let Some(handlers) = self.handlers.borrow().get(node) {

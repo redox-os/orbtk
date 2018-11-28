@@ -42,6 +42,8 @@ impl Widget for MainView {
                                 .with_child(
                                     Button::create()
                                         .with_property(Label::from("Click me"))
+                                        .with_property(Enabled(true))
+                                        .with_property(FontIcon::from(theme::material_font_icons::CHECK_FONT_ICON))
                                         .with_event_handler(MouseEventHandler::default().on_click(Rc::new( move |_pos: Point, _widget: &mut WidgetContainer| -> bool { state.increment(); true }))),
                                 ),
                             )
@@ -66,7 +68,7 @@ fn main() {
         .with_bounds(Rect::new(0, 0, 420, 730))
         .with_title("Orbtk")
         .with_root(MainView::create())
-        .with_debug_flag(true)
+        .with_debug_flag(false)
         .build();
     application.run();
 }

@@ -21,12 +21,11 @@ pub use self::cell::CloneCell;
 pub use self::style::Style;
 
 mod cell;
+pub mod material_font_icons;
 mod style;
 
 pub static DEFAULT_THEME_CSS: &'static str = include_str!("dark.css");
 pub static LIGHT_THEME_EXTENSION_CSS: &'static str = include_str!("light.css");
-pub static MATERIAL_ICONS_REGULAR_FONT: &'static [u8; 128180] =
-    include_bytes!("MaterialIcons-Regular.ttf");
 pub static ROBOTO_REGULAR_FONT: &'static [u8; 145348] = include_bytes!("Roboto-Regular.ttf");
 
 lazy_static! {
@@ -127,6 +126,12 @@ impl Theme {
         self.get(property, query)
             .map(|v| v.uint().unwrap_or(0))
             .unwrap_or(0)
+    }
+
+    pub fn string(&self, property: &str, query: &Selector) -> String {
+        self.get(property, query)
+            .map(|v| v.string().unwrap_or(String::default()))
+            .unwrap_or(String::default())
     }
 }
 
@@ -264,6 +269,7 @@ pub struct Declaration {
 pub enum Value {
     UInt(u32),
     Color(Color),
+    Str(String),
 }
 
 impl Value {
@@ -280,12 +286,20 @@ impl Value {
             _ => None,
         }
     }
+
+    pub fn string(&self) -> Option<String> {
+        match self {
+            Value::Str(x) => Some(x.clone()),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
 pub enum CustomParseError {
     InvalidColorName(String),
     InvalidColorHex(String),
+    InvalidStringName(String),
 }
 
 impl<'t> From<CustomParseError> for ParseError<'t, CustomParseError> {
@@ -432,20 +446,24 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
         input: &mut Parser<'i, 't>,
     ) -> Result<Self::Declaration, ParseError<'i, Self::Error>> {
         let value = match &*name {
-            "color" | "border-color" => Value::Color(parse_basic_color(input)?),
+            "color" | "border-color" | "icon-color" => Value::Color(parse_basic_color(input)?),
 
             "background" | "foreground" => Value::Color(parse_basic_color(input)?),
 
+            "font-family" | "icon-font-family" => Value::Str(parse_string(input)?),
+
             "border-radius" | "border-width" | "width" | "height" | "min-width" | "min-height"
             | "max-width" | "max-height" | "padding-top" | "padding-right" | "padding-bottom"
-            | "padding-left" | "padding" | "font-size" => match input.next()? {
-                Token::Number {
-                    int_value: Some(x),
-                    has_sign,
-                    ..
-                } if !has_sign && x >= 0 => Value::UInt(x as u32),
-                t => return Err(BasicParseError::UnexpectedToken(t).into()),
-            },
+            | "padding-left" | "padding" | "font-size" | "icon-size" | "icon-margin" => {
+                match input.next()? {
+                    Token::Number {
+                        int_value: Some(x),
+                        has_sign,
+                        ..
+                    } if !has_sign && x >= 0 => Value::UInt(x as u32),
+                    t => return Err(BasicParseError::UnexpectedToken(t).into()),
+                }
+            }
 
             _ => return Err(BasicParseError::UnexpectedToken(input.next()?).into()),
         };
@@ -486,6 +504,26 @@ fn css_color(name: &str) -> Option<Color> {
         "aqua" => 0x00f_fff,
         _ => return None,
     }))
+}
+
+fn css_string(name: &str) -> Option<String> {
+    Some(String::from(name))
+}
+
+fn parse_string<'i, 't>(
+    input: &mut Parser<'i, 't>,
+) -> Result<String, ParseError<'i, CustomParseError>> {
+   Ok(match input.next()? {
+        Token::QuotedString(s) => match css_string(&s) {
+            Some(string) => string,
+            None => return Err(CustomParseError::InvalidStringName(s.into_owned()).into()),
+        },
+     
+        t => {
+            let basic_error = BasicParseError::UnexpectedToken(t);
+            return Err(basic_error.into());
+        }
+    })
 }
 
 fn parse_basic_color<'i, 't>(

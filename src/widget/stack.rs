@@ -2,7 +2,12 @@ use widget::{Template, Widget};
 use layout_object::StretchLayoutObject;
 use enums::ParentType;
 
-/// Use this layout widget to overlay its children (on z axis).
+/// The `Stack` represents a layout widget that is used to stack its children on the z-axis.
+/// 
+/// # Others
+/// 
+/// * `ParentType`- Mutli.
+/// * `StretchLayoutObject` - Used to layout the widget.
 pub struct Stack;
 
 impl Widget for Stack {

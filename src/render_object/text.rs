@@ -27,23 +27,25 @@ impl RenderObject for TextRenderObject {
                     if let Ok(label) = widget.borrow_property::<Label>() {
                         if !label.0.is_empty() {
                             renderer.render_text(
-                                theme,
                                 &label.0,
                                 bounds,
                                 parent_bounds,
-                                selector,
                                 offset,
                                 global_position,
+                                theme.uint("font-size", selector),
+                                theme.color("color", selector),
+                                &theme.string("font-family", selector),
                             );
                         } else if let Ok(label) = widget.borrow_property::<WaterMark>() {
                             renderer.render_text(
-                                theme,
                                 &label.0,
                                 bounds,
                                 parent_bounds,
-                                selector,
                                 offset,
                                 global_position,
+                                theme.uint("font-size", selector),
+                                theme.color("color", selector),
+                                &theme.string("font-family", selector)
                             );
                         }
                     }

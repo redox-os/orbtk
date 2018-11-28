@@ -8,7 +8,6 @@
             "command": "cargo",
             "type": "shell",
             "args": [
-                
                 "build",
                 "--examples=widgets"
             ],

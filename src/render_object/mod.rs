@@ -5,9 +5,11 @@ use theme::Theme;
 use widget::WidgetContainer;
 use structs::Point;
 
-pub use self::rectangle::*;
-pub use self::text::*;
+pub use self::font_icon::FontIconRenderObject;
+pub use self::rectangle::RectangleRenderObject;
+pub use self::text::TextRenderObject;
 
+mod font_icon;
 mod rectangle;
 mod text;
 

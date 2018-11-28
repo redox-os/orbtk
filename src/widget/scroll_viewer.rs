@@ -3,7 +3,17 @@ use layout_object::ScrollLayoutObject;
 use widget::{Template, Widget};
 use structs::Offset;
 
-/// Use to scroll its content.
+/// The `ScrollViewer` represents a layout widget that adds vertial and horizontal offset to its perent. 
+/// It is used to scroll the content if the content's width or height is greater than the ScrollViewers width or height.
+/// 
+/// # Properties
+/// 
+/// * `Offset` - Represnts the vertial and horizontal scroll offset.
+/// 
+/// # Others
+/// 
+/// * `ParentType`- Single.
+/// * `ScrollLayoutObject` - Used to layout the widget.
 pub struct ScrollViewer;
 
 impl Widget for ScrollViewer {

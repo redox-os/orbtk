@@ -6,11 +6,12 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use dces::World;
+use orbclient::Color;
 
 use application::Tree;
 use event::EventQueue;
 use structs::{Point, Rect};
-use theme::{Selector, Theme};
+use theme::Theme;
 
 /// Is used to provides data from the `Backend` to the `RenderSystem`.
 pub struct RenderContext<'a> {
@@ -31,25 +32,28 @@ pub struct EventContext<'a> {
 
 /// This trait is used to define a backend renderer for OrbTk.
 pub trait Renderer {
-    fn render(&mut self, theme: &Theme);
+    fn render(&mut self, background: Color);
     fn render_rectangle(
         &mut self,
-        theme: &Theme,
         bounds: &Rect,
         parent_bounds: &Rect,
-        selector: &Selector,
         offset: &Point,
         global_position: &Point,
+        border_radius: u32,
+        background: Color,
+        border_width: u32,
+        border_color: Color,
     );
     fn render_text(
         &mut self,
-        theme: &Theme,
         text: &str,
         bounds: &Rect,
         parent_bounds: &Rect,
-        selector: &Selector,
         offset: &Point,
         global_position: &Point,
+        font_size: u32,
+        color: Color,
+        font: &str,
     );
 }
 
@@ -71,7 +75,7 @@ pub trait BackendRunner {
 
 /// Helper trait to meassure the font size of the given `text`.
 pub trait FontMeasure {
-    fn measure(&self, text: &str, font_size: u32) -> (u32, u32);
+    fn measure(&self, text: &str, font: &str, font_size: u32) -> (u32, u32);
 }
 
 pub use self::target::target_backend;

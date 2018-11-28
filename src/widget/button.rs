@@ -1,46 +1,30 @@
-use std::rc::Rc;
-
 use enums::ParentType;
-use event::Pressed;
-use structs::Label;
+use structs::{FontIcon, Label, Pressed};
 use theme::Selector;
-use widget::{
-    add_selector_to_widget, remove_selector_from_widget, Center, Container, SharedProperty,
-    Template, TextBlock, Widget, WidgetContainer, State
-};
+use widget::{Center, Container, FontIconBlock, Row, SharedProperty, Template, TextBlock, Widget};
 
-/// The `ButtonState` handles the pressed state of the `Button` widget.
-#[derive(Default)]
-pub struct ButtonState;
-impl State for ButtonState {
-    fn update(&self, widget: &mut WidgetContainer) {
-        let mut pressed = false;
-        if let Ok(pres) = widget.borrow_mut_property::<Pressed>() {
-            pressed = pres.0;
-        }
-
-        if pressed {
-            add_selector_to_widget("active", widget);
-        } else {
-            remove_selector_from_widget("active", widget);
-        }
-    }
-}
-
-impl Into<Rc<State>> for ButtonState {
-    fn into(self) -> Rc<State> {
-        Rc::new(self)
-    }
-}
-
-/// The `Button` struct represents a widget that can be clicked by user. It's used to peform an action.
+/// The `Button` widget can be clicked by user. It's used to peform an action.
+///
+/// # Shared Properties
+///
+/// * `Label` - String used to display the text of the button.
+/// * `FontIcon` - String used to display the font icon of the button.
+/// * `Selector` - CSS selector used to request the theme of the widget.
+///
+/// # Properties
+///
+/// * `Pressed` - Bool value represents the pressed state of the button.
+///
+/// # Others
+///
+/// * `ParentType`- Single.
 pub struct Button;
 
 impl Widget for Button {
     fn create() -> Template {
-        let label = SharedProperty::new(Label::from("Button"));
+        let label = SharedProperty::new(Label::default());
+        let icon = SharedProperty::new(FontIcon::default());
         let selector = SharedProperty::new(Selector::new().with("button"));
-        let state = Rc::new(ButtonState::default());
 
         Template::default()
             .as_parent_type(ParentType::Single)
@@ -49,16 +33,24 @@ impl Widget for Button {
                     .with_shared_property(selector.clone())
                     .with_child(
                         Center::create().with_child(
-                            TextBlock::create()
-                                .with_shared_property(label.clone())
-                                .with_shared_property(selector.clone()),
+                            Row::create()
+                                .with_child(
+                                    FontIconBlock::create()
+                                        .with_shared_property(icon.clone())
+                                        .with_shared_property(selector.clone()),
+                                )
+                                .with_child(
+                                    TextBlock::create()
+                                        .with_shared_property(label.clone())
+                                        .with_shared_property(selector.clone()),
+                                ),
                         ),
                     ),
             )
             .with_shared_property(label)
+            .with_shared_property(icon)
             .with_shared_property(selector)
             .with_property(Pressed(false))
-            .with_state(state)
             .with_debug_name("Button")
     }
 }
