@@ -127,10 +127,17 @@ impl EventSystem {
             // MouseUpEvent handling
             if let Ok(event) = event.downcast_ref::<MouseUpEvent>() {
                 let mut pressed = false;
+                let mut in_mouse_pos = false;
 
-                if let Ok(selected) = widget.borrow_mut_property::<Selected>() {
-                    selected.0 = !selected.0;
-                    self.update.set(true);
+                if check_mouse_condition(event.position, &widget) {
+                    in_mouse_pos = true;
+                }
+
+                if in_mouse_pos {
+                    if let Ok(selected) = widget.borrow_mut_property::<Selected>() {
+                        selected.0 = !selected.0;
+                        self.update.set(true);
+                    }
                 }
 
                 if let Ok(pres) = widget.borrow_mut_property::<Pressed>() {
@@ -140,7 +147,7 @@ impl EventSystem {
                 }
 
                 if pressed {
-                    if check_mouse_condition(event.position, &widget) {
+                    if in_mouse_pos {
                         new_events.push(EventBox::new(
                             ClickEvent {
                                 position: event.position,
