@@ -41,14 +41,13 @@ impl Widget for MainView {
                                 Container::create()
                                 .with_child(
                                     Button::create()
-                                        .with_property(Label::from("Click me"))
-                                        .with_property(Enabled(true))
+                                        .with_property(Label::from("Button"))
                                         .with_property(FontIcon::from(theme::material_font_icons::CHECK_FONT_ICON))
                                         .with_event_handler(MouseEventHandler::default().on_click(Rc::new( move |_pos: Point, _widget: &mut WidgetContainer| -> bool { state.increment(); true }))),
                                 ),
                             )
                             .with_child(Container::create().with_child(
-                                TextBox::create().with_property(WaterMark::from("Placeholder")),
+                                TextBox::create().with_property(WaterMark::from("TextBox...")),
                             )),
                     )
                     .with_child(
@@ -56,7 +55,9 @@ impl Widget for MainView {
                             Container::create()
                                 .with_child(TextBlock::create().with_shared_property(label.clone())),
                         ),
-                    ),
+                    ).with_child(
+                        Container::create().with_child(
+                            ToggleButton::create().with_property(Label::from("ToggleButton"))))
             ).with_shared_property(label).with_debug_name("MainView")
     }
 }

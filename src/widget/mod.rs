@@ -14,17 +14,18 @@ use layout_object::{DefaultLayoutObject, LayoutObject};
 use render_object::RenderObject;
 use theme::Selector;
 
-pub use self::button::*;
-pub use self::center::*;
-pub use self::column::*;
-pub use self::container::*;
-pub use self::cursor::*;
+pub use self::button::Button;
+pub use self::center::Center;
+pub use self::column::Column;
+pub use self::container::Container;
+pub use self::cursor::Cursor;
 pub use self::font_icon_block::FontIconBlock;
-pub use self::row::*;
+pub use self::row::Row;
 pub use self::scroll_viewer::*;
-pub use self::stack::*;
-pub use self::text_block::*;
+pub use self::stack::Stack;
+pub use self::text_block::TextBlock;
 pub use self::text_box::*;
+pub use self::toggle_button::ToggleButton;
 pub use self::water_mark_text_block::WaterMarkTextBlock;
 
 mod button;
@@ -38,6 +39,7 @@ mod scroll_viewer;
 mod stack;
 mod text_block;
 mod text_box;
+mod toggle_button;
 mod water_mark_text_block;
 
 /// The `PropertyResult` enum is used to create concrete shared properties for a widget on run time from `SharedProperty` struct.

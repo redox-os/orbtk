@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use dces::{Entity, EntityComponentManager, System};
 
 use application::Tree;
-use structs::{Enabled, Focused, Pressed};
+use structs::{Enabled, Focused, Pressed, Selected};
 use widget::{add_selector_to_widget, remove_selector_from_widget, State, WidgetContainer};
 
 /// The `StateSystem` calls the update methods of widget states.
@@ -26,6 +26,10 @@ impl StateSystem {
         }
 
         if let Ok(_) = ecm.borrow_component::<Focused>(node) {
+            return true;
+        }
+
+        if let Ok(_) = ecm.borrow_component::<Selected>(node) {
             return true;
         }
 
@@ -59,6 +63,15 @@ impl StateSystem {
 
         if focused.0 {
             self.update_default_state(focused.1, "focus", widget);
+        }
+
+        let mut selected = (false, false);
+        if let Ok(sel) = widget.borrow_mut_property::<Selected>() {
+            selected = (true, sel.0);
+        }
+
+        if selected.0 {
+            self.update_default_state(selected.1, "selected", widget);
         }
     }
 

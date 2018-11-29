@@ -8,11 +8,11 @@ use application::Tree;
 use backend::Backend;
 use dces::{Entity, EntityComponentManager, System};
 use event::{
-    check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, 
-    MouseDownEvent, MouseUpEvent,
+    check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
+    MouseUpEvent,
 };
+use structs::{Enabled, Focused, Pressed, Selected};
 use widget::WidgetContainer;
-use structs::{Enabled, Focused, Pressed};
 use Global;
 
 pub struct EventSystem {
@@ -127,6 +127,11 @@ impl EventSystem {
             // MouseUpEvent handling
             if let Ok(event) = event.downcast_ref::<MouseUpEvent>() {
                 let mut pressed = false;
+
+                if let Ok(selected) = widget.borrow_mut_property::<Selected>() {
+                    selected.0 = !selected.0;
+                    self.update.set(true);
+                }
 
                 if let Ok(pres) = widget.borrow_mut_property::<Pressed>() {
                     pressed = pres.0;

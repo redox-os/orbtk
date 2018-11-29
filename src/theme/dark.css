@@ -11,22 +11,20 @@
     icon-font-family: "Material Icons Regular";
 }
 
-button {
-    /* min-width: 60; */
-    /* height: 40; */
+button, togglebutton {
     height: 32;
     background: #6C7A90;
     border-radius: 2;
     padding: 6;
 }
 
-button:active {
+button:active, togglebutton:active, togglebutton:selected {
     color: #637F92;
     icon-color:  #637F92;
     background: #F8DE4C;
 }
 
-button:disabled {
+button:disabled, togglebutton:disabled {
     background: #36516b;
 }
 

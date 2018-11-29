@@ -6,13 +6,13 @@
     icon-color: black;
 }
 
-button {
+button, togglebutton {
     /* min-width: 60; */
     /* height: 40; */
     background: #e5e5e5;
 }
 
-button:active {
+button:active, togglebutton:active, togglebutton:selected {
     background: #d6d6d6;
 }
 
