@@ -8,7 +8,7 @@ use application::Tree;
 use backend::Backend;
 use enums::Visibility;
 use render_object::RenderObject;
-use structs::{Offset, Point, Rect};
+use properties::{Offset, Point, Rect};
 use theme::Selector;
 use widget::WidgetContainer;
 

@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use event::{Event, EventBox, EventHandler};
-use structs::{Point, Rect};
+use properties::{Point, Rect};
 use widget::WidgetContainer;
 
 pub fn check_mouse_condition(position: Point, widget: &WidgetContainer) -> bool {

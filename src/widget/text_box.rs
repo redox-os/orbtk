@@ -2,7 +2,7 @@ use enums::ParentType;
 use event::{Key, KeyEventHandler};
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
-use structs::{Focused, Label, WaterMark};
+use properties::{Focused, Label, WaterMark};
 use theme::Selector;
 use widget::{
     Container, Cursor, ScrollViewer, SharedProperty, Stack, State, Template, WaterMarkTextBlock,
@@ -75,7 +75,7 @@ impl State for TextBoxState {
 /// 
 /// * `Label` - String used to display the text of the text box.
 /// * `Watermark` - String used to display a placeholder text if `Label` string is empty.
-/// * `Selector` - CSS selector used to request the theme of the widget.
+/// * `Selector` - CSS selector with  element name `textbox`, used to request the theme of the widget.
 /// 
 /// # Properties
 /// 

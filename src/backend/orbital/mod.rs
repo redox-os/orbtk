@@ -9,7 +9,7 @@ use orbclient::Window as OrbWindow;
 use self::backend::{OrbitalBackend, OrbitalBackendRunner};
 use self::renderer::FONT_RENDERER;
 use backend::{Backend, FontMeasure};
-use structs::Rect;
+use properties::Rect;
 use theme::Theme;
 
 mod backend;

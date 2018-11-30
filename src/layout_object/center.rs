@@ -1,6 +1,6 @@
 use {Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult, Theme};
 
-use structs::Rect;
+use properties::Rect;
 
 pub struct CenterLayoutObject;
 
@@ -21,11 +21,9 @@ impl LayoutObject for CenterLayoutObject {
         _theme: &Theme,
     ) -> LayoutResult {
         if let Some(size) = size {
-            let requested_size = constraint.perform((size.0, size.1));
-
             let width = {
                 if constraint.width > 0 {
-                    constraint.max_width
+                    constraint.width
                 } else {
                     size.0
                 }
@@ -33,23 +31,29 @@ impl LayoutObject for CenterLayoutObject {
 
             let height = {
                 if constraint.height > 0 {
-                    constraint.max_height
+                    constraint.height
                 } else {
                     size.1
                 }
             };
 
+            let center_size = constraint.perform((width, height));
+
             if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(children[0]) {
-                bounds.x = (width - requested_size.0) as i32 / 2;
-                bounds.y = (height - requested_size.1) as i32 / 2;
+                bounds.x = (center_size.0 - size.0) as i32 / 2;
+                bounds.y = (center_size.1 - size.1) as i32 / 2;
             }
 
-            LayoutResult::Size((width, height))
+            LayoutResult::Size(center_size)
         } else {
             if children.is_empty() {
-                return LayoutResult::Size((constraint.min_width, constraint.min_height));
+                return LayoutResult::Size((constraint.max_width, constraint.max_height));
             }
-            LayoutResult::RequestChild(children[0], *constraint)
+
+            LayoutResult::RequestChild(
+                children[0],
+                *constraint,
+            )
         }
     }
 }

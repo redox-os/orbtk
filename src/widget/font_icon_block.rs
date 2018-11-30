@@ -1,6 +1,6 @@
 use layout_object::FontIconSizeLayoutObject;
 use render_object::FontIconRenderObject;
-use structs::FontIcon;
+use properties::FontIcon;
 use theme::Selector;
 use widget::{Template, Widget};
 
@@ -9,7 +9,7 @@ use widget::{Template, Widget};
 /// # Properties
 /// 
 /// * `FontIcon` - String used to display the icon of the font icon block.
-/// * `Selector` - CSS selector used to request the theme of the font icon block.
+/// * `Selector` - CSS selector with  element name `fonticon`, used to request the theme of the font icon block.
 /// 
 /// # Others
 /// 

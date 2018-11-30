@@ -3,7 +3,7 @@
 use backend::Renderer;
 use theme::Theme;
 use widget::WidgetContainer;
-use structs::Point;
+use properties::Point;
 
 pub use self::font_icon::FontIconRenderObject;
 pub use self::rectangle::RectangleRenderObject;

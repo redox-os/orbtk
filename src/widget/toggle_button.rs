@@ -1,4 +1,4 @@
-use structs::Selected;
+use properties::Selected;
 use theme::Selector;
 use widget::{Button, Template, Widget};
 
@@ -7,7 +7,7 @@ use widget::{Button, Template, Widget};
 /// # Properties
 ///
 /// * `Selected` - Bool value represents the selected state of the widget.
-/// * `Selector` - CSS selector used to request the theme of the widget.
+/// * `Selector` - CSS selector with  element name `togglebutton`, used to request the theme of the widget.
 pub struct ToggleButton;
 
 impl Widget for ToggleButton {

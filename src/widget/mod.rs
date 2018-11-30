@@ -10,7 +10,7 @@ use dces::{Component, ComponentBox, Entity, EntityComponentManager, NotFound, Sh
 use application::Tree;
 use enums::ParentType;
 use event::EventHandler;
-use layout_object::{DefaultLayoutObject, LayoutObject};
+use layout_object::{RootLayoutObject, LayoutObject};
 use render_object::RenderObject;
 use theme::Selector;
 
@@ -128,7 +128,7 @@ impl Default for Template {
             state: None,
             event_handlers: vec![],
             render_object: None,
-            layout_object: Box::new(DefaultLayoutObject),
+            layout_object: Box::new(RootLayoutObject),
             properties: HashMap::new(),
             shared_properties: HashMap::new(),
             debug_name: String::default(),

@@ -12,7 +12,6 @@ pub use self::point::Point;
 pub use self::pressed::Pressed;
 pub use self::rect::Rect;
 pub use self::selected::Selected;
-pub use self::thickness::Thickness;
 pub use self::water_mark::WaterMark;
 
 mod constraint;
@@ -27,7 +26,6 @@ mod point;
 mod pressed;
 mod rect;
 mod selected;
-mod thickness;
 mod water_mark;
 
 #[cfg(test)]

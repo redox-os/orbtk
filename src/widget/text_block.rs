@@ -1,6 +1,6 @@
 use layout_object::TextSizeLayoutObject;
 use render_object::TextRenderObject;
-use structs::Label;
+use properties::Label;
 use theme::Selector;
 use widget::{Template, Widget};
 
@@ -9,7 +9,7 @@ use widget::{Template, Widget};
 /// # Properties
 /// 
 /// * `Label` - String used to display the text of the text block.
-/// * `Selector` - CSS selector used to request the theme of the text block.
+/// * `Selector` - CSS selector with  element name `textblock`, used to request the theme of the text block.
 /// 
 /// # Others
 /// 

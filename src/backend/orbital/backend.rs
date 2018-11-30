@@ -11,7 +11,7 @@ use event::{
     EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
     SystemEvent,
 };
-use structs::{Point, Rect};
+use properties::{Point, Rect};
 use theme::Theme;
 
 /// Implemenation of the OrbClient based backend.

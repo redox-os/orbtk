@@ -5,7 +5,7 @@ use orbclient::{Color, Renderer as OrbRenderer, Window as OrbWindow};
 use orbfont::Font;
 
 use backend::Renderer;
-use structs::{Point, Rect};
+use properties::{Point, Rect};
 use theme::{ROBOTO_REGULAR_FONT, material_font_icons::MATERIAL_ICONS_REGULAR_FONT};
 
 pub struct OrbFontRenderer {

@@ -17,10 +17,20 @@ impl MainViewState {
 
 impl State for MainViewState {
     fn update(&self, widget: &mut WidgetContainer) {
-        if let Ok(label) = widget.borrow_mut_property::<Label>() {
-            label.0 = format!("Button count: {}", self.counter.get());
+        if let Ok(button_count_label) = widget.borrow_mut_property::<Label>() {
+            button_count_label.0 = format!("Button count: {}", self.counter.get());
         }
     }
+}
+
+fn create_header(text: &str) -> Template {
+    TextBlock::create()
+        .with_property(Label::from(text))
+        .with_property(Selector::new().with("textblock").with_class("h1"))
+}
+
+fn create_space_row() -> Template {
+    Row::create().with_property(Selector::new().with("row").with_class("space"))
 }
 
 struct MainView;
@@ -28,37 +38,35 @@ struct MainView;
 impl Widget for MainView {
     fn create() -> Template {
         let state = Rc::new(MainViewState::default());
-        let label = SharedProperty::new(Label::from("Button count: 0"));
+        let button_count_label = SharedProperty::new(Label::from("Button count: 0"));
 
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_state(state.clone())
             .with_child(
-                Column::create()
+                create_space_row()
                     .with_child(
-                        Row::create()
+                        Column::create()
                             .with_child(
-                                Container::create()
-                                .with_child(
-                                    Button::create()
+                                Container::create().with_child(create_header("Buttons"))   
+                            )
+                            .with_child(
+                                Container::create().with_child(Button::create()
                                         .with_property(Label::from("Button"))
                                         .with_property(FontIcon::from(theme::material_font_icons::CHECK_FONT_ICON))
-                                        .with_event_handler(MouseEventHandler::default().on_click(Rc::new( move |_pos: Point, _widget: &mut WidgetContainer| -> bool { state.increment(); true }))),
-                                ),
+                                        .with_event_handler(MouseEventHandler::default().on_click(Rc::new( move |_pos: Point, _widget: &mut WidgetContainer| -> bool { state.increment(); true }))))
                             )
-                            .with_child(Container::create().with_child(
-                                TextBox::create().with_property(WaterMark::from("TextBox...")),
-                            )),
+                            .with_child(Container::create().with_child(ToggleButton::create().with_property(Label::from("ToggleButton"))))
                     )
-                    .with_child(
-                        Row::create().with_child(
-                            Container::create()
-                                .with_child(TextBlock::create().with_shared_property(label.clone())),
-                        ),
-                    ).with_child(
-                        Container::create().with_child(
-                            ToggleButton::create().with_property(Label::from("ToggleButton"))))
-            ).with_shared_property(label).with_debug_name("MainView")
+                     .with_child(
+                        Column::create()
+                            .with_child(
+                                Container::create().with_child(create_header("Text"))   
+                            ).with_child(
+                                Container::create().with_child( TextBlock::create().with_shared_property(button_count_label.clone()).with_property(Selector::new().with("textblock").with_class("fheight"))))                         
+                            .with_child(Container::create().with_child(TextBox::create().with_property(WaterMark::from("TextBox..."))))
+                    )
+            ).with_shared_property(button_count_label).with_debug_name("MainView")
     }
 }
 

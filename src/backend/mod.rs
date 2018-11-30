@@ -10,7 +10,7 @@ use orbclient::Color;
 
 use application::Tree;
 use event::EventQueue;
-use structs::{Point, Rect};
+use properties::{Point, Rect};
 use theme::Theme;
 
 /// Is used to provides data from the `Backend` to the `RenderSystem`.

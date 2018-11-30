@@ -1,5 +1,5 @@
 use enums::ParentType;
-use structs::{FontIcon, Label, Pressed};
+use properties::{FontIcon, Label, Pressed};
 use theme::Selector;
 use widget::{Center, Container, FontIconBlock, Row, SharedProperty, Template, TextBlock, Widget};
 
@@ -9,7 +9,7 @@ use widget::{Center, Container, FontIconBlock, Row, SharedProperty, Template, Te
 ///
 /// * `Label` - String used to display the text of the button.
 /// * `FontIcon` - String used to display the font icon of the button.
-/// * `Selector` - CSS selector used to request the theme of the widget.
+/// * `Selector` - CSS selector with  element name `button`, used to request the theme of the widget.
 ///
 /// # Properties
 ///

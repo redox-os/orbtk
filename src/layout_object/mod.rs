@@ -3,24 +3,24 @@
 
 use dces::{Entity, EntityComponentManager};
 
-use structs::Constraint;
+use properties::Constraint;
 use systems::LayoutResult;
 use theme::Theme;
 
 pub use self::center::CenterLayoutObject;
-pub use self::default::DefaultLayoutObject;
 pub use self::flex::FlexLayoutObject;
 pub use self::font_icon_size::FontIconSizeLayoutObject;
 pub use self::padding::PaddingLayoutObject;
+pub use self::root::RootLayoutObject;
 pub use self::scroll::ScrollLayoutObject;
 pub use self::stretch::StretchLayoutObject;
 pub use self::text_size::TextSizeLayoutObject;
 
 mod center;
-mod default;
 mod flex;
 mod font_icon_size;
 mod padding;
+mod root;
 mod scroll;
 mod stretch;
 mod text_size;

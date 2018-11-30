@@ -1,6 +1,6 @@
 use backend::Renderer;
 use render_object::RenderObject;
-use structs::{Label, Point, Rect, WaterMark};
+use properties::{Label, Point, Rect, WaterMark};
 use theme::{Selector, Theme};
 use widget::WidgetContainer;
 

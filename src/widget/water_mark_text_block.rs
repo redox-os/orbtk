@@ -1,6 +1,6 @@
 use enums::Visibility;
 use std::rc::Rc;
-use structs::{Label, WaterMark};
+use properties::{Label, WaterMark};
 use theme::Selector;
 use widget::{State, Template, TextBlock, Widget, WidgetContainer, add_selector_to_widget, remove_selector_from_widget};
 
@@ -49,7 +49,7 @@ impl State for WaterMarkTextBlockState {
 /// # Properties
 /// 
 /// * `Watermark` - String used to display a placeholder text if `Label` string is empty.
-/// * `Selector` - CSS selector used to request the theme of the WaterMarkTextBlock.
+/// * `Selector` - CSS selector with  element name `textblock` and class `watermark`, used to request the theme of the WaterMarkTextBlock.
 /// 
 /// # Others
 /// 

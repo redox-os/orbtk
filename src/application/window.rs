@@ -8,9 +8,9 @@ use dces::{Entity, World};
 use application::{Application, Tree};
 use backend::{target_backend, BackendRunner};
 use event::EventHandler;
-use layout_object::{DefaultLayoutObject, LayoutObject};
+use layout_object::{RootLayoutObject, LayoutObject};
 use render_object::RenderObject;
-use structs::{Point, Rect};
+use properties::{Point, Rect};
 use systems::{EventSystem, LayoutSystem, RenderSystem, StateSystem};
 use theme::Theme;
 use widget::{PropertyResult, State, Template};
@@ -183,7 +183,7 @@ fn build_tree(
 
             layout_objects
                 .borrow_mut()
-                .insert(root, Box::new(DefaultLayoutObject));
+                .insert(root, Box::new(RootLayoutObject));
         }
 
         let mut template = template;

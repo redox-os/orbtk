@@ -1,6 +1,6 @@
 use backend::Renderer;
 use render_object::RenderObject;
-use structs::{FontIcon, Point, Rect};
+use properties::{FontIcon, Point, Rect};
 use theme::{Selector, Theme};
 use widget::WidgetContainer;
 

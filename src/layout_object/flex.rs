@@ -5,7 +5,7 @@ use layout_object::{LayoutObject, LayoutResult};
 use theme::Theme;
 
 use enums::Alignment;
-use structs::{Constraint, Rect};
+use properties::{Constraint, Rect};
 
 pub struct FlexLayoutObject {
     orientation: Alignment,
@@ -51,20 +51,14 @@ impl LayoutObject for FlexLayoutObject {
                     Alignment::Horizontal => {
                         self.current_position.borrow_mut().push(size.0);
 
-                        if size.1 > self.height.get()
-                            && size.1 <= constraint.max_height
-                            && size.1 >= constraint.min_height
-                        {
+                        if size.1 > self.height.get() {
                             self.height.set(size.1);
                         }
                     }
                     Alignment::Vertical => {
                         self.current_position.borrow_mut().push(size.1);
 
-                        if size.0 > self.width.get()
-                            && size.0 <= constraint.max_width
-                            && size.0 >= constraint.min_width
-                        {
+                        if size.0 > self.width.get() {
                             self.width.set(size.0);
                         }
                     }
@@ -99,10 +93,16 @@ impl LayoutObject for FlexLayoutObject {
 
                 match self.orientation {
                     Alignment::Horizontal => {
-                        return LayoutResult::Size(constraint.perform((self.current_position.borrow().iter().sum(), self.height.get())));
+                        return LayoutResult::Size((
+                            self.current_position.borrow().iter().sum(),
+                            self.height.get(),
+                        ));
                     }
                     Alignment::Vertical => {
-                        return LayoutResult::Size(constraint.perform((self.width.get(), self.current_position.borrow().iter().sum())));
+                        return LayoutResult::Size((
+                            self.width.get(),
+                            self.current_position.borrow().iter().sum(),
+                        ));
                     }
                 }
             }
@@ -116,15 +116,6 @@ impl LayoutObject for FlexLayoutObject {
             self.height.set(0);
         }
 
-        let child_bc = Constraint {
-            min_width: constraint.min_width,
-            max_width: constraint.max_width,
-            min_height: constraint.min_height,
-            max_height: constraint.max_height,
-            width: constraint.width,
-            height: constraint.height,
-        };
-
-        LayoutResult::RequestChild(children[self.current_child.get()], child_bc)
+        LayoutResult::RequestChild(children[self.current_child.get()], *constraint)
     }
 }

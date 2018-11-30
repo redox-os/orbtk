@@ -1,6 +1,6 @@
 use backend::Renderer;
 use render_object::RenderObject;
-use structs::{Point, Rect};
+use properties::{Point, Rect};
 use theme::{Selector, Theme};
 use widget::WidgetContainer;
 

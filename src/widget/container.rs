@@ -9,7 +9,7 @@ use enums::ParentType;
 /// 
 /// # Properties
 /// 
-/// * CSS selector used to request the theme of the widget.
+/// * `Selector` - CSS selector with element name `container`, used to request the theme of the widget.
 /// 
 /// # Others
 /// 

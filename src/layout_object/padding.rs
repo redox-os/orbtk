@@ -1,7 +1,7 @@
 use dces::{Entity, EntityComponentManager};
 
 use layout_object::LayoutObject;
-use structs::{Constraint, Rect, Thickness};
+use properties::{Constraint, Padding, Rect};
 use systems::LayoutResult;
 use theme::{Selector, Theme};
 
@@ -24,23 +24,22 @@ impl LayoutObject for PaddingLayoutObject {
         theme: &Theme,
     ) -> LayoutResult {
         let padding = {
-            let mut padding = Thickness::new(0, 0, 0, 0);
+            let padding = Padding::default();
             if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
                 let pad = theme.uint("padding", selector) as i32;
 
                 if pad > 0 {
-                    padding = Thickness::new(pad, pad, pad, pad)
+                    padding.with(pad)
                 } else {
-                    padding = Thickness::new(
-                        theme.uint("padding-left", selector) as i32,
-                        theme.uint("padding-top", selector) as i32,
-                        theme.uint("padding-right", selector) as i32,
-                        theme.uint("padding-bottom", selector) as i32,
-                    )
+                    padding
+                        .with_left(theme.uint("padding-left", selector) as i32)
+                        .with_top(theme.uint("padding-top", selector) as i32)
+                        .with_right(theme.uint("padding-right", selector) as i32)
+                        .with_bottom(theme.uint("padding-bottom", selector) as i32)
                 }
-            };
-
-            padding
+            } else {
+                padding
+            }
         };
 
         if let Some(size) = size {
@@ -49,29 +48,38 @@ impl LayoutObject for PaddingLayoutObject {
                 bounds.y = padding.top;
             }
 
-            LayoutResult::Size(constraint.perform((
-                size.0 + padding.left as u32 + padding.right as u32,
-                size.1 + padding.top as u32 + padding.bottom as u32,
-            )))
-        } else {
-            if children.is_empty() {
-                return LayoutResult::Size((constraint.min_width, constraint.min_height));
-            }
-
-            let child_bc = Constraint {
-                min_width: (constraint.min_width as i32 - (padding.left + padding.right)).max(0)
-                    as u32,
-                max_width: (constraint.max_width as i32 - (padding.left + padding.right)).max(0)
-                    as u32,
-                min_height: (constraint.min_height as i32 - (padding.top + padding.bottom)).max(0)
-                    as u32,
-                max_height: (constraint.max_height as i32 - (padding.top + padding.bottom)).max(0)
-                    as u32,
-                width: constraint.width,
-                height: constraint.height,
+            let width = {
+                if constraint.width > 0 {
+                    constraint.width
+                } else {
+                    size.0 + padding.left as u32 + padding.right as u32
+                }
             };
 
-            LayoutResult::RequestChild(children[0], child_bc)
+            let height = {
+                if constraint.height > 0 {
+                    constraint.height
+                } else {
+                    size.1 + padding.top as u32 + padding.bottom as u32
+                }
+            };
+
+            LayoutResult::Size(constraint.perform((width, height)))
+        } else {
+            if children.is_empty() {
+                return LayoutResult::Size((constraint.max_width, constraint.max_height));
+            }
+
+            LayoutResult::RequestChild(
+                children[0],
+                Constraint::default()
+                    .with_min_width(constraint.min_width as i32 - (padding.left + padding.right))
+                    .with_max_width(constraint.max_width as i32 - (padding.left + padding.right))
+                    .with_width(constraint.width as i32 - (padding.left + padding.right))
+                    .with_min_height(constraint.min_height as i32 - (padding.top + padding.bottom))
+                    .with_max_height(constraint.max_height as i32 - (padding.top + padding.bottom))
+                    .with_height(constraint.height as i32 - (padding.top + padding.bottom)),
+            )
         }
     }
 }

@@ -1,7 +1,7 @@
 use enums::ParentType;
 use layout_object::ScrollLayoutObject;
 use widget::{Template, Widget};
-use structs::Offset;
+use properties::Offset;
 
 /// The `ScrollViewer` represents a layout widget that adds vertial and horizontal offset to its perent. 
 /// It is used to scroll the content if the content's width or height is greater than the ScrollViewers width or height.

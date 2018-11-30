@@ -11,7 +11,7 @@ use event::{
     check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
     MouseUpEvent,
 };
-use structs::{Enabled, Focused, Pressed, Selected};
+use properties::{Enabled, Focused, Pressed, Selected};
 use widget::WidgetContainer;
 use Global;
 
