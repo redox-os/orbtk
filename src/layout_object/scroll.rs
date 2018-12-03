@@ -1,9 +1,15 @@
+use std::cell::Cell;
+
 use dces::{Entity, EntityComponentManager};
+
 use layout_object::{LayoutObject, LayoutResult};
 use properties::{Constraint, Offset, Rect};
 use theme::Theme;
 
-pub struct ScrollLayoutObject;
+#[derive(Default)]
+pub struct ScrollLayoutObject {
+    child_bounds: Cell<Rect>,
+}
 
 impl Into<Box<LayoutObject>> for ScrollLayoutObject {
     fn into(self) -> Box<LayoutObject> {
@@ -22,7 +28,7 @@ impl LayoutObject for ScrollLayoutObject {
         _theme: &Theme,
     ) -> LayoutResult {
         if let Some(size) = size {
-             let width = {
+            let width = {
                 if constraint.width > 0 {
                     constraint.width
                 } else {
@@ -42,16 +48,41 @@ impl LayoutObject for ScrollLayoutObject {
 
             let mut offset = (0, 0);
 
-            if let Ok(off) = ecm.borrow_mut_component::<Offset>(entity) {
-                off.0 = (center_size.0 as i32 - size.0 as i32).min(0);
-                off.1 = (center_size.1 as i32 - size.1 as i32).min(0);
+            let old_bounds = self.child_bounds.get();
+
+            if let Ok(off) = ecm.borrow_component::<Offset>(entity) {
+                // off.0 = (center_size.0 as i32 - size.0 as i32).min(0);
+                // off.1 = (center_size.1 as i32 - size.1 as i32).min(0);
 
                 offset = (off.0, off.1);
             }
 
-             if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(children[0]) {
+            if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(children[0]) {
+                if bounds.width <= center_size.0 {
+                    offset.0 = 0;
+                } else {
+                    let offset_width = old_bounds.width as i32 - bounds.width as i32;
+
+                    if offset_width != 0 {
+                        offset.0 = (offset.0 + offset_width).min(0);
+                    }
+                }
+
+                if bounds.height <= center_size.1 {
+                    offset.1 = 0;
+                }
+
+                // todo: vertical scrollint
+
                 bounds.x = offset.0;
                 bounds.y = offset.1;
+
+                self.child_bounds.set(*bounds);
+            }
+
+            if let Ok(off) = ecm.borrow_mut_component::<Offset>(entity) {
+                off.0 = offset.0;
+                off.1 = offset.1;
             }
 
             LayoutResult::Size(center_size)

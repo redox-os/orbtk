@@ -21,7 +21,7 @@ impl Widget for ScrollViewer {
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_property(Offset::default())
-            .with_layout_object(ScrollLayoutObject)
+            .with_layout_object(ScrollLayoutObject::default())
             .with_debug_name("ScrollViewer")
     }
 }

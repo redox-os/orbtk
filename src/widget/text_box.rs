@@ -46,6 +46,12 @@ impl TextBoxState {
                 self.update_selection_start(self.selection_start.get() as i32 + 1);
             }
             None => match key {
+                Key::Left => {
+                    self.update_selection_start(self.selection_start.get() as i32 - 1);
+                },
+                Key::Right => {
+                    self.update_selection_start(self.selection_start.get() as i32 + 1);
+                },
                 Key::Backspace => {
                     (*self.text.borrow_mut()).pop();
                     self.update_selection_start(self.selection_start.get() as i32 - 1);
@@ -66,6 +72,11 @@ impl State for TextBoxState {
             self.focused.set(focused.0);
         }
 
+        if let Ok(selection) = widget.borrow_mut_property::<TextSelection>() {
+            selection.start_index = self.selection_start.get();
+            selection.end_index = self.selection_end.get();
+        }
+
         if let Ok(label) = widget.borrow_mut_property::<Label>() {
             if label.0 == *self.text.borrow() {
                 return;
@@ -79,11 +90,6 @@ impl State for TextBoxState {
 
             self.updated.set(false);
         }
-
-        if let Ok(selection) = widget.borrow_mut_property::<TextSelection>() {
-            selection.start_index = self.selection_start.get();
-            selection.end_index = self.selection_end.get();
-        }
     }
 }
 
@@ -96,7 +102,7 @@ impl State for TextBoxState {
 /// * `Selector` - CSS selector with  element name `textbox`, used to request the theme of the widget.
 /// * `TextSelection` - Represents the current selection of the text used by the cursor.
 /// * `Focused` - Defines if the widget is focues and handles the current text input.
-/// 
+///
 /// # Others
 ///
 /// * `TextBoxState` - Handles the inner state of the widget.
@@ -136,14 +142,14 @@ impl Widget for TextBox {
                                     .with_shared_property(label.clone())
                                     .with_shared_property(selection.clone())
                                     .with_shared_property(offset.clone())
-                                    .with_shared_property(focused.clone())
+                                    .with_shared_property(focused.clone()),
                             )
-                            .with_event_handler(MouseEventHandler::default().on_mouse_down(Rc::new(
-                                move |pos: Point| -> bool {
+                            .with_event_handler(MouseEventHandler::default().on_mouse_down(
+                                Rc::new(move |pos: Point| -> bool {
                                     click_state.click(pos);
                                     false
-                                },
-                            ))),
+                                }),
+                            )),
                     )
                     .with_shared_property(selector.clone()),
             )
@@ -155,8 +161,9 @@ impl Widget for TextBox {
             .with_shared_property(selection)
             .with_shared_property(offset)
             .with_shared_property(focused)
-            .with_event_handler(KeyEventHandler::default().on_key_down(Rc::new(
-                move |key: Key| -> bool { state.update_text(key) },
-            )))
+            .with_event_handler(
+                KeyEventHandler::default()
+                    .on_key_down(Rc::new(move |key: Key| -> bool { state.update_text(key) })),
+            )
     }
 }
