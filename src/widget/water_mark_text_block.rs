@@ -61,7 +61,7 @@ impl Widget for WaterMarkTextBlock {
     fn create() -> Template {
         TextBlock::create()
             .with_property(WaterMark::from("Placeholder"))
-            .with_property(Selector::new().with("watermark"))
+            .with_property(Selector::from("watermark"))
             .with_state(Rc::new(WaterMarkTextBlockState::default()))
             .with_debug_name("WaterMarkTextBlock")
     }

@@ -22,7 +22,7 @@ impl Widget for TextBlock {
     fn create() -> Template {
         Template::default()
             .with_property(Label::from("TextBlock"))
-            .with_property(Selector::new().with("textblock"))
+            .with_property(Selector::from("textblock"))
             .with_layout_object(TextSizeLayoutObject)
             .with_render_object(TextRenderObject)
             .with_debug_name("TextBlock")

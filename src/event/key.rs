@@ -1,7 +1,5 @@
 use std::rc::Rc;
 
-use widget::WidgetContainer;
-
 use {Event, EventBox, EventHandler};
 
 #[derive(Copy, Clone, Debug, Hash, PartialEq)]
@@ -295,7 +293,7 @@ pub struct KeyUpEvent {
 
 impl Event for KeyUpEvent {}
 
-pub type KeyHandler = Rc<Fn(Key, &mut WidgetContainer) -> bool + 'static>;
+pub type KeyHandler = Rc<Fn(Key) -> bool + 'static>;
 
 #[derive(Default)]
 pub struct KeyEventHandler {
@@ -322,16 +320,16 @@ impl Into<Rc<EventHandler>> for KeyEventHandler {
 }
 
 impl EventHandler for KeyEventHandler {
-    fn handle_event(&self, event: &EventBox, widget: &mut WidgetContainer) -> bool {
+    fn handle_event(&self, event: &EventBox) -> bool {
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
             if let Some(handler) = &self.key_down {
-                return (handler)(event.key, widget);
+                return (handler)(event.key);
             }
         }
 
         if let Ok(event) = event.downcast_ref::<KeyUpEvent>() {
             if let Some(handler) = &self.key_up {
-                return (handler)(event.key, widget);
+                return (handler)(event.key);
             }
         }
 

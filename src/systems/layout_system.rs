@@ -9,7 +9,7 @@ use backend::Backend;
 use enums::Visibility;
 use layout_object::LayoutObject;
 use properties::{Constraint, Rect};
-use theme::{Selector, Theme};
+use theme::Theme;
 
 pub enum LayoutResult {
     Size((u32, u32)),

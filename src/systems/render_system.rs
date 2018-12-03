@@ -8,7 +8,7 @@ use application::Tree;
 use backend::Backend;
 use enums::Visibility;
 use render_object::RenderObject;
-use properties::{Offset, Point, Rect};
+use properties::{Point, Rect};
 use theme::Selector;
 use widget::WidgetContainer;
 
@@ -45,15 +45,6 @@ impl System<Tree> for RenderSystem {
                 global_position = Point::new(offset.0, offset.1);
             }
 
-            let offset = {
-                // get offset from scrollable parent
-                if let Ok(offset) = ecm.borrow_component::<Offset>(tree.parent[&node]) {
-                    Point::new(offset.0, offset.1)
-                } else {
-                    Point::default()
-                }
-            };
-
             // Hide all children of a hidden parent
             if let Some(parent) = current_hidden_parent {
                 if parent == parents[&node] {
@@ -68,17 +59,17 @@ impl System<Tree> for RenderSystem {
             if self.debug_flag.get() {
                 if let Ok(bounds) = ecm.borrow_component::<Rect>(node) {
                     if let Ok(parent_bounds) = ecm.borrow_component::<Rect>(tree.parent[&node]) {
-                        let selector = Selector::new().with("debugborder");
+                        let selector = Selector::from("debugborder");
 
                         render_context.renderer.render_rectangle(
                             bounds,
                             parent_bounds,
-                            &offset,
                             &global_position,
                             render_context.theme.uint("border-radius", &selector),
                             render_context.theme.color("background", &selector),
                             render_context.theme.uint("border-width", &selector),
                             render_context.theme.color("border-color", &selector),
+                            render_context.theme.float("opcaity", &selector),
                         );
                     }
                 }
@@ -97,7 +88,6 @@ impl System<Tree> for RenderSystem {
                     render_context.renderer,
                     &WidgetContainer::new(node, ecm, tree),
                     &render_context.theme,
-                    &offset,
                     &global_position,
                 );
             }

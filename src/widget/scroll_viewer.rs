@@ -8,7 +8,7 @@ use properties::Offset;
 /// 
 /// # Properties
 /// 
-/// * `Offset` - Represnts the vertial and horizontal scroll offset.
+/// * `Offset` - Represents the vertial and horizontal scroll offset.
 /// 
 /// # Others
 /// 

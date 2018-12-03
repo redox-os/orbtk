@@ -100,7 +100,7 @@ impl EventSystem {
 
             if let Some(handlers) = self.handlers.borrow().get(node) {
                 for handler in handlers {
-                    handled = handler.handle_event(event, &mut widget);
+                    handled = handler.handle_event(event);
 
                     if handled {
                         break;
@@ -114,13 +114,11 @@ impl EventSystem {
                     focused.0 = true;
                     new_focused_widget = Some(*node);
                     self.update.set(true);
-                    break;
                 }
 
                 if let Ok(pressed) = widget.borrow_mut_property::<Pressed>() {
                     pressed.0 = true;
                     self.update.set(true);
-                    break;
                 }
             }
 

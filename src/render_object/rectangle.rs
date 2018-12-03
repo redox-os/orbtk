@@ -18,7 +18,6 @@ impl RenderObject for RectangleRenderObject {
         renderer: &mut Renderer,
         widget: &WidgetContainer,
         theme: &Theme,
-        offset: &Point,
         global_position: &Point,
     ) {
         if let Ok(selector) = widget.borrow_property::<Selector>() {
@@ -27,12 +26,12 @@ impl RenderObject for RectangleRenderObject {
                     renderer.render_rectangle(
                         bounds,
                         parent_bounds,
-                        offset,
                         global_position,
                         theme.uint("border-radius", selector),
                         theme.color("background", selector),
                         theme.uint("border-width", selector),
                         theme.color("border-color", selector),
+                        theme.float("opacity", selector),
                     );
                 }
             }

@@ -12,6 +12,7 @@ pub use self::point::Point;
 pub use self::pressed::Pressed;
 pub use self::rect::Rect;
 pub use self::selected::Selected;
+pub use self::text_selection::TextSelection;
 pub use self::water_mark::WaterMark;
 
 mod constraint;
@@ -26,6 +27,7 @@ mod point;
 mod pressed;
 mod rect;
 mod selected;
+mod text_selection;
 mod water_mark;
 
 #[cfg(test)]

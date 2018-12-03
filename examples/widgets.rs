@@ -26,11 +26,11 @@ impl State for MainViewState {
 fn create_header(text: &str) -> Template {
     TextBlock::create()
         .with_property(Label::from(text))
-        .with_property(Selector::new().with("textblock").with_class("h1"))
+        .with_property(Selector::from("textblock").with_class("h1"))
 }
 
 fn create_space_row() -> Template {
-    Row::create().with_property(Selector::new().with("row").with_class("space"))
+    Row::create().with_property(Selector::from("row").with_class("space"))
 }
 
 struct MainView;
@@ -47,26 +47,51 @@ impl Widget for MainView {
                 create_space_row()
                     .with_child(
                         Column::create()
+                            .with_child(Container::create().with_child(create_header("Buttons")))
                             .with_child(
-                                Container::create().with_child(create_header("Buttons"))   
-                            )
-                            .with_child(
-                                Container::create().with_child(Button::create()
+                                Container::create().with_child(
+                                    Button::create()
                                         .with_property(Label::from("Button"))
-                                        .with_property(FontIcon::from(theme::material_font_icons::CHECK_FONT_ICON))
-                                        .with_event_handler(MouseEventHandler::default().on_click(Rc::new( move |_pos: Point, _widget: &mut WidgetContainer| -> bool { state.increment(); true }))))
+                                        .with_property(FontIcon::from(
+                                            theme::material_font_icons::CHECK_FONT_ICON,
+                                        ))
+                                        .with_event_handler(MouseEventHandler::default().on_click(
+                                            Rc::new(move |_pos: Point| -> bool {
+                                                state.increment();
+                                                true
+                                            }),
+                                        )),
+                                ),
                             )
-                            .with_child(Container::create().with_child(ToggleButton::create().with_property(Label::from("ToggleButton"))))
+                            .with_child(Container::create().with_child(
+                                ToggleButton::create().with_property(Label::from("ToggleButton")),
+                            ))
+                            .with_child(Container::create().with_child(
+                                CheckBox::create().with_property(Label::from("CheckBox")),
+                            )),
                     )
-                     .with_child(
+                    .with_child(
                         Column::create()
+                            .with_child(Container::create().with_child(create_header("Text")))
                             .with_child(
-                                Container::create().with_child(create_header("Text"))   
-                            ).with_child(
-                                Container::create().with_child( TextBlock::create().with_shared_property(button_count_label.clone()).with_property(Selector::new().with("textblock").with_class("fheight"))))                         
-                            .with_child(Container::create().with_child(TextBox::create().with_property(WaterMark::from("TextBox..."))))
-                    )
-            ).with_shared_property(button_count_label).with_debug_name("MainView")
+                                Container::create().with_child(
+                                    TextBlock::create()
+                                        .with_shared_property(button_count_label.clone())
+                                        .with_property(
+                                            Selector::from("textblock").with_class("fheight"),
+                                        ),
+                                ),
+                            )
+                            .with_child(Container::create().with_child(
+                                TextBox::create().with_property(WaterMark::from("TextBox...")),
+                            ))
+                            .with_child(Container::create().with_child(
+                                TextBox::create().with_property(WaterMark::from("TextBox...")),
+                            ))
+                    ),
+            )
+            .with_shared_property(button_count_label)
+            .with_debug_name("MainView")
     }
 }
 

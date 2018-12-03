@@ -51,7 +51,7 @@ pub struct MouseDownEvent {
 
 impl Event for MouseDownEvent {}
 
-pub type MouseHandler = Rc<Fn(Point, &mut WidgetContainer) -> bool + 'static>;
+pub type MouseHandler = Rc<Fn(Point) -> bool + 'static>;
 
 pub type OnMouseUp = Rc<Fn() + 'static>;
 
@@ -86,22 +86,22 @@ impl Into<Rc<EventHandler>> for MouseEventHandler {
 }
 
 impl EventHandler for MouseEventHandler {
-    fn handle_event(&self, event: &EventBox, widget: &mut WidgetContainer) -> bool {
+    fn handle_event(&self, event: &EventBox) -> bool {
         if let Ok(event) = event.downcast_ref::<ClickEvent>() {
             if let Some(handler) = &self.click {
-                return (handler)(event.position, widget);
+                return (handler)(event.position);
             }
         }
 
         if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
             if let Some(handler) = &self.mouse_down {
-                return (handler)(event.position, widget);
+                return (handler)(event.position);
             }
         }
 
         if let Ok(event) = event.downcast_ref::<MouseUpEvent>() {
             if let Some(handler) = &self.mouse_up {
-                (handler)(event.position, widget);
+                (handler)(event.position);
                 return true;
             }
         }

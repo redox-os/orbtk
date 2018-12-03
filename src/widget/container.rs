@@ -22,7 +22,7 @@ impl Widget for Container {
     fn create() -> Template {
         Template::default()
             .as_parent_type(ParentType::Single)
-            .with_property(Selector::new().with("container"))
+            .with_property(Selector::from("container"))
             .with_render_object(RectangleRenderObject)
             .with_layout_object(PaddingLayoutObject) 
             .with_debug_name("Container")

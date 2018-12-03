@@ -6,7 +6,7 @@ use orbfont::Font;
 
 use backend::Renderer;
 use properties::{Point, Rect};
-use theme::{ROBOTO_REGULAR_FONT, material_font_icons::MATERIAL_ICONS_REGULAR_FONT};
+use theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, ROBOTO_REGULAR_FONT};
 
 pub struct OrbFontRenderer {
     pub fonts: HashMap<&'static str, Font>,
@@ -18,7 +18,6 @@ impl OrbFontRenderer {
         text: &str,
         bounds: &Rect,
         parent_bounds: &Rect,
-        offset: &Point,
         global_position: &Point,
         renderer: &mut OrbWindow,
         font_size: f32,
@@ -29,16 +28,16 @@ impl OrbFontRenderer {
             let line = font.render(text, font_size);
             line.draw_clipped(
                 renderer,
-                global_position.x + bounds.x + offset.x,
-                global_position.y + bounds.y + offset.y,
+                global_position.x + bounds.x,
+                global_position.y + bounds.y,
                 global_position.x,
                 parent_bounds.width,
                 color,
             );
         } else {
             let rect = Rect::new(
-                global_position.x + bounds.x + offset.x,
-                global_position.y + bounds.y + offset.y,
+                global_position.x + bounds.x,
+                global_position.y + bounds.y,
                 bounds.width,
                 bounds.height,
             );
@@ -76,9 +75,7 @@ lazy_static! {
             fonts.insert("Material Icons Regular", font);
         }
 
-        Arc::new(OrbFontRenderer {
-            fonts
-        })
+        Arc::new(OrbFontRenderer { fonts })
     };
 }
 
@@ -92,17 +89,43 @@ impl Renderer for OrbWindow {
         &mut self,
         bounds: &Rect,
         parent_bounds: &Rect,
-        offset: &Point,
         global_position: &Point,
         border_radius: u32,
         background: Color,
         border_width: u32,
         border_color: Color,
+        opacity: f32,
     ) {
-        let x = (bounds.x + global_position.x + offset.x).max(parent_bounds.x);
-        let y = (bounds.y + global_position.y + offset.y).max(parent_bounds.y);
-        let width = (bounds.width as i32 + offset.x).min(parent_bounds.width as i32) as u32;
-        let height = (bounds.height as i32 + offset.y).min(parent_bounds.height as i32) as u32;
+        let background = {
+            if opacity < 1.0 {
+                Color {
+                    data: (((opacity * 255.0) as u32) << 24)
+                        | ((background.r() as u32) << 16)
+                        | ((background.g() as u32) << 8)
+                        | (background.b() as u32),
+                }
+            } else {
+                background
+            }
+        };
+
+         let border_color = {
+            if opacity < 1.0 {
+                Color {
+                    data: (((opacity * 255.0) as u32) << 24)
+                        | ((border_color.r() as u32) << 16)
+                        | ((border_color.g() as u32) << 8)
+                        | (border_color.b() as u32),
+                }
+            } else {
+                border_color
+            }
+        };
+
+        let x = (bounds.x + global_position.x).max(parent_bounds.x);
+        let y = (bounds.y + global_position.y).max(parent_bounds.y);
+        let width = (bounds.width as i32).min(parent_bounds.width as i32) as u32;
+        let height = (bounds.height as i32).min(parent_bounds.height as i32) as u32;
 
         self.rounded_rect(x, y, width, height, border_radius, true, background);
 
@@ -116,17 +139,22 @@ impl Renderer for OrbWindow {
         text: &str,
         bounds: &Rect,
         parent_bounds: &Rect,
-        offset: &Point,
         global_position: &Point,
         font_size: u32,
         color: Color,
         font: &str,
     ) {
+        // todo handle alpha by orbfong
+        let alpha = (color.data >> 24) & 0xFF;
+
+        if alpha == 0 {
+            return;
+        }
+
         FONT_RENDERER.render(
             text,
             bounds,
             parent_bounds,
-            offset,
             global_position,
             self,
             font_size as f32,

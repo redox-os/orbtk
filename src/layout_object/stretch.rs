@@ -1,9 +1,16 @@
+use std::cell::Cell;
+
 use dces::{Entity, EntityComponentManager};
 use layout_object::{LayoutObject, LayoutResult};
 use properties::Constraint;
-use theme::Theme;
+use theme::{Selector, Theme};
 
-pub struct StretchLayoutObject;
+#[derive(Default)]
+pub struct StretchLayoutObject {
+    width: Cell<u32>,
+    height: Cell<u32>,
+    current_child: Cell<usize>,
+}
 
 impl Into<Box<LayoutObject>> for StretchLayoutObject {
     fn into(self) -> Box<LayoutObject> {
@@ -14,36 +21,55 @@ impl Into<Box<LayoutObject>> for StretchLayoutObject {
 impl LayoutObject for StretchLayoutObject {
     fn layout(
         &self,
-        _entity: Entity,
-        _ecm: &mut EntityComponentManager,
+        entity: Entity,
+        ecm: &mut EntityComponentManager,
         constraint: &Constraint,
         children: &[Entity],
         size: Option<(u32, u32)>,
-        _theme: &Theme,
+        theme: &Theme,
     ) -> LayoutResult {
         if let Some(size) = size {
-            let width = {
-                if constraint.width > 0 {
-                    constraint.width
-                } else {
-                    size.0
-                }
-            };
+            self.current_child.set(self.current_child.get() + 1);
 
-            let height = {
-                if constraint.height > 0 {
-                    constraint.height
-                } else {
-                    size.1
-                }
-            };
+            if self.current_child.get() == children.len() {
+                let width = {
+                    if self.width.get() > 0 {
+                        self.width.get()
+                    } else {
+                        size.0
+                    }
+                };
 
-            LayoutResult::Size(constraint.perform((width, height)))
-        } else {
-            if children.is_empty() {
-                return LayoutResult::Size((constraint.max_width, constraint.max_height));
+                let height = {
+                    if self.height.get() > 0 {
+                        self.height.get()
+                    } else {
+                        size.1
+                    }
+                };
+                return LayoutResult::Size(constraint.perform((width, height)));
             }
-            LayoutResult::RequestChild(children[0], *constraint)
+        } else {
+            if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
+                self.width.set(theme.uint("width", selector) as u32);
+                self.height.set(theme.uint("height", selector) as u32);
+
+                if self.width.get() == 0 {
+                   self.width.set(constraint.width);
+                }
+
+                if self.height.get() == 0 {
+                    self.height.set(constraint.height);
+                }
+            }
+
+            if children.is_empty() {
+                return LayoutResult::Size((self.width.get(), self.height.get()));
+            }    
+
+              self.current_child.set(0);
         }
+
+        LayoutResult::RequestChild(children[self.current_child.get()], *constraint)
     }
 }

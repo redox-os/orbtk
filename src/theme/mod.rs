@@ -128,6 +128,12 @@ impl Theme {
             .unwrap_or(0)
     }
 
+    pub fn float(&self, property: &str, query: &Selector) -> f32 {
+        self.get(property, query)
+            .map(|v| v.float().unwrap_or(1.0))
+            .unwrap_or(1.0)
+    }
+
     pub fn string(&self, property: &str, query: &Selector) -> String {
         self.get(property, query)
             .map(|v| v.string().unwrap_or(String::default()))
@@ -202,7 +208,7 @@ impl Selector {
         if let Some(ref relation) = self.relation {
             match **relation {
                 SelectorRelation::Ancestor(ref x) | SelectorRelation::Parent(ref x) => {
-                    return x.specificity() + s
+                    return x.specificity() + s;
                 }
             }
         }
@@ -268,6 +274,7 @@ pub struct Declaration {
 #[derive(Clone, Debug)]
 pub enum Value {
     UInt(u32),
+    Float(f32),
     Color(Color),
     Str(String),
 }
@@ -276,6 +283,13 @@ impl Value {
     pub fn uint(&self) -> Option<u32> {
         match *self {
             Value::UInt(x) => Some(x),
+            _ => None,
+        }
+    }
+
+    pub fn float(&self) -> Option<f32> {
+        match *self {
+            Value::Float(x) => Some(x),
             _ => None,
         }
     }
@@ -465,6 +479,14 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
                 }
             }
 
+            "opacity" => match input.next()? {
+                Token::Number {
+                    value: x,
+                    ..
+                } => Value::Float(x as f32),
+                t => return Err(BasicParseError::UnexpectedToken(t).into()),
+            },
+
             _ => return Err(BasicParseError::UnexpectedToken(input.next()?).into()),
         };
 
@@ -513,12 +535,12 @@ fn css_string(name: &str) -> Option<String> {
 fn parse_string<'i, 't>(
     input: &mut Parser<'i, 't>,
 ) -> Result<String, ParseError<'i, CustomParseError>> {
-   Ok(match input.next()? {
+    Ok(match input.next()? {
         Token::QuotedString(s) => match css_string(&s) {
             Some(string) => string,
             None => return Err(CustomParseError::InvalidStringName(s.into_owned()).into()),
         },
-     
+
         t => {
             let basic_error = BasicParseError::UnexpectedToken(t);
             return Err(basic_error.into());
@@ -540,7 +562,7 @@ fn parse_basic_color<'i, 't>(
                 let mut x = match u32::from_str_radix(&hash, 16) {
                     Ok(x) => x,
                     Err(_) => {
-                        return Err(CustomParseError::InvalidColorHex(hash.into_owned()).into())
+                        return Err(CustomParseError::InvalidColorHex(hash.into_owned()).into());
                     }
                 };
 

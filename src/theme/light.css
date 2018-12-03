@@ -16,12 +16,21 @@ button:active, togglebutton:active, togglebutton:selected {
     background: #d6d6d6;
 }
 
-squarebutton {
+checkbox {
+    border-color: #4d4c4c;
+}
+
+checkbox:selected {   
+    background: #e5e5e5;
+    border-color: #adb3b8;
+}
+
+button.square {
     background: #e5e5e5;
     color: black;
 }
 
-squarebutton:active {
+button.square:active {
     background: #d6d6d6;
 }
 

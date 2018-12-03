@@ -14,7 +14,7 @@ impl Widget for Stack {
     fn create() -> Template {
         Template::default()
             .as_parent_type(ParentType::Multi)
-            .with_layout_object(StretchLayoutObject)
+            .with_layout_object(StretchLayoutObject::default())
             .with_debug_name("Stack")
     }
 }

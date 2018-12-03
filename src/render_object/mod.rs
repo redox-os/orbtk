@@ -19,7 +19,6 @@ pub trait RenderObject {
         renderer: &mut Renderer,
         widget: &WidgetContainer,
         theme: &Theme,
-        offset: &Point,
         global_position: &Point,
     );
 }

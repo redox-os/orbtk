@@ -18,7 +18,6 @@ impl RenderObject for FontIconRenderObject {
         renderer: &mut Renderer,
         widget: &WidgetContainer,
         theme: &Theme,
-        offset: &Point,
         global_position: &Point,
     ) {
         if let Ok(selector) = widget.borrow_property::<Selector>() {
@@ -30,7 +29,6 @@ impl RenderObject for FontIconRenderObject {
                                 &icon.0,
                                 bounds,
                                 parent_bounds,
-                                offset,
                                 global_position,
                                 theme.uint("icon-size", selector),
                                 theme.color("icon-color", selector),

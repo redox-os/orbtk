@@ -18,7 +18,6 @@ impl RenderObject for TextRenderObject {
         renderer: &mut Renderer,
         widget: &WidgetContainer,
         theme: &Theme,
-        offset: &Point,
         global_position: &Point,
     ) {
         if let Ok(selector) = widget.borrow_property::<Selector>() {
@@ -30,7 +29,6 @@ impl RenderObject for TextRenderObject {
                                 &label.0,
                                 bounds,
                                 parent_bounds,
-                                offset,
                                 global_position,
                                 theme.uint("font-size", selector),
                                 theme.color("color", selector),
@@ -41,7 +39,6 @@ impl RenderObject for TextRenderObject {
                                 &label.0,
                                 bounds,
                                 parent_bounds,
-                                offset,
                                 global_position,
                                 theme.uint("font-size", selector),
                                 theme.color("color", selector),

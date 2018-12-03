@@ -15,6 +15,30 @@
     width: 100;
 }
 
+spacer {
+    width: 4;
+}
+
+checkbox {
+    height: 24;
+    padding-left: 3;
+    padding-top: 4;
+    padding-right: 3;
+    padding-bottom: 4;
+    background: transparent;
+    border-radius: 2;
+    icon-margin: 0;
+    border-width: 1;
+    border-color: #adb3b8;
+    icon-color: transparent;
+}
+
+checkbox:selected {   
+    background: #6C7A90;
+    border-color: #adb3b8;
+    icon-color: white;
+}
+
 button, togglebutton {
     min-width: 80;
     height: 32;
@@ -43,7 +67,7 @@ button.square {
 
 button.square:active {
     color: #637F92;
-    background: #F8DE4C;
+    background: #f8de4c;
 }
 
 container {
@@ -74,12 +98,20 @@ textbox:watermark {
 }
 
 textbox:focus {
-    border-color: #F8DE4C;
+    border-color: #f8de4c;
 }
 
 cursor {
-    stroke: white;
+    background: transparent;
     width: 1;
+}
+
+cursor:focus {
+    background: #f8de4c;
+}
+
+cursor.selected {
+    opacity: 0.3;
 }
 
 debugborder {
