@@ -2,5 +2,5 @@
 #[derive(Default, Copy, Clone)]
 pub struct TextSelection {
     pub start_index: usize,
-    pub end_index: usize
+    pub length: usize
 }

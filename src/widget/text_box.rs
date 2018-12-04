@@ -16,7 +16,7 @@ pub struct TextBoxState {
     focused: Cell<bool>,
     updated: Cell<bool>,
     selection_start: Cell<usize>,
-    selection_end: Cell<usize>,
+    selection_length: Cell<usize>,
 }
 
 impl Into<Rc<State>> for TextBoxState {
@@ -53,7 +53,9 @@ impl TextBoxState {
                     self.update_selection_start(self.selection_start.get() as i32 + 1);
                 },
                 Key::Backspace => {
-                    (*self.text.borrow_mut()).pop();
+                    for _ in 0..(self.selection_length.get()  + 1) {
+                        (*self.text.borrow_mut()).remove(self.selection_start.get() - 1);
+                    }
                     self.update_selection_start(self.selection_start.get() as i32 - 1);
                 }
                 _ => {}
@@ -74,7 +76,7 @@ impl State for TextBoxState {
 
         if let Ok(selection) = widget.borrow_mut_property::<TextSelection>() {
             selection.start_index = self.selection_start.get();
-            selection.end_index = self.selection_end.get();
+            selection.length = self.selection_length.get();
         }
 
         if let Ok(label) = widget.borrow_mut_property::<Label>() {
