@@ -5,8 +5,8 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use theme::Selector;
 use widget::{
-    Container, Cursor, ScrollViewer, SharedProperty, Stack, State, Template, WaterMarkTextBlock,
-    Widget, WidgetContainer,
+    Container, Context, Cursor, ScrollViewer, SharedProperty, Stack, State, Template,
+    WaterMarkTextBlock, Widget
 };
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
@@ -42,21 +42,27 @@ impl TextBoxState {
 
         match <Option<u8>>::from(key) {
             Some(byte) => {
-                (*self.text.borrow_mut()).push(byte as char);
+                (*self.text.borrow_mut()).insert(self.selection_start.get(), byte as char);
                 self.update_selection_start(self.selection_start.get() as i32 + 1);
             }
             None => match key {
                 Key::Left => {
                     self.update_selection_start(self.selection_start.get() as i32 - 1);
-                },
+                    self.selection_length.set(0);
+                }
                 Key::Right => {
                     self.update_selection_start(self.selection_start.get() as i32 + 1);
-                },
+                    self.selection_length.set(0);
+                }
                 Key::Backspace => {
-                    for _ in 0..(self.selection_length.get()  + 1) {
-                        (*self.text.borrow_mut()).remove(self.selection_start.get() - 1);
+                    if self.text.borrow().len() > 0 {
+                        if self.selection_start.get() > 0 {
+                            for _ in 0..(self.selection_length.get() + 1) {
+                                (*self.text.borrow_mut()).remove(self.selection_start.get() - 1);
+                            }
+                            self.update_selection_start(self.selection_start.get() as i32 - 1);
+                        }
                     }
-                    self.update_selection_start(self.selection_start.get() as i32 - 1);
                 }
                 _ => {}
             },
@@ -69,29 +75,42 @@ impl TextBoxState {
 }
 
 impl State for TextBoxState {
-    fn update(&self, widget: &mut WidgetContainer) {
-        if let Ok(focused) = widget.borrow_property::<Focused>() {
+    fn update(&self, context: &mut Context) {
+        if let Ok(focused) = context.widget.borrow_property::<Focused>() {
             self.focused.set(focused.0);
         }
 
-        if let Ok(selection) = widget.borrow_mut_property::<TextSelection>() {
+        if let Ok(label) = context.widget.borrow_mut_property::<Label>() {
+            if label.0 != *self.text.borrow() {
+                if self.updated.get() {
+                    label.0 = self.text.borrow().clone();
+                } else {
+                    let text_length = self.text.borrow().len();
+                    let origin_text_length = label.0.len();
+                    let delta = text_length as i32 - origin_text_length as i32;
+
+                    *self.text.borrow_mut() = label.0.clone();
+
+                    // adjust cursor position after labe is changed from outside
+                    if text_length < origin_text_length {
+                        self.update_selection_start(self.selection_start.get() as i32 - delta);
+                    } else {
+                        self.update_selection_start(self.selection_start.get() as i32 + delta);
+                    }
+                }
+
+                self.updated.set(false);
+            }
+        }
+
+        if let Ok(selection) = context.widget.borrow_mut_property::<TextSelection>() {
             selection.start_index = self.selection_start.get();
             selection.length = self.selection_length.get();
         }
+    }
 
-        if let Ok(label) = widget.borrow_mut_property::<Label>() {
-            if label.0 == *self.text.borrow() {
-                return;
-            }
-
-            if self.updated.get() {
-                label.0 = self.text.borrow().clone();
-            } else {
-                *self.text.borrow_mut() = label.0.clone();
-            }
-
-            self.updated.set(false);
-        }
+    fn update_post_layout(&self, _context: &mut Context) {
+        
     }
 }
 

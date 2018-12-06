@@ -16,8 +16,8 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&self, widget: &mut WidgetContainer) {
-        if let Ok(button_count_label) = widget.borrow_mut_property::<Label>() {
+    fn update(&self, context: &mut Context) {
+        if let Ok(button_count_label) = context.widget.borrow_mut_property::<Label>() {
             button_count_label.0 = format!("Button count: {}", self.counter.get());
         }
     }
@@ -84,7 +84,10 @@ impl Widget for MainView {
                             )
                             .with_child(Container::create().with_child(
                                 TextBox::create().with_property(WaterMark::from("TextBox...")),
-                            )),
+                            ))
+                            .with_child(Container::create().with_child(
+                                TextBox::create().with_property(WaterMark::from("TextBox...")),
+                            ))
                     ),
             )
             .with_shared_property(button_count_label)

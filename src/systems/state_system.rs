@@ -7,7 +7,7 @@ use dces::{Entity, EntityComponentManager, System};
 
 use application::Tree;
 use properties::{Enabled, Focused, Pressed, Selected};
-use widget::{add_selector_to_widget, remove_selector_from_widget, State, WidgetContainer};
+use widget::{Context, add_selector_to_widget, remove_selector_from_widget, State, WidgetContainer};
 
 /// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {
@@ -104,8 +104,23 @@ impl System<Tree> for StateSystem {
             }
 
             if let Some(state) = self.states.borrow().get(&node) {
-                state.update(&mut widget);
+                state.update(&mut Context { widget: &mut widget });
             }
+        }
+    }
+}
+
+/// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
+pub struct PostLayoutStateSystem {
+    pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
+}
+
+impl System<Tree> for PostLayoutStateSystem {
+    fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
+        for (node, state) in &*self.states.borrow() {
+            let mut widget = WidgetContainer::new(*node, ecm, tree);
+
+            state.update_post_layout(&mut Context { widget: &mut widget });
         }
     }
 }
