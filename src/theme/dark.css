@@ -110,7 +110,7 @@ cursor:focus {
     background: #f8de4c;
 }
 
-cursor.selected {
+cursor:expanded {
     opacity: 0.3;
 }
 
