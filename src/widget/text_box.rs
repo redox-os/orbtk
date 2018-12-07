@@ -1,12 +1,12 @@
-use enums::ParentType;
+use enums::{ParentType, ScrollMode};
 use event::{Key, KeyEventHandler, MouseEventHandler};
-use properties::{Focused, Label, Offset, Point, TextSelection, WaterMark};
+use properties::{Focused, Label, Offset, Point, Rect, ScrollViewerMode, TextSelection, WaterMark};
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use theme::Selector;
 use widget::{
     Container, Context, Cursor, ScrollViewer, SharedProperty, Stack, State, Template,
-    WaterMarkTextBlock, Widget, WidgetKey
+    WaterMarkTextBlock, Widget, WidgetKey,
 };
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
@@ -17,6 +17,7 @@ pub struct TextBoxState {
     updated: Cell<bool>,
     selection_start: Cell<usize>,
     selection_length: Cell<usize>,
+    cursor_x: Cell<i32>,
 }
 
 impl Into<Rc<State>> for TextBoxState {
@@ -110,8 +111,42 @@ impl State for TextBoxState {
     }
 
     fn update_post_layout(&self, context: &mut Context) {
-        if let Ok(offset) = context.widget.borrow_mut_property_by_key::<Offset>("Cursor") {
-            println!("Curor Offset: {}", offset.0);
+        let mut cursor_x_delta = 0;
+        let mut scroll_viewer_width = 0;
+
+        if let Ok(bounds) = context
+            .widget
+            .borrow_property_by_key::<Rect>("ScrollViewer")
+        {
+            scroll_viewer_width = bounds.width;
+        }
+
+        // if selection start is 0 and text is changed and text_size > 0 than selection is 1 and offset is 0
+
+        // if selection x >= bounds.with and text is changed offset -= new character width
+
+        // maybe not use scrollviewer here
+
+        // Adjust offset of text and cursor if cursor position is out of bounds
+        if let Ok(bounds) = context.widget.borrow_mut_property_by_key::<Rect>("Cursor") {
+            if bounds.x < 0 || bounds.x > scroll_viewer_width as i32 {
+                cursor_x_delta = self.cursor_x.get() - bounds.x;
+                bounds.x = self.cursor_x.get();
+            }
+            self.cursor_x.set(bounds.x);
+        }
+
+        if cursor_x_delta != 0 {
+            if let Ok(bounds) = context
+                .widget
+                .borrow_mut_property_by_key::<Rect>("TextBlock")
+            {
+                bounds.x += cursor_x_delta;
+            }
+
+            if let Ok(offset) = context.widget.borrow_mut_property::<Offset>() {
+                offset.0 += cursor_x_delta;
+            }
         }
     }
 }
@@ -143,8 +178,9 @@ impl Widget for TextBox {
         let state = Rc::new(TextBoxState::default());
         let click_state = state.clone();
         let text_block_key = WidgetKey::from("TextBlock");
+        let scroll_viewer_key = WidgetKey::from("ScrollViewer");
         let cursor_key = WidgetKey::from("Cursor");
-        
+
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_property(Focused(false))
@@ -159,9 +195,14 @@ impl Widget for TextBox {
                                             .with_shared_property(label.clone())
                                             .with_shared_property(selector.clone())
                                             .with_shared_property(water_mark.clone())
-                                            .with_key(text_block_key.clone())
+                                            .with_key(text_block_key.clone()),
                                     )
-                                    .with_shared_property(offset.clone()),
+                                    .with_shared_property(offset.clone())
+                                    .with_property(ScrollViewerMode::new(
+                                        ScrollMode::None,
+                                        ScrollMode::None,
+                                    ))
+                                    .with_key(scroll_viewer_key.clone()),
                             )
                             .with_child(
                                 Cursor::create()
@@ -190,6 +231,7 @@ impl Widget for TextBox {
             .with_shared_property(focused)
             .with_child_key(text_block_key)
             .with_child_key(cursor_key)
+            .with_child_key(scroll_viewer_key)
             .with_event_handler(
                 KeyEventHandler::default()
                     .on_key_down(Rc::new(move |key: Key| -> bool { state.update_text(key) })),

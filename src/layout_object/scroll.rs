@@ -2,8 +2,9 @@ use std::cell::Cell;
 
 use dces::{Entity, EntityComponentManager};
 
+use enums::ScrollMode;
 use layout_object::{LayoutObject, LayoutResult};
-use properties::{Constraint, Offset, Rect};
+use properties::{Constraint, Offset, Rect, ScrollViewerMode};
 use theme::Theme;
 
 #[derive(Default)]
@@ -46,6 +47,14 @@ impl LayoutObject for ScrollLayoutObject {
 
             let center_size = constraint.perform((width, height));
 
+            let mut vertical_scroll_mode = ScrollMode::default();
+            let mut horizontal_scroll_mode = ScrollMode::default();
+
+            if let Ok(mode) = ecm.borrow_component::<ScrollViewerMode>(entity) {
+                vertical_scroll_mode = mode.vertical;
+                horizontal_scroll_mode = mode.horizontal;
+            }
+
             let mut offset = (0, 0);
 
             let old_bounds = self.child_bounds.get();
@@ -58,21 +67,25 @@ impl LayoutObject for ScrollLayoutObject {
             }
 
             if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(children[0]) {
-                if bounds.width <= center_size.0 {
-                    offset.0 = 0;
-                } else {
-                    let offset_width = old_bounds.width as i32 - bounds.width as i32;
+                if vertical_scroll_mode != ScrollMode::None
+                    && horizontal_scroll_mode != ScrollMode::None
+                {
+                    if bounds.width <= center_size.0 {
+                        offset.0 = 0;
+                    } else {
+                        let offset_width = old_bounds.width as i32 - bounds.width as i32;
 
-                    if offset_width != 0 {
-                        offset.0 = (offset.0 + offset_width).min(0);
+                        if offset_width != 0 {
+                            offset.0 = (offset.0 + offset_width).min(0);
+                        }
                     }
-                }
 
-                if bounds.height <= center_size.1 {
-                    offset.1 = 0;
-                }
+                    if bounds.height <= center_size.1 {
+                        offset.1 = 0;
+                    }
 
-                // todo: vertical scrollint
+                    // todo: vertical scrollint
+                }
 
                 bounds.x = offset.0;
                 bounds.y = offset.1;
