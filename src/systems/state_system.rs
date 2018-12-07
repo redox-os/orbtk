@@ -6,11 +6,15 @@ use std::collections::BTreeMap;
 use dces::{Entity, EntityComponentManager, System};
 
 use application::Tree;
+use backend::Backend;
 use properties::{Enabled, Focused, Pressed, Selected};
-use widget::{Context, add_selector_to_widget, remove_selector_from_widget, State, WidgetContainer};
+use widget::{
+    add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
+};
 
 /// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {
+    pub backend: Rc<RefCell<Backend>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
     pub update: Rc<Cell<bool>>,
 }
@@ -91,6 +95,9 @@ impl System<Tree> for StateSystem {
             return;
         }
 
+        let mut backend = self.backend.borrow_mut();
+        let state_context = backend.state_context();
+
         for node in tree.into_iter() {
             let has_default_flags = self.has_default_flags(node, ecm);
             if !has_default_flags && !self.states.borrow().contains_key(&node) {
@@ -104,7 +111,10 @@ impl System<Tree> for StateSystem {
             }
 
             if let Some(state) = self.states.borrow().get(&node) {
-                state.update(&mut Context { widget: &mut widget });
+                state.update(&mut Context {
+                    widget: &mut widget,
+                    theme: &state_context.theme,
+                });
             }
         }
     }
@@ -112,15 +122,27 @@ impl System<Tree> for StateSystem {
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 pub struct PostLayoutStateSystem {
+    pub backend: Rc<RefCell<Backend>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
+    pub update: Rc<Cell<bool>>,
 }
 
 impl System<Tree> for PostLayoutStateSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
+        if !self.update.get() {
+            return;
+        }
+
+        let mut backend = self.backend.borrow_mut();
+        let state_context = backend.state_context();
+
         for (node, state) in &*self.states.borrow() {
             let mut widget = WidgetContainer::new(*node, ecm, tree);
 
-            state.update_post_layout(&mut Context { widget: &mut widget });
+            state.update_post_layout(&mut Context {
+                widget: &mut widget,
+                theme: &state_context.theme,
+            });
         }
     }
 }

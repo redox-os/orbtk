@@ -6,7 +6,7 @@ use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow}
 use dces::World;
 
 use application::Tree;
-use backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext};
+use backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext};
 use event::{
     EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
     SystemEvent,
@@ -191,6 +191,12 @@ impl Backend for OrbitalBackend {
     fn event_context(&mut self) -> EventContext {
         EventContext {
             event_queue: &self.event_queue,
+        }
+    }
+
+    fn state_context(&mut self) -> StateContext {
+        StateContext {
+            theme: &self.theme,
         }
     }
 }

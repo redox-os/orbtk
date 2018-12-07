@@ -25,6 +25,11 @@ pub struct LayoutContext<'a> {
     pub theme: &'a Theme,
 }
 
+/// Is used to provides data from the `Backend` to the `StateSystem` and `PostLayoutStateSystem`.
+pub struct StateContext<'a> {
+    pub theme: &'a Theme,
+}
+
 /// Is used to provides data from the `Backend` to the `EventSystem`.
 pub struct EventContext<'a> {
     pub event_queue: &'a RefCell<EventQueue>,
@@ -64,6 +69,7 @@ pub trait Backend {
     fn render_context(&mut self) -> RenderContext;
     fn layout_context(&mut self) -> LayoutContext;
     fn event_context(&mut self) -> EventContext;
+    fn state_context(&mut self) -> StateContext;
 }
 
 /// This trait is used to create a backend runner.

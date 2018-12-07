@@ -114,6 +114,7 @@ impl<'a> WindowBuilder<'a> {
 
         world
             .create_system(StateSystem {
+                backend: backend.clone(),
                 states: states.clone(),
                 update: update.clone(),
             })
@@ -131,7 +132,9 @@ impl<'a> WindowBuilder<'a> {
 
         world
             .create_system(PostLayoutStateSystem {
+                backend: backend.clone(),
                 states: states.clone(),
+                update: update.clone(),
             })
             .with_priority(3)
             .build();
@@ -220,6 +223,11 @@ fn build_tree(
                 }
             }
 
+            // register key chain as property
+            if let Some(key_chain) = template.key_chain {
+                entity_builder = entity_builder.with(key_chain);
+            }
+
             let entity = entity_builder.build();
 
             if let Some(render_object) = template.render_object {
@@ -248,6 +256,11 @@ fn build_tree(
 
             entity
         };
+
+        // register entity for widget key
+        if let Some(key) = template.key {
+            key.entity.set(Some(entity));
+        }
 
         if debug_flag.get() {
             println!(

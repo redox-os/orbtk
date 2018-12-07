@@ -6,7 +6,7 @@ use std::rc::Rc;
 use theme::Selector;
 use widget::{
     Container, Context, Cursor, ScrollViewer, SharedProperty, Stack, State, Template,
-    WaterMarkTextBlock, Widget
+    WaterMarkTextBlock, Widget, WidgetKey
 };
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
@@ -109,8 +109,10 @@ impl State for TextBoxState {
         }
     }
 
-    fn update_post_layout(&self, _context: &mut Context) {
-        
+    fn update_post_layout(&self, context: &mut Context) {
+        if let Ok(offset) = context.widget.borrow_mut_property_by_key::<Offset>("Cursor") {
+            println!("Curor Offset: {}", offset.0);
+        }
     }
 }
 
@@ -140,7 +142,9 @@ impl Widget for TextBox {
         let focused = SharedProperty::new(Focused(false));
         let state = Rc::new(TextBoxState::default());
         let click_state = state.clone();
-
+        let text_block_key = WidgetKey::from("TextBlock");
+        let cursor_key = WidgetKey::from("Cursor");
+        
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_property(Focused(false))
@@ -154,7 +158,8 @@ impl Widget for TextBox {
                                         WaterMarkTextBlock::create()
                                             .with_shared_property(label.clone())
                                             .with_shared_property(selector.clone())
-                                            .with_shared_property(water_mark.clone()),
+                                            .with_shared_property(water_mark.clone())
+                                            .with_key(text_block_key.clone())
                                     )
                                     .with_shared_property(offset.clone()),
                             )
@@ -163,7 +168,8 @@ impl Widget for TextBox {
                                     .with_shared_property(label.clone())
                                     .with_shared_property(selection.clone())
                                     .with_shared_property(offset.clone())
-                                    .with_shared_property(focused.clone()),
+                                    .with_shared_property(focused.clone())
+                                    .with_key(cursor_key.clone()),
                             )
                             .with_event_handler(MouseEventHandler::default().on_mouse_down(
                                 Rc::new(move |pos: Point| -> bool {
@@ -182,6 +188,8 @@ impl Widget for TextBox {
             .with_shared_property(selection)
             .with_shared_property(offset)
             .with_shared_property(focused)
+            .with_child_key(text_block_key)
+            .with_child_key(cursor_key)
             .with_event_handler(
                 KeyEventHandler::default()
                     .on_key_down(Rc::new(move |key: Key| -> bool { state.update_text(key) })),

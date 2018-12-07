@@ -85,9 +85,9 @@ impl Widget for MainView {
                             .with_child(Container::create().with_child(
                                 TextBox::create().with_property(WaterMark::from("TextBox...")),
                             ))
-                            // .with_child(Container::create().with_child(
-                            //     TextBox::create().with_property(WaterMark::from("TextBox...")),
-                            // ))
+                            .with_child(Container::create().with_child(
+                                TextBox::create().with_property(WaterMark::from("TextBox...")),
+                            ))
                     ),
             )
             .with_shared_property(button_count_label)

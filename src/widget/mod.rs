@@ -10,9 +10,9 @@ use dces::{Component, ComponentBox, Entity, EntityComponentManager, NotFound, Sh
 use application::Tree;
 use enums::ParentType;
 use event::EventHandler;
-use layout_object::{RootLayoutObject, LayoutObject};
+use layout_object::{LayoutObject, RootLayoutObject};
 use render_object::RenderObject;
-use theme::Selector;
+use theme::{Selector, Theme};
 
 pub use self::button::Button;
 pub use self::center::Center;
@@ -103,9 +103,75 @@ impl Clone for SharedProperty {
     }
 }
 
+/// The `WidgetKey` struct is used to get access of a widget by using a string.
+pub struct WidgetKey {
+    /// The `key` string is used to call a widget with a string.
+    key: String,
+
+    /// The `entity` will generated on runtime and is used to access the widget.
+    pub entity: Rc<Cell<Option<Entity>>>,
+}
+
+impl From<&str> for WidgetKey {
+    fn from(s: &str) -> WidgetKey {
+        WidgetKey {
+            key: s.to_string(),
+            entity: Rc::new(Cell::new(None)),
+        }
+    }
+}
+
+impl From<String> for WidgetKey {
+    fn from(s: String) -> WidgetKey {
+        WidgetKey {
+            key: s,
+            entity: Rc::new(Cell::new(None)),
+        }
+    }
+}
+
+impl Clone for WidgetKey {
+    fn clone(&self) -> Self {
+        WidgetKey {
+            key: self.key.clone(),
+            entity: self.entity.clone(),
+        }
+    }
+}
+
+/// The `KeyChain` structs provides all widget children keys.
+pub struct KeyChain {
+    key_chain: HashMap<String, WidgetKey>,
+}
+
+impl Default for KeyChain {
+    fn default() -> Self {
+        KeyChain {
+            key_chain: HashMap::new(),
+        }
+    }
+}
+
+impl KeyChain {
+    /// If the the key chain contains the requested key it will return the entity of the requested widget, otherweise it will return `None`.
+    pub fn get(&self, key: &str) -> Option<Entity> {
+        if let Some(key) = self.key_chain.get(key) {
+            return key.entity.get();
+        } else {
+            None
+        }
+    }
+
+    /// Registers a new key in the key chain.
+    pub fn register_key(&mut self, key: WidgetKey) {
+        self.key_chain.insert(key.key.clone(), key);
+    }
+}
+
 /// The `Context` is provides acces for the states to objects they could work with.
 pub struct Context<'a> {
     pub widget: &'a mut WidgetContainer<'a>,
+    pub theme: &'a Theme,
 }
 
 /// Used to define a state of a widget. A state is used to customize properties of a widget.
@@ -129,7 +195,8 @@ pub struct Template {
     pub properties: HashMap<TypeId, ComponentBox>,
     pub shared_properties: HashMap<TypeId, SharedProperty>,
     pub debug_name: String,
-    pub key: Option<String>,
+    pub key: Option<WidgetKey>,
+    pub key_chain: Option<KeyChain>,
 }
 
 impl Default for Template {
@@ -145,6 +212,7 @@ impl Default for Template {
             shared_properties: HashMap::new(),
             debug_name: String::default(),
             key: None,
+            key_chain: None,
         }
     }
 }
@@ -248,6 +316,25 @@ impl Template {
 
         self
     }
+
+    /// Registers a key for the template.
+    pub fn with_key(mut self, key: WidgetKey) -> Self {
+        self.key = Some(key);
+        self
+    }
+
+    /// Adds a new child `WidgetKey` to the `KeyChain` of the widget.
+    pub fn with_child_key(mut self, key: WidgetKey) -> Self {
+        if let None = self.key_chain {
+            self.key_chain = Some(KeyChain::default());
+        }
+
+        if let Some(key_chain) = &mut self.key_chain {
+            key_chain.register_key(key);
+        }
+
+        self
+    }
 }
 
 /// The `Widget` trait is used to define a new widget.
@@ -283,6 +370,39 @@ impl<'a> WidgetContainer<'a> {
     /// not exists or it dosen't have a component of type `P` `NotFound` will be returned.
     pub fn borrow_mut_property<P: Component>(&mut self) -> Result<&mut P, NotFound> {
         self.ecm.borrow_mut_component::<P>(self.current_node)
+    }
+
+    /// Returns a reference of a property of type `P` from the given widget entity by `key`. If the entity does
+    /// not exists or it dosen't have a component of type `P` `NotFound` will be returned.
+    pub fn borrow_property_by_key<P: Component>(&self, key: &str) -> Result<&P, NotFound> {
+        if let Ok(key_chain) = self.borrow_property::<KeyChain>() {
+            if let Some(entity) = key_chain.get(key) {
+                return self.ecm.borrow_component::<P>(entity);
+            }
+        }
+
+        Result::Err(NotFound::Unkown(format!("Key not found: {}", key)))
+    }
+
+    /// Returns a mutable reference of a property of type `P` from the given widget entity by `key`. If the entity does
+    /// not exists or it dosen't have a component of type `P` `NotFound` will be returned.
+    pub fn borrow_mut_property_by_key<P: Component>(
+        &mut self,
+        key: &str,
+    ) -> Result<&mut P, NotFound> {
+        let mut entity = None;
+
+        if let Ok(key_chain) = self.borrow_property::<KeyChain>() {
+            if let Some(en) = key_chain.get(key) {
+                entity = Some(en);
+            }
+        }
+
+        if let Some(entity) = entity {
+            return self.ecm.borrow_mut_component::<P>(entity);
+        }
+
+        Result::Err(NotFound::Unkown(format!("Key not found: {}", key)))
     }
 
     /// Returns a reference of a property of type `P` from the given widgets parent entity. If the entity does
