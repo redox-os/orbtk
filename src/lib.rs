@@ -1,7 +1,6 @@
 #![crate_name = "orbtk"]
 #![crate_type = "lib"]
 // #![deny(warnings)]
-#![feature(const_fn)]
 
 extern crate dces;
 
