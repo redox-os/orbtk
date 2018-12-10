@@ -1,4 +1,4 @@
-# OrbTk
+<img alt="OrbTk" height="200" src="https://gitlab.redox-os.org/redox-os/assets/raw/master/logos/orbtk/logo_dark.png">
 
 [![Build status](https://gitlab.redox-os.org/redox-os/orbtk/badges/master/build.svg)](https://gitlab.redox-os.org/redox-os/orbtk/pipelines)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
@@ -12,7 +12,7 @@ on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity%E2
 
 The main goals of OrbTk are fast peformance, easy to use and cross platform.
 
-<img alt="Redox" height="300" src="https://gitlab.redox-os.org/redox-os/assets/raw/master/screenshots/Calculator.png">
+<img alt="Calculator" height="300" src="https://gitlab.redox-os.org/redox-os/assets/raw/master/screenshots/Calculator.png">
 
 ## Features:
 
