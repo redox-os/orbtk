@@ -1,7 +1,7 @@
 use dces::{Entity, EntityComponentManager};
 
 use layout_object::LayoutObject;
-use properties::{Constraint, Padding, Rect};
+use properties::{Constraint, Padding, Bounds};
 use systems::LayoutResult;
 use theme::{Selector, Theme};
 
@@ -43,7 +43,7 @@ impl LayoutObject for PaddingLayoutObject {
         };
 
         if let Some(size) = size {
-            if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(children[0]) {
+            if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(children[0]) {
                 bounds.x = padding.left;
                 bounds.y = padding.top;
             }
@@ -67,7 +67,24 @@ impl LayoutObject for PaddingLayoutObject {
             LayoutResult::Size(constraint.perform((width, height)))
         } else {
             if children.is_empty() {
-                return LayoutResult::Size((constraint.max_width, constraint.max_height));
+
+                let mut width = constraint.max_width;
+                let mut height = constraint.max_height;
+
+                if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
+                    let w = theme.uint("width", selector);
+                    let h = theme.uint("height", selector);
+
+                    if w > 0 {
+                        width = w;
+                    }
+
+                    if h > 0 {
+                        height = h;
+                    }
+                }
+
+                return LayoutResult::Size((width, height));
             }
 
             LayoutResult::RequestChild(

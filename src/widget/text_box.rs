@@ -1,6 +1,6 @@
 use enums::{ParentType, ScrollMode};
 use event::{Key, KeyEventHandler, MouseEventHandler};
-use properties::{Focused, Label, Offset, Point, Rect, ScrollViewerMode, TextSelection, WaterMark};
+use properties::{Focused, Label, Offset, Point, Bounds, ScrollViewerMode, TextSelection, WaterMark};
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use theme::Selector;
@@ -77,11 +77,13 @@ impl TextBoxState {
 
 impl State for TextBoxState {
     fn update(&self, context: &mut Context) {
-        if let Ok(focused) = context.widget.borrow_property::<Focused>() {
+        let mut widget = context.widget();
+
+        if let Ok(focused) = widget.borrow_property::<Focused>() {
             self.focused.set(focused.0);
         }
 
-        if let Ok(label) = context.widget.borrow_mut_property::<Label>() {
+        if let Ok(label) = widget.borrow_mut_property::<Label>() {
             if label.0 != *self.text.borrow() {
                 if self.updated.get() {
                     label.0 = self.text.borrow().clone();
@@ -104,7 +106,7 @@ impl State for TextBoxState {
             }
         }
 
-        if let Ok(selection) = context.widget.borrow_mut_property::<TextSelection>() {
+        if let Ok(selection) = widget.borrow_mut_property::<TextSelection>() {
             selection.start_index = self.selection_start.get();
             selection.length = self.selection_length.get();
         }
@@ -114,11 +116,12 @@ impl State for TextBoxState {
         let mut cursor_x_delta = 0;
         let mut scroll_viewer_width = 0;
 
-        if let Ok(bounds) = context
-            .widget
-            .borrow_property_by_key::<Rect>("ScrollViewer")
         {
-            scroll_viewer_width = bounds.width;
+            let scroll_viewer = context.widget_from_key("ScrollViewer");
+
+            if let Ok(bounds) = scroll_viewer.unwrap().borrow_property::<Bounds>() {
+                scroll_viewer_width = bounds.width;
+            }
         }
 
         // if selection start is 0 and text is changed and text_size > 0 than selection is 1 and offset is 0
@@ -128,23 +131,29 @@ impl State for TextBoxState {
         // maybe not use scrollviewer here
 
         // Adjust offset of text and cursor if cursor position is out of bounds
-        if let Ok(bounds) = context.widget.borrow_mut_property_by_key::<Rect>("Cursor") {
-            if bounds.x < 0 || bounds.x > scroll_viewer_width as i32 {
-                cursor_x_delta = self.cursor_x.get() - bounds.x;
-                bounds.x = self.cursor_x.get();
+
+        {
+            let cursor = context.widget_from_key("Cursor");
+
+            if let Ok(bounds) = cursor.unwrap().borrow_mut_property::<Bounds>() {
+                if bounds.x < 0 || bounds.x > scroll_viewer_width as i32 {
+                    cursor_x_delta = self.cursor_x.get() - bounds.x;
+                    bounds.x = self.cursor_x.get();
+                }
+                self.cursor_x.set(bounds.x);
             }
-            self.cursor_x.set(bounds.x);
         }
 
         if cursor_x_delta != 0 {
-            if let Ok(bounds) = context
-                .widget
-                .borrow_mut_property_by_key::<Rect>("TextBlock")
             {
-                bounds.x += cursor_x_delta;
+                let text_block = context.widget_from_key("TextBlock");
+
+                if let Ok(bounds) = text_block.unwrap().borrow_mut_property::<Bounds>() {
+                    bounds.x += cursor_x_delta;
+                }
             }
 
-            if let Ok(offset) = context.widget.borrow_mut_property::<Offset>() {
+            if let Ok(offset) = context.widget().borrow_mut_property::<Offset>() {
                 offset.0 += cursor_x_delta;
             }
         }

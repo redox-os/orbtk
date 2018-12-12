@@ -5,7 +5,7 @@ use orbclient::{Color, Renderer as OrbRenderer, Window as OrbWindow};
 use orbfont::Font;
 
 use backend::Renderer;
-use properties::{Point, Rect};
+use properties::{Bounds, Point};
 use theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, ROBOTO_REGULAR_FONT};
 
 pub struct OrbFontRenderer {
@@ -16,8 +16,8 @@ impl OrbFontRenderer {
     fn render(
         &self,
         text: &str,
-        bounds: &Rect,
-        parent_bounds: &Rect,
+        bounds: &Bounds,
+        parent_bounds: &Bounds,
         global_position: &Point,
         renderer: &mut OrbWindow,
         font_size: f32,
@@ -35,13 +35,13 @@ impl OrbFontRenderer {
                 color,
             );
         } else {
-            let rect = Rect::new(
+            let rect = Bounds::new(
                 global_position.x + bounds.x,
                 global_position.y + bounds.y,
                 bounds.width,
                 bounds.height,
             );
-            let mut current_rect = Rect::new(rect.x, rect.y, rect.width, rect.height);
+            let mut current_rect = Bounds::new(rect.x, rect.y, rect.width, rect.height);
             let x = rect.x;
 
             for c in text.chars() {
@@ -87,8 +87,8 @@ impl Renderer for OrbWindow {
 
     fn render_rectangle(
         &mut self,
-        bounds: &Rect,
-        parent_bounds: &Rect,
+        bounds: &Bounds,
+        parent_bounds: &Bounds,
         global_position: &Point,
         border_radius: u32,
         background: Color,
@@ -109,7 +109,7 @@ impl Renderer for OrbWindow {
             }
         };
 
-         let border_color = {
+        let border_color = {
             if opacity < 1.0 {
                 Color {
                     data: (((opacity * 255.0) as u32) << 24)
@@ -137,8 +137,8 @@ impl Renderer for OrbWindow {
     fn render_text(
         &mut self,
         text: &str,
-        bounds: &Rect,
-        parent_bounds: &Rect,
+        bounds: &Bounds,
+        parent_bounds: &Bounds,
         global_position: &Point,
         font_size: u32,
         color: Color,
@@ -161,5 +161,20 @@ impl Renderer for OrbWindow {
             color,
             font,
         );
+    }
+
+    fn render_image(
+        &mut self,
+        image: &[Color],
+        bounds: &Bounds,
+        parent_bounds: &Bounds,
+        global_position: &Point,
+    ) {
+        let x = (bounds.x + global_position.x).max(parent_bounds.x);
+        let y = (bounds.y + global_position.y).max(parent_bounds.y);
+        let width = (bounds.width as i32).min(parent_bounds.width as i32) as u32;
+        let height = (bounds.height as i32).min(parent_bounds.height as i32) as u32;
+
+        self.image_fast(x, y, width, height, image);
     }
 }

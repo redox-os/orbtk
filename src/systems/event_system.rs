@@ -42,9 +42,11 @@ impl EventSystem {
         let mut matching_nodes = vec![];
 
         for node in tree.into_iter() {
+            let widget = WidgetContainer::new(node, ecm);
+
             // MouseDownEvent handling
             if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
-                if check_mouse_condition(event.position, &WidgetContainer::new(node, ecm, tree)) {
+                if check_mouse_condition(event.position, &widget) {
                     matching_nodes.push(node);
                 }
 
@@ -53,9 +55,7 @@ impl EventSystem {
 
             // MouseUpEvent handling
             if event.event_type() == TypeId::of::<MouseUpEvent>() {
-                if let Ok(pressed) =
-                    WidgetContainer::new(node, ecm, tree).borrow_property::<Pressed>()
-                {
+                if let Ok(pressed) = widget.borrow_property::<Pressed>() {
                     if pressed.0 {
                         matching_nodes.push(node);
                         break;
@@ -65,7 +65,7 @@ impl EventSystem {
 
             // Click handling
             if let Ok(event) = event.downcast_ref::<ClickEvent>() {
-                if check_mouse_condition(event.position, &WidgetContainer::new(node, ecm, tree)) {
+                if check_mouse_condition(event.position, &widget) {
                     matching_nodes.push(node);
                 }
 
@@ -96,7 +96,7 @@ impl EventSystem {
                     continue;
                 }
             }
-            let mut widget = WidgetContainer::new(*node, ecm, tree);
+            let mut widget = WidgetContainer::new(*node, ecm);
 
             if let Some(handlers) = self.handlers.borrow().get(node) {
                 for handler in handlers {

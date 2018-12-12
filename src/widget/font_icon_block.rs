@@ -1,5 +1,4 @@
 use layout_object::FontIconSizeLayoutObject;
-use properties::FontIcon;
 use render_object::FontIconRenderObject;
 use theme::Selector;
 use widget::{Template, Widget};
@@ -8,7 +7,6 @@ use widget::{Template, Widget};
 ///
 /// # Properties
 ///
-/// * `FontIcon` - String used to display the icon of the font icon block.
 /// * `Selector` - CSS selector with  element name `fonticon`, used to request the theme of the font icon block.
 ///
 /// # Others
@@ -21,7 +19,6 @@ pub struct FontIconBlock;
 impl Widget for FontIconBlock {
     fn create() -> Template {
         Template::default()
-            .with_property(FontIcon::default())
             .with_property(Selector::from("fonticon"))
             .with_layout_object(FontIconSizeLayoutObject)
             .with_render_object(FontIconRenderObject)

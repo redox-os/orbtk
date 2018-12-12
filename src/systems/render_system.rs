@@ -8,9 +8,9 @@ use application::Tree;
 use backend::Backend;
 use enums::Visibility;
 use render_object::RenderObject;
-use properties::{Point, Rect};
+use properties::{Point, Bounds};
 use theme::Selector;
-use widget::WidgetContainer;
+use widget::Context;
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {
@@ -57,8 +57,8 @@ impl System<Tree> for RenderSystem {
 
             // render debug border for each widget
             if self.debug_flag.get() {
-                if let Ok(bounds) = ecm.borrow_component::<Rect>(node) {
-                    if let Ok(parent_bounds) = ecm.borrow_component::<Rect>(tree.parent[&node]) {
+                if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
+                    if let Ok(parent_bounds) = ecm.borrow_component::<Bounds>(tree.parent[&node]) {
                         let selector = Selector::from("debugborder");
 
                         render_context.renderer.render_rectangle(
@@ -86,15 +86,14 @@ impl System<Tree> for RenderSystem {
             if let Some(render_object) = self.render_objects.borrow().get(&node) {
                 render_object.render(
                     render_context.renderer,
-                    &WidgetContainer::new(node, ecm, tree),
-                    &render_context.theme,
+                    &mut Context::new(node, ecm, tree, &render_context.theme),
                     &global_position,
                 );
             }
 
             let mut global_pos = (0, 0);
 
-            if let Ok(bounds) = ecm.borrow_component::<Rect>(node) {
+            if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
                 global_pos = (global_position.x + bounds.x, global_position.y + bounds.y);
                 offsets.insert(node, global_pos);
             }

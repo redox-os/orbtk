@@ -9,7 +9,7 @@ use orbclient::Window as OrbWindow;
 use self::backend::{OrbitalBackend, OrbitalBackendRunner};
 use self::renderer::FONT_RENDERER;
 use backend::{Backend, FontMeasure};
-use properties::Rect;
+use properties::Bounds;
 use theme::Theme;
 
 mod backend;
@@ -17,7 +17,7 @@ mod renderer;
 
 pub fn target_backend(
     title: &str,
-    bounds: Rect,
+    bounds: Bounds,
     theme: Theme,
 ) -> (Box<OrbitalBackendRunner>, Rc<RefCell<Backend>>) {
     let backend = Rc::new(RefCell::new(OrbitalBackend::new(

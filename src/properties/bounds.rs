@@ -2,17 +2,17 @@ use super::Point;
 
 /// This sturct represents an non visual rectangle.
 #[derive(Clone, Copy, Debug, Default)]
-pub struct Rect {
+pub struct Bounds {
     pub x: i32,
     pub y: i32,
     pub width: u32,
     pub height: u32,
 }
 
-impl Rect {
-    /// Creates a new rectangle.
-    pub fn new(x: i32, y: i32, width: u32, height: u32) -> Rect {
-        Rect {
+impl Bounds {
+    /// Creates new bounds.
+    pub fn new(x: i32, y: i32, width: u32, height: u32) -> Bounds {
+        Bounds {
             x: x,
             y: y,
             width: width,
@@ -20,7 +20,7 @@ impl Rect {
         }
     }
 
-    /// Get the top left point of the rect.
+    /// Get the top left point of the bounds.
     pub fn point(&self) -> Point {
         Point::new(self.x, self.y)
     }
@@ -34,14 +34,14 @@ impl Rect {
     }
 
     /// Check if this rect contains another `rect`.
-    pub fn contains_rect(&self, rect: &Rect) -> bool {
+    pub fn contains_rect(&self, rect: &Bounds) -> bool {
         let p1 = rect.point();
         let p2 = p1 + Point::new(rect.width as i32, rect.height as i32);
         self.contains(p1) && self.contains(p2)
     }
 
     // Check if this rect intersects another `rect`.
-    pub fn intersects(&self, rect: &Rect) -> bool {
+    pub fn intersects(&self, rect: &Bounds) -> bool {
         !(rect.x >= (self.x + self.width as i32)
             || self.x >= (rect.x + rect.width as i32)
             || rect.y >= (self.y + self.height as i32)

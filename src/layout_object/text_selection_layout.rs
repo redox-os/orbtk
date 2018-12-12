@@ -1,7 +1,7 @@
 use backend::{FontMeasure, FONT_MEASURE};
 use dces::{Entity, EntityComponentManager};
 use layout_object::LayoutObject;
-use properties::{Constraint, Label, Offset, Rect, TextSelection};
+use properties::{Constraint, Label, Offset, Bounds, TextSelection};
 use theme::{Selector, Theme};
 
 use LayoutResult;
@@ -65,7 +65,7 @@ impl LayoutObject for TextSelectionLayoutObject {
             pos += off.0;
         }
 
-        if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(entity) {
+        if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(entity) {
             bounds.x = pos;
         }
 

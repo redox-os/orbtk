@@ -4,14 +4,14 @@ use dces::{Entity, EntityComponentManager};
 
 use enums::ScrollMode;
 use layout_object::{LayoutObject, LayoutResult};
-use properties::{Constraint, Offset, Rect, ScrollViewerMode};
+use properties::{Constraint, Offset, Bounds, ScrollViewerMode};
 use theme::Theme;
 
 // todo: not finished yet!!!!
 
 #[derive(Default)]
 pub struct ScrollLayoutObject {
-    child_bounds: Cell<Rect>,
+    child_bounds: Cell<Bounds>,
 }
 
 impl Into<Box<LayoutObject>> for ScrollLayoutObject {
@@ -68,7 +68,7 @@ impl LayoutObject for ScrollLayoutObject {
                 offset = (off.0, off.1);
             }
 
-            if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(children[0]) {
+            if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(children[0]) {
                 if vertical_scroll_mode != ScrollMode::None
                     && horizontal_scroll_mode != ScrollMode::None
                 {

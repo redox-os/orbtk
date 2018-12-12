@@ -1,12 +1,12 @@
 use std::rc::Rc;
 
 use event::{Event, EventBox, EventHandler};
-use properties::{Point, Rect};
+use properties::{Point, Bounds};
 use widget::WidgetContainer;
 
 pub fn check_mouse_condition(position: Point, widget: &WidgetContainer) -> bool {
-    if let Ok(bounds) = widget.borrow_property::<Rect>() {
-        let mut rect = Rect::new(0, 0, bounds.width, bounds.height);
+    if let Ok(bounds) = widget.borrow_property::<Bounds>() {
+        let mut rect = Bounds::new(0, 0, bounds.width, bounds.height);
 
         if let Ok(g_pos) = widget.borrow_property::<Point>() {
             rect.x = g_pos.x;

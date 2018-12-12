@@ -20,20 +20,20 @@ pub struct StateSystem {
 }
 
 impl StateSystem {
-    fn has_default_flags(&self, node: Entity, ecm: &EntityComponentManager) -> bool {
-        if let Ok(_) = ecm.borrow_component::<Enabled>(node) {
+    fn has_default_flags(&self, widget: &WidgetContainer) -> bool {
+        if let Ok(_) = widget.borrow_property::<Enabled>() {
             return true;
         }
 
-        if let Ok(_) = ecm.borrow_component::<Pressed>(node) {
+        if let Ok(_) = widget.borrow_property::<Pressed>() {
             return true;
         }
 
-        if let Ok(_) = ecm.borrow_component::<Focused>(node) {
+        if let Ok(_) = widget.borrow_property::<Focused>() {
             return true;
         }
 
-        if let Ok(_) = ecm.borrow_component::<Selected>(node) {
+        if let Ok(_) = widget.borrow_property::<Selected>() {
             return true;
         }
 
@@ -97,24 +97,25 @@ impl System<Tree> for StateSystem {
 
         let mut backend = self.backend.borrow_mut();
         let state_context = backend.state_context();
+        let mut context = Context::new(tree.root, ecm, tree, &state_context.theme);
 
         for node in tree.into_iter() {
-            let has_default_flags = self.has_default_flags(node, ecm);
-            if !has_default_flags && !self.states.borrow().contains_key(&node) {
-                continue;
-            }
+            context.entity = node;
+            {
+                let mut widget = context.widget();
 
-            let mut widget = WidgetContainer::new(node, ecm, tree);
+                let has_default_flags = self.has_default_flags(&widget);
+                if !has_default_flags && !self.states.borrow().contains_key(&node) {
+                    continue;
+                }
 
-            if has_default_flags {
-                self.update_default_states(&mut widget);
+                if has_default_flags {
+                    self.update_default_states(&mut widget);
+                }
             }
 
             if let Some(state) = self.states.borrow().get(&node) {
-                state.update(&mut Context {
-                    widget: &mut widget,
-                    theme: &state_context.theme,
-                });
+                state.update(&mut context);
             }
         }
     }
@@ -135,14 +136,12 @@ impl System<Tree> for PostLayoutStateSystem {
 
         let mut backend = self.backend.borrow_mut();
         let state_context = backend.state_context();
+        let mut context = Context::new(tree.root, ecm, tree, &state_context.theme);
 
         for (node, state) in &*self.states.borrow() {
-            let mut widget = WidgetContainer::new(*node, ecm, tree);
+            context.entity = *node;
 
-            state.update_post_layout(&mut Context {
-                widget: &mut widget,
-                theme: &state_context.theme,
-            });
+            state.update_post_layout(&mut context);
         }
     }
 }

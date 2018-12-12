@@ -17,7 +17,7 @@ impl MainViewState {
 
 impl State for MainViewState {
     fn update(&self, context: &mut Context) {
-        if let Ok(button_count_label) = context.widget.borrow_mut_property::<Label>() {
+        if let Ok(button_count_label) = context.widget().borrow_mut_property::<Label>() {
             button_count_label.0 = format!("Button count: {}", self.counter.get());
         }
     }
@@ -68,7 +68,8 @@ impl Widget for MainView {
                             ))
                             .with_child(Container::create().with_child(
                                 CheckBox::create().with_property(Label::from("CheckBox")),
-                            )),
+                            ))
+                            .with_child(Container::create().with_child(Switch::create())),
                     )
                     .with_child(
                         Column::create()
@@ -87,7 +88,7 @@ impl Widget for MainView {
                             ))
                             .with_child(Container::create().with_child(
                                 TextBox::create().with_property(WaterMark::from("TextBox...")),
-                            ))
+                            )),
                     ),
             )
             .with_shared_property(button_count_label)
@@ -99,8 +100,8 @@ fn main() {
     let mut application = Application::default();
     application
         .create_window()
-        .with_bounds(Rect::new(0, 0, 420, 730))
-        .with_title("Orbtk")
+        .with_bounds(Bounds::new(0, 0, 420, 730))
+        .with_title("Orbtk - Light theme example")
         .with_root(MainView::create())
         .with_debug_flag(false)
         .with_theme(Theme::parse(&theme::LIGHT_THEME_CSS))

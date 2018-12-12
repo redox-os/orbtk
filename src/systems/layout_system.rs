@@ -8,7 +8,7 @@ use application::Tree;
 use backend::Backend;
 use enums::Visibility;
 use layout_object::LayoutObject;
-use properties::{Constraint, Rect};
+use properties::{Constraint, Bounds};
 use theme::Theme;
 
 pub enum LayoutResult {
@@ -54,7 +54,7 @@ impl System<Tree> for LayoutSystem {
 
                 match layout_result {
                     LayoutResult::Size(size) => {
-                        if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(entity) {
+                        if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(entity) {
                             bounds.width = size.0;
                             bounds.height = size.1;
                         }

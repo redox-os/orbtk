@@ -1,6 +1,6 @@
 
 use layout_object::PaddingLayoutObject;
-use render_object::{RectangleRenderObject};
+use render_object::{BoundsangleRenderObject};
 use theme::Selector;
 use widget::{Template, Widget};
 use enums::ParentType;
@@ -15,7 +15,7 @@ use enums::ParentType;
 /// 
 /// * `ParentType`- Single.
 /// * `PaddingLayoutObject` - Used to layout the widget.
-/// * `RectangleRenderObject` - Used to draw the widget.
+/// * `BoundsangleRenderObject` - Used to draw the widget.
 pub struct Container;
 
 impl Widget for Container {
@@ -23,7 +23,7 @@ impl Widget for Container {
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_property(Selector::from("container"))
-            .with_render_object(RectangleRenderObject)
+            .with_render_object(BoundsangleRenderObject)
             .with_layout_object(PaddingLayoutObject) 
             .with_debug_name("Container")
     }

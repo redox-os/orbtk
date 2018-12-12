@@ -22,8 +22,22 @@ checkbox {
 
 checkbox:selected {   
     background: #e5e5e5;
-    border-color: #adb3b8;
+    border-color: #d1d1d1;
 }
+
+switch {
+    border-color: #d1d1d1;
+    background: #adb3b8;
+}
+
+switchtoggle {
+    background: 4d4c4c;
+}
+
+switchtoggle:selected {
+    background: #F8DE4C;
+}
+
 
 button.square {
     background: #e5e5e5;

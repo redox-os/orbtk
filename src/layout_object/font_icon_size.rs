@@ -1,7 +1,7 @@
 use backend::{FontMeasure, FONT_MEASURE};
 use dces::{Entity, EntityComponentManager};
 use layout_object::LayoutObject;
-use properties::{Constraint, FontIcon};
+use properties::{Constraint, FontIcon, PrimaryFontIcon, SecondaryFontIcon};
 use theme::{Selector, Theme};
 
 use LayoutResult;
@@ -25,13 +25,24 @@ impl LayoutObject for FontIconSizeLayoutObject {
         theme: &Theme,
     ) -> LayoutResult {
         if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-            if let Ok(icon) = ecm.borrow_component::<FontIcon>(entity) {
+
+               let icon = if let Ok(icon) = ecm.borrow_component::<FontIcon>(entity) {
+                    Some(&icon.0)
+                } else if let Ok(icon) = ecm.borrow_component::<PrimaryFontIcon>(entity) {
+                    Some(&icon.0)
+                } else if let Ok(icon) = ecm.borrow_component::<SecondaryFontIcon>(entity) {
+                    Some(&icon.0)
+                } else {
+                    None
+                };
+
+            if let Some(icon) = icon {
                 let size = {
-                    if icon.0.is_empty() {
+                    if icon.is_empty() {
                         (0, 0)
                     } else {
                         let mut size = FONT_MEASURE.measure(
-                            &icon.0,
+                            icon,
                             &theme.string("icon-font-family", selector),
                             theme.uint("icon-size", selector),
                         );

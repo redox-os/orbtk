@@ -68,7 +68,7 @@ fn main() {
     let mut application = Application::default();
     application
         .create_window()
-        .with_bounds(Rect::new(0, 0, 420, 730))
+        .with_bounds(Bounds::new(0, 0, 420, 730))
         .with_title("Orbtk")
         .with_root(MainView::create())
         .build();

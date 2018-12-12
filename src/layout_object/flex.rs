@@ -5,7 +5,7 @@ use layout_object::{LayoutObject, LayoutResult};
 use theme::Theme;
 
 use enums::Alignment;
-use properties::{Constraint, Rect};
+use properties::{Constraint, Bounds};
 
 pub struct FlexLayoutObject {
     orientation: Alignment,
@@ -75,7 +75,7 @@ impl LayoutObject for FlexLayoutObject {
                         current_pos += self.current_position.borrow()[i];
                     }
 
-                    if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(*child) {
+                    if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(*child) {
                         match self.orientation {
                             Alignment::Horizontal => {
                                 bounds.x = current_pos as i32;

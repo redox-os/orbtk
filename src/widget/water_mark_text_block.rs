@@ -16,24 +16,26 @@ impl Into<Rc<State>> for WaterMarkTextBlockState {
 
 impl State for WaterMarkTextBlockState {
     fn update(&self, context: &mut Context) {
+        let mut widget = context.widget();
+
         let mut is_label_empty = false;
         let mut is_water_mark_empty = false;
 
-        if let Ok(label) = context.widget.borrow_property::<Label>() {
+        if let Ok(label) = widget.borrow_property::<Label>() {
             is_label_empty = label.0.is_empty();
         }
 
         if is_label_empty {
-             add_selector_to_widget("watermark", context.widget);
+             add_selector_to_widget("watermark", &mut widget);
         } else {
-             remove_selector_from_widget("watermark", context.widget);
+             remove_selector_from_widget("watermark", &mut widget);
         }
 
-        if let Ok(label) = context.widget.borrow_property::<WaterMark>() {
+        if let Ok(label) = widget.borrow_property::<WaterMark>() {
             is_water_mark_empty = label.0.is_empty();
         }
 
-        if let Ok(visibility) = context.widget.borrow_mut_property::<Visibility>() {
+        if let Ok(visibility) = widget.borrow_mut_property::<Visibility>() {
             if is_water_mark_empty && !is_label_empty {
                 *visibility = Visibility::Hidden;
             } else {

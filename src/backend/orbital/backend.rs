@@ -11,7 +11,7 @@ use event::{
     EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
     SystemEvent,
 };
-use properties::{Point, Rect};
+use properties::{Point, Bounds};
 use theme::Theme;
 
 /// Implemenation of the OrbClient based backend.
@@ -169,7 +169,7 @@ impl Backend for OrbitalBackend {
         (self.width(), self.height())
     }
 
-    fn bounds(&mut self, bounds: &Rect) {
+    fn bounds(&mut self, bounds: &Bounds) {
         self.inner.set_pos(bounds.x, bounds.y);
         self.inner.set_size(bounds.width, bounds.height);
     }

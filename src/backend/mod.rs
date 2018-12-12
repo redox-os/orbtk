@@ -10,7 +10,7 @@ use orbclient::Color;
 
 use application::Tree;
 use event::EventQueue;
-use properties::{Point, Rect};
+use properties::{Bounds, Point};
 use theme::Theme;
 
 /// Is used to provides data from the `Backend` to the `RenderSystem`.
@@ -40,8 +40,8 @@ pub trait Renderer {
     fn render(&mut self, background: Color);
     fn render_rectangle(
         &mut self,
-        bounds: &Rect,
-        parent_bounds: &Rect,
+        bounds: &Bounds,
+        parent_bounds: &Bounds,
         global_position: &Point,
         border_radius: u32,
         background: Color,
@@ -52,19 +52,26 @@ pub trait Renderer {
     fn render_text(
         &mut self,
         text: &str,
-        bounds: &Rect,
-        parent_bounds: &Rect,
+        bounds: &Bounds,
+        parent_bounds: &Bounds,
         global_position: &Point,
         font_size: u32,
         color: Color,
         font: &str,
+    );
+    fn render_image(
+        &mut self,
+        image: &[Color],
+        bounds: &Bounds,
+        parent_bounds: &Bounds,
+        global_position: &Point,
     );
 }
 
 /// This trait is used to define a backend for OrbTk.
 pub trait Backend {
     fn drain_events(&mut self);
-    fn bounds(&mut self, bounds: &Rect);
+    fn bounds(&mut self, bounds: &Bounds);
     fn size(&self) -> (u32, u32);
     fn render_context(&mut self) -> RenderContext;
     fn layout_context(&mut self) -> LayoutContext;

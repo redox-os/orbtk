@@ -1,6 +1,6 @@
 use {Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult, Theme};
 
-use properties::Rect;
+use properties::Bounds;
 
 pub struct CenterLayoutObject;
 
@@ -39,7 +39,7 @@ impl LayoutObject for CenterLayoutObject {
 
             let center_size = constraint.perform((width, height));
 
-            if let Ok(bounds) = ecm.borrow_mut_component::<Rect>(children[0]) {
+            if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(children[0]) {
                 bounds.x = (center_size.0 - size.0) as i32 / 2;
                 bounds.y = (center_size.1 - size.1) as i32 / 2;
             }

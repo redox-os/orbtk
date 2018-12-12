@@ -9,7 +9,7 @@ use application::{Application, Tree};
 use backend::{target_backend, BackendRunner};
 use event::EventHandler;
 use layout_object::{LayoutObject, RootLayoutObject};
-use properties::{Point, Rect};
+use properties::{Point, Bounds};
 use render_object::RenderObject;
 use systems::{PostLayoutStateSystem, EventSystem, LayoutSystem, RenderSystem, StateSystem};
 use theme::Theme;
@@ -37,7 +37,7 @@ impl Window {
 /// The `WindowBuilder` is used to define and build a `Window`.
 pub struct WindowBuilder<'a> {
     pub application: &'a mut Application,
-    pub bounds: Rect,
+    pub bounds: Bounds,
     pub title: String,
     pub theme: Theme,
     pub root: Option<Template>,
@@ -46,7 +46,7 @@ pub struct WindowBuilder<'a> {
 
 impl<'a> WindowBuilder<'a> {
     /// Used to define the render `bounds` of the window.
-    pub fn with_bounds(mut self, bounds: Rect) -> Self {
+    pub fn with_bounds(mut self, bounds: Bounds) -> Self {
         self.bounds = bounds;
         self
     }
@@ -187,7 +187,7 @@ fn build_tree(
             let root = world
                 .create_entity()
                 .with(Global::default())
-                .with(Rect::default())
+                .with(Bounds::default())
                 .with(Point::default())
                 .build();
 
@@ -201,7 +201,7 @@ fn build_tree(
         let entity = {
             let mut entity_builder = world
                 .create_entity()
-                .with(Rect::default())
+                .with(Bounds::default())
                 .with(Point::default());
 
             // normal properties

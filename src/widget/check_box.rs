@@ -5,7 +5,7 @@ use widget::{
     Center, Container, FontIconBlock, Row, SharedProperty, Spacer, Template, TextBlock, Widget,
 };
 
-/// The `Checkbox` widget can be switch its selected state. It contains a selection box and a labe..
+/// The `Checkbox` widget can be switch its selected state. It contains a selection box and a label.
 ///
 /// # Shared Properties
 ///

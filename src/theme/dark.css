@@ -39,6 +39,31 @@ checkbox:selected {
     icon-color: white;
 }
 
+switch {
+    padding: 4;
+    border-radius: 2;
+    icon-margin: 0;
+    border-width: 1;
+    border-color: #adb3b8;
+    background: #6C7A90;
+    width: 56;
+    height: 32;
+}
+
+switchtoggle {
+    width: 24;
+    height: 24;
+    border-radius: 2;
+    background: white;
+}
+
+switchtoggle:selected {
+    width: 24;
+    height: 24;
+    border-radius: 2;
+    background: #F8DE4C;
+}
+
 button, togglebutton {
     min-width: 80;
     height: 32;
