@@ -101,7 +101,7 @@ fn main() {
     application
         .create_window()
         .with_bounds(Bounds::new(0, 0, 420, 730))
-        .with_title("Orbtk - Light theme example")
+        .with_title("OrbTk - Light theme example")
         .with_root(MainView::create())
         .with_debug_flag(false)
         .with_theme(Theme::parse(&theme::LIGHT_THEME_CSS))

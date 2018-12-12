@@ -69,7 +69,7 @@ fn main() {
     application
         .create_window()
         .with_bounds(Bounds::new(0, 0, 420, 730))
-        .with_title("Orbtk")
+        .with_title("OrbTk")
         .with_root(MainView::create())
         .build();
     application.run();
