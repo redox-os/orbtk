@@ -3,7 +3,7 @@ use std::cell::Cell;
 use dces::{Entity, EntityComponentManager};
 use enums::Placement;
 use layout_object::{LayoutObject, LayoutResult};
-use properties::{Bounds, Constraint};
+use properties::{Bounds, Constraint, Canvas};
 use theme::{Selector, Theme};
 
 #[derive(Default)]
@@ -87,6 +87,11 @@ impl LayoutObject for StretchLayoutObject {
                 if self.height.get() == 0 {
                     self.height.set(constraint.height);
                 }
+            }
+
+            if let Ok(canvas) = ecm.borrow_component::<Canvas>(entity) {
+                self.width.set(canvas.width as u32);
+                self.height.set(canvas.height as u32);
             }
 
             if children.is_empty() {

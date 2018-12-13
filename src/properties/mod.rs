@@ -1,5 +1,10 @@
 //! This module contains non visual structures like point, rectangle, color and thickness.
 
+pub use orbclient::color::Color;
+pub use orbclient::Renderer as OrbRenderer;
+pub use orbgl::Canvas;
+pub use orbimage::Image;
+
 pub use self::bounds::Bounds;
 pub use self::constraint::Constraint;
 pub use self::enabled::Enabled;

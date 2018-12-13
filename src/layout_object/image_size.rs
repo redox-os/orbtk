@@ -1,13 +1,11 @@
 use orbclient::Renderer;
-use orbimage;
 
-use backend::{FontMeasure, FONT_MEASURE};
 use dces::{Entity, EntityComponentManager};
 use layout_object::LayoutObject;
-use properties::Constraint;
-use theme::{Selector, Theme};
+use properties::{Constraint, Image};
+use theme::Theme;
 
-use {Label, LayoutResult};
+use LayoutResult;
 
 pub struct ImageSizeLayoutObject;
 
@@ -27,7 +25,7 @@ impl LayoutObject for ImageSizeLayoutObject {
         _size: Option<(u32, u32)>,
         _theme: &Theme,
     ) -> LayoutResult {
-        if let Ok(image) = ecm.borrow_component::<orbimage::Image>(entity) {
+        if let Ok(image) = ecm.borrow_component::<Image>(entity) {
             return LayoutResult::Size((image.width(), image.height()));
         }
 

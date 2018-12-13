@@ -9,7 +9,7 @@ impl Widget for MainView {
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_debug_name("MainView")
-            .with_child(Image::create().with_property(orbimage::Image::from_path("res/orbtk-space.png").unwrap()))
+            .with_child(ImageWidget::create().with_property(Image::from_path("res/orbtk-space.png").unwrap()))
     }
 }
 

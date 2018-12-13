@@ -2,13 +2,14 @@
 
 pub use self::button::Button;
 pub use self::center::Center;
+pub use self::canvas_widget::CanvasWidget;
 pub use self::core::*;
 pub use self::check_box::CheckBox;
 pub use self::column::Column;
 pub use self::container::Container;
 pub use self::cursor::Cursor;
 pub use self::font_icon_block::FontIconBlock;
-pub use self::image::Image;
+pub use self::image_widget::ImageWidget;
 pub use self::row::Row;
 pub use self::scroll_viewer::*;
 pub use self::spacer::*;
@@ -20,6 +21,7 @@ pub use self::toggle_button::ToggleButton;
 pub use self::water_mark_text_block::WaterMarkTextBlock;
 
 mod button;
+mod canvas_widget;
 mod core;
 mod center;
 mod check_box;
@@ -27,7 +29,7 @@ mod column;
 mod container;
 mod cursor;
 mod font_icon_block;
-mod image;
+mod image_widget;
 mod row;
 mod scroll_viewer;
 mod spacer;

@@ -18,6 +18,17 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "Debug canvas",
+            "program": "${workspaceFolder}/target/debug/examples/canvas",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build",
+            "sourceLanguages": [
+                "rust"
+            ]
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Debug images",
             "program": "${workspaceFolder}/target/debug/examples/images",
             "cwd": "${workspaceFolder}",

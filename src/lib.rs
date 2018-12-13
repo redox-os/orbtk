@@ -35,4 +35,4 @@ pub mod widget;
 extern crate orbclient;
 extern crate orbfont;
 extern crate orbimage;
-pub use orbclient::color::Color;
+extern crate orbgl;

@@ -1,10 +1,8 @@
 use orbclient::Renderer as OrbRenderer;
-use orbimage;
 
 use backend::Renderer;
-use properties::{Bounds, Point};
+use properties::{Bounds, Image, Point, Canvas};
 use render_object::RenderObject;
-use theme::Selector;
 use widget::Context;
 
 pub struct ImageRenderObject;
@@ -30,8 +28,12 @@ impl RenderObject for ImageRenderObject {
         let widget = context.widget();
 
         if let Ok(bounds) = widget.borrow_property::<Bounds>() {
-            if let Ok(image) = widget.borrow_property::<orbimage::Image>() {
+            if let Ok(image) = widget.borrow_property::<Image>() {
                 renderer.render_image(image.data(), bounds, &parent_bounds, global_position);
+            }
+
+            if let Ok(canvas) = widget.borrow_property::<Canvas>() {
+                renderer.render_image(&canvas.data, bounds, &parent_bounds, global_position);
             }
         }
     }
