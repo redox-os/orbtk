@@ -29,8 +29,8 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug images",
-            "program": "${workspaceFolder}/target/debug/examples/images",
+            "name": "Debug image",
+            "program": "${workspaceFolder}/target/debug/examples/image",
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build",
             "sourceLanguages": [

@@ -4,15 +4,15 @@ use render_object::RenderObject;
 use theme::Selector;
 use widget::Context;
 
-pub struct BoundsangleRenderObject;
+pub struct RectangleRenderObject;
 
-impl Into<Box<RenderObject>> for BoundsangleRenderObject {
+impl Into<Box<RenderObject>> for RectangleRenderObject {
     fn into(self) -> Box<RenderObject> {
         Box::new(self)
     }
 }
 
-impl RenderObject for BoundsangleRenderObject {
+impl RenderObject for RectangleRenderObject {
     fn render(&self, renderer: &mut Renderer, context: &mut Context, global_position: &Point) {
         let parent_bounds = if let Some(parent) = context.parent_widget() {
             if let Ok(bounds) = parent.borrow_property::<Bounds>() {

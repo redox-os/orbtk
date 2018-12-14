@@ -18,7 +18,7 @@ fn main() {
     application
         .create_window()
         .with_bounds(Bounds::new(0, 0, 800, 420))
-        .with_title("OrbTk - Images example")
+        .with_title("OrbTk - Image example")
         .with_root(MainView::create())
         .build();
     application.run();

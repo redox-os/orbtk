@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use layout_object::TextSelectionLayoutObject;
 use properties::{Label, TextSelection};
-use render_object::BoundsangleRenderObject;
+use render_object::RectangleRenderObject;
 use theme::Selector;
 use widget::{
     add_selector_to_widget, remove_selector_from_widget, Context, State, Template, Widget,
@@ -36,7 +36,7 @@ impl State for CursorState {
 ///
 /// # Others
 ///
-/// * `BoundsangleRenderObject` - Used to draw the widget.
+/// * `RectangleRenderObject` - Used to draw the widget.
 /// * `TextSelectionLayoutObject` - Used to layout the widget.
 pub struct Cursor;
 
@@ -46,7 +46,7 @@ impl Widget for Cursor {
             .with_property(Label::default())
             .with_property(Selector::from("cursor"))
             .with_property(TextSelection::default())
-            .with_render_object(BoundsangleRenderObject)
+            .with_render_object(RectangleRenderObject)
             .with_layout_object(TextSelectionLayoutObject)
             .with_state(Rc::new(CursorState))
             .with_debug_name("Cursor")
