@@ -1,7 +1,7 @@
 /* Every element */
 * {
     /* background: #F5F6F7; */
-    background: #475b6e;
+    background: #3b434a;
     color: white;
     font-size: 16;
     font-family: "Roboto Regular";
@@ -114,6 +114,20 @@ textbox {
     padding: 6;
 }
 
+menu {
+    height: 32;
+    background: #475b6e;
+}
+
+menuitem {
+    padding-left: 8;
+    padding-right: 8;
+    height: 32;
+    color: #9dafbf;
+    font-size: 12;
+}
+
+
 textblock.fheight {
     height: 32;
 }
@@ -144,4 +158,8 @@ debugborder {
     border-radius: 2;
     border-color: blue;
     background: transparent;
+}
+
+#test {
+    background: green;
 }

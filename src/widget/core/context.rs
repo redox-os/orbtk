@@ -1,7 +1,7 @@
 use dces::{Entity, EntityComponentManager};
 
-use super::{KeyChain, WidgetContainer};
-use application::Tree;
+use super::WidgetContainer;
+use application::{Tree, Global};
 use theme::Theme;
 
 /// The `Context` is provides acces for the states to objects they could work with.
@@ -33,14 +33,14 @@ impl<'a> Context<'a> {
         WidgetContainer::new(self.entity, &mut self.ecm)
     }
 
-    /// Returns a child of the widget of the current state referenced by `key`.
-    /// If the current widget has no `KeyChain` or there is no child with the given `key` None will returned.
-    pub fn widget_from_key(&mut self, key: &str) -> Option<WidgetContainer> {
+    /// Returns a child of the widget of the current state referenced by css`id`.
+    /// If the no id is defined None will returned.
+    pub fn widget_from_id<S: Into<String>>(&mut self, id: S) -> Option<WidgetContainer> {
         let mut entity = None;
 
-        if let Ok(key_chain) = self.ecm.borrow_component::<KeyChain>(self.entity) {
-            if let Some(en) = key_chain.get(key) {
-                entity = Some(en);
+        if let Ok(global) = self.ecm.borrow_component::<Global>(0) {
+            if let Some(en) = global.id_map.get(&id.into()) {
+                entity = Some(*en);
             }
         }
 

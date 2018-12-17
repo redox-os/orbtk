@@ -9,7 +9,7 @@ use enums::ParentType;
 use event::EventHandler;
 use layout_object::{LayoutObject, RootLayoutObject};
 use render_object::RenderObject;
-use super::{WidgetKey, State, SharedProperty, KeyChain};
+use super::{State, SharedProperty};
 
 
 /// `Template` is used to define the inner structure of a widget.
@@ -24,8 +24,6 @@ pub struct Template {
     pub properties: HashMap<TypeId, ComponentBox>,
     pub shared_properties: HashMap<TypeId, SharedProperty>,
     pub debug_name: String,
-    pub key: Option<WidgetKey>,
-    pub key_chain: Option<KeyChain>,
 }
 
 impl Default for Template {
@@ -40,8 +38,6 @@ impl Default for Template {
             properties: HashMap::new(),
             shared_properties: HashMap::new(),
             debug_name: String::default(),
-            key: None,
-            key_chain: None,
         }
     }
 }
@@ -141,25 +137,6 @@ impl Template {
                 );
         } else {
             self.shared_properties.insert(property.type_id, property);
-        }
-
-        self
-    }
-
-    /// Registers a key for the template.
-    pub fn with_key(mut self, key: WidgetKey) -> Self {
-        self.key = Some(key);
-        self
-    }
-
-    /// Adds a new child `WidgetKey` to the `KeyChain` of the widget.
-    pub fn with_child_key(mut self, key: WidgetKey) -> Self {
-        if let None = self.key_chain {
-            self.key_chain = Some(KeyChain::default());
-        }
-
-        if let Some(key_chain) = &mut self.key_chain {
-            key_chain.register_key(key);
         }
 
         self

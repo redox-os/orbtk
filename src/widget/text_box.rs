@@ -1,12 +1,14 @@
 use enums::{ParentType, ScrollMode};
 use event::{Key, KeyEventHandler, MouseEventHandler};
-use properties::{Focused, Label, Offset, Point, Bounds, ScrollViewerMode, TextSelection, WaterMark};
+use properties::{
+    Bounds, Focused, Label, Offset, Point, ScrollViewerMode, TextSelection, WaterMark,
+};
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use theme::Selector;
 use widget::{
     Container, Context, Cursor, ScrollViewer, SharedProperty, Stack, State, Template,
-    WaterMarkTextBlock, Widget, WidgetKey,
+    WaterMarkTextBlock, Widget,
 };
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
@@ -117,7 +119,7 @@ impl State for TextBoxState {
         let mut scroll_viewer_width = 0;
 
         {
-            let scroll_viewer = context.widget_from_key("ScrollViewer");
+            let scroll_viewer = context.widget_from_id("TextBoxScrollViewer");
 
             if let Ok(bounds) = scroll_viewer.unwrap().borrow_property::<Bounds>() {
                 scroll_viewer_width = bounds.width;
@@ -133,7 +135,7 @@ impl State for TextBoxState {
         // Adjust offset of text and cursor if cursor position is out of bounds
 
         {
-            let cursor = context.widget_from_key("Cursor");
+            let cursor = context.widget_from_id("TextBoxCursor");
 
             if let Ok(bounds) = cursor.unwrap().borrow_mut_property::<Bounds>() {
                 if bounds.x < 0 || bounds.x > scroll_viewer_width as i32 {
@@ -146,7 +148,7 @@ impl State for TextBoxState {
 
         if cursor_x_delta != 0 {
             {
-                let text_block = context.widget_from_key("TextBlock");
+                let text_block = context.widget_from_id("TextBoxTextBlock");
 
                 if let Ok(bounds) = text_block.unwrap().borrow_mut_property::<Bounds>() {
                     bounds.x += cursor_x_delta;
@@ -180,15 +182,12 @@ impl Widget for TextBox {
     fn create() -> Template {
         let label = SharedProperty::new(Label::default());
         let water_mark = SharedProperty::new(WaterMark::default());
-        let selector = SharedProperty::new(Selector::from("textbox"));
+        let selector = Selector::from("textbox");
         let selection = SharedProperty::new(TextSelection::default());
         let offset = SharedProperty::new(Offset::default());
         let focused = SharedProperty::new(Focused(false));
         let state = Rc::new(TextBoxState::default());
         let click_state = state.clone();
-        let text_block_key = WidgetKey::from("TextBlock");
-        let scroll_viewer_key = WidgetKey::from("ScrollViewer");
-        let cursor_key = WidgetKey::from("Cursor");
 
         Template::default()
             .as_parent_type(ParentType::Single)
@@ -202,16 +201,16 @@ impl Widget for TextBox {
                                     .with_child(
                                         WaterMarkTextBlock::create()
                                             .with_shared_property(label.clone())
-                                            .with_shared_property(selector.clone())
                                             .with_shared_property(water_mark.clone())
-                                            .with_key(text_block_key.clone()),
+                                            .with_shared_property(focused.clone())
+                                            .with_property(selector.clone().with_id("TextBoxTextBlock")),
                                     )
                                     .with_shared_property(offset.clone())
                                     .with_property(ScrollViewerMode::new(
                                         ScrollMode::None,
                                         ScrollMode::None,
                                     ))
-                                    .with_key(scroll_viewer_key.clone()),
+                                    .with_property(selector.clone().with_id("TextBoxScrollViewer")),
                             )
                             .with_child(
                                 Cursor::create()
@@ -219,7 +218,7 @@ impl Widget for TextBox {
                                     .with_shared_property(selection.clone())
                                     .with_shared_property(offset.clone())
                                     .with_shared_property(focused.clone())
-                                    .with_key(cursor_key.clone()),
+                                    .with_property(Selector::from("cursor").with_id("TextBoxCursor")),
                             )
                             .with_event_handler(MouseEventHandler::default().on_mouse_down(
                                 Rc::new(move |pos: Point| -> bool {
@@ -228,19 +227,17 @@ impl Widget for TextBox {
                                 }),
                             )),
                     )
-                    .with_shared_property(selector.clone()),
+                    .with_shared_property(focused.clone())
+                    .with_property(selector.clone()),
             )
             .with_state(state.clone())
             .with_debug_name("TextBox")
             .with_shared_property(label)
-            .with_shared_property(selector)
+            .with_property(selector)
             .with_shared_property(water_mark)
             .with_shared_property(selection)
             .with_shared_property(offset)
             .with_shared_property(focused)
-            .with_child_key(text_block_key)
-            .with_child_key(cursor_key)
-            .with_child_key(scroll_viewer_key)
             .with_event_handler(
                 KeyEventHandler::default()
                     .on_key_down(Rc::new(move |key: Key| -> bool { state.update_text(key) })),

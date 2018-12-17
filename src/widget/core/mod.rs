@@ -1,14 +1,12 @@
 use theme::Selector;
 
 pub use self::context::Context;
-pub use self::key_chain::{WidgetKey, KeyChain};
 pub use self::property::{SharedProperty, PropertyResult};
 pub use self::state::State;
 pub use self::template::Template;
 pub use self::widget_container::WidgetContainer;
 
 mod context;
-mod key_chain;
 mod property;
 mod state;
 mod template;

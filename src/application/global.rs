@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use dces::Entity;
 
 #[derive(Default)]
@@ -5,4 +7,7 @@ use dces::Entity;
 pub struct Global {
     /// Contains the current focues widget.
     pub focused_widget: Option<Entity>,
+
+    /// Used to reference widgets by its css id.
+    pub id_map: HashMap<String, Entity>,
 }
