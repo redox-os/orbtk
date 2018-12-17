@@ -1,5 +1,7 @@
 use std::any::{Any, TypeId};
 
+use dces::Entity;
+
 use {Event, EventStrategy};
 
 #[derive(Debug)]
@@ -10,13 +12,15 @@ pub enum EventError {
 pub struct EventBox {
     event: Box<Any>,
     event_type: TypeId,
+    pub source: Entity,
     pub strategy: EventStrategy,
 }
 
 impl EventBox {
-    pub fn new<E: Event>(event: E, strategy: EventStrategy) -> Self {
+    pub fn new<E: Event>(event: E, strategy: EventStrategy, source: Entity) -> Self {
         EventBox {
             event: Box::new(event),
+            source: source,
             event_type: TypeId::of::<E>(),
             strategy,
         }
@@ -57,12 +61,12 @@ impl EventQueue {
         self.event_queue.append(other);
     }
 
-    pub fn register_event_width_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
-        self.event_queue.push(EventBox::new::<E>(event, strategy));
+    pub fn register_event_width_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy, source: Entity) {
+        self.event_queue.push(EventBox::new::<E>(event, strategy, source));
     }
 
-    pub fn register_event<E: Event>(&mut self, event: E) {
-        self.event_queue.push(EventBox::new::<E>(event, EventStrategy::BottomUp));
+    pub fn register_event<E: Event>(&mut self, event: E, source: Entity) {
+        self.event_queue.push(EventBox::new::<E>(event, EventStrategy::BottomUp, source));
     }
 
     pub fn dequeue(&mut self) -> Option<EventBox> {

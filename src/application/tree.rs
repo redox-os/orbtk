@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::BTreeMap;
 
 use {Entity, NotFound, EntityContainer};
@@ -9,9 +9,16 @@ pub struct Tree {
     pub root: Entity,
     pub children: BTreeMap<Entity, Vec<Entity>>,
     pub parent: BTreeMap<Entity, Entity>,
+    iterator_start_node: Cell<Entity>,
 }
 
 impl Tree {
+    /// Configure the tree iterator with a start node.
+    pub fn with_start_node(&self, start_node: Entity) -> &Self {
+        self.iterator_start_node.set(start_node);
+        self
+    }
+
     /// Registers a new widget `entity` as node.
     pub fn register_node(&mut self, entity: Entity) {
         self.children.insert(entity, vec![]);
@@ -41,6 +48,12 @@ impl Tree {
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
+
+    fn request_start_node(&self) -> Entity {
+        let start_node = self.iterator_start_node.get();
+        self.iterator_start_node.set(self.root);
+        start_node
+    }
 }
 
 impl EntityContainer for Tree {
@@ -59,9 +72,12 @@ impl<'a> IntoIterator for &'a Tree {
     type IntoIter = TreeIterator<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
+        let start_node = self.request_start_node();
+
         TreeIterator {
             tree: self,
             path: RefCell::new(vec![]),
+            start_node,
         }
     }
 }
@@ -70,6 +86,7 @@ impl<'a> IntoIterator for &'a Tree {
 pub struct TreeIterator<'a> {
     tree: &'a Tree,
     path: RefCell<Vec<Entity>>,
+    start_node: Entity,
 }
 
 impl<'a> Iterator for TreeIterator<'a> {
@@ -80,7 +97,7 @@ impl<'a> Iterator for TreeIterator<'a> {
         let mut result = None;
 
         if path.is_empty() {
-            result = Some(self.tree.root);
+            result = Some(self.start_node);
         } else {
             let mut current_node = path[path.len() - 1];
 

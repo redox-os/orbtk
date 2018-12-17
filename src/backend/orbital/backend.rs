@@ -108,7 +108,7 @@ impl Backend for OrbitalBackend {
                         self.event_queue.borrow_mut().register_event(MouseUpEvent {
                             button,
                             position: self.mouse_position,
-                        })
+                        }, 0)
                     } else {
                         let button = {
                             if button.left {
@@ -124,7 +124,7 @@ impl Backend for OrbitalBackend {
                             .register_event(MouseDownEvent {
                                 button,
                                 position: self.mouse_position,
-                            });
+                            }, 0);
                     }
 
                     self.mouse_buttons = (button.left, button.middle, button.right);
@@ -147,17 +147,17 @@ impl Backend for OrbitalBackend {
                     if key_event.pressed {
                         self.event_queue
                             .borrow_mut()
-                            .register_event(KeyUpEvent { key });
+                            .register_event(KeyUpEvent { key }, 0);
                     } else {
                         self.event_queue
                             .borrow_mut()
-                            .register_event(KeyDownEvent { key });
+                            .register_event(KeyDownEvent { key }, 0);
                     }
                 }
                 orbclient::EventOption::Quit(_quit_event) => {
                     self.event_queue
                         .borrow_mut()
-                        .register_event(SystemEvent::Quit);
+                        .register_event(SystemEvent::Quit, 0);
                     self.running = false;
                 }
                 _ => {}

@@ -29,9 +29,6 @@ impl RenderObject for RectangleRenderObject {
 
         if let Ok(selector) = widget.borrow_property::<Selector>() {
             if let Ok(bounds) = widget.borrow_property::<Bounds>() {
-                if selector.element == Some(String::from("menu")) {
-                    println!("aa");
-                }
                 renderer.render_rectangle(
                     bounds,
                     &parent_bounds,

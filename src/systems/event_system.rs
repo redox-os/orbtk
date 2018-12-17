@@ -41,7 +41,7 @@ impl EventSystem {
     ) {
         let mut matching_nodes = vec![];
 
-        for node in tree.into_iter() {
+        for node in tree.with_start_node(event.source).into_iter() {
             let widget = WidgetContainer::new(node, ecm);
 
             // MouseDownEvent handling
@@ -151,6 +151,7 @@ impl EventSystem {
                                 position: event.position,
                             },
                             EventStrategy::BottomUp,
+                            *node,
                         ))
                     }
 
