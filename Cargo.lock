@@ -59,7 +59,7 @@ dependencies = [
 [[package]]
 name = "dces"
 version = "0.1.3"
-source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git#cd2969c40f0f8aaac394cec5d043759c4b15bafd"
+source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git#b6fd827b02d0618e13e7a9de36a62b0aca6b631b"
 
 [[package]]
 name = "discard"

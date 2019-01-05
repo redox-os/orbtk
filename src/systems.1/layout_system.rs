@@ -23,6 +23,7 @@ pub struct LayoutSystem {
     pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
     // pub backend: Rc<RefCell<Backend>>,
     pub update: Rc<Cell<bool>>,
+    pub theme: Arc<Theme>,
 }
 
 impl System<Tree> for LayoutSystem {
@@ -32,6 +33,7 @@ impl System<Tree> for LayoutSystem {
             tree: &Tree,
             constraint: &Constraint,
             entity: Entity,
+            theme: &Arc<Theme>,
             layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
         ) -> (u32, u32) {
             let mut size: Option<(u32, u32)> = None;
@@ -46,6 +48,7 @@ impl System<Tree> for LayoutSystem {
                             &constraint,
                             &tree.children[&entity],
                             size,
+                            theme,
                         );
                     }
 
@@ -72,6 +75,7 @@ impl System<Tree> for LayoutSystem {
                             tree,
                             &child_bc,
                             child,
+                            theme,
                             layout_objects,
                         ));
                     }
@@ -88,14 +92,6 @@ impl System<Tree> for LayoutSystem {
         // let mut backend = self.backend.borrow_mut();
         // let layout_context = backend.layout_context();
 
-        // let size = {
-        //     if let Ok(global) = ecm.borrow_component::<Global>(0) {
-        //         if let Some(window) = global.window {
-                    
-        //         }
-        //     }
-        // }
-
         layout_rec(
             ecm,
             &tree,
@@ -108,6 +104,7 @@ impl System<Tree> for LayoutSystem {
                 height: 0,
             },
             root,
+            &self.theme,
             &self.layout_objects,
         );
     }

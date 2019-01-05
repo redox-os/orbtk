@@ -41,7 +41,6 @@ impl LayoutObject for FlexLayoutObject {
         constraint: &Constraint,
         children: &[Entity],
         size: Option<(u32, u32)>,
-        _theme: &Theme,
     ) -> LayoutResult {
         if let Some(size) = size {
             self.current_child.set(self.current_child.get() + 1);

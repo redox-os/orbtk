@@ -18,7 +18,6 @@ impl LayoutObject for CenterLayoutObject {
         constraint: &Constraint,
         children: &[Entity],
         size: Option<(u32, u32)>,
-        _theme: &Theme,
     ) -> LayoutResult {
         if let Some(size) = size {
             let width = {

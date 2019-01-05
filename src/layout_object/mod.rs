@@ -39,6 +39,5 @@ pub trait LayoutObject {
         constraint: &Constraint,
         children: &[Entity],
         size: Option<(u32, u32)>,
-        theme: &Theme,
     ) -> LayoutResult;
 }

@@ -2,9 +2,10 @@ use std::cell::Cell;
 
 use dces::{Entity, EntityComponentManager};
 
+use application::Global;
 use layout_object::{LayoutObject, LayoutResult};
 use properties::Constraint;
-use theme::{Selector, Theme};
+use theme::Selector;
 
 #[derive(Default)]
 pub struct FixedSizeLayoutObject {
@@ -26,14 +27,16 @@ impl LayoutObject for FixedSizeLayoutObject {
         constraint: &Constraint,
         children: &[Entity],
         size: Option<(u32, u32)>,
-        theme: &Theme,
     ) -> LayoutResult {
         if let Some(_size) = size {
             LayoutResult::Size((self.width.get(), self.height.get()))
         } else {
             if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-                self.width.set(theme.uint("width", selector) as u32);
-                self.height.set(theme.uint("height", selector) as u32);
+                if let Ok(global) = ecm.borrow_component::<Global>(0) {
+                    self.width.set(global.theme.uint("width", selector) as u32);
+                    self.height
+                        .set(global.theme.uint("height", selector) as u32);
+                }
             }
 
             if children.is_empty() {

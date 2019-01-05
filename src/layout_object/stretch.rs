@@ -1,5 +1,6 @@
 use std::cell::Cell;
 
+use application::Global;
 use dces::{Entity, EntityComponentManager};
 use enums::Placement;
 use layout_object::{LayoutObject, LayoutResult};
@@ -27,7 +28,6 @@ impl LayoutObject for StretchLayoutObject {
         constraint: &Constraint,
         children: &[Entity],
         size: Option<(u32, u32)>,
-        theme: &Theme,
     ) -> LayoutResult {
         if let Some(size) = size {
             self.current_child.set(self.current_child.get() + 1);
@@ -77,8 +77,11 @@ impl LayoutObject for StretchLayoutObject {
             }
         } else {
             if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-                self.width.set(theme.uint("width", selector) as u32);
-                self.height.set(theme.uint("height", selector) as u32);
+                if let Ok(global) = ecm.borrow_component::<Global>(0) {
+                    self.width.set(global.theme.uint("width", selector) as u32);
+                    self.height
+                        .set(global.theme.uint("height", selector) as u32);
+                }
 
                 if self.width.get() == 0 {
                     self.width.set(constraint.width);

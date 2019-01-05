@@ -22,7 +22,6 @@ impl LayoutObject for FontIconSizeLayoutObject {
         _constraint: &Constraint,
         _children: &[Entity],
         _size: Option<(u32, u32)>,
-        theme: &Theme,
     ) -> LayoutResult {
         if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
 

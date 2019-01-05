@@ -1,7 +1,8 @@
+use application::Global;
 use dces::{Entity, EntityComponentManager};
 use layout_object::{LayoutObject, LayoutResult};
 use properties::Constraint;
-use theme::{Selector, Theme};
+use theme::Selector;
 
 pub struct RootLayoutObject;
 
@@ -19,7 +20,6 @@ impl LayoutObject for RootLayoutObject {
         constraint: &Constraint,
         children: &[Entity],
         size: Option<(u32, u32)>,
-        theme: &Theme,
     ) -> LayoutResult {
         if let Some(size) = size {
             LayoutResult::Size(size)
@@ -32,13 +32,17 @@ impl LayoutObject for RootLayoutObject {
                 let child_constraint = Constraint::default();
 
                 if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-                    child_constraint
-                        .with_min_width(theme.uint("min-width", selector) as i32)
-                        .with_max_width(theme.uint("max-width", selector) as i32)
-                        .with_width(theme.uint("width", selector) as i32)
-                        .with_min_height(theme.uint("min_height", selector) as i32)
-                        .with_max_height(theme.uint("max_height", selector) as i32)
-                        .with_height(theme.uint("height", selector) as i32)
+                    if let Ok(global) = ecm.borrow_component::<Global>(0) {
+                        child_constraint
+                            .with_min_width(global.theme.uint("min-width", selector) as i32)
+                            .with_max_width(global.theme.uint("max-width", selector) as i32)
+                            .with_width(global.theme.uint("width", selector) as i32)
+                            .with_min_height(global.theme.uint("min_height", selector) as i32)
+                            .with_max_height(global.theme.uint("max_height", selector) as i32)
+                            .with_height(global.theme.uint("height", selector) as i32)
+                    } else {
+                        child_constraint
+                    }
                 } else {
                     child_constraint
                 }

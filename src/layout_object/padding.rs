@@ -1,9 +1,10 @@
 use dces::{Entity, EntityComponentManager};
 
+use application::Global;
 use layout_object::LayoutObject;
-use properties::{Constraint, Padding, Bounds};
+use properties::{Bounds, Constraint, Padding};
 use systems::LayoutResult;
-use theme::{Selector, Theme};
+use theme::Selector;
 
 pub struct PaddingLayoutObject;
 
@@ -21,21 +22,24 @@ impl LayoutObject for PaddingLayoutObject {
         constraint: &Constraint,
         children: &[Entity],
         size: Option<(u32, u32)>,
-        theme: &Theme,
     ) -> LayoutResult {
         let padding = {
             let padding = Padding::default();
             if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-                let pad = theme.uint("padding", selector) as i32;
+                if let Ok(global) = ecm.borrow_component::<Global>(0) {
+                    let pad = global.theme.uint("padding", selector) as i32;
 
-                if pad > 0 {
-                    padding.with(pad)
+                    if pad > 0 {
+                        padding.with(pad)
+                    } else {
+                        padding
+                            .with_left(global.theme.uint("padding-left", selector) as i32)
+                            .with_top(global.theme.uint("padding-top", selector) as i32)
+                            .with_right(global.theme.uint("padding-right", selector) as i32)
+                            .with_bottom(global.theme.uint("padding-bottom", selector) as i32)
+                    }
                 } else {
                     padding
-                        .with_left(theme.uint("padding-left", selector) as i32)
-                        .with_top(theme.uint("padding-top", selector) as i32)
-                        .with_right(theme.uint("padding-right", selector) as i32)
-                        .with_bottom(theme.uint("padding-bottom", selector) as i32)
                 }
             } else {
                 padding
@@ -67,20 +71,21 @@ impl LayoutObject for PaddingLayoutObject {
             LayoutResult::Size(constraint.perform((width, height)))
         } else {
             if children.is_empty() {
-
                 let mut width = constraint.max_width;
                 let mut height = constraint.max_height;
 
                 if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-                    let w = theme.uint("width", selector);
-                    let h = theme.uint("height", selector);
+                    if let Ok(global) = ecm.borrow_component::<Global>(0) {
+                        let w = global.theme.uint("width", selector);
+                        let h = global.theme.uint("height", selector);
 
-                    if w > 0 {
-                        width = w;
-                    }
+                        if w > 0 {
+                            width = w;
+                        }
 
-                    if h > 0 {
-                        height = h;
+                        if h > 0 {
+                            height = h;
+                        }
                     }
                 }
 

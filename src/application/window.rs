@@ -1,16 +1,16 @@
+use std::any::TypeId;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::sync::atomic::{self, AtomicBool};
 use std::sync::Arc;
-use std::any::TypeId;
 
 use std::collections::BTreeMap;
 
 use dces::{Entity, World};
 use orbrender;
 use orbrender::backend::Runner;
-use orbrender::traits;
 use orbrender::render_objects::Rectangle;
+use orbrender::traits;
 
 use application::{Application, Tree};
 // use backend::{target_backend, BackendRunner};
@@ -18,7 +18,10 @@ use event::EventHandler;
 use layout_object::{LayoutObject, RootLayoutObject};
 use properties::{Bounds, Point};
 // use render_object::RenderObject;
-use systems::{EventSystem, LayoutSystem, PostLayoutStateSystem, StateSystem};
+use systems::{
+    EventSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, RequestEventsSystem,
+    StateSystem,
+};
 use theme::Theme;
 use widget::{PropertyResult, State, Template};
 use Global;
@@ -111,29 +114,35 @@ impl<'a> WindowSupplier<'a> {
             .build();
 
         let update = Arc::new(AtomicBool::new(true));
-        
+        let running = Arc::new(AtomicBool::new(true));
+
+        world
+            .create_system(RenderSystem {
+                update: update.clone(),
+            })
+            .with_priority(4)
+            .build();
+
+        world
+            .create_system(RequestEventsSystem {
+                running: running.clone(),
+            })
+            .with_priority(5)
+            .build();
+
+        // add window to global
+        if let Ok(global) = world
+            .entity_component_manager()
+            .borrow_mut_component::<Global>(0)
+        {
+            global.window = Some(window);
+            global.theme = self.theme;
+        }
 
         self.application.main_window_runner = Some(Runner::new(Box::new(move || {
-            if update.load(atomic::Ordering::Acquire) {
-                window.render();
-                update.store(false, atomic::Ordering::Release);
-            }
-
             world.run();
 
-            for event in window.events() {
-                match event {
-                    orbrender::events::Event::System(system_event) => match system_event {
-                        orbrender::events::SystemEvent::Quit => {
-                            return false;
-                        }
-                        _ => {}
-                    },
-                    _ => {}
-                }
-            }
-
-            true
+            running.load(atomic::Ordering::Acquire)
         })));
     }
 }
@@ -266,7 +275,6 @@ fn build_tree(
     expand(
         window,
         world,
-        // render_objects,
         layout_objects,
         handlers,
         states,
