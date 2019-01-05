@@ -5,7 +5,7 @@ use cssparser::{
     Token,
 };
 
-use orbclient::Color;
+use super::properties::Color;
 
 use std::mem;
 use std::path::Path;

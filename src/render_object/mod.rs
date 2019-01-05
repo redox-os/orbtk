@@ -5,12 +5,12 @@ use widget::Context;
 use properties::Point;
 
 pub use self::font_icon::FontIconRenderObject;
-pub use self::image::ImageRenderObject;
+// pub use self::image::ImageRenderObject;
 pub use self::rectangle::RectangleRenderObject;
 pub use self::text::TextRenderObject;
 
 mod font_icon;
-mod image;
+// mod image;
 mod rectangle;
 mod text;
 

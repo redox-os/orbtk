@@ -3,12 +3,13 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use dces::{Component, ComponentBox};
+use orbrender::render_objects::RenderObject;
 
 
 use enums::ParentType;
 use event::EventHandler;
 use layout_object::{LayoutObject, RootLayoutObject};
-use render_object::RenderObject;
+// use render_object::RenderObject;
 use super::{State, SharedProperty};
 
 
@@ -19,7 +20,7 @@ pub struct Template {
     pub parent_type: ParentType,
     pub state: Option<Rc<State>>,
     pub event_handlers: Vec<Rc<EventHandler>>,
-    pub render_object: Option<Box<RenderObject>>,
+    pub render_object: Option<TypeId>,
     pub layout_object: Box<LayoutObject>,
     pub properties: HashMap<TypeId, ComponentBox>,
     pub shared_properties: HashMap<TypeId, SharedProperty>,
@@ -85,8 +86,8 @@ impl Template {
     }
 
     /// Used to add a `render_object' to the template. Only one `render_object` can be added.
-    pub fn with_render_object(mut self, render_object: impl Into<Box<dyn RenderObject>>) -> Self {
-        self.render_object = Some(render_object.into());
+    pub fn with_render_object(mut self, render_object: TypeId) -> Self {
+        self.render_object = Some(render_object);
         self
     }
 

@@ -1,6 +1,10 @@
 extern crate orbtk;
 use orbtk::*;
 
+extern crate orbrender;
+use orbrender::structs::Size;
+use orbrender::window::WindowBuilder;
+
 use std::cell::Cell;
 use std::rc::Rc;
 
@@ -23,15 +27,15 @@ impl State for MainViewState {
     }
 }
 
-fn create_header(text: &str) -> Template {
-    TextBlock::create()
-        .with_property(Label::from(text))
-        .with_property(Selector::from("textblock").with_class("h1"))
-}
+// fn create_header(text: &str) -> Template {
+//     TextBlock::create()
+//         .with_property(Label::from(text))
+//         .with_property(Selector::from("textblock").with_class("h1"))
+// }
 
-fn create_space_row() -> Template {
-    Row::create().with_property(Selector::from("row").with_class("space"))
-}
+// fn create_space_row() -> Template {
+//     Row::create().with_property(Selector::from("row").with_class("space"))
+// }
 
 struct MainView;
 
@@ -43,66 +47,72 @@ impl Widget for MainView {
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_state(state.clone())
-            .with_child(
-                create_space_row()
-                    .with_child(
-                        Column::create()
-                            .with_child(Container::create().with_child(create_header("Buttons")))
-                            .with_child(
-                                Container::create().with_child(
-                                    Button::create()
-                                        .with_property(Label::from("Button"))
-                                        .with_property(FontIcon::from(
-                                            theme::material_font_icons::CHECK_FONT_ICON,
-                                        ))
-                                        .with_event_handler(MouseEventHandler::default().on_click(
-                                            Rc::new(move |_pos: Point| -> bool {
-                                                state.increment();
-                                                true
-                                            }),
-                                        )),
-                                ),
-                            )
-                            .with_child(Container::create().with_child(
-                                ToggleButton::create().with_property(Label::from("ToggleButton")),
-                            ))
-                            .with_child(Container::create().with_child(
-                                CheckBox::create().with_property(Label::from("CheckBox")),
-                            ))
-                            .with_child(Container::create().with_child(Switch::create())),
-                    )
-                    .with_child(
-                        Column::create()
-                            .with_child(Container::create().with_child(create_header("Text")))
-                            .with_child(
-                                Container::create().with_child(
-                                    TextBlock::create()
-                                        .with_shared_property(button_count_label.clone())
-                                        .with_property(
-                                            Selector::from("textblock").with_class("fheight"),
-                                        ),
-                                ),
-                            )
-                            .with_child(Container::create().with_child(
-                                TextBox::create().with_property(WaterMark::from("TextBox...")),
-                            )), // .with_child(Container::create().with_child(
-                                //     TextBox::create().with_property(WaterMark::from("TextBox...")),
-                                // ))
-                    ),
-            )
+            // .with_child(
+            //     create_space_row()
+            //         .with_child(
+            //             Column::create()
+            //                 .with_child(Container::create().with_child(create_header("Buttons")))
+            //                 .with_child(
+            //                     Container::create().with_child(
+            //                         Button::create()
+            //                             .with_property(Label::from("Button"))
+            //                             .with_property(FontIcon::from(
+            //                                 theme::material_font_icons::CHECK_FONT_ICON,
+            //                             ))
+            //                             .with_event_handler(MouseEventHandler::default().on_click(
+            //                                 Rc::new(move |_pos: Point| -> bool {
+            //                                     state.increment();
+            //                                     true
+            //                                 }),
+            //                             )),
+            //                     ),
+            //                 )
+            //                 .with_child(Container::create().with_child(
+            //                     ToggleButton::create().with_property(Label::from("ToggleButton")),
+            //                 ))
+            //                 .with_child(Container::create().with_child(
+            //                     CheckBox::create().with_property(Label::from("CheckBox")),
+            //                 ))
+            //                 .with_child(Container::create().with_child(Switch::create())),
+            //         )
+            //         .with_child(
+            //             Column::create()
+            //                 .with_child(Container::create().with_child(create_header("Text")))
+            //                 .with_child(
+            //                     Container::create().with_child(
+            //                         TextBlock::create()
+            //                             .with_shared_property(button_count_label.clone())
+            //                             .with_property(
+            //                                 Selector::from("textblock").with_class("fheight"),
+            //                             ),
+            //                     ),
+            //                 )
+            //                 .with_child(Container::create().with_child(
+            //                     TextBox::create().with_property(WaterMark::from("TextBox...")),
+            //                 )), // .with_child(Container::create().with_child(
+            //                     //     TextBox::create().with_property(WaterMark::from("TextBox...")),
+            //                     // ))
+            //         ),
+            // )
             .with_shared_property(button_count_label)
             .with_debug_name("MainView")
     }
 }
 
 fn main() {
+    orbtk::initialize();
+
     let mut application = Application::default();
     application
-        .create_window()
-        .with_bounds(Bounds::new(0, 0, 420, 730))
-        .with_title("OrbTk - Widgets example")
+        .main_window(
+            WindowBuilder::default()
+                .with_size(Size::new(420.0, 730.0))
+                .with_title("OrbTk - Widgets example")
+                .build(),
+        )
         .with_root(MainView::create())
-        .with_debug_flag(false)
-        .build();
+        .with_debug_flag(true)
+        .finish();
+
     application.run();
 }

@@ -1,62 +1,37 @@
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
+use std::sync::atomic::{self, AtomicBool};
+use std::sync::Arc;
+use std::any::TypeId;
 
 use std::collections::BTreeMap;
 
 use dces::{Entity, World};
+use orbrender;
+use orbrender::backend::Runner;
+use orbrender::traits;
+use orbrender::render_objects::Rectangle;
 
 use application::{Application, Tree};
-use backend::{target_backend, BackendRunner};
+// use backend::{target_backend, BackendRunner};
 use event::EventHandler;
 use layout_object::{LayoutObject, RootLayoutObject};
-use properties::{Point, Bounds};
-use render_object::RenderObject;
-use systems::{PostLayoutStateSystem, EventSystem, LayoutSystem, RenderSystem, StateSystem};
+use properties::{Bounds, Point};
+// use render_object::RenderObject;
+use systems::{EventSystem, LayoutSystem, PostLayoutStateSystem, StateSystem};
 use theme::Theme;
 use widget::{PropertyResult, State, Template};
 use Global;
 
-/// Represents a window. Each window has its own tree, event pipline and backend.
-pub struct Window {
-    pub backend_runner: Box<BackendRunner>,
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
-    pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
-    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
-    pub update: Rc<Cell<bool>>,
-    pub debug_flag: Rc<Cell<bool>>,
-}
-
-impl Window {
-    /// Executes the given window unitl quit is requested.
-    pub fn run(&mut self) {
-        self.backend_runner.run(self.update.clone());
-    }
-}
-
-/// The `WindowBuilder` is used to define and build a `Window`.
-pub struct WindowBuilder<'a> {
+pub struct WindowSupplier<'a> {
     pub application: &'a mut Application,
-    pub bounds: Bounds,
-    pub title: String,
+    pub window: Box<traits::Window>,
     pub theme: Theme,
     pub root: Option<Template>,
     pub debug_flag: bool,
 }
 
-impl<'a> WindowBuilder<'a> {
-    /// Used to define the render `bounds` of the window.
-    pub fn with_bounds(mut self, bounds: Bounds) -> Self {
-        self.bounds = bounds;
-        self
-    }
-
-    /// Used to set the `title` of the window.
-    pub fn with_title<S: Into<String>>(mut self, title: S) -> Self {
-        self.title = title.into();
-        self
-    }
-
+impl<'a> WindowSupplier<'a> {
     /// Used to set the css `theme` of the window.
     pub fn with_theme(mut self, theme: Theme) -> Self {
         self.theme = theme;
@@ -76,26 +51,25 @@ impl<'a> WindowBuilder<'a> {
         self
     }
 
-    /// Creates the window with the given properties and builds its widget tree.
-    pub fn build(self) {
-        let (mut runner, backend) = target_backend(&self.title, self.bounds, self.theme);
+    pub fn finish(self) {
+        let mut window = self.window;
         let mut world = World::from_container(Tree::default());
-        let render_objects = Rc::new(RefCell::new(BTreeMap::new()));
+
         let layout_objects = Rc::new(RefCell::new(BTreeMap::new()));
         let handlers = Rc::new(RefCell::new(BTreeMap::new()));
         let states = Rc::new(RefCell::new(BTreeMap::new()));
         let update = Rc::new(Cell::new(true));
         let debug_flag = Rc::new(Cell::new(self.debug_flag));
 
-        if debug_flag.get() {
+        if self.debug_flag {
             println!("------ Start build tree ------\n");
         }
 
         if let Some(root) = self.root {
             build_tree(
+                &mut window,
                 root,
                 &mut world,
-                &render_objects,
                 &layout_objects,
                 &handlers,
                 &states,
@@ -105,7 +79,6 @@ impl<'a> WindowBuilder<'a> {
 
         world
             .create_system(EventSystem {
-                backend: backend.clone(),
                 handlers: handlers.clone(),
                 update: update.clone(),
             })
@@ -114,7 +87,6 @@ impl<'a> WindowBuilder<'a> {
 
         world
             .create_system(StateSystem {
-                backend: backend.clone(),
                 states: states.clone(),
                 update: update.clone(),
                 is_init: Cell::new(false),
@@ -124,7 +96,6 @@ impl<'a> WindowBuilder<'a> {
 
         world
             .create_system(LayoutSystem {
-                backend: backend.clone(),
                 layout_objects: layout_objects.clone(),
                 update: update.clone(),
             })
@@ -133,50 +104,55 @@ impl<'a> WindowBuilder<'a> {
 
         world
             .create_system(PostLayoutStateSystem {
-                backend: backend.clone(),
                 states: states.clone(),
                 update: update.clone(),
             })
             .with_priority(3)
             .build();
 
-        world
-            .create_system(RenderSystem {
-                backend: backend.clone(),
-                render_objects: render_objects.clone(),
-                update: update.clone(),
-                debug_flag: debug_flag.clone(),
-            })
-            .with_priority(4)
-            .build();
+        let update = Arc::new(AtomicBool::new(true));
+        
 
-        runner.world(world);
+        self.application.main_window_runner = Some(Runner::new(Box::new(move || {
+            if update.load(atomic::Ordering::Acquire) {
+                window.render();
+                update.store(false, atomic::Ordering::Release);
+            }
 
-        self.application.windows.push(Window {
-            backend_runner: runner,
-            render_objects,
-            layout_objects,
-            handlers,
-            states,
-            update,
-            debug_flag,
-        })
+            world.run();
+
+            for event in window.events() {
+                match event {
+                    orbrender::events::Event::System(system_event) => match system_event {
+                        orbrender::events::SystemEvent::Quit => {
+                            return false;
+                        }
+                        _ => {}
+                    },
+                    _ => {}
+                }
+            }
+
+            true
+        })));
     }
 }
 
 // Builds the widget tree.
 fn build_tree(
+    window: &mut Box<traits::Window>,
     root: Template,
     world: &mut World<Tree>,
-    render_objects: &Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
+    // render_objects: &Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
     layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
     handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
     states: &Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
     debug_flag: &Rc<Cell<bool>>,
 ) {
     fn expand(
+        window: &mut Box<traits::Window>,
         world: &mut World<Tree>,
-        render_objects: &Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
+        // render_objects: &Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
         layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
         handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
         states: &Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
@@ -227,7 +203,10 @@ fn build_tree(
             let entity = entity_builder.build();
 
             if let Some(render_object) = template.render_object {
-                render_objects.borrow_mut().insert(entity, render_object);
+                // todo: rendewrobject builder ...
+                if render_object == TypeId::of::<Rectangle>() {
+                    window.insert_rectangle(entity as usize, Rectangle::default());
+                }
             }
 
             layout_objects
@@ -269,8 +248,9 @@ fn build_tree(
 
         for child in template.children.drain(0..) {
             let child = expand(
+                window,
                 world,
-                render_objects,
+                // render_objects,
                 layout_objects,
                 handlers,
                 states,
@@ -284,8 +264,9 @@ fn build_tree(
     }
 
     expand(
+        window,
         world,
-        render_objects,
+        // render_objects,
         layout_objects,
         handlers,
         states,

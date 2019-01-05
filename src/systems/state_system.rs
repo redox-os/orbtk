@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use dces::{Entity, EntityComponentManager, System};
 
 use application::{Tree, Global};
-use backend::Backend;
+// use backend::Backend;
 use properties::{Enabled, Focused, Pressed, Selected};
 use widget::{
     add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
@@ -15,7 +15,7 @@ use theme::Selector;
 
 /// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {
-    pub backend: Rc<RefCell<Backend>>,
+    // pub backend: Rc<RefCell<Backend>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
     pub update: Rc<Cell<bool>>,
     pub is_init: Cell<bool>,
@@ -125,35 +125,35 @@ impl System<Tree> for StateSystem {
             return;
         }
 
-        let mut backend = self.backend.borrow_mut();
-        let state_context = backend.state_context();
-        let mut context = Context::new(tree.root, ecm, tree, &state_context.theme);
+        // let mut backend = self.backend.borrow_mut();
+        // let state_context = backend.state_context();
+        // let mut context = Context::new(tree.root, ecm, tree, &state_context.theme);
 
-        for node in tree.into_iter() {
-            context.entity = node;
-            {
-                let mut widget = context.widget();
+        // for node in tree.into_iter() {
+        //     context.entity = node;
+        //     {
+        //         let mut widget = context.widget();
 
-                let has_default_flags = self.has_default_flags(&widget);
-                if !has_default_flags && !self.states.borrow().contains_key(&node) {
-                    continue;
-                }
+        //         let has_default_flags = self.has_default_flags(&widget);
+        //         if !has_default_flags && !self.states.borrow().contains_key(&node) {
+        //             continue;
+        //         }
 
-                if has_default_flags {
-                    self.update_default_states(&mut widget);
-                }
-            }
+        //         if has_default_flags {
+        //             self.update_default_states(&mut widget);
+        //         }
+        //     }
 
-            if let Some(state) = self.states.borrow().get(&node) {
-                state.update(&mut context);
-            }
-        }
+        //     if let Some(state) = self.states.borrow().get(&node) {
+        //         state.update(&mut context);
+        //     }
+        // }
     }
 }
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 pub struct PostLayoutStateSystem {
-    pub backend: Rc<RefCell<Backend>>,
+    // pub backend: Rc<RefCell<Backend>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
     pub update: Rc<Cell<bool>>,
 }
@@ -164,14 +164,14 @@ impl System<Tree> for PostLayoutStateSystem {
             return;
         }
 
-        let mut backend = self.backend.borrow_mut();
-        let state_context = backend.state_context();
-        let mut context = Context::new(tree.root, ecm, tree, &state_context.theme);
+        // let mut backend = self.backend.borrow_mut();
+        // let state_context = backend.state_context();
+        // let mut context = Context::new(tree.root, ecm, tree, &state_context.theme);
 
-        for (node, state) in &*self.states.borrow() {
-            context.entity = *node;
+        // for (node, state) in &*self.states.borrow() {
+        //     context.entity = *node;
 
-            state.update_post_layout(&mut context);
-        }
+        //     state.update_post_layout(&mut context);
+        // }
     }
 }

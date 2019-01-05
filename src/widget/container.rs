@@ -1,6 +1,9 @@
+use std::any::TypeId;
+
+use orbrender::render_objects::Rectangle;
 
 use layout_object::PaddingLayoutObject;
-use render_object::{RectangleRenderObject};
+
 use theme::Selector;
 use widget::{Template, Widget};
 use enums::ParentType;
@@ -23,7 +26,7 @@ impl Widget for Container {
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_property(Selector::from("container"))
-            .with_render_object(RectangleRenderObject)
+            .with_render_object(TypeId::of::<Rectangle>())
             .with_layout_object(PaddingLayoutObject) 
             .with_debug_name("Container")
     }

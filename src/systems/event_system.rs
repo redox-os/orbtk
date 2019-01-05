@@ -5,7 +5,7 @@ use std::rc::Rc;
 use std::collections::BTreeMap;
 
 use application::Tree;
-use backend::Backend;
+// use backend::Backend;
 use dces::{Entity, EntityComponentManager, System};
 use event::{
     check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
@@ -16,7 +16,7 @@ use widget::WidgetContainer;
 use Global;
 
 pub struct EventSystem {
-    pub backend: Rc<RefCell<Backend>>,
+    // pub backend: Rc<RefCell<Backend>>,
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
     pub update: Rc<Cell<bool>>,
 }
@@ -190,26 +190,26 @@ impl EventSystem {
 
 impl System<Tree> for EventSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-        let mut backend = self.backend.borrow_mut();
-        let event_context = backend.event_context();
+        // let mut backend = self.backend.borrow_mut();
+        // let event_context = backend.event_context();
 
-        let mut new_events = vec![];
+        // let mut new_events = vec![];
 
-        for event in event_context.event_queue.borrow_mut().into_iter() {
-            match event.strategy {
-                EventStrategy::TopDown => {
-                    self.process_top_down_event(&event, tree, ecm, &mut new_events);
-                }
-                EventStrategy::BottomUp => {
-                    self.process_bottom_up_event(&event, tree, ecm, &mut new_events);
-                }
-                _ => {}
-            }
-        }
+        // for event in event_context.event_queue.borrow_mut().into_iter() {
+        //     match event.strategy {
+        //         EventStrategy::TopDown => {
+        //             self.process_top_down_event(&event, tree, ecm, &mut new_events);
+        //         }
+        //         EventStrategy::BottomUp => {
+        //             self.process_bottom_up_event(&event, tree, ecm, &mut new_events);
+        //         }
+        //         _ => {}
+        //     }
+        // }
 
-        event_context
-            .event_queue
-            .borrow_mut()
-            .append(&mut new_events);
+        // event_context
+        //     .event_queue
+        //     .borrow_mut()
+        //     .append(&mut new_events);
     }
 }
