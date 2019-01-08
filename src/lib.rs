@@ -1,12 +1,8 @@
 #![crate_name = "orbtk"]
 #![crate_type = "lib"]
-// #![deny(warnings)]
-
-
 
 pub use dces::prelude::*;
 
-use cssparser;
 #[macro_use]
 extern crate lazy_static;
 
@@ -31,7 +27,5 @@ pub mod properties;
 pub mod systems;
 pub mod theme;
 pub mod widget;
-
-use orbclient;
 
 
