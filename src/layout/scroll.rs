@@ -4,7 +4,7 @@ use dces::{Entity, EntityComponentManager};
 
 use crate::{
     enums::ScrollMode,
-    layout_object::LayoutObject,
+    layout::Layout,
     properties::{Bounds, Constraint, Offset, ScrollViewerMode},
     theme::Theme,
     LayoutResult,
@@ -13,17 +13,17 @@ use crate::{
 // todo: not finished yet!!!!
 
 #[derive(Default)]
-pub struct ScrollLayoutObject {
+pub struct ScrollLayout {
     child_bounds: Cell<Bounds>,
 }
 
-impl Into<Box<dyn LayoutObject>> for ScrollLayoutObject {
-    fn into(self) -> Box<dyn LayoutObject> {
+impl Into<Box<dyn Layout>> for ScrollLayout {
+    fn into(self) -> Box<dyn Layout> {
         Box::new(self)
     }
 }
 
-impl LayoutObject for ScrollLayoutObject {
+impl Layout for ScrollLayout {
     fn layout(
         &self,
         entity: Entity,

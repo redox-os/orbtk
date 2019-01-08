@@ -2,21 +2,21 @@ use dces::{Entity, EntityComponentManager};
 
 use crate::{
     backend::{FontMeasure, FONT_MEASURE},
-    layout_object::LayoutObject,
+    layout::Layout,
     properties::{Bounds, Constraint, Label, Offset, TextSelection},
     theme::{Selector, Theme},
     LayoutResult,
 };
 
-pub struct TextSelectionLayoutObject;
+pub struct TextSelectionLayout;
 
-impl Into<Box<dyn LayoutObject>> for TextSelectionLayoutObject {
-    fn into(self) -> Box<dyn LayoutObject> {
+impl Into<Box<dyn Layout>> for TextSelectionLayout {
+    fn into(self) -> Box<dyn Layout> {
         Box::new(self)
     }
 }
 
-impl LayoutObject for TextSelectionLayoutObject {
+impl Layout for TextSelectionLayout {
     fn layout(
         &self,
         entity: Entity,

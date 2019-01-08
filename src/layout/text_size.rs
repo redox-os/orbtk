@@ -2,21 +2,21 @@ use dces::{Entity, EntityComponentManager};
 
 use crate::{
     backend::{FontMeasure, FONT_MEASURE},
-    layout_object::LayoutObject,
+    layout::Layout,
     properties::{Constraint, Label},
     theme::{Selector, Theme},
     LayoutResult,
 };
 
-pub struct TextSizeLayoutObject;
+pub struct TextSizeLayout;
 
-impl Into<Box<dyn LayoutObject>> for TextSizeLayoutObject {
-    fn into(self) -> Box<dyn LayoutObject> {
+impl Into<Box<dyn Layout>> for TextSizeLayout {
+    fn into(self) -> Box<dyn Layout> {
         Box::new(self)
     }
 }
 
-impl LayoutObject for TextSizeLayoutObject {
+impl Layout for TextSizeLayout {
     fn layout(
         &self,
         entity: Entity,

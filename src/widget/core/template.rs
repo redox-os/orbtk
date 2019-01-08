@@ -7,7 +7,7 @@ use dces::{Component, ComponentBox};
 
 use crate::{enums::ParentType,
 event::EventHandler,
-layout_object::{LayoutObject, RootLayoutObject},
+layout::{Layout, RootLayout},
 render_object::RenderObject,};
 
 use super::{State, SharedProperty};
@@ -21,7 +21,7 @@ pub struct Template {
     pub state: Option<Rc<dyn State>>,
     pub event_handlers: Vec<Rc<dyn EventHandler>>,
     pub render_object: Option<Box<dyn RenderObject>>,
-    pub layout_object: Box<dyn LayoutObject>,
+    pub layout: Box<dyn Layout>,
     pub properties: HashMap<TypeId, ComponentBox>,
     pub shared_properties: HashMap<TypeId, SharedProperty>,
     pub debug_name: String,
@@ -35,7 +35,7 @@ impl Default for Template {
             state: None,
             event_handlers: vec![],
             render_object: None,
-            layout_object: Box::new(RootLayoutObject),
+            layout: Box::new(RootLayout),
             properties: HashMap::new(),
             shared_properties: HashMap::new(),
             debug_name: String::default(),
@@ -91,9 +91,9 @@ impl Template {
         self
     }
 
-    /// Used to add a `layout_object' to the template. Only one `layout_object` can be added.
-    pub fn with_layout_object(mut self, layout_object: impl Into<Box<dyn LayoutObject>>) -> Self {
-        self.layout_object = layout_object.into();
+    /// Used to add a `layout' to the template. Only one `layout` can be added.
+    pub fn with_layout(mut self, layout: impl Into<Box<dyn Layout>>) -> Self {
+        self.layout = layout.into();
         self
     }
 

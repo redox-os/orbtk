@@ -1,6 +1,6 @@
 use crate::{
     enums::ParentType,
-    layout_object::CenterLayoutObject,
+    layout::CenterLayout,
     widget::{Template, Widget},
 };
 
@@ -9,14 +9,14 @@ use crate::{
 /// # Others
 ///
 /// * `ParentType`- Single.
-/// * `CenterLayoutObject` - Used to layout the widget.
+/// * `CenterLayout` - Used to layout the widget.
 pub struct Center;
 
 impl Widget for Center {
     fn create() -> Template {
         Template::default()
             .as_parent_type(ParentType::Single)
-            .with_layout_object(CenterLayoutObject)
+            .with_layout(CenterLayout)
             .with_debug_name("Center")
     }
 }

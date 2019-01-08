@@ -10,7 +10,7 @@ use crate::{
     application::Tree,
     backend::Backend,
     enums::Visibility,
-    layout_object::LayoutObject,
+    layout::Layout,
     properties::{Bounds, Constraint},
     theme::Theme,
 };
@@ -22,7 +22,7 @@ pub enum LayoutResult {
 
 /// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calulated by the layout objects of layout widgets.
 pub struct LayoutSystem {
-    pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn LayoutObject>>>>,
+    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub backend: Rc<RefCell<dyn Backend>>,
     pub update: Rc<Cell<bool>>,
 }
@@ -35,14 +35,14 @@ impl System<Tree> for LayoutSystem {
             constraint: &Constraint,
             entity: Entity,
             theme: &Theme,
-            layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn LayoutObject>>>>,
+            layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         ) -> (u32, u32) {
             let mut size: Option<(u32, u32)> = None;
 
             loop {
                 let layout_result = {
                     let mut result = LayoutResult::Size((32, 32));
-                    if let Some(layout) = layout_objects.borrow().get(&entity) {
+                    if let Some(layout) = layouts.borrow().get(&entity) {
                         result = layout.layout(
                             entity,
                             ecm,
@@ -77,7 +77,7 @@ impl System<Tree> for LayoutSystem {
                             &child_bc,
                             child,
                             theme,
-                            layout_objects,
+                            layouts,
                         ));
                     }
                 }
@@ -106,7 +106,7 @@ impl System<Tree> for LayoutSystem {
             },
             root,
             &layout_context.theme,
-            &self.layout_objects,
+            &self.layouts,
         );
     }
 }

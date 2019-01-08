@@ -1,17 +1,17 @@
 use crate::{
-    properties::Bounds, Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult,
+    properties::Bounds, Constraint, Entity, EntityComponentManager, Layout, LayoutResult,
     Theme,
 };
 
-pub struct CenterLayoutObject;
+pub struct CenterLayout;
 
-impl Into<Box<dyn LayoutObject>> for CenterLayoutObject {
-    fn into(self) -> Box<dyn LayoutObject> {
+impl Into<Box<dyn Layout>> for CenterLayout {
+    fn into(self) -> Box<dyn Layout> {
         Box::new(self)
     }
 }
 
-impl LayoutObject for CenterLayoutObject {
+impl Layout for CenterLayout {
     fn layout(
         &self,
         _entity: Entity,

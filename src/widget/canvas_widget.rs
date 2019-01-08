@@ -1,5 +1,5 @@
 use crate::{
-    layout_object::StretchLayoutObject,
+    layout::StretchLayout,
     render_object::ImageRenderObject,
     theme::Selector,
     widget::{Template, Widget},
@@ -14,7 +14,7 @@ use crate::{
 /// # Others
 ///
 /// * `ParentType`- None.
-/// * `StretchLayoutObject` - Used to layout the widget.
+/// * `StretchLayout` - Used to layout the widget.
 /// * `ImageRenderObject` - Used to draw the image of the widget.
 pub struct CanvasWidget;
 
@@ -22,7 +22,7 @@ impl Widget for CanvasWidget {
     fn create() -> Template {
         Template::default()
             .with_property(Selector::from("imagewidget"))
-            .with_layout_object(StretchLayoutObject::default())
+            .with_layout(StretchLayout::default())
             .with_render_object(ImageRenderObject)
             .with_debug_name("ImageWidget")
     }

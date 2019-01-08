@@ -1,5 +1,5 @@
 use crate::{
-    layout_object::TextSizeLayoutObject,
+    layout::TextSizeLayout,
     properties::Label,
     render_object::TextRenderObject,
     theme::Selector,
@@ -16,7 +16,7 @@ use crate::{
 /// # Others
 ///
 /// * `ParentType`- None.
-/// * `TextSizeLayoutObject` - Used to layout the widget.
+/// * `TextSizeLayout` - Used to layout the widget.
 /// * `TextRenderObject` - Used to draw the text of the widget.
 pub struct TextBlock;
 
@@ -25,7 +25,7 @@ impl Widget for TextBlock {
         Template::default()
             .with_property(Label::from("TextBlock"))
             .with_property(Selector::from("textblock"))
-            .with_layout_object(TextSizeLayoutObject)
+            .with_layout(TextSizeLayout)
             .with_render_object(TextRenderObject)
             .with_debug_name("TextBlock")
     }

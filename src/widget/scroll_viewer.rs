@@ -1,6 +1,6 @@
 use crate::{
     enums::ParentType,
-    layout_object::ScrollLayoutObject,
+    layout::ScrollLayout,
     properties::{Offset, ScrollViewerMode},
     widget::{Template, Widget},
 };
@@ -16,7 +16,7 @@ use crate::{
 /// # Others
 ///
 /// * `ParentType`- Single.
-/// * `ScrollLayoutObject` - Used to layout the widget.
+/// * `ScrollLayout` - Used to layout the widget.
 pub struct ScrollViewer;
 
 impl Widget for ScrollViewer {
@@ -25,7 +25,7 @@ impl Widget for ScrollViewer {
             .as_parent_type(ParentType::Single)
             .with_property(Offset::default())
             .with_property(ScrollViewerMode::default())
-            .with_layout_object(ScrollLayoutObject::default())
+            .with_layout(ScrollLayout::default())
             .with_debug_name("ScrollViewer")
     }
 }

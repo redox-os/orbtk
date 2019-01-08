@@ -1,6 +1,6 @@
 use crate::{
     enums::ParentType,
-    layout_object::PaddingLayoutObject,
+    layout::PaddingLayout,
     render_object::RectangleRenderObject,
     theme::Selector,
     widget::{Template, Widget},
@@ -15,7 +15,7 @@ use crate::{
 /// # Others
 ///
 /// * `ParentType`- Single.
-/// * `PaddingLayoutObject` - Used to layout the widget.
+/// * `PaddingLayout` - Used to layout the widget.
 /// * `RectangleRenderObject` - Used to draw the widget.
 pub struct Container;
 
@@ -25,7 +25,7 @@ impl Widget for Container {
             .as_parent_type(ParentType::Single)
             .with_property(Selector::from("container"))
             .with_render_object(RectangleRenderObject)
-            .with_layout_object(PaddingLayoutObject)
+            .with_layout(PaddingLayout)
             .with_debug_name("Container")
     }
 }

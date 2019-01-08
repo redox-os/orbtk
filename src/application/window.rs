@@ -10,7 +10,7 @@ use crate::{
     application::{Application, Tree},
     backend::{target_backend, BackendRunner},
     event::EventHandler,
-    layout_object::{LayoutObject, RootLayoutObject},
+    layout::{Layout, RootLayout},
     properties::{Bounds, Point},
     render_object::RenderObject,
     systems::{EventSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem},
@@ -23,7 +23,7 @@ use crate::{
 pub struct Window {
     pub backend_runner: Box<dyn BackendRunner>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn LayoutObject>>>>,
+    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
@@ -84,7 +84,7 @@ impl<'a> WindowBuilder<'a> {
         let (mut runner, backend) = target_backend(&self.title, self.bounds, self.theme);
         let mut world = World::from_container(Tree::default());
         let render_objects = Rc::new(RefCell::new(BTreeMap::new()));
-        let layout_objects = Rc::new(RefCell::new(BTreeMap::new()));
+        let layouts = Rc::new(RefCell::new(BTreeMap::new()));
         let handlers = Rc::new(RefCell::new(BTreeMap::new()));
         let states = Rc::new(RefCell::new(BTreeMap::new()));
         let update = Rc::new(Cell::new(true));
@@ -99,7 +99,7 @@ impl<'a> WindowBuilder<'a> {
                 root,
                 &mut world,
                 &render_objects,
-                &layout_objects,
+                &layouts,
                 &handlers,
                 &states,
                 &debug_flag,
@@ -128,7 +128,7 @@ impl<'a> WindowBuilder<'a> {
         world
             .create_system(LayoutSystem {
                 backend: backend.clone(),
-                layout_objects: layout_objects.clone(),
+                layouts: layouts.clone(),
                 update: update.clone(),
             })
             .with_priority(2)
@@ -158,7 +158,7 @@ impl<'a> WindowBuilder<'a> {
         self.application.windows.push(Window {
             backend_runner: runner,
             render_objects,
-            layout_objects,
+            layouts,
             handlers,
             states,
             update,
@@ -172,7 +172,7 @@ fn build_tree(
     root: Template,
     world: &mut World<Tree>,
     render_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn LayoutObject>>>>,
+    layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     states: &Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     debug_flag: &Rc<Cell<bool>>,
@@ -180,7 +180,7 @@ fn build_tree(
     fn expand(
         world: &mut World<Tree>,
         render_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-        layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn LayoutObject>>>>,
+        layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
         states: &Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
         template: Template,
@@ -195,9 +195,9 @@ fn build_tree(
                 .with(Point::default())
                 .build();
 
-            layout_objects
+            layouts
                 .borrow_mut()
-                .insert(root, Box::new(RootLayoutObject));
+                .insert(root, Box::new(RootLayout));
         }
 
         let mut template = template;
@@ -233,9 +233,9 @@ fn build_tree(
                 render_objects.borrow_mut().insert(entity, render_object);
             }
 
-            layout_objects
+            layouts
                 .borrow_mut()
-                .insert(entity, template.layout_object);
+                .insert(entity, template.layout);
 
             let widget_handlers = template.event_handlers;
 
@@ -274,7 +274,7 @@ fn build_tree(
             let child = expand(
                 world,
                 render_objects,
-                layout_objects,
+                layouts,
                 handlers,
                 states,
                 child,
@@ -289,7 +289,7 @@ fn build_tree(
     expand(
         world,
         render_objects,
-        layout_objects,
+        layouts,
         handlers,
         states,
         root,

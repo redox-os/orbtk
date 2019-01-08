@@ -4,26 +4,26 @@ use std::cell::Cell;
 
 use crate::{
     enums::Placement,
-    layout_object::LayoutObject,
+    layout::Layout,
     properties::{Constraint, Bounds, Canvas},
     theme::{Selector, Theme},
     LayoutResult,
 };
 
 #[derive(Default)]
-pub struct StretchLayoutObject {
+pub struct StretchLayout {
     width: Cell<u32>,
     height: Cell<u32>,
     current_child: Cell<usize>,
 }
 
-impl Into<Box<dyn LayoutObject>> for StretchLayoutObject {
-    fn into(self) -> Box<dyn LayoutObject> {
+impl Into<Box<dyn Layout>> for StretchLayout {
+    fn into(self) -> Box<dyn Layout> {
         Box::new(self)
     }
 }
 
-impl LayoutObject for StretchLayoutObject {
+impl Layout for StretchLayout {
     fn layout(
         &self,
         entity: Entity,

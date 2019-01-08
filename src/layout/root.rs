@@ -1,21 +1,21 @@
 use dces::{Entity, EntityComponentManager};
 
 use crate::{
-    layout_object::LayoutObject,
+    layout::Layout,
     properties::Constraint,
     theme::{Selector, Theme},
     LayoutResult,
 };
 
-pub struct RootLayoutObject;
+pub struct RootLayout;
 
-impl Into<Box<dyn LayoutObject>> for RootLayoutObject {
-    fn into(self) -> Box<dyn LayoutObject> {
+impl Into<Box<dyn Layout>> for RootLayout {
+    fn into(self) -> Box<dyn Layout> {
         Box::new(self)
     }
 }
 
-impl LayoutObject for RootLayoutObject {
+impl Layout for RootLayout {
     fn layout(
         &self,
         entity: Entity,
