@@ -1,5 +1,5 @@
 use crate::{
-    layout_object::FixedSizeLayoutObject,
+    layout::FixedSizeLayout,
     theme::Selector,
     widget::{Template, Widget},
 };
@@ -19,7 +19,7 @@ impl Widget for Spacer {
     fn create() -> Template {
         Template::default()
             .with_property(Selector::from("spacer"))
-            .with_layout_object(FixedSizeLayoutObject::default())
+            .with_layout(FixedSizeLayout::default())
             .with_debug_name("Spacer")
     }
 }

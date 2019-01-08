@@ -4,12 +4,12 @@ use dces::{Entity, EntityComponentManager};
 
 use crate::{
     enums::Alignment,
-    layout_object::{LayoutObject, LayoutResult},
+    layout::{Layout, LayoutResult},
     properties::{Bounds, Constraint},
     theme::Theme,
 };
 
-pub struct FlexLayoutObject {
+pub struct FlexLayout {
     orientation: Alignment,
     current_child: Cell<usize>,
     current_position: RefCell<Vec<u32>>,
@@ -17,15 +17,15 @@ pub struct FlexLayoutObject {
     height: Cell<u32>,
 }
 
-impl Into<Box<dyn LayoutObject>> for FlexLayoutObject {
-    fn into(self) -> Box<dyn LayoutObject> {
+impl Into<Box<dyn Layout>> for FlexLayout {
+    fn into(self) -> Box<dyn Layout> {
         Box::new(self)
     }
 }
 
-impl FlexLayoutObject {
+impl FlexLayout {
     pub fn new(orientation: Alignment) -> Self {
-        FlexLayoutObject {
+        FlexLayout {
             orientation,
             current_child: Cell::new(0),
             current_position: RefCell::new(vec![]),
@@ -35,7 +35,7 @@ impl FlexLayoutObject {
     }
 }
 
-impl LayoutObject for FlexLayoutObject {
+impl Layout for FlexLayout {
     fn layout(
         &self,
         _entity: Entity,

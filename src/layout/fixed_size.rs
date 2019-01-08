@@ -3,24 +3,24 @@ use std::cell::Cell;
 use dces::{Entity, EntityComponentManager};
 
 use crate::{
-    layout_object::{LayoutObject, LayoutResult},
+    layout::{Layout, LayoutResult},
     properties::Constraint,
     theme::{Selector, Theme},
 };
 
 #[derive(Default)]
-pub struct FixedSizeLayoutObject {
+pub struct FixedSizeLayout {
     width: Cell<u32>,
     height: Cell<u32>,
 }
 
-impl Into<Box<dyn LayoutObject>> for FixedSizeLayoutObject {
-    fn into(self) -> Box<dyn LayoutObject> {
+impl Into<Box<dyn Layout>> for FixedSizeLayout {
+    fn into(self) -> Box<dyn Layout> {
         Box::new(self)
     }
 }
 
-impl LayoutObject for FixedSizeLayoutObject {
+impl Layout for FixedSizeLayout {
     fn layout(
         &self,
         entity: Entity,

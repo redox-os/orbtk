@@ -3,21 +3,21 @@ use orbclient::Renderer;
 use dces::{Entity, EntityComponentManager};
 
 use crate::{
-    layout_object::LayoutObject,
+    layout::Layout,
     properties::{Constraint, Image},
     theme::Theme,
     LayoutResult,
 };
 
-pub struct ImageSizeLayoutObject;
+pub struct ImageSizeLayout;
 
-impl Into<Box<dyn LayoutObject>> for ImageSizeLayoutObject {
-    fn into(self) -> Box<dyn LayoutObject> {
+impl Into<Box<dyn Layout>> for ImageSizeLayout {
+    fn into(self) -> Box<dyn Layout> {
         Box::new(self)
     }
 }
 
-impl LayoutObject for ImageSizeLayoutObject {
+impl Layout for ImageSizeLayout {
     fn layout(
         &self,
         entity: Entity,

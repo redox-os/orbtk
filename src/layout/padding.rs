@@ -1,21 +1,21 @@
 use dces::{Entity, EntityComponentManager};
 
 use crate::{
-    layout_object::LayoutObject,
+    layout::Layout,
     properties::{Bounds, Constraint, Padding},
     theme::{Selector, Theme},
     LayoutResult,
 };
 
-pub struct PaddingLayoutObject;
+pub struct PaddingLayout;
 
-impl Into<Box<dyn LayoutObject>> for PaddingLayoutObject {
-    fn into(self) -> Box<dyn LayoutObject> {
+impl Into<Box<dyn Layout>> for PaddingLayout {
+    fn into(self) -> Box<dyn Layout> {
         Box::new(self)
     }
 }
 
-impl LayoutObject for PaddingLayoutObject {
+impl Layout for PaddingLayout {
     fn layout(
         &self,
         entity: Entity,

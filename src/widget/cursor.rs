@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use crate::{
-    layout_object::TextSelectionLayoutObject,
+    layout::TextSelectionLayout,
     properties::{Label, TextSelection},
     render_object::RectangleRenderObject,
     theme::Selector,
@@ -39,7 +39,7 @@ impl State for CursorState {
 /// # Others
 ///
 /// * `RectangleRenderObject` - Used to draw the widget.
-/// * `TextSelectionLayoutObject` - Used to layout the widget.
+/// * `TextSelectionLayout` - Used to layout the widget.
 pub struct Cursor;
 
 impl Widget for Cursor {
@@ -49,7 +49,7 @@ impl Widget for Cursor {
             .with_property(Selector::from("cursor"))
             .with_property(TextSelection::default())
             .with_render_object(RectangleRenderObject)
-            .with_layout_object(TextSelectionLayoutObject)
+            .with_layout(TextSelectionLayout)
             .with_state(Rc::new(CursorState))
             .with_debug_name("Cursor")
     }

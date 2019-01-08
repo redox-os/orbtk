@@ -1,7 +1,7 @@
 use crate::{
     enums::Alignment,
     enums::ParentType,
-    layout_object::FlexLayoutObject,
+    layout::FlexLayout,
     widget::{Template, Widget},
 };
 
@@ -10,14 +10,14 @@ use crate::{
 /// # Others
 ///
 /// * `ParentType`- Multi.
-/// * `FlexLayoutObject` - Used to layout the widget.
+/// * `FlexLayout` - Used to layout the widget.
 pub struct Column;
 
 impl Widget for Column {
     fn create() -> Template {
         Template::default()
             .as_parent_type(ParentType::Multi)
-            .with_layout_object(FlexLayoutObject::new(Alignment::Vertical))
+            .with_layout(FlexLayout::new(Alignment::Vertical))
             .with_debug_name("Column")
     }
 }
