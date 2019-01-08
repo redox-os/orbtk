@@ -1,11 +1,12 @@
-use {Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult, Theme};
-
-use properties::Bounds;
+use crate::{
+    properties::Bounds, Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult,
+    Theme,
+};
 
 pub struct CenterLayoutObject;
 
-impl Into<Box<LayoutObject>> for CenterLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for CenterLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }
@@ -50,10 +51,7 @@ impl LayoutObject for CenterLayoutObject {
                 return LayoutResult::Size((constraint.max_width, constraint.max_height));
             }
 
-            LayoutResult::RequestChild(
-                children[0],
-                *constraint,
-            )
+            LayoutResult::RequestChild(children[0], *constraint)
         }
     }
 }

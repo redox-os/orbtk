@@ -1,5 +1,7 @@
-use std::cell::{Cell, Ref, RefCell, RefMut};
-use std::sync::Arc;
+use std::{
+    cell::{Cell, Ref, RefCell, RefMut},
+    sync::Arc,
+};
 
 pub trait CheckSet<T> {
     fn check_set(&self, value: T) -> bool;
@@ -7,7 +9,7 @@ pub trait CheckSet<T> {
 
 pub struct CloneCell<T: Clone + 'static> {
     inner: Arc<RefCell<T>>,
-    change_callbacks: Arc<RefCell<Vec<Arc<Fn(T)>>>>,
+    change_callbacks: Arc<RefCell<Vec<Arc<dyn Fn(T)>>>>,
 }
 
 impl<T: Clone> CloneCell<T> {
@@ -18,11 +20,11 @@ impl<T: Clone> CloneCell<T> {
         }
     }
 
-    pub fn borrow(&self) -> Ref<T> {
+    pub fn borrow(&self) -> Ref<'_, T> {
         self.inner.borrow()
     }
 
-    pub fn borrow_mut(&self) -> RefMut<T> {
+    pub fn borrow_mut(&self) -> RefMut<'_, T> {
         self.inner.borrow_mut()
     }
 

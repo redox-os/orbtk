@@ -1,7 +1,9 @@
-use layout_object::FontIconSizeLayoutObject;
-use render_object::FontIconRenderObject;
-use theme::Selector;
-use widget::{Template, Widget};
+use crate::{
+    layout_object::FontIconSizeLayoutObject,
+    render_object::FontIconRenderObject,
+    theme::Selector,
+    widget::{Template, Widget},
+};
 
 /// The `FontIconBlock` widget is used to draw an font icon. It is not interactive.
 ///

@@ -1,15 +1,17 @@
-use backend::{FontMeasure, FONT_MEASURE};
 use dces::{Entity, EntityComponentManager};
-use layout_object::LayoutObject;
-use properties::Constraint;
-use theme::{Selector, Theme};
 
-use {Label, LayoutResult};
+use crate::{
+    backend::{FontMeasure, FONT_MEASURE},
+    layout_object::LayoutObject,
+    properties::{Constraint, Label},
+    theme::{Selector, Theme},
+    LayoutResult,
+};
 
 pub struct TextSizeLayoutObject;
 
-impl Into<Box<LayoutObject>> for TextSizeLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for TextSizeLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

@@ -1,14 +1,16 @@
 use dces::{Entity, EntityComponentManager};
 
-use layout_object::LayoutObject;
-use properties::{Constraint, Padding, Bounds};
-use systems::LayoutResult;
-use theme::{Selector, Theme};
+use crate::{
+    layout_object::LayoutObject,
+    properties::{Bounds, Constraint, Padding},
+    theme::{Selector, Theme},
+    LayoutResult,
+};
 
 pub struct PaddingLayoutObject;
 
-impl Into<Box<LayoutObject>> for PaddingLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for PaddingLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }
@@ -67,7 +69,6 @@ impl LayoutObject for PaddingLayoutObject {
             LayoutResult::Size(constraint.perform((width, height)))
         } else {
             if children.is_empty() {
-
                 let mut width = constraint.max_width;
                 let mut height = constraint.max_height;
 

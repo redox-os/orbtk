@@ -1,15 +1,19 @@
-use std::cell::{Cell, RefCell};
-use std::collections::BTreeMap;
-use std::rc::Rc;
+use std::{
+    cell::{Cell, RefCell},
+    collections::BTreeMap,
+    rc::Rc,
+};
 
 use dces::{Entity, EntityComponentManager, System};
 
-use application::Tree;
-use backend::Backend;
-use enums::Visibility;
-use layout_object::LayoutObject;
-use properties::{Constraint, Bounds};
-use theme::Theme;
+use crate::{
+    application::Tree,
+    backend::Backend,
+    enums::Visibility,
+    layout_object::LayoutObject,
+    properties::{Bounds, Constraint},
+    theme::Theme,
+};
 
 pub enum LayoutResult {
     Size((u32, u32)),
@@ -18,8 +22,8 @@ pub enum LayoutResult {
 
 /// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calulated by the layout objects of layout widgets.
 pub struct LayoutSystem {
-    pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
-    pub backend: Rc<RefCell<Backend>>,
+    pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn LayoutObject>>>>,
+    pub backend: Rc<RefCell<dyn Backend>>,
     pub update: Rc<Cell<bool>>,
 }
 
@@ -31,7 +35,7 @@ impl System<Tree> for LayoutSystem {
             constraint: &Constraint,
             entity: Entity,
             theme: &Theme,
-            layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
+            layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn LayoutObject>>>>,
         ) -> (u32, u32) {
             let mut size: Option<(u32, u32)> = None;
 

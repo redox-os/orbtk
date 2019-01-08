@@ -8,9 +8,9 @@ use orbclient::Window as OrbWindow;
 
 use self::backend::{OrbitalBackend, OrbitalBackendRunner};
 use self::renderer::FONT_RENDERER;
-use backend::{Backend, FontMeasure};
-use properties::Bounds;
-use theme::Theme;
+use crate::backend::{Backend, FontMeasure};
+use crate::properties::Bounds;
+use crate::theme::Theme;
 
 mod backend;
 mod renderer;
@@ -19,7 +19,7 @@ pub fn target_backend(
     title: &str,
     bounds: Bounds,
     theme: Theme,
-) -> (Box<OrbitalBackendRunner>, Rc<RefCell<Backend>>) {
+) -> (Box<OrbitalBackendRunner>, Rc<RefCell<dyn Backend>>) {
     let backend = Rc::new(RefCell::new(OrbitalBackend::new(
         theme,
         OrbWindow::new_flags(bounds.x, bounds.y, bounds.width, bounds.height, title, &[]).unwrap(),

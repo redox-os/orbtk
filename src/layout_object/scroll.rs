@@ -2,10 +2,13 @@ use std::cell::Cell;
 
 use dces::{Entity, EntityComponentManager};
 
-use enums::ScrollMode;
-use layout_object::{LayoutObject, LayoutResult};
-use properties::{Constraint, Offset, Bounds, ScrollViewerMode};
-use theme::Theme;
+use crate::{
+    enums::ScrollMode,
+    layout_object::LayoutObject,
+    properties::{Bounds, Constraint, Offset, ScrollViewerMode},
+    theme::Theme,
+    LayoutResult,
+};
 
 // todo: not finished yet!!!!
 
@@ -14,8 +17,8 @@ pub struct ScrollLayoutObject {
     child_bounds: Cell<Bounds>,
 }
 
-impl Into<Box<LayoutObject>> for ScrollLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for ScrollLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

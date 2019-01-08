@@ -2,20 +2,24 @@
 //! A backend is used to open a window, draw on the screen and to call events.
 //! This module contains also an `OrbClient` based backend.
 
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
+use std::{
+    cell::{Cell, RefCell},
+    rc::Rc,
+};
 
 use dces::World;
 use orbclient::Color;
 
-use application::Tree;
-use event::EventQueue;
-use properties::{Bounds, Point};
-use theme::Theme;
+use crate::{
+    application::Tree,
+    event::EventQueue,
+    properties::{Bounds, Point},
+    theme::Theme,
+};
 
 /// Is used to provides data from the `Backend` to the `RenderSystem`.
 pub struct RenderContext<'a> {
-    pub renderer: &'a mut Renderer,
+    pub renderer: &'a mut dyn Renderer,
     pub theme: &'a Theme,
 }
 
@@ -73,10 +77,10 @@ pub trait Backend {
     fn drain_events(&mut self);
     fn bounds(&mut self, bounds: &Bounds);
     fn size(&self) -> (u32, u32);
-    fn render_context(&mut self) -> RenderContext;
-    fn layout_context(&mut self) -> LayoutContext;
-    fn event_context(&mut self) -> EventContext;
-    fn state_context(&mut self) -> StateContext;
+    fn render_context(&mut self) -> RenderContext<'_>;
+    fn layout_context(&mut self) -> LayoutContext<'_>;
+    fn event_context(&mut self) -> EventContext<'_>;
+    fn state_context(&mut self) -> StateContext<'_>;
 }
 
 /// This trait is used to create a backend runner.

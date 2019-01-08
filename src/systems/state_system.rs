@@ -1,22 +1,25 @@
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
-
-use std::collections::BTreeMap;
+use std::{
+    cell::{Cell, RefCell},
+    collections::BTreeMap,
+    rc::Rc,
+};
 
 use dces::{Entity, EntityComponentManager, System};
 
-use application::{Tree, Global};
-use backend::Backend;
-use properties::{Enabled, Focused, Pressed, Selected};
-use widget::{
-    add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
+use crate::{
+    application::{Global, Tree},
+    backend::Backend,
+    properties::{Enabled, Focused, Pressed, Selected},
+    theme::Selector,
+    widget::{
+        add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
+    },
 };
-use theme::Selector;
 
 /// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {
-    pub backend: Rc<RefCell<Backend>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
+    pub backend: Rc<RefCell<dyn Backend>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
     pub is_init: Cell<bool>,
 }
@@ -24,9 +27,8 @@ pub struct StateSystem {
 impl StateSystem {
     fn init(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
         for node in tree.into_iter() {
-
             // Add css id to global id map.
-            let mut id = if let Ok(selector) = ecm.borrow_component::<Selector>(node) {
+            let id = if let Ok(selector) = ecm.borrow_component::<Selector>(node) {
                 if let Some(id) = &selector.id {
                     Some((node, id.clone()))
                 } else {
@@ -37,16 +39,16 @@ impl StateSystem {
             };
 
             if let Some((entity, id)) = id {
-                if let Ok(global) =  ecm.borrow_mut_component::<Global>(0) {
+                if let Ok(global) = ecm.borrow_mut_component::<Global>(0) {
                     global.id_map.insert(id, entity);
                 }
-            }  
+            }
         }
 
         self.is_init.set(true);
     }
 
-    fn has_default_flags(&self, widget: &WidgetContainer) -> bool {
+    fn has_default_flags(&self, widget: &WidgetContainer<'_>) -> bool {
         if let Ok(_) = widget.borrow_property::<Enabled>() {
             return true;
         }
@@ -67,7 +69,7 @@ impl StateSystem {
     }
 
     // Used to updates default states like Pressed, Focused and Enabled.
-    fn update_default_states(&self, widget: &mut WidgetContainer) {
+    fn update_default_states(&self, widget: &mut WidgetContainer<'_>) {
         let mut enabled = (false, false);
         if let Ok(en) = widget.borrow_property::<Enabled>() {
             enabled = (true, en.0);
@@ -106,7 +108,12 @@ impl StateSystem {
     }
 
     // Updates the peseudo class of a widget by the given state.
-    fn update_default_state(&self, state: bool, pseudo_class: &str, widget: &mut WidgetContainer) {
+    fn update_default_state(
+        &self,
+        state: bool,
+        pseudo_class: &str,
+        widget: &mut WidgetContainer<'_>,
+    ) {
         if state {
             add_selector_to_widget(pseudo_class, widget)
         } else {
@@ -120,7 +127,7 @@ impl System<Tree> for StateSystem {
         if !self.is_init.get() {
             self.init(tree, ecm);
         }
-        
+
         if !self.update.get() {
             return;
         }
@@ -153,8 +160,8 @@ impl System<Tree> for StateSystem {
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 pub struct PostLayoutStateSystem {
-    pub backend: Rc<RefCell<Backend>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
+    pub backend: Rc<RefCell<dyn Backend>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
 }
 

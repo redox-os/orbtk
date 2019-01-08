@@ -1,10 +1,12 @@
 use std::rc::Rc;
 
-use event::{Event, EventBox, EventHandler};
-use properties::{Point, Bounds};
-use widget::WidgetContainer;
+use crate::{
+    event::{Event, EventBox, EventHandler},
+    properties::{Bounds, Point},
+    widget::WidgetContainer,
+};
 
-pub fn check_mouse_condition(position: Point, widget: &WidgetContainer) -> bool {
+pub fn check_mouse_condition(position: Point, widget: &WidgetContainer<'_>) -> bool {
     if let Ok(bounds) = widget.borrow_property::<Bounds>() {
         let mut rect = Bounds::new(0, 0, bounds.width, bounds.height);
 
@@ -51,9 +53,9 @@ pub struct MouseDownEvent {
 
 impl Event for MouseDownEvent {}
 
-pub type MouseHandler = Rc<Fn(Point) -> bool + 'static>;
+pub type MouseHandler = Rc<dyn Fn(Point) -> bool + 'static>;
 
-pub type OnMouseUp = Rc<Fn() + 'static>;
+pub type OnMouseUp = Rc<dyn Fn() + 'static>;
 
 #[derive(Default)]
 pub struct MouseEventHandler {
@@ -66,21 +68,21 @@ impl MouseEventHandler {
     pub fn on_mouse_up(mut self, handler: MouseHandler) -> Self {
         self.mouse_up = Some(handler);
         self
-    } 
+    }
 
     pub fn on_mouse_down(mut self, handler: MouseHandler) -> Self {
         self.mouse_down = Some(handler);
         self
-    } 
+    }
 
-     pub fn on_click(mut self, handler: MouseHandler) -> Self {
+    pub fn on_click(mut self, handler: MouseHandler) -> Self {
         self.click = Some(handler);
         self
-    } 
+    }
 }
 
-impl Into<Rc<EventHandler>> for MouseEventHandler {
-    fn into(self) -> Rc<EventHandler> {
+impl Into<Rc<dyn EventHandler>> for MouseEventHandler {
+    fn into(self) -> Rc<dyn EventHandler> {
         Rc::new(self)
     }
 }

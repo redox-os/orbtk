@@ -2,7 +2,7 @@ use std::any::{Any, TypeId};
 
 use dces::Entity;
 
-use {Event, EventStrategy};
+use crate::{Event, EventStrategy};
 
 #[derive(Debug)]
 pub enum EventError {
@@ -10,7 +10,7 @@ pub enum EventError {
 }
 
 pub struct EventBox {
-    event: Box<Any>,
+    event: Box<dyn Any>,
     event_type: TypeId,
     pub source: Entity,
     pub strategy: EventStrategy,

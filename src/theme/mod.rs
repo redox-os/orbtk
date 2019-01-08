@@ -1,5 +1,7 @@
 //! This module contains all css theming releated resources.
 
+use std::{fs::File, io::BufReader, io::Read, mem, path::Path, sync::Arc};
+
 use cssparser::{
     self, BasicParseError, CompactCowStr, DeclarationListParser, ParseError, Parser, ParserInput,
     Token,
@@ -7,17 +9,9 @@ use cssparser::{
 
 use orbclient::Color;
 
-use std::mem;
-use std::path::Path;
-use std::sync::Arc;
-
-use std::fs::File;
-use std::io::BufReader;
-use std::io::Read;
-
 pub use self::cell::CloneCell;
-pub use self::selector::{Selector, SelectorRelation};
 use self::selector::Specificity;
+pub use self::selector::{Selector, SelectorRelation};
 pub use self::style::Style;
 
 mod cell;
@@ -62,7 +56,7 @@ impl Theme {
     }
 
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Theme, String> {
-        let file = try!(File::open(path).map_err(|err| format!("failed to open css: {}", err)));
+        let file = r#try!(File::open(path).map_err(|err| format!("failed to open css: {}", err)));
         let mut reader = BufReader::new(file);
         let mut css = String::new();
         let res = reader
@@ -385,7 +379,7 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
         Ok(Declaration {
             property: name.into_owned(),
             value: value,
-            important: input.try(cssparser::parse_important).is_ok(),
+            important: input.r#try(cssparser::parse_important).is_ok(),
         })
     }
 }

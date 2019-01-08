@@ -1,4 +1,4 @@
-use theme::{CloneCell, Selector};
+use crate::theme::{CloneCell, Selector};
 
 pub trait Style {
     fn selector(&self) -> &CloneCell<Selector>;

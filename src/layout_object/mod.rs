@@ -3,9 +3,9 @@
 
 use dces::{Entity, EntityComponentManager};
 
-use properties::Constraint;
-use systems::LayoutResult;
-use theme::Theme;
+use crate::properties::Constraint;
+use crate::systems::LayoutResult;
+use crate::theme::Theme;
 
 pub use self::center::CenterLayoutObject;
 pub use self::fixed_size::FixedSizeLayoutObject;

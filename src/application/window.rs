@@ -1,28 +1,31 @@
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
-
-use std::collections::BTreeMap;
+use std::{
+    cell::{Cell, RefCell},
+    collections::BTreeMap,
+    rc::Rc,
+};
 
 use dces::{Entity, World};
 
-use application::{Application, Tree};
-use backend::{target_backend, BackendRunner};
-use event::EventHandler;
-use layout_object::{LayoutObject, RootLayoutObject};
-use properties::{Point, Bounds};
-use render_object::RenderObject;
-use systems::{PostLayoutStateSystem, EventSystem, LayoutSystem, RenderSystem, StateSystem};
-use theme::Theme;
-use widget::{PropertyResult, State, Template};
-use Global;
+use crate::{
+    application::{Application, Tree},
+    backend::{target_backend, BackendRunner},
+    event::EventHandler,
+    layout_object::{LayoutObject, RootLayoutObject},
+    properties::{Bounds, Point},
+    render_object::RenderObject,
+    systems::{EventSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem},
+    theme::Theme,
+    widget::{PropertyResult, State, Template},
+    Global,
+};
 
 /// Represents a window. Each window has its own tree, event pipline and backend.
 pub struct Window {
-    pub backend_runner: Box<BackendRunner>,
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
-    pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
-    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
+    pub backend_runner: Box<dyn BackendRunner>,
+    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+    pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn LayoutObject>>>>,
+    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
     pub debug_flag: Rc<Cell<bool>>,
 }
@@ -168,18 +171,18 @@ impl<'a> WindowBuilder<'a> {
 fn build_tree(
     root: Template,
     world: &mut World<Tree>,
-    render_objects: &Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
-    layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
-    handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
-    states: &Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
+    render_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+    layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn LayoutObject>>>>,
+    handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
+    states: &Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     debug_flag: &Rc<Cell<bool>>,
 ) {
     fn expand(
         world: &mut World<Tree>,
-        render_objects: &Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
-        layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
-        handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
-        states: &Rc<RefCell<BTreeMap<Entity, Rc<State>>>>,
+        render_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+        layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn LayoutObject>>>>,
+        handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
+        states: &Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
         template: Template,
         debug_flag: &Rc<Cell<bool>>,
     ) -> Entity {

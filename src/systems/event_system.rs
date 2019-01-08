@@ -1,23 +1,27 @@
-use std::any::TypeId;
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
-
-use std::collections::BTreeMap;
-
-use application::Tree;
-use backend::Backend;
-use dces::{Entity, EntityComponentManager, System};
-use event::{
-    check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
-    MouseUpEvent,
+use std::{
+    any::TypeId,
+    cell::{Cell, RefCell},
+    collections::BTreeMap,
+    rc::Rc,
 };
-use properties::{Enabled, Focused, Pressed, Selected};
-use widget::WidgetContainer;
-use Global;
+
+use dces::{Entity, EntityComponentManager, System};
+
+use crate::{
+    application::Tree,
+    backend::Backend,
+    event::{
+        check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
+        MouseUpEvent,
+    },
+    properties::{Enabled, Focused, Pressed, Selected},
+    widget::WidgetContainer,
+    Global,
+};
 
 pub struct EventSystem {
-    pub backend: Rc<RefCell<Backend>>,
-    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
+    pub backend: Rc<RefCell<dyn Backend>>,
+    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub update: Rc<Cell<bool>>,
 }
 

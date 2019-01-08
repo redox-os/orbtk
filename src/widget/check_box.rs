@@ -1,8 +1,10 @@
-use enums::ParentType;
-use properties::{FontIcon, Label, Selected};
-use theme::{material_font_icons, Selector};
-use widget::{
-    Center, Container, FontIconBlock, Row, SharedProperty, Spacer, Template, TextBlock, Widget,
+use crate::{
+    enums::ParentType,
+    properties::{FontIcon, Label, Selected},
+    theme::{material_font_icons, Selector},
+    widget::{
+        Center, Container, FontIconBlock, Row, SharedProperty, Spacer, Template, TextBlock, Widget,
+    },
 };
 
 /// The `Checkbox` widget can be switch its selected state. It contains a selection box and a label.

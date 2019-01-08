@@ -1,19 +1,21 @@
-use layout_object::StretchLayoutObject;
-use render_object::ImageRenderObject;
-use theme::Selector;
-use widget::{Template, Widget};
+use crate::{
+    layout_object::StretchLayoutObject,
+    render_object::ImageRenderObject,
+    theme::Selector,
+    widget::{Template, Widget},
+};
 
 /// The `CanvasWidget` widget is used to provide custom drawing by handling the `Canvas` struct from `OrbGl` as property.
-/// 
+///
 /// # Properties
-/// 
+///
 /// * `Selector` - CSS selector with  element name `image`, used to request the theme of the image widget.
-/// 
+///
 /// # Others
-/// 
+///
 /// * `ParentType`- None.
 /// * `StretchLayoutObject` - Used to layout the widget.
-/// * `ImageRenderObject` - Used to draw the image of the widget. 
+/// * `ImageRenderObject` - Used to draw the image of the widget.
 pub struct CanvasWidget;
 
 impl Widget for CanvasWidget {

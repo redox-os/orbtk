@@ -1,15 +1,17 @@
 use std::rc::Rc;
 
-use enums::{ParentType, Placement};
-use properties::{Label, PrimaryFontIcon, SecondaryFontIcon, Selected};
-use theme::{material_font_icons, Selector};
-use widget::{Container, Context, SharedProperty, Stack, State, Template, Widget};
+use crate::{
+    enums::{ParentType, Placement},
+    properties::{Label, PrimaryFontIcon, SecondaryFontIcon, Selected},
+    theme::{material_font_icons, Selector},
+    widget::{Container, Context, SharedProperty, Stack, State, Template, Widget},
+};
 
 // State to handle the position of switch toggle.
 struct SwitchState;
 
 impl State for SwitchState {
-    fn update(&self, context: &mut Context) {
+    fn update(&self, context: &mut Context<'_>) {
         let mut switch_toggle = context.widget_from_id("SwitchSwitchToggle").unwrap();
         let mut selected = false;
 
@@ -64,7 +66,9 @@ impl Widget for Switch {
                             Container::create()
                                 .with_shared_property(selected.clone())
                                 .with_property(Placement::default())
-                                .with_property(Selector::from("switchtoggle").with_id("SwitchSwitchToggle")),
+                                .with_property(
+                                    Selector::from("switchtoggle").with_id("SwitchSwitchToggle"),
+                                ),
                         ),
                     )
                     .with_property(selector.clone()),

@@ -1,6 +1,6 @@
 //! This module contains the base elements of an OrbTk application (Application, WindowBuilder and Window).
 
-use {Bounds, Theme};
+use crate::{Bounds, Theme};
 
 pub use self::global::*;
 pub use self::tree::*;
@@ -23,7 +23,7 @@ impl Application {
     }
 
     /// Returns a `WindowBuilder.
-    pub fn create_window(&mut self) -> WindowBuilder {
+    pub fn create_window(&mut self) -> WindowBuilder<'_> {
         WindowBuilder {
             application: self,
             bounds: Bounds::default(),

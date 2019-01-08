@@ -5,14 +5,14 @@ use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow}
 
 use dces::World;
 
-use application::Tree;
-use backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext};
-use event::{
+use crate::application::Tree;
+use crate::backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext};
+use crate::event::{
     EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
     SystemEvent,
 };
-use properties::{Point, Bounds};
-use theme::Theme;
+use crate::properties::{Point, Bounds};
+use crate::theme::Theme;
 
 /// Implemenation of the OrbClient based backend.
 pub struct OrbitalBackend {
@@ -174,27 +174,27 @@ impl Backend for OrbitalBackend {
         self.inner.set_size(bounds.width, bounds.height);
     }
 
-    fn render_context(&mut self) -> RenderContext {
+    fn render_context(&mut self) -> RenderContext<'_> {
         RenderContext {
             renderer: &mut self.inner,
             theme: &self.theme,
         }
     }
 
-    fn layout_context(&mut self) -> LayoutContext {
+    fn layout_context(&mut self) -> LayoutContext<'_> {
         LayoutContext {
             window_size: self.size(),
             theme: &self.theme,
         }
     }
 
-    fn event_context(&mut self) -> EventContext {
+    fn event_context(&mut self) -> EventContext<'_> {
         EventContext {
             event_queue: &self.event_queue,
         }
     }
 
-    fn state_context(&mut self) -> StateContext {
+    fn state_context(&mut self) -> StateContext<'_> {
         StateContext {
             theme: &self.theme,
         }

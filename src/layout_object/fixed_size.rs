@@ -2,9 +2,11 @@ use std::cell::Cell;
 
 use dces::{Entity, EntityComponentManager};
 
-use layout_object::{LayoutObject, LayoutResult};
-use properties::Constraint;
-use theme::{Selector, Theme};
+use crate::{
+    layout_object::{LayoutObject, LayoutResult},
+    properties::Constraint,
+    theme::{Selector, Theme},
+};
 
 #[derive(Default)]
 pub struct FixedSizeLayoutObject {
@@ -12,8 +14,8 @@ pub struct FixedSizeLayoutObject {
     height: Cell<u32>,
 }
 
-impl Into<Box<LayoutObject>> for FixedSizeLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for FixedSizeLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

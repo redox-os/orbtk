@@ -1,7 +1,9 @@
-use enums::ParentType;
-use properties::{FontIcon, Label, Pressed};
-use theme::Selector;
-use widget::{Center, Container, FontIconBlock, Row, SharedProperty, Template, TextBlock, Widget};
+use crate::{
+    enums::ParentType,
+    properties::{FontIcon, Label, Pressed},
+    theme::Selector,
+    widget::{Center, Container, FontIconBlock, Row, SharedProperty, Template, TextBlock, Widget},
+};
 
 /// The `Button` widget can be clicked by user. It's used to peform an action.
 ///

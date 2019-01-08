@@ -15,6 +15,7 @@ keywords = [
     "redox",
     "ui",
 ]
+edition = "2018"
 
 [lib]
 name = "orbtk"

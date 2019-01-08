@@ -1,23 +1,25 @@
 use std::rc::Rc;
 
-use layout_object::TextSelectionLayoutObject;
-use properties::{Label, TextSelection};
-use render_object::RectangleRenderObject;
-use theme::Selector;
-use widget::{
-    add_selector_to_widget, remove_selector_from_widget, Context, State, Template, Widget,
+use crate::{
+    layout_object::TextSelectionLayoutObject,
+    properties::{Label, TextSelection},
+    render_object::RectangleRenderObject,
+    theme::Selector,
+    widget::{
+        add_selector_to_widget, remove_selector_from_widget, Context, State, Template, Widget,
+    },
 };
 
 // Default state of the `Cursor` widget.
 struct CursorState;
 
 impl State for CursorState {
-    fn update(&self, context: &mut Context) {
+    fn update(&self, context: &mut Context<'_>) {
         let mut selection_length = 0;
         let mut widget = context.widget();
 
         if let Ok(selection) = widget.borrow_property::<TextSelection>() {
-           selection_length = selection.length;
+            selection_length = selection.length;
         }
 
         if selection_length > 0 {

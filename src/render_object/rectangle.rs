@@ -1,19 +1,26 @@
-use backend::Renderer;
-use properties::{Bounds, Point};
-use render_object::RenderObject;
-use theme::Selector;
-use widget::Context;
+use crate::{
+    backend::Renderer,
+    properties::{Bounds, Point},
+    render_object::RenderObject,
+    theme::Selector,
+    widget::Context,
+};
 
 pub struct RectangleRenderObject;
 
-impl Into<Box<RenderObject>> for RectangleRenderObject {
-    fn into(self) -> Box<RenderObject> {
+impl Into<Box<dyn RenderObject>> for RectangleRenderObject {
+    fn into(self) -> Box<dyn RenderObject> {
         Box::new(self)
     }
 }
 
 impl RenderObject for RectangleRenderObject {
-    fn render(&self, renderer: &mut Renderer, context: &mut Context, global_position: &Point) {
+    fn render(
+        &self,
+        renderer: &mut dyn Renderer,
+        context: &mut Context<'_>,
+        global_position: &Point,
+    ) {
         let parent_bounds = if let Some(parent) = context.parent_widget() {
             if let Ok(bounds) = parent.borrow_property::<Bounds>() {
                 bounds.clone()

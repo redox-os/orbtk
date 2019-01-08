@@ -1,4 +1,4 @@
-use event::EventBox;
+use crate::event::EventBox;
 
 /// This trait is used to define an event handler.
 pub trait EventHandler {

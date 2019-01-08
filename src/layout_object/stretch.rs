@@ -1,10 +1,14 @@
+use dces::{Entity, EntityComponentManager};
+
 use std::cell::Cell;
 
-use dces::{Entity, EntityComponentManager};
-use enums::Placement;
-use layout_object::{LayoutObject, LayoutResult};
-use properties::{Bounds, Constraint, Canvas};
-use theme::{Selector, Theme};
+use crate::{
+    enums::Placement,
+    layout_object::LayoutObject,
+    properties::{Constraint, Bounds, Canvas},
+    theme::{Selector, Theme},
+    LayoutResult,
+};
 
 #[derive(Default)]
 pub struct StretchLayoutObject {
@@ -13,8 +17,8 @@ pub struct StretchLayoutObject {
     current_child: Cell<usize>,
 }
 
-impl Into<Box<LayoutObject>> for StretchLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for StretchLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

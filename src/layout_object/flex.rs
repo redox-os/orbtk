@@ -1,11 +1,13 @@
 use std::cell::{Cell, RefCell};
 
 use dces::{Entity, EntityComponentManager};
-use layout_object::{LayoutObject, LayoutResult};
-use theme::Theme;
 
-use enums::Alignment;
-use properties::{Constraint, Bounds};
+use crate::{
+    enums::Alignment,
+    layout_object::{LayoutObject, LayoutResult},
+    properties::{Bounds, Constraint},
+    theme::Theme,
+};
 
 pub struct FlexLayoutObject {
     orientation: Alignment,
@@ -15,8 +17,8 @@ pub struct FlexLayoutObject {
     height: Cell<u32>,
 }
 
-impl Into<Box<LayoutObject>> for FlexLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for FlexLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }
