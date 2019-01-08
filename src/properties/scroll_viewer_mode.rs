@@ -1,4 +1,4 @@
-use enums::ScrollMode;
+use crate::enums::ScrollMode;
 
 /// The `ScrollViewerMode` struct is used to define the vertical and horizontal scroll behavior of the `ScrollViewer`.
 #[derive(Default)]

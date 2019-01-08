@@ -2,7 +2,7 @@ use std::any::{Any, TypeId};
 
 use dces::Entity;
 
-use {Event, EventStrategy};
+use crate::{Event, EventStrategy};
 
 #[derive(Debug)]
 pub enum EventError {

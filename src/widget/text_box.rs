@@ -1,12 +1,12 @@
-use enums::{ParentType, ScrollMode};
-use event::{Key, KeyEventHandler, MouseEventHandler};
-use properties::{
+use crate::enums::{ParentType, ScrollMode};
+use crate::event::{Key, KeyEventHandler, MouseEventHandler};
+use crate::properties::{
     Bounds, Focused, Label, Offset, Point, ScrollViewerMode, TextSelection, WaterMark,
 };
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
-use theme::Selector;
-use widget::{
+use crate::theme::Selector;
+use crate::widget::{
     Container, Context, Cursor, ScrollViewer, SharedProperty, Stack, State, Template,
     WaterMarkTextBlock, Widget,
 };

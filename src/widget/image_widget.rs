@@ -1,7 +1,7 @@
-use layout_object::ImageSizeLayoutObject;
-use render_object::ImageRenderObject;
-use theme::Selector;
-use widget::{Template, Widget};
+use crate::layout_object::ImageSizeLayoutObject;
+use crate::render_object::ImageRenderObject;
+use crate::theme::Selector;
+use crate::widget::{Template, Widget};
 
 /// The `ImageWidget` widget is used to draw an image. It is not interactive.
 /// 

@@ -1,9 +1,9 @@
 use std::rc::Rc;
 
-use enums::{ParentType, Placement};
-use properties::{Label, PrimaryFontIcon, SecondaryFontIcon, Selected};
-use theme::{material_font_icons, Selector};
-use widget::{Container, Context, SharedProperty, Stack, State, Template, Widget};
+use crate::enums::{ParentType, Placement};
+use crate::properties::{Label, PrimaryFontIcon, SecondaryFontIcon, Selected};
+use crate::theme::{material_font_icons, Selector};
+use crate::widget::{Container, Context, SharedProperty, Stack, State, Template, Widget};
 
 // State to handle the position of switch toggle.
 struct SwitchState;

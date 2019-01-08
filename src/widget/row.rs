@@ -1,7 +1,7 @@
-use layout_object::FlexLayoutObject;
-use enums::Alignment;
-use widget::{Template, Widget};
-use enums::ParentType;
+use crate::layout_object::FlexLayoutObject;
+use crate::enums::Alignment;
+use crate::widget::{Template, Widget};
+use crate::enums::ParentType;
 
 /// The `Row` represents a layout that orders its children horizontal.
 /// 

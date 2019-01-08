@@ -1,8 +1,8 @@
-use enums::Visibility;
+use crate::enums::Visibility;
 use std::rc::Rc;
-use properties::{Label, WaterMark};
-use theme::Selector;
-use widget::{Context, State, Template, TextBlock, Widget, add_selector_to_widget, remove_selector_from_widget};
+use crate::properties::{Label, WaterMark};
+use crate::theme::Selector;
+use crate::widget::{Context, State, Template, TextBlock, Widget, add_selector_to_widget, remove_selector_from_widget};
 
 /// The `WaterMarkTextBlockState` handles the text processing of the `WaterMarkTextBlock` widget.
 #[derive(Default)]

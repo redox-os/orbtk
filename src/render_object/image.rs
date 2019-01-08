@@ -1,9 +1,9 @@
 use orbclient::Renderer as OrbRenderer;
 
-use backend::Renderer;
-use properties::{Bounds, Image, Point, Canvas};
-use render_object::RenderObject;
-use widget::Context;
+use crate::backend::Renderer;
+use crate::properties::{Bounds, Image, Point, Canvas};
+use crate::render_object::RenderObject;
+use crate::widget::Context;
 
 pub struct ImageRenderObject;
 

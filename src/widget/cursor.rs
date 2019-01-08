@@ -1,10 +1,10 @@
 use std::rc::Rc;
 
-use layout_object::TextSelectionLayoutObject;
-use properties::{Label, TextSelection};
-use render_object::RectangleRenderObject;
-use theme::Selector;
-use widget::{
+use crate::layout_object::TextSelectionLayoutObject;
+use crate::properties::{Label, TextSelection};
+use crate::render_object::RectangleRenderObject;
+use crate::theme::Selector;
+use crate::widget::{
     add_selector_to_widget, remove_selector_from_widget, Context, State, Template, Widget,
 };
 

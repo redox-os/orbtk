@@ -1,6 +1,6 @@
-use layout_object::FixedSizeLayoutObject;
-use widget::{Template, Widget};
-use theme::Selector;
+use crate::layout_object::FixedSizeLayoutObject;
+use crate::widget::{Template, Widget};
+use crate::theme::Selector;
 
 /// The `Space` is used to create empty space inside of a `Row` or `Column`.
 /// 

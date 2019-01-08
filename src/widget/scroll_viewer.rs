@@ -1,7 +1,7 @@
-use enums::ParentType;
-use layout_object::ScrollLayoutObject;
-use widget::{Template, Widget};
-use properties::{Offset, ScrollViewerMode};
+use crate::enums::ParentType;
+use crate::layout_object::ScrollLayoutObject;
+use crate::widget::{Template, Widget};
+use crate::properties::{Offset, ScrollViewerMode};
 
 /// The `ScrollViewer` represents a layout widget that adds vertial and horizontal offset to its perent. 
 /// It is used to scroll the content if the content's width or height is greater than the ScrollViewers width or height.

@@ -1,9 +1,9 @@
 
-use layout_object::PaddingLayoutObject;
-use render_object::{RectangleRenderObject};
-use theme::Selector;
-use widget::{Template, Widget};
-use enums::ParentType;
+use crate::layout_object::PaddingLayoutObject;
+use crate::render_object::{RectangleRenderObject};
+use crate::theme::Selector;
+use crate::widget::{Template, Widget};
+use crate::enums::ParentType;
 
 /// The `Container` represents a layout that surrounds its child with a padding. Draws a box arround the child.
 /// 

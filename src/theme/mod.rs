@@ -62,7 +62,7 @@ impl Theme {
     }
 
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Theme, String> {
-        let file = try!(File::open(path).map_err(|err| format!("failed to open css: {}", err)));
+        let file = r#try!(File::open(path).map_err(|err| format!("failed to open css: {}", err)));
         let mut reader = BufReader::new(file);
         let mut css = String::new();
         let res = reader
@@ -385,7 +385,7 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
         Ok(Declaration {
             property: name.into_owned(),
             value: value,
-            important: input.try(cssparser::parse_important).is_ok(),
+            important: input.r#try(cssparser::parse_important).is_ok(),
         })
     }
 }

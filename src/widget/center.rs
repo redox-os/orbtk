@@ -1,6 +1,6 @@
-use layout_object::CenterLayoutObject;
-use widget::{Template, Widget};
-use enums::ParentType;
+use crate::layout_object::CenterLayoutObject;
+use crate::widget::{Template, Widget};
+use crate::enums::ParentType;
 
 /// The `Center` represents a layout widget that center its child inside of it.
 /// 

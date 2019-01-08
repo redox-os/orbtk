@@ -5,16 +5,16 @@ use std::collections::BTreeMap;
 
 use dces::{Entity, World};
 
-use application::{Application, Tree};
-use backend::{target_backend, BackendRunner};
-use event::EventHandler;
-use layout_object::{LayoutObject, RootLayoutObject};
-use properties::{Point, Bounds};
-use render_object::RenderObject;
-use systems::{PostLayoutStateSystem, EventSystem, LayoutSystem, RenderSystem, StateSystem};
-use theme::Theme;
-use widget::{PropertyResult, State, Template};
-use Global;
+use crate::application::{Application, Tree};
+use crate::backend::{target_backend, BackendRunner};
+use crate::event::EventHandler;
+use crate::layout_object::{LayoutObject, RootLayoutObject};
+use crate::properties::{Point, Bounds};
+use crate::render_object::RenderObject;
+use crate::systems::{PostLayoutStateSystem, EventSystem, LayoutSystem, RenderSystem, StateSystem};
+use crate::theme::Theme;
+use crate::widget::{PropertyResult, State, Template};
+use crate::Global;
 
 /// Represents a window. Each window has its own tree, event pipline and backend.
 pub struct Window {

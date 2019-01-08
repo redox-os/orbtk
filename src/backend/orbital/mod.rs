@@ -8,9 +8,9 @@ use orbclient::Window as OrbWindow;
 
 use self::backend::{OrbitalBackend, OrbitalBackendRunner};
 use self::renderer::FONT_RENDERER;
-use backend::{Backend, FontMeasure};
-use properties::Bounds;
-use theme::Theme;
+use crate::backend::{Backend, FontMeasure};
+use crate::properties::Bounds;
+use crate::theme::Theme;
 
 mod backend;
 mod renderer;

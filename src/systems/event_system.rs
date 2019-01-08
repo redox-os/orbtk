@@ -4,16 +4,16 @@ use std::rc::Rc;
 
 use std::collections::BTreeMap;
 
-use application::Tree;
-use backend::Backend;
+use crate::application::Tree;
+use crate::backend::Backend;
 use dces::{Entity, EntityComponentManager, System};
-use event::{
+use crate::event::{
     check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
     MouseUpEvent,
 };
-use properties::{Enabled, Focused, Pressed, Selected};
-use widget::WidgetContainer;
-use Global;
+use crate::properties::{Enabled, Focused, Pressed, Selected};
+use crate::widget::WidgetContainer;
+use crate::Global;
 
 pub struct EventSystem {
     pub backend: Rc<RefCell<Backend>>,

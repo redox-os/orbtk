@@ -1,8 +1,8 @@
-use backend::Renderer;
-use properties::{Bounds, Point};
-use render_object::RenderObject;
-use theme::Selector;
-use widget::Context;
+use crate::backend::Renderer;
+use crate::properties::{Bounds, Point};
+use crate::render_object::RenderObject;
+use crate::theme::Selector;
+use crate::widget::Context;
 
 pub struct RectangleRenderObject;
 

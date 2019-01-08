@@ -5,14 +5,14 @@ use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow}
 
 use dces::World;
 
-use application::Tree;
-use backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext};
-use event::{
+use crate::application::Tree;
+use crate::backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext};
+use crate::event::{
     EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
     SystemEvent,
 };
-use properties::{Point, Bounds};
-use theme::Theme;
+use crate::properties::{Point, Bounds};
+use crate::theme::Theme;
 
 /// Implemenation of the OrbClient based backend.
 pub struct OrbitalBackend {

@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use {Event, EventBox, EventHandler};
+use crate::{Event, EventBox, EventHandler};
 
 #[derive(Copy, Clone, Debug, Hash, PartialEq)]
 pub enum Key {

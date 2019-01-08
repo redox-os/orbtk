@@ -5,13 +5,13 @@ use std::collections::BTreeMap;
 
 use dces::{Entity, EntityComponentManager, System};
 
-use application::{Tree, Global};
-use backend::Backend;
-use properties::{Enabled, Focused, Pressed, Selected};
-use widget::{
+use crate::application::{Tree, Global};
+use crate::backend::Backend;
+use crate::properties::{Enabled, Focused, Pressed, Selected};
+use crate::widget::{
     add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
 };
-use theme::Selector;
+use crate::theme::Selector;
 
 /// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {

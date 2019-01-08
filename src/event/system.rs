@@ -1,5 +1,5 @@
 
-use Event;
+use crate::Event;
 
 pub enum SystemEvent {
     Quit

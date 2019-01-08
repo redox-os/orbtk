@@ -1,4 +1,4 @@
-use theme::Selector;
+use crate::theme::Selector;
 
 pub use self::context::Context;
 pub use self::property::{SharedProperty, PropertyResult};

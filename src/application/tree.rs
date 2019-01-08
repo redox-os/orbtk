@@ -1,7 +1,7 @@
 use std::cell::{Cell, RefCell};
 use std::collections::BTreeMap;
 
-use {Entity, NotFound, EntityContainer};
+use crate::{Entity, NotFound, EntityContainer};
 
 /// Base data structure to manage the widget entities of a window in a tree based structure.
 #[derive(Default)]

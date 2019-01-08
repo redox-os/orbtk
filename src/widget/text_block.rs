@@ -1,8 +1,8 @@
-use layout_object::TextSizeLayoutObject;
-use render_object::TextRenderObject;
-use properties::Label;
-use theme::Selector;
-use widget::{Template, Widget};
+use crate::layout_object::TextSizeLayoutObject;
+use crate::render_object::TextRenderObject;
+use crate::properties::Label;
+use crate::theme::Selector;
+use crate::widget::{Template, Widget};
 
 /// The `TextBlock` widget is used to draw text. It is not interactive.
 /// 

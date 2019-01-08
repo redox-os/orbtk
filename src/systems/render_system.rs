@@ -4,13 +4,13 @@ use std::rc::Rc;
 
 use dces::{Entity, EntityComponentManager, System};
 
-use application::Tree;
-use backend::Backend;
-use enums::Visibility;
-use render_object::RenderObject;
-use properties::{Point, Bounds};
-use theme::Selector;
-use widget::Context;
+use crate::application::Tree;
+use crate::backend::Backend;
+use crate::enums::Visibility;
+use crate::render_object::RenderObject;
+use crate::properties::{Point, Bounds};
+use crate::theme::Selector;
+use crate::widget::Context;
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {

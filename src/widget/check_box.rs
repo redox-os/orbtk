@@ -1,7 +1,7 @@
-use enums::ParentType;
-use properties::{FontIcon, Label, Selected};
-use theme::{material_font_icons, Selector};
-use widget::{
+use crate::enums::ParentType;
+use crate::properties::{FontIcon, Label, Selected};
+use crate::theme::{material_font_icons, Selector};
+use crate::widget::{
     Center, Container, FontIconBlock, Row, SharedProperty, Spacer, Template, TextBlock, Widget,
 };
 

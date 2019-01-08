@@ -1,6 +1,6 @@
-use widget::{Template, Widget};
-use layout_object::StretchLayoutObject;
-use enums::ParentType;
+use crate::widget::{Template, Widget};
+use crate::layout_object::StretchLayoutObject;
+use crate::enums::ParentType;
 
 /// The `Stack` represents a layout widget that is used to stack its children on the z-axis.
 /// 

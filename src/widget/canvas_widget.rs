@@ -1,7 +1,7 @@
-use layout_object::StretchLayoutObject;
-use render_object::ImageRenderObject;
-use theme::Selector;
-use widget::{Template, Widget};
+use crate::layout_object::StretchLayoutObject;
+use crate::render_object::ImageRenderObject;
+use crate::theme::Selector;
+use crate::widget::{Template, Widget};
 
 /// The `CanvasWidget` widget is used to provide custom drawing by handling the `Canvas` struct from `OrbGl` as property.
 /// 

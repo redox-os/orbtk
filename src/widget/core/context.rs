@@ -1,8 +1,8 @@
 use dces::{Entity, EntityComponentManager};
 
 use super::WidgetContainer;
-use application::{Tree, Global};
-use theme::Theme;
+use crate::application::{Tree, Global};
+use crate::theme::Theme;
 
 /// The `Context` is provides acces for the states to objects they could work with.
 pub struct Context<'a> {

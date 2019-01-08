@@ -1,10 +1,10 @@
-use backend::{FontMeasure, FONT_MEASURE};
+use crate::backend::{FontMeasure, FONT_MEASURE};
 use dces::{Entity, EntityComponentManager};
-use layout_object::LayoutObject;
-use properties::{Constraint, FontIcon, PrimaryFontIcon, SecondaryFontIcon};
-use theme::{Selector, Theme};
+use crate::layout_object::LayoutObject;
+use crate::properties::{Constraint, FontIcon, PrimaryFontIcon, SecondaryFontIcon};
+use crate::theme::{Selector, Theme};
 
-use LayoutResult;
+use crate::LayoutResult;
 
 pub struct FontIconSizeLayoutObject;
 

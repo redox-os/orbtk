@@ -1,9 +1,9 @@
 use dces::{Entity, EntityComponentManager};
 
-use layout_object::LayoutObject;
-use properties::{Constraint, Padding, Bounds};
-use systems::LayoutResult;
-use theme::{Selector, Theme};
+use crate::layout_object::LayoutObject;
+use crate::properties::{Constraint, Padding, Bounds};
+use crate::systems::LayoutResult;
+use crate::theme::{Selector, Theme};
 
 pub struct PaddingLayoutObject;
 
