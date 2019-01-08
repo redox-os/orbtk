@@ -23,7 +23,7 @@ impl Application {
     }
 
     /// Returns a `WindowBuilder.
-    pub fn create_window(&mut self) -> WindowBuilder {
+    pub fn create_window(&mut self) -> WindowBuilder<'_> {
         WindowBuilder {
             application: self,
             bounds: Bounds::default(),

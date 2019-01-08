@@ -8,14 +8,14 @@ use crate::widget::{Context, State, Template, TextBlock, Widget, add_selector_to
 #[derive(Default)]
 pub struct WaterMarkTextBlockState;
 
-impl Into<Rc<State>> for WaterMarkTextBlockState {
-    fn into(self) -> Rc<State> {
+impl Into<Rc<dyn State>> for WaterMarkTextBlockState {
+    fn into(self) -> Rc<dyn State> {
         Rc::new(self)
     }
 }
 
 impl State for WaterMarkTextBlockState {
-    fn update(&self, context: &mut Context) {
+    fn update(&self, context: &mut Context<'_>) {
         let mut widget = context.widget();
 
         let mut is_label_empty = false;

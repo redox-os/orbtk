@@ -5,8 +5,8 @@ use crate::theme::{Selector, Theme};
 
 pub struct RootLayoutObject;
 
-impl Into<Box<LayoutObject>> for RootLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for RootLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

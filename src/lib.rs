@@ -2,11 +2,11 @@
 #![crate_type = "lib"]
 // #![deny(warnings)]
 
-extern crate dces;
+
 
 pub use dces::prelude::*;
 
-extern crate cssparser;
+use cssparser;
 #[macro_use]
 extern crate lazy_static;
 
@@ -32,7 +32,6 @@ pub mod systems;
 pub mod theme;
 pub mod widget;
 
-extern crate orbclient;
-extern crate orbfont;
-extern crate orbimage;
-extern crate orbgl;
+use orbclient;
+
+

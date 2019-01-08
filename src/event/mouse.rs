@@ -4,7 +4,7 @@ use crate::event::{Event, EventBox, EventHandler};
 use crate::properties::{Point, Bounds};
 use crate::widget::WidgetContainer;
 
-pub fn check_mouse_condition(position: Point, widget: &WidgetContainer) -> bool {
+pub fn check_mouse_condition(position: Point, widget: &WidgetContainer<'_>) -> bool {
     if let Ok(bounds) = widget.borrow_property::<Bounds>() {
         let mut rect = Bounds::new(0, 0, bounds.width, bounds.height);
 
@@ -51,9 +51,9 @@ pub struct MouseDownEvent {
 
 impl Event for MouseDownEvent {}
 
-pub type MouseHandler = Rc<Fn(Point) -> bool + 'static>;
+pub type MouseHandler = Rc<dyn Fn(Point) -> bool + 'static>;
 
-pub type OnMouseUp = Rc<Fn() + 'static>;
+pub type OnMouseUp = Rc<dyn Fn() + 'static>;
 
 #[derive(Default)]
 pub struct MouseEventHandler {
@@ -79,8 +79,8 @@ impl MouseEventHandler {
     } 
 }
 
-impl Into<Rc<EventHandler>> for MouseEventHandler {
-    fn into(self) -> Rc<EventHandler> {
+impl Into<Rc<dyn EventHandler>> for MouseEventHandler {
+    fn into(self) -> Rc<dyn EventHandler> {
         Rc::new(self)
     }
 }

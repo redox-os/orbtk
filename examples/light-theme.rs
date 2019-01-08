@@ -1,4 +1,4 @@
-extern crate orbtk;
+
 use orbtk::*;
 
 use std::cell::Cell;
@@ -16,7 +16,7 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&self, context: &mut Context) {
+    fn update(&self, context: &mut Context<'_>) {
         if let Ok(button_count_label) = context.widget().borrow_mut_property::<Label>() {
             button_count_label.0 = format!("Button count: {}", self.counter.get());
         }

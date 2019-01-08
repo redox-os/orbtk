@@ -22,8 +22,8 @@ pub struct TextBoxState {
     cursor_x: Cell<i32>,
 }
 
-impl Into<Rc<State>> for TextBoxState {
-    fn into(self) -> Rc<State> {
+impl Into<Rc<dyn State>> for TextBoxState {
+    fn into(self) -> Rc<dyn State> {
         Rc::new(self)
     }
 }
@@ -78,7 +78,7 @@ impl TextBoxState {
 }
 
 impl State for TextBoxState {
-    fn update(&self, context: &mut Context) {
+    fn update(&self, context: &mut Context<'_>) {
         let mut widget = context.widget();
 
         if let Ok(focused) = widget.borrow_property::<Focused>() {
@@ -114,7 +114,7 @@ impl State for TextBoxState {
         }
     }
 
-    fn update_post_layout(&self, context: &mut Context) {
+    fn update_post_layout(&self, context: &mut Context<'_>) {
         let mut cursor_x_delta = 0;
         let mut scroll_viewer_width = 0;
 

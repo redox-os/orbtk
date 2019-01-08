@@ -15,8 +15,8 @@ pub struct FlexLayoutObject {
     height: Cell<u32>,
 }
 
-impl Into<Box<LayoutObject>> for FlexLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for FlexLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

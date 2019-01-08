@@ -12,7 +12,7 @@ use crate::widget::{
 struct CursorState;
 
 impl State for CursorState {
-    fn update(&self, context: &mut Context) {
+    fn update(&self, context: &mut Context<'_>) {
         let mut selection_length = 0;
         let mut widget = context.widget();
 

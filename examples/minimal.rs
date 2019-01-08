@@ -1,4 +1,4 @@
-extern crate orbtk;
+
 use orbtk::*;
 
 struct MainView;

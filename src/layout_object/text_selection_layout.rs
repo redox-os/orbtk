@@ -8,8 +8,8 @@ use crate::LayoutResult;
 
 pub struct TextSelectionLayoutObject;
 
-impl Into<Box<LayoutObject>> for TextSelectionLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for TextSelectionLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

@@ -14,8 +14,8 @@ pub struct ScrollLayoutObject {
     child_bounds: Cell<Bounds>,
 }
 
-impl Into<Box<LayoutObject>> for ScrollLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for ScrollLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

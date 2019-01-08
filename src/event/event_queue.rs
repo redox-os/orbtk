@@ -10,7 +10,7 @@ pub enum EventError {
 }
 
 pub struct EventBox {
-    event: Box<Any>,
+    event: Box<dyn Any>,
     event_type: TypeId,
     pub source: Entity,
     pub strategy: EventStrategy,

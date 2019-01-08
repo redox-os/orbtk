@@ -7,8 +7,8 @@ use crate::theme::{Selector, Theme};
 
 pub struct PaddingLayoutObject;
 
-impl Into<Box<LayoutObject>> for PaddingLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for PaddingLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

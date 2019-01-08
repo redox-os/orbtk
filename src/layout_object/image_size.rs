@@ -9,8 +9,8 @@ use crate::LayoutResult;
 
 pub struct ImageSizeLayoutObject;
 
-impl Into<Box<LayoutObject>> for ImageSizeLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for ImageSizeLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

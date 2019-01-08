@@ -9,7 +9,7 @@ use crate::widget::{Container, Context, SharedProperty, Stack, State, Template, 
 struct SwitchState;
 
 impl State for SwitchState {
-    fn update(&self, context: &mut Context) {
+    fn update(&self, context: &mut Context<'_>) {
         let mut switch_toggle = context.widget_from_id("SwitchSwitchToggle").unwrap();
         let mut selected = false;
 

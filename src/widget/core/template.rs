@@ -17,10 +17,10 @@ use super::{State, SharedProperty};
 pub struct Template {
     pub children: Vec<Template>,
     pub parent_type: ParentType,
-    pub state: Option<Rc<State>>,
-    pub event_handlers: Vec<Rc<EventHandler>>,
-    pub render_object: Option<Box<RenderObject>>,
-    pub layout_object: Box<LayoutObject>,
+    pub state: Option<Rc<dyn State>>,
+    pub event_handlers: Vec<Rc<dyn EventHandler>>,
+    pub render_object: Option<Box<dyn RenderObject>>,
+    pub layout_object: Box<dyn LayoutObject>,
     pub properties: HashMap<TypeId, ComponentBox>,
     pub shared_properties: HashMap<TypeId, SharedProperty>,
     pub debug_name: String,
@@ -73,7 +73,7 @@ impl Template {
     }
 
     /// Used to add a `state' to the template. Only one `state` can be added.
-    pub fn with_state(mut self, state: Rc<State>) -> Self {
+    pub fn with_state(mut self, state: Rc<dyn State>) -> Self {
         self.state = Some(state);
         self
     }

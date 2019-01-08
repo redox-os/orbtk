@@ -4,8 +4,8 @@ use crate::properties::Bounds;
 
 pub struct CenterLayoutObject;
 
-impl Into<Box<LayoutObject>> for CenterLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for CenterLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

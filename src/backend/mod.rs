@@ -15,7 +15,7 @@ use crate::theme::Theme;
 
 /// Is used to provides data from the `Backend` to the `RenderSystem`.
 pub struct RenderContext<'a> {
-    pub renderer: &'a mut Renderer,
+    pub renderer: &'a mut dyn Renderer,
     pub theme: &'a Theme,
 }
 
@@ -73,10 +73,10 @@ pub trait Backend {
     fn drain_events(&mut self);
     fn bounds(&mut self, bounds: &Bounds);
     fn size(&self) -> (u32, u32);
-    fn render_context(&mut self) -> RenderContext;
-    fn layout_context(&mut self) -> LayoutContext;
-    fn event_context(&mut self) -> EventContext;
-    fn state_context(&mut self) -> StateContext;
+    fn render_context(&mut self) -> RenderContext<'_>;
+    fn layout_context(&mut self) -> LayoutContext<'_>;
+    fn event_context(&mut self) -> EventContext<'_>;
+    fn state_context(&mut self) -> StateContext<'_>;
 }
 
 /// This trait is used to create a backend runner.

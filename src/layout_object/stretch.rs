@@ -13,8 +13,8 @@ pub struct StretchLayoutObject {
     current_child: Cell<usize>,
 }
 
-impl Into<Box<LayoutObject>> for StretchLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for StretchLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

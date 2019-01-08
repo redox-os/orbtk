@@ -18,8 +18,8 @@ pub enum LayoutResult {
 
 /// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calulated by the layout objects of layout widgets.
 pub struct LayoutSystem {
-    pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
-    pub backend: Rc<RefCell<Backend>>,
+    pub layout_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn LayoutObject>>>>,
+    pub backend: Rc<RefCell<dyn Backend>>,
     pub update: Rc<Cell<bool>>,
 }
 
@@ -31,7 +31,7 @@ impl System<Tree> for LayoutSystem {
             constraint: &Constraint,
             entity: Entity,
             theme: &Theme,
-            layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<LayoutObject>>>>,
+            layout_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn LayoutObject>>>>,
         ) -> (u32, u32) {
             let mut size: Option<(u32, u32)> = None;
 

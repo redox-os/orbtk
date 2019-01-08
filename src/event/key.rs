@@ -293,7 +293,7 @@ pub struct KeyUpEvent {
 
 impl Event for KeyUpEvent {}
 
-pub type KeyHandler = Rc<Fn(Key) -> bool + 'static>;
+pub type KeyHandler = Rc<dyn Fn(Key) -> bool + 'static>;
 
 #[derive(Default)]
 pub struct KeyEventHandler {
@@ -313,8 +313,8 @@ impl KeyEventHandler {
     } 
 }
 
-impl Into<Rc<EventHandler>> for KeyEventHandler {
-    fn into(self) -> Rc<EventHandler> {
+impl Into<Rc<dyn EventHandler>> for KeyEventHandler {
+    fn into(self) -> Rc<dyn EventHandler> {
         Rc::new(self)
     }
 }

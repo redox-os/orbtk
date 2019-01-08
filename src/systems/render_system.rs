@@ -14,8 +14,8 @@ use crate::widget::Context;
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<RenderObject>>>>,
-    pub backend: Rc<RefCell<Backend>>,
+    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+    pub backend: Rc<RefCell<dyn Backend>>,
     pub update: Rc<Cell<bool>>,
     pub debug_flag: Rc<Cell<bool>>,
 }

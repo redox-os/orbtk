@@ -12,8 +12,8 @@ pub struct FixedSizeLayoutObject {
     height: Cell<u32>,
 }
 
-impl Into<Box<LayoutObject>> for FixedSizeLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for FixedSizeLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

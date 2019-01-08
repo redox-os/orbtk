@@ -1,5 +1,5 @@
-extern crate orbimage;
-extern crate orbtk;
+
+
 use orbtk::*;
 
 struct MainView;

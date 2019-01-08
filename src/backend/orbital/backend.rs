@@ -174,27 +174,27 @@ impl Backend for OrbitalBackend {
         self.inner.set_size(bounds.width, bounds.height);
     }
 
-    fn render_context(&mut self) -> RenderContext {
+    fn render_context(&mut self) -> RenderContext<'_> {
         RenderContext {
             renderer: &mut self.inner,
             theme: &self.theme,
         }
     }
 
-    fn layout_context(&mut self) -> LayoutContext {
+    fn layout_context(&mut self) -> LayoutContext<'_> {
         LayoutContext {
             window_size: self.size(),
             theme: &self.theme,
         }
     }
 
-    fn event_context(&mut self) -> EventContext {
+    fn event_context(&mut self) -> EventContext<'_> {
         EventContext {
             event_queue: &self.event_queue,
         }
     }
 
-    fn state_context(&mut self) -> StateContext {
+    fn state_context(&mut self) -> StateContext<'_> {
         StateContext {
             theme: &self.theme,
         }

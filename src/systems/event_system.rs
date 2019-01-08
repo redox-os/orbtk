@@ -16,8 +16,8 @@ use crate::widget::WidgetContainer;
 use crate::Global;
 
 pub struct EventSystem {
-    pub backend: Rc<RefCell<Backend>>,
-    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<EventHandler>>>>>,
+    pub backend: Rc<RefCell<dyn Backend>>,
+    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub update: Rc<Cell<bool>>,
 }
 

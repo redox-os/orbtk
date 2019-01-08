@@ -8,8 +8,8 @@ use crate::LayoutResult;
 
 pub struct FontIconSizeLayoutObject;
 
-impl Into<Box<LayoutObject>> for FontIconSizeLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for FontIconSizeLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }

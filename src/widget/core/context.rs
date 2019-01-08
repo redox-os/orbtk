@@ -29,13 +29,13 @@ impl<'a> Context<'a> {
     }
 
     /// Returns the widget of the current state context.
-    pub fn widget(&mut self) -> WidgetContainer {
+    pub fn widget(&mut self) -> WidgetContainer<'_> {
         WidgetContainer::new(self.entity, &mut self.ecm)
     }
 
     /// Returns a child of the widget of the current state referenced by css`id`.
     /// If the no id is defined None will returned.
-    pub fn widget_from_id<S: Into<String>>(&mut self, id: S) -> Option<WidgetContainer> {
+    pub fn widget_from_id<S: Into<String>>(&mut self, id: S) -> Option<WidgetContainer<'_>> {
         let mut entity = None;
 
         if let Ok(global) = self.ecm.borrow_component::<Global>(0) {
@@ -53,7 +53,7 @@ impl<'a> Context<'a> {
 
     /// Returns the child of the current widget.
     /// If the index is out of the children index bounds or the widget has no children None will be returned.
-    pub fn widget_from_child_index(&mut self, index: usize) -> Option<WidgetContainer> {
+    pub fn widget_from_child_index(&mut self, index: usize) -> Option<WidgetContainer<'_>> {
         if index >= self.tree.children[&self.entity].len() {
             return None;
         }
@@ -66,7 +66,7 @@ impl<'a> Context<'a> {
 
     /// Returns the parent of the current widget.
     /// If the current widget is the root None will be returned.
-    pub fn parent_widget(&mut self) -> Option<WidgetContainer> {
+    pub fn parent_widget(&mut self) -> Option<WidgetContainer<'_>> {
         if self.tree.parent[&self.entity] == 0 {
             return None;
         }

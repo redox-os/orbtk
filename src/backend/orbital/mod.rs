@@ -19,7 +19,7 @@ pub fn target_backend(
     title: &str,
     bounds: Bounds,
     theme: Theme,
-) -> (Box<OrbitalBackendRunner>, Rc<RefCell<Backend>>) {
+) -> (Box<OrbitalBackendRunner>, Rc<RefCell<dyn Backend>>) {
     let backend = Rc::new(RefCell::new(OrbitalBackend::new(
         theme,
         OrbWindow::new_flags(bounds.x, bounds.y, bounds.width, bounds.height, title, &[]).unwrap(),

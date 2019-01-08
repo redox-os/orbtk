@@ -8,8 +8,8 @@ use crate::{Label, LayoutResult};
 
 pub struct TextSizeLayoutObject;
 
-impl Into<Box<LayoutObject>> for TextSizeLayoutObject {
-    fn into(self) -> Box<LayoutObject> {
+impl Into<Box<dyn LayoutObject>> for TextSizeLayoutObject {
+    fn into(self) -> Box<dyn LayoutObject> {
         Box::new(self)
     }
 }
