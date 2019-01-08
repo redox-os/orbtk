@@ -17,3 +17,5 @@
 
 # Brainstorming files
 brain_*.rs
+
+.DS_Store
