@@ -1,10 +1,14 @@
+use dces::{Entity, EntityComponentManager};
+
 use std::cell::Cell;
 
-use dces::{Entity, EntityComponentManager};
-use crate::enums::Placement;
-use crate::layout_object::{LayoutObject, LayoutResult};
-use crate::properties::{Bounds, Constraint, Canvas};
-use crate::theme::{Selector, Theme};
+use crate::{
+    enums::Placement,
+    layout_object::LayoutObject,
+    properties::{Constraint, Bounds, Canvas},
+    theme::{Selector, Theme},
+    LayoutResult,
+};
 
 #[derive(Default)]
 pub struct StretchLayoutObject {

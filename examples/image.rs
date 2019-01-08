@@ -1,5 +1,3 @@
-
-
 use orbtk::*;
 
 struct MainView;
@@ -9,7 +7,10 @@ impl Widget for MainView {
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_debug_name("MainView")
-            .with_child(ImageWidget::create().with_property(Image::from_path("res/orbtk-space.png").unwrap()))
+            .with_child(
+                ImageWidget::create()
+                    .with_property(Image::from_path("res/orbtk-space.png").unwrap()),
+            )
     }
 }
 

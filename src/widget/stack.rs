@@ -1,11 +1,13 @@
-use crate::widget::{Template, Widget};
-use crate::layout_object::StretchLayoutObject;
-use crate::enums::ParentType;
+use crate::{
+    enums::ParentType,
+    layout_object::StretchLayoutObject,
+    widget::{Template, Widget},
+};
 
 /// The `Stack` represents a layout widget that is used to stack its children on the z-axis.
-/// 
+///
 /// # Others
-/// 
+///
 /// * `ParentType`- Mutli.
 /// * `StretchLayoutObject` - Used to layout the widget.
 pub struct Stack;

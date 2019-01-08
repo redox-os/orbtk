@@ -1,5 +1,7 @@
-use std::cell::{Cell, Ref, RefCell, RefMut};
-use std::sync::Arc;
+use std::{
+    cell::{Cell, Ref, RefCell, RefMut},
+    sync::Arc,
+};
 
 pub trait CheckSet<T> {
     fn check_set(&self, value: T) -> bool;

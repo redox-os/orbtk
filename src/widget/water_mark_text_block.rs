@@ -1,8 +1,14 @@
-use crate::enums::Visibility;
 use std::rc::Rc;
-use crate::properties::{Label, WaterMark};
-use crate::theme::Selector;
-use crate::widget::{Context, State, Template, TextBlock, Widget, add_selector_to_widget, remove_selector_from_widget};
+
+use crate::{
+    enums::Visibility,
+    properties::{Label, WaterMark},
+    theme::Selector,
+    widget::{
+        add_selector_to_widget, remove_selector_from_widget, Context, State, Template, TextBlock,
+        Widget,
+    },
+};
 
 /// The `WaterMarkTextBlockState` handles the text processing of the `WaterMarkTextBlock` widget.
 #[derive(Default)]
@@ -26,9 +32,9 @@ impl State for WaterMarkTextBlockState {
         }
 
         if is_label_empty {
-             add_selector_to_widget("watermark", &mut widget);
+            add_selector_to_widget("watermark", &mut widget);
         } else {
-             remove_selector_from_widget("watermark", &mut widget);
+            remove_selector_from_widget("watermark", &mut widget);
         }
 
         if let Ok(label) = widget.borrow_property::<WaterMark>() {
@@ -47,14 +53,14 @@ impl State for WaterMarkTextBlockState {
 
 /// The `WaterMarkTextBlock` widget is used to display a placeholder watermark if the `Label` is empty.
 /// Derives from `TextBlock`.
-/// 
+///
 /// # Properties
-/// 
+///
 /// * `Watermark` - String used to display a placeholder text if `Label` string is empty.
 /// * `Selector` - CSS selector with  element name `textblock` and class `watermark`, used to request the theme of the WaterMarkTextBlock.
-/// 
+///
 /// # Others
-/// 
+///
 /// * `ParentType`- None.
 /// * `WaterMarkTextBlockState` - Handles the inner state of the widget.
 pub struct WaterMarkTextBlock;

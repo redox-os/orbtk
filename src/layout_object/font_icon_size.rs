@@ -1,10 +1,12 @@
-use crate::backend::{FontMeasure, FONT_MEASURE};
 use dces::{Entity, EntityComponentManager};
-use crate::layout_object::LayoutObject;
-use crate::properties::{Constraint, FontIcon, PrimaryFontIcon, SecondaryFontIcon};
-use crate::theme::{Selector, Theme};
 
-use crate::LayoutResult;
+use crate::{
+    backend::{FontMeasure, FONT_MEASURE},
+    layout_object::LayoutObject,
+    properties::{Constraint, FontIcon, PrimaryFontIcon, SecondaryFontIcon},
+    theme::{Selector, Theme},
+    LayoutResult,
+};
 
 pub struct FontIconSizeLayoutObject;
 
@@ -25,16 +27,15 @@ impl LayoutObject for FontIconSizeLayoutObject {
         theme: &Theme,
     ) -> LayoutResult {
         if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-
-               let icon = if let Ok(icon) = ecm.borrow_component::<FontIcon>(entity) {
-                    Some(&icon.0)
-                } else if let Ok(icon) = ecm.borrow_component::<PrimaryFontIcon>(entity) {
-                    Some(&icon.0)
-                } else if let Ok(icon) = ecm.borrow_component::<SecondaryFontIcon>(entity) {
-                    Some(&icon.0)
-                } else {
-                    None
-                };
+            let icon = if let Ok(icon) = ecm.borrow_component::<FontIcon>(entity) {
+                Some(&icon.0)
+            } else if let Ok(icon) = ecm.borrow_component::<PrimaryFontIcon>(entity) {
+                Some(&icon.0)
+            } else if let Ok(icon) = ecm.borrow_component::<SecondaryFontIcon>(entity) {
+                Some(&icon.0)
+            } else {
+                None
+            };
 
             if let Some(icon) = icon {
                 let size = {

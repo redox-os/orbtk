@@ -1,7 +1,11 @@
 use dces::{Entity, EntityComponentManager};
-use crate::layout_object::{LayoutObject, LayoutResult};
-use crate::properties::Constraint;
-use crate::theme::{Selector, Theme};
+
+use crate::{
+    layout_object::LayoutObject,
+    properties::Constraint,
+    theme::{Selector, Theme},
+    LayoutResult,
+};
 
 pub struct RootLayoutObject;
 

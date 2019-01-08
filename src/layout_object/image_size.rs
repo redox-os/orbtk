@@ -1,11 +1,13 @@
 use orbclient::Renderer;
 
 use dces::{Entity, EntityComponentManager};
-use crate::layout_object::LayoutObject;
-use crate::properties::{Constraint, Image};
-use crate::theme::Theme;
 
-use crate::LayoutResult;
+use crate::{
+    layout_object::LayoutObject,
+    properties::{Constraint, Image},
+    theme::Theme,
+    LayoutResult,
+};
 
 pub struct ImageSizeLayoutObject;
 

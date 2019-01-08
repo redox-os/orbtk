@@ -1,8 +1,6 @@
-
 use orbtk::*;
 
-use std::cell::Cell;
-use std::rc::Rc;
+use std::{cell::Cell, rc::Rc};
 
 #[derive(Default)]
 struct MainViewState {

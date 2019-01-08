@@ -1,15 +1,19 @@
-use std::cell::{Cell, RefCell};
-use std::collections::BTreeMap;
-use std::rc::Rc;
+use std::{
+    cell::{Cell, RefCell},
+    collections::BTreeMap,
+    rc::Rc,
+};
 
 use dces::{Entity, EntityComponentManager, System};
 
-use crate::application::Tree;
-use crate::backend::Backend;
-use crate::enums::Visibility;
-use crate::layout_object::LayoutObject;
-use crate::properties::{Constraint, Bounds};
-use crate::theme::Theme;
+use crate::{
+    application::Tree,
+    backend::Backend,
+    enums::Visibility,
+    layout_object::LayoutObject,
+    properties::{Bounds, Constraint},
+    theme::Theme,
+};
 
 pub enum LayoutResult {
     Size((u32, u32)),

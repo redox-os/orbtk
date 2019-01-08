@@ -1,20 +1,23 @@
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
-
-use std::collections::BTreeMap;
+use std::{
+    cell::{Cell, RefCell},
+    collections::BTreeMap,
+    rc::Rc,
+};
 
 use dces::{Entity, World};
 
-use crate::application::{Application, Tree};
-use crate::backend::{target_backend, BackendRunner};
-use crate::event::EventHandler;
-use crate::layout_object::{LayoutObject, RootLayoutObject};
-use crate::properties::{Point, Bounds};
-use crate::render_object::RenderObject;
-use crate::systems::{PostLayoutStateSystem, EventSystem, LayoutSystem, RenderSystem, StateSystem};
-use crate::theme::Theme;
-use crate::widget::{PropertyResult, State, Template};
-use crate::Global;
+use crate::{
+    application::{Application, Tree},
+    backend::{target_backend, BackendRunner},
+    event::EventHandler,
+    layout_object::{LayoutObject, RootLayoutObject},
+    properties::{Bounds, Point},
+    render_object::RenderObject,
+    systems::{EventSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem},
+    theme::Theme,
+    widget::{PropertyResult, State, Template},
+    Global,
+};
 
 /// Represents a window. Each window has its own tree, event pipline and backend.
 pub struct Window {

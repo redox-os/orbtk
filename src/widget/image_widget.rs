@@ -1,19 +1,21 @@
-use crate::layout_object::ImageSizeLayoutObject;
-use crate::render_object::ImageRenderObject;
-use crate::theme::Selector;
-use crate::widget::{Template, Widget};
+use crate::{
+    layout_object::ImageSizeLayoutObject,
+    render_object::ImageRenderObject,
+    theme::Selector,
+    widget::{Template, Widget},
+};
 
 /// The `ImageWidget` widget is used to draw an image. It is not interactive.
-/// 
+///
 /// # Properties
-/// 
+///
 /// * `Selector` - CSS selector with  element name `image`, used to request the theme of the image widget.
-/// 
+///
 /// # Others
-/// 
+///
 /// * `ParentType`- None.
 /// * `ImageSizeLayoutObject` - Used to layout the widget.
-/// * `ImageRenderObject` - Used to draw the image of the widget. 
+/// * `ImageRenderObject` - Used to draw the image of the widget.
 pub struct ImageWidget;
 
 impl Widget for ImageWidget {

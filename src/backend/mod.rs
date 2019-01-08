@@ -2,16 +2,20 @@
 //! A backend is used to open a window, draw on the screen and to call events.
 //! This module contains also an `OrbClient` based backend.
 
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
+use std::{
+    cell::{Cell, RefCell},
+    rc::Rc,
+};
 
 use dces::World;
 use orbclient::Color;
 
-use crate::application::Tree;
-use crate::event::EventQueue;
-use crate::properties::{Bounds, Point};
-use crate::theme::Theme;
+use crate::{
+    application::Tree,
+    event::EventQueue,
+    properties::{Bounds, Point},
+    theme::Theme,
+};
 
 /// Is used to provides data from the `Backend` to the `RenderSystem`.
 pub struct RenderContext<'a> {

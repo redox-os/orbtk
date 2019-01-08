@@ -1,14 +1,15 @@
-use std::any::TypeId;
-use std::collections::HashMap;
-use std::rc::Rc;
+use std::{any::TypeId,
+collections::HashMap,
+rc::Rc,};
 
 use dces::{Component, ComponentBox};
 
 
-use crate::enums::ParentType;
-use crate::event::EventHandler;
-use crate::layout_object::{LayoutObject, RootLayoutObject};
-use crate::render_object::RenderObject;
+use crate::{enums::ParentType,
+event::EventHandler,
+layout_object::{LayoutObject, RootLayoutObject},
+render_object::RenderObject,};
+
 use super::{State, SharedProperty};
 
 

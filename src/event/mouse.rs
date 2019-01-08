@@ -1,8 +1,10 @@
 use std::rc::Rc;
 
-use crate::event::{Event, EventBox, EventHandler};
-use crate::properties::{Point, Bounds};
-use crate::widget::WidgetContainer;
+use crate::{
+    event::{Event, EventBox, EventHandler},
+    properties::{Bounds, Point},
+    widget::WidgetContainer,
+};
 
 pub fn check_mouse_condition(position: Point, widget: &WidgetContainer<'_>) -> bool {
     if let Ok(bounds) = widget.borrow_property::<Bounds>() {
@@ -66,17 +68,17 @@ impl MouseEventHandler {
     pub fn on_mouse_up(mut self, handler: MouseHandler) -> Self {
         self.mouse_up = Some(handler);
         self
-    } 
+    }
 
     pub fn on_mouse_down(mut self, handler: MouseHandler) -> Self {
         self.mouse_down = Some(handler);
         self
-    } 
+    }
 
-     pub fn on_click(mut self, handler: MouseHandler) -> Self {
+    pub fn on_click(mut self, handler: MouseHandler) -> Self {
         self.click = Some(handler);
         self
-    } 
+    }
 }
 
 impl Into<Rc<dyn EventHandler>> for MouseEventHandler {

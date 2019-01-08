@@ -1,11 +1,13 @@
 use std::cell::{Cell, RefCell};
 
 use dces::{Entity, EntityComponentManager};
-use crate::layout_object::{LayoutObject, LayoutResult};
-use crate::theme::Theme;
 
-use crate::enums::Alignment;
-use crate::properties::{Constraint, Bounds};
+use crate::{
+    enums::Alignment,
+    layout_object::{LayoutObject, LayoutResult},
+    properties::{Bounds, Constraint},
+    theme::Theme,
+};
 
 pub struct FlexLayoutObject {
     orientation: Alignment,

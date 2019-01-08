@@ -1,5 +1,7 @@
-use std::cell::{Cell, RefCell};
-use std::collections::BTreeMap;
+use std::{
+    cell::{Cell, RefCell},
+    collections::BTreeMap,
+};
 
 use crate::{Entity, NotFound, EntityContainer};
 

@@ -1,17 +1,20 @@
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
-
-use std::collections::BTreeMap;
+use std::{
+    cell::{Cell, RefCell},
+    collections::BTreeMap,
+    rc::Rc,
+};
 
 use dces::{Entity, EntityComponentManager, System};
 
-use crate::application::{Tree, Global};
-use crate::backend::Backend;
-use crate::properties::{Enabled, Focused, Pressed, Selected};
-use crate::widget::{
-    add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
+use crate::{
+    application::{Global, Tree},
+    backend::Backend,
+    properties::{Enabled, Focused, Pressed, Selected},
+    theme::Selector,
+    widget::{
+        add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
+    },
 };
-use crate::theme::Selector;
 
 /// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {
@@ -24,7 +27,6 @@ pub struct StateSystem {
 impl StateSystem {
     fn init(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
         for node in tree.into_iter() {
-
             // Add css id to global id map.
             let id = if let Ok(selector) = ecm.borrow_component::<Selector>(node) {
                 if let Some(id) = &selector.id {
@@ -37,10 +39,10 @@ impl StateSystem {
             };
 
             if let Some((entity, id)) = id {
-                if let Ok(global) =  ecm.borrow_mut_component::<Global>(0) {
+                if let Ok(global) = ecm.borrow_mut_component::<Global>(0) {
                     global.id_map.insert(id, entity);
                 }
-            }  
+            }
         }
 
         self.is_init.set(true);
@@ -106,7 +108,12 @@ impl StateSystem {
     }
 
     // Updates the peseudo class of a widget by the given state.
-    fn update_default_state(&self, state: bool, pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
+    fn update_default_state(
+        &self,
+        state: bool,
+        pseudo_class: &str,
+        widget: &mut WidgetContainer<'_>,
+    ) {
         if state {
             add_selector_to_widget(pseudo_class, widget)
         } else {
@@ -120,7 +127,7 @@ impl System<Tree> for StateSystem {
         if !self.is_init.get() {
             self.init(tree, ecm);
         }
-        
+
         if !self.update.get() {
             return;
         }

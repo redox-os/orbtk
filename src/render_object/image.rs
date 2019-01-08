@@ -1,9 +1,11 @@
 use orbclient::Renderer as OrbRenderer;
 
-use crate::backend::Renderer;
-use crate::properties::{Bounds, Image, Point, Canvas};
-use crate::render_object::RenderObject;
-use crate::widget::Context;
+use crate::{
+    backend::Renderer,
+    properties::{Bounds, Canvas, Image, Point},
+    render_object::RenderObject,
+    widget::Context,
+};
 
 pub struct ImageRenderObject;
 
@@ -14,7 +16,12 @@ impl Into<Box<dyn RenderObject>> for ImageRenderObject {
 }
 
 impl RenderObject for ImageRenderObject {
-    fn render(&self, renderer: &mut dyn Renderer, context: &mut Context<'_>, global_position: &Point) {
+    fn render(
+        &self,
+        renderer: &mut dyn Renderer,
+        context: &mut Context<'_>,
+        global_position: &Point,
+    ) {
         let parent_bounds = if let Some(parent) = context.parent_widget() {
             if let Ok(bounds) = parent.borrow_property::<Bounds>() {
                 bounds.clone()

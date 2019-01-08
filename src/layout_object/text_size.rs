@@ -1,10 +1,12 @@
-use crate::backend::{FontMeasure, FONT_MEASURE};
 use dces::{Entity, EntityComponentManager};
-use crate::layout_object::LayoutObject;
-use crate::properties::Constraint;
-use crate::theme::{Selector, Theme};
 
-use crate::{Label, LayoutResult};
+use crate::{
+    backend::{FontMeasure, FONT_MEASURE},
+    layout_object::LayoutObject,
+    properties::{Constraint, Label},
+    theme::{Selector, Theme},
+    LayoutResult,
+};
 
 pub struct TextSizeLayoutObject;
 

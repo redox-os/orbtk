@@ -1,16 +1,20 @@
-use std::cell::{Cell, RefCell};
-use std::collections::BTreeMap;
-use std::rc::Rc;
+use std::{
+    cell::{Cell, RefCell},
+    collections::BTreeMap,
+    rc::Rc,
+};
 
 use dces::{Entity, EntityComponentManager, System};
 
-use crate::application::Tree;
-use crate::backend::Backend;
-use crate::enums::Visibility;
-use crate::render_object::RenderObject;
-use crate::properties::{Point, Bounds};
-use crate::theme::Selector;
-use crate::widget::Context;
+use crate::{
+    application::Tree,
+    backend::Backend,
+    enums::Visibility,
+    properties::{Bounds, Point},
+    render_object::RenderObject,
+    theme::Selector,
+    widget::Context,
+};
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {
@@ -36,7 +40,9 @@ impl System<Tree> for RenderSystem {
         offsets.insert(tree.root, (0, 0));
 
         // render window background
-        render_context.renderer.render(render_context.theme.color("background", &"window".into()));
+        render_context
+            .renderer
+            .render(render_context.theme.color("background", &"window".into()));
 
         for node in tree.into_iter() {
             let mut global_position = Point::default();
@@ -53,7 +59,7 @@ impl System<Tree> for RenderSystem {
                 } else {
                     current_hidden_parent = None;
                 }
-            } 
+            }
 
             // render debug border for each widget
             if self.debug_flag.get() {
@@ -79,8 +85,8 @@ impl System<Tree> for RenderSystem {
             if let Ok(visibility) = ecm.borrow_component::<Visibility>(node) {
                 if *visibility != Visibility::Visible {
                     current_hidden_parent = Some(node);
-                     continue;
-                }             
+                    continue;
+                }
             }
 
             if let Some(render_object) = self.render_objects.borrow().get(&node) {

@@ -1,10 +1,12 @@
-use crate::backend::{FontMeasure, FONT_MEASURE};
 use dces::{Entity, EntityComponentManager};
-use crate::layout_object::LayoutObject;
-use crate::properties::{Constraint, Label, Offset, Bounds, TextSelection};
-use crate::theme::{Selector, Theme};
 
-use crate::LayoutResult;
+use crate::{
+    backend::{FontMeasure, FONT_MEASURE},
+    layout_object::LayoutObject,
+    properties::{Bounds, Constraint, Label, Offset, TextSelection},
+    theme::{Selector, Theme},
+    LayoutResult,
+};
 
 pub struct TextSelectionLayoutObject;
 

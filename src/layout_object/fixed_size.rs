@@ -2,9 +2,11 @@ use std::cell::Cell;
 
 use dces::{Entity, EntityComponentManager};
 
-use crate::layout_object::{LayoutObject, LayoutResult};
-use crate::properties::Constraint;
-use crate::theme::{Selector, Theme};
+use crate::{
+    layout_object::{LayoutObject, LayoutResult},
+    properties::Constraint,
+    theme::{Selector, Theme},
+};
 
 #[derive(Default)]
 pub struct FixedSizeLayoutObject {

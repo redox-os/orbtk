@@ -1,6 +1,8 @@
-use std::any::TypeId;
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
+use std::{
+    any::TypeId,
+    cell::{Cell, RefCell},
+    rc::Rc,
+};
 
 use dces::{Component, ComponentBox, Entity, SharedComponentBox};
 

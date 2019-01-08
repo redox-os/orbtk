@@ -1,5 +1,7 @@
 //! This module contains all css theming releated resources.
 
+use std::{fs::File, io::BufReader, io::Read, mem, path::Path, sync::Arc};
+
 use cssparser::{
     self, BasicParseError, CompactCowStr, DeclarationListParser, ParseError, Parser, ParserInput,
     Token,
@@ -7,17 +9,9 @@ use cssparser::{
 
 use orbclient::Color;
 
-use std::mem;
-use std::path::Path;
-use std::sync::Arc;
-
-use std::fs::File;
-use std::io::BufReader;
-use std::io::Read;
-
 pub use self::cell::CloneCell;
-pub use self::selector::{Selector, SelectorRelation};
 use self::selector::Specificity;
+pub use self::selector::{Selector, SelectorRelation};
 pub use self::style::Style;
 
 mod cell;

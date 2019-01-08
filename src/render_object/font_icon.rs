@@ -1,8 +1,10 @@
-use crate::backend::Renderer;
-use crate::properties::{FontIcon, PrimaryFontIcon, SecondaryFontIcon, Point, Bounds};
-use crate::render_object::RenderObject;
-use crate::theme::Selector;
-use crate::widget::Context;
+use crate::{
+    backend::Renderer,
+    properties::{Bounds, FontIcon, Point, PrimaryFontIcon, SecondaryFontIcon},
+    render_object::RenderObject,
+    theme::Selector,
+    widget::Context,
+};
 
 pub struct FontIconRenderObject;
 
@@ -13,7 +15,12 @@ impl Into<Box<dyn RenderObject>> for FontIconRenderObject {
 }
 
 impl RenderObject for FontIconRenderObject {
-    fn render(&self, renderer: &mut dyn Renderer, context: &mut Context<'_>, global_position: &Point) {
+    fn render(
+        &self,
+        renderer: &mut dyn Renderer,
+        context: &mut Context<'_>,
+        global_position: &Point,
+    ) {
         let parent_bounds = if let Some(parent) = context.parent_widget() {
             if let Ok(bounds) = parent.borrow_property::<Bounds>() {
                 bounds.clone()

@@ -1,9 +1,11 @@
 use dces::{Entity, EntityComponentManager};
 
-use crate::layout_object::LayoutObject;
-use crate::properties::{Constraint, Padding, Bounds};
-use crate::systems::LayoutResult;
-use crate::theme::{Selector, Theme};
+use crate::{
+    layout_object::LayoutObject,
+    properties::{Bounds, Constraint, Padding},
+    theme::{Selector, Theme},
+    LayoutResult,
+};
 
 pub struct PaddingLayoutObject;
 
@@ -67,7 +69,6 @@ impl LayoutObject for PaddingLayoutObject {
             LayoutResult::Size(constraint.perform((width, height)))
         } else {
             if children.is_empty() {
-
                 let mut width = constraint.max_width;
                 let mut height = constraint.max_height;
 

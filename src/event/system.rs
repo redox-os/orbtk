@@ -1,8 +1,7 @@
-
 use crate::Event;
 
 pub enum SystemEvent {
-    Quit
+    Quit,
 }
 
 impl Event for SystemEvent {}

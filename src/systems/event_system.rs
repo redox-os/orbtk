@@ -1,19 +1,23 @@
-use std::any::TypeId;
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
-
-use std::collections::BTreeMap;
-
-use crate::application::Tree;
-use crate::backend::Backend;
-use dces::{Entity, EntityComponentManager, System};
-use crate::event::{
-    check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
-    MouseUpEvent,
+use std::{
+    any::TypeId,
+    cell::{Cell, RefCell},
+    collections::BTreeMap,
+    rc::Rc,
 };
-use crate::properties::{Enabled, Focused, Pressed, Selected};
-use crate::widget::WidgetContainer;
-use crate::Global;
+
+use dces::{Entity, EntityComponentManager, System};
+
+use crate::{
+    application::Tree,
+    backend::Backend,
+    event::{
+        check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
+        MouseUpEvent,
+    },
+    properties::{Enabled, Focused, Pressed, Selected},
+    widget::WidgetContainer,
+    Global,
+};
 
 pub struct EventSystem {
     pub backend: Rc<RefCell<dyn Backend>>,

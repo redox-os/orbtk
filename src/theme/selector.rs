@@ -1,5 +1,4 @@
-use std::collections::HashSet;
-use std::ops::Add;
+use std::{collections::HashSet, ops::Add};
 
 #[derive(Clone, Debug)]
 pub enum SelectorRelation {
@@ -127,13 +126,13 @@ impl Selector {
 }
 
 impl Clone for Selector {
-     fn clone(&self) -> Self {
-         Selector {
-             id: None,
-             element: self.element.clone(),
-             classes: self.classes.clone(),
-             pseudo_classes: self.pseudo_classes.clone(),
-             relation: self.relation.clone(),
-         }
-     }
+    fn clone(&self) -> Self {
+        Selector {
+            id: None,
+            element: self.element.clone(),
+            classes: self.classes.clone(),
+            pseudo_classes: self.pseudo_classes.clone(),
+            relation: self.relation.clone(),
+        }
+    }
 }

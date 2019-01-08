@@ -1,14 +1,19 @@
-use crate::enums::{ParentType, ScrollMode};
-use crate::event::{Key, KeyEventHandler, MouseEventHandler};
-use crate::properties::{
-    Bounds, Focused, Label, Offset, Point, ScrollViewerMode, TextSelection, WaterMark,
+use std::{
+    cell::{Cell, RefCell},
+    rc::Rc,
 };
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
-use crate::theme::Selector;
-use crate::widget::{
-    Container, Context, Cursor, ScrollViewer, SharedProperty, Stack, State, Template,
-    WaterMarkTextBlock, Widget,
+
+use crate::{
+    enums::{ParentType, ScrollMode},
+    event::{Key, KeyEventHandler, MouseEventHandler},
+    properties::{
+        Bounds, Focused, Label, Offset, Point, ScrollViewerMode, TextSelection, WaterMark,
+    },
+    theme::Selector,
+    widget::{
+        Container, Context, Cursor, ScrollViewer, SharedProperty, Stack, State, Template,
+        WaterMarkTextBlock, Widget,
+    },
 };
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
@@ -203,7 +208,9 @@ impl Widget for TextBox {
                                             .with_shared_property(label.clone())
                                             .with_shared_property(water_mark.clone())
                                             .with_shared_property(focused.clone())
-                                            .with_property(selector.clone().with_id("TextBoxTextBlock")),
+                                            .with_property(
+                                                selector.clone().with_id("TextBoxTextBlock"),
+                                            ),
                                     )
                                     .with_shared_property(offset.clone())
                                     .with_property(ScrollViewerMode::new(
@@ -218,7 +225,9 @@ impl Widget for TextBox {
                                     .with_shared_property(selection.clone())
                                     .with_shared_property(offset.clone())
                                     .with_shared_property(focused.clone())
-                                    .with_property(Selector::from("cursor").with_id("TextBoxCursor")),
+                                    .with_property(
+                                        Selector::from("cursor").with_id("TextBoxCursor"),
+                                    ),
                             )
                             .with_event_handler(MouseEventHandler::default().on_mouse_down(
                                 Rc::new(move |pos: Point| -> bool {

@@ -1,6 +1,7 @@
-use crate::{Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult, Theme};
-
-use crate::properties::Bounds;
+use crate::{
+    properties::Bounds, Constraint, Entity, EntityComponentManager, LayoutObject, LayoutResult,
+    Theme,
+};
 
 pub struct CenterLayoutObject;
 
@@ -50,10 +51,7 @@ impl LayoutObject for CenterLayoutObject {
                 return LayoutResult::Size((constraint.max_width, constraint.max_height));
             }
 
-            LayoutResult::RequestChild(
-                children[0],
-                *constraint,
-            )
+            LayoutResult::RequestChild(children[0], *constraint)
         }
     }
 }

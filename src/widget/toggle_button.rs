@@ -1,6 +1,8 @@
-use crate::properties::Selected;
-use crate::theme::Selector;
-use crate::widget::{Button, Template, Widget};
+use crate::{
+    properties::Selected,
+    theme::Selector,
+    widget::{Button, Template, Widget},
+};
 
 /// The `ToggleButton` widget can be switch its selected state. It derives from `Button` widget.
 ///
