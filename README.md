@@ -18,7 +18,7 @@ The main goals of OrbTk are fast peformance, easy to use and cross platform.
 
 * Modern [Flutter](https://flutter.io/), [React](https://reactjs.org/), [Redux](https://redux.js.org/) like API
 * Uses the Entity Component System library [DCES](https://gitlab.redox-os.org/redox-os/dces-rust) for widget and properties handling
-* Updating instead of rebuling subtrees
+* Updating instead of rebuilding subtrees
 * Flexible event system
 * Widget state management
 * Cross platform: Redox OS, Linux, macOS, Windows
