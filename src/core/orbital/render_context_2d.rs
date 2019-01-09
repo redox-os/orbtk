@@ -4,6 +4,7 @@ use std::sync::Arc;
 use orbclient::{Color, Renderer as OrbRenderer, Window as OrbWindow};
 use orbfont::Font;
 use orbgl::Canvas;
+use orbimage::Image;
 
 use crate::{
     core::{
@@ -17,6 +18,7 @@ use crate::{
 pub struct OrbRenderContext2D<'a> {
     context: &'a mut Canvas,
     helper_context: &'a mut OrbWindow,
+    image_cache: &'a mut HashMap<String, Image>,
 }
 
 impl<'a> OrbRenderContext2D<'a> {
@@ -88,28 +90,42 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
     }
 
     /// Draws an image on (x, y).
-    fn draw_image(&mut self, image_element: ImageElement, x: f64, y: f64) {
-        // todo: needs implementation
-        // todo: use OrbClient
+    fn draw_image(&mut self, image_element: &ImageElement, x: f64, y: f64) {
+        if !self.image_cache.contains_key(&image_element.path) {
+            if let Ok(image) = Image::from_path(&image_element.path) {
+                self.image_cache.insert(image_element.path.clone(), image);
+            }
+        }
+
+        if let Some(image) = self.image_cache.get(&image_element.path) {
+            self.helper_context.image_fast(x as i32, y as i32, image.width(), image.height(), image.data());
+        }
     }
 
     /// Draws an image on (x, y) with (width, height).
     fn draw_image_d(
         &mut self,
-        image_element: ImageElement,
+        image_element: &ImageElement,
         x: f64,
         y: f64,
         width: f64,
         height: f64,
     ) {
-        // todo: needs implementation
-        // todo: use OrbClient
+        if !self.image_cache.contains_key(&image_element.path) {
+            if let Ok(image) = Image::from_path(&image_element.path) {
+                self.image_cache.insert(image_element.path.clone(), image);
+            }
+        }
+
+        if let Some(image) = self.image_cache.get(&image_element.path) {
+            self.helper_context.image_fast(x as i32, y as i32, width as u32, height as u32, image.data());
+        }
     }
 
     /// Draws a part of the image with the given (source_x, source_y, source_width, source_height) on (x, y) with (width, height).
     fn draw_image_s(
         &mut self,
-        image_element: ImageElement,
+        image_element: &ImageElement,
         source_x: f64,
         source_y: f64,
         source_width: f64,
@@ -240,6 +256,10 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
     fn measure_text(&self, text: &str) -> TextMetrics {
         // todo: implement with OrbClient
         TextMetrics { width: 12.0 }
+    }
+
+    fn finish(&self) {
+
     }
 }
 

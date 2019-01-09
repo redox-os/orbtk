@@ -149,12 +149,12 @@ pub trait RenderContext2D {
     fn close_path(&mut self);
 
     /// Draws an image on (x, y).
-    fn draw_image(&mut self, image_element: ImageElement, x: f64, y: f64);
+    fn draw_image(&mut self, image_element: &ImageElement, x: f64, y: f64);
 
     /// Draws an image on (x, y) with (width, height).
     fn draw_image_d(
         &mut self,
-        image_element: ImageElement,
+        image_element: &ImageElement,
         x: f64,
         y: f64,
         width: f64,
@@ -164,7 +164,7 @@ pub trait RenderContext2D {
     /// Draws a part of the image with the given (source_x, source_y, source_width, source_height) on (x, y) with (width, height).
     fn draw_image_s(
         &mut self,
-        image_element: ImageElement,
+        image_element: &ImageElement,
         source_x: f64,
         source_y: f64,
         source_width: f64,
@@ -241,6 +241,9 @@ pub trait RenderContext2D {
     /// Returns a `TextMetrics` object that contains information about the measured text (such as its width for example).
     fn measure_text(&self, text: &str) -> TextMetrics;
 
+    /// Finish the drawing.
+    fn finish(&self);
+
     /// Translates the render instructions to render methods of `RenderContext`.
     fn render(&mut self, instructions: &[Instruction]) {
         for instruction in instructions {
@@ -253,9 +256,9 @@ pub trait RenderContext2D {
                 Instruction::BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y) => self.bezier_curve_to(*cp1x, *cp1y, *cp2x, *cp2y, *x, *y),
                 Instruction::ClearRect(x, y, width, height) => self.clear_rect(*x, *y, *width, *height),
                 Instruction::ClosePath() => self.close_path(),
-                Instruction::DrawImage(image, x, y) => self.draw_image(*image, *x, *y),
+                Instruction::DrawImage(image, x, y) => self.draw_image(image, *x, *y),
                 Instruction::DrawImageD(image, x, y, width, height) => {
-                    self.draw_image_d(*image, *x, *y, *width, *height)
+                    self.draw_image_d(image, *x, *y, *width, *height)
                 }
                 Instruction::DrawImageS(
                     image,
@@ -268,7 +271,7 @@ pub trait RenderContext2D {
                     width,
                     height,
                 ) => self.draw_image_s(
-                    *image, *s_x, *s_y, *s_width, *s_height, *x, *y, *width, *height,
+                    image, *s_x, *s_y, *s_width, *s_height, *x, *y, *width, *height,
                 ),
                 Instruction::Fill(file_rule) => self.fill(*file_rule),
                 Instruction::FillRect(x, y, width, height) => {
@@ -295,5 +298,7 @@ pub trait RenderContext2D {
                 Instruction::Translate(x, y) => self.translate(*x, *y),
             }
         }
+
+        self.finish();
     }
 }
