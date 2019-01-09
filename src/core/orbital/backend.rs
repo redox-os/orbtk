@@ -6,7 +6,7 @@ use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow}
 use dces::World;
 
 use crate::application::Tree;
-use crate::backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext};
+use crate::core::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext};
 use crate::event::{
     EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
     SystemEvent,

@@ -8,7 +8,7 @@ use dces::{Entity, World};
 
 use crate::{
     application::{Application, Tree},
-    backend::{target_backend, BackendRunner},
+    core::{target_backend, BackendRunner},
     event::EventHandler,
     layout::{Layout, RootLayout},
     properties::{Bounds, Point},

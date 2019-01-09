@@ -1,7 +1,7 @@
 use dces::{Entity, EntityComponentManager};
 
 use crate::{
-    backend::{FontMeasure, FONT_MEASURE},
+    core::{FontMeasure, FONT_MEASURE},
     layout::Layout,
     properties::{Constraint, FontIcon, PrimaryFontIcon, SecondaryFontIcon},
     theme::{Selector, Theme},

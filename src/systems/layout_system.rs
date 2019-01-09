@@ -8,7 +8,7 @@ use dces::{Entity, EntityComponentManager, System};
 
 use crate::{
     application::Tree,
-    backend::Backend,
+    core::Backend,
     enums::Visibility,
     layout::Layout,
     properties::{Bounds, Constraint},
