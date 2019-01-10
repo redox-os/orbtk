@@ -7,13 +7,13 @@ use std::sync::Arc;
 use orbclient::Window as OrbWindow;
 
 use self::backend::{OrbitalBackend, OrbitalBackendRunner};
-use self::renderer::FONT_RENDERER;
-use crate::backend::{Backend, FontMeasure};
+use self::render_context_2d::FONT_RENDERER;
+use crate::core::{Backend, FontMeasure};
 use crate::properties::Bounds;
 use crate::theme::Theme;
 
 mod backend;
-mod renderer;
+mod render_context_2d;
 
 pub fn target_backend(
     title: &str,

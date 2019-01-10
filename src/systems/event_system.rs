@@ -9,7 +9,7 @@ use dces::{Entity, EntityComponentManager, System};
 
 use crate::{
     application::Tree,
-    backend::Backend,
+    core::Backend,
     event::{
         check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
         MouseUpEvent,
