@@ -71,11 +71,8 @@ pub enum Instruction {
     /// Adds a rotation to the transformation matrix.
     Rotate(f64),
 
-    /// Specifies the color to use inside shapes.
-    SetFillStyleColor(String),
-
-    /// Specifies the color or style to use inside shapes. The default is #000 (black).
-    SetFillStyleGradient(Gradient),
+    /// Specifies the brush to use inside shapes.
+    SetFillStyleBrush(Brush),
 
     /// Specifies the current text style being used when drawing text. 
     SetFont(String),
@@ -194,10 +191,7 @@ pub trait RenderContext2D {
     fn rotate(&mut self, angle: f64);
 
     /// Specifies the color to use inside shapes.
-    fn set_fill_style_color(&mut self, color: &str);
-
-    /// Specifies the color or style to use inside shapes. The default is #000 (black).
-    fn set_fill_style_gradient(&mut self, gradient: &Gradient);
+    fn set_fill_style_brush(&mut self, color: &Brush);
 
     /// Specifies the current text style being used when drawing text. 
     fn set_font(&mut self, font: &str);
@@ -287,8 +281,7 @@ pub trait RenderContext2D {
                 Instruction::MoveTo(x, y) => self.move_to(*x, *y),
                 Instruction::Restore() => self.restore(),
                 Instruction::Rotate(angle) => self.rotate(*angle),
-                Instruction::SetFillStyleColor(color) => self.set_fill_style_color(&color),
-                Instruction::SetFillStyleGradient(gradient) => self.set_fill_style_gradient(&gradient),
+                Instruction::SetFillStyleBrush(brush) => self.set_fill_style_brush(&brush),
                 Instruction::SetStrokeStyleColor(color) => self.set_stroke_style_color(&color),
                 Instruction::SetFont(font) => self.set_font(font),
                 Instruction::SetLineWidth(width) => self.set_line_width(*width),

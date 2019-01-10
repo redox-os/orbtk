@@ -1,38 +1,57 @@
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
+use std::{
+    cell::{Cell, RefCell},
+    collections::HashMap,
+    rc::Rc,
+};
 
 use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
+use orbfont::Font;
+use orbgl::Canvas;
+use orbimage::Image;
 
 use dces::World;
 
-use crate::application::Tree;
-use crate::core::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext};
-use crate::event::{
-    EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
-    SystemEvent,
+use crate::{
+    application::Tree,
+    core::{
+        Backend, BackendRunner, EventContext, LayoutContext, OrbRenderContext2D, RenderContext2D,
+        Shape2D, StateContext,
+    },
+    event::{
+        EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
+        SystemEvent,
+    },
+    properties::{Bounds, Point},
+    theme::Theme,
 };
-use crate::properties::{Point, Bounds};
-use crate::theme::Theme;
 
 /// Implemenation of the OrbClient based backend.
 pub struct OrbitalBackend {
     inner: OrbWindow,
+    canvas: Canvas,
     theme: Theme,
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
     event_queue: RefCell<EventQueue>,
     running: bool,
+    image_cache: HashMap<String, Image>,
+    fonts: HashMap<String, Font>,
 }
 
 impl OrbitalBackend {
     pub fn new(theme: Theme, inner: OrbWindow) -> OrbitalBackend {
+        let canvas = Canvas::new(inner.width() as f32, inner.height() as f32);
+
         OrbitalBackend {
             inner,
+            canvas,
             theme,
             mouse_buttons: (false, false, false),
             mouse_position: Point::default(),
             event_queue: RefCell::new(EventQueue::default()),
             running: false,
+            image_cache: HashMap::new(),
+            fonts: HashMap::new(),
         }
     }
 }
@@ -105,10 +124,13 @@ impl Backend for OrbitalBackend {
                                 MouseButton::Right
                             }
                         };
-                        self.event_queue.borrow_mut().register_event(MouseUpEvent {
-                            button,
-                            position: self.mouse_position,
-                        }, 0)
+                        self.event_queue.borrow_mut().register_event(
+                            MouseUpEvent {
+                                button,
+                                position: self.mouse_position,
+                            },
+                            0,
+                        )
                     } else {
                         let button = {
                             if button.left {
@@ -119,12 +141,13 @@ impl Backend for OrbitalBackend {
                                 MouseButton::Right
                             }
                         };
-                        self.event_queue
-                            .borrow_mut()
-                            .register_event(MouseDownEvent {
+                        self.event_queue.borrow_mut().register_event(
+                            MouseDownEvent {
                                 button,
                                 position: self.mouse_position,
-                            }, 0);
+                            },
+                            0,
+                        );
                     }
 
                     self.mouse_buttons = (button.left, button.middle, button.right);
@@ -174,11 +197,33 @@ impl Backend for OrbitalBackend {
         self.inner.set_size(bounds.width, bounds.height);
     }
 
-    fn render_context(&mut self) -> RenderContext<'_> {
-        RenderContext {
-            renderer: &mut self.inner,
-            theme: &self.theme,
+    fn render(&mut self, shape: &Shape2D) {
+        self.inner.set(Color { data: 0 });
+
+        {
+            let mut context = OrbRenderContext2D {
+                orbgl_context: &mut self.canvas,
+                orbclient_context: &mut self.inner,
+                image_cache: &mut self.image_cache,
+                fonts: &mut self.fonts,
+                fill_color: Color { data: 0 },
+                stroke_color: Color { data: 0 },
+                gradient: vec![],
+                position: (0.0, 0.0),
+            };
+
+            context.render_shape(shape);
         }
+
+        self.inner.image_fast(
+            0,
+            0,
+            self.inner.width(),
+            self.inner.height(),
+            &self.canvas.data,
+        );
+
+        self.inner.sync();
     }
 
     fn layout_context(&mut self) -> LayoutContext<'_> {
@@ -195,9 +240,7 @@ impl Backend for OrbitalBackend {
     }
 
     fn state_context(&mut self) -> StateContext<'_> {
-        StateContext {
-            theme: &self.theme,
-        }
+        StateContext { theme: &self.theme }
     }
 }
 

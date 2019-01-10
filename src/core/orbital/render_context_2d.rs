@@ -7,19 +7,20 @@ use orbgl::Canvas;
 use orbimage::Image;
 
 use crate::{
-    core::{FillRule, Gradient, ImageElement, RenderContext2D, Renderer, TextMetrics},
+    core::{Brush, FillRule, GradientStop, ImageElement, RenderContext2D, Renderer, TextMetrics},
     properties::{Bounds, Point},
     theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, ROBOTO_REGULAR_FONT},
 };
 
 pub struct OrbRenderContext2D<'a> {
-    orbgl_context: &'a mut Canvas,
-    orbclient_context: &'a mut OrbWindow,
-    image_cache: &'a mut HashMap<String, Image>,
-    fonts: &'a mut HashMap<String, Font>,
-    position: (f64, f64),
-    fill_color: Color,
-    stroke_color: Color,
+    pub orbgl_context: &'a mut Canvas,
+    pub orbclient_context: &'a mut OrbWindow,
+    pub image_cache: &'a mut HashMap<String, Image>,
+    pub fonts: &'a mut HashMap<String, Font>,
+    pub position: (f64, f64),
+    pub fill_color: Color,
+    pub stroke_color: Color,
+    pub gradient: Vec<GradientStop>,
 }
 
 impl<'a> OrbRenderContext2D<'a> {
@@ -51,7 +52,12 @@ impl<'a> OrbRenderContext2D<'a> {
             self.orbclient_context.height(),
             &self.orbgl_context.data,
         );
-        self.orbgl_context.data.clear();
+        self.orbgl_context.clear_rect(
+            0.0,
+            0.0,
+            self.orbclient_context.width() as f32,
+            self.orbclient_context.height() as f32,
+        );
     }
 }
 
@@ -220,16 +226,19 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
         self.orbgl_context.rotate(angle as f32);
     }
 
-    /// Specifies the color to use inside shapes.
-    fn set_fill_style_color(&mut self, color: &str) {
-        let color = self.get_color(color);
-        self.fill_color = color;
-        self.orbgl_context.set_fill_style(color);
-    }
+    /// Specifies the brush to use inside shapes.
+    fn set_fill_style_brush(&mut self, brush: &Brush) {
+        match brush {
+            Brush::SolidColor(color) => {
+                let color = self.get_color(color);
+                self.fill_color = color;
+            }
+            Brush::Gradient(gradient) => {
+                self.gradient = gradient.clone();
+            }
+        }
 
-    /// Specifies the color or style to use inside shapes. The default is #000 (black).
-    fn set_fill_style_gradient(&mut self, gradient: &Gradient) {
-        // todo: needs implementation
+        self.orbgl_context.set_fill_style(self.fill_color);
     }
 
     /// Specifies the current text style being used when drawing text.

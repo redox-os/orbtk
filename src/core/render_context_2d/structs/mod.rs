@@ -1,4 +1,4 @@
-pub use self::brush::Gradient;
+pub use self::brush::{Brush, GradientStop};
 pub use self::font::TextMetrics;
 pub use self::image_element::ImageElement;
 

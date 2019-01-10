@@ -15,11 +15,12 @@ use crate::{
     event::EventQueue,
     properties::{Bounds, Point},
     theme::Theme,
+    core::{RenderContext2D, Shape2D},
 };
 
 /// Is used to provides data from the `Backend` to the `RenderSystem`.
 pub struct RenderContext<'a> {
-    pub renderer: &'a mut dyn Renderer,
+    pub context: &'a mut dyn RenderContext2D,
     pub theme: &'a Theme,
 }
 
@@ -77,7 +78,7 @@ pub trait Backend {
     fn drain_events(&mut self);
     fn bounds(&mut self, bounds: &Bounds);
     fn size(&self) -> (u32, u32);
-    fn render_context(&mut self) -> RenderContext<'_>;
+    fn render(&mut self, shape: &Shape2D);
     fn layout_context(&mut self) -> LayoutContext<'_>;
     fn event_context(&mut self) -> EventContext<'_>;
     fn state_context(&mut self) -> StateContext<'_>;
@@ -94,8 +95,7 @@ pub trait FontMeasure {
     fn measure(&self, text: &str, font: &str, font_size: u32) -> (u32, u32);
 }
 
-pub use self::target::target_backend;
-pub use self::target::FONT_MEASURE;
+pub use self::target::*;
 
 pub use self::render_context_2d::*;
 
