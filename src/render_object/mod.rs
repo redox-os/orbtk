@@ -31,7 +31,6 @@ use crate::core::{FillRule, Instruction};
 // *[ ] Think about how to implement shadows
 // *[ ] Adjust Template to work with new render objects e.g. .with_render_shape(RectangleBuilder::new())
 // *[ ] Store render shapes in ecs
-// *[ ] Renname render objects to render shapes
 // *[ ] Implement RenderContext for OrbClient
 // *[ ] Cache images
 // *[ ] Remove old Renderer trait
@@ -75,46 +74,17 @@ pub struct Rectangle {
     // todo: option instruction without border /
 }
 
-pub trait Shape2D {
-    fn instructions(&self) -> &[Instruction];
-}
 
-pub trait Shape2DBuilder {
-    fn build(&self) -> Box<Shape2D>;
-}
+
+// pub trait Shape2DBuilder {
+//     fn build(&self) -> Box<Shape2D>;
+// }
 
 pub struct RectangleBuilder {}
 
 // zoom, rotate, ...
 
 pub struct CCanvas {}
-
-impl Rectangle {
-    pub fn new() -> Self {
-        Rectangle {
-            instructions: vec![
-                Instruction::SetFillStyleColor(String::from("")),
-                Instruction::BeginPath(),
-                Instruction::ArcTo(0.0, 0.0),
-                Instruction::ArcTo(0.0, 0.0),
-                Instruction::ArcTo(0.0, 0.0),
-                Instruction::ArcTo(0.0, 0.0),
-                Instruction::ClosePath(),
-                Instruction::Fill(FillRule::default()),
-            ],
-        }
-    }
-
-    pub fn set_size(&mut self, width: f64, height: f64) {
-        self.instructions[2] = Instruction::ArcTo(0.0, 0.0);
-    }
-}
-
-impl Shape2D for Rectangle {
-    fn instructions(&self) -> &[Instruction] {
-        &self.instructions
-    }
-}
 
 pub trait RenderObject {
     fn render(

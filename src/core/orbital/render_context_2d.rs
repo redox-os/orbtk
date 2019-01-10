@@ -7,18 +7,19 @@ use orbgl::Canvas;
 use orbimage::Image;
 
 use crate::{
-    core::{
-        Brush, FillRule, Gradient, ImageElement, Instruction, RenderContext2D, Renderer,
-        TextMetrics,
-    },
+    core::{FillRule, Gradient, ImageElement, RenderContext2D, Renderer, TextMetrics},
     properties::{Bounds, Point},
     theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, ROBOTO_REGULAR_FONT},
 };
 
 pub struct OrbRenderContext2D<'a> {
-    context: &'a mut Canvas,
-    helper_context: &'a mut OrbWindow,
+    orbgl_context: &'a mut Canvas,
+    orbclient_context: &'a mut OrbWindow,
     image_cache: &'a mut HashMap<String, Image>,
+    fonts: &'a mut HashMap<String, Font>,
+    position: (f64, f64),
+    fill_color: Color,
+    stroke_color: Color,
 }
 
 impl<'a> OrbRenderContext2D<'a> {
@@ -40,6 +41,18 @@ impl<'a> OrbRenderContext2D<'a> {
             _ => Color { data: 0 },
         }
     }
+
+    // Helper that writes the data from orb_gl_context to orbclient_context
+    fn switch_context(&mut self) {
+        self.orbclient_context.image_fast(
+            0,
+            0,
+            self.orbclient_context.width(),
+            self.orbclient_context.height(),
+            &self.orbgl_context.data,
+        );
+        self.orbgl_context.data.clear();
+    }
 }
 
 impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
@@ -53,22 +66,24 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
         end_engle: f64,
         anti_clockwise: bool,
     ) {
+        self.switch_context();
         // todo: needs implementation
     }
 
     /// Adds a circular arc to the current sub-path, using the given control points and radius. The arc is automatically connected to the path's latest point with a straight line, if necessary for the specified parameters.
     fn arc_to(&mut self, x: f64, y: f64) {
+        self.switch_context();
         // todo: needs implementation
     }
 
     /// Starts a new path by emptying the list of sub-paths. Call this when you want to create a new path.
     fn begin_path(&mut self) {
-        self.context.begin_path();
+        self.orbgl_context.begin_path();
     }
 
     /// Adds a cubic Bézier curve to the current sub-path. It requires three points: the first two are control points and the third one is the end point. The starting point is the latest point in the current path, which can be changed using MoveTo() before creating the Bézier curve.
     fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
-        self.context.bezier_curve_to(
+        self.orbgl_context.bezier_curve_to(
             cp1x as f32,
             cp1y as f32,
             cp2x as f32,
@@ -80,17 +95,18 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
 
     /// Erases the pixels in a rectangular area by setting them to transparent black.
     fn clear_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.context
+        self.orbgl_context
             .clear_rect(x as f32, y as f32, width as f32, height as f32);
     }
 
     /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
     fn close_path(&mut self) {
-        self.context.close_path();
+        self.orbgl_context.close_path();
     }
 
     /// Draws an image on (x, y).
     fn draw_image(&mut self, image_element: &ImageElement, x: f64, y: f64) {
+        self.switch_context();
         if !self.image_cache.contains_key(&image_element.path) {
             if let Ok(image) = Image::from_path(&image_element.path) {
                 self.image_cache.insert(image_element.path.clone(), image);
@@ -98,7 +114,13 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
         }
 
         if let Some(image) = self.image_cache.get(&image_element.path) {
-            self.helper_context.image_fast(x as i32, y as i32, image.width(), image.height(), image.data());
+            self.orbclient_context.image_fast(
+                x as i32,
+                y as i32,
+                image.width(),
+                image.height(),
+                image.data(),
+            );
         }
     }
 
@@ -111,6 +133,7 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
         width: f64,
         height: f64,
     ) {
+        self.switch_context();
         if !self.image_cache.contains_key(&image_element.path) {
             if let Ok(image) = Image::from_path(&image_element.path) {
                 self.image_cache.insert(image_element.path.clone(), image);
@@ -118,7 +141,13 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
         }
 
         if let Some(image) = self.image_cache.get(&image_element.path) {
-            self.helper_context.image_fast(x as i32, y as i32, width as u32, height as u32, image.data());
+            self.orbclient_context.image_fast(
+                x as i32,
+                y as i32,
+                width as u32,
+                height as u32,
+                image.data(),
+            );
         }
     }
 
@@ -132,21 +161,35 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
         source_height: f64,
         x: f64,
         y: f64,
-        width: f64,
-        height: f64,
+        _: f64,
+        _: f64,
     ) {
-        // todo: needs implementation
-        // todo: use OrbClient
+        self.switch_context();
+        if !self.image_cache.contains_key(&image_element.path) {
+            if let Ok(image) = Image::from_path(&image_element.path) {
+                self.image_cache.insert(image_element.path.clone(), image);
+            }
+        }
+
+        if let Some(image) = self.image_cache.get(&image_element.path) {
+            let image_roi = image.roi(
+                source_x as u32,
+                source_y as u32,
+                source_width as u32,
+                source_height as u32,
+            );
+            image_roi.draw(self.orbclient_context, x as i32, y as i32);
+        }
     }
 
     /// Fills the current or given path with the current file style.
     fn fill(&mut self, _: FillRule) {
-        self.context.fill();
+        self.orbgl_context.fill();
     }
 
     /// Draws a filled rectangle whose starting point is at the coordinates (x, y) with the specified width and height and whose style is determined by the fillStyle attribute.
     fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.context
+        self.orbgl_context
             .fill_rect(x as f32, y as f32, width as f32, height as f32);
     }
 
@@ -158,27 +201,30 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
 
     /// Adds a straight line to the current sub-path by connecting the sub-path's last point to the specified (x, y) coordinates.
     fn line_to(&mut self, x: f64, y: f64) {
-        self.context.line_to(x as f32, y as f32);
+        self.orbgl_context.line_to(x as f32, y as f32);
     }
 
     /// Begins a new sub-path at the point specified by the given (x, y) coordinates.
     fn move_to(&mut self, x: f64, y: f64) {
-        self.context.move_to(x as f32, y as f32);
+        self.position = (x, y);
+        self.orbgl_context.move_to(x as f32, y as f32);
     }
 
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
     fn restore(&mut self) {
-        self.context.restore();
+        self.orbgl_context.restore();
     }
 
     /// Adds a rotation to the transformation matrix.
     fn rotate(&mut self, angle: f64) {
-        self.context.rotate(angle as f32);
+        self.orbgl_context.rotate(angle as f32);
     }
 
     /// Specifies the color to use inside shapes.
     fn set_fill_style_color(&mut self, color: &str) {
-        self.context.set_fill_style(self.get_color(color));
+        let color = self.get_color(color);
+        self.fill_color = color;
+        self.orbgl_context.set_fill_style(color);
     }
 
     /// Specifies the color or style to use inside shapes. The default is #000 (black).
@@ -194,7 +240,7 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
 
     /// Sets the thickness of lines.
     fn set_line_width(&mut self, width: f64) {
-        self.context.set_line_width(width as f32);
+        self.orbgl_context.set_line_width(width as f32);
     }
 
     /// Specifies the amount of blur applied to shadows. The default is 0 (no blur).
@@ -223,33 +269,35 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
 
     /// Specifies the color or style to use for the lines around shapes. The default is #000 (black).
     fn set_stroke_style_color(&mut self, color: &str) {
-        self.context.set_stroke_style(self.get_color(color));
+        let color = self.get_color(color);
+        self.fill_color = color;
+        self.orbgl_context.set_stroke_style(color);
     }
 
     /// Saves the entire state of the canvas by pushing the current state onto a stack.
     fn save(&mut self) {
-        self.context.save();
+        self.orbgl_context.save();
     }
 
     /// Adds a scaling transformation to the canvas units horizontally and/or vertically.
     fn scale(&mut self, x: f64, y: f64) {
-        self.context.scale(x as f32, y as f32);
+        self.orbgl_context.scale(x as f32, y as f32);
     }
 
     /// Strokes (outlines) the current or given path with the current stroke style.
     fn stroke(&mut self) {
-        self.context.stroke();
+        self.orbgl_context.stroke();
     }
 
     /// Multiplies the current transformation with the matrix described by the arguments of this method. You are able to scale, rotate, move and skew the context.
     fn transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
-        self.context
+        self.orbgl_context
             .transform(a as f32, b as f32, c as f32, d as f32, e as f32, f as f32);
     }
 
     /// Adds a translation transformation to the current matrix.
     fn translate(&mut self, x: f64, y: f64) {
-        self.context.translate(x as f32, y as f32);
+        self.orbgl_context.translate(x as f32, y as f32);
     }
 
     /// Returns a `TextMetrics` object that contains information about the measured text (such as its width for example).
@@ -258,8 +306,11 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
         TextMetrics { width: 12.0 }
     }
 
-    fn finish(&self) {
+    fn finish(&self) {}
 
+    /// Registers a new font from a path.
+    fn register_font(&mut self, path: &str) {
+        if let Ok(font) = Font::from_path(path) {}
     }
 }
 

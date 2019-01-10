@@ -1,11 +1,8 @@
+pub use self::shapes::*;
+pub use self::structs::*;
 
-pub use self::brush::{Gradient, Brush};
-pub use self::font::TextMetrics;
-pub use self::image_element::ImageElement;
-
-mod brush;
-mod font;
-mod image_element;
+mod shapes;
+mod structs;
 
 /// The algorithm by which to determine if a point is inside or outside the filling region.
 #[derive(PartialEq, Debug, Copy, Clone)]
@@ -243,6 +240,14 @@ pub trait RenderContext2D {
 
     /// Finish the drawing.
     fn finish(&self);
+
+    /// Registers a new font from a path.
+    fn register_font(&mut self, path: &str);
+
+    /// Renders a 2D Shape.
+    fn render_shape(&mut self, shape: &Shape2D) {
+        self.render(shape.instructions());
+    }
 
     /// Translates the render instructions to render methods of `RenderContext`.
     fn render(&mut self, instructions: &[Instruction]) {
