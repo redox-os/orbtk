@@ -7,7 +7,10 @@ use orbgl::Canvas;
 use orbimage::Image;
 
 use crate::{
-    core::{Brush, FillRule, GradientStop, ImageElement, RenderContext2D, Renderer, TextMetrics},
+    core::{
+        Brush, FillRule, GradientStop, ImageElement, Position, RenderContext2D, Renderer, Size,
+        TextMetrics,
+    },
     properties::{Bounds, Point},
     theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, ROBOTO_REGULAR_FONT},
 };
@@ -111,82 +114,109 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
     }
 
     /// Draws an image on (x, y).
-    fn draw_image(&mut self, image_element: &ImageElement, x: f64, y: f64) {
+    fn draw_image(&mut self, image_element: &ImageElement) {
         self.switch_context();
-        if !self.image_cache.contains_key(&image_element.path) {
-            if let Ok(image) = Image::from_path(&image_element.path) {
-                self.image_cache.insert(image_element.path.clone(), image);
+        let path = image_element.get_path();
+        if !self.image_cache.contains_key(path) {
+            if let Ok(image) = Image::from_path(path) {
+                self.image_cache.insert(path.to_string(), image);
             }
         }
 
-        if let Some(image) = self.image_cache.get(&image_element.path) {
-            self.orbclient_context.image_fast(
-                x as i32,
-                y as i32,
-                image.width(),
-                image.height(),
-                image.data(),
-            );
-        }
-    }
+        if let Some(image) = self.image_cache.get(path) {
+            let (width, height) = {
+                if image_element.get_width() == 0.0 && image_element.get_height() == 0.0 {
+                    (image.width(), image.height())
+                } else {
+                    (
+                        image_element.get_width() as u32,
+                        image_element.get_height() as u32,
+                    )
+                }
+            };
 
-    /// Draws an image on (x, y) with (width, height).
-    fn draw_image_d(
-        &mut self,
-        image_element: &ImageElement,
-        x: f64,
-        y: f64,
-        width: f64,
-        height: f64,
-    ) {
-        self.switch_context();
-        if !self.image_cache.contains_key(&image_element.path) {
-            if let Ok(image) = Image::from_path(&image_element.path) {
-                self.image_cache.insert(image_element.path.clone(), image);
+            if let Some(source_rect) = image_element.get_source_rect() {
+                let image_roi = image.roi(
+                    source_rect.x as u32,
+                    source_rect.y as u32,
+                    source_rect.width as u32,
+                    source_rect.height as u32,
+                );
+
+                image_roi.draw(
+                    self.orbclient_context,
+                    image_element.get_x() as i32,
+                    image_element.get_y() as i32,
+                );
+            } else {
+                self.orbclient_context.image_fast(
+                    image_element.get_x() as i32,
+                    image_element.get_y() as i32,
+                    width,
+                    height,
+                    image.data(),
+                );
             }
         }
-
-        if let Some(image) = self.image_cache.get(&image_element.path) {
-            self.orbclient_context.image_fast(
-                x as i32,
-                y as i32,
-                width as u32,
-                height as u32,
-                image.data(),
-            );
-        }
     }
 
-    /// Draws a part of the image with the given (source_x, source_y, source_width, source_height) on (x, y) with (width, height).
-    fn draw_image_s(
-        &mut self,
-        image_element: &ImageElement,
-        source_x: f64,
-        source_y: f64,
-        source_width: f64,
-        source_height: f64,
-        x: f64,
-        y: f64,
-        _: f64,
-        _: f64,
-    ) {
-        self.switch_context();
-        if !self.image_cache.contains_key(&image_element.path) {
-            if let Ok(image) = Image::from_path(&image_element.path) {
-                self.image_cache.insert(image_element.path.clone(), image);
-            }
-        }
+    // /// Draws an image on (x, y) with (width, height).
+    // fn draw_image_d(
+    //     &mut self,
+    //     image_element: &ImageElement,
+    //     x: f64,
+    //     y: f64,
+    //     width: f64,
+    //     height: f64,
+    // ) {
+    //     self.switch_context();
+    //     if !self.image_cache.contains_key(&image_element.path) {
+    //         if let Ok(image) = Image::from_path(&image_element.path) {
+    //             self.image_cache.insert(image_element.path.clone(), image);
+    //         }
+    //     }
 
-        if let Some(image) = self.image_cache.get(&image_element.path) {
-            let image_roi = image.roi(
-                source_x as u32,
-                source_y as u32,
-                source_width as u32,
-                source_height as u32,
-            );
-            image_roi.draw(self.orbclient_context, x as i32, y as i32);
-        }
-    }
+    //     if let Some(image) = self.image_cache.get(&image_element.path) {
+    //         self.orbclient_context.image_fast(
+    //             x as i32,
+    //             y as i32,
+    //             width as u32,
+    //             height as u32,
+    //             image.data(),
+    //         );
+    //     }
+    // }
+
+    // /// Draws a part of the image with the given (source_x, source_y, source_width, source_height) on (x, y) with (width, height).
+    // fn draw_image_s(
+    //     &mut self,
+    //     image_element: &ImageElement,
+    //     source_x: f64,
+    //     source_y: f64,
+    //     source_width: f64,
+    //     source_height: f64,
+    //     x: f64,
+    //     y: f64,
+    //     _: f64,
+    //     _: f64,
+    // ) {
+    //     self.switch_context();
+    //     if !self.image_cache.contains_key(&image_element.path) {
+    //         if let Ok(image) = Image::from_path(&image_element.path) {
+    //             self.image_cache.insert(image_element.path.clone(), image);
+    //         }
+    //     }
+
+    //     if let Some(image) = self.image_cache.get(&image_element.path) {
+    //         let image_roi = image.roi(
+    //             source_x as u32,
+    //             source_y as u32,
+    //             source_width as u32,
+    //             source_height as u32,
+    //         );
+    //         image_roi.draw(self.orbclient_context, x as i32, y as i32);
+    //     }
+    // }
 
     /// Fills the current or given path with the current file style.
     fn fill(&mut self, _: FillRule) {

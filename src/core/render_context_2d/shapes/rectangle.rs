@@ -1,32 +1,14 @@
-use crate::{core::Shape2D, Brush, FillRule, ImageElement, Instruction};
-
-#[derive(Copy, Clone, Default, Debug, PartialEq)]
-pub struct Thickness {
-    pub left: f64,
-    pub top: f64,
-    pub right: f64,
-    pub bottom: f64,
-}
-
-#[derive(Copy, Clone, Default, Debug, PartialEq)]
-pub struct Rect {
-    pub x: f64,
-    pub y: f64,
-    pub width: f64,
-    pub height: f64,
-}
-
-#[derive(Clone, Default, Debug, PartialEq)]
-pub struct Border {
-    pub brush: Brush,
-    pub thickness: Thickness,
-}
+use crate::{
+    core::{Border, Rect, Shape2D},
+    Brush, FillRule, ImageElement, ImageElementBuilder, Instruction
+};
 
 #[derive(Default)]
 pub struct RectangleBuilder {
     pub background: Brush,
     pub rect: Rect,
     pub border: Border,
+    pub radius: f64,
 }
 
 impl RectangleBuilder {
@@ -49,6 +31,11 @@ impl RectangleBuilder {
         self
     }
 
+    pub fn with_radius(mut self, radius: f64) -> Self {
+        self.radius = radius;
+        self
+    }
+
     pub fn build(self) -> Rectangle {
         Rectangle::new()
     }
@@ -64,23 +51,19 @@ impl Rectangle {
         Rectangle {
             instructions: vec![
                 Instruction::DrawImage(
-                    ImageElement {
-                        path: "res/orbtk-space.png".to_string(),
-                    },
-                    10.0,
-                    10.0,
+                    ImageElementBuilder::new("res/orbtk-space.png".to_string()).with_position( 10.0,
+                    10.0).build()
+                   
                 ),
                 Instruction::SetFillStyleBrush(Brush::from("#6195ED")),
                 Instruction::FillRect(10.0, 10.0, 100.0, 200.0),
-                Instruction::DrawImage(
-                    ImageElement {
-                        path: "res/orbtk-space.png".to_string(),
-                    },
-                    60.0,
-                    30.0,
-                ),
+               
                 Instruction::SetFillStyleBrush(Brush::from("#80ED61")),
                 Instruction::FillRect(20.0, 20.0, 80.0, 180.0),
+                 Instruction::DrawImage(
+                   ImageElementBuilder::new("res/orbtk-space.png".to_string()).with_position( 60.0,
+                    60.0).with_source_rect(50.0, 50.0, 150.0, 150.0).build()
+                ),
             ],
         }
     }

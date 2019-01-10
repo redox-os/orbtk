@@ -41,14 +41,8 @@ pub enum Instruction {
     /// Erases the pixels in a rectangular area by setting them to transparent black.
     ClearRect(f64, f64, f64, f64),
 
-    /// Draws an image on (x, y).
-    DrawImage(ImageElement, f64, f64),
-
-    /// Draws an image on (x, y) with (width, height).
-    DrawImageD(ImageElement, f64, f64, f64, f64),
-
-    /// Draws a part of the image with the given (source_x, source_y, source_width, source_height) on (x, y) with (width, height).
-    DrawImageS(ImageElement, f64, f64, f64, f64, f64, f64, f64, f64),
+    /// Draws an image.
+    DrawImage(ImageElement),
 
     /// Fills the current or given path with the current file style.
     Fill(FillRule),
@@ -143,31 +137,7 @@ pub trait RenderContext2D {
     fn close_path(&mut self);
 
     /// Draws an image on (x, y).
-    fn draw_image(&mut self, image_element: &ImageElement, x: f64, y: f64);
-
-    /// Draws an image on (x, y) with (width, height).
-    fn draw_image_d(
-        &mut self,
-        image_element: &ImageElement,
-        x: f64,
-        y: f64,
-        width: f64,
-        height: f64,
-    );
-
-    /// Draws a part of the image with the given (source_x, source_y, source_width, source_height) on (x, y) with (width, height).
-    fn draw_image_s(
-        &mut self,
-        image_element: &ImageElement,
-        source_x: f64,
-        source_y: f64,
-        source_width: f64,
-        source_height: f64,
-        x: f64,
-        y: f64,
-        width: f64,
-        height: f64,
-    );
+    fn draw_image(&mut self, image_element: &ImageElement);
 
     /// Fills the current or given path with the current file style.
     fn fill(&mut self, fill_rule: FillRule);
@@ -255,23 +225,7 @@ pub trait RenderContext2D {
                 Instruction::BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y) => self.bezier_curve_to(*cp1x, *cp1y, *cp2x, *cp2y, *x, *y),
                 Instruction::ClearRect(x, y, width, height) => self.clear_rect(*x, *y, *width, *height),
                 Instruction::ClosePath() => self.close_path(),
-                Instruction::DrawImage(image, x, y) => self.draw_image(image, *x, *y),
-                Instruction::DrawImageD(image, x, y, width, height) => {
-                    self.draw_image_d(image, *x, *y, *width, *height)
-                }
-                Instruction::DrawImageS(
-                    image,
-                    s_x,
-                    s_y,
-                    s_width,
-                    s_height,
-                    x,
-                    y,
-                    width,
-                    height,
-                ) => self.draw_image_s(
-                    image, *s_x, *s_y, *s_width, *s_height, *x, *y, *width, *height,
-                ),
+                Instruction::DrawImage(image) => self.draw_image(image),
                 Instruction::Fill(file_rule) => self.fill(*file_rule),
                 Instruction::FillRect(x, y, width, height) => {
                     self.fill_rect(*x, *y, *width, *height)
