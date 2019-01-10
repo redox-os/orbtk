@@ -97,8 +97,5 @@ pub trait FontMeasure {
 pub use self::target::target_backend;
 pub use self::target::FONT_MEASURE;
 
-pub use self::render_context_2d::*;
-
 #[path = "orbital/mod.rs"]
 mod target;
-mod render_context_2d;

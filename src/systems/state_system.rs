@@ -8,7 +8,7 @@ use dces::{Entity, EntityComponentManager, System};
 
 use crate::{
     application::{Global, Tree},
-    core::Backend,
+    backend::Backend,
     properties::{Enabled, Focused, Pressed, Selected},
     theme::Selector,
     widget::{

@@ -1,7 +1,7 @@
 use orbclient::Renderer as OrbRenderer;
 
 use crate::{
-    core::Renderer,
+    backend::Renderer,
     properties::{Bounds, Canvas, Image, Point},
     render_object::RenderObject,
     widget::Context,

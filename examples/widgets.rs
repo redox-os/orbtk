@@ -94,9 +94,6 @@ impl Widget for MainView {
 }
 
 fn main() {
-   
-
-
     let mut application = Application::default();
     application
         .create_window()

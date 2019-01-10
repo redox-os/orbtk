@@ -1,5 +1,5 @@
 use crate::{
-    core::Renderer,
+    backend::Renderer,
     properties::{Bounds, Point},
     render_object::RenderObject,
     theme::Selector,

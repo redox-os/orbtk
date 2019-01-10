@@ -7,7 +7,7 @@ pub use dces::prelude::*;
 extern crate lazy_static;
 
 pub use crate::application::*;
-pub use crate::core::*;
+pub use crate::backend::*;
 pub use crate::enums::*;
 pub use crate::event::*;
 pub use crate::layout::*;
@@ -18,7 +18,7 @@ pub use crate::theme::{Selector, Theme, DEFAULT_THEME_CSS, LIGHT_THEME_CSS};
 pub use crate::widget::*;
 
 pub mod application;
-pub mod core;
+pub mod backend;
 pub mod enums;
 pub mod event;
 pub mod layout;
