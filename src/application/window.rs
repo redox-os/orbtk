@@ -13,7 +13,7 @@ use crate::{
     layout::{Layout, RootLayout},
     properties::{Bounds, Point},
     systems::{EventSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem},
-    theme::Theme,
+    theme::{Theme, UpdateableShape},
     widget::{PropertyResult, State, Template},
     Global,
 };
@@ -21,6 +21,7 @@ use crate::{
 /// Represents a window. Each window has its own tree, event pipline and backend.
 pub struct Window {
     pub backend_runner: Box<dyn BackendRunner>,
+    pub shapes: Rc<RefCell<BTreeMap<Entity, Box<dyn UpdateableShape>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
@@ -81,6 +82,7 @@ impl<'a> WindowBuilder<'a> {
     pub fn build(self) {
         let (mut runner, backend) = target_backend(&self.title, self.bounds, self.theme);
         let mut world = World::from_container(Tree::default());
+        let shapes = Rc::new(RefCell::new(BTreeMap::new()));
         let layouts = Rc::new(RefCell::new(BTreeMap::new()));
         let handlers = Rc::new(RefCell::new(BTreeMap::new()));
         let states = Rc::new(RefCell::new(BTreeMap::new()));
@@ -95,6 +97,7 @@ impl<'a> WindowBuilder<'a> {
             build_tree(
                 root,
                 &mut world,
+                &shapes,
                 &layouts,
                 &handlers,
                 &states,
@@ -113,6 +116,7 @@ impl<'a> WindowBuilder<'a> {
 
         world
             .create_system(StateSystem {
+                shapes: shapes.clone(),
                 backend: backend.clone(),
                 states: states.clone(),
                 update: update.clone(),
@@ -141,6 +145,7 @@ impl<'a> WindowBuilder<'a> {
 
         world
             .create_system(RenderSystem {
+                shapes: shapes.clone(),
                 backend: backend.clone(),
                 update: update.clone(),
                 debug_flag: debug_flag.clone(),
@@ -152,6 +157,7 @@ impl<'a> WindowBuilder<'a> {
 
         self.application.windows.push(Window {
             backend_runner: runner,
+            shapes,
             layouts,
             handlers,
             states,
@@ -165,6 +171,7 @@ impl<'a> WindowBuilder<'a> {
 fn build_tree(
     root: Template,
     world: &mut World<Tree>,
+    shapes: &Rc<RefCell<BTreeMap<Entity, Box<dyn UpdateableShape>>>>,
     layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     states: &Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
@@ -172,6 +179,7 @@ fn build_tree(
 ) {
     fn expand(
         world: &mut World<Tree>,
+        shapes: &Rc<RefCell<BTreeMap<Entity, Box<dyn UpdateableShape>>>>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
         states: &Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
@@ -225,6 +233,10 @@ fn build_tree(
                 .borrow_mut()
                 .insert(entity, template.layout);
 
+            if let Some(shape) = template.shape {
+                shapes.borrow_mut().insert(entity, shape);
+            }
+
             let widget_handlers = template.event_handlers;
 
             if !widget_handlers.is_empty() {
@@ -261,6 +273,7 @@ fn build_tree(
         for child in template.children.drain(0..) {
             let child = expand(
                 world,
+                shapes,
                 layouts,
                 handlers,
                 states,
@@ -275,6 +288,7 @@ fn build_tree(
 
     expand(
         world,
+        shapes,
         layouts,
         handlers,
         states,

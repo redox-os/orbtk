@@ -13,14 +13,15 @@ use cssparser::{
 pub use self::cell::CloneCell;
 use self::selector::Specificity;
 pub use self::selector::{Selector, SelectorRelation};
-pub use self::from_theme::*;
 pub use self::style::Style;
+pub use self::update::*;
 
 mod cell;
 pub mod material_font_icons;
 mod selector;
-mod from_theme;
+
 mod style;
+mod update;
 
 pub static DEFAULT_THEME_CSS: &'static str = include_str!("dark.css");
 pub static LIGHT_THEME_EXTENSION_CSS: &'static str = include_str!("light.css");

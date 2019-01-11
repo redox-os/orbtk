@@ -10,7 +10,7 @@ use crate::{
     application::{Global, Tree},
     core::Backend,
     properties::{Enabled, Focused, Pressed, Selected},
-    theme::Selector,
+    theme::{Selector, Theme, UpdateableShape},
     widget::{
         add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
     },
@@ -18,6 +18,7 @@ use crate::{
 
 /// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {
+    pub shapes: Rc<RefCell<BTreeMap<Entity, Box<dyn UpdateableShape>>>>,
     pub backend: Rc<RefCell<dyn Backend>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
@@ -25,10 +26,16 @@ pub struct StateSystem {
 }
 
 impl StateSystem {
-    fn init(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
+    fn init(&self, theme: &Theme, tree: &Tree, ecm: &mut EntityComponentManager) {
         for node in tree.into_iter() {
             // Add css id to global id map.
             let id = if let Ok(selector) = ecm.borrow_component::<Selector>(node) {
+
+                // intialize render shape from theme
+                if let Some(shape) = self.shapes.borrow_mut().get_mut(&node) {
+                    shape.update_by_selector(selector, theme);
+                }
+
                 if let Some(id) = &selector.id {
                     Some((node, id.clone()))
                 } else {
@@ -124,15 +131,17 @@ impl StateSystem {
 
 impl System<Tree> for StateSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
+         let mut backend = self.backend.borrow_mut();
+
         if !self.is_init.get() {
-            self.init(tree, ecm);
+            self.init(&backend.state_context().theme, tree, ecm);
         }
 
         if !self.update.get() {
             return;
         }
 
-        let mut backend = self.backend.borrow_mut();
+       
         let state_context = backend.state_context();
         let mut context = Context::new(tree.root, ecm, tree, &state_context.theme);
 

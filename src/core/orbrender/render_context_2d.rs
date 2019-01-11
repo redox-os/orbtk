@@ -206,6 +206,10 @@ pub trait RenderContext2D {
     /// Registers a new font from a path.
     fn register_font(&mut self, path: &str);
 
+    fn render_shape_box(&mut self, shape: &Box<Shape2D>) {
+        self.render(shape.instructions());
+    }
+
     /// Renders a 2D Shape.
     fn render_shape(&mut self, shape: &Shape2D) {
         self.render(shape.instructions());

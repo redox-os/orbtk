@@ -66,7 +66,7 @@ impl Rectangle {
         self.background = background;
     }
 
-    fn create_shape(&mut self) {
+    pub fn create_shape(&mut self) {
         self.instructions.clear();
         let has_thickness = self.border.thickness.left > 0.0
             || self.border.thickness.top > 0.0
@@ -222,7 +222,6 @@ impl Shape2D for Rectangle {
 impl Size for Rectangle {
     fn set_with(&mut self, width: f64) {
         self.rect.width = width;
-        self.create_shape();
     }
 
     fn get_width(&self) -> f64 {
@@ -231,7 +230,6 @@ impl Size for Rectangle {
 
     fn set_height(&mut self, height: f64) {
         self.rect.height = height;
-        self.create_shape();
     }
 
     fn get_height(&self) -> f64 {
@@ -241,7 +239,6 @@ impl Size for Rectangle {
     fn set_size(&mut self, width: f64, height: f64) {
         self.rect.width = width;
         self.rect.height = height;
-        self.create_shape();
     }
 
     fn get_size(&self) -> (f64, f64) {
@@ -252,7 +249,6 @@ impl Size for Rectangle {
 impl Position for Rectangle {
     fn set_x(&mut self, x: f64) {
         self.rect.x = x;
-        self.create_shape();
     }
 
     fn get_x(&self) -> f64 {
@@ -261,7 +257,6 @@ impl Position for Rectangle {
 
     fn set_y(&mut self, y: f64) {
         self.rect.y = y;
-        self.create_shape();
     }
 
     fn get_y(&self) -> f64 {
@@ -271,7 +266,6 @@ impl Position for Rectangle {
     fn set_position(&mut self, x: f64, y: f64) {
         self.rect.x = x;
         self.rect.y = y;
-        self.create_shape();
     }
 
     fn get_position(&self) -> (f64, f64) {
@@ -286,7 +280,6 @@ impl Bordered for Rectangle {
 
     fn set_border_thickness(&mut self, thickness: Thickness) {
         self.border.thickness = thickness;
-        self.create_shape();
     }
 
     fn get_border_brush(&self) -> &Brush {
@@ -295,7 +288,6 @@ impl Bordered for Rectangle {
 
     fn set_border_brush(&mut self, brush: Brush) {
         self.border.brush = brush;
-        self.create_shape();
     }
 
     fn get_border(&self) -> &Border {
@@ -304,6 +296,5 @@ impl Bordered for Rectangle {
 
     fn set_border(&mut self, border: Border) {
         self.border = border;
-        self.create_shape();
     }
 }

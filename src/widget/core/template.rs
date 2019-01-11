@@ -5,6 +5,7 @@ use dces::{Component, ComponentBox};
 use crate::{
     enums::ParentType,
     event::EventHandler,
+    theme::UpdateableShape,
     layout::{Layout, RootLayout},
 };
 
@@ -17,7 +18,7 @@ pub struct Template {
     pub parent_type: ParentType,
     pub state: Option<Rc<dyn State>>,
     pub event_handlers: Vec<Rc<dyn EventHandler>>,
-    // pub render_object: Option<Box<dyn RenderObject>>,
+    pub shape: Option<Box<dyn UpdateableShape>>,
     pub layout: Box<dyn Layout>,
     pub properties: HashMap<TypeId, ComponentBox>,
     pub shared_properties: HashMap<TypeId, SharedProperty>,
@@ -30,6 +31,7 @@ impl Default for Template {
             children: vec![],
             parent_type: ParentType::None,
             state: None,
+            shape: None,
             event_handlers: vec![],
             layout: Box::new(RootLayout),
             properties: HashMap::new(),
@@ -81,11 +83,11 @@ impl Template {
         self
     }
 
-    // /// Used to add a `render_object' to the template. Only one `render_object` can be added.
-    // pub fn with_render_object(mut self, render_object: impl Into<Box<dyn RenderObject>>) -> Self {
-    //     self.render_object = Some(render_object.into());
-    //     self
-    // }
+    /// Used to add a `shape' to the template. Only one `shape` can be added.
+    pub fn with_render_shape(mut self, shape: impl Into<Box<dyn UpdateableShape>>) -> Self {
+        self.shape = Some(shape.into());
+        self
+    }
 
     /// Used to add a `layout' to the template. Only one `layout` can be added.
     pub fn with_layout(mut self, layout: impl Into<Box<dyn Layout>>) -> Self {
