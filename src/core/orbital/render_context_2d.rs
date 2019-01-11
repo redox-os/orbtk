@@ -8,8 +8,11 @@ use orbimage::Image;
 
 use crate::{
     core::{
-        Brush, FillRule, GradientStop, ImageElement, Position, RenderContext2D, Renderer, Size,
-        TextMetrics,
+        orbrender::{
+            Brush, FillRule, GradientStop, ImageElement, Position, RenderContext2D, Size,
+            TextMetrics,
+        },
+        Renderer,
     },
     properties::{Bounds, Point},
     theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, ROBOTO_REGULAR_FONT},
@@ -80,7 +83,7 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
     }
 
     /// Adds a circular arc to the current sub-path, using the given control points and radius. The arc is automatically connected to the path's latest point with a straight line, if necessary for the specified parameters.
-    fn arc_to(&mut self, x: f64, y: f64) {
+    fn arc_to(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, radius: f64) {
         self.switch_context();
         // todo: needs implementation
     }

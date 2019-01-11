@@ -1,4 +1,6 @@
-use crate::core::{Position, Rect, Size};
+use crate::core::orbrender::{Position, Rect, Size};
+
+// todo: ImageElement and Font as Trait. Implementation by backend wrapping native images and fonts.
 
 pub struct ImageElementBuilder {
     pub path: String,
@@ -27,7 +29,7 @@ impl ImageElementBuilder {
         self
     }
 
-    pub fn with_rect(mut self, x: f64, y: f64, width: f64, height: f64) -> Self {
+    pub fn with_rect(self, x: f64, y: f64, width: f64, height: f64) -> Self {
         self.with_position(x, y).with_size(width, height)
     }
 
@@ -109,7 +111,7 @@ impl Size for ImageElement {
 }
 
 impl Position for ImageElement {
-    fn set_with(&mut self, x: f64) {
+    fn set_x(&mut self, x: f64) {
         self.rect.x = x;
     }
 

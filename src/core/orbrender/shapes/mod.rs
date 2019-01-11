@@ -1,7 +1,7 @@
 use super::Instruction;
 
 pub use self::image::Image;
-pub use self::rectangle::Rectangle;
+pub use self::rectangle::{Rectangle, RectangleBuilder};
 
 mod image;
 mod rectangle;

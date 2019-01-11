@@ -1,8 +1,6 @@
-pub use self::shapes::*;
-pub use self::structs::*;
-
-mod shapes;
-mod structs;
+use crate::{
+    core::orbrender::{ImageElement, Brush, TextMetrics, Shape2D},
+};
 
 /// The algorithm by which to determine if a point is inside or outside the filling region.
 #[derive(PartialEq, Debug, Copy, Clone)]
@@ -27,7 +25,7 @@ pub enum Instruction {
     Arc(f64, f64, f64, f64, f64, bool),
 
     /// Adds a circular arc to the current sub-path, using the given control points and radius. The arc is automatically connected to the path's latest point with a straight line, if necessary for the specified parameters.
-    ArcTo(f64, f64),
+    ArcTo(f64, f64, f64, f64, f64),
 
     /// Starts a new path by emptying the list of sub-paths. Call this when you want to create a new path.
     BeginPath(),
@@ -122,7 +120,7 @@ pub trait RenderContext2D {
     );
 
     /// Adds a circular arc to the current sub-path, using the given control points and radius. The arc is automatically connected to the path's latest point with a straight line, if necessary for the specified parameters.
-    fn arc_to(&mut self, x: f64, y: f64);
+    fn arc_to(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, radius: f64);
 
     /// Starts a new path by emptying the list of sub-paths. Call this when you want to create a new path.
     fn begin_path(&mut self);
@@ -220,7 +218,7 @@ pub trait RenderContext2D {
                 Instruction::Arc(x, y, radius, start_angle, end_engle, anti_clockwise) => {
                     self.arc(*x, *y, *radius, *start_angle, *end_engle, *anti_clockwise)
                 }
-                Instruction::ArcTo(x, y) => self.arc_to(*x, *y),
+                Instruction::ArcTo(x1, y1, x2, y2, radius) => self.arc_to(*x1, *y1, *x2, *y2, *radius),
                 Instruction::BeginPath() => self.begin_path(),
                 Instruction::BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y) => self.bezier_curve_to(*cp1x, *cp1y, *cp2x, *cp2y, *x, *y),
                 Instruction::ClearRect(x, y, width, height) => self.clear_rect(*x, *y, *width, *height),

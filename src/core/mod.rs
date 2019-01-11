@@ -15,7 +15,7 @@ use crate::{
     event::EventQueue,
     properties::{Bounds, Point},
     theme::Theme,
-    core::{RenderContext2D, Shape2D},
+    core::orbrender::{RenderContext2D, Shape2D},
 };
 
 /// Is used to provides data from the `Backend` to the `RenderSystem`.
@@ -97,8 +97,6 @@ pub trait FontMeasure {
 
 pub use self::target::*;
 
-pub use self::render_context_2d::*;
-
 #[path = "orbital/mod.rs"]
 mod target;
-mod render_context_2d;
+pub mod orbrender;

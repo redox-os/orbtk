@@ -6,6 +6,17 @@ pub struct Rect {
     pub height: f64,
 }
 
+impl Rect {
+    pub fn new(x: f64, y: f64, width: f64, height: f64) -> Self {
+        Rect {
+            x,
+            y, 
+            width,
+            height,
+        }
+    }
+}
+
 pub trait Size {
     fn set_with(&mut self, width: f64);
     fn get_width(&self) -> f64;
@@ -16,7 +27,7 @@ pub trait Size {
 }
 
 pub trait Position {
-    fn set_with(&mut self, x: f64);
+    fn set_x(&mut self, x: f64);
     fn get_x(&self) -> f64;
     fn set_y(&mut self, y: f64);
     fn get_y(&self) -> f64;

@@ -4,6 +4,8 @@ pub struct GradientStop {
     pub color: String,
 }
 
+// todo: Color struct
+
 // impl Default for Gradient {
 //     fn default() -> Self {
 //         Gradient {

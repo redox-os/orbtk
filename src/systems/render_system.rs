@@ -8,7 +8,10 @@ use dces::{Entity, EntityComponentManager, System};
 
 use crate::{
     application::Tree,
-    core::{Backend, Rectangle},
+    core::{
+        orbrender::{BorderBuilder, Rectangle, Rect, Thickness, Border, Brush, RectangleBuilder},
+        Backend,
+    },
     enums::Visibility,
     properties::{Bounds, Point},
     render_object::RenderObject,
@@ -31,7 +34,6 @@ impl System<Tree> for RenderSystem {
         }
 
         let mut backend = self.backend.borrow_mut();
-        
 
         let parents = tree.parent.clone();
         // let mut current_hidden_parent = None;
@@ -39,12 +41,25 @@ impl System<Tree> for RenderSystem {
         let mut offsets = BTreeMap::new();
         offsets.insert(tree.root, (0, 0));
 
-        let rectangle = Rectangle::new();
+        let rectangle = RectangleBuilder::new()
+            .with_rect(Rect::new(10.0, 10.0, 120.0, 130.0))
+            .with_border(Border::new(
+                Brush::from("#073B92"),
+                Thickness::new(5.0, 10.0, 4.0, 20.0),
+            ))
+            .with_background(Brush::from("#3F79D9"))
+            .build();
 
         backend.render(&rectangle);
 
+         let rectangle = RectangleBuilder::new()
+            .with_rect(Rect::new(10.0, 160.0, 120.0, 130.0))
+            .with_background(Brush::from("#3F79D9"))
+            .build();
+
+             backend.render(&rectangle);
+
         // render window background
-  
 
         // render_context
         //     .context.inner
