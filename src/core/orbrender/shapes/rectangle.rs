@@ -48,6 +48,7 @@ impl RectangleBuilder {
     }
 }
 
+#[derive(Default)]
 pub struct Rectangle {
     instructions: Vec<Instruction>,
     rect: Rect,

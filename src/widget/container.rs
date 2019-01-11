@@ -1,4 +1,5 @@
 use crate::{
+    core::orbrender::Rectangle,
     enums::ParentType,
     layout::PaddingLayout,
     // render_object::RectangleRenderObject,
@@ -11,12 +12,12 @@ use crate::{
 /// # Properties
 ///
 /// * `Selector` - CSS selector with element name `container`, used to request the theme of the widget.
+/// * `Rectangle`- Used to draw the widget.
 ///
 /// # Others
 ///
 /// * `ParentType`- Single.
 /// * `PaddingLayout` - Used to layout the widget.
-/// * `RectangleRenderObject` - Used to draw the widget.
 pub struct Container;
 
 impl Widget for Container {
@@ -24,7 +25,7 @@ impl Widget for Container {
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_property(Selector::from("container"))
-            // .with_render_object(RectangleRenderObject)
+            .with_property(Rectangle::default())
             .with_layout(PaddingLayout)
             .with_debug_name("Container")
     }

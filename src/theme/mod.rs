@@ -2,21 +2,24 @@
 
 use std::{fs::File, io::BufReader, io::Read, mem, path::Path, sync::Arc};
 
+
+use crate::core::orbrender::Brush;
+
 use cssparser::{
     self, BasicParseError, CompactCowStr, DeclarationListParser, ParseError, Parser, ParserInput,
     Token,
 };
 
-use orbclient::Color;
-
 pub use self::cell::CloneCell;
 use self::selector::Specificity;
 pub use self::selector::{Selector, SelectorRelation};
+pub use self::from_theme::*;
 pub use self::style::Style;
 
 mod cell;
 pub mod material_font_icons;
 mod selector;
+mod from_theme;
 mod style;
 
 pub static DEFAULT_THEME_CSS: &'static str = include_str!("dark.css");
@@ -110,11 +113,10 @@ impl Theme {
         matches.last().map(|x| x.2.clone())
     }
 
-    pub fn color(&self, property: &str, query: &Selector) -> Color {
-        let default = Color { data: 0 };
+    pub fn brush(&self, property: &str, query: &Selector) -> Brush {
         self.get(property, query)
-            .map(|v| v.color().unwrap_or(default))
-            .unwrap_or(default)
+            .map(|v| v.brush().unwrap_or(Brush::default()))
+            .unwrap_or(Brush::default())
     }
 
     pub fn uint(&self, property: &str, query: &Selector) -> u32 {
@@ -159,7 +161,7 @@ pub struct Declaration {
 pub enum Value {
     UInt(u32),
     Float(f32),
-    Color(Color),
+    Brush(Brush),
     Str(String),
 }
 
@@ -178,9 +180,9 @@ impl Value {
         }
     }
 
-    pub fn color(&self) -> Option<Color> {
-        match *self {
-            Value::Color(x) => Some(x),
+    pub fn brush(&self) -> Option<Brush> {
+        match self {
+            Value::Brush(x) => Some(x.clone()),
             _ => None,
         }
     }
@@ -349,13 +351,13 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
         input: &mut Parser<'i, 't>,
     ) -> Result<Self::Declaration, ParseError<'i, Self::Error>> {
         let value = match &*name {
-            "color" | "border-color" | "icon-color" => Value::Color(parse_basic_color(input)?),
+            "color" | "border-color" | "icon-color" => Value::Brush(parse_basic_color(input)?),
 
-            "background" | "foreground" => Value::Color(parse_basic_color(input)?),
+            "background" | "foreground" => Value::Brush(parse_basic_color(input)?),
 
             "font-family" | "icon-font-family" => Value::Str(parse_string(input)?),
 
-            "border-radius" | "border-width" | "width" | "height" | "min-width" | "min-height"
+            "border-radius" | "border-width" | "border-left" | "border-top" | "border-right" | "border-bottom" | "width" | "height" | "min-width" | "min-height"
             | "max-width" | "max-height" | "padding-top" | "padding-right" | "padding-bottom"
             | "padding-left" | "padding" | "font-size" | "icon-size" | "icon-margin" => {
                 match input.next()? {
@@ -390,28 +392,28 @@ impl<'i> cssparser::AtRuleParser<'i> for DeclarationParser {
     type Error = CustomParseError;
 }
 
-fn css_color(name: &str) -> Option<Color> {
-    Some(hex(match name {
-        "transparent" => return Some(Color { data: 0 }),
+fn css_color(name: &str) -> Option<Brush> {
+    Some(match name {
+        "transparent" => Brush::from(name),
 
-        "black" => 0x000_000,
-        "silver" => 0xc0c_0c0,
-        "gray" | "grey" => 0x808_080,
-        "white" => 0xfff_fff,
-        "maroon" => 0x800_000,
-        "red" => 0xff0_000,
-        "purple" => 0x800_080,
-        "fuchsia" => 0xff0_0ff,
-        "green" => 0x008_000,
-        "lime" => 0x00f_f00,
-        "olive" => 0x808_000,
-        "yellow" => 0xfff_f00,
-        "navy" => 0x000_080,
-        "blue" => 0x000_0ff,
-        "teal" => 0x008_080,
-        "aqua" => 0x00f_fff,
+        "black" => Brush::from("#000000"),
+        "silver" => Brush::from("#C0C0C0"),
+        "gray" | "grey" => Brush::from("#808080"),
+        "white" => Brush::from("#FFFFFF"),
+        "maroon" => Brush::from("#800000"),
+        "red" => Brush::from("#FF0000"),
+        "purple" => Brush::from("#800080"),
+        "fuchsia" => Brush::from("#FF00FF"),
+        "green" => Brush::from("#008000"),
+        "lime" => Brush::from("#00FF00"),
+        "olive" => Brush::from("#808000"),
+        "yellow" => Brush::from("#FFFF00"),
+        "navy" => Brush::from("#000080"),
+        "blue" => Brush::from("#0000FF"),
+        "teal" => Brush::from("#008080"),
+        "aqua" => Brush::from("#00FFFF"),
         _ => return None,
-    }))
+    })
 }
 
 fn css_string(name: &str) -> Option<String> {
@@ -436,30 +438,14 @@ fn parse_string<'i, 't>(
 
 fn parse_basic_color<'i, 't>(
     input: &mut Parser<'i, 't>,
-) -> Result<Color, ParseError<'i, CustomParseError>> {
+) -> Result<Brush, ParseError<'i, CustomParseError>> {
     Ok(match input.next()? {
         Token::Ident(s) => match css_color(&s) {
             Some(color) => color,
             None => return Err(CustomParseError::InvalidColorName(s.into_owned()).into()),
         },
 
-        Token::IDHash(hash) | Token::Hash(hash) => match hash.len() {
-            6 | 8 => {
-                let mut x = match u32::from_str_radix(&hash, 16) {
-                    Ok(x) => x,
-                    Err(_) => {
-                        return Err(CustomParseError::InvalidColorHex(hash.into_owned()).into());
-                    }
-                };
-
-                if hash.len() == 6 {
-                    x |= 0xFF_000_000;
-                }
-
-                Color { data: x }
-            }
-            _ => return Err(CustomParseError::InvalidColorHex(hash.into_owned()).into()),
-        },
+        Token::IDHash(hash) | Token::Hash(hash) => Brush::from(hash.into_owned()),
 
         t => {
             let basic_error = BasicParseError::UnexpectedToken(t);
@@ -495,8 +481,8 @@ pub fn parse(s: &str) -> Vec<Rule> {
     rules.into_iter().filter_map(|rule| rule.ok()).collect()
 }
 
-const fn hex(data: u32) -> Color {
-    Color {
-        data: 0xFF_000_000 | data,
-    }
-}
+// const fn hex(data: u32) -> Color {
+//     Color {
+//         data: 0xFF_000_000 | data,
+//     }
+// }
