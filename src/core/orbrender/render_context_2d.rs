@@ -108,6 +108,9 @@ pub enum Instruction {
 
 /// translater
 pub trait RenderContext2D {
+    /// Fills the whole background with the fill color.
+    fn fill_background(&mut self);
+
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle, and travels in the direction given by anticlockwise (defaulting to clockwise).
     fn arc(
         &mut self,

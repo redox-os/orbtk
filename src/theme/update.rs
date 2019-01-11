@@ -6,19 +6,24 @@ use crate::{
 use super::{Selector, Theme};
 
 pub trait UpdateableShape: Shape2D {
-    fn update_by_selector(&mut self, selector: &Selector, theme: &Theme);
+    fn update_by_selector(&mut self, selector: &mut Selector, theme: &Theme);
     fn update_by_bounds(&mut self, x: f64, y: f64, width: f64, height: f64);
 }
 
 impl UpdateableShape for Rectangle {
-    fn update_by_selector(&mut self, selector: &Selector, theme: &Theme) {
-        // todo selector dirty!!!
+    fn update_by_selector(&mut self, selector: &mut Selector, theme: &Theme) {
+        if !selector.is_dirty() {
+            return;
+        }
+     
 
         let left = theme.uint("border-left", selector) as f64;
         let right = theme.uint("border-left", selector) as f64;
         let top = theme.uint("border-left", selector) as f64;
         let bottom = theme.uint("border-left", selector) as f64;
         let width = theme.uint("border-width", selector) as f64;
+
+        // todo radius
         let radius = theme.uint("border-radius", selector) as f64;
         let brush = theme.brush("border-color", selector);
         let background = theme.brush("background", selector);
@@ -35,6 +40,7 @@ impl UpdateableShape for Rectangle {
         self.set_border_brush(brush);
         self.set_background(background);
         self.create_shape();
+        selector.set_dirty(false);
     }
 
     fn update_by_bounds(&mut self, x: f64, y: f64, width: f64, height: f64) {

@@ -34,6 +34,7 @@ pub struct Selector {
     pub classes: HashSet<String>,
     pub pseudo_classes: HashSet<String>,
     pub relation: Option<Box<SelectorRelation>>,
+    pub dirty: bool,
 }
 
 impl Selector {
@@ -44,7 +45,16 @@ impl Selector {
             classes: HashSet::new(),
             pseudo_classes: HashSet::new(),
             relation: None,
+            dirty: true,
         }
+    }
+
+    pub fn is_dirty(&self) -> bool {
+        self.dirty
+    }
+
+    pub fn set_dirty(&mut self, dirty: bool) {
+        self.dirty = dirty;
     }
 
     pub fn specificity(&self) -> Specificity {
@@ -133,6 +143,7 @@ impl Clone for Selector {
             classes: self.classes.clone(),
             pseudo_classes: self.pseudo_classes.clone(),
             relation: self.relation.clone(),
+            dirty: true,
         }
     }
 }

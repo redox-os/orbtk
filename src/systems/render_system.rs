@@ -45,6 +45,7 @@ impl System<Tree> for RenderSystem {
         // render window background
         {
             let render_context = backend.render_context();
+            render_context.fill_background();
 
             for node in tree.into_iter() {
                 let mut global_position = Point::default();
@@ -62,26 +63,6 @@ impl System<Tree> for RenderSystem {
                         current_hidden_parent = None;
                     }
                 }
-
-                // render debug border for each widget
-                // if self.debug_flag.get() {
-                //     if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
-                //         if let Ok(parent_bounds) = ecm.borrow_component::<Bounds>(tree.parent[&node]) {
-                //             let selector = Selector::from("debugborder");
-
-                //             render_context.renderer.render_rectangle(
-                //                 bounds,
-                //                 parent_bounds,
-                //                 &global_position,
-                //                 render_context.theme.uint("border-radius", &selector),
-                //                 render_context.theme.color("background", &selector),
-                //                 render_context.theme.uint("border-width", &selector),
-                //                 render_context.theme.color("border-color", &selector),
-                //                 render_context.theme.float("opcaity", &selector),
-                //             );
-                //         }
-                //     }
-                // }
 
                 // hide hidden widget
                 if let Ok(visibility) = ecm.borrow_component::<Visibility>(node) {

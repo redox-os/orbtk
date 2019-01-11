@@ -11,6 +11,10 @@
     icon-font-family: "Material Icons Regular";
 }
 
+window {
+    background: "#242424"
+}
+
 .space {
     width: 100;
 }

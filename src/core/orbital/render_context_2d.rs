@@ -15,7 +15,7 @@ use crate::{
         Renderer,
     },
     properties::{Bounds, Point},
-    theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, Theme, ROBOTO_REGULAR_FONT},
+    theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, Theme, ROBOTO_REGULAR_FONT, Selector},
 };
 
 pub struct OrbContext {
@@ -69,6 +69,12 @@ impl OrbContext {
 }
 
 impl RenderContext2D for OrbContext {
+    fn fill_background(&mut self) {
+        // todo store windwo selector
+        self.set_fill_style_brush(&self.theme.brush("background", &Selector::from("window")));
+        self.switch_context();
+        self.orbclient_context.set(self.fill_color);
+    }
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle, and travels in the direction given by anticlockwise (defaulting to clockwise).
     fn arc(
         &mut self,

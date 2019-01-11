@@ -29,8 +29,7 @@ impl StateSystem {
     fn init(&self, theme: &Theme, tree: &Tree, ecm: &mut EntityComponentManager) {
         for node in tree.into_iter() {
             // Add css id to global id map.
-            let id = if let Ok(selector) = ecm.borrow_component::<Selector>(node) {
-
+            let id = if let Ok(selector) = ecm.borrow_mut_component::<Selector>(node) {
                 // intialize render shape from theme
                 if let Some(shape) = self.shapes.borrow_mut().get_mut(&node) {
                     shape.update_by_selector(selector, theme);
@@ -131,7 +130,7 @@ impl StateSystem {
 
 impl System<Tree> for StateSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-         let mut backend = self.backend.borrow_mut();
+        let mut backend = self.backend.borrow_mut();
 
         if !self.is_init.get() {
             self.init(&backend.state_context().theme, tree, ecm);
@@ -141,7 +140,6 @@ impl System<Tree> for StateSystem {
             return;
         }
 
-       
         let state_context = backend.state_context();
         let mut context = Context::new(tree.root, ecm, tree, &state_context.theme);
 
@@ -162,6 +160,12 @@ impl System<Tree> for StateSystem {
 
             if let Some(state) = self.states.borrow().get(&node) {
                 state.update(&mut context);
+            }
+
+            if let Ok(selector) = context.widget().borrow_mut_property::<Selector>() {
+                if let Some(shape) = self.shapes.borrow_mut().get_mut(&node) {
+                    shape.update_by_selector(selector, &state_context.theme);
+                }
             }
         }
     }
