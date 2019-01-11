@@ -1,6 +1,6 @@
 use crate::{
     layout::StretchLayout,
-    render_object::ImageRenderObject,
+    // render_object::ImageRenderObject,
     theme::Selector,
     widget::{Template, Widget},
 };
@@ -23,7 +23,7 @@ impl Widget for CanvasWidget {
         Template::default()
             .with_property(Selector::from("imagewidget"))
             .with_layout(StretchLayout::default())
-            .with_render_object(ImageRenderObject)
+            // .with_render_object(ImageRenderObject)
             .with_debug_name("ImageWidget")
     }
 }

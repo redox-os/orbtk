@@ -1,6 +1,6 @@
 use crate::{
     layout::ImageSizeLayout,
-    render_object::ImageRenderObject,
+    // render_object::ImageRenderObject,
     theme::Selector,
     widget::{Template, Widget},
 };
@@ -23,7 +23,7 @@ impl Widget for ImageWidget {
         Template::default()
             .with_property(Selector::from("imagewidget"))
             .with_layout(ImageSizeLayout)
-            .with_render_object(ImageRenderObject)
+            // .with_render_object(ImageRenderObject)
             .with_debug_name("ImageWidget")
     }
 }

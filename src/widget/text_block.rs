@@ -1,7 +1,7 @@
 use crate::{
     layout::TextSizeLayout,
     properties::Label,
-    render_object::TextRenderObject,
+    // render_object::TextRenderObject,
     theme::Selector,
     widget::{Template, Widget},
 };
@@ -26,7 +26,7 @@ impl Widget for TextBlock {
             .with_property(Label::from("TextBlock"))
             .with_property(Selector::from("textblock"))
             .with_layout(TextSizeLayout)
-            .with_render_object(TextRenderObject)
+            // .with_render_object(TextRenderObject)
             .with_debug_name("TextBlock")
     }
 }

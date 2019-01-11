@@ -14,8 +14,8 @@ use dces::World;
 use crate::{
     application::Tree,
     core::{
-        Backend, BackendRunner, EventContext, LayoutContext, OrbRenderContext2D, RenderContext2D,
-        Shape2D, StateContext,
+        Backend, BackendRunner, EventContext, LayoutContext, OrbContext, RenderContext,
+        RenderContext2D, Shape2D, StateContext,
     },
     event::{
         EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
@@ -27,15 +27,11 @@ use crate::{
 
 /// Implemenation of the OrbClient based backend.
 pub struct OrbitalBackend {
-    inner: OrbWindow,
-    canvas: Canvas,
-    theme: Theme,
+    context: OrbContext,
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
     event_queue: RefCell<EventQueue>,
     running: bool,
-    image_cache: HashMap<String, Image>,
-    fonts: HashMap<String, Font>,
 }
 
 impl OrbitalBackend {
@@ -43,66 +39,72 @@ impl OrbitalBackend {
         let canvas = Canvas::new(inner.width() as f32, inner.height() as f32);
 
         OrbitalBackend {
-            inner,
-            canvas,
-            theme,
+            context: OrbContext {
+                orbclient_context: inner,
+                orbgl_context: canvas,
+                theme: theme,
+                image_cache: HashMap::new(),
+                fonts: HashMap::new(),
+                fill_color: Color { data: 0 },
+                stroke_color: Color { data: 0 },
+                gradient: vec![],
+                position: (0.0, 0.0),
+            },
             mouse_buttons: (false, false, false),
             mouse_position: Point::default(),
             event_queue: RefCell::new(EventQueue::default()),
             running: false,
-            image_cache: HashMap::new(),
-            fonts: HashMap::new(),
         }
     }
 }
 
 impl OrbRenderer for OrbitalBackend {
     fn width(&self) -> u32 {
-        self.inner.width()
+        self.context.orbclient_context.width()
     }
 
     fn height(&self) -> u32 {
-        self.inner.height()
+        self.context.orbclient_context.height()
     }
 
     fn data(&self) -> &[Color] {
-        self.inner.data()
+        self.context.orbclient_context.data()
     }
 
     fn data_mut(&mut self) -> &mut [Color] {
-        self.inner.data_mut()
+        self.context.orbclient_context.data_mut()
     }
 
     fn sync(&mut self) -> bool {
-        self.inner.sync()
+        self.context.orbclient_context.sync()
     }
 
     fn mode(&self) -> &Cell<Mode> {
-        &self.inner.mode()
+        &self.context.orbclient_context.mode()
     }
 
     fn char(&mut self, x: i32, y: i32, c: char, color: Color) {
         // if let Some(ref font) = self.font {
         //     let mut buf = [0; 4];
         //     font.render(&c.encode_utf8(&mut buf), 16.0)
-        //         .draw(&mut self.inner, x, y, color)
+        //         .draw(&mut self.context.orbclient_context, x, y, color)
         // } else {
-        self.inner.char(x, y, c, color);
+        self.context.orbclient_context.char(x, y, c, color);
         // }
     }
 }
 
 impl Drop for OrbitalBackend {
     fn drop(&mut self) {
-        self.inner.sync();
+        self.context.orbclient_context.sync();
     }
 }
 
 impl Backend for OrbitalBackend {
     fn drain_events(&mut self) {
-        self.inner.sync();
+        // self.context.orbclient_context.sync();
 
-        for event in self.inner.events() {
+        for event in self.context.orbclient_context.events() {
             match event.to_option() {
                 orbclient::EventOption::Mouse(mouse) => {
                     self.mouse_position.x = mouse.x;
@@ -193,43 +195,21 @@ impl Backend for OrbitalBackend {
     }
 
     fn bounds(&mut self, bounds: &Bounds) {
-        self.inner.set_pos(bounds.x, bounds.y);
-        self.inner.set_size(bounds.width, bounds.height);
+        self.context.orbclient_context.set_pos(bounds.x, bounds.y);
+        self.context
+            .orbclient_context
+            .set_size(bounds.width, bounds.height);
     }
 
-    fn render(&mut self, shape: &Shape2D) {
-        self.inner.set(Color { data: 0 });
-
-        {
-            let mut context = OrbRenderContext2D {
-                orbgl_context: &mut self.canvas,
-                orbclient_context: &mut self.inner,
-                image_cache: &mut self.image_cache,
-                fonts: &mut self.fonts,
-                fill_color: Color { data: 0 },
-                stroke_color: Color { data: 0 },
-                gradient: vec![],
-                position: (0.0, 0.0),
-            };
-
-            context.render_shape(shape);
-        }
-
-        self.inner.image_fast(
-            0,
-            0,
-            self.inner.width(),
-            self.inner.height(),
-            &self.canvas.data,
-        );
-
-        self.inner.sync();
+    fn render_context(&mut self) -> &mut RenderContext2D {
+        self.context.orbclient_context.set(Color { data: 0 });
+        &mut self.context
     }
 
     fn layout_context(&mut self) -> LayoutContext<'_> {
         LayoutContext {
             window_size: self.size(),
-            theme: &self.theme,
+            theme: &self.context.theme,
         }
     }
 
@@ -240,7 +220,13 @@ impl Backend for OrbitalBackend {
     }
 
     fn state_context(&mut self) -> StateContext<'_> {
-        StateContext { theme: &self.theme }
+        StateContext {
+            theme: &self.context.theme,
+        }
+    }
+
+    fn flip(&mut self) -> bool {
+        self.sync()
     }
 }
 

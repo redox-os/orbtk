@@ -15,21 +15,22 @@ use crate::{
         Renderer,
     },
     properties::{Bounds, Point},
-    theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, ROBOTO_REGULAR_FONT},
+    theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, Theme, ROBOTO_REGULAR_FONT},
 };
 
-pub struct OrbRenderContext2D<'a> {
-    pub orbgl_context: &'a mut Canvas,
-    pub orbclient_context: &'a mut OrbWindow,
-    pub image_cache: &'a mut HashMap<String, Image>,
-    pub fonts: &'a mut HashMap<String, Font>,
+pub struct OrbContext {
+    pub orbgl_context: Canvas,
+    pub theme: Theme,
+    pub orbclient_context: OrbWindow,
+    pub image_cache: HashMap<String, Image>,
+    pub fonts: HashMap<String, Font>,
     pub position: (f64, f64),
     pub fill_color: Color,
     pub stroke_color: Color,
     pub gradient: Vec<GradientStop>,
 }
 
-impl<'a> OrbRenderContext2D<'a> {
+impl OrbContext {
     fn get_color(&self, hex: &str) -> Color {
         let clean_hex = hex.trim_start_matches("#");
         match clean_hex.len() {
@@ -67,7 +68,7 @@ impl<'a> OrbRenderContext2D<'a> {
     }
 }
 
-impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
+impl RenderContext2D for OrbContext {
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle, and travels in the direction given by anticlockwise (defaulting to clockwise).
     fn arc(
         &mut self,
@@ -147,7 +148,7 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
                 );
 
                 image_roi.draw(
-                    self.orbclient_context,
+                    &mut self.orbclient_context,
                     image_element.get_x() as i32,
                     image_element.get_y() as i32,
                 );
@@ -162,64 +163,6 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
             }
         }
     }
-
-    // /// Draws an image on (x, y) with (width, height).
-    // fn draw_image_d(
-    //     &mut self,
-    //     image_element: &ImageElement,
-    //     x: f64,
-    //     y: f64,
-    //     width: f64,
-    //     height: f64,
-    // ) {
-    //     self.switch_context();
-    //     if !self.image_cache.contains_key(&image_element.path) {
-    //         if let Ok(image) = Image::from_path(&image_element.path) {
-    //             self.image_cache.insert(image_element.path.clone(), image);
-    //         }
-    //     }
-
-    //     if let Some(image) = self.image_cache.get(&image_element.path) {
-    //         self.orbclient_context.image_fast(
-    //             x as i32,
-    //             y as i32,
-    //             width as u32,
-    //             height as u32,
-    //             image.data(),
-    //         );
-    //     }
-    // }
-
-    // /// Draws a part of the image with the given (source_x, source_y, source_width, source_height) on (x, y) with (width, height).
-    // fn draw_image_s(
-    //     &mut self,
-    //     image_element: &ImageElement,
-    //     source_x: f64,
-    //     source_y: f64,
-    //     source_width: f64,
-    //     source_height: f64,
-    //     x: f64,
-    //     y: f64,
-    //     _: f64,
-    //     _: f64,
-    // ) {
-    //     self.switch_context();
-    //     if !self.image_cache.contains_key(&image_element.path) {
-    //         if let Ok(image) = Image::from_path(&image_element.path) {
-    //             self.image_cache.insert(image_element.path.clone(), image);
-    //         }
-    //     }
-
-    //     if let Some(image) = self.image_cache.get(&image_element.path) {
-    //         let image_roi = image.roi(
-    //             source_x as u32,
-    //             source_y as u32,
-    //             source_width as u32,
-    //             source_height as u32,
-    //         );
-    //         image_roi.draw(self.orbclient_context, x as i32, y as i32);
-    //     }
-    // }
 
     /// Fills the current or given path with the current file style.
     fn fill(&mut self, _: FillRule) {
@@ -348,7 +291,15 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
         TextMetrics { width: 12.0 }
     }
 
-    fn finish(&self) {}
+    fn finish(&mut self) {
+        self.orbclient_context.image_fast(
+            0,
+            0,
+            self.orbclient_context.width(),
+            self.orbclient_context.height(),
+            &self.orbgl_context.data,
+        );
+    }
 
     /// Registers a new font from a path.
     fn register_font(&mut self, path: &str) {
@@ -358,57 +309,6 @@ impl<'a> RenderContext2D for OrbRenderContext2D<'a> {
 
 pub struct OrbFontRenderer {
     pub fonts: HashMap<&'static str, Font>,
-}
-
-impl OrbFontRenderer {
-    fn render(
-        &self,
-        text: &str,
-        bounds: &Bounds,
-        parent_bounds: &Bounds,
-        global_position: &Point,
-        renderer: &mut OrbWindow,
-        font_size: f32,
-        color: Color,
-        font: &str,
-    ) {
-        if let Some(font) = &self.fonts.get(font) {
-            let line = font.render(text, font_size);
-            line.draw_clipped(
-                renderer,
-                global_position.x + bounds.x,
-                global_position.y + bounds.y,
-                global_position.x,
-                parent_bounds.width,
-                color,
-            );
-        } else {
-            let rect = Bounds::new(
-                global_position.x + bounds.x,
-                global_position.y + bounds.y,
-                bounds.width,
-                bounds.height,
-            );
-            let mut current_rect = Bounds::new(rect.x, rect.y, rect.width, rect.height);
-            let x = rect.x;
-
-            for c in text.chars() {
-                if c == '\n' {
-                    current_rect.x = x;
-                    current_rect.y += 16;
-                } else {
-                    if current_rect.x + 8 >= global_position.x
-                        && current_rect.y + 16 >= global_position.y
-                        && current_rect.x + 8 < global_position.x + parent_bounds.width as i32
-                        && current_rect.y < global_position.y + parent_bounds.height as i32
-                    {
-                        renderer.char(current_rect.x, current_rect.y, c, color);
-                    }
-                    current_rect.x += 8;
-                }
-            }
-        }
-    }
 }
 
 lazy_static! {
@@ -425,104 +325,4 @@ lazy_static! {
 
         Arc::new(OrbFontRenderer { fonts })
     };
-}
-
-impl Renderer for OrbWindow {
-    fn render(&mut self, background: Color) {
-        // render window background
-        self.set(background);
-    }
-
-    fn render_rectangle(
-        &mut self,
-        bounds: &Bounds,
-        parent_bounds: &Bounds,
-        global_position: &Point,
-        border_radius: u32,
-        background: Color,
-        border_width: u32,
-        border_color: Color,
-        opacity: f32,
-    ) {
-        let background = {
-            if opacity < 1.0 {
-                Color {
-                    data: (((opacity * 255.0) as u32) << 24)
-                        | ((background.r() as u32) << 16)
-                        | ((background.g() as u32) << 8)
-                        | (background.b() as u32),
-                }
-            } else {
-                background
-            }
-        };
-
-        let border_color = {
-            if opacity < 1.0 {
-                Color {
-                    data: (((opacity * 255.0) as u32) << 24)
-                        | ((border_color.r() as u32) << 16)
-                        | ((border_color.g() as u32) << 8)
-                        | (border_color.b() as u32),
-                }
-            } else {
-                border_color
-            }
-        };
-
-        let x = (bounds.x + global_position.x).max(parent_bounds.x);
-        let y = (bounds.y + global_position.y).max(parent_bounds.y);
-        let width = (bounds.width as i32).min(parent_bounds.width as i32) as u32;
-        let height = (bounds.height as i32).min(parent_bounds.height as i32) as u32;
-
-        self.rounded_rect(x, y, width, height, border_radius, true, background);
-
-        if border_width > 0 {
-            self.rounded_rect(x, y, width, height, border_radius, false, border_color);
-        }
-    }
-
-    fn render_text(
-        &mut self,
-        text: &str,
-        bounds: &Bounds,
-        parent_bounds: &Bounds,
-        global_position: &Point,
-        font_size: u32,
-        color: Color,
-        font: &str,
-    ) {
-        // todo handle alpha by orbfong
-        let alpha = (color.data >> 24) & 0xFF;
-
-        if alpha == 0 {
-            return;
-        }
-
-        FONT_RENDERER.render(
-            text,
-            bounds,
-            parent_bounds,
-            global_position,
-            self,
-            font_size as f32,
-            color,
-            font,
-        );
-    }
-
-    fn render_image(
-        &mut self,
-        image: &[Color],
-        bounds: &Bounds,
-        parent_bounds: &Bounds,
-        global_position: &Point,
-    ) {
-        let x = (bounds.x + global_position.x).max(parent_bounds.x);
-        let y = (bounds.y + global_position.y).max(parent_bounds.y);
-        let width = (bounds.width as i32).min(parent_bounds.width as i32) as u32;
-        let height = (bounds.height as i32).min(parent_bounds.height as i32) as u32;
-
-        self.image_fast(x, y, width, height, image);
-    }
 }

@@ -3,7 +3,7 @@ use std::rc::Rc;
 use crate::{
     layout::TextSelectionLayout,
     properties::{Label, TextSelection},
-    render_object::RectangleRenderObject,
+    // render_object::RectangleRenderObject,
     theme::Selector,
     widget::{
         add_selector_to_widget, remove_selector_from_widget, Context, State, Template, Widget,
@@ -48,7 +48,7 @@ impl Widget for Cursor {
             .with_property(Label::default())
             .with_property(Selector::from("cursor"))
             .with_property(TextSelection::default())
-            .with_render_object(RectangleRenderObject)
+            // .with_render_object(RectangleRenderObject)
             .with_layout(TextSelectionLayout)
             .with_state(Rc::new(CursorState))
             .with_debug_name("Cursor")

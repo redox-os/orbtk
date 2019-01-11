@@ -1,6 +1,6 @@
 use crate::{
     layout::FontIconSizeLayout,
-    render_object::FontIconRenderObject,
+    // render_object::FontIconRenderObject,
     theme::Selector,
     widget::{Template, Widget},
 };
@@ -23,7 +23,7 @@ impl Widget for FontIconBlock {
         Template::default()
             .with_property(Selector::from("fonticon"))
             .with_layout(FontIconSizeLayout)
-            .with_render_object(FontIconRenderObject)
+            // .with_render_object(FontIconRenderObject)
             .with_debug_name("FontIconBlock")
     }
 }

@@ -201,7 +201,7 @@ pub trait RenderContext2D {
     fn measure_text(&self, text: &str) -> TextMetrics;
 
     /// Finish the drawing.
-    fn finish(&self);
+    fn finish(&mut self);
 
     /// Registers a new font from a path.
     fn register_font(&mut self, path: &str);

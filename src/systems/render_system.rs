@@ -9,19 +9,17 @@ use dces::{Entity, EntityComponentManager, System};
 use crate::{
     application::Tree,
     core::{
-        orbrender::{BorderBuilder, Rectangle, Rect, Thickness, Border, Brush, RectangleBuilder},
+        orbrender::{Border, BorderBuilder, Brush, Rect, Rectangle, RectangleBuilder, Thickness},
         Backend,
     },
     enums::Visibility,
     properties::{Bounds, Point},
-    render_object::RenderObject,
     theme::Selector,
     widget::Context,
 };
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub backend: Rc<RefCell<dyn Backend>>,
     pub update: Rc<Cell<bool>>,
     pub debug_flag: Rc<Cell<bool>>,
@@ -39,25 +37,32 @@ impl System<Tree> for RenderSystem {
         // let mut current_hidden_parent = None;
 
         let mut offsets = BTreeMap::new();
+
         offsets.insert(tree.root, (0, 0));
+        {
+            let render_context = backend.render_context();
 
-        let rectangle = RectangleBuilder::new()
-            .with_rect(Rect::new(10.0, 10.0, 120.0, 130.0))
-            .with_border(Border::new(
-                Brush::from("#073B92"),
-                Thickness::new(5.0, 10.0, 4.0, 20.0),
-            ))
-            .with_background(Brush::from("#3F79D9"))
-            .build();
+            let rectangle = RectangleBuilder::new()
+                .with_rect(Rect::new(10.0, 10.0, 120.0, 130.0))
+                .with_border(Border::new(
+                    Brush::from("#073B92"),
+                    Thickness::new(5.0, 10.0, 4.0, 20.0),
+                ))
+                .with_background(Brush::from("#3F79D9"))
+                .build();
 
-        backend.render(&rectangle);
+            render_context.render_shape(&rectangle);
 
-         let rectangle = RectangleBuilder::new()
-            .with_rect(Rect::new(10.0, 160.0, 120.0, 130.0))
-            .with_background(Brush::from("#3F79D9"))
-            .build();
+            let rectangle = RectangleBuilder::new()
+                .with_rect(Rect::new(10.0, 160.0, 120.0, 130.0))
+                .with_background(Brush::from("#3F79D9"))
+                .build();
 
-             backend.render(&rectangle);
+            render_context.render_shape(&rectangle);
+            render_context.finish();
+        }
+
+        backend.flip();
 
         // render window background
 

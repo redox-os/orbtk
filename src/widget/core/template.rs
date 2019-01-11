@@ -1,17 +1,14 @@
-use std::{any::TypeId,
-collections::HashMap,
-rc::Rc,};
+use std::{any::TypeId, collections::HashMap, rc::Rc};
 
 use dces::{Component, ComponentBox};
 
+use crate::{
+    enums::ParentType,
+    event::EventHandler,
+    layout::{Layout, RootLayout},
+};
 
-use crate::{enums::ParentType,
-event::EventHandler,
-layout::{Layout, RootLayout},
-render_object::RenderObject,};
-
-use super::{State, SharedProperty};
-
+use super::{SharedProperty, State};
 
 /// `Template` is used to define the inner structure of a widget.
 /// Intern it is used to create an entity with components for the widget.
@@ -20,7 +17,7 @@ pub struct Template {
     pub parent_type: ParentType,
     pub state: Option<Rc<dyn State>>,
     pub event_handlers: Vec<Rc<dyn EventHandler>>,
-    pub render_object: Option<Box<dyn RenderObject>>,
+    // pub render_object: Option<Box<dyn RenderObject>>,
     pub layout: Box<dyn Layout>,
     pub properties: HashMap<TypeId, ComponentBox>,
     pub shared_properties: HashMap<TypeId, SharedProperty>,
@@ -34,7 +31,6 @@ impl Default for Template {
             parent_type: ParentType::None,
             state: None,
             event_handlers: vec![],
-            render_object: None,
             layout: Box::new(RootLayout),
             properties: HashMap::new(),
             shared_properties: HashMap::new(),
@@ -85,11 +81,11 @@ impl Template {
         self
     }
 
-    /// Used to add a `render_object' to the template. Only one `render_object` can be added.
-    pub fn with_render_object(mut self, render_object: impl Into<Box<dyn RenderObject>>) -> Self {
-        self.render_object = Some(render_object.into());
-        self
-    }
+    // /// Used to add a `render_object' to the template. Only one `render_object` can be added.
+    // pub fn with_render_object(mut self, render_object: impl Into<Box<dyn RenderObject>>) -> Self {
+    //     self.render_object = Some(render_object.into());
+    //     self
+    // }
 
     /// Used to add a `layout' to the template. Only one `layout` can be added.
     pub fn with_layout(mut self, layout: impl Into<Box<dyn Layout>>) -> Self {

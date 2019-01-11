@@ -1,7 +1,7 @@
 use crate::{
     enums::ParentType,
     layout::PaddingLayout,
-    render_object::RectangleRenderObject,
+    // render_object::RectangleRenderObject,
     theme::Selector,
     widget::{Template, Widget},
 };
@@ -24,7 +24,7 @@ impl Widget for Container {
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_property(Selector::from("container"))
-            .with_render_object(RectangleRenderObject)
+            // .with_render_object(RectangleRenderObject)
             .with_layout(PaddingLayout)
             .with_debug_name("Container")
     }

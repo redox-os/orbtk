@@ -20,8 +20,8 @@ use crate::{
 
 /// Is used to provides data from the `Backend` to the `RenderSystem`.
 pub struct RenderContext<'a> {
-    pub context: &'a mut dyn RenderContext2D,
-    pub theme: &'a Theme,
+    pub context_2d: Box<RenderContext2D>,
+    pub theme: &'a mut Theme,
 }
 
 /// Is used to provides data from the `Backend` to the `LayoutSystem`.
@@ -42,35 +42,7 @@ pub struct EventContext<'a> {
 
 /// This trait is used to define a backend renderer for OrbTk.
 pub trait Renderer {
-    fn render(&mut self, background: Color);
-    fn render_rectangle(
-        &mut self,
-        bounds: &Bounds,
-        parent_bounds: &Bounds,
-        global_position: &Point,
-        border_radius: u32,
-        background: Color,
-        border_width: u32,
-        border_color: Color,
-        opacity: f32,
-    );
-    fn render_text(
-        &mut self,
-        text: &str,
-        bounds: &Bounds,
-        parent_bounds: &Bounds,
-        global_position: &Point,
-        font_size: u32,
-        color: Color,
-        font: &str,
-    );
-    fn render_image(
-        &mut self,
-        image: &[Color],
-        bounds: &Bounds,
-        parent_bounds: &Bounds,
-        global_position: &Point,
-    );
+    fn render_shape(&mut self, shape: &Shape2D);
 }
 
 /// This trait is used to define a backend for OrbTk.
@@ -78,10 +50,11 @@ pub trait Backend {
     fn drain_events(&mut self);
     fn bounds(&mut self, bounds: &Bounds);
     fn size(&self) -> (u32, u32);
-    fn render(&mut self, shape: &Shape2D);
+    fn render_context(&mut self) -> &mut RenderContext2D;
     fn layout_context(&mut self) -> LayoutContext<'_>;
     fn event_context(&mut self) -> EventContext<'_>;
     fn state_context(&mut self) -> StateContext<'_>;
+    fn flip(&mut self) -> bool;
 }
 
 /// This trait is used to create a backend runner.
