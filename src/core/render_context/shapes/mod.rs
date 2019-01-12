@@ -1,4 +1,4 @@
-use super::Instruction;
+use crate::core::Instruction2D;
 
 pub use self::image::Image;
 pub use self::rectangle::{Rectangle, RectangleBuilder};
@@ -7,5 +7,5 @@ mod image;
 mod rectangle;
 
 pub trait Shape2D {
-    fn instructions(&self) -> &[Instruction];
+    fn instructions(&self) -> &[Instruction2D];
 }

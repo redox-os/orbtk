@@ -3,7 +3,7 @@
 use std::{fs::File, io::BufReader, io::Read, mem, path::Path, sync::Arc};
 
 
-use crate::core::orbrender::Brush;
+use crate::core::Brush;
 
 use cssparser::{
     self, BasicParseError, CompactCowStr, DeclarationListParser, ParseError, Parser, ParserInput,

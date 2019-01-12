@@ -103,7 +103,7 @@ fn main() {
         .with_bounds(Bounds::new(0, 0, 420, 730))
         .with_title("OrbTk - Widgets example")
         .with_root(MainView::create())
-        .with_debug_flag(false)
+        .with_debug_flag(true)
         .build();
     application.run();
 }

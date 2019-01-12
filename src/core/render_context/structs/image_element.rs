@@ -1,4 +1,4 @@
-use crate::core::orbrender::{Position, Rect, Size};
+use crate::core::{Position, Rect, Size};
 
 // todo: ImageElement and Font as Trait. Implementation by backend wrapping native images and fonts.
 

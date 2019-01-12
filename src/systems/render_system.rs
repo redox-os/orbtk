@@ -8,10 +8,7 @@ use dces::{Entity, EntityComponentManager, System};
 
 use crate::{
     application::Tree,
-    core::{
-        orbrender::{Border, BorderBuilder, Brush, Rect, Rectangle, RectangleBuilder, Thickness},
-        Backend,
-    },
+    core::{Backend, Border, RenderContext2D, BorderBuilder, Brush, Rect, Rectangle, RectangleBuilder, Thickness},
     enums::Visibility,
     properties::{Bounds, Point},
     theme::{Selector, UpdateableShape},
@@ -27,7 +24,6 @@ pub struct RenderSystem {
 }
 
 impl System<Tree> for RenderSystem {
-
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
         if !self.update.get() || tree.parent.is_empty() {
             return;
@@ -41,14 +37,19 @@ impl System<Tree> for RenderSystem {
         let mut offsets = BTreeMap::new();
 
         offsets.insert(tree.root, (0, 0));
-             
+
         // render window background
         {
             let render_context = backend.render_context();
-            render_context.fill_background();
+            // render_context.fill_background();
 
             for node in tree.into_iter() {
                 let mut global_position = Point::default();
+
+                // remove dirty flags from selectors.
+                if let Ok(selector) = ecm.borrow_mut_component::<Selector>(node) {
+                    selector.set_dirty(false);
+                }
 
                 if let Some(offset) = offsets.get(&tree.parent[&node]) {
                     global_position = Point::new(offset.0, offset.1);
@@ -81,7 +82,7 @@ impl System<Tree> for RenderSystem {
                             bounds.height as f64,
                         );
 
-                        render_context.render(&shape.instructions());
+                        render_context.context_2d.render_instructions(&shape.instructions());
                     }
                 }
 
@@ -98,7 +99,7 @@ impl System<Tree> for RenderSystem {
                 }
             }
 
-            render_context.finish();
+            // render_context.finish();
         }
 
         backend.flip();

@@ -1,5 +1,5 @@
 use crate::{
-    core::orbrender::{Bordered, Position, Rectangle, Shape2D, Size, Thickness},
+    core::{Bordered, Position, Rectangle, Shape2D, Size, Thickness},
     properties::Bounds,
 };
 
@@ -14,8 +14,7 @@ impl UpdateableShape for Rectangle {
     fn update_by_selector(&mut self, selector: &mut Selector, theme: &Theme) {
         if !selector.is_dirty() {
             return;
-        }
-     
+        }  
 
         let left = theme.uint("border-left", selector) as f64;
         let right = theme.uint("border-left", selector) as f64;
@@ -40,7 +39,6 @@ impl UpdateableShape for Rectangle {
         self.set_border_brush(brush);
         self.set_background(background);
         self.create_shape();
-        selector.set_dirty(false);
     }
 
     fn update_by_bounds(&mut self, x: f64, y: f64, width: f64, height: f64) {

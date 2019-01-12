@@ -14,8 +14,8 @@ use dces::World;
 use crate::{
     application::Tree,
     core::{
-        Backend, BackendRunner, EventContext, LayoutContext, OrbContext, RenderContext,
-        RenderContext2D, Shape2D, StateContext,
+        Backend, BackendRunner, EventContext, LayoutContext, RenderContext, RenderContext2D,
+        Shape2D, StateContext,
     },
     event::{
         EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
@@ -27,7 +27,9 @@ use crate::{
 
 /// Implemenation of the OrbClient based backend.
 pub struct OrbitalBackend {
-    context: OrbContext,
+    theme: Theme,
+    inner: OrbWindow,
+    canvas: Canvas,
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
     event_queue: RefCell<EventQueue>,
@@ -39,17 +41,9 @@ impl OrbitalBackend {
         let canvas = Canvas::new(inner.width() as f32, inner.height() as f32);
 
         OrbitalBackend {
-            context: OrbContext {
-                orbclient_context: inner,
-                orbgl_context: canvas,
-                theme: theme,
-                image_cache: HashMap::new(),
-                fonts: HashMap::new(),
-                fill_color: Color { data: 0 },
-                stroke_color: Color { data: 0 },
-                gradient: vec![],
-                position: (0.0, 0.0),
-            },
+            theme,
+            inner,
+            canvas,
             mouse_buttons: (false, false, false),
             mouse_position: Point::default(),
             event_queue: RefCell::new(EventQueue::default()),
@@ -60,51 +54,51 @@ impl OrbitalBackend {
 
 impl OrbRenderer for OrbitalBackend {
     fn width(&self) -> u32 {
-        self.context.orbclient_context.width()
+        self.inner.width()
     }
 
     fn height(&self) -> u32 {
-        self.context.orbclient_context.height()
+        self.inner.height()
     }
 
     fn data(&self) -> &[Color] {
-        self.context.orbclient_context.data()
+        self.inner.data()
     }
 
     fn data_mut(&mut self) -> &mut [Color] {
-        self.context.orbclient_context.data_mut()
+        self.inner.data_mut()
     }
 
     fn sync(&mut self) -> bool {
-        self.context.orbclient_context.sync()
+        self.inner.sync()
     }
 
     fn mode(&self) -> &Cell<Mode> {
-        &self.context.orbclient_context.mode()
+        &self.inner.mode()
     }
 
     fn char(&mut self, x: i32, y: i32, c: char, color: Color) {
         // if let Some(ref font) = self.font {
         //     let mut buf = [0; 4];
         //     font.render(&c.encode_utf8(&mut buf), 16.0)
-        //         .draw(&mut self.context.orbclient_context, x, y, color)
+        //         .draw(&mut self.inner., x, y, color)
         // } else {
-        self.context.orbclient_context.char(x, y, c, color);
+        self.inner.char(x, y, c, color);
         // }
     }
 }
 
 impl Drop for OrbitalBackend {
     fn drop(&mut self) {
-        self.context.orbclient_context.sync();
+        self.inner.sync();
     }
 }
 
 impl Backend for OrbitalBackend {
     fn drain_events(&mut self) {
-        // self.context.orbclient_context.sync();
+        // self.inner.sync();
 
-        for event in self.context.orbclient_context.events() {
+        for event in self.inner.events() {
             match event.to_option() {
                 orbclient::EventOption::Mouse(mouse) => {
                     self.mouse_position.x = mouse.x;
@@ -195,21 +189,21 @@ impl Backend for OrbitalBackend {
     }
 
     fn bounds(&mut self, bounds: &Bounds) {
-        self.context.orbclient_context.set_pos(bounds.x, bounds.y);
-        self.context
-            .orbclient_context
-            .set_size(bounds.width, bounds.height);
+        self.inner.set_pos(bounds.x, bounds.y);
+        self.inner.set_size(bounds.width, bounds.height);
     }
 
-    fn render_context(&mut self) -> &mut RenderContext2D {
-        self.context.orbclient_context.set(Color { data: 0 });
-        &mut self.context
+    fn render_context(&mut self) -> RenderContext<'_> {
+        RenderContext {
+            context_2d: &mut self.canvas,
+            theme: &self.theme,
+        }
     }
 
     fn layout_context(&mut self) -> LayoutContext<'_> {
         LayoutContext {
             window_size: self.size(),
-            theme: &self.context.theme,
+            theme: &self.theme,
         }
     }
 
@@ -220,9 +214,7 @@ impl Backend for OrbitalBackend {
     }
 
     fn state_context(&mut self) -> StateContext<'_> {
-        StateContext {
-            theme: &self.context.theme,
-        }
+        StateContext { theme: &self.theme }
     }
 
     fn flip(&mut self) -> bool {

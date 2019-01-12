@@ -15,14 +15,7 @@ use crate::{
     event::EventQueue,
     properties::{Bounds, Point},
     theme::Theme,
-    core::orbrender::{RenderContext2D, Shape2D},
 };
-
-/// Is used to provides data from the `Backend` to the `RenderSystem`.
-pub struct RenderContext<'a> {
-    pub context_2d: Box<RenderContext2D>,
-    pub theme: &'a mut Theme,
-}
 
 /// Is used to provides data from the `Backend` to the `LayoutSystem`.
 pub struct LayoutContext<'a> {
@@ -50,7 +43,7 @@ pub trait Backend {
     fn drain_events(&mut self);
     fn bounds(&mut self, bounds: &Bounds);
     fn size(&self) -> (u32, u32);
-    fn render_context(&mut self) -> &mut RenderContext2D;
+    fn render_context(&mut self) -> RenderContext<'_>;
     fn layout_context(&mut self) -> LayoutContext<'_>;
     fn event_context(&mut self) -> EventContext<'_>;
     fn state_context(&mut self) -> StateContext<'_>;
@@ -69,7 +62,8 @@ pub trait FontMeasure {
 }
 
 pub use self::target::*;
+pub use self::render_context::*;
 
 #[path = "orbital/mod.rs"]
 mod target;
-pub mod orbrender;
+mod render_context;

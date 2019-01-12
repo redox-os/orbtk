@@ -142,15 +142,18 @@ impl System<Tree> for StateSystem {
 
         let state_context = backend.state_context();
         let mut context = Context::new(tree.root, ecm, tree, &state_context.theme);
+        
 
         for node in tree.into_iter() {
+            let mut skip = false;
             context.entity = node;
             {
+                
                 let mut widget = context.widget();
 
                 let has_default_flags = self.has_default_flags(&widget);
                 if !has_default_flags && !self.states.borrow().contains_key(&node) {
-                    continue;
+                    skip = true;
                 }
 
                 if has_default_flags {
@@ -158,8 +161,10 @@ impl System<Tree> for StateSystem {
                 }
             }
 
-            if let Some(state) = self.states.borrow().get(&node) {
-                state.update(&mut context);
+            if !skip {
+                if let Some(state) = self.states.borrow().get(&node) {
+                    state.update(&mut context);
+                }
             }
 
             if let Ok(selector) = context.widget().borrow_mut_property::<Selector>() {
