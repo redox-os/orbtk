@@ -8,7 +8,7 @@ use dces::{Entity, World};
 
 use crate::{
     application::{Application, Tree},
-    core::{target_backend, BackendRunner},
+    core::{target_backend, BackendRunner, Rectangle},
     event::EventHandler,
     layout::{Layout, RootLayout},
     properties::{Bounds, Point},
@@ -188,16 +188,17 @@ fn build_tree(
     ) -> Entity {
         // register window as entity with global properties
         if world.entity_container().is_empty() {
-            let root = world
+            let window = world
                 .create_entity()
                 .with(Global::default())
                 .with(Bounds::default())
                 .with(Point::default())
+                .with(Rectangle::default())
                 .build();
 
             layouts
                 .borrow_mut()
-                .insert(root, Box::new(RootLayout));
+                .insert(window, Box::new(RootLayout));
         }
 
         let mut template = template;

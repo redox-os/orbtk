@@ -6,7 +6,7 @@ use std::{
 
 use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
 use orbfont::Font;
-use orbgl::Canvas;
+use orbgl::{render_engine::CairoRenderEngine, Canvas, FramebufferSurface};
 use orbimage::Image;
 
 use dces::World;
@@ -38,7 +38,15 @@ pub struct OrbitalBackend {
 
 impl OrbitalBackend {
     pub fn new(theme: Theme, inner: OrbWindow) -> OrbitalBackend {
-        let canvas = Canvas::new(inner.width() as f32, inner.height() as f32);
+        let mut inner = inner;
+        let surface = FramebufferSurface::new(
+            inner.width(),
+            inner.height(),
+            inner.data_mut().as_mut_ptr() as *mut u8,
+        );
+        let render_engine = CairoRenderEngine::new(surface.clone());
+
+        let canvas = Canvas::new(render_engine.clone());
 
         OrbitalBackend {
             theme,

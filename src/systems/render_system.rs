@@ -98,8 +98,6 @@ impl System<Tree> for RenderSystem {
                     g_pos.y = global_pos.1;
                 }
             }
-
-            // render_context.finish();
         }
 
         backend.flip();
