@@ -5,7 +5,7 @@ use crate::theme::Theme;
 
 pub use self::shapes::*;
 pub use self::structs::*;
-pub use self::render_context_2d::{RenderContext2D, Instruction2D, FillRule};
+pub use self::render_context_2d::{RenderContext2D, Instruction2D};
 
 mod shapes;
 mod structs;

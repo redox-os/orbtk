@@ -1,5 +1,5 @@
 use crate::core::{
-    Border, Bordered, Brush, FillRule, Instruction2D, Position, Rect, Shape2D, Size, Thickness,
+    Border, Bordered, Brush, Instruction2D, Position, Rect, Shape2D, Size, Thickness,
 };
 
 #[derive(Default)]
@@ -7,7 +7,6 @@ pub struct RectangleBuilder {
     pub background: Brush,
     pub rect: Rect,
     pub border: Border,
-    pub radius: f64,
 }
 
 impl RectangleBuilder {
@@ -30,17 +29,11 @@ impl RectangleBuilder {
         self
     }
 
-    pub fn with_radius(mut self, radius: f64) -> Self {
-        self.radius = radius;
-        self
-    }
-
     pub fn build(self) -> Rectangle {
         let mut rect = Rectangle {
             instructions: vec![],
             rect: self.rect,
             border: self.border,
-            radius: self.radius,
             background: self.background,
         };
         rect.create_shape();
@@ -53,7 +46,6 @@ pub struct Rectangle {
     instructions: Vec<Instruction2D>,
     rect: Rect,
     border: Border,
-    radius: f64,
     background: Brush,
 }
 
@@ -73,7 +65,7 @@ impl Rectangle {
             || self.border.thickness.right > 0.0
             || self.border.thickness.bottom > 0.0;
 
-        if self.radius > 0.0 {
+        if self.border.radius > 0.0 {
             if has_thickness {
                 self.create_rounded_bordered_rect_shape();
             } else {
@@ -82,7 +74,7 @@ impl Rectangle {
                     self.rect.y,
                     self.rect.width,
                     self.rect.height,
-                    self.radius,
+                    self.border.radius,
                     self.background.clone(),
                 );
             }
@@ -103,9 +95,13 @@ impl Rectangle {
 
     fn create_rect_shape(&mut self, x: f64, y: f64, width: f64, height: f64, brush: Brush) {
         self.instructions
-            .push(Instruction2D::SetFillStyleBrush{brush});
-        self.instructions
-            .push(Instruction2D::FillRect{x, y, width, height});
+            .push(Instruction2D::SetFillStyleBrush { brush });
+        self.instructions.push(Instruction2D::FillRect {
+            x,
+            y,
+            width,
+            height,
+        });
     }
 
     fn create_bordered_rect_shape(&mut self) {
@@ -120,29 +116,12 @@ impl Rectangle {
 
         // content
         self.create_rect_shape(
-            self.rect.x,
-            self.rect.y,
-            self.rect.width,
-            self.rect.height,
-            self.border.brush.clone(),
+            self.rect.x + self.border.thickness.left,
+            self.rect.y + self.border.thickness.top,
+            self.rect.width - self.border.thickness.left - self.border.thickness.right,
+            self.rect.height - self.border.thickness.top - self.border.thickness.right,
+            self.background.clone(),
         );
-
-        self.instructions
-            .push(Instruction2D::SetFillStyleBrush{brush: self.border.brush.clone()});
-        self.instructions.push(Instruction2D::FillRect{
-            x: self.rect.x,
-            y: self.rect.y,
-            width: self.rect.width,
-            height: self.rect.height,
-        });
-        self.instructions
-            .push(Instruction2D::SetFillStyleBrush{brush: self.background.clone()});
-        self.instructions.push(Instruction2D::FillRect{
-            x: self.rect.x + self.border.thickness.left,
-            y: self.rect.y + self.border.thickness.top,
-            width: self.rect.width - self.border.thickness.left - self.border.thickness.right,
-            height: self.rect.height - self.border.thickness.top - self.border.thickness.right,
-        });
     }
 
     fn create_rounded_rect_shape(
@@ -154,40 +133,43 @@ impl Rectangle {
         radius: f64,
         brush: Brush,
     ) {
-        let mut radius = radius;
+        let m_pi = 3.14159265;
+        let degrees = m_pi / 180.0;
 
-        if width < 2.0 * radius {
-            radius = width / 2.0;
-        }
-        if height < 2.0 * radius {
-            radius = height / 2.0;
-        }
-
-        self.instructions
-            .push(Instruction2D::SetFillStyleBrush{brush});
         self.instructions.push(Instruction2D::BeginPath());
-        self.instructions.push(Instruction2D::MoveTo{x: x + radius, y});
-        self.instructions.push(Instruction2D::ArcTo{
-            x1: x + width,
-            y1: y,
-            x2: x + width,
-            y2: y + height,
+        self.instructions.push(Instruction2D::Arc {
+            x: x + width - radius,
+            y: y + radius,
             radius,
+            start_angle: -90.0 * degrees,
+            end_engle: 0.0 * degrees,
         });
-        self.instructions.push(Instruction2D::ArcTo{
-            x1: x + width,
-            y1: y + height,
-            x2: x,
-            y2: y + height,
+        self.instructions.push(Instruction2D::Arc {
+            x: x + width - radius,
+            y: y + height - radius,
             radius,
+            start_angle: 0.0 * degrees,
+            end_engle: 90.0 * degrees,
         });
+        self.instructions.push(Instruction2D::Arc {
+            x: x + radius,
+            y: y + height - radius,
+            radius,
+            start_angle: 90.0 * degrees,
+            end_engle: 180.0 * degrees,
+        });
+        self.instructions.push(Instruction2D::Arc {
+            x: x + radius,
+            y: y + radius,
+            radius,
+            start_angle: 180.0 * degrees,
+            end_engle: 270.0 * degrees,
+        });
+
         self.instructions
-            .push(Instruction2D::ArcTo{x1: x, y1: y + height, x2: x, y2: y, radius});
-        self.instructions
-            .push(Instruction2D::ArcTo{x1: x, y1: y, x2: x + width, y2: y, radius});
+            .push(Instruction2D::SetFillStyleBrush { brush });
         self.instructions.push(Instruction2D::ClosePath());
-        self.instructions
-            .push(Instruction2D::Fill{rule: FillRule::default()});
+        self.instructions.push(Instruction2D::Fill());
     }
 
     fn create_rounded_bordered_rect_shape(&mut self) {
@@ -197,7 +179,7 @@ impl Rectangle {
             self.rect.y,
             self.rect.width,
             self.rect.height,
-            self.radius,
+            self.border.radius,
             self.border.brush.clone(),
         );
 
@@ -207,7 +189,7 @@ impl Rectangle {
             self.rect.y + self.border.thickness.top,
             self.rect.width - self.border.thickness.left - self.border.thickness.right,
             self.rect.height - self.border.thickness.top - self.border.thickness.right,
-            self.radius,
+            self.border.radius,
             self.background.clone(),
         );
     }
@@ -288,6 +270,14 @@ impl Bordered for Rectangle {
 
     fn set_border_brush(&mut self, brush: Brush) {
         self.border.brush = brush;
+    }
+
+    fn get_border_radius(&self) -> f64 {
+        self.border.radius
+    }
+
+    fn set_border_radius(&mut self, radius: f64) {
+        self.border.radius = radius;
     }
 
     fn get_border(&self) -> &Border {

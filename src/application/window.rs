@@ -13,7 +13,7 @@ use crate::{
     layout::{Layout, RootLayout},
     properties::{Bounds, Point},
     systems::{EventSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem},
-    theme::{Theme, UpdateableShape},
+    theme::{Selector, Theme, UpdateableShape},
     widget::{PropertyResult, State, Template},
     Global,
 };
@@ -82,8 +82,9 @@ impl<'a> WindowBuilder<'a> {
     pub fn build(self) {
         let (mut runner, backend) = target_backend(&self.title, self.bounds, self.theme);
         let mut world = World::from_container(Tree::default());
-        let shapes = Rc::new(RefCell::new(BTreeMap::new()));
-        let layouts = Rc::new(RefCell::new(BTreeMap::new()));
+        let shapes: Rc<RefCell<BTreeMap<Entity, Box<dyn UpdateableShape>>>> =
+            Rc::new(RefCell::new(BTreeMap::new()));
+        let layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>> = Rc::new(RefCell::new(BTreeMap::new()));
         let handlers = Rc::new(RefCell::new(BTreeMap::new()));
         let states = Rc::new(RefCell::new(BTreeMap::new()));
         let update = Rc::new(Cell::new(true));
@@ -91,6 +92,21 @@ impl<'a> WindowBuilder<'a> {
 
         if debug_flag.get() {
             println!("------ Start build tree ------\n");
+        }
+
+        // register window as entity with global properties
+        if world.entity_container().is_empty() {
+            let window = world
+                .create_entity()
+                .with(Global::default())
+                .with(self.bounds)
+                .with(Point::default())
+                .with(Selector::from("window"))
+                .build();
+
+            shapes
+                .borrow_mut()
+                .insert(window, Box::new(Rectangle::default()));
         }
 
         if let Some(root) = self.root {
@@ -186,21 +202,6 @@ fn build_tree(
         template: Template,
         debug_flag: &Rc<Cell<bool>>,
     ) -> Entity {
-        // register window as entity with global properties
-        if world.entity_container().is_empty() {
-            let window = world
-                .create_entity()
-                .with(Global::default())
-                .with(Bounds::default())
-                .with(Point::default())
-                .with(Rectangle::default())
-                .build();
-
-            layouts
-                .borrow_mut()
-                .insert(window, Box::new(RootLayout));
-        }
-
         let mut template = template;
 
         let entity = {
@@ -230,9 +231,7 @@ fn build_tree(
 
             let entity = entity_builder.build();
 
-            layouts
-                .borrow_mut()
-                .insert(entity, template.layout);
+            layouts.borrow_mut().insert(entity, template.layout);
 
             if let Some(shape) = template.shape {
                 shapes.borrow_mut().insert(entity, shape);
@@ -272,30 +271,14 @@ fn build_tree(
         }
 
         for child in template.children.drain(0..) {
-            let child = expand(
-                world,
-                shapes,
-                layouts,
-                handlers,
-                states,
-                child,
-                debug_flag,
-            );
+            let child = expand(world, shapes, layouts, handlers, states, child, debug_flag);
             let _result = world.entity_container().append_child(entity, child);
         }
 
         entity
     }
 
-    expand(
-        world,
-        shapes,
-        layouts,
-        handlers,
-        states,
-        root,
-        debug_flag,
-    );
+    expand(world, shapes, layouts, handlers, states, root, debug_flag);
 
     if debug_flag.get() {
         println!("\n------  End build tree  ------ ");

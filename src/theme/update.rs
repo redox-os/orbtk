@@ -17,9 +17,9 @@ impl UpdateableShape for Rectangle {
         }  
 
         let left = theme.uint("border-left", selector) as f64;
-        let right = theme.uint("border-left", selector) as f64;
-        let top = theme.uint("border-left", selector) as f64;
-        let bottom = theme.uint("border-left", selector) as f64;
+        let right = theme.uint("border-right", selector) as f64;
+        let top = theme.uint("border-top", selector) as f64;
+        let bottom = theme.uint("border-bottom", selector) as f64;
         let width = theme.uint("border-width", selector) as f64;
 
         // todo radius
@@ -37,6 +37,7 @@ impl UpdateableShape for Rectangle {
 
         self.set_border_thickness(thickness);
         self.set_border_brush(brush);
+        self.set_border_radius(radius);
         self.set_background(background);
         self.create_shape();
     }

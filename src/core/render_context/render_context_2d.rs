@@ -3,31 +3,14 @@ use orbgl::Canvas;
 
 use crate::core::{Brush, ImageElement, Shape2D};
 
-/// The algorithm by which to determine if a point is inside or outside the filling region.
-#[derive(PartialEq, Debug, Copy, Clone)]
-pub enum FillRule {
-    /// The non-zero winding rule. Default rule.
-    NonZero,
-
-    /// The even-odd winding rule.
-    EvenOdd,
-}
-
-impl Default for FillRule {
-    fn default() -> Self {
-        FillRule::NonZero
-    }
-}
-
 pub enum Instruction2D {
-    /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle, and travels in the direction given by anticlockwise (defaulting to clockwise).
+    /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
     Arc {
         x: f64,
         y: f64,
         radius: f64,
         start_angle: f64,
         end_engle: f64,
-        anti_clockwise: bool,
     },
 
     /// Adds a circular arc to the current sub-path, using the given control points and radius. The arc is automatically connected to the path's latest point with a straight line, if necessary for the specified parameters.
@@ -67,7 +50,7 @@ pub enum Instruction2D {
     DrawImage { image_element: ImageElement },
 
     /// Fills the current or given path with the current file style.
-    Fill { rule: FillRule },
+    Fill(),
 
     /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
     FillRect {
@@ -156,10 +139,10 @@ impl RenderContext2D for Canvas {
     fn render_instructions(&mut self, instructions: &[Instruction2D]) {
         for instruction in instructions {
             match instruction {
-                // Instruction2D::Arc{x, y, radius, start_angle, end_engle, anti_clockwise} => {
-                //     self.arc(*x, *y, *radius, *start_angle, *end_engle, *anti_clockwise)
-                // }
-                // Instruction2D::ArcTo{x1, y1, x2, y2, radius} => self.arc_to(*x1, *y1, *x2, *y2, *radius),
+                Instruction2D::Arc{x, y, radius, start_angle, end_engle} => {
+                    self.arc(*x, *y, *radius, *start_angle, *end_engle)
+                }
+                Instruction2D::ArcTo{x1, y1, x2, y2, radius} => println!("RenderContext2D: 'ArcTo' is not implemented."),
                 Instruction2D::BeginPath() => self.begin_path(),
                 Instruction2D::BezierCurveTo {
                     cp1x,
@@ -183,20 +166,20 @@ impl RenderContext2D for Canvas {
                     height,
                 } => self.clear_rect(*x, *y, *width, *height),
                 Instruction2D::ClosePath() => self.close_path(),
-                // Instruction2D::DrawImage { image } => self.draw_image(image),
-                // Instruction2D::Fill { file_rule } => self.fill(*file_rule),
+                Instruction2D::DrawImage { image_element } => println!("RenderContext2D: 'DrawImage' is not implemented."),
+                Instruction2D::Fill () => self.fill(),
                 Instruction2D::FillRect {
                     x,
                     y,
                     width,
                     height,
                 } => self.fill_rect(*x, *y, *width, *height),
-                // Instruction2D::FillText {
-                //     text,
-                //     x,
-                //     y,
-                //     max_width,
-                // } => self.fill_text(text, *x, *y, *max_width),
+                Instruction2D::FillText {
+                    text,
+                    x,
+                    y,
+                    max_width,
+                } => println!("RenderContext2D: 'FillText' is not implemented."),
                 Instruction2D::LineTo { x, y } => self.line_to(*x, *y),
                 Instruction2D::MoveTo { x, y } => self.move_to(*x, *y),
                 Instruction2D::Restore() => self.restore(),
@@ -205,13 +188,13 @@ impl RenderContext2D for Canvas {
                     Brush::SolidColor(color) => self.set_fill_style(get_color(color)),
                     Brush::Gradient(gradient) => {}
                 },
-                // Instruction2D::SetStrokeStyleColor { color } => self.set_stroke_style_color(get_color(color)),
-                // Instruction2D::SetFont { font } => self.set_font(font),
-                Instruction2D::SetLineWidth { width } => self.set_line_width(*width),
-                // Instruction2D::SetShadowBlur { blur } => self.set_shadow_blur(*blur),
-                // Instruction2D::SetShadowColor { color } => self.set_shadow_color(color),
-                // Instruction2D::SetShadowOffsetX { x } => self.set_shadow_offset_x(*x),
-                // Instruction2D::SetShadowOffsetY { y } => self.set_shadow_offset_y(*y),
+                Instruction2D::SetStrokeStyleColor { color } => println!("RenderContext2D: 'SetStrokeStyleColor' is not implemented."),
+                Instruction2D::SetFont { font } => println!("RenderContext2D: 'SetFont' is not implemented."),
+                Instruction2D::SetLineWidth { width } => println!("RenderContext2D: 'SetLineWidth' is not implemented."),
+                Instruction2D::SetShadowBlur { blur } => println!("RenderContext2D: 'SetShadowBlur' is not implemented."),
+                Instruction2D::SetShadowColor { color } => println!("RenderContext2D: 'SetShadowColor' is not implemented."),
+                Instruction2D::SetShadowOffsetX { x } => println!("RenderContext2D: 'SetShadowOffsetX' is not implemented."),
+                Instruction2D::SetShadowOffsetY { y } => println!("RenderContext2D: 'SetShadowOffsetY' is not implemented."),
                 Instruction2D::Save() => self.save(),
                 Instruction2D::Scale { x, y } => self.scale(*x, *y),
                 Instruction2D::Stroke() => self.stroke(),

@@ -5,6 +5,8 @@ pub trait Bordered {
     fn set_border_thickness(&mut self, thickness: Thickness);
     fn get_border_brush(&self) -> &Brush;
     fn set_border_brush(&mut self, brush: Brush);
+    fn get_border_radius(&self) -> f64;
+    fn set_border_radius(&mut self, radius: f64);
     fn get_border(&self) -> &Border;
     fn set_border(&mut self, border: Border);
 }
@@ -14,6 +16,7 @@ pub trait Bordered {
 pub struct BorderBuilder {
     brush: Brush,
     thickness: Thickness,
+    radius: f64,
 }
 
 impl BorderBuilder {
@@ -31,10 +34,16 @@ impl BorderBuilder {
         self
     }
 
+    pub fn with_radius(mut self, radius: f64) -> Self {
+        self.radius = radius;
+        self
+    }
+
     pub fn build(self) ->  Border {
         Border {
             brush: self.brush,
             thickness: self.thickness,
+            radius: self.radius,
         }
     }
 }
@@ -43,13 +52,15 @@ impl BorderBuilder {
 pub struct Border {
     pub brush: Brush,
     pub thickness: Thickness,
+    pub radius: f64
 }
 
 impl Border {
-    pub fn new(brush: Brush, thickness: Thickness) -> Self {
+    pub fn new(brush: Brush, thickness: Thickness, radius: f64) -> Self {
         Border {
             brush,
             thickness,
+            radius,
         }
     }
 }

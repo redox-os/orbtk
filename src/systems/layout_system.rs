@@ -88,7 +88,8 @@ impl System<Tree> for LayoutSystem {
             return;
         }
 
-        let root = tree.root;
+        // skip window widget because it has custom layout
+        let root = tree.root + 1;
 
         let mut backend = self.backend.borrow_mut();
         let layout_context = backend.layout_context();
