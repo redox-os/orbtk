@@ -8,12 +8,11 @@ use std::{
 };
 
 use dces::World;
-use orbclient::Color;
 
 use crate::{
     application::Tree,
     event::EventQueue,
-    properties::{Bounds, Point},
+    properties::Bounds,
     theme::Theme,
 };
 
@@ -31,11 +30,6 @@ pub struct StateContext<'a> {
 /// Is used to provides data from the `Backend` to the `EventSystem`.
 pub struct EventContext<'a> {
     pub event_queue: &'a RefCell<EventQueue>,
-}
-
-/// This trait is used to define a backend renderer for OrbTk.
-pub trait Renderer {
-    fn render_shape(&mut self, shape: &Shape2D);
 }
 
 /// This trait is used to define a backend for OrbTk.

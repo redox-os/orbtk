@@ -1,11 +1,11 @@
 use crate::{
-    core::{Bordered, Position, Rectangle, Shape2D, Size, Thickness},
+    core::{Bordered, Position, Rectangle, Shape, Size, Thickness, ImageElement},
     properties::Bounds,
 };
 
 use super::{Selector, Theme};
 
-pub trait UpdateableShape: Shape2D {
+pub trait UpdateableShape: Shape {
     fn update_by_selector(&mut self, selector: &mut Selector, theme: &Theme);
     fn update_by_bounds(&mut self, x: f64, y: f64, width: f64, height: f64);
 }
@@ -39,18 +39,37 @@ impl UpdateableShape for Rectangle {
         self.set_border_brush(brush);
         self.set_border_radius(radius);
         self.set_background(background);
-        self.create_shape();
+        self.build_path();
     }
 
     fn update_by_bounds(&mut self, x: f64, y: f64, width: f64, height: f64) {
         // todo check changes
         self.set_position(x, y);
         self.set_size(width, height);
-        self.create_shape();
+        self.build_path();
     }
 }
 
 impl Into<Box<dyn UpdateableShape>> for Rectangle {
+    fn into(self) -> Box<dyn UpdateableShape> {
+        Box::new(self)
+    }
+}
+
+impl UpdateableShape for ImageElement {
+    fn update_by_selector(&mut self, selector: &mut Selector, theme: &Theme) {
+     
+    }
+
+    fn update_by_bounds(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        // todo check changes
+        self.set_position(x, y);
+        self.set_size(width, height);
+        self.build_path();
+    }
+}
+
+impl Into<Box<dyn UpdateableShape>> for ImageElement {
     fn into(self) -> Box<dyn UpdateableShape> {
         Box::new(self)
     }

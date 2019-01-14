@@ -8,12 +8,13 @@ use dces::{Entity, EntityComponentManager, System};
 
 use crate::{
     application::Tree,
-    core::{Backend, Border, RenderContext2D, BorderBuilder, Brush, Rect, Rectangle, RectangleBuilder, Thickness},
+    core::{Backend, Renderer},
     enums::Visibility,
     properties::{Bounds, Point},
     theme::{Selector, UpdateableShape},
-    widget::Context,
 };
+
+use orbclient::Color;
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {
@@ -75,14 +76,29 @@ impl System<Tree> for RenderSystem {
 
                 if let Some(shape) = self.shapes.borrow_mut().get_mut(&node) {
                     if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
+
                         shape.update_by_bounds(
-                            global_position.x as f64,
-                            global_position.y as f64,
+                            (global_position.x + bounds.x) as f64,
+                            (global_position.y + bounds.y) as f64,
                             bounds.width as f64,
                             bounds.height as f64,
                         );
 
-                        render_context.context_2d.render_instructions(&shape.instructions());
+                        render_context.renderer.render_path(&mut shape.path());
+
+                        // draw debug border
+                        if self.debug_flag.get() {
+                            render_context
+                                .renderer
+                                .set_stroke_style(Color::rgb(0, 0, 255));
+                            render_context.renderer.rect(
+                                global_position.x as f64,
+                                global_position.y as f64,
+                                bounds.width as f64,
+                                bounds.height as f64,
+                            );
+                            render_context.renderer.stroke();
+                        }
                     }
                 }
 

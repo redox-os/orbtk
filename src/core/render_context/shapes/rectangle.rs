@@ -1,5 +1,5 @@
 use crate::core::{
-    Border, Bordered, Brush, Instruction2D, Position, Rect, Shape2D, Size, Thickness,
+    Border, Bordered, Brush, PathSegment, Position, Rect, Shape, Size, Thickness,
 };
 
 #[derive(Default)]
@@ -31,26 +31,30 @@ impl RectangleBuilder {
 
     pub fn build(self) -> Rectangle {
         let mut rect = Rectangle {
-            instructions: vec![],
+            path: vec![],
             rect: self.rect,
             border: self.border,
             background: self.background,
         };
-        rect.create_shape();
+        rect.build_path();
         rect
     }
 }
 
 #[derive(Default)]
 pub struct Rectangle {
-    instructions: Vec<Instruction2D>,
+    path: Vec<PathSegment>,
     rect: Rect,
     border: Border,
     background: Brush,
 }
 
 impl Rectangle {
-    pub fn get_background(&self) -> &Brush {
+    pub fn create() -> RectangleBuilder {
+        RectangleBuilder::default()
+    }
+
+    pub fn background(&self) -> &Brush {
         &self.background
     }
 
@@ -58,45 +62,11 @@ impl Rectangle {
         self.background = background;
     }
 
-    pub fn create_shape(&mut self) {
-        self.instructions.clear();
-        let has_thickness = self.border.thickness.left > 0.0
-            || self.border.thickness.top > 0.0
-            || self.border.thickness.right > 0.0
-            || self.border.thickness.bottom > 0.0;
-
-        if self.border.radius > 0.0 {
-            if has_thickness {
-                self.create_rounded_bordered_rect_shape();
-            } else {
-                self.create_rounded_rect_shape(
-                    self.rect.x,
-                    self.rect.y,
-                    self.rect.width,
-                    self.rect.height,
-                    self.border.radius,
-                    self.background.clone(),
-                );
-            }
-        } else {
-            if has_thickness {
-                self.create_bordered_rect_shape();
-            } else {
-                self.create_rect_shape(
-                    self.rect.x,
-                    self.rect.y,
-                    self.rect.width,
-                    self.rect.height,
-                    self.background.clone(),
-                );
-            }
-        }
-    }
-
-    fn create_rect_shape(&mut self, x: f64, y: f64, width: f64, height: f64, brush: Brush) {
-        self.instructions
-            .push(Instruction2D::SetFillStyleBrush { brush });
-        self.instructions.push(Instruction2D::FillRect {
+    // Builds rectangle path without border and radius.
+    fn build_rect_path(&mut self, x: f64, y: f64, width: f64, height: f64, brush: Brush) {
+        self.path
+            .push(PathSegment::SetFillStyleBrush { brush });
+        self.path.push(PathSegment::FillRect {
             x,
             y,
             width,
@@ -104,9 +74,10 @@ impl Rectangle {
         });
     }
 
-    fn create_bordered_rect_shape(&mut self) {
+    // Builds rectangle path with border and without radius.
+    fn build_bordered_rect_path(&mut self) {
         // border
-        self.create_rect_shape(
+        self.build_rect_path(
             self.rect.x,
             self.rect.y,
             self.rect.width,
@@ -115,7 +86,7 @@ impl Rectangle {
         );
 
         // content
-        self.create_rect_shape(
+        self.build_rect_path(
             self.rect.x + self.border.thickness.left,
             self.rect.y + self.border.thickness.top,
             self.rect.width - self.border.thickness.left - self.border.thickness.right,
@@ -124,7 +95,8 @@ impl Rectangle {
         );
     }
 
-    fn create_rounded_rect_shape(
+    // Builds ractangle path with radius and withoud border.
+    fn build_rounded_rect_path(
         &mut self,
         x: f64,
         y: f64,
@@ -136,29 +108,29 @@ impl Rectangle {
         let m_pi = 3.14159265;
         let degrees = m_pi / 180.0;
 
-        self.instructions.push(Instruction2D::BeginPath());
-        self.instructions.push(Instruction2D::Arc {
+        self.path.push(PathSegment::BeginPath());
+        self.path.push(PathSegment::Arc {
             x: x + width - radius,
             y: y + radius,
             radius,
             start_angle: -90.0 * degrees,
             end_engle: 0.0 * degrees,
         });
-        self.instructions.push(Instruction2D::Arc {
+        self.path.push(PathSegment::Arc {
             x: x + width - radius,
             y: y + height - radius,
             radius,
             start_angle: 0.0 * degrees,
             end_engle: 90.0 * degrees,
         });
-        self.instructions.push(Instruction2D::Arc {
+        self.path.push(PathSegment::Arc {
             x: x + radius,
             y: y + height - radius,
             radius,
             start_angle: 90.0 * degrees,
             end_engle: 180.0 * degrees,
         });
-        self.instructions.push(Instruction2D::Arc {
+        self.path.push(PathSegment::Arc {
             x: x + radius,
             y: y + radius,
             radius,
@@ -166,15 +138,16 @@ impl Rectangle {
             end_engle: 270.0 * degrees,
         });
 
-        self.instructions
-            .push(Instruction2D::SetFillStyleBrush { brush });
-        self.instructions.push(Instruction2D::ClosePath());
-        self.instructions.push(Instruction2D::Fill());
+        self.path
+            .push(PathSegment::SetFillStyleBrush { brush });
+        self.path.push(PathSegment::ClosePath());
+        self.path.push(PathSegment::Fill());
     }
 
-    fn create_rounded_bordered_rect_shape(&mut self) {
+    // Builds rectangle with border and radius.
+    fn build_rounded_bordered_rect_path(&mut self) {
         // border
-        self.create_rounded_rect_shape(
+        self.build_rounded_rect_path(
             self.rect.x,
             self.rect.y,
             self.rect.width,
@@ -184,7 +157,7 @@ impl Rectangle {
         );
 
         // content
-        self.create_rounded_rect_shape(
+        self.build_rounded_rect_path(
             self.rect.x + self.border.thickness.left,
             self.rect.y + self.border.thickness.top,
             self.rect.width - self.border.thickness.left - self.border.thickness.right,
@@ -195,9 +168,44 @@ impl Rectangle {
     }
 }
 
-impl Shape2D for Rectangle {
-    fn instructions(&self) -> &[Instruction2D] {
-        &self.instructions
+impl Shape for Rectangle {
+    fn path(&mut self) -> &mut [PathSegment] {
+        &mut self.path
+    }
+
+    fn build_path(&mut self) {
+        self.path.clear();
+        let has_thickness = self.border.thickness.left > 0.0
+            || self.border.thickness.top > 0.0
+            || self.border.thickness.right > 0.0
+            || self.border.thickness.bottom > 0.0;
+
+        if self.border.radius > 0.0 {
+            if has_thickness {
+                self.build_rounded_bordered_rect_path();
+            } else {
+                self.build_rounded_rect_path(
+                    self.rect.x,
+                    self.rect.y,
+                    self.rect.width,
+                    self.rect.height,
+                    self.border.radius,
+                    self.background.clone(),
+                );
+            }
+        } else {
+            if has_thickness {
+                self.build_bordered_rect_path();
+            } else {
+                self.build_rect_path(
+                    self.rect.x,
+                    self.rect.y,
+                    self.rect.width,
+                    self.rect.height,
+                    self.background.clone(),
+                );
+            }
+        }
     }
 }
 
@@ -206,7 +214,7 @@ impl Size for Rectangle {
         self.rect.width = width;
     }
 
-    fn get_width(&self) -> f64 {
+    fn width(&self) -> f64 {
         self.rect.height
     }
 
@@ -214,7 +222,7 @@ impl Size for Rectangle {
         self.rect.height = height;
     }
 
-    fn get_height(&self) -> f64 {
+    fn height(&self) -> f64 {
         self.rect.height
     }
 
@@ -223,7 +231,7 @@ impl Size for Rectangle {
         self.rect.height = height;
     }
 
-    fn get_size(&self) -> (f64, f64) {
+    fn size(&self) -> (f64, f64) {
         (self.rect.width, self.rect.height)
     }
 }
@@ -233,7 +241,7 @@ impl Position for Rectangle {
         self.rect.x = x;
     }
 
-    fn get_x(&self) -> f64 {
+    fn x(&self) -> f64 {
         self.rect.y
     }
 
@@ -241,7 +249,7 @@ impl Position for Rectangle {
         self.rect.y = y;
     }
 
-    fn get_y(&self) -> f64 {
+    fn y(&self) -> f64 {
         self.rect.y
     }
 
@@ -250,13 +258,13 @@ impl Position for Rectangle {
         self.rect.y = y;
     }
 
-    fn get_position(&self) -> (f64, f64) {
+    fn position(&self) -> (f64, f64) {
         (self.rect.x, self.rect.y)
     }
 }
 
 impl Bordered for Rectangle {
-    fn get_border_thickness(&self) -> &Thickness {
+    fn border_thickness(&self) -> &Thickness {
         &self.border.thickness
     }
 
@@ -264,7 +272,7 @@ impl Bordered for Rectangle {
         self.border.thickness = thickness;
     }
 
-    fn get_border_brush(&self) -> &Brush {
+    fn border_brush(&self) -> &Brush {
         &self.border.brush
     }
 
@@ -272,7 +280,7 @@ impl Bordered for Rectangle {
         self.border.brush = brush;
     }
 
-    fn get_border_radius(&self) -> f64 {
+    fn border_radius(&self) -> f64 {
         self.border.radius
     }
 
@@ -280,7 +288,7 @@ impl Bordered for Rectangle {
         self.border.radius = radius;
     }
 
-    fn get_border(&self) -> &Border {
+    fn border(&self) -> &Border {
         &self.border
     }
 

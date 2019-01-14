@@ -2,8 +2,7 @@
 
 pub use orbclient::color::Color;
 pub use orbclient::Renderer as OrbRenderer;
-pub use orbgl::Canvas;
-pub use orbimage::Image;
+pub use orbgl::{Canvas, Image};
 
 pub use self::bounds::Bounds;
 pub use self::constraint::Constraint;

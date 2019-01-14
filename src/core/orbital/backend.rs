@@ -4,18 +4,25 @@ use std::{
     rc::Rc,
 };
 
-use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
+use orbclient::{self, Mode, Renderer as OrbRenderer, Window as OrbWindow};
 use orbfont::Font;
-use orbgl::{render_engine::CairoRenderEngine, Canvas, FramebufferSurface};
-use orbimage::Image;
+
+#[cfg(feature = "orbgl_render")]
+use orbgl::render_engine::OrbGLRenderEngine;
+
+#[cfg(not(feature = "orbgl_render"))]
+use orbgl::render_engine::CairoRenderEngine;
+
+use orbgl::{Image, Color, Canvas, FramebufferSurface};
+
 
 use dces::World;
 
 use crate::{
     application::Tree,
     core::{
-        Backend, BackendRunner, EventContext, LayoutContext, RenderContext, RenderContext2D,
-        Shape2D, StateContext,
+        Backend, BackendRunner, EventContext, LayoutContext, RenderContext, Renderer,
+        Shape, StateContext,
     },
     event::{
         EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
@@ -44,6 +51,11 @@ impl OrbitalBackend {
             inner.height(),
             inner.data_mut().as_mut_ptr() as *mut u8,
         );
+
+        #[cfg(feature = "orbgl_render")]
+        let render_engine = OrbGLRenderEngine::new(surface.clone());
+
+        #[cfg(not(feature = "orbgl_render"))]
         let render_engine = CairoRenderEngine::new(surface.clone());
 
         let canvas = Canvas::new(render_engine.clone());
@@ -203,7 +215,7 @@ impl Backend for OrbitalBackend {
 
     fn render_context(&mut self) -> RenderContext<'_> {
         RenderContext {
-            context_2d: &mut self.canvas,
+            renderer: &mut self.canvas,
             theme: &self.theme,
         }
     }

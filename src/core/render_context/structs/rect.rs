@@ -19,18 +19,18 @@ impl Rect {
 
 pub trait Size {
     fn set_with(&mut self, width: f64);
-    fn get_width(&self) -> f64;
+    fn width(&self) -> f64;
     fn set_height(&mut self, height: f64);
-    fn get_height(&self) -> f64;
+    fn height(&self) -> f64;
     fn set_size(&mut self, width: f64, height: f64);
-    fn get_size(&self) -> (f64, f64);
+    fn size(&self) -> (f64, f64);
 }
 
 pub trait Position {
     fn set_x(&mut self, x: f64);
-    fn get_x(&self) -> f64;
+    fn x(&self) -> f64;
     fn set_y(&mut self, y: f64);
-    fn get_y(&self) -> f64;
+    fn y(&self) -> f64;
     fn set_position(&mut self, x: f64, y: f64);
-    fn get_position(&self) -> (f64, f64);
+    fn position(&self) -> (f64, f64);
 }

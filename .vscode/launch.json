@@ -18,6 +18,17 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "Debug widgets orbgl",
+            "program": "${workspaceFolder}/target/debug/examples/widgets",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build orbgl render",
+            "sourceLanguages": [
+                "rust"
+            ]
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Debug canvas",
             "program": "${workspaceFolder}/target/debug/examples/canvas",
             "cwd": "${workspaceFolder}",

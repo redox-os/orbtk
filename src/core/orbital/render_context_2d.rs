@@ -1,18 +1,10 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use orbclient::{Color, Renderer as OrbRenderer, Window as OrbWindow};
 use orbfont::Font;
-use orbgl::Canvas;
-use orbimage::Image;
 
 use crate::{
-    core::{
-     
-        Renderer,
-    },
-    properties::{Bounds, Point},
-    theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, Theme, ROBOTO_REGULAR_FONT, Selector},
+    theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, ROBOTO_REGULAR_FONT},
 };
 
 pub struct OrbFontRenderer {

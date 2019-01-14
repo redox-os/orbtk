@@ -19,6 +19,25 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "build orbgl render",
+            "command": "cargo",
+            "type": "shell",
+            "args": [
+                "build",
+                "--examples=widgets",
+                "--features",
+                "orbgl_render"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

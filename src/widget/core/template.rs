@@ -84,7 +84,7 @@ impl Template {
     }
 
     /// Used to add a `shape' to the template. Only one `shape` can be added.
-    pub fn with_render_shape(mut self, shape: impl Into<Box<dyn UpdateableShape>>) -> Self {
+    pub fn with_shape(mut self, shape: impl Into<Box<dyn UpdateableShape>>) -> Self {
         self.shape = Some(shape.into());
         self
     }

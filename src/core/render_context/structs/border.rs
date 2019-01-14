@@ -1,13 +1,13 @@
 use super::{Brush, Thickness};
 
 pub trait Bordered {
-    fn get_border_thickness(&self) -> &Thickness;
+    fn border_thickness(&self) -> &Thickness;
     fn set_border_thickness(&mut self, thickness: Thickness);
-    fn get_border_brush(&self) -> &Brush;
+    fn border_brush(&self) -> &Brush;
     fn set_border_brush(&mut self, brush: Brush);
-    fn get_border_radius(&self) -> f64;
+    fn border_radius(&self) -> f64;
     fn set_border_radius(&mut self, radius: f64);
-    fn get_border(&self) -> &Border;
+    fn border(&self) -> &Border;
     fn set_border(&mut self, border: Border);
 }
 

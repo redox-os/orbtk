@@ -10,7 +10,7 @@ impl Widget for MainView {
             .with_child(
                 Container::create()
                     .as_parent_type(ParentType::Single)
-                    .with_child(Button::create().with_property(Label::from("OrbTk"))),
+                    .with_child(Switch::create()),
             )
     }
 }

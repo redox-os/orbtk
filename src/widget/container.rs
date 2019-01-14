@@ -25,7 +25,7 @@ impl Widget for Container {
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_property(Selector::from("container"))
-            .with_render_shape(Rectangle::default())
+            .with_shape(Rectangle::default())
             .with_layout(PaddingLayout)
             .with_debug_name("Container")
     }

@@ -3,7 +3,7 @@ pub struct TextMetrics {
 }
 
 impl TextMetrics {
-    pub fn get_width(&self) -> f64 {
+    pub fn width(&self) -> f64 {
         self.width
     }
 }

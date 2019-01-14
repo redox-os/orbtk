@@ -15,7 +15,6 @@ use crate::{
 ///
 /// * `ParentType`- None.
 /// * `ImageSizeLayout` - Used to layout the widget.
-/// * `ImageRenderObject` - Used to draw the image of the widget.
 pub struct ImageWidget;
 
 impl Widget for ImageWidget {
@@ -23,7 +22,6 @@ impl Widget for ImageWidget {
         Template::default()
             .with_property(Selector::from("imagewidget"))
             .with_layout(ImageSizeLayout)
-            // .with_render_object(ImageRenderObject)
             .with_debug_name("ImageWidget")
     }
 }
