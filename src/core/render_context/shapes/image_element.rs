@@ -3,6 +3,7 @@ use orbgl::Image;
 
 use crate::core::{PathSegment, Position, Rect, Shape, Size};
 
+/// Used to build a image element, specifying additional details.
 pub struct ImageElementBuilder {
     pub path: String,
     pub rect: Rect,
@@ -10,6 +11,7 @@ pub struct ImageElementBuilder {
 }
 
 impl ImageElementBuilder {
+    /// Creates a new image bilder with the given image `path`.
     pub fn new<S: Into<String>>(path: S) -> Self {
         ImageElementBuilder {
             path: path.into(),
@@ -18,22 +20,26 @@ impl ImageElementBuilder {
         }
     }
 
+    /// Inserts a new position:
     pub fn with_position(mut self, x: f64, y: f64) -> Self {
         self.rect.x = x;
         self.rect.y = y;
         self
     }
 
+    /// Inserts a new size.
     pub fn with_size(mut self, width: f64, height: f64) -> Self {
         self.rect.width = width;
         self.rect.height = height;
         self
     }
 
+    /// Inserts a new bounding rect and overwrites position and size.
     pub fn with_rect(self, x: f64, y: f64, width: f64, height: f64) -> Self {
         self.with_position(x, y).with_size(width, height)
     }
 
+    /// Inserts a new source rect.
     pub fn with_source_rect(
         mut self,
         source_x: f64,
@@ -50,6 +56,7 @@ impl ImageElementBuilder {
         self
     }
 
+    /// Builds the image element.
     pub fn build(self) -> ImageElement {
         let mut image_element = ImageElement {
             path: vec![],
@@ -64,6 +71,7 @@ impl ImageElementBuilder {
     }
 }
 
+/// The ÌmageElement` is used to display a image on the screen.
 #[derive(Clone)]
 pub struct ImageElement {
     path: Vec<PathSegment>,
@@ -74,24 +82,29 @@ pub struct ImageElement {
 }
 
 impl ImageElement {
+    /// Creates a new `ImageBuilder` object.
     pub fn create<S: Into<String>>(source: S) -> ImageElementBuilder {
         ImageElementBuilder::new(source)
     }
 
+    /// Gets the file source.
     pub fn source(&self) -> &str {
         &self.source
     }
 
+    /// Sets the file source.
     pub fn set_source<S: Into<String>>(&mut self, source: S) {
         self.source = source.into();
     }
 
-    pub fn set_source_rect(&mut self, source_rect: Rect) {
-        self.source_rect = Some(source_rect);
-    }
-
+    /// Gets the source rect.
     pub fn source_rect(&self) -> &Option<Rect> {
         &self.source_rect
+    }
+
+    /// Sets the source rect.
+    pub fn set_source_rect(&mut self, source_rect: Rect) {
+        self.source_rect = Some(source_rect);
     }
 }
 

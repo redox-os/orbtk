@@ -2,6 +2,7 @@ use crate::core::{
     Border, Bordered, Brush, PathSegment, Position, Rect, Shape, Size, Thickness,
 };
 
+/// Used to build a rectangle, specifying additional details.
 #[derive(Default)]
 pub struct RectangleBuilder {
     pub background: Brush,
@@ -10,6 +11,7 @@ pub struct RectangleBuilder {
 }
 
 impl RectangleBuilder {
+    /// Creates a new rectangle bilder with.
     pub fn new() -> Self {
         RectangleBuilder::default()
     }
