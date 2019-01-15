@@ -38,6 +38,19 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "test",
+            "command": "cargo",
+            "type": "shell",
+            "args": [
+                "test",
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+            },
+            "group": "test"
         }
     ]
 }
