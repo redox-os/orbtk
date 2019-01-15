@@ -95,6 +95,12 @@ impl Renderer for Canvas {
                 PathSegment::LineTo { x, y } => self.line_to(*x, *y),
                 PathSegment::MoveTo { x, y } => self.move_to(*x, *y),
                 PathSegment::Restore() => self.restore(),
+                PathSegment::Rect {
+                    x,
+                    y,
+                    width,
+                    height,
+                } => self.rect(*x, *y, *width, *height),
                 PathSegment::Rotate { angle } => self.rotate(*angle),
                 PathSegment::SetFillStyleBrush { brush } => match brush {
                     Brush::SolidColor(color) => self.set_fill_style(get_color(color)),

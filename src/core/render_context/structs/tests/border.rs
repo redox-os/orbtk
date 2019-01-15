@@ -1,7 +1,7 @@
 use super::*;
 
 #[test]
-fn with_brush() {
+fn test_with_brush() {
     let brush = Brush::SolidColor("#000000".to_string());
 
     let builder = BorderBuilder::new();
@@ -12,7 +12,7 @@ fn with_brush() {
 }
 
 #[test]
-fn with_thickness() {
+fn test_with_thickness() {
     let thickness = Thickness::new(0.0, 0.0, 0.0, 0.0);
 
     let builder = BorderBuilder::new();
@@ -21,7 +21,7 @@ fn with_thickness() {
 }
 
 #[test]
-fn with_radius() {
+fn test_with_radius() {
     let radius = 0.0;
 
     let builder = BorderBuilder::new();
@@ -30,7 +30,7 @@ fn with_radius() {
 }
 
 #[test]
-fn set_brush() {
+fn test_set_brush() {
     let brush = Brush::SolidColor("#000000".to_string());
 
     let mut border = Border::default();
@@ -41,7 +41,7 @@ fn set_brush() {
 }
 
 #[test]
-fn set_thickness() {
+fn test_set_thickness() {
     let thickness = Thickness::new(0.0, 0.0, 0.0, 0.0);
 
     let mut border = Border::default();
@@ -50,7 +50,7 @@ fn set_thickness() {
 }
 
 #[test]
-fn set_radius() {
+fn test_set_radius() {
     let radius = 0.0;
 
     let mut border = Border::default();

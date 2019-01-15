@@ -5,16 +5,16 @@ use crate::core::{PathSegment, Position, Rect, Shape, Size};
 
 /// Used to build a image element, specifying additional details.
 pub struct ImageElementBuilder {
-    pub path: String,
+    pub source: String,
     pub rect: Rect,
     pub source_rect: Option<Rect>,
 }
 
 impl ImageElementBuilder {
-    /// Creates a new image bilder with the given image `path`.
-    pub fn new<S: Into<String>>(path: S) -> Self {
+    /// Creates a new image bilder with the given image `source`.
+    pub fn new<S: Into<String>>(source: S) -> Self {
         ImageElementBuilder {
-            path: path.into(),
+            source: source.into(),
             rect: Rect::default(),
             source_rect: None,
         }
@@ -62,7 +62,7 @@ impl ImageElementBuilder {
             path: vec![],
             rect: self.rect,
             inner_size: None,
-            source: self.path,
+            source: self.source,
             source_rect: self.source_rect,
         };
 
@@ -116,77 +116,86 @@ impl Shape for ImageElement {
     fn build_path(&mut self) {
         self.path.clear();
 
-        let image = Image::from_path(self.source()).unwrap();
-
-        if self.width() == 0.0 && self.height() == 0.0 {
-            self.inner_size = Some((image.width() as f64, image.height() as f64));
-        } else {
-            self.inner_size = None;
-        }
-
-        if let Some(source_rect) = self.source_rect {
+        if let Ok(image) = Image::from_path(self.source()) {
             if self.width() == 0.0 && self.height() == 0.0 {
-                let image_width = image.width();
-                let image_height = image.height();
-
-                self.path.push(PathSegment::DrawImageWithClipAndSize {
-                    image,
-                    clip_x: source_rect.x,
-                    clip_y: source_rect.y,
-                    clip_width: source_rect.width,
-                    clip_height: source_rect.height,
-                    x: self.x(),
-                    y: self.y(),
-                    width: image_width as f64,
-                    height: image_height as f64,
-                });
+                self.inner_size = Some((image.width() as f64, image.height() as f64));
             } else {
-                self.path.push(PathSegment::DrawImageWithClipAndSize {
-                    image,
-                    clip_x: source_rect.x,
-                    clip_y: source_rect.y,
-                    clip_width: source_rect.width,
-                    clip_height: source_rect.height,
-                    x: self.x(),
-                    y: self.y(),
-                    width: self.width(),
-                    height: self.height(),
-                });
+                self.inner_size = None;
+            }
+
+            if let Some(source_rect) = self.source_rect {
+                if self.width() == 0.0 && self.height() == 0.0 {
+                    let image_width = image.width();
+                    let image_height = image.height();
+
+                    self.path.push(PathSegment::DrawImageWithClipAndSize {
+                        image,
+                        clip_x: source_rect.x,
+                        clip_y: source_rect.y,
+                        clip_width: source_rect.width,
+                        clip_height: source_rect.height,
+                        x: self.x(),
+                        y: self.y(),
+                        width: image_width as f64,
+                        height: image_height as f64,
+                    });
+                } else {
+                    self.path.push(PathSegment::DrawImageWithClipAndSize {
+                        image,
+                        clip_x: source_rect.x,
+                        clip_y: source_rect.y,
+                        clip_width: source_rect.width,
+                        clip_height: source_rect.height,
+                        x: self.x(),
+                        y: self.y(),
+                        width: self.width(),
+                        height: self.height(),
+                    });
+                }
+            } else {
+                if self.width() == 0.0 && self.height() == 0.0 {
+                    self.path.push(PathSegment::DrawImage {
+                        image,
+                        x: self.x(),
+                        y: self.y(),
+                    });
+                } else {
+                    self.path.push(PathSegment::DrawImageWithSize {
+                        image,
+                        x: self.x(),
+                        y: self.y(),
+                        width: self.width(),
+                        height: self.height(),
+                    });
+                }
             }
         } else {
-            if self.width() == 0.0 && self.height() == 0.0 {
-                self.path.push(PathSegment::DrawImage {
-                    image,
-                    x: self.x(),
-                    y: self.y(),
-                });
-            } else {
-                self.path.push(PathSegment::DrawImageWithSize {
-                    image,
-                    x: self.x(),
-                    y: self.y(),
-                    width: self.width(),
-                    height: self.height(),
-                });
-            }
+            // placeholder border if image could not be loaded
+            self.path.push(PathSegment::SetStrokeStyleColor {
+                color: "#000000".to_string(),
+            });
+            self.path.push(PathSegment::Rect {
+                x: self.rect.x,
+                y: self.rect.y,
+                width: self.rect.width,
+                height: self.rect.height,
+            });
+            self.path.push(PathSegment::Stroke());
         }
     }
 }
 
 impl Size for ImageElement {
-    fn set_with(&mut self, width: f64) {
-        self.rect.width = width;
-    }
-
     fn width(&self) -> f64 {
         if let Some(size) = self.inner_size {
             return size.0;
         }
-        self.rect.height
+
+        self.rect.width
     }
 
-    fn set_height(&mut self, height: f64) {
-        self.rect.height = height;
+    fn set_width(&mut self, width: f64) {
+        self.rect.width = width;
     }
 
     fn height(&self) -> f64 {
@@ -196,22 +205,30 @@ impl Size for ImageElement {
         self.rect.height
     }
 
-    fn set_size(&mut self, width: f64, height: f64) {
-        self.rect.width = width;
+    fn set_height(&mut self, height: f64) {
         self.rect.height = height;
     }
 
     fn size(&self) -> (f64, f64) {
         (self.rect.width, self.rect.height)
     }
+
+    fn set_size(&mut self, width: f64, height: f64) {
+        self.rect.width = width;
+        self.rect.height = height;
+    }
 }
 
 impl Position for ImageElement {
+    fn x(&self) -> f64 {
+        self.rect.x
+    }
+
     fn set_x(&mut self, x: f64) {
         self.rect.x = x;
     }
 
-    fn x(&self) -> f64 {
+    fn y(&self) -> f64 {
         self.rect.y
     }
 
@@ -219,16 +236,12 @@ impl Position for ImageElement {
         self.rect.y = y;
     }
 
-    fn y(&self) -> f64 {
-        self.rect.y
+    fn position(&self) -> (f64, f64) {
+        (self.rect.x, self.rect.y)
     }
 
     fn set_position(&mut self, x: f64, y: f64) {
         self.rect.x = x;
         self.rect.y = y;
-    }
-
-    fn position(&self) -> (f64, f64) {
-        (self.rect.x, self.rect.y)
     }
 }

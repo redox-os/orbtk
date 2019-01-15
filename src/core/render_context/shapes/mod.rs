@@ -16,3 +16,6 @@ pub trait Shape {
     /// Builds the inner path of render `PathSegments`.
     fn build_path(&mut self);
 }
+
+#[cfg(test)]
+mod tests;

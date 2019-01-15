@@ -100,6 +100,14 @@ pub enum PathSegment {
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
     Restore(),
 
+    /// Adds a rectangle to the current path.
+    Rect {
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+    },
+
     /// Adds a rotation to the transformation matrix.
     Rotate { angle: f64 },
 

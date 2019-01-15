@@ -1,6 +1,4 @@
-use crate::core::{
-    Border, Bordered, Brush, PathSegment, Position, Rect, Shape, Size, Thickness,
-};
+use crate::core::{Border, Bordered, Brush, PathSegment, Position, Rect, Shape, Size, Thickness};
 
 /// Used to build a rectangle, specifying additional details.
 #[derive(Default)]
@@ -22,10 +20,23 @@ impl RectangleBuilder {
         self
     }
 
-    /// Inserts a new bounds rect.
-    pub fn with_rect(mut self, rect: Rect) -> Self {
-        self.rect = rect;
+    /// Inserts a new position.
+    pub fn with_position(mut self, x: f64, y: f64) -> Self {
+        self.rect.x = x;
+        self.rect.y = y;
         self
+    }
+
+    /// Inserts a new size.
+    pub fn with_size(mut self, width: f64, height: f64) -> Self {
+        self.rect.width = width;
+        self.rect.height = height;
+        self
+    }
+
+    /// Inserts a new bounding rect and overwrites position and size.
+    pub fn with_rect(self, x: f64, y: f64, width: f64, height: f64) -> Self {
+        self.with_position(x, y).with_size(width, height)
     }
 
     /// Inserts a new border.
@@ -74,8 +85,7 @@ impl Rectangle {
 
     // Builds rectangle path without border and radius.
     fn build_rect_path(&mut self, x: f64, y: f64, width: f64, height: f64, brush: Brush) {
-        self.path
-            .push(PathSegment::SetFillStyleBrush { brush });
+        self.path.push(PathSegment::SetFillStyleBrush { brush });
         self.path.push(PathSegment::FillRect {
             x,
             y,
@@ -148,8 +158,7 @@ impl Rectangle {
             end_engle: 270.0 * degrees,
         });
 
-        self.path
-            .push(PathSegment::SetFillStyleBrush { brush });
+        self.path.push(PathSegment::SetFillStyleBrush { brush });
         self.path.push(PathSegment::ClosePath());
         self.path.push(PathSegment::Fill());
     }
@@ -220,12 +229,12 @@ impl Shape for Rectangle {
 }
 
 impl Size for Rectangle {
-    fn set_with(&mut self, width: f64) {
+    fn set_width(&mut self, width: f64) {
         self.rect.width = width;
     }
 
     fn width(&self) -> f64 {
-        self.rect.height
+        self.rect.width
     }
 
     fn set_height(&mut self, height: f64) {
@@ -252,7 +261,7 @@ impl Position for Rectangle {
     }
 
     fn x(&self) -> f64 {
-        self.rect.y
+        self.rect.x
     }
 
     fn set_y(&mut self, y: f64) {
@@ -295,7 +304,7 @@ impl Bordered for Rectangle {
     }
 
     fn set_border_radius(&mut self, radius: f64) {
-       self.border.set_radius(radius);
+        self.border.set_radius(radius);
     }
 
     fn border(&self) -> &Border {

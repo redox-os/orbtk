@@ -53,7 +53,7 @@ pub trait Size {
     fn width(&self) -> f64;
 
     /// Sets the width.
-    fn set_with(&mut self, width: f64);
+    fn set_width(&mut self, width: f64);
 
     /// Gets the height.
     fn height(&self) -> f64;

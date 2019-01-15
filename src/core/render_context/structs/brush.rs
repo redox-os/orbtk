@@ -1,4 +1,6 @@
 
+// !!! Brush is still WIP. Brush will use color struct from OrbGL. !!!
+
 /// Describes a position on a coloerfull gradient.
 #[derive(Default, Clone, PartialEq, Debug)]
 pub struct GradientStop {
