@@ -67,8 +67,8 @@ impl Border {
     }
 
     /// Gets the thickness.
-    pub fn thickness(&self) -> &Thickness {
-        &self.thickness
+    pub fn thickness(&self) -> Thickness {
+        self.thickness
     }
 
     /// Sets the thickness.
@@ -90,7 +90,7 @@ impl Border {
 /// Contains a set of getters and setters to read and write to a border.
 pub trait Bordered {
     /// Gets the thickness.
-    fn border_thickness(&self) -> &Thickness;
+    fn border_thickness(&self) -> Thickness;
 
     /// Sets the border thickness.
     fn set_border_thickness(&mut self, thickness: Thickness);

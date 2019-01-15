@@ -11,3 +11,6 @@ mod brush;
 mod font;
 mod rect;
 mod thickness;
+
+#[cfg(test)]
+mod tests;

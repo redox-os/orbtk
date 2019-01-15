@@ -274,8 +274,8 @@ impl Position for Rectangle {
 }
 
 impl Bordered for Rectangle {
-    fn border_thickness(&self) -> &Thickness {
-        &self.border.thickness()
+    fn border_thickness(&self) -> Thickness {
+        self.border.thickness()
     }
 
     fn set_border_thickness(&mut self, thickness: Thickness) {
