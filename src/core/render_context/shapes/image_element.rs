@@ -20,7 +20,7 @@ impl ImageElementBuilder {
         }
     }
 
-    /// Inserts a new position:
+    /// Inserts a new position.
     pub fn with_position(mut self, x: f64, y: f64) -> Self {
         self.rect.x = x;
         self.rect.y = y;

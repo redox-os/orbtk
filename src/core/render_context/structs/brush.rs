@@ -1,30 +1,18 @@
+
+/// Describes a position on a coloerfull gradient.
 #[derive(Default, Clone, PartialEq, Debug)]
 pub struct GradientStop {
     pub position: f64,
     pub color: String,
 }
 
-// todo: Color struct
-
-// impl Default for Gradient {
-//     fn default() -> Self {
-//         Gradient {
-//             color_stops: BTreeMap::new()
-//         }
-//     }
-// }
-
-// impl Gradient {
-//     pub fn new() -> Self {
-//         Gradient::default()
-//     }
-
-//     pub fn add_color_stop(&mut self)
-// }
-
+/// A `Brush`describes how a shape is filled or stroked.
 #[derive(Clone, PartialEq, Debug)]
 pub enum Brush {
+    /// Paints an area with a solid color.
     SolidColor(String),
+
+    /// Paints an area with a linear gradient.
     Gradient(Vec<GradientStop>),
 }
 

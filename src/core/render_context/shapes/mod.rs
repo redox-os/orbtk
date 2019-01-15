@@ -1,4 +1,4 @@
-
+// This private sub module contains a list of shapes.
 
 pub use self::image_element::{ImageElement, ImageElementBuilder};
 pub use self::rectangle::{Rectangle, RectangleBuilder};

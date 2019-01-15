@@ -2,14 +2,18 @@ use orbgl::{Canvas, Color};
 
 use crate::core::{Brush, PathSegment, Shape};
 
+/// Used to extends a render context and to make it easier to render a shape.
 pub trait Renderer {
+    /// Renders the given shape.
     fn render_shape(&mut self, shape: &mut Shape) {
         self.render_path(shape.path());
     }
 
+    /// Renders the given path.
     fn render_path(&mut self, path: &mut [PathSegment]);
 }
 
+// Default Render implementation of OrbGL Canvas.
 impl Renderer for Canvas {
     fn render_path(&mut self, path: &mut [PathSegment]) {
         for instruction in path {
@@ -130,6 +134,7 @@ impl Renderer for Canvas {
     }
 }
 
+// Helper to convert a color.
 fn get_color(hex: &str) -> Color {
     let clean_hex = hex.trim_start_matches("#");
     match clean_hex.len() {
