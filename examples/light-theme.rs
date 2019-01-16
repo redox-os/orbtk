@@ -62,6 +62,15 @@ impl Widget for MainView {
                                         )),
                                 ),
                             )
+                            .with_child(
+                                Container::create().with_child(
+                                    Button::create()
+                                        .with_property(
+                                            Selector::from("button").with_class("primary"),
+                                        )
+                                        .with_property(Label::from("Primary")),
+                                ),
+                            )
                             .with_child(Container::create().with_child(
                                 ToggleButton::create().with_property(Label::from("ToggleButton")),
                             ))

@@ -2,18 +2,26 @@
 * {
     /* background: #F5F6F7; */
     background: #fafafa;
-    color: black;
-    icon-color: black;
+    color: #3b434a;
+    icon-color: #3b434a;
 }
 
 button, togglebutton {
     /* min-width: 60; */
     /* height: 40; */
-    background: #e5e5e5;
+    background: #dadada;
 }
 
-button:active, togglebutton:active, togglebutton:selected {
-    background: #d6d6d6;
+button.primary {
+    background: #efd035;
+    color: #3b434a;
+    icon-color: #3b434a;
+}
+
+button:active, button.primary:active, togglebutton:active, togglebutton:selected {
+    background: #a8a8a8;
+    color: #3b434a;
+    icon-color: #3b434a;
 }
 
 checkbox {
