@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use crate::{
-    core::Rectangle,
+    shapes::Rectangle,
     layout::TextSelectionLayout,
     properties::{Label, TextSelection},
     // render_object::RectangleRenderObject,

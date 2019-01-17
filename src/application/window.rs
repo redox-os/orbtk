@@ -8,10 +8,11 @@ use dces::{Entity, World};
 
 use crate::{
     application::{Application, Tree},
-    core::{target_backend, BackendRunner, Rectangle},
+    core::{target_backend, BackendRunner},
     event::EventHandler,
-    layout::{Layout, RootLayout},
+    layout::Layout,
     properties::{Bounds, Point},
+    shapes::Rectangle,
     systems::{EventSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem},
     theme::{Selector, Theme, UpdateableShape},
     widget::{PropertyResult, State, Template},
@@ -84,7 +85,8 @@ impl<'a> WindowBuilder<'a> {
         let mut world = World::from_container(Tree::default());
         let shapes: Rc<RefCell<BTreeMap<Entity, Box<dyn UpdateableShape>>>> =
             Rc::new(RefCell::new(BTreeMap::new()));
-        let layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>> = Rc::new(RefCell::new(BTreeMap::new()));
+        let layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>> =
+            Rc::new(RefCell::new(BTreeMap::new()));
         let handlers = Rc::new(RefCell::new(BTreeMap::new()));
         let states = Rc::new(RefCell::new(BTreeMap::new()));
         let update = Rc::new(Cell::new(true));

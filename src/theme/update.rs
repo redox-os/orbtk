@@ -1,6 +1,7 @@
 use crate::{
-    core::{Bordered, Position, Rectangle, Shape, Size, Thickness, ImageElement},
     properties::Bounds,
+    shapes::{ImageElement, Rectangle, Shape},
+    structs::{Bordered, Position, Size, Thickness},
 };
 
 use super::{Selector, Theme};
@@ -14,7 +15,7 @@ impl UpdateableShape for Rectangle {
     fn update_by_selector(&mut self, selector: &mut Selector, theme: &Theme) {
         if !selector.is_dirty() {
             return;
-        }  
+        }
 
         let left = theme.uint("border-left", selector) as f64;
         let right = theme.uint("border-right", selector) as f64;
@@ -57,9 +58,7 @@ impl Into<Box<dyn UpdateableShape>> for Rectangle {
 }
 
 impl UpdateableShape for ImageElement {
-    fn update_by_selector(&mut self, selector: &mut Selector, theme: &Theme) {
-     
-    }
+    fn update_by_selector(&mut self, selector: &mut Selector, theme: &Theme) {}
 
     fn update_by_bounds(&mut self, x: f64, y: f64, width: f64, height: f64) {
         // todo check changes

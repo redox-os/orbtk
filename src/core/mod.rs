@@ -2,35 +2,11 @@
 //! A backend is used to open a window, draw on the screen and to call events.
 //! This module contains also an `OrbClient` based backend.
 
-use std::{
-    cell::{Cell, RefCell},
-    rc::Rc,
-};
+use std::{cell::Cell, rc::Rc};
 
 use dces::World;
 
-use crate::{
-    application::Tree,
-    event::EventQueue,
-    properties::Bounds,
-    theme::Theme,
-};
-
-/// Is used to provides data from the `Backend` to the `LayoutSystem`.
-pub struct LayoutContext<'a> {
-    pub window_size: (u32, u32),
-    pub theme: &'a Theme,
-}
-
-/// Is used to provides data from the `Backend` to the `StateSystem` and `PostLayoutStateSystem`.
-pub struct StateContext<'a> {
-    pub theme: &'a Theme,
-}
-
-/// Is used to provides data from the `Backend` to the `EventSystem`.
-pub struct EventContext<'a> {
-    pub event_queue: &'a RefCell<EventQueue>,
-}
+use crate::{application::Tree, properties::Bounds};
 
 /// This trait is used to define a backend for OrbTk.
 pub trait Backend {
@@ -55,9 +31,9 @@ pub trait FontMeasure {
     fn measure(&self, text: &str, font: &str, font_size: u32) -> (u32, u32);
 }
 
+pub use self::context::*;
 pub use self::target::*;
-pub use self::render_context::*;
 
+mod context;
 #[path = "orbital/mod.rs"]
 mod target;
-mod render_context;

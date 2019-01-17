@@ -27,7 +27,8 @@ lazy_static = "1.2.0"
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }
 orbclient = "0.3.18"
 orbfont = { git = "https://gitlab.redox-os.org/redox-os/orbfont.git" }
-orbgl = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git"}
+orbgl = { git = "https://gitlab.redox-os.org/redox-os/orbgl" }
+orbgl_shapes = { git = "https://gitlab.redox-os.org/redox-os/orbgl" }
 
 [features]
 orbgl_render = []

@@ -8,7 +8,8 @@ use dces::{Entity, EntityComponentManager, System};
 
 use crate::{
     application::Tree,
-    core::{Backend, Renderer},
+    core::Backend,
+    shape_renderer::ShapeRenderer,
     enums::Visibility,
     properties::{Bounds, Point},
     theme::{Selector, UpdateableShape},

@@ -1,11 +1,9 @@
 use std::{
     cell::{Cell, RefCell},
-    collections::HashMap,
     rc::Rc,
 };
 
 use orbclient::{self, Mode, Renderer as OrbRenderer, Window as OrbWindow};
-use orbfont::Font;
 
 #[cfg(feature = "orbgl_render")]
 use orbgl::render_engine::OrbGLRenderEngine;
@@ -13,17 +11,13 @@ use orbgl::render_engine::OrbGLRenderEngine;
 #[cfg(not(feature = "orbgl_render"))]
 use orbgl::render_engine::CairoRenderEngine;
 
-use orbgl::{Image, Color, Canvas, FramebufferSurface};
-
+use orbgl::prelude::{Canvas, Color, FramebufferSurface};
 
 use dces::World;
 
 use crate::{
     application::Tree,
-    core::{
-        Backend, BackendRunner, EventContext, LayoutContext, RenderContext, Renderer,
-        Shape, StateContext,
-    },
+    core::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext},
     event::{
         EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
         SystemEvent,

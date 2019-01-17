@@ -2,6 +2,11 @@
 #![crate_type = "lib"]
 
 pub use dces::prelude::*;
+pub use orbgl_shapes::structs;
+pub use orbgl_shapes::shapes;
+pub use orbgl_shapes::shape_renderer;
+
+pub use orbgl_shapes::prelude::*;
 
 #[macro_use]
 extern crate lazy_static;

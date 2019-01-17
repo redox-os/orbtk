@@ -1,10 +1,10 @@
 use orbclient::Renderer;
 
-use crate::core::{ImageElement, Size};
-
 use dces::{Entity, EntityComponentManager};
 
 use crate::{
+    shapes::ImageElement,
+    structs::Size,
     layout::Layout,
     properties::Constraint,
     theme::Theme,
