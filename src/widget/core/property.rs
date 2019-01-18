@@ -4,7 +4,7 @@ use std::{
     rc::Rc,
 };
 
-use dces::{Component, ComponentBox, Entity, SharedComponentBox};
+use dces::prelude::{Component, ComponentBox, Entity, SharedComponentBox};
 
 /// The `PropertyResult` enum is used to create concrete shared properties for a widget on run time from `SharedProperty` struct.
 pub enum PropertyResult {

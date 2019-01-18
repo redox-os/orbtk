@@ -3,7 +3,9 @@ use std::{
     collections::BTreeMap,
 };
 
-use crate::{Entity, NotFound, EntityContainer};
+use dces::prelude::{Entity, EntityContainer};
+
+use crate::enums;
 
 /// Base data structure to manage the widget entities of a window in a tree based structure.
 #[derive(Default)]
@@ -29,11 +31,11 @@ impl Tree {
 
     /// Appends a `child` entity to the given `parent` entity.
     /// Raised `NotFound` error if the parent is not part of the tree.
-    pub fn append_child(&mut self, parent: Entity, child: Entity) -> Result<Entity, NotFound> {
+    pub fn append_child(&mut self, parent: Entity, child: Entity) -> Result<Entity, enums::NotFound> {
         if let Some(p) = self.children.get_mut(&parent) {
             p.push(child);
         } else {
-            return Err(NotFound::Parent(parent));
+            return Err(enums::NotFound::Parent(parent));
         }
 
         self.parent.insert(child, parent);

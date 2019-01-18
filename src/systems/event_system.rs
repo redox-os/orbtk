@@ -5,7 +5,7 @@ use std::{
     rc::Rc,
 };
 
-use dces::{Entity, EntityComponentManager, System};
+use dces::prelude::{Entity, EntityComponentManager, System};
 
 use crate::{
     application::Tree,

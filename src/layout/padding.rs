@@ -1,4 +1,4 @@
-use dces::{Entity, EntityComponentManager};
+use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
     layout::Layout,

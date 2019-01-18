@@ -4,7 +4,7 @@
 
 use std::{cell::Cell, rc::Rc};
 
-use dces::World;
+use dces::prelude::World;
 
 use crate::{application::Tree, properties::Bounds};
 

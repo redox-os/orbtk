@@ -1,6 +1,6 @@
 use std::any::{Any, TypeId};
 
-use dces::Entity;
+use dces::prelude::Entity;
 
 use crate::{Event, EventStrategy};
 

@@ -13,7 +13,7 @@ use orbgl::render_engine::CairoRenderEngine;
 
 use orbgl::prelude::{Canvas, Color, FramebufferSurface};
 
-use dces::World;
+use dces::prelude::World;
 
 use crate::{
     application::Tree,

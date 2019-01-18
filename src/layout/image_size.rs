@@ -1,6 +1,6 @@
 use orbclient::Renderer;
 
-use dces::{Entity, EntityComponentManager};
+use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
     shapes::ImageElement,

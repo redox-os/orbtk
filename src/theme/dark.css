@@ -2,11 +2,11 @@
 * {
     /* background: #F5F6F7; */
     background: #3b434a;
-    color: white;
+    color: #dfebf5;
     font-size: 16;
     font-family: "Roboto Regular";
     icon-size: 16;
-    icon-color: white;
+    icon-color:  #dfebf5;
     icon-margin: 2;
     icon-font-family: "Material Icons Regular";
 }
@@ -71,15 +71,21 @@ switchtoggle:selected {
 button, togglebutton {
     min-width: 80;
     height: 32;
-    background: #6C7A90;
+    background: #647b91;
     border-radius: 2;
     padding: 6;
 }
 
-button:active, togglebutton:active, togglebutton:selected {
-    color: #637F92;
-    icon-color:  #637F92;
-    background: #F8DE4C;
+button.primary {
+    background: #efd035;
+    color: #3b434a;
+    icon-color: #3b434a;
+}
+
+button:active, button.primary:active, button.square:active, togglebutton:active, togglebutton:selected {
+    background: #516475;
+    color: #dfebf5;
+    icon-color:  #dfebf5;
 }
 
 button:disabled, togglebutton:disabled {
@@ -87,16 +93,10 @@ button:disabled, togglebutton:disabled {
 }
 
 button.square {
-    background: #6C7A90;
-    border-radius: 2;
+    border-radius: 1;
     min-width: 0;
-    width: 40;
-    height: 40;
-}
-
-button.square:active {
-    color: #637F92;
-    background: #f8de4c;
+    width: 48;
+    height: 48;
 }
 
 container {
