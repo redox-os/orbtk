@@ -228,7 +228,7 @@ impl Backend for OrbitalBackend {
     }
 
     fn state_context(&mut self) -> StateContext<'_> {
-        StateContext { theme: &self.theme }
+        StateContext { theme: &self.theme, event_queue: &self.event_queue }
     }
 
     fn flip(&mut self) -> bool {

@@ -1,3 +1,5 @@
+use std::cell::RefCell;
+
 use dces::prelude::{Entity, EntityComponentManager};
 
 use super::WidgetContainer;
@@ -5,12 +7,14 @@ use super::WidgetContainer;
 use crate::{
     application::{Global, Tree},
     theme::Theme,
+    event::{Event, EventQueue, EventStrategy},
 };
 
 /// The `Context` is provides acces for the states to objects they could work with.
 pub struct Context<'a> {
     ecm: &'a mut EntityComponentManager,
     tree: &'a Tree,
+    event_queue: &'a RefCell<EventQueue>,
     pub entity: Entity,
     pub theme: &'a Theme,
 }
@@ -21,12 +25,14 @@ impl<'a> Context<'a> {
         entity: Entity,
         ecm: &'a mut EntityComponentManager,
         tree: &'a Tree,
+        event_queue: &'a RefCell<EventQueue>,
         theme: &'a Theme,
     ) -> Self {
         Context {
             entity,
             ecm,
             tree,
+            event_queue,
             theme,
         }
     }
@@ -78,5 +84,15 @@ impl<'a> Context<'a> {
             self.tree.parent[&self.entity],
             &mut self.ecm,
         ))
+    }
+
+    /// Pushs an event to the event queue with the given `strategy`.
+    pub fn push_event_width_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
+        self.event_queue.borrow_mut().register_event_width_strategy(event, strategy, self.entity);
+    }
+
+    /// Pushs an event to the event queue.
+    pub fn push_event<E: Event>(&self, event: E) {
+        self.event_queue.borrow_mut().register_event(event, self.entity);
     }
 }

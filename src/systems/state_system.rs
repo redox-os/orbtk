@@ -141,7 +141,7 @@ impl System<Tree> for StateSystem {
         }
 
         let state_context = backend.state_context();
-        let mut context = Context::new(tree.root, ecm, tree, &state_context.theme);
+        let mut context = Context::new(tree.root, ecm, tree, &state_context.event_queue, &state_context.theme);
         
 
         for node in tree.into_iter() {
@@ -191,7 +191,7 @@ impl System<Tree> for PostLayoutStateSystem {
 
         let mut backend = self.backend.borrow_mut();
         let state_context = backend.state_context();
-        let mut context = Context::new(tree.root, ecm, tree, &state_context.theme);
+        let mut context = Context::new(tree.root, ecm, tree, &state_context.event_queue, &state_context.theme);
 
         for (node, state) in &*self.states.borrow() {
             context.entity = *node;
