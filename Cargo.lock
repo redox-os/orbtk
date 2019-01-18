@@ -396,7 +396,7 @@ dependencies = [
 [[package]]
 name = "orbgl"
 version = "0.1.0"
-source = "git+https://gitlab.redox-os.org/redox-os/orbgl.git#ae7c4679fc37457f843c1c1446fcb7e55f457857"
+source = "git+https://gitlab.redox-os.org/redox-os/orbgl.git?rev=ae7c4679fc37457f843c1c1446fcb7e55f457857#ae7c4679fc37457f843c1c1446fcb7e55f457857"
 dependencies = [
  "orbclient 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -420,7 +420,7 @@ dependencies = [
  "lazy_static 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbclient 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbfont 0.1.9 (git+https://gitlab.redox-os.org/redox-os/orbfont.git)",
- "orbgl 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
+ "orbgl 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git?rev=ae7c4679fc37457f843c1c1446fcb7e55f457857)",
  "orbimage 0.1.16 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -795,7 +795,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum num_cpus 1.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "5a69d464bdc213aaaff628444e99578ede64e9c854025aa43b9796530afa9238"
 "checksum orbclient 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)" = "0a35fa1b5d90c19bc174dd4b392e29e8eecf6cf794a7626d9b115b1f40237526"
 "checksum orbfont 0.1.9 (git+https://gitlab.redox-os.org/redox-os/orbfont.git)" = "<none>"
-"checksum orbgl 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)" = "<none>"
+"checksum orbgl 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git?rev=ae7c4679fc37457f843c1c1446fcb7e55f457857)" = "<none>"
 "checksum orbimage 0.1.16 (registry+https://github.com/rust-lang/crates.io-index)" = "4ba0f4046c0c2c3325a87055396d19929122095366d8da2292fbda6347977ce1"
 "checksum ordered-float 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "2f0015e9e8e28ee20c581cfbfe47c650cedeb9ed0721090e0b7ebb10b9cdbcc2"
 "checksum phf 0.7.23 (registry+https://github.com/rust-lang/crates.io-index)" = "cec29da322b242f4c3098852c77a0ca261c9c01b806cae85a5572a1eb94db9a6"

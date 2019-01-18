@@ -28,4 +28,4 @@ dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }
 orbclient = "0.3.18"
 orbfont = { git = "https://gitlab.redox-os.org/redox-os/orbfont.git" }
 orbimage = "0.1.16"
-orbgl = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git"}
+orbgl = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git", rev = "ae7c4679fc37457f843c1c1446fcb7e55f457857" }
