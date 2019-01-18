@@ -1,6 +1,6 @@
 use std::cell::{Cell, RefCell};
 
-use dces::{Entity, EntityComponentManager};
+use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
     enums::Alignment,

@@ -8,7 +8,7 @@ extern crate lazy_static;
 
 pub use crate::application::*;
 pub use crate::backend::*;
-pub use crate::enums::*;
+pub use crate::enums::{Alignment, ParentType, Placement, ScrollMode};
 pub use crate::event::*;
 pub use crate::layout::*;
 pub use crate::render_object::*;

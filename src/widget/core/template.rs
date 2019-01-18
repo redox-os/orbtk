@@ -2,7 +2,7 @@ use std::{any::TypeId,
 collections::HashMap,
 rc::Rc,};
 
-use dces::{Component, ComponentBox};
+use dces::prelude::{Component, ComponentBox};
 
 
 use crate::{enums::ParentType,

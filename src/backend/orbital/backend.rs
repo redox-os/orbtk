@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
 
-use dces::World;
+use dces::prelude::World;
 
 use crate::application::Tree;
 use crate::backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext};

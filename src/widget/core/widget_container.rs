@@ -1,4 +1,4 @@
-use dces::{Component, Entity, EntityComponentManager, NotFound};
+use dces::prelude::{Component, Entity, EntityComponentManager, NotFound};
 
 /// The `WidgetContainer` wraps the entity of a widget and provides access to its propeties, its children properties and its parent properties.
 pub struct WidgetContainer<'a> {

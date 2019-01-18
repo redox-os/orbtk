@@ -7,7 +7,7 @@ use std::{
     rc::Rc,
 };
 
-use dces::World;
+use dces::prelude::World;
 use orbclient::Color;
 
 use crate::{

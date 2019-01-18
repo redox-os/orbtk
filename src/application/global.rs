@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use dces::Entity;
+use dces::prelude::Entity;
 
 #[derive(Default)]
 /// The `Global` struct is used to define global `properties` that could be accsed application width.

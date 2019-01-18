@@ -24,7 +24,7 @@ path = "src/lib.rs"
 [dependencies]
 cssparser = "0.17.0"
 lazy_static = "1.2.0"
-dces = "0.1.2"
+dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }
 orbclient = "0.3.18"
 orbfont = { git = "https://gitlab.redox-os.org/redox-os/orbfont.git" }
 orbimage = "0.1.16"

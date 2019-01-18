@@ -4,7 +4,7 @@ use std::{
     rc::Rc,
 };
 
-use dces::{Entity, World};
+use dces::prelude::{Entity, World};
 
 use crate::{
     application::{Application, Tree},
