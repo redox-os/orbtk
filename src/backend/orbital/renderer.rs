@@ -6,7 +6,7 @@ use orbfont::Font;
 
 use crate::backend::Renderer;
 use crate::properties::{Bounds, Point};
-use crate::theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, ROBOTO_REGULAR_FONT};
+use crate::styling::fonts::*;
 
 pub struct OrbFontRenderer {
     pub fonts: HashMap<&'static str, Font>,

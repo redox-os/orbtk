@@ -1,7 +1,8 @@
 use crate::{
     enums::ParentType,
     properties::{FontIcon, Label, Selected},
-    theme::{material_font_icons, Selector},
+    styling::vector_graphics::material_font_icons,
+    theme::Selector,
     widget::{
         Center, Container, FontIconBlock, Row, SharedProperty, Spacer, Template, TextBlock, Widget,
     },
