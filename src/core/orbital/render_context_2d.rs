@@ -4,7 +4,7 @@ use std::sync::Arc;
 use orbfont::Font;
 
 use crate::{
-    theme::{material_font_icons::MATERIAL_ICONS_REGULAR_FONT, ROBOTO_REGULAR_FONT},
+    styling::{fonts::{MATERIAL_ICONS_REGULAR_FONT, ROBOTO_REGULAR_FONT}},
 };
 
 pub struct OrbFontRenderer {

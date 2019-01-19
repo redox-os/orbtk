@@ -33,10 +33,9 @@ pub struct Window {
 }
 
 impl Window {
-    /// Executes the given window until quit is requested.
+    /// Executes the given window unitl quit is requested.
     pub fn run(&mut self) {
-        self.backend_runner
-            .run(self.update.clone(), self.running.clone());
+        self.backend_runner.run(self.update.clone(), self.running.clone());
     }
 }
 
@@ -91,8 +90,7 @@ impl<'a> WindowBuilder<'a> {
 
     /// Creates the window with the given properties and builds its widget tree.
     pub fn build(self) {
-        let (mut runner, backend) =
-            target_backend(&self.title, self.bounds, self.resizable, self.theme);
+        let (mut runner, backend) = target_backend(&self.title, self.bounds, self.resizable, self.theme);
         let mut world = World::from_container(Tree::default());
         let shapes: Rc<RefCell<BTreeMap<Entity, Box<dyn UpdateableShape>>>> =
             Rc::new(RefCell::new(BTreeMap::new()));
@@ -113,7 +111,7 @@ impl<'a> WindowBuilder<'a> {
             let window = world
                 .create_entity()
                 .with(Global::default())
-                .with(self.bounds)
+                .with(Bounds::new(0, 0, self.bounds.width, self.bounds.height))
                 .with(Point::default())
                 .with(Selector::from("window"))
                 .build();
@@ -220,25 +218,13 @@ fn build_tree(
         debug_flag: &Rc<Cell<bool>>,
         depth: usize,
     ) -> Entity {
-<<<<<<< HEAD
-=======
-        // register window as entity with global properties
-        if world.entity_container().is_empty() {
-            let root = world
-                .create_entity()
-                .with(Global::default())
-                .with(Bounds::default())
-                .with(Point::default())
-                .build();
-
-            layouts.borrow_mut().insert(root, Box::new(RootLayout));
-        }
-
->>>>>>> master
         let mut template = template;
 
         let entity = {
-            let mut entity_builder = world.create_entity();
+            let mut entity_builder = world
+                .create_entity()
+                .with(Bounds::default())
+                .with(Point::default());
 
             // normal properties
             for (_, value) in template.properties.drain() {
@@ -286,7 +272,7 @@ fn build_tree(
             entity
         };
 
-        if debug_flag.get() {
+       if debug_flag.get() {
             println!(
                 "{}{} (id = {}, children_len = {})",
                 "| ".repeat(depth),
@@ -302,40 +288,14 @@ fn build_tree(
         }
 
         for child in template.children.drain(0..) {
-<<<<<<< HEAD
-            let child = expand(world, shapes, layouts, handlers, states, child, debug_flag);
-=======
-            let child = expand(
-                world,
-                render_objects,
-                layouts,
-                handlers,
-                states,
-                child,
-                debug_flag,
-                depth + 1,
-            );
->>>>>>> master
+            let child = expand(world, shapes, layouts, handlers, states, child, debug_flag, depth + 1,);
             let _result = world.entity_container().append_child(entity, child);
         }
 
         entity
     }
 
-<<<<<<< HEAD
-    expand(world, shapes, layouts, handlers, states, root, debug_flag);
-=======
-    expand(
-        world,
-        render_objects,
-        layouts,
-        handlers,
-        states,
-        root,
-        debug_flag,
-        0,
-    );
->>>>>>> master
+    expand(world, shapes, layouts, handlers, states, root, debug_flag, 0);
 
     if debug_flag.get() {
         println!("\n------  End build tree  ------ ");

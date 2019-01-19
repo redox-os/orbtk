@@ -7,7 +7,7 @@ use crate::{
     event::EventHandler,
     layout::{Layout, RootLayout},
     properties::{Bounds, Point},
-    render_object::RenderObject,
+    theme::UpdateableShape,
 };
 
 use super::{SharedProperty, State};

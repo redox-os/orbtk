@@ -15,29 +15,16 @@ use orbgl::prelude::{Canvas, Color, FramebufferSurface};
 
 use dces::prelude::World;
 
-<<<<<<< HEAD:src/core/orbital/backend.rs
 use crate::{
     application::Tree,
     core::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext},
     event::{
         EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
-        SystemEvent,
+        SystemEvent, WindowEvent,
     },
     properties::{Bounds, Point},
     theme::Theme,
 };
-=======
-use crate::application::Tree;
-use crate::backend::{
-    Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext,
-};
-use crate::event::{
-    EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
-    SystemEvent, WindowEvent,
-};
-use crate::properties::{Bounds, Point};
-use crate::theme::Theme;
->>>>>>> master:src/backend/orbital/backend.rs
 
 /// Implemenation of the OrbClient based backend.
 pub struct OrbitalBackend {
@@ -249,13 +236,10 @@ impl Backend for OrbitalBackend {
 
     fn state_context(&mut self) -> StateContext<'_> {
         StateContext { theme: &self.theme, event_queue: &self.event_queue }
-<<<<<<< HEAD:src/core/orbital/backend.rs
     }
 
     fn flip(&mut self) -> bool {
         self.sync()
-=======
->>>>>>> master:src/backend/orbital/backend.rs
     }
 }
 

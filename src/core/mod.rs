@@ -23,7 +23,7 @@ pub trait Backend {
 /// This trait is used to create a backend runner.
 pub trait BackendRunner {
     fn world(&mut self, world: World<Tree>);
-    fn run(&mut self, update: Rc<Cell<bool>>);
+    fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>);
 }
 
 /// Helper trait to meassure the font size of the given `text`.
