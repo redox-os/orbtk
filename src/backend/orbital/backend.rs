@@ -190,6 +190,7 @@ impl Backend for OrbitalBackend {
         RenderContext {
             renderer: &mut self.inner,
             theme: &self.theme,
+            event_queue: &self.event_queue
         }
     }
 
@@ -207,7 +208,7 @@ impl Backend for OrbitalBackend {
     }
 
     fn state_context(&mut self) -> StateContext<'_> {
-        StateContext { theme: &self.theme }
+        StateContext { theme: &self.theme, event_queue: &self.event_queue }
     }
 }
 

@@ -94,7 +94,7 @@ impl System<Tree> for RenderSystem {
             if let Some(render_object) = self.render_objects.borrow().get(&node) {
                 render_object.render(
                     render_context.renderer,
-                    &mut Context::new(node, ecm, tree, &render_context.theme),
+                    &mut Context::new(node, ecm, tree, &render_context.event_queue, &render_context.theme),
                     &global_position,
                 );
             }
