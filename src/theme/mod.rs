@@ -15,13 +15,14 @@ pub use self::selector::{Selector, SelectorRelation};
 pub use self::style::Style;
 
 mod cell;
-pub mod material_font_icons;
+
 mod selector;
 mod style;
 
-pub static DEFAULT_THEME_CSS: &'static str = include_str!("dark.css");
-pub static LIGHT_THEME_EXTENSION_CSS: &'static str = include_str!("light.css");
-pub static ROBOTO_REGULAR_FONT: &'static [u8; 145348] = include_bytes!("Roboto-Regular.ttf");
+use crate::{
+    styling::theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS}
+};
+
 
 lazy_static! {
     static ref DEFAULT_THEME: Arc<Theme> = {
