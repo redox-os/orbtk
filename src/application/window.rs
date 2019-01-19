@@ -35,7 +35,8 @@ pub struct Window {
 impl Window {
     /// Executes the given window until quit is requested.
     pub fn run(&mut self) {
-        self.backend_runner.run(self.update.clone(), self.running.clone());
+        self.backend_runner
+            .run(self.update.clone(), self.running.clone());
     }
 }
 
@@ -90,7 +91,8 @@ impl<'a> WindowBuilder<'a> {
 
     /// Creates the window with the given properties and builds its widget tree.
     pub fn build(self) {
-        let (mut runner, backend) = target_backend(&self.title, self.bounds, self.resizable, self.theme);
+        let (mut runner, backend) =
+            target_backend(&self.title, self.bounds, self.resizable, self.theme);
         let mut world = World::from_container(Tree::default());
         let render_objects = Rc::new(RefCell::new(BTreeMap::new()));
         let layouts = Rc::new(RefCell::new(BTreeMap::new()));
@@ -209,18 +211,13 @@ fn build_tree(
                 .with(Point::default())
                 .build();
 
-            layouts
-                .borrow_mut()
-                .insert(root, Box::new(RootLayout));
+            layouts.borrow_mut().insert(root, Box::new(RootLayout));
         }
 
         let mut template = template;
 
         let entity = {
-            let mut entity_builder = world
-                .create_entity()
-                .with(Bounds::default())
-                .with(Point::default());
+            let mut entity_builder = world.create_entity();
 
             // normal properties
             for (_, value) in template.properties.drain() {
@@ -247,9 +244,7 @@ fn build_tree(
                 render_objects.borrow_mut().insert(entity, render_object);
             }
 
-            layouts
-                .borrow_mut()
-                .insert(entity, template.layout);
+            layouts.borrow_mut().insert(entity, template.layout);
 
             let widget_handlers = template.event_handlers;
 
@@ -310,7 +305,7 @@ fn build_tree(
         states,
         root,
         debug_flag,
-        0
+        0,
     );
 
     if debug_flag.get() {

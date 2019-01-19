@@ -10,3 +10,9 @@ pub enum Visibility {
     /// The widget will not be displayed but it doesen't takes space in the layout.
     Collapsed,
 }
+
+impl Default for Visibility {
+    fn default() -> Visibility {
+        Visibility::Visible
+    }
+}
