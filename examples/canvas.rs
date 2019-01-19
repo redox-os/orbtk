@@ -89,8 +89,8 @@ fn main() {
     let mut application = Application::default();
     application
         .create_window()
-        .with_bounds(Bounds::new(0, 0, 800, 600))
-        .with_title("OrbTk - Canvas example")
+        .with_bounds(Bounds::new(100, 100, 800, 600))
+        .with_title("OrbTk - canvas example")
         .with_root(MainView::create())
         .build();
     application.run();
