@@ -21,6 +21,7 @@ use crate::{
 pub struct RenderContext<'a> {
     pub renderer: &'a mut dyn Renderer,
     pub theme: &'a Theme,
+    pub event_queue: &'a RefCell<EventQueue>,
 }
 
 /// Is used to provides data from the `Backend` to the `LayoutSystem`.
@@ -32,6 +33,7 @@ pub struct LayoutContext<'a> {
 /// Is used to provides data from the `Backend` to the `StateSystem` and `PostLayoutStateSystem`.
 pub struct StateContext<'a> {
     pub theme: &'a Theme,
+    pub event_queue: &'a RefCell<EventQueue>,
 }
 
 /// Is used to provides data from the `Backend` to the `EventSystem`.
