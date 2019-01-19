@@ -109,6 +109,7 @@ fn main() {
         .with_bounds(Bounds::new(100, 100, 420, 730))
         .with_title("OrbTk - widgets example")
         .with_root(MainView::create())
+        .with_resizable(true)
         .with_debug_flag(false)
         .build();
     application.run();
