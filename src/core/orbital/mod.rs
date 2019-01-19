@@ -4,7 +4,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
 
-use orbclient::Window as OrbWindow;
+use orbclient::{Window as OrbWindow, WindowFlag};
 
 use self::backend::{OrbitalBackend, OrbitalBackendRunner};
 pub use self::render_context_2d::{FONT_RENDERER};
@@ -18,11 +18,20 @@ mod render_context_2d;
 pub fn target_backend(
     title: &str,
     bounds: Bounds,
+    resizable: bool,
     theme: Theme,
 ) -> (Box<OrbitalBackendRunner>, Rc<RefCell<dyn Backend>>) {
+    let flags = {
+        if resizable {
+            vec![WindowFlag::Resizable]
+        } else {
+            vec![]
+        }
+    };
+
     let backend = Rc::new(RefCell::new(OrbitalBackend::new(
         theme,
-        OrbWindow::new_flags(bounds.x, bounds.y, bounds.width, bounds.height, title, &[]).unwrap(),
+        OrbWindow::new_flags(bounds.x, bounds.y, bounds.width, bounds.height, title, &flags).unwrap(),
     )));
 
     let backend_runner = Box::new(OrbitalBackendRunner {

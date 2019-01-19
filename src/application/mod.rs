@@ -30,6 +30,7 @@ impl Application {
             title: String::from(""),
             theme: Theme::new(),
             root: None,
+            resizable: false,
             debug_flag: false,
         }
     }

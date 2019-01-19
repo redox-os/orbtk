@@ -33,7 +33,6 @@ impl System<Tree> for RenderSystem {
 
         let mut backend = self.backend.borrow_mut();
 
-        let parents = tree.parent.clone();
         let mut current_hidden_parent = None;
 
         let mut offsets = BTreeMap::new();
@@ -57,14 +56,16 @@ impl System<Tree> for RenderSystem {
                     global_position = Point::new(offset.0, offset.1);
                 }
 
-                // Hide all children of a hidden parent
-                if let Some(parent) = current_hidden_parent {
-                    if parent == parents[&node] {
+               if let Some(parent) = current_hidden_parent {
+                if &parent == &tree.parent[&node] {
+                    if tree.children[&node].len() > 0 {
                         current_hidden_parent = Some(node);
-                        continue;
-                    } else {
-                        current_hidden_parent = None;
                     }
+
+                    continue;
+                } else {
+                    current_hidden_parent = None;
+                }
                 }
 
                 // hide hidden widget

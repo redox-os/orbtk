@@ -7,12 +7,14 @@ pub use self::event_queue::*;
 pub use self::key::*;
 pub use self::mouse::*;
 pub use self::system::*;
+pub use self::window::*;
 
 mod event_handler;
 mod event_queue;
 mod key;
 mod mouse;
 mod system;
+mod window;
 
 /// Defines the strategy a event moves through the tree.
 #[derive(PartialEq)]

@@ -12,7 +12,7 @@ use crate::{
     core::Backend,
     event::{
         check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
-        MouseUpEvent,
+        MouseUpEvent, WindowEvent, SystemEvent,
     },
     properties::{Enabled, Focused, Pressed, Selected},
     widget::WidgetContainer,
@@ -23,6 +23,7 @@ pub struct EventSystem {
     pub backend: Rc<RefCell<dyn Backend>>,
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub update: Rc<Cell<bool>>,
+    pub running: Rc<Cell<bool>>,
 }
 
 /// The `EventSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets.
@@ -44,6 +45,22 @@ impl EventSystem {
         new_events: &mut Vec<EventBox>,
     ) {
         let mut matching_nodes = vec![];
+
+        if let Ok(event) = event.downcast_ref::<WindowEvent>() {
+            match event {
+                WindowEvent::Resize { .. } => {
+                    self.update.set(true);
+                }
+            }
+        }
+
+        if let Ok(event) = event.downcast_ref::<SystemEvent>() {
+            match event {
+                SystemEvent::Quit => {
+                    self.running.set(false);
+                }
+            }
+        }
 
         for node in tree.with_start_node(event.source).into_iter() {
             let widget = WidgetContainer::new(node, ecm);

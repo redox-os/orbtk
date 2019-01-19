@@ -19,7 +19,8 @@ pub use crate::event::*;
 pub use crate::layout::*;
 pub use crate::properties::*;
 pub use crate::systems::*;
-pub use crate::theme::{Selector, Theme, DEFAULT_THEME_CSS, LIGHT_THEME_CSS};
+pub use crate::theme::{Selector, Theme};
+pub use crate::styling::theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS};
 pub use crate::widget::*;
 
 pub mod application;
@@ -28,6 +29,7 @@ pub mod enums;
 pub mod event;
 pub mod layout;
 pub mod properties;
+pub mod styling;
 pub mod systems;
 pub mod theme;
 pub mod widget;

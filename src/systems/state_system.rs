@@ -142,7 +142,6 @@ impl System<Tree> for StateSystem {
 
         let state_context = backend.state_context();
         let mut context = Context::new(tree.root, ecm, tree, &state_context.event_queue, &state_context.theme);
-        
 
         for node in tree.into_iter() {
             let mut skip = false;
