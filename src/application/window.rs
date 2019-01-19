@@ -27,13 +27,15 @@ pub struct Window {
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
+    pub running: Rc<Cell<bool>>,
+    pub resizable: bool,
     pub debug_flag: Rc<Cell<bool>>,
 }
 
 impl Window {
     /// Executes the given window until quit is requested.
     pub fn run(&mut self) {
-        self.backend_runner.run(self.update.clone());
+        self.backend_runner.run(self.update.clone(), self.running.clone());
     }
 }
 
@@ -44,6 +46,7 @@ pub struct WindowBuilder<'a> {
     pub title: String,
     pub theme: Theme,
     pub root: Option<Template>,
+    pub resizable: bool,
     pub debug_flag: bool,
 }
 
@@ -72,6 +75,12 @@ impl<'a> WindowBuilder<'a> {
         self
     }
 
+    /// Sets whether the window is resizable or not.
+    pub fn with_resizable(mut self, resizable: bool) -> Self {
+        self.resizable = resizable;
+        self
+    }
+
     /// Used to set the `debug` flag of the window.
     /// If the flag is set to `ture` debug informations will be printed to the console.
     pub fn with_debug_flag(mut self, debug: bool) -> Self {
@@ -81,13 +90,14 @@ impl<'a> WindowBuilder<'a> {
 
     /// Creates the window with the given properties and builds its widget tree.
     pub fn build(self) {
-        let (mut runner, backend) = target_backend(&self.title, self.bounds, self.theme);
+        let (mut runner, backend) = target_backend(&self.title, self.bounds, self.resizable, self.theme);
         let mut world = World::from_container(Tree::default());
         let render_objects = Rc::new(RefCell::new(BTreeMap::new()));
         let layouts = Rc::new(RefCell::new(BTreeMap::new()));
         let handlers = Rc::new(RefCell::new(BTreeMap::new()));
         let states = Rc::new(RefCell::new(BTreeMap::new()));
         let update = Rc::new(Cell::new(true));
+        let running = Rc::new(Cell::new(true));
         let debug_flag = Rc::new(Cell::new(self.debug_flag));
 
         if debug_flag.get() {
@@ -111,6 +121,7 @@ impl<'a> WindowBuilder<'a> {
                 backend: backend.clone(),
                 handlers: handlers.clone(),
                 update: update.clone(),
+                running: running.clone(),
             })
             .with_priority(0)
             .build();
@@ -162,6 +173,8 @@ impl<'a> WindowBuilder<'a> {
             handlers,
             states,
             update,
+            running,
+            resizable: self.resizable,
             debug_flag,
         })
     }

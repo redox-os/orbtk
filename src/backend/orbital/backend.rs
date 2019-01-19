@@ -6,12 +6,14 @@ use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow}
 use dces::prelude::World;
 
 use crate::application::Tree;
-use crate::backend::{Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext};
+use crate::backend::{
+    Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext,
+};
 use crate::event::{
     EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
-    SystemEvent,
+    SystemEvent, WindowEvent,
 };
-use crate::properties::{Point, Bounds};
+use crate::properties::{Bounds, Point};
 use crate::theme::Theme;
 
 /// Implemenation of the OrbClient based backend.
@@ -21,7 +23,6 @@ pub struct OrbitalBackend {
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
     event_queue: RefCell<EventQueue>,
-    running: bool,
 }
 
 impl OrbitalBackend {
@@ -32,7 +33,6 @@ impl OrbitalBackend {
             mouse_buttons: (false, false, false),
             mouse_position: Point::default(),
             event_queue: RefCell::new(EventQueue::default()),
-            running: false,
         }
     }
 }
@@ -105,10 +105,13 @@ impl Backend for OrbitalBackend {
                                 MouseButton::Right
                             }
                         };
-                        self.event_queue.borrow_mut().register_event(MouseUpEvent {
-                            button,
-                            position: self.mouse_position,
-                        }, 0)
+                        self.event_queue.borrow_mut().register_event(
+                            MouseUpEvent {
+                                button,
+                                position: self.mouse_position,
+                            },
+                            0,
+                        )
                     } else {
                         let button = {
                             if button.left {
@@ -119,12 +122,13 @@ impl Backend for OrbitalBackend {
                                 MouseButton::Right
                             }
                         };
-                        self.event_queue
-                            .borrow_mut()
-                            .register_event(MouseDownEvent {
+                        self.event_queue.borrow_mut().register_event(
+                            MouseDownEvent {
                                 button,
                                 position: self.mouse_position,
-                            }, 0);
+                            },
+                            0,
+                        );
                     }
 
                     self.mouse_buttons = (button.left, button.middle, button.right);
@@ -158,7 +162,15 @@ impl Backend for OrbitalBackend {
                     self.event_queue
                         .borrow_mut()
                         .register_event(SystemEvent::Quit, 0);
-                    self.running = false;
+                }
+                orbclient::EventOption::Resize(resize_event) => {
+                    self.event_queue.borrow_mut().register_event(
+                        WindowEvent::Resize {
+                            width: resize_event.width,
+                            height: resize_event.height,
+                        },
+                        0,
+                    );
                 }
                 _ => {}
             }
@@ -195,9 +207,7 @@ impl Backend for OrbitalBackend {
     }
 
     fn state_context(&mut self) -> StateContext<'_> {
-        StateContext {
-            theme: &self.theme,
-        }
+        StateContext { theme: &self.theme }
     }
 }
 
@@ -211,13 +221,10 @@ impl BackendRunner for OrbitalBackendRunner {
     fn world(&mut self, world: World<Tree>) {
         self.world = Some(world);
     }
-    fn run(&mut self, update: Rc<Cell<bool>>) {
-        self.backend.borrow_mut().running = true;
+    fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>) {
 
         loop {
-            let running = self.backend.borrow().running;
-
-            if !running {
+            if !running.get() {
                 break;
             }
 
