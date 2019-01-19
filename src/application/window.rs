@@ -31,7 +31,7 @@ pub struct Window {
 }
 
 impl Window {
-    /// Executes the given window unitl quit is requested.
+    /// Executes the given window until quit is requested.
     pub fn run(&mut self) {
         self.backend_runner.run(self.update.clone());
     }
@@ -185,6 +185,7 @@ fn build_tree(
         states: &Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
         template: Template,
         debug_flag: &Rc<Cell<bool>>,
+        depth: usize,
     ) -> Entity {
         // register window as entity with global properties
         if world.entity_container().is_empty() {
@@ -258,7 +259,8 @@ fn build_tree(
 
         if debug_flag.get() {
             println!(
-                "{} (id = {}, children_lenght = {})",
+                "{}{} (id = {}, children_len = {})",
+                "| ".repeat(depth),
                 template.debug_name,
                 entity,
                 template.children.len()
@@ -279,6 +281,7 @@ fn build_tree(
                 states,
                 child,
                 debug_flag,
+                depth + 1,
             );
             let _result = world.entity_container().append_child(entity, child);
         }
@@ -294,6 +297,7 @@ fn build_tree(
         states,
         root,
         debug_flag,
+        0
     );
 
     if debug_flag.get() {
