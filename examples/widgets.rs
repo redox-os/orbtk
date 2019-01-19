@@ -106,8 +106,8 @@ fn main() {
     let mut application = Application::default();
     application
         .create_window()
-        .with_bounds(Bounds::new(0, 0, 420, 730))
-        .with_title("OrbTk - Widgets example")
+        .with_bounds(Bounds::new(100, 100, 420, 730))
+        .with_title("OrbTk - widgets example")
         .with_root(MainView::create())
         .with_debug_flag(false)
         .build();
