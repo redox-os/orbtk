@@ -1,13 +1,13 @@
-/// The `Padding` is used to define inner widget space.
+/// The `Margin` is used to define space around a widget.
 #[derive(Default, Clone, Copy)]
-pub struct Padding {
+pub struct Margin {
     pub left: i32,
     pub top: i32,
     pub right: i32,
     pub bottom: i32,
 }
 
-impl Padding {
+impl Margin {
     pub fn with(mut self, all: i32) -> Self {
         self.left = all;
         self.top = all;

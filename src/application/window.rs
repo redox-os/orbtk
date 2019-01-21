@@ -13,7 +13,9 @@ use crate::{
     layout::{Layout, RootLayout},
     properties::{Bounds, Point},
     render_object::RenderObject,
-    systems::{EventSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem},
+    systems::{
+        EventSystem, InitSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem,
+    },
     theme::Theme,
     widget::{PropertyResult, State, Template},
     Global,
@@ -118,6 +120,10 @@ impl<'a> WindowBuilder<'a> {
             );
         }
 
+        world.register_init_system(InitSystem {
+            backend: backend.clone(),
+        });
+
         world
             .create_system(EventSystem {
                 backend: backend.clone(),
@@ -133,7 +139,6 @@ impl<'a> WindowBuilder<'a> {
                 backend: backend.clone(),
                 states: states.clone(),
                 update: update.clone(),
-                is_init: Cell::new(false),
             })
             .with_priority(1)
             .build();

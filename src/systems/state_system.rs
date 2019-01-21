@@ -21,33 +21,9 @@ pub struct StateSystem {
     pub backend: Rc<RefCell<dyn Backend>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
-    pub is_init: Cell<bool>,
 }
 
 impl StateSystem {
-    fn init(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-        for node in tree.into_iter() {
-            // Add css id to global id map.
-            let id = if let Ok(selector) = ecm.borrow_component::<Selector>(node) {
-                if let Some(id) = &selector.id {
-                    Some((node, id.clone()))
-                } else {
-                    None
-                }
-            } else {
-                None
-            };
-
-            if let Some((entity, id)) = id {
-                if let Ok(global) = ecm.borrow_mut_component::<Global>(0) {
-                    global.id_map.insert(id, entity);
-                }
-            }
-        }
-
-        self.is_init.set(true);
-    }
-
     fn has_default_flags(&self, widget: &WidgetContainer<'_>) -> bool {
         if let Ok(_) = widget.borrow_property::<Enabled>() {
             return true;
@@ -124,10 +100,6 @@ impl StateSystem {
 
 impl System<Tree> for StateSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-        if !self.is_init.get() {
-            self.init(tree, ecm);
-        }
-
         if !self.update.get() {
             return;
         }

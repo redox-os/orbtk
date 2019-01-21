@@ -469,7 +469,8 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
 
             "border-radius" | "border-width" | "width" | "height" | "min-width" | "min-height"
             | "max-width" | "max-height" | "padding-top" | "padding-right" | "padding-bottom"
-            | "padding-left" | "padding" | "font-size" | "icon-size" | "icon-margin" => {
+            | "padding-left" | "padding" | "margin-top" | "margin-right" | "margin-bottom"
+            | "margin-left" | "margin" | "font-size" | "icon-size" | "icon-margin" => {
                 match input.next()? {
                     Token::Number {
                         int_value: Some(x),
