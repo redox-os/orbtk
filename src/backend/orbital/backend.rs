@@ -8,7 +8,7 @@ use dces::prelude::{Entity, World};
 
 use crate::application::Tree;
 use crate::backend::{
-    Backend, BackendRunner, EventContext, LayoutContext, RenderContext, StateContext,
+    Backend, BackendRunner, EventContext, InitContext, LayoutContext, RenderContext, StateContext,
 };
 use crate::event::{
     EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
@@ -188,6 +188,10 @@ impl Backend for OrbitalBackend {
     fn bounds(&mut self, bounds: &Bounds) {
         self.inner.set_pos(bounds.x, bounds.y);
         self.inner.set_size(bounds.width, bounds.height);
+    }
+
+    fn init_context(&mut self) -> InitContext<'_> {
+        InitContext { theme: &self.theme }
     }
 
     fn render_context(&mut self) -> RenderContext<'_> {

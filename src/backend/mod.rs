@@ -19,6 +19,11 @@ use crate::{
     widget::MessageBox,
 };
 
+/// Provides the context for the `InitSystem`. 
+pub struct InitContext<'a> {
+    pub theme: &'a Theme,
+}
+
 /// Is used to provides data from the `Backend` to the `RenderSystem`.
 pub struct RenderContext<'a> {
     pub renderer: &'a mut dyn Renderer,
@@ -82,6 +87,7 @@ pub trait Backend {
     fn drain_events(&mut self);
     fn bounds(&mut self, bounds: &Bounds);
     fn size(&self) -> (u32, u32);
+    fn init_context(&mut self) -> InitContext<'_>;
     fn render_context(&mut self) -> RenderContext<'_>;
     fn layout_context(&mut self) -> LayoutContext<'_>;
     fn event_context(&mut self) -> EventContext<'_>;
