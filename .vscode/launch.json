@@ -48,7 +48,17 @@
                 "rust"
             ]
         },
-
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug messages",
+            "program": "${workspaceFolder}/target/debug/examples/messages",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build",
+            "sourceLanguages": [
+                "rust"
+            ]
+        },
         {
             "type": "lldb",
             "request": "launch",

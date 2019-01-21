@@ -31,9 +31,18 @@ impl Default for Template {
         let mut properties = HashMap::new();
 
         // register default set of widget properties
-        properties.insert(TypeId::of::<Bounds>(), ComponentBox::new::<Bounds>(Bounds::default()));
-        properties.insert(TypeId::of::<Point>(), ComponentBox::new::<Point>(Point::default()));
-        properties.insert(TypeId::of::<Visibility>(), ComponentBox::new::<Visibility>(Visibility::default()));
+        properties.insert(
+            TypeId::of::<Bounds>(),
+            ComponentBox::new::<Bounds>(Bounds::default()),
+        );
+        properties.insert(
+            TypeId::of::<Point>(),
+            ComponentBox::new::<Point>(Point::default()),
+        );
+        properties.insert(
+            TypeId::of::<Visibility>(),
+            ComponentBox::new::<Visibility>(Visibility::default()),
+        );
 
         Template {
             children: vec![],

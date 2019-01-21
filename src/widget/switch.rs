@@ -3,8 +3,8 @@ use std::rc::Rc;
 use crate::{
     enums::{ParentType, Placement},
     properties::{Label, PrimaryFontIcon, SecondaryFontIcon, Selected},
-    theme::Selector,
     styling::vector_graphics::material_font_icons,
+    theme::Selector,
     widget::{Container, Context, SharedProperty, Stack, State, Template, Widget},
 };
 

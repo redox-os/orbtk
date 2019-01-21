@@ -4,10 +4,11 @@
 
 use std::{
     cell::{Cell, RefCell},
+    collections::BTreeMap,
     rc::Rc,
 };
 
-use dces::prelude::World;
+use dces::prelude::{Entity, World};
 use orbclient::Color;
 
 use crate::{
@@ -15,6 +16,7 @@ use crate::{
     event::EventQueue,
     properties::{Bounds, Point},
     theme::Theme,
+    widget::MessageBox,
 };
 
 /// Is used to provides data from the `Backend` to the `RenderSystem`.
@@ -34,6 +36,7 @@ pub struct LayoutContext<'a> {
 pub struct StateContext<'a> {
     pub theme: &'a Theme,
     pub event_queue: &'a RefCell<EventQueue>,
+    pub messages: &'a RefCell<BTreeMap<Entity, Vec<MessageBox>>>,
 }
 
 /// Is used to provides data from the `Backend` to the `EventSystem`.

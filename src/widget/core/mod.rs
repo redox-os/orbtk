@@ -1,12 +1,14 @@
 use crate::theme::Selector;
 
 pub use self::context::Context;
-pub use self::property::{SharedProperty, PropertyResult};
+pub use self::message::{MessageBox, StringMessage};
+pub use self::property::{PropertyResult, SharedProperty};
 pub use self::state::State;
 pub use self::template::Template;
 pub use self::widget_container::WidgetContainer;
 
 mod context;
+mod message;
 mod property;
 mod state;
 mod template;

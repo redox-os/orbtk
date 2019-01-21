@@ -31,7 +31,15 @@ pub fn target_backend(
 
     let backend = Rc::new(RefCell::new(OrbitalBackend::new(
         theme,
-        OrbWindow::new_flags(bounds.x, bounds.y, bounds.width, bounds.height, title, &flags).unwrap(),
+        OrbWindow::new_flags(
+            bounds.x,
+            bounds.y,
+            bounds.width,
+            bounds.height,
+            title,
+            &flags,
+        )
+        .unwrap(),
     )));
 
     let backend_runner = Box::new(OrbitalBackendRunner {
@@ -56,7 +64,5 @@ impl FontMeasure for OrbFontMeasure {
 }
 
 lazy_static! {
-    pub static ref FONT_MEASURE: Arc<OrbFontMeasure> = {
-        Arc::new(OrbFontMeasure)
-    };
+    pub static ref FONT_MEASURE: Arc<OrbFontMeasure> = { Arc::new(OrbFontMeasure) };
 }

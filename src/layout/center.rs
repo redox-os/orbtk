@@ -1,6 +1,5 @@
 use crate::{
-    properties::Bounds, Constraint, Entity, EntityComponentManager, Layout, LayoutResult,
-    Theme,
+    properties::Bounds, Constraint, Entity, EntityComponentManager, Layout, LayoutResult, Theme,
 };
 
 pub struct CenterLayout;

@@ -12,7 +12,7 @@ use crate::{
     backend::Backend,
     event::{
         check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
-        MouseUpEvent, WindowEvent, SystemEvent,
+        MouseUpEvent, SystemEvent, WindowEvent,
     },
     properties::{Enabled, Focused, Pressed, Selected},
     widget::WidgetContainer,
@@ -45,22 +45,6 @@ impl EventSystem {
         new_events: &mut Vec<EventBox>,
     ) {
         let mut matching_nodes = vec![];
-
-        if let Ok(event) = event.downcast_ref::<WindowEvent>() {
-            match event {
-                WindowEvent::Resize { .. } => {
-                    self.update.set(true);
-                }
-            }
-        }
-
-        if let Ok(event) = event.downcast_ref::<SystemEvent>() {
-            match event {
-                SystemEvent::Quit => {
-                    self.running.set(false);
-                }
-            }
-        }
 
         for node in tree.with_start_node(event.source).into_iter() {
             let widget = WidgetContainer::new(node, ecm);
@@ -217,6 +201,23 @@ impl System<Tree> for EventSystem {
         let mut new_events = vec![];
 
         for event in event_context.event_queue.borrow_mut().into_iter() {
+            if let Ok(event) = event.downcast_ref::<WindowEvent>() {
+                match event {
+                    WindowEvent::Resize { .. } => {
+                        self.update.set(true);
+                    }
+                }
+            }
+
+            if let Ok(event) = event.downcast_ref::<SystemEvent>() {
+                match event {
+                    SystemEvent::Quit => {
+                        self.running.set(false);
+                        return
+                    }
+                }
+            }
+
             match event.strategy {
                 EventStrategy::TopDown => {
                     self.process_top_down_event(&event, tree, ecm, &mut new_events);

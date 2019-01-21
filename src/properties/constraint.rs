@@ -10,22 +10,22 @@ pub struct Constraint {
 }
 
 impl Constraint {
-    pub fn with_min_width(mut self, min_width: i32) -> Self  {
+    pub fn with_min_width(mut self, min_width: i32) -> Self {
         self.min_width = min_width.max(0) as u32;
         self
     }
 
-    pub fn with_max_width(mut self, max_width: i32) -> Self  {
+    pub fn with_max_width(mut self, max_width: i32) -> Self {
         self.max_width = max_width.max(0) as u32;
         self
     }
 
-    pub fn with_min_height(mut self, min_height: i32) -> Self  {
+    pub fn with_min_height(mut self, min_height: i32) -> Self {
         self.min_height = min_height.max(0) as u32;
         self
     }
 
-    pub fn with_max_height(mut self, max_height: i32) -> Self  {
+    pub fn with_max_height(mut self, max_height: i32) -> Self {
         self.max_height = max_height.max(0) as u32;
         self
     }

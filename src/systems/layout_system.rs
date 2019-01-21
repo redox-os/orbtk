@@ -71,14 +71,7 @@ impl System<Tree> for LayoutSystem {
                                 return (0, 0);
                             }
                         }
-                        size = Some(layout_rec(
-                            ecm,
-                            tree,
-                            &child_bc,
-                            child,
-                            theme,
-                            layouts,
-                        ));
+                        size = Some(layout_rec(ecm, tree, &child_bc, child, theme, layouts));
                     }
                 }
             }

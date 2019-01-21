@@ -1,13 +1,13 @@
-use std::cell::RefCell;
+use std::{cell::RefCell, collections::BTreeMap};
 
 use dces::prelude::{Entity, EntityComponentManager};
 
-use super::WidgetContainer;
+use super::{MessageBox, WidgetContainer};
 
 use crate::{
     application::{Global, Tree},
-    theme::Theme,
     event::{Event, EventQueue, EventStrategy},
+    theme::Theme,
 };
 
 /// The `Context` is provides acces for the states to objects they could work with.
@@ -15,6 +15,7 @@ pub struct Context<'a> {
     ecm: &'a mut EntityComponentManager,
     tree: &'a Tree,
     event_queue: &'a RefCell<EventQueue>,
+    messages: Option<&'a RefCell<BTreeMap<Entity, Vec<MessageBox>>>>,
     pub entity: Entity,
     pub theme: &'a Theme,
 }
@@ -27,12 +28,14 @@ impl<'a> Context<'a> {
         tree: &'a Tree,
         event_queue: &'a RefCell<EventQueue>,
         theme: &'a Theme,
+        messages: Option<&'a RefCell<BTreeMap<Entity, Vec<MessageBox>>>>,
     ) -> Self {
         Context {
             entity,
             ecm,
             tree,
             event_queue,
+            messages,
             theme,
         }
     }
@@ -86,13 +89,45 @@ impl<'a> Context<'a> {
         ))
     }
 
+    /// Sends a message to the widget with the given id over the message channel.
+    pub fn send_message(&mut self, target_widget: &str, message: impl Into<MessageBox>) {
+        if let Some(messages) = &self.messages {
+            let mut entity = None;
+            if let Ok(global) = self.ecm.borrow_component::<Global>(0) {
+                if let Some(en) = global.id_map.get(target_widget) {
+                    entity = Some(*en);
+                }
+            }
+
+            if let Some(entity) = entity {
+                if !messages.borrow().contains_key(&entity) {
+                    messages.borrow_mut().insert(entity, vec![]);
+                }
+                messages
+                    .borrow_mut()
+                    .get_mut(&entity)
+                    .unwrap()
+                    .push(message.into());
+            } else {
+                println!(
+                    "Context send_message: widget id {} not found.",
+                    target_widget
+                );
+            }
+        }
+    }
+
     /// Pushs an event to the event queue with the given `strategy`.
     pub fn push_event_width_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
-        self.event_queue.borrow_mut().register_event_width_strategy(event, strategy, self.entity);
+        self.event_queue
+            .borrow_mut()
+            .register_event_width_strategy(event, strategy, self.entity);
     }
 
     /// Pushs an event to the event queue.
     pub fn push_event<E: Event>(&self, event: E) {
-        self.event_queue.borrow_mut().register_event(event, self.entity);
+        self.event_queue
+            .borrow_mut()
+            .register_event(event, self.entity);
     }
 }

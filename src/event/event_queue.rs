@@ -6,7 +6,7 @@ use crate::{Event, EventStrategy};
 
 #[derive(Debug)]
 pub enum EventError {
-    WrongType(TypeId)
+    WrongType(TypeId),
 }
 
 pub struct EventBox {
@@ -36,7 +36,7 @@ impl EventBox {
 
     pub fn downcast<E: Event>(self) -> Result<E, EventError> {
         if self.event_type == TypeId::of::<E>() {
-            return Ok(*self.event.downcast::<E>().unwrap())
+            return Ok(*self.event.downcast::<E>().unwrap());
         }
 
         Err(EventError::WrongType(TypeId::of::<E>()))
@@ -44,7 +44,7 @@ impl EventBox {
 
     pub fn downcast_ref<E: Any>(&self) -> Result<&E, EventError> {
         if self.event_type == TypeId::of::<E>() {
-            return Ok(&*self.event.downcast_ref::<E>().unwrap())
+            return Ok(&*self.event.downcast_ref::<E>().unwrap());
         }
 
         Err(EventError::WrongType(TypeId::of::<E>()))
@@ -61,16 +61,23 @@ impl EventQueue {
         self.event_queue.append(other);
     }
 
-    pub fn register_event_width_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy, source: Entity) {
-        self.event_queue.push(EventBox::new::<E>(event, strategy, source));
+    pub fn register_event_width_strategy<E: Event>(
+        &mut self,
+        event: E,
+        strategy: EventStrategy,
+        source: Entity,
+    ) {
+        self.event_queue
+            .push(EventBox::new::<E>(event, strategy, source));
     }
 
     pub fn register_event<E: Event>(&mut self, event: E, source: Entity) {
-        self.event_queue.push(EventBox::new::<E>(event, EventStrategy::BottomUp, source));
+        self.event_queue
+            .push(EventBox::new::<E>(event, EventStrategy::BottomUp, source));
     }
 
     pub fn dequeue(&mut self) -> Option<EventBox> {
-        if ! self.event_queue.is_empty() {
+        if !self.event_queue.is_empty() {
             return Some(self.event_queue.remove(0));
         }
 
@@ -83,9 +90,7 @@ impl<'a> IntoIterator for &'a mut EventQueue {
     type IntoIter = EventQeueIterator<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
-        EventQeueIterator {
-            event_queue: self,
-        }
+        EventQeueIterator { event_queue: self }
     }
 }
 
