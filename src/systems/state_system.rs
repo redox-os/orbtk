@@ -134,9 +134,19 @@ impl System<Tree> for StateSystem {
 
         let mut backend = self.backend.borrow_mut();
         let state_context = backend.state_context();
-        let mut context = Context::new(tree.root, ecm, tree, &state_context.event_queue, &state_context.theme);
+
+        let mut context = Context::new(
+            tree.root,
+            ecm,
+            tree,
+            &state_context.event_queue,
+            &state_context.theme,
+            Some(&state_context.messages),
+        );
 
         for node in tree.into_iter() {
+            state_context.messages.borrow_mut().clear();
+
             context.entity = node;
             {
                 let mut widget = context.widget();
@@ -153,6 +163,16 @@ impl System<Tree> for StateSystem {
 
             if let Some(state) = self.states.borrow().get(&node) {
                 state.update(&mut context);
+            }
+
+            // Handle messages.
+            {
+                for (entity, messages) in state_context.messages.borrow_mut().iter() {
+                    if let Some(state) = self.states.borrow().get(&entity) {
+                        context.entity = *entity;
+                        state.receive_messages(&mut context, &messages);
+                    }
+                }
             }
         }
     }
@@ -173,12 +193,29 @@ impl System<Tree> for PostLayoutStateSystem {
 
         let mut backend = self.backend.borrow_mut();
         let state_context = backend.state_context();
-        let mut context = Context::new(tree.root, ecm, tree, &state_context.event_queue, &state_context.theme);
+        let mut context = Context::new(
+            tree.root,
+            ecm,
+            tree,
+            &state_context.event_queue,
+            &state_context.theme,
+            None,
+        );
 
         for (node, state) in &*self.states.borrow() {
             context.entity = *node;
 
             state.update_post_layout(&mut context);
+
+            // Handle messages.
+            {
+                for (entity, messages) in state_context.messages.borrow_mut().iter() {
+                    if let Some(state) = self.states.borrow().get(&entity) {
+                        context.entity = *entity;
+                        state.receive_messages(&mut context, &messages);
+                    }
+                }
+            }
         }
     }
 }

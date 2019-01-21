@@ -1,6 +1,6 @@
 use std::{
     cell::{Cell, RefCell},
-    collections::BTreeMap,
+    collections::{BTreeMap, HashSet},
     rc::Rc,
 };
 
@@ -33,7 +33,7 @@ impl System<Tree> for RenderSystem {
         let mut backend = self.backend.borrow_mut();
         let render_context = backend.render_context();
 
-        let mut current_hidden_parent = None;
+        let mut hidden_parents: HashSet<Entity> = HashSet::new();
 
         let mut offsets = BTreeMap::new();
         offsets.insert(tree.root, (0, 0));
@@ -51,16 +51,9 @@ impl System<Tree> for RenderSystem {
             }
 
             // Hide all children of a hidden parent
-            if let Some(parent) = current_hidden_parent {
-                if &parent == &tree.parent[&node] {
-                    if tree.children[&node].len() > 0 {
-                        current_hidden_parent = Some(node);
-                    }
-
-                    continue;
-                } else {
-                    current_hidden_parent = None;
-                }
+            if hidden_parents.contains(&tree.parent[&node]) {
+                hidden_parents.insert(node);
+                continue;
             }
 
             // render debug border for each widget
@@ -86,7 +79,7 @@ impl System<Tree> for RenderSystem {
             // hide hidden widget
             if let Ok(visibility) = ecm.borrow_component::<Visibility>(node) {
                 if *visibility != Visibility::Visible {
-                    current_hidden_parent = Some(node);
+                    hidden_parents.insert(node);
                     continue;
                 }
             }
@@ -94,7 +87,14 @@ impl System<Tree> for RenderSystem {
             if let Some(render_object) = self.render_objects.borrow().get(&node) {
                 render_object.render(
                     render_context.renderer,
-                    &mut Context::new(node, ecm, tree, &render_context.event_queue, &render_context.theme),
+                    &mut Context::new(
+                        node,
+                        ecm,
+                        tree,
+                        &render_context.event_queue,
+                        &render_context.theme,
+                        None,
+                    ),
                     &global_position,
                 );
             }

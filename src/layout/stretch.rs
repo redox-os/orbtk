@@ -5,7 +5,7 @@ use std::cell::Cell;
 use crate::{
     enums::Placement,
     layout::Layout,
-    properties::{Constraint, Bounds, Canvas},
+    properties::{Bounds, Canvas, Constraint},
     theme::{Selector, Theme},
     LayoutResult,
 };

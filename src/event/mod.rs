@@ -26,11 +26,11 @@ pub enum EventStrategy {
     BottomUp,
 
     /// Occures direct.
-    Direct
+    Direct,
 }
 
 /// Used to define an event.
-pub trait Event : Any {
+pub trait Event: Any {
     fn strategy(&self) -> EventStrategy {
         EventStrategy::BottomUp
     }

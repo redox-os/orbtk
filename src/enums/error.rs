@@ -7,5 +7,5 @@ pub enum NotFound {
     Parent(Entity),
 
     /// Child could not be found
-    Child(Entity)
+    Child(Entity),
 }

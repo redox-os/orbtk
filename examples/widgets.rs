@@ -104,6 +104,7 @@ impl Widget for MainView {
 
 fn main() {
     let mut application = Application::default();
+
     application
         .create_window()
         .with_bounds(Bounds::new(100, 100, 420, 730))

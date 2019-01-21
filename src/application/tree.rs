@@ -31,7 +31,11 @@ impl Tree {
 
     /// Appends a `child` entity to the given `parent` entity.
     /// Raised `NotFound` error if the parent is not part of the tree.
-    pub fn append_child(&mut self, parent: Entity, child: Entity) -> Result<Entity, enums::NotFound> {
+    pub fn append_child(
+        &mut self,
+        parent: Entity,
+        child: Entity,
+    ) -> Result<Entity, enums::NotFound> {
         if let Some(p) = self.children.get_mut(&parent) {
             p.push(child);
         } else {
@@ -106,7 +110,7 @@ impl<'a> Iterator for TreeIterator<'a> {
             let mut current_node = path[path.len() - 1];
 
             // if current node has children return the first child
-            if ! self.tree.children[&current_node].is_empty() {
+            if !self.tree.children[&current_node].is_empty() {
                 result = Some(self.tree.children[&current_node][0]);
             } else {
                 // if the node doesn't have kids check its siblings

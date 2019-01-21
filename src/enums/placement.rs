@@ -1,8 +1,7 @@
-
 #[derive(Copy, Clone, PartialEq)]
 pub enum Placement {
     Left,
-    Right
+    Right,
 }
 
 impl Default for Placement {

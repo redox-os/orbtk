@@ -1,5 +1,3 @@
-
-
 use orbtk::*;
 
 struct MainView;
@@ -78,10 +76,7 @@ impl Widget for MainView {
         Template::default()
             .as_parent_type(ParentType::Single)
             .with_debug_name("MainView")
-            .with_child(
-                CanvasWidget::create()
-                    .with_property(canvas),
-            )
+            .with_child(CanvasWidget::create().with_property(canvas))
     }
 }
 

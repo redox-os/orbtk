@@ -305,12 +305,12 @@ impl KeyEventHandler {
     pub fn on_key_up(mut self, handler: KeyHandler) -> Self {
         self.key_up = Some(handler);
         self
-    } 
+    }
 
     pub fn on_key_down(mut self, handler: KeyHandler) -> Self {
         self.key_down = Some(handler);
         self
-    } 
+    }
 }
 
 impl Into<Rc<dyn EventHandler>> for KeyEventHandler {

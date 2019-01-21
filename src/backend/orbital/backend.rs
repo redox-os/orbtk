@@ -1,9 +1,10 @@
 use std::cell::{Cell, RefCell};
+use std::collections::BTreeMap;
 use std::rc::Rc;
 
 use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
 
-use dces::prelude::World;
+use dces::prelude::{Entity, World};
 
 use crate::application::Tree;
 use crate::backend::{
@@ -15,6 +16,7 @@ use crate::event::{
 };
 use crate::properties::{Bounds, Point};
 use crate::theme::Theme;
+use crate::widget::MessageBox;
 
 /// Implemenation of the OrbClient based backend.
 pub struct OrbitalBackend {
@@ -23,6 +25,7 @@ pub struct OrbitalBackend {
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
     event_queue: RefCell<EventQueue>,
+    messages: RefCell<BTreeMap<Entity, Vec<MessageBox>>>,
 }
 
 impl OrbitalBackend {
@@ -33,6 +36,7 @@ impl OrbitalBackend {
             mouse_buttons: (false, false, false),
             mouse_position: Point::default(),
             event_queue: RefCell::new(EventQueue::default()),
+            messages: RefCell::new(BTreeMap::new()),
         }
     }
 }
@@ -190,7 +194,7 @@ impl Backend for OrbitalBackend {
         RenderContext {
             renderer: &mut self.inner,
             theme: &self.theme,
-            event_queue: &self.event_queue
+            event_queue: &self.event_queue,
         }
     }
 
@@ -208,7 +212,11 @@ impl Backend for OrbitalBackend {
     }
 
     fn state_context(&mut self) -> StateContext<'_> {
-        StateContext { theme: &self.theme, event_queue: &self.event_queue }
+        StateContext {
+            theme: &self.theme,
+            event_queue: &self.event_queue,
+            messages: &mut self.messages,
+        }
     }
 }
 
@@ -223,7 +231,6 @@ impl BackendRunner for OrbitalBackendRunner {
         self.world = Some(world);
     }
     fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>) {
-
         loop {
             if !running.get() {
                 break;
