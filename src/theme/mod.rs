@@ -19,10 +19,7 @@ mod cell;
 mod selector;
 mod style;
 
-use crate::{
-    styling::theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS}
-};
-
+use crate::styling::theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS};
 
 lazy_static! {
     static ref DEFAULT_THEME: Arc<Theme> = {
@@ -38,18 +35,132 @@ lazy_static! {
         format!("{}{}", LIGHT_THEME_EXTENSION_CSS, DEFAULT_THEME_CSS);
 }
 
-#[derive(Debug, Default, Clone)]
+/// Used to build a theme, specifying additional details.
+pub struct ThemeBuilder {
+    theme_css: Option<String>,
+    theme_path: Option<String>,
+    theme_extensitons: Vec<String>,
+    theme_exention_paths: Vec<String>,
+}
+
+impl Default for ThemeBuilder {
+    fn default() -> Self {
+        ThemeBuilder {
+            theme_css: None,
+            theme_path: None,
+            theme_extensitons: vec![],
+            theme_exention_paths: vec![],
+        }
+    }
+}
+
+impl ThemeBuilder {
+    /// Inserts a theme css extension.
+    pub fn with_extenstion_css(mut self, extension: impl Into<String>) -> Self {
+        self.theme_extensitons.push(extension.into());
+        self
+    }
+
+    /// Inserts a theme extension by path.
+    pub fn with_extenstion_path(mut self, extension_path: impl Into<String>) -> Self {
+        self.theme_exention_paths.push(extension_path.into());
+        self
+    }
+
+    /// Builds the theme.
+    pub fn build(self) -> Theme {
+        let mut theme = String::new();
+
+        for css_extension in self.theme_extensitons.iter().rev() {
+            theme.push_str(&css_extension);
+        }
+
+        for extension_path in self.theme_exention_paths.iter().rev() {
+            let file = File::open(extension_path).unwrap();
+
+            let mut reader = BufReader::new(file);
+            let mut css = String::new();
+            let _ = reader.read_to_string(&mut css).unwrap();
+
+            theme.push_str(&css);
+        }
+
+        if let Some(css) = self.theme_css {
+            theme.push_str(&css);
+        };
+
+        if let Some(path) = self.theme_path {
+            let file = File::open(path).unwrap();
+
+            let mut reader = BufReader::new(file);
+            let mut css = String::new();
+            let _ = reader.read_to_string(&mut css).unwrap();
+
+            theme.push_str(&css);
+        };
+
+        Theme::parse(&theme)
+    }
+}
+
+/// `Theme` is the represenation of a css styling.
+#[derive(Debug, Clone)]
 pub struct Theme {
     parent: Option<Arc<Theme>>,
     rules: Vec<Rule>,
 }
 
+impl Default for Theme {
+    fn default() -> Theme {
+        Theme::parse(DEFAULT_THEME_CSS)
+    }
+}
+
 impl Theme {
-    pub fn new() -> Self {
-        Theme::parse("")
+    /// Returns the default light theme.
+    pub fn default_light() -> Theme {
+        Theme::parse(&format!(
+            "{}{}",
+            LIGHT_THEME_EXTENSION_CSS, DEFAULT_THEME_CSS
+        ))
     }
 
-    pub fn parse(s: &str) -> Self {
+    /// Creates a new `ThemeBuilder` object with default theme as base.
+    pub fn create() -> ThemeBuilder {
+        ThemeBuilder {
+            theme_css: Some(DEFAULT_THEME_CSS.to_string()),
+            ..Default::default()
+        }
+    }
+
+    /// Creates a new `ThemeBuilder` object with light theme as base.
+    pub fn create_light_theme() -> ThemeBuilder {
+        ThemeBuilder {
+            theme_css: Some(format!(
+                "{}{}",
+                LIGHT_THEME_EXTENSION_CSS, DEFAULT_THEME_CSS
+            )),
+            ..Default::default()
+        }
+    }
+
+    /// Creates a new `ThemeBuilder` with the given css as base.
+    pub fn create_from_css(css: impl Into<String>) -> ThemeBuilder {
+        ThemeBuilder {
+            theme_css: Some(css.into()),
+            ..Default::default()
+        }
+    }
+
+    /// Creates a new `ThemeBuilder` with the given css path as base.
+    pub fn create_from_path(path: impl Into<String>) -> ThemeBuilder {
+        ThemeBuilder {
+            theme_path: Some(path.into()),
+            ..Default::default()
+        }
+    }
+
+    fn parse(s: &str) -> Self {
         Theme {
             parent: Some(DEFAULT_THEME.clone()),
             rules: parse(s),
