@@ -112,7 +112,7 @@ fn main() {
         .with_title("OrbTk - light theme example")
         .with_root(MainView::create())
         .with_debug_flag(false)
-        .with_theme(Theme::parse(&theme::LIGHT_THEME_CSS))
+        .with_theme(Theme::default_light())
         .build();
     application.run();
 }

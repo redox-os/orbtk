@@ -28,7 +28,7 @@ impl Application {
             application: self,
             bounds: Bounds::default(),
             title: String::from(""),
-            theme: Theme::new(),
+            theme: Theme::default(),
             root: None,
             resizable: false,
             debug_flag: false,
