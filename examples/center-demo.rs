@@ -1,27 +1,14 @@
 extern crate orbtk;
 use orbtk::*;
-use std::{cell::Cell, rc::Rc};
+use std::{rc::Rc};
 static CENTER_DEMO_CSS: &'static str = include_str!("center-demo.css");
 
 #[derive(Default)]
-struct MainViewState {
-  counter: Cell<i32>,
-}
+struct MainViewState {}
 
 impl MainViewState {}
 
 impl State for MainViewState {
-  fn update(&self, context: &mut Context<'_>) {
-    if let Ok(button_count_label) = context.widget().borrow_mut_property::<Label>() {
-      button_count_label.0 = format!("Button count: {}", self.counter.get());
-    }
-  }
-}
-
-fn _create_header(text: &str) -> Template {
-  TextBlock::create()
-    .with_property(Label::from(text))
-    .with_property(Selector::from("textblock").with_class("h1"))
 }
 
 struct MainView;
@@ -29,7 +16,6 @@ struct MainView;
 impl Widget for MainView {
   fn create() -> Template {
     let state = Rc::new(MainViewState::default());
-    // let clear_state = state.clone();
     let label = SharedProperty::new(Label::from("prototype"));
 
     Template::default()
