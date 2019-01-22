@@ -76,9 +76,9 @@ impl InitSystem {
             }
 
             constraint.min_width = theme.uint("min-width", selector) as u32;
-            constraint.max_width = theme.uint("max_width-width", selector) as u32;
-            constraint.min_height = theme.uint("min_height-width", selector) as u32;
-            constraint.max_height = theme.uint("min-max_height", selector) as u32;
+            constraint.max_width = theme.uint("max-width", selector) as u32;
+            constraint.min_height = theme.uint("min-height", selector) as u32;
+            constraint.max_height = theme.uint("max-height", selector) as u32;
             constraint.width = theme.uint("width", selector) as u32;
             constraint.height = theme.uint("height", selector) as u32;
         }
