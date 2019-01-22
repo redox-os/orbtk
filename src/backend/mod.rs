@@ -14,8 +14,9 @@ use orbclient::Color;
 use crate::{
     application::Tree,
     event::EventQueue,
-    properties::{Bounds, Point},
+    properties::Bounds,
     theme::Theme,
+    structs::Point,
     widget::MessageBox,
 };
 

@@ -12,11 +12,12 @@ use crate::{
     enums::Visibility,
     layout::Layout,
     properties::{Bounds, Constraint},
+    structs::{Position, Size},
     theme::Theme,
 };
 
 pub enum LayoutResult {
-    Size((u32, u32)),
+    Size((f64, f64)),
     RequestChild(Entity, Constraint),
 }
 
@@ -25,6 +26,7 @@ pub struct LayoutSystem {
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub backend: Rc<RefCell<dyn Backend>>,
     pub update: Rc<Cell<bool>>,
+    pub debug_flag: Rc<Cell<bool>>,
 }
 
 impl System<Tree> for LayoutSystem {
@@ -36,21 +38,15 @@ impl System<Tree> for LayoutSystem {
             entity: Entity,
             theme: &Theme,
             layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-        ) -> (u32, u32) {
-            let mut size: Option<(u32, u32)> = None;
+        ) -> (f64, f64) {
+            let mut size: Option<(f64, f64)> = None;
 
             loop {
                 let layout_result = {
-                    let mut result = LayoutResult::Size((32, 32));
+                    let mut result = LayoutResult::Size((32.0, 32.0));
                     if let Some(layout) = layouts.borrow().get(&entity) {
-                        result = layout.layout(
-                            entity,
-                            ecm,
-                            &constraint,
-                            &tree.children[&entity],
-                            size,
-                            theme,
-                        );
+                        result =
+                            layout.layout(entity, ecm, &constraint, &tree.children[&entity], size);
                     }
 
                     result
@@ -58,9 +54,10 @@ impl System<Tree> for LayoutSystem {
 
                 match layout_result {
                     LayoutResult::Size(size) => {
+                        println!("id: {}, width: {}, height: {}", entity,  size.0, size.1);
                         if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(entity) {
-                            bounds.width = size.0;
-                            bounds.height = size.1;
+                            bounds.set_width(size.0);
+                            bounds.set_height(size.1);
                         }
 
                         return size;
@@ -68,7 +65,7 @@ impl System<Tree> for LayoutSystem {
                     LayoutResult::RequestChild(child, child_bc) => {
                         if let Ok(visibility) = ecm.borrow_component::<Visibility>(entity) {
                             if *visibility == Visibility::Collapsed {
-                                return (0, 0);
+                                return (0.0, 0.0);
                             }
                         }
                         size = Some(layout_rec(ecm, tree, &child_bc, child, theme, layouts));
@@ -81,25 +78,39 @@ impl System<Tree> for LayoutSystem {
             return;
         }
 
+        println!("\n------ Start layout update ------\n");
+
         let root = tree.root;
 
         let mut backend = self.backend.borrow_mut();
         let layout_context = backend.layout_context();
 
+        let constraint = {
+            let bounds = if let Ok(bounds) = ecm.borrow_component::<Bounds>(root) {
+                *bounds
+            } else {
+                Bounds::default()
+            };
+
+            // set windows constraint width and height to bounds width and height
+            if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(root) {
+                constraint.set_width(bounds.width());
+                constraint.set_height(bounds.height());
+                *constraint
+            } else {
+                Constraint::default()
+            }
+        };
+
         layout_rec(
             ecm,
             &tree,
-            &Constraint {
-                min_width: 0,
-                min_height: 0,
-                max_width: layout_context.window_size.0,
-                max_height: layout_context.window_size.1,
-                width: 0,
-                height: 0,
-            },
-            root,
+            &constraint,
+            tree.children[&root][0],
             &layout_context.theme,
             &self.layouts,
         );
+
+        println!("\n------ End layout update   ------\n");
     }
 }

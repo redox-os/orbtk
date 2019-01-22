@@ -2,20 +2,21 @@ use std::rc::Rc;
 
 use crate::{
     event::{Event, EventBox, EventHandler},
-    properties::{Bounds, Point},
+    properties::Bounds,
+    structs::{Point, Position, Size},
     widget::WidgetContainer,
 };
 
 pub fn check_mouse_condition(position: Point, widget: &WidgetContainer<'_>) -> bool {
     if let Ok(bounds) = widget.borrow_property::<Bounds>() {
-        let mut rect = Bounds::new(0, 0, bounds.width, bounds.height);
+        let mut rect = Bounds::new(0.0, 0.0, bounds.width(), bounds.height());
 
         if let Ok(g_pos) = widget.borrow_property::<Point>() {
-            rect.x = g_pos.x;
-            rect.y = g_pos.y;
+            rect.set_x(g_pos.x);
+            rect.set_y(g_pos.y);
         }
 
-        return rect.contains(position);
+        return rect.contains((position.x, position.y));
     }
 
     false

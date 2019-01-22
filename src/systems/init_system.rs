@@ -1,7 +1,4 @@
-use std::{
-    cell::RefCell,
-    rc::Rc,
-};
+use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -9,6 +6,7 @@ use crate::{
     application::{Global, Tree},
     backend::Backend,
     properties::{Constraint, Margin, Padding},
+    structs::{Spacer, Thickness},
     theme::{Selector, Theme},
 };
 
@@ -38,54 +36,94 @@ impl InitSystem {
         }
     }
 
+    // todo: read properties from theme!!!
+
     // Read all initial data from css
     fn read_init_from_theme(&self, node: Entity, ecm: &mut EntityComponentManager, theme: &Theme) {
-        let mut margin = Margin::default();
-        let mut padding = Padding::default();
-        let mut constraint = Constraint::default();
+        let mut margin = Thickness::default();
+        let mut padding = Thickness::default();
+        let (mut width, mut height, mut min_width, mut min_height, mut max_width, mut max_height) =
+            (0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
         // todo: update widget by selector method!!!
 
         if let Ok(selector) = ecm.borrow_component::<Selector>(node) {
-            let pad = theme.uint("padding", selector) as i32;
+            let pad = theme.uint("padding", selector) as f64;
+            padding.left = pad;
+            padding.top = pad;
+            padding.right = pad;
+            padding.bottom = pad;
 
-            if pad > 0 {
-                padding.left = pad;
-                padding.top = pad;
-                padding.right = pad;
-                padding.bottom = pad;
-            } else {
-                padding.left = theme.uint("padding-left", selector) as i32;
-                padding.top = theme.uint("padding-top", selector) as i32;
-                padding.right = theme.uint("padding-right", selector) as i32;
-                padding.bottom = theme.uint("padding-bottom", selector) as i32;
+            let left = theme.uint("padding-left", selector) as f64;;
+            let top = theme.uint("padding-top", selector) as f64;
+            let right = theme.uint("padding-right", selector) as f64;
+            let bottom = theme.uint("padding-bottom", selector) as f64;
+
+            if left > 0.0 {
+                padding.left = left;
             }
 
-            let mar = theme.uint("margin", selector) as i32;
-
-            if mar > 0 {
-                margin.left = mar;
-                margin.top = mar;
-                margin.right = mar;
-                margin.bottom = mar;
-            } else {
-                margin.left = theme.uint("margin-left", selector) as i32;
-                margin.top = theme.uint("margin-top", selector) as i32;
-                margin.right = theme.uint("margin-right", selector) as i32;
-                margin.bottom = theme.uint("margin-bottom", selector) as i32;
+            if top > 0.0 {
+                padding.top = top;
             }
 
-            constraint.min_width = theme.uint("min-width", selector) as u32;
-            constraint.max_width = theme.uint("max_width-width", selector) as u32;
-            constraint.min_height = theme.uint("min_height-width", selector) as u32;
-            constraint.max_height = theme.uint("min-max_height", selector) as u32;
-            constraint.width = theme.uint("width", selector) as u32;
-            constraint.height = theme.uint("height", selector) as u32;
+            if right > 0.0 {
+                padding.right = right;
+            }
+
+            if bottom > 0.0 {
+                padding.bottom = bottom;
+            }
+
+
+            let mar = theme.uint("margin", selector) as f64;
+            margin.left = mar;
+            margin.top = mar;
+            margin.right = mar;
+            margin.bottom = mar;
+
+            let left = theme.uint("margin-left", selector) as f64;;
+            let top = theme.uint("margin-top", selector) as f64;
+            let right = theme.uint("margin-right", selector) as f64;
+            let bottom = theme.uint("margin-bottom", selector) as f64;
+
+            if left > 0.0 {
+                margin.left = left;
+            }
+
+            if top > 0.0 {
+                margin.top = top;
+            }
+
+            if right > 0.0 {
+                margin.right = right;
+            }
+
+            if bottom > 0.0 {
+                margin.bottom = bottom;
+            }
+
+            width = theme.uint("width", selector) as f64;
+            height = theme.uint("height", selector) as f64;
+            min_width = theme.uint("min-width", selector) as f64;
+            max_width = theme.uint("max-width", selector) as f64;
+            min_height = theme.uint("min_height", selector) as f64;
+            max_height = theme.uint("min-max", selector) as f64;
         }
 
-        ecm.register_component(node, padding);
-        ecm.register_component(node, margin);
-        ecm.register_component(node, constraint);
+        if let Ok(w_padding) = ecm.borrow_mut_component::<Padding>(node) {
+            w_padding.set_thickness(padding);
+        }
+
+        if let Ok(w_margin) = ecm.borrow_mut_component::<Margin>(node) {
+            w_margin.set_thickness(margin);
+        }
+
+        if let Ok(w_constraint) = ecm.borrow_mut_component::<Constraint>(node) {
+            w_constraint.set_size(width, height);
+            w_constraint.set_min_size(min_width, min_height);
+            w_constraint.set_max_size(max_width, max_height);
+        }
     }
 }
 

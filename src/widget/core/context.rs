@@ -79,12 +79,12 @@ impl<'a> Context<'a> {
     /// Returns the parent of the current widget.
     /// If the current widget is the root None will be returned.
     pub fn parent_widget(&mut self) -> Option<WidgetContainer<'_>> {
-        if self.tree.parent[&self.entity] == 0 {
+        if self.tree.parent[&self.entity] == None {
             return None;
         }
 
         Some(WidgetContainer::new(
-            self.tree.parent[&self.entity],
+            self.tree.parent[&self.entity].unwrap(),
             &mut self.ecm,
         ))
     }

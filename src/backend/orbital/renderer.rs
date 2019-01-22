@@ -5,7 +5,8 @@ use orbclient::{Color, Renderer as OrbRenderer, Window as OrbWindow};
 use orbfont::Font;
 
 use crate::backend::Renderer;
-use crate::properties::{Bounds, Point};
+use crate::properties::Bounds;
+use crate::structs::{Point, Position, Size};
 use crate::styling::fonts::*;
 
 pub struct OrbFontRenderer {
@@ -28,35 +29,35 @@ impl OrbFontRenderer {
             let line = font.render(text, font_size);
             line.draw_clipped(
                 renderer,
-                global_position.x + bounds.x,
-                global_position.y + bounds.y,
-                global_position.x,
-                parent_bounds.width,
+                (global_position.x + bounds.x()) as i32,
+                (global_position.y + bounds.y()) as i32,
+                global_position.x as i32,
+                parent_bounds.width() as u32,
                 color,
             );
         } else {
             let rect = Bounds::new(
-                global_position.x + bounds.x,
-                global_position.y + bounds.y,
-                bounds.width,
-                bounds.height,
+                global_position.x + bounds.x(),
+                global_position.y + bounds.y(),
+                bounds.width(),
+                bounds.height(),
             );
-            let mut current_rect = Bounds::new(rect.x, rect.y, rect.width, rect.height);
-            let x = rect.x;
+            let mut current_rect = Bounds::new(rect.x(), rect.y(), rect.width(), rect.height());
+            let x = rect.x();
 
             for c in text.chars() {
                 if c == '\n' {
-                    current_rect.x = x;
-                    current_rect.y += 16;
+                    current_rect.set_x(x);
+                    current_rect.set_y(current_rect.y() + 16.0);
                 } else {
-                    if current_rect.x + 8 >= global_position.x
-                        && current_rect.y + 16 >= global_position.y
-                        && current_rect.x + 8 < global_position.x + parent_bounds.width as i32
-                        && current_rect.y < global_position.y + parent_bounds.height as i32
+                    if current_rect.x() + 8.0 >= global_position.x
+                        && current_rect.y() + 16.0 >= global_position.y
+                        && current_rect.x() + 8.0 < global_position.x + parent_bounds.width()
+                        && current_rect.y() < global_position.y + parent_bounds.height()
                     {
-                        renderer.char(current_rect.x, current_rect.y, c, color);
+                        renderer.char(current_rect.x() as i32, current_rect.y() as i32, c, color);
                     }
-                    current_rect.x += 8;
+                    current_rect.set_x(current_rect.x() + 8.0);
                 }
             }
         }
@@ -122,12 +123,12 @@ impl Renderer for OrbWindow {
             }
         };
 
-        let x = (bounds.x + global_position.x).max(parent_bounds.x);
-        let y = (bounds.y + global_position.y).max(parent_bounds.y);
-        let width = (bounds.width as i32).min(parent_bounds.width as i32) as u32;
-        let height = (bounds.height as i32).min(parent_bounds.height as i32) as u32;
+        let x = (bounds.x() + global_position.x).max(parent_bounds.x()) as i32;
+        let y = (bounds.y() + global_position.y).max(parent_bounds.y()) as i32;
+        let width = bounds.width() as u32; //(bounds.width() as i32).min(parent_bounds.width() as i32) as u32;
+        let height = bounds.height() as u32; // (bounds.height() as i32).min(parent_bounds.height() as i32) as u32;
 
-        self.rounded_rect(x, y, width, height, border_radius, true, background);
+        self.rounded_rect(x, y, bounds.width() as u32, height, border_radius, true, background);
 
         if border_width > 0 {
             self.rounded_rect(x, y, width, height, border_radius, false, border_color);
@@ -170,10 +171,10 @@ impl Renderer for OrbWindow {
         parent_bounds: &Bounds,
         global_position: &Point,
     ) {
-        let x = (bounds.x + global_position.x).max(parent_bounds.x);
-        let y = (bounds.y + global_position.y).max(parent_bounds.y);
-        let width = (bounds.width as i32).min(parent_bounds.width as i32) as u32;
-        let height = (bounds.height as i32).min(parent_bounds.height as i32) as u32;
+        let x = (bounds.x() + global_position.x).max(parent_bounds.x()) as i32;
+        let y = (bounds.y() + global_position.y).max(parent_bounds.y()) as i32;
+        let width = (bounds.width() as i32).min(parent_bounds.width() as i32) as u32;
+        let height = (bounds.height() as i32).min(parent_bounds.height() as i32) as u32;
 
         self.image_fast(x, y, width, height, image);
     }

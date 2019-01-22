@@ -10,8 +10,9 @@ use crate::{
     application::{Application, Tree},
     backend::{target_backend, BackendRunner},
     event::EventHandler,
-    layout::{Layout, RootLayout},
-    properties::{Bounds, Point},
+    layout::Layout,
+    structs::{Position, Size},
+    properties::{Bounds, Constraint},
     render_object::RenderObject,
     systems::{
         EventSystem, InitSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem,
@@ -108,6 +109,23 @@ impl<'a> WindowBuilder<'a> {
             println!("------ Start build tree ------\n");
         }
 
+        // register window as entity with global properties
+        if world.entity_container().is_empty() {
+            let window = world
+                .create_entity()
+                .with(Global::default())
+                .with(Bounds::new(0.0, 0.0, self.bounds.width(), self.bounds.height()))
+                .with(Constraint::default())
+                .build();
+
+            if debug_flag.get() {
+                println!(
+                    "Window (id = {}, children_len = 1)",
+                    window,
+                );
+            }
+        }
+
         if let Some(root) = self.root {
             build_tree(
                 root,
@@ -148,6 +166,7 @@ impl<'a> WindowBuilder<'a> {
                 backend: backend.clone(),
                 layouts: layouts.clone(),
                 update: update.clone(),
+                debug_flag: debug_flag.clone(),
             })
             .with_priority(2)
             .build();
@@ -207,18 +226,6 @@ fn build_tree(
         debug_flag: &Rc<Cell<bool>>,
         depth: usize,
     ) -> Entity {
-        // register window as entity with global properties
-        if world.entity_container().is_empty() {
-            let root = world
-                .create_entity()
-                .with(Global::default())
-                .with(Bounds::default())
-                .with(Point::default())
-                .build();
-
-            layouts.borrow_mut().insert(root, Box::new(RootLayout));
-        }
-
         let mut template = template;
 
         let entity = {
@@ -310,7 +317,7 @@ fn build_tree(
         states,
         root,
         debug_flag,
-        0,
+        1,
     );
 
     if debug_flag.get() {

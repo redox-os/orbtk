@@ -5,7 +5,7 @@ use std::cell::Cell;
 use crate::{
     enums::Placement,
     layout::Layout,
-    properties::{Bounds, Canvas, Constraint},
+    properties::{Bounds, Constraint},
     theme::{Selector, Theme},
     LayoutResult,
 };
@@ -93,10 +93,10 @@ impl Layout for StretchLayout {
                 }
             }
 
-            if let Ok(canvas) = ecm.borrow_component::<Canvas>(entity) {
-                self.width.set(canvas.width as u32);
-                self.height.set(canvas.height as u32);
-            }
+//            if let Ok(canvas) = ecm.borrow_component::<Canvas>(entity) {
+//                self.width.set(canvas.width as u32);
+//                self.height.set(canvas.height as u32);
+//            }
 
             if children.is_empty() {
                 return LayoutResult::Size((self.width.get(), self.height.get()));

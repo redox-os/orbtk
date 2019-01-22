@@ -2,7 +2,8 @@ use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
     layout::Layout,
-    properties::Constraint,
+    properties::{Constraint, Bounds},
+    structs::{Position, Size},
     theme::{Selector, Theme},
     LayoutResult,
 };
@@ -20,35 +21,32 @@ impl Layout for RootLayout {
         &self,
         entity: Entity,
         ecm: &mut EntityComponentManager,
-        constraint: &Constraint,
+        parent_constraint: &Constraint,
         children: &[Entity],
-        size: Option<(u32, u32)>,
-        theme: &Theme,
+        size: Option<(f64, f64)>,
     ) -> LayoutResult {
-        if let Some(size) = size {
-            LayoutResult::Size(size)
-        } else {
-            if children.is_empty() {
-                return LayoutResult::Size((constraint.min_width, constraint.min_height));
+        let bounds = {
+            if let Ok(bounds) = ecm.borrow_component::<Bounds>(entity) {
+                *bounds
+            } else {
+                Bounds::default()
+            }
+        };
+
+        if let Some(_size) = size {
+            // Expands the root element always to the size of the window.
+            if let Ok(c_bounds) = ecm.borrow_mut_component::<Bounds>(children[0]) {
+                c_bounds.set_width(bounds.width());
+                c_bounds.set_height(bounds.height());
             }
 
-            let child_constraint = {
-                let child_constraint = Constraint::default();
+            LayoutResult::Size((parent_constraint.width(), parent_constraint.height()))
+        } else {
+            if children.is_empty() {
+                return LayoutResult::Size((parent_constraint.width(), parent_constraint.height()));
+            }
 
-                if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-                    child_constraint
-                        .with_min_width(theme.uint("min-width", selector) as i32)
-                        .with_max_width(theme.uint("max-width", selector) as i32)
-                        .with_width(theme.uint("width", selector) as i32)
-                        .with_min_height(theme.uint("min_height", selector) as i32)
-                        .with_max_height(theme.uint("max_height", selector) as i32)
-                        .with_height(theme.uint("height", selector) as i32)
-                } else {
-                    child_constraint
-                }
-            };
-
-            LayoutResult::RequestChild(children[0], child_constraint)
+            LayoutResult::RequestChild(children[0], *parent_constraint)
         }
     }
 }

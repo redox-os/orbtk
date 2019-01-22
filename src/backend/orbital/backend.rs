@@ -14,7 +14,8 @@ use crate::event::{
     EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
     SystemEvent, WindowEvent,
 };
-use crate::properties::{Bounds, Point};
+use crate::properties::Bounds;
+use crate::structs::{Point, Position, Size};
 use crate::theme::Theme;
 use crate::widget::MessageBox;
 
@@ -90,8 +91,8 @@ impl Backend for OrbitalBackend {
         for event in self.inner.events() {
             match event.to_option() {
                 orbclient::EventOption::Mouse(mouse) => {
-                    self.mouse_position.x = mouse.x;
-                    self.mouse_position.y = mouse.y;
+                    self.mouse_position.x = mouse.x as f64;
+                    self.mouse_position.y = mouse.y as f64;
                     // self.event_queue
                     //     .borrow_mut()
                     //     .register_event(MouseMouveEvent {
@@ -170,8 +171,8 @@ impl Backend for OrbitalBackend {
                 orbclient::EventOption::Resize(resize_event) => {
                     self.event_queue.borrow_mut().register_event(
                         WindowEvent::Resize {
-                            width: resize_event.width,
-                            height: resize_event.height,
+                            width: resize_event.width as f64,
+                            height: resize_event.height as f64,
                         },
                         0,
                     );
@@ -186,8 +187,8 @@ impl Backend for OrbitalBackend {
     }
 
     fn bounds(&mut self, bounds: &Bounds) {
-        self.inner.set_pos(bounds.x, bounds.y);
-        self.inner.set_size(bounds.width, bounds.height);
+        self.inner.set_pos(bounds.x() as i32, bounds.y() as i32);
+        self.inner.set_size(bounds.width() as u32, bounds.height() as u32);
     }
 
     fn init_context(&mut self) -> InitContext<'_> {

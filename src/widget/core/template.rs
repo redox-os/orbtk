@@ -5,8 +5,9 @@ use dces::prelude::{Component, ComponentBox};
 use crate::{
     enums::{ParentType, Visibility},
     event::EventHandler,
-    layout::{Layout, RootLayout},
-    properties::{Bounds, Point},
+    layout::{Layout, GridLayout},
+    properties::Bounds,
+    structs::Point,
     render_object::RenderObject,
 };
 
@@ -29,20 +30,7 @@ pub struct Template {
 impl Default for Template {
     fn default() -> Self {
         let mut properties = HashMap::new();
-
-        // register default set of widget properties
-        properties.insert(
-            TypeId::of::<Bounds>(),
-            ComponentBox::new::<Bounds>(Bounds::default()),
-        );
-        properties.insert(
-            TypeId::of::<Point>(),
-            ComponentBox::new::<Point>(Point::default()),
-        );
-        properties.insert(
-            TypeId::of::<Visibility>(),
-            ComponentBox::new::<Visibility>(Visibility::default()),
-        );
+        properties.insert(TypeId::of::<Bounds>(), ComponentBox::new::<Bounds>(Bounds::default()));
 
         Template {
             children: vec![],
@@ -50,7 +38,7 @@ impl Default for Template {
             state: None,
             event_handlers: vec![],
             render_object: None,
-            layout: Box::new(RootLayout),
+            layout: Box::new(GridLayout::default()),
             properties,
             shared_properties: HashMap::new(),
             debug_name: String::default(),

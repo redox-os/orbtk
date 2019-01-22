@@ -11,6 +11,7 @@ use self::renderer::FONT_RENDERER;
 use crate::backend::{Backend, FontMeasure};
 use crate::properties::Bounds;
 use crate::theme::Theme;
+use crate::structs::{Position, Size};
 
 mod backend;
 mod renderer;
@@ -32,10 +33,10 @@ pub fn target_backend(
     let backend = Rc::new(RefCell::new(OrbitalBackend::new(
         theme,
         OrbWindow::new_flags(
-            bounds.x,
-            bounds.y,
-            bounds.width,
-            bounds.height,
+            bounds.x() as i32,
+            bounds.y() as i32,
+            bounds.width() as u32,
+            bounds.height() as u32,
             title,
             &flags,
         )
