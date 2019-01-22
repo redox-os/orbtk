@@ -1,6 +1,5 @@
 use std::{
-    cell::{Cell, RefCell},
-    collections::BTreeMap,
+    cell::RefCell,
     rc::Rc,
 };
 
@@ -9,11 +8,8 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 use crate::{
     application::{Global, Tree},
     backend::Backend,
-    properties::{Constraint, Enabled, Focused, Margin, Padding, Pressed, Selected},
+    properties::{Constraint, Margin, Padding},
     theme::{Selector, Theme},
-    widget::{
-        add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
-    },
 };
 
 /// This system is used to initializes the widgets.
