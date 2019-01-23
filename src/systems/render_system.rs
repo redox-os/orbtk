@@ -70,7 +70,7 @@ impl System<Tree> for RenderSystem {
                             render_context.theme.color("background", &selector),
                             render_context.theme.uint("border-width", &selector),
                             render_context.theme.color("border-color", &selector),
-                            render_context.theme.float("opcaity", &selector),
+                            render_context.theme.float("opacity", &selector),
                         );
                     }
                 }
