@@ -16,17 +16,17 @@ impl Default for HorizontalAlignment {
 }
 
 impl HorizontalAlignment {
-    pub fn align_x(&self, parent_width: f64, width: f64, margin: Margin) -> f64 {
+    pub fn align_x(&self, available_width: f64, width: f64, margin: Margin) -> f64 {
         match self {
-            HorizontalAlignment::Right => parent_width - width - margin.right(),
-            HorizontalAlignment::Center => (parent_width - width) / 2.0,
+            HorizontalAlignment::Right => available_width - width - margin.right(),
+            HorizontalAlignment::Center => (available_width - width) / 2.0,
             _ => margin.left(),
         }
     }
 
-    pub fn align_width(&self, parent_width: f64, width: f64, margin: Margin) -> f64 {
+    pub fn align_width(&self, available_width: f64, width: f64, margin: Margin) -> f64 {
         match self {
-            HorizontalAlignment::Stretch => parent_width - margin.left() - margin.right(),
+            HorizontalAlignment::Stretch => available_width - margin.left() - margin.right(),
             _ => width,
         }
     }

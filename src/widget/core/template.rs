@@ -6,7 +6,7 @@ use crate::{
     enums::{ParentType, Visibility},
     event::EventHandler,
     layout::{Layout, GridLayout},
-    properties::Bounds,
+    properties::{Bounds, Constraint, Margin, VerticalAlignment, HorizontalAlignment},
     structs::Point,
     render_object::RenderObject,
 };
@@ -14,7 +14,22 @@ use crate::{
 use super::{SharedProperty, State};
 
 /// `Template` is used to define the inner structure of a widget.
+///
 /// Intern it is used to create an entity with components for the widget.
+///
+/// # Properties of each widget
+///
+/// * Bounds
+/// * Constraint
+/// * Margin
+/// * VerticalAlignment
+/// * HorizontalAlignment
+///
+/// # CSS properties of each widget
+///
+/// * margin
+/// * (min | max) width
+/// * (min | max) height
 pub struct Template {
     pub children: Vec<Template>,
     pub parent_type: ParentType,
@@ -31,6 +46,10 @@ impl Default for Template {
     fn default() -> Self {
         let mut properties = HashMap::new();
         properties.insert(TypeId::of::<Bounds>(), ComponentBox::new::<Bounds>(Bounds::default()));
+        properties.insert(TypeId::of::<Constraint>(), ComponentBox::new::<Constraint>(Constraint::default()));
+        properties.insert(TypeId::of::<Margin>(), ComponentBox::new::<Margin>(Margin::default()));
+        properties.insert(TypeId::of::<VerticalAlignment>(), ComponentBox::new::<VerticalAlignment>(VerticalAlignment::default()));
+        properties.insert(TypeId::of::<HorizontalAlignment>(), ComponentBox::new::<HorizontalAlignment>(HorizontalAlignment::default()));
 
         Template {
             children: vec![],
