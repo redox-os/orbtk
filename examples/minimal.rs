@@ -47,15 +47,11 @@ impl Widget for MainView {
                     .with_child(
                         Grid::create()
                             .with_property(Selector::from("testa"))
-                            .with_property(HorizontalAlignment::Center)
-                            .with_property(VerticalAlignment::Center)
                             .with_property(Column(1)),
                     )
                     .with_child(
                         Grid::create()
                             .with_property(Selector::from("testb"))
-                            .with_property(HorizontalAlignment::Center)
-                            .with_property(VerticalAlignment::Center)
                             .with_property(Column(2)),
                     ),
             )
