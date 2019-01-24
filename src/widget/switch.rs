@@ -59,27 +59,27 @@ impl Widget for Switch {
         let selected = SharedProperty::new(Selected(false));
 
         Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_child(
+           .parent_type(ParentType::Single)
+            .child(
                 Container::create()
-                    .with_child(
-                        Stack::create().with_child(
+                    .child(
+                        Stack::create().child(
                             Container::create()
-                                .with_shared_property(selected.clone())
-                                .with_property(Placement::default())
-                                .with_property(
-                                    Selector::from("switchtoggle").with_id("SwitchSwitchToggle"),
+                                .shared_property(selected.clone())
+                                .property(Placement::default())
+                                .property(
+                                    Selector::from("switchtoggle").id("SwitchSwitchToggle"),
                                 ),
                         ),
                     )
-                    .with_property(selector.clone()),
+                    .property(selector.clone()),
             )
-            .with_shared_property(primary_icon)
-            .with_shared_property(secondary_icon)
-            .with_shared_property(label)
-            .with_property(selector)
-            .with_shared_property(selected)
-            .with_state(Rc::new(SwitchState))
-            .with_debug_name("Switch")
+            .shared_property(primary_icon)
+            .shared_property(secondary_icon)
+            .shared_property(label)
+            .property(selector)
+            .shared_property(selected)
+            .state(Rc::new(SwitchState))
+            .debug_name("Switch")
     }
 }

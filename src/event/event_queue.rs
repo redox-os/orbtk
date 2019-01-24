@@ -61,7 +61,7 @@ impl EventQueue {
         self.event_queue.append(other);
     }
 
-    pub fn register_event_width_strategy<E: Event>(
+    pub fn register_event_with_strategy<E: Event>(
         &mut self,
         event: E,
         strategy: EventStrategy,

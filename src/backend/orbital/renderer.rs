@@ -128,7 +128,15 @@ impl Renderer for OrbWindow {
         let width = bounds.width() as u32; //(bounds.width() as i32).min(parent_bounds.width() as i32) as u32;
         let height = bounds.height() as u32; // (bounds.height() as i32).min(parent_bounds.height() as i32) as u32;
 
-        self.rounded_rect(x, y, bounds.width() as u32, height, border_radius, true, background);
+        self.rounded_rect(
+            x,
+            y,
+            bounds.width() as u32,
+            height,
+            border_radius,
+            true,
+            background,
+        );
 
         if border_width > 0 {
             self.rounded_rect(x, y, width, height, border_radius, false, border_color);

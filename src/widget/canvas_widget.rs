@@ -21,9 +21,9 @@ pub struct CanvasWidget;
 impl Widget for CanvasWidget {
     fn create() -> Template {
         Template::default()
-            .with_property(Selector::from("imagewidget"))
-            .with_layout(StretchLayout::default())
-            .with_render_object(ImageRenderObject)
-            .with_debug_name("ImageWidget")
+            .property(Selector::from("imagewidget"))
+            .layout(StretchLayout::default())
+            .render_object(ImageRenderObject)
+            .debug_name("ImageWidget")
     }
 }

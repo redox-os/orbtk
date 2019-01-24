@@ -8,7 +8,7 @@ pub struct Background {
 impl Default for Background {
     fn default() -> Background {
         Background {
-            value: Brush::from("#000000")
+            value: Brush::from("#000000"),
         }
     }
 }

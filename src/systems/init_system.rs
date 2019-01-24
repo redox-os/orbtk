@@ -75,7 +75,6 @@ impl InitSystem {
                 padding.bottom = bottom;
             }
 
-
             let mar = theme.uint("margin", selector) as f64;
             margin.left = mar;
             margin.top = mar;

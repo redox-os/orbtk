@@ -11,9 +11,9 @@ use crate::{
     backend::{target_backend, BackendRunner},
     event::EventHandler,
     layout::Layout,
-    structs::{Position, Size},
     properties::{Bounds, Constraint},
     render_object::RenderObject,
+    structs::{Position, Size},
     systems::{
         EventSystem, InitSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem,
     },
@@ -56,38 +56,38 @@ pub struct WindowBuilder<'a> {
 
 impl<'a> WindowBuilder<'a> {
     /// Used to define the render `bounds` of the window.
-    pub fn with_bounds(mut self, bounds: Bounds) -> Self {
+    pub fn bounds(mut self, bounds: Bounds) -> Self {
         self.bounds = bounds;
         self
     }
 
     /// Used to set the `title` of the window.
-    pub fn with_title<S: Into<String>>(mut self, title: S) -> Self {
+    pub fn title<S: Into<String>>(mut self, title: S) -> Self {
         self.title = title.into();
         self
     }
 
     /// Used to set the css `theme` of the window.
-    pub fn with_theme(mut self, theme: Theme) -> Self {
+    pub fn theme(mut self, theme: Theme) -> Self {
         self.theme = theme;
         self
     }
 
     /// Used to set the `root` template of the window.
-    pub fn with_root(mut self, root: Template) -> Self {
+    pub fn root(mut self, root: Template) -> Self {
         self.root = Some(root);
         self
     }
 
     /// Sets whether the window is resizable or not.
-    pub fn with_resizable(mut self, resizable: bool) -> Self {
+    pub fn resizable(mut self, resizable: bool) -> Self {
         self.resizable = resizable;
         self
     }
 
     /// Used to set the `debug` flag of the window.
     /// If the flag is set to `ture` debug informations will be printed to the console.
-    pub fn with_debug_flag(mut self, debug: bool) -> Self {
+    pub fn debug_flag(mut self, debug: bool) -> Self {
         self.debug_flag = debug;
         self
     }
@@ -114,15 +114,17 @@ impl<'a> WindowBuilder<'a> {
             let window = world
                 .create_entity()
                 .with(Global::default())
-                .with(Bounds::new(0.0, 0.0, self.bounds.width(), self.bounds.height()))
+                .with(Bounds::new(
+                    0.0,
+                    0.0,
+                    self.bounds.width(),
+                    self.bounds.height(),
+                ))
                 .with(Constraint::default())
                 .build();
 
             if debug_flag.get() {
-                println!(
-                    "Window (id = {}, children_len = 1)",
-                    window,
-                );
+                println!("Window (id = {}, children_len = 1)", window,);
             }
         }
 

@@ -25,19 +25,18 @@
 //         let send_state = state.clone();
 
 //         Template::default()
-//             .as_parent_type(ParentType::Single)
-//             .with_debug_name("SenderView")
-//             .with_child(
+//             .debug_name("SenderView")
+//             .child(
 //                 Button::create()
-//                     .with_property(Label::from("Send message"))
-//                     .with_event_handler(MouseEventHandler::default().on_click(Rc::new(
+//                     .property(Label::from("Send message"))
+//                     .event_handler(MouseEventHandler::default().on_click(Rc::new(
 //                         move |_pos: Point| -> bool {
 //                             send_state.send_message.set(true);
 //                             true
 //                         },
 //                     ))),
 //             )
-//             .with_state(state)
+//             .state(state)
 //     }
 // }
 
@@ -58,15 +57,15 @@
 // impl Widget for ReceiverView {
 //     fn create() -> Template {
 //         Template::default()
-//             .as_parent_type(ParentType::Single)
-//             .with_debug_name("ReceiverView")
-//             .with_child(
+//            .parent_type(ParentType::Single)
+//             .debug_name("ReceiverView")
+//             .child(
 //                 Container::create()
-//                     .as_parent_type(ParentType::Single)
-//                     .with_child(SenderView::create()),
+//                    .parent_type(ParentType::Single)
+//                     .child(SenderView::create()),
 //             )
-//             .with_property(Selector::default().with_id("receiver_view"))
-//             .with_state(Rc::new(ReceiverState))
+//             .property(Selector::default().id("receiver_view"))
+//             .state(Rc::new(ReceiverState))
 //     }
 // }
 
@@ -74,14 +73,12 @@
 //     let mut application = Application::default();
 //     application
 //         .create_window()
-//         .with_bounds(Bounds::new(100, 100, 420, 730))
-//         .with_title("OrbTk - minimal example")
-//         .with_root(ReceiverView::create())
-//         .with_debug_flag(true)
+//         .bounds(Bounds::new(100, 100, 420, 730))
+//         .title("OrbTk - minimal example")
+//         .root(ReceiverView::create())
+//         .debug_flag(true)
 //         .build();
 //     application.run();
 // }
 
-fn main() {
-    
-}
+fn main() {}

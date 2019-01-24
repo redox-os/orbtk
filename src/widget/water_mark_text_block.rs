@@ -68,9 +68,9 @@ pub struct WaterMarkTextBlock;
 impl Widget for WaterMarkTextBlock {
     fn create() -> Template {
         TextBlock::create()
-            .with_property(WaterMark::from("Placeholder"))
-            .with_property(Selector::from("watermark"))
-            .with_state(Rc::new(WaterMarkTextBlockState::default()))
-            .with_debug_name("WaterMarkTextBlock")
+            .property(WaterMark::from("Placeholder"))
+            .property(Selector::from("watermark"))
+            .state(Rc::new(WaterMarkTextBlockState::default()))
+            .debug_name("WaterMarkTextBlock")
     }
 }

@@ -15,8 +15,8 @@ pub struct ToggleButton;
 impl Widget for ToggleButton {
     fn create() -> Template {
         Button::create()
-            .with_property(Selected(false))
-            .with_property(Selector::from("togglebutton"))
-            .with_debug_name("ToggleButton")
+            .property(Selected(false))
+            .property(Selector::from("togglebutton"))
+            .debug_name("ToggleButton")
     }
 }

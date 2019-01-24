@@ -188,7 +188,8 @@ impl Backend for OrbitalBackend {
 
     fn bounds(&mut self, bounds: &Bounds) {
         self.inner.set_pos(bounds.x() as i32, bounds.y() as i32);
-        self.inner.set_size(bounds.width() as u32, bounds.height() as u32);
+        self.inner
+            .set_size(bounds.width() as u32, bounds.height() as u32);
     }
 
     fn init_context(&mut self) -> InitContext<'_> {

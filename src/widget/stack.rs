@@ -15,8 +15,8 @@ pub struct Stack;
 impl Widget for Stack {
     fn create() -> Template {
         Template::default()
-            .as_parent_type(ParentType::Multi)
-            .with_layout(StretchLayout::default())
-            .with_debug_name("Stack")
+           .parent_type(ParentType::Multi)
+            .layout(StretchLayout::default())
+            .debug_name("Stack")
     }
 }

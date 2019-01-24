@@ -1,24 +1,21 @@
 //! This module contains all layout objects used in OrbTk. Layout objects are used to define the layout of a widget, how
 //! to place and order its children.
 
-
-
-
 use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
-    properties::{Constraint, VerticalAlignment, Margin, HorizontalAlignment, GridColumn},
+    properties::{Constraint, GridColumn, HorizontalAlignment, Margin, VerticalAlignment},
     systems::LayoutResult,
 };
 
 // --- obsolete ---
 
-//pub use self::fixed_size::FixedSizeLayout;
+
 //pub use self::padding::PaddingLayout;
 //pub use self::scroll::ScrollLayout;
 //pub use self::text_selection_layout::TextSelectionLayout;
 //
-//mod fixed_size;
+
 //mod padding;
 //mod scroll;
 //mod text_selection_layout;
@@ -26,10 +23,11 @@ use crate::{
 // todo: stack layout
 
 // --- obsolete ---
-
+pub use self::fixed_size::FixedSizeLayout;
 pub use self::grid::GridLayout;
 
 mod grid;
+mod fixed_size;
 
 pub trait Layout {
     fn layout(
@@ -52,7 +50,10 @@ pub fn get_vertical_alignment(entity: Entity, ecm: &EntityComponentManager) -> V
     VerticalAlignment::default()
 }
 
-pub fn get_horizontal_alignment(entity: Entity, ecm: &EntityComponentManager) -> HorizontalAlignment {
+pub fn get_horizontal_alignment(
+    entity: Entity,
+    ecm: &EntityComponentManager,
+) -> HorizontalAlignment {
     if let Ok(horizontal_alignment) = ecm.borrow_component::<HorizontalAlignment>(entity) {
         return *horizontal_alignment;
     }

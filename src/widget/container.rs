@@ -22,10 +22,10 @@ pub struct Container;
 impl Widget for Container {
     fn create() -> Template {
         Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_property(Selector::from("container"))
-            .with_render_object(RectangleRenderObject)
-            .with_layout(PaddingLayout)
-            .with_debug_name("Container")
+           .parent_type(ParentType::Single)
+            .property(Selector::from("container"))
+            .render_object(RectangleRenderObject)
+            .layout(PaddingLayout)
+            .debug_name("Container")
     }
 }

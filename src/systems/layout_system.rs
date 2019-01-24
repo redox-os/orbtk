@@ -59,7 +59,7 @@ impl System<Tree> for LayoutSystem {
 
                 match layout_result {
                     LayoutResult::Size(size) => {
-                        println!("id: {}, width: {}, height: {}", entity,  size.0, size.1);
+                        println!("id: {}, width: {}, height: {}", entity, size.0, size.1);
                         if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(entity) {
                             bounds.set_width(size.0);
                             bounds.set_height(size.1);

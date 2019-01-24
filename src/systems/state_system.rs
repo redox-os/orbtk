@@ -157,7 +157,6 @@ pub struct PostLayoutStateSystem {
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
-
 }
 
 impl System<Tree> for PostLayoutStateSystem {

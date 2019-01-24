@@ -10,8 +10,8 @@ use self::backend::{OrbitalBackend, OrbitalBackendRunner};
 use self::renderer::FONT_RENDERER;
 use crate::backend::{Backend, FontMeasure};
 use crate::properties::Bounds;
-use crate::theme::Theme;
 use crate::structs::{Position, Size};
+use crate::theme::Theme;
 
 mod backend;
 mod renderer;
@@ -42,7 +42,6 @@ pub fn target_backend(
         )
         .unwrap(),
     )));
-
 
     let backend_runner = Box::new(OrbitalBackendRunner {
         backend: backend.clone(),

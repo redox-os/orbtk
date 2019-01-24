@@ -21,9 +21,9 @@ pub struct ImageWidget;
 impl Widget for ImageWidget {
     fn create() -> Template {
         Template::default()
-            .with_property(Selector::from("imagewidget"))
-            .with_layout(ImageSizeLayout)
-            .with_render_object(ImageRenderObject)
-            .with_debug_name("ImageWidget")
+            .property(Selector::from("imagewidget"))
+            .layout(ImageSizeLayout)
+            .render_object(ImageRenderObject)
+            .debug_name("ImageWidget")
     }
 }

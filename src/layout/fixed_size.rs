@@ -30,19 +30,37 @@ impl Layout for FixedSizeLayout {
         size: Option<(u32, u32)>,
         theme: &Theme,
     ) -> LayoutResult {
-        if let Some(_size) = size {
-            LayoutResult::Size((self.width.get(), self.height.get()))
-        } else {
-            if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-                self.width.set(theme.uint("width", selector) as u32);
-                self.height.set(theme.uint("height", selector) as u32);
+        if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
+            let icon = if let Ok(icon) = ecm.borrow_component::<FontIcon>(entity) {
+                Some(&icon.0)
+            } else if let Ok(icon) = ecm.borrow_component::<PrimaryFontIcon>(entity) {
+                Some(&icon.0)
+            } else if let Ok(icon) = ecm.borrow_component::<SecondaryFontIcon>(entity) {
+                Some(&icon.0)
+            } else {
+                None
+            };
+
+            if let Some(icon) = icon {
+                let size = {
+                    if icon.is_empty() {
+                        (0, 0)
+                    } else {
+                        let mut size = FONT_MEASURE.measure(
+                            icon,
+                            &theme.string("icon-font-family", selector),
+                            theme.uint("icon-size", selector),
+                        );
+                        if size.0 == 0 {
+                            size = (0, 0);
+                        }
+                        size.0 = size.0 + theme.uint("icon-margin", selector);
+                        size
+                    }
+                };
+
+                return LayoutResult::Size(size);
             }
 
-            if children.is_empty() {
-                return LayoutResult::Size((self.width.get(), self.height.get()));
-            }
-
-            LayoutResult::RequestChild(children[0], *constraint)
         }
-    }
 }

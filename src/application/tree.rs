@@ -18,7 +18,7 @@ pub struct Tree {
 
 impl Tree {
     /// Configure the tree iterator with a start node.
-    pub fn with_start_node(&self, start_node: Entity) -> &Self {
+    pub fn start_node(&self, start_node: Entity) -> &Self {
         self.iterator_start_node.set(start_node);
         self
     }

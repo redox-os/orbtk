@@ -118,10 +118,10 @@ impl<'a> Context<'a> {
     }
 
     /// Pushs an event to the event queue with the given `strategy`.
-    pub fn push_event_width_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
+    pub fn push_event_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
         self.event_queue
             .borrow_mut()
-            .register_event_width_strategy(event, strategy, self.entity);
+            .register_event_with_strategy(event, strategy, self.entity);
     }
 
     /// Pushs an event to the event queue.

@@ -23,10 +23,10 @@ pub struct TextBlock;
 impl Widget for TextBlock {
     fn create() -> Template {
         Template::default()
-            .with_property(Label::from("TextBlock"))
-            .with_property(Selector::from("textblock"))
-            .with_layout(TextSizeLayout)
-            .with_render_object(TextRenderObject)
-            .with_debug_name("TextBlock")
+            .property(Label::from("TextBlock"))
+            .property(Selector::from("textblock"))
+            .layout(TextSizeLayout)
+            .render_object(TextRenderObject)
+            .debug_name("TextBlock")
     }
 }

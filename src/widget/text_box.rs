@@ -195,59 +195,59 @@ impl Widget for TextBox {
         let click_state = state.clone();
 
         Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_property(Focused(false))
-            .with_child(
+           .parent_type(ParentType::Single)
+            .property(Focused(false))
+            .child(
                 Container::create()
-                    .with_child(
+                    .child(
                         Stack::create()
-                            .with_child(
+                            .child(
                                 ScrollViewer::create()
-                                    .with_child(
+                                    .child(
                                         WaterMarkTextBlock::create()
-                                            .with_shared_property(label.clone())
-                                            .with_shared_property(water_mark.clone())
-                                            .with_shared_property(focused.clone())
-                                            .with_property(
-                                                selector.clone().with_id("TextBoxTextBlock"),
+                                            .shared_property(label.clone())
+                                            .shared_property(water_mark.clone())
+                                            .shared_property(focused.clone())
+                                            .property(
+                                                selector.clone().id("TextBoxTextBlock"),
                                             ),
                                     )
-                                    .with_shared_property(offset.clone())
-                                    .with_property(ScrollViewerMode::new(
+                                    .shared_property(offset.clone())
+                                    .property(ScrollViewerMode::new(
                                         ScrollMode::None,
                                         ScrollMode::None,
                                     ))
-                                    .with_property(selector.clone().with_id("TextBoxScrollViewer")),
+                                    .property(selector.clone().id("TextBoxScrollViewer")),
                             )
-                            .with_child(
+                            .child(
                                 Cursor::create()
-                                    .with_shared_property(label.clone())
-                                    .with_shared_property(selection.clone())
-                                    .with_shared_property(offset.clone())
-                                    .with_shared_property(focused.clone())
-                                    .with_property(
-                                        Selector::from("cursor").with_id("TextBoxCursor"),
+                                    .shared_property(label.clone())
+                                    .shared_property(selection.clone())
+                                    .shared_property(offset.clone())
+                                    .shared_property(focused.clone())
+                                    .property(
+                                        Selector::from("cursor").id("TextBoxCursor"),
                                     ),
                             )
-                            .with_event_handler(MouseEventHandler::default().on_mouse_down(
+                            .event_handler(MouseEventHandler::default().on_mouse_down(
                                 Rc::new(move |pos: Point| -> bool {
                                     click_state.click(pos);
                                     false
                                 }),
                             )),
                     )
-                    .with_shared_property(focused.clone())
-                    .with_property(selector.clone()),
+                    .shared_property(focused.clone())
+                    .property(selector.clone()),
             )
-            .with_state(state.clone())
-            .with_debug_name("TextBox")
-            .with_shared_property(label)
-            .with_property(selector)
-            .with_shared_property(water_mark)
-            .with_shared_property(selection)
-            .with_shared_property(offset)
-            .with_shared_property(focused)
-            .with_event_handler(
+            .state(state.clone())
+            .debug_name("TextBox")
+            .shared_property(label)
+            .property(selector)
+            .shared_property(water_mark)
+            .shared_property(selection)
+            .shared_property(offset)
+            .shared_property(focused)
+            .event_handler(
                 KeyEventHandler::default()
                     .on_key_down(Rc::new(move |key: Key| -> bool { state.update_text(key) })),
             )

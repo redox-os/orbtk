@@ -2,31 +2,31 @@
 use super::*;
 
 #[test]
-fn test_with_width() {
+fn test_width() {
     let width = ColumnWidth::Width(64.0);
 
     let builder = ColumnBuilder::new();
-    let column = builder.with_width(width).build();
+    let column = builder.width(width).build();
 
     assert_eq!(column.width, width);
 }
 
 #[test]
-fn test_with_min_width() {
+fn test_min_width() {
     let min_width = 64.0;
 
     let builder = ColumnBuilder::new();
-    let column = builder.with_min_width(min_width).build();
+    let column = builder.min_width(min_width).build();
 
     assert_eq!(column.min_width, min_width);
 }
 
 #[test]
-fn test_with_max_width() {
+fn test_max_width() {
     let max_width = 64.0;
 
     let builder = ColumnBuilder::new();
-    let column = builder.with_max_width(max_width).build();
+    let column = builder.max_width(max_width).build();
 
     assert_eq!(column.max_width, max_width);
 }
@@ -40,10 +40,7 @@ fn test_set_current_width() {
     let max_width = 64.0;
 
     let builder = ColumnBuilder::new();
-    let mut column = builder
-        .with_min_width(min_width)
-        .with_max_width(max_width)
-        .build();
+    let mut column = builder.min_width(min_width).max_width(max_width).build();
 
     column.set_current_width(out_one_width);
     assert_eq!(column.current_width(), min_width);

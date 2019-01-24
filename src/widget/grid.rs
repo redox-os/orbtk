@@ -26,16 +26,17 @@ use crate::{
 /// * `GridLayout` - used to layout the widget.
 pub struct Grid;
 
+
 impl Widget for Grid {
     fn create() -> Template {
         Template::default()
-            .as_parent_type(ParentType::Multi)
-            .with_layout(GridLayout::default())
-            .with_render_object(RectangleRenderObject)
-            .with_property(Background::default())
-            .with_property(Columns::default())
-            .with_property(Rows::default())
-            .with_property(Selector::from("grid"))
-            .with_debug_name("Grid")
+            .parent_type(ParentType::Multi)
+            .layout(GridLayout::default())
+            .render_object(RectangleRenderObject)
+            .property(Background::default())
+            .property(Columns::default())
+            .property(Rows::default())
+            .property(Selector::from("grid"))
+            .debug_name("Grid")
     }
 }

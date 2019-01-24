@@ -22,10 +22,10 @@ pub struct ScrollViewer;
 impl Widget for ScrollViewer {
     fn create() -> Template {
         Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_property(Offset::default())
-            .with_property(ScrollViewerMode::default())
-            .with_layout(ScrollLayout::default())
-            .with_debug_name("ScrollViewer")
+            .parent_type(ParentType::Single)
+            .property(Offset::default())
+            .property(ScrollViewerMode::default())
+            .layout(ScrollLayout::default())
+            .debug_name("ScrollViewer")
     }
 }

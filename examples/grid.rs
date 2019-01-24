@@ -9,50 +9,44 @@ struct MainView;
 impl Widget for MainView {
     fn create() -> Template {
         Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_debug_name("MainView")
-            .with_child(
+            .debug_name("MainView")
+            .child(
                 Grid::create()
-                    .with_property(Selector::from("green"))
-                    .with_property(
+                    .property(Selector::from("green"))
+                    .property(
                         Columns::create()
-                            .with(Column::create().with_width(ColumnWidth::Stretch).build())
-                            .with(Column::create().with_width(ColumnWidth::Auto).build())
-                            .with(
-                                Column::create()
-                                    .with_width(ColumnWidth::Width(50.0))
-                                    .build(),
-                            )
+                            .column(Column::create().width(ColumnWidth::Stretch).build())
+                            .column(Column::create().width(ColumnWidth::Auto).build())
+                            .column(Column::create().width(ColumnWidth::Width(50.0)).build())
                             .build(),
                     )
-                    .with_property(
+                    .property(
                         Rows::create()
-                            .with(Row::create().with_height(RowHeight::Stretch).build())
-                            .with(Row::create().with_height(RowHeight::Stretch).build())
+                            .row(Row::create().height(RowHeight::Stretch).build())
+                            .row(Row::create().height(RowHeight::Stretch).build())
                             .build(),
                     )
-                    .with_child(
+                    .child(
                         Grid::create()
-                            .with_property(Selector::from("blue"))
-                            .with_property(GridColumn(0))
-
+                            .property(Selector::from("blue"))
+                            .property(GridColumn(0)),
                     )
-                    .with_child(
+                    .child(
                         Grid::create()
-                            .with_property(Selector::from("yellow"))
-                            .with_property(GridColumn(1)),
+                            .property(Selector::from("yellow"))
+                            .property(GridColumn(1)),
                     )
-                    .with_child(
+                    .child(
                         Grid::create()
-                            .with_property(Selector::from("red"))
-                            .with_property(GridColumn(2)),
+                            .property(Selector::from("red"))
+                            .property(GridColumn(2)),
                     )
-                    .with_child(
+                    .child(
                         Grid::create()
-                            .with_property(Selector::from("olive"))
-                            .with_property(GridColumn(1))
-                            .with_property(GridRow(1))
-                            .with_property(ColumnSpan(2)),
+                            .property(Selector::from("olive"))
+                            .property(GridColumn(1))
+                            .property(GridRow(1))
+                            .property(ColumnSpan(2)),
                     ),
             )
     }
@@ -62,16 +56,16 @@ fn main() {
     let mut application = Application::default();
     application
         .create_window()
-        .with_bounds(Bounds::new(100.0, 100.0, 420.0, 730.0))
-        .with_title("OrbTk - grid example")
-        .with_root(MainView::create())
-        .with_theme(
+        .bounds(Bounds::new(100.0, 100.0, 420.0, 730.0))
+        .title("OrbTk - grid example")
+        .root(MainView::create())
+        .theme(
             Theme::create()
-                .with_extenstion_path("examples/res/grid.css")
+                .extenstion_path("examples/res/grid.css")
                 .build(),
         )
-        .with_resizable(true)
-        .with_debug_flag(true)
+        .resizable(true)
+        .debug_flag(true)
         .build();
     application.run();
 }

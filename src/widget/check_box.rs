@@ -32,33 +32,33 @@ impl Widget for CheckBox {
         let selector = SharedProperty::new(Selector::from("checkbox"));
 
         Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_child(
+           .parent_type(ParentType::Single)
+            .child(
                 Row::create()
-                    .with_child(
+                    .child(
                         Container::create()
-                            .with_child(
-                                Center::create().with_child(
+                            .child(
+                                Center::create().child(
                                     FontIconBlock::create()
-                                        .with_shared_property(icon.clone())
-                                        .with_shared_property(selector.clone()),
+                                        .shared_property(icon.clone())
+                                        .shared_property(selector.clone()),
                                 ),
                             )
-                            .with_shared_property(selector.clone()),
+                            .shared_property(selector.clone()),
                     )
-                    .with_child(Spacer::create())
-                    .with_child(
-                        Center::create().with_child(
+                    .child(Spacer::create())
+                    .child(
+                        Center::create().child(
                             TextBlock::create()
-                                .with_shared_property(label.clone())
-                                .with_shared_property(selector.clone()),
+                                .shared_property(label.clone())
+                                .shared_property(selector.clone()),
                         ),
                     ),
             )
-            .with_shared_property(icon)
-            .with_shared_property(label)
-            .with_shared_property(selector)
-            .with_property(Selected(false))
-            .with_debug_name("CheckBox")
+            .shared_property(icon)
+            .shared_property(label)
+            .shared_property(selector)
+            .property(Selected(false))
+            .debug_name("CheckBox")
     }
 }

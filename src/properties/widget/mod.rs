@@ -1,6 +1,6 @@
 // Widget related properties.
 
-pub use self::font_icon::FontIcon;
+pub use self::font_icon::{FontIcon, PrimaryFontIcon, SecondaryFontIcon};
 pub use self::label::Label;
 pub use self::text_selection::TextSelection;
 pub use self::water_mark::WaterMark;

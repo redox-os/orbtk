@@ -34,10 +34,10 @@ impl Layout for PaddingLayout {
                     padding.with(pad)
                 } else {
                     padding
-                        .with_left(theme.uint("padding-left", selector) as i32)
-                        .with_top(theme.uint("padding-top", selector) as i32)
-                        .with_right(theme.uint("padding-right", selector) as i32)
-                        .with_bottom(theme.uint("padding-bottom", selector) as i32)
+                        .left(theme.uint("padding-left", selector) as i32)
+                        .top(theme.uint("padding-top", selector) as i32)
+                        .right(theme.uint("padding-right", selector) as i32)
+                        .bottom(theme.uint("padding-bottom", selector) as i32)
                 }
             } else {
                 padding
@@ -91,12 +91,12 @@ impl Layout for PaddingLayout {
             LayoutResult::RequestChild(
                 children[0],
                 Constraint::default()
-                    .with_min_width(constraint.min_width as i32 - (padding.left + padding.right))
-                    .with_max_width(constraint.max_width as i32 - (padding.left + padding.right))
-                    .with_width(constraint.width as i32 - (padding.left + padding.right))
-                    .with_min_height(constraint.min_height as i32 - (padding.top + padding.bottom))
-                    .with_max_height(constraint.max_height as i32 - (padding.top + padding.bottom))
-                    .with_height(constraint.height as i32 - (padding.top + padding.bottom)),
+                    .min_width(constraint.min_width as i32 - (padding.left + padding.right))
+                    .max_width(constraint.max_width as i32 - (padding.left + padding.right))
+                    .width(constraint.width as i32 - (padding.left + padding.right))
+                    .min_height(constraint.min_height as i32 - (padding.top + padding.bottom))
+                    .max_height(constraint.max_height as i32 - (padding.top + padding.bottom))
+                    .height(constraint.height as i32 - (padding.top + padding.bottom)),
             )
         }
     }

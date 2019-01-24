@@ -24,19 +24,19 @@ impl ColumnBuilder {
     }
 
     /// Inserts a new width.
-    pub fn with_width(mut self, width: ColumnWidth) -> Self {
+    pub fn width(mut self, width: ColumnWidth) -> Self {
         self.width = width;
         self
     }
 
     /// Inserts a new min width.
-    pub fn with_min_width(mut self, min_width: f64) -> Self {
+    pub fn min_width(mut self, min_width: f64) -> Self {
         self.min_width = min_width;
         self
     }
 
     /// Inserts a new max width.
-    pub fn with_max_width(mut self, max_width: f64) -> Self {
+    pub fn max_width(mut self, max_width: f64) -> Self {
         self.max_width = max_width;
         self
     }
@@ -119,7 +119,7 @@ impl ColumnsBuilder {
     }
 
     /// Inserts a new column.
-    pub fn with(mut self, column: Column) -> Self {
+    pub fn column(mut self, column: Column) -> Self {
         self.columns.push(column);
         self
     }

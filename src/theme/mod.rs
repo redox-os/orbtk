@@ -56,13 +56,13 @@ impl Default for ThemeBuilder {
 
 impl ThemeBuilder {
     /// Inserts a theme css extension.
-    pub fn with_extenstion_css(mut self, extension: impl Into<String>) -> Self {
+    pub fn extenstion_css(mut self, extension: impl Into<String>) -> Self {
         self.theme_extensitons.push(extension.into());
         self
     }
 
     /// Inserts a theme extension by path.
-    pub fn with_extenstion_path(mut self, extension_path: impl Into<String>) -> Self {
+    pub fn extenstion_path(mut self, extension_path: impl Into<String>) -> Self {
         self.theme_exention_paths.push(extension_path.into());
         self
     }

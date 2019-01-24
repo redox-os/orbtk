@@ -45,12 +45,12 @@ pub struct Cursor;
 impl Widget for Cursor {
     fn create() -> Template {
         Template::default()
-            .with_property(Label::default())
-            .with_property(Selector::from("cursor"))
-            .with_property(TextSelection::default())
-            .with_render_object(RectangleRenderObject)
-            .with_layout(TextSelectionLayout)
-            .with_state(Rc::new(CursorState))
-            .with_debug_name("Cursor")
+            .property(Label::default())
+            .property(Selector::from("cursor"))
+            .property(TextSelection::default())
+            .render_object(RectangleRenderObject)
+            .layout(TextSelectionLayout)
+            .state(Rc::new(CursorState))
+            .debug_name("Cursor")
     }
 }

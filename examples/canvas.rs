@@ -74,9 +74,9 @@
 //         canvas.fill();
 
 //         Template::default()
-//             .as_parent_type(ParentType::Single)
-//             .with_debug_name("MainView")
-//             .with_child(CanvasWidget::create().with_property(canvas))
+//            .parent_type(ParentType::Single)
+//             .debug_name("MainView")
+//             .child(CanvasWidget::create().property(canvas))
 //     }
 // }
 
@@ -84,13 +84,11 @@
 //     let mut application = Application::default();
 //     application
 //         .create_window()
-//         .with_bounds(Bounds::new(100, 100, 800, 600))
-//         .with_title("OrbTk - canvas example")
-//         .with_root(MainView::create())
+//         .bounds(Bounds::new(100, 100, 800, 600))
+//         .title("OrbTk - canvas example")
+//         .root(MainView::create())
 //         .build();
 //     application.run();
 // }
 
-fn main() {
-    
-}
+fn main() {}

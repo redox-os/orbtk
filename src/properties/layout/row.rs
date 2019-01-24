@@ -24,19 +24,19 @@ impl RowBuilder {
     }
 
     /// Inserts a new height.
-    pub fn with_height(mut self, height: RowHeight) -> Self {
+    pub fn height(mut self, height: RowHeight) -> Self {
         self.height = height;
         self
     }
 
     /// Inserts a new min height.
-    pub fn with_min_height(mut self, min_height: f64) -> Self {
+    pub fn min_height(mut self, min_height: f64) -> Self {
         self.min_height = min_height;
         self
     }
 
     /// Inserts a new max height.
-    pub fn with_max_height(mut self, max_height: f64) -> Self {
+    pub fn max_height(mut self, max_height: f64) -> Self {
         self.max_height = max_height;
         self
     }
@@ -118,7 +118,7 @@ impl RowsBuilder {
     }
 
     /// Inserts a new row.
-    pub fn with(mut self, row: Row) -> Self {
+    pub fn row(mut self, row: Row) -> Self {
         self.row_definitions.push(row);
         self
     }

@@ -29,30 +29,30 @@ impl Widget for Button {
         let selector = SharedProperty::new(Selector::from("button"));
 
         Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_child(
+           .parent_type(ParentType::Single)
+            .child(
                 Container::create()
-                    .with_shared_property(selector.clone())
-                    .with_child(
-                        Center::create().with_child(
+                    .shared_property(selector.clone())
+                    .child(
+                        Center::create().child(
                             Row::create()
-                                .with_child(
+                                .child(
                                     FontIconBlock::create()
-                                        .with_shared_property(icon.clone())
-                                        .with_shared_property(selector.clone()),
+                                        .shared_property(icon.clone())
+                                        .shared_property(selector.clone()),
                                 )
-                                .with_child(
+                                .child(
                                     TextBlock::create()
-                                        .with_shared_property(label.clone())
-                                        .with_shared_property(selector.clone()),
+                                        .shared_property(label.clone())
+                                        .shared_property(selector.clone()),
                                 ),
                         ),
                     ),
             )
-            .with_shared_property(label)
-            .with_shared_property(icon)
-            .with_shared_property(selector)
-            .with_property(Pressed(false))
-            .with_debug_name("Button")
+            .shared_property(label)
+            .shared_property(icon)
+            .shared_property(selector)
+            .property(Pressed(false))
+            .debug_name("Button")
     }
 }
