@@ -1,4 +1,4 @@
-/// This struct is used to add bounds constraints to a widget.
+/// This struct is used to add bound constraints to a widget.
 #[derive(Default, Clone, Copy)]
 pub struct Constraint {
     width: f64,
@@ -9,79 +9,95 @@ pub struct Constraint {
     max_height: f64,
 }
 
-// todo: documentation!!!
-
 impl Constraint {
+    /// Gets the width.
     pub fn width(&self) -> f64 {
         self.width
     }
 
+    /// Sets the width.
     pub fn set_width(&mut self, width: f64) {
         self.width = width;
     }
 
+    /// Gets the height.
     pub fn height(&self) -> f64 {
         self.height
     }
 
+    /// Sets the height.
     pub fn set_height(&mut self, height: f64) {
         self.height = height;
     }
 
+    /// Gets the size.
     pub fn size(&self) -> (f64, f64) {
         (self.width, self.height)
     }
 
+    /// Sets the size.
     pub fn set_size(&mut self, width: f64, height: f64) {
         self.width = width;
         self.height = height;
     }
 
+    /// Gets the min width.
     pub fn min_width(&self) -> f64 {
         self.min_width
     }
 
+    /// Sets the min width.
     pub fn set_min_width(&mut self, min_width: f64) {
         self.min_width = min_width;
     }
 
+    /// Gets the min height.
     pub fn min_height(&self) -> f64 {
         self.min_height
     }
 
+    /// Sets the min height.
     pub fn set_min_height(&mut self, min_height: f64) {
         self.min_height = min_height;
     }
 
+    /// Gets the min size.
     pub fn min_size(&self) -> (f64, f64) {
         (self.min_width, self.min_height)
     }
 
+    /// Sets the min size.
     pub fn set_min_size(&mut self, min_width: f64, min_height: f64) {
         self.min_width = min_width;
         self.min_height = min_height;
     }
 
-    fn max_width(&self) -> f64 {
+    /// Gets the maximum width.
+    pub fn max_width(&self) -> f64 {
         self.max_width
     }
 
+    /// Sets the maximum width.
     pub fn set_max_width(&mut self, max_width: f64) {
         self.max_width = max_width;
     }
 
+    /// Gets the maximum height.
     pub fn max_height(&self) -> f64 {
         self.max_height
     }
 
+    /// Sets the maximum height.
     pub fn set_max_height(&mut self, max_height: f64) {
         self.max_height = max_height;
     }
 
+    /// Gets the maximum size.
     pub fn max_size(&self) -> (f64, f64) {
         (self.max_width, self.max_height)
     }
 
+    /// Sets the maximum size.
     pub fn set_max_size(&mut self, max_width: f64, max_height: f64) {
         self.max_width = max_width;
         self.max_height = max_height;

@@ -25,11 +25,17 @@ impl Widget for MainView {
                             )
                             .build(),
                     )
+                    .with_property(
+                        Rows::create()
+                            .with(Row::create().with_height(RowHeight::Stretch).build())
+                            .with(Row::create().with_height(RowHeight::Stretch).build())
+                            .build(),
+                    )
                     .with_child(
                         Grid::create()
                             .with_property(Selector::from("blue"))
                             .with_property(GridColumn(0))
-                            .with_property(ColumnSpan(3)),
+
                     )
                     .with_child(
                         Grid::create()
@@ -40,6 +46,13 @@ impl Widget for MainView {
                         Grid::create()
                             .with_property(Selector::from("red"))
                             .with_property(GridColumn(2)),
+                    )
+                    .with_child(
+                        Grid::create()
+                            .with_property(Selector::from("olive"))
+                            .with_property(GridColumn(1))
+                            .with_property(GridRow(1))
+                            .with_property(ColumnSpan(2)),
                     ),
             )
     }

@@ -1,11 +1,13 @@
 use crate::structs::{Point, Position, Rect, Size};
 
+/// Describes the actual bounds of a widget.
 #[derive(Default, Copy, Clone)]
 pub struct Bounds {
     value: Rect,
 }
 
 impl Bounds {
+    /// Create a new bounds object with the given values.
     pub fn new(x: f64, y: f64, width: f64, height: f64) -> Self {
         Bounds {
             value: Rect::new(x, y, width, height),
@@ -27,7 +29,7 @@ impl Bounds {
         self.contains(p1) && self.contains(p2)
     }
 
-    // Check if this rect intersects another `rect`.
+    /// Check if this rect intersects another `rect`.
     pub fn intersects(&self, rect: &Bounds) -> bool {
         !(rect.x() >= (self.value.x + self.value.width)
             || self.value.x >= (rect.x() + rect.width())

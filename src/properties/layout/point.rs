@@ -3,13 +3,13 @@ use std::ops::{Add, Sub};
 /// This struct represents a non visual point.
 #[derive(Copy, Clone, Debug, Default)]
 pub struct Point {
-    pub x: i32,
-    pub y: i32,
+    pub x: f64,
+    pub y: f64,
 }
 
 impl Point {
     /// Creates a new point.
-    pub fn new(x: i32, y: i32) -> Self {
+    pub fn new(x: f64, y: f64) -> Self {
         Point { x: x, y: y }
     }
 }

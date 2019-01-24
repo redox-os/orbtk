@@ -6,8 +6,6 @@ pub struct Padding {
     value: Thickness,
 }
 
-// todo: tests
-
 impl Spacer for Padding {
     fn left(&self) -> f64 {
         self.value.left

@@ -1,12 +1,19 @@
 use super::Margin;
 use crate::structs::Spacer;
 
-// todo: docu / tests
+/// Used to vertical align a widget.
 #[derive(Copy, Clone, PartialEq)]
 pub enum VerticalAlignment {
+    /// Align left.
     Top,
+
+    /// Align center.
     Center,
+
+    /// Align bottom.
     Bottom,
+
+    /// Stretch to available height.
     Stretch,
 }
 
@@ -17,6 +24,8 @@ impl Default for VerticalAlignment {
 }
 
 impl VerticalAlignment {
+    /// Calculates the y position of the widget depending on the available height, the goal height
+    /// margin and vertical alignment.
     pub fn align_y(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
         match self {
             VerticalAlignment::Bottom => available_height - height - margin.bottom(),
@@ -25,6 +34,8 @@ impl VerticalAlignment {
         }
     }
 
+    /// Calculates the height of the widget depending on the available height, the goal height
+    /// margin and vertical alignment.
     pub fn align_height(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
         match self {
             VerticalAlignment::Stretch => available_height - margin.top() - margin.bottom(),

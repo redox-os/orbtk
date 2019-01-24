@@ -1,22 +1,29 @@
 use crate::{
     enums::ParentType,
     layout::GridLayout,
-    properties::{Background, Columns},
+    properties::{Background, Columns, Rows},
     render_object::RectangleRenderObject,
     theme::Selector,
     widget::{Template, Widget},
 };
 
-// todo: documentation, add all default properties (bounds, margin, ...) to the widgets, also for a better documentation
-/// Grid ...
+/// Defines a flexible grid area that consists of columns and rows.
 ///
 /// # Properties
 ///
-/// * Background
+/// * `Background` - stores the css background.
+/// * `Columns` - used to define the columns of the grid.
+/// * `Rows` - used to define the rows of the grid.
+/// * `Selector` - css selector with element `grid`.
 ///
 /// # CSS properties
 ///
-/// * background
+/// * `background` - defines the background of the widget.
+///
+/// # Others
+///
+/// * `ParentType`- Multi.
+/// * `GridLayout` - used to layout the widget.
 pub struct Grid;
 
 impl Widget for Grid {
@@ -27,6 +34,7 @@ impl Widget for Grid {
             .with_render_object(RectangleRenderObject)
             .with_property(Background::default())
             .with_property(Columns::default())
+            .with_property(Rows::default())
             .with_property(Selector::from("grid"))
             .with_debug_name("Grid")
     }
