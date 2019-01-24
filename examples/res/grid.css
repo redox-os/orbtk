@@ -1,18 +1,19 @@
-grid {
+green {
     background: green;
 }
 
-test {
+blue {
     background: blue;
     margin-left: 10;
     margin-bottom: 4;
 }
 
-testa {
+yellow {
     background: yellow;
     width: 150;
+    margin: 10;
 }
 
-testb {
+red {
     background: red;
 }

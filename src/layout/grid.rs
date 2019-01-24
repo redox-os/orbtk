@@ -8,8 +8,8 @@ use dces::prelude::{Entity, EntityComponentManager};
 use crate::{
     layout::Layout,
     properties::{
-        Bounds, Column, ColumnWidth, Columns, Constraint, GridColumn, HorizontalAlignment, Margin,
-        VerticalAlignment,
+        Bounds, Column, ColumnSpan, ColumnWidth, Columns, Constraint, GridColumn,
+        HorizontalAlignment, Margin, VerticalAlignment,
     },
     structs::{Position, Size, Spacer},
     LayoutResult,
@@ -19,6 +19,38 @@ use crate::{
 pub struct GridLayout {
     current_child: Cell<usize>,
     columns_cache: RefCell<BTreeMap<usize, (f64, f64)>>,
+}
+
+impl GridLayout {
+    // calculates the available width for a column
+    fn get_column_x_and_width(
+        &self,
+        entity: Entity,
+        ecm: &EntityComponentManager,
+        grid_column: usize,
+    ) -> (f64, f64) {
+        let mut width = 0.0;
+        let column_cache = self.columns_cache.borrow();
+        let column = column_cache.get(&grid_column);
+
+        let x = if let Some((x, _)) = column { *x } else { 0.0 };
+
+        if let Ok(column_span) = ecm.borrow_component::<ColumnSpan>(entity) {
+            for i in grid_column..(grid_column + column_span.0) {
+                if let Some(column) = column_cache.get(&i) {
+                    width += column.1;
+                } else {
+                    break;
+                }
+            }
+        } else {
+            if let Some((_, column_width)) = column {
+                width = *column_width;
+            }
+        }
+
+        (x, width)
+    }
 }
 
 impl Into<Box<dyn Layout>> for GridLayout {
@@ -68,7 +100,8 @@ impl Layout for GridLayout {
         constraint.set_width(size.0);
         constraint.set_height(size.1);
 
-        // todo: this is complete wip, column and rows not implemented at the moment
+        // todo: span
+        // todo: add margin to auto columns / rows
         if let Some(child_size) = child_size {
             let child = children[self.current_child.get()];
 
@@ -105,11 +138,7 @@ impl Layout for GridLayout {
                 };
 
                 let (offset_x, available_width) =
-                    if let Some((x, width)) = self.columns_cache.borrow().get(&grid_column) {
-                        (*x, *width)
-                    } else {
-                        (0.0, size.0)
-                    };
+                    self.get_column_x_and_width(child, ecm, grid_column);
 
                 if let Ok(c_bounds) = ecm.borrow_mut_component::<Bounds>(child) {
                     c_bounds.set_x(
@@ -146,17 +175,18 @@ impl Layout for GridLayout {
 
         // calculates the column and row sizes only by the first child
         if self.current_child.get() == 0 {
-            // todo clear column widths after size is changed
 
             // calculates the auto column widths
             for child in children {
+                let margin = get_margin(*child, ecm);
+
                 if let Ok(grid_column) = ecm.borrow_component::<GridColumn>(*child) {
                     if let Ok(constraint) = ecm.borrow_component::<Constraint>(*child) {
                         if let Ok(columns) = ecm.borrow_component::<Columns>(entity) {
                             if let Some(column) = columns.get(grid_column.0) {
                                 if column.width == ColumnWidth::Auto {
                                     if column.current_width() < constraint.width() {
-                                        column_widths.insert(grid_column.0, constraint.width());
+                                        column_widths.insert(grid_column.0, constraint.width() + margin.left() + margin.right());
                                     }
                                 }
                             }
@@ -167,14 +197,16 @@ impl Layout for GridLayout {
 
             if let Ok(columns) = ecm.borrow_mut_component::<Columns>(entity) {
                 if columns.len() > 0 {
+
                     // sets auto columns width to the width of the largest child
                     for (grid_column, width) in column_widths {
                         if let Some(column) = columns.get_mut(grid_column) {
+
                             column.set_current_width(width);
                         }
                     }
 
-                    // sets the width column widths
+                    // sets the width of columns with fixed width
                     columns
                         .iter_mut()
                         .filter(|column| {
@@ -189,13 +221,13 @@ impl Layout for GridLayout {
                         });
 
                     // calculates the width of the stretch columns
-                    let remaining_width: f64 = columns
+                    let used_width: f64 = columns
                         .iter()
                         .filter(|column| column.width != ColumnWidth::Stretch)
                         .map(|column| column.current_width())
                         .sum();
 
-                    let stretch_width = remaining_width
+                    let stretch_width = (size.0 - used_width)
                         / columns
                             .iter()
                             .filter(|column| column.width == ColumnWidth::Stretch)
@@ -218,6 +250,8 @@ impl Layout for GridLayout {
                             .borrow_mut()
                             .insert(i, (column_sum, columns.get(i).unwrap().current_width()));
                         column_sum += columns.get(i).unwrap().current_width();
+
+                        println!("cs: {}", column_sum);
                     }
 
                     println!("cw: {}", stretch_width);
@@ -254,5 +288,15 @@ fn get_column_index(entity: Entity, ecm: &EntityComponentManager) -> usize {
 
     0
 }
+
+fn get_margin(entity: Entity, ecm: &EntityComponentManager) -> Margin {
+    if let Ok(margin) = ecm.borrow_component::<Margin>(entity) {
+        return *margin;
+    }
+
+    Margin::default()
+}
+
+// todo provide helpers for basic properties get_.. borrow_.. borrow_mut..
 
 // --- helpers ---

@@ -63,7 +63,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug minimal",
-            "program": "${workspaceFolder}/target/debug/examples/minimal",
+            "program": "${workspaceFolder}/target/debug/examples/grid",
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build",
             "sourceLanguages": [

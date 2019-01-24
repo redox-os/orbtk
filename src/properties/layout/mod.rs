@@ -1,7 +1,5 @@
 pub use self::bounds::Bounds;
-pub use self::column::{
-    GridColumn, ColumnsBuilder, Columns, Column, ColumnWidth
-};
+pub use self::column::{Column, ColumnSpan, ColumnWidth, Columns, ColumnsBuilder, GridColumn};
 pub use self::constraint::Constraint;
 pub use self::global_position::GlobalPosition;
 pub use self::horizontal_alignment::HorizontalAlignment;

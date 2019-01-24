@@ -2,29 +2,10 @@ use orbtk::*;
 
 struct MainView;
 
-// Positing with horizontal / vertical alignment
-
-//impl Widget for MainView {
-//    fn create() -> Template {
-//        Template::default()
-//            .as_parent_type(ParentType::Single)
-//            .with_debug_name("MainView")
-//            .with_child(
-//                Grid::create()
-//                    .with_child(Grid::create().with_property(Selector::from("test")))
-//                    .with_child(
-//                        Grid::create()
-//                            .with_property(Selector::from("testa"))
-//                            .with_property(HorizontalAlignment::Center)
-//                            .with_property(VerticalAlignment::Center)
-//                    ),
-//            )
-//    }
-//}
+// todo: check running by each system
 
 // todo: use ParentType::Single as default
 
-// todo: column definitions are not functional now (wip)
 impl Widget for MainView {
     fn create() -> Template {
         Template::default()
@@ -32,6 +13,7 @@ impl Widget for MainView {
             .with_debug_name("MainView")
             .with_child(
                 Grid::create()
+                    .with_property(Selector::from("green"))
                     .with_property(
                         Columns::create()
                             .with(Column::create().with_width(ColumnWidth::Stretch).build())
@@ -45,17 +27,18 @@ impl Widget for MainView {
                     )
                     .with_child(
                         Grid::create()
-                            .with_property(Selector::from("test"))
-                            .with_property(GridColumn(0)),
+                            .with_property(Selector::from("blue"))
+                            .with_property(GridColumn(0))
+                            .with_property(ColumnSpan(3)),
                     )
                     .with_child(
                         Grid::create()
-                            .with_property(Selector::from("testa"))
+                            .with_property(Selector::from("yellow"))
                             .with_property(GridColumn(1)),
                     )
                     .with_child(
                         Grid::create()
-                            .with_property(Selector::from("testb"))
+                            .with_property(Selector::from("red"))
                             .with_property(GridColumn(2)),
                     ),
             )
@@ -74,6 +57,7 @@ fn main() {
                 .with_extenstion_path("examples/res/grid.css")
                 .build(),
         )
+        .with_resizable(true)
         .with_debug_flag(true)
         .build();
     application.run();

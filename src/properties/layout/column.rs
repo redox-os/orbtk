@@ -1,4 +1,3 @@
-
 use crate::properties::Constraint;
 use std::slice::{Iter, IterMut};
 
@@ -8,6 +7,9 @@ use std::slice::{Iter, IterMut};
 
 #[derive(Default, Copy, Clone, PartialEq)]
 pub struct GridColumn(pub usize);
+
+#[derive(Default, Copy, Clone, PartialEq)]
+pub struct ColumnSpan(pub usize);
 
 #[derive(Default)]
 pub struct ColumnBuilder {
@@ -47,7 +49,7 @@ pub struct Column {
     pub width: ColumnWidth,
     pub min_width: f64,
     pub max_width: f64,
-    current_width: f64
+    current_width: f64,
 }
 
 impl Column {
@@ -60,7 +62,7 @@ impl Column {
     }
 
     pub fn set_current_width(&mut self, width: f64) {
-        self.current_width =  if self.min_width == 0.0 && self.max_width == 0.0 && width > 0.0 {
+        self.current_width = if self.min_width == 0.0 && self.max_width == 0.0 && width > 0.0 {
             width
         } else if width < self.min_width && self.min_width > 0.0 {
             self.min_width
