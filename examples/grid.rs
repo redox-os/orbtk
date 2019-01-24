@@ -8,47 +8,33 @@ struct MainView;
 
 impl Widget for MainView {
     fn create() -> Template {
-        Template::default()
-            .debug_name("MainView")
-            .child(
-                Grid::create()
-                    .property(Selector::from("green"))
-                    .property(
-                        Columns::create()
-                            .column(Column::create().width(ColumnWidth::Stretch).build())
-                            .column(Column::create().width(ColumnWidth::Auto).build())
-                            .column(Column::create().width(ColumnWidth::Width(50.0)).build())
-                            .build(),
-                    )
-                    .property(
-                        Rows::create()
-                            .row(Row::create().height(RowHeight::Stretch).build())
-                            .row(Row::create().height(RowHeight::Stretch).build())
-                            .build(),
-                    )
-                    .child(
-                        Grid::create()
-                            .property(Selector::from("blue"))
-                            .property(GridColumn(0)),
-                    )
-                    .child(
-                        Grid::create()
-                            .property(Selector::from("yellow"))
-                            .property(GridColumn(1)),
-                    )
-                    .child(
-                        Grid::create()
-                            .property(Selector::from("red"))
-                            .property(GridColumn(2)),
-                    )
-                    .child(
-                        Grid::create()
-                            .property(Selector::from("olive"))
-                            .property(GridColumn(1))
-                            .property(GridRow(1))
-                            .property(ColumnSpan(2)),
-                    ),
-            )
+        Template::default().debug_name("MainView").child(
+            Grid::create()
+                .selector("green")
+                .property(
+                    Columns::create()
+                        .column(Column::create().width(ColumnWidth::Stretch).build())
+                        .column(Column::create().width(ColumnWidth::Auto).build())
+                        .column(Column::create().width(ColumnWidth::Width(50.0)).build())
+                        .build(),
+                )
+                .property(
+                    Rows::create()
+                        .row(Row::create().height(RowHeight::Stretch).build())
+                        .row(Row::create().height(RowHeight::Stretch).build())
+                        .build(),
+                )
+                .child(Grid::create().selector("blue").property(GridColumn(0)))
+                .child(Grid::create().selector("yellow").property(GridColumn(1)))
+                .child(Grid::create().selector("red").property(GridColumn(2)))
+                .child(
+                    Grid::create()
+                        .selector("olive")
+                        .property(GridColumn(1))
+                        .property(GridRow(1))
+                        .property(ColumnSpan(2)),
+                ),
+        )
     }
 }
 

@@ -43,3 +43,20 @@ impl HorizontalAlignment {
         }
     }
 }
+
+impl<T: Into<String>> From<T> for HorizontalAlignment {
+    fn from(t: T) -> Self {
+        match &t.into()[..] {
+            "Right" | "right" => {
+                HorizontalAlignment::Right
+            },
+            "Center" | "center" => {
+                HorizontalAlignment::Right
+            },
+            "Left" | "left" => {
+                HorizontalAlignment::Right
+            },
+            _ => HorizontalAlignment::Stretch
+        }
+    }
+}

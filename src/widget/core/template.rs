@@ -9,6 +9,7 @@ use crate::{
     properties::{Bounds, Constraint, HorizontalAlignment, Margin, VerticalAlignment},
     render_object::RenderObject,
     structs::Point,
+    theme::Selector,
 };
 
 use super::{SharedProperty, State};
@@ -182,5 +183,35 @@ impl Template {
         }
 
         self
+    }
+
+    /// Inserts the selector.
+    pub fn selector<S: Into<Selector>>(self, selector: S) -> Self {
+        self.property(selector.into())
+    }
+
+    /// Inserts a shared selector.
+    pub fn shared_selector<S: Into<Selector>>(self, selector: S) -> Self {
+        self.shared_property(SharedProperty::new(selector.into()))
+    }
+
+    /// Inserts the vertical alignment.
+    pub fn vertical_alignment<V: Into<VerticalAlignment>>(self, vertical_alignment: V) -> Self {
+        self.property(vertical_alignment.into())
+    }
+
+    /// Inserts a shared vertical alignment.
+    pub fn shared_vertical_alignment<V: Into<VerticalAlignment>>(self, vertical_alignment: V) -> Self {
+        self.shared_property(SharedProperty::new(vertical_alignment.into()))
+    }
+
+    /// Inserts the horizontal alignment.
+    pub fn horizontal_alignment<H: Into<HorizontalAlignment>>(self, horizontal_alignment: H) -> Self {
+        self.property(horizontal_alignment.into())
+    }
+
+    /// Inserts a shared horizontal alignment.
+    pub fn shared_horizontal_alignment<H: Into<HorizontalAlignment>>(self, horizontal_alignment: H) -> Self {
+        self.shared_property(SharedProperty::new(horizontal_alignment.into()))
     }
 }

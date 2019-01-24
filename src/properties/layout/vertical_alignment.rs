@@ -43,3 +43,20 @@ impl VerticalAlignment {
         }
     }
 }
+
+impl<T: Into<String>> From<T> for VerticalAlignment {
+    fn from(t: T) -> Self {
+        match &t.into()[..] {
+            "Top" | "top" => {
+                VerticalAlignment::Top
+            },
+            "Center" | "center" => {
+                VerticalAlignment::Center
+            },
+            "Bottom" | "bottom" => {
+                VerticalAlignment::Bottom
+            },
+            _ => VerticalAlignment::Stretch
+        }
+    }
+}
