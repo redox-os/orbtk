@@ -23,11 +23,12 @@ pub struct RenderSystem {
     pub backend: Rc<RefCell<dyn Backend>>,
     pub update: Rc<Cell<bool>>,
     pub debug_flag: Rc<Cell<bool>>,
+    pub running: Rc<Cell<bool>>,
 }
 
 impl System<Tree> for RenderSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-        if !self.update.get() || tree.parent.is_empty() {
+        if !self.update.get() || tree.parent.is_empty() || !self.running.get() {
             return;
         }
 

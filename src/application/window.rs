@@ -157,6 +157,7 @@ impl<'a> WindowBuilder<'a> {
                 backend: backend.clone(),
                 states: states.clone(),
                 update: update.clone(),
+                running: running.clone(),
             })
             .with_priority(1)
             .build();
@@ -167,6 +168,7 @@ impl<'a> WindowBuilder<'a> {
                 layouts: layouts.clone(),
                 update: update.clone(),
                 debug_flag: debug_flag.clone(),
+                running: running.clone(),
             })
             .with_priority(2)
             .build();
@@ -176,6 +178,7 @@ impl<'a> WindowBuilder<'a> {
                 backend: backend.clone(),
                 states: states.clone(),
                 update: update.clone(),
+                running: running.clone(),
             })
             .with_priority(3)
             .build();
@@ -186,6 +189,7 @@ impl<'a> WindowBuilder<'a> {
                 render_objects: render_objects.clone(),
                 update: update.clone(),
                 debug_flag: debug_flag.clone(),
+                running: running.clone(),
             })
             .with_priority(4)
             .build();

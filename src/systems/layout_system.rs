@@ -27,10 +27,15 @@ pub struct LayoutSystem {
     pub backend: Rc<RefCell<dyn Backend>>,
     pub update: Rc<Cell<bool>>,
     pub debug_flag: Rc<Cell<bool>>,
+    pub running: Rc<Cell<bool>>,
 }
 
 impl System<Tree> for LayoutSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
+        if !self.running.get() {
+            return;
+        }
+
         fn layout_rec(
             ecm: &mut EntityComponentManager,
             tree: &Tree,

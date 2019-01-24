@@ -21,6 +21,7 @@ pub struct StateSystem {
     pub backend: Rc<RefCell<dyn Backend>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
+    pub running: Rc<Cell<bool>>,
 }
 
 impl StateSystem {
@@ -100,7 +101,7 @@ impl StateSystem {
 
 impl System<Tree> for StateSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-        if !self.update.get() {
+        if !self.update.get() || !self.running.get() {
             return;
         }
 
@@ -155,11 +156,13 @@ pub struct PostLayoutStateSystem {
     pub backend: Rc<RefCell<dyn Backend>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
+    pub running: Rc<Cell<bool>>,
+
 }
 
 impl System<Tree> for PostLayoutStateSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-        if !self.update.get() {
+        if !self.update.get() || !self.running.get() {
             return;
         }
 

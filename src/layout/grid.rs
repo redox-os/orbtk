@@ -15,6 +15,8 @@ use crate::{
     LayoutResult,
 };
 
+use super::{get_horizontal_alignment, get_margin, get_vertical_alignment};
+
 /// The `GridLayout` position its children in rows and columns. If now columns or rows are defined
 /// the children are placed according to their alignment definitions and constraints.
 #[derive(Default)]
@@ -166,7 +168,6 @@ impl Layout for GridLayout {
                 let (offset_x, available_width) =
                     self.get_column_x_and_width(child, ecm, grid_column);
 
-
                 if let Ok(c_bounds) = ecm.borrow_mut_component::<Bounds>(child) {
                     // x, width
                     c_bounds.set_x(
@@ -295,7 +296,8 @@ impl Layout for GridLayout {
                         / columns
                             .iter()
                             .filter(|column| column.width == ColumnWidth::Stretch)
-                            .count() as f64).trunc();
+                            .count() as f64)
+                        .trunc();
 
                     columns
                         .iter_mut()
@@ -306,8 +308,6 @@ impl Layout for GridLayout {
                             }
                             _ => {}
                         });
-
-
 
                     let mut column_sum = 0.0;
 
@@ -320,8 +320,14 @@ impl Layout for GridLayout {
 
                     // fix rounding gab
                     if size.0 - column_sum > 0.0 {
-                        if let Some(last_column) = columns.iter_mut().filter(|column| column.width == ColumnWidth::Stretch).last() {
-                            last_column.set_current_width(last_column.current_width() + size.0 - column_sum);
+                        if let Some(last_column) = columns
+                            .iter_mut()
+                            .filter(|column| column.width == ColumnWidth::Stretch)
+                            .last()
+                        {
+                            last_column.set_current_width(
+                                last_column.current_width() + size.0 - column_sum,
+                            );
                         }
                     }
                 }
@@ -381,7 +387,8 @@ impl Layout for GridLayout {
                         / rows
                             .iter()
                             .filter(|row| row.height == RowHeight::Stretch)
-                            .count() as f64).trunc();
+                            .count() as f64)
+                        .trunc();
 
                     rows.iter_mut()
                         .filter(|row| row.height == RowHeight::Stretch)
@@ -403,8 +410,13 @@ impl Layout for GridLayout {
 
                     // fix rounding gab
                     if size.1 - row_sum > 0.0 {
-                        if let Some(last_row) = rows.iter_mut().filter(|row| row.height == RowHeight::Stretch).last() {
-                            last_row.set_current_height(last_row.current_height() + size.1 - row_sum);
+                        if let Some(last_row) = rows
+                            .iter_mut()
+                            .filter(|row| row.height == RowHeight::Stretch)
+                            .last()
+                        {
+                            last_row
+                                .set_current_height(last_row.current_height() + size.1 - row_sum);
                         }
                     }
                 }
@@ -414,41 +426,3 @@ impl Layout for GridLayout {
         LayoutResult::RequestChild(children[self.current_child.get()], constraint)
     }
 }
-
-// --- helpers ---
-
-fn get_vertical_alignment(entity: Entity, ecm: &EntityComponentManager) -> VerticalAlignment {
-    if let Ok(vertical_alignment) = ecm.borrow_component::<VerticalAlignment>(entity) {
-        return *vertical_alignment;
-    }
-
-    VerticalAlignment::default()
-}
-
-fn get_horizontal_alignment(entity: Entity, ecm: &EntityComponentManager) -> HorizontalAlignment {
-    if let Ok(horizontal_alignment) = ecm.borrow_component::<HorizontalAlignment>(entity) {
-        return *horizontal_alignment;
-    }
-
-    HorizontalAlignment::default()
-}
-
-fn get_column_index(entity: Entity, ecm: &EntityComponentManager) -> usize {
-    if let Ok(column) = ecm.borrow_component::<GridColumn>(entity) {
-        return column.0;
-    }
-
-    0
-}
-
-fn get_margin(entity: Entity, ecm: &EntityComponentManager) -> Margin {
-    if let Ok(margin) = ecm.borrow_component::<Margin>(entity) {
-        return *margin;
-    }
-
-    Margin::default()
-}
-
-// todo provide helpers for basic properties get_.. borrow_.. borrow_mut..
-
-// --- helpers ---
