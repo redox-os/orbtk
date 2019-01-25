@@ -56,7 +56,7 @@ fn test_set_current_height() {
 }
 
 #[test]
-fn test_with() {
+fn test_row() {
     let height = RowHeight::Height(64.0);
 
     let builder = RowsBuilder::new();
@@ -66,9 +66,33 @@ fn test_with() {
 
     let builder = RowsBuilder::new();
     let rows = builder
-        .with(Row::create().build())
-        .with(Row::create().build())
+        .row(Row::create().build())
+        .row(Row::create().build())
         .build();
 
     assert_eq!(rows.len(), 2);
+}
+
+#[test]
+fn test_row_height_into() {
+    let row : Row = "Auto".into();
+    assert_eq!(row.height(), RowHeight::Auto);
+
+    let row : Row = "auto".into();
+    assert_eq!(row.height(), RowHeight::Auto);
+
+    let row : Row = "Stretch".into();
+    assert_eq!(row.height(), RowHeight::Stretch);
+
+    let row : Row = "stretch".into();
+    assert_eq!(row.height(), RowHeight::Stretch);
+
+    let row : Row = "*".into();
+    assert_eq!(row.height(), RowHeight::Stretch);
+
+    let row : Row = "other".into();
+    assert_eq!(row.height(), RowHeight::Stretch);
+
+    let row : Row = 64.0.into();
+    assert_eq!(row.height(), RowHeight::Height(64.0));
 }

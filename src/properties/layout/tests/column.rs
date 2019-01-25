@@ -53,7 +53,7 @@ fn test_set_current_width() {
 }
 
 #[test]
-fn test_with() {
+fn test_column() {
     let width = ColumnWidth::Width(64.0);
 
     let builder = ColumnsBuilder::new();
@@ -63,9 +63,33 @@ fn test_with() {
 
     let builder = ColumnsBuilder::new();
     let columns = builder
-        .with(Column::create().build())
-        .with(Column::create().build())
+        .column(Column::create().build())
+        .column(Column::create().build())
         .build();
 
     assert_eq!(columns.len(), 2);
+}
+
+#[test]
+fn test_column_width_into() {
+    let column : Column = "Auto".into();
+    assert_eq!(column.width(), ColumnWidth::Auto);
+
+    let column : Column = "auto".into();
+    assert_eq!(column.width(), ColumnWidth::Auto);
+
+    let column : Column = "Stretch".into();
+    assert_eq!(column.width(), ColumnWidth::Stretch);
+
+    let column : Column = "stretch".into();
+    assert_eq!(column.width(), ColumnWidth::Stretch);
+
+    let column : Column = "*".into();
+    assert_eq!(column.width(), ColumnWidth::Stretch);
+
+    let column : Column = "other".into();
+    assert_eq!(column.width(), ColumnWidth::Stretch);
+
+    let column : Column = 64.0.into();
+    assert_eq!(column.width(), ColumnWidth::Width(64.0));
 }

@@ -67,6 +67,11 @@ impl Column {
         ColumnBuilder::new()
     }
 
+    /// Gets the column width.
+    pub fn width(&self) -> ColumnWidth {
+        self.width
+    }
+
     /// Gets the current width.
     pub fn current_width(&self) -> f64 {
         self.current_width
@@ -119,8 +124,8 @@ impl ColumnsBuilder {
     }
 
     /// Inserts a new column.
-    pub fn column(mut self, column: Column) -> Self {
-        self.columns.push(column);
+    pub fn column<C: Into<Column>>(mut self, column: C) -> Self {
+        self.columns.push(column.into());
         self
     }
 
@@ -167,5 +172,20 @@ impl Columns {
     /// Returns a mutable iterator over the slice.
     pub fn iter_mut(&mut self) -> IterMut<Column> {
         self.value.iter_mut()
+    }
+}
+
+impl From<&str> for Column {
+    fn from(t: &str) -> Self {
+        match t {
+            "Auto" | "auto" => Column::create().width(ColumnWidth::Auto).build(),
+            _ =>  Column::create().width(ColumnWidth::Stretch).build(),
+        }
+    }
+}
+
+impl From<f64> for Column {
+    fn from(t: f64) -> Self {
+        Column::create().width(ColumnWidth::Width(t)).build()
     }
 }

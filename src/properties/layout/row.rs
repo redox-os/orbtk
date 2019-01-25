@@ -67,6 +67,11 @@ impl Row {
         RowBuilder::new()
     }
 
+    /// Gets the row height.
+    pub fn height(&self) -> RowHeight {
+        self.height
+    }
+
     /// Gets the current height.
     pub fn current_height(&self) -> f64 {
         self.current_height
@@ -118,8 +123,8 @@ impl RowsBuilder {
     }
 
     /// Inserts a new row.
-    pub fn row(mut self, row: Row) -> Self {
-        self.row_definitions.push(row);
+    pub fn row<R: Into<Row>>(mut self, row: R) -> Self {
+        self.row_definitions.push(row.into());
         self
     }
 
@@ -166,5 +171,20 @@ impl Rows {
     /// Returns a mutable iterator over the slice.
     pub fn iter_mut(&mut self) -> IterMut<Row> {
         self.value.iter_mut()
+    }
+}
+
+impl From<&str> for Row {
+    fn from(t: &str) -> Self {
+        match t {
+            "Auto" | "auto" => Row::create().height(RowHeight::Auto).build(),
+            _ =>  Row::create().height(RowHeight::Stretch).build(),
+        }
+    }
+}
+
+impl From<f64> for Row {
+    fn from(t: f64) -> Self {
+        Row::create().height(RowHeight::Height(t)).build()
     }
 }

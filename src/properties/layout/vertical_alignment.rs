@@ -2,7 +2,7 @@ use super::Margin;
 use crate::structs::Spacer;
 
 /// Used to vertical align a widget.
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum VerticalAlignment {
     /// Align left.
     Top,
@@ -44,19 +44,13 @@ impl VerticalAlignment {
     }
 }
 
-impl<T: Into<String>> From<T> for VerticalAlignment {
-    fn from(t: T) -> Self {
-        match &t.into()[..] {
-            "Top" | "top" => {
-                VerticalAlignment::Top
-            },
-            "Center" | "center" => {
-                VerticalAlignment::Center
-            },
-            "Bottom" | "bottom" => {
-                VerticalAlignment::Bottom
-            },
-            _ => VerticalAlignment::Stretch
+impl From<&str> for VerticalAlignment {
+    fn from(t: &str) -> Self {
+        match t {
+            "Top" | "top" => VerticalAlignment::Top,
+            "Center" | "center" => VerticalAlignment::Center,
+            "Bottom" | "bottom" => VerticalAlignment::Bottom,
+            _ => VerticalAlignment::Stretch,
         }
     }
 }

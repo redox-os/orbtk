@@ -2,7 +2,7 @@ use super::Margin;
 use crate::structs::Spacer;
 
 /// Used to horizontal align a widget.
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum HorizontalAlignment {
     /// Align left.
     Left,
@@ -44,17 +44,17 @@ impl HorizontalAlignment {
     }
 }
 
-impl<T: Into<String>> From<T> for HorizontalAlignment {
-    fn from(t: T) -> Self {
-        match &t.into()[..] {
+impl From<&str> for HorizontalAlignment {
+    fn from(t: &str) -> Self {
+        match t {
             "Right" | "right" => {
                 HorizontalAlignment::Right
             },
             "Center" | "center" => {
-                HorizontalAlignment::Right
+                HorizontalAlignment::Center
             },
             "Left" | "left" => {
-                HorizontalAlignment::Right
+                HorizontalAlignment::Left
             },
             _ => HorizontalAlignment::Stretch
         }
