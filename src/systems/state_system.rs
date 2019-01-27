@@ -10,7 +10,7 @@ use crate::{
     application::{Global, Tree},
     backend::{Backend, FontMeasure, FONT_MEASURE},
     properties::{
-        Constraint, Enabled, Focused, FontIcon, Label, Pressed, PrimaryFontIcon, SecondaryFontIcon,
+        Constraint, Enabled, Focused, FontIcon, Text, Pressed, PrimaryFontIcon, SecondaryFontIcon,
         Selected,
     },
     theme::Selector,
@@ -155,12 +155,12 @@ impl System<Tree> for StateSystem {
         for node in tree.into_iter() {
             let size = {
                 if let Ok(selector) = ecm.borrow_component::<Selector>(node) {
-                    if let Ok(label) = ecm.borrow_component::<Label>(node) {
-                        if label.0.is_empty() {
+                    if let Ok(text) = ecm.borrow_component::<Text>(node) {
+                        if text.0.is_empty() {
                             None
                         } else {
                             Some(FONT_MEASURE.measure(
-                                &label.0,
+                                &text.0,
                                 &state_context.theme.string("font-family", selector),
                                 state_context.theme.uint("font-size", selector),
                             ))

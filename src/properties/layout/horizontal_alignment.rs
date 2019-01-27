@@ -1,5 +1,5 @@
 use super::Margin;
-use crate::structs::Spacer;
+use crate::{structs::Spacer, widget::Template};
 
 /// Used to horizontal align a widget.
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -58,5 +58,17 @@ impl From<&str> for HorizontalAlignment {
             },
             _ => HorizontalAlignment::Stretch
         }
+    }
+}
+
+pub trait HorizontalAlignmentProperty: Sized + From<Template> + Into<Template> {
+    fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
+        Self::from(transform(self.into()))
+    }
+
+    fn horizontal_alignment<H: Into<HorizontalAlignment>>(self, horizontal_alignment: H) -> Self {
+        self.template(|template| {
+            template.property(horizontal_alignment.into())
+        })
     }
 }

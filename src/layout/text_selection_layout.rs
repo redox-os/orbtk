@@ -3,7 +3,7 @@ use dces::prelude::{Entity, EntityComponentManager};
 use crate::{
     backend::{FontMeasure, FONT_MEASURE},
     layout::Layout,
-    properties::{Bounds, Constraint, Label, Offset, TextSelection},
+    properties::{Bounds, Constraint, Text, Offset, TextSelection},
     theme::{Selector, Theme},
     LayoutResult,
 };
@@ -48,12 +48,12 @@ impl Layout for TextSelectionLayout {
         let mut pos = 0;
 
         if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-            if let Ok(label) = ecm.borrow_component::<Label>(entity) {
+            if let Ok(text) = ecm.borrow_component::<Text>(entity) {
                 if let Ok(selection) = ecm.borrow_component::<TextSelection>(entity) {
-                    if let Some(label_part) = label.0.get(0..selection.start_index) {
+                    if let Some(text_part) = text.0.get(0..selection.start_index) {
                         pos = FONT_MEASURE
                             .measure(
-                                label_part,
+                                text_part,
                                 &theme.string("font-family", selector),
                                 theme.uint("font-size", selector),
                             )

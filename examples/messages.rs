@@ -28,7 +28,7 @@
 //             .debug_name("SenderView")
 //             .child(
 //                 Button::create()
-//                     .property(Label::from("Send message"))
+//                     .property(Text::from("Send message"))
 //                     .event_handler(MouseEventHandler::default().on_click(Rc::new(
 //                         move |_pos: Point| -> bool {
 //                             send_state.send_message.set(true);

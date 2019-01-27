@@ -27,7 +27,9 @@ use crate::{
 pub struct Grid;
 
 impl Widget for Grid {
-    fn create() -> Template {
+    type Template = Template;
+
+    fn create() -> Self::Template {
         Template::default()
             .property(Background::default())
             .property(Columns::default())

@@ -12,6 +12,7 @@ use crate::{
     theme::Selector,
 };
 
+
 use super::{SharedProperty, State};
 
 /// `Template` is used to define the inner structure of a widget.
@@ -100,14 +101,14 @@ impl Template {
 
     /// Add a child to the widget template. If `parent_type` is set to `ParentType::None` this method do nothing. If `parent_type` is set to `ParentType::Single` only on child could
     /// be added. Every call of this method will overwrite the existing `child`. If `parent_type`is set to `ParentType::Multiple` any number of children could be added to the template.
-    pub fn child(mut self, child: Template) -> Self {
+    pub fn child<T: Into<Template>>(mut self, child: T) -> Self {
         match self.parent_type {
             ParentType::Single => {
                 self.children.clear();
-                self.children.push(child);
+                self.children.push(child.into());
             }
             ParentType::Multi => {
-                self.children.push(child);
+                self.children.push(child.into());
             }
             _ => return self,
         }
@@ -201,17 +202,49 @@ impl Template {
     }
 
     /// Inserts a shared vertical alignment.
-    pub fn shared_vertical_alignment<V: Into<VerticalAlignment>>(self, vertical_alignment: V) -> Self {
+    pub fn shared_vertical_alignment<V: Into<VerticalAlignment>>(
+        self,
+        vertical_alignment: V,
+    ) -> Self {
         self.shared_property(SharedProperty::new(vertical_alignment.into()))
     }
 
     /// Inserts the horizontal alignment.
-    pub fn horizontal_alignment<H: Into<HorizontalAlignment>>(self, horizontal_alignment: H) -> Self {
+    pub fn horizontal_alignment<H: Into<HorizontalAlignment>>(
+        self,
+        horizontal_alignment: H,
+    ) -> Self {
         self.property(horizontal_alignment.into())
     }
 
     /// Inserts a shared horizontal alignment.
-    pub fn shared_horizontal_alignment<H: Into<HorizontalAlignment>>(self, horizontal_alignment: H) -> Self {
+    pub fn shared_horizontal_alignment<H: Into<HorizontalAlignment>>(
+        self,
+        horizontal_alignment: H,
+    ) -> Self {
         self.shared_property(SharedProperty::new(horizontal_alignment.into()))
     }
+}
+
+#[macro_export]
+macro_rules! provide_properties {
+    ($type:ident, [ $( $derive:ident ),* ]) => (
+        pub struct $type(Template);
+
+        impl From<Template> for $type {
+            fn from(template: Template) -> Self {
+                $type(template)
+            }
+        }
+
+        impl Into<Template> for $type {
+            fn into(self) -> Template {
+                self.0
+            }
+        }
+
+        $(
+            impl $derive for $type {}
+        )*
+    )
 }

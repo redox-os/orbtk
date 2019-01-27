@@ -59,7 +59,7 @@ impl Widget for MainView {
             .child(
                 Container::create()
                    .parent_type(ParentType::Single)
-                    .child(TextBlock::create().property(Label::from("OrbTk"))),
+                    .child(TextBlock::create().property(Text::from("OrbTk"))),
             )
     }
 }

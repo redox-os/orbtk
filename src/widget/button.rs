@@ -1,6 +1,6 @@
 use crate::{
     enums::ParentType,
-    properties::{FontIcon, Label, Pressed},
+    properties::{FontIcon, Text, Pressed},
     theme::Selector,
     widget::{Center, Container, FontIconBlock, Row, SharedProperty, Template, TextBlock, Widget},
 };
@@ -9,7 +9,7 @@ use crate::{
 ///
 /// # Shared Properties
 ///
-/// * `Label` - String used to display the text of the button.
+/// * `Text` - String used to display the text of the button.
 /// * `FontIcon` - String used to display the font icon of the button.
 /// * `Selector` - CSS selector with  element name `button`, used to request the theme of the widget.
 ///
@@ -24,7 +24,7 @@ pub struct Button;
 
 impl Widget for Button {
     fn create() -> Template {
-        let label = SharedProperty::new(Label::default());
+        let text = SharedProperty::new(Text::default());
         let icon = SharedProperty::new(FontIcon::default());
         let selector = SharedProperty::new(Selector::from("button"));
 
@@ -43,13 +43,13 @@ impl Widget for Button {
                                 )
                                 .child(
                                     TextBlock::create()
-                                        .shared_property(label.clone())
+                                        .shared_property(text.clone())
                                         .shared_property(selector.clone()),
                                 ),
                         ),
                     ),
             )
-            .shared_property(label)
+            .shared_property(text)
             .shared_property(icon)
             .shared_property(selector)
             .property(Pressed(false))

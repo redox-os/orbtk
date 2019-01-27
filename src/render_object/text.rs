@@ -1,6 +1,6 @@
 use crate::{
     backend::Renderer,
-    properties::{Bounds, Label, WaterMark},
+    properties::{Bounds, Text, WaterMark},
     render_object::RenderObject,
     structs::Point,
     theme::Selector,
@@ -37,10 +37,10 @@ impl RenderObject for TextRenderObject {
 
         if let Ok(selector) = widget.borrow_property::<Selector>() {
             if let Ok(bounds) = widget.borrow_property::<Bounds>() {
-                if let Ok(label) = widget.borrow_property::<Label>() {
-                    if !label.0.is_empty() {
+                if let Ok(text) = widget.borrow_property::<Text>() {
+                    if !text.0.is_empty() {
                         renderer.render_text(
-                            &label.0,
+                            &text.0,
                             bounds,
                             &parent_bounds,
                             global_position,
@@ -48,9 +48,9 @@ impl RenderObject for TextRenderObject {
                             theme.color("color", selector),
                             &theme.string("font-family", selector),
                         );
-                    } else if let Ok(label) = widget.borrow_property::<WaterMark>() {
+                    } else if let Ok(text) = widget.borrow_property::<WaterMark>() {
                         renderer.render_text(
-                            &label.0,
+                            &text.0,
                             bounds,
                             &parent_bounds,
                             global_position,

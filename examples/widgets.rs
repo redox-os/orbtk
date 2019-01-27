@@ -15,15 +15,15 @@
 
 // impl State for MainViewState {
 //     fn update(&self, context: &mut Context<'_>) {
-//         if let Ok(button_count_label) = context.widget().borrow_mut_property::<Label>() {
-//             button_count_label.0 = format!("Button count: {}", self.counter.get());
+//         if let Ok(button_count_text) = context.widget().borrow_mut_property::<Text>() {
+//             button_count_text.0 = format!("Button count: {}", self.counter.get());
 //         }
 //     }
 // }
 
 // fn create_header(text: &str) -> Template {
 //     TextBlock::create()
-//         .property(Label::from(text))
+//         .property(Text::from(text))
 //         .property(Selector::from("textblock").class("h1"))
 // }
 
@@ -36,7 +36,7 @@
 // impl Widget for MainView {
 //     fn create() -> Template {
 //         let state = Rc::new(MainViewState::default());
-//         let button_count_label = SharedProperty::new(Label::from("Button count: 0"));
+//         let button_count_text = SharedProperty::new(Text::from("Button count: 0"));
 
 //         Template::default()
 //             .state(state.clone())
@@ -48,7 +48,7 @@
 //                             .child(
 //                                 Container::create().child(
 //                                     Button::create()
-//                                         .property(Label::from("Button"))
+//                                         .property(Text::from("Button"))
 //                                         .property(FontIcon::from(
 //                                             styling::vector_graphics::material_font_icons::CHECK_FONT_ICON,
 //                                         ))
@@ -66,14 +66,14 @@
 //                                         .property(
 //                                             Selector::from("button").class("primary"),
 //                                         )
-//                                         .property(Label::from("Primary")),
+//                                         .property(Text::from("Primary")),
 //                                 ),
 //                             )
 //                             .child(Container::create().child(
-//                                 ToggleButton::create().property(Label::from("ToggleButton")),
+//                                 ToggleButton::create().property(Text::from("ToggleButton")),
 //                             ))
 //                             .child(Container::create().child(
-//                                 CheckBox::create().property(Label::from("CheckBox")),
+//                                 CheckBox::create().property(Text::from("CheckBox")),
 //                             ))
 //                             .child(Container::create().child(Switch::create())),
 //                     )
@@ -83,7 +83,7 @@
 //                             .child(
 //                                 Container::create().child(
 //                                     TextBlock::create()
-//                                         .shared_property(button_count_label.clone())
+//                                         .shared_property(button_count_text.clone())
 //                                         .property(
 //                                             Selector::from("textblock").class("fheight"),
 //                                         ),
@@ -96,7 +96,7 @@
 //                                 // ))
 //                     ),
 //             )
-//             .shared_property(button_count_label)
+//             .shared_property(button_count_text)
 //             .debug_name("MainView")
 //     }
 // }

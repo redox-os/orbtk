@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use crate::{
     enums::{ParentType, Placement},
-    properties::{Label, PrimaryFontIcon, SecondaryFontIcon, Selected},
+    properties::{Text, PrimaryFontIcon, SecondaryFontIcon, Selected},
     styling::vector_graphics::material_font_icons,
     theme::Selector,
     widget::{Container, Context, SharedProperty, Stack, State, Template, Widget},
@@ -49,7 +49,7 @@ pub struct Switch;
 
 impl Widget for Switch {
     fn create() -> Template {
-        let label = SharedProperty::new(Label::default());
+        let text = SharedProperty::new(Text::default());
         let primary_icon =
             SharedProperty::new(PrimaryFontIcon::from(material_font_icons::CHECK_FONT_ICON));
         let secondary_icon = SharedProperty::new(SecondaryFontIcon::from(
@@ -76,7 +76,7 @@ impl Widget for Switch {
             )
             .shared_property(primary_icon)
             .shared_property(secondary_icon)
-            .shared_property(label)
+            .shared_property(text)
             .property(selector)
             .shared_property(selected)
             .state(Rc::new(SwitchState))

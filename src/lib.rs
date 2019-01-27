@@ -30,4 +30,5 @@ pub mod structs;
 pub mod styling;
 pub mod systems;
 pub mod theme;
+#[macro_use]
 pub mod widget;

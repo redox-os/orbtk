@@ -7,7 +7,7 @@ use crate::{
     enums::{ParentType, ScrollMode},
     event::{Key, KeyEventHandler, MouseEventHandler},
     properties::{
-        Bounds, Focused, Label, Offset, Point, ScrollViewerMode, TextSelection, WaterMark,
+        Bounds, Focused, Text, Offset, Point, ScrollViewerMode, TextSelection, WaterMark,
     },
     theme::Selector,
     widget::{
@@ -90,16 +90,16 @@ impl State for TextBoxState {
             self.focused.set(focused.0);
         }
 
-        if let Ok(label) = widget.borrow_mut_property::<Label>() {
-            if label.0 != *self.text.borrow() {
+        if let Ok(text) = widget.borrow_mut_property::<Text>() {
+            if text.0 != *self.text.borrow() {
                 if self.updated.get() {
-                    label.0 = self.text.borrow().clone();
+                    text.0 = self.text.borrow().clone();
                 } else {
                     let text_length = self.text.borrow().len();
-                    let origin_text_length = label.0.len();
+                    let origin_text_length = text.0.len();
                     let delta = text_length as i32 - origin_text_length as i32;
 
-                    *self.text.borrow_mut() = label.0.clone();
+                    *self.text.borrow_mut() = text.0.clone();
 
                     // adjust cursor position after labe is changed from outside
                     if text_length < origin_text_length {
@@ -171,8 +171,8 @@ impl State for TextBoxState {
 ///
 /// # Shared Properties
 ///
-/// * `Label` - String used to display the text of the text box.
-/// * `Watermark` - String used to display a placeholder text if `Label` string is empty.
+/// * `Text` - String used to display the text of the text box.
+/// * `Watermark` - String used to display a placeholder text if `Text` string is empty.
 /// * `Selector` - CSS selector with  element name `textbox`, used to request the theme of the widget.
 /// * `TextSelection` - Represents the current selection of the text used by the cursor.
 /// * `Focused` - Defines if the widget is focues and handles the current text input.
@@ -185,7 +185,7 @@ pub struct TextBox;
 
 impl Widget for TextBox {
     fn create() -> Template {
-        let label = SharedProperty::new(Label::default());
+        let text = SharedProperty::new(Text::default());
         let water_mark = SharedProperty::new(WaterMark::default());
         let selector = Selector::from("textbox");
         let selection = SharedProperty::new(TextSelection::default());
@@ -205,7 +205,7 @@ impl Widget for TextBox {
                                 ScrollViewer::create()
                                     .child(
                                         WaterMarkTextBlock::create()
-                                            .shared_property(label.clone())
+                                            .shared_property(text.clone())
                                             .shared_property(water_mark.clone())
                                             .shared_property(focused.clone())
                                             .property(
@@ -221,7 +221,7 @@ impl Widget for TextBox {
                             )
                             .child(
                                 Cursor::create()
-                                    .shared_property(label.clone())
+                                    .shared_property(text.clone())
                                     .shared_property(selection.clone())
                                     .shared_property(offset.clone())
                                     .shared_property(focused.clone())
@@ -241,7 +241,7 @@ impl Widget for TextBox {
             )
             .state(state.clone())
             .debug_name("TextBox")
-            .shared_property(label)
+            .shared_property(text)
             .property(selector)
             .shared_property(water_mark)
             .shared_property(selection)

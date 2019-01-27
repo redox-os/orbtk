@@ -11,7 +11,7 @@ use orbclient::Color;
 
 pub use self::cell::CloneCell;
 use self::selector::Specificity;
-pub use self::selector::{Selector, SelectorRelation};
+pub use self::selector::{Selector, SelectorProperty, SelectorRelation};
 pub use self::style::Style;
 
 mod cell;

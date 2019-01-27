@@ -7,7 +7,9 @@ struct MainView;
 // todo: use ParentType::Single as default
 
 impl Widget for MainView {
-    fn create() -> Template {
+    type Template = Template;
+
+    fn create() -> Self::Template {
         Template::default().debug_name("MainView").child(
             Grid::create()
                 .selector("green")
@@ -23,7 +25,7 @@ impl Widget for MainView {
                     Grid::create()
                         .selector("blue")
                         .property(GridColumn(0))
-                        .child(TextBlock::create().property(Label::from("(0,0)"))),
+                        .child(TextBlock::create().text("(0,0)")),
                 )
                 .child(
                     Grid::create()
@@ -31,16 +33,16 @@ impl Widget for MainView {
                         .property(GridColumn(1))
                         .child(
                             TextBlock::create()
-                                .property(Label::from("(1,0)"))
+                                .text("(1,0)")
                                 .horizontal_alignment("Center")
-                                .vertical_alignment("Center")
+                                .vertical_alignment("Center"),
                         ),
                 )
                 .child(
                     Grid::create()
                         .selector("red")
                         .property(GridColumn(2))
-                        .child(TextBlock::create().property(Label::from("(1,1)"))),
+                        .child(TextBlock::create().text("(1,1)")),
                 )
                 .child(
                     Grid::create()
@@ -48,7 +50,7 @@ impl Widget for MainView {
                         .property(GridColumn(1))
                         .property(GridRow(1))
                         .property(ColumnSpan(2))
-                        .child(TextBlock::create().property(Label::from("(1,1)"))),
+                        .child(TextBlock::create().text("(1,1)")),
                 ),
         )
     }

@@ -36,6 +36,7 @@ pub use self::core::*;
 pub use self::grid::Grid;
 pub use self::text_block::TextBlock;
 
+#[macro_use]
 mod core;
 mod grid;
 mod text_block;
