@@ -1,5 +1,5 @@
 use crate::{
-    layout::TextSizeLayout,
+    layout::FixedSizeLayout,
     properties::Label,
     render_object::TextRenderObject,
     theme::Selector,
@@ -24,8 +24,8 @@ impl Widget for TextBlock {
     fn create() -> Template {
         Template::default()
             .property(Label::from("TextBlock"))
-            .property(Selector::from("textblock"))
-            .layout(TextSizeLayout)
+            .selector("textblock")
+            .layout(FixedSizeLayout)
             .render_object(TextRenderObject)
             .debug_name("TextBlock")
     }

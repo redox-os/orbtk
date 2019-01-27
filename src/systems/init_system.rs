@@ -4,8 +4,8 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 
 use crate::{
     application::{Global, Tree},
-    backend::Backend,
-    properties::{Constraint, Margin, Padding},
+    backend::{Backend, FontMeasure, FONT_MEASURE},
+    properties::{Constraint, Margin, Padding, FontIcon, PrimaryFontIcon, SecondaryFontIcon},
     structs::{Spacer, Thickness},
     theme::{Selector, Theme},
 };

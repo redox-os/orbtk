@@ -11,7 +11,7 @@
 //pub use self::scroll_viewer::*;
 //pub use self::stack::Stack;
 //pub use self::switch::Switch;
-//pub use self::text_block::TextBlock;
+
 //pub use self::text_box::*;
 //pub use self::toggle_button::ToggleButton;
 //pub use self::water_mark_text_block::WaterMarkTextBlock;
@@ -27,13 +27,15 @@
 //mod scroll_viewer;
 //mod stack;
 //mod switch;
-//mod text_block;
+
 //mod text_box;
 //mod toggle_button;
 //mod water_mark_text_block;
 
 pub use self::core::*;
 pub use self::grid::Grid;
+pub use self::text_block::TextBlock;
 
 mod core;
 mod grid;
+mod text_block;

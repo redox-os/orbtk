@@ -1,7 +1,8 @@
 use crate::{
     backend::Renderer,
-    properties::{Bounds, Label, Point, WaterMark},
+    properties::{Bounds, Label, WaterMark},
     render_object::RenderObject,
+    structs::Point,
     theme::Selector,
     widget::Context,
 };

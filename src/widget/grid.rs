@@ -26,17 +26,51 @@ use crate::{
 /// * `GridLayout` - used to layout the widget.
 pub struct Grid;
 
-
 impl Widget for Grid {
     fn create() -> Template {
         Template::default()
-            .parent_type(ParentType::Multi)
-            .layout(GridLayout::default())
-            .render_object(RectangleRenderObject)
             .property(Background::default())
             .property(Columns::default())
             .property(Rows::default())
-            .property(Selector::from("grid"))
+            .parent_type(ParentType::Multi)
+            .layout(GridLayout::default())
+            .render_object(RectangleRenderObject)
+            .selector("grid")
             .debug_name("Grid")
     }
 }
+
+//impl From<GridTemplate> for Template {
+//    fn from(temp: GridTemplate) -> Template {
+//        temp.template
+//    }
+//}
+//
+//impl From<Template> for GridTemplate {
+//    fn from(temp: Template) -> GridTemplate {
+//        GridTemplate {
+//            template: temp
+//        }
+//    }
+//}
+//
+//pub struct GridTemplate {
+//    template: Template
+//}
+//
+//impl Templateable for GridTemplate {
+//    fn template<F: FnOnce(Template) -> Templateable>(self, transform: F) -> Self
+//        where Self: Into<Template> + From<Template>
+//    {
+//        Self::from(transform(self.into))
+//    }
+//}
+//
+//pub trait Templateable {
+//    fn template<F: FnOnce(Template) -> Templateable>(self, transform: F) -> Self
+//        where Self: Into<Template> + From<Template>;
+//
+//    fn background(mut self, background: Background) -> Self {
+//        self.template(move |template| template.property(background))
+//    }
+//}
