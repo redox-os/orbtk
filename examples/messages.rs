@@ -24,7 +24,7 @@
 //         let state = Rc::new(SenderState::default());
 //         let send_state = state.clone();
 
-//         Template::default()
+//         Template::new()
 //             .debug_name("SenderView")
 //             .child(
 //                 Button::create()
@@ -56,7 +56,7 @@
 
 // impl Widget for ReceiverView {
 //     fn create() -> Template {
-//         Template::default()
+//         Template::new()
 //            .parent_type(ParentType::Single)
 //             .debug_name("ReceiverView")
 //             .child(

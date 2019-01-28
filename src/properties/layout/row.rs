@@ -1,4 +1,4 @@
-use crate::properties::Constraint;
+
 use std::slice::{Iter, IterMut};
 
 /// Used to define the row position of a widget on the `Grid`.
@@ -141,6 +141,8 @@ impl RowsBuilder {
 pub struct Rows {
     value: Vec<Row>,
 }
+
+property!(Rows, RowsProperty, rows, shared_rows);
 
 impl Rows {
     /// Creates a new `RowsBuilder` object with default values.

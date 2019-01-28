@@ -4,7 +4,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "text": "build",
+            "label": "build",
             "command": "cargo",
             "type": "shell",
             "args": [

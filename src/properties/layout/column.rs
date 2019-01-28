@@ -1,4 +1,3 @@
-use crate::properties::Constraint;
 use std::slice::{Iter, IterMut};
 
 /// Used to define the column position of a widget on the `Grid`.
@@ -142,6 +141,8 @@ impl ColumnsBuilder {
 pub struct Columns {
     value: Vec<Column>,
 }
+
+property!(Columns, ColumnsProperty, columns, shared_columns);
 
 impl Columns {
     /// Creates a new `ColumnsBuilder` object with default values.

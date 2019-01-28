@@ -1,5 +1,5 @@
 use super::Margin;
-use crate::{structs::Spacer, widget::Template};
+use crate::structs::Spacer;
 
 /// Used to vertical align a widget.
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -16,6 +16,8 @@ pub enum VerticalAlignment {
     /// Stretch to available height.
     Stretch,
 }
+
+property!(VerticalAlignment, VerticalAlignmentProperty, vertical_alignment, shared_vertical_alignment);
 
 impl Default for VerticalAlignment {
     fn default() -> Self {
@@ -52,17 +54,5 @@ impl From<&str> for VerticalAlignment {
             "Bottom" | "bottom" => VerticalAlignment::Bottom,
             _ => VerticalAlignment::Stretch,
         }
-    }
-}
-
-pub trait VerticalAlignmentProperty: Sized + From<Template> + Into<Template> {
-    fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
-        Self::from(transform(self.into()))
-    }
-
-    fn vertical_alignment<V: Into<VerticalAlignment>>(self, vertical_alignment: V) -> Self {
-        self.template(|template| {
-            template.property(vertical_alignment.into())
-        })
     }
 }

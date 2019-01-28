@@ -4,7 +4,7 @@
 
 // impl Widget for MainView {
 //     fn create() -> Template {
-//         Template::default()
+//         Template::new()
 //             .debug_name("MainView")
 //             .child(
 //                 ImageWidget::create()

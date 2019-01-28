@@ -3,8 +3,10 @@ use orbtk::*;
 struct MainView;
 
 impl Widget for MainView {
+    type Template = Template;
+    
     fn create() -> Template {
-        Template::default()
+        Template::new()
             .debug_name("MainView")
     }
 }

@@ -20,7 +20,7 @@ pub struct CanvasWidget;
 
 impl Widget for CanvasWidget {
     fn create() -> Template {
-        Template::default()
+        Template::new()
             .property(Selector::from("imagewidget"))
             .layout(StretchLayout::default())
             .render_object(ImageRenderObject)

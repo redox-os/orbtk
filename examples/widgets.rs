@@ -38,7 +38,7 @@
 //         let state = Rc::new(MainViewState::default());
 //         let button_count_text = SharedProperty::new(Text::from("Button count: 0"));
 
-//         Template::default()
+//         Template::new()
 //             .state(state.clone())
 //             .child(
 //                 create_space_row()

@@ -10,27 +10,27 @@ impl Widget for MainView {
     type Template = Template;
 
     fn create() -> Self::Template {
-        Template::default().debug_name("MainView").child(
+        Template::new().child(
             Grid::create()
                 .selector("green")
-                .property(
+                .columns(
                     Columns::create()
                         .column("*")
                         .column("Auto")
                         .column(50.0)
                         .build(),
                 )
-                .property(Rows::create().row("*").row("*").build())
+                .rows(Rows::create().row("*").row("*").build())
                 .child(
                     Grid::create()
                         .selector("blue")
-                        .property(GridColumn(0))
+                        .attach_property(GridColumn(0))
                         .child(TextBlock::create().text("(0,0)")),
                 )
                 .child(
                     Grid::create()
                         .selector("yellow")
-                        .property(GridColumn(1))
+                        .attach_property(GridColumn(1))
                         .child(
                             TextBlock::create()
                                 .text("(1,0)")
@@ -41,18 +41,18 @@ impl Widget for MainView {
                 .child(
                     Grid::create()
                         .selector("red")
-                        .property(GridColumn(2))
+                        .attach_property(GridColumn(2))
                         .child(TextBlock::create().text("(1,1)")),
                 )
                 .child(
                     Grid::create()
                         .selector("olive")
-                        .property(GridColumn(1))
-                        .property(GridRow(1))
-                        .property(ColumnSpan(2))
+                        .attach_property(GridColumn(1))
+                        .attach_property(GridRow(1))
+                        .attach_property(ColumnSpan(2))
                         .child(TextBlock::create().text("(1,1)")),
                 ),
-        )
+        ).debug_name("MainView")
     }
 }
 

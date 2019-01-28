@@ -1,13 +1,9 @@
 use crate::{
     layout::FixedSizeLayout,
-    properties::{HorizontalAlignmentProperty, Text, TextProperty, VerticalAlignmentProperty},
+    properties::TextProperty,
     render_object::TextRenderObject,
-    theme::SelectorProperty,
     widget::{Template, Widget},
 };
-
-#[macro_use]
-use crate::widget;
 
 /// The `TextBlock` widget is used to draw text. It is not interactive.
 ///
@@ -27,23 +23,15 @@ impl Widget for TextBlock {
     type Template = TextBlockTemplate;
 
     fn create() -> Self::Template {
-        TextBlockTemplate(
-            Template::default()
-                .layout(FixedSizeLayout)
-                .render_object(TextRenderObject)
-                .debug_name("TextBlock"),
-        )
-        .text("TextBlock")
-        .selector("textblock")
+        TextBlockTemplate::new()
+            .layout(FixedSizeLayout::new())
+            .render_object(TextRenderObject)
+            .debug_name("TextBlock")
+            .text("TextBlock")
+            .selector("textblock")
     }
 }
 
-provide_properties!(
-    TextBlockTemplate,
-    [
-        TextProperty,
-        VerticalAlignmentProperty,
-        HorizontalAlignmentProperty,
-        SelectorProperty
-    ]
+template!(
+    TextBlockTemplate, [TextProperty]
 );

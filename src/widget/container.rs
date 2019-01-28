@@ -21,7 +21,7 @@ pub struct Container;
 
 impl Widget for Container {
     fn create() -> Template {
-        Template::default()
+        Template::new()
            .parent_type(ParentType::Single)
             .property(Selector::from("container"))
             .render_object(RectangleRenderObject)

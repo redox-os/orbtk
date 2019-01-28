@@ -20,7 +20,7 @@ pub struct ImageWidget;
 
 impl Widget for ImageWidget {
     fn create() -> Template {
-        Template::default()
+        Template::new()
             .property(Selector::from("imagewidget"))
             .layout(ImageSizeLayout)
             .render_object(ImageRenderObject)

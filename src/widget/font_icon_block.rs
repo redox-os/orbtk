@@ -20,7 +20,7 @@ pub struct FontIconBlock;
 
 impl Widget for FontIconBlock {
     fn create() -> Template {
-        Template::default()
+        Template::new()
             .property(Selector::from("fonticon"))
             .layout(FontIconSizeLayout)
             .render_object(FontIconRenderObject)

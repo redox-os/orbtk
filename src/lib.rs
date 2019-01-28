@@ -6,6 +6,9 @@ pub use dces::prelude::*;
 #[macro_use]
 extern crate lazy_static;
 
+#[macro_use]
+mod macros;
+
 pub use crate::application::*;
 pub use crate::backend::*;
 pub use crate::enums::{Alignment, ParentType, Placement, ScrollMode};
@@ -16,8 +19,9 @@ pub use crate::render_object::*;
 pub use crate::structs::*;
 pub use crate::styling::theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS};
 pub use crate::systems::*;
-pub use crate::theme::{Selector, Theme};
+pub use crate::theme::{Selector, Theme, SelectorProperty};
 pub use crate::widget::*;
+
 
 pub mod application;
 pub mod backend;
@@ -30,5 +34,6 @@ pub mod structs;
 pub mod styling;
 pub mod systems;
 pub mod theme;
-#[macro_use]
 pub mod widget;
+
+

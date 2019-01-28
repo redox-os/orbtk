@@ -28,7 +28,7 @@ impl Widget for Button {
         let icon = SharedProperty::new(FontIcon::default());
         let selector = SharedProperty::new(Selector::from("button"));
 
-        Template::default()
+        Template::new()
            .parent_type(ParentType::Single)
             .child(
                 Container::create()

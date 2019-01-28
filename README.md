@@ -54,7 +54,7 @@ struct MainView;
 
 impl Widget for MainView {
     fn create() -> Template {
-        Template::default()
+        Template::new()
            .parent_type(ParentType::Single)
             .child(
                 Container::create()

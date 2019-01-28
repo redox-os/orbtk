@@ -1,5 +1,4 @@
 use std::{collections::HashSet, ops::Add};
-use crate::widget::Template;
 
 #[derive(Clone, Debug)]
 pub enum SelectorRelation {
@@ -36,6 +35,8 @@ pub struct Selector {
     pub pseudo_classes: HashSet<String>,
     pub relation: Option<Box<SelectorRelation>>,
 }
+
+property!(Selector, SelectorProperty, selector, shared_selector);
 
 impl Selector {
     pub fn new() -> Self {
@@ -135,17 +136,5 @@ impl Clone for Selector {
             pseudo_classes: self.pseudo_classes.clone(),
             relation: self.relation.clone(),
         }
-    }
-}
-
-pub trait SelectorProperty: Sized + From<Template> + Into<Template> {
-    fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
-        Self::from(transform(self.into()))
-    }
-
-    fn selector<S: Into<Selector>>(self, selector: S) -> Self {
-        self.template(|template| {
-            template.property(selector.into())
-        })
     }
 }

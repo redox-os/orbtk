@@ -73,7 +73,7 @@
 //         //Fill the polygon and draw a stroke
 //         canvas.fill();
 
-//         Template::default()
+//         Template::new()
 //            .parent_type(ParentType::Single)
 //             .debug_name("MainView")
 //             .child(CanvasWidget::create().property(canvas))

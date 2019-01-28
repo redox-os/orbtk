@@ -44,7 +44,7 @@ pub struct Cursor;
 
 impl Widget for Cursor {
     fn create() -> Template {
-        Template::default()
+        Template::new()
             .property(Text::default())
             .property(Selector::from("cursor"))
             .property(TextSelection::default())

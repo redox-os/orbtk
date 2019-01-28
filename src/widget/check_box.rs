@@ -31,7 +31,7 @@ impl Widget for CheckBox {
         let icon = SharedProperty::new(FontIcon::from(material_font_icons::CHECK_FONT_ICON));
         let selector = SharedProperty::new(Selector::from("checkbox"));
 
-        Template::default()
+        Template::new()
            .parent_type(ParentType::Single)
             .child(
                 Row::create()

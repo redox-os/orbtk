@@ -1,5 +1,7 @@
+use std::f64;
+
 /// This struct is used to add bound constraints to a widget.
-#[derive(Default, Clone, Copy)]
+#[derive(Clone, Copy)]
 pub struct Constraint {
     width: f64,
     height: f64,
@@ -7,6 +9,19 @@ pub struct Constraint {
     min_height: f64,
     max_width: f64,
     max_height: f64,
+}
+
+impl Default for Constraint {
+    fn default() -> Self {
+        Constraint {
+            width: 0.0,
+            height: 0.0,
+            min_width: 0.0,
+            min_height: 0.0,
+            max_width: f64::MAX,
+            max_height: f64::MAX,
+        }
+    }
 }
 
 impl Constraint {

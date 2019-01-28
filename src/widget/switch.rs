@@ -58,7 +58,7 @@ impl Widget for Switch {
         let selector = Selector::from("switch");
         let selected = SharedProperty::new(Selected(false));
 
-        Template::default()
+        Template::new()
            .parent_type(ParentType::Single)
             .child(
                 Container::create()

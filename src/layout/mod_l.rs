@@ -1,27 +1,43 @@
-use std::{
-    cell::RefCell,
-    collections::BTreeMap,
-    rc::Rc,
-};
+//! This module contains all layout objects used in OrbTk. Layout objects are used to define the layout of a widget, how
+//! to place and order its children.
 
 use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
-    application::Tree,
     properties::{Constraint, GridColumn, HorizontalAlignment, Margin, VerticalAlignment},
     systems::LayoutResult,
 };
 
-pub use self::grid::GridLayout;
-pub use self::fixed_size::FixedSizeLayout;
+// --- obsolete ---
 
+
+//pub use self::padding::PaddingLayout;
+//pub use self::scroll::ScrollLayout;
+//pub use self::text_selection_layout::TextSelectionLayout;
+//
+
+//mod padding;
+//mod scroll;
+//mod text_selection_layout;
+
+// todo: stack layout
+
+// --- obsolete ---
+pub use self::fixed_size::FixedSizeLayout;
+pub use self::grid::GridLayout;
 
 mod grid;
 mod fixed_size;
 
 pub trait Layout {
-    fn measure(&self, entity: Entity, ecm: &mut EntityComponentManager, tree: &Tree, layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>) -> (f64, f64);
-    fn arrange(&self, parent_size: (f64, f64), entity: Entity, ecm: &mut EntityComponentManager, tree: &Tree, layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>) -> (f64, f64);
+    fn layout(
+        &self,
+        entity: Entity,
+        ecm: &mut EntityComponentManager,
+        parent_constraint: &Constraint,
+        children: &[Entity],
+        size: Option<(f64, f64)>,
+    ) -> LayoutResult;
 }
 
 // --- helpers ---
@@ -51,14 +67,6 @@ pub fn get_margin(entity: Entity, ecm: &EntityComponentManager) -> Margin {
     }
 
     Margin::default()
-}
-
-pub fn get_constraint(entity: Entity, ecm: &EntityComponentManager) -> Constraint {
-    if let Ok(constraint) = ecm.borrow_component::<Constraint>(entity) {
-        return *constraint;
-    }
-
-    Constraint::default()
 }
 
 // todo provide helpers for basic properties get_.. borrow_.. borrow_mut..

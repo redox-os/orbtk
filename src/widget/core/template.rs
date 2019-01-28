@@ -3,15 +3,12 @@ use std::{any::TypeId, collections::HashMap, rc::Rc};
 use dces::prelude::{Component, ComponentBox};
 
 use crate::{
-    enums::{ParentType, Visibility},
+    enums::ParentType,
     event::EventHandler,
     layout::{GridLayout, Layout},
     properties::{Bounds, Constraint, HorizontalAlignment, Margin, VerticalAlignment},
     render_object::RenderObject,
-    structs::Point,
-    theme::Selector,
 };
-
 
 use super::{SharedProperty, State};
 
@@ -87,6 +84,10 @@ impl Default for Template {
 }
 
 impl Template {
+    /// Creates a new template with default values.
+    pub fn new() -> Self {
+        Template::default()
+    }
     /// Set the debug name of the widget. It is used to print the name of the widget while widget creation if `debug_flag` on window is set to `true`.
     pub fn debug_name(mut self, name: impl Into<String>) -> Self {
         self.debug_name = name.into();
@@ -186,16 +187,6 @@ impl Template {
         self
     }
 
-    /// Inserts the selector.
-    pub fn selector<S: Into<Selector>>(self, selector: S) -> Self {
-        self.property(selector.into())
-    }
-
-    /// Inserts a shared selector.
-    pub fn shared_selector<S: Into<Selector>>(self, selector: S) -> Self {
-        self.shared_property(SharedProperty::new(selector.into()))
-    }
-
     /// Inserts the vertical alignment.
     pub fn vertical_alignment<V: Into<VerticalAlignment>>(self, vertical_alignment: V) -> Self {
         self.property(vertical_alignment.into())
@@ -208,43 +199,58 @@ impl Template {
     ) -> Self {
         self.shared_property(SharedProperty::new(vertical_alignment.into()))
     }
-
-    /// Inserts the horizontal alignment.
-    pub fn horizontal_alignment<H: Into<HorizontalAlignment>>(
-        self,
-        horizontal_alignment: H,
-    ) -> Self {
-        self.property(horizontal_alignment.into())
-    }
-
-    /// Inserts a shared horizontal alignment.
-    pub fn shared_horizontal_alignment<H: Into<HorizontalAlignment>>(
-        self,
-        horizontal_alignment: H,
-    ) -> Self {
-        self.shared_property(SharedProperty::new(horizontal_alignment.into()))
-    }
 }
 
-#[macro_export]
-macro_rules! provide_properties {
-    ($type:ident, [ $( $derive:ident ),* ]) => (
-        pub struct $type(Template);
 
-        impl From<Template> for $type {
-            fn from(template: Template) -> Self {
-                $type(template)
-            }
-        }
+/// Used as base for widget templates.
+pub trait TemplateBase: Sized + From<Template> + Into<Template> {
+    /// Transforms the widget into a template.
+    fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
+        Self::from(transform(self.into()))
+    }
 
-        impl Into<Template> for $type {
-            fn into(self) -> Template {
-                self.0
-            }
-        }
+    /// Inserts a debug name.
+    fn debug_name(self, name: impl Into<String>) -> Self {
+        self.template(|template| template.debug_name(name))
+    }
 
-        $(
-            impl $derive for $type {}
-        )*
-    )
+    /// Inserts a parent type.
+    fn parent_type(self, parent_type: ParentType) -> Self {
+        self.template(|template| template.parent_type(parent_type))
+    }
+
+    /// Inserts a child.
+    fn child<T: Into<Template>>(self, child: T) -> Self {
+        self.template(|template| template.child(child))
+    }
+
+    /// Inserts a state.
+    fn state(self, state: Rc<dyn State>) -> Self {
+        self.template(|template| template.state(state))
+    }
+
+    /// Inserts a event handler.
+    fn event_handler(self, handler: impl Into<Rc<dyn EventHandler>>) -> Self {
+        self.template(|template| template.event_handler(handler))
+    }
+
+    /// Inserts a render object.
+    fn render_object(self, render_object: impl Into<Box<dyn RenderObject>>) -> Self {
+        self.template(|template| template.render_object(render_object))
+    }
+
+    /// Inserts a layout.
+    fn layout(self, layout: impl Into<Box<dyn Layout>>) -> Self {
+        self.template(|template| template.layout(layout))
+    }
+
+    /// Attaches a property.
+    fn attach_property<C: Component>(self, property: C) -> Self {
+        self.template(|template| template.property(property))
+    }
+
+    /// Attatches a shared property.
+    fn attach_shared_property(self, property: SharedProperty) -> Self {
+        self.template(|template| template.shared_property(property))
+    }
 }

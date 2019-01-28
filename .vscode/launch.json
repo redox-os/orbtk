@@ -62,7 +62,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug minimal",
+            "name": "Debug grid",
             "program": "${workspaceFolder}/target/debug/examples/grid",
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build",

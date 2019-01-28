@@ -194,7 +194,7 @@ impl Widget for TextBox {
         let state = Rc::new(TextBoxState::default());
         let click_state = state.clone();
 
-        Template::default()
+        Template::new()
            .parent_type(ParentType::Single)
             .property(Focused(false))
             .child(

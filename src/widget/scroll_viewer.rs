@@ -21,7 +21,7 @@ pub struct ScrollViewer;
 
 impl Widget for ScrollViewer {
     fn create() -> Template {
-        Template::default()
+        Template::new()
             .parent_type(ParentType::Single)
             .property(Offset::default())
             .property(ScrollViewerMode::default())
