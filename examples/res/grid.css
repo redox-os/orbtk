@@ -1,23 +1,22 @@
-green {
-    background: green;
+* {
+    font-size: 24;
 }
 
-blue {
-    background: blue;
-    margin-left: 10;
-    margin-bottom: 4;
+lynch {
+    background: #647b91;
 }
 
-yellow {
-    background: yellow;
+bluebayoux {
+    background: #516475;
     width: 150;
-    margin: 10;
 }
 
-red {
-    background: red;
+linkwater {
+    background: #dfebf5;
+    color: #3b434a;
 }
 
-olive {
-    background: olive;
+goldendream {
+    background: #efd035;
+    color: #3b434a;
 }

@@ -1,5 +1,5 @@
 /// Is used to control the visibility of a widget
-#[derive(PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Visibility {
     /// The widget is visible.
     Visible,
@@ -11,8 +11,20 @@ pub enum Visibility {
     Collapsed,
 }
 
+property!(Visibility, VisibilityProperty, visibility, shared_visibility);
+
 impl Default for Visibility {
     fn default() -> Visibility {
         Visibility::Visible
+    }
+}
+
+impl From<&str> for Visibility {
+    fn from(t: &str) -> Self {
+        match t {
+            "Hidden" | "hidden" => Visibility::Hidden,
+            "Collapsed" | "collapsed" => Visibility::Collapsed,
+            _ => Visibility::Visible,
+        }
     }
 }

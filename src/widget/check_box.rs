@@ -1,13 +1,12 @@
 use crate::{
-    enums::ParentType,
-    properties::{FontIcon, Text, Selected},
-    styling::vector_graphics::material_font_icons,
-    theme::Selector,
-    widget::{
-        Center, Container, FontIconBlock, Row, SharedProperty, Spacer, Template, TextBlock, Widget,
+    material_font_icons,
+    properties::{
+        Constraint, ConstraintBuilder, FontIcon, FontIconProperty, OrientationProperty,
+        PressedProperty, SelectedProperty, Text, TextProperty
     },
+    theme::Selector,
+    widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
 };
-
 /// The `Checkbox` widget can be switch its selected state. It contains a selection box and a text.
 ///
 /// # Shared Properties
@@ -26,39 +25,54 @@ use crate::{
 pub struct CheckBox;
 
 impl Widget for CheckBox {
-    fn create() -> Template {
+    type Template = CheckBoxTemplate;
+
+    fn create() -> Self::Template {
         let text = SharedProperty::new(Text::default());
         let icon = SharedProperty::new(FontIcon::from(material_font_icons::CHECK_FONT_ICON));
         let selector = SharedProperty::new(Selector::from("checkbox"));
 
-        Template::new()
-           .parent_type(ParentType::Single)
+        CheckBoxTemplate::new()
+            .constraint(Constraint::create().height(24.0).build())
             .child(
-                Row::create()
+                Stack::create()
+                    .orientation("Horizontal")
                     .child(
                         Container::create()
+                            .constraint(Constraint::create().width(24.0).height(24.0).build())
                             .child(
-                                Center::create().child(
-                                    FontIconBlock::create()
-                                        .shared_property(icon.clone())
-                                        .shared_property(selector.clone()),
-                                ),
+                                FontIconBlock::create()
+                                    .vertical_alignment("Center")
+                                    .horizontal_alignment("Center")
+                                    .shared_font_icon(icon.clone())
+                                    .shared_selector(selector.clone()),
                             )
-                            .shared_property(selector.clone()),
+                            .shared_selector(selector.clone()),
                     )
-                    .child(Spacer::create())
                     .child(
-                        Center::create().child(
-                            TextBlock::create()
-                                .shared_property(text.clone())
-                                .shared_property(selector.clone()),
-                        ),
+                        TextBlock::create()
+                            .vertical_alignment("Center")
+                            .margin((0.8, 0.0, 0.0, 0.0))
+                            .shared_text(text.clone())
+                            .shared_selector(selector.clone()),
                     ),
             )
-            .shared_property(icon)
-            .shared_property(text)
-            .shared_property(selector)
-            .property(Selected(false))
+            .shared_font_icon(icon)
+            .shared_text(text)
+            .shared_selector(selector)
+            .selected(false)
             .debug_name("CheckBox")
     }
 }
+
+template!(
+    CheckBoxTemplate,
+    [
+        TextProperty,
+        FontIconProperty,
+        PressedProperty,
+        SelectedProperty
+    ]
+);
+
+// todo attach event handler

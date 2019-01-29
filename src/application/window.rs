@@ -13,7 +13,7 @@ use crate::{
     layout::Layout,
     properties::{Bounds, Constraint},
     render_object::RenderObject,
-    structs::{Position, Size},
+    structs::Size,
     systems::{
         EventSystem, InitSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem,
     },

@@ -15,7 +15,7 @@ use crate::{
         MouseUpEvent, SystemEvent, WindowEvent,
     },
     properties::{Bounds, Constraint, Enabled, Focused, Pressed, Selected},
-    structs::{Position, Size},
+    structs::Size,
     widget::WidgetContainer,
     Global,
 };

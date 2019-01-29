@@ -1,5 +1,5 @@
 use crate::{
-    layout::StretchLayout,
+    layout::FixedSizeLayout,
     render_object::ImageRenderObject,
     theme::Selector,
     widget::{Template, Widget},
@@ -19,10 +19,12 @@ use crate::{
 pub struct CanvasWidget;
 
 impl Widget for CanvasWidget {
+    type Template = Template;
+    
     fn create() -> Template {
         Template::new()
             .property(Selector::from("imagewidget"))
-            .layout(StretchLayout::default())
+            .layout(FixedSizeLayout::default())
             .render_object(ImageRenderObject)
             .debug_name("ImageWidget")
     }

@@ -4,8 +4,8 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 
 use crate::{
     application::{Global, Tree},
-    backend::{Backend, FontMeasure, FONT_MEASURE},
-    properties::{Constraint, Margin, Padding, FontIcon, PrimaryFontIcon, SecondaryFontIcon},
+    backend::Backend,
+    properties::{Constraint, Margin, Padding},
     structs::{Spacer, Thickness},
     theme::{Selector, Theme},
 };
@@ -134,7 +134,7 @@ impl System<Tree> for InitSystem {
         // init css ids
         for node in tree.into_iter() {
             self.init_id(node, ecm);
-            self.read_init_from_theme(node, ecm, context.theme);
+            //self.read_init_from_theme(node, ecm, context.theme);
         }
     }
 }

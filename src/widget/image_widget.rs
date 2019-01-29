@@ -1,7 +1,7 @@
 use crate::{
-    layout::ImageSizeLayout,
+    layout::FixedSizeLayout,
     render_object::ImageRenderObject,
-    theme::Selector,
+    properties::ImageProperty,
     widget::{Template, Widget},
 };
 
@@ -19,11 +19,15 @@ use crate::{
 pub struct ImageWidget;
 
 impl Widget for ImageWidget {
-    fn create() -> Template {
-        Template::new()
-            .property(Selector::from("imagewidget"))
-            .layout(ImageSizeLayout)
+    type Template = ImageTemplate;
+
+    fn create() -> Self::Template {
+        ImageTemplate::new()
+            .selector("imagewidget")
+            .layout(FixedSizeLayout::new())
             .render_object(ImageRenderObject)
             .debug_name("ImageWidget")
     }
 }
+
+template!(ImageTemplate, [ImageProperty]);

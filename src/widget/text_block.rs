@@ -15,7 +15,7 @@ use crate::{
 /// # Others
 ///
 /// * `ParentType`- None.
-/// * `TextSizeLayout` - Used to layout the widget.
+/// * `FixedSizeLayout` - Used to layout the widget.
 /// * `TextRenderObject` - Used to draw the text of the widget.
 pub struct TextBlock;
 

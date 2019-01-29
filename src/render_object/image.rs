@@ -1,8 +1,7 @@
-use orbclient::Renderer as OrbRenderer;
-
 use crate::{
     backend::Renderer,
-    properties::{Bounds, Image, Point},
+    properties::{Bounds, Image},
+    structs::Point,
     render_object::RenderObject,
     widget::Context,
 };
@@ -38,10 +37,6 @@ impl RenderObject for ImageRenderObject {
             if let Ok(image) = widget.borrow_property::<Image>() {
                 renderer.render_image(image.data(), bounds, &parent_bounds, global_position);
             }
-
-//            if let Ok(canvas) = widget.borrow_property::<Canvas>() {
-//                renderer.render_image(&canvas.data, bounds, &parent_bounds, global_position);
-//            }
         }
     }
 }

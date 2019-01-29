@@ -1,4 +1,3 @@
-// todo: write tests.
 use super::*;
 
 #[test]

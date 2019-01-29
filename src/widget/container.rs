@@ -1,8 +1,7 @@
 use crate::{
-    enums::ParentType,
     layout::PaddingLayout,
+    properties::PaddingProperty,
     render_object::RectangleRenderObject,
-    theme::Selector,
     widget::{Template, Widget},
 };
 
@@ -20,12 +19,16 @@ use crate::{
 pub struct Container;
 
 impl Widget for Container {
-    fn create() -> Template {
-        Template::new()
-           .parent_type(ParentType::Single)
-            .property(Selector::from("container"))
+    type Template = ContainerTemplate;
+
+    fn create() -> Self::Template {
+        ContainerTemplate::new()
+            .padding(0.0)
             .render_object(RectangleRenderObject)
-            .layout(PaddingLayout)
+            .layout(PaddingLayout::new())
+            .selector("container")
             .debug_name("Container")
     }
 }
+
+template!(ContainerTemplate, [PaddingProperty]);

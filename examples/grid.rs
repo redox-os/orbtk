@@ -2,57 +2,73 @@ use orbtk::*;
 
 struct MainView;
 
-// todo: check running by each system
-
-// todo: use ParentType::Single as default
-
 impl Widget for MainView {
     type Template = Template;
 
     fn create() -> Self::Template {
-        Template::new().child(
-            Grid::create()
-                .selector("green")
-                .columns(
-                    Columns::create()
-                        .column("*")
-                        .column("Auto")
-                        .column(50.0)
-                        .build(),
-                )
-                .rows(Rows::create().row("*").row("*").build())
-                .child(
-                    Grid::create()
-                        .selector("blue")
-                        .attach_property(GridColumn(0))
-                        .child(TextBlock::create().text("(0,0)")),
-                )
-                .child(
-                    Grid::create()
-                        .selector("yellow")
-                        .attach_property(GridColumn(1))
-                        .child(
-                            TextBlock::create()
-                                .text("(1,0)")
-                                .horizontal_alignment("Center")
-                                .vertical_alignment("Center"),
-                        ),
-                )
-                .child(
-                    Grid::create()
-                        .selector("red")
-                        .attach_property(GridColumn(2))
-                        .child(TextBlock::create().text("(1,1)")),
-                )
-                .child(
-                    Grid::create()
-                        .selector("olive")
-                        .attach_property(GridColumn(1))
-                        .attach_property(GridRow(1))
-                        .attach_property(ColumnSpan(2))
-                        .child(TextBlock::create().text("(1,1)")),
-                ),
-        ).debug_name("MainView")
+        Template::new()
+            .child(
+                Grid::create()
+                    .columns(
+                        Columns::create()
+                            .column("*")
+                            .column("Auto")
+                            .column(50.0)
+                            .build(),
+                    )
+                    .rows(Rows::create().row("*").row("*").build())
+                    .child(
+                        Grid::create()
+                            .selector("lynch")
+                            .margin((10.0, 0.0, 0.0, 4.0))
+                            .attach_property(GridColumn(0))
+                            .child(
+                                TextBlock::create()
+                                    .text("(0,0)")
+                                    .horizontal_alignment("Center")
+                                    .vertical_alignment("Center"),
+                            ),
+                    )
+                    .child(
+                        Grid::create()
+                            .selector("bluebayoux")
+                            .margin(10.0)
+                            .attach_property(GridColumn(1))
+                            .child(
+                                TextBlock::create()
+                                    .text("(1,0)")
+                                    .horizontal_alignment("Center")
+                                    .vertical_alignment("Center"),
+                            ),
+                    )
+                    .child(
+                        Grid::create()
+                            .selector("linkwater")
+                            .attach_property(GridColumn(2))
+                            .child(
+                                TextBlock::create()
+                                    .text("(2,0)")
+                                    .selector("linkwater")
+                                    .horizontal_alignment("Center")
+                                    .vertical_alignment("Center"),
+                            ),
+                    )
+                    .child(
+                        Grid::create()
+                            .selector("goldendream")
+                            .attach_property(GridColumn(0))
+                            .attach_property(GridRow(1))
+                            .attach_property(ColumnSpan(3))
+                            .child(
+                                TextBlock::create()
+                                    .text("(0,1) - ColumnSpan 3")
+                                    .selector("goldendream")
+                                    .horizontal_alignment("Center")
+                                    .vertical_alignment("Center"),
+                            ),
+                    ),
+            )
+            .debug_name("MainView")
     }
 }
 
@@ -69,7 +85,7 @@ fn main() {
                 .build(),
         )
         .resizable(true)
-        .debug_flag(true)
+        .debug_flag(false)
         .build();
     application.run();
 }

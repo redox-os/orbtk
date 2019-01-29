@@ -9,10 +9,9 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 use crate::{
     application::Tree,
     backend::Backend,
-    enums::Visibility,
-    properties::Bounds,
+    properties::{Bounds, Visibility},
     render_object::RenderObject,
-    structs::{Point, Position, Size},
+    structs::{Point, Position},
     theme::Selector,
     widget::Context,
 };
@@ -83,10 +82,6 @@ impl System<Tree> for RenderSystem {
                     ),
                     &global_position,
                 );
-            }
-
-            if let Some(parent) = tree.parent[&node] {
-                println!("Node: {}, parent: {}", node, parent);
             }
 
             // render debug border for each widget

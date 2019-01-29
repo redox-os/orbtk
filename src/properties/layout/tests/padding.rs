@@ -56,3 +56,20 @@ fn test_set_thickness() {
 
     assert_eq!(padding.thickness(), thickness);
 }
+
+#[test]
+fn test_into() {
+    let padding: Padding = (10.0, 12.0, 13.0, 14.0).into();
+
+    assert_eq!(padding.left(), 10.0);
+    assert_eq!(padding.top(), 12.0);
+    assert_eq!(padding.right(), 13.0);
+    assert_eq!(padding.bottom(), 14.0);
+
+    let padding: Padding = 10.0.into();
+
+    assert_eq!(padding.left(), 10.0);
+    assert_eq!(padding.top(), 10.0);
+    assert_eq!(padding.right(), 10.0);
+    assert_eq!(padding.bottom(), 10.0);
+}

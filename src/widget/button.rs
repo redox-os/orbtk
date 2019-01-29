@@ -1,8 +1,10 @@
 use crate::{
-    enums::ParentType,
-    properties::{FontIcon, Text, Pressed},
+    properties::{
+        Constraint, ConstraintBuilder, FontIcon, FontIconProperty, OrientationProperty,
+        PaddingProperty, PressedProperty, Text, TextProperty,
+    },
     theme::Selector,
-    widget::{Center, Container, FontIconBlock, Row, SharedProperty, Template, TextBlock, Widget},
+    widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
 };
 
 /// The `Button` widget can be clicked by user. It's used to peform an action.
@@ -23,36 +25,46 @@ use crate::{
 pub struct Button;
 
 impl Widget for Button {
-    fn create() -> Template {
+    type Template = ButtonTemplate;
+
+    fn create() -> Self::Template {
         let text = SharedProperty::new(Text::default());
         let icon = SharedProperty::new(FontIcon::default());
         let selector = SharedProperty::new(Selector::from("button"));
 
-        Template::new()
-           .parent_type(ParentType::Single)
+        ButtonTemplate::new()
+            .constraint(Constraint::create().height(32.0).min_width(80.0).build())
             .child(
                 Container::create()
-                    .shared_property(selector.clone())
+                    .padding((8.0, 0.0, 8.0, 0.0))
+                    .shared_selector(selector.clone())
                     .child(
-                        Center::create().child(
-                            Row::create()
-                                .child(
-                                    FontIconBlock::create()
-                                        .shared_property(icon.clone())
-                                        .shared_property(selector.clone()),
-                                )
-                                .child(
-                                    TextBlock::create()
-                                        .shared_property(text.clone())
-                                        .shared_property(selector.clone()),
-                                ),
-                        ),
+                        Stack::create()
+                            .child(
+                                FontIconBlock::create()
+                                    .margin((0.0, 0.0, 2.0, 0.0))
+                                    .shared_font_icon(icon.clone())
+                                    .shared_selector(selector.clone()),
+                            )
+                            .child(
+                                TextBlock::create()
+                                    .shared_text(text.clone())
+                                    .shared_selector(selector.clone()),
+                            )
+                            .orientation("Horizontal")
+                            .vertical_alignment("Center")
+                            .horizontal_alignment("Center"),
                     ),
             )
-            .shared_property(text)
-            .shared_property(icon)
-            .shared_property(selector)
-            .property(Pressed(false))
+            .shared_text(text)
+            .shared_font_icon(icon)
+            .shared_selector(selector)
+            .pressed(false)
             .debug_name("Button")
     }
 }
+
+template!(
+    ButtonTemplate,
+    [TextProperty, FontIconProperty, PressedProperty]
+);

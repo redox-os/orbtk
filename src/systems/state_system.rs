@@ -7,13 +7,9 @@ use std::{
 use dces::prelude::{Entity, EntityComponentManager, System};
 
 use crate::{
-    application::{Global, Tree},
-    backend::{Backend, FontMeasure, FONT_MEASURE},
-    properties::{
-        Constraint, Enabled, Focused, FontIcon, Text, Pressed, PrimaryFontIcon, SecondaryFontIcon,
-        Selected,
-    },
-    theme::Selector,
+    application::Tree,
+    backend::Backend,
+    properties::{Enabled, Focused, Pressed, Selected},
     widget::{
         add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
     },
@@ -148,35 +144,6 @@ impl System<Tree> for StateSystem {
                         context.entity = *entity;
                         state.receive_messages(&mut context, &messages);
                     }
-                }
-            }
-        }
-
-        for node in tree.into_iter() {
-            let size = {
-                if let Ok(selector) = ecm.borrow_component::<Selector>(node) {
-                    if let Ok(text) = ecm.borrow_component::<Text>(node) {
-                        if text.0.is_empty() {
-                            None
-                        } else {
-                            Some(FONT_MEASURE.measure(
-                                &text.0,
-                                &state_context.theme.string("font-family", selector),
-                                state_context.theme.uint("font-size", selector),
-                            ))
-                        }
-                    } else {
-                        None
-                    }
-                } else {
-                    None
-                }
-            };
-
-            if let Some(size) = size {
-                if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(node) {
-                    constraint.set_width(size.0 as f64);
-                    constraint.set_height(size.1 as f64);
                 }
             }
         }

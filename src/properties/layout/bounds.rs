@@ -1,4 +1,4 @@
-use crate::structs::{Point, Position, Rect, Size};
+use crate::structs::{Position, Rect, Size};
 
 /// Describes the actual bounds of a widget.
 #[derive(Default, Copy, Clone)]

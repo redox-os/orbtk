@@ -35,8 +35,8 @@ impl Widget for Grid {
             .parent_type(ParentType::Multi)
             .layout(GridLayout::default())
             .render_object(RectangleRenderObject)
-            .debug_name("Grid")
             .selector("grid")
+            .debug_name("Grid")
     }
 }
 

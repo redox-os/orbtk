@@ -6,7 +6,14 @@ macro_rules! template {
      
         use crate::{
             widget::TemplateBase,
-            properties::{HorizontalAlignmentProperty, VerticalAlignmentProperty},
+            properties::{
+                ConstraintProperty,
+                HorizontalAlignmentProperty, 
+                VerticalAlignmentProperty,
+                EnabledProperty, 
+                VisibilityProperty,
+                MarginProperty,
+            },
             theme::SelectorProperty,
         };
 
@@ -39,11 +46,19 @@ macro_rules! template {
 
         impl TemplateBase for $type {}    
 
+        impl ConstraintProperty for $type {}
+
         impl HorizontalAlignmentProperty for $type {}
 
         impl VerticalAlignmentProperty for $type {}
 
         impl SelectorProperty for $type {}
+
+        impl EnabledProperty for $type {}
+
+        impl VisibilityProperty for $type {}
+
+        impl MarginProperty for $type {}  
 
         $(
             impl $derive for $type {}

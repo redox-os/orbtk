@@ -4,12 +4,12 @@ pub use self::bounds::Bounds;
 pub use self::column::{
     Column, ColumnBuilder, ColumnSpan, ColumnWidth, Columns, ColumnsBuilder, GridColumn, ColumnsProperty
 };
-pub use self::constraint::Constraint;
+pub use self::constraint::{Constraint, ConstraintBuilder, ConstraintProperty};
 pub use self::horizontal_alignment::{HorizontalAlignment, HorizontalAlignmentProperty};
-pub use self::margin::Margin;
+pub use self::margin::{Margin, MarginProperty};
 pub use self::offset::Offset;
-pub use self::orientation::Orientation;
-pub use self::padding::Padding;
+pub use self::orientation::{Orientation, OrientationProperty};
+pub use self::padding::{Padding, PaddingProperty};
 pub use self::point::Point;
 pub use self::row::{GridRow, Row, RowBuilder, RowHeight, RowSpan, Rows, RowsBuilder, RowsProperty};
 pub use self::scroll_viewer_mode::ScrollViewerMode;

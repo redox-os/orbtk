@@ -1,9 +1,10 @@
 use crate::{
     backend::Renderer,
-    properties::{Bounds, FontIcon, Point, PrimaryFontIcon, SecondaryFontIcon},
+    properties::{Bounds, FontIcon, PrimaryFontIcon, SecondaryFontIcon},
     render_object::RenderObject,
     theme::Selector,
     widget::Context,
+    structs::Point,
 };
 
 pub struct FontIconRenderObject;

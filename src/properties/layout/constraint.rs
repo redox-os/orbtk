@@ -1,5 +1,95 @@
 use std::f64;
 
+// todo: unit test for builder
+
+/// Used to build a constraint, specifying additional details.
+#[derive(Default)]
+pub struct ConstraintBuilder {
+    width: f64,
+    height: f64,
+    min_width: f64,
+    min_height: f64,
+    max_width: f64,
+    max_height: f64,
+}
+
+/// Used to build a constraint, specifying additional details.
+impl ConstraintBuilder {
+    /// Creates a new `ConstraintBuilder` with default values.
+    pub fn new() -> Self {
+        ConstraintBuilder::default()
+    }
+
+    /// Inserts a new width.
+    pub fn width(mut self, width: f64) -> Self {
+        self.width = width;
+        self
+    }
+
+    /// Inserts a new height.
+    pub fn height(mut self, height: f64) -> Self {
+        self.height = height;
+        self
+    }
+
+    /// Inserts a new size.
+    pub fn size(mut self, size: (f64, f64)) -> Self {
+        self.width = size.0;
+        self.height = size.1;
+        self
+    }
+
+    /// Inserts a new min_width.
+    pub fn min_width(mut self, min_width: f64) -> Self {
+        self.min_width = min_width;
+        self
+    }
+
+    /// Inserts a new min_height.
+    pub fn min_height(mut self, min_height: f64) -> Self {
+        self.min_height = min_height;
+        self
+    }
+
+    /// Inserts a new min_size.
+    pub fn min_size(mut self, min_size: (f64, f64)) -> Self {
+        self.min_width = min_size.0;
+        self.min_height = min_size.1;
+        self
+    }
+
+    /// Inserts a new max_width.
+    pub fn max_width(mut self, max_width: f64) -> Self {
+        self.max_width = max_width;
+        self
+    }
+
+    /// Inserts a new max_height.
+    pub fn max_height(mut self, max_height: f64) -> Self {
+        self.max_height = max_height;
+        self
+    }
+
+     /// Inserts a new min_size.
+    pub fn max_size(mut self, max_size: (f64, f64)) -> Self {
+        self.max_width = max_size.0;
+        self.max_height = max_size.1;
+        self
+    }
+
+    /// Builds the constraint.
+    pub fn build(self) -> Constraint {
+        Constraint {
+            width: self.width,
+            height: self.height,
+            min_width: self.min_width,
+            min_height: self.min_height,
+            max_width: self.max_width,
+            max_height: self.max_height,
+        }
+    }
+}
+
 /// This struct is used to add bound constraints to a widget.
 #[derive(Clone, Copy)]
 pub struct Constraint {
@@ -10,6 +100,13 @@ pub struct Constraint {
     max_width: f64,
     max_height: f64,
 }
+
+property!(
+    Constraint,
+    ConstraintProperty,
+    constraint,
+    shared_constraint
+);
 
 impl Default for Constraint {
     fn default() -> Self {
@@ -25,6 +122,14 @@ impl Default for Constraint {
 }
 
 impl Constraint {
+    pub fn create() -> ConstraintBuilder {
+        ConstraintBuilder::new()
+    }
+
+    pub fn new() -> Self {
+        Constraint::default()
+    }
+
     /// Gets the width.
     pub fn width(&self) -> f64 {
         self.width

@@ -11,9 +11,6 @@
     icon-font-family: "Material Icons Regular";
 }
 
-grid {
-    background: green;
-}
 
 test {
     background: blue;
@@ -39,14 +36,8 @@ spacer {
 }
 
 checkbox {
-    height: 24;
-    padding-left: 3;
-    padding-top: 4;
-    padding-right: 3;
-    padding-bottom: 4;
     background: transparent;
     border-radius: 2;
-    icon-margin: 0;
     border-width: 1;
     border-color: #adb3b8;
     icon-color: transparent;
@@ -88,7 +79,6 @@ button, togglebutton {
     height: 32;
     background: #647b91;
     border-radius: 2;
-    padding: 6;
 }
 
 button.primary {
@@ -115,12 +105,14 @@ button.square {
 }
 
 container {
-    background: transparent;
     padding: 8;
 }
 
 textblock.h1 {
     font-size: 24;
+}
+blub {
+    margin: 10;
 }
 
 textbox {

@@ -2,7 +2,6 @@
 
 pub use orbclient::color::Color;
 pub use orbclient::Renderer as OrbRenderer;
-pub use orbimage::Image;
 
 pub use self::layout::*;
 pub use self::state::*;

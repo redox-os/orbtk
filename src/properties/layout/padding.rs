@@ -6,6 +6,8 @@ pub struct Padding {
     value: Thickness,
 }
 
+property!(Padding, PaddingProperty, padding, shared_padding);
+
 impl Spacer for Padding {
     fn left(&self) -> f64 {
         self.value.left
@@ -45,5 +47,21 @@ impl Spacer for Padding {
 
     fn set_thickness(&mut self, thickness: Thickness) {
         self.value = thickness;
+    }
+}
+
+impl From<(f64, f64, f64, f64)> for Padding {
+    fn from(t: (f64, f64, f64, f64)) -> Self {
+        Padding {
+            value: Thickness::new(t.0, t.1, t.2, t.3),
+        }
+    }
+}
+
+impl From<f64> for Padding {
+    fn from(t: f64) -> Self {
+        Padding {
+            value: Thickness::new(t, t, t, t),
+        }
     }
 }

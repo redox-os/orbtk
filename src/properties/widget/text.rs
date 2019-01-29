@@ -1,8 +1,8 @@
-use crate::widget::Template;
-
 /// The `Text` struct represents a string used for text drawing.
 #[derive(Default, Clone)]
 pub struct Text(pub String);
+
+property!(Text, TextProperty, text, shared_text);
 
 impl From<&str> for Text {
     fn from(s: &str) -> Text {
@@ -16,14 +16,3 @@ impl From<String> for Text {
     }
 }
 
-pub trait TextProperty: Sized + From<Template> + Into<Template> {
-    fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
-        Self::from(transform(self.into()))
-    }
-
-    fn text<L: Into<Text>>(self, text: L) -> Self {
-        self.template(|template| {
-            template.property(text.into())
-        })
-    }
-}

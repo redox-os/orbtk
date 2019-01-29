@@ -6,6 +6,14 @@ pub struct Margin {
     value: Thickness,
 }
 
+property!(Margin, MarginProperty, margin, shared_margin);
+
+impl Margin {
+    pub fn new() -> Self {
+        Margin::default()
+    }
+}
+
 impl Spacer for Margin {
     /// Gets left.
     fn left(&self) -> f64 {
@@ -55,5 +63,21 @@ impl Spacer for Margin {
     /// Sets thickness
     fn set_thickness(&mut self, thickness: Thickness) {
         self.value = thickness;
+    }
+}
+
+impl From<(f64, f64, f64, f64)> for Margin {
+    fn from(t: (f64, f64, f64, f64)) -> Self {
+        Margin {
+            value: Thickness::new(t.0, t.1, t.2, t.3),
+        }
+    }
+}
+
+impl From<f64> for Margin {
+    fn from(t: f64) -> Self {
+        Margin {
+            value: Thickness::new(t, t, t, t),
+        }
     }
 }

@@ -6,8 +6,9 @@ use crate::{
     enums::ParentType,
     event::EventHandler,
     layout::{GridLayout, Layout},
-    properties::{Bounds, Constraint, HorizontalAlignment, Margin, VerticalAlignment},
+    properties::{Bounds, Constraint, HorizontalAlignment, Margin, VerticalAlignment, Visibility},
     render_object::RenderObject,
+    structs::Point,
 };
 
 use super::{SharedProperty, State};
@@ -67,6 +68,15 @@ impl Default for Template {
         properties.insert(
             TypeId::of::<HorizontalAlignment>(),
             ComponentBox::new::<HorizontalAlignment>(HorizontalAlignment::default()),
+        );
+        properties.insert(
+            TypeId::of::<Visibility>(),
+            ComponentBox::new::<Visibility>(Visibility::default()),
+        );
+
+        properties.insert(
+            TypeId::of::<Point>(),
+            ComponentBox::new::<Point>(Point::new(0.0, 0.0)),
         );
 
         Template {
@@ -200,7 +210,6 @@ impl Template {
         self.shared_property(SharedProperty::new(vertical_alignment.into()))
     }
 }
-
 
 /// Used as base for widget templates.
 pub trait TemplateBase: Sized + From<Template> + Into<Template> {

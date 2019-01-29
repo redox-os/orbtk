@@ -8,12 +8,13 @@ use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
     application::Tree,
-    properties::{Bounds, Constraint, GridColumn, HorizontalAlignment, Margin, VerticalAlignment},
+    backend::{FontMeasure, FONT_MEASURE},
+    properties::{Bounds, Constraint, FontIcon, Image, Text, Visibility},
     structs::Size,
-    systems::LayoutResult,
+    theme::{Selector, Theme},
 };
 
-use super::{get_constraint, Layout};
+use super::{get_constraint, get_visibility, Layout};
 
 #[derive(Default)]
 pub struct FixedSizeLayout {
@@ -39,7 +40,55 @@ impl Layout for FixedSizeLayout {
         ecm: &mut EntityComponentManager,
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+        theme: &Theme,
     ) -> (f64, f64) {
+        if get_visibility(entity, ecm) == Visibility::Collapsed {
+            return (0.0, 0.0);
+        }
+
+        // -- todo will be removed after orbgl merge --
+
+        let size = {
+            if let Ok(image) = ecm.borrow_component::<Image>(entity) {
+                Some((image.width(), image.height()))
+            } else if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
+                if let Ok(text) = ecm.borrow_component::<Text>(entity) {
+                    if text.0.is_empty() {
+                        None
+                    } else {
+                        Some(FONT_MEASURE.measure(
+                            &text.0,
+                            &theme.string("font-family", selector),
+                            theme.uint("font-size", selector),
+                        ))
+                    }
+                } else if let Ok(font_icon) = ecm.borrow_component::<FontIcon>(entity) {
+                    if font_icon.0.is_empty() {
+                        None
+                    } else {
+                        Some(FONT_MEASURE.measure(
+                            &font_icon.0,
+                            &theme.string("icon-font-family", selector),
+                            theme.uint("icon-size", selector),
+                        ))
+                    }
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        };
+
+        if let Some(size) = size {
+            if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(entity) {
+                constraint.set_width(size.0 as f64);
+                constraint.set_height(size.1 as f64);
+            }
+        }
+
+        // -- todo will be removed after orbgl merge --
+
         self.desired_size.set((0.0, 0.0));
 
         let constraint = get_constraint(entity, ecm);
@@ -48,7 +97,7 @@ impl Layout for FixedSizeLayout {
 
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
-                child_layout.measure(*child, ecm, tree, layouts);
+                child_layout.measure(*child, ecm, tree, layouts, theme);
             }
         }
 
@@ -63,6 +112,10 @@ impl Layout for FixedSizeLayout {
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     ) -> (f64, f64) {
+        if get_visibility(entity, ecm) == Visibility::Collapsed {
+            return (0.0, 0.0);
+        }
+
         if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(entity) {
             bounds.set_width(self.desired_size.get().0);
             bounds.set_height(self.desired_size.get().1);

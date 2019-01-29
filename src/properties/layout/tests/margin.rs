@@ -56,3 +56,21 @@ fn test_set_thickness() {
 
     assert_eq!(margin.thickness(), thickness);
 }
+
+
+#[test]
+fn test_into() {
+    let margin : Margin = (10.0, 12.0, 13.0, 14.0).into();
+
+    assert_eq!(margin.left(), 10.0);
+    assert_eq!(margin.top(), 12.0);
+    assert_eq!(margin.right(), 13.0);
+    assert_eq!(margin.bottom(), 14.0);
+
+    let margin : Margin = 10.0.into();
+
+    assert_eq!(margin.left(), 10.0);
+    assert_eq!(margin.top(), 10.0);
+    assert_eq!(margin.right(), 10.0);
+    assert_eq!(margin.bottom(), 10.0);
+}

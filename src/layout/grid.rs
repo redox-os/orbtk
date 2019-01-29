@@ -9,14 +9,14 @@ use dces::prelude::{Entity, EntityComponentManager};
 use crate::{
     application::Tree,
     properties::{
-        Bounds, Column, ColumnSpan, ColumnWidth, Columns, Constraint, GridColumn, GridRow,
-        HorizontalAlignment, Margin, Row, RowHeight, RowSpan, Rows, RowsBuilder, VerticalAlignment,
+        Bounds, ColumnSpan, ColumnWidth, Columns, GridColumn, GridRow, Margin, RowHeight, RowSpan,
+        Rows, Visibility
     },
     structs::{Position, Size, Spacer},
-    LayoutResult,
+    theme::Theme,
 };
 
-use super::{get_constraint, get_horizontal_alignment, get_margin, get_vertical_alignment, Layout};
+use super::{get_constraint, get_horizontal_alignment, get_margin, get_vertical_alignment, get_visibility, Layout};
 
 #[derive(Default)]
 pub struct GridLayout {
@@ -104,13 +104,18 @@ impl Layout for GridLayout {
         ecm: &mut EntityComponentManager,
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+         theme: &Theme
     ) -> (f64, f64) {
+         if get_visibility(entity, ecm) == Visibility::Collapsed {
+            return (0.0, 0.0);
+        }
+
         self.children_sizes.borrow_mut().clear();
         self.desired_size.set((0.0, 0.0));
 
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
-                let child_desired_size = child_layout.measure(*child, ecm, tree, layouts);
+                let child_desired_size = child_layout.measure(*child, ecm, tree, layouts, theme);
                 let mut desired_size = self.desired_size.get();
 
                 desired_size.0 = desired_size.0.max(child_desired_size.0);
@@ -138,6 +143,10 @@ impl Layout for GridLayout {
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     ) -> (f64, f64) {
+         if get_visibility(entity, ecm) == Visibility::Collapsed {
+            return (0.0, 0.0);
+        }
+
         let horizontal_alignment = get_horizontal_alignment(entity, ecm);
         let vertical_alignment = get_vertical_alignment(entity, ecm);
         let margin = get_margin(entity, ecm);
@@ -162,7 +171,8 @@ impl Layout for GridLayout {
                     if let Some(column) = columns.get(grid_column.0) {
                         if column.width == ColumnWidth::Auto {
                             let child_width = self.children_sizes.borrow().get(child).unwrap().0;
-                            if column.current_width() < child_width {
+                            if column.current_width() < child_width + margin.left() + margin.right()
+                            {
                                 column_widths.insert(
                                     grid_column.0,
                                     child_width + margin.left() + margin.right(),
@@ -178,7 +188,8 @@ impl Layout for GridLayout {
                     if let Some(row) = rows.get(grid_row.0) {
                         if row.height == RowHeight::Auto {
                             let child_height = self.children_sizes.borrow().get(child).unwrap().1;
-                            if row.current_height() < child_height {
+                            if row.current_height() < child_height + margin.top() + margin.bottom()
+                            {
                                 row_heights.insert(
                                     grid_row.0,
                                     child_height + margin.top() + margin.bottom(),
@@ -381,7 +392,8 @@ impl Layout for GridLayout {
                     0
                 };
 
-                let (offset_y, available_height) = self.get_row_y_and_height(&rows_cache, *child, ecm, grid_row);
+                let (offset_y, available_height) =
+                    self.get_row_y_and_height(&rows_cache, *child, ecm, grid_row);
 
                 cell_position.1 = offset_y;
                 available_size.1 = available_height;
@@ -395,7 +407,7 @@ impl Layout for GridLayout {
 
             if let Ok(child_bounds) = ecm.borrow_mut_component::<Bounds>(*child) {
                 child_bounds.set_x(
-                    cell_position.1
+                    cell_position.0
                         + c_horizontal_alignment.align_x(
                             self.desired_size.get().0,
                             available_size.0,

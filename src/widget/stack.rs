@@ -1,6 +1,7 @@
 use crate::{
     enums::ParentType,
-    layout::StretchLayout,
+    layout::StackLayout,
+    properties::OrientationProperty,
     widget::{Template, Widget},
 };
 
@@ -13,10 +14,15 @@ use crate::{
 pub struct Stack;
 
 impl Widget for Stack {
-    fn create() -> Template {
-        Template::new()
-           .parent_type(ParentType::Multi)
-            .layout(StretchLayout::default())
+    type Template = StackTemplate;
+
+    fn create() -> Self::Template {
+        StackTemplate::new()
+            .orientation("Vertical")
+            .parent_type(ParentType::Multi)
+            .layout(StackLayout::new())
             .debug_name("Stack")
     }
 }
+
+template!(StackTemplate, [OrientationProperty]);
