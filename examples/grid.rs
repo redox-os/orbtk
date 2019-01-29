@@ -33,6 +33,7 @@ impl Widget for MainView {
                         Grid::create()
                             .selector("bluebayoux")
                             .margin(10.0)
+                            .constraint(Constraint::create().width(150.0).build())
                             .attach_property(GridColumn(1))
                             .child(
                                 TextBlock::create()
