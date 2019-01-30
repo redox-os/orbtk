@@ -25,7 +25,12 @@ impl Widget for MainView {
                         .child(
                             CheckBox::create()
                                 .margin((0.0, 8.0, 0.0, 0.0))
-                                .text("Toggle")
+                                .text("CheckBox")
+                                .horizontal_alignment("Left"),
+                        )
+                        .child(
+                            Switch::create()
+                                .margin((0.0, 8.0, 0.0, 0.0))
                                 .horizontal_alignment("Left"),
                         ),
                 ),

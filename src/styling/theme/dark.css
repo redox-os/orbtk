@@ -7,32 +7,7 @@
     font-family: "Roboto Regular";
     icon-size: 16;
     icon-color:  #dfebf5;
-    icon-margin: 2;
     icon-font-family: "Material Icons Regular";
-}
-
-
-test {
-    background: blue;
-    margin-left: 10;
-    margin-bottom: 4;
-}
-
-testa {
-    background: yellow;
-    width: 50;
-}
-
-testb {
-    background: red;
-}
-
-.space {
-    width: 100;
-}
-
-spacer {
-    width: 4;
 }
 
 checkbox {
@@ -49,27 +24,23 @@ checkbox:selected {
     icon-color: white;
 }
 
+grid {
+    background: transparent;
+}
+
 switch {
-    padding: 4;
     border-radius: 2;
-    icon-margin: 0;
     border-width: 1;
     border-color: #adb3b8;
     background: #6C7A90;
-    width: 56;
-    height: 32;
 }
 
 switchtoggle {
-    width: 24;
-    height: 24;
     border-radius: 2;
     background: white;
 }
 
 switchtoggle:selected {
-    width: 24;
-    height: 24;
     border-radius: 2;
     background: #F8DE4C;
 }
@@ -100,8 +71,6 @@ button:disabled, togglebutton:disabled {
 button.square {
     border-radius: 1;
     min-width: 0;
-    width: 48;
-    height: 48;
 }
 
 container {
@@ -110,9 +79,6 @@ container {
 
 textblock.h1 {
     font-size: 24;
-}
-blub {
-    margin: 10;
 }
 
 textbox {
@@ -126,7 +92,6 @@ textbox {
 }
 
 menu {
-    height: 32;
     background: #475b6e;
 }
 
@@ -136,11 +101,6 @@ menuitem {
     height: 32;
     color: #9dafbf;
     font-size: 12;
-}
-
-
-textblock.fheight {
-    height: 32;
 }
 
 textbox:watermark {

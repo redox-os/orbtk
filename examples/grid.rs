@@ -86,7 +86,6 @@ fn main() {
                 .build(),
         )
         .resizable(true)
-        .debug_flag(false)
         .build();
     application.run();
 }

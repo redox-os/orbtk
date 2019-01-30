@@ -2,7 +2,7 @@ use crate::{
     material_font_icons,
     properties::{
         Constraint, ConstraintBuilder, FontIcon, FontIconProperty, OrientationProperty,
-        PressedProperty, SelectedProperty, Text, TextProperty
+        PressedProperty, SelectedProperty, Text, TextProperty,
     },
     theme::Selector,
     widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
@@ -34,25 +34,27 @@ impl Widget for CheckBox {
 
         CheckBoxTemplate::new()
             .constraint(Constraint::create().height(24.0).build())
+            .selected(false)
+            .debug_name("CheckBox")
             .child(
                 Stack::create()
                     .orientation("Horizontal")
                     .child(
                         Container::create()
                             .constraint(Constraint::create().width(24.0).height(24.0).build())
+                            .shared_selector(selector.clone())
                             .child(
                                 FontIconBlock::create()
                                     .vertical_alignment("Center")
                                     .horizontal_alignment("Center")
                                     .shared_font_icon(icon.clone())
                                     .shared_selector(selector.clone()),
-                            )
-                            .shared_selector(selector.clone()),
+                            ),
                     )
                     .child(
                         TextBlock::create()
                             .vertical_alignment("Center")
-                            .margin((0.8, 0.0, 0.0, 0.0))
+                            .margin((8.0, 0.0, 0.0, 0.0))
                             .shared_text(text.clone())
                             .shared_selector(selector.clone()),
                     ),
@@ -60,8 +62,6 @@ impl Widget for CheckBox {
             .shared_font_icon(icon)
             .shared_text(text)
             .shared_selector(selector)
-            .selected(false)
-            .debug_name("CheckBox")
     }
 }
 

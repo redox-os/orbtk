@@ -34,12 +34,17 @@ impl Widget for Button {
 
         ButtonTemplate::new()
             .constraint(Constraint::create().height(32.0).min_width(80.0).build())
+            .pressed(false)
+            .debug_name("Button")
             .child(
                 Container::create()
                     .padding((8.0, 0.0, 8.0, 0.0))
                     .shared_selector(selector.clone())
                     .child(
                         Stack::create()
+                            .orientation("Horizontal")
+                            .vertical_alignment("Center")
+                            .horizontal_alignment("Center")
                             .child(
                                 FontIconBlock::create()
                                     .margin((0.0, 0.0, 2.0, 0.0))
@@ -50,17 +55,12 @@ impl Widget for Button {
                                 TextBlock::create()
                                     .shared_text(text.clone())
                                     .shared_selector(selector.clone()),
-                            )
-                            .orientation("Horizontal")
-                            .vertical_alignment("Center")
-                            .horizontal_alignment("Center"),
+                            ),
                     ),
             )
             .shared_text(text)
             .shared_font_icon(icon)
             .shared_selector(selector)
-            .pressed(false)
-            .debug_name("Button")
     }
 }
 

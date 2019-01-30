@@ -467,10 +467,7 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
 
             "font-family" | "icon-font-family" => Value::Str(parse_string(input)?),
 
-            "border-radius" | "border-width" | "width" | "height" | "min-width" | "min-height"
-            | "max-width" | "max-height" | "padding-top" | "padding-right" | "padding-bottom"
-            | "padding-left" | "padding" | "margin-top" | "margin-right" | "margin-bottom"
-            | "margin-left" | "margin" | "font-size" | "icon-size" | "icon-margin" => {
+            "border-radius" | "border-width" | "font-size" | "icon-size" | "icon-margin" => {
                 match input.next()? {
                     Token::Number {
                         int_value: Some(x),

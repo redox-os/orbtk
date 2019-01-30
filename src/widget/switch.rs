@@ -1,11 +1,12 @@
 use std::rc::Rc;
 
 use crate::{
-    enums::{ParentType, Placement},
-    properties::{Text, PrimaryFontIcon, SecondaryFontIcon, Selected},
-    styling::vector_graphics::material_font_icons,
+    properties::{
+        Constraint, HorizontalAlignment, PaddingProperty, PressedProperty, Selected,
+        SelectedProperty,
+    },
     theme::Selector,
-    widget::{Container, Context, SharedProperty, Stack, State, Template, Widget},
+    widget::{Container, Context, Grid, SharedProperty, State, Template, Widget},
 };
 
 // State to handle the position of switch toggle.
@@ -13,18 +14,19 @@ struct SwitchState;
 
 impl State for SwitchState {
     fn update(&self, context: &mut Context<'_>) {
-        let mut switch_toggle = context.widget_from_id("SwitchSwitchToggle").unwrap();
         let mut selected = false;
-
-        if let Ok(sel) = switch_toggle.borrow_property::<Selected>() {
+        if let Ok(sel) = context.widget().borrow_property::<Selected>() {
             selected = sel.0;
         }
 
-        if let Ok(placement) = switch_toggle.borrow_mut_property::<Placement>() {
+        let mut switch_toggle = context.widget_from_id("SwitchSwitchToggle").unwrap();
+
+        if let Ok(horizontal_alignment) = switch_toggle.borrow_mut_property::<HorizontalAlignment>()
+        {
             if selected {
-                *placement = Placement::Right;
+                *horizontal_alignment = HorizontalAlignment::Right;
             } else {
-                *placement = Placement::Left;
+                *horizontal_alignment = HorizontalAlignment::Left;
             }
         }
     }
@@ -34,8 +36,6 @@ impl State for SwitchState {
 ///
 /// # Shared Properties
 ///
-/// * `PrimaryFontIcon` - String used to display the font icon of the on state.
-/// * `SecondaryFontIcon` - String used to display the font icon of the off state.
 /// * `Selector` - CSS selector with  element name `checkbox`, used to request the theme of the widget.
 ///
 /// # Properties
@@ -48,38 +48,34 @@ impl State for SwitchState {
 pub struct Switch;
 
 impl Widget for Switch {
-    fn create() -> Template {
-        let text = SharedProperty::new(Text::default());
-        let primary_icon =
-            SharedProperty::new(PrimaryFontIcon::from(material_font_icons::CHECK_FONT_ICON));
-        let secondary_icon = SharedProperty::new(SecondaryFontIcon::from(
-            material_font_icons::CHECK_FONT_ICON,
-        ));
-        let selector = Selector::from("switch");
-        let selected = SharedProperty::new(Selected(false));
+    type Template = SwitchTemplate;
 
-        Template::new()
-           .parent_type(ParentType::Single)
-            .child(
-                Container::create()
-                    .child(
-                        Stack::create().child(
-                            Container::create()
-                                .shared_property(selected.clone())
-                                .property(Placement::default())
-                                .property(
-                                    Selector::from("switchtoggle").id("SwitchSwitchToggle"),
-                                ),
-                        ),
-                    )
-                    .property(selector.clone()),
-            )
-            .shared_property(primary_icon)
-            .shared_property(secondary_icon)
-            .shared_property(text)
-            .property(selector)
-            .shared_property(selected)
+    fn create() -> Self::Template {
+        let selector = SharedProperty::new(Selector::from("switch"));
+        let selected = SharedProperty::new(Selected::from(false));
+
+        SwitchTemplate::new()
+            .constraint(Constraint::create().width(56.0).height(32.0).build())
             .state(Rc::new(SwitchState))
             .debug_name("Switch")
+            .child(
+                Container::create()
+                    .padding(4.0)
+                    .shared_selector(selector.clone())
+                    .child(
+                        Grid::create().child(
+                            Container::create()
+                                .constraint(Constraint::create().width(24.0).height(24.0).build())
+                                .vertical_alignment("Center")
+                                .horizontal_alignment("Left")
+                                .attach_shared_property(selected.clone())
+                                .selector(Selector::from("switchtoggle").id("SwitchSwitchToggle")),
+                        ),
+                    ),
+            )
+            .shared_selector(selector)
+            .shared_selected(selected)
     }
 }
+
+template!(SwitchTemplate, [PressedProperty, SelectedProperty]);
