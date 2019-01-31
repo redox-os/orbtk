@@ -4,7 +4,7 @@ pub use self::font_icon::{FontIcon, FontIconProperty, PrimaryFontIcon, Secondary
 pub use self::image::*;
 pub use self::text::{Text, TextProperty};
 pub use self::text_selection::TextSelection;
-pub use self::water_mark::WaterMark;
+pub use self::water_mark::*;
 
 mod font_icon;
 mod image;

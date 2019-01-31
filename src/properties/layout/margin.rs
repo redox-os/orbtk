@@ -74,6 +74,14 @@ impl From<(f64, f64, f64, f64)> for Margin {
     }
 }
 
+impl From<(f64, f64)> for Margin {
+    fn from(t: (f64, f64)) -> Self {
+        Margin {
+            value: Thickness::new(t.0, t.1, t.0, t.1),
+        }
+    }
+}
+
 impl From<f64> for Margin {
     fn from(t: f64) -> Self {
         Margin {

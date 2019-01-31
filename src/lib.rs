@@ -11,7 +11,7 @@ mod macros;
 
 pub use crate::application::*;
 pub use crate::backend::*;
-pub use crate::enums::{Alignment, ParentType, Placement, ScrollMode};
+pub use crate::enums::ParentType;
 pub use crate::event::*;
 pub use crate::layout::*;
 pub use crate::properties::*;
@@ -22,7 +22,6 @@ pub use crate::styling::vector_graphics::*;
 pub use crate::systems::*;
 pub use crate::theme::{Selector, Theme, SelectorProperty};
 pub use crate::widget::*;
-
 
 pub mod application;
 pub mod backend;
@@ -36,5 +35,3 @@ pub mod styling;
 pub mod systems;
 pub mod theme;
 pub mod widget;
-
-

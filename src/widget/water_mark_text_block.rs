@@ -1,13 +1,12 @@
 use std::rc::Rc;
 
 use crate::{
-    enums::Visibility,
-    properties::{Text, WaterMark},
-    theme::Selector,
+    properties::{Text, TextProperty, Visibility, WaterMark, WaterMarkProperty},
     widget::{
-        add_selector_to_widget, remove_selector_from_widget, Context, State, Template, TextBlock,
-        Widget,
+        add_selector_to_widget, remove_selector_from_widget, Context, State, Template, Widget,
     },
+    render_object::TextRenderObject,
+    layout::FixedSizeLayout,
 };
 
 /// The `WaterMarkTextBlockState` handles the text processing of the `WaterMarkTextBlock` widget.
@@ -66,11 +65,20 @@ impl State for WaterMarkTextBlockState {
 pub struct WaterMarkTextBlock;
 
 impl Widget for WaterMarkTextBlock {
-    fn create() -> Template {
-        TextBlock::create()
-            .property(WaterMark::from("Placeholder"))
-            .property(Selector::from("watermark"))
+    type Template = WaterMarkTextBlockTemplate;
+
+    fn create() -> Self::Template {
+        WaterMarkTextBlockTemplate::new()
+            .layout(FixedSizeLayout::new())
+            .render_object(TextRenderObject)
+            .water_mark("Placeholder")
+            .selector("watermark")
             .state(Rc::new(WaterMarkTextBlockState::default()))
             .debug_name("WaterMarkTextBlock")
     }
 }
+
+template!(
+    WaterMarkTextBlockTemplate,
+    [WaterMarkProperty, TextProperty]
+);

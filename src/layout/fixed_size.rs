@@ -9,13 +9,14 @@ use dces::prelude::{Entity, EntityComponentManager};
 use crate::{
     application::Tree,
     backend::{FontMeasure, FONT_MEASURE},
-    properties::{Bounds, Constraint, FontIcon, Image, Text, Visibility},
+    properties::{Bounds, Constraint, FontIcon, Image, Text, Visibility, WaterMark},
     structs::Size,
     theme::{Selector, Theme},
 };
 
 use super::{get_constraint, get_visibility, Layout};
 
+/// Fixed size layout is defined by fixed bounds like the size of an image or the size of a text.
 #[derive(Default)]
 pub struct FixedSizeLayout {
     desired_size: Cell<(f64, f64)>,
@@ -54,7 +55,19 @@ impl Layout for FixedSizeLayout {
             } else if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
                 if let Ok(text) = ecm.borrow_component::<Text>(entity) {
                     if text.0.is_empty() {
-                        None
+                        if let Ok(water_mark) = ecm.borrow_component::<WaterMark>(entity) {
+                            if water_mark.0.is_empty() {
+                                None
+                            } else {
+                                Some(FONT_MEASURE.measure(
+                                    &text.0,
+                                    &theme.string("font-family", selector),
+                                    theme.uint("font-size", selector),
+                                ))
+                            }
+                        } else {
+                            None
+                        }
                     } else {
                         Some(FONT_MEASURE.measure(
                             &text.0,

@@ -32,6 +32,13 @@ impl Widget for MainView {
                             Switch::create()
                                 .margin((0.0, 8.0, 0.0, 0.0))
                                 .horizontal_alignment("Left"),
+                        )
+                        .child(
+                            TextBox::create()
+                                .margin((0.0, 8.0, 0.0, 0.0))
+                                .horizontal_alignment("Left")
+                                .text("")
+                                .water_mark("Insert text")
                         ),
                 ),
             )

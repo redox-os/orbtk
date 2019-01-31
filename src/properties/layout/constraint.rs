@@ -33,9 +33,9 @@ impl ConstraintBuilder {
     }
 
     /// Inserts a new size.
-    pub fn size(mut self, size: (f64, f64)) -> Self {
-        self.width = size.0;
-        self.height = size.1;
+    pub fn size(mut self, width: f64, height: f64) -> Self {
+        self.width = width;
+        self.height = height;
         self
     }
 
@@ -52,9 +52,9 @@ impl ConstraintBuilder {
     }
 
     /// Inserts a new min_size.
-    pub fn min_size(mut self, min_size: (f64, f64)) -> Self {
-        self.min_width = min_size.0;
-        self.min_height = min_size.1;
+    pub fn min_size(mut self, min_width: f64, min_height: f64) -> Self {
+        self.min_width = min_width;
+        self.min_height = min_height;
         self
     }
 
@@ -71,9 +71,9 @@ impl ConstraintBuilder {
     }
 
      /// Inserts a new min_size.
-    pub fn max_size(mut self, max_size: (f64, f64)) -> Self {
-        self.max_width = max_size.0;
-        self.max_height = max_size.1;
+    pub fn max_size(mut self, max_width: f64, max_height: f64) -> Self {
+        self.max_width = max_width;
+        self.max_height = max_height;
         self
     }
 

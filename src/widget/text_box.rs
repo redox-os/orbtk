@@ -4,16 +4,14 @@ use std::{
 };
 
 use crate::{
-    enums::{ParentType, ScrollMode},
     event::{Key, KeyEventHandler, MouseEventHandler},
-    properties::{
-        Bounds, Focused, Text, Offset, Point, ScrollViewerMode, TextSelection, WaterMark,
+    properties::{ ScrollMode,
+        Bounds, Constraint, Focused, FocusedProperty, Offset, Point, ScrollViewerMode, Text,
+        TextProperty, TextSelection, WaterMark, PaddingProperty, WaterMarkProperty
     },
+    structs::{Position, Size},
     theme::Selector,
-    widget::{
-        Container, Context, Cursor, ScrollViewer, SharedProperty, Stack, State, Template,
-        WaterMarkTextBlock, Widget,
-    },
+    widget::{Container, Context, Grid, SharedProperty, State, Template, TextBlock, Widget, WaterMarkTextBlock},
 };
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
@@ -24,7 +22,7 @@ pub struct TextBoxState {
     updated: Cell<bool>,
     selection_start: Cell<usize>,
     selection_length: Cell<usize>,
-    cursor_x: Cell<i32>,
+    cursor_x: Cell<f64>,
 }
 
 impl Into<Rc<dyn State>> for TextBoxState {
@@ -120,43 +118,39 @@ impl State for TextBoxState {
     }
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
-        let mut cursor_x_delta = 0;
-        let mut scroll_viewer_width = 0;
+        let mut cursor_x_delta = 0.0;
+        let mut scroll_viewer_width = 0.0;
 
         {
             let scroll_viewer = context.widget_from_id("TextBoxScrollViewer");
 
             if let Ok(bounds) = scroll_viewer.unwrap().borrow_property::<Bounds>() {
-                scroll_viewer_width = bounds.width;
+                scroll_viewer_width = bounds.width();
             }
         }
-
-        // if selection start is 0 and text is changed and text_size > 0 than selection is 1 and offset is 0
-
-        // if selection x >= bounds.with and text is changed offset -= new character width
 
         // maybe not use scrollviewer here
 
         // Adjust offset of text and cursor if cursor position is out of bounds
 
         {
-            let cursor = context.widget_from_id("TextBoxCursor");
+            // let cursor = context.widget_from_id("TextBoxCursor");
 
-            if let Ok(bounds) = cursor.unwrap().borrow_mut_property::<Bounds>() {
-                if bounds.x < 0 || bounds.x > scroll_viewer_width as i32 {
-                    cursor_x_delta = self.cursor_x.get() - bounds.x;
-                    bounds.x = self.cursor_x.get();
-                }
-                self.cursor_x.set(bounds.x);
-            }
+            // if let Ok(bounds) = cursor.unwrap().borrow_mut_property::<Bounds>() {
+            //     if bounds.x() < 0.0 || bounds.x() > scroll_viewer_width {
+            //         cursor_x_delta = self.cursor_x.get() - bounds.x();
+            //         bounds.set_x(self.cursor_x.get());
+            //     }
+            //     self.cursor_x.set(bounds.x());
+            // }
         }
 
-        if cursor_x_delta != 0 {
+        if cursor_x_delta != 0.0 {
             {
                 let text_block = context.widget_from_id("TextBoxTextBlock");
 
                 if let Ok(bounds) = text_block.unwrap().borrow_mut_property::<Bounds>() {
-                    bounds.x += cursor_x_delta;
+                    bounds.set_x(bounds.x() + cursor_x_delta);
                 }
             }
 
@@ -184,7 +178,9 @@ impl State for TextBoxState {
 pub struct TextBox;
 
 impl Widget for TextBox {
-    fn create() -> Template {
+    type Template = TextBoxTemplate;
+
+    fn create() -> Self::Template {
         let text = SharedProperty::new(Text::default());
         let water_mark = SharedProperty::new(WaterMark::default());
         let selector = Selector::from("textbox");
@@ -194,62 +190,61 @@ impl Widget for TextBox {
         let state = Rc::new(TextBoxState::default());
         let click_state = state.clone();
 
-        Template::new()
-           .parent_type(ParentType::Single)
-            .property(Focused(false))
-            .child(
-                Container::create()
-                    .child(
-                        Stack::create()
-                            .child(
-                                ScrollViewer::create()
-                                    .child(
-                                        WaterMarkTextBlock::create()
-                                            .shared_property(text.clone())
-                                            .shared_property(water_mark.clone())
-                                            .shared_property(focused.clone())
-                                            .property(
-                                                selector.clone().id("TextBoxTextBlock"),
-                                            ),
-                                    )
-                                    .shared_property(offset.clone())
-                                    .property(ScrollViewerMode::new(
-                                        ScrollMode::None,
-                                        ScrollMode::None,
-                                    ))
-                                    .property(selector.clone().id("TextBoxScrollViewer")),
-                            )
-                            .child(
-                                Cursor::create()
-                                    .shared_property(text.clone())
-                                    .shared_property(selection.clone())
-                                    .shared_property(offset.clone())
-                                    .shared_property(focused.clone())
-                                    .property(
-                                        Selector::from("cursor").id("TextBoxCursor"),
-                                    ),
-                            )
-                            .event_handler(MouseEventHandler::default().on_mouse_down(
-                                Rc::new(move |pos: Point| -> bool {
-                                    click_state.click(pos);
-                                    false
-                                }),
-                            )),
-                    )
-                    .shared_property(focused.clone())
-                    .property(selector.clone()),
-            )
+        TextBoxTemplate::new()
+            .constraint(Constraint::create().size(128.0, 32.0).build())
             .state(state.clone())
             .debug_name("TextBox")
-            .shared_property(text)
-            .property(selector)
-            .shared_property(water_mark)
-            .shared_property(selection)
-            .shared_property(offset)
-            .shared_property(focused)
+            .child(
+                Container::create()
+                    .padding((8.0, 2.0))
+                    .child(
+                        Grid::create()
+                            .child(
+                                Grid::create()
+                                    .child(
+                                        WaterMarkTextBlock::create()
+                                            .vertical_alignment("Center")
+                                            .shared_text(text.clone())
+                                            .shared_water_mark(water_mark.clone())
+                                            .attach_shared_property(focused.clone())
+                                            .selector(selector.clone().id("TextBoxTextBlock")),
+                                    )
+                                    // .shared_property(offset.clone())
+                                    // .property(ScrollViewerMode::new(
+                                    //     ScrollMode::None,
+                                    //     ScrollMode::None,
+                                    // ))
+                                    .selector(Selector::from("scrollviewer").id("TextBoxScrollViewer")),
+                            )
+                            // .child(
+                            //     Cursor::create()
+                            //         .shared_property(text.clone())
+                            //         .shared_property(selection.clone())
+                            //         .shared_property(offset.clone())
+                            //         .shared_property(focused.clone())
+                            //         .property(Selector::from("cursor").id("TextBoxCursor")),
+                            // )
+                            // .event_handler(MouseEventHandler::default().on_mouse_down(Rc::new(
+                            //     move |pos: Point| -> bool {
+                            //         click_state.click(pos);
+                            //         false
+                            //     },
+                            // ))),
+                    )
+                    .attach_shared_property(focused.clone())
+                    .attach_property(selector.clone()),
+            )
+            .shared_text(text)
+            .selector(selector)
+            .shared_water_mark(water_mark)
+            // .shared_property(selection)
+            .attach_property(offset)
+            .shared_focused(focused)
             .event_handler(
                 KeyEventHandler::default()
                     .on_key_down(Rc::new(move |key: Key| -> bool { state.update_text(key) })),
             )
     }
 }
+
+template!(TextBoxTemplate, [TextProperty, FocusedProperty, WaterMarkProperty]);

@@ -16,3 +16,4 @@ impl From<String> for Text {
     }
 }
 
+// todo tests!!!

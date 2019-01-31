@@ -58,6 +58,14 @@ impl From<(f64, f64, f64, f64)> for Padding {
     }
 }
 
+impl From<(f64, f64)> for Padding {
+    fn from(t: (f64, f64)) -> Self {
+        Padding {
+            value: Thickness::new(t.0, t.1, t.0, t.1),
+        }
+    }
+}
+
 impl From<f64> for Padding {
     fn from(t: f64) -> Self {
         Padding {

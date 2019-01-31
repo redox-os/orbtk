@@ -2,6 +2,8 @@
 #[derive(Default, Clone)]
 pub struct WaterMark(pub String);
 
+property!(WaterMark, WaterMarkProperty, water_mark, shared_water_mark);
+
 impl From<&str> for WaterMark {
     fn from(s: &str) -> WaterMark {
         WaterMark(s.to_string())
@@ -13,3 +15,5 @@ impl From<String> for WaterMark {
         WaterMark(s)
     }
 }
+
+// todo tests!!!

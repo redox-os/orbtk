@@ -1,14 +1,10 @@
 //! This module contains the base structures for widget creation and concret implementations of OrbTk's default widgets. It contains also layout widgets.
 
-//pub use self::button::Button;
+
 //pub use self::canvas_widget::CanvasWidget;
-//pub use self::check_box::CheckBox;
 //
 //pub use self::cursor::Cursor;
-//pub use self::font_icon_block::FontIconBlock;
 //pub use self::scroll_viewer::*;
-//pub use self::stack::Stack;
-//pub use self::switch::Switch;
 
 //pub use self::text_box::*;
 
@@ -16,7 +12,6 @@
 //
 
 //mod canvas_widget;
-//mod check_box;
 //
 //mod cursor;
 
@@ -24,8 +19,7 @@
 
 //mod switch;
 
-//mod text_box;
-//mod toggle_button;
+
 //mod water_mark_text_block;
 
 pub use self::button::*;
@@ -39,7 +33,9 @@ pub use self::image_widget::*;
 pub use self::switch::*;
 pub use self::stack::*;
 pub use self::text_block::*;
+pub use self::text_box::*;
 pub use self::toggle_button::*;
+pub use self::water_mark_text_block::*;
 
 
 mod button;
@@ -53,4 +49,6 @@ mod image_widget;
 mod switch;
 mod stack;
 mod text_block;
+mod text_box;
 mod toggle_button;
+mod water_mark_text_block;
