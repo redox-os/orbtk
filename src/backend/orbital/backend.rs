@@ -19,7 +19,7 @@ use crate::structs::{Point, Position, Size};
 use crate::theme::Theme;
 use crate::widget::MessageBox;
 
-/// Implemenation of the OrbClient based backend.
+/// Implementation of the OrbClient based backend.
 pub struct OrbitalBackend {
     inner: OrbWindow,
     theme: Theme,

@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    event::{Key, KeyEventHandler, MouseEventHandler},
+    event::{Key, KeyDownHandler},
     properties::{
         Bounds, Constraint, Focused, FocusedProperty, Margin, Offset, OffsetProperty,
         PaddingProperty, Point, ScrollMode, ScrollViewerMode, ScrollViewerModeProperty, Text,
@@ -249,10 +249,7 @@ impl Widget for TextBox {
             .shared_text_selection(selection)
             .attach_shared_property(offset)
             .shared_focused(focused)
-            .event_handler(
-                KeyEventHandler::default()
-                    .on_key_down(Rc::new(move |key: Key| -> bool { state.update_text(key) })),
-            )
+            .on_key_down(move |key: Key| -> bool { state.update_text(key) })
     }
 }
 
@@ -262,6 +259,7 @@ template!(
         TextProperty,
         FocusedProperty,
         WaterMarkProperty,
-        TextSelectionProperty
+        TextSelectionProperty,
+        KeyDownHandler
     ]
 );

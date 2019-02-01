@@ -4,6 +4,7 @@ use crate::{
         PressedProperty, Text, TextProperty,
     },
     theme::Selector,
+    event::ClickHandler,
     widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
 };
 
@@ -66,5 +67,5 @@ impl Widget for Button {
 
 template!(
     ButtonTemplate,
-    [TextProperty, FontIconProperty, PressedProperty]
+    [TextProperty, FontIconProperty, PressedProperty, ClickHandler]
 );

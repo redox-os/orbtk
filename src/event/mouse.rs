@@ -54,68 +54,42 @@ pub struct MouseDownEvent {
 
 impl Event for MouseDownEvent {}
 
-pub type MouseHandler = Rc<dyn Fn(Point) -> bool + 'static>;
+pub type MouseHandler = Fn(Point) -> bool + 'static;
 
-event_handler!(MouseHandler, TestHandler, [on_mouse_up]);
+use crate::Template;
 
-
-#[derive(Default)]
-pub struct MouseEventHandler {
-    mouse_up: Option<MouseHandler>,
-    mouse_down: Option<MouseHandler>,
-    click: Option<MouseHandler>,
+pub struct ClickEventHandler {
+    handler: Rc<MouseHandler>,
 }
 
-impl MouseEventHandler {
-    pub fn new() -> Self {
-        MouseEventHandler::default()
-    }
-
-    pub fn on_mouse_up(mut self, handler: MouseHandler) -> Self {
-        self.mouse_up = Some(handler);
-        self
-    }
-
-    pub fn on_mouse_down(mut self, handler: MouseHandler) -> Self {
-        self.mouse_down = Some(handler);
-        self
-    }
-
-    pub fn on_click(mut self, handler: MouseHandler) -> Self {
-        self.click = Some(handler);
-        self
-    }
-}
-
-impl Into<Rc<dyn EventHandler>> for MouseEventHandler {
+impl Into<Rc<dyn EventHandler>> for ClickEventHandler {
     fn into(self) -> Rc<dyn EventHandler> {
         Rc::new(self)
     }
 }
 
-impl EventHandler for MouseEventHandler {
+impl EventHandler for ClickEventHandler {
     fn handle_event(&self, event: &EventBox) -> bool {
         if let Ok(event) = event.downcast_ref::<ClickEvent>() {
-            if let Some(handler) = &self.click {
-                return (handler)(event.position);
-            }
+            return (self.handler)(event.position);
         }
 
-        if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
-            if let Some(handler) = &self.mouse_down {
-                return (handler)(event.position);
-            }
-        }
-
-        if let Ok(event) = event.downcast_ref::<MouseUpEvent>() {
-            if let Some(handler) = &self.mouse_up {
-                (handler)(event.position);
-                return true;
-            }
-        }
-
-        false
+        return false;
     }
 }
 
+pub trait ClickHandler: Sized + From<Template> + Into<Template> {
+    /// Transforms the handler into a template.
+    fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
+        Self::from(transform(self.into()))
+    }
 
+    /// Inserts a handler.
+    fn on_click<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
+        self.template(|template| {
+            template.event_handler(ClickEventHandler {
+                handler: Rc::new(handler),
+            })
+        })
+    }
+}

@@ -89,25 +89,3 @@ macro_rules! property {
         }
     };
 }
-
-/// Used to define an event handler.
-#[macro_export]
-macro_rules! event_handler {
-    ($type:ident, $handler:ident, [ $( $method:ident ),* ]) => {
-        use crate::widget::Template;
-
-        pub trait $handler: Sized + From<Template> + Into<Template> {
-            /// Transforms the handler into a template.
-            fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
-                Self::from(transform(self.into()))
-            }      
-
-            $(
-                /// Inserts a handler.
-                fn $method<V: Into<$type>>(self, $method: V) -> Self {
-                    self.template(|template| template)
-                }
-            )*
-        }
-    };
-}

@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::{Event, EventBox, EventHandler};
+use crate::{Event, EventBox, EventHandler, Template};
 
 #[derive(Copy, Clone, Debug, Hash, PartialEq)]
 pub enum Key {
@@ -293,46 +293,40 @@ pub struct KeyUpEvent {
 
 impl Event for KeyUpEvent {}
 
-pub type KeyHandler = Rc<dyn Fn(Key) -> bool + 'static>;
+pub type KeyHandler = Fn(Key) -> bool + 'static;
 
-#[derive(Default)]
-pub struct KeyEventHandler {
-    key_up: Option<KeyHandler>,
-    key_down: Option<KeyHandler>,
+pub struct KeyDownEventHandler {
+    handler: Rc<KeyHandler>,
 }
 
-impl KeyEventHandler {
-    pub fn on_key_up(mut self, handler: KeyHandler) -> Self {
-        self.key_up = Some(handler);
-        self
-    }
-
-    pub fn on_key_down(mut self, handler: KeyHandler) -> Self {
-        self.key_down = Some(handler);
-        self
-    }
-}
-
-impl Into<Rc<dyn EventHandler>> for KeyEventHandler {
+impl Into<Rc<dyn EventHandler>> for KeyDownEventHandler {
     fn into(self) -> Rc<dyn EventHandler> {
         Rc::new(self)
     }
 }
 
-impl EventHandler for KeyEventHandler {
+impl EventHandler for KeyDownEventHandler {
     fn handle_event(&self, event: &EventBox) -> bool {
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
-            if let Some(handler) = &self.key_down {
-                return (handler)(event.key);
-            }
+            return (self.handler)(event.key);
         }
 
-        if let Ok(event) = event.downcast_ref::<KeyUpEvent>() {
-            if let Some(handler) = &self.key_up {
-                return (handler)(event.key);
-            }
-        }
+        return false;
+    }
+}
 
-        false
+pub trait KeyDownHandler: Sized + From<Template> + Into<Template> {
+    /// Transforms the handler into a template.
+    fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
+        Self::from(transform(self.into()))
+    }
+
+    /// Inserts a handler.
+    fn on_key_down<H: Fn(Key) -> bool + 'static>(self, handler: H) -> Self {
+        self.template(|template| {
+            template.event_handler(KeyDownEventHandler {
+                handler: Rc::new(handler),
+            })
+        })
     }
 }

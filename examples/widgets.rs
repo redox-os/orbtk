@@ -70,7 +70,11 @@ impl Widget for MainView {
                             .margin((0.0, 8.0, 0.0, 0.0))
                             .font_icon(material_font_icons::CHECK_FONT_ICON)
                             .attach_property(GridColumn(0))
-                            .attach_property(GridRow(1)),
+                            .attach_property(GridRow(1))
+                            .on_click(move |_| {
+                                state.increment();
+                                true
+                            }),
                     )
                     .child(
                         Button::create()

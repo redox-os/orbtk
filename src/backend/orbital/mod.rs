@@ -22,13 +22,10 @@ pub fn target_backend(
     resizable: bool,
     theme: Theme,
 ) -> (Box<OrbitalBackendRunner>, Rc<RefCell<dyn Backend>>) {
-    let flags = {
-        if resizable {
-            vec![WindowFlag::Resizable]
-        } else {
-            vec![]
-        }
-    };
+    let mut flags = vec![WindowFlag::Async];
+    if resizable {
+        flags.push(WindowFlag::Resizable);
+    }
 
     let backend = Rc::new(RefCell::new(OrbitalBackend::new(
         theme,
