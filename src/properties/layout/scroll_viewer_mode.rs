@@ -10,6 +10,8 @@ pub struct ScrollViewerMode {
     pub horizontal: ScrollMode,
 }
 
+property!(ScrollViewerMode, ScrollViewerModeProperty, scroll_viewer_mode, shared_scroll_viewer_mode);
+
 impl ScrollViewerMode {
     /// Creates a new scroll viewer mode.
     pub fn new(vertical: ScrollMode, horizontal: ScrollMode) -> Self {

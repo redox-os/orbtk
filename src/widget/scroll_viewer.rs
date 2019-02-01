@@ -1,7 +1,7 @@
 use crate::{
     enums::ParentType,
     layout::ScrollLayout,
-    properties::{Offset, ScrollViewerMode},
+    properties::{Offset, OffsetProperty, ScrollViewerMode, ScrollViewerModeProperty},
     widget::{Template, Widget},
 };
 
@@ -20,12 +20,18 @@ use crate::{
 pub struct ScrollViewer;
 
 impl Widget for ScrollViewer {
-    fn create() -> Template {
-        Template::new()
-            .parent_type(ParentType::Single)
-            .property(Offset::default())
-            .property(ScrollViewerMode::default())
+    type Template = ScrollViewerTemplate;
+
+    fn create() -> Self::Template {
+        ScrollViewerTemplate::new()
+            .offset(0.0)
+            .scroll_viewer_mode(ScrollViewerMode::default())
             .layout(ScrollLayout::default())
             .debug_name("ScrollViewer")
     }
 }
+
+template!(
+    ScrollViewerTemplate,
+    [OffsetProperty, ScrollViewerModeProperty]
+);

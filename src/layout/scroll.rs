@@ -114,7 +114,7 @@ impl Layout for ScrollLayout {
         }
 
         for child in &tree.children[&entity] {
-            let child_margin = get_margin(*child, ecm);
+            // let child_margin = get_margin(*child, ecm);
             let mut child_size = old_child_size;
 
             if let Some(child_layout) = layouts.borrow().get(child) {

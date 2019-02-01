@@ -7,11 +7,11 @@ use crate::{
     event::{Key, KeyEventHandler, MouseEventHandler},
     properties::{ ScrollMode,
         Bounds, Constraint, Focused, FocusedProperty, Offset, Point, ScrollViewerMode, Text,
-        TextProperty, TextSelection, WaterMark, PaddingProperty, WaterMarkProperty
+        TextProperty, TextSelection, WaterMark, PaddingProperty, WaterMarkProperty, OffsetProperty, ScrollViewerModeProperty
     },
     structs::{Position, Size},
     theme::Selector,
-    widget::{Container, Context, Grid, SharedProperty, State, Template, TextBlock, Widget, WaterMarkTextBlock},
+    widget::{Container, Context, Grid, SharedProperty, State, Template, TextBlock, Widget, WaterMarkTextBlock, ScrollViewer},
 };
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
@@ -200,7 +200,7 @@ impl Widget for TextBox {
                     .child(
                         Grid::create()
                             .child(
-                                Grid::create()
+                                ScrollViewer::create()
                                     .child(
                                         WaterMarkTextBlock::create()
                                             .vertical_alignment("Center")
@@ -209,11 +209,11 @@ impl Widget for TextBox {
                                             .attach_shared_property(focused.clone())
                                             .selector(selector.clone().id("TextBoxTextBlock")),
                                     )
-                                    // .shared_property(offset.clone())
-                                    // .property(ScrollViewerMode::new(
-                                    //     ScrollMode::None,
-                                    //     ScrollMode::None,
-                                    // ))
+                                    .shared_offset(offset.clone())
+                                    .scroll_viewer_mode(ScrollViewerMode::new(
+                                        ScrollMode::None,
+                                        ScrollMode::None,
+                                    ))
                                     .selector(Selector::from("scrollviewer").id("TextBoxScrollViewer")),
                             )
                             // .child(
@@ -238,7 +238,7 @@ impl Widget for TextBox {
             .selector(selector)
             .shared_water_mark(water_mark)
             // .shared_property(selection)
-            .attach_property(offset)
+            .attach_shared_property(offset)
             .shared_focused(focused)
             .event_handler(
                 KeyEventHandler::default()

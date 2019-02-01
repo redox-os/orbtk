@@ -53,7 +53,7 @@ fn main() {
         .bounds(Bounds::new(100.0, 100.0, 420.0, 730.0))
         .title("OrbTk - minimal example")
         .root(MainView::create())
-        .debug_flag(false)
+        .debug_flag(true)
         .build();
     application.run();
 }

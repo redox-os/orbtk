@@ -13,7 +13,7 @@ pub use self::padding::{Padding, PaddingProperty};
 pub use self::point::Point;
 pub use self::row::{GridRow, Row, RowBuilder, RowHeight, RowSpan, Rows, RowsBuilder, RowsProperty};
 pub use self::scroll_mode::*;
-pub use self::scroll_viewer_mode::ScrollViewerMode;
+pub use self::scroll_viewer_mode::*;
 pub use self::vertical_alignment::{VerticalAlignment, VerticalAlignmentProperty};
 
 mod bounds;
