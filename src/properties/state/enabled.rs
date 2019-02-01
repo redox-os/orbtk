@@ -6,6 +6,6 @@ property!(Enabled, EnabledProperty, enabled, shared_enabled);
 
 impl From<bool> for Enabled {
     fn from(t: bool) -> Self {
-       Enabled(t)
+        Enabled(t)
     }
 }

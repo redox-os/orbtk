@@ -28,11 +28,11 @@ pub enum MouseButton {
     Right,
 }
 
-pub struct MouseMouveEvent {
+pub struct MouseMoveEvent {
     pub position: Point,
 }
 
-impl Event for MouseMouveEvent {}
+impl Event for MouseMoveEvent {}
 
 pub struct MouseUpEvent {
     pub button: MouseButton,
@@ -56,7 +56,8 @@ impl Event for MouseDownEvent {}
 
 pub type MouseHandler = Rc<dyn Fn(Point) -> bool + 'static>;
 
-pub type OnMouseUp = Rc<dyn Fn() + 'static>;
+event_handler!(MouseHandler, TestHandler, [on_mouse_up]);
+
 
 #[derive(Default)]
 pub struct MouseEventHandler {
@@ -66,6 +67,10 @@ pub struct MouseEventHandler {
 }
 
 impl MouseEventHandler {
+    pub fn new() -> Self {
+        MouseEventHandler::default()
+    }
+
     pub fn on_mouse_up(mut self, handler: MouseHandler) -> Self {
         self.mouse_up = Some(handler);
         self
@@ -112,3 +117,5 @@ impl EventHandler for MouseEventHandler {
         false
     }
 }
+
+

@@ -6,13 +6,13 @@ property!(Offset, OffsetProperty, offset, shared_offset);
 
 impl From<(f64, f64)> for Offset {
     fn from(t: (f64, f64)) -> Self {
-         Offset(t.0, t.1)
+        Offset(t.0, t.1)
     }
 }
 
 impl From<f64> for Offset {
-   fn from(t: f64) -> Self {
-         Offset(t, t)
+    fn from(t: f64) -> Self {
+        Offset(t, t)
     }
 }
 

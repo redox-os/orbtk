@@ -7,7 +7,7 @@ use crate::{
     widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
 };
 
-/// The `ToggleButton` widget can be clicked by user. It's used to peform an action.
+/// The `ToggleButton` widget can be clicked by user. It's used to perform an action.
 ///
 /// # Shared Properties
 ///

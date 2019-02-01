@@ -6,6 +6,6 @@ property!(MouseOver, MouseOverProperty, mouse_over, shared_mouse_over);
 
 impl From<bool> for MouseOver {
     fn from(t: bool) -> Self {
-       MouseOver(t)
+        MouseOver(t)
     }
 }

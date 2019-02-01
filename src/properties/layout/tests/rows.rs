@@ -74,24 +74,24 @@ fn test_row() {
 
 #[test]
 fn test_row_height_into() {
-    let row : Row = "Auto".into();
+    let row: Row = "Auto".into();
     assert_eq!(row.height(), RowHeight::Auto);
 
-    let row : Row = "auto".into();
+    let row: Row = "auto".into();
     assert_eq!(row.height(), RowHeight::Auto);
 
-    let row : Row = "Stretch".into();
+    let row: Row = "Stretch".into();
     assert_eq!(row.height(), RowHeight::Stretch);
 
-    let row : Row = "stretch".into();
+    let row: Row = "stretch".into();
     assert_eq!(row.height(), RowHeight::Stretch);
 
-    let row : Row = "*".into();
+    let row: Row = "*".into();
     assert_eq!(row.height(), RowHeight::Stretch);
 
-    let row : Row = "other".into();
+    let row: Row = "other".into();
     assert_eq!(row.height(), RowHeight::Stretch);
 
-    let row : Row = 64.0.into();
+    let row: Row = 64.0.into();
     assert_eq!(row.height(), RowHeight::Height(64.0));
 }

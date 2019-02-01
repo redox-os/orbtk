@@ -1,8 +1,8 @@
 use crate::{
     backend::Renderer,
     properties::{Bounds, Image},
-    structs::Point,
     render_object::RenderObject,
+    structs::Point,
     widget::Context,
 };
 

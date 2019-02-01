@@ -62,33 +62,32 @@ fn test_align_width() {
     );
 }
 
-
 #[test]
 fn test_into() {
-    let horizontal_alignment : HorizontalAlignment = "Left".into();
+    let horizontal_alignment: HorizontalAlignment = "Left".into();
     assert_eq!(horizontal_alignment, HorizontalAlignment::Left);
 
-    let horizontal_alignment : HorizontalAlignment = "left".into();
+    let horizontal_alignment: HorizontalAlignment = "left".into();
     assert_eq!(horizontal_alignment, HorizontalAlignment::Left);
 
-    let horizontal_alignment : HorizontalAlignment = "Center".into();
+    let horizontal_alignment: HorizontalAlignment = "Center".into();
     assert_eq!(horizontal_alignment, HorizontalAlignment::Center);
 
-    let horizontal_alignment : HorizontalAlignment = "center".into();
+    let horizontal_alignment: HorizontalAlignment = "center".into();
     assert_eq!(horizontal_alignment, HorizontalAlignment::Center);
 
-    let horizontal_alignment : HorizontalAlignment = "Right".into();
+    let horizontal_alignment: HorizontalAlignment = "Right".into();
     assert_eq!(horizontal_alignment, HorizontalAlignment::Right);
 
-    let horizontal_alignment : HorizontalAlignment = "right".into();
+    let horizontal_alignment: HorizontalAlignment = "right".into();
     assert_eq!(horizontal_alignment, HorizontalAlignment::Right);
 
-    let horizontal_alignment : HorizontalAlignment = "Stretch".into();
+    let horizontal_alignment: HorizontalAlignment = "Stretch".into();
     assert_eq!(horizontal_alignment, HorizontalAlignment::Stretch);
 
-    let horizontal_alignment : HorizontalAlignment = "stretch".into();
+    let horizontal_alignment: HorizontalAlignment = "stretch".into();
     assert_eq!(horizontal_alignment, HorizontalAlignment::Stretch);
 
-    let horizontal_alignment : HorizontalAlignment = "other".into();
+    let horizontal_alignment: HorizontalAlignment = "other".into();
     assert_eq!(horizontal_alignment, HorizontalAlignment::Stretch);
 }

@@ -1,7 +1,6 @@
-
-pub use orbimage::Image as OrbImage;
-pub use orbclient::Renderer;
 use orbclient::Color;
+pub use orbclient::Renderer;
+pub use orbimage::Image as OrbImage;
 
 pub struct Image(OrbImage);
 
@@ -32,7 +31,3 @@ impl From<String> for Image {
         Image(OrbImage::from_path(s).unwrap())
     }
 }
-
-
-
-

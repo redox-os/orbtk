@@ -1,12 +1,12 @@
 use std::rc::Rc;
 
 use crate::{
+    layout::FixedSizeLayout,
     properties::{Text, TextProperty, Visibility, WaterMark, WaterMarkProperty},
+    render_object::TextRenderObject,
     widget::{
         add_selector_to_widget, remove_selector_from_widget, Context, State, Template, Widget,
     },
-    render_object::TextRenderObject,
-    layout::FixedSizeLayout,
 };
 
 /// The `WaterMarkTextBlockState` handles the text processing of the `WaterMarkTextBlock` widget.

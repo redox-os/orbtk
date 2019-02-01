@@ -1,9 +1,9 @@
 use crate::{
+    enums::ParentType,
     layout::GridLayout,
-    properties::{Columns, Rows, ColumnsProperty, RowsProperty},
+    properties::{Columns, ColumnsProperty, Rows, RowsProperty},
     render_object::RectangleRenderObject,
     widget::{Template, Widget},
-    enums::ParentType,
 };
 
 /// Defines a flexible grid area that consists of columns and rows.

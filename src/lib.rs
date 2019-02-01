@@ -20,7 +20,7 @@ pub use crate::structs::*;
 pub use crate::styling::theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS};
 pub use crate::styling::vector_graphics::*;
 pub use crate::systems::*;
-pub use crate::theme::{Selector, Theme, SelectorProperty};
+pub use crate::theme::{Selector, SelectorProperty, Theme};
 pub use crate::widget::*;
 
 pub mod application;

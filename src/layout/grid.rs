@@ -10,24 +10,21 @@ use crate::{
     application::Tree,
     properties::{
         Bounds, ColumnSpan, ColumnWidth, Columns, GridColumn, GridRow, Margin, RowHeight, RowSpan,
-        Rows, Visibility
+        Rows, Visibility,
     },
     structs::{Position, Size, Spacer},
     theme::Theme,
 };
 
-use super::{get_constraint, get_horizontal_alignment, get_margin, get_vertical_alignment, get_visibility, Layout};
+use super::{
+    get_constraint, get_horizontal_alignment, get_margin, get_vertical_alignment, get_visibility,
+    Layout,
+};
 
 #[derive(Default)]
 pub struct GridLayout {
     desired_size: Cell<(f64, f64)>,
     children_sizes: RefCell<BTreeMap<Entity, (f64, f64)>>,
-}
-
-impl Into<Box<dyn Layout>> for GridLayout {
-    fn into(self) -> Box<dyn Layout> {
-        Box::new(self)
-    }
 }
 
 impl GridLayout {
@@ -104,9 +101,9 @@ impl Layout for GridLayout {
         ecm: &mut EntityComponentManager,
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-         theme: &Theme
+        theme: &Theme,
     ) -> (f64, f64) {
-         if get_visibility(entity, ecm) == Visibility::Collapsed {
+        if get_visibility(entity, ecm) == Visibility::Collapsed {
             return (0.0, 0.0);
         }
 
@@ -142,8 +139,9 @@ impl Layout for GridLayout {
         ecm: &mut EntityComponentManager,
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+        theme: &Theme,
     ) -> (f64, f64) {
-         if get_visibility(entity, ecm) == Visibility::Collapsed {
+        if get_visibility(entity, ecm) == Visibility::Collapsed {
             return (0.0, 0.0);
         }
 
@@ -171,11 +169,18 @@ impl Layout for GridLayout {
                     if let Some(column) = columns.get(grid_column.0) {
                         if column.width == ColumnWidth::Auto {
                             let child_width = self.children_sizes.borrow().get(child).unwrap().0;
-                            if column.current_width() < child_width + margin.left() + margin.right()
-                            {
+                           
+                            if let Some(width) = column_widths.get(&grid_column.0) {
+                                if *width < child_width + margin.top() + margin.bottom() {
+                                    column_widths.insert(
+                                        grid_column.0,
+                                        child_width + margin.top() + margin.bottom(),
+                                    );
+                                }
+                            } else {
                                 column_widths.insert(
                                     grid_column.0,
-                                    child_width + margin.left() + margin.right(),
+                                    child_width + margin.top() + margin.bottom(),
                                 );
                             }
                         }
@@ -188,8 +193,15 @@ impl Layout for GridLayout {
                     if let Some(row) = rows.get(grid_row.0) {
                         if row.height == RowHeight::Auto {
                             let child_height = self.children_sizes.borrow().get(child).unwrap().1;
-                            if row.current_height() < child_height + margin.top() + margin.bottom()
-                            {
+
+                            if let Some(height) = row_heights.get(&grid_row.0) {
+                                if *height < child_height + margin.top() + margin.bottom() {
+                                    row_heights.insert(
+                                        grid_row.0,
+                                        child_height + margin.top() + margin.bottom(),
+                                    );
+                                }
+                            } else {
                                 row_heights.insert(
                                     grid_row.0,
                                     child_height + margin.top() + margin.bottom(),
@@ -402,7 +414,8 @@ impl Layout for GridLayout {
             }
 
             if let Some(child_layout) = layouts.borrow().get(child) {
-                available_size = child_layout.arrange(available_size, *child, ecm, tree, layouts);
+                available_size =
+                    child_layout.arrange(available_size, *child, ecm, tree, layouts, theme);
             }
 
             if let Ok(child_bounds) = ecm.borrow_mut_component::<Bounds>(*child) {
@@ -431,5 +444,11 @@ impl Layout for GridLayout {
         }
 
         self.desired_size.get()
+    }
+}
+
+impl Into<Box<dyn Layout>> for GridLayout {
+    fn into(self) -> Box<dyn Layout> {
+        Box::new(self)
     }
 }

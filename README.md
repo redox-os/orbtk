@@ -10,7 +10,7 @@
 The Orbital Widget Toolkit is a multi platform (G)UI toolkit for building scalable user interfaces with the programming language Rust. It's based
 on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity%E2%80%93component%E2%80%93system) and provides a functional-reactive API. 
 
-The main goals of OrbTk are fast peformance, easy to use and cross platform.
+The main goals of OrbTk are fast performance, easy to use and cross platform.
 
 <img alt="Calculator" height="300" src="https://gitlab.redox-os.org/redox-os/assets/raw/master/screenshots/Calculator.png">
 
@@ -18,7 +18,7 @@ The main goals of OrbTk are fast peformance, easy to use and cross platform.
 
 * Modern [Flutter](https://flutter.io/), [React](https://reactjs.org/), [Redux](https://redux.js.org/) like API
 * Uses the Entity Component System library [DCES](https://gitlab.redox-os.org/redox-os/dces-rust) for widget and properties handling
-* Updating instead of rebuilding subtrees
+* Updating instead of rebuilding sub-trees
 * Flexible event system
 * Widget state management
 * Cross platform: Redox OS, Linux, macOS, Windows
@@ -47,30 +47,16 @@ crate](https://github.com/AngryLawyer/rust-sdl2#user-content-requirements).
 ## Minimal Example
 
 ```rust
-extern crate orbtk;
 use orbtk::*;
-
-struct MainView;
-
-impl Widget for MainView {
-    fn create() -> Template {
-        Template::new()
-           .parent_type(ParentType::Single)
-            .child(
-                Container::create()
-                   .parent_type(ParentType::Single)
-                    .child(TextBlock::create().property(Text::from("OrbTk"))),
-            )
-    }
-}
 
 fn main() {
     let mut application = Application::default();
     application
         .create_window()
-        .bounds(Bounds::new(0, 0, 420, 730))
-        .title("OrbTk")
-        .root(MainView::create())
+        .bounds(Bounds::new(100.0, 100.0, 420.0, 730.0))
+        .title("OrbTk - minimal example")
+        .root(TextBlock::create().text("OrbTk").into())
+        .debug_flag(false)
         .build();
     application.run();
 }
@@ -86,7 +72,7 @@ You can start the widgets example by executing the following command:
 cargo run --example widgets --release
 ```
 
-## Build and run documenation
+## Build and run documentation
 
 You can build and run the latest documentation y executing the following command:
 

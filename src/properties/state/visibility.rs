@@ -11,7 +11,12 @@ pub enum Visibility {
     Collapsed,
 }
 
-property!(Visibility, VisibilityProperty, visibility, shared_visibility);
+property!(
+    Visibility,
+    VisibilityProperty,
+    visibility,
+    shared_visibility
+);
 
 impl Default for Visibility {
     fn default() -> Visibility {

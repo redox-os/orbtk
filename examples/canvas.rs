@@ -9,7 +9,7 @@ impl Widget for MainView {
         Template::new()
             .parent_type(ParentType::Single)
             .debug_name("MainView")
-            .child(TextBlock::create().text("ToDo"))
+            .child(TextBlock::create().text("Wait for next merge"))
     }
 }
 

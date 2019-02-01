@@ -7,10 +7,10 @@ use super::{MessageBox, WidgetContainer};
 use crate::{
     application::{Global, Tree},
     event::{Event, EventQueue, EventStrategy},
-    theme::Theme,
+    theme::{Selector, Theme},
 };
 
-/// The `Context` is provides acces for the states to objects they could work with.
+/// The `Context` is provides access for the states to objects they could work with.
 pub struct Context<'a> {
     ecm: &'a mut EntityComponentManager,
     tree: &'a Tree,
@@ -45,19 +45,18 @@ impl<'a> Context<'a> {
         WidgetContainer::new(self.entity, &mut self.ecm)
     }
 
-    /// Returns a child of the widget of the current state referenced by css`id`.
+    /// Returns a child of the widget of the current state referenced by css `id`.
     /// If the no id is defined None will returned.
-    pub fn widget_from_id<S: Into<String>>(&mut self, id: S) -> Option<WidgetContainer<'_>> {
-        let mut entity = None;
-
-        if let Ok(global) = self.ecm.borrow_component::<Global>(0) {
-            if let Some(en) = global.id_map.get(&id.into()) {
-                entity = Some(*en);
+    pub fn child_by_id<S: Into<String>>(&mut self, id: S) -> Option<WidgetContainer<'_>> {
+        let id = id.into();
+        for child in self.tree.start_node(self.entity).into_iter() {
+            if let Ok(selector) = self.ecm.borrow_component::<Selector>(child) {
+                if let Some(child_id) = &selector.id {
+                    if child_id.eq(&id) {
+                        return Some(WidgetContainer::new(child, &mut self.ecm));
+                    }
+                }
             }
-        }
-
-        if let Some(entity) = entity {
-            return Some(WidgetContainer::new(entity, &mut self.ecm));
         }
 
         None
@@ -117,14 +116,14 @@ impl<'a> Context<'a> {
         }
     }
 
-    /// Pushs an event to the event queue with the given `strategy`.
+    /// Pushes an event to the event queue with the given `strategy`.
     pub fn push_event_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
         self.event_queue
             .borrow_mut()
             .register_event_with_strategy(event, strategy, self.entity);
     }
 
-    /// Pushs an event to the event queue.
+    /// Pushes an event to the event queue.
     pub fn push_event<E: Event>(&self, event: E) {
         self.event_queue
             .borrow_mut()

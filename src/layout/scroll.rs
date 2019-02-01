@@ -11,7 +11,7 @@ use crate::{
     application::Tree,
     layout::Layout,
     properties::{Bounds, Offset, ScrollMode, ScrollViewerMode, Visibility},
-    structs::{Size, Position},
+    structs::{Position, Size},
     theme::Theme,
 };
 
@@ -19,8 +19,7 @@ use super::{
     get_constraint, get_horizontal_alignment, get_margin, get_vertical_alignment, get_visibility,
 };
 
-// todo: not finished yet!!!!
-
+/// IMPORTANT: The scroll layout will only work for the text box now. A update will follow!!!!
 #[derive(Default)]
 pub struct ScrollLayout {
     old_child_size: Cell<(f64, f64)>,
@@ -30,12 +29,6 @@ pub struct ScrollLayout {
 impl ScrollLayout {
     pub fn new() -> Self {
         ScrollLayout::default()
-    }
-}
-
-impl Into<Box<dyn Layout>> for ScrollLayout {
-    fn into(self) -> Box<dyn Layout> {
-        Box::new(self)
     }
 }
 
@@ -74,6 +67,7 @@ impl Layout for ScrollLayout {
         ecm: &mut EntityComponentManager,
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+        theme: &Theme,
     ) -> (f64, f64) {
         if get_visibility(entity, ecm) == Visibility::Collapsed {
             return (0.0, 0.0);
@@ -94,13 +88,13 @@ impl Layout for ScrollLayout {
             bounds.set_height(self.desired_size.get().1);
         }
 
-        let mut vertical_scroll_mode = ScrollMode::default();
-        let mut horizontal_scroll_mode = ScrollMode::default();
+        // let mut vertical_scroll_mode = ScrollMode::default();
+        // let mut horizontal_scroll_mode = ScrollMode::default();
 
-        if let Ok(mode) = ecm.borrow_component::<ScrollViewerMode>(entity) {
-            vertical_scroll_mode = mode.vertical;
-            horizontal_scroll_mode = mode.horizontal;
-        }
+        // if let Ok(mode) = ecm.borrow_component::<ScrollViewerMode>(entity) {
+        //     vertical_scroll_mode = mode.vertical;
+        //     horizontal_scroll_mode = mode.horizontal;
+        // }
 
         let mut offset = (0.0, 0.0);
 
@@ -116,39 +110,43 @@ impl Layout for ScrollLayout {
         for child in &tree.children[&entity] {
             // let child_margin = get_margin(*child, ecm);
             let mut child_size = old_child_size;
+            let child_vertical_alignment = get_vertical_alignment(*child, ecm);
+            let child_margin = get_margin(*child, ecm);
 
             if let Some(child_layout) = layouts.borrow().get(child) {
-                child_size = child_layout.arrange((f64::MAX, f64::MAX), *child, ecm, tree, layouts);
+                child_size =
+                    child_layout.arrange((f64::MAX, f64::MAX), *child, ecm, tree, layouts, theme);
             }
 
-            if vertical_scroll_mode != ScrollMode::None
-                && horizontal_scroll_mode != ScrollMode::None
-            {
-                if child_size.0 <= self.desired_size.get().0 {
-                    offset.0 = 0.0;
-                } else {
-                    let offset_width = old_child_size.0 - child_size.0;
-
-                    if offset_width != 0.0 {
-                        offset.0 = (offset.0 + offset_width).min(0.0);
-                    }
-                }
-
-                if child_size.1 <= self.desired_size.get().1 {
-                    offset.1 = 0.0;
-                }
-
-                // todo: vertical scrolling
+            if child_size.0 > self.desired_size.get().0 {
+                offset.0 = (offset.0 + old_child_size.0 - child_size.0).min(0.0);
+            } else {
+                offset.0 = 0.0;
             }
 
             if let Ok(child_bounds) = ecm.borrow_mut_component::<Bounds>(*child) {
-                child_bounds.set_x(offset.0);   
-                child_bounds.set_y(offset.1);   
+                child_bounds.set_x(offset.0);
+                child_bounds.set_y(child_vertical_alignment.align_y(
+                    self.desired_size.get().1,
+                    child_bounds.height(),
+                    child_margin,
+                ));
+            }
+
+            if let Ok(off) = ecm.borrow_mut_component::<Offset>(entity) {
+                off.0 = offset.0;
+                off.1 = offset.1;
             }
 
             self.old_child_size.set(child_size);
         }
 
         self.desired_size.get()
+    }
+}
+
+impl Into<Box<dyn Layout>> for ScrollLayout {
+    fn into(self) -> Box<dyn Layout> {
+        Box::new(self)
     }
 }

@@ -2,24 +2,24 @@ use super::*;
 
 #[test]
 fn test_into() {
-    let visibility : Visibility = "Hidden".into();
+    let visibility: Visibility = "Hidden".into();
     assert_eq!(visibility, Visibility::Hidden);
 
-    let visibility : Visibility = "hidden".into();
+    let visibility: Visibility = "hidden".into();
     assert_eq!(visibility, Visibility::Hidden);
 
-    let visibility : Visibility = "Collapsed".into();
+    let visibility: Visibility = "Collapsed".into();
     assert_eq!(visibility, Visibility::Collapsed);
 
-    let visibility : Visibility = "collapsed".into();
+    let visibility: Visibility = "collapsed".into();
     assert_eq!(visibility, Visibility::Collapsed);
 
-    let visibility : Visibility = "Visible".into();
+    let visibility: Visibility = "Visible".into();
     assert_eq!(visibility, Visibility::Visible);
 
-    let visibility : Visibility = "visible".into();
+    let visibility: Visibility = "visible".into();
     assert_eq!(visibility, Visibility::Visible);
 
-    let visibility : Visibility = "other".into();
+    let visibility: Visibility = "other".into();
     assert_eq!(visibility, Visibility::Visible);
 }

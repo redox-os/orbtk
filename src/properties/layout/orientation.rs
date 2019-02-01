@@ -8,7 +8,12 @@ pub enum Orientation {
     Horizontal,
 }
 
-property!(Orientation, OrientationProperty, orientation, shared_orientation);
+property!(
+    Orientation,
+    OrientationProperty,
+    orientation,
+    shared_orientation
+);
 
 impl Default for Orientation {
     fn default() -> Self {

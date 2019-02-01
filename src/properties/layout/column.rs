@@ -180,7 +180,7 @@ impl From<&str> for Column {
     fn from(t: &str) -> Self {
         match t {
             "Auto" | "auto" => Column::create().width(ColumnWidth::Auto).build(),
-            _ =>  Column::create().width(ColumnWidth::Stretch).build(),
+            _ => Column::create().width(ColumnWidth::Stretch).build(),
         }
     }
 }

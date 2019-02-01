@@ -1,7 +1,7 @@
 use crate::{
     layout::FixedSizeLayout,
-    render_object::FontIconRenderObject,
     properties::FontIconProperty,
+    render_object::FontIconRenderObject,
     widget::{Template, Widget},
 };
 
@@ -31,6 +31,4 @@ impl Widget for FontIconBlock {
     }
 }
 
-template!(
-    FontIconBlockTemplate, [FontIconProperty]
-);
+template!(FontIconBlockTemplate, [FontIconProperty]);

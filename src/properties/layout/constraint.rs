@@ -70,7 +70,7 @@ impl ConstraintBuilder {
         self
     }
 
-     /// Inserts a new min_size.
+    /// Inserts a new min_size.
     pub fn max_size(mut self, max_width: f64, max_height: f64) -> Self {
         self.max_width = max_width;
         self.max_height = max_height;

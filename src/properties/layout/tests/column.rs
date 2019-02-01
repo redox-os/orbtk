@@ -72,24 +72,24 @@ fn test_column() {
 
 #[test]
 fn test_column_width_into() {
-    let column : Column = "Auto".into();
+    let column: Column = "Auto".into();
     assert_eq!(column.width(), ColumnWidth::Auto);
 
-    let column : Column = "auto".into();
+    let column: Column = "auto".into();
     assert_eq!(column.width(), ColumnWidth::Auto);
 
-    let column : Column = "Stretch".into();
+    let column: Column = "Stretch".into();
     assert_eq!(column.width(), ColumnWidth::Stretch);
 
-    let column : Column = "stretch".into();
+    let column: Column = "stretch".into();
     assert_eq!(column.width(), ColumnWidth::Stretch);
 
-    let column : Column = "*".into();
+    let column: Column = "*".into();
     assert_eq!(column.width(), ColumnWidth::Stretch);
 
-    let column : Column = "other".into();
+    let column: Column = "other".into();
     assert_eq!(column.width(), ColumnWidth::Stretch);
 
-    let column : Column = 64.0.into();
+    let column: Column = 64.0.into();
     assert_eq!(column.width(), ColumnWidth::Width(64.0));
 }

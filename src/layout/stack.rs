@@ -23,12 +23,6 @@ pub struct StackLayout {
     desired_size: Cell<(f64, f64)>,
 }
 
-impl Into<Box<dyn Layout>> for StackLayout {
-    fn into(self) -> Box<dyn Layout> {
-        Box::new(self)
-    }
-}
-
 impl StackLayout {
     pub fn new() -> Self {
         StackLayout::default()
@@ -95,6 +89,7 @@ impl Layout for StackLayout {
         ecm: &mut EntityComponentManager,
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+        theme: &Theme,
     ) -> (f64, f64) {
         if get_visibility(entity, ecm) == Visibility::Collapsed {
             return (0.0, 0.0);
@@ -122,8 +117,14 @@ impl Layout for StackLayout {
         for child in &tree.children[&entity] {
             let mut child_desired_size = (0.0, 0.0);
             if let Some(child_layout) = layouts.borrow().get(child) {
-                child_desired_size =
-                    child_layout.arrange(self.desired_size.get(), *child, ecm, tree, layouts);
+                child_desired_size = child_layout.arrange(
+                    self.desired_size.get(),
+                    *child,
+                    ecm,
+                    tree,
+                    layouts,
+                    theme,
+                );
             }
 
             let child_margin = {
@@ -178,6 +179,12 @@ impl Layout for StackLayout {
         }
 
         self.desired_size.get()
+    }
+}
+
+impl Into<Box<dyn Layout>> for StackLayout {
+    fn into(self) -> Box<dyn Layout> {
+        Box::new(self)
     }
 }
 

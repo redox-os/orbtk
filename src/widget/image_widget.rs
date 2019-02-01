@@ -1,7 +1,7 @@
 use crate::{
     layout::FixedSizeLayout,
-    render_object::ImageRenderObject,
     properties::ImageProperty,
+    render_object::ImageRenderObject,
     widget::{Template, Widget},
 };
 

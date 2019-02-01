@@ -5,13 +5,17 @@ use std::{
 
 use crate::{
     event::{Key, KeyEventHandler, MouseEventHandler},
-    properties::{ ScrollMode,
-        Bounds, Constraint, Focused, FocusedProperty, Offset, Point, ScrollViewerMode, Text,
-        TextProperty, TextSelection, WaterMark, PaddingProperty, WaterMarkProperty, OffsetProperty, ScrollViewerModeProperty
+    properties::{
+        Bounds, Constraint, Focused, FocusedProperty, Margin, Offset, OffsetProperty,
+        PaddingProperty, Point, ScrollMode, ScrollViewerMode, ScrollViewerModeProperty, Text,
+        TextProperty, TextSelection, TextSelectionProperty, WaterMark, WaterMarkProperty,
     },
-    structs::{Position, Size},
+    structs::{Position, Size, Spacer},
     theme::Selector,
-    widget::{Container, Context, Grid, SharedProperty, State, Template, TextBlock, Widget, WaterMarkTextBlock, ScrollViewer},
+    widget::{
+        Container, Context, Cursor, Grid, ScrollViewer, SharedProperty, State, Template,
+        WaterMarkTextBlock, Widget,
+    },
 };
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
@@ -99,7 +103,7 @@ impl State for TextBoxState {
 
                     *self.text.borrow_mut() = text.0.clone();
 
-                    // adjust cursor position after labe is changed from outside
+                    // adjust cursor position after label is changed from outside
                     if text_length < origin_text_length {
                         self.update_selection_start(self.selection_start.get() as i32 - delta);
                     } else {
@@ -122,32 +126,36 @@ impl State for TextBoxState {
         let mut scroll_viewer_width = 0.0;
 
         {
-            let scroll_viewer = context.widget_from_id("TextBoxScrollViewer");
+            let scroll_viewer = context.child_by_id("TextBoxScrollViewer");
 
             if let Ok(bounds) = scroll_viewer.unwrap().borrow_property::<Bounds>() {
                 scroll_viewer_width = bounds.width();
             }
         }
 
-        // maybe not use scrollviewer here
+        // maybe not use scroll viewer here
 
         // Adjust offset of text and cursor if cursor position is out of bounds
 
         {
-            // let cursor = context.widget_from_id("TextBoxCursor");
+            let mut cursor = context.child_by_id("TextBoxCursor").unwrap();
 
-            // if let Ok(bounds) = cursor.unwrap().borrow_mut_property::<Bounds>() {
-            //     if bounds.x() < 0.0 || bounds.x() > scroll_viewer_width {
-            //         cursor_x_delta = self.cursor_x.get() - bounds.x();
-            //         bounds.set_x(self.cursor_x.get());
-            //     }
-            //     self.cursor_x.set(bounds.x());
-            // }
+            if let Ok(margin) = cursor.borrow_mut_property::<Margin>() {
+                if margin.left() < 0.0 || margin.left() > scroll_viewer_width {
+                    cursor_x_delta = self.cursor_x.get() - margin.left();
+                    margin.set_left(self.cursor_x.get());
+                }
+                self.cursor_x.set(margin.left());
+            }
+
+            if let Ok(bounds) = cursor.borrow_mut_property::<Bounds>() {
+                bounds.set_x(self.cursor_x.get());
+            }
         }
 
         if cursor_x_delta != 0.0 {
             {
-                let text_block = context.widget_from_id("TextBoxTextBlock");
+                let text_block = context.child_by_id("TextBoxTextBlock");
 
                 if let Ok(bounds) = text_block.unwrap().borrow_mut_property::<Bounds>() {
                     bounds.set_x(bounds.x() + cursor_x_delta);
@@ -169,12 +177,12 @@ impl State for TextBoxState {
 /// * `Watermark` - String used to display a placeholder text if `Text` string is empty.
 /// * `Selector` - CSS selector with  element name `textbox`, used to request the theme of the widget.
 /// * `TextSelection` - Represents the current selection of the text used by the cursor.
-/// * `Focused` - Defines if the widget is focues and handles the current text input.
+/// * `Focused` - Defines if the widget is focused and handles the current text input.
 ///
 /// # Others
 ///
 /// * `TextBoxState` - Handles the inner state of the widget.
-/// * `KeyEventHandler` - Process the text input of the control if it is focuesd.
+/// * `KeyEventHandler` - Process the text input of the control if it is focused.
 pub struct TextBox;
 
 impl Widget for TextBox {
@@ -196,7 +204,7 @@ impl Widget for TextBox {
             .debug_name("TextBox")
             .child(
                 Container::create()
-                    .padding((8.0, 2.0))
+                    .padding(4.0)
                     .child(
                         Grid::create()
                             .child(
@@ -216,14 +224,15 @@ impl Widget for TextBox {
                                     ))
                                     .selector(Selector::from("scrollviewer").id("TextBoxScrollViewer")),
                             )
-                            // .child(
-                            //     Cursor::create()
-                            //         .shared_property(text.clone())
-                            //         .shared_property(selection.clone())
-                            //         .shared_property(offset.clone())
-                            //         .shared_property(focused.clone())
-                            //         .property(Selector::from("cursor").id("TextBoxCursor")),
-                            // )
+                            .child(
+                                Cursor::create()
+                                    .horizontal_alignment("Left")
+                                    .shared_text(text.clone())
+                                    .shared_text_selection(selection.clone())
+                                    .shared_offset(offset.clone())
+                                    .shared_focused(focused.clone())
+                                    .selector(Selector::from("cursor").id("TextBoxCursor")),
+                            )
                             // .event_handler(MouseEventHandler::default().on_mouse_down(Rc::new(
                             //     move |pos: Point| -> bool {
                             //         click_state.click(pos);
@@ -237,7 +246,7 @@ impl Widget for TextBox {
             .shared_text(text)
             .selector(selector)
             .shared_water_mark(water_mark)
-            // .shared_property(selection)
+            .shared_text_selection(selection)
             .attach_shared_property(offset)
             .shared_focused(focused)
             .event_handler(
@@ -247,4 +256,12 @@ impl Widget for TextBox {
     }
 }
 
-template!(TextBoxTemplate, [TextProperty, FocusedProperty, WaterMarkProperty]);
+template!(
+    TextBoxTemplate,
+    [
+        TextProperty,
+        FocusedProperty,
+        WaterMarkProperty,
+        TextSelectionProperty
+    ]
+);

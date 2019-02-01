@@ -1,13 +1,13 @@
 use crate::{
     properties::{
-        Constraint, ConstraintBuilder, FontIcon, FontIconProperty, OrientationProperty,
-        PaddingProperty, PressedProperty, Text, TextProperty,
+        Constraint, FontIcon, FontIconProperty, OrientationProperty, PaddingProperty,
+        PressedProperty, Text, TextProperty,
     },
     theme::Selector,
     widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
 };
 
-/// The `Button` widget can be clicked by user. It's used to peform an action.
+/// The `Button` widget can be clicked by user. It's used to perform an action.
 ///
 /// # Shared Properties
 ///

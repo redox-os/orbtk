@@ -6,6 +6,6 @@ property!(Selected, SelectedProperty, selected, shared_selected);
 
 impl From<bool> for Selected {
     fn from(t: bool) -> Self {
-       Selected(t)
+        Selected(t)
     }
 }

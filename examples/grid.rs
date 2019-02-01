@@ -82,7 +82,7 @@ fn main() {
         .root(MainView::create())
         .theme(
             Theme::create()
-                .extenstion_path("examples/res/grid.css")
+                .extension_path("examples/res/grid.css")
                 .build(),
         )
         .resizable(true)

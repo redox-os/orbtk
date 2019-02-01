@@ -8,10 +8,7 @@ impl Widget for MainView {
     fn create() -> Self::Template {
         Template::new()
             .debug_name("MainView")
-            .child(
-                ImageWidget::create()
-                    .image("res/orbtk-space.png"),
-            )
+            .child(ImageWidget::create().image("res/orbtk-space.png"))
     }
 }
 
@@ -25,4 +22,3 @@ fn main() {
         .build();
     application.run();
 }
-

@@ -95,7 +95,7 @@ impl Backend for OrbitalBackend {
                     self.mouse_position.y = mouse.y as f64;
                     // self.event_queue
                     //     .borrow_mut()
-                    //     .register_event(MouseMouveEvent {
+                    //     .register_event(MouseMoveEvent {
                     //         position: self.mouse_position,
                     //     });
                 }

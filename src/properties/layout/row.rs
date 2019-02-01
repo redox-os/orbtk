@@ -1,4 +1,3 @@
-
 use std::slice::{Iter, IterMut};
 
 /// Used to define the row position of a widget on the `Grid`.
@@ -180,7 +179,7 @@ impl From<&str> for Row {
     fn from(t: &str) -> Self {
         match t {
             "Auto" | "auto" => Row::create().height(RowHeight::Auto).build(),
-            _ =>  Row::create().height(RowHeight::Stretch).build(),
+            _ => Row::create().height(RowHeight::Stretch).build(),
         }
     }
 }

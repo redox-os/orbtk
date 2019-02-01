@@ -17,7 +17,12 @@ pub enum VerticalAlignment {
     Stretch,
 }
 
-property!(VerticalAlignment, VerticalAlignmentProperty, vertical_alignment, shared_vertical_alignment);
+property!(
+    VerticalAlignment,
+    VerticalAlignmentProperty,
+    vertical_alignment,
+    shared_vertical_alignment
+);
 
 impl Default for VerticalAlignment {
     fn default() -> Self {

@@ -2,9 +2,11 @@ use std::rc::Rc;
 
 use crate::{
     layout::TextSelectionLayout,
-    properties::{Text, TextSelection},
+    properties::{
+        Constraint, FocusedProperty, OffsetProperty, TextProperty, TextSelection,
+        TextSelectionProperty,
+    },
     render_object::RectangleRenderObject,
-    theme::Selector,
     widget::{
         add_selector_to_widget, remove_selector_from_widget, Context, State, Template, Widget,
     },
@@ -43,14 +45,28 @@ impl State for CursorState {
 pub struct Cursor;
 
 impl Widget for Cursor {
-    fn create() -> Template {
-        Template::new()
-            .property(Text::default())
-            .property(Selector::from("cursor"))
-            .property(TextSelection::default())
+    type Template = CursorTemplate;
+
+    fn create() -> Self::Template {
+        CursorTemplate::new()
+            .constraint(Constraint::create().width(1.0).build())
+            .text("")
+            .selector("cursor")
+            .offset(0.0)
+            .text_selection(TextSelection::default())
             .render_object(RectangleRenderObject)
-            .layout(TextSelectionLayout)
+            .layout(TextSelectionLayout::new())
             .state(Rc::new(CursorState))
             .debug_name("Cursor")
     }
 }
+
+template!(
+    CursorTemplate,
+    [
+        TextProperty,
+        TextSelectionProperty,
+        OffsetProperty,
+        FocusedProperty
+    ]
+);

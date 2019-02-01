@@ -22,12 +22,6 @@ pub struct FixedSizeLayout {
     desired_size: Cell<(f64, f64)>,
 }
 
-impl Into<Box<dyn Layout>> for FixedSizeLayout {
-    fn into(self) -> Box<dyn Layout> {
-        Box::new(self)
-    }
-}
-
 impl FixedSizeLayout {
     pub fn new() -> Self {
         FixedSizeLayout::default()
@@ -60,7 +54,7 @@ impl Layout for FixedSizeLayout {
                                 None
                             } else {
                                 Some(FONT_MEASURE.measure(
-                                    &text.0,
+                                    &water_mark.0,
                                     &theme.string("font-family", selector),
                                     theme.uint("font-size", selector),
                                 ))
@@ -69,11 +63,23 @@ impl Layout for FixedSizeLayout {
                             None
                         }
                     } else {
-                        Some(FONT_MEASURE.measure(
+                        let mut size = FONT_MEASURE.measure(
                             &text.0,
                             &theme.string("font-family", selector),
                             theme.uint("font-size", selector),
-                        ))
+                        );
+
+                        if text.0.ends_with(" ") {
+                            size.0 += FONT_MEASURE
+                                .measure(
+                                    "a",
+                                    &theme.string("font-family", selector),
+                                    theme.uint("font-size", selector),
+                                )
+                                .0
+                                / 2;
+                        }
+                        Some(size)
                     }
                 } else if let Ok(font_icon) = ecm.borrow_component::<FontIcon>(entity) {
                     if font_icon.0.is_empty() {
@@ -124,6 +130,7 @@ impl Layout for FixedSizeLayout {
         ecm: &mut EntityComponentManager,
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+        theme: &Theme,
     ) -> (f64, f64) {
         if get_visibility(entity, ecm) == Visibility::Collapsed {
             return (0.0, 0.0);
@@ -136,10 +143,16 @@ impl Layout for FixedSizeLayout {
 
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
-                child_layout.arrange(self.desired_size.get(), *child, ecm, tree, layouts);
+                child_layout.arrange(self.desired_size.get(), *child, ecm, tree, layouts, theme);
             }
         }
 
         self.desired_size.get()
+    }
+}
+
+impl Into<Box<dyn Layout>> for FixedSizeLayout {
+    fn into(self) -> Box<dyn Layout> {
+        Box::new(self)
     }
 }

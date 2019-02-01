@@ -23,12 +23,6 @@ pub struct PaddingLayout {
     desired_size: Cell<(f64, f64)>,
 }
 
-impl Into<Box<dyn Layout>> for PaddingLayout {
-    fn into(self) -> Box<dyn Layout> {
-        Box::new(self)
-    }
-}
-
 impl PaddingLayout {
     pub fn new() -> Self {
         PaddingLayout::default()
@@ -92,6 +86,7 @@ impl Layout for PaddingLayout {
         ecm: &mut EntityComponentManager,
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+        theme: &Theme,
     ) -> (f64, f64) {
         if get_visibility(entity, ecm) == Visibility::Collapsed {
             return (0.0, 0.0);
@@ -122,7 +117,7 @@ impl Layout for PaddingLayout {
             let child_margin = get_margin(*child, ecm);
 
             if let Some(child_layout) = layouts.borrow().get(child) {
-                child_layout.arrange(available_size, *child, ecm, tree, layouts);
+                child_layout.arrange(available_size, *child, ecm, tree, layouts, theme);
             }
 
             let child_horizontal_alignment = get_horizontal_alignment(*child, ecm);
@@ -149,5 +144,11 @@ impl Layout for PaddingLayout {
         }
 
         self.desired_size.get()
+    }
+}
+
+impl Into<Box<dyn Layout>> for PaddingLayout {
+    fn into(self) -> Box<dyn Layout> {
+        Box::new(self)
     }
 }

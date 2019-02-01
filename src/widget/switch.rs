@@ -19,7 +19,7 @@ impl State for SwitchState {
             selected = sel.0;
         }
 
-        let mut switch_toggle = context.widget_from_id("SwitchSwitchToggle").unwrap();
+        let mut switch_toggle = context.child_by_id("SwitchSwitchToggle").unwrap();
 
         if let Ok(horizontal_alignment) = switch_toggle.borrow_mut_property::<HorizontalAlignment>()
         {

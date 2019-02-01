@@ -22,14 +22,14 @@ pub trait Widget {
     fn create() -> Self::Template;
 }
 
-/// Adds the given `pseudo_class` to the css selector of the given `wiget`.
+/// Adds the given `pseudo_class` to the css selector of the given `widget`.
 pub fn add_selector_to_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
     if let Ok(selector) = widget.borrow_mut_property::<Selector>() {
         selector.pseudo_classes.insert(String::from(pseudo_class));
     }
 }
 
-/// Removes the given `pseudo_class` from the css selector of the given `wiget`.
+/// Removes the given `pseudo_class` from the css selector of the given `widget`.
 pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
     if let Ok(selector) = widget.borrow_mut_property::<Selector>() {
         selector.pseudo_classes.remove(pseudo_class);

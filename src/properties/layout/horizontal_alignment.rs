@@ -17,7 +17,12 @@ pub enum HorizontalAlignment {
     Stretch,
 }
 
-property!(HorizontalAlignment,HorizontalAlignmentProperty, horizontal_alignment, shared_horizontal_alignment);
+property!(
+    HorizontalAlignment,
+    HorizontalAlignmentProperty,
+    horizontal_alignment,
+    shared_horizontal_alignment
+);
 
 impl Default for HorizontalAlignment {
     fn default() -> Self {
@@ -49,16 +54,10 @@ impl HorizontalAlignment {
 impl From<&str> for HorizontalAlignment {
     fn from(t: &str) -> Self {
         match t {
-            "Right" | "right" => {
-                HorizontalAlignment::Right
-            },
-            "Center" | "center" => {
-                HorizontalAlignment::Center
-            },
-            "Left" | "left" => {
-                HorizontalAlignment::Left
-            },
-            _ => HorizontalAlignment::Stretch
+            "Right" | "right" => HorizontalAlignment::Right,
+            "Center" | "center" => HorizontalAlignment::Center,
+            "Left" | "left" => HorizontalAlignment::Left,
+            _ => HorizontalAlignment::Stretch,
         }
     }
 }

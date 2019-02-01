@@ -6,6 +6,6 @@ property!(Focused, FocusedProperty, focused, shared_focused);
 
 impl From<bool> for Focused {
     fn from(t: bool) -> Self {
-       Focused(t)
+        Focused(t)
     }
 }

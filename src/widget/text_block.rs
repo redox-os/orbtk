@@ -32,6 +32,4 @@ impl Widget for TextBlock {
     }
 }
 
-template!(
-    TextBlockTemplate, [TextProperty]
-);
+template!(TextBlockTemplate, [TextProperty]);

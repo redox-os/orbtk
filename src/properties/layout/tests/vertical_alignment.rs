@@ -64,30 +64,30 @@ fn test_align_height() {
 
 #[test]
 fn test_into() {
-    let vertical_alignment : VerticalAlignment = "Top".into();
+    let vertical_alignment: VerticalAlignment = "Top".into();
     assert_eq!(vertical_alignment, VerticalAlignment::Top);
 
-    let vertical_alignment : VerticalAlignment = "top".into();
+    let vertical_alignment: VerticalAlignment = "top".into();
     assert_eq!(vertical_alignment, VerticalAlignment::Top);
 
-    let vertical_alignment : VerticalAlignment = "Center".into();
+    let vertical_alignment: VerticalAlignment = "Center".into();
     assert_eq!(vertical_alignment, VerticalAlignment::Center);
 
-    let vertical_alignment : VerticalAlignment = "center".into();
+    let vertical_alignment: VerticalAlignment = "center".into();
     assert_eq!(vertical_alignment, VerticalAlignment::Center);
 
-    let vertical_alignment : VerticalAlignment = "Bottom".into();
+    let vertical_alignment: VerticalAlignment = "Bottom".into();
     assert_eq!(vertical_alignment, VerticalAlignment::Bottom);
 
-    let vertical_alignment : VerticalAlignment = "bottom".into();
+    let vertical_alignment: VerticalAlignment = "bottom".into();
     assert_eq!(vertical_alignment, VerticalAlignment::Bottom);
 
-    let vertical_alignment : VerticalAlignment = "Stretch".into();
+    let vertical_alignment: VerticalAlignment = "Stretch".into();
     assert_eq!(vertical_alignment, VerticalAlignment::Stretch);
 
-    let vertical_alignment : VerticalAlignment = "stretch".into();
+    let vertical_alignment: VerticalAlignment = "stretch".into();
     assert_eq!(vertical_alignment, VerticalAlignment::Stretch);
 
-    let vertical_alignment : VerticalAlignment = "other".into();
+    let vertical_alignment: VerticalAlignment = "other".into();
     assert_eq!(vertical_alignment, VerticalAlignment::Stretch);
 }

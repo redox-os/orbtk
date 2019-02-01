@@ -6,6 +6,6 @@ property!(Pressed, PressedProperty, pressed, shared_pressed);
 
 impl From<bool> for Pressed {
     fn from(t: bool) -> Self {
-       Pressed(t)
+        Pressed(t)
     }
 }
