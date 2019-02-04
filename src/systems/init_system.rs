@@ -127,7 +127,7 @@ impl InitSystem {
 
 impl System<Tree> for InitSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-        let mut backend = self.backend.borrow_mut();
+        let mut _backend = self.backend.borrow_mut();
         // let context = backend.state_context();
 
         // init css ids

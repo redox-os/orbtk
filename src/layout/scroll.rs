@@ -10,7 +10,7 @@ use dces::prelude::{Entity, EntityComponentManager};
 use crate::{
     application::Tree,
     layout::Layout,
-    properties::{Bounds, Offset, ScrollMode, ScrollViewerMode, Visibility},
+    properties::{Bounds, Offset, Visibility},
     structs::{Position, Size},
     theme::Theme,
 };

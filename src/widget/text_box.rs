@@ -36,9 +36,9 @@ impl Into<Rc<dyn State>> for TextBoxState {
 }
 
 impl TextBoxState {
-    fn click(&self, point: Point) {
-        println!("Clicked text box point: ({}, {})", point.x, point.y);
-    }
+    // fn click(&self, point: Point) {
+    //     println!("Clicked text box point: ({}, {})", point.x, point.y);
+    // }
 
     fn update_selection_start(&self, selection: i32) {
         self.selection_start
@@ -195,7 +195,7 @@ impl Widget for TextBox {
         let offset = SharedProperty::new(Offset::default());
         let focused = SharedProperty::new(Focused(false));
         let state = Rc::new(TextBoxState::default());
-        let click_state = state.clone();
+        let _click_state = state.clone();
 
         TextBoxTemplate::new()
             .constraint(Constraint::create().size(128.0, 32.0).build())

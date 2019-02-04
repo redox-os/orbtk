@@ -39,7 +39,7 @@ switch {
 }
 
 switchtoggle {
-    background: 4d4c4c;
+    background: #4d4c4c;
 }
 
 switchtoggle:selected {
