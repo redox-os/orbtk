@@ -171,18 +171,17 @@ impl State for TextBoxState {
 
 /// The `TextBox` represents a single line text input widget.
 ///
-/// # Shared Properties
+/// # Properties
 ///
-/// * `Text` - String used to display the text of the text box.
-/// * `Watermark` - String used to display a placeholder text if `Text` string is empty.
-/// * `Selector` - CSS selector with  element name `textbox`, used to request the theme of the widget.
-/// * `TextSelection` - Represents the current selection of the text used by the cursor.
-/// * `Focused` - Defines if the widget is focused and handles the current text input.
+/// * `text` - String used to display the text of the text box.
+/// * `water_mark` - String used to display a placeholder text if `Text` string is empty.
+/// * `selector` - CSS selector with  element name `textbox`, used to request the theme of the widget.
+/// * `text_selection` - Represents the current selection of the text used by the cursor.
+/// * `focused` - Defines if the widget is focused and handles the current text input.
 ///
 /// # Others
 ///
 /// * `TextBoxState` - Handles the inner state of the widget.
-/// * `KeyEventHandler` - Process the text input of the control if it is focused.
 pub struct TextBox;
 
 impl Widget for TextBox {

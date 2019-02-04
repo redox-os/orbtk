@@ -465,7 +465,7 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
 
             "background" | "foreground" => Value::Color(parse_basic_color(input)?),
 
-            "font-family" | "icon-font-family" => Value::Str(parse_string(input)?),
+            "font-family" | "icon-familiy" => Value::Str(parse_string(input)?),
 
             "border-radius" | "border-width" | "font-size" | "icon-size" | "icon-margin" => {
                 match input.next()? {

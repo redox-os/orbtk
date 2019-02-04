@@ -87,7 +87,7 @@ impl Layout for FixedSizeLayout {
                     } else {
                         Some(FONT_MEASURE.measure(
                             &font_icon.0,
-                            &theme.string("icon-font-family", selector),
+                            &theme.string("icon-familiy", selector),
                             theme.uint("icon-size", selector),
                         ))
                     }

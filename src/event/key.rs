@@ -2,6 +2,7 @@ use std::rc::Rc;
 
 use crate::{Event, EventBox, EventHandler, Template};
 
+/// Represents a keyboard key.
 #[derive(Copy, Clone, Debug, Hash, PartialEq)]
 pub enum Key {
     Unknown,
@@ -295,6 +296,7 @@ impl Event for KeyUpEvent {}
 
 pub type KeyHandler = Fn(Key) -> bool + 'static;
 
+/// Used to handle key down events. Could be attached to a widget.
 pub struct KeyDownEventHandler {
     handler: Rc<KeyHandler>,
 }

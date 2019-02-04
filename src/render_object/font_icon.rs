@@ -55,7 +55,7 @@ impl RenderObject for FontIconRenderObject {
                             global_position,
                             theme.uint("icon-size", selector),
                             theme.color("icon-color", selector),
-                            &theme.string("icon-font-family", selector),
+                            &theme.string("icon-familiy", selector),
                         );
                     }
                 }

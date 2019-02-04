@@ -5,6 +5,8 @@ use crate::{
     widget::{Template, Widget},
 };
 
+// Unused at the moment!!!
+
 /// The `CanvasWidget` widget is used to provide custom drawing by handling the `Canvas` struct from `OrbGl` as property.
 ///
 /// # Properties

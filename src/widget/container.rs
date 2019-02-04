@@ -9,11 +9,10 @@ use crate::{
 ///
 /// # Properties
 ///
-/// * `Selector` - CSS selector with element name `container`, used to request the theme of the widget.
+/// * `selector` - CSS selector with element name `container`, used to request the theme of the widget.
 ///
 /// # Others
 ///
-/// * `ParentType`- Single.
 /// * `PaddingLayout` - Used to layout the widget.
 /// * `RectangleRenderObject` - Used to draw the widget.
 pub struct Container;

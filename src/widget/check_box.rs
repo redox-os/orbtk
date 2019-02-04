@@ -1,7 +1,7 @@
 use crate::{
     material_font_icons,
     properties::{
-        Constraint, ConstraintBuilder, FontIcon, FontIconProperty, OrientationProperty,
+        Constraint, FontIcon, FontIconProperty, OrientationProperty,
         PressedProperty, SelectedProperty, Text, TextProperty,
     },
     theme::Selector,
@@ -9,19 +9,12 @@ use crate::{
 };
 /// The `Checkbox` widget can be switch its selected state. It contains a selection box and a text.
 ///
-/// # Shared Properties
-///
-/// * `Text` - String used to display the text of the check box.
-/// * `FontIcon` - String used to display the font icon of the check box.
-/// * `Selector` - CSS selector with  element name `checkbox`, used to request the theme of the widget.
-///
 /// # Properties
 ///
-/// * `Selected` - Bool value represents the selected state of the widget.
-///
-/// # Others
-///
-/// * `ParentType`- Single.
+/// * `text` - String used to display the text of the check box.
+/// * `font_icon` - String used to display the font icon of the check box.
+/// * `selector` - CSS selector with  element name `checkbox`, used to request the theme of the widget.
+/// * `selected` - Bool value represents the selected state of the widget.
 pub struct CheckBox;
 
 impl Widget for CheckBox {
@@ -74,5 +67,3 @@ template!(
         SelectedProperty
     ]
 );
-
-// todo attach event handler

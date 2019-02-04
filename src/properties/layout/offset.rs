@@ -15,5 +15,3 @@ impl From<f64> for Offset {
         Offset(t, t)
     }
 }
-
-// todo tests

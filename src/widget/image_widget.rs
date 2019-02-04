@@ -9,11 +9,10 @@ use crate::{
 ///
 /// # Properties
 ///
-/// * `Selector` - CSS selector with  element name `image`, used to request the theme of the image widget.
+/// * `selector` - CSS selector with  element name `image`, used to request the theme of the image widget.
 ///
 /// # Others
 ///
-/// * `ParentType`- None.
 /// * `ImageSizeLayout` - Used to layout the widget.
 /// * `ImageRenderObject` - Used to draw the image of the widget.
 pub struct ImageWidget;

@@ -55,12 +55,11 @@ impl State for WaterMarkTextBlockState {
 ///
 /// # Properties
 ///
-/// * `Watermark` - String used to display a placeholder text if `Text` string is empty.
-/// * `Selector` - CSS selector with  element name `textblock` and class `watermark`, used to request the theme of the WaterMarkTextBlock.
+/// * `watermark` - String used to display a placeholder text if `Text` string is empty.
+/// * `selector` - CSS selector with  element name `watermark` used to request the theme of the WaterMarkTextBlock.
 ///
 /// # Others
-///
-/// * `ParentType`- None.
+/// 
 /// * `WaterMarkTextBlockState` - Handles the inner state of the widget.
 pub struct WaterMarkTextBlock;
 

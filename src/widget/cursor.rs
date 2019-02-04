@@ -36,7 +36,8 @@ impl State for CursorState {
 ///
 /// # Properties
 ///
-/// * `TextSelection` - Represents the current selection of the text used by the cursor.
+/// * `text_selection` - Represents the current selection of the text used by the cursor.
+/// * `text` - Used to set the text of the cursor.
 ///
 /// # Others
 ///

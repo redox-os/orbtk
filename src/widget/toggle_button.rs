@@ -1,6 +1,6 @@
 use crate::{
     properties::{
-        Constraint, ConstraintBuilder, FontIcon, FontIconProperty, OrientationProperty,
+        Constraint, FontIcon, FontIconProperty, OrientationProperty,
         PaddingProperty, PressedProperty, SelectedProperty, Text, TextProperty,
     },
     theme::Selector,
@@ -9,19 +9,12 @@ use crate::{
 
 /// The `ToggleButton` widget can be clicked by user. It's used to perform an action.
 ///
-/// # Shared Properties
-///
-/// * `Text` - String used to display the text of the button.
-/// * `FontIcon` - String used to display the font icon of the button.
-/// * `Selector` - CSS selector with  element name `button`, used to request the theme of the widget.
-///
 /// # Properties
 ///
-/// * `Pressed` - Bool value represents the pressed state of the button.
-///
-/// # Others
-///
-/// * `ParentType`- Single.
+/// * `text` - String used to display the text of the button.
+/// * `font_icon` - String used to display the font icon of the button.
+/// * `selector` - CSS selector with  element name `button`, used to request the theme of the widget.
+/// * `pressed` - Bool value represents the pressed state of the button.
 pub struct ToggleButton;
 
 impl Widget for ToggleButton {

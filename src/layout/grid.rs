@@ -21,6 +21,8 @@ use super::{
     Layout,
 };
 
+/// Orders its children in a grid layout with columns and rows. If now columns and rows are defined
+/// the gird layout could also be used as alignment layout.
 #[derive(Default)]
 pub struct GridLayout {
     desired_size: Cell<(f64, f64)>,

@@ -7,6 +7,10 @@ use crate::{
 
 /// The `Stack` represents a layout widget that is used to stack its children on the z-axis.
 ///
+/// # Properties
+///
+/// * `orientation` - used to define the orientation of the stack layout vertical (default) of horizontal.
+/// 
 /// # Others
 ///
 /// * `ParentType`- Mutli.

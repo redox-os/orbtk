@@ -153,7 +153,6 @@ impl Renderer for OrbWindow {
         color: Color,
         font: &str,
     ) {
-        // todo handle alpha by orbfong
         let alpha = (color.data >> 24) & 0xFF;
 
         if alpha == 0 {

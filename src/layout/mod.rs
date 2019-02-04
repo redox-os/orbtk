@@ -92,8 +92,8 @@ pub fn get_constraint(entity: Entity, ecm: &EntityComponentManager) -> Constrain
 }
 
 pub fn get_visibility(entity: Entity, ecm: &EntityComponentManager) -> Visibility {
-    if let Ok(visiblity) = ecm.borrow_component::<Visibility>(entity) {
-        return *visiblity;
+    if let Ok(visibility) = ecm.borrow_component::<Visibility>(entity) {
+        return *visibility;
     }
 
     Visibility::Collapsed

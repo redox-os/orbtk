@@ -10,7 +10,7 @@ use crate::{
     application::Tree,
     backend::{FontMeasure, FONT_MEASURE},
     properties::{Bounds, Margin, Offset, Text, TextSelection, Visibility},
-    structs::{Position, Size, Spacer},
+    structs::{Size, Spacer},
     theme::{Selector, Theme},
 };
 

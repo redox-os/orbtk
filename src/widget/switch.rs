@@ -34,13 +34,10 @@ impl State for SwitchState {
 
 /// The `Switch` widget can be switch between `on` and `off`.
 ///
-/// # Shared Properties
-///
-/// * `Selector` - CSS selector with  element name `checkbox`, used to request the theme of the widget.
-///
 /// # Properties
 ///
-/// * `Selected` - Bool value represents the selected state of the widget.
+/// * `selector` - CSS selector with  element name `checkbox`, used to request the theme of the widget.
+/// * `selected` - Bool value represents the selected state of the widget.
 ///
 /// # Others
 ///

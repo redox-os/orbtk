@@ -1,7 +1,5 @@
 use std::f64;
 
-// todo: unit test for builder
-
 /// Used to build a constraint, specifying additional details.
 #[derive(Default)]
 pub struct ConstraintBuilder {

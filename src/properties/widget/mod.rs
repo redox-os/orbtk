@@ -11,3 +11,6 @@ mod image;
 mod text;
 mod text_selection;
 mod water_mark;
+
+#[cfg(test)]
+mod tests;

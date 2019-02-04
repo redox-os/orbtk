@@ -10,6 +10,7 @@ use crate::{
     theme::{Selector, Theme},
 };
 
+
 /// This system is used to initializes the widgets.
 pub struct InitSystem {
     pub backend: Rc<RefCell<dyn Backend>>,
@@ -36,10 +37,8 @@ impl InitSystem {
         }
     }
 
-    // todo: read properties from theme!!!
-
     // Read all initial data from css
-    fn read_init_from_theme(&self, node: Entity, ecm: &mut EntityComponentManager, theme: &Theme) {
+    fn _read_init_from_theme(&self, node: Entity, ecm: &mut EntityComponentManager, theme: &Theme) {
         let mut margin = Thickness::default();
         let mut padding = Thickness::default();
         let (mut width, mut height, mut min_width, mut min_height, mut max_width, mut max_height) =
@@ -129,7 +128,7 @@ impl InitSystem {
 impl System<Tree> for InitSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
         let mut backend = self.backend.borrow_mut();
-        let context = backend.state_context();
+        // let context = backend.state_context();
 
         // init css ids
         for node in tree.into_iter() {

@@ -1,6 +1,60 @@
 use super::*;
 
 #[test]
+fn test_builder_width() {
+     let width = 12.0;
+
+     let constraint = Constraint::create().width(width).build();
+
+     assert_eq!(constraint.width(), width);
+}
+
+#[test]
+fn test_builder_height() {
+     let height = 12.0;
+
+     let constraint = Constraint::create().height(height).build();
+
+     assert_eq!(constraint.height(), height);
+}
+
+#[test]
+fn test_builder_min_width() {
+     let width = 12.0;
+
+     let constraint = Constraint::create().min_width(width).build();
+
+     assert_eq!(constraint.min_width(), width);
+}
+
+#[test]
+fn test_builder_min_height() {
+     let height = 12.0;
+
+     let constraint = Constraint::create().min_height(height).build();
+
+     assert_eq!(constraint.min_height(), height);
+}
+
+#[test]
+fn test_builder_max_width() {
+     let width = 12.0;
+
+     let constraint = Constraint::create().max_width(width).build();
+
+     assert_eq!(constraint.max_width(), width);
+}
+
+#[test]
+fn test_builder_max_height() {
+     let height = 12.0;
+
+     let constraint = Constraint::create().max_height(height).build();
+
+     assert_eq!(constraint.max_height(), height);
+}
+
+#[test]
 fn test_set_width() {
     let width = 12.0;
 

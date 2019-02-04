@@ -9,12 +9,11 @@ use crate::{
 ///
 /// # Properties
 ///
-/// * `Text` - String used to display the text of the text block.
-/// * `Selector` - CSS selector with  element name `textblock`, used to request the theme of the text block.
+/// * `text` - String used to display the text of the text block.
+/// * `selector` - CSS selector with  element name `textblock`, used to request the theme of the text block.
 ///
 /// # Others
 ///
-/// * `ParentType`- None.
 /// * `FixedSizeLayout` - Used to layout the widget.
 /// * `TextRenderObject` - Used to draw the text of the widget.
 pub struct TextBlock;

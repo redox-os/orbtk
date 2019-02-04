@@ -12,7 +12,6 @@ property!(
     shared_text_selection
 );
 
-// todo write test
 impl From<(usize, usize)> for TextSelection {
     fn from(t: (usize, usize)) -> Self {
         TextSelection {

@@ -1,4 +1,3 @@
-// todo: write tests.
 use super::*;
 
 #[test]
@@ -54,8 +53,6 @@ fn test_set_current_width() {
 
 #[test]
 fn test_column() {
-    let width = ColumnWidth::Width(64.0);
-
     let builder = ColumnsBuilder::new();
     let columns = builder.build();
 

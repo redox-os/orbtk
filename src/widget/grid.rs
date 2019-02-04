@@ -10,14 +10,9 @@ use crate::{
 ///
 /// # Properties
 ///
-/// * `Background` - stores the css background.
-/// * `Columns` - used to define the columns of the grid.
-/// * `Rows` - used to define the rows of the grid.
-/// * `Selector` - css selector with element `grid`.
-///
-/// # CSS properties
-///
-/// * `background` - defines the background of the widget.
+/// * `columns` - used to define the columns of the grid.
+/// * `rows` - used to define the rows of the grid.
+/// * `selector` - css selector with element `grid`.
 ///
 /// # Others
 ///

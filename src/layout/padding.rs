@@ -18,6 +18,7 @@ use super::{
     get_visibility, Layout,
 };
 
+/// Add padding to the widget.
 #[derive(Default)]
 pub struct PaddingLayout {
     desired_size: Cell<(f64, f64)>,

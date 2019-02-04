@@ -58,6 +58,7 @@ pub type MouseHandler = Fn(Point) -> bool + 'static;
 
 use crate::Template;
 
+/// Used to handle click events. Could be attached to a widget.
 pub struct ClickEventHandler {
     handler: Rc<MouseHandler>,
 }

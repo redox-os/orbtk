@@ -18,6 +18,7 @@ use super::{
     Layout,
 };
 
+/// Stacks visual the children widgets vertical or horizontal.
 #[derive(Default)]
 pub struct StackLayout {
     desired_size: Cell<(f64, f64)>,

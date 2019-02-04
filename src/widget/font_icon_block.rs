@@ -9,11 +9,10 @@ use crate::{
 ///
 /// # Properties
 ///
-/// * `Selector` - CSS selector with  element name `fonticon`, used to request the theme of the font icon block.
+/// * `selector` - CSS selector with  element name `fonticon`, used to request the theme of the font icon block.
 ///
 /// # Others
 ///
-/// * `ParentType`- None.
 /// * `FixedSizeLayout` - Used to layout the widget.
 /// * `FontIconRenderObject` - Used to draw the text of the widget.
 pub struct FontIconBlock;
