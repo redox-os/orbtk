@@ -7,7 +7,7 @@ use crate::{
     event::{Key, KeyDownHandler},
     properties::{
         Bounds, Constraint, Focused, FocusedProperty, Margin, Offset, OffsetProperty,
-        PaddingProperty, Point, ScrollMode, ScrollViewerMode, ScrollViewerModeProperty, Text,
+        PaddingProperty, ScrollMode, ScrollViewerMode, ScrollViewerModeProperty, Text,
         TextProperty, TextSelection, TextSelectionProperty, WaterMark, WaterMarkProperty,
     },
     structs::{Position, Size, Spacer},

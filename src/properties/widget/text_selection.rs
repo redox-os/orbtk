@@ -1,5 +1,5 @@
 /// The `TextSelection` property is used to mark the selection of a text.
-#[derive(Default, Copy, Clone)]
+#[derive(Default, Copy, Clone, PartialEq)]
 pub struct TextSelection {
     pub start_index: usize,
     pub length: usize,

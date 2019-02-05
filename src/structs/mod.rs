@@ -1,7 +1,9 @@
 pub use orbgl_shapes::structs::*;
 
+pub use self::dirty_size::DirtySize;
 pub use self::point::Point;
 
+mod dirty_size;
 mod point;
 
 // todo: move to orbgl_shapes and documentation
@@ -26,3 +28,6 @@ pub trait Spacer {
 
     fn set_thickness(&mut self, thickness: Thickness);
 }
+
+#[cfg(test)]
+mod tests;

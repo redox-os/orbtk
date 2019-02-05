@@ -9,10 +9,10 @@ use dces::prelude::{Entity, EntityComponentManager};
 use crate::{
     application::Tree,
     properties::{
-        Bounds, ColumnSpan, ColumnWidth, Columns, GridColumn, GridRow, Margin, RowHeight, RowSpan,
-        Rows, Visibility,
+        Bounds, ColumnSpan, ColumnWidth, Columns, GridColumn, GridRow, HorizontalAlignment, Margin,
+        RowHeight, RowSpan, Rows, VerticalAlignment, Visibility,
     },
-    structs::{Position, Size, Spacer},
+    structs::{DirtySize, Position, Size, Spacer},
     theme::Theme,
 };
 
@@ -25,8 +25,9 @@ use super::{
 /// the gird layout could also be used as alignment layout.
 #[derive(Default)]
 pub struct GridLayout {
-    desired_size: Cell<(f64, f64)>,
+    desired_size: RefCell<DirtySize>,
     children_sizes: RefCell<BTreeMap<Entity, (f64, f64)>>,
+    old_alignment: Cell<(VerticalAlignment, HorizontalAlignment)>,
 }
 
 impl GridLayout {
@@ -104,34 +105,49 @@ impl Layout for GridLayout {
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
-    ) -> (f64, f64) {
+    ) -> DirtySize {
         if get_visibility(entity, ecm) == Visibility::Collapsed {
-            return (0.0, 0.0);
+            self.desired_size.borrow_mut().set_size(0.0, 0.0);
+            return self.desired_size.borrow().clone();
+        }
+
+        let horizontal_alignment = get_horizontal_alignment(entity, ecm);
+        let vertical_alignment = get_vertical_alignment(entity, ecm);
+
+        if horizontal_alignment != self.old_alignment.get().1
+            || vertical_alignment != self.old_alignment.get().0
+        {
+            self.desired_size.borrow_mut().set_dirty(true);
         }
 
         self.children_sizes.borrow_mut().clear();
-        self.desired_size.set((0.0, 0.0));
+        let mut desired_size: (f64, f64) = (0.0, 0.0);
 
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let child_desired_size = child_layout.measure(*child, ecm, tree, layouts, theme);
-                let mut desired_size = self.desired_size.get();
 
-                desired_size.0 = desired_size.0.max(child_desired_size.0);
-                desired_size.1 = desired_size.1.max(child_desired_size.1);
+                let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
 
-                self.children_sizes
-                    .borrow_mut()
-                    .insert(*child, child_desired_size);
+                self.desired_size.borrow_mut().set_dirty(dirty);
+                desired_size.0 = desired_size.0.max(child_desired_size.width());
+                desired_size.1 = desired_size.1.max(child_desired_size.height());
 
-                self.desired_size.set(desired_size);
+                self.children_sizes.borrow_mut().insert(
+                    *child,
+                    (child_desired_size.width(), child_desired_size.height()),
+                );
             }
         }
 
         self.desired_size
-            .set(get_constraint(entity, ecm).perform(self.desired_size.get()));
+            .borrow_mut()
+            .set_size(desired_size.0, desired_size.1);
 
-        self.desired_size.get()
+        let size = get_constraint(entity, ecm).perform(self.desired_size.borrow().size());
+        self.desired_size.borrow_mut().set_size(size.0, size.1);
+
+        self.desired_size.borrow().clone()
     }
 
     fn arrange(
@@ -143,8 +159,8 @@ impl Layout for GridLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
     ) -> (f64, f64) {
-        if get_visibility(entity, ecm) == Visibility::Collapsed {
-            return (0.0, 0.0);
+        if !self.desired_size.borrow().dirty() {
+            return self.desired_size.borrow().size();
         }
 
         let horizontal_alignment = get_horizontal_alignment(entity, ecm);
@@ -152,10 +168,18 @@ impl Layout for GridLayout {
         let margin = get_margin(entity, ecm);
         let constraint = get_constraint(entity, ecm);
 
-        self.desired_size.set(constraint.perform((
-            horizontal_alignment.align_width(parent_size.0, self.desired_size.get().0, margin),
-            vertical_alignment.align_height(parent_size.1, self.desired_size.get().1, margin),
-        )));
+        let size = constraint.perform((
+            horizontal_alignment.align_width(
+                parent_size.0,
+                self.desired_size.borrow().width(),
+                margin,
+            ),
+            vertical_alignment.align_height(
+                parent_size.1,
+                self.desired_size.borrow().height(),
+                margin,
+            ),
+        ));
 
         let mut column_widths = BTreeMap::new();
         let mut row_heights = BTreeMap::new();
@@ -171,7 +195,7 @@ impl Layout for GridLayout {
                     if let Some(column) = columns.get(grid_column.0) {
                         if column.width == ColumnWidth::Auto {
                             let child_width = self.children_sizes.borrow().get(child).unwrap().0;
-                           
+
                             if let Some(width) = column_widths.get(&grid_column.0) {
                                 if *width < child_width + margin.top() + margin.bottom() {
                                     column_widths.insert(
@@ -244,7 +268,7 @@ impl Layout for GridLayout {
                     .map(|column| column.current_width())
                     .sum();
 
-                let stretch_width = ((self.desired_size.get().0 - used_width)
+                let stretch_width = ((size.0 - used_width)
                     / columns
                         .iter()
                         .filter(|column| column.width == ColumnWidth::Stretch)
@@ -269,15 +293,14 @@ impl Layout for GridLayout {
                 }
 
                 // fix rounding gab
-                if self.desired_size.get().0 - column_sum > 0.0 {
+                if size.0 - column_sum > 0.0 {
                     if let Some(last_column) = columns
                         .iter_mut()
                         .filter(|column| column.width == ColumnWidth::Stretch)
                         .last()
                     {
-                        last_column.set_current_width(
-                            last_column.current_width() + self.desired_size.get().0 - column_sum,
-                        );
+                        last_column
+                            .set_current_width(last_column.current_width() + size.0 - column_sum);
                     }
                 }
             }
@@ -309,7 +332,7 @@ impl Layout for GridLayout {
                     .map(|row| row.current_height())
                     .sum();
 
-                let stretch_height = ((self.desired_size.get().1 - used_height)
+                let stretch_height = ((size.1 - used_height)
                     / rows
                         .iter()
                         .filter(|row| row.height == RowHeight::Stretch)
@@ -333,23 +356,21 @@ impl Layout for GridLayout {
                 }
 
                 // fix rounding gab
-                if self.desired_size.get().1 - row_sum > 0.0 {
+                if size.1 - row_sum > 0.0 {
                     if let Some(last_row) = rows
                         .iter_mut()
                         .filter(|row| row.height == RowHeight::Stretch)
                         .last()
                     {
-                        last_row.set_current_height(
-                            last_row.current_height() + self.desired_size.get().1 - row_sum,
-                        );
+                        last_row.set_current_height(last_row.current_height() + size.1 - row_sum);
                     }
                 }
             }
         }
 
         if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(entity) {
-            bounds.set_width(self.desired_size.get().0);
-            bounds.set_height(self.desired_size.get().1);
+            bounds.set_width(size.0);
+            bounds.set_height(size.1);
         }
 
         for child in &tree.children[&entity] {
@@ -389,7 +410,7 @@ impl Layout for GridLayout {
                 cell_position.0 = offset_x;
                 available_size.0 = available_width;
             } else {
-                available_size.0 = self.desired_size.get().0;
+                available_size.0 = size.0;
             }
 
             let has_rows = if let Ok(rows) = ecm.borrow_component::<Rows>(entity) {
@@ -412,7 +433,7 @@ impl Layout for GridLayout {
                 cell_position.1 = offset_y;
                 available_size.1 = available_height;
             } else {
-                available_size.1 = self.desired_size.get().1;
+                available_size.1 = size.1;
             }
 
             if let Some(child_layout) = layouts.borrow().get(child) {
@@ -423,29 +444,22 @@ impl Layout for GridLayout {
             if let Ok(child_bounds) = ecm.borrow_mut_component::<Bounds>(*child) {
                 child_bounds.set_x(
                     cell_position.0
-                        + c_horizontal_alignment.align_x(
-                            self.desired_size.get().0,
-                            available_size.0,
-                            c_margin,
-                        ),
+                        + c_horizontal_alignment.align_x(size.0, available_size.0, c_margin),
                 );
                 child_bounds.set_y(
                     cell_position.1
-                        + c_vertical_alignment.align_y(
-                            self.desired_size.get().1,
-                            available_size.1,
-                            c_margin,
-                        ),
+                        + c_vertical_alignment.align_y(size.1, available_size.1, c_margin),
                 );
             }
         }
 
         if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(entity) {
-            bounds.set_width(self.desired_size.get().0);
-            bounds.set_height(self.desired_size.get().1);
+            bounds.set_width(size.0);
+            bounds.set_height(size.1);
         }
 
-        self.desired_size.get()
+        self.desired_size.borrow_mut().set_dirty(false);
+        size
     }
 }
 

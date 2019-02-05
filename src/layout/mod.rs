@@ -6,6 +6,7 @@ use crate::{
     application::Tree,
     properties::{Constraint, HorizontalAlignment, Margin, Padding, VerticalAlignment, Visibility},
     theme::Theme,
+    structs::DirtySize,
 };
 
 pub use self::fixed_size::FixedSizeLayout;
@@ -24,7 +25,7 @@ mod text_selection;
 
 /// A layout is used to dynamic order the children of a widget.
 pub trait Layout {
-    // Measure all childrens before the arragement.
+    // Measure all children before the arrangement.
     fn measure(
         &self,
         entity: Entity,
@@ -32,7 +33,7 @@ pub trait Layout {
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
-    ) -> (f64, f64);
+    ) -> DirtySize;
 
     /// Arranges an sizes the children.
     fn arrange(

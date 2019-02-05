@@ -10,7 +10,7 @@ use crate::{
     application::Tree,
     backend::{FontMeasure, FONT_MEASURE},
     properties::{Bounds, Margin, Offset, Text, TextSelection, Visibility},
-    structs::{Size, Spacer},
+    structs::{DirtySize, Size, Spacer},
     theme::{Selector, Theme},
 };
 
@@ -19,7 +19,8 @@ use super::{get_constraint, get_margin, get_vertical_alignment, get_visibility, 
 /// The text selection layout is used to measure and arrange a text selection cursor.
 #[derive(Default)]
 pub struct TextSelectionLayout {
-    desired_size: Cell<(f64, f64)>,
+    desired_size: RefCell<DirtySize>,
+    old_text_selection: Cell<TextSelection>,
 }
 
 impl TextSelectionLayout {
@@ -42,29 +43,53 @@ impl Layout for TextSelectionLayout {
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
-    ) -> (f64, f64) {
+    ) -> DirtySize {
         if get_visibility(entity, ecm) == Visibility::Collapsed {
-            return (0.0, 0.0);
+            self.desired_size.borrow_mut().set_size(0.0, 0.0);
+            return self.desired_size.borrow().clone();
         }
 
         let constraint = get_constraint(entity, ecm);
 
+        if let Ok(selection) = ecm.borrow_component::<TextSelection>(entity) {
+            if *selection != self.old_text_selection.get() {
+                self.desired_size.borrow_mut().set_dirty(true);
+            }
+
+            self.old_text_selection.set(*selection);
+        }
+
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
-                child_layout.measure(*child, ecm, tree, layouts, theme);
+                let dirty = child_layout
+                    .measure(*child, ecm, tree, layouts, theme)
+                    .dirty()
+                    || self.desired_size.borrow().dirty();
+                self.desired_size.borrow_mut().set_dirty(dirty);
             }
         }
 
-        self.desired_size
-            .set((constraint.width(), constraint.height()));
+        if constraint.width() > 0.0 {
+            self.desired_size.borrow_mut().set_width(constraint.width());
+        }
+
+        if constraint.height() > 0.0 {
+            self.desired_size
+                .borrow_mut()
+                .set_height(constraint.height());
+        }
 
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
-                child_layout.measure(*child, ecm, tree, layouts, theme);
+                let dirty = child_layout
+                    .measure(*child, ecm, tree, layouts, theme)
+                    .dirty()
+                    || self.desired_size.borrow().dirty();
+                self.desired_size.borrow_mut().set_dirty(dirty);
             }
         }
 
-        self.desired_size.get()
+        self.desired_size.borrow().clone()
     }
 
     fn arrange(
@@ -76,17 +101,17 @@ impl Layout for TextSelectionLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
     ) -> (f64, f64) {
-        if get_visibility(entity, ecm) == Visibility::Collapsed {
-            return (0.0, 0.0);
+        if !self.desired_size.borrow().dirty() {
+            return self.desired_size.borrow().size();
         }
 
         let mut pos = 0.0;
-        let mut desired_size = self.desired_size.get();
+        let mut size = self.desired_size.borrow().size();
 
         let vertical_alignment = get_vertical_alignment(entity, ecm);
         let margin = get_margin(entity, ecm);
 
-        desired_size.1 = vertical_alignment.align_height(parent_size.1, desired_size.1, margin);
+        size.1 = vertical_alignment.align_height(parent_size.1, size.1, margin);
 
         if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
             if let Ok(text) = ecm.borrow_component::<Text>(entity) {
@@ -125,16 +150,16 @@ impl Layout for TextSelectionLayout {
 
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
-                child_layout.arrange(self.desired_size.get(), *child, ecm, tree, layouts, theme);
+                child_layout.arrange(size, *child, ecm, tree, layouts, theme);
             }
         }
 
         if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(entity) {
-            bounds.set_width(desired_size.0);
-            bounds.set_height(desired_size.1);
+            bounds.set_width(size.0);
+            bounds.set_height(size.1);
         }
 
-        self.desired_size.set(desired_size);
-        self.desired_size.get()
+        self.desired_size.borrow_mut().set_dirty(false);
+        size
     }
 }

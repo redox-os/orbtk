@@ -21,13 +21,13 @@ pub struct LayoutSystem {
 
 impl System<Tree> for LayoutSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-        if !self.running.get() {
+        if! self.update.get() || !self.running.get() {
             return;
         }
 
-        if self.debug_flag.get() {
-            println!("\n------ Start layout update  ------\n");
-        }
+        // if self.debug_flag.get() {
+        //     println!("\n------ Start layout update  ------\n");
+        // }
 
         let mut window_size = (0.0, 0.0);
 
@@ -51,8 +51,8 @@ impl System<Tree> for LayoutSystem {
             &render_context.theme,
         );
 
-        if self.debug_flag.get() {
-            println!("\n------ End layout update   ------\n");
-        }
+        // if self.debug_flag.get() {
+        //     println!("\n------ End layout update   ------\n");
+        // }
     }
 }
