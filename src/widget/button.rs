@@ -1,10 +1,10 @@
 use crate::{
+    event::ClickHandler,
     properties::{
-        Constraint, FontIcon, FontIconProperty, OrientationProperty, PaddingProperty,
+        FontIcon, FontIconProperty, OrientationProperty, PaddingProperty,
         PressedProperty, Text, TextProperty,
     },
     theme::Selector,
-    event::ClickHandler,
     widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
 };
 
@@ -27,7 +27,8 @@ impl Widget for Button {
         let selector = SharedProperty::new(Selector::from("button"));
 
         ButtonTemplate::new()
-            .constraint(Constraint::create().height(32.0).min_width(80.0).build())
+            .height(32.0)
+            .min_width(80.0)
             .pressed(false)
             .debug_name("Button")
             .child(
@@ -60,5 +61,10 @@ impl Widget for Button {
 
 template!(
     ButtonTemplate,
-    [TextProperty, FontIconProperty, PressedProperty, ClickHandler]
+    [
+        TextProperty,
+        FontIconProperty,
+        PressedProperty,
+        ClickHandler
+    ]
 );

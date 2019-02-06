@@ -132,7 +132,7 @@ fn main() {
 
     application
         .create_window()
-        .bounds(Bounds::new(100.0, 100.0, 420.0, 730.0))
+        .bounds((100.0, 100.0, 420.0, 730.0))
         .title("OrbTk - widgets example")
         .root(MainView::create())
         .debug_flag(false)

@@ -6,7 +6,7 @@ use crate::{
     enums::ParentType,
     event::EventHandler,
     layout::{GridLayout, Layout},
-    properties::{Bounds, Constraint, HorizontalAlignment, Margin, VerticalAlignment, Visibility},
+    properties::{Bounds, Constraint, HorizontalAlignment, VerticalAlignment, Visibility},
     render_object::RenderObject,
     structs::Point,
 };
@@ -41,6 +41,7 @@ pub struct Template {
     pub event_handlers: Vec<Rc<dyn EventHandler>>,
     pub render_object: Option<Box<dyn RenderObject>>,
     pub layout: Box<dyn Layout>,
+    pub constraint: Constraint,
     pub properties: HashMap<TypeId, ComponentBox>,
     pub shared_properties: HashMap<TypeId, SharedProperty>,
     pub debug_name: String,
@@ -56,10 +57,6 @@ impl Default for Template {
         properties.insert(
             TypeId::of::<Constraint>(),
             ComponentBox::new::<Constraint>(Constraint::default()),
-        );
-        properties.insert(
-            TypeId::of::<Margin>(),
-            ComponentBox::new::<Margin>(Margin::default()),
         );
         properties.insert(
             TypeId::of::<VerticalAlignment>(),
@@ -86,6 +83,7 @@ impl Default for Template {
             event_handlers: vec![],
             render_object: None,
             layout: Box::new(GridLayout::default()),
+            constraint: Constraint::new(),
             properties,
             shared_properties: HashMap::new(),
             debug_name: String::default(),
@@ -148,6 +146,69 @@ impl Template {
     /// Used to add a `layout' to the template. Only one `layout` can be added.
     pub fn layout(mut self, layout: impl Into<Box<dyn Layout>>) -> Self {
         self.layout = layout.into();
+        self
+    }
+
+    /// Overwrite the constraint of the template.
+    pub fn constraint<C: Into<Constraint>>(mut self, constraint: C) -> Self {
+        self.constraint = constraint.into();
+        self
+    }
+
+    /// Inserts a new width.
+    pub fn width(mut self, width: f64) -> Self {
+        self.constraint.set_width(width);
+        self
+    }
+
+    /// Inserts a new height.
+    pub fn height(mut self, height: f64) -> Self {
+        self.constraint.set_height(height);
+        self
+    }
+
+    /// Inserts a new size.
+    pub fn size(mut self, width: f64, height: f64) -> Self {
+        self.constraint.set_width(width);
+        self.constraint.set_height(height);
+        self
+    }
+
+    /// Inserts a new min_width.
+    pub fn min_width(mut self, min_width: f64) -> Self {
+        self.constraint.set_min_width(min_width);
+        self
+    }
+
+    /// Inserts a new min_height.
+    pub fn min_height(mut self, min_height: f64) -> Self {
+        self.constraint.set_min_height(min_height);
+        self
+    }
+
+    /// Inserts a new min_size.
+    pub fn min_size(mut self, min_width: f64, min_height: f64) -> Self {
+        self.constraint.set_min_width(min_width);
+        self.constraint.set_min_height(min_height);
+        self
+    }
+
+    /// Inserts a new max_width.
+    pub fn max_width(mut self, max_width: f64) -> Self {
+        self.constraint.set_max_width(max_width);
+        self
+    }
+
+    /// Inserts a new max_height.
+    pub fn max_height(mut self, max_height: f64) -> Self {
+        self.constraint.set_max_height(max_height);
+        self
+    }
+
+    /// Inserts a new min_size.
+    pub fn max_size(mut self, max_width: f64, max_height: f64) -> Self {
+        self.constraint.set_max_width(max_width);
+        self.constraint.set_max_height(max_height);
         self
     }
 
@@ -253,12 +314,62 @@ pub trait TemplateBase: Sized + From<Template> + Into<Template> {
         self.template(|template| template.layout(layout))
     }
 
+    /// Overwrite the constraint of the template.
+    fn constraint<C: Into<Constraint>>(self, constraint: C) -> Self {
+        self.template(|template| template.constraint(constraint))
+    }
+
+    /// Inserts a new width.
+    fn width(self, width: f64) -> Self {
+        self.template(|template| template.width(width))
+    }
+
+    /// Inserts a new height.
+    fn height(self, height: f64) -> Self {
+        self.template(|template| template.height(height))
+    }
+
+    /// Inserts a new size.
+    fn size(self, width: f64, height: f64) -> Self {
+        self.template(|template| template.size(width, height))
+    }
+
+    /// Inserts a new min_width.
+    fn min_width(self, min_width: f64) -> Self {
+        self.template(|template| template.min_width(min_width))
+    }
+
+    /// Inserts a new min_height.
+    fn min_height(self, min_height: f64) -> Self {
+        self.template(|template| template.min_height(min_height))
+    }
+
+    /// Inserts a new min_size.
+    fn min_size(self, min_width: f64, min_height: f64) -> Self {
+        self.template(|template| template.min_size(min_width, min_height))
+    }
+
+    /// Inserts a new max_width.
+    fn max_width(self, max_width: f64) -> Self {
+         self.template(|template| template.max_width(max_width))
+    }
+
+    /// Inserts a new max_height.
+    fn max_height(self, max_height: f64) -> Self {
+        self.template(|template| template.max_height(max_height))
+    }
+
+    /// Inserts a new min_size.
+    fn max_size(self, max_width: f64, max_height: f64) -> Self {
+        self.template(|template| template.max_size(max_width, max_height))
+    }
+
     /// Attaches a property.
     fn attach_property<C: Component>(self, property: C) -> Self {
         self.template(|template| template.property(property))
     }
 
-    /// Attatches a shared property.
+    /// Attaches a shared property.
     fn attach_shared_property(self, property: SharedProperty) -> Self {
         self.template(|template| template.shared_property(property))
     }

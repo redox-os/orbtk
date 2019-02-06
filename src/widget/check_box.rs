@@ -1,7 +1,7 @@
 use crate::{
     material_font_icons,
     properties::{
-        Constraint, FontIcon, FontIconProperty, OrientationProperty,
+        FontIcon, FontIconProperty, OrientationProperty,
         PressedProperty, SelectedProperty, Text, TextProperty,
     },
     theme::Selector,
@@ -26,7 +26,7 @@ impl Widget for CheckBox {
         let selector = SharedProperty::new(Selector::from("checkbox"));
 
         CheckBoxTemplate::new()
-            .constraint(Constraint::create().height(24.0).build())
+            .height(24.0)
             .selected(false)
             .debug_name("CheckBox")
             .child(
@@ -34,7 +34,7 @@ impl Widget for CheckBox {
                     .orientation("Horizontal")
                     .child(
                         Container::create()
-                            .constraint(Constraint::create().width(24.0).height(24.0).build())
+                            .size(24.0, 24.0)
                             .shared_selector(selector.clone())
                             .child(
                                 FontIconBlock::create()

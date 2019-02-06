@@ -6,9 +6,10 @@ use std::{
 use crate::{
     event::{Key, KeyDownHandler},
     properties::{
-        Bounds, Constraint, Focused, FocusedProperty, Margin, Offset, OffsetProperty,
+        Bounds, Focused, FocusedProperty, Margin, Offset, OffsetProperty,
         PaddingProperty, ScrollMode, ScrollViewerMode, ScrollViewerModeProperty, Text,
         TextProperty, TextSelection, TextSelectionProperty, WaterMark, WaterMarkProperty,
+        Padding,
     },
     structs::{Position, Size, Spacer},
     theme::Selector,
@@ -194,16 +195,16 @@ impl Widget for TextBox {
         let selection = SharedProperty::new(TextSelection::default());
         let offset = SharedProperty::new(Offset::default());
         let focused = SharedProperty::new(Focused(false));
+        let padding = SharedProperty::new(Padding::from(4.0));
         let state = Rc::new(TextBoxState::default());
         let _click_state = state.clone();
 
         TextBoxTemplate::new()
-            .constraint(Constraint::create().size(128.0, 32.0).build())
+            .size(128.0, 32.0)
             .state(state.clone())
             .debug_name("TextBox")
             .child(
                 Container::create()
-                    .padding(4.0)
                     .child(
                         Grid::create()
                             .child(
@@ -239,8 +240,9 @@ impl Widget for TextBox {
                             //     },
                             // ))),
                     )
+                    .attach_property(selector.clone())
                     .attach_shared_property(focused.clone())
-                    .attach_property(selector.clone()),
+                    .shared_padding(padding.clone())
             )
             .shared_text(text)
             .selector(selector)
@@ -248,6 +250,7 @@ impl Widget for TextBox {
             .shared_text_selection(selection)
             .attach_shared_property(offset)
             .shared_focused(focused)
+            .shared_padding(padding)
             .on_key_down(move |key: Key| -> bool { state.update_text(key) })
     }
 }
@@ -259,6 +262,7 @@ template!(
         FocusedProperty,
         WaterMarkProperty,
         TextSelectionProperty,
+        PaddingProperty,
         KeyDownHandler
     ]
 );

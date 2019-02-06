@@ -1,6 +1,6 @@
 use crate::{
     properties::{
-        Constraint, FontIcon, FontIconProperty, OrientationProperty,
+        FontIcon, FontIconProperty, OrientationProperty,
         PaddingProperty, PressedProperty, SelectedProperty, Text, TextProperty,
     },
     theme::Selector,
@@ -26,7 +26,8 @@ impl Widget for ToggleButton {
         let selector = SharedProperty::new(Selector::from("togglebutton"));
 
         ToggleButtonTemplate::new()
-            .constraint(Constraint::create().height(32.0).min_width(80.0).build())
+            .height(32.0)
+            .min_width(80.0)
             .selected(false)
             .pressed(false)
             .debug_name("ToggleButton")

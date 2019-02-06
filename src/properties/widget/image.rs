@@ -2,7 +2,14 @@ use orbclient::Color;
 pub use orbclient::Renderer;
 pub use orbimage::Image as OrbImage;
 
+#[derive(Clone)]
 pub struct Image(OrbImage);
+
+impl Default for Image {
+    fn default() -> Self {
+        Image(OrbImage::new(0, 0))
+    }
+}
 
 property!(Image, ImageProperty, image, shared_image);
 

@@ -64,8 +64,8 @@ impl Widget for MainView {
                                 TextBlock::create()
                                     .text("(0,1) - ColumnSpan 3")
                                     .selector("goldendream")
-                                    .horizontal_alignment("Center")
-                                    .vertical_alignment("Center"),
+                                    .horizontal_alignment(HorizontalAlignment::Center)
+                                    .vertical_alignment(VerticalAlignment::Center),
                             ),
                     ),
             )
@@ -77,7 +77,7 @@ fn main() {
     let mut application = Application::default();
     application
         .create_window()
-        .bounds(Bounds::new(100.0, 100.0, 420.0, 730.0))
+        .bounds((100.0, 100.0, 420.0, 730.0))
         .title("OrbTk - grid example")
         .root(MainView::create())
         .theme(

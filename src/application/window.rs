@@ -56,8 +56,8 @@ pub struct WindowBuilder<'a> {
 
 impl<'a> WindowBuilder<'a> {
     /// Used to define the render `bounds` of the window.
-    pub fn bounds(mut self, bounds: Bounds) -> Self {
-        self.bounds = bounds;
+    pub fn bounds<B: Into<Bounds>>(mut self, bounds: B) -> Self {
+        self.bounds = bounds.into();
         self
     }
 
@@ -255,6 +255,9 @@ fn build_tree(
                     PropertyResult::PropertyNotFound => {}
                 }
             }
+
+            // constraint
+            entity_builder = entity_builder.with(template.constraint);
 
             let entity = entity_builder.build();
 

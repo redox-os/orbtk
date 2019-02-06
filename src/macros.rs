@@ -6,7 +6,6 @@ macro_rules! template {
         use crate::{
             widget::TemplateBase,
             properties::{
-                ConstraintProperty,
                 HorizontalAlignmentProperty,
                 VerticalAlignmentProperty,
                 EnabledProperty,
@@ -44,8 +43,6 @@ macro_rules! template {
         }
 
         impl TemplateBase for $type {}
-
-        impl ConstraintProperty for $type {}
 
         impl HorizontalAlignmentProperty for $type {}
 

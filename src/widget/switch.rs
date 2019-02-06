@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use crate::{
     properties::{
-        Constraint, HorizontalAlignment, PaddingProperty, PressedProperty, Selected,
+        HorizontalAlignment, PaddingProperty, PressedProperty, Selected,
         SelectedProperty,
     },
     theme::Selector,
@@ -52,7 +52,8 @@ impl Widget for Switch {
         let selected = SharedProperty::new(Selected::from(false));
 
         SwitchTemplate::new()
-            .constraint(Constraint::create().width(56.0).height(32.0).build())
+            .width(56.0)
+            .height(32.0)
             .state(Rc::new(SwitchState))
             .debug_name("Switch")
             .child(
@@ -62,7 +63,7 @@ impl Widget for Switch {
                     .child(
                         Grid::create().child(
                             Container::create()
-                                .constraint(Constraint::create().width(24.0).height(24.0).build())
+                                .size(24.0, 24.0)
                                 .vertical_alignment("Center")
                                 .horizontal_alignment("Left")
                                 .attach_shared_property(selected.clone())

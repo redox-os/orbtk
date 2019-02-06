@@ -41,7 +41,7 @@ impl State for WaterMarkTextBlockState {
         }
 
         if let Ok(visibility) = widget.borrow_mut_property::<Visibility>() {
-            if is_water_mark_empty && !is_text_empty {
+            if is_water_mark_empty && is_text_empty {
                 *visibility = Visibility::Hidden;
             } else {
                 *visibility = Visibility::Visible;

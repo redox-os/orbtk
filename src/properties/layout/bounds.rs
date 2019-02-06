@@ -93,3 +93,9 @@ impl Position for Bounds {
         self.value.y = y;
     }
 }
+
+impl From<(f64, f64, f64, f64)> for Bounds {
+    fn from(t: (f64, f64, f64, f64)) -> Self {
+        Bounds::new(t.0, t.1, t.2, t.3)
+    }
+}

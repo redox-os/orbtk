@@ -1,12 +1,12 @@
 use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
-use dces::prelude::{Entity, EntityComponentManager};
+use dces::prelude::{Component, Entity, EntityComponentManager};
 
 use crate::{
     application::Tree,
     properties::{Constraint, HorizontalAlignment, Margin, Padding, VerticalAlignment, Visibility},
-    theme::Theme,
     structs::DirtySize,
+    theme::Theme,
 };
 
 pub use self::fixed_size::FixedSizeLayout;
@@ -49,55 +49,40 @@ pub trait Layout {
 
 // --- helpers ---
 
-pub fn get_vertical_alignment(entity: Entity, ecm: &EntityComponentManager) -> VerticalAlignment {
-    if let Ok(vertical_alignment) = ecm.borrow_component::<VerticalAlignment>(entity) {
-        return *vertical_alignment;
-    }
+fn get_property<T>(entity: Entity, ecm: &EntityComponentManager) -> T
+where
+    T: Clone + Component + Default,
+{
+    ecm.borrow_component::<T>(entity)
+        .map(|r| r.clone())
+        .unwrap_or_default()
+}
 
-    VerticalAlignment::default()
+pub fn get_vertical_alignment(entity: Entity, ecm: &EntityComponentManager) -> VerticalAlignment {
+    get_property::<VerticalAlignment>(entity, ecm)
 }
 
 pub fn get_horizontal_alignment(
     entity: Entity,
     ecm: &EntityComponentManager,
 ) -> HorizontalAlignment {
-    if let Ok(horizontal_alignment) = ecm.borrow_component::<HorizontalAlignment>(entity) {
-        return *horizontal_alignment;
-    }
-
-    HorizontalAlignment::default()
+    get_property::<HorizontalAlignment>(entity, ecm)
 }
 
 pub fn get_margin(entity: Entity, ecm: &EntityComponentManager) -> Margin {
-    if let Ok(margin) = ecm.borrow_component::<Margin>(entity) {
-        return *margin;
-    }
-
-    Margin::default()
+    get_property::<Margin>(entity, ecm)
 }
 
 pub fn get_padding(entity: Entity, ecm: &EntityComponentManager) -> Padding {
-    if let Ok(padding) = ecm.borrow_component::<Padding>(entity) {
-        return *padding;
-    }
-
-    Padding::default()
+    get_property::<Padding>(entity, ecm)
 }
 
 pub fn get_constraint(entity: Entity, ecm: &EntityComponentManager) -> Constraint {
-    if let Ok(constraint) = ecm.borrow_component::<Constraint>(entity) {
-        return *constraint;
-    }
-
-    Constraint::default()
+    get_property::<Constraint>(entity, ecm)
 }
 
 pub fn get_visibility(entity: Entity, ecm: &EntityComponentManager) -> Visibility {
-    if let Ok(visibility) = ecm.borrow_component::<Visibility>(entity) {
-        return *visibility;
-    }
-
-    Visibility::Collapsed
+    get_property::<Visibility>(entity, ecm)
 }
 
 // todo provide helpers for basic properties get_.. borrow_.. borrow_mut..

@@ -3,7 +3,7 @@ use std::rc::Rc;
 use crate::{
     layout::TextSelectionLayout,
     properties::{
-        Constraint, FocusedProperty, OffsetProperty, TextProperty, TextSelection,
+        FocusedProperty, OffsetProperty, TextProperty, TextSelection,
         TextSelectionProperty,
     },
     render_object::RectangleRenderObject,
@@ -50,7 +50,7 @@ impl Widget for Cursor {
 
     fn create() -> Self::Template {
         CursorTemplate::new()
-            .constraint(Constraint::create().width(1.0).build())
+            .width(1.0)
             .text("")
             .selector("cursor")
             .offset(0.0)

@@ -17,13 +17,13 @@ impl<'a> WidgetContainer<'a> {
 
     /// Returns a reference of a property of type `P` from the given widget entity. If the entity does
     /// not exists or it doesn't have a component of type `P` `NotFound` will be returned.
-    pub fn borrow_property<P: Component>(&self) -> Result<&P, NotFound> {
+    pub fn borrow_property<P: Component + Default>(&self) -> Result<&P, NotFound> {
         self.ecm.borrow_component::<P>(self.current_node)
     }
 
     /// Returns a mutable reference of a property of type `P` from the given widget entity. If the entity does
     /// not exists or it doesn't have a component of type `P` `NotFound` will be returned.
-    pub fn borrow_mut_property<P: Component>(&mut self) -> Result<&mut P, NotFound> {
+    pub fn borrow_mut_property<P: Component + Default>(&mut self) -> Result<&mut P, NotFound> {
         self.ecm.borrow_mut_component::<P>(self.current_node)
     }
 }

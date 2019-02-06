@@ -1,4 +1,5 @@
 use super::*;
+use crate::structs::{Size, Position};
 
 #[test]
 fn test_contains() {
@@ -61,4 +62,14 @@ fn test_intersects() {
     assert!(neg_rect.intersects(&inner_neg_rect));
     assert!(!neg_rect.intersects(&outer_neg_rect_one));
     assert!(!neg_rect.intersects(&outer_neg_rect_two));
+}
+
+#[test]
+fn test_into() {
+    let bounds: Bounds = (10.0, 12.0, 13.0, 14.0).into();
+
+    assert_eq!(bounds.x(), 10.0);
+    assert_eq!(bounds.y(), 12.0);
+    assert_eq!(bounds.width(), 13.0);
+    assert_eq!(bounds.height(), 14.0);
 }
