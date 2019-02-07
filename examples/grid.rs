@@ -64,8 +64,8 @@ impl Widget for MainView {
                                 TextBlock::create()
                                     .text("(0,1) - ColumnSpan 3")
                                     .selector("goldendream")
-                                    .horizontal_alignment(HorizontalAlignment::Center)
-                                    .vertical_alignment(VerticalAlignment::Center),
+                                    .horizontal_alignment(HorizontalAlignment(Alignment::Center))
+                                    .vertical_alignment(VerticalAlignment(Alignment::Center)),
                             ),
                     ),
             )

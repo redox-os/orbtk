@@ -11,7 +11,7 @@ mod macros;
 
 pub use crate::application::*;
 pub use crate::backend::*;
-pub use crate::enums::ParentType;
+pub use crate::enums::*;
 pub use crate::event::*;
 pub use crate::layout::*;
 pub use crate::properties::*;

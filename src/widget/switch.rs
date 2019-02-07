@@ -1,6 +1,7 @@
 use std::rc::Rc;
 
 use crate::{
+    enums::Alignment,
     properties::{
         HorizontalAlignment, PaddingProperty, PressedProperty, Selected,
         SelectedProperty,
@@ -24,9 +25,9 @@ impl State for SwitchState {
         if let Ok(horizontal_alignment) = switch_toggle.borrow_mut_property::<HorizontalAlignment>()
         {
             if selected {
-                *horizontal_alignment = HorizontalAlignment::Right;
+                *horizontal_alignment = HorizontalAlignment(Alignment::End);
             } else {
-                *horizontal_alignment = HorizontalAlignment::Left;
+                *horizontal_alignment = HorizontalAlignment(Alignment::Start);
             }
         }
     }
@@ -65,7 +66,7 @@ impl Widget for Switch {
                             Container::create()
                                 .size(24.0, 24.0)
                                 .vertical_alignment("Center")
-                                .horizontal_alignment("Left")
+                                .horizontal_alignment("Start")
                                 .attach_shared_property(selected.clone())
                                 .selector(Selector::from("switchtoggle").id("SwitchSwitchToggle")),
                         ),

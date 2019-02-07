@@ -226,7 +226,8 @@ impl Widget for TextBox {
                             )
                             .child(
                                 Cursor::create()
-                                    .horizontal_alignment("Left")
+                                    .margin(0.0)
+                                    .horizontal_alignment("Start")
                                     .shared_text(text.clone())
                                     .shared_text_selection(selection.clone())
                                     .shared_offset(offset.clone())
