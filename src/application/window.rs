@@ -10,9 +10,10 @@ use crate::{
     application::{Application, Tree},
     backend::{target_backend, BackendRunner},
     event::EventHandler,
-    layout::{Layout, RootLayout},
-    properties::{Bounds, Point},
+    layout::Layout,
+    properties::{Bounds, Constraint},
     render_object::RenderObject,
+    structs::Size,
     systems::{
         EventSystem, InitSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem,
     },
@@ -55,38 +56,38 @@ pub struct WindowBuilder<'a> {
 
 impl<'a> WindowBuilder<'a> {
     /// Used to define the render `bounds` of the window.
-    pub fn with_bounds(mut self, bounds: Bounds) -> Self {
-        self.bounds = bounds;
+    pub fn bounds<B: Into<Bounds>>(mut self, bounds: B) -> Self {
+        self.bounds = bounds.into();
         self
     }
 
     /// Used to set the `title` of the window.
-    pub fn with_title<S: Into<String>>(mut self, title: S) -> Self {
+    pub fn title<S: Into<String>>(mut self, title: S) -> Self {
         self.title = title.into();
         self
     }
 
     /// Used to set the css `theme` of the window.
-    pub fn with_theme(mut self, theme: Theme) -> Self {
+    pub fn theme(mut self, theme: Theme) -> Self {
         self.theme = theme;
         self
     }
 
     /// Used to set the `root` template of the window.
-    pub fn with_root(mut self, root: Template) -> Self {
+    pub fn root(mut self, root: Template) -> Self {
         self.root = Some(root);
         self
     }
 
     /// Sets whether the window is resizable or not.
-    pub fn with_resizable(mut self, resizable: bool) -> Self {
+    pub fn resizable(mut self, resizable: bool) -> Self {
         self.resizable = resizable;
         self
     }
 
     /// Used to set the `debug` flag of the window.
     /// If the flag is set to `ture` debug informations will be printed to the console.
-    pub fn with_debug_flag(mut self, debug: bool) -> Self {
+    pub fn debug_flag(mut self, debug: bool) -> Self {
         self.debug_flag = debug;
         self
     }
@@ -106,6 +107,25 @@ impl<'a> WindowBuilder<'a> {
 
         if debug_flag.get() {
             println!("------ Start build tree ------\n");
+        }
+
+        // register window as entity with global properties
+        if world.entity_container().is_empty() {
+            let window = world
+                .create_entity()
+                .with(Global::default())
+                .with(Bounds::new(
+                    0.0,
+                    0.0,
+                    self.bounds.width(),
+                    self.bounds.height(),
+                ))
+                .with(Constraint::default())
+                .build();
+
+            if debug_flag.get() {
+                println!("Window (id = {}, children_len = 1)", window,);
+            }
         }
 
         if let Some(root) = self.root {
@@ -139,6 +159,7 @@ impl<'a> WindowBuilder<'a> {
                 backend: backend.clone(),
                 states: states.clone(),
                 update: update.clone(),
+                running: running.clone(),
             })
             .with_priority(1)
             .build();
@@ -148,6 +169,8 @@ impl<'a> WindowBuilder<'a> {
                 backend: backend.clone(),
                 layouts: layouts.clone(),
                 update: update.clone(),
+                debug_flag: debug_flag.clone(),
+                running: running.clone(),
             })
             .with_priority(2)
             .build();
@@ -157,6 +180,7 @@ impl<'a> WindowBuilder<'a> {
                 backend: backend.clone(),
                 states: states.clone(),
                 update: update.clone(),
+                running: running.clone(),
             })
             .with_priority(3)
             .build();
@@ -167,6 +191,7 @@ impl<'a> WindowBuilder<'a> {
                 render_objects: render_objects.clone(),
                 update: update.clone(),
                 debug_flag: debug_flag.clone(),
+                running: running.clone(),
             })
             .with_priority(4)
             .build();
@@ -207,18 +232,6 @@ fn build_tree(
         debug_flag: &Rc<Cell<bool>>,
         depth: usize,
     ) -> Entity {
-        // register window as entity with global properties
-        if world.entity_container().is_empty() {
-            let root = world
-                .create_entity()
-                .with(Global::default())
-                .with(Bounds::default())
-                .with(Point::default())
-                .build();
-
-            layouts.borrow_mut().insert(root, Box::new(RootLayout));
-        }
-
         let mut template = template;
 
         let entity = {
@@ -242,6 +255,9 @@ fn build_tree(
                     PropertyResult::PropertyNotFound => {}
                 }
             }
+
+            // constraint
+            entity_builder = entity_builder.with(template.constraint);
 
             let entity = entity_builder.build();
 
@@ -310,7 +326,7 @@ fn build_tree(
         states,
         root,
         debug_flag,
-        0,
+        1,
     );
 
     if debug_flag.get() {

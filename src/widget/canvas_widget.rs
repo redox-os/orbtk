@@ -1,9 +1,11 @@
 use crate::{
-    layout::StretchLayout,
+    layout::FixedSizeLayout,
     render_object::ImageRenderObject,
     theme::Selector,
     widget::{Template, Widget},
 };
+
+// Unused at the moment!!!
 
 /// The `CanvasWidget` widget is used to provide custom drawing by handling the `Canvas` struct from `OrbGl` as property.
 ///
@@ -19,11 +21,13 @@ use crate::{
 pub struct CanvasWidget;
 
 impl Widget for CanvasWidget {
+    type Template = Template;
+    
     fn create() -> Template {
-        Template::default()
-            .with_property(Selector::from("imagewidget"))
-            .with_layout(StretchLayout::default())
-            .with_render_object(ImageRenderObject)
-            .with_debug_name("ImageWidget")
+        Template::new()
+            .property(Selector::from("imagewidget"))
+            .layout(FixedSizeLayout::default())
+            .render_object(ImageRenderObject)
+            .debug_name("ImageWidget")
     }
 }

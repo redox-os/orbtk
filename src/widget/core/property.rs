@@ -14,7 +14,7 @@ pub enum PropertyResult {
 }
 
 /// The `SharedProperty` struct is used to define shared properties for widgets. A shared property could be shared between different widgets.
-/// All refernces of a shared property will always share the same value. Only the origin shared property contains the concret property, all
+/// All references of a shared property will always share the same value. Only the origin shared property contains the concert property, all
 /// other cloned shared properties only references to the origin.
 pub struct SharedProperty {
     pub source_chain: Rc<RefCell<Vec<Rc<Cell<Option<Entity>>>>>>,
@@ -32,12 +32,12 @@ impl SharedProperty {
         }
     }
 
-    // Use to change the inner `property` of the origin.
+    /// Use to change the inner `property` of the origin.
     pub fn update_property<P: Component>(&mut self, property: P) {
         self.property = Some(ComponentBox::new(property));
     }
 
-    /// Returns the concret property if the shared property is orgin. If the shared property contains a refernce to its origin the method returns
+    /// Returns the concert property if the shared property is origin. If the shared property contains a reference to its origin the method returns
     /// a `SharedComponentBox`. If its not the origion and does not contain a reference to the origin `PropertyResult::PropertyNotFound` will be returned.
     pub fn build(self) -> PropertyResult {
         if let Some(property) = self.property {

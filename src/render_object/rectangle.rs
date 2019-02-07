@@ -1,9 +1,6 @@
 use crate::{
-    backend::Renderer,
-    properties::{Bounds, Point},
-    render_object::RenderObject,
-    theme::Selector,
-    widget::Context,
+    backend::Renderer, properties::Bounds, render_object::RenderObject, structs::Point,
+    theme::Selector, widget::Context,
 };
 
 pub struct RectangleRenderObject;
@@ -21,14 +18,16 @@ impl RenderObject for RectangleRenderObject {
         context: &mut Context<'_>,
         global_position: &Point,
     ) {
-        let parent_bounds = if let Some(parent) = context.parent_widget() {
-            if let Ok(bounds) = parent.borrow_property::<Bounds>() {
-                bounds.clone()
+        let parent_bounds = {
+            if let Some(parent) = context.parent_widget() {
+                if let Ok(bounds) = parent.borrow_property::<Bounds>() {
+                    bounds.clone()
+                } else {
+                    Bounds::default()
+                }
             } else {
                 Bounds::default()
             }
-        } else {
-            Bounds::default()
         };
 
         let theme = context.theme;

@@ -3,14 +3,12 @@ use orbtk::*;
 struct MainView;
 
 impl Widget for MainView {
-    fn create() -> Template {
-        Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_debug_name("MainView")
-            .with_child(
-                ImageWidget::create()
-                    .with_property(Image::from_path("res/orbtk-space.png").unwrap()),
-            )
+    type Template = Template;
+
+    fn create() -> Self::Template {
+        Template::new()
+            .debug_name("MainView")
+            .child(ImageWidget::create().image("res/orbtk-space.png"))
     }
 }
 
@@ -18,9 +16,9 @@ fn main() {
     let mut application = Application::default();
     application
         .create_window()
-        .with_bounds(Bounds::new(100, 100, 800, 420))
-        .with_title("OrbTk - image example")
-        .with_root(MainView::create())
+        .bounds((100.0, 100.0, 800.0, 420.0))
+        .title("OrbTk - image example")
+        .root(MainView::create())
         .build();
     application.run();
 }

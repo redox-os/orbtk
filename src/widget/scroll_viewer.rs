@@ -1,31 +1,35 @@
 use crate::{
-    enums::ParentType,
     layout::ScrollLayout,
-    properties::{Offset, ScrollViewerMode},
+    properties::{OffsetProperty, ScrollViewerMode, ScrollViewerModeProperty},
     widget::{Template, Widget},
 };
 
-/// The `ScrollViewer` represents a layout widget that adds vertial and horizontal offset to its perent.
+/// The `ScrollViewer` (wip) represents a layout widget that adds vertical and horizontal offset to its parent.
 /// It is used to scroll the content if the content's width or height is greater than the ScrollViewers width or height.
 ///
 /// # Properties
 ///
-/// * `Offset` - Represents the vertial and horizontal scroll offset.
-/// * `ScrollMode` - Scroll mode vertical / horizontal off the scroll viewr.
+/// * `offset` - Represents the vertical and horizontal scroll offset.
+/// * `scroll_viewer_mode` - Scroll mode vertical / horizontal off the scroll viewer.
 ///
 /// # Others
 ///
-/// * `ParentType`- Single.
 /// * `ScrollLayout` - Used to layout the widget.
 pub struct ScrollViewer;
 
 impl Widget for ScrollViewer {
-    fn create() -> Template {
-        Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_property(Offset::default())
-            .with_property(ScrollViewerMode::default())
-            .with_layout(ScrollLayout::default())
-            .with_debug_name("ScrollViewer")
+    type Template = ScrollViewerTemplate;
+
+    fn create() -> Self::Template {
+        ScrollViewerTemplate::new()
+            .offset(0.0)
+            .scroll_viewer_mode(ScrollViewerMode::default())
+            .layout(ScrollLayout::default())
+            .debug_name("ScrollViewer")
     }
 }
+
+template!(
+    ScrollViewerTemplate,
+    [OffsetProperty, ScrollViewerModeProperty]
+);

@@ -1,64 +1,69 @@
 use crate::{
-    enums::ParentType,
-    properties::{FontIcon, Label, Selected},
-    styling::vector_graphics::material_font_icons,
-    theme::Selector,
-    widget::{
-        Center, Container, FontIconBlock, Row, SharedProperty, Spacer, Template, TextBlock, Widget,
+    material_font_icons,
+    properties::{
+        FontIcon, FontIconProperty, OrientationProperty,
+        PressedProperty, SelectedProperty, Text, TextProperty,
     },
+    theme::Selector,
+    widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
 };
-
-/// The `Checkbox` widget can be switch its selected state. It contains a selection box and a label.
-///
-/// # Shared Properties
-///
-/// * `Label` - String used to display the text of the check box.
-/// * `FontIcon` - String used to display the font icon of the check box.
-/// * `Selector` - CSS selector with  element name `checkbox`, used to request the theme of the widget.
+/// The `Checkbox` widget can be switch its selected state. It contains a selection box and a text.
 ///
 /// # Properties
 ///
-/// * `Selected` - Bool value represents the selected state of the widget.
-///
-/// # Others
-///
-/// * `ParentType`- Single.
+/// * `text` - String used to display the text of the check box.
+/// * `font_icon` - String used to display the font icon of the check box.
+/// * `selector` - CSS selector with  element name `checkbox`, used to request the theme of the widget.
+/// * `selected` - Bool value represents the selected state of the widget.
 pub struct CheckBox;
 
 impl Widget for CheckBox {
-    fn create() -> Template {
-        let label = SharedProperty::new(Label::default());
+    type Template = CheckBoxTemplate;
+
+    fn create() -> Self::Template {
+        let text = SharedProperty::new(Text::default());
         let icon = SharedProperty::new(FontIcon::from(material_font_icons::CHECK_FONT_ICON));
         let selector = SharedProperty::new(Selector::from("checkbox"));
 
-        Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_child(
-                Row::create()
-                    .with_child(
+        CheckBoxTemplate::new()
+            .height(24.0)
+            .selected(false)
+            .debug_name("CheckBox")
+            .child(
+                Stack::create()
+                    .orientation("Horizontal")
+                    .child(
                         Container::create()
-                            .with_child(
-                                Center::create().with_child(
-                                    FontIconBlock::create()
-                                        .with_shared_property(icon.clone())
-                                        .with_shared_property(selector.clone()),
-                                ),
-                            )
-                            .with_shared_property(selector.clone()),
+                            .size(24.0, 24.0)
+                            .shared_selector(selector.clone())
+                            .child(
+                                FontIconBlock::create()
+                                    .vertical_alignment("Center")
+                                    .horizontal_alignment("Center")
+                                    .shared_font_icon(icon.clone())
+                                    .shared_selector(selector.clone()),
+                            ),
                     )
-                    .with_child(Spacer::create())
-                    .with_child(
-                        Center::create().with_child(
-                            TextBlock::create()
-                                .with_shared_property(label.clone())
-                                .with_shared_property(selector.clone()),
-                        ),
+                    .child(
+                        TextBlock::create()
+                            .vertical_alignment("Center")
+                            .margin((8.0, 0.0, 0.0, 0.0))
+                            .shared_text(text.clone())
+                            .shared_selector(selector.clone()),
                     ),
             )
-            .with_shared_property(icon)
-            .with_shared_property(label)
-            .with_shared_property(selector)
-            .with_property(Selected(false))
-            .with_debug_name("CheckBox")
+            .shared_font_icon(icon)
+            .shared_text(text)
+            .shared_selector(selector)
     }
 }
+
+template!(
+    CheckBoxTemplate,
+    [
+        TextProperty,
+        FontIconProperty,
+        PressedProperty,
+        SelectedProperty
+    ]
+);
