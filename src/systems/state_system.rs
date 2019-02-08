@@ -10,6 +10,8 @@ use crate::{
     application::Tree,
     backend::Backend,
     properties::{Enabled, Focused, Pressed, Selected},
+    shapes::UpdateableShape,
+    theme::Selector,
     widget::{
         add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
     },
@@ -18,6 +20,7 @@ use crate::{
 /// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {
     pub backend: Rc<RefCell<dyn Backend>>,
+    pub shapes: Rc<RefCell<BTreeMap<Entity, Box<dyn UpdateableShape>>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
@@ -83,7 +86,7 @@ impl StateSystem {
         }
     }
 
-    // Updates the peseudo class of a widget by the given state.
+    // Updates the pseudo class of a widget by the given state.
     fn update_default_state(
         &self,
         state: bool,
@@ -117,15 +120,14 @@ impl System<Tree> for StateSystem {
         );
 
         for node in tree.into_iter() {
-            state_context.messages.borrow_mut().clear();
-
+            let mut skip = false;
             context.entity = node;
             {
                 let mut widget = context.widget();
 
                 let has_default_flags = self.has_default_flags(&widget);
                 if !has_default_flags && !self.states.borrow().contains_key(&node) {
-                    continue;
+                    skip = true;
                 }
 
                 if has_default_flags {
@@ -133,17 +135,15 @@ impl System<Tree> for StateSystem {
                 }
             }
 
-            if let Some(state) = self.states.borrow().get(&node) {
-                state.update(&mut context);
+            if !skip {
+                if let Some(state) = self.states.borrow().get(&node) {
+                    state.update(&mut context);
+                }
             }
 
-            // Handle messages.
-            {
-                for (entity, messages) in state_context.messages.borrow_mut().iter() {
-                    if let Some(state) = self.states.borrow().get(&entity) {
-                        context.entity = *entity;
-                        state.receive_messages(&mut context, &messages);
-                    }
+            if let Ok(selector) = context.widget().borrow_mut_property::<Selector>() {
+                if let Some(shape) = self.shapes.borrow_mut().get_mut(&node) {
+                    shape.update_by_selector(selector, &state_context.theme);
                 }
             }
         }

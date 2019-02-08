@@ -45,7 +45,7 @@ impl RenderObject for TextRenderObject {
                             &parent_bounds,
                             global_position,
                             theme.uint("font-size", selector),
-                            theme.color("color", selector),
+                            theme.brush("color", selector).into(),
                             &theme.string("font-family", selector),
                         );
                     } else if let Ok(text) = widget.borrow_property::<WaterMark>() {
@@ -55,7 +55,7 @@ impl RenderObject for TextRenderObject {
                             &parent_bounds,
                             global_position,
                             theme.uint("font-size", selector),
-                            theme.color("color", selector),
+                            theme.brush("color", selector).into(),
                             &theme.string("font-family", selector),
                         );
                     }

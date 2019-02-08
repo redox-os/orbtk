@@ -19,7 +19,10 @@ mod cell;
 mod selector;
 mod style;
 
-use crate::styling::theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS};
+use crate::{
+    structs::Brush,
+    styling::theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS},
+};
 
 lazy_static! {
     static ref DEFAULT_THEME: Arc<Theme> = {
@@ -39,8 +42,8 @@ lazy_static! {
 pub struct ThemeBuilder {
     theme_css: Option<String>,
     theme_path: Option<String>,
-    theme_extensitons: Vec<String>,
-    theme_exention_paths: Vec<String>,
+    theme_extensions: Vec<String>,
+    theme_extension_paths: Vec<String>,
 }
 
 impl Default for ThemeBuilder {
@@ -48,8 +51,8 @@ impl Default for ThemeBuilder {
         ThemeBuilder {
             theme_css: None,
             theme_path: None,
-            theme_extensitons: vec![],
-            theme_exention_paths: vec![],
+            theme_extensions: vec![],
+            theme_extension_paths: vec![],
         }
     }
 }
@@ -57,13 +60,13 @@ impl Default for ThemeBuilder {
 impl ThemeBuilder {
     /// Inserts a theme css extension.
     pub fn extension_css(mut self, extension: impl Into<String>) -> Self {
-        self.theme_extensitons.push(extension.into());
+        self.theme_extensions.push(extension.into());
         self
     }
 
     /// Inserts a theme extension by path.
     pub fn extension_path(mut self, extension_path: impl Into<String>) -> Self {
-        self.theme_exention_paths.push(extension_path.into());
+        self.theme_extension_paths.push(extension_path.into());
         self
     }
 
@@ -71,11 +74,11 @@ impl ThemeBuilder {
     pub fn build(self) -> Theme {
         let mut theme = String::new();
 
-        for css_extension in self.theme_extensitons.iter().rev() {
+        for css_extension in self.theme_extensions.iter().rev() {
             theme.push_str(&css_extension);
         }
 
-        for extension_path in self.theme_exention_paths.iter().rev() {
+        for extension_path in self.theme_extension_paths.iter().rev() {
             let file = File::open(extension_path).unwrap();
 
             let mut reader = BufReader::new(file);
@@ -103,7 +106,7 @@ impl ThemeBuilder {
     }
 }
 
-/// `Theme` is the represenation of a css styling.
+/// `Theme` is the representation of a css styling.
 #[derive(Debug, Clone)]
 pub struct Theme {
     parent: Option<Arc<Theme>>,
@@ -222,11 +225,10 @@ impl Theme {
         matches.last().map(|x| x.2.clone())
     }
 
-    pub fn color(&self, property: &str, query: &Selector) -> Color {
-        let default = Color { data: 0 };
+    pub fn brush(&self, property: &str, query: &Selector) -> Brush {
         self.get(property, query)
-            .map(|v| v.color().unwrap_or(default))
-            .unwrap_or(default)
+            .map(|v| v.brush().unwrap_or(Brush::default()))
+            .unwrap_or(Brush::default())
     }
 
     pub fn uint(&self, property: &str, query: &Selector) -> u32 {
@@ -271,7 +273,7 @@ pub struct Declaration {
 pub enum Value {
     UInt(u32),
     Float(f32),
-    Color(Color),
+    Brush(Brush),
     Str(String),
 }
 
@@ -290,9 +292,9 @@ impl Value {
         }
     }
 
-    pub fn color(&self) -> Option<Color> {
-        match *self {
-            Value::Color(x) => Some(x),
+    pub fn brush(&self) -> Option<Brush> {
+        match self {
+            Value::Brush(x) => Some(x.clone()),
             _ => None,
         }
     }
@@ -461,11 +463,11 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
         input: &mut Parser<'i, 't>,
     ) -> Result<Self::Declaration, ParseError<'i, Self::Error>> {
         let value = match &*name {
-            "color" | "border-color" | "icon-color" => Value::Color(parse_basic_color(input)?),
+            "color" | "border-color" | "icon-color" => Value::Brush(parse_basic_color(input)?),
 
-            "background" | "foreground" => Value::Color(parse_basic_color(input)?),
+            "background" | "foreground" => Value::Brush(parse_basic_color(input)?),
 
-            "font-family" | "icon-familiy" => Value::Str(parse_string(input)?),
+            "font-family" | "icon-family" => Value::Str(parse_string(input)?),
 
             "border-radius" | "border-width" | "font-size" | "icon-size" | "icon-margin" => {
                 match input.next()? {
@@ -500,28 +502,28 @@ impl<'i> cssparser::AtRuleParser<'i> for DeclarationParser {
     type Error = CustomParseError;
 }
 
-fn css_color(name: &str) -> Option<Color> {
-    Some(hex(match name {
-        "transparent" => return Some(Color { data: 0 }),
+fn css_color(name: &str) -> Option<Brush> {
+    Some(match name {
+        "transparent" => Brush::from(name),
 
-        "black" => 0x000_000,
-        "silver" => 0xc0c_0c0,
-        "gray" | "grey" => 0x808_080,
-        "white" => 0xfff_fff,
-        "maroon" => 0x800_000,
-        "red" => 0xff0_000,
-        "purple" => 0x800_080,
-        "fuchsia" => 0xff0_0ff,
-        "green" => 0x008_000,
-        "lime" => 0x00f_f00,
-        "olive" => 0x808_000,
-        "yellow" => 0xfff_f00,
-        "navy" => 0x000_080,
-        "blue" => 0x000_0ff,
-        "teal" => 0x008_080,
-        "aqua" => 0x00f_fff,
+        "black" => Brush::from("#000000"),
+        "silver" => Brush::from("#C0C0C0"),
+        "gray" | "grey" => Brush::from("#808080"),
+        "white" => Brush::from("#FFFFFF"),
+        "maroon" => Brush::from("#800000"),
+        "red" => Brush::from("#FF0000"),
+        "purple" => Brush::from("#800080"),
+        "fuchsia" => Brush::from("#FF00FF"),
+        "green" => Brush::from("#008000"),
+        "lime" => Brush::from("#00FF00"),
+        "olive" => Brush::from("#808000"),
+        "yellow" => Brush::from("#FFFF00"),
+        "navy" => Brush::from("#000080"),
+        "blue" => Brush::from("#0000FF"),
+        "teal" => Brush::from("#008080"),
+        "aqua" => Brush::from("#00FFFF"),
         _ => return None,
-    }))
+    })
 }
 
 fn css_string(name: &str) -> Option<String> {
@@ -546,30 +548,14 @@ fn parse_string<'i, 't>(
 
 fn parse_basic_color<'i, 't>(
     input: &mut Parser<'i, 't>,
-) -> Result<Color, ParseError<'i, CustomParseError>> {
+) -> Result<Brush, ParseError<'i, CustomParseError>> {
     Ok(match input.next()? {
         Token::Ident(s) => match css_color(&s) {
             Some(color) => color,
             None => return Err(CustomParseError::InvalidColorName(s.into_owned()).into()),
         },
 
-        Token::IDHash(hash) | Token::Hash(hash) => match hash.len() {
-            6 | 8 => {
-                let mut x = match u32::from_str_radix(&hash, 16) {
-                    Ok(x) => x,
-                    Err(_) => {
-                        return Err(CustomParseError::InvalidColorHex(hash.into_owned()).into());
-                    }
-                };
-
-                if hash.len() == 6 {
-                    x |= 0xFF_000_000;
-                }
-
-                Color { data: x }
-            }
-            _ => return Err(CustomParseError::InvalidColorHex(hash.into_owned()).into()),
-        },
+        Token::IDHash(hash) | Token::Hash(hash) => Brush::from(hash.into_owned()),
 
         t => {
             let basic_error = BasicParseError::UnexpectedToken(t);

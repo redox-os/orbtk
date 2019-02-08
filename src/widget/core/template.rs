@@ -9,6 +9,7 @@ use crate::{
     layout::{GridLayout, Layout},
     properties::{Bounds, Constraint, HorizontalAlignment, VerticalAlignment, Visibility},
     render_object::RenderObject,
+    shapes::UpdateableShape,
     structs::Point,
 };
 
@@ -41,6 +42,7 @@ pub struct Template {
     pub state: Option<Rc<dyn State>>,
     pub event_handlers: Vec<Rc<dyn EventHandler>>,
     pub render_object: Option<Box<dyn RenderObject>>,
+    pub shape: Option<Box<dyn UpdateableShape>>,
     pub layout: Box<dyn Layout>,
     pub constraint: Constraint,
     pub properties: HashMap<TypeId, ComponentBox>,
@@ -82,6 +84,7 @@ impl Default for Template {
             parent_type: ParentType::Single,
             state: None,
             event_handlers: vec![],
+            shape: None,
             render_object: None,
             layout: Box::new(GridLayout::default()),
             constraint: Constraint::new(),
@@ -145,8 +148,9 @@ impl Template {
     }
 
     /// Used to add a render `shape` to the template. Only one `shape` per template could be added.
-    pub fn shape<S: Component + Shape>(self, shape: S) -> Self {
-        self.property(shape)
+    pub fn shape(mut self, shape:  impl Into<Box<dyn UpdateableShape>>) -> Self {
+        self.shape = Some(shape.into());
+        self
     }
 
     /// Used to add a `layout' to the template. Only one `layout` can be added.
@@ -316,7 +320,7 @@ pub trait TemplateBase: Sized + From<Template> + Into<Template> {
     }
 
     /// Inserts a shape
-    fn shape<S: Component + Shape>(self, shape: S) -> Self {
+    fn shape(self, shape: impl Into<Box<dyn UpdateableShape>>) -> Self {
         self.template(|template| template.shape(shape))
     }
 

@@ -1,5 +1,3 @@
-use orbgl_api::prelude::Canvas;
-
 use std::{
     cell::{Cell, RefCell},
     collections::{BTreeMap, HashSet},
@@ -13,13 +11,15 @@ use crate::{
     backend::Backend,
     properties::{Bounds, Visibility},
     render_object::RenderObject,
-    structs::{Point, Position},
+    shapes::UpdateableShape,
+    structs::{Point, Position, Size},
     theme::Selector,
     widget::Context,
 };
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {
+    pub shapes: Rc<RefCell<BTreeMap<Entity, Box<dyn UpdateableShape>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub backend: Rc<RefCell<dyn Backend>>,
     pub update: Rc<Cell<bool>>,
@@ -42,9 +42,12 @@ impl System<Tree> for RenderSystem {
         offsets.insert(tree.root, (0.0, 0.0));
 
         // render window background
-        render_context
-            .renderer
-            .render(render_context.theme.color("background", &"window".into()));
+        render_context.renderer.render(
+            render_context
+                .theme
+                .brush("background", &"window".into())
+                .into(),
+        );
 
         for node in tree.into_iter() {
             let mut global_position = Point::default();
@@ -86,6 +89,59 @@ impl System<Tree> for RenderSystem {
                 );
             }
 
+            //  let x = bounds.x();
+            //         let y = bounds.y();
+            //         let radius = 2.0;
+            //         let width = bounds.width();
+            //         let height = bounds.height();
+            //         let degrees = 3.15 / 180.0;
+
+            //         render_context.canvas.arc(
+            //             x + width - radius,
+            //             y + radius,
+            //             radius,
+            //             -90.0 * degrees,
+            //             0.0 * degrees,
+            //         );
+            //         render_context.canvas.arc(
+            //             x + width - radius,
+            //             y + height - radius,
+            //             radius,
+            //             0.0 * degrees,
+            //             90.0 * degrees,
+            //         );
+            //         render_context.canvas.arc(
+            //             x + radius,
+            //             y + height - radius,
+            //             radius,
+            //             90.0 * degrees,
+            //             180.0 * degrees,
+            //         );
+            //         render_context.canvas.arc(
+            //             x + radius,
+            //             y + radius,
+            //             radius,
+            //             180.0 * degrees,
+            //             270.0 * degrees,
+            //         );
+
+            //         use orbgl_api::Color;
+
+            //         render_context.canvas.set_fill_style(Color::rgb(100, 100, 100));
+
+            if let Some(shape) = self.shapes.borrow_mut().get_mut(&node) {
+                if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
+                    shape.update_by_bounds(
+                        (global_position.x + bounds.x()) as f64,
+                        (global_position.y + bounds.y()) as f64,
+                        bounds.width() as f64,
+                        bounds.height() as f64,
+                    );
+
+                    shape.render(render_context.canvas);
+                }
+            }
+
             // render debug border for each widget
             if self.debug_flag.get() {
                 if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
@@ -98,9 +154,9 @@ impl System<Tree> for RenderSystem {
                                 parent_bounds,
                                 &global_position,
                                 render_context.theme.uint("border-radius", &selector),
-                                render_context.theme.color("background", &selector),
+                                render_context.theme.brush("background", &selector).into(),
                                 render_context.theme.uint("border-width", &selector),
-                                render_context.theme.color("border-color", &selector),
+                                render_context.theme.brush("border-color", &selector).into(),
                                 render_context.theme.float("opcaity", &selector),
                             );
                         }

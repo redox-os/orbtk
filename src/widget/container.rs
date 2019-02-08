@@ -1,9 +1,7 @@
-use orbgl_shapes::prelude::Rectangle;
-
 use crate::{
     layout::PaddingLayout,
     properties::PaddingProperty,
-    render_object::RectangleRenderObject,
+    shapes::Rectangle,
     widget::{Template, Widget},
 };
 
@@ -16,7 +14,7 @@ use crate::{
 /// # Others
 ///
 /// * `PaddingLayout` - Used to layout the widget.
-/// * `RectangleRenderObject` - Used to draw the widget.
+/// * `Rectangle` - Used to draw the widget.
 pub struct Container;
 
 impl Widget for Container {
@@ -26,7 +24,6 @@ impl Widget for Container {
         ContainerTemplate::new()
             .padding(0.0)
             .shape(Rectangle::default())
-            // .render_object(RectangleRenderObject)
             .layout(PaddingLayout::new())
             .selector("container")
             .debug_name("Container")

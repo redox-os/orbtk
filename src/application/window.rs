@@ -14,6 +14,7 @@ use crate::{
     properties::{Bounds, Constraint},
     render_object::RenderObject,
     structs::Size,
+    shapes::UpdateableShape,
     systems::{
         EventSystem, InitSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem,
     },
@@ -22,10 +23,11 @@ use crate::{
     Global,
 };
 
-/// Represents a window. Each window has its own tree, event pipline and backend.
+/// Represents a window. Each window has its own tree, event pipeline and backend.
 pub struct Window {
     pub backend_runner: Box<dyn BackendRunner>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+    pub shapes: Rc<RefCell<BTreeMap<Entity, Box<dyn UpdateableShape>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
@@ -98,6 +100,7 @@ impl<'a> WindowBuilder<'a> {
             target_backend(&self.title, self.bounds, self.resizable, self.theme);
         let mut world = World::from_container(Tree::default());
         let render_objects = Rc::new(RefCell::new(BTreeMap::new()));
+        let shapes = Rc::new(RefCell::new(BTreeMap::new()));
         let layouts = Rc::new(RefCell::new(BTreeMap::new()));
         let handlers = Rc::new(RefCell::new(BTreeMap::new()));
         let states = Rc::new(RefCell::new(BTreeMap::new()));
@@ -133,6 +136,7 @@ impl<'a> WindowBuilder<'a> {
                 root,
                 &mut world,
                 &render_objects,
+                &shapes,
                 &layouts,
                 &handlers,
                 &states,
@@ -157,6 +161,7 @@ impl<'a> WindowBuilder<'a> {
         world
             .create_system(StateSystem {
                 backend: backend.clone(),
+                shapes: shapes.clone(),
                 states: states.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -188,6 +193,7 @@ impl<'a> WindowBuilder<'a> {
         world
             .create_system(RenderSystem {
                 backend: backend.clone(),
+                shapes: shapes.clone(),
                 render_objects: render_objects.clone(),
                 update: update.clone(),
                 debug_flag: debug_flag.clone(),
@@ -201,6 +207,7 @@ impl<'a> WindowBuilder<'a> {
         self.application.windows.push(Window {
             backend_runner: runner,
             render_objects,
+            shapes,
             layouts,
             handlers,
             states,
@@ -217,6 +224,7 @@ fn build_tree(
     root: Template,
     world: &mut World<Tree>,
     render_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+    shapes: &Rc<RefCell<BTreeMap<Entity, Box<dyn UpdateableShape>>>>,
     layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     states: &Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
@@ -225,6 +233,7 @@ fn build_tree(
     fn expand(
         world: &mut World<Tree>,
         render_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+        shapes: &Rc<RefCell<BTreeMap<Entity, Box<dyn UpdateableShape>>>>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
         states: &Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
@@ -267,6 +276,10 @@ fn build_tree(
 
             layouts.borrow_mut().insert(entity, template.layout);
 
+            if let Some(shape) = template.shape {
+                shapes.borrow_mut().insert(entity, shape);
+            }
+
             let widget_handlers = template.event_handlers;
 
             if !widget_handlers.is_empty() {
@@ -305,6 +318,7 @@ fn build_tree(
             let child = expand(
                 world,
                 render_objects,
+                shapes,
                 layouts,
                 handlers,
                 states,
@@ -321,6 +335,7 @@ fn build_tree(
     expand(
         world,
         render_objects,
+        shapes,
         layouts,
         handlers,
         states,

@@ -2,7 +2,7 @@ use crate::{
     enums::ParentType,
     layout::GridLayout,
     properties::{Columns, ColumnsProperty, Rows, RowsProperty},
-    render_object::RectangleRenderObject,
+    shapes::Rectangle,
     widget::{Template, Widget},
 };
 
@@ -29,7 +29,7 @@ impl Widget for Grid {
             .rows(Rows::default())
             .parent_type(ParentType::Multi)
             .layout(GridLayout::default())
-            .render_object(RectangleRenderObject)
+            .shape(Rectangle::default())
             .selector("grid")
             .debug_name("Grid")
     }

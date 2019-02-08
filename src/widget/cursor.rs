@@ -6,7 +6,7 @@ use crate::{
         FocusedProperty, OffsetProperty, TextProperty, TextSelection,
         TextSelectionProperty,
     },
-    render_object::RectangleRenderObject,
+    shapes::Rectangle,
     widget::{
         add_selector_to_widget, remove_selector_from_widget, Context, State, Template, Widget,
     },
@@ -55,7 +55,7 @@ impl Widget for Cursor {
             .selector("cursor")
             .offset(0.0)
             .text_selection(TextSelection::default())
-            .render_object(RectangleRenderObject)
+            .shape(Rectangle::default())
             .layout(TextSelectionLayout::new())
             .state(Rc::new(CursorState))
             .debug_name("Cursor")

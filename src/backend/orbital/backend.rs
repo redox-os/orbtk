@@ -5,9 +5,8 @@ use std::rc::Rc;
 use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
 
 use dces::prelude::{Entity, World};
-use orbgl::prelude::{Canvas, FramebufferSurface, CairoRenderEngine};
-
-
+use orbgl::prelude::{FramebufferSurface, CairoRenderEngine};
+use orbgl_api::Canvas;
 
 use crate::application::Tree;
 use crate::backend::{

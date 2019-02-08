@@ -26,6 +26,7 @@ pub trait Widget {
 pub fn add_selector_to_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
     if let Ok(selector) = widget.borrow_mut_property::<Selector>() {
         selector.pseudo_classes.insert(String::from(pseudo_class));
+        selector.set_dirty(true);
     }
 }
 
@@ -33,5 +34,6 @@ pub fn add_selector_to_widget(pseudo_class: &str, widget: &mut WidgetContainer<'
 pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
     if let Ok(selector) = widget.borrow_mut_property::<Selector>() {
         selector.pseudo_classes.remove(pseudo_class);
+        selector.set_dirty(true);
     }
 }

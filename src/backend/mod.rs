@@ -99,7 +99,7 @@ pub trait BackendRunner {
     fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>);
 }
 
-/// Helper trait to meassure the font size of the given `text`.
+/// Helper trait to measure the font size of the given `text`.
 pub trait FontMeasure {
     fn measure(&self, text: &str, font: &str, font_size: u32) -> (u32, u32);
 }
