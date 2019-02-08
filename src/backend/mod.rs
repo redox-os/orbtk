@@ -10,6 +10,7 @@ use std::{
 
 use dces::prelude::{Entity, World};
 use orbclient::Color;
+use orbgl_api::prelude::Canvas;
 
 use crate::{
     application::Tree, event::EventQueue, properties::Bounds, structs::Point, theme::Theme,
@@ -23,6 +24,7 @@ pub struct InitContext<'a> {
 
 /// Is used to provides data from the `Backend` to the `RenderSystem`.
 pub struct RenderContext<'a> {
+    pub canvas: &'a mut Canvas,
     pub renderer: &'a mut dyn Renderer,
     pub theme: &'a Theme,
     pub event_queue: &'a RefCell<EventQueue>,

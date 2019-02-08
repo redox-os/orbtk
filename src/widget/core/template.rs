@@ -1,6 +1,7 @@
 use std::{any::TypeId, collections::HashMap, rc::Rc};
 
 use dces::prelude::{Component, ComponentBox};
+use orbgl_shapes::shapes::Shape;
 
 use crate::{
     enums::ParentType,
@@ -141,6 +142,11 @@ impl Template {
     pub fn render_object(mut self, render_object: impl Into<Box<dyn RenderObject>>) -> Self {
         self.render_object = Some(render_object.into());
         self
+    }
+
+    /// Used to add a render `shape` to the template. Only one `shape` per template could be added.
+    pub fn shape<S: Component + Shape>(self, shape: S) -> Self {
+        self.property(shape)
     }
 
     /// Used to add a `layout' to the template. Only one `layout` can be added.
@@ -309,6 +315,11 @@ pub trait TemplateBase: Sized + From<Template> + Into<Template> {
         self.template(|template| template.render_object(render_object))
     }
 
+    /// Inserts a shape
+    fn shape<S: Component + Shape>(self, shape: S) -> Self {
+        self.template(|template| template.shape(shape))
+    }
+
     /// Inserts a layout.
     fn layout(self, layout: impl Into<Box<dyn Layout>>) -> Self {
         self.template(|template| template.layout(layout))
@@ -351,7 +362,7 @@ pub trait TemplateBase: Sized + From<Template> + Into<Template> {
 
     /// Inserts a new max_width.
     fn max_width(self, max_width: f64) -> Self {
-         self.template(|template| template.max_width(max_width))
+        self.template(|template| template.max_width(max_width))
     }
 
     /// Inserts a new max_height.

@@ -22,6 +22,7 @@ pub use crate::styling::vector_graphics::*;
 pub use crate::systems::*;
 pub use crate::theme::{Selector, SelectorProperty, Theme};
 pub use crate::widget::*;
+pub use crate::shapes::*;
 
 pub mod application;
 pub mod backend;
@@ -35,3 +36,4 @@ pub mod styling;
 pub mod systems;
 pub mod theme;
 pub mod widget;
+pub mod shapes;

@@ -1,3 +1,5 @@
+use orbgl_api::prelude::Canvas;
+
 use std::{
     cell::{Cell, RefCell},
     collections::{BTreeMap, HashSet},

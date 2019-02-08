@@ -1,3 +1,5 @@
+use orbgl_shapes::prelude::Rectangle;
+
 use crate::{
     layout::PaddingLayout,
     properties::PaddingProperty,
@@ -23,7 +25,8 @@ impl Widget for Container {
     fn create() -> Self::Template {
         ContainerTemplate::new()
             .padding(0.0)
-            .render_object(RectangleRenderObject)
+            .shape(Rectangle::default())
+            // .render_object(RectangleRenderObject)
             .layout(PaddingLayout::new())
             .selector("container")
             .debug_name("Container")

@@ -5,6 +5,9 @@ use std::rc::Rc;
 use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
 
 use dces::prelude::{Entity, World};
+use orbgl::prelude::{Canvas, FramebufferSurface, CairoRenderEngine};
+
+
 
 use crate::application::Tree;
 use crate::backend::{
@@ -27,10 +30,23 @@ pub struct OrbitalBackend {
     mouse_position: Point,
     event_queue: RefCell<EventQueue>,
     messages: RefCell<BTreeMap<Entity, Vec<MessageBox>>>,
+    canvas: Canvas,
 }
 
 impl OrbitalBackend {
     pub fn new(theme: Theme, inner: OrbWindow) -> OrbitalBackend {
+        let mut inner = inner;
+        
+        let surface = FramebufferSurface::new(
+            inner.width(),
+            inner.height(),
+            inner.data_mut().as_mut_ptr() as *mut u8,
+        );
+
+        let render_engine = CairoRenderEngine::new(surface.clone());
+
+        let canvas = Canvas::new(render_engine.clone());
+
         OrbitalBackend {
             inner,
             theme,
@@ -38,6 +54,7 @@ impl OrbitalBackend {
             mouse_position: Point::default(),
             event_queue: RefCell::new(EventQueue::default()),
             messages: RefCell::new(BTreeMap::new()),
+            canvas,
         }
     }
 }
@@ -198,6 +215,7 @@ impl Backend for OrbitalBackend {
 
     fn render_context(&mut self) -> RenderContext<'_> {
         RenderContext {
+            canvas: &mut self.canvas,
             renderer: &mut self.inner,
             theme: &self.theme,
             event_queue: &self.event_queue,
