@@ -14,7 +14,8 @@ use crate::{
         check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
         MouseUpEvent, SystemEvent, WindowEvent,
     },
-    properties::{Enabled, Focused, Pressed, Selected},
+    properties::{Bounds, Constraint, Enabled, Focused, Pressed, Selected},
+    structs::Size,
     widget::WidgetContainer,
     Global,
 };
@@ -46,7 +47,7 @@ impl EventSystem {
     ) {
         let mut matching_nodes = vec![];
 
-        for node in tree.with_start_node(event.source).into_iter() {
+        for node in tree.start_node(event.source).into_iter() {
             let widget = WidgetContainer::new(node, ecm);
 
             // MouseDownEvent handling
@@ -87,7 +88,7 @@ impl EventSystem {
 
         for node in matching_nodes.iter().rev() {
             if let Some(dp) = disabled_parent {
-                if tree.parent[&node] == dp {
+                if tree.parent[&node] == Some(dp) {
                     disabled_parent = Some(*node);
                     continue;
                 } else {
@@ -203,7 +204,18 @@ impl System<Tree> for EventSystem {
         for event in event_context.event_queue.borrow_mut().into_iter() {
             if let Ok(event) = event.downcast_ref::<WindowEvent>() {
                 match event {
-                    WindowEvent::Resize { .. } => {
+                    WindowEvent::Resize { width, height } => {
+                        // update window size
+                        if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(0) {
+                            bounds.set_width(*width);
+                            bounds.set_height(*height);
+                        }
+
+                        if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(0) {
+                            constraint.set_width(*width);
+                            constraint.set_height(*height);
+                        }
+
                         self.update.set(true);
                     }
                 }
@@ -213,7 +225,7 @@ impl System<Tree> for EventSystem {
                 match event {
                     SystemEvent::Quit => {
                         self.running.set(false);
-                        return
+                        return;
                     }
                 }
             }

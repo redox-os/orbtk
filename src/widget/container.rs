@@ -1,8 +1,7 @@
 use crate::{
-    enums::ParentType,
     layout::PaddingLayout,
+    properties::PaddingProperty,
     render_object::RectangleRenderObject,
-    theme::Selector,
     widget::{Template, Widget},
 };
 
@@ -10,22 +9,25 @@ use crate::{
 ///
 /// # Properties
 ///
-/// * `Selector` - CSS selector with element name `container`, used to request the theme of the widget.
+/// * `selector` - CSS selector with element name `container`, used to request the theme of the widget.
 ///
 /// # Others
 ///
-/// * `ParentType`- Single.
 /// * `PaddingLayout` - Used to layout the widget.
 /// * `RectangleRenderObject` - Used to draw the widget.
 pub struct Container;
 
 impl Widget for Container {
-    fn create() -> Template {
-        Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_property(Selector::from("container"))
-            .with_render_object(RectangleRenderObject)
-            .with_layout(PaddingLayout)
-            .with_debug_name("Container")
+    type Template = ContainerTemplate;
+
+    fn create() -> Self::Template {
+        ContainerTemplate::new()
+            .padding(0.0)
+            .render_object(RectangleRenderObject)
+            .layout(PaddingLayout::new())
+            .selector("container")
+            .debug_name("Container")
     }
 }
+
+template!(ContainerTemplate, [PaddingProperty]);

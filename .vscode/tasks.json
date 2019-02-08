@@ -9,7 +9,7 @@
             "type": "shell",
             "args": [
                 "build",
-                "--examples=widgets"
+                "--examples=minimal"
             ],
             "presentation": {
                 "reveal": "always",

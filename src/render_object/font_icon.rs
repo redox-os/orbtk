@@ -1,7 +1,8 @@
 use crate::{
     backend::Renderer,
-    properties::{Bounds, FontIcon, Point, PrimaryFontIcon, SecondaryFontIcon},
+    properties::{Bounds, FontIcon, PrimaryFontIcon, SecondaryFontIcon},
     render_object::RenderObject,
+    structs::Point,
     theme::Selector,
     widget::Context,
 };
@@ -54,7 +55,7 @@ impl RenderObject for FontIconRenderObject {
                             global_position,
                             theme.uint("icon-size", selector),
                             theme.color("icon-color", selector),
-                            &theme.string("icon-font-family", selector),
+                            &theme.string("icon-familiy", selector),
                         );
                     }
                 }

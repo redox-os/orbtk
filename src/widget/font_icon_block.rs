@@ -1,7 +1,7 @@
 use crate::{
-    layout::FontIconSizeLayout,
+    layout::FixedSizeLayout,
+    properties::FontIconProperty,
     render_object::FontIconRenderObject,
-    theme::Selector,
     widget::{Template, Widget},
 };
 
@@ -9,21 +9,25 @@ use crate::{
 ///
 /// # Properties
 ///
-/// * `Selector` - CSS selector with  element name `fonticon`, used to request the theme of the font icon block.
+/// * `selector` - CSS selector with  element name `fonticon`, used to request the theme of the font icon block.
 ///
 /// # Others
 ///
-/// * `ParentType`- None.
-/// * `FontIconSizeLayout` - Used to layout the widget.
+/// * `FixedSizeLayout` - Used to layout the widget.
 /// * `FontIconRenderObject` - Used to draw the text of the widget.
 pub struct FontIconBlock;
 
 impl Widget for FontIconBlock {
-    fn create() -> Template {
-        Template::default()
-            .with_property(Selector::from("fonticon"))
-            .with_layout(FontIconSizeLayout)
-            .with_render_object(FontIconRenderObject)
-            .with_debug_name("FontIconBlock")
+    type Template = FontIconBlockTemplate;
+
+    fn create() -> Self::Template {
+        FontIconBlockTemplate::new()
+            .layout(FixedSizeLayout::new())
+            .render_object(FontIconRenderObject)
+            .debug_name("FontIconBlock")
+            .font_icon("")
+            .selector("fonticon")
     }
 }
+
+template!(FontIconBlockTemplate, [FontIconProperty]);

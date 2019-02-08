@@ -4,14 +4,17 @@ use std::{
 };
 
 use crate::{
-    enums::{ParentType, ScrollMode},
-    event::{Key, KeyEventHandler, MouseEventHandler},
+    event::{Key, KeyDownHandler},
     properties::{
-        Bounds, Focused, Label, Offset, Point, ScrollViewerMode, TextSelection, WaterMark,
+        Bounds, Focused, FocusedProperty, Margin, Offset, OffsetProperty,
+        PaddingProperty, ScrollMode, ScrollViewerMode, ScrollViewerModeProperty, Text,
+        TextProperty, TextSelection, TextSelectionProperty, WaterMark, WaterMarkProperty,
+        Padding,
     },
+    structs::{Position, Size, Spacer},
     theme::Selector,
     widget::{
-        Container, Context, Cursor, ScrollViewer, SharedProperty, Stack, State, Template,
+        Container, Context, Cursor, Grid, ScrollViewer, SharedProperty, State, Template,
         WaterMarkTextBlock, Widget,
     },
 };
@@ -24,7 +27,7 @@ pub struct TextBoxState {
     updated: Cell<bool>,
     selection_start: Cell<usize>,
     selection_length: Cell<usize>,
-    cursor_x: Cell<i32>,
+    cursor_x: Cell<f64>,
 }
 
 impl Into<Rc<dyn State>> for TextBoxState {
@@ -34,9 +37,9 @@ impl Into<Rc<dyn State>> for TextBoxState {
 }
 
 impl TextBoxState {
-    fn click(&self, point: Point) {
-        println!("Clicked text box point: ({}, {})", point.x, point.y);
-    }
+    // fn click(&self, point: Point) {
+    //     println!("Clicked text box point: ({}, {})", point.x, point.y);
+    // }
 
     fn update_selection_start(&self, selection: i32) {
         self.selection_start
@@ -90,18 +93,18 @@ impl State for TextBoxState {
             self.focused.set(focused.0);
         }
 
-        if let Ok(label) = widget.borrow_mut_property::<Label>() {
-            if label.0 != *self.text.borrow() {
+        if let Ok(text) = widget.borrow_mut_property::<Text>() {
+            if text.0 != *self.text.borrow() {
                 if self.updated.get() {
-                    label.0 = self.text.borrow().clone();
+                    text.0 = self.text.borrow().clone();
                 } else {
                     let text_length = self.text.borrow().len();
-                    let origin_text_length = label.0.len();
+                    let origin_text_length = text.0.len();
                     let delta = text_length as i32 - origin_text_length as i32;
 
-                    *self.text.borrow_mut() = label.0.clone();
+                    *self.text.borrow_mut() = text.0.clone();
 
-                    // adjust cursor position after labe is changed from outside
+                    // adjust cursor position after label is changed from outside
                     if text_length < origin_text_length {
                         self.update_selection_start(self.selection_start.get() as i32 - delta);
                     } else {
@@ -120,43 +123,43 @@ impl State for TextBoxState {
     }
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
-        let mut cursor_x_delta = 0;
-        let mut scroll_viewer_width = 0;
+        let mut cursor_x_delta = 0.0;
+        let mut scroll_viewer_width = 0.0;
 
         {
-            let scroll_viewer = context.widget_from_id("TextBoxScrollViewer");
+            let scroll_viewer = context.child_by_id("TextBoxScrollViewer");
 
             if let Ok(bounds) = scroll_viewer.unwrap().borrow_property::<Bounds>() {
-                scroll_viewer_width = bounds.width;
+                scroll_viewer_width = bounds.width();
             }
         }
 
-        // if selection start is 0 and text is changed and text_size > 0 than selection is 1 and offset is 0
-
-        // if selection x >= bounds.with and text is changed offset -= new character width
-
-        // maybe not use scrollviewer here
+        // maybe not use scroll viewer here
 
         // Adjust offset of text and cursor if cursor position is out of bounds
 
         {
-            let cursor = context.widget_from_id("TextBoxCursor");
+            let mut cursor = context.child_by_id("TextBoxCursor").unwrap();
 
-            if let Ok(bounds) = cursor.unwrap().borrow_mut_property::<Bounds>() {
-                if bounds.x < 0 || bounds.x > scroll_viewer_width as i32 {
-                    cursor_x_delta = self.cursor_x.get() - bounds.x;
-                    bounds.x = self.cursor_x.get();
+            if let Ok(margin) = cursor.borrow_mut_property::<Margin>() {
+                if margin.left() < 0.0 || margin.left() > scroll_viewer_width {
+                    cursor_x_delta = self.cursor_x.get() - margin.left();
+                    margin.set_left(self.cursor_x.get());
                 }
-                self.cursor_x.set(bounds.x);
+                self.cursor_x.set(margin.left());
+            }
+
+            if let Ok(bounds) = cursor.borrow_mut_property::<Bounds>() {
+                bounds.set_x(self.cursor_x.get());
             }
         }
 
-        if cursor_x_delta != 0 {
+        if cursor_x_delta != 0.0 {
             {
-                let text_block = context.widget_from_id("TextBoxTextBlock");
+                let text_block = context.child_by_id("TextBoxTextBlock");
 
                 if let Ok(bounds) = text_block.unwrap().borrow_mut_property::<Bounds>() {
-                    bounds.x += cursor_x_delta;
+                    bounds.set_x(bounds.x() + cursor_x_delta);
                 }
             }
 
@@ -169,87 +172,98 @@ impl State for TextBoxState {
 
 /// The `TextBox` represents a single line text input widget.
 ///
-/// # Shared Properties
+/// # Properties
 ///
-/// * `Label` - String used to display the text of the text box.
-/// * `Watermark` - String used to display a placeholder text if `Label` string is empty.
-/// * `Selector` - CSS selector with  element name `textbox`, used to request the theme of the widget.
-/// * `TextSelection` - Represents the current selection of the text used by the cursor.
-/// * `Focused` - Defines if the widget is focues and handles the current text input.
+/// * `text` - String used to display the text of the text box.
+/// * `water_mark` - String used to display a placeholder text if `Text` string is empty.
+/// * `selector` - CSS selector with  element name `textbox`, used to request the theme of the widget.
+/// * `text_selection` - Represents the current selection of the text used by the cursor.
+/// * `focused` - Defines if the widget is focused and handles the current text input.
 ///
 /// # Others
 ///
 /// * `TextBoxState` - Handles the inner state of the widget.
-/// * `KeyEventHandler` - Process the text input of the control if it is focuesd.
 pub struct TextBox;
 
 impl Widget for TextBox {
-    fn create() -> Template {
-        let label = SharedProperty::new(Label::default());
+    type Template = TextBoxTemplate;
+
+    fn create() -> Self::Template {
+        let text = SharedProperty::new(Text::default());
         let water_mark = SharedProperty::new(WaterMark::default());
         let selector = Selector::from("textbox");
         let selection = SharedProperty::new(TextSelection::default());
         let offset = SharedProperty::new(Offset::default());
         let focused = SharedProperty::new(Focused(false));
+        let padding = SharedProperty::new(Padding::from(4.0));
         let state = Rc::new(TextBoxState::default());
-        let click_state = state.clone();
+        let _click_state = state.clone();
 
-        Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_property(Focused(false))
-            .with_child(
+        TextBoxTemplate::new()
+            .size(128.0, 32.0)
+            .state(state.clone())
+            .debug_name("TextBox")
+            .child(
                 Container::create()
-                    .with_child(
-                        Stack::create()
-                            .with_child(
+                    .child(
+                        Grid::create()
+                            .child(
                                 ScrollViewer::create()
-                                    .with_child(
+                                    .child(
                                         WaterMarkTextBlock::create()
-                                            .with_shared_property(label.clone())
-                                            .with_shared_property(water_mark.clone())
-                                            .with_shared_property(focused.clone())
-                                            .with_property(
-                                                selector.clone().with_id("TextBoxTextBlock"),
-                                            ),
+                                            .vertical_alignment("Center")
+                                            .shared_text(text.clone())
+                                            .shared_water_mark(water_mark.clone())
+                                            .attach_shared_property(focused.clone())
+                                            .selector(selector.clone().id("TextBoxTextBlock")),
                                     )
-                                    .with_shared_property(offset.clone())
-                                    .with_property(ScrollViewerMode::new(
+                                    .shared_offset(offset.clone())
+                                    .scroll_viewer_mode(ScrollViewerMode::new(
                                         ScrollMode::None,
                                         ScrollMode::None,
                                     ))
-                                    .with_property(selector.clone().with_id("TextBoxScrollViewer")),
+                                    .selector(Selector::from("scrollviewer").id("TextBoxScrollViewer")),
                             )
-                            .with_child(
+                            .child(
                                 Cursor::create()
-                                    .with_shared_property(label.clone())
-                                    .with_shared_property(selection.clone())
-                                    .with_shared_property(offset.clone())
-                                    .with_shared_property(focused.clone())
-                                    .with_property(
-                                        Selector::from("cursor").with_id("TextBoxCursor"),
-                                    ),
+                                    .margin(0.0)
+                                    .horizontal_alignment("Start")
+                                    .shared_text(text.clone())
+                                    .shared_text_selection(selection.clone())
+                                    .shared_offset(offset.clone())
+                                    .shared_focused(focused.clone())
+                                    .selector(Selector::from("cursor").id("TextBoxCursor")),
                             )
-                            .with_event_handler(MouseEventHandler::default().on_mouse_down(
-                                Rc::new(move |pos: Point| -> bool {
-                                    click_state.click(pos);
-                                    false
-                                }),
-                            )),
+                            // .event_handler(MouseEventHandler::default().on_mouse_down(Rc::new(
+                            //     move |pos: Point| -> bool {
+                            //         click_state.click(pos);
+                            //         false
+                            //     },
+                            // ))),
                     )
-                    .with_shared_property(focused.clone())
-                    .with_property(selector.clone()),
+                    .attach_property(selector.clone())
+                    .attach_shared_property(focused.clone())
+                    .shared_padding(padding.clone())
             )
-            .with_state(state.clone())
-            .with_debug_name("TextBox")
-            .with_shared_property(label)
-            .with_property(selector)
-            .with_shared_property(water_mark)
-            .with_shared_property(selection)
-            .with_shared_property(offset)
-            .with_shared_property(focused)
-            .with_event_handler(
-                KeyEventHandler::default()
-                    .on_key_down(Rc::new(move |key: Key| -> bool { state.update_text(key) })),
-            )
+            .shared_text(text)
+            .selector(selector)
+            .shared_water_mark(water_mark)
+            .shared_text_selection(selection)
+            .attach_shared_property(offset)
+            .shared_focused(focused)
+            .shared_padding(padding)
+            .on_key_down(move |key: Key| -> bool { state.update_text(key) })
     }
 }
+
+template!(
+    TextBoxTemplate,
+    [
+        TextProperty,
+        FocusedProperty,
+        WaterMarkProperty,
+        TextSelectionProperty,
+        PaddingProperty,
+        KeyDownHandler
+    ]
+);

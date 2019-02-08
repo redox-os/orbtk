@@ -20,24 +20,23 @@ impl State for SenderState {
 struct SenderView;
 
 impl Widget for SenderView {
-    fn create() -> Template {
+    type Template = Template;
+
+    fn create() -> Self::Template {
         let state = Rc::new(SenderState::default());
         let send_state = state.clone();
 
-        Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_debug_name("SenderView")
-            .with_child(
+        Template::new()
+            .debug_name("SenderView")
+            .child(
                 Button::create()
-                    .with_property(Label::from("Send message"))
-                    .with_event_handler(MouseEventHandler::default().on_click(Rc::new(
-                        move |_pos: Point| -> bool {
-                            send_state.send_message.set(true);
-                            true
-                        },
-                    ))),
+                    .text("Send message")
+                    .on_click(move |_| -> bool {
+                        send_state.send_message.set(true);
+                        true
+                    }),
             )
-            .with_state(state)
+            .state(state)
     }
 }
 
@@ -56,17 +55,14 @@ impl State for ReceiverState {
 struct ReceiverView;
 
 impl Widget for ReceiverView {
-    fn create() -> Template {
-        Template::default()
-            .as_parent_type(ParentType::Single)
-            .with_debug_name("ReceiverView")
-            .with_child(
-                Container::create()
-                    .as_parent_type(ParentType::Single)
-                    .with_child(SenderView::create()),
-            )
-            .with_property(Selector::default().with_id("receiver_view"))
-            .with_state(Rc::new(ReceiverState))
+    type Template = Template;
+
+    fn create() -> Self::Template {
+        Template::new()
+            .debug_name("ReceiverView")
+            .child(Container::create().child(SenderView::create()))
+            .property(Selector::default().id("receiver_view"))
+            .state(Rc::new(ReceiverState))
     }
 }
 
@@ -74,10 +70,10 @@ fn main() {
     let mut application = Application::default();
     application
         .create_window()
-        .with_bounds(Bounds::new(100, 100, 420, 730))
-        .with_title("OrbTk - minimal example")
-        .with_root(ReceiverView::create())
-        .with_debug_flag(true)
+        .bounds((100.0, 100.0, 420.0, 730.0))
+        .title("OrbTk - minimal example")
+        .root(ReceiverView::create())
+        .debug_flag(true)
         .build();
     application.run();
 }

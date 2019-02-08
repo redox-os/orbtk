@@ -11,7 +11,7 @@ use orbclient::Color;
 
 pub use self::cell::CloneCell;
 use self::selector::Specificity;
-pub use self::selector::{Selector, SelectorRelation};
+pub use self::selector::{Selector, SelectorProperty, SelectorRelation};
 pub use self::style::Style;
 
 mod cell;
@@ -56,13 +56,13 @@ impl Default for ThemeBuilder {
 
 impl ThemeBuilder {
     /// Inserts a theme css extension.
-    pub fn with_extenstion_css(mut self, extension: impl Into<String>) -> Self {
+    pub fn extension_css(mut self, extension: impl Into<String>) -> Self {
         self.theme_extensitons.push(extension.into());
         self
     }
 
     /// Inserts a theme extension by path.
-    pub fn with_extenstion_path(mut self, extension_path: impl Into<String>) -> Self {
+    pub fn extension_path(mut self, extension_path: impl Into<String>) -> Self {
         self.theme_exention_paths.push(extension_path.into());
         self
     }
@@ -465,12 +465,9 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
 
             "background" | "foreground" => Value::Color(parse_basic_color(input)?),
 
-            "font-family" | "icon-font-family" => Value::Str(parse_string(input)?),
+            "font-family" | "icon-familiy" => Value::Str(parse_string(input)?),
 
-            "border-radius" | "border-width" | "width" | "height" | "min-width" | "min-height"
-            | "max-width" | "max-height" | "padding-top" | "padding-right" | "padding-bottom"
-            | "padding-left" | "padding" | "margin-top" | "margin-right" | "margin-bottom"
-            | "margin-left" | "margin" | "font-size" | "icon-size" | "icon-margin" => {
+            "border-radius" | "border-width" | "font-size" | "icon-size" | "icon-margin" => {
                 match input.next()? {
                     Token::Number {
                         int_value: Some(x),
