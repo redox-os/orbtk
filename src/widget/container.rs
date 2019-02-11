@@ -1,15 +1,16 @@
 use crate::{
     layout::PaddingLayout,
-    properties::PaddingProperty,
+    properties::{BackgroundProperty, PaddingProperty},
     shapes::Rectangle,
     widget::{Template, Widget},
 };
 
-/// The `Container` represents a layout that surrounds its child with a padding. Draws a box arround the child.
+/// The `Container` represents a layout that surrounds its child with a padding. Draws a box around the child.
 ///
 /// # Properties
 ///
-/// * `selector` - CSS selector with element name `container`, used to request the theme of the widget.
+/// * `background` - background drawing brush. 
+/// * `padding` - gap to the child.
 ///
 /// # Others
 ///
@@ -30,4 +31,4 @@ impl Widget for Container {
     }
 }
 
-template!(ContainerTemplate, [PaddingProperty]);
+template!(ContainerTemplate, [BackgroundProperty, PaddingProperty]);

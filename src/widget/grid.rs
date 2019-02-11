@@ -1,7 +1,7 @@
 use crate::{
     enums::ParentType,
     layout::GridLayout,
-    properties::{Columns, ColumnsProperty, Rows, RowsProperty},
+    properties::{Columns, ColumnsProperty, Rows, RowsProperty, BackgroundProperty},
     shapes::Rectangle,
     widget::{Template, Widget},
 };
@@ -11,9 +11,10 @@ use crate::{
 /// # Properties
 ///
 /// * `columns` - used to define the columns of the grid.
+/// * `background` - background brush of the grid.
 /// * `rows` - used to define the rows of the grid.
 /// * `selector` - css selector with element `grid`.
-///
+/// 
 /// # Others
 ///
 /// * `ParentType`- Multi.
@@ -35,4 +36,4 @@ impl Widget for Grid {
     }
 }
 
-template!(GridTemplate, [RowsProperty, ColumnsProperty]);
+template!(GridTemplate, [BackgroundProperty, RowsProperty, ColumnsProperty]);
