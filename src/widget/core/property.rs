@@ -4,7 +4,9 @@ use std::{
     rc::Rc,
 };
 
-use dces::prelude::{Component, ComponentBox, Entity, SharedComponentBox};
+use dces::prelude::{Component, ComponentBox, Entity, EntityComponentManager, SharedComponentBox};
+
+use super::WidgetContainer;
 
 /// The `PropertyResult` enum is used to create concrete shared properties for a widget on run time from `SharedProperty` struct.
 pub enum PropertyResult {
@@ -61,4 +63,34 @@ impl Clone for SharedProperty {
             type_id: self.type_id,
         }
     }
+}
+
+pub fn get_property<T>(entity: Entity, ecm: &EntityComponentManager) -> T
+where
+    T: Clone + Component + Default,
+{
+    ecm.borrow_component::<T>(entity)
+        .map(|r| r.clone())
+        .unwrap_or_default()
+}
+
+pub fn get_property_by_widget<T>(widget: &WidgetContainer) -> T
+where
+    T: Clone + Component + Default,
+{
+    widget
+        .borrow_property::<T>()
+        .map(|r| r.clone())
+        .unwrap_or_default()
+}
+
+pub fn has_property<T>(widget: &WidgetContainer) -> bool
+where
+    T: Clone + Component + Default,
+{
+    if let Ok(_) = widget.borrow_property::<T>() {
+        return true;
+    }
+
+    false
 }

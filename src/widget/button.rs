@@ -2,9 +2,10 @@ use crate::{
     event::ClickHandler,
     properties::{
         FontIcon, FontIconProperty, OrientationProperty, PaddingProperty,
-        PressedProperty, Text, TextProperty,
+        PressedProperty, Text, TextProperty, Foreground, ForegroundProperty,
     },
     theme::Selector,
+    styling,
     widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
 };
 
@@ -25,6 +26,7 @@ impl Widget for Button {
         let text = SharedProperty::new(Text::default());
         let icon = SharedProperty::new(FontIcon::default());
         let selector = SharedProperty::new(Selector::from("button"));
+        let foreground = SharedProperty::new(Foreground::from(styling::LINK_WATER_COLOR));
 
         ButtonTemplate::new()
             .height(32.0)
@@ -48,6 +50,7 @@ impl Widget for Button {
                             )
                             .child(
                                 TextBlock::create()
+                                    .shared_foreground(foreground.clone())
                                     .shared_text(text.clone())
                                     .shared_selector(selector.clone()),
                             ),
@@ -55,6 +58,7 @@ impl Widget for Button {
             )
             .shared_text(text)
             .shared_font_icon(icon)
+            .shared_foreground(foreground)
             .shared_selector(selector)
     }
 }
@@ -64,6 +68,7 @@ template!(
     [
         TextProperty,
         FontIconProperty,
+        ForegroundProperty,
         PressedProperty,
         ClickHandler
     ]

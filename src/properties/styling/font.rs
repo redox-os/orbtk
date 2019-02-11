@@ -1,3 +1,3 @@
-use orbgl_api::Font as OrbGLFont;
+use orbfont::Font as Font;
 
 pub struct Font(OrbGLFont);

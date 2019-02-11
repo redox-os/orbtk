@@ -9,17 +9,14 @@ use dces::prelude::{Entity, EntityComponentManager};
 use crate::{
     application::Tree,
     properties::{
-        Bounds, ColumnSpan, ColumnWidth, Columns, GridColumn, GridRow, HorizontalAlignment, Margin,
-        RowHeight, RowSpan, Rows, VerticalAlignment, Visibility,
+        Bounds, ColumnSpan, ColumnWidth, Columns, Constraint, GridColumn, GridRow,
+        HorizontalAlignment, Margin, RowHeight, RowSpan, Rows, VerticalAlignment, Visibility,
     },
     structs::{DirtySize, Position, Size, Spacer},
     theme::Theme,
 };
 
-use super::{
-    get_constraint, get_horizontal_alignment, get_margin, get_vertical_alignment, get_visibility,
-    Layout,
-};
+use super::Layout;
 
 /// Orders its children in a grid layout with columns and rows. If now columns and rows are defined
 /// the gird layout could also be used as alignment layout.
@@ -106,13 +103,13 @@ impl Layout for GridLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
     ) -> DirtySize {
-        if get_visibility(entity, ecm) == Visibility::Collapsed {
+        if Visibility::get(entity, ecm) == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = get_horizontal_alignment(entity, ecm);
-        let vertical_alignment = get_vertical_alignment(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
+        let vertical_alignment = VerticalAlignment::get(entity, ecm);
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -144,7 +141,7 @@ impl Layout for GridLayout {
             .borrow_mut()
             .set_size(desired_size.0, desired_size.1);
 
-        let size = get_constraint(entity, ecm).perform(self.desired_size.borrow().size());
+        let size = Constraint::get(entity, ecm).perform(self.desired_size.borrow().size());
         self.desired_size.borrow_mut().set_size(size.0, size.1);
 
         self.desired_size.borrow().clone()
@@ -163,10 +160,10 @@ impl Layout for GridLayout {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment = get_horizontal_alignment(entity, ecm);
-        let vertical_alignment = get_vertical_alignment(entity, ecm);
-        let margin = get_margin(entity, ecm);
-        let constraint = get_constraint(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
+        let vertical_alignment = VerticalAlignment::get(entity, ecm);
+        let margin = Margin::get(entity, ecm);
+        let constraint = Constraint::get(entity, ecm);
 
         let size = constraint.perform((
             horizontal_alignment.align_width(
@@ -188,7 +185,7 @@ impl Layout for GridLayout {
 
         // calculates the auto column widths
         for child in &tree.children[&entity] {
-            let margin = get_margin(*child, ecm);
+            let margin = Margin::get(*child, ecm);
 
             if let Ok(grid_column) = ecm.borrow_component::<GridColumn>(*child) {
                 if let Ok(columns) = ecm.borrow_component::<Columns>(entity) {
@@ -386,8 +383,8 @@ impl Layout for GridLayout {
                 }
             };
 
-            let c_vertical_alignment = get_vertical_alignment(*child, ecm);
-            let c_horizontal_alignment = get_horizontal_alignment(*child, ecm);
+            let c_vertical_alignment = VerticalAlignment::get(*child, ecm);
+            let c_horizontal_alignment = HorizontalAlignment::get(*child, ecm);
 
             let has_columns = if let Ok(columns) = ecm.borrow_component::<Columns>(entity) {
                 columns.len() > 0

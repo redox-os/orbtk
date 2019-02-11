@@ -1,6 +1,7 @@
-use crate::structs::Brush;
+use crate::structs::{Brush, Color};
 
 /// Used to draw the border brush of a widget.
+#[derive(Clone)]
 pub struct BorderBrush(pub Brush);
 
 property!(
@@ -9,6 +10,12 @@ property!(
     border_brush,
     shared_border_brush
 );
+
+impl From<BorderBrush> for Color {
+    fn from(b: BorderBrush) -> Color {
+        b.0.into()
+    }
+}
 
 impl Default for BorderBrush {
     fn default() -> BorderBrush {

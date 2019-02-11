@@ -140,7 +140,7 @@ impl Selector {
 impl Clone for Selector {
     fn clone(&self) -> Self {
         Selector {
-            id: None,
+            id: self.id.clone(),
             element: self.element.clone(),
             classes: self.classes.clone(),
             pseudo_classes: self.pseudo_classes.clone(),

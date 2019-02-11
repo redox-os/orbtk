@@ -1,4 +1,5 @@
 pub use orbgl_shapes::structs::*;
+pub use orbclient::Color;
 
 pub use self::dirty_size::DirtySize;
 pub use self::point::Point;

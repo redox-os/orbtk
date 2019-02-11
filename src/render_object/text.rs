@@ -1,8 +1,8 @@
 use crate::{
     backend::Renderer,
-    properties::{Bounds, Text, WaterMark},
+    properties::{Bounds, Text, WaterMark, Foreground},
     render_object::RenderObject,
-    structs::Point,
+    structs::{Point, Color},
     theme::Selector,
     widget::Context,
 };
@@ -35,6 +35,8 @@ impl RenderObject for TextRenderObject {
         let theme = context.theme;
         let widget = context.widget();
 
+        let foreground = Foreground::get_by_widget(&widget);
+
         if let Ok(selector) = widget.borrow_property::<Selector>() {
             if let Ok(bounds) = widget.borrow_property::<Bounds>() {
                 if let Ok(text) = widget.borrow_property::<Text>() {
@@ -45,7 +47,7 @@ impl RenderObject for TextRenderObject {
                             &parent_bounds,
                             global_position,
                             theme.uint("font-size", selector),
-                            theme.brush("color", selector).into(),
+                            foreground.into(),
                             &theme.string("font-family", selector),
                         );
                     } else if let Ok(text) = widget.borrow_property::<WaterMark>() {

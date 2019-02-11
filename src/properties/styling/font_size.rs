@@ -1,4 +1,5 @@
-/// Represents the font size of an text element.
+/// Represents the font size of a text element.
+#[derive(Default, Clone, Copy)]
 pub struct FontSize(pub f64);
 
 property!(

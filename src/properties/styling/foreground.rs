@@ -1,6 +1,7 @@
-use crate::structs::Brush;
+use crate::structs::{Brush, Color};
 
 /// Used to draw the foreground brush of a widget.
+#[derive(Clone)]
 pub struct Foreground(pub Brush);
 
 property!(
@@ -9,6 +10,12 @@ property!(
     foreground,
     shared_foreground
 );
+
+impl From<Foreground> for Color {
+    fn from(b: Foreground) -> Color {
+        b.0.into()
+    }
+}
 
 impl Default for Foreground {
     fn default() -> Foreground {

@@ -1,4 +1,5 @@
 /// Represents the degree to which the corners of a Border are rounded.
+#[derive(Default, Clone, Copy)]
 pub struct BorderRadius(pub f64);
 
 property!(

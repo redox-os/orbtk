@@ -1,7 +1,7 @@
 use super::ScrollMode;
 
 /// The `ScrollViewerMode` struct is used to define the vertical and horizontal scroll behavior of the `ScrollViewer`.
-#[derive(Default)]
+#[derive(Clone, Default, PartialEq)]
 pub struct ScrollViewerMode {
     /// Vertical scroll mode.
     pub vertical: ScrollMode,

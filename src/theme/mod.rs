@@ -9,19 +9,16 @@ use cssparser::{
 
 use orbclient::Color;
 
-pub use self::cell::CloneCell;
 use self::selector::Specificity;
 pub use self::selector::{Selector, SelectorProperty, SelectorRelation};
-pub use self::style::Style;
-
-mod cell;
 
 mod selector;
-mod style;
 
 use crate::{
+    properties::*,
     structs::Brush,
     styling::theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS},
+    widget::WidgetContainer,
 };
 
 lazy_static! {
@@ -247,6 +244,29 @@ impl Theme {
         self.get(property, query)
             .map(|v| v.string().unwrap_or(String::default()))
             .unwrap_or(String::default())
+    }
+
+    /// Updates the given widget by theme and selector.
+    pub fn update_widget_theme(&self, widget: &mut WidgetContainer) {
+        if !Selector::has(widget) {
+            return;
+        }
+
+        let mut selector = Selector::get_by_widget(widget);
+
+        if !selector.dirty() {
+            return;
+        }
+
+        if let Ok(foreground) = widget.borrow_mut_property::<Foreground>() {
+            // todo later
+            // if let Some(foreground) = self.brush("color", &selector) {}
+            foreground.0 = self.brush("color", &selector);
+        }
+
+        selector.set_dirty(true);
+
+        *widget.borrow_mut_property::<Selector>().unwrap() = selector;
     }
 }
 

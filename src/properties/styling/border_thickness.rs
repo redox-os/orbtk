@@ -1,6 +1,7 @@
 use crate::structs::{Spacer, Thickness};
 
 /// Represents relative thickness of a Border.
+#[derive(Default, Clone, Copy)]
 pub struct BorderThickness(pub Thickness);
 
 property!(

@@ -1,7 +1,8 @@
 use crate::{
     layout::FixedSizeLayout,
-    properties::TextProperty,
+    properties::{TextProperty, ForegroundProperty},
     render_object::TextRenderObject,
+    styling,
     widget::{Template, Widget},
 };
 
@@ -10,7 +11,7 @@ use crate::{
 /// # Properties
 ///
 /// * `text` - String used to display the text of the text block.
-/// * `selector` - CSS selector with  element name `textblock`, used to request the theme of the text block.
+/// * `foreground` - A brush that describes the foreground color. 
 ///
 /// # Others
 ///
@@ -26,9 +27,9 @@ impl Widget for TextBlock {
             .layout(FixedSizeLayout::new())
             .render_object(TextRenderObject)
             .debug_name("TextBlock")
+            .foreground(styling::LINK_WATER_COLOR)
             .text("TextBlock")
-            .selector("textblock")
     }
 }
 
-template!(TextBlockTemplate, [TextProperty]);
+template!(TextBlockTemplate, [ForegroundProperty, TextProperty]);

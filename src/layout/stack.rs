@@ -8,15 +8,14 @@ use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
     application::Tree,
-    properties::{Bounds, HorizontalAlignment, Margin, Orientation, VerticalAlignment, Visibility},
+    properties::{
+        Bounds, Constraint, HorizontalAlignment, Margin, Orientation, VerticalAlignment, Visibility,
+    },
     structs::{DirtySize, Position, Size, Spacer},
     theme::Theme,
 };
 
-use super::{
-    get_constraint, get_horizontal_alignment, get_margin, get_vertical_alignment, get_visibility,
-    Layout,
-};
+use super::Layout;
 
 /// Stacks visual the children widgets vertical or horizontal.
 #[derive(Default)]
@@ -40,13 +39,13 @@ impl Layout for StackLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
     ) -> DirtySize {
-        if get_visibility(entity, ecm) == Visibility::Collapsed {
+        if Visibility::get(entity, ecm) == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = get_horizontal_alignment(entity, ecm);
-        let vertical_alignment = get_vertical_alignment(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
+        let vertical_alignment = VerticalAlignment::get(entity, ecm);
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -62,7 +61,7 @@ impl Layout for StackLayout {
                 let child_desired_size = child_layout.measure(*child, ecm, tree, layouts, theme);
                 let child_margin = {
                     if child_desired_size.width() > 0.0 && child_desired_size.height() > 0.0 {
-                        get_margin(*child, ecm)
+                        Margin::get(*child, ecm)
                     } else {
                         Margin::new()
                     }
@@ -112,10 +111,10 @@ impl Layout for StackLayout {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment = get_horizontal_alignment(entity, ecm);
-        let vertical_alignment = get_vertical_alignment(entity, ecm);
-        let margin = get_margin(entity, ecm);
-        let constraint = get_constraint(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
+        let vertical_alignment = VerticalAlignment::get(entity, ecm);
+        let margin = Margin::get(entity, ecm);
+        let constraint = Constraint::get(entity, ecm);
         let orientation = get_orientation(entity, ecm);
         let mut size_counter = 0.0;
 
@@ -147,14 +146,14 @@ impl Layout for StackLayout {
 
             let child_margin = {
                 if child_desired_size.0 > 0.0 && child_desired_size.1 > 0.0 {
-                    get_margin(*child, ecm)
+                    Margin::get(*child, ecm)
                 } else {
                     Margin::new()
                 }
             };
 
-            let child_horizontal_alignment = get_horizontal_alignment(*child, ecm);
-            let child_vertical_alignment = get_vertical_alignment(*child, ecm);
+            let child_horizontal_alignment = HorizontalAlignment::get(*child, ecm);
+            let child_vertical_alignment = VerticalAlignment::get(*child, ecm);
 
             if let Ok(child_bounds) = ecm.borrow_mut_component::<Bounds>(*child) {
                 match orientation {

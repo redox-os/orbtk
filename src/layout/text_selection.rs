@@ -9,12 +9,12 @@ use dces::prelude::{Entity, EntityComponentManager};
 use crate::{
     application::Tree,
     backend::{FontMeasure, FONT_MEASURE},
-    properties::{Bounds, Margin, Offset, Text, TextSelection, Visibility},
+    properties::{Bounds, Constraint, Margin, Offset, Text, TextSelection, Visibility, VerticalAlignment},
     structs::{DirtySize, Size, Spacer},
     theme::{Selector, Theme},
 };
 
-use super::{get_constraint, get_margin, get_vertical_alignment, get_visibility, Layout};
+use super::Layout;
 
 /// The text selection layout is used to measure and arrange a text selection cursor.
 #[derive(Default)]
@@ -44,12 +44,12 @@ impl Layout for TextSelectionLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
     ) -> DirtySize {
-        if get_visibility(entity, ecm) == Visibility::Collapsed {
+        if Visibility::get(entity, ecm) == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let constraint = get_constraint(entity, ecm);
+        let constraint = Constraint::get(entity, ecm);
 
         if let Ok(selection) = ecm.borrow_component::<TextSelection>(entity) {
             if *selection != self.old_text_selection.get() {
@@ -108,8 +108,8 @@ impl Layout for TextSelectionLayout {
         let mut pos = 0.0;
         let mut size = self.desired_size.borrow().size();
 
-        let vertical_alignment = get_vertical_alignment(entity, ecm);
-        let margin = get_margin(entity, ecm);
+        let vertical_alignment = VerticalAlignment::get(entity, ecm);
+        let margin = Margin::get(entity, ecm);
 
         size.1 = vertical_alignment.align_height(parent_size.1, size.1, margin);
 

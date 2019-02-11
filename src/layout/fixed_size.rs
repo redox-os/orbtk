@@ -17,9 +17,7 @@ use crate::{
     theme::{Selector, Theme},
 };
 
-use super::{
-    get_constraint, get_horizontal_alignment, get_vertical_alignment, get_visibility, Layout,
-};
+use super::Layout;
 
 /// Fixed size layout is defined by fixed bounds like the size of an image or the size of a text.
 #[derive(Default)]
@@ -43,13 +41,13 @@ impl Layout for FixedSizeLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
     ) -> DirtySize {
-        if get_visibility(entity, ecm) == Visibility::Collapsed {
+        if Visibility::get(entity, ecm) == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = get_horizontal_alignment(entity, ecm);
-        let vertical_alignment = get_vertical_alignment(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
+        let vertical_alignment = VerticalAlignment::get(entity, ecm);
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -124,7 +122,7 @@ impl Layout for FixedSizeLayout {
 
         // -- todo will be removed after orbgl merge --
 
-        let constraint = get_constraint(entity, ecm);
+        let constraint = Constraint::get(entity, ecm);
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());
