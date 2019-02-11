@@ -1,3 +1,5 @@
+use orbgl_api::Canvas;
+
 use crate::{
     backend::Renderer,
     properties::{Bounds, Text, WaterMark, Foreground},
@@ -18,6 +20,7 @@ impl Into<Box<dyn RenderObject>> for TextRenderObject {
 impl RenderObject for TextRenderObject {
     fn render(
         &self,
+        canvas: &mut Canvas,
         renderer: &mut dyn Renderer,
         context: &mut Context<'_>,
         global_position: &Point,
@@ -35,7 +38,7 @@ impl RenderObject for TextRenderObject {
         let theme = context.theme;
         let widget = context.widget();
 
-        let foreground = Foreground::get_by_widget(&widget);
+        let foreground = widget.get_property::<Foreground>();
 
         if let Ok(selector) = widget.borrow_property::<Selector>() {
             if let Ok(bounds) = widget.borrow_property::<Bounds>() {
@@ -50,17 +53,18 @@ impl RenderObject for TextRenderObject {
                             foreground.into(),
                             &theme.string("font-family", selector),
                         );
-                    } else if let Ok(text) = widget.borrow_property::<WaterMark>() {
-                        renderer.render_text(
-                            &text.0,
-                            bounds,
-                            &parent_bounds,
-                            global_position,
-                            theme.uint("font-size", selector),
-                            theme.brush("color", selector).into(),
-                            &theme.string("font-family", selector),
-                        );
-                    }
+                    } 
+                    // else if let Ok(text) = widget.borrow_property::<WaterMark>() {
+                    //     renderer.render_text(
+                    //         &text.0,
+                    //         bounds,
+                    //         &parent_bounds,
+                    //         global_position,
+                    //         theme.uint("font-size", selector),
+                    //         theme.brush("color", selector).into(),
+                    //         &theme.string("font-family", selector),
+                    //     );
+                    // }
                 }
             }
         }

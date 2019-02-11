@@ -9,6 +9,7 @@ pub use self::foreground::*;
 pub use self::icon_brush::*;
 pub use self::icon_brush::*;
 pub use self::icon_size::*;
+pub use self::opacity::*;
 
 mod background;
 mod border_brush;
@@ -19,6 +20,7 @@ mod foreground;
 mod icon_brush;
 mod icon_font;
 mod icon_size;
+mod opacity;
 
 #[cfg(test)]
 mod tests;

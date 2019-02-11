@@ -10,3 +10,4 @@ mod foreground;
 mod icon_brush;
 mod icon_font;
 mod icon_size;
+mod opacity;

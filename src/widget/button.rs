@@ -1,11 +1,7 @@
 use crate::{
     event::ClickHandler,
-    properties::{
-        FontIcon, FontIconProperty, OrientationProperty, PaddingProperty,
-        PressedProperty, Text, TextProperty, Foreground, ForegroundProperty,
-    },
-    theme::Selector,
-    styling,
+    properties::*,
+    styling::colors,
     widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
 };
 
@@ -25,18 +21,26 @@ impl Widget for Button {
     fn create() -> Self::Template {
         let text = SharedProperty::new(Text::default());
         let icon = SharedProperty::new(FontIcon::default());
-        let selector = SharedProperty::new(Selector::from("button"));
-        let foreground = SharedProperty::new(Foreground::from(styling::LINK_WATER_COLOR));
+        let foreground = SharedProperty::new(Foreground::from(colors::LINK_WATER_COLOR));
+        let background = SharedProperty::new(Background::from(colors::LYNCH_COLOR));
+        let border_radius = SharedProperty::new(BorderRadius::from(2.0));
+        let border_thickness = SharedProperty::new(BorderThickness::from(0.0));
+        let border_brush = SharedProperty::new(BorderBrush::from("transparent"));
+        let opacity = SharedProperty::new(Opacity::from(1.0));
 
         ButtonTemplate::new()
             .height(32.0)
             .min_width(80.0)
             .pressed(false)
+            .selector("button")
             .debug_name("Button")
             .child(
                 Container::create()
                     .padding((8.0, 0.0, 8.0, 0.0))
-                    .shared_selector(selector.clone())
+                    .shared_background(background.clone())
+                    .shared_border_radius(border_radius.clone())
+                    .shared_border_thickness(border_thickness.clone())
+                    .shared_border_brush(border_brush.clone())
                     .child(
                         Stack::create()
                             .orientation("Horizontal")
@@ -45,27 +49,32 @@ impl Widget for Button {
                             .child(
                                 FontIconBlock::create()
                                     .margin((0.0, 0.0, 2.0, 0.0))
-                                    .shared_font_icon(icon.clone())
-                                    .shared_selector(selector.clone()),
+                                    .shared_font_icon(icon.clone()),
                             )
                             .child(
                                 TextBlock::create()
                                     .shared_foreground(foreground.clone())
-                                    .shared_text(text.clone())
-                                    .shared_selector(selector.clone()),
+                                    .shared_text(text.clone()),
                             ),
                     ),
             )
             .shared_text(text)
             .shared_font_icon(icon)
             .shared_foreground(foreground)
-            .shared_selector(selector)
+            .shared_background(background)
+            .shared_border_radius(border_radius)
+            .shared_border_thickness(border_thickness)
+            .shared_border_brush(border_brush)
     }
 }
 
 template!(
     ButtonTemplate,
     [
+        BackgroundProperty,
+        BorderRadiusProperty,
+        BorderThicknessProperty,
+        BorderBrushProperty,
         TextProperty,
         FontIconProperty,
         ForegroundProperty,

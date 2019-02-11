@@ -10,6 +10,12 @@
     icon-family: "Material Icons Regular";
 }
 
+.body {
+    color: #dfebf5;
+    font-size: 16;
+    font-family: "Roboto Regular";
+}
+
 checkbox {
     background: transparent;
     border-radius: 2;

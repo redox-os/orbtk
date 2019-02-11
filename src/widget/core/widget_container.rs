@@ -26,4 +26,40 @@ impl<'a> WidgetContainer<'a> {
     pub fn borrow_mut_property<P: Component + Default>(&mut self) -> Result<&mut P, NotFound> {
         self.ecm.borrow_mut_component::<P>(self.current_node)
     }
+
+    /// Gets the property.
+    pub fn get_property<P>(&self) -> P
+    where
+        P: Clone + Component + Default,
+    {
+        self.ecm
+            .borrow_component::<P>(self.current_node)
+            .map(|r| r.clone())
+            .unwrap_or_default()
+    }
+
+    /// Sets the property.
+    pub fn set_property<P>(&mut self, value: P)
+    where
+        P: Clone + Component + Default,
+    {
+        if let Ok(property) = self.ecm.borrow_mut_component::<P>(self.current_node) {
+            *property = value;
+            return;
+        }
+
+        self.ecm.register_component(self.current_node, value);
+    }
+
+    /// Returns `true` if the widget has a property of type `P` otherwise `false`.
+    pub fn has_property<P>(&self) -> bool
+    where
+        P: Clone + Component + Default,
+    {
+        if let Ok(_) = self.borrow_property::<P>() {
+            return true;
+        }
+
+        false
+    }
 }

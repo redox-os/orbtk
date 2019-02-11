@@ -1,4 +1,4 @@
-//! This module contains all css theming releated resources.
+//! This module contains all css theming related resources.
 
 use std::{fs::File, io::BufReader, io::Read, mem, path::Path, sync::Arc};
 
@@ -222,10 +222,8 @@ impl Theme {
         matches.last().map(|x| x.2.clone())
     }
 
-    pub fn brush(&self, property: &str, query: &Selector) -> Brush {
-        self.get(property, query)
-            .map(|v| v.brush().unwrap_or(Brush::default()))
-            .unwrap_or(Brush::default())
+    pub fn brush(&self, property: &str, query: &Selector) -> Option<Brush> {
+        self.get(property, query).map(|v| v.brush().unwrap())
     }
 
     pub fn uint(&self, property: &str, query: &Selector) -> u32 {
@@ -248,25 +246,49 @@ impl Theme {
 
     /// Updates the given widget by theme and selector.
     pub fn update_widget_theme(&self, widget: &mut WidgetContainer) {
-        if !Selector::has(widget) {
+        if !widget.has_property::<Selector>() {
             return;
         }
 
-        let mut selector = Selector::get_by_widget(widget);
+        let mut selector = widget.get_property::<Selector>();
 
         if !selector.dirty() {
             return;
         }
 
         if let Ok(foreground) = widget.borrow_mut_property::<Foreground>() {
+            if let Some(color) = self.brush("color", &selector) {
+                foreground.0 = color;
+            }
+        }
+
+        if let Ok(background) = widget.borrow_mut_property::<Background>() {
+            if let Some(bg) = self.brush("background", &selector) {
+                background.0 = bg;
+            }
+        }
+
+        if let Ok(border_brush) = widget.borrow_mut_property::<BorderBrush>() {
+            if let Some(border_color) = self.brush("border-color", &selector) {
+                border_brush.0 = border_color;
+            }
+        }
+
+        if let Ok(border_radius) = widget.borrow_mut_property::<BorderRadius>() {
             // todo later
             // if let Some(foreground) = self.brush("color", &selector) {}
-            foreground.0 = self.brush("color", &selector);
+            border_radius.0 = self.float("border-radius", &selector) as f64;
+        }
+
+        if let Ok(border_thickness) = widget.borrow_mut_property::<BorderThickness>() {
+            // todo later. Check if theme has property for selector
+            // if let Some(foreground) = self.brush("color", &selector) {}
+            *border_thickness = BorderThickness::from(self.float("border-width", &selector) as f64);
         }
 
         selector.set_dirty(true);
 
-        *widget.borrow_mut_property::<Selector>().unwrap() = selector;
+        widget.set_property::<Selector>(selector);
     }
 }
 

@@ -6,6 +6,10 @@
     icon-color: #3b434a;
 }
 
+.body {
+    color: #3b434a;
+}
+
 button, togglebutton {
     /* min-width: 60; */
     /* height: 40; */

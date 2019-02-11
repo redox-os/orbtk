@@ -2,7 +2,7 @@ use crate::{
     layout::FixedSizeLayout,
     properties::{TextProperty, ForegroundProperty},
     render_object::TextRenderObject,
-    styling,
+    styling::colors,
     widget::{Template, Widget},
 };
 
@@ -27,7 +27,7 @@ impl Widget for TextBlock {
             .layout(FixedSizeLayout::new())
             .render_object(TextRenderObject)
             .debug_name("TextBlock")
-            .foreground(styling::LINK_WATER_COLOR)
+            .foreground(colors::LINK_WATER_COLOR)
             .text("TextBlock")
     }
 }

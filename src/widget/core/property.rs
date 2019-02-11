@@ -73,24 +73,3 @@ where
         .map(|r| r.clone())
         .unwrap_or_default()
 }
-
-pub fn get_property_by_widget<T>(widget: &WidgetContainer) -> T
-where
-    T: Clone + Component + Default,
-{
-    widget
-        .borrow_property::<T>()
-        .map(|r| r.clone())
-        .unwrap_or_default()
-}
-
-pub fn has_property<T>(widget: &WidgetContainer) -> bool
-where
-    T: Clone + Component + Default,
-{
-    if let Ok(_) = widget.borrow_property::<T>() {
-        return true;
-    }
-
-    false
-}

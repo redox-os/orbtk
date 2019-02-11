@@ -68,7 +68,7 @@ macro_rules! property {
     ($type:ident, $property:ident, $method:ident, $shared_method:ident) => {
         use dces::prelude::{Entity, EntityComponentManager};
         
-        use crate::widget::{SharedProperty, Template, get_property, get_property_by_widget, has_property, WidgetContainer};
+        use crate::widget::{SharedProperty, Template, get_property};
 
         pub trait $property: Sized + From<Template> + Into<Template> {
             /// Transforms the property into a template.
@@ -90,14 +90,6 @@ macro_rules! property {
         impl $type {
             pub fn get(entity: Entity, ecm: &EntityComponentManager) -> $type {
                 get_property::<$type>(entity, ecm)
-            }
-
-            pub fn get_by_widget(widget: &WidgetContainer) -> $type {
-                get_property_by_widget::<$type>(widget)
-            }
-
-            pub fn has(widget: &WidgetContainer) -> bool {
-                has_property::<$type>(widget)
             }
         }
     };

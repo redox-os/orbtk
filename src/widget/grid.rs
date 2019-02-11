@@ -1,8 +1,8 @@
 use crate::{
     enums::ParentType,
     layout::GridLayout,
-    properties::{Columns, ColumnsProperty, Rows, RowsProperty, BackgroundProperty},
-    shapes::Rectangle,
+    properties::{BackgroundProperty, Columns, ColumnsProperty, Rows, RowsProperty},
+    render_object::RectangleRenderObject,
     widget::{Template, Widget},
 };
 
@@ -14,7 +14,7 @@ use crate::{
 /// * `background` - background brush of the grid.
 /// * `rows` - used to define the rows of the grid.
 /// * `selector` - css selector with element `grid`.
-/// 
+///
 /// # Others
 ///
 /// * `ParentType`- Multi.
@@ -30,10 +30,13 @@ impl Widget for Grid {
             .rows(Rows::default())
             .parent_type(ParentType::Multi)
             .layout(GridLayout::default())
-            .shape(Rectangle::default())
+            .render_object(RectangleRenderObject)
             .selector("grid")
             .debug_name("Grid")
     }
 }
 
-template!(GridTemplate, [BackgroundProperty, RowsProperty, ColumnsProperty]);
+template!(
+    GridTemplate,
+    [BackgroundProperty, RowsProperty, ColumnsProperty]
+);

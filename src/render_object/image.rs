@@ -1,3 +1,5 @@
+use orbgl_api::Canvas;
+
 use crate::{
     backend::Renderer,
     properties::{Bounds, Image},
@@ -17,6 +19,7 @@ impl Into<Box<dyn RenderObject>> for ImageRenderObject {
 impl RenderObject for ImageRenderObject {
     fn render(
         &self,
+        canvas: &mut Canvas,
         renderer: &mut dyn Renderer,
         context: &mut Context<'_>,
         global_position: &Point,

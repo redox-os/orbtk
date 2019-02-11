@@ -1,7 +1,8 @@
 use crate::{
     layout::PaddingLayout,
-    properties::{BackgroundProperty, PaddingProperty},
-    shapes::Rectangle,
+    properties::*,
+    render_object::RectangleRenderObject,
+    styling::colors,
     widget::{Template, Widget},
 };
 
@@ -9,7 +10,7 @@ use crate::{
 ///
 /// # Properties
 ///
-/// * `background` - background drawing brush. 
+/// * `background` - background drawing brush.
 /// * `padding` - gap to the child.
 ///
 /// # Others
@@ -24,11 +25,23 @@ impl Widget for Container {
     fn create() -> Self::Template {
         ContainerTemplate::new()
             .padding(0.0)
-            .shape(Rectangle::default())
+            .background(colors::LYNCH_COLOR)
+            .border_radius(0.0)
+            .border_thickness(0.0)
+            .border_brush("transparent")
+            .render_object(RectangleRenderObject)
             .layout(PaddingLayout::new())
-            .selector("container")
             .debug_name("Container")
     }
 }
 
-template!(ContainerTemplate, [BackgroundProperty, PaddingProperty]);
+template!(
+    ContainerTemplate,
+    [
+        BackgroundProperty,
+        BorderRadiusProperty,
+        BorderThicknessProperty,
+        BorderBrushProperty,
+        PaddingProperty
+    ]
+);
