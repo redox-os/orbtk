@@ -2,9 +2,9 @@ use orbgl_api::Canvas;
 
 use crate::{
     backend::Renderer,
-    properties::{Bounds, Text, WaterMark, Foreground},
+    properties::{Bounds, Font, FontSize, Foreground, Text, WaterMark},
     render_object::RenderObject,
-    structs::{Point, Color},
+    structs::{Color, Point},
     theme::Selector,
     widget::Context,
 };
@@ -35,38 +35,24 @@ impl RenderObject for TextRenderObject {
             Bounds::default()
         };
 
-        let theme = context.theme;
         let widget = context.widget();
 
+        let bounds = widget.get_property::<Bounds>();
         let foreground = widget.get_property::<Foreground>();
+        let font_size = widget.get_property::<FontSize>();
+        let text = widget.get_property::<Text>();
+        let font = widget.get_property::<Font>();
 
-        if let Ok(selector) = widget.borrow_property::<Selector>() {
-            if let Ok(bounds) = widget.borrow_property::<Bounds>() {
-                if let Ok(text) = widget.borrow_property::<Text>() {
-                    if !text.0.is_empty() {
-                        renderer.render_text(
-                            &text.0,
-                            bounds,
-                            &parent_bounds,
-                            global_position,
-                            theme.uint("font-size", selector),
-                            foreground.into(),
-                            &theme.string("font-family", selector),
-                        );
-                    } 
-                    // else if let Ok(text) = widget.borrow_property::<WaterMark>() {
-                    //     renderer.render_text(
-                    //         &text.0,
-                    //         bounds,
-                    //         &parent_bounds,
-                    //         global_position,
-                    //         theme.uint("font-size", selector),
-                    //         theme.brush("color", selector).into(),
-                    //         &theme.string("font-family", selector),
-                    //     );
-                    // }
-                }
-            }
+        if !text.0.is_empty() {
+            renderer.render_text(
+                &text.0,
+                &bounds,
+                &parent_bounds,
+                global_position,
+                font_size.0 as u32,
+                foreground.into(),
+                &font.0,
+            );
         }
     }
 }

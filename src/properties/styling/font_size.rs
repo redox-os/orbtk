@@ -9,7 +9,6 @@ property!(
     shared_font_size
 );
 
-
 impl From<f64> for FontSize {
     fn from(t: f64) -> Self {
         FontSize(t)

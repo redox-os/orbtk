@@ -1,8 +1,8 @@
 use crate::{
     layout::FixedSizeLayout,
-    properties::{TextProperty, ForegroundProperty},
+    properties::{TextProperty, ForegroundProperty, FontSizeProperty, FontProperty},
     render_object::TextRenderObject,
-    styling::colors,
+    styling::{colors, fonts},
     widget::{Template, Widget},
 };
 
@@ -28,8 +28,10 @@ impl Widget for TextBlock {
             .render_object(TextRenderObject)
             .debug_name("TextBlock")
             .foreground(colors::LINK_WATER_COLOR)
+            .font_size(fonts::FONT_SIZE_12)
+            .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
             .text("TextBlock")
     }
 }
 
-template!(TextBlockTemplate, [ForegroundProperty, TextProperty]);
+template!(TextBlockTemplate, [ForegroundProperty, TextProperty, FontSizeProperty, FontProperty]);

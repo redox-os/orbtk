@@ -3,7 +3,7 @@ pub use orbclient::Renderer;
 pub use orbimage::Image as OrbImage;
 
 #[derive(Clone)]
-pub struct Image(OrbImage);
+pub struct Image(pub OrbImage);
 
 impl Default for Image {
     fn default() -> Self {

@@ -9,9 +9,13 @@ use dces::prelude::{Entity, EntityComponentManager};
 use crate::{
     application::Tree,
     backend::{FontMeasure, FONT_MEASURE},
-    properties::{Bounds, Constraint, Margin, Offset, Text, TextSelection, Visibility, VerticalAlignment},
+    properties::{
+        Bounds, Constraint, Font, FontSize, Margin, Offset, Text, TextSelection, VerticalAlignment,
+        Visibility,
+    },
     structs::{DirtySize, Size, Spacer},
-    theme::{Selector, Theme},
+    theme::Theme,
+    widget::WidgetContainer,
 };
 
 use super::Layout;
@@ -111,30 +115,24 @@ impl Layout for TextSelectionLayout {
         let vertical_alignment = VerticalAlignment::get(entity, ecm);
         let margin = Margin::get(entity, ecm);
 
+        let widget = WidgetContainer::new(entity, ecm);
+
         size.1 = vertical_alignment.align_height(parent_size.1, size.1, margin);
 
-        if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-            if let Ok(text) = ecm.borrow_component::<Text>(entity) {
-                if let Ok(selection) = ecm.borrow_component::<TextSelection>(entity) {
-                    if let Some(text_part) = text.0.get(0..selection.start_index) {
-                        pos = FONT_MEASURE
-                            .measure(
-                                text_part,
-                                &theme.string("font-family", selector),
-                                theme.uint("font-size", selector),
-                            )
-                            .0 as f64;
+        if widget.has_property::<Text>() {
+            let text = widget.get_property::<Text>();
+            let font = widget.get_property::<Font>();
+            let font_size = widget.get_property::<FontSize>();
 
-                        if text_part.ends_with(" ") {
-                            pos += (FONT_MEASURE
-                                .measure(
-                                    "a",
-                                    &theme.string("font-family", selector),
-                                    theme.uint("font-size", selector),
-                                )
-                                .0
-                                / 2) as f64;
-                        }
+            if let Ok(selection) = ecm.borrow_component::<TextSelection>(entity) {
+                if let Some(text_part) = text.0.get(0..selection.start_index) {
+                    pos = FONT_MEASURE
+                        .measure(text_part, &font.0, font_size.0 as u32)
+                        .0 as f64;
+
+                    if text_part.ends_with(" ") {
+                        pos +=
+                            (FONT_MEASURE.measure("a", &font.0, font_size.0 as u32).0 / 2) as f64;
                     }
                 }
             }

@@ -223,25 +223,19 @@ impl Theme {
     }
 
     pub fn brush(&self, property: &str, query: &Selector) -> Option<Brush> {
-        self.get(property, query).map(|v| v.brush().unwrap())
+        self.get(property, query).map_or(None,|v| v.brush())
     }
 
-    pub fn uint(&self, property: &str, query: &Selector) -> u32 {
-        self.get(property, query)
-            .map(|v| v.uint().unwrap_or(0))
-            .unwrap_or(0)
+    pub fn uint(&self, property: &str, query: &Selector) -> Option<u32> {
+        self.get(property, query).map_or(None, |v| v.uint())
     }
 
-    pub fn float(&self, property: &str, query: &Selector) -> f32 {
-        self.get(property, query)
-            .map(|v| v.float().unwrap_or(1.0))
-            .unwrap_or(1.0)
+    pub fn float(&self, property: &str, query: &Selector) -> Option<f32> {
+        self.get(property, query).map_or(None, |v| v.float())
     }
 
-    pub fn string(&self, property: &str, query: &Selector) -> String {
-        self.get(property, query)
-            .map(|v| v.string().unwrap_or(String::default()))
-            .unwrap_or(String::default())
+    pub fn string(&self, property: &str, query: &Selector) -> Option<String> {
+         self.get(property, query).map_or(None, |v| v.string())
     }
 
     /// Updates the given widget by theme and selector.
@@ -275,16 +269,24 @@ impl Theme {
         }
 
         if let Ok(border_radius) = widget.borrow_mut_property::<BorderRadius>() {
-            // todo later
-            // if let Some(foreground) = self.brush("color", &selector) {}
-            border_radius.0 = self.float("border-radius", &selector) as f64;
+            if let Some(radius) = self.float("border-radius", &selector) {
+                border_radius.0 = radius as f64;
+            }
         }
 
         if let Ok(border_thickness) = widget.borrow_mut_property::<BorderThickness>() {
-            // todo later. Check if theme has property for selector
-            // if let Some(foreground) = self.brush("color", &selector) {}
-            *border_thickness = BorderThickness::from(self.float("border-width", &selector) as f64);
+            if let Some(border_width) = self.uint("border-width", &selector) {
+                *border_thickness = BorderThickness::from(border_width as f64);
+            }
         }
+
+         if let Ok(font_size) = widget.borrow_mut_property::<FontSize>() {
+            if let Some(size) = self.uint("font-size", &selector) {
+                font_size.0 = size as f64;
+            }
+        }
+
+        // todo padding
 
         selector.set_dirty(true);
 

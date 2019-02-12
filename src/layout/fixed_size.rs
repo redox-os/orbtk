@@ -4,17 +4,20 @@ use std::{
     rc::Rc,
 };
 
+use orbclient::Renderer;
+
 use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
     application::Tree,
     backend::{FontMeasure, FONT_MEASURE},
     properties::{
-        Bounds, Constraint, FontIcon, HorizontalAlignment, Image, Text, VerticalAlignment,
-        Visibility, WaterMark,
+        Bounds, Constraint, Font, FontIcon, FontSize, HorizontalAlignment, IconFont, IconSize,
+        Image, Text, VerticalAlignment, Visibility, WaterMark,
     },
     structs::{DirtySize, Size},
     theme::{Selector, Theme},
+    widget::WidgetContainer,
 };
 
 use super::Layout;
@@ -55,58 +58,50 @@ impl Layout for FixedSizeLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
+        let widget = WidgetContainer::new(entity, ecm);
+
         // -- todo will be removed after orbgl merge --
 
         let size = {
-            if let Ok(image) = ecm.borrow_component::<Image>(entity) {
-                Some((image.width(), image.height()))
-            } else if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-                if let Ok(text) = ecm.borrow_component::<Text>(entity) {
-                    if text.0.is_empty() {
-                        if let Ok(water_mark) = ecm.borrow_component::<WaterMark>(entity) {
-                            if water_mark.0.is_empty() {
-                                None
-                            } else {
-                                Some(FONT_MEASURE.measure(
-                                    &water_mark.0,
-                                    &theme.string("font-family", selector),
-                                    theme.uint("font-size", selector),
-                                ))
-                            }
-                        } else {
-                            None
-                        }
-                    } else {
-                        let mut size = FONT_MEASURE.measure(
-                            &text.0,
-                            &theme.string("font-family", selector),
-                            theme.uint("font-size", selector),
-                        );
-
-                        if text.0.ends_with(" ") {
-                            size.0 += FONT_MEASURE
-                                .measure(
-                                    "a",
-                                    &theme.string("font-family", selector),
-                                    theme.uint("font-size", selector),
-                                )
-                                .0
-                                / 2;
-                        }
-                        Some(size)
-                    }
-                } else if let Ok(font_icon) = ecm.borrow_component::<FontIcon>(entity) {
-                    if font_icon.0.is_empty() {
-                        None
-                    } else {
-                        Some(FONT_MEASURE.measure(
-                            &font_icon.0,
-                            &theme.string("icon-family", selector),
-                            theme.uint("icon-size", selector),
-                        ))
-                    }
+            if widget.has_property::<Image>() {
+                if let Ok(image) = widget.borrow_property::<Image>() {
+                     Some((image.0.width(), image.0.height()))
                 } else {
                     None
+                }
+            } else if widget.has_property::<Text>() {
+                let text = widget.get_property::<Text>();
+                let font = widget.get_property::<Font>();
+                let font_size = widget.get_property::<FontSize>();
+
+                if text.0.is_empty() {
+                    if let Ok(water_mark) = ecm.borrow_component::<WaterMark>(entity) {
+                        if water_mark.0.is_empty() {
+                            None
+                        } else {
+                            Some(FONT_MEASURE.measure(&water_mark.0, &font.0, font_size.0 as u32))
+                        }
+                    } else {
+                        None
+                    }
+                } else {
+                    let mut size = FONT_MEASURE.measure(&text.0, &font.0, font_size.0 as u32);
+
+                    if text.0.ends_with(" ") {
+                        size.0 += FONT_MEASURE.measure("a", &font.0, font_size.0 as u32).0 / 2;
+                    }
+                    Some(size)
+                }
+            } else if widget.has_property::<FontIcon>() {
+                let font_icon = widget.get_property::<FontIcon>();
+                if font_icon.0.is_empty() {
+                    None
+                } else {
+                    Some(FONT_MEASURE.measure(
+                        &font_icon.0,
+                        &widget.get_property::<IconFont>().0,
+                        widget.get_property::<IconSize>().0 as u32,
+                    ))
                 }
             } else {
                 None

@@ -1,7 +1,7 @@
 use crate::{
     event::ClickHandler,
     properties::*,
-    styling::colors,
+    styling::{colors, fonts},
     widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
 };
 
@@ -19,9 +19,15 @@ impl Widget for Button {
     type Template = ButtonTemplate;
 
     fn create() -> Self::Template {
+        // text properties
         let text = SharedProperty::new(Text::default());
         let icon = SharedProperty::new(FontIcon::default());
         let foreground = SharedProperty::new(Foreground::from(colors::LINK_WATER_COLOR));
+        let font =
+            SharedProperty::new(Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT)));
+        let font_size = SharedProperty::new(FontSize::from(fonts::FONT_SIZE_12));
+
+        // container properties
         let background = SharedProperty::new(Background::from(colors::LYNCH_COLOR));
         let border_radius = SharedProperty::new(BorderRadius::from(2.0));
         let border_thickness = SharedProperty::new(BorderThickness::from(0.0));
@@ -54,11 +60,15 @@ impl Widget for Button {
                             .child(
                                 TextBlock::create()
                                     .shared_foreground(foreground.clone())
-                                    .shared_text(text.clone()),
+                                    .shared_text(text.clone())
+                                    .shared_font(font.clone())
+                                    .shared_font_size(font_size.clone()),
                             ),
                     ),
             )
             .shared_text(text)
+            .shared_font(font)
+            .shared_font_size(font_size)
             .shared_font_icon(icon)
             .shared_foreground(foreground)
             .shared_background(background)
@@ -76,6 +86,8 @@ template!(
         BorderThicknessProperty,
         BorderBrushProperty,
         TextProperty,
+        FontProperty,
+        FontSizeProperty,
         FontIconProperty,
         ForegroundProperty,
         PressedProperty,

@@ -11,6 +11,7 @@ use std::{
 use dces::prelude::{Entity, World};
 use orbclient::Color;
 use orbgl_api::prelude::Canvas;
+use orbfont::Font;
 
 use crate::{
     application::Tree, event::EventQueue, properties::Bounds, structs::Point, theme::Theme,
@@ -70,7 +71,7 @@ pub trait Renderer {
         global_position: &Point,
         font_size: u32,
         color: Color,
-        font: &str,
+        font: &Font,
     );
     fn render_image(
         &mut self,
@@ -101,7 +102,7 @@ pub trait BackendRunner {
 
 /// Helper trait to measure the font size of the given `text`.
 pub trait FontMeasure {
-    fn measure(&self, text: &str, font: &str, font_size: u32) -> (u32, u32);
+    fn measure(&self, text: &str, font: &Font, font_size: u32) -> (u32, u32);
 }
 
 pub use self::target::target_backend;
