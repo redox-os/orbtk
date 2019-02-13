@@ -1,6 +1,7 @@
 use crate::{
     layout::FixedSizeLayout,
-    properties::FontIconProperty,
+    properties::{FontIconProperty, IconFontProperty, IconSizeProperty, IconBrushProperty},
+    styling::{colors, fonts},
     render_object::FontIconRenderObject,
     widget::{Template, Widget},
 };
@@ -26,8 +27,19 @@ impl Widget for FontIconBlock {
             .render_object(FontIconRenderObject)
             .debug_name("FontIconBlock")
             .font_icon("")
+            .icon_brush(colors::LINK_WATER_COLOR)
+            .icon_size(fonts::ICON_FONT_SIZE_12)
+            .icon_font(fonts::font_into_box(fonts::MATERIAL_ICONS_REGULAR_FONT))
             .selector("fonticon")
     }
 }
 
-template!(FontIconBlockTemplate, [FontIconProperty]);
+template!(
+    FontIconBlockTemplate,
+    [
+        FontIconProperty,
+        IconSizeProperty,
+        IconBrushProperty,
+        IconFontProperty
+    ]
+);

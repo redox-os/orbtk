@@ -2,10 +2,9 @@ use orbgl_api::Canvas;
 
 use crate::{
     backend::Renderer,
-    properties::{Bounds, FontIcon, PrimaryFontIcon, SecondaryFontIcon},
+    properties::{Bounds, FontIcon, IconBrush, IconFont, IconSize},
     render_object::RenderObject,
     structs::Point,
-    theme::Selector,
     widget::Context,
 };
 
@@ -34,35 +33,20 @@ impl RenderObject for FontIconRenderObject {
         } else {
             Bounds::default()
         };
-        let theme = context.theme;
+
         let widget = context.widget();
+        let icon = widget.get_property::<FontIcon>();
 
-        // if let Ok(selector) = widget.borrow_property::<Selector>() {
-        //     if let Ok(bounds) = widget.borrow_property::<Bounds>() {
-        //         let icon = if let Ok(icon) = widget.borrow_property::<FontIcon>() {
-        //             Some(&icon.0)
-        //         } else if let Ok(icon) = widget.borrow_property::<PrimaryFontIcon>() {
-        //             Some(&icon.0)
-        //         } else if let Ok(icon) = widget.borrow_property::<SecondaryFontIcon>() {
-        //             Some(&icon.0)
-        //         } else {
-        //             None
-        //         };
-
-        //         if let Some(icon) = icon {
-        //             if !icon.is_empty() {
-        //                 renderer.render_text(
-        //                     icon,
-        //                     bounds,
-        //                     &parent_bounds,
-        //                     global_position,
-        //                     theme.uint("icon-size", selector),
-        //                     theme.brush("icon-color", selector).into(),
-        //                     &theme.string("icon-family", selector),
-        //                 );
-        //             }
-        //         }
-        //     }
-        // }
+        if !icon.0.is_empty() {
+            renderer.render_text(
+                &icon.0,
+                &widget.get_property::<Bounds>(),
+                &parent_bounds,
+                global_position,
+                widget.get_property::<IconSize>().0 as u32,
+                widget.get_property::<IconBrush>().into(),
+                &widget.get_property::<IconFont>().0,
+            );
+        }
     }
 }

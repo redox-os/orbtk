@@ -17,7 +17,10 @@ mod selector;
 use crate::{
     properties::*,
     structs::Brush,
-    styling::theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS},
+    styling::{
+        fonts,
+        theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS},
+    },
     widget::WidgetContainer,
 };
 
@@ -223,7 +226,7 @@ impl Theme {
     }
 
     pub fn brush(&self, property: &str, query: &Selector) -> Option<Brush> {
-        self.get(property, query).map_or(None,|v| v.brush())
+        self.get(property, query).map_or(None, |v| v.brush())
     }
 
     pub fn uint(&self, property: &str, query: &Selector) -> Option<u32> {
@@ -235,7 +238,7 @@ impl Theme {
     }
 
     pub fn string(&self, property: &str, query: &Selector) -> Option<String> {
-         self.get(property, query).map_or(None, |v| v.string())
+        self.get(property, query).map_or(None, |v| v.string())
     }
 
     /// Updates the given widget by theme and selector.
@@ -280,13 +283,47 @@ impl Theme {
             }
         }
 
-         if let Ok(font_size) = widget.borrow_mut_property::<FontSize>() {
+        if let Ok(font_size) = widget.borrow_mut_property::<FontSize>() {
             if let Some(size) = self.uint("font-size", &selector) {
                 font_size.0 = size as f64;
             }
         }
 
-        // todo padding
+        if let Ok(font) = widget.borrow_mut_property::<Font>() {
+            if let Some(font_family) = self.string("font-family", &selector) {
+                if let Some(inner_font) = fonts::font_by_key(&font_family[..]) {
+                    font.0 = inner_font;
+                }
+            }
+        }
+
+        if let Ok(icon_brush) = widget.borrow_mut_property::<IconBrush>() {
+            if let Some(color) = self.brush("icon-color", &selector) {
+                icon_brush.0 = color;
+            }
+        }
+
+        if let Ok(icon_size) = widget.borrow_mut_property::<IconSize>() {
+            if let Some(size) = self.uint("icon-size", &selector) {
+                icon_size.0 = size as f64;
+            }
+        }
+
+        if let Ok(icon_font) = widget.borrow_mut_property::<IconFont>() {
+            if let Some(font_family) = self.string("icon-family", &selector) {
+                if let Some(font) = fonts::font_by_key(&font_family[..]) {
+                    icon_font.0 = font;
+                }
+            }
+        }
+
+        if let Ok(padding) = widget.borrow_mut_property::<Padding>() {
+            if let Some(pad) = self.string("padding", &selector) {
+                // pad.set_thickness(pad as f64);
+            }
+        }
+
+        // todo padding, icon_margin
 
         selector.set_dirty(true);
 
@@ -513,7 +550,8 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
 
             "font-family" | "icon-family" => Value::Str(parse_string(input)?),
 
-            "border-radius" | "border-width" | "font-size" | "icon-size" | "icon-margin" => {
+            "border-radius" | "border-width" | "font-size" | "icon-size" | "icon-margin"
+            | "padding" | "padding-left" | "padding-top" | "padding-right" | "padding-bottom" => {
                 match input.next()? {
                     Token::Number {
                         int_value: Some(x),

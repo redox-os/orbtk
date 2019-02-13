@@ -36,22 +36,17 @@ impl RenderObject for TextRenderObject {
         };
 
         let widget = context.widget();
-
-        let bounds = widget.get_property::<Bounds>();
-        let foreground = widget.get_property::<Foreground>();
-        let font_size = widget.get_property::<FontSize>();
         let text = widget.get_property::<Text>();
-        let font = widget.get_property::<Font>();
 
         if !text.0.is_empty() {
             renderer.render_text(
                 &text.0,
-                &bounds,
+                &widget.get_property::<Bounds>(),
                 &parent_bounds,
                 global_position,
-                font_size.0 as u32,
-                foreground.into(),
-                &font.0,
+                widget.get_property::<FontSize>().0 as u32,
+                widget.get_property::<Foreground>().into(),
+                &widget.get_property::<Font>().0,
             );
         }
     }

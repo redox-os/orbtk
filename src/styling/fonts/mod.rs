@@ -23,5 +23,7 @@ pub fn font_into_box(font: &[u8]) -> Box<[u8]> {
 }
 
 // font sizes
-
 pub static FONT_SIZE_12: f64 = 12.0;
+
+// icon sizes
+pub static ICON_FONT_SIZE_12: f64 = 12.0;

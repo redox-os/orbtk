@@ -5,7 +5,7 @@ pub struct IconSize(pub f64);
 property!(
     IconSize,
     IconSizeProperty,
-    icon_sie,
+    icon_size,
     shared_icon_size
 );
 

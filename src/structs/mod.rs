@@ -27,7 +27,7 @@ pub trait Spacer {
 
     fn thickness(&self) -> Thickness;
 
-    fn set_thickness(&mut self, thickness: Thickness);
+    fn set_thickness<T: Into<Thickness>>(&mut self, thickness: T);
 }
 
 #[cfg(test)]

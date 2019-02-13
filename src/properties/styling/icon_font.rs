@@ -26,6 +26,12 @@ impl From<&str> for IconFont {
     }
 }
 
+impl From<String> for IconFont {
+    fn from(s: String) -> IconFont {
+        IconFont(OrbFont::from_path(s).unwrap())
+    }
+}
+
 impl From<Box<[u8]>> for IconFont {
     fn from(s: Box<[u8]>) -> IconFont {
         IconFont(OrbFont::from_data(s).unwrap())

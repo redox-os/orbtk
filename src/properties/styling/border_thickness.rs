@@ -49,8 +49,8 @@ impl Spacer for BorderThickness {
         self.0
     }
 
-    fn set_thickness(&mut self, thickness: Thickness) {
-        self.0 = thickness;
+    fn set_thickness<T: Into<Thickness>>(&mut self, thickness: T) {
+        self.0 = thickness.into();
     }
 }
 

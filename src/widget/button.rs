@@ -21,11 +21,18 @@ impl Widget for Button {
     fn create() -> Self::Template {
         // text properties
         let text = SharedProperty::new(Text::default());
-        let icon = SharedProperty::new(FontIcon::default());
         let foreground = SharedProperty::new(Foreground::from(colors::LINK_WATER_COLOR));
         let font =
             SharedProperty::new(Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT)));
         let font_size = SharedProperty::new(FontSize::from(fonts::FONT_SIZE_12));
+
+        // font properties
+        let icon = SharedProperty::new(FontIcon::default());
+        let icon_brush = SharedProperty::new(IconBrush::from(colors::LINK_WATER_COLOR));
+        let icon_font = SharedProperty::new(IconFont::from(fonts::font_into_box(
+            fonts::MATERIAL_ICONS_REGULAR_FONT,
+        )));
+        let icon_size = SharedProperty::new(IconSize::from(fonts::ICON_FONT_SIZE_12));
 
         // container properties
         let background = SharedProperty::new(Background::from(colors::LYNCH_COLOR));
@@ -55,7 +62,10 @@ impl Widget for Button {
                             .child(
                                 FontIconBlock::create()
                                     .margin((0.0, 0.0, 2.0, 0.0))
-                                    .shared_font_icon(icon.clone()),
+                                    .shared_font_icon(icon.clone())
+                                    .shared_icon_brush(icon_brush.clone())
+                                    .shared_icon_size(icon_size.clone())
+                                    .shared_icon_font(icon_font.clone()),
                             )
                             .child(
                                 TextBlock::create()
@@ -70,6 +80,9 @@ impl Widget for Button {
             .shared_font(font)
             .shared_font_size(font_size)
             .shared_font_icon(icon)
+            .shared_icon_brush(icon_brush)
+            .shared_icon_size(icon_size)
+            .shared_icon_font(icon_font)
             .shared_foreground(foreground)
             .shared_background(background)
             .shared_border_radius(border_radius)
@@ -89,6 +102,9 @@ template!(
         FontProperty,
         FontSizeProperty,
         FontIconProperty,
+        IconSizeProperty,
+        IconBrushProperty,
+        IconFontProperty,
         ForegroundProperty,
         PressedProperty,
         ClickHandler

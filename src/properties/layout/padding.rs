@@ -45,8 +45,8 @@ impl Spacer for Padding {
         self.value
     }
 
-    fn set_thickness(&mut self, thickness: Thickness) {
-        self.value = thickness;
+    fn set_thickness<T: Into<Thickness>>(&mut self, thickness: T) {
+        self.value = thickness.into();
     }
 }
 
