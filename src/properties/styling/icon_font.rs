@@ -6,19 +6,13 @@ use crate::styling::fonts;
 #[derive(Clone)]
 pub struct IconFont(pub OrbFont);
 
-property!(
-    IconFont,
-    IconFontProperty,
-    icon_font,
-    shared_icon_font
-);
+property!(IconFont, IconFontProperty, icon_font, shared_icon_font);
 
 impl Default for IconFont {
     fn default() -> Self {
         IconFont::from(fonts::font_into_box(fonts::MATERIAL_ICONS_REGULAR_FONT))
     }
 }
-
 
 impl From<&str> for IconFont {
     fn from(s: &str) -> IconFont {

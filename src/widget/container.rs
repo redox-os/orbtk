@@ -25,7 +25,7 @@ impl Widget for Container {
     fn create() -> Self::Template {
         ContainerTemplate::new()
             .padding(0.0)
-            .background(colors::LYNCH_COLOR)
+            .background("transparent")
             .border_radius(0.0)
             .border_thickness(0.0)
             .border_brush("transparent")

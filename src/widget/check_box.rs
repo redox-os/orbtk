@@ -1,8 +1,8 @@
 use crate::{
     material_font_icons,
     properties::{
-        FontIcon, FontIconProperty, OrientationProperty,
-        PressedProperty, SelectedProperty, Text, TextProperty,
+        FontIcon, FontIconProperty, OrientationProperty, PressedProperty, SelectedProperty, Text,
+        TextProperty,
     },
     theme::Selector,
     widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},

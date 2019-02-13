@@ -22,13 +22,15 @@ impl VerticalAlignment {
     /// Calculates the y position of the widget depending on the available height, the goal height
     /// margin and Vertical alignment.
     pub fn align_y(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
-        self.0.align_position(available_height, height, margin.top(), margin.bottom())
+        self.0
+            .align_position(available_height, height, margin.top(), margin.bottom())
     }
 
     /// Calculates the height of the widget depending on the available height, the goal height
     /// margin and Vertical alignment.
     pub fn align_height(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
-        self.0.align_measure(available_height, height,margin.top(), margin.bottom())
+        self.0
+            .align_measure(available_height, height, margin.top(), margin.bottom())
     }
 }
 

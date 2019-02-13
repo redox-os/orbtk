@@ -3,8 +3,7 @@ use std::rc::Rc;
 use crate::{
     enums::Alignment,
     properties::{
-        HorizontalAlignment, PaddingProperty, PressedProperty, Selected,
-        SelectedProperty,
+        HorizontalAlignment, PaddingProperty, PressedProperty, Selected, SelectedProperty,
     },
     theme::Selector,
     widget::{Container, Context, Grid, SharedProperty, State, Template, Widget},

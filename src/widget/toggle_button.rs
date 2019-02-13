@@ -1,7 +1,7 @@
 use crate::{
     properties::{
-        FontIcon, FontIconProperty, OrientationProperty,
-        PaddingProperty, PressedProperty, SelectedProperty, Text, TextProperty,
+        FontIcon, FontIconProperty, OrientationProperty, PaddingProperty, PressedProperty,
+        SelectedProperty, Text, TextProperty,
     },
     theme::Selector,
     widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},

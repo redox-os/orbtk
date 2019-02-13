@@ -10,8 +10,8 @@ use std::{
 
 use dces::prelude::{Entity, World};
 use orbclient::Color;
-use orbgl_api::prelude::Canvas;
 use orbfont::Font;
+use orbgl_api::prelude::Canvas;
 
 use crate::{
     application::Tree, event::EventQueue, properties::Bounds, structs::Point, theme::Theme,

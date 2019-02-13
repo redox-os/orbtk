@@ -26,7 +26,7 @@ impl Widget for Button {
             SharedProperty::new(Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT)));
         let font_size = SharedProperty::new(FontSize::from(fonts::FONT_SIZE_12));
 
-        // font properties
+        // icon properties
         let icon = SharedProperty::new(FontIcon::default());
         let icon_brush = SharedProperty::new(IconBrush::from(colors::LINK_WATER_COLOR));
         let icon_font = SharedProperty::new(IconFont::from(fonts::font_into_box(
@@ -39,6 +39,7 @@ impl Widget for Button {
         let border_radius = SharedProperty::new(BorderRadius::from(2.0));
         let border_thickness = SharedProperty::new(BorderThickness::from(0.0));
         let border_brush = SharedProperty::new(BorderBrush::from("transparent"));
+        let padding = SharedProperty::new(Padding::from((8.0, 0.0, 8.0, 0.0)));
         let opacity = SharedProperty::new(Opacity::from(1.0));
 
         ButtonTemplate::new()
@@ -49,11 +50,6 @@ impl Widget for Button {
             .debug_name("Button")
             .child(
                 Container::create()
-                    .padding((8.0, 0.0, 8.0, 0.0))
-                    .shared_background(background.clone())
-                    .shared_border_radius(border_radius.clone())
-                    .shared_border_thickness(border_thickness.clone())
-                    .shared_border_brush(border_brush.clone())
                     .child(
                         Stack::create()
                             .orientation("Horizontal")
@@ -74,7 +70,12 @@ impl Widget for Button {
                                     .shared_font(font.clone())
                                     .shared_font_size(font_size.clone()),
                             ),
-                    ),
+                    )
+                    .shared_padding(padding.clone())
+                    .shared_background(background.clone())
+                    .shared_border_radius(border_radius.clone())
+                    .shared_border_thickness(border_thickness.clone())
+                    .shared_border_brush(border_brush.clone()),
             )
             .shared_text(text)
             .shared_font(font)
@@ -88,6 +89,7 @@ impl Widget for Button {
             .shared_border_radius(border_radius)
             .shared_border_thickness(border_thickness)
             .shared_border_brush(border_brush)
+            .shared_padding(padding)
     }
 }
 
@@ -107,6 +109,7 @@ template!(
         IconFontProperty,
         ForegroundProperty,
         PressedProperty,
+        PaddingProperty,
         ClickHandler
     ]
 );

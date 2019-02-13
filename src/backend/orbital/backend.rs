@@ -5,7 +5,7 @@ use std::rc::Rc;
 use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
 
 use dces::prelude::{Entity, World};
-use orbgl::prelude::{FramebufferSurface, CairoRenderEngine};
+use orbgl::prelude::{CairoRenderEngine, FramebufferSurface};
 use orbgl_api::Canvas;
 
 use crate::application::Tree;
@@ -35,7 +35,7 @@ pub struct OrbitalBackend {
 impl OrbitalBackend {
     pub fn new(theme: Theme, inner: OrbWindow) -> OrbitalBackend {
         let mut inner = inner;
-        
+
         let surface = FramebufferSurface::new(
             inner.width(),
             inner.height(),

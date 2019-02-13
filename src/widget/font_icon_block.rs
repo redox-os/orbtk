@@ -1,8 +1,8 @@
 use crate::{
     layout::FixedSizeLayout,
-    properties::{FontIconProperty, IconFontProperty, IconSizeProperty, IconBrushProperty},
-    styling::{colors, fonts},
+    properties::{FontIconProperty, IconBrushProperty, IconFontProperty, IconSizeProperty},
     render_object::FontIconRenderObject,
+    styling::{colors, fonts},
     widget::{Template, Widget},
 };
 

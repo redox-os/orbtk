@@ -2,7 +2,7 @@ use crate::theme::Selector;
 
 pub use self::context::Context;
 pub use self::message::{MessageBox, StringMessage};
-pub use self::property::{PropertyResult, SharedProperty, get_property};
+pub use self::property::{get_property, PropertyResult, SharedProperty};
 pub use self::state::State;
 pub use self::template::{Template, TemplateBase};
 pub use self::widget_container::WidgetContainer;

@@ -6,19 +6,13 @@ use crate::styling::fonts;
 #[derive(Clone)]
 pub struct Font(pub OrbFont);
 
-property!(
-    Font,
-    FontProperty,
-    font,
-    shared_font
-);
+property!(Font, FontProperty, font, shared_font);
 
 impl Default for Font {
     fn default() -> Self {
         Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
     }
 }
-
 
 impl From<&str> for Font {
     fn from(s: &str) -> Font {

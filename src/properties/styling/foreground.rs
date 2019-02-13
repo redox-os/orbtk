@@ -19,7 +19,7 @@ impl From<Foreground> for Color {
 
 impl Default for Foreground {
     fn default() -> Foreground {
-       "#000000".into()
+        "#000000".into()
     }
 }
 

@@ -16,7 +16,7 @@ mod selector;
 
 use crate::{
     properties::*,
-    structs::Brush,
+    structs::{Brush, Spacer},
     styling::{
         fonts,
         theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS},
@@ -318,8 +318,32 @@ impl Theme {
         }
 
         if let Ok(padding) = widget.borrow_mut_property::<Padding>() {
-            if let Some(pad) = self.string("padding", &selector) {
-                // pad.set_thickness(pad as f64);
+            if let Some(pad) = self.uint("padding", &selector) {
+                padding.set_thickness(pad as f64);
+            }
+        }
+
+        if let Ok(padding) = widget.borrow_mut_property::<Padding>() {
+            if let Some(left) = self.uint("padding-left", &selector) {
+                padding.set_left(left as f64);
+            }
+        }
+
+        if let Ok(padding) = widget.borrow_mut_property::<Padding>() {
+            if let Some(top) = self.uint("padding-top", &selector) {
+                padding.set_top(top as f64);
+            }
+        }
+
+        if let Ok(padding) = widget.borrow_mut_property::<Padding>() {
+            if let Some(right) = self.uint("padding-right", &selector) {
+                padding.set_right(right as f64);
+            }
+        }
+
+        if let Ok(padding) = widget.borrow_mut_property::<Padding>() {
+            if let Some(bottom) = self.uint("padding-bottom", &selector) {
+                padding.set_bottom(bottom as f64);
             }
         }
 

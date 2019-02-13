@@ -10,7 +10,7 @@ use crate::{
 /// # Properties
 ///
 /// * `orientation` - used to define the orientation of the stack layout vertical (default) of horizontal.
-/// 
+///
 /// # Others
 ///
 /// * `ParentType`- Mutli.

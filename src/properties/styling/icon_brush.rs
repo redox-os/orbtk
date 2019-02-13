@@ -4,12 +4,7 @@ use crate::structs::{Brush, Color};
 #[derive(Clone)]
 pub struct IconBrush(pub Brush);
 
-property!(
-    IconBrush,
-    IconBrushProperty,
-    icon_brush,
-    shared_icon_brush
-);
+property!(IconBrush, IconBrushProperty, icon_brush, shared_icon_brush);
 
 impl From<IconBrush> for Color {
     fn from(b: IconBrush) -> Color {
@@ -19,7 +14,7 @@ impl From<IconBrush> for Color {
 
 impl Default for IconBrush {
     fn default() -> IconBrush {
-       "#000000".into()
+        "#000000".into()
     }
 }
 

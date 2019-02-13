@@ -65,7 +65,7 @@ impl Layout for FixedSizeLayout {
         let size = {
             if widget.has_property::<Image>() {
                 if let Ok(image) = widget.borrow_property::<Image>() {
-                     Some((image.0.width(), image.0.height()))
+                    Some((image.0.width(), image.0.height()))
                 } else {
                     None
                 }

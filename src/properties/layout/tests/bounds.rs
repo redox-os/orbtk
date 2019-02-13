@@ -1,5 +1,5 @@
 use super::*;
-use crate::structs::{Size, Position};
+use crate::structs::{Position, Size};
 
 #[test]
 fn test_contains() {

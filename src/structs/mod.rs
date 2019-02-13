@@ -1,13 +1,20 @@
-pub use orbgl_shapes::structs::*;
 pub use orbclient::Color;
 
+pub use self::border::*;
+pub use self::brush::*;
 pub use self::dirty_size::DirtySize;
 pub use self::point::Point;
+pub use self::rect::*;
+pub use self::thickness::Thickness;
 
+mod border;
+mod brush;
 mod dirty_size;
 mod point;
+mod rect;
+mod thickness;
 
-// todo: move to orbgl_shapes and documentation
+// todo:  documentation
 pub trait Spacer {
     fn left(&self) -> f64;
 

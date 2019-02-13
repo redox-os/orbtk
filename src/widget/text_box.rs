@@ -5,13 +5,9 @@ use std::{
 
 use crate::{
     event::{Key, KeyDownHandler},
-    properties::{
-        Bounds, Focused, FocusedProperty, Margin, Offset, OffsetProperty,
-        PaddingProperty, ScrollMode, ScrollViewerMode, ScrollViewerModeProperty, Text,
-        TextProperty, TextSelection, TextSelectionProperty, WaterMark, WaterMarkProperty,
-        Padding,
-    },
+    properties::*,
     structs::{Position, Size, Spacer},
+    styling::{colors, fonts},
     theme::Selector,
     widget::{
         Container, Context, Cursor, Grid, ScrollViewer, SharedProperty, State, Template,
@@ -189,7 +185,13 @@ impl Widget for TextBox {
     type Template = TextBoxTemplate;
 
     fn create() -> Self::Template {
+        // text properties
         let text = SharedProperty::new(Text::default());
+        let foreground = SharedProperty::new(Foreground::from(colors::LINK_WATER_COLOR));
+        let font =
+            SharedProperty::new(Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT)));
+        let font_size = SharedProperty::new(FontSize::from(fonts::FONT_SIZE_12));
+
         let water_mark = SharedProperty::new(WaterMark::default());
         let selector = Selector::from("textbox");
         let selection = SharedProperty::new(TextSelection::default());
@@ -198,6 +200,14 @@ impl Widget for TextBox {
         let padding = SharedProperty::new(Padding::from(4.0));
         let state = Rc::new(TextBoxState::default());
         let _click_state = state.clone();
+
+        // container properties
+        let background = SharedProperty::new(Background::from(colors::LYNCH_COLOR));
+        let border_radius = SharedProperty::new(BorderRadius::from(2.0));
+        let border_thickness = SharedProperty::new(BorderThickness::from(0.0));
+        let border_brush = SharedProperty::new(BorderBrush::from("transparent"));
+        let padding = SharedProperty::new(Padding::from((8.0, 0.0, 8.0, 0.0)));
+        let opacity = SharedProperty::new(Opacity::from(1.0));
 
         TextBoxTemplate::new()
             .size(128.0, 32.0)
@@ -212,7 +222,10 @@ impl Widget for TextBox {
                                     .child(
                                         WaterMarkTextBlock::create()
                                             .vertical_alignment("Center")
+                                            .shared_foreground(foreground.clone())
                                             .shared_text(text.clone())
+                                            .shared_font(font.clone())
+                                            .shared_font_size(font_size.clone())
                                             .shared_water_mark(water_mark.clone())
                                             .attach_shared_property(focused.clone())
                                             .selector(selector.clone().id("TextBoxTextBlock")),
@@ -222,13 +235,15 @@ impl Widget for TextBox {
                                         ScrollMode::None,
                                         ScrollMode::None,
                                     ))
-                                    .selector(Selector::from("scrollviewer").id("TextBoxScrollViewer")),
+                                    .selector(Selector::new().id("TextBoxScrollViewer")),
                             )
                             .child(
                                 Cursor::create()
                                     .margin(0.0)
                                     .horizontal_alignment("Start")
                                     .shared_text(text.clone())
+                                    .shared_font(font.clone())
+                                    .shared_font_size(font_size.clone())
                                     .shared_text_selection(selection.clone())
                                     .shared_offset(offset.clone())
                                     .shared_focused(focused.clone())
@@ -244,14 +259,24 @@ impl Widget for TextBox {
                     .attach_property(selector.clone())
                     .attach_shared_property(focused.clone())
                     .shared_padding(padding.clone())
+                    .shared_background(background.clone())
+                    .shared_border_radius(border_radius.clone())
+                    .shared_border_thickness(border_thickness.clone())
+                    .shared_border_brush(border_brush.clone())
             )
             .shared_text(text)
+            .shared_font(font)
+            .shared_font_size(font_size)
             .selector(selector)
             .shared_water_mark(water_mark)
             .shared_text_selection(selection)
             .attach_shared_property(offset)
             .shared_focused(focused)
             .shared_padding(padding)
+            .shared_background(background)
+            .shared_border_radius(border_radius)
+            .shared_border_thickness(border_thickness)
+            .shared_border_brush(border_brush)
             .on_key_down(move |key: Key| -> bool { state.update_text(key) })
     }
 }
@@ -259,6 +284,12 @@ impl Widget for TextBox {
 template!(
     TextBoxTemplate,
     [
+        BackgroundProperty,
+        BorderRadiusProperty,
+        BorderThicknessProperty,
+        BorderBrushProperty,
+        FontProperty,
+        FontSizeProperty,
         TextProperty,
         FocusedProperty,
         WaterMarkProperty,

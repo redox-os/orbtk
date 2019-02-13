@@ -11,7 +11,6 @@ property!(
     shared_border_thickness
 );
 
-
 impl Spacer for BorderThickness {
     fn left(&self) -> f64 {
         self.0.left

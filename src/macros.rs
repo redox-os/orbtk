@@ -67,8 +67,8 @@ macro_rules! template {
 macro_rules! property {
     ($type:ident, $property:ident, $method:ident, $shared_method:ident) => {
         use dces::prelude::{Entity, EntityComponentManager};
-        
-        use crate::widget::{SharedProperty, Template, get_property};
+
+        use crate::widget::{get_property, SharedProperty, Template};
 
         pub trait $property: Sized + From<Template> + Into<Template> {
             /// Transforms the property into a template.

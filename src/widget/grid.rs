@@ -26,6 +26,7 @@ impl Widget for Grid {
 
     fn create() -> Self::Template {
         GridTemplate::new()
+            .background("transparent")
             .columns(Columns::default())
             .rows(Rows::default())
             .parent_type(ParentType::Multi)

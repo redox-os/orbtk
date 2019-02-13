@@ -22,13 +22,15 @@ impl HorizontalAlignment {
     /// Calculates the x position of the widget depending on the available width, the goal width
     /// margin and horizontal alignment.
     pub fn align_x(&self, available_width: f64, width: f64, margin: Margin) -> f64 {
-        self.0.align_position(available_width, width, margin.left(), margin.right())
+        self.0
+            .align_position(available_width, width, margin.left(), margin.right())
     }
 
     /// Calculates the width of the widget depending on the available width, the goal width
     /// margin and horizontal alignment.
     pub fn align_width(&self, available_width: f64, width: f64, margin: Margin) -> f64 {
-        self.0.align_measure(available_width, width,margin.left(), margin.right())
+        self.0
+            .align_measure(available_width, width, margin.left(), margin.right())
     }
 }
 

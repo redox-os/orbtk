@@ -2,11 +2,15 @@ use std::rc::Rc;
 
 use crate::{
     layout::FixedSizeLayout,
-    properties::{Text, TextProperty, Visibility, WaterMark, WaterMarkProperty},
+    properties::{
+        FontProperty, FontSizeProperty, ForegroundProperty, Text, TextProperty, Visibility,
+        WaterMark, WaterMarkProperty,
+    },
     render_object::TextRenderObject,
     widget::{
         add_selector_to_widget, remove_selector_from_widget, Context, State, Template, Widget,
     },
+    styling::{colors, fonts}
 };
 
 /// The `WaterMarkTextBlockState` handles the text processing of the `WaterMarkTextBlock` widget.
@@ -59,7 +63,7 @@ impl State for WaterMarkTextBlockState {
 /// * `selector` - CSS selector with  element name `watermark` used to request the theme of the WaterMarkTextBlock.
 ///
 /// # Others
-/// 
+///
 /// * `WaterMarkTextBlockState` - Handles the inner state of the widget.
 pub struct WaterMarkTextBlock;
 
@@ -72,6 +76,10 @@ impl Widget for WaterMarkTextBlock {
             .render_object(TextRenderObject)
             .water_mark("Placeholder")
             .selector("watermark")
+            .foreground(colors::LINK_WATER_COLOR)
+            .font_size(fonts::FONT_SIZE_12)
+            .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
+            .text("")
             .state(Rc::new(WaterMarkTextBlockState::default()))
             .debug_name("WaterMarkTextBlock")
     }
@@ -79,5 +87,11 @@ impl Widget for WaterMarkTextBlock {
 
 template!(
     WaterMarkTextBlockTemplate,
-    [WaterMarkProperty, TextProperty]
+    [
+        WaterMarkProperty,
+        ForegroundProperty,
+        TextProperty,
+        FontSizeProperty,
+        FontProperty
+    ]
 );

@@ -2,12 +2,7 @@
 #[derive(Default, Clone, Copy)]
 pub struct IconSize(pub f64);
 
-property!(
-    IconSize,
-    IconSizeProperty,
-    icon_size,
-    shared_icon_size
-);
+property!(IconSize, IconSizeProperty, icon_size, shared_icon_size);
 
 impl From<f64> for IconSize {
     fn from(t: f64) -> Self {

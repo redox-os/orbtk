@@ -19,7 +19,7 @@ impl From<BorderBrush> for Color {
 
 impl Default for BorderBrush {
     fn default() -> BorderBrush {
-       "#000000".into()
+        "#000000".into()
     }
 }
 

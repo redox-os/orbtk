@@ -3,13 +3,14 @@ use std::rc::Rc;
 use crate::{
     layout::TextSelectionLayout,
     properties::{
-        FocusedProperty, OffsetProperty, TextProperty, TextSelection,
-        TextSelectionProperty,
+        BackgroundProperty, FocusedProperty, OffsetProperty, TextProperty, TextSelection,
+        TextSelectionProperty, FontProperty, FontSizeProperty
     },
-   render_object::RectangleRenderObject,
+    render_object::RectangleRenderObject,
     widget::{
         add_selector_to_widget, remove_selector_from_widget, Context, State, Template, Widget,
     },
+    styling::fonts
 };
 
 // Default state of the `Cursor` widget.
@@ -54,8 +55,11 @@ impl Widget for Cursor {
             .text("")
             .selector("cursor")
             .offset(0.0)
+            .background("transparent")
+            .font_size(fonts::FONT_SIZE_12)
+            .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
             .text_selection(TextSelection::default())
-           .render_object(RectangleRenderObject)
+            .render_object(RectangleRenderObject)
             .layout(TextSelectionLayout::new())
             .state(Rc::new(CursorState))
             .debug_name("Cursor")
@@ -65,8 +69,11 @@ impl Widget for Cursor {
 template!(
     CursorTemplate,
     [
+        BackgroundProperty,
         TextProperty,
         TextSelectionProperty,
+        FontProperty,
+        FontSizeProperty,
         OffsetProperty,
         FocusedProperty
     ]
