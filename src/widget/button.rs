@@ -20,8 +20,8 @@ impl Widget for Button {
 
     fn create() -> Self::Template {
         // text properties
-        let text = Property::new(Text::default());
-        let foreground = Property::new(Foreground::from(colors::LINK_WATER_COLOR));
+        let text = Text::prop("");
+        let foreground = Foreground::prop(colors::LINK_WATER_COLOR);
         let font =
             Property::new(Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT)));
         let font_size = Property::new(FontSize::from(fonts::FONT_SIZE_12));
