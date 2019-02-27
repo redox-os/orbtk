@@ -5,7 +5,7 @@ use crate::{
         TextProperty,
     },
     theme::Selector,
-    widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
+    widget::{Container, FontIconBlock, Property, Stack, Template, TextBlock, Widget},
 };
 /// The `Checkbox` widget can be switch its selected state. It contains a selection box and a text.
 ///
@@ -21,9 +21,9 @@ impl Widget for CheckBox {
     type Template = CheckBoxTemplate;
 
     fn create() -> Self::Template {
-        let text = SharedProperty::new(Text::default());
-        let icon = SharedProperty::new(FontIcon::from(material_font_icons::CHECK_FONT_ICON));
-        let selector = SharedProperty::new(Selector::from("checkbox"));
+        let text = Property::new(Text::default());
+        let icon = Property::new(FontIcon::from(material_font_icons::CHECK_FONT_ICON));
+        let selector = Property::new(Selector::from("checkbox"));
 
         CheckBoxTemplate::new()
             .height(24.0)
@@ -35,21 +35,21 @@ impl Widget for CheckBox {
                     .child(
                         Container::create()
                             .size(24.0, 24.0)
-                            .shared_selector(selector.clone())
+                            .shared_selector(selector.share())
                             .child(
                                 FontIconBlock::create()
                                     .vertical_alignment("Center")
                                     .horizontal_alignment("Center")
-                                    .shared_font_icon(icon.clone())
-                                    .shared_selector(selector.clone()),
+                                    .shared_font_icon(icon.share())
+                                    .shared_selector(selector.share()),
                             ),
                     )
                     .child(
                         TextBlock::create()
                             .vertical_alignment("Center")
                             .margin((8.0, 0.0, 0.0, 0.0))
-                            .shared_text(text.clone())
-                            .shared_selector(selector.clone()),
+                            .shared_text(text.share())
+                            .shared_selector(selector.share()),
                     ),
             )
             .shared_font_icon(icon)

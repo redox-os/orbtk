@@ -2,7 +2,7 @@ use crate::{
     event::ClickHandler,
     properties::*,
     styling::{colors, fonts},
-    widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
+    widget::{Container, FontIconBlock, Property, Stack, Template, TextBlock, Widget},
 };
 
 /// The `Button` widget can be clicked by user. It's used to perform an action.
@@ -20,27 +20,27 @@ impl Widget for Button {
 
     fn create() -> Self::Template {
         // text properties
-        let text = SharedProperty::new(Text::default());
-        let foreground = SharedProperty::new(Foreground::from(colors::LINK_WATER_COLOR));
+        let text = Property::new(Text::default());
+        let foreground = Property::new(Foreground::from(colors::LINK_WATER_COLOR));
         let font =
-            SharedProperty::new(Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT)));
-        let font_size = SharedProperty::new(FontSize::from(fonts::FONT_SIZE_12));
+            Property::new(Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT)));
+        let font_size = Property::new(FontSize::from(fonts::FONT_SIZE_12));
 
         // icon properties
-        let icon = SharedProperty::new(FontIcon::default());
-        let icon_brush = SharedProperty::new(IconBrush::from(colors::LINK_WATER_COLOR));
-        let icon_font = SharedProperty::new(IconFont::from(fonts::font_into_box(
+        let icon = Property::new(FontIcon::default());
+        let icon_brush = Property::new(IconBrush::from(colors::LINK_WATER_COLOR));
+        let icon_font = Property::new(IconFont::from(fonts::font_into_box(
             fonts::MATERIAL_ICONS_REGULAR_FONT,
         )));
-        let icon_size = SharedProperty::new(IconSize::from(fonts::ICON_FONT_SIZE_12));
+        let icon_size = Property::new(IconSize::from(fonts::ICON_FONT_SIZE_12));
 
         // container properties
-        let background = SharedProperty::new(Background::from(colors::LYNCH_COLOR));
-        let border_radius = SharedProperty::new(BorderRadius::from(2.0));
-        let border_thickness = SharedProperty::new(BorderThickness::from(0.0));
-        let border_brush = SharedProperty::new(BorderBrush::from("transparent"));
-        let padding = SharedProperty::new(Padding::from((8.0, 0.0, 8.0, 0.0)));
-        let opacity = SharedProperty::new(Opacity::from(1.0));
+        let background = Property::new(Background::from(colors::LYNCH_COLOR));
+        let border_radius = Property::new(BorderRadius::from(2.0));
+        let border_thickness = Property::new(BorderThickness::from(0.0));
+        let border_brush = Property::new(BorderBrush::from("transparent"));
+        let padding = Property::new(Padding::from((8.0, 0.0, 8.0, 0.0)));
+        let opacity = Property::new(Opacity::from(1.0));
 
         ButtonTemplate::new()
             .height(32.0)
@@ -58,24 +58,24 @@ impl Widget for Button {
                             .child(
                                 FontIconBlock::create()
                                     .margin((0.0, 0.0, 2.0, 0.0))
-                                    .shared_font_icon(icon.clone())
-                                    .shared_icon_brush(icon_brush.clone())
-                                    .shared_icon_size(icon_size.clone())
-                                    .shared_icon_font(icon_font.clone()),
+                                    .shared_font_icon(icon.share())
+                                    .shared_icon_brush(icon_brush.share())
+                                    .shared_icon_size(icon_size.share())
+                                    .shared_icon_font(icon_font.share()),
                             )
                             .child(
                                 TextBlock::create()
-                                    .shared_foreground(foreground.clone())
-                                    .shared_text(text.clone())
-                                    .shared_font(font.clone())
-                                    .shared_font_size(font_size.clone()),
+                                    .shared_foreground(foreground.share())
+                                    .shared_text(text.share())
+                                    .shared_font(font.share())
+                                    .shared_font_size(font_size.share()),
                             ),
                     )
-                    .shared_padding(padding.clone())
-                    .shared_background(background.clone())
-                    .shared_border_radius(border_radius.clone())
-                    .shared_border_thickness(border_thickness.clone())
-                    .shared_border_brush(border_brush.clone()),
+                    .shared_padding(padding.share())
+                    .shared_background(background.share())
+                    .shared_border_radius(border_radius.share())
+                    .shared_border_thickness(border_thickness.share())
+                    .shared_border_brush(border_brush.share()),
             )
             .shared_text(text)
             .shared_font(font)

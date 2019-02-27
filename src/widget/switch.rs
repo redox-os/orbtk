@@ -6,7 +6,7 @@ use crate::{
         HorizontalAlignment, PaddingProperty, PressedProperty, Selected, SelectedProperty,
     },
     theme::Selector,
-    widget::{Container, Context, Grid, SharedProperty, State, Template, Widget},
+    widget::{Container, Context, Grid, Property, State, Template, Widget},
 };
 
 // State to handle the position of switch toggle.
@@ -48,8 +48,8 @@ impl Widget for Switch {
     type Template = SwitchTemplate;
 
     fn create() -> Self::Template {
-        let selector = SharedProperty::new(Selector::from("switch"));
-        let selected = SharedProperty::new(Selected::from(false));
+        let selector = Property::new(Selector::from("switch"));
+        let selected = Property::new(Selected::from(false));
 
         SwitchTemplate::new()
             .width(56.0)
@@ -59,14 +59,14 @@ impl Widget for Switch {
             .child(
                 Container::create()
                     .padding(4.0)
-                    .shared_selector(selector.clone())
+                    .shared_selector(selector.share())
                     .child(
                         Grid::create().child(
                             Container::create()
                                 .size(24.0, 24.0)
                                 .vertical_alignment("Center")
                                 .horizontal_alignment("Start")
-                                .attach_shared_property(selected.clone())
+                                .attach_shared_property(selected.share())
                                 .selector(Selector::from("switchtoggle").id("SwitchSwitchToggle")),
                         ),
                     ),

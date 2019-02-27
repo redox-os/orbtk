@@ -4,7 +4,7 @@ use crate::{
         SelectedProperty, Text, TextProperty,
     },
     theme::Selector,
-    widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
+    widget::{Container, FontIconBlock, Property, Stack, Template, TextBlock, Widget},
 };
 
 /// The `ToggleButton` widget can be clicked by user. It's used to perform an action.
@@ -21,9 +21,9 @@ impl Widget for ToggleButton {
     type Template = ToggleButtonTemplate;
 
     fn create() -> Self::Template {
-        let text = SharedProperty::new(Text::default());
-        let icon = SharedProperty::new(FontIcon::default());
-        let selector = SharedProperty::new(Selector::from("togglebutton"));
+        let text = Property::new(Text::default());
+        let icon = Property::new(FontIcon::default());
+        let selector = Property::new(Selector::from("togglebutton"));
 
         ToggleButtonTemplate::new()
             .height(32.0)
@@ -34,7 +34,7 @@ impl Widget for ToggleButton {
             .child(
                 Container::create()
                     .padding((8.0, 0.0, 8.0, 0.0))
-                    .shared_selector(selector.clone())
+                    .shared_selector(selector.share())
                     .child(
                         Stack::create()
                             .orientation("Horizontal")
@@ -43,13 +43,13 @@ impl Widget for ToggleButton {
                             .child(
                                 FontIconBlock::create()
                                     .margin((0.0, 0.0, 2.0, 0.0))
-                                    .shared_font_icon(icon.clone())
-                                    .shared_selector(selector.clone()),
+                                    .shared_font_icon(icon.share())
+                                    .shared_selector(selector.share()),
                             )
                             .child(
                                 TextBlock::create()
-                                    .shared_text(text.clone())
-                                    .shared_selector(selector.clone()),
+                                    .shared_text(text.share())
+                                    .shared_selector(selector.share()),
                             ),
                     ),
             )

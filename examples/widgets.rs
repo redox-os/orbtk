@@ -37,7 +37,7 @@ impl Widget for MainView {
 
     fn create() -> Self::Template {
         let state = Rc::new(MainViewState::default());
-        let button_count_text = SharedProperty::new(Text::from("Button count: 0"));
+        let button_count_text = Property::new(Text::from("Button count: 0"));
 
         let grid = Grid::create();
 
@@ -115,7 +115,7 @@ impl Widget for MainView {
                     .child(
                         TextBlock::create()
                             .selector(Selector::new().class("body"))
-                            .shared_text(button_count_text.clone())
+                            .shared_text(button_count_text.share())
                             .margin((0.0, 8.0, 0.0, 0.0))
                             .attach_property(GridColumn(2))
                             .attach_property(GridRow(1)),

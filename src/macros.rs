@@ -68,7 +68,7 @@ macro_rules! property {
     ($type:ident, $property:ident, $method:ident, $shared_method:ident) => {
         use dces::prelude::{Entity, EntityComponentManager};
 
-        use crate::widget::{get_property, SharedProperty, Template};
+        use crate::widget::{get_property, Property, Template};
 
         pub trait $property: Sized + From<Template> + Into<Template> {
             /// Transforms the property into a template.
@@ -82,7 +82,7 @@ macro_rules! property {
             }
 
             /// Inserts a shared property.
-            fn $shared_method(self, $method: SharedProperty) -> Self {
+            fn $shared_method(self, $method: Property) -> Self {
                 self.template(|template| template.shared_property($method.into()))
             }
         }
@@ -90,6 +90,47 @@ macro_rules! property {
         impl $type {
             pub fn get(entity: Entity, ecm: &EntityComponentManager) -> $type {
                 get_property::<$type>(entity, ecm)
+            }
+        }
+    };
+}
+
+macro_rules! widget {
+    ( $(#[$widget_doc:meta])* $widget:ident { $($(#[$prop_doc:meta])* $property:ident: $property_type:tt ),*} ) => {
+        $(#[$widget_doc])*
+        pub struct $widget {
+            $(
+                $property: $property_type,
+            )*
+        }
+
+        impl $widget {
+            /// Creates a new instance of the widget, with all its properties. Used to build the template of the widget.
+            pub fn create() -> Self {
+               $widget {
+                    $(
+                        $property: $property_type::default(),
+                    )*
+               }
+            }
+
+            $(
+                $(#[$prop_doc])*
+                pub fn $property(mut self, $property: impl Into<$property_type>) -> Self {
+                    self.$property = $property.into();
+                    self
+                }
+            )*
+
+            /// Builds the template of the widget.
+            pub fn build(self) -> Template {
+                let mut template = self.template();
+
+                $(
+                    template.insert_property(TypeId::of::<$property_type>(), self.$property.into());
+                )*
+
+                template
             }
         }
     };

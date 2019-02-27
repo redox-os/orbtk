@@ -11,7 +11,7 @@ use crate::{
     structs::Point,
 };
 
-use super::{SharedProperty, State};
+use super::{Property, State};
 
 /// `Template` is used to define the inner structure of a widget.
 ///
@@ -43,7 +43,7 @@ pub struct Template {
     pub layout: Box<dyn Layout>,
     pub constraint: Constraint,
     pub properties: HashMap<TypeId, ComponentBox>,
-    pub shared_properties: HashMap<TypeId, SharedProperty>,
+    pub shared_properties: HashMap<TypeId, Property>,
     pub debug_name: String,
 }
 
@@ -233,7 +233,7 @@ impl Template {
 
     /// Used to register a shared property for the template. Only one shared property per type can be registered.
     /// If a property of the same type exists, it will be replaced by the given shared property.
-    pub fn shared_property(mut self, property: SharedProperty) -> Self {
+    pub fn shared_property(mut self, property: Property) -> Self {
         if self.properties.contains_key(&property.type_id) {
             self.properties.remove(&property.type_id);
         }
@@ -268,7 +268,7 @@ impl Template {
         self,
         vertical_alignment: V,
     ) -> Self {
-        self.shared_property(SharedProperty::new(vertical_alignment.into()))
+        self.shared_property(Property::new(vertical_alignment.into()))
     }
 }
 
@@ -370,7 +370,7 @@ pub trait TemplateBase: Sized + From<Template> + Into<Template> {
     }
 
     /// Attaches a shared property.
-    fn attach_shared_property(self, property: SharedProperty) -> Self {
+    fn attach_shared_property(self, property: Property) -> Self {
         self.template(|template| template.shared_property(property))
     }
 }

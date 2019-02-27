@@ -10,7 +10,7 @@ use crate::{
     styling::{colors, fonts},
     theme::Selector,
     widget::{
-        Container, Context, Cursor, Grid, ScrollViewer, SharedProperty, State, Template,
+        Container, Context, Cursor, Grid, ScrollViewer, Property, State, Template,
         WaterMarkTextBlock, Widget,
     },
 };
@@ -186,28 +186,28 @@ impl Widget for TextBox {
 
     fn create() -> Self::Template {
         // text properties
-        let text = SharedProperty::new(Text::default());
-        let foreground = SharedProperty::new(Foreground::from(colors::LINK_WATER_COLOR));
+        let text = Property::new(Text::default());
+        let foreground = Property::new(Foreground::from(colors::LINK_WATER_COLOR));
         let font =
-            SharedProperty::new(Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT)));
-        let font_size = SharedProperty::new(FontSize::from(fonts::FONT_SIZE_12));
+            Property::new(Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT)));
+        let font_size = Property::new(FontSize::from(fonts::FONT_SIZE_12));
 
-        let water_mark = SharedProperty::new(WaterMark::default());
+        let water_mark = Property::new(WaterMark::default());
         let selector = Selector::from("textbox");
-        let selection = SharedProperty::new(TextSelection::default());
-        let offset = SharedProperty::new(Offset::default());
-        let focused = SharedProperty::new(Focused(false));
-        let padding = SharedProperty::new(Padding::from(4.0));
+        let selection = Property::new(TextSelection::default());
+        let offset = Property::new(Offset::default());
+        let focused = Property::new(Focused(false));
+        let padding = Property::new(Padding::from(4.0));
         let state = Rc::new(TextBoxState::default());
         let _click_state = state.clone();
 
         // container properties
-        let background = SharedProperty::new(Background::from(colors::LYNCH_COLOR));
-        let border_radius = SharedProperty::new(BorderRadius::from(2.0));
-        let border_thickness = SharedProperty::new(BorderThickness::from(0.0));
-        let border_brush = SharedProperty::new(BorderBrush::from("transparent"));
-        let padding = SharedProperty::new(Padding::from((8.0, 0.0, 8.0, 0.0)));
-        let opacity = SharedProperty::new(Opacity::from(1.0));
+        let background = Property::new(Background::from(colors::LYNCH_COLOR));
+        let border_radius = Property::new(BorderRadius::from(2.0));
+        let border_thickness = Property::new(BorderThickness::from(0.0));
+        let border_brush = Property::new(BorderBrush::from("transparent"));
+        let padding = Property::new(Padding::from((8.0, 0.0, 8.0, 0.0)));
+        let opacity = Property::new(Opacity::from(1.0));
 
         TextBoxTemplate::new()
             .size(128.0, 32.0)
@@ -222,15 +222,15 @@ impl Widget for TextBox {
                                     .child(
                                         WaterMarkTextBlock::create()
                                             .vertical_alignment("Center")
-                                            .shared_foreground(foreground.clone())
-                                            .shared_text(text.clone())
-                                            .shared_font(font.clone())
-                                            .shared_font_size(font_size.clone())
-                                            .shared_water_mark(water_mark.clone())
-                                            .attach_shared_property(focused.clone())
+                                            .shared_foreground(foreground.share())
+                                            .shared_text(text.share())
+                                            .shared_font(font.share())
+                                            .shared_font_size(font_size.share())
+                                            .shared_water_mark(water_mark.share())
+                                            .attach_shared_property(focused.share())
                                             .selector(selector.clone().id("TextBoxTextBlock")),
                                     )
-                                    .shared_offset(offset.clone())
+                                    .shared_offset(offset.share())
                                     .scroll_viewer_mode(ScrollViewerMode::new(
                                         ScrollMode::None,
                                         ScrollMode::None,
@@ -241,12 +241,12 @@ impl Widget for TextBox {
                                 Cursor::create()
                                     .margin(0.0)
                                     .horizontal_alignment("Start")
-                                    .shared_text(text.clone())
-                                    .shared_font(font.clone())
-                                    .shared_font_size(font_size.clone())
-                                    .shared_text_selection(selection.clone())
-                                    .shared_offset(offset.clone())
-                                    .shared_focused(focused.clone())
+                                    .shared_text(text.share())
+                                    .shared_font(font.share())
+                                    .shared_font_size(font_size.share())
+                                    .shared_text_selection(selection.share())
+                                    .shared_offset(offset.share())
+                                    .shared_focused(focused.share())
                                     .selector(Selector::from("cursor").id("TextBoxCursor")),
                             )
                             // .event_handler(MouseEventHandler::default().on_mouse_down(Rc::new(
@@ -257,12 +257,12 @@ impl Widget for TextBox {
                             // ))),
                     )
                     .attach_property(selector.clone())
-                    .attach_shared_property(focused.clone())
-                    .shared_padding(padding.clone())
-                    .shared_background(background.clone())
-                    .shared_border_radius(border_radius.clone())
-                    .shared_border_thickness(border_thickness.clone())
-                    .shared_border_brush(border_brush.clone())
+                    .attach_shared_property(focused.share())
+                    .shared_padding(padding.share())
+                    .shared_background(background.share())
+                    .shared_border_radius(border_radius.share())
+                    .shared_border_thickness(border_thickness.share())
+                    .shared_border_brush(border_brush.share())
             )
             .shared_text(text)
             .shared_font(font)
