@@ -33,24 +33,23 @@ impl State for CursorState {
     }
 }
 
-/// The `Cursor` represents a text cursor used to mark text.
-///
-/// # Properties
-///
-/// * `text_selection` - Represents the current selection of the text used by the cursor.
-/// * `text` - Used to set the text of the cursor.
-///
-/// # Others
-///
-/// * `RectangleRenderObject` - Used to draw the widget.
-/// * `TextSelectionLayout` - Used to layout the widget.
-pub struct Cursor;
+widget!(
+    /// The `Cursor` represents a text cursor used to mark text.
+    Cursor
+    (
+        BackgroundProperty,
+        TextProperty,
+        TextSelectionProperty,
+        FontProperty,
+        FontSizeProperty,
+        OffsetProperty,
+        FocusedProperty
+    )
+);
 
 impl Widget for Cursor {
-    type Template = CursorTemplate;
-
-    fn create() -> Self::Template {
-        CursorTemplate::new()
+    fn create() -> Self {
+        Cursor::new()
             .width(1.0)
             .text("")
             .selector("cursor")
@@ -65,16 +64,3 @@ impl Widget for Cursor {
             .debug_name("Cursor")
     }
 }
-
-template!(
-    CursorTemplate,
-    [
-        BackgroundProperty,
-        TextProperty,
-        TextSelectionProperty,
-        FontProperty,
-        FontSizeProperty,
-        OffsetProperty,
-        FocusedProperty
-    ]
-);

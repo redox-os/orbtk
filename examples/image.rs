@@ -1,14 +1,13 @@
 use orbtk::*;
 
-struct MainView;
+widget!(MainView ());
 
 impl Widget for MainView {
-    type Template = Template;
-
-    fn create() -> Self::Template {
-        Template::new()
+    fn create() -> Self {
+        MainView::new()
             .debug_name("MainView")
-            .child(ImageWidget::create().image("res/orbtk-space.png"))
+            .child(ImageWidget::create()
+            .image("res/orbtk-space.png"))
     }
 }
 

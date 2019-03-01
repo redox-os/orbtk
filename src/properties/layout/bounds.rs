@@ -6,6 +6,8 @@ pub struct Bounds {
     value: Rect,
 }
 
+property!(Bounds, BoundsProperty, bounds, shared_bounds);
+
 impl Bounds {
     /// Create a new bounds object with the given values.
     pub fn new(x: f64, y: f64, width: f64, height: f64) -> Self {

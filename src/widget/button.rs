@@ -2,47 +2,55 @@ use crate::{
     event::ClickHandler,
     properties::*,
     styling::{colors, fonts},
-    widget::{Container, FontIconBlock, Property, Stack, Template, TextBlock, Widget},
+    widget::{Container, FontIconBlock, Property, Stack, Template, TextBlock, Widget },
 };
 
-/// The `Button` widget can be clicked by user. It's used to perform an action.
-///
-/// # Properties
-///
-/// * `text` - String used to display the text of the button.
-/// * `font_icon` - String used to display the font icon of the button.
-/// * `selector` - CSS selector with  element name `button`, used to request the theme of the widget.
-/// * `pressed` - Bool value represents the pressed state of the button.
-pub struct Button;
+widget!(
+    /// The `Button` widget can be clicked by user. It's used to perform an action.
+    Button
+    (
+        BackgroundProperty,
+        BorderRadiusProperty,
+        BorderThicknessProperty,
+        BorderBrushProperty,
+        TextProperty,
+        FontProperty,
+        FontSizeProperty,
+        FontIconProperty,
+        IconSizeProperty,
+        IconBrushProperty,
+        IconFontProperty,
+        ForegroundProperty,
+        PressedProperty,
+        PaddingProperty,
+        ClickHandler
+    )
+);
 
 impl Widget for Button {
-    type Template = ButtonTemplate;
-
-    fn create() -> Self::Template {
+    fn create() -> Self {
         // text properties
-        let text = Text::prop("");
-        let foreground = Foreground::prop(colors::LINK_WATER_COLOR);
-        let font =
-            Property::new(Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT)));
-        let font_size = Property::new(FontSize::from(fonts::FONT_SIZE_12));
+        let text: Property = Text::default().into();
+        let foreground: Property = Foreground::from(colors::LINK_WATER_COLOR).into();
+        let font: Property = Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT)).into();
+        let font_size: Property = FontSize::from(fonts::FONT_SIZE_12).into();
 
         // icon properties
-        let icon = Property::new(FontIcon::default());
-        let icon_brush = Property::new(IconBrush::from(colors::LINK_WATER_COLOR));
-        let icon_font = Property::new(IconFont::from(fonts::font_into_box(
-            fonts::MATERIAL_ICONS_REGULAR_FONT,
-        )));
-        let icon_size = Property::new(IconSize::from(fonts::ICON_FONT_SIZE_12));
+        let icon: Property = FontIcon::default().into();
+        let icon_brush: Property = IconBrush::from(colors::LINK_WATER_COLOR).into();
+        let icon_font: Property =
+            IconFont::from(fonts::font_into_box(fonts::MATERIAL_ICONS_REGULAR_FONT)).into();
+        let icon_size: Property = IconSize::from(fonts::ICON_FONT_SIZE_12).into();
 
         // container properties
-        let background = Property::new(Background::from(colors::LYNCH_COLOR));
-        let border_radius = Property::new(BorderRadius::from(2.0));
-        let border_thickness = Property::new(BorderThickness::from(0.0));
-        let border_brush = Property::new(BorderBrush::from("transparent"));
-        let padding = Property::new(Padding::from((8.0, 0.0, 8.0, 0.0)));
-        let opacity = Property::new(Opacity::from(1.0));
+        let background: Property = Background::from(colors::LYNCH_COLOR).into();
+        let border_radius: Property = BorderRadius::from(2.0).into();
+        let border_thickness: Property = BorderThickness::from(0.0).into();
+        let border_brush: Property = BorderBrush::from("transparent").into();
+        let padding: Property = Padding::from((8.0, 0.0, 8.0, 0.0)).into();
+        let _opacity: Property = Opacity::from(1.0).into();
 
-        ButtonTemplate::new()
+        Button::new()
             .height(32.0)
             .min_width(80.0)
             .pressed(false)
@@ -92,24 +100,3 @@ impl Widget for Button {
             .shared_padding(padding)
     }
 }
-
-template!(
-    ButtonTemplate,
-    [
-        BackgroundProperty,
-        BorderRadiusProperty,
-        BorderThicknessProperty,
-        BorderBrushProperty,
-        TextProperty,
-        FontProperty,
-        FontSizeProperty,
-        FontIconProperty,
-        IconSizeProperty,
-        IconBrushProperty,
-        IconFontProperty,
-        ForegroundProperty,
-        PressedProperty,
-        PaddingProperty,
-        ClickHandler
-    ]
-);

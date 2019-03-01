@@ -55,8 +55,7 @@ impl Property {
     }
 
     pub fn share(&self) -> Self {
-          Property {
-              
+          Property {         
             source_chain: self.source_chain.clone(),
             property: None,
             type_id: self.type_id,

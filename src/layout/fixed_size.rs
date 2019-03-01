@@ -16,7 +16,7 @@ use crate::{
         Image, Text, VerticalAlignment, Visibility, WaterMark,
     },
     structs::{DirtySize, Size},
-    theme::{Selector, Theme},
+    theme::Theme,
     widget::WidgetContainer,
 };
 

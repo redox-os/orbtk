@@ -7,25 +7,24 @@ use crate::{
     widget::{Container, FontIconBlock, Property, Stack, Template, TextBlock, Widget},
 };
 
-/// The `ToggleButton` widget can be clicked by user. It's used to perform an action.
-///
-/// # Properties
-///
-/// * `text` - String used to display the text of the button.
-/// * `font_icon` - String used to display the font icon of the button.
-/// * `selector` - CSS selector with  element name `button`, used to request the theme of the widget.
-/// * `pressed` - Bool value represents the pressed state of the button.
-pub struct ToggleButton;
+widget!(
+    /// The `ToggleButton` widget can be clicked by user. It's used to perform an action.
+    ToggleButton
+    (
+        TextProperty,
+        FontIconProperty,
+        PressedProperty,
+        SelectedProperty
+    )
+);
 
 impl Widget for ToggleButton {
-    type Template = ToggleButtonTemplate;
-
-    fn create() -> Self::Template {
+    fn create() -> Self {
         let text = Property::new(Text::default());
         let icon = Property::new(FontIcon::default());
         let selector = Property::new(Selector::from("togglebutton"));
 
-        ToggleButtonTemplate::new()
+        ToggleButton::new()
             .height(32.0)
             .min_width(80.0)
             .selected(false)
@@ -58,13 +57,3 @@ impl Widget for ToggleButton {
             .shared_selector(selector)
     }
 }
-
-template!(
-    ToggleButtonTemplate,
-    [
-        TextProperty,
-        FontIconProperty,
-        PressedProperty,
-        SelectedProperty
-    ]
-);

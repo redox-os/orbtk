@@ -7,25 +7,26 @@ use crate::{
     theme::Selector,
     widget::{Container, FontIconBlock, Property, Stack, Template, TextBlock, Widget},
 };
-/// The `Checkbox` widget can be switch its selected state. It contains a selection box and a text.
-///
-/// # Properties
-///
-/// * `text` - String used to display the text of the check box.
-/// * `font_icon` - String used to display the font icon of the check box.
-/// * `selector` - CSS selector with  element name `checkbox`, used to request the theme of the widget.
-/// * `selected` - Bool value represents the selected state of the widget.
-pub struct CheckBox;
+
+widget!(
+    /// The `Checkbox` widget can be switch its selected state. It contains a selection box and a text.
+    CheckBox
+    (
+        TextProperty,
+        FontIconProperty,
+        PressedProperty,
+        SelectedProperty
+    )
+);
+
 
 impl Widget for CheckBox {
-    type Template = CheckBoxTemplate;
-
-    fn create() -> Self::Template {
+    fn create() -> Self {
         let text = Property::new(Text::default());
         let icon = Property::new(FontIcon::from(material_font_icons::CHECK_FONT_ICON));
         let selector = Property::new(Selector::from("checkbox"));
 
-        CheckBoxTemplate::new()
+        CheckBox::new()
             .height(24.0)
             .selected(false)
             .debug_name("CheckBox")
@@ -57,13 +58,3 @@ impl Widget for CheckBox {
             .shared_selector(selector)
     }
 }
-
-template!(
-    CheckBoxTemplate,
-    [
-        TextProperty,
-        FontIconProperty,
-        PressedProperty,
-        SelectedProperty
-    ]
-);

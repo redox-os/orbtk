@@ -147,7 +147,7 @@ impl RenderObject for RectangleRenderObject {
     fn render(
         &self,
         canvas: &mut Canvas,
-        renderer: &mut dyn Renderer,
+        _renderer: &mut dyn Renderer,
         context: &mut Context<'_>,
         global_position: &Point,
     ) {

@@ -1,12 +1,10 @@
 use orbtk::*;
 
-struct MainView;
+widget!(MainView ());
 
 impl Widget for MainView {
-    type Template = Template;
-
-    fn create() -> Template {
-        Template::new()
+    fn create() -> Self {
+        MainView::new()
             .parent_type(ParentType::Single)
             .debug_name("MainView")
             .child(TextBlock::create().text("Wait for next merge"))

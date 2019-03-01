@@ -1,12 +1,10 @@
 use orbtk::*;
 
-struct MainView;
+widget!(MainView ());
 
 impl Widget for MainView {
-    type Template = Template;
-
-    fn create() -> Self::Template {
-        Template::new()
+    fn create() -> Self {
+        MainView::new()
             .child(
                 Grid::create()
                     .columns(
@@ -21,7 +19,7 @@ impl Widget for MainView {
                         Grid::create()
                             .selector("lynch")
                             .margin((10.0, 0.0, 0.0, 4.0))
-                            .attach_property(GridColumn(0))
+                            .attach(GridColumn(0))
                             .child(
                                 TextBlock::create()
                                     .text("(0,0)")
@@ -34,7 +32,7 @@ impl Widget for MainView {
                             .selector("bluebayoux")
                             .margin(10.0)
                             .constraint(Constraint::create().width(150.0).build())
-                            .attach_property(GridColumn(1))
+                            .attach(GridColumn(1))
                             .child(
                                 TextBlock::create()
                                     .text("(1,0)")
@@ -45,7 +43,7 @@ impl Widget for MainView {
                     .child(
                         Grid::create()
                             .selector("linkwater")
-                            .attach_property(GridColumn(2))
+                            .attach(GridColumn(2))
                             .child(
                                 TextBlock::create()
                                     .text("(2,0)")
@@ -57,9 +55,9 @@ impl Widget for MainView {
                     .child(
                         Grid::create()
                             .selector("goldendream")
-                            .attach_property(GridColumn(0))
-                            .attach_property(GridRow(1))
-                            .attach_property(ColumnSpan(3))
+                            .attach(GridColumn(0))
+                            .attach(GridRow(1))
+                            .attach(ColumnSpan(3))
                             .child(
                                 TextBlock::create()
                                     .text("(0,1) - ColumnSpan 3")

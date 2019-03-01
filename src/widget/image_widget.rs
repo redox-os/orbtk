@@ -5,28 +5,18 @@ use crate::{
     widget::{Template, Widget},
 };
 
-/// The `ImageWidget` widget is used to draw an image. It is not interactive.
-///
-/// # Properties
-///
-/// * `selector` - CSS selector with  element name `image`, used to request the theme of the image widget.
-///
-/// # Others
-///
-/// * `ImageSizeLayout` - Used to layout the widget.
-/// * `ImageRenderObject` - Used to draw the image of the widget.
-pub struct ImageWidget;
+widget!(
+    /// The `ImageWidget` widget is used to draw an image. It is not interactive.
+    ImageWidget
+    (ImageProperty)
+);
 
 impl Widget for ImageWidget {
-    type Template = ImageTemplate;
-
-    fn create() -> Self::Template {
-        ImageTemplate::new()
+    fn create() -> Self {
+        ImageWidget::new()
             .selector("imagewidget")
             .layout(FixedSizeLayout::new())
             .render_object(ImageRenderObject)
             .debug_name("ImageWidget")
     }
 }
-
-template!(ImageTemplate, [ImageProperty]);

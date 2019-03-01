@@ -74,8 +74,8 @@ impl<'a> WindowBuilder<'a> {
     }
 
     /// Used to set the `root` template of the window.
-    pub fn root(mut self, root: Template) -> Self {
-        self.root = Some(root);
+    pub fn root(mut self, root: impl Into<Template>) -> Self {
+        self.root = Some(root.into());
         self
     }
 
@@ -238,9 +238,9 @@ fn build_tree(
             let mut entity_builder = world.create_entity();
 
             // normal properties
-            for (_, value) in template.properties.drain() {
-                entity_builder = entity_builder.with_box(value);
-            }
+            // for (_, value) in template.properties.drain() {
+            //     entity_builder = entity_builder.with_box(value);
+            // }
 
             // shared property
             for (_, value) in template.shared_properties {

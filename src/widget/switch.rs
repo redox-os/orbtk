@@ -32,26 +32,18 @@ impl State for SwitchState {
     }
 }
 
-/// The `Switch` widget can be switch between `on` and `off`.
-///
-/// # Properties
-///
-/// * `selector` - CSS selector with  element name `checkbox`, used to request the theme of the widget.
-/// * `selected` - Bool value represents the selected state of the widget.
-///
-/// # Others
-///
-/// * `ParentType`- Single.
-pub struct Switch;
+widget!(
+    // The `Switch` widget can be switch between `on` and `off`.
+    Switch
+    ( PressedProperty, SelectedProperty )
+);
 
 impl Widget for Switch {
-    type Template = SwitchTemplate;
+    fn create() -> Self {
+        let selector: Property = Selector::from("switch").into();
+        let selected: Property = Selected::from(false).into();
 
-    fn create() -> Self::Template {
-        let selector = Property::new(Selector::from("switch"));
-        let selected = Property::new(Selected::from(false));
-
-        SwitchTemplate::new()
+        Switch::new()
             .width(56.0)
             .height(32.0)
             .state(Rc::new(SwitchState))
@@ -66,7 +58,7 @@ impl Widget for Switch {
                                 .size(24.0, 24.0)
                                 .vertical_alignment("Center")
                                 .horizontal_alignment("Start")
-                                .attach_shared_property(selected.share())
+                                .attach(selected.share())
                                 .selector(Selector::from("switchtoggle").id("SwitchSwitchToggle")),
                         ),
                     ),
@@ -75,5 +67,3 @@ impl Widget for Switch {
             .shared_selected(selected)
     }
 }
-
-template!(SwitchTemplate, [PressedProperty, SelectedProperty]);

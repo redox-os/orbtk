@@ -54,24 +54,21 @@ impl State for WaterMarkTextBlockState {
     }
 }
 
-/// The `WaterMarkTextBlock` widget is used to display a placeholder watermark if the `Text` is empty.
-/// Derives from `TextBlock`.
-///
-/// # Properties
-///
-/// * `watermark` - String used to display a placeholder text if `Text` string is empty.
-/// * `selector` - CSS selector with  element name `watermark` used to request the theme of the WaterMarkTextBlock.
-///
-/// # Others
-///
-/// * `WaterMarkTextBlockState` - Handles the inner state of the widget.
-pub struct WaterMarkTextBlock;
+widget!(
+    /// The `WaterMarkTextBlock` widget is used to display a placeholder watermark if the `Text` is empty.
+    WaterMarkTextBlock
+    (
+        WaterMarkProperty,
+        ForegroundProperty,
+        TextProperty,
+        FontSizeProperty,
+        FontProperty
+    )
+);
 
 impl Widget for WaterMarkTextBlock {
-    type Template = WaterMarkTextBlockTemplate;
-
-    fn create() -> Self::Template {
-        WaterMarkTextBlockTemplate::new()
+    fn create() -> Self {
+        WaterMarkTextBlock::new()
             .layout(FixedSizeLayout::new())
             .render_object(TextRenderObject)
             .water_mark("Placeholder")
@@ -85,13 +82,4 @@ impl Widget for WaterMarkTextBlock {
     }
 }
 
-template!(
-    WaterMarkTextBlockTemplate,
-    [
-        WaterMarkProperty,
-        ForegroundProperty,
-        TextProperty,
-        FontSizeProperty,
-        FontProperty
-    ]
-);
+

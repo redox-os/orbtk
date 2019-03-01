@@ -1,13 +1,5 @@
 use std::slice::{Iter, IterMut};
 
-/// Used to define the column position of a widget on the `Grid`.
-#[derive(Default, Copy, Clone, PartialEq)]
-pub struct GridColumn(pub usize);
-
-/// Used to define the column span of a widget on the `Grid`.
-#[derive(Default, Copy, Clone, PartialEq)]
-pub struct ColumnSpan(pub usize);
-
 /// Used to build a column, specifying additional details.
 #[derive(Default)]
 pub struct ColumnBuilder {

@@ -19,7 +19,7 @@ impl Into<Box<dyn RenderObject>> for ImageRenderObject {
 impl RenderObject for ImageRenderObject {
     fn render(
         &self,
-        canvas: &mut Canvas,
+        _canvas: &mut Canvas,
         renderer: &mut dyn Renderer,
         context: &mut Context<'_>,
         global_position: &Point,

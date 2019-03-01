@@ -42,39 +42,26 @@ pub struct Template {
     pub render_object: Option<Box<dyn RenderObject>>,
     pub layout: Box<dyn Layout>,
     pub constraint: Constraint,
-    pub properties: HashMap<TypeId, ComponentBox>,
     pub shared_properties: HashMap<TypeId, Property>,
     pub debug_name: String,
 }
 
 impl Default for Template {
     fn default() -> Self {
-        let mut properties = HashMap::new();
-        properties.insert(
-            TypeId::of::<Bounds>(),
-            ComponentBox::new::<Bounds>(Bounds::default()),
-        );
-        properties.insert(
-            TypeId::of::<Constraint>(),
-            ComponentBox::new::<Constraint>(Constraint::default()),
-        );
-        properties.insert(
+        let mut shared_properties = HashMap::new();
+        shared_properties.insert(TypeId::of::<Bounds>(), Bounds::default().into());
+        shared_properties.insert(TypeId::of::<Constraint>(), Constraint::default().into());
+        shared_properties.insert(
             TypeId::of::<VerticalAlignment>(),
-            ComponentBox::new::<VerticalAlignment>(VerticalAlignment::default()),
+            VerticalAlignment::default().into(),
         );
-        properties.insert(
+        shared_properties.insert(
             TypeId::of::<HorizontalAlignment>(),
-            ComponentBox::new::<HorizontalAlignment>(HorizontalAlignment::default()),
+            HorizontalAlignment::default().into(),
         );
-        properties.insert(
-            TypeId::of::<Visibility>(),
-            ComponentBox::new::<Visibility>(Visibility::default()),
-        );
+        shared_properties.insert(TypeId::of::<Visibility>(), Visibility::default().into());
 
-        properties.insert(
-            TypeId::of::<Point>(),
-            ComponentBox::new::<Point>(Point::new(0.0, 0.0)),
-        );
+        shared_properties.insert(TypeId::of::<Point>(), Point::new(0.0, 0.0).into());
 
         Template {
             children: vec![],
@@ -84,8 +71,7 @@ impl Default for Template {
             render_object: None,
             layout: Box::new(GridLayout::default()),
             constraint: Constraint::new(),
-            properties,
-            shared_properties: HashMap::new(),
+            shared_properties,
             debug_name: String::default(),
         }
     }
@@ -212,35 +198,19 @@ impl Template {
         self
     }
 
-    /// Used to register a `property' for the template. Only one property per type can be registered.
-    /// If a shared property of the same type exists the value of the shared property will be set to
-    /// the given property's value.
-    pub fn property<C: Component>(mut self, property: C) -> Self {
-        let type_id = TypeId::of::<C>();
-
-        if !self.shared_properties.contains_key(&type_id) {
-            self.properties
-                .insert(TypeId::of::<C>(), ComponentBox::new::<C>(property));
-        } else {
-            self.shared_properties
-                .get_mut(&type_id)
-                .unwrap()
-                .update_property(property);
-        }
-
-        self
-    }
-
     /// Used to register a shared property for the template. Only one shared property per type can be registered.
     /// If a property of the same type exists, it will be replaced by the given shared property.
-    pub fn shared_property(mut self, property: Property) -> Self {
-        if self.properties.contains_key(&property.type_id) {
-            self.properties.remove(&property.type_id);
+    pub fn property(mut self, property: impl Into<Property>) -> Self {
+        let property = property.into();
+
+        let type_id = property.type_id;
+
+        if !self.shared_properties.contains_key(&type_id) {
+            self.shared_properties.insert(type_id, property);
+            return self;
         }
 
-        if self.shared_properties.contains_key(&property.type_id) {
-            let type_id = property.type_id;
-
+        if property.property.is_none() {
             self.shared_properties.get_mut(&type_id).unwrap().property = None;
             self.shared_properties
                 .get_mut(&type_id)
@@ -252,7 +222,7 @@ impl Template {
                         .clone(),
                 );
         } else {
-            self.shared_properties.insert(property.type_id, property);
+            self.shared_properties.get_mut(&type_id).unwrap().property = property.property;
         }
 
         self
@@ -268,7 +238,7 @@ impl Template {
         self,
         vertical_alignment: V,
     ) -> Self {
-        self.shared_property(Property::new(vertical_alignment.into()))
+        self.property(vertical_alignment.into())
     }
 }
 
@@ -365,12 +335,7 @@ pub trait TemplateBase: Sized + From<Template> + Into<Template> {
     }
 
     /// Attaches a property.
-    fn attach_property<C: Component>(self, property: C) -> Self {
+    fn attach(self, property: impl Into<Property>) -> Self {
         self.template(|template| template.property(property))
-    }
-
-    /// Attaches a shared property.
-    fn attach_shared_property(self, property: Property) -> Self {
-        self.template(|template| template.shared_property(property))
     }
 }

@@ -4,10 +4,8 @@ use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
     application::Tree,
-    properties::{Constraint, HorizontalAlignment, Margin, Padding, VerticalAlignment, Visibility},
     structs::DirtySize,
     theme::Theme,
-    widget::get_property,
 };
 
 pub use self::fixed_size::FixedSizeLayout;

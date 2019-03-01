@@ -6,24 +6,19 @@ use crate::{
     widget::{Template, Widget},
 };
 
-/// The `TextBlock` widget is used to draw text. It is not interactive.
-///
-/// # Properties
-///
-/// * `text` - String used to display the text of the text block.
-/// * `foreground` - A brush that describes the foreground color.
-///
-/// # Others
-///
-/// * `FixedSizeLayout` - Used to layout the widget.
-/// * `TextRenderObject` - Used to draw the text of the widget.
-pub struct TextBlock;
+widget!(
+    /// The `TextBlock` widget is used to draw text. It is not interactive.
+    TextBlock(
+        ForegroundProperty,
+        TextProperty,
+        FontSizeProperty,
+        FontProperty
+    )
+);
 
 impl Widget for TextBlock {
-    type Template = TextBlockTemplate;
-
-    fn create() -> Self::Template {
-        TextBlockTemplate::new()
+    fn create() -> Self {
+        TextBlock::new()
             .layout(FixedSizeLayout::new())
             .render_object(TextRenderObject)
             .foreground(colors::LINK_WATER_COLOR)
@@ -34,12 +29,16 @@ impl Widget for TextBlock {
     }
 }
 
-template!(
-    TextBlockTemplate,
-    [
-        ForegroundProperty,
-        TextProperty,
-        FontSizeProperty,
-        FontProperty
-    ]
-);
+// pub use abc::*;
+
+// mod abc {
+//     use crate::properties::Text;
+
+//     wip_widget!(
+//         TestBox {
+//             properties {
+//                 text: Text
+//             }
+//         }
+//     );
+// }

@@ -16,10 +16,8 @@ mod widget_container;
 
 /// The `Widget` trait is used to define a new widget.
 pub trait Widget {
-    type Template;
-
-    /// Returns the template of the implemented widget.
-    fn create() -> Self::Template;
+    /// Returns a new widget.
+    fn create() -> Self;
 }
 
 /// Adds the given `pseudo_class` to the css selector of the given `widget`.

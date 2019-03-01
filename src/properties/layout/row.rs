@@ -1,13 +1,5 @@
 use std::slice::{Iter, IterMut};
 
-/// Used to define the row position of a widget on the `Grid`.
-#[derive(Default, Copy, Clone, PartialEq)]
-pub struct GridRow(pub usize);
-
-/// Used to define the row span of a widget on the `Grid`.
-#[derive(Default, Copy, Clone, PartialEq)]
-pub struct RowSpan(pub usize);
-
 /// Used to build a row, specifying additional details.
 #[derive(Default)]
 pub struct RowBuilder {

@@ -20,7 +20,7 @@ impl Into<Box<dyn RenderObject>> for TextRenderObject {
 impl RenderObject for TextRenderObject {
     fn render(
         &self,
-        canvas: &mut Canvas,
+        _canvas: &mut Canvas,
         renderer: &mut dyn Renderer,
         context: &mut Context<'_>,
         global_position: &Point,

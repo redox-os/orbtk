@@ -25,26 +25,19 @@ fn create_header(text: &str, grid: usize, column: usize) -> Template {
     TextBlock::create()
         .text(text)
         .selector(Selector::from("textblock").class("h1"))
-        .attach_property(GridColumn(grid))
-        .attach_property(GridRow(column))
+        .attach(GridColumn(grid))
+        .attach(GridRow(column))
         .into()
 }
 
-struct MainView;
+widget!(MainView ());
 
 impl Widget for MainView {
-    type Template = Template;
-
-    fn create() -> Self::Template {
+    fn create() -> Self {
         let state = Rc::new(MainViewState::default());
         let button_count_text = Property::new(Text::from("Button count: 0"));
 
-        let grid = Grid::create();
-
-        let grid_twp = Grid::create();
-        grid_twp.child(grid);
-
-        Template::new()
+        MainView::new()
             .state(state.clone())
             .child(
                 Grid::create()
@@ -74,8 +67,8 @@ impl Widget for MainView {
                             .text("Button")
                             .margin((0.0, 8.0, 0.0, 0.0))
                             .font_icon(material_font_icons::CHECK_FONT_ICON)
-                            .attach_property(GridColumn(0))
-                            .attach_property(GridRow(1))
+                            .attach(GridColumn(0))
+                            .attach(GridRow(1))
                             .on_click(move |_| {
                                 state.increment();
                                 true
@@ -87,28 +80,28 @@ impl Widget for MainView {
                             .selector(Selector::from("button").class("primary"))
                             .margin((0.0, 8.0, 0.0, 0.0))
                             .font_icon(material_font_icons::CHECK_FONT_ICON)
-                            .attach_property(GridColumn(0))
-                            .attach_property(GridRow(2)),
+                            .attach(GridColumn(0))
+                            .attach(GridRow(2)),
                     )
                     .child(
                         ToggleButton::create()
                             .text("ToggleButton")
                             .margin((0.0, 8.0, 0.0, 0.0))
-                            .attach_property(GridColumn(0))
-                            .attach_property(GridRow(3)),
+                            .attach(GridColumn(0))
+                            .attach(GridRow(3)),
                     )
                     .child(
                         CheckBox::create()
                             .text("CheckBox")
                             .margin((0.0, 8.0, 0.0, 0.0))
-                            .attach_property(GridColumn(0))
-                            .attach_property(GridRow(4)),
+                            .attach(GridColumn(0))
+                            .attach(GridRow(4)),
                     )
                     .child(
                         Switch::create()
                             .margin((0.0, 8.0, 0.0, 0.0))
-                            .attach_property(GridColumn(0))
-                            .attach_property(GridRow(5)),
+                            .attach(GridColumn(0))
+                            .attach(GridRow(5)),
                     )
                     // Column 2
                     .child(create_header("Text", 2, 0))
@@ -117,18 +110,18 @@ impl Widget for MainView {
                             .selector(Selector::new().class("body"))
                             .shared_text(button_count_text.share())
                             .margin((0.0, 8.0, 0.0, 0.0))
-                            .attach_property(GridColumn(2))
-                            .attach_property(GridRow(1)),
+                            .attach(GridColumn(2))
+                            .attach(GridRow(1)),
                     )
                     .child(
                         TextBox::create()
                             .water_mark("TextBox...")
                             .margin((0.0, 8.0, 0.0, 0.0))
-                            .attach_property(GridColumn(2))
-                            .attach_property(GridRow(2)),
+                            .attach(GridColumn(2))
+                            .attach(GridRow(2)),
                     ),
             )
-            .shared_property(button_count_text)
+            .attach(button_count_text)
             .debug_name("MainView")
     }
 }

@@ -696,9 +696,3 @@ pub fn parse(s: &str) -> Vec<Rule> {
 
     rules.into_iter().filter_map(|rule| rule.ok()).collect()
 }
-
-const fn hex(data: u32) -> Color {
-    Color {
-        data: 0xFF_000_000 | data,
-    }
-}

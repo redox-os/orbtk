@@ -10,7 +10,7 @@ use crate::{
     styling::{colors, fonts},
     theme::Selector,
     widget::{
-        Container, Context, Cursor, Grid, ScrollViewer, Property, State, Template,
+        Container, Context, Cursor, Grid, Property, ScrollViewer, State, Template,
         WaterMarkTextBlock, Widget,
     },
 };
@@ -166,50 +166,54 @@ impl State for TextBoxState {
     }
 }
 
-/// The `TextBox` represents a single line text input widget.
-///
-/// # Properties
-///
-/// * `text` - String used to display the text of the text box.
-/// * `water_mark` - String used to display a placeholder text if `Text` string is empty.
-/// * `selector` - CSS selector with  element name `textbox`, used to request the theme of the widget.
-/// * `text_selection` - Represents the current selection of the text used by the cursor.
-/// * `focused` - Defines if the widget is focused and handles the current text input.
-///
-/// # Others
-///
-/// * `TextBoxState` - Handles the inner state of the widget.
-pub struct TextBox;
+widget!(
+    /// The `TextBox` represents a single line text input widget.
+    TextBox
+    (
+        BackgroundProperty,
+        BorderRadiusProperty,
+        BorderThicknessProperty,
+        BorderBrushProperty,
+        FontProperty,
+        FontSizeProperty,
+        TextProperty,
+        FocusedProperty,
+        WaterMarkProperty,
+        TextSelectionProperty,
+        PaddingProperty,
+        KeyDownHandler
+    )
+);
 
 impl Widget for TextBox {
-    type Template = TextBoxTemplate;
-
-    fn create() -> Self::Template {
+    fn create() -> Self {
         // text properties
-        let text = Property::new(Text::default());
-        let foreground = Property::new(Foreground::from(colors::LINK_WATER_COLOR));
-        let font =
-            Property::new(Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT)));
-        let font_size = Property::new(FontSize::from(fonts::FONT_SIZE_12));
+        let text: Property = Text::default().into();
+        let foreground: Property = Foreground::from(colors::LINK_WATER_COLOR).into();
+        let font: Property = Font::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT)).into();
+        let font_size: Property = FontSize::from(fonts::FONT_SIZE_12).into();
+        let water_mark: Property = WaterMark::default().into();
 
-        let water_mark = Property::new(WaterMark::default());
+        // state properties
         let selector = Selector::from("textbox");
-        let selection = Property::new(TextSelection::default());
-        let offset = Property::new(Offset::default());
-        let focused = Property::new(Focused(false));
-        let padding = Property::new(Padding::from(4.0));
+        let selection: Property = TextSelection::default().into();
+        let offset: Property = Offset::default().into();
+        let focused: Property = Focused(false).into();
+        let padding: Property = Padding::from(4.0).into();
+
+        // container properties
+        let background: Property = Background::from(colors::LYNCH_COLOR).into();
+        let border_radius: Property = BorderRadius::from(2.0).into();
+        let border_thickness: Property = BorderThickness::from(0.0).into();
+        let border_brush: Property = BorderBrush::from("transparent").into();
+        let _padding: Property = Padding::from((8.0, 0.0, 8.0, 0.0)).into();
+        let _opacity: Property = Opacity::from(1.0).into();
+
+        // states
         let state = Rc::new(TextBoxState::default());
         let _click_state = state.clone();
 
-        // container properties
-        let background = Property::new(Background::from(colors::LYNCH_COLOR));
-        let border_radius = Property::new(BorderRadius::from(2.0));
-        let border_thickness = Property::new(BorderThickness::from(0.0));
-        let border_brush = Property::new(BorderBrush::from("transparent"));
-        let padding = Property::new(Padding::from((8.0, 0.0, 8.0, 0.0)));
-        let opacity = Property::new(Opacity::from(1.0));
-
-        TextBoxTemplate::new()
+        TextBox::new()
             .size(128.0, 32.0)
             .state(state.clone())
             .debug_name("TextBox")
@@ -227,7 +231,7 @@ impl Widget for TextBox {
                                             .shared_font(font.share())
                                             .shared_font_size(font_size.share())
                                             .shared_water_mark(water_mark.share())
-                                            .attach_shared_property(focused.share())
+                                            .attach(focused.share())
                                             .selector(selector.clone().id("TextBoxTextBlock")),
                                     )
                                     .shared_offset(offset.share())
@@ -256,13 +260,13 @@ impl Widget for TextBox {
                             //     },
                             // ))),
                     )
-                    .attach_property(selector.clone())
-                    .attach_shared_property(focused.share())
+                    .attach(selector.clone())
+                    .attach(focused.share())
                     .shared_padding(padding.share())
                     .shared_background(background.share())
                     .shared_border_radius(border_radius.share())
                     .shared_border_thickness(border_thickness.share())
-                    .shared_border_brush(border_brush.share())
+                    .shared_border_brush(border_brush.share()),
             )
             .shared_text(text)
             .shared_font(font)
@@ -270,7 +274,7 @@ impl Widget for TextBox {
             .selector(selector)
             .shared_water_mark(water_mark)
             .shared_text_selection(selection)
-            .attach_shared_property(offset)
+            .attach(offset)
             .shared_focused(focused)
             .shared_padding(padding)
             .shared_background(background)
@@ -280,21 +284,3 @@ impl Widget for TextBox {
             .on_key_down(move |key: Key| -> bool { state.update_text(key) })
     }
 }
-
-template!(
-    TextBoxTemplate,
-    [
-        BackgroundProperty,
-        BorderRadiusProperty,
-        BorderThicknessProperty,
-        BorderBrushProperty,
-        FontProperty,
-        FontSizeProperty,
-        TextProperty,
-        FocusedProperty,
-        WaterMarkProperty,
-        TextSelectionProperty,
-        PaddingProperty,
-        KeyDownHandler
-    ]
-);
