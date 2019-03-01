@@ -80,7 +80,7 @@ impl Widget for Button {
                             ),
                     )
                     .shared_padding(padding.share())
-                    .shared_background(background.share())
+                    .background_prop(background.share())
                     .shared_border_radius(border_radius.share())
                     .shared_border_thickness(border_thickness.share())
                     .shared_border_brush(border_brush.share()),
@@ -93,7 +93,7 @@ impl Widget for Button {
             .shared_icon_size(icon_size)
             .shared_icon_font(icon_font)
             .shared_foreground(foreground)
-            .shared_background(background)
+            .background_prop(background)
             .shared_border_radius(border_radius)
             .shared_border_thickness(border_thickness)
             .shared_border_brush(border_brush)

@@ -30,7 +30,7 @@ fn create_header(text: &str, grid: usize, column: usize) -> Template {
         .into()
 }
 
-widget!(MainView ());
+widget!(MainView);
 
 impl Widget for MainView {
     fn create() -> Self {

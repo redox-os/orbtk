@@ -4,11 +4,14 @@ use crate::structs::{Brush, Color};
 #[derive(Clone)]
 pub struct Background(pub Brush);
 
-property!(
-    Background,
-    BackgroundProperty,
-    background,
-    shared_background
+wip_property!(
+    /// Used to set the background of a widget.
+    BackgroundProperty: Background(
+        /// Sets the background.
+        background, 
+        /// Sets the background property.
+        background_prop
+    )
 );
 
 impl From<Background> for Color {

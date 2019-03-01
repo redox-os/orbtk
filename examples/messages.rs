@@ -19,7 +19,7 @@ mod sender {
         }
     }
 
-    widget!(SenderView ());
+    widget!(SenderView);
 
     impl Widget for SenderView {
         fn create() -> Self {
@@ -58,7 +58,7 @@ mod receiver {
         }
     }
 
-    widget!(ReceiverView ());
+    widget!(ReceiverView);
 
     impl Widget for ReceiverView {
         fn create() -> Self {

@@ -1,6 +1,6 @@
 use orbtk::*;
 
-widget!(MainView ());
+widget!(MainView);
 
 impl Widget for MainView {
     fn create() -> Self {

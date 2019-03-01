@@ -28,17 +28,3 @@ impl Widget for TextBlock {
             .debug_name("TextBlock")
     }
 }
-
-// pub use abc::*;
-
-// mod abc {
-//     use crate::properties::Text;
-
-//     wip_widget!(
-//         TestBox {
-//             properties {
-//                 text: Text
-//             }
-//         }
-//     );
-// }
