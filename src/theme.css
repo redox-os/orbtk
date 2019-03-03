@@ -68,6 +68,10 @@ text-box :focus {
     border-color: #5294E2;
 }
 
+combo-box :focus {
+    border-color: #5294E2;
+}
+
 combo-box-toggle :active {
     background: #5294E2;
 }

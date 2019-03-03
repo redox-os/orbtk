@@ -315,7 +315,7 @@ impl Widget for ComboBox {
         &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut Renderer, focused: bool, theme: &Theme) {
         let rect = self.rect.get();
         let activated = self.activated.get();
         let offset = self.offset.get();
@@ -340,7 +340,7 @@ impl Widget for ComboBox {
                 if point.y >= rect.y
                     && point.y + rect.height as i32 <= flyout_rect.y + flyout_rect.height as i32
                 {
-                    entry.draw(renderer, _focused, theme);
+                    entry.draw(renderer, focused, theme);
                 }
             }
         }
@@ -350,6 +350,10 @@ impl Widget for ComboBox {
 
         if activated {
             selector = selector.with_pseudo_class("active");
+        }
+
+        if focused {
+            selector = selector.with_pseudo_class("focus");
         }
 
         draw_box(renderer, rect, theme, &selector);
@@ -377,12 +381,12 @@ impl Widget for ComboBox {
         if activated {
             if let Some(ref icon) = *self.toggle_icon_active.borrow() {
                 icon.position(toggle_rect.x, toggle_rect.y);
-                icon.draw(renderer, _focused, theme)
+                icon.draw(renderer, focused, theme)
             }
         } else {
             if let Some(ref icon) = *self.toggle_icon.borrow() {
                 icon.position(toggle_rect.x, toggle_rect.y);
-                icon.draw(renderer, _focused, theme)
+                icon.draw(renderer, focused, theme)
             }
         }
 
