@@ -76,10 +76,10 @@ pub trait Widget: Any {
         _focused
     }
 
-    /// Handle the incoming events by bubbling from child to parent. 
+    /// Handle the incoming events by bubbling from child to parent.
     /// Must have overwritten to create a custom bubbling event handling.
-    fn event(&self, _event: Event, _focused: bool, _redraw: &mut bool) -> bool {
-        _focused
+    fn event(&self, _event: Event, _focused: bool, _redraw: &mut bool, _caught: &mut bool) -> bool {
+        false
     }
 
     /// Return the name of the widget.

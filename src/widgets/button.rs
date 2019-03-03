@@ -145,7 +145,7 @@ impl Widget for Button {
         self.selector().set(selector);
     }
 
-    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
+    fn event(&self, event: Event, focused: bool, redraw: &mut bool, caught: &mut bool) -> bool {
         match event {
             Event::Mouse {
                 point, left_button, ..
@@ -168,6 +168,8 @@ impl Widget for Button {
                             *redraw = true;
                         }
                     }
+
+                    *caught = true;
                 } else {
                     if self.hover.check_set(false) {
                         *redraw = true;

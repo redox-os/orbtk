@@ -120,7 +120,7 @@ impl Widget for TextWidget {
         }
     }
 
-    fn event(&self, _event: Event, _focused: bool, _redraw: &mut bool) -> bool {
+    fn event(&self, _event: Event, _focused: bool, _redraw: &mut bool, _caught: &mut bool) -> bool {
         _focused
     }
 

@@ -121,11 +121,10 @@ impl Widget for Entry {
             point.x += 8;
         }
     }
-    fn event(&self, event: Event, _focused: bool, redraw: &mut bool) -> bool {
+
+    fn event(&self, event: Event, _focused: bool, redraw: &mut bool, caught: &mut bool) -> bool {
         match event {
-            Event::Mouse {
-                point, left_button, ..
-            } => {
+            Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
 
                 let rect = self.rect.get();
@@ -141,9 +140,12 @@ impl Widget for Entry {
                     } else {
                         if self.pressed.check_set(false) {
                             click = true;
+                            self.hover.set(false);
                             *redraw = true;
                         }
                     }
+
+                    *caught = true;
                 } else {
                     if self.hover.check_set(false) {
                         *redraw = true;
@@ -163,7 +165,7 @@ impl Widget for Entry {
             _ => (),
         }
 
-        _focused
+        false
     }
 
     fn name(&self) -> &str {
@@ -399,40 +401,45 @@ impl Widget for ComboBox {
         }
     }
 
-    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
-        match event {
-            Event::Mouse {
-                point, left_button, ..
-            } => {
-                let mut ignore_event = false;
-                if self.activated.get() {
-                    for entry in self.entries.borrow().iter() {
-                        if entry.event(event, focused, redraw) {
-                            ignore_event = true;
-
-                            self.change_selection(entry.index);
-                            if self.activated.check_set(false) {
-                                *redraw = true;
-                            }
-                        }
+    fn event(&self, event: Event, mut focused: bool, redraw: &mut bool, caught: &mut bool) -> bool {
+        let mut ignore_event = false;
+        if self.activated.get() {
+            for entry in self.entries.borrow().iter() {
+                if entry.event(event, focused, redraw, caught) {
+                    ignore_event = true;
+                    self.change_selection(entry.index);
+                    if self.activated.check_set(false) {
+                        *redraw = true;
                     }
                 }
 
+                if *caught {
+                    break;
+                }
+            }
+        }
+
+        match event {
+            Event::Mouse { point, left_button, .. } => {
                 let rect = self.rect.get();
                 if rect.contains(point) {
                     if left_button {
                         self.pressed.set(!self.pressed.get());
 
                         if self.activated.check_set(true) {
+                            focused = true;
                             *redraw = true;
                         }
                     } else {
                         if !self.pressed.get() {
                             if self.activated.check_set(false) {
+                                focused = true;
                                 *redraw = true;
                             }
                         }
                     }
+
+                    *caught = true;
                 } else {
                     if !ignore_event {
                         if left_button {
@@ -447,7 +454,7 @@ impl Widget for ComboBox {
                     }
                 }
             }
-            Event::KeyPressed(key_event) => match key_event.scancode {
+            Event::KeyPressed(key_event) if focused => match key_event.scancode {
                 orbclient::K_UP => match self.selected.get() {
                     None => {
                         self.change_selection(0);

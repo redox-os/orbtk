@@ -1,6 +1,6 @@
 [package]
 name = "orbtk"
-version = "0.2.27"
+version = "0.2.28"
 authors = ["Jeremy Soller <jackpot51@gmail.com>"]
 description = "The Orbital Widget Toolkit"
 documentation = "https://docs.rs/orbtk"

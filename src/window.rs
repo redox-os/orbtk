@@ -46,7 +46,7 @@ impl<'a> Renderer for WindowRenderer<'a> {
     fn sync(&mut self) -> bool {
         self.inner.sync()
     }
-    
+
     fn mode(&self) -> &Cell<Mode> {
         &self.inner.mode()
     }
@@ -225,30 +225,20 @@ impl Window {
                 _ => (),
             }
 
-            for widget in self.widgets.borrow().iter() {
-                self.redraw = self.drain_event(event, self.redraw, widget);
+            let mut caught = false;
+            for widget in self.widgets.borrow().iter().rev() {
+                if widget.event(event, self.focus_manager.focused(&widget), &mut self.redraw, &mut caught) {
+                    if !self.focus_manager.focused(&widget) {
+                        self.focus_manager.request_focus(&widget);
+                        self.redraw = true;
+                    }
+                }
+
+                if caught {
+                    break;
+                }
             }
         }
-    }
-
-    fn drain_event(&self, event: Event, redraw: bool, widget: &Arc<Widget>) -> bool {
-        let mut redraw = redraw;
-        //let mut children_redraw = false;
-
-        if widget.event(event, self.focus_manager.focused(&widget), &mut redraw) {
-            if !self.focus_manager.focused(&widget) {
-                self.focus_manager.request_focus(&widget);
-                redraw = true;
-            }
-        }
-
-        redraw
-
-        // for child in &*widget.children().borrow_mut() {
-        //     children_redraw = self.drain_event(event, redraw, child);
-        // }
-
-        // redraw || children_redraw
     }
 
     pub fn drain_orbital_events(&mut self) {

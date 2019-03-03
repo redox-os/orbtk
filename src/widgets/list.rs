@@ -267,7 +267,7 @@ impl Widget for List {
         &self.local_position
     }
 
-    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
+    fn event(&self, event: Event, focused: bool, redraw: &mut bool, caught: &mut bool) -> bool {
         match event {
             Event::Mouse {
                 point, left_button, ..
@@ -286,6 +286,8 @@ impl Widget for List {
                             *redraw = true;
                         }
                     }
+
+                    *caught = true;
                 } else {
                     if !left_button {
                         if self.pressed.check_set(false) {

@@ -193,13 +193,17 @@ impl Widget for Menu {
         }
     }
 
-    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
+    fn event(&self, event: Event, focused: bool, redraw: &mut bool, caught: &mut bool) -> bool {
         let mut ignore_event = false;
         if self.activated.get() {
             for entry in self.entries.borrow().iter() {
-                if entry.event(event, focused, redraw) {
+                if entry.event(event, focused, redraw, caught) {
                     ignore_event = true;
                     self.pressed.set(true);
+                }
+
+                if *caught {
+                    break;
                 }
             }
         }
@@ -225,6 +229,8 @@ impl Widget for Menu {
                             }
                         }
                     }
+
+                    *caught = true;
                 } else {
                     if !ignore_event {
                         if left_button {
@@ -367,7 +373,7 @@ impl Widget for Action {
         }
     }
 
-    fn event(&self, event: Event, _focused: bool, redraw: &mut bool) -> bool {
+    fn event(&self, event: Event, _focused: bool, redraw: &mut bool, caught: &mut bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
@@ -389,6 +395,8 @@ impl Widget for Action {
                             *redraw = true;
                         }
                     }
+
+                    *caught = true;
                 } else {
                     if self.hover.check_set(false) {
                         *redraw = true;
@@ -477,13 +485,14 @@ impl Widget for Separator {
         renderer.rect(rect.x, line_y, rect.width, 1, theme.color("color", selector));
     }
 
-    fn event(&self, event: Event, _focused: bool, _redraw: &mut bool) -> bool {
+    fn event(&self, event: Event, _focused: bool, _redraw: &mut bool, caught: &mut bool) -> bool {
         let mut ignore_event = false;
         match event {
             Event::Mouse { point, .. } => {
                 let rect = self.rect.get();
                 if rect.contains(point) {
                     ignore_event = true;
+                    *caught = true;
                 }
             }
             _ => (),

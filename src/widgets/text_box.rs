@@ -274,7 +274,7 @@ impl Widget for TextBox {
         }
     }
 
-    fn event(&self, event: Event, mut focused: bool, redraw: &mut bool) -> bool {
+    fn event(&self, event: Event, mut focused: bool, redraw: &mut bool, caught: &mut bool) -> bool {
         // If the event wasn't handled by the custom handler.
         if let Some(event) = self.handle_event(event, &mut focused, redraw) {
             let mut new_text_i = None;
@@ -296,6 +296,8 @@ impl Widget for TextBox {
                                 *redraw = true;
                             }
                         }
+
+                        *caught = true;
                     } else {
                         if !left_button {
                             if self.pressed.check_set(false) {

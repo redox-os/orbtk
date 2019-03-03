@@ -129,7 +129,7 @@ impl Widget for Label {
         &self.margin
     }
 
-    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
+    fn event(&self, event: Event, focused: bool, redraw: &mut bool, caught: &mut bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {
                 let mut click = false;
@@ -146,6 +146,8 @@ impl Widget for Label {
                             *redraw = true;
                         }
                     }
+
+                    *caught = true;
                 } else {
                     if !left_button {
                         if self.pressed.check_set(false) {

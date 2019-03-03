@@ -96,14 +96,17 @@ impl Widget for Image {
         renderer.image(rect.x, rect.y, image.width(), image.height(), image.data());
     }
 
-    fn event(&self, event: Event, focused: bool, redraw: &mut bool) -> bool {
+    fn event(&self, event: Event, focused: bool, redraw: &mut bool, caught: &mut bool) -> bool {
         match event {
             Event::Mouse { point, left_button, .. } => {
                 let rect = self.rect.get();
-                if rect.contains(point) && left_button {
-                    let click_point: Point = point - rect.point();
-                    self.emit_click(click_point);
-                    *redraw = true;
+                if rect.contains(point) {
+                    if left_button {
+                        let click_point: Point = point - rect.point();
+                        self.emit_click(click_point);
+                        *redraw = true;
+                    }
+                    *caught = true;
                 }
             }
             _ => (),
@@ -111,7 +114,7 @@ impl Widget for Image {
 
         focused
     }
-    
+
     fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
         &self.children
     }
