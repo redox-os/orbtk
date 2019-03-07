@@ -2,7 +2,7 @@
 #[derive(Default, Clone)]
 pub struct FontIcon(pub String);
 
-property!(FontIcon, FontIconProperty, font_icon, shared_font_icon);
+property!(FontIcon, FontIconProperty, font_icon, font_icon_prop);
 
 impl From<&str> for FontIcon {
     fn from(s: &str) -> FontIcon {

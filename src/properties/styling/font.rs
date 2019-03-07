@@ -6,7 +6,7 @@ use crate::styling::fonts;
 #[derive(Clone)]
 pub struct Font(pub OrbFont);
 
-property!(Font, FontProperty, font, shared_font);
+property!(Font, FontProperty, font, font_prop);
 
 impl Default for Font {
     fn default() -> Self {

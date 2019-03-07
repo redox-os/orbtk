@@ -8,7 +8,7 @@ property!(
     Foreground,
     ForegroundProperty,
     foreground,
-    shared_foreground
+    foreground_prop
 );
 
 impl From<Foreground> for Color {

@@ -6,7 +6,7 @@ pub struct Padding {
     value: Thickness,
 }
 
-property!(Padding, PaddingProperty, padding, shared_padding);
+property!(Padding, PaddingProperty, padding, padding_prop);
 
 impl Spacer for Padding {
     fn left(&self) -> f64 {

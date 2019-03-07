@@ -42,18 +42,18 @@ impl Widget for ToggleButton {
                             .child(
                                 FontIconBlock::create()
                                     .margin((0.0, 0.0, 2.0, 0.0))
-                                    .shared_font_icon(icon.share())
+                                    .font_icon_prop(icon.share())
                                     .shared_selector(selector.share()),
                             )
                             .child(
                                 TextBlock::create()
-                                    .shared_text(text.share())
+                                    .text_prop(text.share())
                                     .shared_selector(selector.share()),
                             ),
                     ),
             )
-            .shared_text(text)
-            .shared_font_icon(icon)
+            .text_prop(text)
+            .font_icon_prop(icon)
             .shared_selector(selector)
     }
 }

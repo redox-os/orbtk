@@ -2,7 +2,7 @@
 #[derive(Default, Clone)]
 pub struct Text(pub String);
 
-property!(Text, TextProperty, text, shared_text);
+property!(Text, TextProperty, text, text_prop);
 
 impl From<&str> for Text {
     fn from(s: &str) -> Text {

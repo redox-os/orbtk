@@ -8,7 +8,7 @@ property!(
     BorderBrush,
     BorderBrushProperty,
     border_brush,
-    shared_border_brush
+    border_brush_prop
 );
 
 impl From<BorderBrush> for Color {

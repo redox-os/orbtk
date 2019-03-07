@@ -41,7 +41,7 @@ impl Widget for CheckBox {
                                 FontIconBlock::create()
                                     .vertical_alignment("Center")
                                     .horizontal_alignment("Center")
-                                    .shared_font_icon(icon.share())
+                                    .font_icon_prop(icon.share())
                                     .shared_selector(selector.share()),
                             ),
                     )
@@ -49,12 +49,12 @@ impl Widget for CheckBox {
                         TextBlock::create()
                             .vertical_alignment("Center")
                             .margin((8.0, 0.0, 0.0, 0.0))
-                            .shared_text(text.share())
+                            .text_prop(text.share())
                             .shared_selector(selector.share()),
                     ),
             )
-            .shared_font_icon(icon)
-            .shared_text(text)
+            .font_icon_prop(icon)
+            .text_prop(text)
             .shared_selector(selector)
     }
 }

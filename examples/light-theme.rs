@@ -107,7 +107,7 @@ impl Widget for MainView {
                     .child(create_header("Text", 2, 0))
                     .child(
                         TextBlock::create()
-                            .shared_text(button_count_text.share())
+                            .text_prop(button_count_text.share())
                             .margin((0.0, 8.0, 0.0, 0.0))
                             .attach(GridColumn(2))
                             .attach(GridRow(1)),

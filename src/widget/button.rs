@@ -48,7 +48,7 @@ impl Widget for Button {
         let border_thickness: Property = BorderThickness::from(0.0).into();
         let border_brush: Property = BorderBrush::from("transparent").into();
         let padding: Property = Padding::from((8.0, 0.0, 8.0, 0.0)).into();
-        let _opacity: Property = Opacity::from(1.0).into();
+        let opacity: Property = Opacity::from(1.0).into();
 
         Button::new()
             .height(32.0)
@@ -66,37 +66,37 @@ impl Widget for Button {
                             .child(
                                 FontIconBlock::create()
                                     .margin((0.0, 0.0, 2.0, 0.0))
-                                    .shared_font_icon(icon.share())
-                                    .shared_icon_brush(icon_brush.share())
-                                    .shared_icon_size(icon_size.share())
-                                    .shared_icon_font(icon_font.share()),
+                                    .font_icon_prop(icon.share())
+                                    .icon_brush_prop(icon_brush.share())
+                                    .icon_size_prop(icon_size.share())
+                                    .icon_font_prop(icon_font.share()),
                             )
                             .child(
                                 TextBlock::create()
-                                    .shared_foreground(foreground.share())
-                                    .shared_text(text.share())
-                                    .shared_font(font.share())
-                                    .shared_font_size(font_size.share()),
+                                    .foreground_prop(foreground.share())
+                                    .text_prop(text.share())
+                                    .font_prop(font.share())
+                                    .font_size_prop(font_size.share()),
                             ),
                     )
-                    .shared_padding(padding.share())
+                    .padding_prop(padding.share())
                     .background_prop(background.share())
-                    .shared_border_radius(border_radius.share())
-                    .shared_border_thickness(border_thickness.share())
-                    .shared_border_brush(border_brush.share()),
+                    .border_radius_prop(border_radius.share())
+                    .border_thickness_prop(border_thickness.share())
+                    .border_brush_prop(border_brush.share()),
             )
-            .shared_text(text)
-            .shared_font(font)
-            .shared_font_size(font_size)
-            .shared_font_icon(icon)
-            .shared_icon_brush(icon_brush)
-            .shared_icon_size(icon_size)
-            .shared_icon_font(icon_font)
-            .shared_foreground(foreground)
+            .text_prop(text)
+            .font_prop(font)
+            .font_size_prop(font_size)
+            .font_icon_prop(icon)
+            .icon_brush_prop(icon_brush)
+            .icon_size_prop(icon_size)
+            .icon_font_prop(icon_font)
+            .foreground_prop(foreground)
             .background_prop(background)
-            .shared_border_radius(border_radius)
-            .shared_border_thickness(border_thickness)
-            .shared_border_brush(border_brush)
-            .shared_padding(padding)
+            .border_radius_prop(border_radius)
+            .border_thickness_prop(border_thickness)
+            .border_brush_prop(border_brush)
+            .padding_prop(opacity)
     }
 }

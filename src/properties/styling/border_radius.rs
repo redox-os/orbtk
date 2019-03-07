@@ -6,7 +6,7 @@ property!(
     BorderRadius,
     BorderRadiusProperty,
     border_radius,
-    shared_border_radius
+    border_radius_prop
 );
 
 impl From<f64> for BorderRadius {

@@ -108,7 +108,7 @@ impl Widget for MainView {
                     .child(
                         TextBlock::create()
                             .selector(Selector::new().class("body"))
-                            .shared_text(button_count_text.share())
+                            .text_prop(button_count_text.share())
                             .margin((0.0, 8.0, 0.0, 0.0))
                             .attach(GridColumn(2))
                             .attach(GridRow(1)),
@@ -127,6 +127,14 @@ impl Widget for MainView {
 }
 
 fn main() {
+    let mut world = World::from_container(Tree::default());
+    let mut context = WipBuildContext::new(&mut world);
+    let _wip_button = WipButton::create(&mut context)
+        .background()
+        .value("green")
+        .foreground()
+        .value("blue");
+
     let mut application = Application::default();
 
     application

@@ -2,7 +2,7 @@
 #[derive(Default, Clone, Copy)]
 pub struct FontSize(pub f64);
 
-property!(FontSize, FontSizeProperty, font_size, shared_font_size);
+property!(FontSize, FontSizeProperty, font_size, font_size_prop);
 
 impl From<f64> for FontSize {
     fn from(t: f64) -> Self {

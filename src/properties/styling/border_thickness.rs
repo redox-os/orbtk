@@ -8,7 +8,7 @@ property!(
     BorderThickness,
     BorderThicknessProperty,
     border_thickness,
-    shared_border_thickness
+    border_thickness_prop
 );
 
 impl Spacer for BorderThickness {
