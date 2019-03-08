@@ -2,7 +2,7 @@
 
 pub use self::font_icon::{FontIcon, FontIconProperty, PrimaryFontIcon, SecondaryFontIcon};
 pub use self::image::*;
-pub use self::text::{Text, TextProperty};
+pub use self::text::*;
 pub use self::text_selection::*;
 pub use self::water_mark::*;
 

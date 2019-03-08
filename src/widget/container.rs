@@ -1,8 +1,10 @@
+use dces::prelude::Entity;
+
 use crate::{
     layout::PaddingLayout,
     properties::*,
     render_object::RectangleRenderObject,
-    widget::{Template, Widget},
+    widget::{Template, Widget, WipTemplateBuilder, WipBuildContext, WipTemplate},
 };
 
 widget!(
@@ -32,3 +34,15 @@ impl Widget for Container {
     }
 }
 
+
+wip_widget!(///This is a container
+WipContainer {
+    /// Sets the background
+    background: WipBackground
+});
+
+impl<'a> WipTemplateBuilder<'a> for WipContainer {
+    fn template(id: Entity, context: &mut WipBuildContext<'a>) -> WipTemplate {
+        WipTemplate::new(id)
+    }
+}

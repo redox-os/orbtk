@@ -1,9 +1,11 @@
+use dces::prelude::Entity;
+
 use crate::{
     layout::FixedSizeLayout,
-    properties::{FontProperty, FontSizeProperty, ForegroundProperty, TextProperty},
+    properties::{FontProperty, FontSizeProperty, ForegroundProperty, TextProperty, WipForeground, WipText},
     render_object::TextRenderObject,
     styling::{colors, fonts},
-    widget::{Template, Widget},
+    widget::{Template, Widget, WipTemplateBuilder, WipBuildContext, WipTemplate },
 };
 
 widget!(
@@ -26,5 +28,20 @@ impl Widget for TextBlock {
             .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
             .text("TextBlock")
             .debug_name("TextBlock")
+    }
+}
+
+wip_widget!(///This is a text block
+WipTextBlock {
+    /// Sets the foreground
+    foreground: WipForeground,
+
+    /// Sets the text
+    text: WipText
+});
+
+impl<'a> WipTemplateBuilder<'a> for WipTextBlock {
+    fn template(id: Entity, context: &mut WipBuildContext<'a>) -> WipTemplate {
+        WipTemplate::new(id)
     }
 }

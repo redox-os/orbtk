@@ -84,3 +84,8 @@ where
         .map(|r| r.clone())
         .unwrap_or_default()
 }
+
+pub enum PropertySource<P: Component> {
+    Source(Entity),
+    Value(P),
+}

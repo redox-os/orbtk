@@ -129,11 +129,15 @@ impl Widget for MainView {
 fn main() {
     let mut world = World::from_container(Tree::default());
     let mut context = WipBuildContext::new(&mut world);
-    let _wip_button = WipButton::create(&mut context)
-        .background()
-        .value("green")
-        .foreground()
-        .value("blue");
+    let _wip_button = WipButton::create()
+        .background("green")
+        .foreground("blue")
+        .text("Click me")
+        .on_click(|_| {
+            println!("Clicked");
+            false
+        })
+        .build(&mut context);
 
     let mut application = Application::default();
 

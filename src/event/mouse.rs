@@ -4,7 +4,7 @@ use crate::{
     event::{Event, EventBox, EventHandler},
     properties::Bounds,
     structs::{Point, Position, Size},
-    widget::WidgetContainer,
+    widget::{WidgetContainer, WipWidget},
 };
 
 pub fn check_mouse_condition(position: Point, widget: &WidgetContainer<'_>) -> bool {
@@ -91,6 +91,15 @@ pub trait ClickHandler: Sized + From<Template> + Into<Template> {
             template.event_handler(ClickEventHandler {
                 handler: Rc::new(handler),
             })
+        })
+    }
+}
+
+pub trait WipClickHandler<'a>: Sized + WipWidget<'a> {
+    /// Inserts a handler.
+    fn on_click<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
+        self.insert_handler(ClickEventHandler {
+            handler: Rc::new(handler)
         })
     }
 }

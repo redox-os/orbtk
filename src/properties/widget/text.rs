@@ -1,3 +1,5 @@
+use crate::widget::PropertySource;
+
 /// The `Text` struct represents a string used for text drawing.
 #[derive(Default, Clone)]
 pub struct Text(pub String);
@@ -17,3 +19,17 @@ impl From<String> for Text {
 }
 
 // todo tests!!!
+
+wip_property!(WipText(String));
+
+impl From<&str> for WipText {
+    fn from(s: &str) -> WipText {
+        WipText(s.into())
+    }
+}
+
+impl Into<PropertySource<WipText>> for &str {
+    fn into(self) -> PropertySource<WipText> {
+        PropertySource::Value(WipText::from(self))
+    }
+}

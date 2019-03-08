@@ -1,8 +1,10 @@
+use dces::prelude::Entity;
+
 use crate::{
-    event::ClickHandler,
+    event::{ClickHandler, WipClickHandler},
     properties::*,
     styling::{colors, fonts},
-    widget::{Container, FontIconBlock, Property, Stack, Template, TextBlock, Widget },
+    widget::{Container, FontIconBlock, Property, Stack, Template, TextBlock, Widget, WipTextBlock, WipContainer, WipTemplateBuilder, WipBuildContext, WipTemplate },
 };
 
 widget!(
@@ -98,5 +100,32 @@ impl Widget for Button {
             .border_thickness_prop(border_thickness)
             .border_brush_prop(border_brush)
             .padding_prop(opacity)
+    }
+}
+
+wip_widget!(
+    ///This is a button
+    WipButton: WipClickHandler {
+        /// Sets the background
+        background: WipBackground,
+
+        /// Sets the foreground
+        foreground: WipForeground,
+
+        /// Sets the text
+        text: WipText
+    }
+);
+
+impl<'a> WipTemplateBuilder<'a> for WipButton {
+    fn template(id: Entity, context: &mut WipBuildContext<'a>) -> WipTemplate {
+        WipTemplate::new(id).child(
+            WipContainer::create().background(id).build(context).child(
+                WipTextBlock::create()
+                    .foreground(id)
+                    .text(id)
+                    .build(context),
+            ),
+        )
     }
 }

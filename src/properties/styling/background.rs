@@ -1,4 +1,7 @@
-use crate::structs::{Brush, Color};
+use crate::{
+    widget::PropertySource,
+    structs::{Brush, Color},
+};
 
 /// Used to draw the background brush of a widget.
 #[derive(Clone)]
@@ -36,3 +39,17 @@ impl From<&str> for Background {
 //         Property::new(background)
 //     }
 // }
+
+wip_property!(WipBackground(Brush));
+
+impl From<&str> for WipBackground {
+    fn from(s: &str) -> WipBackground {
+        WipBackground(s.into())
+    }
+}
+
+impl Into<PropertySource<WipBackground>> for &str {
+    fn into(self) -> PropertySource<WipBackground> {
+        PropertySource::Value(WipBackground::from(self))
+    }
+}
