@@ -136,7 +136,6 @@ impl<'a> WindowBuilder<'a> {
         let mut world = World::from_container(Tree::default());
 
         let mut context = WipBuildContext::new(
-            window,
             &mut world,
             render_objects.clone(),
             layouts.clone(),

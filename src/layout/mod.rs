@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc, any::Any };
 
 use dces::prelude::{Entity, EntityComponentManager};
 
@@ -23,7 +23,7 @@ mod stack;
 mod text_selection;
 
 /// A layout is used to dynamic order the children of a widget.
-pub trait Layout {
+pub trait Layout: Any {
     // Measure all children before the arrangement.
     fn measure(
         &self,

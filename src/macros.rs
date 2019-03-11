@@ -142,7 +142,7 @@ macro_rules! wip_property {
 
 /// Used to define a widget, with properties and event handlers.
 macro_rules! wip_widget {
-    ( $(#[$widget_doc:meta])* $widget:ident $(: $( $handler:ident ),*)* { $($(#[$prop_doc:meta])* $property:ident: $property_type:tt ),* } ) => {
+    ( $(#[$widget_doc:meta])* $widget:ident $(<$state:ident>)* $(: $( $handler:ident ),*)* { $($(#[$prop_doc:meta])* $property:ident: $property_type:tt ),* } ) => {
         use std::{ any::TypeId, rc::Rc, collections::HashMap};
 
         use dces::prelude::{Component, ComponentBox, SharedComponentBox };
@@ -211,6 +211,12 @@ macro_rules! wip_widget {
                 self
             }
 
+            $(
+                fn state(self) -> Option<Rc<State>> {
+                    Rc::new($state::new())
+                }
+            )*
+
             fn build(self, context: &mut WipBuildContext) -> Entity {
                 let entity = context.create_entity();
 
@@ -232,13 +238,13 @@ macro_rules! wip_widget {
                         }
                     }
                 )*
+                
 
                 for child in self.children {
                     context.append_child(entity, child);
                 }
 
                 entity
-                // $widget::template(context.create_entity(), context)
             }
         }
     };

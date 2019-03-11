@@ -8,7 +8,7 @@ use crate::theme::Selector;
 
 use crate::event::EventHandler;
 
-use crate::{Layout, RenderObject};
+use crate::{Layout, PaddingLayout, RenderObject};
 
 pub use self::context::Context;
 pub use self::message::{MessageBox, StringMessage};
@@ -80,11 +80,85 @@ pub trait WipWidget: WipTemplateBuilder {
     /// Inerts a new event handler.
     fn insert_handler(self, handler: impl Into<Rc<dyn EventHandler>>) -> Self;
 
+    fn render_object(self) -> Option<Box<dyn RenderObject>> {
+        None
+    }
+
+    fn layout(self) -> Box<dyn Layout> {
+        Box::new(PaddingLayout::new())
+    }
+
+    fn state(self) -> Option<Rc<State>> {
+        None
+    }
+
     fn child(self, child: Entity) -> Self;
 }
 
+use std::any::TypeId;
+use std::collections::HashMap;
+
+#[derive(Default)]
+pub struct LayoutStorage {
+    layouts: HashMap<TypeId, Box<dyn Layout>>,
+    map: HashMap<Entity, TypeId>,
+}
+
+impl LayoutStorage {
+    pub fn new() -> Self {
+        LayoutStorage::default()
+    }
+
+    pub fn register_layout<L: Layout + Default>(&mut self, widget: Entity) {
+        let type_id = TypeId::of::<L>();
+
+        if !self.layouts.contains_key(&type_id) {
+            self.layouts.insert(type_id, Box::new(L::default()));
+        }
+
+        self.map.insert(widget, type_id);
+    }
+
+    pub fn layout(&self, widget: Entity) -> Option<&Box<Layout>> {
+        if let Some(type_id) = self.map.get(&widget) {
+            return self.layouts.get(type_id);
+        }
+
+        None
+    }
+}
+
+#[derive(Default)]
+pub struct RenderObjectStorage {
+    render_objects: HashMap<TypeId, Box<dyn RenderObject>>,
+    map: HashMap<Entity, TypeId>,
+}
+
+impl RenderObjectStorage {
+    pub fn new() -> Self {
+        RenderObjectStorage::default()
+    }
+
+    pub fn register_render_object<R: RenderObject + Default>(&mut self, widget: Entity) {
+        let type_id = TypeId::of::<R>();
+
+        if !self.render_objects.contains_key(&type_id) {
+            self.render_objects.insert(type_id, Box::new(R::default()));
+        }
+
+        self.map.insert(widget, type_id);
+    }
+
+    pub fn render_object(&self, widget: Entity) -> Option<&Box<RenderObject>> {
+        if let Some(type_id) = self.map.get(&widget) {
+            return self.render_objects.get(type_id);
+        }
+
+        None
+    }
+}
+
 pub struct WipBuildContext<'a> {
-    root: Entity,
     world: &'a mut World<Tree>,
     render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
@@ -94,14 +168,19 @@ pub struct WipBuildContext<'a> {
 
 impl<'a> WipBuildContext<'a> {
     pub fn new(
-        root: Entity,
         world: &'a mut World<Tree>,
         render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
         layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
         states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     ) -> Self {
-        WipBuildContext { root, world, render_objects, layouts, handlers, states }
+        WipBuildContext {
+            world,
+            render_objects,
+            layouts,
+            handlers,
+            states,
+        }
     }
 
     pub fn create_entity(&mut self) -> Entity {
@@ -109,25 +188,28 @@ impl<'a> WipBuildContext<'a> {
     }
 
     pub fn append_child(&mut self, parent: Entity, child: Entity) {
-        self.world.entity_container().append_child(parent, child).unwrap();
+        self.world
+            .entity_container()
+            .append_child(parent, child)
+            .unwrap();
     }
 
-    pub fn register_property<P: Component>(&mut self, entity: Entity, property: P) {
+    pub fn register_property<P: Component>(&mut self, widget: Entity, property: P) {
         self.world
             .entity_component_manager()
-            .register_component(entity, property);
+            .register_component(widget, property);
     }
 
-    pub fn register_property_box(&mut self, entity: Entity, property: ComponentBox) {
+    pub fn register_property_box(&mut self, widget: Entity, property: ComponentBox) {
         self.world
             .entity_component_manager()
-            .register_component_box(entity, property);
+            .register_component_box(widget, property);
     }
 
-    pub fn register_property_shared_box(&mut self, entity: Entity, property: SharedComponentBox) {
+    pub fn register_property_shared_box(&mut self, widget: Entity, property: SharedComponentBox) {
         self.world
             .entity_component_manager()
-            .register_shared_component_box(entity, property);
+            .register_shared_component_box(widget, property);
     }
 
     pub fn register_shared_property<P: Component>(&mut self, target: Entity, source: Entity) {
@@ -135,4 +217,20 @@ impl<'a> WipBuildContext<'a> {
             .entity_component_manager()
             .register_shared_component::<P>(target, source);
     }
+
+    pub fn register_state(&self, widget: Entity, state: Rc<State>) {
+        self.states.borrow_mut().insert(widget, state);
+    }
+
+    pub fn register_render_object(&self, widget: Entity, render_object: Box<dyn RenderObject>) {
+        self.render_objects
+            .borrow_mut()
+            .insert(widget, render_object);
+    }
+
+    pub fn register_layout(&self, widget: Entity, layout: Box<dyn Layout>) {
+        self.layouts.borrow_mut().insert(widget, layout);
+    }
 }
+
+// todo: improvement use only one layout and one render object of the same type.

@@ -1,5 +1,7 @@
 //! This module contains all render objects used in OrbTk. Render objects are used to define how to draw parts of a widget.
 
+use std::any::Any;
+
 use orbgl_api::Canvas;
 
 use crate::backend::Renderer;
@@ -16,7 +18,7 @@ mod image;
 mod rectangle;
 mod text;
 
-pub trait RenderObject {
+pub trait RenderObject: Any {
     fn render(
         &self,
         canvas: &mut Canvas,
