@@ -4,13 +4,15 @@ use crate::{
     event::{ClickHandler, WipClickHandler},
     properties::*,
     styling::{colors, fonts},
-    widget::{Container, FontIconBlock, Property, Stack, Template, TextBlock, Widget, WipTextBlock, WipContainer, WipTemplateBuilder, WipBuildContext, WipTemplate },
+    widget::{
+        Container, FontIconBlock, Property, Stack, Template, TextBlock, Widget, WipBuildContext,
+        WipContainer, WipTemplate, WipTemplateBuilder, WipTextBlock,
+    },
 };
 
 widget!(
     /// The `Button` widget can be clicked by user. It's used to perform an action.
-    Button
-    (
+    Button(
         BackgroundProperty,
         BorderRadiusProperty,
         BorderThicknessProperty,
@@ -117,15 +119,18 @@ wip_widget!(
     }
 );
 
-impl<'a> WipTemplateBuilder<'a> for WipButton {
-    fn template(id: Entity, context: &mut WipBuildContext<'a>) -> WipTemplate {
-        WipTemplate::new(id).child(
-            WipContainer::create().background(id).build(context).child(
-                WipTextBlock::create()
-                    .foreground(id)
-                    .text(id)
-                    .build(context),
-            ),
-        )
+impl WipTemplateBuilder for WipButton {
+    fn template(self, id: Entity, context: &mut WipBuildContext) {
+        self.child(
+            WipContainer::create()
+                .background(id)
+                .child(
+                    WipTextBlock::create()
+                        .foreground(id)
+                        .text(id)
+                        .build(context),
+                )
+                .build(context),
+        );
     }
 }

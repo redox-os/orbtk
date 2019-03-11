@@ -18,7 +18,7 @@ use crate::{
         EventSystem, InitSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem,
     },
     theme::Theme,
-    widget::{PropertyResult, State, Template},
+    widget::{PropertyResult, State, Template, WipBuildContext, WipTemplateBuilder, WipWidget},
     Global,
 };
 
@@ -79,6 +79,10 @@ impl<'a> WindowBuilder<'a> {
         self
     }
 
+    // pub fn wip_root(mut self, root: WipTemplateBuilder) -> Self {
+    //     self
+    // }
+
     /// Sets whether the window is resizable or not.
     pub fn resizable(mut self, resizable: bool) -> Self {
         self.resizable = resizable;
@@ -86,10 +90,133 @@ impl<'a> WindowBuilder<'a> {
     }
 
     /// Used to set the `debug` flag of the window.
-    /// If the flag is set to `ture` debug informations will be printed to the console.
+    /// If the flag is set to `true` debug information will be printed to the console.
     pub fn debug_flag(mut self, debug: bool) -> Self {
         self.debug_flag = debug;
         self
+    }
+
+    /// Creates the window with the given properties and builds its widget tree.
+    pub fn wip_build<W>(self, root: W)
+    where
+        W: WipWidget,
+    {
+        let (mut runner, backend) =
+            target_backend(&self.title, self.bounds, self.resizable, self.theme);
+        let mut world = World::from_container(Tree::default());
+        let render_objects = Rc::new(RefCell::new(BTreeMap::new()));
+        let layouts = Rc::new(RefCell::new(BTreeMap::new()));
+        let handlers = Rc::new(RefCell::new(BTreeMap::new()));
+        let states = Rc::new(RefCell::new(BTreeMap::new()));
+        let update = Rc::new(Cell::new(true));
+        let running = Rc::new(Cell::new(true));
+        let debug_flag = Rc::new(Cell::new(self.debug_flag));
+
+        if debug_flag.get() {
+            println!("------ Start build tree ------\n");
+        }
+
+        // register window as entity with global properties
+        let window = world
+            .create_entity()
+            .with(Global::default())
+            .with(Bounds::new(
+                0.0,
+                0.0,
+                self.bounds.width(),
+                self.bounds.height(),
+            ))
+            .with(Constraint::default())
+            .build();
+
+        if debug_flag.get() {
+            println!("Window (id = {}, children_len = 1)", window,);
+        }
+
+        let mut world = World::from_container(Tree::default());
+
+        let mut context = WipBuildContext::new(
+            window,
+            &mut world,
+            render_objects.clone(),
+            layouts.clone(),
+            handlers.clone(),
+            states.clone(),
+        );
+        
+        // Register root widget as child of window
+        let root = root.build(&mut context);
+        world.entity_container().append_child(window, root).unwrap();
+
+        world.register_init_system(InitSystem {
+            backend: backend.clone(),
+        });
+
+        world
+            .create_system(EventSystem {
+                backend: backend.clone(),
+                handlers: handlers.clone(),
+                update: update.clone(),
+                running: running.clone(),
+            })
+            .with_priority(0)
+            .build();
+
+        world
+            .create_system(StateSystem {
+                backend: backend.clone(),
+                states: states.clone(),
+                update: update.clone(),
+                running: running.clone(),
+            })
+            .with_priority(1)
+            .build();
+
+        world
+            .create_system(LayoutSystem {
+                backend: backend.clone(),
+                layouts: layouts.clone(),
+                update: update.clone(),
+                debug_flag: debug_flag.clone(),
+                running: running.clone(),
+            })
+            .with_priority(2)
+            .build();
+
+        world
+            .create_system(PostLayoutStateSystem {
+                backend: backend.clone(),
+                states: states.clone(),
+                update: update.clone(),
+                running: running.clone(),
+            })
+            .with_priority(3)
+            .build();
+
+        world
+            .create_system(RenderSystem {
+                backend: backend.clone(),
+                render_objects: render_objects.clone(),
+                update: update.clone(),
+                debug_flag: debug_flag.clone(),
+                running: running.clone(),
+            })
+            .with_priority(4)
+            .build();
+
+        runner.world(world);
+
+        self.application.windows.push(Window {
+            backend_runner: runner,
+            render_objects,
+            layouts,
+            handlers,
+            states,
+            update,
+            running,
+            resizable: self.resizable,
+            debug_flag,
+        })
     }
 
     /// Creates the window with the given properties and builds its widget tree.

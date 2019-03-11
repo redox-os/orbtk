@@ -127,17 +127,17 @@ impl Widget for MainView {
 }
 
 fn main() {
-    let mut world = World::from_container(Tree::default());
-    let mut context = WipBuildContext::new(&mut world);
-    let _wip_button = WipButton::create()
-        .background("green")
-        .foreground("blue")
-        .text("Click me")
-        .on_click(|_| {
-            println!("Clicked");
-            false
-        })
-        .build(&mut context);
+    // let mut world = World::from_container(Tree::default());
+    // let mut context = WipBuildContext::new(&mut world);
+    // let _wip_button = WipButton::create()
+    //     .background("green")
+    //     .foreground("blue")
+    //     .text("Click me")
+    //     .on_click(|_| {
+    //         println!("Clicked");
+    //         false
+    //     })
+    //     .build(&mut context);
 
     let mut application = Application::default();
 
@@ -145,8 +145,8 @@ fn main() {
         .create_window()
         .bounds((100.0, 100.0, 420.0, 730.0))
         .title("OrbTk - widgets example")
-        .root(MainView::create())
+        // .root(MainView::create())
         .debug_flag(false)
-        .build();
+        .wip_build(WipButton::create());
     application.run();
 }

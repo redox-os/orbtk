@@ -1,7 +1,6 @@
-use std::rc::Rc;
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
-use dces::prelude::{World, Entity, Component, ComponentBox, SharedComponentBox};
-
+use dces::prelude::{Component, ComponentBox, Entity, SharedComponentBox, World};
 
 use crate::application::Tree;
 
@@ -9,9 +8,13 @@ use crate::theme::Selector;
 
 use crate::event::EventHandler;
 
+use crate::{Layout, RenderObject};
+
 pub use self::context::Context;
 pub use self::message::{MessageBox, StringMessage};
-pub use self::property::{get_property, PropertyResult, Property, WipProperty, WipPropertyBuilder, PropertySource};
+pub use self::property::{
+    get_property, Property, PropertyResult, PropertySource, WipProperty, WipPropertyBuilder,
+};
 pub use self::state::State;
 pub use self::template::{Template, TemplateBase};
 pub use self::widget_container::WidgetContainer;
@@ -58,42 +61,55 @@ impl WipTemplate {
             children: vec![],
         }
     }
-
-    pub fn child(mut self, template: WipTemplate) -> Self {
-        self.children.push(template);
-        self
-    }
 }
 
 /// The `TemplateBuilder` trait provides the method for the widget template creation.
-pub trait WipTemplateBuilder<'a> {
+pub trait WipTemplateBuilder: Sized {
     /// Creates the template of the widget and returns it.
-    fn template(id: Entity, context: &mut WipBuildContext<'a>) -> WipTemplate;
+    fn template(self, _id: Entity, _context: &mut WipBuildContext) {}
 }
 
 /// The `Widget` trait is used to define a new widget.
-pub trait WipWidget<'a>: Sized + WipTemplateBuilder<'a> {
+pub trait WipWidget: WipTemplateBuilder {
     /// Creates a new widget.
     fn create() -> Self;
 
     /// Builds the widget and returns the template of the widget.
-    fn build(self, context: &mut WipBuildContext<'a>) -> WipTemplate;
+    fn build(self, context: &mut WipBuildContext) -> Entity;
 
     /// Inerts a new event handler.
-    fn insert_handler(mut self, handler: impl Into<Rc<dyn EventHandler>>) -> Self;
+    fn insert_handler(self, handler: impl Into<Rc<dyn EventHandler>>) -> Self;
+
+    fn child(self, child: Entity) -> Self;
 }
 
 pub struct WipBuildContext<'a> {
+    root: Entity,
     world: &'a mut World<Tree>,
+    render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+    layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+    handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
+    states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
 }
 
 impl<'a> WipBuildContext<'a> {
-    pub fn new(world: &'a mut World<Tree>) -> Self {
-        WipBuildContext { world }
+    pub fn new(
+        root: Entity,
+        world: &'a mut World<Tree>,
+        render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+        layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+        handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
+        states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    ) -> Self {
+        WipBuildContext { root, world, render_objects, layouts, handlers, states }
     }
 
     pub fn create_entity(&mut self) -> Entity {
         self.world.create_entity().build()
+    }
+
+    pub fn append_child(&mut self, parent: Entity, child: Entity) {
+        self.world.entity_container().append_child(parent, child).unwrap();
     }
 
     pub fn register_property<P: Component>(&mut self, entity: Entity, property: P) {
@@ -108,7 +124,7 @@ impl<'a> WipBuildContext<'a> {
             .register_component_box(entity, property);
     }
 
-      pub fn register_property_shared_box(&mut self, entity: Entity, property: SharedComponentBox) {
+    pub fn register_property_shared_box(&mut self, entity: Entity, property: SharedComponentBox) {
         self.world
             .entity_component_manager()
             .register_shared_component_box(entity, property);

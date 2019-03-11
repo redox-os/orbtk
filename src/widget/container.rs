@@ -41,8 +41,8 @@ WipContainer {
     background: WipBackground
 });
 
-impl<'a> WipTemplateBuilder<'a> for WipContainer {
-    fn template(id: Entity, context: &mut WipBuildContext<'a>) -> WipTemplate {
-        WipTemplate::new(id)
+impl WipTemplateBuilder for WipContainer {
+    fn template(self, id: Entity, context: &mut WipBuildContext) {
+        // WipTemplate::new(id)
     }
 }

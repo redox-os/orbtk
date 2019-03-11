@@ -157,6 +157,7 @@ macro_rules! wip_widget {
             $(
                 $property: PropertySource<$property_type>,
             )*
+            children: Vec<Entity>,
         }
 
         impl $widget {
@@ -183,11 +184,11 @@ macro_rules! wip_widget {
 
         $(
             $(
-                impl<'a> $handler<'a> for $widget {}
+                impl $handler for $widget {}
             )*
         )*
 
-        impl<'a> WipWidget<'a> for $widget {
+        impl WipWidget for $widget {
             fn create() -> Self {
                 $widget {
                     attached_properties: HashMap::new(),
@@ -196,6 +197,7 @@ macro_rules! wip_widget {
                     $(
                         $property: PropertySource::Value($property_type::default()),
                     )*
+                    children: vec![],
                 }
             }
 
@@ -204,7 +206,12 @@ macro_rules! wip_widget {
                 self
             }
 
-            fn build(self, context: &mut WipBuildContext<'a>) -> WipTemplate {
+            fn child(mut self, child: Entity) -> Self {
+                self.children.push(child);
+                self
+            }
+
+            fn build(self, context: &mut WipBuildContext) -> Entity {
                 let entity = context.create_entity();
 
                 for (_, property) in self.attached_properties {
@@ -226,7 +233,12 @@ macro_rules! wip_widget {
                     }
                 )*
 
-                $widget::template(context.create_entity(), context)
+                for child in self.children {
+                    context.append_child(entity, child);
+                }
+
+                entity
+                // $widget::template(context.create_entity(), context)
             }
         }
     };

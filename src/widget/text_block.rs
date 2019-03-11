@@ -40,8 +40,8 @@ WipTextBlock {
     text: WipText
 });
 
-impl<'a> WipTemplateBuilder<'a> for WipTextBlock {
-    fn template(id: Entity, context: &mut WipBuildContext<'a>) -> WipTemplate {
-        WipTemplate::new(id)
+impl WipTemplateBuilder for WipTextBlock {
+    fn template(self, id: Entity, context: &mut WipBuildContext) {
+        self.text("");
     }
 }

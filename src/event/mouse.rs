@@ -95,7 +95,7 @@ pub trait ClickHandler: Sized + From<Template> + Into<Template> {
     }
 }
 
-pub trait WipClickHandler<'a>: Sized + WipWidget<'a> {
+pub trait WipClickHandler: Sized + WipWidget {
     /// Inserts a handler.
     fn on_click<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
         self.insert_handler(ClickEventHandler {
