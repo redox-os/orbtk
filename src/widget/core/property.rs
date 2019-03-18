@@ -15,18 +15,18 @@ pub enum PropertyResult {
     PropertyNotFound,
 }
 
-pub trait WipProperty {
-    type Value;
+// pub trait Property {
+//     type Value;
 
-    fn value(&self) -> Self::Value;
-    fn set_value(&mut self, value: Self::Value);
-}
+//     fn value(&self) -> Self::Value;
+//     fn set_value(&mut self, value: Self::Value);
+// }
 
-pub trait WipPropertyBuilder {
-    type Value;
+// pub trait PropertyBuilder {
+//     type Value;
 
-    fn build(self) -> (Option<ComponentBox>, Option<Rc<RefCell<Vec<Rc<Cell<Option<Entity>>>>>>>);
-}
+//     fn build(self) -> (Option<ComponentBox>, Option<Rc<RefCell<Vec<Rc<Cell<Option<Entity>>>>>>>);
+// }
 
 /// The `Property` struct is used to define shared properties for widgets. A shared property could be shared between different widgets.
 /// All references of a shared property will always share the same value. Only the origin shared property contains the concert property, all

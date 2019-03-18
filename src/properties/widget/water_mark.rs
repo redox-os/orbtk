@@ -1,19 +1,18 @@
-/// The `WaterMark` struct represents a string used as placeholder text.
-#[derive(Default, Clone)]
-pub struct WaterMark(pub String);
+property!(
+    /// `WaterMark` describes a placeholder text.
+    WaterMark(String)
+);
 
-property!(WaterMark, WaterMarkProperty, water_mark, shared_water_mark);
+// --- Conversions ---
 
 impl From<&str> for WaterMark {
     fn from(s: &str) -> WaterMark {
-        WaterMark(s.to_string())
+        WaterMark(s.into())
     }
 }
 
-impl From<String> for WaterMark {
-    fn from(s: String) -> WaterMark {
-        WaterMark(s)
+impl Into<PropertySource<WaterMark>> for &str {
+    fn into(self) -> PropertySource<WaterMark> {
+        PropertySource::Value(WaterMark::from(self))
     }
 }
-
-// todo tests!!!

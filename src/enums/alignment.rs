@@ -7,6 +7,12 @@ pub enum Alignment {
     Stretch,
 }
 
+impl Default for Alignment {
+    fn default() -> Self {
+        Alignment::Stretch
+    }
+}
+
 impl Alignment {
     /// Calculates the position (x or y) of the widget depending on the available measure, the goal measure
     /// margin and alignment.

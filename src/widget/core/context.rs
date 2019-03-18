@@ -51,7 +51,7 @@ impl<'a> Context<'a> {
         let id = id.into();
         for child in self.tree.start_node(self.entity).into_iter() {
             if let Ok(selector) = self.ecm.borrow_component::<Selector>(child) {
-                if let Some(child_id) = &selector.id {
+                if let Some(child_id) = &selector.0.id {
                     if child_id.eq(&id) {
                         return Some(WidgetContainer::new(child, &mut self.ecm));
                     }

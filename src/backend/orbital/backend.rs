@@ -102,7 +102,7 @@ impl Drop for OrbitalBackend {
 
 impl Backend for OrbitalBackend {
     fn drain_events(&mut self) {
-        self.inner.sync();
+        self.inner.sync();        
 
         for event in self.inner.events() {
             match event.to_option() {
@@ -257,7 +257,7 @@ impl BackendRunner for OrbitalBackendRunner {
         loop {
             if !running.get() {
                 break;
-            }
+            }        
 
             if let Some(world) = &mut self.world {
                 world.run();

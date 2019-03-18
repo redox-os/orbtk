@@ -14,7 +14,7 @@ use crate::{
         check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
         MouseUpEvent, SystemEvent, WindowEvent,
     },
-    properties::{Bounds, Constraint, Enabled, Focused, Pressed, Selected},
+    properties::{Bounds, Constraint, Enabled, Focused, Pressed, Selected, ConstraintExtension},
     structs::Size,
     widget::WidgetContainer,
     Global,
@@ -171,7 +171,7 @@ impl EventSystem {
             }
         }
 
-        // remove focus from previes focues entity
+        // remove focus from previous focused entity
         let mut old_focused_widget = None;
 
         if let Ok(global) = ecm.borrow_mut_component::<Global>(tree.root) {

@@ -11,4 +11,4 @@ impl Point {
     }
 }
 
-property!(Point, PointProperty, point, shared_point);
+// property!(Point, PointProperty, point, shared_point);

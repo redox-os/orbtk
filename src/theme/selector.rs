@@ -2,8 +2,8 @@ use std::{collections::HashSet, ops::Add};
 
 #[derive(Clone, Debug)]
 pub enum SelectorRelation {
-    Ancestor(Selector),
-    Parent(Selector),
+    Ancestor(SelectorValue),
+    Parent(SelectorValue),
 }
 
 /// Describes the specificity of a selector.
@@ -28,7 +28,7 @@ impl Add<Self> for Specificity {
 }
 
 #[derive(Debug, Default)]
-pub struct Selector {
+pub struct SelectorValue {
     pub id: Option<String>,
     pub element: Option<String>,
     pub classes: HashSet<String>,
@@ -37,11 +37,9 @@ pub struct Selector {
     pub dirty: bool,
 }
 
-property!(Selector, SelectorProperty, selector, shared_selector);
-
-impl Selector {
+impl SelectorValue {
     pub fn new() -> Self {
-        Selector {
+        SelectorValue {
             id: None,
             element: None,
             classes: HashSet::new(),
@@ -77,7 +75,7 @@ impl Selector {
         s
     }
 
-    pub fn matches(&self, other: &Selector) -> bool {
+    pub fn matches(&self, other: &SelectorValue) -> bool {
         if self.id.is_some() && self.id != other.id {
             return false;
         }
@@ -128,7 +126,13 @@ impl Selector {
     }
 }
 
-impl Selector {
+impl PartialEq for SelectorValue {
+    fn eq(&self, other: &SelectorValue) -> bool {
+        self.id == other.id
+    }
+}
+
+impl SelectorValue {
     pub fn is_empty(&self) -> bool {
         self.element.is_none()
             && self.id.is_none()
@@ -137,9 +141,9 @@ impl Selector {
     }
 }
 
-impl Clone for Selector {
+impl Clone for SelectorValue {
     fn clone(&self) -> Self {
-        Selector {
+        SelectorValue {
             id: self.id.clone(),
             element: self.element.clone(),
             classes: self.classes.clone(),
@@ -149,3 +153,8 @@ impl Clone for Selector {
         }
     }
 }
+
+property!(
+    /// `Selector` describes the css selector of a widget.
+    Selector(SelectorValue)
+);

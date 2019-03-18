@@ -1,96 +1,6 @@
-use std::f64;
-
-/// Used to build a constraint, specifying additional details.
-#[derive(Default)]
-pub struct ConstraintBuilder {
-    width: f64,
-    height: f64,
-    min_width: f64,
-    min_height: f64,
-    max_width: f64,
-    max_height: f64,
-}
-
-/// Used to build a constraint, specifying additional details.
-impl ConstraintBuilder {
-    /// Creates a new `ConstraintBuilder` with default values.
-    pub fn new() -> Self {
-        ConstraintBuilder::default()
-    }
-
-    /// Inserts a new width.
-    pub fn width(mut self, width: f64) -> Self {
-        self.width = width;
-        self
-    }
-
-    /// Inserts a new height.
-    pub fn height(mut self, height: f64) -> Self {
-        self.height = height;
-        self
-    }
-
-    /// Inserts a new size.
-    pub fn size(mut self, width: f64, height: f64) -> Self {
-        self.width = width;
-        self.height = height;
-        self
-    }
-
-    /// Inserts a new min_width.
-    pub fn min_width(mut self, min_width: f64) -> Self {
-        self.min_width = min_width;
-        self
-    }
-
-    /// Inserts a new min_height.
-    pub fn min_height(mut self, min_height: f64) -> Self {
-        self.min_height = min_height;
-        self
-    }
-
-    /// Inserts a new min_size.
-    pub fn min_size(mut self, min_width: f64, min_height: f64) -> Self {
-        self.min_width = min_width;
-        self.min_height = min_height;
-        self
-    }
-
-    /// Inserts a new max_width.
-    pub fn max_width(mut self, max_width: f64) -> Self {
-        self.max_width = max_width;
-        self
-    }
-
-    /// Inserts a new max_height.
-    pub fn max_height(mut self, max_height: f64) -> Self {
-        self.max_height = max_height;
-        self
-    }
-
-    /// Inserts a new min_size.
-    pub fn max_size(mut self, max_width: f64, max_height: f64) -> Self {
-        self.max_width = max_width;
-        self.max_height = max_height;
-        self
-    }
-
-    /// Builds the constraint.
-    pub fn build(self) -> Constraint {
-        Constraint {
-            width: self.width,
-            height: self.height,
-            min_width: self.min_width,
-            min_height: self.min_height,
-            max_width: self.max_width,
-            max_height: self.max_height,
-        }
-    }
-}
-
-/// This struct is used to add bound constraints to a widget.
-#[derive(Clone, Copy)]
-pub struct Constraint {
+/// `BoxConstraint` describes a box constraint.
+#[derive(Copy, Clone, Default, Debug, PartialEq)]
+pub struct BoxConstraint {
     width: f64,
     height: f64,
     min_width: f64,
@@ -100,129 +10,104 @@ pub struct Constraint {
 }
 
 property!(
-    Constraint,
-    ConstraintProperty,
-    constraint,
-    shared_constraint
+    /// `Constraint` describes the box constraint (min, max size) of a widget.
+    Constraint(BoxConstraint)
 );
 
-impl Default for Constraint {
-    fn default() -> Self {
-        Constraint {
-            width: 0.0,
-            height: 0.0,
-            min_width: 0.0,
-            min_height: 0.0,
-            max_width: f64::MAX,
-            max_height: f64::MAX,
-        }
-    }
+// --- Trait implementations ---
+
+/// Provides operations on a box constraint.
+pub trait ConstraintExtension {
+    /// Gets width.
+    fn width(&self) -> f64;
+
+    /// Sets width.
+    fn set_width(&mut self, width: f64);
+
+    /// Gets height.
+    fn height(&self) -> f64;
+
+    /// Sets height.
+    fn set_height(&mut self, height: f64);
+
+    /// Gets min_width.
+    fn min_width(&self) -> f64;
+
+    /// Sets min_width.
+    fn set_min_width(&mut self, min_width: f64);
+
+    /// Gets min_height.
+    fn min_height(&self) -> f64;
+
+    /// Sets min_height.
+    fn set_min_height(&mut self, min_height: f64);
+
+    /// Gets max_width.
+    fn max_width(&self) -> f64;
+
+    /// Sets max_width.
+    fn set_max_width(&mut self, max_width: f64);
+
+    /// Gets max_height.
+    fn max_height(&self) -> f64;
+
+    /// Sets max_height.
+    fn set_max_height(&mut self, max_height: f64);
+
+    /// Adjust the given `size` to match the constraint.
+    fn perform(&self, size: (f64, f64)) -> (f64, f64);
 }
 
-impl Constraint {
-    pub fn create() -> ConstraintBuilder {
-        ConstraintBuilder::new()
-    }
-
-    pub fn new() -> Self {
-        Constraint::default()
-    }
-
-    /// Gets the width.
-    pub fn width(&self) -> f64 {
+impl ConstraintExtension for BoxConstraint {
+    fn width(&self) -> f64 {
         self.width
     }
 
-    /// Sets the width.
-    pub fn set_width(&mut self, width: f64) {
+    fn set_width(&mut self, width: f64) {
         self.width = width;
     }
 
-    /// Gets the height.
-    pub fn height(&self) -> f64 {
+     fn height(&self) -> f64 {
         self.height
     }
 
-    /// Sets the height.
-    pub fn set_height(&mut self, height: f64) {
+    fn set_height(&mut self, height: f64) {
         self.height = height;
     }
 
-    /// Gets the size.
-    pub fn size(&self) -> (f64, f64) {
-        (self.width, self.height)
-    }
-
-    /// Sets the size.
-    pub fn set_size(&mut self, width: f64, height: f64) {
-        self.width = width;
-        self.height = height;
-    }
-
-    /// Gets the min width.
-    pub fn min_width(&self) -> f64 {
+     fn min_width(&self) -> f64 {
         self.min_width
     }
 
-    /// Sets the min width.
-    pub fn set_min_width(&mut self, min_width: f64) {
+    fn set_min_width(&mut self, min_width: f64) {
         self.min_width = min_width;
     }
 
-    /// Gets the min height.
-    pub fn min_height(&self) -> f64 {
+     fn min_height(&self) -> f64 {
         self.min_height
     }
 
-    /// Sets the min height.
-    pub fn set_min_height(&mut self, min_height: f64) {
+    fn set_min_height(&mut self, min_height: f64) {
         self.min_height = min_height;
     }
 
-    /// Gets the min size.
-    pub fn min_size(&self) -> (f64, f64) {
-        (self.min_width, self.min_height)
-    }
-
-    /// Sets the min size.
-    pub fn set_min_size(&mut self, min_width: f64, min_height: f64) {
-        self.min_width = min_width;
-        self.min_height = min_height;
-    }
-
-    /// Gets the maximum width.
-    pub fn max_width(&self) -> f64 {
+     fn max_width(&self) -> f64 {
         self.max_width
     }
 
-    /// Sets the maximum width.
-    pub fn set_max_width(&mut self, max_width: f64) {
+    fn set_max_width(&mut self, max_width: f64) {
         self.max_width = max_width;
     }
 
-    /// Gets the maximum height.
-    pub fn max_height(&self) -> f64 {
+     fn max_height(&self) -> f64 {
         self.max_height
     }
 
-    /// Sets the maximum height.
-    pub fn set_max_height(&mut self, max_height: f64) {
+    fn set_max_height(&mut self, max_height: f64) {
         self.max_height = max_height;
     }
 
-    /// Gets the maximum size.
-    pub fn max_size(&self) -> (f64, f64) {
-        (self.max_width, self.max_height)
-    }
-
-    /// Sets the maximum size.
-    pub fn set_max_size(&mut self, max_width: f64, max_height: f64) {
-        self.max_width = max_width;
-        self.max_height = max_height;
-    }
-
-    /// Adjust the given `size` to match the constraint.
-    pub fn perform(&self, size: (f64, f64)) -> (f64, f64) {
+    fn perform(&self, size: (f64, f64)) -> (f64, f64) {
         let size = {
             let width = if self.width > 0.0 { self.width } else { size.0 };
             let height = if self.height > 0.0 {
@@ -238,6 +123,60 @@ impl Constraint {
             constrain(size.0, self.min_width, self.max_width, self.width),
             constrain(size.1, self.min_height, self.max_height, self.height),
         )
+    }
+}
+
+impl ConstraintExtension for Constraint {
+     fn width(&self) -> f64 {
+        self.0.width
+    }
+
+    fn set_width(&mut self, width: f64) {
+        self.0.width = width;
+    }
+
+     fn height(&self) -> f64 {
+        self.0.height
+    }
+
+    fn set_height(&mut self, height: f64) {
+        self.0.height = height;
+    }
+
+     fn min_width(&self) -> f64 {
+        self.0.min_width
+    }
+
+    fn set_min_width(&mut self, min_width: f64) {
+        self.0.min_width = min_width;
+    }
+
+     fn min_height(&self) -> f64 {
+        self.0.min_height
+    }
+
+    fn set_min_height(&mut self, min_height: f64) {
+        self.0.min_height = min_height;
+    }
+
+     fn max_width(&self) -> f64 {
+        self.0.max_width
+    }
+
+    fn set_max_width(&mut self, max_width: f64) {
+        self.0.max_width = max_width;
+    }
+
+     fn max_height(&self) -> f64 {
+        self.0.max_height
+    }
+
+    fn set_max_height(&mut self, max_height: f64) {
+        self.0.max_height = max_height;
+    }
+
+    fn perform(&self, size: (f64, f64)) -> (f64, f64) {
+       self.0.perform(size)
     }
 }
 

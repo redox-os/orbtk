@@ -8,12 +8,12 @@ use crate::{
     theme::Theme,
 };
 
-pub use self::fixed_size::FixedSizeLayout;
-pub use self::grid::GridLayout;
-pub use self::padding::PaddingLayout;
-pub use self::scroll::ScrollLayout;
-pub use self::stack::StackLayout;
-pub use self::text_selection::TextSelectionLayout;
+pub use self::fixed_size::*;
+pub use self::grid::*;
+pub use self::padding::*;
+pub use self::scroll::*;
+pub use self::stack::*;
+pub use self::text_selection::*;
 
 mod fixed_size;
 mod grid;

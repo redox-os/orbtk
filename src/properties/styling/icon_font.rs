@@ -1,33 +1,50 @@
+use std::fmt;
+
 use orbfont::Font as OrbFont;
 
 use crate::styling::fonts;
 
-/// Text font.
-#[derive(Clone)]
-pub struct IconFont(pub OrbFont);
+use super::InnerFont;
 
-property!(IconFont, IconFontProperty, icon_font, icon_font_prop);
+property!(
+    /// `IconFont` describes the icon font of a widget.
+    IconFont(InnerFont)
+);
 
-impl Default for IconFont {
-    fn default() -> Self {
-        IconFont::from(fonts::font_into_box(fonts::MATERIAL_ICONS_REGULAR_FONT))
-    }
-}
+// --- Conversions ---
 
 impl From<&str> for IconFont {
     fn from(s: &str) -> IconFont {
-        IconFont(OrbFont::from_path(s).unwrap())
+        IconFont::from(InnerFont::from(OrbFont::from_path(s).unwrap()))
+    }
+}
+
+impl Into<PropertySource<IconFont>> for &str {
+    fn into(self) -> PropertySource<IconFont> {
+        PropertySource::Value(IconFont::from(self))
     }
 }
 
 impl From<String> for IconFont {
     fn from(s: String) -> IconFont {
-        IconFont(OrbFont::from_path(s).unwrap())
+        IconFont::from(InnerFont::from(OrbFont::from_path(s).unwrap()))
+    }
+}
+
+impl Into<PropertySource<IconFont>> for String {
+    fn into(self) -> PropertySource<IconFont> {
+        PropertySource::Value(IconFont::from(self))
     }
 }
 
 impl From<Box<[u8]>> for IconFont {
     fn from(s: Box<[u8]>) -> IconFont {
-        IconFont(OrbFont::from_data(s).unwrap())
+        IconFont::from(InnerFont::from(OrbFont::from_data(s).unwrap()))
+    }
+}
+
+impl Into<PropertySource<IconFont>> for Box<[u8]> {
+    fn into(self) -> PropertySource<IconFont> {
+        PropertySource::Value(IconFont::from(self))
     }
 }

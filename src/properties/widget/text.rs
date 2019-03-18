@@ -1,35 +1,18 @@
-use crate::widget::PropertySource;
+property!(
+    /// `Text` describes the text of a widget.
+    Text(String)
+);
 
-/// The `Text` struct represents a string used for text drawing.
-#[derive(Default, Clone)]
-pub struct Text(pub String);
-
-property!(Text, TextProperty, text, text_prop);
+// --- Conversions ---
 
 impl From<&str> for Text {
     fn from(s: &str) -> Text {
-        Text(s.to_string())
+        Text(s.into())
     }
 }
 
-impl From<String> for Text {
-    fn from(s: String) -> Text {
-        Text(s)
-    }
-}
-
-// todo tests!!!
-
-wip_property!(WipText(String));
-
-impl From<&str> for WipText {
-    fn from(s: &str) -> WipText {
-        WipText(s.into())
-    }
-}
-
-impl Into<PropertySource<WipText>> for &str {
-    fn into(self) -> PropertySource<WipText> {
-        PropertySource::Value(WipText::from(self))
+impl Into<PropertySource<Text>> for &str {
+    fn into(self) -> PropertySource<Text> {
+        PropertySource::Value(Text::from(self))
     }
 }

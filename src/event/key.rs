@@ -317,18 +317,18 @@ impl EventHandler for KeyDownEventHandler {
     }
 }
 
-pub trait KeyDownHandler: Sized + From<Template> + Into<Template> {
-    /// Transforms the handler into a template.
-    fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
-        Self::from(transform(self.into()))
-    }
+// pub trait KeyDownHandler: Sized + From<Template> + Into<Template> {
+//     /// Transforms the handler into a template.
+//     fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
+//         Self::from(transform(self.into()))
+//     }
 
-    /// Inserts a handler.
-    fn on_key_down<H: Fn(Key) -> bool + 'static>(self, handler: H) -> Self {
-        self.template(|template| {
-            template.event_handler(KeyDownEventHandler {
-                handler: Rc::new(handler),
-            })
-        })
-    }
-}
+//     /// Inserts a handler.
+//     fn on_key_down<H: Fn(Key) -> bool + 'static>(self, handler: H) -> Self {
+//         self.template(|template| {
+//             template.event_handler(KeyDownEventHandler {
+//                 handler: Rc::new(handler),
+//             })
+//         })
+//     }
+// }

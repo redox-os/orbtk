@@ -9,7 +9,7 @@ pub use self::cursor::*;
 pub use self::font_icon_block::*;
 pub use self::grid::*;
 pub use self::image_widget::*;
-pub use self::scroll_viewer::ScrollViewer;
+pub use self::scroll_viewer::*;
 pub use self::stack::*;
 pub use self::switch::*;
 pub use self::text_block::*;

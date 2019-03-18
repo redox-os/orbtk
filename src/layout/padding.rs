@@ -9,8 +9,9 @@ use dces::prelude::{Entity, EntityComponentManager};
 use crate::{
     application::Tree,
     properties::{
-        Bounds, Constraint, HorizontalAlignment, Margin, Padding, VerticalAlignment, Visibility,
+        Bounds, Constraint, HorizontalAlignment, Margin, Padding, VerticalAlignment, Visibility, VisibilityValue, ConstraintExtension
     },
+    enums::Alignment,
     structs::{DirtySize, Position, Size, Spacer},
     theme::Theme,
 };
@@ -21,7 +22,7 @@ use super::Layout;
 #[derive(Default)]
 pub struct PaddingLayout {
     desired_size: RefCell<DirtySize>,
-    old_alignment: Cell<(VerticalAlignment, HorizontalAlignment)>,
+    old_alignment: Cell<(Alignment, Alignment)>,
 }
 
 impl PaddingLayout {
@@ -39,7 +40,7 @@ impl Layout for PaddingLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
     ) -> DirtySize {
-        if Visibility::get(entity, ecm) == Visibility::Collapsed {
+        if Visibility::get(entity, ecm) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
@@ -120,15 +121,17 @@ impl Layout for PaddingLayout {
         let constraint = Constraint::get(entity, ecm);
 
         let size = constraint.perform((
-            horizontal_alignment.align_width(
+            horizontal_alignment.align_measure(
                 parent_size.0,
                 self.desired_size.borrow().width(),
-                margin,
+                margin.left(),
+                            margin.right()
             ),
-            vertical_alignment.align_height(
+            vertical_alignment.align_position(
                 parent_size.1,
                 self.desired_size.borrow().height(),
-                margin,
+                 margin.top(),
+                            margin.bottom()
             ),
         ));
 
@@ -155,18 +158,20 @@ impl Layout for PaddingLayout {
             if let Ok(child_bounds) = ecm.borrow_mut_component::<Bounds>(*child) {
                 child_bounds.set_x(
                     padding.left()
-                        + child_horizontal_alignment.align_x(
+                        + child_horizontal_alignment.align_measure(
                             available_size.0,
                             child_bounds.width(),
-                            child_margin,
+                            child_margin.left(),
+                            child_margin.right()
                         ),
                 );
                 child_bounds.set_y(
                     padding.top()
-                        + child_vertical_alignment.align_y(
+                        + child_vertical_alignment.align_position(
                             available_size.1,
                             child_bounds.height(),
-                            child_margin,
+                            child_margin.top(),
+                            child_margin.bottom()
                         ),
                 );
             }

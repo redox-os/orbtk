@@ -1,41 +1,47 @@
 use super::Margin;
 use crate::{enums::Alignment, structs::Spacer};
 
-/// Used to Vertical align a widget.
-#[derive(Copy, Clone, PartialEq, Debug)]
-pub struct VerticalAlignment(pub Alignment);
-
 property!(
-    VerticalAlignment,
-    VerticalAlignmentProperty,
-    vertical_alignment,
-    shared_vertical_alignment
+    /// `VerticalAlignment` describes the vertical alignment of a widget.
+    VerticalAlignment(Alignment)
 );
 
-impl Default for VerticalAlignment {
-    fn default() -> Self {
-        VerticalAlignment(Alignment::Stretch)
-    }
-}
+// --- Trait implementations ---
 
-impl VerticalAlignment {
+/// Used to align the position of a widget vertical.
+pub trait AlignVertical {
     /// Calculates the y position of the widget depending on the available height, the goal height
     /// margin and Vertical alignment.
-    pub fn align_y(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
+    fn align_y(&self, available_height: f64, height: f64, margin: Margin) -> f64;
+
+    /// Calculates the height of the widget depending on the available height, the goal height
+    /// margin and Vertical alignment.
+    fn align_height(&self, available_height: f64, height: f64, margin: Margin) -> f64;
+}
+
+impl AlignVertical for VerticalAlignment {
+    fn align_y(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
         self.0
             .align_position(available_height, height, margin.top(), margin.bottom())
     }
 
-    /// Calculates the height of the widget depending on the available height, the goal height
-    /// margin and Vertical alignment.
-    pub fn align_height(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
+  
+    fn align_height(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
         self.0
             .align_measure(available_height, height, margin.top(), margin.bottom())
     }
 }
 
+// --- Conversions ---
+
 impl From<&str> for VerticalAlignment {
-    fn from(t: &str) -> Self {
-        VerticalAlignment(t.into())
+    fn from(s: &str) -> VerticalAlignment {
+        VerticalAlignment(s.into())
+    }
+}
+
+impl Into<PropertySource<VerticalAlignment>> for &str {
+    fn into(self) -> PropertySource<VerticalAlignment> {
+        PropertySource::Value(VerticalAlignment::from(self))
     }
 }

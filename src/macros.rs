@@ -1,118 +1,20 @@
-/// Used to define a widget, with properties and event handlers.
-#[macro_export]
-macro_rules! widget {
-    ( $(#[$widget_doc:meta])* $type:ident ) => (
-        widget!( $type () );
-    );
-    
-    ( $(#[$widget_doc:meta])* $type:ident ( $( $derive:ident ),* ] ) => (
-        use crate::{
-            widget::TemplateBase,
-            properties::{
-                HorizontalAlignmentProperty,
-                VerticalAlignmentProperty,
-                EnabledProperty,
-                VisibilityProperty,
-                MarginProperty,
-            },
-            theme::SelectorProperty,
-        };
-
-        $(#[$widget_doc])*
-        pub struct $type {
-            template: Template
-        }
-
-        impl $type {
-            /// Creates a new widget.
-            pub fn new() -> Self {
-                $type {
-                    template: Template::new()
-                }
-            }
-        }
-
-        impl From<Template> for $type {
-            fn from(template: Template) -> Self {
-                $type {
-                    template
-                }
-            }
-        }
-
-        impl Into<Template> for $type {
-            fn into(self) -> Template {
-                self.template
-            }
-        }
-
-        impl TemplateBase for $type {}
-
-        impl HorizontalAlignmentProperty for $type {}
-
-        impl VerticalAlignmentProperty for $type {}
-
-        impl SelectorProperty for $type {}
-
-        impl EnabledProperty for $type {}
-
-        impl VisibilityProperty for $type {}
-
-        impl MarginProperty for $type {}
-
-        $(
-            impl $derive for $type {}
-        )*
-    )
-}
-
 /// Used to define a property.
 #[macro_export]
 macro_rules! property {
-    ($(#[$widget_doc:meta])* $type:ident, $property:ident, $name:ident, $prop_name:ident) => {
+    ($(#[$property_doc:meta])* $property:ident($type:ty)) => {
         use dces::prelude::{Entity, EntityComponentManager};
+        use crate::widget::{PropertySource, get_property};
 
-        use crate::widget::{get_property, Property, Template};
+        #[derive(Default, Debug, Clone, PartialEq)]
+        $(#[$property_doc])*
+        pub struct $property(pub $type);
 
-        $(#[$widget_doc])*
-        pub trait $property: Sized + From<Template> + Into<Template> {
-            /// Transforms the property into a template.
-            fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
-                Self::from(transform(self.into()))
-            }
-
-            /// Inserts a property.
-            fn $name<V: Into<$type>>(self, $name: V) -> Self {
-                self.$prop_name($name.into())
-            }
-
-            /// Inserts a shared property.
-            fn $prop_name(self, $name: impl Into<Property>) -> Self {
-                self.template(|template| template.property($name.into())
-            }
-        }
-
-        impl From<$type> for Property {
-            fn from(prop: $type) -> Self {
-                Property::new(prop)
-            }
-        }
-
-        impl $type {
+        impl $property {
             /// Returns the value of a property.
             pub fn get(entity: Entity, ecm: &EntityComponentManager) -> $type {
                 get_property::<$type>(entity, ecm)
             }
         }
-    };
-}
-
-/// Used to define a property.
-#[macro_export]
-macro_rules! wip_property {
-    ($property:ident($type:ty)) => {
-        #[derive(Default)]
-        pub struct $property(pub $type);
 
         impl From<$property> for $type {
             fn from(property: $property) -> $type {
@@ -141,21 +43,28 @@ macro_rules! wip_property {
 }
 
 /// Used to define a widget, with properties and event handlers.
-macro_rules! wip_widget {
+macro_rules! widget {
     ( $(#[$widget_doc:meta])* $widget:ident $(<$state:ident>)* $(: $( $handler:ident ),*)* { $($(#[$prop_doc:meta])* $property:ident: $property_type:tt ),* } ) => {
         use std::{ any::TypeId, rc::Rc, collections::HashMap};
 
         use dces::prelude::{Component, ComponentBox, SharedComponentBox };
 
-        use crate::{event::EventHandler, widget::{PropertySource, WipWidget}};
+        use crate::{event::EventHandler, 
+            properties::{Bounds, Constraint, VerticalAlignment, HorizontalAlignment, Visibility}, 
+            widget::{PropertySource, Widget, BuildContext}};
 
         $(#[$widget_doc])*
         pub struct $widget {
             attached_properties: HashMap<TypeId, ComponentBox>,
             shared_attached_properties: HashMap<TypeId, SharedComponentBox>,
             event_handlers: Vec<Rc<dyn EventHandler>>,
+            bounds: Bounds,
+            constraint: Constraint,
+            horizontal_alignment: HorizontalAlignment,
+            vertical_alignment: VerticalAlignment,
+            visibility: Visibility,
             $(
-                $property: PropertySource<$property_type>,
+                $property: Option<PropertySource<$property_type>>,
             )*
             children: Vec<Entity>,
         }
@@ -176,7 +85,11 @@ macro_rules! wip_widget {
             $(
                 $(#[$prop_doc])*
                 pub fn $property<P: Into<PropertySource<$property_type>>>(mut self, $property: P) -> Self {
-                    self.$property = $property.into();
+                    if !self.$property.is_none() {
+                        return self;
+                    }
+
+                    self.$property = Some($property.into());
                     self
                 }
             )*
@@ -188,14 +101,19 @@ macro_rules! wip_widget {
             )*
         )*
 
-        impl WipWidget for $widget {
+        impl Widget for $widget {
             fn create() -> Self {
                 $widget {
                     attached_properties: HashMap::new(),
                     shared_attached_properties: HashMap::new(),
                     event_handlers: vec![],
+                    bounds: Bounds::default(),
+                    constraint: Constraint::default(),
+                    horizontal_alignment: HorizontalAlignment::default(),
+                    vertical_alignment: VerticalAlignment::default(),
+                    visibility: Visibility::default(),
                     $(
-                        $property: PropertySource::Value($property_type::default()),
+                        $property: None,
                     )*
                     children: vec![],
                 }
@@ -217,30 +135,50 @@ macro_rules! wip_widget {
                 }
             )*
 
-            fn build(self, context: &mut WipBuildContext) -> Entity {
+            fn build(self, context: &mut BuildContext) -> Entity {
                 let entity = context.create_entity();
 
-                for (_, property) in self.attached_properties {
+                 let this = self.template(entity, context);
+
+                if let Some(render_object) = this.render_object() {
+                    context.register_render_object(entity, render_object);
+                }
+
+                context.register_layout(entity, this.layout());
+
+                // register default set of properties
+                context.register_property(entity, this.bounds);
+                context.register_property(entity, this.constraint);
+                context.register_property(entity, this.vertical_alignment);
+                context.register_property(entity, this.horizontal_alignment);
+                context.register_property(entity, this.visibility);
+
+                // register attached properties
+                for (_, property) in this.attached_properties {
                     context.register_property_box(entity, property);
                 }
 
-                for (_, property) in self.shared_attached_properties {
+                for (_, property) in this.shared_attached_properties {
                     context.register_property_shared_box(entity, property);
                 }
 
+           
+
+                // register properties
                 $(
-                    match self.$property {
-                        PropertySource::Value(value) => {
-                            context.register_property(entity, value);
-                        },
-                        PropertySource::Source(source) => {
-                            context.register_shared_property::<$property_type>(entity, source);
+                    if let Some($property) = this.$property {
+                        match $property {
+                            PropertySource::Value(value) => {
+                                context.register_property(entity, value);
+                            },
+                            PropertySource::Source(source) => {
+                                context.register_shared_property::<$property_type>(entity, source);
+                            }
                         }
                     }
-                )*
+                )*      
                 
-
-                for child in self.children {
+                for child in this.children {
                     context.append_child(entity, child);
                 }
 

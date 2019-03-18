@@ -1,3 +1,5 @@
+use super::Spacer;
+
 /// Used to describes a thickness e.g a border thickness.
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct Thickness {
@@ -23,6 +25,55 @@ impl Thickness {
             right,
             bottom,
         }
+    }
+}
+
+// --- Trait implementations ---
+
+impl Spacer for Thickness {
+    fn left(&self) -> f64 {
+        self.left
+    }
+
+    fn set_left(&mut self, left: f64) {
+        self.left = left;
+    }
+
+    fn top(&self) -> f64 {
+        self.top
+    }
+
+    fn set_top(&mut self, top: f64) {
+        self.top = top;
+    }
+
+    fn right(&self) -> f64 {
+        self.right
+    }
+
+    fn set_right(&mut self, right: f64) {
+        self.right = right;
+    }
+
+    fn bottom(&self) -> f64 {
+        self.bottom
+    }
+
+    fn set_bottom(&mut self, bottom: f64) {
+        self.bottom = bottom;
+    }
+
+    fn thickness(&self) -> Thickness {
+        self.clone()
+    }
+
+    fn set_thickness<T: Into<Thickness>>(&mut self, thickness: T) {
+        let other = thickness.into();
+
+        self.set_left(other.left());
+        self.set_top(other.top());
+        self.set_right(other.right());
+        self.set_bottom(other.bottom());
     }
 }
 

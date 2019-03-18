@@ -21,7 +21,7 @@ impl InitSystem {
     fn init_id(&self, node: Entity, ecm: &mut EntityComponentManager) {
         // Add css id to global id map.
         let id = if let Ok(selector) = ecm.borrow_component::<Selector>(node) {
-            if let Some(id) = &selector.id {
+            if let Some(id) = &selector.0.id {
                 Some((node, id.clone()))
             } else {
                 None

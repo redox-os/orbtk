@@ -1,41 +1,47 @@
 use super::Margin;
 use crate::{enums::Alignment, structs::Spacer};
 
-/// Used to horizontal align a widget.
-#[derive(Copy, Clone, PartialEq, Debug)]
-pub struct HorizontalAlignment(pub Alignment);
-
 property!(
-    HorizontalAlignment,
-    HorizontalAlignmentProperty,
-    horizontal_alignment,
-    shared_horizontal_alignment
+    /// `HorizontalAlignment` describes the vertical alignment of a widget.
+    HorizontalAlignment(Alignment)
 );
 
-impl Default for HorizontalAlignment {
-    fn default() -> Self {
-        HorizontalAlignment(Alignment::Stretch)
-    }
-}
+// --- Trait implementations ---
 
-impl HorizontalAlignment {
+/// Used to align the position of a widget vertical.
+pub trait AlignHorizontal {
     /// Calculates the x position of the widget depending on the available width, the goal width
-    /// margin and horizontal alignment.
-    pub fn align_x(&self, available_width: f64, width: f64, margin: Margin) -> f64 {
-        self.0
-            .align_position(available_width, width, margin.left(), margin.right())
-    }
+    /// margin and Horizontal alignment.
+    fn align_x(&self, available_height: f64, height: f64, margin: Margin) -> f64;
 
     /// Calculates the width of the widget depending on the available width, the goal width
-    /// margin and horizontal alignment.
-    pub fn align_width(&self, available_width: f64, width: f64, margin: Margin) -> f64 {
+    /// margin and Horizontal alignment.
+    fn align_width(&self, available_height: f64, height: f64, margin: Margin) -> f64;
+}
+
+impl AlignHorizontal for HorizontalAlignment {
+    fn align_x(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
         self.0
-            .align_measure(available_width, width, margin.left(), margin.right())
+            .align_position(available_height, height, margin.left(), margin.right())
+    }
+
+  
+    fn align_width(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
+        self.0
+            .align_measure(available_height, height, margin.left(), margin.right())
     }
 }
 
+// --- Conversions ---
+
 impl From<&str> for HorizontalAlignment {
-    fn from(t: &str) -> Self {
-        HorizontalAlignment(t.into())
+    fn from(s: &str) -> HorizontalAlignment {
+        HorizontalAlignment(s.into())
+    }
+}
+
+impl Into<PropertySource<HorizontalAlignment>> for &str {
+    fn into(self) -> PropertySource<HorizontalAlignment> {
+        PropertySource::Value(HorizontalAlignment::from(self))
     }
 }

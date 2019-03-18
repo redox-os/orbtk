@@ -13,8 +13,9 @@ use crate::{
     backend::{FontMeasure, FONT_MEASURE},
     properties::{
         Bounds, Constraint, Font, FontIcon, FontSize, HorizontalAlignment, IconFont, IconSize,
-        Image, Text, VerticalAlignment, Visibility, WaterMark,
+        Image, Text, VerticalAlignment, Visibility, VisibilityValue, WaterMark, ImageExtension, ConstraintExtension
     },
+    enums::Alignment,
     structs::{DirtySize, Size},
     theme::Theme,
     widget::WidgetContainer,
@@ -26,7 +27,7 @@ use super::Layout;
 #[derive(Default)]
 pub struct FixedSizeLayout {
     desired_size: RefCell<DirtySize>,
-    old_alignment: Cell<(VerticalAlignment, HorizontalAlignment)>,
+    old_alignment: Cell<(Alignment, Alignment)>,
 }
 
 impl FixedSizeLayout {
@@ -44,7 +45,7 @@ impl Layout for FixedSizeLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
     ) -> DirtySize {
-        if Visibility::get(entity, ecm) == Visibility::Collapsed {
+        if Visibility::get(entity, ecm) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
@@ -65,7 +66,7 @@ impl Layout for FixedSizeLayout {
         let size = {
             if widget.has_property::<Image>() {
                 if let Ok(image) = widget.borrow_property::<Image>() {
-                    Some((image.0.width(), image.0.height()))
+                    Some((image.width(), image.height()))
                 } else {
                     None
                 }
@@ -79,16 +80,16 @@ impl Layout for FixedSizeLayout {
                         if water_mark.0.is_empty() {
                             None
                         } else {
-                            Some(FONT_MEASURE.measure(&water_mark.0, &font.0, font_size.0 as u32))
+                            Some(FONT_MEASURE.measure(&water_mark.0, &(font.0).0, font_size.0 as u32))
                         }
                     } else {
                         None
                     }
                 } else {
-                    let mut size = FONT_MEASURE.measure(&text.0, &font.0, font_size.0 as u32);
+                    let mut size = FONT_MEASURE.measure(&text.0, &(font.0).0, font_size.0 as u32);
 
                     if text.0.ends_with(" ") {
-                        size.0 += FONT_MEASURE.measure("a", &font.0, font_size.0 as u32).0 / 2;
+                        size.0 += FONT_MEASURE.measure("a", &(font.0).0, font_size.0 as u32).0 / 2;
                     }
                     Some(size)
                 }
@@ -99,7 +100,7 @@ impl Layout for FixedSizeLayout {
                 } else {
                     Some(FONT_MEASURE.measure(
                         &font_icon.0,
-                        &widget.get_property::<IconFont>().0,
+                        &(widget.get_property::<IconFont>().0).0,
                         widget.get_property::<IconSize>().0 as u32,
                     ))
                 }

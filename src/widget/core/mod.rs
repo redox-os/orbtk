@@ -8,15 +8,14 @@ use crate::theme::Selector;
 
 use crate::event::EventHandler;
 
-use crate::{Layout, PaddingLayout, RenderObject};
+use crate::{Layout, RenderObject, PaddingLayout};
 
 pub use self::context::Context;
 pub use self::message::{MessageBox, StringMessage};
 pub use self::property::{
-    get_property, Property, PropertyResult, PropertySource, WipProperty, WipPropertyBuilder,
+    get_property, Property, PropertyResult, PropertySource,
 };
 pub use self::state::State;
-pub use self::template::{Template, TemplateBase};
 pub use self::widget_container::WidgetContainer;
 
 mod context;
@@ -26,67 +25,50 @@ mod state;
 mod template;
 mod widget_container;
 
-/// The `Widget` trait is used to define a new widget.
-pub trait Widget {
-    /// Returns a new widget.
-    fn create() -> Self;
-}
-
 /// Adds the given `pseudo_class` to the css selector of the given `widget`.
 pub fn add_selector_to_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
     if let Ok(selector) = widget.borrow_mut_property::<Selector>() {
-        selector.pseudo_classes.insert(String::from(pseudo_class));
-        selector.set_dirty(true);
+        selector.0.pseudo_classes.insert(String::from(pseudo_class));
+        selector.0.set_dirty(true);
     }
 }
 
 /// Removes the given `pseudo_class` from the css selector of the given `widget`.
 pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
     if let Ok(selector) = widget.borrow_mut_property::<Selector>() {
-        selector.pseudo_classes.remove(pseudo_class);
-        selector.set_dirty(true);
+        selector.0.pseudo_classes.remove(pseudo_class);
+        selector.0.set_dirty(true);
     }
 }
 
-pub struct WipTemplate {
-    id: Entity,
-    children: Vec<WipTemplate>,
-    // todo parent type
-}
-
-impl WipTemplate {
-    pub fn new(id: Entity) -> Self {
-        WipTemplate {
-            id,
-            children: vec![],
-        }
-    }
-}
-
-/// The `TemplateBuilder` trait provides the method for the widget template creation.
-pub trait WipTemplateBuilder: Sized {
+/// The `Template` trait provides the method for the widget template creation.
+pub trait Template: Sized {
     /// Creates the template of the widget and returns it.
-    fn template(self, _id: Entity, _context: &mut WipBuildContext) {}
+    fn template(self, _id: Entity, _context: &mut BuildContext) -> Self {
+        self
+    }
+
+    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
+        None
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(PaddingLayout::new())
+    }
 }
 
 /// The `Widget` trait is used to define a new widget.
-pub trait WipWidget: WipTemplateBuilder {
+pub trait Widget: Template {
     /// Creates a new widget.
     fn create() -> Self;
 
     /// Builds the widget and returns the template of the widget.
-    fn build(self, context: &mut WipBuildContext) -> Entity;
+    fn build(self, context: &mut BuildContext) -> Entity;
 
     /// Inerts a new event handler.
     fn insert_handler(self, handler: impl Into<Rc<dyn EventHandler>>) -> Self;
 
-    fn render_object(self) -> Option<Box<dyn RenderObject>> {
-        None
-    }
-
-    fn layout(self) -> Box<dyn Layout> {
-        Box::new(PaddingLayout::new())
-    }
+   
 
     fn state(self) -> Option<Rc<State>> {
         None
@@ -158,7 +140,7 @@ impl RenderObjectStorage {
     }
 }
 
-pub struct WipBuildContext<'a> {
+pub struct BuildContext<'a> {
     world: &'a mut World<Tree>,
     render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
@@ -166,7 +148,7 @@ pub struct WipBuildContext<'a> {
     states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
 }
 
-impl<'a> WipBuildContext<'a> {
+impl<'a> BuildContext<'a> {
     pub fn new(
         world: &'a mut World<Tree>,
         render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
@@ -174,7 +156,7 @@ impl<'a> WipBuildContext<'a> {
         handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
         states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     ) -> Self {
-        WipBuildContext {
+        BuildContext {
             world,
             render_objects,
             layouts,

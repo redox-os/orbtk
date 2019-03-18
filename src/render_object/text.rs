@@ -2,10 +2,9 @@ use orbgl_api::Canvas;
 
 use crate::{
     backend::Renderer,
-    properties::{Bounds, Font, FontSize, Foreground, Text, WaterMark},
+    properties::{Bounds, Font, FontSize, Foreground, Text},
     render_object::RenderObject,
-    structs::{Color, Point},
-    theme::Selector,
+    structs::Point,
     widget::Context,
 };
 
@@ -46,7 +45,7 @@ impl RenderObject for TextRenderObject {
                 global_position,
                 widget.get_property::<FontSize>().0 as u32,
                 widget.get_property::<Foreground>().into(),
-                &widget.get_property::<Font>().0,
+                &(widget.get_property::<Font>().0).0,
             );
         }
     }

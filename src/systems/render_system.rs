@@ -9,7 +9,7 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 use crate::{
     application::Tree,
     backend::Backend,
-    properties::{Bounds, Visibility},
+    properties::{Bounds, Visibility, VisibilityValue},
     render_object::RenderObject,
     structs::{Point, Position, Size},
     theme::Selector,
@@ -63,7 +63,7 @@ impl System<Tree> for RenderSystem {
 
             // hide hidden widget
             if let Ok(visibility) = ecm.borrow_component::<Visibility>(node) {
-                if *visibility != Visibility::Visible {
+                if visibility.0 != VisibilityValue::Visible {
                     hidden_parents.insert(node);
                     continue;
                 }
