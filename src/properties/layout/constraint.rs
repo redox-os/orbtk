@@ -1,5 +1,95 @@
 use std::f64;
 
+/// Used to build a constraint, specifying additional details.
+#[derive(Default)]
+pub struct ConstraintBuilder {
+    width: f64,
+    height: f64,
+    min_width: f64,
+    min_height: f64,
+    max_width: f64,
+    max_height: f64,
+}
+
+/// Used to build a constraint, specifying additional details.
+impl ConstraintBuilder {
+    /// Creates a new `ConstraintBuilder` with default values.
+    pub fn new() -> Self {
+        ConstraintBuilder::default()
+    }
+
+    /// Inserts a new width.
+    pub fn width(mut self, width: f64) -> Self {
+        self.width = width;
+        self
+    }
+
+    /// Inserts a new height.
+    pub fn height(mut self, height: f64) -> Self {
+        self.height = height;
+        self
+    }
+
+    /// Inserts a new size.
+    pub fn size(mut self, width: f64, height: f64) -> Self {
+        self.width = width;
+        self.height = height;
+        self
+    }
+
+    /// Inserts a new min_width.
+    pub fn min_width(mut self, min_width: f64) -> Self {
+        self.min_width = min_width;
+        self
+    }
+
+    /// Inserts a new min_height.
+    pub fn min_height(mut self, min_height: f64) -> Self {
+        self.min_height = min_height;
+        self
+    }
+
+    /// Inserts a new min_size.
+    pub fn min_size(mut self, min_width: f64, min_height: f64) -> Self {
+        self.min_width = min_width;
+        self.min_height = min_height;
+        self
+    }
+
+    /// Inserts a new max_width.
+    pub fn max_width(mut self, max_width: f64) -> Self {
+        self.max_width = max_width;
+        self
+    }
+
+    /// Inserts a new max_height.
+    pub fn max_height(mut self, max_height: f64) -> Self {
+        self.max_height = max_height;
+        self
+    }
+
+    /// Inserts a new min_size.
+    pub fn max_size(mut self, max_width: f64, max_height: f64) -> Self {
+        self.max_width = max_width;
+        self.max_height = max_height;
+        self
+    }
+
+    /// Builds the constraint.
+    pub fn build(self) -> Constraint {
+        Constraint(
+        BoxConstraint {
+            width: self.width,
+            height: self.height,
+            min_width: self.min_width,
+            min_height: self.min_height,
+            max_width: self.max_width,
+            max_height: self.max_height,
+        })
+    }
+}
+
+
 /// `BoxConstraint` describes a box constraint.
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct BoxConstraint {
@@ -33,6 +123,9 @@ property!(
 
 /// Provides operations on a box constraint.
 pub trait ConstraintExtension {
+    /// Returns a constraint builder.
+     fn create() -> ConstraintBuilder;
+
     /// Gets width.
     fn width(&self) -> f64;
 
@@ -74,6 +167,10 @@ pub trait ConstraintExtension {
 }
 
 impl ConstraintExtension for BoxConstraint {
+    fn create() -> ConstraintBuilder {
+        ConstraintBuilder::new()
+    }
+
     fn width(&self) -> f64 {
         self.width
     }
@@ -142,6 +239,10 @@ impl ConstraintExtension for BoxConstraint {
 }
 
 impl ConstraintExtension for Constraint {
+    fn create() -> ConstraintBuilder {
+        ConstraintBuilder::new()
+    }
+
     fn width(&self) -> f64 {
         self.0.width
     }

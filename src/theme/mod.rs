@@ -253,49 +253,49 @@ impl Theme {
             return;
         }
 
-        // if let Ok(foreground) = widget.borrow_mut_property::<Foreground>() {
-        //     if let Some(color) = self.brush("color", &selector) {
-        //         foreground.0 = color;
-        //     }
-        // }
+        if let Ok(foreground) = widget.borrow_mut_property::<Foreground>() {
+            if let Some(color) = self.brush("color", &selector) {
+                foreground.0 = color;
+            }
+        }
 
-        // if let Ok(background) = widget.borrow_mut_property::<Background>() {
-        //     if let Some(bg) = self.brush("background", &selector) {
-        //         background.0 = bg;
-        //     }
-        // }
+        if let Ok(background) = widget.borrow_mut_property::<Background>() {
+            if let Some(bg) = self.brush("background", &selector) {
+                background.0 = bg;
+            }
+        }
 
-        // if let Ok(border_brush) = widget.borrow_mut_property::<BorderBrush>() {
-        //     if let Some(border_color) = self.brush("border-color", &selector) {
-        //         border_brush.0 = border_color;
-        //     }
-        // }
+        if let Ok(border_brush) = widget.borrow_mut_property::<BorderBrush>() {
+            if let Some(border_color) = self.brush("border-color", &selector) {
+                border_brush.0 = border_color;
+            }
+        }
 
-        // if let Ok(border_radius) = widget.borrow_mut_property::<BorderRadius>() {
-        //     if let Some(radius) = self.float("border-radius", &selector) {
-        //         border_radius.0 = radius as f64;
-        //     }
-        // }
+        if let Ok(border_radius) = widget.borrow_mut_property::<BorderRadius>() {
+            if let Some(radius) = self.float("border-radius", &selector) {
+                border_radius.0 = radius as f64;
+            }
+        }
 
-        // if let Ok(border_thickness) = widget.borrow_mut_property::<BorderThickness>() {
-        //     if let Some(border_width) = self.uint("border-width", &selector) {
-        //         *border_thickness = BorderThickness::from(border_width as f64);
-        //     }
-        // }
+        if let Ok(border_thickness) = widget.borrow_mut_property::<BorderThickness>() {
+            if let Some(border_width) = self.uint("border-width", &selector) {
+                *border_thickness = BorderThickness::from(border_width as f64);
+            }
+        }
 
-        // if let Ok(font_size) = widget.borrow_mut_property::<FontSize>() {
-        //     if let Some(size) = self.uint("font-size", &selector) {
-        //         font_size.0 = size as f64;
-        //     }
-        // }
+        if let Ok(font_size) = widget.borrow_mut_property::<FontSize>() {
+            if let Some(size) = self.uint("font-size", &selector) {
+                font_size.0 = size as f64;
+            }
+        }
 
-        // if let Ok(font) = widget.borrow_mut_property::<Font>() {
-        //     if let Some(font_family) = self.string("font-family", &selector) {
-        //         if let Some(inner_font) = fonts::font_by_key(&font_family[..]) {
-        //             font.0 = inner_font;
-        //         }
-        //     }
-        // }
+        if let Ok(font) = widget.borrow_mut_property::<Font>() {
+            if let Some(font_family) = self.string("font-family", &selector) {
+                if let Some(inner_font) = fonts::font_by_key(&font_family[..]) {
+                    (font.0).0 = inner_font;
+                }
+            }
+        }
 
         // if let Ok(icon_brush) = widget.borrow_mut_property::<IconBrush>() {
         //     if let Some(color) = self.brush("icon-color", &selector) {
@@ -359,12 +359,6 @@ impl Theme {
 pub struct Rule {
     pub selectors: Vec<Selector>,
     pub declarations: Vec<Declaration>,
-}
-
-impl<T: Into<String>> From<T> for Selector {
-    fn from(t: T) -> Self {
-        Selector::from(SelectorValue::new().with(t.into()))    
-    }
 }
 
 #[derive(Clone, Debug)]

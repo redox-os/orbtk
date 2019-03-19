@@ -158,3 +158,27 @@ property!(
     /// `Selector` describes the css selector of a widget.
     Selector(SelectorValue)
 );
+
+impl From<String> for Selector {
+    fn from(s: String) -> Selector {
+        Selector(SelectorValue::new().with(s))
+    }
+}
+
+impl Into<PropertySource<Selector>> for String {
+    fn into(self) -> PropertySource<Selector> {
+        PropertySource::Value(Selector::from(self))
+    }
+}
+
+impl From<&str> for Selector {
+    fn from(s: &str) -> Selector {
+        Selector(SelectorValue::new().with(s.to_string()))
+    }
+}
+
+impl Into<PropertySource<Selector>> for &str {
+    fn into(self) -> PropertySource<Selector> {
+        PropertySource::Value(Selector::from(self))
+    }
+}

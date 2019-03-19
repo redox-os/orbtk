@@ -3,12 +3,15 @@ use dces::prelude::Entity;
 use crate::{
     event::ClickHandler,
     properties::*,
+    theme::Selector,
     styling::{colors, fonts},
     widget::{Container, Template, TextBlock},
 };
 
 widget!(
     /// The `Button` widget can be clicked by user. It's used to perform an action.
+    /// 
+    /// * CSS Element: `button`
     Button: ClickHandler {
         /// Sets or shares the background property.
         background: Background,
@@ -35,13 +38,17 @@ widget!(
         font_size: FontSize,
 
         /// Sets or shares the font property.
-        font: Font
+        font: Font,
+
+        /// Sets or shares the css selector property. 
+        selector: Selector
     }
 );
 
 impl Template for Button {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
         self.name("Button")
+            .selector("button")
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
             .border_thickness(0.0)

@@ -8,7 +8,7 @@ use crate::theme::Selector;
 
 use crate::event::EventHandler;
 
-use crate::{Layout, RenderObject, PaddingLayout};
+use crate::{Layout, RenderObject, GridLayout};
 
 pub use self::context::Context;
 pub use self::message::{MessageBox, StringMessage};
@@ -53,7 +53,7 @@ pub trait Template: Sized {
     }
 
     fn layout(&self) -> Box<dyn Layout> {
-        Box::new(PaddingLayout::new())
+        Box::new(GridLayout::new())
     }
 }
 

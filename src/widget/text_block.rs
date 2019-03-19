@@ -3,6 +3,7 @@ use dces::prelude::Entity;
 use crate::{
     layout::{FixedSizeLayout, Layout},
     properties::*,
+    theme::Selector,
     render_object::{RenderObject, TextRenderObject},
     styling::{colors, fonts},
     widget::Template,
@@ -21,7 +22,10 @@ widget!(
         font_size: FontSize,
 
         /// Sets or shares the font property.
-        font: Font
+        font: Font,
+
+        /// Sets or shares the css selector property. 
+        selector: Selector
     }
 );
 

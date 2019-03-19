@@ -1,27 +1,47 @@
-// use crate::{
-//     enums::ParentType,
-//     layout::GridLayout,
-//     properties::{BackgroundProperty, Columns, ColumnsProperty, Rows, RowsProperty},
-//     render_object::RectangleRenderObject,
-//     widget::{Template, Widget},
-// };
+use dces::prelude::Entity;
 
-// widget!(
-//     /// Defines a flexible grid area that consists of columns and rows.
-//     Grid
-//     (BackgroundProperty, RowsProperty, ColumnsProperty)
-// );
+use crate::{ 
+    theme::Selector,
+    layout::{GridLayout, Layout},
+    properties::*,
+    render_object::{RenderObject, RectangleRenderObject},
+    widget::Template
+};
 
-// impl Widget for Grid {
-//     fn create() -> Self {
-//         Grid::new()
-//             .background("transparent")
-//             .columns(Columns::default())
-//             .rows(Rows::default())
-//             .parent_type(ParentType::Multi)
-//             .layout(GridLayout::default())
-//             .render_object(RectangleRenderObject)
-//             .selector("grid")
-//             .debug_name("Grid")
-//     }
-// }
+widget!(
+    /// The `Grid` defines a flexible grid area that consists of columns and rows.
+    Grid {
+        /// Sets or shares the background property.
+        background: Background,
+
+        /// Sets or shares the columns property.
+        columns: Columns,
+
+        /// Sets or shares the rows property.
+        rows: Rows,
+
+        /// Sets or shares the css selector property. 
+        selector: Selector,
+
+        /// Sets or shares the margin property.
+        margin: Margin
+    }
+);
+
+impl Template for Grid {
+    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+         self.name("Grid")
+            .selector("grid")
+            .background("transparent")
+            .rows(Rows::default())
+            .columns(Columns::default())
+    }
+
+    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
+        Some(Box::new(RectangleRenderObject))
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(GridLayout::new())
+    }
+}

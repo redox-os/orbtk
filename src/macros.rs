@@ -16,6 +16,12 @@ macro_rules! property {
             }
         }
 
+         impl Into<PropertySource<$property>> for $property {
+            fn into(self) -> PropertySource<$property> {
+                PropertySource::Value(self)
+            }
+        }
+
         impl From<$property> for $type {
             fn from(property: $property) -> $type {
                 property.0.into()
@@ -85,6 +91,11 @@ macro_rules! widget {
                     }
                 }
                 self
+            }
+
+             /// Sets or shares the constraint property.
+            pub fn constraint<P: Into<PropertySource<Constraint>>>(self, constraint: P) -> Self {
+                self.attach(constraint)
             }
 
             /// Sets or shares the vertical alignment property.
