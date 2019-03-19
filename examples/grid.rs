@@ -22,6 +22,7 @@ impl Template for MainView {
                         .child(
                             TextBlock::create()
                                 .text("(0,0)")
+                                .selector("white")
                                 .horizontal_alignment("Center")
                                 .vertical_alignment("Center")
                                 .build(context),
@@ -37,6 +38,7 @@ impl Template for MainView {
                         .child(
                             TextBlock::create()
                                 .text("(1,0)")
+                                .selector("white")
                                 .horizontal_alignment("Center")
                                 .vertical_alignment("Center")
                                 .build(context),
