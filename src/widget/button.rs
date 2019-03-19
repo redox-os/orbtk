@@ -4,38 +4,68 @@ use crate::{
     event::ClickHandler,
     properties::*,
     styling::{colors, fonts},
-    widget::{
-       Container, TextBlock, Template
-    },
+    widget::{Container, Template, TextBlock},
 };
 
 widget!(
-    /// This is a button
+    /// The `Button` widget can be clicked by user. It's used to perform an action.
     Button: ClickHandler {
-        /// Sets the background
+        /// Sets or shares the background property.
         background: Background,
 
-        /// Sets the foreground
+        /// Sets or shares the border radius property.
+        border_radius: BorderRadius,
+
+        /// Sets or shares the border thickness property.
+        border_thickness: BorderThickness,
+
+        /// Sets or shares the border brush property.
+        border_brush: BorderBrush,
+
+        /// Sets or shares the padding property.
+        padding: Padding,
+
+        /// Sets or shares the foreground property.
         foreground: Foreground,
 
-        /// Sets the text
-        text: Text
+        /// Sets or shares the text property.
+        text: Text,
+
+        /// Sets or share the font size property.
+        font_size: FontSize,
+
+        /// Sets or shares the font property.
+        font: Font
     }
 );
 
 impl Template for Button {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
-        self.child(
-            Container::create()
-                .background(id)
-                .child(
-                    TextBlock::create()
-                        .foreground(id)
-                        .text(id)
-                        .build(context),
-                )
-                .build(context),
-        )
+        self.name("Button")
+            .background(colors::LYNCH_COLOR)
+            .border_radius(2.0)
+            .border_thickness(0.0)
+            .padding((8.0, 0.0, 8.0, 0.0))
+            .foreground(colors::LINK_WATER_COLOR)
+            .text("")
+            .font_size(fonts::FONT_SIZE_12)
+            .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
+            .child(
+                Container::create()
+                    .background(id)
+                    .border_radius(id)
+                    .border_thickness(id)
+                    .padding(id)
+                    .child(
+                        TextBlock::create()
+                            .foreground(id)
+                            .text(id)
+                            .font_size(id)
+                            .font(id)
+                            .build(context),
+                    )
+                    .build(context),
+            )
     }
 }
 

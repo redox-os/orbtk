@@ -93,7 +93,7 @@ macro_rules! widget {
             }
 
             /// Sets or shares the horizontal alignment property.
-            pub fn horizontal_alignment<P: Into<PropertySource<VerticalAlignment>>>(self, horizontal_alignment: P) -> Self {
+            pub fn horizontal_alignment<P: Into<PropertySource<HorizontalAlignment>>>(self, horizontal_alignment: P) -> Self {
                 self.attach(horizontal_alignment)
             }
 

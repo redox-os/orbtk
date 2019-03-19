@@ -129,15 +129,10 @@ widget!(MainView);
 impl Template for MainView {
     fn template(self, _: Entity, context: &mut BuildContext) -> Self {
         self.name("MainView").child(
-            Container::create()
-                .background("#6195ED")
+            Button::create()
+                .text("Click me")
                 .vertical_alignment("Start")
-                .child(
-                    TextBlock::create()
-                        .text("TextBlock")
-                        .font_size(38.0)
-                        .build(context),
-                )
+                .horizontal_alignment("Start")
                 .build(context),
         )
     }
