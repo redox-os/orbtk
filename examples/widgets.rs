@@ -1,7 +1,5 @@
 use orbtk::*;
 
-use std::{cell::Cell, rc::Rc};
-
 // #[derive(Default)]
 // struct MainViewState {
 //     counter: Cell<i32>,
@@ -126,6 +124,25 @@ use std::{cell::Cell, rc::Rc};
 //     }
 // }
 
+widget!(MainView);
+
+impl Template for MainView {
+    fn template(self, _: Entity, context: &mut BuildContext) -> Self {
+        self.name("MainView").child(
+            Container::create()
+                .background("#6195ED")
+                .vertical_alignment("Start")
+                .child(
+                    TextBlock::create()
+                        .text("TextBlock")
+                        .font_size(38.0)
+                        .build(context),
+                )
+                .build(context),
+        )
+    }
+}
+
 fn main() {
     let mut application = Application::default();
 
@@ -134,6 +151,6 @@ fn main() {
         .bounds((100.0, 100.0, 420.0, 730.0))
         .title("OrbTk - widgets example")
         .debug_flag(true)
-        .build(TextBlock::create().text("TextBlock").font_size(38.0));
+        .build(MainView::create());
     application.run();
 }

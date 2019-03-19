@@ -127,7 +127,7 @@ impl Layout for PaddingLayout {
                 margin.left(),
                             margin.right()
             ),
-            vertical_alignment.align_position(
+            vertical_alignment.align_measure(
                 parent_size.1,
                 self.desired_size.borrow().height(),
                  margin.top(),
@@ -158,7 +158,7 @@ impl Layout for PaddingLayout {
             if let Ok(child_bounds) = ecm.borrow_mut_component::<Bounds>(*child) {
                 child_bounds.set_x(
                     padding.left()
-                        + child_horizontal_alignment.align_measure(
+                        + child_horizontal_alignment.align_position(
                             available_size.0,
                             child_bounds.width(),
                             child_margin.left(),

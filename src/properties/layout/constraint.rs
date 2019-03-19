@@ -1,5 +1,7 @@
+use std::f64;
+
 /// `BoxConstraint` describes a box constraint.
-#[derive(Copy, Clone, Default, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct BoxConstraint {
     width: f64,
     height: f64,
@@ -7,6 +9,19 @@ pub struct BoxConstraint {
     min_height: f64,
     max_width: f64,
     max_height: f64,
+}
+
+impl Default for BoxConstraint {
+    fn default() -> Self {
+        BoxConstraint {
+            width: 0.0,
+            height: 0.0,
+            min_width: 0.0,
+            min_height: 0.0,
+            max_width: f64::MAX,
+            max_height: f64::MAX,
+        }
+    }
 }
 
 property!(
@@ -67,7 +82,7 @@ impl ConstraintExtension for BoxConstraint {
         self.width = width;
     }
 
-     fn height(&self) -> f64 {
+    fn height(&self) -> f64 {
         self.height
     }
 
@@ -75,7 +90,7 @@ impl ConstraintExtension for BoxConstraint {
         self.height = height;
     }
 
-     fn min_width(&self) -> f64 {
+    fn min_width(&self) -> f64 {
         self.min_width
     }
 
@@ -83,7 +98,7 @@ impl ConstraintExtension for BoxConstraint {
         self.min_width = min_width;
     }
 
-     fn min_height(&self) -> f64 {
+    fn min_height(&self) -> f64 {
         self.min_height
     }
 
@@ -91,7 +106,7 @@ impl ConstraintExtension for BoxConstraint {
         self.min_height = min_height;
     }
 
-     fn max_width(&self) -> f64 {
+    fn max_width(&self) -> f64 {
         self.max_width
     }
 
@@ -99,7 +114,7 @@ impl ConstraintExtension for BoxConstraint {
         self.max_width = max_width;
     }
 
-     fn max_height(&self) -> f64 {
+    fn max_height(&self) -> f64 {
         self.max_height
     }
 
@@ -127,7 +142,7 @@ impl ConstraintExtension for BoxConstraint {
 }
 
 impl ConstraintExtension for Constraint {
-     fn width(&self) -> f64 {
+    fn width(&self) -> f64 {
         self.0.width
     }
 
@@ -135,7 +150,7 @@ impl ConstraintExtension for Constraint {
         self.0.width = width;
     }
 
-     fn height(&self) -> f64 {
+    fn height(&self) -> f64 {
         self.0.height
     }
 
@@ -143,7 +158,7 @@ impl ConstraintExtension for Constraint {
         self.0.height = height;
     }
 
-     fn min_width(&self) -> f64 {
+    fn min_width(&self) -> f64 {
         self.0.min_width
     }
 
@@ -151,7 +166,7 @@ impl ConstraintExtension for Constraint {
         self.0.min_width = min_width;
     }
 
-     fn min_height(&self) -> f64 {
+    fn min_height(&self) -> f64 {
         self.0.min_height
     }
 
@@ -159,7 +174,7 @@ impl ConstraintExtension for Constraint {
         self.0.min_height = min_height;
     }
 
-     fn max_width(&self) -> f64 {
+    fn max_width(&self) -> f64 {
         self.0.max_width
     }
 
@@ -167,7 +182,7 @@ impl ConstraintExtension for Constraint {
         self.0.max_width = max_width;
     }
 
-     fn max_height(&self) -> f64 {
+    fn max_height(&self) -> f64 {
         self.0.max_height
     }
 
@@ -176,7 +191,7 @@ impl ConstraintExtension for Constraint {
     }
 
     fn perform(&self, size: (f64, f64)) -> (f64, f64) {
-       self.0.perform(size)
+        self.0.perform(size)
     }
 }
 
