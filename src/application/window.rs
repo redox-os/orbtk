@@ -88,12 +88,12 @@ impl<'a> WindowBuilder<'a> {
 
     /// Creates the window with the given properties and builds its widget tree.
     pub fn build<W>(self, root: W)
-    where
-        W: Widget,
+        where
+            W: Widget,
     {
         let mut world = World::from_container(Tree::default());
 
-         // register window as entity with global properties
+        // register window as entity with global properties
         let window = world
             .create_entity()
             .with(Global::default())
@@ -108,7 +108,7 @@ impl<'a> WindowBuilder<'a> {
 
         let (mut runner, backend) =
             target_backend(&self.title, self.bounds, self.resizable, self.theme);
-        
+
         let render_objects = Rc::new(RefCell::new(BTreeMap::new()));
         let layouts = Rc::new(RefCell::new(BTreeMap::new()));
         let handlers = Rc::new(RefCell::new(BTreeMap::new()));
@@ -122,7 +122,7 @@ impl<'a> WindowBuilder<'a> {
         }
 
         if debug_flag.get() {
-            println!("Window (id = {}, children_len = 1)", window,);
+            println!("Window (id = {}, children_len = 1)", window, );
         }
 
         let mut context = BuildContext::new(
@@ -132,7 +132,7 @@ impl<'a> WindowBuilder<'a> {
             handlers.clone(),
             states.clone(),
         );
-        
+
         // Register root widget as child of window
         let root = root.build(&mut context);
         world.entity_container().append_child(window, root).unwrap();

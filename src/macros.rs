@@ -8,7 +8,7 @@ macro_rules! property {
         #[derive(Default, Debug, Clone, PartialEq)]
         $(#[$property_doc])*
         pub struct $property(pub $type);
-
+        
         impl $property {
             /// Returns the value of a property.
             pub fn get(entity: Entity, ecm: &EntityComponentManager) -> $type {
@@ -58,7 +58,8 @@ macro_rules! widget {
 
         use crate::{event::EventHandler,
             properties::{Bounds, Constraint, VerticalAlignment, HorizontalAlignment, Visibility, Name},
-            widget::{PropertySource, Widget, BuildContext}};
+            widget::{PropertySource, Widget, BuildContext},
+            structs::Point};
 
         $(#[$widget_doc])*
         pub struct $widget {
@@ -70,6 +71,7 @@ macro_rules! widget {
             name: Option<Name>,
             horizontal_alignment: HorizontalAlignment,
             vertical_alignment: VerticalAlignment,
+            margin: Margin,
             enabled: Enabled,
             visibility: Visibility,
              $(
@@ -114,12 +116,72 @@ macro_rules! widget {
                 self.attach(visibility)
             }
 
+            /// Sets or shares the margin property.
+            pub fn margin<P: Into<PropertySource<Margin>>>(self, margin: P) -> Self {
+                self.attach(margin)
+            }
+
             /// Sets or shares the enabled property.
             pub fn enabled<P: Into<PropertySource<Enabled>>>(self, enabled: P) -> Self {
                 self.attach(enabled)
             }
 
-            // todo: constraint also by with min max, ...
+            /// Inserts a new width.
+            pub fn width(mut self, width: f64) -> Self {
+                self.constraint.set_width(width);
+                self
+            }
+
+            /// Inserts a new height.
+            pub fn height(mut self, height: f64) -> Self {
+                self.constraint.set_height(height);
+                self
+            }
+
+            /// Inserts a new size.
+            pub fn size(mut self, width: f64, height: f64) -> Self {
+                self.constraint.set_width(width);
+                self.constraint.set_height(height);
+                self
+            }
+
+            /// Inserts a new min_width.
+            pub fn min_width(mut self, min_width: f64) -> Self {
+                self.constraint.set_min_width(min_width);
+                self
+            }
+
+            /// Inserts a new min_height.
+            pub fn min_height(mut self, min_height: f64) -> Self {
+                self.constraint.set_min_height(min_height);
+                self
+            }
+
+            /// Inserts a new min_size.
+            pub fn min_size(mut self, min_width: f64, min_height: f64) -> Self {
+                self.constraint.set_min_width(min_width);
+                self.constraint.set_min_height(min_height);
+                self
+            }
+
+            /// Inserts a new max_width.
+            pub fn max_width(mut self, max_width: f64) -> Self {
+                self.constraint.set_max_width(max_width);
+                self
+            }
+
+            /// Inserts a new max_height.
+            pub fn max_height(mut self, max_height: f64) -> Self {
+                self.constraint.set_max_height(max_height);
+                self
+            }
+
+            /// Inserts a new min_size.
+            pub fn max_size(mut self, max_width: f64, max_height: f64) -> Self {
+                self.constraint.set_max_width(max_width);
+                self.constraint.set_max_height(max_height);
+                self
+            }
 
             /// Sets the debug name of the widget.
             pub fn name<P: Into<Name>>(mut self, name: P) -> Self {
@@ -160,6 +222,7 @@ macro_rules! widget {
                     horizontal_alignment: HorizontalAlignment::default(),
                     vertical_alignment: VerticalAlignment::default(),
                     visibility: Visibility::default(),
+                    margin: Margin::default(),
                     enabled: Enabled(false),
                     $(
                         $(
@@ -203,6 +266,10 @@ macro_rules! widget {
                 context.register_property(entity, this.vertical_alignment);
                 context.register_property(entity, this.horizontal_alignment);
                 context.register_property(entity, this.visibility);
+                context.register_property(entity, this.margin);
+
+                // register helpers
+                context.register_property(entity, Point::default());
                 
                 // register attached properties
                 for (_, property) in this.attached_properties {
@@ -228,6 +295,11 @@ macro_rules! widget {
                         }
                     )*
                 )*
+
+                // register event handlers
+                for handler in this.event_handlers {
+                    context.register_handler(entity, handler);
+                }
 
                 // register name
                 if let Some(name) = this.name {

@@ -78,14 +78,14 @@ impl ConstraintBuilder {
     /// Builds the constraint.
     pub fn build(self) -> Constraint {
         Constraint(
-        BoxConstraint {
-            width: self.width,
-            height: self.height,
-            min_width: self.min_width,
-            min_height: self.min_height,
-            max_width: self.max_width,
-            max_height: self.max_height,
-        })
+            BoxConstraint {
+                width: self.width,
+                height: self.height,
+                min_width: self.min_width,
+                min_height: self.min_height,
+                max_width: self.max_width,
+                max_height: self.max_height,
+            })
     }
 }
 
@@ -124,7 +124,7 @@ property!(
 /// Provides operations on a box constraint.
 pub trait ConstraintExtension {
     /// Returns a constraint builder.
-     fn create() -> ConstraintBuilder;
+    fn create() -> ConstraintBuilder;
 
     /// Gets width.
     fn width(&self) -> f64;

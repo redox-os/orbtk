@@ -3,14 +3,16 @@ use dces::prelude::Entity;
 use crate::{
     layout::{FixedSizeLayout, Layout},
     properties::*,
-    theme::Selector,
     render_object::{RenderObject, TextRenderObject},
     styling::{colors, fonts},
+    theme::Selector,
     widget::Template,
 };
 
 widget!(
     /// The `TextBlock` widget is used to draw text. It is not interactive.
+    /// 
+    /// * CSS element: `text-block`
     TextBlock {
         /// Sets or shares the text property.
         text: Text,
@@ -24,14 +26,16 @@ widget!(
         /// Sets or shares the font property.
         font: Font,
 
-        /// Sets or shares the css selector property. 
+        /// Sets or shares the css selector property.
         selector: Selector
     }
 );
 
 impl Template for TextBlock {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        self.name("TextBlock").text("")
+        self.name("TextBlock")
+            .selector("text-block")
+            .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
             .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))

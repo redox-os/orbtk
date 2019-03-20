@@ -22,7 +22,7 @@
 
 // // impl Widget for CanvasWidget {
 // //     type Template = Template;
-    
+
 // //     fn create() -> Template {
 // //         Template::new()
 // //             .property(Selector::from("imagewidget"))

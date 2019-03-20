@@ -35,8 +35,7 @@ impl EventSystem {
         _tree: &Tree,
         _ecm: &mut EntityComponentManager,
         _new_events: &mut Vec<EventBox>,
-    ) {
-    }
+    ) {}
 
     fn process_bottom_up_event(
         &self,

@@ -39,7 +39,6 @@ impl BoundsExtension for Bounds {
             || rect.y() >= (self.0.y + self.0.height)
             || self.0.y >= (rect.y() + rect.height()))
     }
-
 }
 
 impl Size for Bounds {

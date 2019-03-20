@@ -14,7 +14,7 @@
     font-family: "Roboto Regular";
 }
 
-checkbox {
+check-box {
     background: transparent;
     border-radius: 2;
     border-width: 1;
@@ -22,7 +22,7 @@ checkbox {
     icon-color: transparent;
 }
 
-checkbox:selected {   
+check-box:selected {
     background: #6C7A90;
     border-color: #adb3b8;
     icon-color: white;
@@ -39,17 +39,17 @@ switch {
     background: #6C7A90;
 }
 
-switchtoggle {
+switch-toggle {
     border-radius: 2;
     background: white;
 }
 
-switchtoggle:selected {
+switch-toggle:selected {
     border-radius: 2;
     background: #F8DE4C;
 }
 
-button, togglebutton {
+button, toggle-button {
     background: #647b91;
     border-radius: 2;
 }
@@ -60,13 +60,13 @@ button.primary {
     icon-color: #3b434a;
 }
 
-button:active, button.primary:active, button.square:active, togglebutton:active, togglebutton:selected {
+button:active, button.primary:active, button.square:active, toggle-button:active, toggle-button:selected {
     background: #516475;
     color: #dfebf5;
-    icon-color:  #dfebf5;
+    icon-color: #dfebf5;
 }
 
-button:disabled, togglebutton:disabled {
+button:disabled, toggle-button:disabled {
     background: #36516b;
 }
 
@@ -79,11 +79,11 @@ container {
     padding: 8;
 }
 
-textblock.h1 {
+text-block.h1 {
     font-size: 24;
 }
 
-textbox {
+text-box {
     width: 100;
     height: 32;
     background: #3b434a;
@@ -105,11 +105,11 @@ menuitem {
     font-size: 12;
 }
 
-textbox:watermark {
+text-box:watermark {
     color: #9E9E9E
 }
 
-textbox:focus {
+text-box:focus {
     border-color: #f8de4c;
 }
 
@@ -125,7 +125,7 @@ cursor:expanded {
     opacity: 0.3;
 }
 
-debugborder {
+debug-border {
     border-width: 1;
     border-color: blue;
     background: transparent;

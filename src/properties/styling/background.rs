@@ -1,5 +1,5 @@
 use crate::
-    structs::{Brush, Color};
+structs::{Brush, Color};
 
 property!(
     /// `Background` describes the background brush of a visual element.

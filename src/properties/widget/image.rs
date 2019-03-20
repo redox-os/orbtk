@@ -8,25 +8,25 @@ use orbimage::Image as OrbImage;
 pub struct InnerImage(pub OrbImage);
 
 impl Default for InnerImage {
-       fn default() -> Self {
-           InnerImage(OrbImage::new(0, 0))
+    fn default() -> Self {
+        InnerImage(OrbImage::new(0, 0))
     }
 }
 
 impl fmt::Debug for InnerImage {
-     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "InnerImage(orbimage::Image)")
     }
 }
 
 impl PartialEq for InnerImage {
     // todo: impl
-     fn eq(&self, other: &InnerImage) -> bool {
-         false
+    fn eq(&self, other: &InnerImage) -> bool {
+        false
     }
 }
 
-impl From<OrbImage> for InnerImage { 
+impl From<OrbImage> for InnerImage {
     fn from(image: OrbImage) -> InnerImage {
         InnerImage(image)
     }
@@ -42,17 +42,17 @@ property!(
 /// Provides additional methods for image objects.
 pub trait ImageExtension {
     /// Gets the width.
-        fn width(&self) -> u32;
+    fn width(&self) -> u32;
 
     /// Gets the height.
     fn height(&self) -> u32;
 
     /// Gets the color data.
-     fn data(&self) -> &[Color];
+    fn data(&self) -> &[Color];
 }
 
 impl ImageExtension for InnerImage {
-        fn width(&self) -> u32 {
+    fn width(&self) -> u32 {
         self.0.width()
     }
 
@@ -66,7 +66,7 @@ impl ImageExtension for InnerImage {
 }
 
 impl ImageExtension for Image {
-        fn width(&self) -> u32 {
+    fn width(&self) -> u32 {
         self.0.width()
     }
 
@@ -104,41 +104,3 @@ impl Into<PropertySource<Image>> for String {
         PropertySource::Value(Image::from(self))
     }
 }
-
-
-// #[derive(Clone)]
-// pub struct Image(pub OrbImage);
-
-// impl Default for Image {
-//     fn default() -> Self {
-//         Image(OrbImage::new(0, 0))
-//     }
-// }
-
-// property!(Image, ImageProperty, image, shared_image);
-
-// impl Image {
-//     pub fn width(&self) -> u32 {
-//         self.0.width()
-//     }
-
-//     pub fn height(&self) -> u32 {
-//         self.0.height()
-//     }
-
-//     pub fn data(&self) -> &[Color] {
-//         self.0.data()
-//     }
-// }
-
-// impl From<&str> for Image {
-//     fn from(s: &str) -> Image {
-//         Image(OrbImage::from_path(s).unwrap())
-//     }
-// }
-
-// impl From<String> for Image {
-//     fn from(s: String) -> Image {
-//         Image(OrbImage::from_path(s).unwrap())
-//     }
-// }

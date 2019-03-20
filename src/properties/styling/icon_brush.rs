@@ -1,25 +1,26 @@
-// use crate::structs::{Brush, Color};
+use crate::
+structs::{Brush, Color};
 
-// /// Used to draw the icon brush of a widget.
-// #[derive(Clone)]
-// pub struct IconBrush(pub Brush);
+property!(
+    /// `IconBrush` describes the icon brush of a visual element.
+    IconBrush(Brush));
 
-// property!(IconBrush, IconBrushProperty, icon_brush, icon_brush_prop);
+// --- Conversions ---
 
-// impl From<IconBrush> for Color {
-//     fn from(b: IconBrush) -> Color {
-//         b.0.into()
-//     }
-// }
+impl From<&str> for IconBrush {
+    fn from(s: &str) -> IconBrush {
+        IconBrush(s.into())
+    }
+}
 
-// impl Default for IconBrush {
-//     fn default() -> IconBrush {
-//         "#000000".into()
-//     }
-// }
+impl Into<PropertySource<IconBrush>> for &str {
+    fn into(self) -> PropertySource<IconBrush> {
+        PropertySource::Value(IconBrush::from(self))
+    }
+}
 
-// impl From<&str> for IconBrush {
-//     fn from(s: &str) -> IconBrush {
-//         IconBrush(s.into())
-//     }
-// }
+impl From<IconBrush> for Color {
+    fn from(b: IconBrush) -> Color {
+        b.0.into()
+    }
+}

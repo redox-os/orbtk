@@ -24,7 +24,7 @@ impl HorizontalAlignmentExtension for HorizontalAlignment {
         self.0
             .align_position(available_height, height, margin.left(), margin.right())
     }
- 
+
     fn align_width(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
         self.0
             .align_measure(available_height, height, margin.left(), margin.right())

@@ -65,7 +65,6 @@ impl GridLayout {
         &self,
         rows_cache: &BTreeMap<usize, (f64, f64)>,
         entity: Entity,
-
         ecm: &EntityComponentManager,
         grid_row: usize,
     ) -> (f64, f64) {
@@ -168,13 +167,13 @@ impl Layout for GridLayout {
                 parent_size.0,
                 self.desired_size.borrow().width(),
                 margin.left(),
-                margin.right()
+                margin.right(),
             ),
             vertical_alignment.align_measure(
                 parent_size.1,
                 self.desired_size.borrow().height(),
                 margin.top(),
-                margin.bottom()
+                margin.bottom(),
             ),
         ));
 
@@ -267,9 +266,9 @@ impl Layout for GridLayout {
 
                 let stretch_width = ((size.0 - used_width)
                     / columns
-                        .iter()
-                        .filter(|column| column.width == ColumnWidth::Stretch)
-                        .count() as f64)
+                    .iter()
+                    .filter(|column| column.width == ColumnWidth::Stretch)
+                    .count() as f64)
                     .trunc();
 
                 columns
@@ -331,9 +330,9 @@ impl Layout for GridLayout {
 
                 let stretch_height = ((size.1 - used_height)
                     / rows
-                        .iter()
-                        .filter(|row| row.height == RowHeight::Stretch)
-                        .count() as f64)
+                    .iter()
+                    .filter(|row| row.height == RowHeight::Stretch)
+                    .count() as f64)
                     .trunc();
 
                 rows.iter_mut()
@@ -375,7 +374,7 @@ impl Layout for GridLayout {
             let mut available_size = *self.children_sizes.borrow().get(child).unwrap();
 
             // child margin
-            let c_margin = Margin::get(*child,ecm);
+            let c_margin = Margin::get(*child, ecm);
 
             let c_vertical_alignment = VerticalAlignment::get(*child, ecm);
             let c_horizontal_alignment = HorizontalAlignment::get(*child, ecm);

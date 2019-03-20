@@ -1,9 +1,10 @@
 use crate::
-    structs::{Brush, Color};
+structs::{Brush, Color};
 
 property!(
     /// `Foreground` describes the foreground brush of a visual element.
-    Foreground(Brush));
+    Foreground(Brush)
+);
 
 // --- Conversions ---
 

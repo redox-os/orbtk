@@ -83,6 +83,4 @@
 //     application.run();
 // }
 
-fn main() {
-    
-}
+fn main() {}

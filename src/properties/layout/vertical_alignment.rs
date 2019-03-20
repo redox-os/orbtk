@@ -24,7 +24,7 @@ impl VerticalAlignmentExtension for VerticalAlignment {
         self.0
             .align_position(available_height, height, margin.top(), margin.bottom())
     }
-  
+
     fn align_height(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
         self.0
             .align_measure(available_height, height, margin.top(), margin.bottom())

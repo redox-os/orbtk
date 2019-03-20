@@ -8,7 +8,7 @@
 > OrbTk 0.3.0 is under heavy development and it's not compatible to earlier releases.
 
 The Orbital Widget Toolkit is a multi platform (G)UI toolkit for building scalable user interfaces with the programming language Rust. It's based
-on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity%E2%80%93component%E2%80%93system) and provides a functional-reactive API. 
+on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity%E2%80%93component%E2%80%93system) and provides a functional-reactive like API. 
 
 The main goals of OrbTk are fast performance, easy to use and cross platform.
 
@@ -16,7 +16,7 @@ The main goals of OrbTk are fast performance, easy to use and cross platform.
 
 ## Features:
 
-* Modern [Flutter](https://flutter.io/), [React](https://reactjs.org/), [Redux](https://redux.js.org/) like API
+* Modern lightweight API
 * Uses the Entity Component System library [DCES](https://gitlab.redox-os.org/redox-os/dces-rust) for widget and properties handling
 * Updating instead of rebuilding sub-trees
 * Flexible event system
@@ -55,9 +55,8 @@ fn main() {
         .create_window()
         .bounds(Bounds::new(100.0, 100.0, 420.0, 730.0))
         .title("OrbTk - minimal example")
-        .root(TextBlock::create().text("OrbTk").into())
         .debug_flag(false)
-        .build();
+        .build(TextBlock::create().text("OrbTk"));
     application.run();
 }
 ```
@@ -90,12 +89,13 @@ cargo doc --no-deps --open
 * Exchange views / widgets / screens on runtime
 * Split application in modules
 * Theme update
-* Support for Android, iOS and WebAssembly
+* Support for Android, iOS, Ubuntu Touch and WebAssembly
 * Vulkan / OpenGL Support 
 
 ## Dependencies
 
-* [OrbClient](https://gitlab.redox-os.org/redox-os/orbclient): window creation, drawing, window events
+* [OrbGL](https://gitlab.redox-os.org/redox-os/orbgl): 2D/3D drawing
+* [OrbClient](https://gitlab.redox-os.org/redox-os/orbclient): window creation, window events
 * [OrbFont](https://gitlab.redox-os.org/redox-os/orbfont): font rendering
 * [OrbImage](https://gitlab.redox-os.org/redox-os/orbimage/tree/master/src): image loading
 * [DCES](https://gitlab.redox-os.org/redox-os/dces-rust): Entity Component System

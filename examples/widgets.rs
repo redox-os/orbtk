@@ -19,14 +19,7 @@ use orbtk::*;
 //     }
 // }
 
-// fn create_header(text: &str, grid: usize, column: usize) -> Template {
-//     TextBlock::create()
-//         .text(text)
-//         .selector(Selector::from("textblock").class("h1"))
-//         .attach(GridColumn(grid))
-//         .attach(GridRow(column))
-//         .into()
-// }
+
 
 // widget!(MainView);
 
@@ -124,16 +117,102 @@ use orbtk::*;
 //     }
 // }
 
+fn create_header(context: &mut BuildContext, text: &str, grid: usize, column: usize) -> Entity {
+    TextBlock::create()
+        .text(text)
+        .selector(SelectorValue::new().with("text-block").class("h1"))
+        .attach(GridColumn(grid))
+        .attach(GridRow(column))
+        .build(context)
+}
+
 widget!(MainView);
 
 impl Template for MainView {
     fn template(self, _: Entity, context: &mut BuildContext) -> Self {
         self.name("MainView").child(
-            Button::create()
-                .text("Click me")
-                .vertical_alignment("Start")
-                .horizontal_alignment("Start")
-                .build(context),
+            Grid::create()
+                .margin(8.0)
+                .columns(
+                    Columns::create()
+                        .column("Auto")
+                        .column(32.0)
+                        .column("Auto")
+                        .column("*")
+                        .build(),
+                )
+                .rows(
+                    Rows::create()
+                        .row("Auto")
+                        .row("Auto")
+                        .row("Auto")
+                        .row("Auto")
+                        .row("Auto")
+                        .row("Auto")
+                        .build(),
+                )
+                // Column 0
+                .child(create_header(context, "Button", 0, 0))
+                .child(
+                    Button::create()
+                        .text("Button")
+                        .margin((0.0, 8.0, 0.0, 0.0))
+                        .icon(material_font_icons::CHECK_FONT_ICON)
+                        .attach(GridColumn(0))
+                        .attach(GridRow(1))
+                        .on_click(move |_| {
+                            println!("Blub");
+                            // state.increment();
+                            true
+                        }).build(context)
+                )
+                .child(
+                    Button::create()
+                        .text("Primary")
+                        .selector(SelectorValue::new().with("button").class("primary"))
+                        .margin((0.0, 8.0, 0.0, 0.0))
+                        .icon(material_font_icons::CHECK_FONT_ICON)
+                        .attach(GridColumn(0))
+                        .attach(GridRow(2)).build(context)
+                )
+                .child(
+                    ToggleButton::create()
+                        .text("ToggleButton")
+                        .margin((0.0, 8.0, 0.0, 0.0))
+                        .attach(GridColumn(0))
+                        .attach(GridRow(3)).build(context)
+                )
+                .child(
+                    CheckBox::create()
+                        .text("CheckBox")
+                        .margin((0.0, 8.0, 0.0, 0.0))
+                        .attach(GridColumn(0))
+                        .attach(GridRow(4)).build(context)
+                )
+                .child(
+                    Switch::create()
+                        .margin((0.0, 8.0, 0.0, 0.0))
+                        .attach(GridColumn(0))
+                        .attach(GridRow(5)).build(context)
+                )
+                // Column 2
+                .child(create_header(context, "Text", 2, 0))
+                .child(
+                    TextBlock::create()
+                        .selector(SelectorValue::new().class("body"))
+                        // .text(button_count_text.share())
+                        .margin((0.0, 8.0, 0.0, 0.0))
+                        .attach(GridColumn(2))
+                        .attach(GridRow(1)).build(context)
+                )
+                // .child(
+                //     TextBox::create()
+                //         .water_mark("TextBox...")
+                //         .margin((0.0, 8.0, 0.0, 0.0))
+                //         .attach(GridColumn(2))
+                //         .attach(GridRow(2)).build(context)
+                // )
+                .build(context)
         )
     }
 }

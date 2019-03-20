@@ -1,45 +1,35 @@
-// use orbgl_api::Canvas;
+use orbgl_api::Canvas;
 
-// use crate::{
-//     backend::Renderer,
-//     properties::{Bounds, Image},
-//     render_object::RenderObject,
-//     structs::Point,
-//     widget::Context,
-// };
+use crate::{
+    backend::Renderer,
+    properties::{Bounds, Image},
+    render_object::RenderObject,
+    structs::{Point, Size},
+    widget::Context,
+};
 
-// pub struct ImageRenderObject;
+/// Used to render an image.
+pub struct ImageRenderObject;
 
-// impl Into<Box<dyn RenderObject>> for ImageRenderObject {
-//     fn into(self) -> Box<dyn RenderObject> {
-//         Box::new(self)
-//     }
-// }
+impl Into<Box<dyn RenderObject>> for ImageRenderObject {
+    fn into(self) -> Box<dyn RenderObject> {
+        Box::new(self)
+    }
+}
 
-// impl RenderObject for ImageRenderObject {
-//     fn render(
-//         &self,
-//         _canvas: &mut Canvas,
-//         renderer: &mut dyn Renderer,
-//         context: &mut Context<'_>,
-//         global_position: &Point,
-//     ) {
-//         let parent_bounds = if let Some(parent) = context.parent_widget() {
-//             if let Ok(bounds) = parent.borrow_property::<Bounds>() {
-//                 bounds.clone()
-//             } else {
-//                 Bounds::default()
-//             }
-//         } else {
-//             Bounds::default()
-//         };
-
-//         let widget = context.widget();
-
-//         if let Ok(bounds) = widget.borrow_property::<Bounds>() {
-//             if let Ok(image) = widget.borrow_property::<Image>() {
-//                 renderer.render_image(image.data(), bounds, &parent_bounds, global_position);
-//             }
-//         }
-//     }
-// }
+impl RenderObject for ImageRenderObject {
+    fn render(
+        &self,
+        canvas: &mut Canvas,
+        _renderer: &mut dyn Renderer,
+        context: &mut Context<'_>,
+        global_position: &Point,
+    ) {
+        let mut widget = context.widget();
+        let bounds = widget.get_property::<Bounds>();
+   
+        if let Ok(image) = widget.borrow_mut_property::<Image>() {
+            canvas.draw_image_with_size(&mut (image.0).0, global_position.x, global_position.y, bounds.width(), bounds.height());
+        }  
+    }
+}

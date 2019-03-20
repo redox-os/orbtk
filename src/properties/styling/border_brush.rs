@@ -1,5 +1,5 @@
 use crate::
-    structs::{Brush, Color};
+structs::{Brush, Color};
 
 property!(
     /// `BorderBrush` describes the border brush.

@@ -9,7 +9,7 @@ use dces::prelude::{Entity, EntityComponentManager};
 use crate::{
     application::Tree,
     properties::{
-        Bounds, Constraint, HorizontalAlignment, Margin, Padding, VerticalAlignment, Visibility, VisibilityValue, ConstraintExtension
+        Bounds, Constraint, HorizontalAlignment, Margin, Padding, VerticalAlignment, Visibility, VisibilityValue, ConstraintExtension,
     },
     enums::Alignment,
     structs::{DirtySize, Position, Size, Spacer},
@@ -125,13 +125,13 @@ impl Layout for PaddingLayout {
                 parent_size.0,
                 self.desired_size.borrow().width(),
                 margin.left(),
-                            margin.right()
+                margin.right(),
             ),
             vertical_alignment.align_measure(
                 parent_size.1,
                 self.desired_size.borrow().height(),
-                 margin.top(),
-                            margin.bottom()
+                margin.top(),
+                margin.bottom(),
             ),
         ));
 
@@ -159,20 +159,20 @@ impl Layout for PaddingLayout {
                 child_bounds.set_x(
                     padding.left()
                         + child_horizontal_alignment.align_position(
-                            available_size.0,
-                            child_bounds.width(),
-                            child_margin.left(),
-                            child_margin.right()
-                        ),
+                        available_size.0,
+                        child_bounds.width(),
+                        child_margin.left(),
+                        child_margin.right(),
+                    ),
                 );
                 child_bounds.set_y(
                     padding.top()
                         + child_vertical_alignment.align_position(
-                            available_size.1,
-                            child_bounds.height(),
-                            child_margin.top(),
-                            child_margin.bottom()
-                        ),
+                        available_size.1,
+                        child_bounds.height(),
+                        child_margin.top(),
+                        child_margin.bottom(),
+                    ),
                 );
             }
         }

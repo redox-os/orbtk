@@ -8,25 +8,25 @@ use crate::styling::fonts;
 pub struct InnerFont(pub OrbFont);
 
 impl Default for InnerFont {
-       fn default() -> Self {
+    fn default() -> Self {
         InnerFont::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
     }
 }
 
 impl fmt::Debug for InnerFont {
-     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "InnerFont(orbfont::Font)")
     }
 }
 
 impl PartialEq for InnerFont {
     // todo: impl
-     fn eq(&self, other: &InnerFont) -> bool {
-         false
+    fn eq(&self, other: &InnerFont) -> bool {
+        false
     }
 }
 
-impl From<OrbFont> for InnerFont { 
+impl From<OrbFont> for InnerFont {
     fn from(font: OrbFont) -> InnerFont {
         InnerFont(font)
     }

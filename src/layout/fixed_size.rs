@@ -13,7 +13,7 @@ use crate::{
     backend::{FontMeasure, FONT_MEASURE},
     properties::{
         Bounds, Constraint, Font, FontIcon, FontSize, HorizontalAlignment, IconFont, IconSize,
-        Image, Text, VerticalAlignment, Visibility, VisibilityValue, WaterMark, ImageExtension, ConstraintExtension
+        Image, Text, VerticalAlignment, Visibility, VisibilityValue, WaterMark, ImageExtension, ConstraintExtension,
     },
     enums::Alignment,
     structs::{DirtySize, Size},
@@ -119,6 +119,7 @@ impl Layout for FixedSizeLayout {
         // -- todo will be removed after orbgl merge --
 
         let constraint = Constraint::get(entity, ecm);
+        let sub_constraint = Constraint::get(entity, ecm);
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());

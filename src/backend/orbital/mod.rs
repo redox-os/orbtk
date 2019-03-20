@@ -37,7 +37,7 @@ pub fn target_backend(
             title,
             &flags,
         )
-        .unwrap(),
+            .unwrap(),
     )));
 
     let backend_runner = Box::new(OrbitalBackendRunner {

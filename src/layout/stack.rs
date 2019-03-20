@@ -114,7 +114,7 @@ impl Layout for StackLayout {
         let vertical_alignment = VerticalAlignment::get(entity, ecm);
         let margin = Margin::get(entity, ecm);
         let constraint = Constraint::get(entity, ecm);
-        let orientation =  Orientation::get(entity, ecm);
+        let orientation = Orientation::get(entity, ecm);
         let mut size_counter = 0.0;
 
         let size = constraint.perform((
@@ -122,13 +122,13 @@ impl Layout for StackLayout {
                 parent_size.0,
                 self.desired_size.borrow().width(),
                 margin.left(),
-                margin.right()
+                margin.right(),
             ),
             vertical_alignment.align_measure(
                 parent_size.1,
                 self.desired_size.borrow().height(),
                 margin.top(),
-                margin.bottom()
+                margin.bottom(),
             ),
         ));
 
@@ -162,17 +162,17 @@ impl Layout for StackLayout {
                         child_bounds.set_x(
                             size_counter
                                 + child_horizontal_alignment.align_position(
-                                    available_size.0,
-                                    child_bounds.width(),
-                                    child_margin.left(),
-                                    child_margin.right()
-                                ),
+                                available_size.0,
+                                child_bounds.width(),
+                                child_margin.left(),
+                                child_margin.right(),
+                            ),
                         );
                         child_bounds.set_y(child_vertical_alignment.align_position(
                             available_size.1,
                             child_bounds.height(),
                             child_margin.top(),
-                            child_margin.bottom()
+                            child_margin.bottom(),
                         ));
                         size_counter +=
                             child_bounds.width() + child_margin.left() + child_margin.right();
@@ -182,16 +182,16 @@ impl Layout for StackLayout {
                             available_size.0,
                             child_bounds.width(),
                             child_margin.left(),
-                                    child_margin.right()
+                            child_margin.right(),
                         ));
                         child_bounds.set_y(
                             size_counter
                                 + child_vertical_alignment.align_position(
-                                    available_size.1,
-                                    child_bounds.height(),
-                                    child_margin.top(),
-                                    child_margin.bottom()
-                                ),
+                                available_size.1,
+                                child_bounds.height(),
+                                child_margin.top(),
+                                child_margin.bottom(),
+                            ),
                         );
                         size_counter +=
                             child_bounds.height() + child_margin.top() + child_margin.bottom();

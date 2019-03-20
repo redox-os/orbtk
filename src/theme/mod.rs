@@ -297,25 +297,25 @@ impl Theme {
             }
         }
 
-        // if let Ok(icon_brush) = widget.borrow_mut_property::<IconBrush>() {
-        //     if let Some(color) = self.brush("icon-color", &selector) {
-        //         icon_brush.0 = color;
-        //     }
-        // }
+        if let Ok(icon_brush) = widget.borrow_mut_property::<IconBrush>() {
+            if let Some(color) = self.brush("icon-color", &selector) {
+                icon_brush.0 = color;
+            }
+        }
 
-        // if let Ok(icon_size) = widget.borrow_mut_property::<IconSize>() {
-        //     if let Some(size) = self.uint("icon-size", &selector) {
-        //         icon_size.0 = size as f64;
-        //     }
-        // }
+        if let Ok(icon_size) = widget.borrow_mut_property::<IconSize>() {
+            if let Some(size) = self.uint("icon-size", &selector) {
+                icon_size.0 = size as f64;
+            }
+        }
 
-        // if let Ok(icon_font) = widget.borrow_mut_property::<IconFont>() {
-        //     if let Some(font_family) = self.string("icon-family", &selector) {
-        //         if let Some(font) = fonts::font_by_key(&font_family[..]) {
-        //             icon_font.0 = font;
-        //         }
-        //     }
-        // }
+        if let Ok(icon_font) = widget.borrow_mut_property::<IconFont>() {
+            if let Some(font_family) = self.string("icon-family", &selector) {
+                if let Some(inner_font) = fonts::font_by_key(&font_family[..]) {
+                   (icon_font.0).0 = inner_font;
+                }
+            }
+        }
 
         if let Ok(padding) = widget.borrow_mut_property::<Padding>() {
             if let Some(pad) = self.uint("padding", &selector) {

@@ -1,15 +1,17 @@
 use dces::prelude::Entity;
 
-use crate::{ 
+use crate::{
     theme::Selector,
     layout::{GridLayout, Layout},
     properties::*,
     render_object::{RenderObject, RectangleRenderObject},
-    widget::Template
+    widget::Template,
 };
 
 widget!(
     /// The `Grid` defines a flexible grid area that consists of columns and rows.
+    /// 
+    /// * CSS element: `grid`
     Grid {
         /// Sets or shares the background property.
         background: Background,
@@ -21,16 +23,13 @@ widget!(
         rows: Rows,
 
         /// Sets or shares the css selector property. 
-        selector: Selector,
-
-        /// Sets or shares the margin property.
-        margin: Margin
+        selector: Selector
     }
 );
 
 impl Template for Grid {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
-         self.name("Grid")
+        self.name("Grid")
             .selector("grid")
             .background("transparent")
             .rows(Rows::default())
