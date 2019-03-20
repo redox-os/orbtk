@@ -70,6 +70,7 @@ macro_rules! widget {
             name: Option<Name>,
             horizontal_alignment: HorizontalAlignment,
             vertical_alignment: VerticalAlignment,
+            enabled: Enabled,
             visibility: Visibility,
              $(
                 $(
@@ -113,6 +114,11 @@ macro_rules! widget {
                 self.attach(visibility)
             }
 
+            /// Sets or shares the enabled property.
+            pub fn enabled<P: Into<PropertySource<Enabled>>>(self, enabled: P) -> Self {
+                self.attach(enabled)
+            }
+
             // todo: constraint also by with min max, ...
 
             /// Sets the debug name of the widget.
@@ -154,6 +160,7 @@ macro_rules! widget {
                     horizontal_alignment: HorizontalAlignment::default(),
                     vertical_alignment: VerticalAlignment::default(),
                     visibility: Visibility::default(),
+                    enabled: Enabled(false),
                     $(
                         $(
                             $property: None,

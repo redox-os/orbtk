@@ -41,7 +41,10 @@ widget!(
         font: Font,
 
         /// Sets or shares the css selector property. 
-        selector: Selector
+        selector: Selector,
+
+        /// Sets or shares the pressed property. 
+        pressed: Pressed
     }
 );
 
@@ -57,6 +60,7 @@ impl Template for Button {
             .text("")
             .font_size(fonts::FONT_SIZE_12)
             .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
+            .pressed(false)
             .child(
                 Container::create()
                     .background(id)
