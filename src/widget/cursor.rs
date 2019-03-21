@@ -62,7 +62,10 @@ widget!(
         font: Font,
 
         /// Sets or shares the text offset property.
-        text_offset: Offset,
+        offset: Offset,
+
+        /// Sets or shares the focused property.
+        focused: Focused,
 
         /// Sets or shares the css selector property.
         selector: Selector
@@ -75,10 +78,11 @@ impl Template for Cursor {
             .width(1.0)
             .selector("cursor")
             .text("")
-            .text_offset(0.0)
+            .offset(0.0)
             .background("transparent")
             .font_size(fonts::FONT_SIZE_12)
             .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
+            .focused(false)
     }
 
     fn render_object(&self) -> Option<Box<dyn RenderObject>> {

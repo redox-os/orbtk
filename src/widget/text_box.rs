@@ -11,7 +11,7 @@
 //     theme::Selector,
 //     widget::{
 //         Container, Context, Cursor, Grid, Property, ScrollViewer, State, Template,
-//         WaterMarkTextBlock, Widget,
+//         WaterMarkTextBox, Widget,
 //     },
 // };
 
@@ -152,7 +152,7 @@
 
 //         if cursor_x_delta != 0.0 {
 //             {
-//                 let text_block = context.child_by_id("TextBoxTextBlock");
+//                 let text_block = context.child_by_id("TextBoxTextBox");
 
 //                 if let Ok(bounds) = text_block.unwrap().borrow_mut_property::<Bounds>() {
 //                     bounds.set_x(bounds.x() + cursor_x_delta);
@@ -224,7 +224,7 @@
 //                             .child(
 //                                 ScrollViewer::create()
 //                                     .child(
-//                                         WaterMarkTextBlock::create()
+//                                         WaterMarkTextBox::create()
 //                                             .vertical_alignment("Center")
 //                                             .foreground_prop(foreground.share())
 //                                             .text_prop(text.share())
@@ -232,7 +232,7 @@
 //                                             .font_size_prop(font_size.share())
 //                                             .shared_water_mark(water_mark.share())
 //                                             .attach(focused.share())
-//                                             .selector(selector.clone().id("TextBoxTextBlock")),
+//                                             .selector(selector.clone().id("TextBoxTextBox")),
 //                                     )
 //                                     .shared_offset(offset.share())
 //                                     .scroll_viewer_mode(ScrollViewerMode::new(
@@ -284,3 +284,89 @@
 //             .on_key_down(move |key: Key| -> bool { state.update_text(key) })
 //     }
 // }
+
+
+use dces::prelude::Entity;
+
+use crate::{
+    event::{Key, KeyDownHandler},
+    properties::*,
+    styling::{colors, fonts},
+    widget::{Template, Container},
+};
+
+widget!(
+    /// The `TextBox` widget represents a single line text input widget.
+    /// 
+    /// * CSS element: `text-box`
+    TextBox: KeyDownHandler {
+        /// Sets or shares the text property.
+        text: Text,
+
+        /// Sets or shares the placeholder text property.
+        placeholder: WaterMark,
+
+        /// Sets or shares the text selection property.
+        selection: TextSelection,
+
+        /// Sets or shares the foreground property.
+        foreground: Foreground,
+
+        /// Sets or share the font size property.
+        font_size: FontSize,
+
+        /// Sets or shares the font property.
+        font: Font,
+
+        /// Sets or shares the background property.
+        background: Background,
+
+        /// Sets or shares the border radius property.
+        border_radius: BorderRadius,
+
+        /// Sets or shares the border thickness property.
+        border_thickness: BorderThickness,
+
+        /// Sets or shares the border brush property.
+        border_brush: BorderBrush,
+
+        /// Sets or shares the padding property.
+        padding: Padding,
+
+        /// Sets or shares the text offset property.
+        offset: Offset,
+
+         /// Sets or shares the focused property.
+        focused: Focused,
+
+        /// Sets or shares the css selector property.
+        selector: Selector
+    }
+);
+
+impl Template for TextBox {
+    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+        self.name("TextBox")
+            .selector("text-box")
+            .text("")
+            .foreground(colors::LINK_WATER_COLOR)
+            .font_size(fonts::FONT_SIZE_12)
+            .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
+            .selection(TextSelectionValue::default())
+            .offset(0.0)
+            .padding(4.0)
+            .background(colors::LYNCH_COLOR)
+            .border_brush("transparent")
+            .border_thickness(0.0)
+            .border_radius(2.0)
+            .size(128.0, 32.0)
+            .child(
+                Container::create()
+                    .background(id)
+                    .border_radius(id)
+                    .border_thickness(id)
+                    .border_brush(id)
+                    .padding(id).build(context)
+            )
+    }
+}

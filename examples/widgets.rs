@@ -204,13 +204,13 @@ impl Template for MainView {
                         .attach(GridColumn(2))
                         .attach(GridRow(1)).build(context)
                 )
-                // .child(
-                //     TextBox::create()
-                //         .water_mark("TextBox...")
-                //         .margin((0.0, 8.0, 0.0, 0.0))
-                //         .attach(GridColumn(2))
-                //         .attach(GridRow(2)).build(context)
-                // )
+                .child(
+                    TextBox::create()
+                        .placeholder("TextBox...")
+                        .margin((0.0, 8.0, 0.0, 0.0))
+                        .attach(GridColumn(2))
+                        .attach(GridRow(2)).build(context)
+                )
                 .build(context)
         )
     }
