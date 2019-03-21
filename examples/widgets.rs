@@ -20,7 +20,6 @@ use orbtk::*;
 // }
 
 
-
 // widget!(MainView);
 
 // impl Widget for MainView {

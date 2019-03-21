@@ -71,9 +71,9 @@ impl Layout for FixedSizeLayout {
                     None
                 }
             } else if widget.has_property::<Text>() {
-                let text = widget.get_property::<Text>();
-                let font = widget.get_property::<Font>();
-                let font_size = widget.get_property::<FontSize>();
+                let text = widget.property::<Text>();
+                let font = widget.property::<Font>();
+                let font_size = widget.property::<FontSize>();
 
                 if text.0.is_empty() {
                     if let Ok(water_mark) = ecm.borrow_component::<WaterMark>(entity) {
@@ -94,14 +94,14 @@ impl Layout for FixedSizeLayout {
                     Some(size)
                 }
             } else if widget.has_property::<FontIcon>() {
-                let font_icon = widget.get_property::<FontIcon>();
+                let font_icon = widget.property::<FontIcon>();
                 if font_icon.0.is_empty() {
                     None
                 } else {
                     Some(FONT_MEASURE.measure(
                         &font_icon.0,
-                        &(widget.get_property::<IconFont>().0).0,
-                        widget.get_property::<IconSize>().0 as u32,
+                        &(widget.property::<IconFont>().0).0,
+                        widget.property::<IconSize>().0 as u32,
                     ))
                 }
             } else {

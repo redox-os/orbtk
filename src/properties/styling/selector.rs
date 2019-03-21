@@ -1,5 +1,7 @@
 use std::{collections::HashSet, ops::Add};
 
+use std::fmt;
+
 #[derive(Clone, Debug)]
 pub enum SelectorRelation {
     Ancestor(SelectorValue),
@@ -37,6 +39,41 @@ pub struct SelectorValue {
     pub dirty: bool,
 }
 
+impl fmt::Display for SelectorValue {
+      fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+      
+      if let Some(element) = &self.element {
+          return write!(f, ", css: {}", element);
+      }
+
+        write!(f, "")
+    }
+}
+
+/// Extends the selector.
+pub trait SelectorExtension {
+    fn dirty(&self) -> bool;
+
+    fn set_dirty(&mut self, dirty: bool);
+
+    fn specificity(&self) -> Specificity;
+
+    fn matches(&self, other: &SelectorValue) -> bool;
+
+    fn with<S: Into<String>>(self, element: S) -> Self;
+
+    fn id<S: Into<String>>(self, id: S) -> Self;
+
+    fn class<S: Into<String>>(self, class: S) -> Self;
+
+    fn without_class<S: Into<String>>(self, class: S) -> Self;
+
+    fn pseudo_class<S: Into<String>>(self, pseudo_class: S) -> Self;
+
+    fn without_pseudo_class<S: Into<String>>(self, pseudo_class: S) -> Self;
+}
+
+/// Inner selector value.
 impl SelectorValue {
     pub fn new() -> Self {
         SelectorValue {
@@ -48,16 +85,18 @@ impl SelectorValue {
             dirty: true,
         }
     }
+}
 
-    pub fn dirty(&self) -> bool {
+impl SelectorExtension for SelectorValue {
+    fn dirty(&self) -> bool {
         self.dirty
     }
 
-    pub fn set_dirty(&mut self, dirty: bool) {
+    fn set_dirty(&mut self, dirty: bool) {
         self.dirty = dirty;
     }
 
-    pub fn specificity(&self) -> Specificity {
+    fn specificity(&self) -> Specificity {
         let s = Specificity([
             if self.id.is_some() { 1 } else { 0 },
             (self.classes.len() + self.pseudo_classes.len()) as u8,
@@ -75,7 +114,7 @@ impl SelectorValue {
         s
     }
 
-    pub fn matches(&self, other: &SelectorValue) -> bool {
+    fn matches(&self, other: &SelectorValue) -> bool {
         if self.id.is_some() && self.id != other.id {
             return false;
         }
@@ -95,32 +134,32 @@ impl SelectorValue {
         true
     }
 
-    pub fn with<S: Into<String>>(mut self, element: S) -> Self {
+    fn with<S: Into<String>>(mut self, element: S) -> Self {
         self.element = Some(element.into());
         self
     }
 
-    pub fn id<S: Into<String>>(mut self, id: S) -> Self {
+    fn id<S: Into<String>>(mut self, id: S) -> Self {
         self.id = Some(id.into());
         self
     }
 
-    pub fn class<S: Into<String>>(mut self, class: S) -> Self {
+    fn class<S: Into<String>>(mut self, class: S) -> Self {
         self.classes.insert(class.into());
         self
     }
 
-    pub fn without_class<S: Into<String>>(mut self, class: S) -> Self {
+    fn without_class<S: Into<String>>(mut self, class: S) -> Self {
         self.classes.remove(&class.into());
         self
     }
 
-    pub fn pseudo_class<S: Into<String>>(mut self, pseudo_class: S) -> Self {
+    fn pseudo_class<S: Into<String>>(mut self, pseudo_class: S) -> Self {
         self.pseudo_classes.insert(pseudo_class.into());
         self
     }
 
-    pub fn without_pseudo_class<S: Into<String>>(mut self, pseudo_class: S) -> Self {
+    fn without_pseudo_class<S: Into<String>>(mut self, pseudo_class: S) -> Self {
         self.pseudo_classes.remove(&pseudo_class.into());
         self
     }
@@ -158,6 +197,88 @@ property!(
     /// `Selector` describes the css selector of a widget.
     Selector(SelectorValue)
 );
+
+// --- Trait implementations ---
+
+impl SelectorExtension for Selector {
+    fn dirty(&self) -> bool {
+        self.0.dirty
+    }
+
+    fn set_dirty(&mut self, dirty: bool) {
+        self.0.dirty = dirty;
+    }
+
+    fn specificity(&self) -> Specificity {
+        let s = Specificity([
+            if self.0.id.is_some() { 1 } else { 0 },
+            (self.0.classes.len() + self.0.pseudo_classes.len()) as u8,
+            if self.0.element.is_some() { 1 } else { 0 },
+        ]);
+
+        if let Some(ref relation) = self.0.relation {
+            match **relation {
+                SelectorRelation::Ancestor(ref x) | SelectorRelation::Parent(ref x) => {
+                    return x.specificity() + s;
+                }
+            }
+        }
+
+        s
+    }
+
+    fn matches(&self, other: &SelectorValue) -> bool {
+        if self.0.id.is_some() && self.0.id != other.id {
+            return false;
+        }
+
+        if self.0.element.is_some() && self.0.element != other.element {
+            return false;
+        }
+
+        if !other.classes.is_superset(&self.0.classes) {
+            return false;
+        }
+
+        if !other.pseudo_classes.is_superset(&self.0.pseudo_classes) {
+            return false;
+        }
+
+        true
+    }
+
+    fn with<S: Into<String>>(mut self, element: S) -> Self {
+        self.0.element = Some(element.into());
+        self
+    }
+
+    fn id<S: Into<String>>(mut self, id: S) -> Self {
+        self.0.id = Some(id.into());
+        self
+    }
+
+    fn class<S: Into<String>>(mut self, class: S) -> Self {
+        self.0.classes.insert(class.into());
+        self
+    }
+
+    fn without_class<S: Into<String>>(mut self, class: S) -> Self {
+        self.0.classes.remove(&class.into());
+        self
+    }
+
+    fn pseudo_class<S: Into<String>>(mut self, pseudo_class: S) -> Self {
+        self.0.pseudo_classes.insert(pseudo_class.into());
+        self
+    }
+
+    fn without_pseudo_class<S: Into<String>>(mut self, pseudo_class: S) -> Self {
+        self.0.pseudo_classes.remove(&pseudo_class.into());
+        self
+    }
+}
+
+// --- Conversions ---
 
 impl From<String> for Selector {
     fn from(s: String) -> Selector {

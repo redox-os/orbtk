@@ -4,7 +4,6 @@ use crate::{
     event::ClickHandler,
     properties::*,
     styling::{colors, fonts},
-    theme::Selector,
     widget::{Container, FontIconBlock, Stack, Template, TextBlock},
 };
 

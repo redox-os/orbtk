@@ -152,11 +152,11 @@ impl RenderObject for RectangleRenderObject {
     ) {
         let widget = context.widget();
 
-        let bounds = widget.get_property::<Bounds>();
-        let background = widget.get_property::<Background>();
-        let border_radius = widget.get_property::<BorderRadius>();
-        let border_thickness = widget.get_property::<BorderThickness>();
-        let border_brush = widget.get_property::<BorderBrush>();
+        let bounds = widget.property::<Bounds>();
+        let background = widget.property::<Background>();
+        let border_radius = widget.property::<BorderRadius>();
+        let border_thickness = widget.property::<BorderThickness>();
+        let border_brush = widget.property::<BorderBrush>();
 
         let has_thickness = border_thickness.0.left > 0.0
             || border_thickness.0.top > 0.0

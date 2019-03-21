@@ -1,19 +1,21 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::{Cell, RefCell}, rc::Rc, collections::BTreeMap};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
 use crate::{
     application::{Global, Tree},
     backend::Backend,
-    properties::{Constraint, Margin, Padding},
+    properties::*,
     structs::{Spacer, Thickness},
-    theme::{Selector, Theme},
-    widget::Context,
+    theme::Theme,
+    widget::{Context, State},
 };
 
 /// This system is used to initializes the widgets.
 pub struct InitSystem {
     pub backend: Rc<RefCell<dyn Backend>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    pub debug_flag: Rc<Cell<bool>>,
 }
 
 impl InitSystem {
@@ -132,6 +134,14 @@ impl System<Tree> for InitSystem {
         let mut backend = self.backend.borrow_mut();
         let state_context = backend.state_context();
 
+        if self.debug_flag.get() {
+            println!("\n------ Widget tree ------\n");
+
+            print_tree(tree.root, 0, tree, ecm);
+
+            println!("\n------ Widget tree ------\n");
+        }
+
         // init css ids
         for node in tree.into_iter() {
             self.init_id(node, ecm);
@@ -144,7 +154,25 @@ impl System<Tree> for InitSystem {
                 &state_context.theme,
                 None,
             );
+
+             if let Some(state) = self.states.borrow().get(&node) {
+                    state.init(&mut context);
+                }
+
+
+
             self.read_init_from_theme(&mut context);
         }
+    }
+}
+
+fn print_tree(entity: Entity, depth: usize, tree: &Tree, ecm: &mut EntityComponentManager) {
+    let name = Name::get(entity, ecm);
+    let selector = Selector::get(entity, ecm);
+
+    println!("{}{} (entity: {}{})", "| ".repeat(depth), name, entity, selector);
+
+    for child in tree.children.get(&entity).unwrap() {
+        print_tree(*child, depth + 1, tree, ecm);
     }
 }

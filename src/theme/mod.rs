@@ -9,11 +9,6 @@ use cssparser::{
 
 use orbclient::Color;
 
-use self::selector::Specificity;
-pub use self::selector::{Selector, SelectorRelation, SelectorValue};
-
-mod selector;
-
 use crate::{
     properties::*,
     structs::{Brush, Spacer},
@@ -247,7 +242,7 @@ impl Theme {
             return;
         }
 
-        let mut selector = widget.get_property::<Selector>();
+        let mut selector = widget.property::<Selector>();
 
         if !selector.0.dirty() {
             return;
@@ -312,7 +307,7 @@ impl Theme {
         if let Ok(icon_font) = widget.borrow_mut_property::<IconFont>() {
             if let Some(font_family) = self.string("icon-family", &selector) {
                 if let Some(inner_font) = fonts::font_by_key(&font_family[..]) {
-                   (icon_font.0).0 = inner_font;
+                    (icon_font.0).0 = inner_font;
                 }
             }
         }

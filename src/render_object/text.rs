@@ -8,6 +8,7 @@ use crate::{
     widget::Context,
 };
 
+/// Used to render a text.
 pub struct TextRenderObject;
 
 impl Into<Box<dyn RenderObject>> for TextRenderObject {
@@ -35,17 +36,17 @@ impl RenderObject for TextRenderObject {
         };
 
         let widget = context.widget();
-        let text = widget.get_property::<Text>();
+        let text = widget.property::<Text>();
 
         if !text.0.is_empty() {
             renderer.render_text(
                 &text.0,
-                &widget.get_property::<Bounds>(),
+                &widget.property::<Bounds>(),
                 &parent_bounds,
                 global_position,
-                widget.get_property::<FontSize>().0 as u32,
-                widget.get_property::<Foreground>().into(),
-                &(widget.get_property::<Font>().0).0,
+                widget.property::<FontSize>().0 as u32,
+                widget.property::<Foreground>().into(),
+                &(widget.property::<Font>().0).0,
             );
         }
     }

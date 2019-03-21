@@ -28,7 +28,7 @@ impl<'a> WidgetContainer<'a> {
     }
 
     /// Gets the property.
-    pub fn get_property<P>(&self) -> P
+    pub fn property<P>(&self) -> P
         where
             P: Clone + Component + Default,
     {

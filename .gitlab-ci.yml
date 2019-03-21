@@ -1,11 +1,11 @@
 image: 'rust:latest'
 
 stages:
-    - build
-    - test
+  - build
+  - test
 
 variables:
-    CARGO_HOME: $CI_PROJECT_DIR/cargo
+  CARGO_HOME: $CI_PROJECT_DIR/cargo
 before_script:
   - apt-get update -qq
   - apt-get install -qq build-essential curl git
@@ -41,12 +41,12 @@ build:redox:
       - target/
 
 test:linux:
-    stage: test
-    before_script:
+  stage: test
+  before_script:
     - apt-get update && apt-get -y install cmake
     - apt-get install libsdl2-dev -y
-    dependencies:
-        - build:linux
-    script:
-      - rustup default nightly
-      - cargo test
+  dependencies:
+    - build:linux
+  script:
+    - rustup default nightly
+    - cargo test

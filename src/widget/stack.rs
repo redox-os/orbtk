@@ -3,8 +3,6 @@ use dces::prelude::Entity;
 use crate::{
     layout::{Layout, StackLayout},
     properties::*,
-    render_object::{RectangleRenderObject, RenderObject},
-    theme::Selector,
     widget::Template,
 };
 

@@ -9,8 +9,7 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 use crate::{
     application::Tree,
     backend::Backend,
-    properties::{Enabled, Focused, Pressed, Selected},
-    theme::Selector,
+    properties::*,
     widget::{
         add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
     },

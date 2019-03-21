@@ -1,7 +1,6 @@
 use dces::prelude::Entity;
 
 use crate::{
-    theme::Selector,
     layout::{GridLayout, Layout},
     properties::*,
     render_object::{RenderObject, RectangleRenderObject},
@@ -22,15 +21,19 @@ widget!(
         /// Sets or shares the rows property.
         rows: Rows,
 
+        /// Sets or shares the border radius property.
+        border_radius: BorderRadius,
+
         /// Sets or shares the css selector property. 
         selector: Selector
     }
 );
 
 impl Template for Grid {
-    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Grid")
             .selector("grid")
+            .border_radius(0.0)
             .background("transparent")
             .rows(Rows::default())
             .columns(Columns::default())

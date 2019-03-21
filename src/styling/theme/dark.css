@@ -40,12 +40,11 @@ switch {
 }
 
 switch-toggle {
-    border-radius: 2;
+    border-radius: 8;
     background: white;
 }
 
 switch-toggle:selected {
-    border-radius: 2;
     background: #F8DE4C;
 }
 

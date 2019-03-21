@@ -5,7 +5,6 @@ use crate::{
     material_font_icons,
     properties::*,
     styling::{colors, fonts},
-    theme::Selector,
     widget::{Container, FontIconBlock, Stack, Template, TextBlock},
 };
 

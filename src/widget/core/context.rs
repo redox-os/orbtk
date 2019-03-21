@@ -7,7 +7,8 @@ use super::{MessageBox, WidgetContainer};
 use crate::{
     application::{Global, Tree},
     event::{Event, EventQueue, EventStrategy},
-    theme::{Selector, Theme},
+    properties::Selector,
+    theme::Theme,
 };
 
 /// The `Context` is provides access for the states to objects they could work with.

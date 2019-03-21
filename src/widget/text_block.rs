@@ -5,7 +5,6 @@ use crate::{
     properties::*,
     render_object::{RenderObject, TextRenderObject},
     styling::{colors, fonts},
-    theme::Selector,
     widget::Template,
 };
 

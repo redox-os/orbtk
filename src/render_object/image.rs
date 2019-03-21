@@ -26,10 +26,10 @@ impl RenderObject for ImageRenderObject {
         global_position: &Point,
     ) {
         let mut widget = context.widget();
-        let bounds = widget.get_property::<Bounds>();
-   
+        let bounds = widget.property::<Bounds>();
+
         if let Ok(image) = widget.borrow_mut_property::<Image>() {
             canvas.draw_image_with_size(&mut (image.0).0, global_position.x, global_position.y, bounds.width(), bounds.height());
-        }  
+        }
     }
 }

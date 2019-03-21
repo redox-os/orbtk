@@ -13,54 +13,79 @@
 //     styling::fonts
 // };
 
-// // Default state of the `Cursor` widget.
-// struct CursorState;
+use dces::prelude::Entity;
 
-// impl State for CursorState {
-//     fn update(&self, context: &mut Context<'_>) {
-//         let mut selection_length = 0;
-//         let mut widget = context.widget();
+use crate::{
+    layout::{TextSelectionLayout, Layout},
+    properties::*,
+    render_object::{RenderObject, RectangleRenderObject},
+    styling::fonts,
+    widget::{Template, State, Context, add_selector_to_widget, remove_selector_from_widget},
+};
 
-//         if let Ok(selection) = widget.borrow_property::<TextSelection>() {
-//             selection_length = selection.length;
-//         }
+// Default state of the `Cursor` widget.
+#[derive(Default)]
+struct CursorState;
 
-//         if selection_length > 0 {
-//             add_selector_to_widget("expanded", &mut widget);
-//         } else {
-//             remove_selector_from_widget("expanded", &mut widget)
-//         }
-//     }
-// }
+impl State for CursorState {
+    fn update(&self, context: &mut Context<'_>) {
+        let mut widget = context.widget();
 
-// widget!(
-//     /// The `Cursor` represents a text cursor used to mark text.
-//     Cursor
-//     (
-//         BackgroundProperty,
-//         TextProperty,
-//         TextSelectionProperty,
-//         FontProperty,
-//         FontSizeProperty,
-//         OffsetProperty,
-//         FocusedProperty
-//     )
-// );
+        let selection_length = widget.property::<TextSelection>().0.length;
 
-// impl Widget for Cursor {
-//     fn create() -> Self {
-//         Cursor::new()
-//             .width(1.0)
-//             .text("")
-//             .selector("cursor")
-//             .offset(0.0)
-//             .background("transparent")
-//             .font_size(fonts::FONT_SIZE_12)
-//             .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
-//             .text_selection(TextSelection::default())
-//             .render_object(RectangleRenderObject)
-//             .layout(TextSelectionLayout::new())
-//             .state(Rc::new(CursorState))
-//             .debug_name("Cursor")
-//     }
-// }
+        if selection_length > 0 {
+            add_selector_to_widget("expanded", &mut widget);
+        } else {
+            remove_selector_from_widget("expanded", &mut widget)
+        }
+    }
+}
+
+widget!(
+    /// The `Cursor` widget represents a text cursor used to mark text.
+    /// 
+    /// * CSS element: `cursor`
+    Cursor<CursorState> {
+        /// Sets or shares the text property.
+        text: Text,
+
+        /// Sets or shares the text selection property.
+        selection: TextSelection,
+
+        /// Sets or shares the background property.
+        background: Background,
+
+        /// Sets or share the font size property.
+        font_size: FontSize,
+
+        /// Sets or shares the font property.
+        font: Font,
+
+        /// Sets or shares the text offset property.
+        text_offset: Offset,
+
+        /// Sets or shares the css selector property.
+        selector: Selector
+    }
+);
+
+impl Template for Cursor {
+    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
+        self.name("Cursor")
+            .width(1.0)
+            .selector("cursor")
+            .text("")
+            .text_offset(0.0)
+            .background("transparent")
+            .font_size(fonts::FONT_SIZE_12)
+            .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
+    }
+
+    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
+        Some(Box::new(RectangleRenderObject))
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(TextSelectionLayout::default())
+    }
+}

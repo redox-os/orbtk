@@ -1,99 +1,99 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug widgets",
-            "program": "${workspaceFolder}/target/debug/examples/widgets",
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "build",
-            "sourceLanguages": [
-                "rust"
-            ]
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug canvas",
-            "program": "${workspaceFolder}/target/debug/examples/canvas",
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "build",
-            "sourceLanguages": [
-                "rust"
-            ]
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug image",
-            "program": "${workspaceFolder}/target/debug/examples/image",
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "build",
-            "sourceLanguages": [
-                "rust"
-            ]
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug light theme",
-            "program": "${workspaceFolder}/target/debug/examples/light-theme",
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "build",
-            "sourceLanguages": [
-                "rust"
-            ]
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug messages",
-            "program": "${workspaceFolder}/target/debug/examples/messages",
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "build",
-            "sourceLanguages": [
-                "rust"
-            ]
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug grid",
-            "program": "${workspaceFolder}/target/debug/examples/grid",
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "build",
-            "sourceLanguages": [
-                "rust"
-            ]
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug minimal",
-            "program": "${workspaceFolder}/target/debug/examples/minimal",
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "build",
-            "sourceLanguages": [
-                "rust"
-            ]
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug tests",
-            "cargo": {
-                "args": [
-                    "test",
-                    "--no-run",
-                    "--lib"
-                ]
-            },
-            "args": [],
-            "cwd": "${workspaceFolder}"
-        }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug widgets",
+      "program": "${workspaceFolder}/target/debug/examples/widgets",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug canvas",
+      "program": "${workspaceFolder}/target/debug/examples/canvas",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug image",
+      "program": "${workspaceFolder}/target/debug/examples/image",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug light theme",
+      "program": "${workspaceFolder}/target/debug/examples/light-theme",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug messages",
+      "program": "${workspaceFolder}/target/debug/examples/messages",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug grid",
+      "program": "${workspaceFolder}/target/debug/examples/grid",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug minimal",
+      "program": "${workspaceFolder}/target/debug/examples/minimal",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug tests",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--lib"
+        ]
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
 }

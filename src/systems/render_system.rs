@@ -9,10 +9,9 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 use crate::{
     application::Tree,
     backend::Backend,
-    properties::{Bounds, Visibility, VisibilityValue},
+    properties::*,
     render_object::RenderObject,
     structs::{Point, Position, Size},
-    theme::Selector,
     widget::Context,
 };
 

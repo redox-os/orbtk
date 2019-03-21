@@ -35,17 +35,17 @@ impl RenderObject for FontIconRenderObject {
         };
 
         let widget = context.widget();
-        let icon = widget.get_property::<FontIcon>();
+        let icon = widget.property::<FontIcon>();
 
         if !icon.0.is_empty() {
             renderer.render_text(
                 &icon.0,
-                &widget.get_property::<Bounds>(),
+                &widget.property::<Bounds>(),
                 &parent_bounds,
                 global_position,
-                widget.get_property::<IconSize>().0 as u32,
-                widget.get_property::<IconBrush>().into(),
-                &(widget.get_property::<IconFont>().0).0,
+                widget.property::<IconSize>().0 as u32,
+                widget.property::<IconBrush>().into(),
+                &(widget.property::<IconFont>().0).0,
             );
         }
     }

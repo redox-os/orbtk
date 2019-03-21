@@ -3,7 +3,7 @@
 macro_rules! property {
     ($(#[$property_doc:meta])* $property:ident($type:ty)) => {
         use dces::prelude::{Entity, EntityComponentManager};
-        use crate::widget::{PropertySource, get_property};
+        use crate::properties::{PropertySource, get_property};
 
         #[derive(Default, Debug, Clone, PartialEq)]
         $(#[$property_doc])*
@@ -57,8 +57,8 @@ macro_rules! widget {
         use dces::prelude::{Component, ComponentBox, SharedComponentBox };
 
         use crate::{event::EventHandler,
-            properties::{Bounds, Constraint, VerticalAlignment, HorizontalAlignment, Visibility, Name},
-            widget::{PropertySource, Widget, BuildContext},
+            properties::{PropertySource, Bounds, Constraint, VerticalAlignment, HorizontalAlignment, Visibility, Name},
+            widget::{Widget, BuildContext},
             structs::Point};
 
         $(#[$widget_doc])*
@@ -93,6 +93,12 @@ macro_rules! widget {
                         self.shared_attached_properties.insert(TypeId::of::<P>(), SharedComponentBox::new(TypeId::of::<P>(), source));
                     }
                 }
+                self
+            }
+
+            /// Shares an attached property.
+            pub fn attach_by_source<P: Component>(mut self, source: Entity) -> Self {
+                 self.shared_attached_properties.insert(TypeId::of::<P>(), SharedComponentBox::new(TypeId::of::<P>(), source));
                 self
             }
 
@@ -223,7 +229,7 @@ macro_rules! widget {
                     vertical_alignment: VerticalAlignment::default(),
                     visibility: Visibility::default(),
                     margin: Margin::default(),
-                    enabled: Enabled(false),
+                    enabled: Enabled(true),
                     $(
                         $(
                             $property: None,
@@ -244,8 +250,8 @@ macro_rules! widget {
             }
 
             $(
-                fn state(self) -> Option<Rc<State>> {
-                    Rc::new($state::new())
+                fn state(&self) -> Option<Rc<State>> {
+                    Some(Rc::new($state::default()))
                 }
             )*
 
@@ -260,6 +266,11 @@ macro_rules! widget {
 
                 context.register_layout(entity, this.layout());
 
+                 // register state
+                if let Some(state) = this.state() {
+                     context.register_state(entity, state);
+                 }
+
                 // register default set of properties
                 context.register_property(entity, this.bounds);
                 context.register_property(entity, this.constraint);
@@ -267,6 +278,7 @@ macro_rules! widget {
                 context.register_property(entity, this.horizontal_alignment);
                 context.register_property(entity, this.visibility);
                 context.register_property(entity, this.margin);
+                context.register_property(entity, this.enabled);
 
                 // register helpers
                 context.register_property(entity, Point::default());
@@ -299,11 +311,10 @@ macro_rules! widget {
                 // register event handlers
                 for handler in this.event_handlers {
                     context.register_handler(entity, handler);
-                }
+                }       
 
                 // register name
                 if let Some(name) = this.name {
-                    println!("{} (id = {}, children_len = {})", name.0, entity, this.children.len());
                     context.register_property(entity, name);                   
                 }
 
