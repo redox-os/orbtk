@@ -52,7 +52,8 @@ macro_rules! property {
 #[macro_export]
 macro_rules! widget {
     ( $(#[$widget_doc:meta])* $widget:ident $(<$state:ident>)* $(: $( $handler:ident ),*)* $( { $($(#[$prop_doc:meta])* $property:ident: $property_type:tt ),* } )* ) => {
-        use std::{ any::TypeId, rc::Rc, collections::HashMap};
+        #[allow(dead_code)]
+        use std::{ any::TypeId, rc::Rc, collections::HashMap, cell::RefCell };
 
         use dces::prelude::{Component, ComponentBox, SharedComponentBox };
 
@@ -62,6 +63,7 @@ macro_rules! widget {
             structs::Point};
 
         $(#[$widget_doc])*
+        #[derive(Default)]
         pub struct $widget {
             attached_properties: HashMap<TypeId, ComponentBox>,
             shared_attached_properties: HashMap<TypeId, SharedComponentBox>,
@@ -74,12 +76,16 @@ macro_rules! widget {
             margin: Margin,
             enabled: Enabled,
             visibility: Visibility,
+            _empty: Option<RefCell<i32>>,
              $(
                 $(
                     $property: Option<PropertySource<$property_type>>,
                 )*
              )*
             children: Vec<Entity>,
+            $(
+                state: RefCell<Option<Rc<$state>>>
+            )*
         }
 
         impl $widget {
@@ -196,6 +202,20 @@ macro_rules! widget {
             }
 
             $(
+                /// Returns the cloned state of the widget.
+                pub fn clone_state(&self) -> Rc<$state> {
+                    if let Some(state) = &*self.state.borrow() {
+                        return state.clone();
+                    }
+
+                    let state = Rc::new($state::default());
+                    *self.state.borrow_mut() = Some(state.clone());
+                  
+                    state
+                }
+            )*
+            
+            $(
                 $(
                     $(#[$prop_doc])*
                     pub fn $property<P: Into<PropertySource<$property_type>>>(mut self, $property: P) -> Self {
@@ -219,16 +239,7 @@ macro_rules! widget {
         impl Widget for $widget {
             fn create() -> Self {
                 $widget {
-                    attached_properties: HashMap::new(),
-                    shared_attached_properties: HashMap::new(),
                     event_handlers: vec![],
-                    bounds: Bounds::default(),
-                    constraint: Constraint::default(),
-                    name: None,
-                    horizontal_alignment: HorizontalAlignment::default(),
-                    vertical_alignment: VerticalAlignment::default(),
-                    visibility: Visibility::default(),
-                    margin: Margin::default(),
                     enabled: Enabled(true),
                     $(
                         $(
@@ -236,6 +247,7 @@ macro_rules! widget {
                         )*
                     )*
                     children: vec![],
+                    ..Default::default()
                 }
             }
 
@@ -251,7 +263,15 @@ macro_rules! widget {
 
             $(
                 fn state(&self) -> Option<Rc<State>> {
-                    Some(Rc::new($state::default()))
+                    if self.state.borrow().is_none() {
+                        *self.state.borrow_mut() = Some(Rc::new($state::default()));
+                    }
+
+                    if let Some(state) = &*self.state.borrow() {
+                        return Some(state.clone())
+                    }
+
+                    None
                 }
             )*
 
@@ -267,8 +287,8 @@ macro_rules! widget {
                 context.register_layout(entity, this.layout());
 
                  // register state
-                if let Some(state) = this.state() {
-                     context.register_state(entity, state);
+                if let Some(state) = &this.state() {
+                     context.register_state(entity, state.clone());
                  }
 
                 // register default set of properties

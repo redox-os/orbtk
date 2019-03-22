@@ -21,7 +21,7 @@ impl fmt::Debug for InnerFont {
 
 impl PartialEq for InnerFont {
     // todo: impl
-    fn eq(&self, other: &InnerFont) -> bool {
+    fn eq(&self, _other: &InnerFont) -> bool {
         false
     }
 }

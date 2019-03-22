@@ -25,7 +25,7 @@ impl RenderObject for FontIconRenderObject {
         global_position: &Point,
     ) {
         let parent_bounds = if let Some(parent) = context.parent_widget() {
-            if let Ok(bounds) = parent.borrow_property::<Bounds>() {
+            if let Ok(bounds) = parent.borrow::<Bounds>() {
                 bounds.clone()
             } else {
                 Bounds::default()
@@ -35,17 +35,17 @@ impl RenderObject for FontIconRenderObject {
         };
 
         let widget = context.widget();
-        let icon = widget.property::<FontIcon>();
+        let icon = widget.get::<FontIcon>();
 
         if !icon.0.is_empty() {
             renderer.render_text(
                 &icon.0,
-                &widget.property::<Bounds>(),
+                widget.borrow::<Bounds>().unwrap(),
                 &parent_bounds,
                 global_position,
-                widget.property::<IconSize>().0 as u32,
-                widget.property::<IconBrush>().into(),
-                &(widget.property::<IconFont>().0).0,
+                widget.get::<IconSize>().0 as u32,
+                widget.get::<IconBrush>().into(),
+                &(widget.get::<IconFont>().0).0,
             );
         }
     }

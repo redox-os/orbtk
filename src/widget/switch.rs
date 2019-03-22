@@ -4,23 +4,22 @@ use crate::{
     properties::*,
     styling::colors,
     widget::{Container, Grid, Template, State, Context},
-    enums::Alignment,
 };
 
 /// State to handle the position of switch toggle.
 #[derive(Default)]
-struct SwitchState;
+pub struct SwitchState;
 
 impl State for SwitchState {
     fn update(&self, context: &mut Context<'_>) {
-        let selected = context.widget().property::<Selected>().0;
+        let selected = context.widget().get::<Selected>().0;
 
         let mut switch_toggle = context.child_by_id("SwitchSwitchToggle").unwrap();
 
         if selected {
-            switch_toggle.set_property(HorizontalAlignment(Alignment::End));
+            switch_toggle.set(HorizontalAlignment::from("End"));
         } else {
-            switch_toggle.set_property(HorizontalAlignment(Alignment::Start));
+            switch_toggle.set(HorizontalAlignment::from("Start"));
         }
     }
 }

@@ -40,11 +40,10 @@ pub struct SelectorValue {
 }
 
 impl fmt::Display for SelectorValue {
-      fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-      
-      if let Some(element) = &self.element {
-          return write!(f, ", css: {}", element);
-      }
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        if let Some(element) = &self.element {
+            return write!(f, ", css: {}", element);
+        }
 
         write!(f, "")
     }

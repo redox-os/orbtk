@@ -25,29 +25,13 @@ pub struct StateSystem {
 
 impl StateSystem {
     fn has_default_flags(&self, widget: &WidgetContainer<'_>) -> bool {
-        if let Ok(_) = widget.borrow_property::<Enabled>() {
-            return true;
-        }
-
-        if let Ok(_) = widget.borrow_property::<Pressed>() {
-            return true;
-        }
-
-        if let Ok(_) = widget.borrow_property::<Focused>() {
-            return true;
-        }
-
-        if let Ok(_) = widget.borrow_property::<Selected>() {
-            return true;
-        }
-
-        return false;
+        return widget.has::<Enabled>() || widget.has::<Pressed>() || widget.has::<Focused>() || widget.has::<Selected>();
     }
 
     // Used to updates default states like Pressed, Focused and Enabled.
     fn update_default_states(&self, widget: &mut WidgetContainer<'_>) {
         let mut enabled = (false, false);
-        if let Ok(en) = widget.borrow_property::<Enabled>() {
+        if let Ok(en) = widget.borrow_mut::<Enabled>() {
             enabled = (true, en.0);
         }
 
@@ -56,7 +40,7 @@ impl StateSystem {
         }
 
         let mut pressed = (false, false);
-        if let Ok(pres) = widget.borrow_mut_property::<Pressed>() {
+        if let Ok(pres) = widget.borrow_mut::<Pressed>() {
             pressed = (true, pres.0);
         }
 
@@ -65,7 +49,7 @@ impl StateSystem {
         }
 
         let mut focused = (false, false);
-        if let Ok(foc) = widget.borrow_mut_property::<Focused>() {
+        if let Ok(foc) = widget.borrow_mut::<Focused>() {
             focused = (true, foc.0);
         }
 
@@ -74,7 +58,7 @@ impl StateSystem {
         }
 
         let mut selected = (false, false);
-        if let Ok(sel) = widget.borrow_mut_property::<Selected>() {
+        if let Ok(sel) = widget.borrow_mut::<Selected>() {
             selected = (true, sel.0);
         }
 

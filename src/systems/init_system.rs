@@ -6,8 +6,6 @@ use crate::{
     application::{Global, Tree},
     backend::Backend,
     properties::*,
-    structs::{Spacer, Thickness},
-    theme::Theme,
     widget::{Context, State},
 };
 
@@ -155,10 +153,9 @@ impl System<Tree> for InitSystem {
                 None,
             );
 
-             if let Some(state) = self.states.borrow().get(&node) {
-                    state.init(&mut context);
-                }
-
+            if let Some(state) = self.states.borrow().get(&node) {
+                state.init(&mut context);
+            }
 
 
             self.read_init_from_theme(&mut context);

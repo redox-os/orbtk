@@ -21,7 +21,7 @@ impl fmt::Debug for InnerImage {
 
 impl PartialEq for InnerImage {
     // todo: impl
-    fn eq(&self, other: &InnerImage) -> bool {
+    fn eq(&self, _other: &InnerImage) -> bool {
         false
     }
 }

@@ -4,8 +4,6 @@ use std::{
     rc::Rc,
 };
 
-use orbclient::Renderer;
-
 use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
@@ -64,16 +62,16 @@ impl Layout for FixedSizeLayout {
         // -- todo will be removed after orbgl merge --
 
         let size = {
-            if widget.has_property::<Image>() {
-                if let Ok(image) = widget.borrow_property::<Image>() {
+            if widget.has::<Image>() {
+                if let Ok(image) = widget.borrow::<Image>() {
                     Some((image.width(), image.height()))
                 } else {
                     None
                 }
-            } else if widget.has_property::<Text>() {
-                let text = widget.property::<Text>();
-                let font = widget.property::<Font>();
-                let font_size = widget.property::<FontSize>();
+            } else if widget.has::<Text>() {
+                let text = widget.get::<Text>();
+                let font = widget.get::<Font>();
+                let font_size = widget.get::<FontSize>();
 
                 if text.0.is_empty() {
                     if let Ok(water_mark) = ecm.borrow_component::<WaterMark>(entity) {
@@ -93,15 +91,15 @@ impl Layout for FixedSizeLayout {
                     }
                     Some(size)
                 }
-            } else if widget.has_property::<FontIcon>() {
-                let font_icon = widget.property::<FontIcon>();
+            } else if widget.has::<FontIcon>() {
+                let font_icon = widget.get::<FontIcon>();
                 if font_icon.0.is_empty() {
                     None
                 } else {
                     Some(FONT_MEASURE.measure(
                         &font_icon.0,
-                        &(widget.property::<IconFont>().0).0,
-                        widget.property::<IconSize>().0 as u32,
+                        &(widget.get::<IconFont>().0).0,
+                        widget.get::<IconSize>().0 as u32,
                     ))
                 }
             } else {
@@ -119,7 +117,6 @@ impl Layout for FixedSizeLayout {
         // -- todo will be removed after orbgl merge --
 
         let constraint = Constraint::get(entity, ecm);
-        let sub_constraint = Constraint::get(entity, ecm);
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());

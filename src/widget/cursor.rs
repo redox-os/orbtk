@@ -1,18 +1,3 @@
-// use std::rc::Rc;
-
-// use crate::{
-//     layout::TextSelectionLayout,
-//     properties::{
-//         BackgroundProperty, FocusedProperty, OffsetProperty, TextProperty, TextSelection,
-//         TextSelectionProperty, FontProperty, FontSizeProperty
-//     },
-//     render_object::RectangleRenderObject,
-//     widget::{
-//         add_selector_to_widget, remove_selector_from_widget, Context, State, Template, Widget,
-//     },
-//     styling::fonts
-// };
-
 use dces::prelude::Entity;
 
 use crate::{
@@ -25,18 +10,24 @@ use crate::{
 
 // Default state of the `Cursor` widget.
 #[derive(Default)]
-struct CursorState;
+pub struct CursorState;
 
 impl State for CursorState {
     fn update(&self, context: &mut Context<'_>) {
         let mut widget = context.widget();
 
-        let selection_length = widget.property::<TextSelection>().0.length;
+        let selection_length = widget.get::<TextSelection>().0.length;
 
         if selection_length > 0 {
             add_selector_to_widget("expanded", &mut widget);
         } else {
             remove_selector_from_widget("expanded", &mut widget)
+        }
+
+        if widget.get::<Focused>().0 {
+            add_selector_to_widget("focus", &mut widget);
+        } else {
+            remove_selector_from_widget("focus", &mut widget)
         }
     }
 }

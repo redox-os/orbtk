@@ -13,3 +13,12 @@ impl Default for ScrollMode {
         ScrollMode::Auto
     }
 }
+
+impl From<(&str)> for ScrollMode {
+    fn from(s: &str) -> ScrollMode {
+        match s {
+            "Auto" | "auto" => ScrollMode::Auto,
+            _ => ScrollMode::None
+        }
+    }
+}

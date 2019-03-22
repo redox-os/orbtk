@@ -13,7 +13,7 @@ use crate::{
     layout::Layout,
     properties::*,
     render_object::RenderObject,
-    structs::{Size, Rect},
+    structs::{Size, Rect, Point},
     systems::{
         EventSystem, InitSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem,
     },
@@ -98,6 +98,7 @@ impl<'a> WindowBuilder<'a> {
             .create_entity()
             .with(Global::default())
             .with(Name::from("Window"))
+            .with(Point::default())
             .with(Bounds::from(Rect::new(
                 0.0,
                 0.0,

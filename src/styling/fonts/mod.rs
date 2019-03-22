@@ -1,5 +1,4 @@
 use orbfont::Font;
-use std::collections::HashMap;
 
 /// Reference to the material icon font.
 pub static MATERIAL_ICONS_REGULAR_FONT: &'static [u8; 128180] =

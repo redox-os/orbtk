@@ -7,8 +7,6 @@ use cssparser::{
     Token,
 };
 
-use orbclient::Color;
-
 use crate::{
     properties::*,
     structs::{Brush, Spacer},
@@ -238,53 +236,53 @@ impl Theme {
 
     /// Updates the given widget by theme and selector.
     pub fn update_widget_theme(&self, widget: &mut WidgetContainer) {
-        if !widget.has_property::<Selector>() {
+        if !widget.has::<Selector>() {
             return;
         }
 
-        let mut selector = widget.property::<Selector>();
+        let selector = widget.get::<Selector>();
 
         if !selector.0.dirty() {
             return;
         }
 
-        if let Ok(foreground) = widget.borrow_mut_property::<Foreground>() {
+        if let Ok(foreground) = widget.borrow_mut::<Foreground>() {
             if let Some(color) = self.brush("color", &selector) {
                 foreground.0 = color;
             }
         }
 
-        if let Ok(background) = widget.borrow_mut_property::<Background>() {
+        if let Ok(background) = widget.borrow_mut::<Background>() {
             if let Some(bg) = self.brush("background", &selector) {
                 background.0 = bg;
             }
         }
 
-        if let Ok(border_brush) = widget.borrow_mut_property::<BorderBrush>() {
+        if let Ok(border_brush) = widget.borrow_mut::<BorderBrush>() {
             if let Some(border_color) = self.brush("border-color", &selector) {
                 border_brush.0 = border_color;
             }
         }
 
-        if let Ok(border_radius) = widget.borrow_mut_property::<BorderRadius>() {
+        if let Ok(border_radius) = widget.borrow_mut::<BorderRadius>() {
             if let Some(radius) = self.float("border-radius", &selector) {
                 border_radius.0 = radius as f64;
             }
         }
 
-        if let Ok(border_thickness) = widget.borrow_mut_property::<BorderThickness>() {
+        if let Ok(border_thickness) = widget.borrow_mut::<BorderThickness>() {
             if let Some(border_width) = self.uint("border-width", &selector) {
                 *border_thickness = BorderThickness::from(border_width as f64);
             }
         }
 
-        if let Ok(font_size) = widget.borrow_mut_property::<FontSize>() {
+        if let Ok(font_size) = widget.borrow_mut::<FontSize>() {
             if let Some(size) = self.uint("font-size", &selector) {
                 font_size.0 = size as f64;
             }
         }
 
-        if let Ok(font) = widget.borrow_mut_property::<Font>() {
+        if let Ok(font) = widget.borrow_mut::<Font>() {
             if let Some(font_family) = self.string("font-family", &selector) {
                 if let Some(inner_font) = fonts::font_by_key(&font_family[..]) {
                     (font.0).0 = inner_font;
@@ -292,19 +290,19 @@ impl Theme {
             }
         }
 
-        if let Ok(icon_brush) = widget.borrow_mut_property::<IconBrush>() {
+        if let Ok(icon_brush) = widget.borrow_mut::<IconBrush>() {
             if let Some(color) = self.brush("icon-color", &selector) {
                 icon_brush.0 = color;
             }
         }
 
-        if let Ok(icon_size) = widget.borrow_mut_property::<IconSize>() {
+        if let Ok(icon_size) = widget.borrow_mut::<IconSize>() {
             if let Some(size) = self.uint("icon-size", &selector) {
                 icon_size.0 = size as f64;
             }
         }
 
-        if let Ok(icon_font) = widget.borrow_mut_property::<IconFont>() {
+        if let Ok(icon_font) = widget.borrow_mut::<IconFont>() {
             if let Some(font_family) = self.string("icon-family", &selector) {
                 if let Some(inner_font) = fonts::font_by_key(&font_family[..]) {
                     (icon_font.0).0 = inner_font;
@@ -312,31 +310,31 @@ impl Theme {
             }
         }
 
-        if let Ok(padding) = widget.borrow_mut_property::<Padding>() {
+        if let Ok(padding) = widget.borrow_mut::<Padding>() {
             if let Some(pad) = self.uint("padding", &selector) {
                 padding.set_thickness(pad as f64);
             }
         }
 
-        if let Ok(padding) = widget.borrow_mut_property::<Padding>() {
+        if let Ok(padding) = widget.borrow_mut::<Padding>() {
             if let Some(left) = self.uint("padding-left", &selector) {
                 padding.set_left(left as f64);
             }
         }
 
-        if let Ok(padding) = widget.borrow_mut_property::<Padding>() {
+        if let Ok(padding) = widget.borrow_mut::<Padding>() {
             if let Some(top) = self.uint("padding-top", &selector) {
                 padding.set_top(top as f64);
             }
         }
 
-        if let Ok(padding) = widget.borrow_mut_property::<Padding>() {
+        if let Ok(padding) = widget.borrow_mut::<Padding>() {
             if let Some(right) = self.uint("padding-right", &selector) {
                 padding.set_right(right as f64);
             }
         }
 
-        if let Ok(padding) = widget.borrow_mut_property::<Padding>() {
+        if let Ok(padding) = widget.borrow_mut::<Padding>() {
             if let Some(bottom) = self.uint("padding-bottom", &selector) {
                 padding.set_bottom(bottom as f64);
             }
@@ -344,9 +342,7 @@ impl Theme {
 
         // todo padding, icon_margin
 
-        selector.0.set_dirty(true);
-
-        widget.set_property::<Selector>(selector);
+        widget.get_mut::<Selector>().0.set_dirty(true);
     }
 }
 

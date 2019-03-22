@@ -1,8 +1,4 @@
-use std::fmt;
-
 use orbfont::Font as OrbFont;
-
-use crate::styling::fonts;
 
 use super::InnerFont;
 

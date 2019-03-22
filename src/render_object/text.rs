@@ -26,7 +26,7 @@ impl RenderObject for TextRenderObject {
         global_position: &Point,
     ) {
         let parent_bounds = if let Some(parent) = context.parent_widget() {
-            if let Ok(bounds) = parent.borrow_property::<Bounds>() {
+            if let Ok(bounds) = parent.borrow::<Bounds>() {
                 bounds.clone()
             } else {
                 Bounds::default()
@@ -36,17 +36,17 @@ impl RenderObject for TextRenderObject {
         };
 
         let widget = context.widget();
-        let text = widget.property::<Text>();
+        let text = widget.get::<Text>();
 
         if !text.0.is_empty() {
             renderer.render_text(
                 &text.0,
-                &widget.property::<Bounds>(),
+                &widget.get::<Bounds>(),
                 &parent_bounds,
                 global_position,
-                widget.property::<FontSize>().0 as u32,
-                widget.property::<Foreground>().into(),
-                &(widget.property::<Font>().0).0,
+                widget.get::<FontSize>().0 as u32,
+                widget.get::<Foreground>().into(),
+                &(widget.get::<Font>().0).0,
             );
         }
     }

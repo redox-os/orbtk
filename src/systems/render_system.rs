@@ -11,7 +11,7 @@ use crate::{
     backend::Backend,
     properties::*,
     render_object::RenderObject,
-    structs::{Point, Position, Size},
+    structs::{Point, Position},
     widget::Context,
 };
 

@@ -116,10 +116,10 @@ impl Layout for TextSelectionLayout {
 
         size.1 = vertical_alignment.align_measure(parent_size.1, size.1, margin.top(), margin.bottom());
 
-        if widget.has_property::<Text>() {
-            let text = widget.property::<Text>();
-            let font = widget.property::<Font>();
-            let font_size = widget.property::<FontSize>();
+        if widget.has::<Text>() {
+            let text = widget.get::<Text>();
+            let font = widget.get::<Font>();
+            let font_size = widget.get::<FontSize>();
 
             if let Ok(selection) = ecm.borrow_component::<TextSelection>(entity) {
                 if let Some(text_part) = text.0.get(0..selection.0.start_index) {
