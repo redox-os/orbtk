@@ -132,6 +132,8 @@ impl Grid {
                 rect.height = rows[row].height;
             }
             entry.rect().set(rect);
+
+            entry.arrange();
         }
     }
 }
@@ -175,8 +177,17 @@ impl Widget for Grid {
     }
 
     fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+        fn draw_widget(widget: &Arc<Widget>, renderer: &mut Renderer, focused: bool, theme: &Theme) {
+            widget.update();
+            widget.draw(renderer, focused, theme);
+
+            for child in widget.children().borrow().iter() {
+                draw_widget(child, renderer, focused, theme);
+            }
+        }
+
         for (&(col, row), entry) in self.entries.borrow().iter() {
-            entry.draw(renderer, self.focused.get() == Some((col, row)), theme);
+            draw_widget(entry, renderer, self.focused.get() == Some((col, row)), theme);
         }
     }
 
