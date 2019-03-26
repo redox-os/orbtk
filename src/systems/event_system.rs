@@ -60,7 +60,7 @@ impl EventSystem {
 
             // MouseUpEvent handling
             if event.event_type() == TypeId::of::<MouseUpEvent>() {
-                if let Ok(pressed) = widget.borrow::<Pressed>() {
+                if let Some(pressed) = widget.try_get::<Pressed>() {
                     if pressed.0 {
                         matching_nodes.push(node);
                         break;
@@ -115,13 +115,13 @@ impl EventSystem {
 
             // MouseDownEvent handling
             if event.event_type() == TypeId::of::<MouseDownEvent>() {
-                if let Ok(focused) = widget.borrow_mut::<Focused>() {
+                if let Some(focused) = widget.try_get_mut::<Focused>() {
                     focused.0 = true;
                     new_focused_widget = Some(*node);
                     self.update.set(true);
                 }
 
-                if let Ok(pressed) = widget.borrow_mut::<Pressed>() {
+                if let Some(pressed) = widget.try_get_mut::<Pressed>() {
                     pressed.0 = true;
                     self.update.set(true);
                 }
@@ -137,13 +137,13 @@ impl EventSystem {
                 }
 
                 if in_mouse_pos {
-                    if let Ok(selected) = widget.borrow_mut::<Selected>() {
+                    if let Some(selected) = widget.try_get_mut::<Selected>() {
                         selected.0 = !selected.0;
                         self.update.set(true);
                     }
                 }
 
-                if let Ok(pres) = widget.borrow_mut::<Pressed>() {
+                if let Some(pres) = widget.try_get_mut::<Pressed>() {
                     pressed = pres.0;
                     pres.0 = false;
                     self.update.set(true);

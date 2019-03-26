@@ -31,7 +31,7 @@ impl StateSystem {
     // Used to updates default states like Pressed, Focused and Enabled.
     fn update_default_states(&self, widget: &mut WidgetContainer<'_>) {
         let mut enabled = (false, false);
-        if let Ok(en) = widget.borrow_mut::<Enabled>() {
+        if let Some(en) = widget.try_get::<Enabled>() {
             enabled = (true, en.0);
         }
 
@@ -40,7 +40,7 @@ impl StateSystem {
         }
 
         let mut pressed = (false, false);
-        if let Ok(pres) = widget.borrow_mut::<Pressed>() {
+        if let Some(pres) = widget.try_get::<Pressed>() {
             pressed = (true, pres.0);
         }
 
@@ -49,7 +49,7 @@ impl StateSystem {
         }
 
         let mut focused = (false, false);
-        if let Ok(foc) = widget.borrow_mut::<Focused>() {
+        if let Some(foc) = widget.try_get::<Focused>() {
             focused = (true, foc.0);
         }
 
@@ -58,7 +58,7 @@ impl StateSystem {
         }
 
         let mut selected = (false, false);
-        if let Ok(sel) = widget.borrow_mut::<Selected>() {
+        if let Some(sel) = widget.try_get::<Selected>() {
             selected = (true, sel.0);
         }
 

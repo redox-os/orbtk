@@ -1,5 +1,7 @@
 //! This module contains non visual structures like point, rectangle, color and thickness.
 
+use std::fmt::Debug;
+
 use dces::prelude::{Component, Entity, EntityComponentManager};
 
 pub use orbclient::color::Color;
@@ -26,7 +28,18 @@ pub fn get_property<T>(entity: Entity, ecm: &EntityComponentManager) -> T
 }
 
 /// Use to build a property or to share it.
-pub enum PropertySource<P: Component> {
+#[derive(PartialEq, Debug)]
+pub enum PropertySource<P: Component + PartialEq + Debug> {
     Source(Entity),
     Value(P),
 }
+
+// impl<P: Component> PropertySource<P> {
+//         pub fn is_value(&self) -> bool {
+//         if let PropertySource::Value(_) = self {
+//                 return true;
+//         }
+
+//         false
+// }
+// }

@@ -143,7 +143,7 @@ impl ColumnsBuilder {
 
 /// Helper struct used inside of the columns Property.
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct ColumnsContainer(Vec<Column>);
+pub struct ColumnsContainer(pub Vec<Column>);
 
 property!(
     /// `Columns` describes a list of grid columns.
@@ -203,6 +203,4 @@ impl ColumnExtension for Columns {
         (self.0).0.iter_mut()
     }
 }
-
-// --- Conversions ---
 

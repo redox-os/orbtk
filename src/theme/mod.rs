@@ -240,49 +240,49 @@ impl Theme {
             return;
         }
 
-        let selector = widget.get::<Selector>();
+        let selector = widget.clone::<Selector>();
 
         if !selector.0.dirty() {
             return;
         }
 
-        if let Ok(foreground) = widget.borrow_mut::<Foreground>() {
+        if let Some(foreground) = widget.try_get_mut::<Foreground>() {
             if let Some(color) = self.brush("color", &selector) {
                 foreground.0 = color;
             }
         }
 
-        if let Ok(background) = widget.borrow_mut::<Background>() {
+        if let Some(background) = widget.try_get_mut::<Background>() {
             if let Some(bg) = self.brush("background", &selector) {
                 background.0 = bg;
             }
         }
 
-        if let Ok(border_brush) = widget.borrow_mut::<BorderBrush>() {
+        if let Some(border_brush) = widget.try_get_mut::<BorderBrush>() {
             if let Some(border_color) = self.brush("border-color", &selector) {
                 border_brush.0 = border_color;
             }
         }
 
-        if let Ok(border_radius) = widget.borrow_mut::<BorderRadius>() {
+        if let Some(border_radius) = widget.try_get_mut::<BorderRadius>() {
             if let Some(radius) = self.float("border-radius", &selector) {
                 border_radius.0 = radius as f64;
             }
         }
 
-        if let Ok(border_thickness) = widget.borrow_mut::<BorderThickness>() {
+        if let Some(border_thickness) = widget.try_get_mut::<BorderThickness>() {
             if let Some(border_width) = self.uint("border-width", &selector) {
                 *border_thickness = BorderThickness::from(border_width as f64);
             }
         }
 
-        if let Ok(font_size) = widget.borrow_mut::<FontSize>() {
+        if let Some(font_size) = widget.try_get_mut::<FontSize>() {
             if let Some(size) = self.uint("font-size", &selector) {
                 font_size.0 = size as f64;
             }
         }
 
-        if let Ok(font) = widget.borrow_mut::<Font>() {
+        if let Some(font) = widget.try_get_mut::<Font>() {
             if let Some(font_family) = self.string("font-family", &selector) {
                 if let Some(inner_font) = fonts::font_by_key(&font_family[..]) {
                     (font.0).0 = inner_font;
@@ -290,19 +290,19 @@ impl Theme {
             }
         }
 
-        if let Ok(icon_brush) = widget.borrow_mut::<IconBrush>() {
+        if let Some(icon_brush) = widget.try_get_mut::<IconBrush>() {
             if let Some(color) = self.brush("icon-color", &selector) {
                 icon_brush.0 = color;
             }
         }
 
-        if let Ok(icon_size) = widget.borrow_mut::<IconSize>() {
+        if let Some(icon_size) = widget.try_get_mut::<IconSize>() {
             if let Some(size) = self.uint("icon-size", &selector) {
                 icon_size.0 = size as f64;
             }
         }
 
-        if let Ok(icon_font) = widget.borrow_mut::<IconFont>() {
+        if let Some(icon_font) = widget.try_get_mut::<IconFont>() {
             if let Some(font_family) = self.string("icon-family", &selector) {
                 if let Some(inner_font) = fonts::font_by_key(&font_family[..]) {
                     (icon_font.0).0 = inner_font;
@@ -310,31 +310,31 @@ impl Theme {
             }
         }
 
-        if let Ok(padding) = widget.borrow_mut::<Padding>() {
+        if let Some(padding) = widget.try_get_mut::<Padding>() {
             if let Some(pad) = self.uint("padding", &selector) {
                 padding.set_thickness(pad as f64);
             }
         }
 
-        if let Ok(padding) = widget.borrow_mut::<Padding>() {
+        if let Some(padding) = widget.try_get_mut::<Padding>() {
             if let Some(left) = self.uint("padding-left", &selector) {
                 padding.set_left(left as f64);
             }
         }
 
-        if let Ok(padding) = widget.borrow_mut::<Padding>() {
+        if let Some(padding) = widget.try_get_mut::<Padding>() {
             if let Some(top) = self.uint("padding-top", &selector) {
                 padding.set_top(top as f64);
             }
         }
 
-        if let Ok(padding) = widget.borrow_mut::<Padding>() {
+        if let Some(padding) = widget.try_get_mut::<Padding>() {
             if let Some(right) = self.uint("padding-right", &selector) {
                 padding.set_right(right as f64);
             }
         }
 
-        if let Ok(padding) = widget.borrow_mut::<Padding>() {
+        if let Some(padding) = widget.try_get_mut::<Padding>() {
             if let Some(bottom) = self.uint("padding-bottom", &selector) {
                 padding.set_bottom(bottom as f64);
             }

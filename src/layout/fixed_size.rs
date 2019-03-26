@@ -63,7 +63,7 @@ impl Layout for FixedSizeLayout {
 
         let size = {
             if widget.has::<Image>() {
-                if let Ok(image) = widget.borrow::<Image>() {
+                if let Some(image) = widget.try_get::<Image>() {
                     Some((image.width(), image.height()))
                 } else {
                     None
@@ -74,7 +74,7 @@ impl Layout for FixedSizeLayout {
                 let font_size = widget.get::<FontSize>();
 
                 if text.0.is_empty() {
-                    if let Ok(water_mark) = ecm.borrow_component::<WaterMark>(entity) {
+                    if let Some(water_mark) = widget.try_get::<WaterMark>() {
                         if water_mark.0.is_empty() {
                             None
                         } else {

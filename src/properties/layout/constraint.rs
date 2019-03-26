@@ -138,6 +138,12 @@ pub trait ConstraintExtension {
     /// Sets height.
     fn set_height(&mut self, height: f64);
 
+    /// Gets the size.
+    fn size(&self) -> (f64, f64);
+
+    /// Sets the size.
+    fn set_size(&mut self, width: f64, height: f64);
+
     /// Gets min_width.
     fn min_width(&self) -> f64;
 
@@ -150,6 +156,12 @@ pub trait ConstraintExtension {
     /// Sets min_height.
     fn set_min_height(&mut self, min_height: f64);
 
+    /// Gets the min_size.
+    fn min_size(&self) -> (f64, f64);
+
+    /// Sets the min size.
+    fn set_min_size(&mut self, min_width: f64, min_height: f64);
+
     /// Gets max_width.
     fn max_width(&self) -> f64;
 
@@ -161,6 +173,12 @@ pub trait ConstraintExtension {
 
     /// Sets max_height.
     fn set_max_height(&mut self, max_height: f64);
+
+    /// Gets the max_size.
+    fn max_size(&self) -> (f64, f64);
+
+    /// Sets the max size.
+    fn set_max_size(&mut self, max_width: f64, max_height: f64);
 
     /// Adjust the given `size` to match the constraint.
     fn perform(&self, size: (f64, f64)) -> (f64, f64);
@@ -187,6 +205,15 @@ impl ConstraintExtension for BoxConstraint {
         self.height = height;
     }
 
+    fn size(&self) -> (f64, f64) {
+        (self.width, self.height)
+    }
+
+    fn set_size(&mut self, width: f64, height: f64) {
+        self.width = width;
+        self.height = height;
+    }
+
     fn min_width(&self) -> f64 {
         self.min_width
     }
@@ -203,6 +230,15 @@ impl ConstraintExtension for BoxConstraint {
         self.min_height = min_height;
     }
 
+    fn min_size(&self) -> (f64, f64) {
+        (self.min_width, self.min_height)
+    }
+
+    fn set_min_size(&mut self, min_width: f64, min_height: f64) {
+        self.min_width = min_width;
+        self.min_height = min_height;
+    }
+   
     fn max_width(&self) -> f64 {
         self.max_width
     }
@@ -216,6 +252,15 @@ impl ConstraintExtension for BoxConstraint {
     }
 
     fn set_max_height(&mut self, max_height: f64) {
+        self.max_height = max_height;
+    }
+
+    fn max_size(&self) -> (f64, f64) {
+        (self.max_width, self.max_height)
+    }
+
+    fn set_max_size(&mut self, max_width: f64, max_height: f64) {
+        self.max_width = max_width;
         self.max_height = max_height;
     }
 
@@ -259,6 +304,15 @@ impl ConstraintExtension for Constraint {
         self.0.height = height;
     }
 
+    fn size(&self) -> (f64, f64) {
+        (self.0.width, self.0.height)
+    }
+
+    fn set_size(&mut self, width: f64, height: f64) {
+        self.0.width = width;
+        self.0.height = height;
+    }
+
     fn min_width(&self) -> f64 {
         self.0.min_width
     }
@@ -275,6 +329,15 @@ impl ConstraintExtension for Constraint {
         self.0.min_height = min_height;
     }
 
+    fn min_size(&self) -> (f64, f64) {
+        (self.0.min_width, self.0.min_height)
+    }
+
+    fn set_min_size(&mut self, min_width: f64, min_height: f64) {
+        self.0.min_width = min_width;
+        self.0.min_height = min_height;
+    }
+
     fn max_width(&self) -> f64 {
         self.0.max_width
     }
@@ -288,6 +351,15 @@ impl ConstraintExtension for Constraint {
     }
 
     fn set_max_height(&mut self, max_height: f64) {
+        self.0.max_height = max_height;
+    }
+
+    fn max_size(&self) -> (f64, f64) {
+        (self.0.max_width, self.0.max_height)
+    }
+
+    fn set_max_size(&mut self, max_width: f64, max_height: f64) {
+        self.0.max_width = max_width;
         self.0.max_height = max_height;
     }
 

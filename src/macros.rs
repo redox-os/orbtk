@@ -53,7 +53,7 @@ macro_rules! property {
 macro_rules! widget {
     ( $(#[$widget_doc:meta])* $widget:ident $(<$state:ident>)* $(: $( $handler:ident ),*)* $( { $($(#[$prop_doc:meta])* $property:ident: $property_type:tt ),* } )* ) => {
         #[allow(dead_code)]
-        use std::{ any::TypeId, rc::Rc, collections::HashMap, cell::RefCell };
+        use std::{ any::TypeId, rc::Rc, collections::HashMap, cell::RefCell, fmt::Debug };
 
         use dces::prelude::{Component, ComponentBox, SharedComponentBox };
 
@@ -90,7 +90,7 @@ macro_rules! widget {
 
         impl $widget {
             /// Sets or shares an attached property.
-            pub fn attach<P: Component>(mut self, property: impl Into<PropertySource<P>>) -> Self {
+            pub fn attach<P: Component + PartialEq + Debug>(mut self, property: impl Into<PropertySource<P>>) -> Self {
                 match property.into() {
                     PropertySource::Value(value) => {
                         self.attached_properties.insert(TypeId::of::<P>(), ComponentBox::new(value));
