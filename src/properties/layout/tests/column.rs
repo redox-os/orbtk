@@ -1,5 +1,4 @@
 use super::*;
-use crate::properties::PropertySource;
 
 #[test]
 fn test_width() {

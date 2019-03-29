@@ -1,5 +1,4 @@
 use super::*;
-use crate::structs::*;
 
 #[test]
 fn test_builder_width() {

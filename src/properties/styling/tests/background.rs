@@ -1,12 +1,12 @@
-// use crate::structs::{Brush, Color};
+use crate::structs::{Brush, Color};
 
-// use super::*;
+use super::*;
 
-// #[test]
-// fn test_into() {
-//     let background: Background = "#000000".into();
-//     assert_eq!(background.0, Brush::SolidColor(Color::rgb(0, 0, 0)));
+#[test]
+fn test_into() {
+    let background: Background = "#000000".into();
+    assert_eq!(background.0, Brush::SolidColor(Color::rgb(0, 0, 0)));
 
-//     let background: Background = "#ffffff".into();
-//     assert_eq!(background.0, Brush::SolidColor(Color::rgb(255, 255, 255)));
-// }
+    let background: Background = "#ffffff".into();
+    assert_eq!(background.0, Brush::SolidColor(Color::rgb(255, 255, 255)));
+}
