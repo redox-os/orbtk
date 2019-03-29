@@ -1,4 +1,4 @@
-use super::;*
+use super::*;
 
 #[test]
 fn test_height() {
