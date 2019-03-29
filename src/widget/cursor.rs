@@ -2,9 +2,11 @@ use std::rc::Rc;
 
 use crate::{
     layout::TextSelectionLayout,
-    properties::{Label, TextSelection},
+    properties::{
+        FocusedProperty, OffsetProperty, TextProperty, TextSelection,
+        TextSelectionProperty,
+    },
     render_object::RectangleRenderObject,
-    theme::Selector,
     widget::{
         add_selector_to_widget, remove_selector_from_widget, Context, State, Template, Widget,
     },
@@ -34,7 +36,8 @@ impl State for CursorState {
 ///
 /// # Properties
 ///
-/// * `TextSelection` - Represents the current selection of the text used by the cursor.
+/// * `text_selection` - Represents the current selection of the text used by the cursor.
+/// * `text` - Used to set the text of the cursor.
 ///
 /// # Others
 ///
@@ -43,14 +46,28 @@ impl State for CursorState {
 pub struct Cursor;
 
 impl Widget for Cursor {
-    fn create() -> Template {
-        Template::default()
-            .with_property(Label::default())
-            .with_property(Selector::from("cursor"))
-            .with_property(TextSelection::default())
-            .with_render_object(RectangleRenderObject)
-            .with_layout(TextSelectionLayout)
-            .with_state(Rc::new(CursorState))
-            .with_debug_name("Cursor")
+    type Template = CursorTemplate;
+
+    fn create() -> Self::Template {
+        CursorTemplate::new()
+            .width(1.0)
+            .text("")
+            .selector("cursor")
+            .offset(0.0)
+            .text_selection(TextSelection::default())
+            .render_object(RectangleRenderObject)
+            .layout(TextSelectionLayout::new())
+            .state(Rc::new(CursorState))
+            .debug_name("Cursor")
     }
 }
+
+template!(
+    CursorTemplate,
+    [
+        TextProperty,
+        TextSelectionProperty,
+        OffsetProperty,
+        FocusedProperty
+    ]
+);

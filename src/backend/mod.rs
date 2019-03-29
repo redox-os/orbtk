@@ -12,14 +12,11 @@ use dces::prelude::{Entity, World};
 use orbclient::Color;
 
 use crate::{
-    application::Tree,
-    event::EventQueue,
-    properties::{Bounds, Point},
-    theme::Theme,
+    application::Tree, event::EventQueue, properties::Bounds, structs::Point, theme::Theme,
     widget::MessageBox,
 };
 
-/// Provides the context for the `InitSystem`. 
+/// Provides the context for the `InitSystem`.
 pub struct InitContext<'a> {
     pub theme: &'a Theme,
 }

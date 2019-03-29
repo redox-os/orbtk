@@ -2,20 +2,21 @@ use std::rc::Rc;
 
 use crate::{
     event::{Event, EventBox, EventHandler},
-    properties::{Bounds, Point},
+    properties::Bounds,
+    structs::{Point, Position, Size},
     widget::WidgetContainer,
 };
 
 pub fn check_mouse_condition(position: Point, widget: &WidgetContainer<'_>) -> bool {
     if let Ok(bounds) = widget.borrow_property::<Bounds>() {
-        let mut rect = Bounds::new(0, 0, bounds.width, bounds.height);
+        let mut rect = Bounds::new(0.0, 0.0, bounds.width(), bounds.height());
 
         if let Ok(g_pos) = widget.borrow_property::<Point>() {
-            rect.x = g_pos.x;
-            rect.y = g_pos.y;
+            rect.set_x(g_pos.x);
+            rect.set_y(g_pos.y);
         }
 
-        return rect.contains(position);
+        return rect.contains((position.x, position.y));
     }
 
     false
@@ -27,11 +28,11 @@ pub enum MouseButton {
     Right,
 }
 
-pub struct MouseMouveEvent {
+pub struct MouseMoveEvent {
     pub position: Point,
 }
 
-impl Event for MouseMouveEvent {}
+impl Event for MouseMoveEvent {}
 
 pub struct MouseUpEvent {
     pub button: MouseButton,
@@ -53,61 +54,43 @@ pub struct MouseDownEvent {
 
 impl Event for MouseDownEvent {}
 
-pub type MouseHandler = Rc<dyn Fn(Point) -> bool + 'static>;
+pub type MouseHandler = Fn(Point) -> bool + 'static;
 
-pub type OnMouseUp = Rc<dyn Fn() + 'static>;
+use crate::Template;
 
-#[derive(Default)]
-pub struct MouseEventHandler {
-    mouse_up: Option<MouseHandler>,
-    mouse_down: Option<MouseHandler>,
-    click: Option<MouseHandler>,
+/// Used to handle click events. Could be attached to a widget.
+pub struct ClickEventHandler {
+    handler: Rc<MouseHandler>,
 }
 
-impl MouseEventHandler {
-    pub fn on_mouse_up(mut self, handler: MouseHandler) -> Self {
-        self.mouse_up = Some(handler);
-        self
-    }
-
-    pub fn on_mouse_down(mut self, handler: MouseHandler) -> Self {
-        self.mouse_down = Some(handler);
-        self
-    }
-
-    pub fn on_click(mut self, handler: MouseHandler) -> Self {
-        self.click = Some(handler);
-        self
-    }
-}
-
-impl Into<Rc<dyn EventHandler>> for MouseEventHandler {
+impl Into<Rc<dyn EventHandler>> for ClickEventHandler {
     fn into(self) -> Rc<dyn EventHandler> {
         Rc::new(self)
     }
 }
 
-impl EventHandler for MouseEventHandler {
+impl EventHandler for ClickEventHandler {
     fn handle_event(&self, event: &EventBox) -> bool {
         if let Ok(event) = event.downcast_ref::<ClickEvent>() {
-            if let Some(handler) = &self.click {
-                return (handler)(event.position);
-            }
+            return (self.handler)(event.position);
         }
 
-        if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
-            if let Some(handler) = &self.mouse_down {
-                return (handler)(event.position);
-            }
-        }
+        return false;
+    }
+}
 
-        if let Ok(event) = event.downcast_ref::<MouseUpEvent>() {
-            if let Some(handler) = &self.mouse_up {
-                (handler)(event.position);
-                return true;
-            }
-        }
+pub trait ClickHandler: Sized + From<Template> + Into<Template> {
+    /// Transforms the handler into a template.
+    fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
+        Self::from(transform(self.into()))
+    }
 
-        false
+    /// Inserts a handler.
+    fn on_click<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
+        self.template(|template| {
+            template.event_handler(ClickEventHandler {
+                handler: Rc::new(handler),
+            })
+        })
     }
 }

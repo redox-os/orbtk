@@ -36,6 +36,8 @@ pub struct Selector {
     pub relation: Option<Box<SelectorRelation>>,
 }
 
+property!(Selector, SelectorProperty, selector, shared_selector);
+
 impl Selector {
     pub fn new() -> Self {
         Selector {
@@ -90,12 +92,12 @@ impl Selector {
         self
     }
 
-    pub fn with_id<S: Into<String>>(mut self, id: S) -> Self {
+    pub fn id<S: Into<String>>(mut self, id: S) -> Self {
         self.id = Some(id.into());
         self
     }
 
-    pub fn with_class<S: Into<String>>(mut self, class: S) -> Self {
+    pub fn class<S: Into<String>>(mut self, class: S) -> Self {
         self.classes.insert(class.into());
         self
     }
@@ -105,7 +107,7 @@ impl Selector {
         self
     }
 
-    pub fn with_pseudo_class<S: Into<String>>(mut self, pseudo_class: S) -> Self {
+    pub fn pseudo_class<S: Into<String>>(mut self, pseudo_class: S) -> Self {
         self.pseudo_classes.insert(pseudo_class.into());
         self
     }

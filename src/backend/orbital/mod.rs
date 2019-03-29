@@ -10,6 +10,7 @@ use self::backend::{OrbitalBackend, OrbitalBackendRunner};
 use self::renderer::FONT_RENDERER;
 use crate::backend::{Backend, FontMeasure};
 use crate::properties::Bounds;
+use crate::structs::{Position, Size};
 use crate::theme::Theme;
 
 mod backend;
@@ -21,21 +22,18 @@ pub fn target_backend(
     resizable: bool,
     theme: Theme,
 ) -> (Box<OrbitalBackendRunner>, Rc<RefCell<dyn Backend>>) {
-    let flags = {
-        if resizable {
-            vec![WindowFlag::Resizable]
-        } else {
-            vec![]
-        }
-    };
+    let mut flags = vec![WindowFlag::Async];
+    if resizable {
+        flags.push(WindowFlag::Resizable);
+    }
 
     let backend = Rc::new(RefCell::new(OrbitalBackend::new(
         theme,
         OrbWindow::new_flags(
-            bounds.x,
-            bounds.y,
-            bounds.width,
-            bounds.height,
+            bounds.x() as i32,
+            bounds.y() as i32,
+            bounds.width() as u32,
+            bounds.height() as u32,
             title,
             &flags,
         )

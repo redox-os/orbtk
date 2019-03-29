@@ -12,13 +12,13 @@ use crate::enums;
 pub struct Tree {
     pub root: Entity,
     pub children: BTreeMap<Entity, Vec<Entity>>,
-    pub parent: BTreeMap<Entity, Entity>,
+    pub parent: BTreeMap<Entity, Option<Entity>>,
     iterator_start_node: Cell<Entity>,
 }
 
 impl Tree {
     /// Configure the tree iterator with a start node.
-    pub fn with_start_node(&self, start_node: Entity) -> &Self {
+    pub fn start_node(&self, start_node: Entity) -> &Self {
         self.iterator_start_node.set(start_node);
         self
     }
@@ -26,7 +26,7 @@ impl Tree {
     /// Registers a new widget `entity` as node.
     pub fn register_node(&mut self, entity: Entity) {
         self.children.insert(entity, vec![]);
-        self.parent.insert(entity, entity);
+        self.parent.insert(entity, None);
     }
 
     /// Appends a `child` entity to the given `parent` entity.
@@ -42,7 +42,7 @@ impl Tree {
             return Err(enums::NotFound::Parent(parent));
         }
 
-        self.parent.insert(child, parent);
+        self.parent.insert(child, Some(parent));
 
         Ok(child)
     }
@@ -122,7 +122,7 @@ impl<'a> Iterator for TreeIterator<'a> {
                     }
 
                     let parent = self.tree.parent[&current_node];
-                    let siblings = &self.tree.children[&parent];
+                    let siblings = &self.tree.children[&parent.unwrap()];
                     let sibling_index =
                         siblings.iter().position(|&r| r == current_node).unwrap() + 1;
 
@@ -130,7 +130,7 @@ impl<'a> Iterator for TreeIterator<'a> {
                         result = Some(siblings[sibling_index]);
                         break;
                     } else {
-                        current_node = parent;
+                        current_node = parent.unwrap();
                     }
                 }
             }
