@@ -33,9 +33,3 @@ impl From<&str> for Visibility {
         }
     }
 }
-
-impl Into<PropertySource<Visibility>> for &str {
-    fn into(self) -> PropertySource<Visibility> {
-        PropertySource::Value(Visibility::from(self))
-    }
-}

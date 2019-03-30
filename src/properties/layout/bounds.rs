@@ -102,9 +102,3 @@ impl From<(f64, f64, f64, f64)> for Bounds {
         Bounds::from(Rect::new(t.0, t.1, t.2, t.3))
     }
 }
-
-impl Into<PropertySource<Bounds>> for (f64, f64, f64, f64) {
-    fn into(self) -> PropertySource<Bounds> {
-        PropertySource::Value(Bounds::from(self))
-    }
-}

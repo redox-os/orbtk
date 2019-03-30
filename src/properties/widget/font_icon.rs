@@ -10,9 +10,3 @@ impl From<&str> for FontIcon {
         FontIcon(s.into())
     }
 }
-
-impl Into<PropertySource<FontIcon>> for &str {
-    fn into(self) -> PropertySource<FontIcon> {
-        PropertySource::Value(FontIcon::from(self))
-    }
-}

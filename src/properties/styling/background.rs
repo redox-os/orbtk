@@ -14,12 +14,6 @@ impl From<&str> for Background {
     }
 }
 
-impl Into<PropertySource<Background>> for &str {
-    fn into(self) -> PropertySource<Background> {
-        PropertySource::Value(Background::from(self))
-    }
-}
-
 impl From<Background> for Color {
     fn from(b: Background) -> Color {
         b.0.into()

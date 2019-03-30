@@ -10,9 +10,3 @@ impl From<&str> for Name {
         Name(s.into())
     }
 }
-
-impl Into<PropertySource<Name>> for &str {
-    fn into(self) -> PropertySource<Name> {
-        PropertySource::Value(Name::from(self))
-    }
-}

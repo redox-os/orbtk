@@ -87,20 +87,8 @@ impl From<&str> for Image {
     }
 }
 
-impl Into<PropertySource<Image>> for &str {
-    fn into(self) -> PropertySource<Image> {
-        PropertySource::Value(Image::from(self))
-    }
-}
-
 impl From<String> for Image {
     fn from(s: String) -> Image {
         Image::from(InnerImage::from(OrbImage::from_path(s).unwrap()))
-    }
-}
-
-impl Into<PropertySource<Image>> for String {
-    fn into(self) -> PropertySource<Image> {
-        PropertySource::Value(Image::from(self))
     }
 }

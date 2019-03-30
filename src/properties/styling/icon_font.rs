@@ -15,32 +15,14 @@ impl From<&str> for IconFont {
     }
 }
 
-impl Into<PropertySource<IconFont>> for &str {
-    fn into(self) -> PropertySource<IconFont> {
-        PropertySource::Value(IconFont::from(self))
-    }
-}
-
 impl From<String> for IconFont {
     fn from(s: String) -> IconFont {
         IconFont::from(InnerFont::from(OrbFont::from_path(s).unwrap()))
     }
 }
 
-impl Into<PropertySource<IconFont>> for String {
-    fn into(self) -> PropertySource<IconFont> {
-        PropertySource::Value(IconFont::from(self))
-    }
-}
-
 impl From<Box<[u8]>> for IconFont {
     fn from(s: Box<[u8]>) -> IconFont {
         IconFont::from(InnerFont::from(OrbFont::from_data(s).unwrap()))
-    }
-}
-
-impl Into<PropertySource<IconFont>> for Box<[u8]> {
-    fn into(self) -> PropertySource<IconFont> {
-        PropertySource::Value(IconFont::from(self))
     }
 }

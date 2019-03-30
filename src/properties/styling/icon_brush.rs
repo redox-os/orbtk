@@ -13,12 +13,6 @@ impl From<&str> for IconBrush {
     }
 }
 
-impl Into<PropertySource<IconBrush>> for &str {
-    fn into(self) -> PropertySource<IconBrush> {
-        PropertySource::Value(IconBrush::from(self))
-    }
-}
-
 impl From<IconBrush> for Color {
     fn from(b: IconBrush) -> Color {
         b.0.into()

@@ -18,9 +18,3 @@ impl From<(usize, usize)> for TextSelection {
         })
     }
 }
-
-impl Into<PropertySource<TextSelection>> for (usize, usize) {
-    fn into(self) -> PropertySource<TextSelection> {
-        PropertySource::Value(TextSelection::from(self))
-    }
-}

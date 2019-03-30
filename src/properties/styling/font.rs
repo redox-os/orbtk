@@ -51,32 +51,14 @@ impl From<&str> for Font {
     }
 }
 
-impl Into<PropertySource<Font>> for &str {
-    fn into(self) -> PropertySource<Font> {
-        PropertySource::Value(Font::from(self))
-    }
-}
-
 impl From<String> for Font {
     fn from(s: String) -> Font {
         Font::from(InnerFont::from(OrbFont::from_path(s).unwrap()))
     }
 }
 
-impl Into<PropertySource<Font>> for String {
-    fn into(self) -> PropertySource<Font> {
-        PropertySource::Value(Font::from(self))
-    }
-}
-
 impl From<Box<[u8]>> for Font {
     fn from(s: Box<[u8]>) -> Font {
         Font::from(InnerFont::from(OrbFont::from_data(s).unwrap()))
-    }
-}
-
-impl Into<PropertySource<Font>> for Box<[u8]> {
-    fn into(self) -> PropertySource<Font> {
-        PropertySource::Value(Font::from(self))
     }
 }

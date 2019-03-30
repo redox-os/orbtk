@@ -285,20 +285,8 @@ impl From<String> for Selector {
     }
 }
 
-impl Into<PropertySource<Selector>> for String {
-    fn into(self) -> PropertySource<Selector> {
-        PropertySource::Value(Selector::from(self))
-    }
-}
-
 impl From<&str> for Selector {
     fn from(s: &str) -> Selector {
         Selector(SelectorValue::new().with(s.to_string()))
-    }
-}
-
-impl Into<PropertySource<Selector>> for &str {
-    fn into(self) -> PropertySource<Selector> {
-        PropertySource::Value(Selector::from(self))
     }
 }

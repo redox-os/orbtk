@@ -57,32 +57,14 @@ impl From<(f64, f64, f64, f64)> for BorderThickness {
     }
 }
 
-impl Into<PropertySource<BorderThickness>> for (f64, f64, f64, f64) {
-    fn into(self) -> PropertySource<BorderThickness> {
-        PropertySource::Value(BorderThickness::from(self))
-    }
-}
-
 impl From<(f64, f64)> for BorderThickness {
     fn from(t: (f64, f64)) -> Self {
         BorderThickness::from(Thickness::new(t.0, t.1, t.0, t.1))
     }
 }
 
-impl Into<PropertySource<BorderThickness>> for (f64, f64) {
-    fn into(self) -> PropertySource<BorderThickness> {
-        PropertySource::Value(BorderThickness::from(self))
-    }
-}
-
 impl From<f64> for BorderThickness {
     fn from(t: f64) -> Self {
         BorderThickness::from(Thickness::new(t, t, t, t))
-    }
-}
-
-impl Into<PropertySource<BorderThickness>> for f64 {
-    fn into(self) -> PropertySource<BorderThickness> {
-        PropertySource::Value(BorderThickness::from(self))
     }
 }

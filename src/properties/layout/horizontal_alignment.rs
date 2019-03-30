@@ -38,9 +38,3 @@ impl From<&str> for HorizontalAlignment {
         HorizontalAlignment(s.into())
     }
 }
-
-impl Into<PropertySource<HorizontalAlignment>> for &str {
-    fn into(self) -> PropertySource<HorizontalAlignment> {
-        PropertySource::Value(HorizontalAlignment::from(self))
-    }
-}

@@ -34,12 +34,8 @@ pub enum PropertySource<P: Component + PartialEq + Debug> {
     Value(P),
 }
 
-// impl<P: Component> PropertySource<P> {
-//         pub fn is_value(&self) -> bool {
-//         if let PropertySource::Value(_) = self {
-//                 return true;
-//         }
-
-//         false
-// }
-// }
+impl<P: Component + PartialEq + Debug> From<Entity> for PropertySource<P> {
+    fn from(entity: Entity) -> Self {
+        PropertySource::Source(entity)
+    }
+}

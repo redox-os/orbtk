@@ -8,7 +8,7 @@ macro_rules! property {
         #[derive(Default, Debug, Clone, PartialEq)]
         $(#[$property_doc])*
         pub struct $property(pub $type);
-        
+
         impl $property {
             /// Returns the value of a property.
             pub fn get(entity: Entity, ecm: &EntityComponentManager) -> $type {
@@ -16,9 +16,9 @@ macro_rules! property {
             }
         }
 
-         impl Into<PropertySource<$property>> for $property {
-            fn into(self) -> PropertySource<$property> {
-                PropertySource::Value(self)
+        impl<T: Into<$property>> From<T> for PropertySource<$property> {
+            fn from(value: T) -> Self {
+                PropertySource::Value(value.into())
             }
         }
 
@@ -31,18 +31,6 @@ macro_rules! property {
         impl From<$type> for $property {
             fn from(value: $type) -> $property {
                 $property(value)
-            }
-        }
-
-        impl Into<PropertySource<$property>> for $type {
-            fn into(self) -> PropertySource<$property> {
-                PropertySource::Value($property::from(self))
-            }
-        }
-
-        impl Into<PropertySource<$property>> for Entity {
-            fn into(self) -> PropertySource<$property> {
-                PropertySource::Source(self)
             }
         }
     };
@@ -210,11 +198,11 @@ macro_rules! widget {
 
                     let state = Rc::new($state::default());
                     *self.state.borrow_mut() = Some(state.clone());
-                  
+
                     state
                 }
             )*
-            
+
             $(
                 $(
                     $(#[$prop_doc])*
@@ -302,7 +290,7 @@ macro_rules! widget {
 
                 // register helpers
                 context.register_property(entity, Point::default());
-                
+
                 // register attached properties
                 for (_, property) in this.attached_properties {
                     context.register_property_box(entity, property);
@@ -331,11 +319,11 @@ macro_rules! widget {
                 // register event handlers
                 for handler in this.event_handlers {
                     context.register_handler(entity, handler);
-                }       
+                }
 
                 // register name
                 if let Some(name) = this.name {
-                    context.register_property(entity, name);                   
+                    context.register_property(entity, name);
                 }
 
                 for child in this.children {

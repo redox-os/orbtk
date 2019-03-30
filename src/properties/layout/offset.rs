@@ -8,9 +8,3 @@ impl From<f64> for Offset {
         Offset((t, t))
     }
 }
-
-impl Into<PropertySource<Offset>> for f64 {
-    fn into(self) -> PropertySource<Offset> {
-        PropertySource::Value(Offset::from(self))
-    }
-}

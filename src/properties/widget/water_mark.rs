@@ -10,9 +10,3 @@ impl From<&str> for WaterMark {
         WaterMark(s.into())
     }
 }
-
-impl Into<PropertySource<WaterMark>> for &str {
-    fn into(self) -> PropertySource<WaterMark> {
-        PropertySource::Value(WaterMark::from(self))
-    }
-}

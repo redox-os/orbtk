@@ -14,12 +14,6 @@ impl From<&str> for BorderBrush {
     }
 }
 
-impl Into<PropertySource<BorderBrush>> for &str {
-    fn into(self) -> PropertySource<BorderBrush> {
-        PropertySource::Value(BorderBrush::from(self))
-    }
-}
-
 impl From<BorderBrush> for Color {
     fn from(b: BorderBrush) -> Color {
         b.0.into()

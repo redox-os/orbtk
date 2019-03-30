@@ -29,9 +29,3 @@ impl From<&str> for Orientation {
         }
     }
 }
-
-impl Into<PropertySource<Orientation>> for &str {
-    fn into(self) -> PropertySource<Orientation> {
-        PropertySource::Value(Orientation::from(self))
-    }
-}

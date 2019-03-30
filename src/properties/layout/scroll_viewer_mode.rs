@@ -34,9 +34,3 @@ impl From<(&str, &str)> for ScrollViewerMode {
         })
     }
 }
-
-impl Into<PropertySource<ScrollViewerMode>> for (&str, &str) {
-    fn into(self) -> PropertySource<ScrollViewerMode> {
-        PropertySource::Value(ScrollViewerMode::from(self))
-    }
-}
