@@ -1,80 +1,94 @@
-use std::rc::Rc;
+use dces::prelude::Entity;
 
 use crate::{
-    enums::Alignment,
-    properties::{
-        HorizontalAlignment, PaddingProperty, PressedProperty, Selected,
-        SelectedProperty,
-    },
-    theme::Selector,
-    widget::{Container, Context, Grid, SharedProperty, State, Template, Widget},
+    properties::*,
+    styling::colors,
+    widget::{Container, Grid, Template, State, Context},
 };
 
-// State to handle the position of switch toggle.
-struct SwitchState;
+/// State to handle the position of switch toggle.
+#[derive(Default)]
+pub struct SwitchState;
 
 impl State for SwitchState {
     fn update(&self, context: &mut Context<'_>) {
-        let mut selected = false;
-        if let Ok(sel) = context.widget().borrow_property::<Selected>() {
-            selected = sel.0;
-        }
+        let selected = context.widget().get::<Selected>().0;
 
         let mut switch_toggle = context.child_by_id("SwitchSwitchToggle").unwrap();
 
-        if let Ok(horizontal_alignment) = switch_toggle.borrow_mut_property::<HorizontalAlignment>()
-        {
-            if selected {
-                *horizontal_alignment = HorizontalAlignment(Alignment::End);
-            } else {
-                *horizontal_alignment = HorizontalAlignment(Alignment::Start);
-            }
+        if selected {
+            switch_toggle.set(HorizontalAlignment::from("End"));
+        } else {
+            switch_toggle.set(HorizontalAlignment::from("Start"));
         }
     }
 }
 
-/// The `Switch` widget can be switch between `on` and `off`.
-///
-/// # Properties
-///
-/// * `selector` - CSS selector with  element name `checkbox`, used to request the theme of the widget.
-/// * `selected` - Bool value represents the selected state of the widget.
-///
-/// # Others
-///
-/// * `ParentType`- Single.
-pub struct Switch;
+widget!(
+    /// The `Switch` widget can be switch between `on` and `off`.
+    ///
+    /// * CSS element: `switch`
+    Switch<SwitchState> {
+        /// Sets or shares the background property.
+        background: Background,
 
-impl Widget for Switch {
-    type Template = SwitchTemplate;
+        /// Sets or shares the border radius property.
+        border_radius: BorderRadius,
 
-    fn create() -> Self::Template {
-        let selector = SharedProperty::new(Selector::from("switch"));
-        let selected = SharedProperty::new(Selected::from(false));
+        /// Sets or shares the border thickness property.
+        border_thickness: BorderThickness,
 
-        SwitchTemplate::new()
+        /// Sets or shares the border brush property.
+        border_brush: BorderBrush,
+
+        /// Sets or shares the padding property.
+        padding: Padding,
+
+        /// Sets or shares the css selector property.
+        selector: Selector,
+
+        /// Sets or shares the pressed property.
+        pressed: Pressed,
+
+        /// Sets or shares the selected property.
+        selected: Selected
+    }
+);
+
+impl Template for Switch {
+    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+        self.name("Switch")
+            .selector("switch")
+            .pressed(false)
+            .selected(false)
             .width(56.0)
             .height(32.0)
-            .state(Rc::new(SwitchState))
-            .debug_name("Switch")
+            .border_brush(colors::BOMBAY_COLOR)
+            .background(colors::SLATE_GRAY_COLOR)
+            .border_radius(2.0)
+            .border_thickness(1.0)
+            .padding(4.0)
             .child(
                 Container::create()
-                    .padding(4.0)
-                    .shared_selector(selector.clone())
+                    .background(id)
+                    .border_radius(id)
+                    .border_thickness(id)
+                    .border_brush(id)
+                    .padding(id)
                     .child(
-                        Grid::create().child(
-                            Container::create()
-                                .size(24.0, 24.0)
-                                .vertical_alignment("Center")
-                                .horizontal_alignment("Start")
-                                .attach_shared_property(selected.clone())
-                                .selector(Selector::from("switchtoggle").id("SwitchSwitchToggle")),
-                        ),
-                    ),
+                        Grid::create()
+                            .child(Container::create().size(24.0, 24.0).build(context))
+                            .border_radius(1.0)
+                            .selector(
+                                Selector::from("switch-toggle")
+                                    .id("SwitchSwitchToggle"),
+                            )
+                            .vertical_alignment("Center")
+                            .horizontal_alignment("Start")
+                            .attach_by_source::<Selected>(id)
+                            .build(context),
+                    )
+                    .build(context),
             )
-            .shared_selector(selector)
-            .shared_selected(selected)
     }
 }
-
-template!(SwitchTemplate, [PressedProperty, SelectedProperty]);

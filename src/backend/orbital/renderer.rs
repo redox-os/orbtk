@@ -23,9 +23,9 @@ impl OrbFontRenderer {
         renderer: &mut OrbWindow,
         font_size: f32,
         color: Color,
-        font: &str,
+        font: &Font,
     ) {
-        if let Some(font) = &self.fonts.get(font) {
+        if font_size > 0.0 {
             let line = font.render(text, font_size);
             line.draw_clipped(
                 renderer,
@@ -35,31 +35,6 @@ impl OrbFontRenderer {
                 parent_bounds.width() as u32,
                 color,
             );
-        } else {
-            let rect = Bounds::new(
-                global_position.x + bounds.x(),
-                global_position.y + bounds.y(),
-                bounds.width(),
-                bounds.height(),
-            );
-            let mut current_rect = Bounds::new(rect.x(), rect.y(), rect.width(), rect.height());
-            let x = rect.x();
-
-            for c in text.chars() {
-                if c == '\n' {
-                    current_rect.set_x(x);
-                    current_rect.set_y(current_rect.y() + 16.0);
-                } else {
-                    if current_rect.x() + 8.0 >= global_position.x
-                        && current_rect.y() + 16.0 >= global_position.y
-                        && current_rect.x() + 8.0 < global_position.x + parent_bounds.width()
-                        && current_rect.y() < global_position.y + parent_bounds.height()
-                    {
-                        renderer.char(current_rect.x() as i32, current_rect.y() as i32, c, color);
-                    }
-                    current_rect.set_x(current_rect.x() + 8.0);
-                }
-            }
         }
     }
 }
@@ -151,7 +126,7 @@ impl Renderer for OrbWindow {
         global_position: &Point,
         font_size: u32,
         color: Color,
-        font: &str,
+        font: &Font,
     ) {
         let alpha = (color.data >> 24) & 0xFF;
 

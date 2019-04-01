@@ -8,21 +8,19 @@ use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
     application::Tree,
-    properties::{Bounds, HorizontalAlignment, Margin, Orientation, VerticalAlignment, Visibility},
+    properties::*,
     structs::{DirtySize, Position, Size, Spacer},
+    enums::Alignment,
     theme::Theme,
 };
 
-use super::{
-    get_constraint, get_horizontal_alignment, get_margin, get_vertical_alignment, get_visibility,
-    Layout,
-};
+use super::Layout;
 
 /// Stacks visual the children widgets vertical or horizontal.
 #[derive(Default)]
 pub struct StackLayout {
     desired_size: RefCell<DirtySize>,
-    old_alignment: Cell<(VerticalAlignment, HorizontalAlignment)>,
+    old_alignment: Cell<(Alignment, Alignment)>,
 }
 
 impl StackLayout {
@@ -40,13 +38,13 @@ impl Layout for StackLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
     ) -> DirtySize {
-        if get_visibility(entity, ecm) == Visibility::Collapsed {
+        if Visibility::get(entity, ecm) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = get_horizontal_alignment(entity, ecm);
-        let vertical_alignment = get_vertical_alignment(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
+        let vertical_alignment = VerticalAlignment::get(entity, ecm);
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -54,7 +52,7 @@ impl Layout for StackLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let orientation = get_orientation(entity, ecm);
+        let orientation = Orientation::get(entity, ecm);
         let mut desired_size: (f64, f64) = (0.0, 0.0);
 
         for child in &tree.children[&entity] {
@@ -62,14 +60,14 @@ impl Layout for StackLayout {
                 let child_desired_size = child_layout.measure(*child, ecm, tree, layouts, theme);
                 let child_margin = {
                     if child_desired_size.width() > 0.0 && child_desired_size.height() > 0.0 {
-                        get_margin(*child, ecm)
+                        Margin::get(*child, ecm)
                     } else {
-                        Margin::new()
+                        Margin::default().0
                     }
                 };
 
                 match orientation {
-                    Orientation::Horizontal => {
+                    OrientationValue::Horizontal => {
                         desired_size.0 +=
                             child_desired_size.width() + child_margin.left() + child_margin.right();
                         desired_size.1 = desired_size.1.max(
@@ -112,23 +110,25 @@ impl Layout for StackLayout {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment = get_horizontal_alignment(entity, ecm);
-        let vertical_alignment = get_vertical_alignment(entity, ecm);
-        let margin = get_margin(entity, ecm);
-        let constraint = get_constraint(entity, ecm);
-        let orientation = get_orientation(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
+        let vertical_alignment = VerticalAlignment::get(entity, ecm);
+        let margin = Margin::get(entity, ecm);
+        let constraint = Constraint::get(entity, ecm);
+        let orientation = Orientation::get(entity, ecm);
         let mut size_counter = 0.0;
 
         let size = constraint.perform((
-            horizontal_alignment.align_width(
+            horizontal_alignment.align_measure(
                 parent_size.0,
                 self.desired_size.borrow().width(),
-                margin,
+                margin.left(),
+                margin.right(),
             ),
-            vertical_alignment.align_height(
+            vertical_alignment.align_measure(
                 parent_size.1,
                 self.desired_size.borrow().height(),
-                margin,
+                margin.top(),
+                margin.bottom(),
             ),
         ));
 
@@ -147,47 +147,51 @@ impl Layout for StackLayout {
 
             let child_margin = {
                 if child_desired_size.0 > 0.0 && child_desired_size.1 > 0.0 {
-                    get_margin(*child, ecm)
+                    Margin::get(*child, ecm)
                 } else {
-                    Margin::new()
+                    Margin::default().0
                 }
             };
 
-            let child_horizontal_alignment = get_horizontal_alignment(*child, ecm);
-            let child_vertical_alignment = get_vertical_alignment(*child, ecm);
+            let child_horizontal_alignment = HorizontalAlignment::get(*child, ecm);
+            let child_vertical_alignment = VerticalAlignment::get(*child, ecm);
 
             if let Ok(child_bounds) = ecm.borrow_mut_component::<Bounds>(*child) {
                 match orientation {
-                    Orientation::Horizontal => {
+                    OrientationValue::Horizontal => {
                         child_bounds.set_x(
                             size_counter
-                                + child_horizontal_alignment.align_x(
-                                    available_size.0,
-                                    child_bounds.width(),
-                                    child_margin,
-                                ),
+                                + child_horizontal_alignment.align_position(
+                                available_size.0,
+                                child_bounds.width(),
+                                child_margin.left(),
+                                child_margin.right(),
+                            ),
                         );
-                        child_bounds.set_y(child_vertical_alignment.align_y(
+                        child_bounds.set_y(child_vertical_alignment.align_position(
                             available_size.1,
                             child_bounds.height(),
-                            child_margin,
+                            child_margin.top(),
+                            child_margin.bottom(),
                         ));
                         size_counter +=
                             child_bounds.width() + child_margin.left() + child_margin.right();
                     }
                     _ => {
-                        child_bounds.set_x(child_horizontal_alignment.align_x(
+                        child_bounds.set_x(child_horizontal_alignment.align_position(
                             available_size.0,
                             child_bounds.width(),
-                            child_margin,
+                            child_margin.left(),
+                            child_margin.right(),
                         ));
                         child_bounds.set_y(
                             size_counter
-                                + child_vertical_alignment.align_y(
-                                    available_size.1,
-                                    child_bounds.height(),
-                                    child_margin,
-                                ),
+                                + child_vertical_alignment.align_position(
+                                available_size.1,
+                                child_bounds.height(),
+                                child_margin.top(),
+                                child_margin.bottom(),
+                            ),
                         );
                         size_counter +=
                             child_bounds.height() + child_margin.top() + child_margin.bottom();
@@ -206,15 +210,3 @@ impl Into<Box<dyn Layout>> for StackLayout {
         Box::new(self)
     }
 }
-
-// --- helpers ---
-
-fn get_orientation(entity: Entity, ecm: &EntityComponentManager) -> Orientation {
-    if let Ok(orientation) = ecm.borrow_component::<Orientation>(entity) {
-        return *orientation;
-    }
-
-    Orientation::default()
-}
-
-// --- helpers ---

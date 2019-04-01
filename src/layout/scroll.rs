@@ -9,15 +9,13 @@ use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
     application::Tree,
-    layout::Layout,
-    properties::{Bounds, HorizontalAlignment, Offset, VerticalAlignment, Visibility},
-    structs::{DirtySize, Position, Size},
+    properties::*,
+    enums::Alignment,
+    structs::*,
     theme::Theme,
 };
 
-use super::{
-    get_constraint, get_horizontal_alignment, get_margin, get_vertical_alignment, get_visibility,
-};
+use super::Layout;
 
 /// IMPORTANT: The scroll layout will only work for the text box now. A update will follow!!!!
 #[derive(Default)]
@@ -25,7 +23,7 @@ pub struct ScrollLayout {
     old_child_size: Cell<(f64, f64)>,
     desired_size: RefCell<DirtySize>,
     old_offset: Cell<(f64, f64)>,
-    old_alignment: Cell<(VerticalAlignment, HorizontalAlignment)>,
+    old_alignment: Cell<(Alignment, Alignment)>,
 }
 
 impl ScrollLayout {
@@ -43,13 +41,13 @@ impl Layout for ScrollLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
     ) -> DirtySize {
-        if get_visibility(entity, ecm) == Visibility::Collapsed {
+        if Visibility::get(entity, ecm) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = get_horizontal_alignment(entity, ecm);
-        let vertical_alignment = get_vertical_alignment(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
+        let vertical_alignment = VerticalAlignment::get(entity, ecm);
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -57,7 +55,7 @@ impl Layout for ScrollLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let constraint = get_constraint(entity, ecm);
+        let constraint = Constraint::get(entity, ecm);
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());
@@ -80,11 +78,11 @@ impl Layout for ScrollLayout {
             }
         }
 
-        if let Ok(off) = ecm.borrow_component::<Offset>(entity) {
-            if self.old_offset.get().0 != off.0 || self.old_offset.get().1 != off.1 {
-                self.old_offset.set((off.0, off.1));
-                self.desired_size.borrow_mut().set_dirty(true);
-            }
+        let off = Offset::get(entity, ecm);
+
+        if self.old_offset.get().0 != off.0 || self.old_offset.get().1 != off.1 {
+            self.old_offset.set((off.0, off.1));
+            self.desired_size.borrow_mut().set_dirty(true);
         }
 
         self.desired_size.borrow().clone()
@@ -103,21 +101,24 @@ impl Layout for ScrollLayout {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment = get_horizontal_alignment(entity, ecm);
-        let vertical_alignment = get_vertical_alignment(entity, ecm);
-        let margin = get_margin(entity, ecm);
-        let constraint = get_constraint(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
+        let vertical_alignment = VerticalAlignment::get(entity, ecm);
+        let margin = Margin::get(entity, ecm);
+        let _padding = Padding::get(entity, ecm);
+        let constraint = Constraint::get(entity, ecm);
 
         let size = constraint.perform((
-            horizontal_alignment.align_width(
+            horizontal_alignment.align_measure(
                 parent_size.0,
                 self.desired_size.borrow().width(),
-                margin,
+                margin.left(),
+                margin.right(),
             ),
-            vertical_alignment.align_height(
+            vertical_alignment.align_measure(
                 parent_size.1,
                 self.desired_size.borrow().height(),
-                margin,
+                margin.top(),
+                margin.bottom(),
             ),
         ));
 
@@ -134,22 +135,16 @@ impl Layout for ScrollLayout {
         //     horizontal_scroll_mode = mode.horizontal;
         // }
 
-        let mut offset = (0.0, 0.0);
+        let off = Offset::get(entity, ecm);
+        let mut offset = (off.0, off.1);
 
         let old_child_size = self.old_child_size.get();
-
-        if let Ok(off) = ecm.borrow_component::<Offset>(entity) {
-            // off.0 = (center_size.0 as i32 - size.0 as i32).min(0);
-            // off.1 = (center_size.1 as i32 - size.1 as i32).min(0);
-
-            offset = (off.0, off.1);
-        }
 
         for child in &tree.children[&entity] {
             // let child_margin = get_margin(*child, ecm);
             let mut child_size = old_child_size;
-            let child_vertical_alignment = get_vertical_alignment(*child, ecm);
-            let child_margin = get_margin(*child, ecm);
+            let child_vertical_alignment = VerticalAlignment::get(*child, ecm);
+            let child_margin = Margin::get(*child, ecm);
 
             if let Some(child_layout) = layouts.borrow().get(child) {
                 child_size =
@@ -164,16 +159,17 @@ impl Layout for ScrollLayout {
 
             if let Ok(child_bounds) = ecm.borrow_mut_component::<Bounds>(*child) {
                 child_bounds.set_x(offset.0);
-                child_bounds.set_y(child_vertical_alignment.align_y(
+                child_bounds.set_y(child_vertical_alignment.align_position(
                     size.1,
                     child_bounds.height(),
-                    child_margin,
+                    child_margin.top(),
+                    child_margin.bottom(),
                 ));
             }
 
             if let Ok(off) = ecm.borrow_mut_component::<Offset>(entity) {
-                off.0 = offset.0;
-                off.1 = offset.1;
+                (off.0).0 = offset.0;
+                (off.0).1 = offset.1;
             }
 
             self.old_child_size.set(child_size);

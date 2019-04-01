@@ -1,34 +1,50 @@
+use dces::prelude::Entity;
+
 use crate::{
-    layout::FixedSizeLayout,
-    properties::TextProperty,
-    render_object::TextRenderObject,
-    widget::{Template, Widget},
+    layout::{FixedSizeLayout, Layout},
+    properties::*,
+    render_object::{RenderObject, TextRenderObject},
+    styling::{colors, fonts},
+    widget::Template,
 };
 
-/// The `TextBlock` widget is used to draw text. It is not interactive.
-///
-/// # Properties
-///
-/// * `text` - String used to display the text of the text block.
-/// * `selector` - CSS selector with  element name `textblock`, used to request the theme of the text block.
-///
-/// # Others
-///
-/// * `FixedSizeLayout` - Used to layout the widget.
-/// * `TextRenderObject` - Used to draw the text of the widget.
-pub struct TextBlock;
+widget!(
+    /// The `TextBlock` widget is used to draw text. It is not interactive.
+    /// 
+    /// * CSS element: `text-block`
+    TextBlock {
+        /// Sets or shares the text property.
+        text: Text,
 
-impl Widget for TextBlock {
-    type Template = TextBlockTemplate;
+        /// Sets or shares the foreground property.
+        foreground: Foreground,
 
-    fn create() -> Self::Template {
-        TextBlockTemplate::new()
-            .layout(FixedSizeLayout::new())
-            .render_object(TextRenderObject)
-            .debug_name("TextBlock")
-            .text("TextBlock")
-            .selector("textblock")
+        /// Sets or share the font size property.
+        font_size: FontSize,
+
+        /// Sets or shares the font property.
+        font: Font,
+
+        /// Sets or shares the css selector property.
+        selector: Selector
+    }
+);
+
+impl Template for TextBlock {
+    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
+        self.name("TextBlock")
+            .selector("text-block")
+            .text("")
+            .foreground(colors::LINK_WATER_COLOR)
+            .font_size(fonts::FONT_SIZE_12)
+            .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
+    }
+
+    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
+        Some(Box::new(TextRenderObject))
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(FixedSizeLayout::new())
     }
 }
-
-template!(TextBlockTemplate, [TextProperty]);

@@ -1,13 +1,5 @@
 use std::slice::{Iter, IterMut};
 
-/// Used to define the row position of a widget on the `Grid`.
-#[derive(Default, Copy, Clone, PartialEq)]
-pub struct GridRow(pub usize);
-
-/// Used to define the row span of a widget on the `Grid`.
-#[derive(Default, Copy, Clone, PartialEq)]
-pub struct RowSpan(pub usize);
-
 /// Used to build a row, specifying additional details.
 #[derive(Default)]
 pub struct RowBuilder {
@@ -52,7 +44,7 @@ impl RowBuilder {
 }
 
 /// Used to define the row of the `Grid`.
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Default, Debug)]
 pub struct Row {
     pub height: RowHeight,
     pub min_height: f64,
@@ -87,6 +79,21 @@ impl Row {
         } else {
             height
         };
+    }
+}
+
+impl From<&str> for Row {
+    fn from(t: &str) -> Self {
+        match t {
+            "Auto" | "auto" => Row::create().height(RowHeight::Auto).build(),
+            _ => Row::create().height(RowHeight::Stretch).build(),
+        }
+    }
+}
+
+impl From<f64> for Row {
+    fn from(t: f64) -> Self {
+        Row::create().height(RowHeight::Height(t)).build()
     }
 }
 
@@ -127,65 +134,91 @@ impl RowsBuilder {
         self
     }
 
+    /// Inserts a list of rows.
+    pub fn rows<R: Into<Row> + Clone>(mut self, rows: &[R]) -> Self {
+        for row in rows.to_vec() {
+            self.row_definitions.push(row.into());
+        }
+        self
+    }
+
+    /// Inserts the given row as often as given.
+    pub fn repeat<R: Into<Row> + Copy>(mut self, row: R, count: usize) -> Self {
+        for _ in 0..count {
+            self.row_definitions.push(row.into())
+        }
+        self
+    }
+
     /// Builds the rows.
     pub fn build(self) -> Rows {
-        Rows {
-            value: self.row_definitions,
-        }
+        Rows(RowsContainer(self.row_definitions))
     }
 }
 
-/// Represents a list of grid rows.
-#[derive(Default, Clone, PartialEq)]
-pub struct Rows {
-    value: Vec<Row>,
+/// Helper struct used inside of the row Property.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct RowsContainer(Vec<Row>);
+
+property!(
+    /// `Rows` describes a list of grid rows.
+    Rows(RowsContainer)
+);
+
+// --- Trait implementations ---
+
+/// Provides additional operations on grid rows.
+pub trait RowExtension {
+    /// Returns a new Rows Builder.
+    fn create() -> RowsBuilder;
+
+    /// Returns the number of elements in the rows list, also referred to as its 'length'.
+    fn len(&self) -> usize;
+
+    /// Returns a reference to an row.
+    fn get(&self, row: usize) -> Option<&Row>;
+
+    /// Returns a mutable reference to an row.
+    fn get_mut(&mut self, row: usize) -> Option<&mut Row>;
+
+    /// Returns an iterator over the slice.
+    fn iter(&self) -> Iter<Row>;
+
+    /// Returns a mutable iterator over the slice.
+    fn iter_mut(&mut self) -> IterMut<Row>;
 }
 
-property!(Rows, RowsProperty, rows, shared_rows);
-
-impl Rows {
+impl RowExtension for Rows {
     /// Creates a new `RowsBuilder` object with default values.
-    pub fn create() -> RowsBuilder {
+    fn create() -> RowsBuilder {
         RowsBuilder::new()
     }
 
-    /// Returns the number of elements in the columns list, also referred to as its 'length'.
-    pub fn len(&self) -> usize {
-        self.value.len()
+    /// Returns the number of elements in the rows list, also referred to as its 'length'.
+    fn len(&self) -> usize {
+        (self.0).0.len()
     }
 
-    /// Returns a reference to an column.
-    pub fn get(&self, row: usize) -> Option<&Row> {
-        self.value.get(row)
+    /// Returns a reference to an row.
+    fn get(&self, row: usize) -> Option<&Row> {
+        (self.0).0.get(row)
     }
 
-    /// Returns a mutable reference to an column.
-    pub fn get_mut(&mut self, row: usize) -> Option<&mut Row> {
-        self.value.get_mut(row)
+    /// Returns a mutable reference to an row.
+    fn get_mut(&mut self, row: usize) -> Option<&mut Row> {
+        (self.0).0.get_mut(row)
     }
 
     /// Returns an iterator over the slice.
-    pub fn iter(&self) -> Iter<Row> {
-        self.value.iter()
+    fn iter(&self) -> Iter<Row> {
+        (self.0).0.iter()
     }
 
     /// Returns a mutable iterator over the slice.
-    pub fn iter_mut(&mut self) -> IterMut<Row> {
-        self.value.iter_mut()
+    fn iter_mut(&mut self) -> IterMut<Row> {
+        (self.0).0.iter_mut()
     }
 }
 
-impl From<&str> for Row {
-    fn from(t: &str) -> Self {
-        match t {
-            "Auto" | "auto" => Row::create().height(RowHeight::Auto).build(),
-            _ => Row::create().height(RowHeight::Stretch).build(),
-        }
-    }
-}
+// --- Conversions ---
 
-impl From<f64> for Row {
-    fn from(t: f64) -> Self {
-        Row::create().height(RowHeight::Height(t)).build()
-    }
-}

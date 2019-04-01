@@ -2,32 +2,32 @@ use super::*;
 use crate::enums::Alignment;
 
 #[test]
-fn test_align_x() {
+fn test_align_position() {
     let available_width = 100.0;
     let width = 50.0;
     let margin = Margin::default();
 
     let horizontal_alignment = HorizontalAlignment(Alignment::Stretch);
     assert_eq!(
-        horizontal_alignment.align_x(available_width, width, margin),
+        horizontal_alignment.align_x(available_width, width, margin.clone()),
         0.0
     );
 
     let horizontal_alignment = HorizontalAlignment(Alignment::Center);
     assert_eq!(
-        horizontal_alignment.align_x(available_width, width, margin),
+        horizontal_alignment.align_x(available_width, width, margin.clone()),
         25.0
     );
 
     let horizontal_alignment = HorizontalAlignment(Alignment::Start);
     assert_eq!(
-        horizontal_alignment.align_x(available_width, width, margin),
+        horizontal_alignment.align_x(available_width, width, margin.clone()),
         0.0
     );
 
     let horizontal_alignment = HorizontalAlignment(Alignment::End);
     assert_eq!(
-        horizontal_alignment.align_x(available_width, width, margin),
+        horizontal_alignment.align_x(available_width, width, margin.clone()),
         50.0
     );
 }
@@ -40,25 +40,25 @@ fn test_align_width() {
 
     let horizontal_alignment = HorizontalAlignment(Alignment::Stretch);
     assert_eq!(
-        horizontal_alignment.align_width(available_width, width, margin),
+        horizontal_alignment.align_width(available_width, width, margin.clone()),
         available_width
     );
 
     let horizontal_alignment = HorizontalAlignment(Alignment::Center);
     assert_eq!(
-        horizontal_alignment.align_width(available_width, width, margin),
+        horizontal_alignment.align_width(available_width, width, margin.clone()),
         width
     );
 
     let horizontal_alignment = HorizontalAlignment(Alignment::Start);
     assert_eq!(
-        horizontal_alignment.align_width(available_width, width, margin),
+        horizontal_alignment.align_width(available_width, width, margin.clone()),
         width
     );
 
     let horizontal_alignment = HorizontalAlignment(Alignment::End);
     assert_eq!(
-        horizontal_alignment.align_width(available_width, width, margin),
+        horizontal_alignment.align_width(available_width, width, margin.clone()),
         width
     );
 }

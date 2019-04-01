@@ -9,25 +9,25 @@ fn test_align_y() {
 
     let vertical_alignment = VerticalAlignment(Alignment::Stretch);
     assert_eq!(
-        vertical_alignment.align_y(available_height, height, margin),
+        vertical_alignment.align_y(available_height, height, margin.clone()),
         0.0
     );
 
     let vertical_alignment = VerticalAlignment(Alignment::Center);
     assert_eq!(
-        vertical_alignment.align_y(available_height, height, margin),
+        vertical_alignment.align_y(available_height, height, margin.clone()),
         25.0
     );
 
     let vertical_alignment = VerticalAlignment(Alignment::Start);
     assert_eq!(
-        vertical_alignment.align_y(available_height, height, margin),
+        vertical_alignment.align_y(available_height, height, margin.clone()),
         0.0
     );
 
     let vertical_alignment = VerticalAlignment(Alignment::End);
     assert_eq!(
-        vertical_alignment.align_y(available_height, height, margin),
+        vertical_alignment.align_y(available_height, height, margin.clone()),
         50.0
     );
 }
@@ -40,25 +40,25 @@ fn test_align_height() {
 
     let vertical_alignment = VerticalAlignment(Alignment::Stretch);
     assert_eq!(
-        vertical_alignment.align_height(available_height, height, margin),
+        vertical_alignment.align_height(available_height, height, margin.clone()),
         available_height
     );
 
     let vertical_alignment = VerticalAlignment(Alignment::Center);
     assert_eq!(
-        vertical_alignment.align_height(available_height, height, margin),
+        vertical_alignment.align_height(available_height, height, margin.clone()),
         height
     );
 
     let vertical_alignment = VerticalAlignment(Alignment::Start);
     assert_eq!(
-        vertical_alignment.align_height(available_height, height, margin),
+        vertical_alignment.align_height(available_height, height, margin.clone()),
         height
     );
 
     let vertical_alignment = VerticalAlignment(Alignment::End);
     assert_eq!(
-        vertical_alignment.align_height(available_height, height, margin),
+        vertical_alignment.align_height(available_height, height, margin.clone()),
         height
     );
 }

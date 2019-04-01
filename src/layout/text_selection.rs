@@ -9,18 +9,19 @@ use dces::prelude::{Entity, EntityComponentManager};
 use crate::{
     application::Tree,
     backend::{FontMeasure, FONT_MEASURE},
-    properties::{Bounds, Margin, Offset, Text, TextSelection, Visibility},
+    properties::*,
     structs::{DirtySize, Size, Spacer},
-    theme::{Selector, Theme},
+    theme::Theme,
+    widget::WidgetContainer,
 };
 
-use super::{get_constraint, get_margin, get_vertical_alignment, get_visibility, Layout};
+use super::Layout;
 
 /// The text selection layout is used to measure and arrange a text selection cursor.
 #[derive(Default)]
 pub struct TextSelectionLayout {
     desired_size: RefCell<DirtySize>,
-    old_text_selection: Cell<TextSelection>,
+    old_text_selection: Cell<TextSelectionValue>,
 }
 
 impl TextSelectionLayout {
@@ -44,19 +45,19 @@ impl Layout for TextSelectionLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
     ) -> DirtySize {
-        if get_visibility(entity, ecm) == Visibility::Collapsed {
+        if Visibility::get(entity, ecm) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let constraint = get_constraint(entity, ecm);
+        let constraint = Constraint::get(entity, ecm);
 
         if let Ok(selection) = ecm.borrow_component::<TextSelection>(entity) {
-            if *selection != self.old_text_selection.get() {
+            if selection.0 != self.old_text_selection.get() {
                 self.desired_size.borrow_mut().set_dirty(true);
             }
 
-            self.old_text_selection.set(*selection);
+            self.old_text_selection.set(selection.0);
         }
 
         for child in &tree.children[&entity] {
@@ -108,55 +109,47 @@ impl Layout for TextSelectionLayout {
         let mut pos = 0.0;
         let mut size = self.desired_size.borrow().size();
 
-        let vertical_alignment = get_vertical_alignment(entity, ecm);
-        let margin = get_margin(entity, ecm);
+        let vertical_alignment = VerticalAlignment::get(entity, ecm);
+        let margin = Margin::get(entity, ecm);
+        {
+            let mut widget = WidgetContainer::new(entity, ecm);
 
-        size.1 = vertical_alignment.align_height(parent_size.1, size.1, margin);
+            size.1 = vertical_alignment.align_measure(parent_size.1, size.1, margin.top(), margin.bottom());
 
-        if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-            if let Ok(text) = ecm.borrow_component::<Text>(entity) {
-                if let Ok(selection) = ecm.borrow_component::<TextSelection>(entity) {
-                    if let Some(text_part) = text.0.get(0..selection.start_index) {
+            if let Some(text) = widget.try_get::<Text>() {
+                let font = widget.get::<Font>();
+                let font_size = widget.get::<FontSize>();
+
+                if let Some(selection) = widget.try_get::<TextSelection>() {
+                    if let Some(text_part) = text.0.get(0..selection.0.start_index) {
                         pos = FONT_MEASURE
-                            .measure(
-                                text_part,
-                                &theme.string("font-family", selector),
-                                theme.uint("font-size", selector),
-                            )
+                            .measure(text_part, &(font.0).0, font_size.0 as u32)
                             .0 as f64;
 
                         if text_part.ends_with(" ") {
-                            pos += (FONT_MEASURE
-                                .measure(
-                                    "a",
-                                    &theme.string("font-family", selector),
-                                    theme.uint("font-size", selector),
-                                )
-                                .0
-                                / 2) as f64;
+                            pos +=
+                                (FONT_MEASURE.measure("a", &(font.0).0, font_size.0 as u32).0 / 2) as f64;
                         }
                     }
                 }
             }
-        }
 
-        if let Ok(off) = ecm.borrow_component::<Offset>(entity) {
-            pos += off.0;
-        }
+            pos += widget.try_get::<Offset>().map_or(0.0, |off| (off.0).0);
 
-        if let Ok(margin) = ecm.borrow_mut_component::<Margin>(entity) {
-            margin.set_left(pos);
+            if let Some(margin) = widget.try_get_mut::<Margin>() {
+                margin.set_left(pos);
+            }
+
+            if let Some(bounds) = widget.try_get_mut::<Bounds>() {
+                bounds.set_width(size.0);
+                bounds.set_height(size.1);
+            }
         }
 
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 child_layout.arrange(size, *child, ecm, tree, layouts, theme);
             }
-        }
-
-        if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(entity) {
-            bounds.set_width(size.0);
-            bounds.set_height(size.1);
         }
 
         self.desired_size.borrow_mut().set_dirty(false);

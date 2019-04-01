@@ -1,33 +1,44 @@
-use crate::{
-    layout::PaddingLayout,
-    properties::PaddingProperty,
-    render_object::RectangleRenderObject,
-    widget::{Template, Widget},
-};
+use dces::prelude::Entity;
 
-/// The `Container` represents a layout that surrounds its child with a padding. Draws a box arround the child.
-///
-/// # Properties
-///
-/// * `selector` - CSS selector with element name `container`, used to request the theme of the widget.
-///
-/// # Others
-///
-/// * `PaddingLayout` - Used to layout the widget.
-/// * `RectangleRenderObject` - Used to draw the widget.
-pub struct Container;
+use crate::{properties::*, widget::Template, render_object::{RenderObject, RectangleRenderObject}, layout::{Layout, PaddingLayout}};
 
-impl Widget for Container {
-    type Template = ContainerTemplate;
+widget!(
+    /// The `Container` layout widget surrounds its child with a padding. Draws a box around the child.
+    Container {
+        /// Sets or shares the background property.
+        background: Background,
 
-    fn create() -> Self::Template {
-        ContainerTemplate::new()
-            .padding(0.0)
-            .render_object(RectangleRenderObject)
-            .layout(PaddingLayout::new())
-            .selector("container")
-            .debug_name("Container")
+        /// Sets or shares the border radius property.
+        border_radius: BorderRadius,
+
+        /// Sets or shares the border thickness property.
+        border_thickness: BorderThickness,
+
+        /// Sets or shares the border brush property.
+        border_brush: BorderBrush,
+
+        /// Sets or shares the padding property.
+        padding: Padding,
+
+        /// Sets or shares the css selector property. 
+        selector: Selector
+    }
+);
+
+impl Template for Container {
+    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
+        self.name("Container").padding(0.0)
+            .background("transparent")
+            .border_radius(0.0)
+            .border_thickness(0.0)
+            .border_brush("transparent")
+    }
+
+    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
+        Some(Box::new(RectangleRenderObject))
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(PaddingLayout::new())
     }
 }
-
-template!(ContainerTemplate, [PaddingProperty]);

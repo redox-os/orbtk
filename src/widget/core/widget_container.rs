@@ -1,4 +1,6 @@
-use dces::prelude::{Component, Entity, EntityComponentManager, NotFound};
+use std::any::TypeId;
+
+use dces::prelude::{Component, Entity, EntityComponentManager};
 
 /// The `WidgetContainer` wraps the entity of a widget and provides access to its properties, its children properties and its parent properties.
 pub struct WidgetContainer<'a> {
@@ -15,15 +17,117 @@ impl<'a> WidgetContainer<'a> {
         }
     }
 
+    /// Gets the property.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the widget does not contains the property.
+    pub fn get<P>(&self) -> &P
+        where
+            P: Clone + Component + Default,
+    {
+        if let Ok(property) = self.ecm.borrow_component::<P>(self.current_node) {
+            return property;
+        }
+
+        panic!(
+            "Entity {} does not contain property type {:?}",
+            self.current_node,
+            TypeId::of::<P>()
+        );
+    }
+
+    /// Gets a mutable reference of the property of type `P`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the widget does not contains the property.
+    pub fn get_mut<P>(&mut self) -> &mut P
+        where
+            P: Clone + Component + Default,
+    {
+        if let Ok(property) = self.ecm.borrow_mut_component::<P>(self.current_node) {
+            return property;
+        }
+
+        panic!(
+            "Entity {} does not contain property type {:?}",
+            self.current_node,
+            TypeId::of::<P>()
+        );
+    }
+
+    /// Clones the property. If the property does not exists for the widget the
+    /// default of the property value will be returned,
+    pub fn clone_or_default<P>(&self) -> P
+        where
+            P: Clone + Component + Default,
+    {
+        if let Ok(property) = self.ecm.borrow_component::<P>(self.current_node) {
+            return property.clone();
+        }
+
+        P::default()
+    }
+
+    /// Clones the property.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the widget does not contains the property.
+    pub fn clone<P>(&self) -> P
+        where
+            P: Clone + Component + Default,
+    {
+        if let Ok(property) = self.ecm.borrow_component::<P>(self.current_node) {
+            return property.clone();
+        }
+
+        panic!(
+            "Entity {} does not contain property type {:?}",
+            self.current_node,
+            TypeId::of::<P>()
+        );
+    }
+
+    /// Sets the property of type `P`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the widget does not contains the property.
+    pub fn set<P>(&mut self, value: P)
+        where
+            P: Component + Default + Clone,
+    {
+        if let Ok(property) = self.ecm.borrow_mut_component::<P>(self.current_node) {
+            *property = value;
+            return;
+        }
+
+        panic!(
+            "Entity {} does not contain property type {:?}",
+            self.current_node,
+            TypeId::of::<P>()
+        );
+    }
+
+    /// Returns `true` if the widget has a property of type `P` otherwise `false`.
+    pub fn has<P>(&self) -> bool
+        where
+            P: Clone + Component + Default,
+    {
+        self.ecm.borrow_component::<P>(self.current_node).is_ok()
+    }
+
     /// Returns a reference of a property of type `P` from the given widget entity. If the entity does
-    /// not exists or it doesn't have a component of type `P` `NotFound` will be returned.
-    pub fn borrow_property<P: Component + Default>(&self) -> Result<&P, NotFound> {
-        self.ecm.borrow_component::<P>(self.current_node)
+    /// not exists or it doesn't have a component of type `P` `None` will be returned.
+    pub fn try_get<P: Component + Default>(&self) -> Option<&P> {
+        self.ecm.borrow_component::<P>(self.current_node).ok()
     }
 
     /// Returns a mutable reference of a property of type `P` from the given widget entity. If the entity does
-    /// not exists or it doesn't have a component of type `P` `NotFound` will be returned.
-    pub fn borrow_mut_property<P: Component + Default>(&mut self) -> Result<&mut P, NotFound> {
-        self.ecm.borrow_mut_component::<P>(self.current_node)
+    /// not exists or it doesn't have a component of type `P` `None` will be returned.
+    pub fn try_get_mut<P: Component + Default>(&mut self) -> Option<&mut P> {
+        self.ecm.borrow_mut_component::<P>(self.current_node).ok()
     }
 }

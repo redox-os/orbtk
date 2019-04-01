@@ -1,35 +1,33 @@
+use dces::prelude::Entity;
+
 use crate::{
-    layout::ScrollLayout,
-    properties::{OffsetProperty, ScrollViewerMode, ScrollViewerModeProperty},
-    widget::{Template, Widget},
+    layout::{Layout, ScrollLayout},
+    properties::*,
+    widget::Template,
 };
 
-/// The `ScrollViewer` (wip) represents a layout widget that adds vertical and horizontal offset to its parent.
-/// It is used to scroll the content if the content's width or height is greater than the ScrollViewers width or height.
-///
-/// # Properties
-///
-/// * `offset` - Represents the vertical and horizontal scroll offset.
-/// * `scroll_viewer_mode` - Scroll mode vertical / horizontal off the scroll viewer.
-///
-/// # Others
-///
-/// * `ScrollLayout` - Used to layout the widget.
-pub struct ScrollViewer;
+widget!(
+    /// The `ScrollViewer` defines a layout that is used to stack its children on the z-axis.
+    /// 
+    /// * CSS element: `scroll-viewer`
+    ScrollViewer {
+        /// Sets or shares the orientation property.
+        offset: Offset,
 
-impl Widget for ScrollViewer {
-    type Template = ScrollViewerTemplate;
+        /// Sets or shares the scroll mode property.
+        scroll_mode: ScrollViewerMode,
 
-    fn create() -> Self::Template {
-        ScrollViewerTemplate::new()
-            .offset(0.0)
-            .scroll_viewer_mode(ScrollViewerMode::default())
-            .layout(ScrollLayout::default())
-            .debug_name("ScrollViewer")
+        /// Sets or shares the css selector property.
+        selector: Selector
+    }
+);
+
+impl Template for ScrollViewer {
+    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
+        self.name("ScrollViewer").selector("scroll-viewer").offset(0.0).scroll_mode(ScrollViewerModeValue::default())
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(ScrollLayout::new())
     }
 }
-
-template!(
-    ScrollViewerTemplate,
-    [OffsetProperty, ScrollViewerModeProperty]
-);

@@ -1,13 +1,5 @@
 use std::slice::{Iter, IterMut};
 
-/// Used to define the column position of a widget on the `Grid`.
-#[derive(Default, Copy, Clone, PartialEq)]
-pub struct GridColumn(pub usize);
-
-/// Used to define the column span of a widget on the `Grid`.
-#[derive(Default, Copy, Clone, PartialEq)]
-pub struct ColumnSpan(pub usize);
-
 /// Used to build a column, specifying additional details.
 #[derive(Default)]
 pub struct ColumnBuilder {
@@ -52,7 +44,7 @@ impl ColumnBuilder {
 }
 
 /// Used to define the column of the `Grid`.
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct Column {
     pub width: ColumnWidth,
     pub min_width: f64,
@@ -87,6 +79,21 @@ impl Column {
         } else {
             width
         };
+    }
+}
+
+impl From<&str> for Column {
+    fn from(t: &str) -> Self {
+        match t {
+            "Auto" | "auto" => Column::create().width(ColumnWidth::Auto).build(),
+            _ => Column::create().width(ColumnWidth::Stretch).build(),
+        }
+    }
+}
+
+impl From<f64> for Column {
+    fn from(t: f64) -> Self {
+        Column::create().width(ColumnWidth::Width(t)).build()
     }
 }
 
@@ -128,65 +135,88 @@ impl ColumnsBuilder {
         self
     }
 
+    /// Inserts a list of columns.
+    pub fn columns<R: Into<Column> + Clone>(mut self, columns: &[R]) -> Self {
+        for column in columns.to_vec() {
+            self.columns.push(column.into());
+        }
+        self
+    }
+
+    /// Inserts the given column as often as given.
+    pub fn repeat<R: Into<Column> + Copy>(mut self, column: R, count: usize) -> Self {
+        for _ in 0..count {
+            self.columns.push(column.into())
+        }
+        self
+    }
+
     /// Builds the columns.
     pub fn build(self) -> Columns {
-        Columns {
-            value: self.columns,
-        }
+        Columns(ColumnsContainer(self.columns))
     }
 }
 
-/// Represents a list of grid columns.
-#[derive(Default, Clone, PartialEq)]
-pub struct Columns {
-    value: Vec<Column>,
+/// Helper struct used inside of the columns Property.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct ColumnsContainer(pub Vec<Column>);
+
+property!(
+    /// `Columns` describes a list of grid columns.
+    Columns(ColumnsContainer)
+);
+
+// --- Trait implementations ---
+
+/// Provides additional operations on grid columns.
+pub trait ColumnExtension {
+    fn create() -> ColumnsBuilder;
+
+    /// Returns the number of elements in the columns list, also referred to as its 'length'.
+    fn len(&self) -> usize;
+
+    /// Returns a reference to an column.
+    fn get(&self, column: usize) -> Option<&Column>;
+
+    /// Returns a mutable reference to an column.
+    fn get_mut(&mut self, column: usize) -> Option<&mut Column>;
+
+    /// Returns an iterator over the slice.
+    fn iter(&self) -> Iter<Column>;
+
+    /// Returns a mutable iterator over the slice.
+    fn iter_mut(&mut self) -> IterMut<Column>;
 }
 
-property!(Columns, ColumnsProperty, columns, shared_columns);
-
-impl Columns {
+impl ColumnExtension for Columns {
     /// Creates a new `ColumnsBuilder` object with default values.
-    pub fn create() -> ColumnsBuilder {
+    fn create() -> ColumnsBuilder {
         ColumnsBuilder::new()
     }
 
     /// Returns the number of elements in the columns list, also referred to as its 'length'.
-    pub fn len(&self) -> usize {
-        self.value.len()
+    fn len(&self) -> usize {
+        (self.0).0.len()
     }
 
     /// Returns a reference to an column.
-    pub fn get(&self, column: usize) -> Option<&Column> {
-        self.value.get(column)
+    fn get(&self, column: usize) -> Option<&Column> {
+        (self.0).0.get(column)
     }
 
     /// Returns a mutable reference to an column.
-    pub fn get_mut(&mut self, column: usize) -> Option<&mut Column> {
-        self.value.get_mut(column)
+    fn get_mut(&mut self, column: usize) -> Option<&mut Column> {
+        (self.0).0.get_mut(column)
     }
 
     /// Returns an iterator over the slice.
-    pub fn iter(&self) -> Iter<Column> {
-        self.value.iter()
+    fn iter(&self) -> Iter<Column> {
+        (self.0).0.iter()
     }
 
     /// Returns a mutable iterator over the slice.
-    pub fn iter_mut(&mut self) -> IterMut<Column> {
-        self.value.iter_mut()
+    fn iter_mut(&mut self) -> IterMut<Column> {
+        (self.0).0.iter_mut()
     }
 }
 
-impl From<&str> for Column {
-    fn from(t: &str) -> Self {
-        match t {
-            "Auto" | "auto" => Column::create().width(ColumnWidth::Auto).build(),
-            _ => Column::create().width(ColumnWidth::Stretch).build(),
-        }
-    }
-}
-
-impl From<f64> for Column {
-    fn from(t: f64) -> Self {
-        Column::create().width(ColumnWidth::Width(t)).build()
-    }
-}

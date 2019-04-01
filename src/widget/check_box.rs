@@ -1,69 +1,122 @@
+use dces::prelude::Entity;
+
 use crate::{
+    event::ClickHandler,
     material_font_icons,
-    properties::{
-        FontIcon, FontIconProperty, OrientationProperty,
-        PressedProperty, SelectedProperty, Text, TextProperty,
-    },
-    theme::Selector,
-    widget::{Container, FontIconBlock, SharedProperty, Stack, Template, TextBlock, Widget},
+    properties::*,
+    styling::{colors, fonts},
+    widget::{Container, FontIconBlock, Stack, Template, TextBlock},
 };
-/// The `Checkbox` widget can be switch its selected state. It contains a selection box and a text.
-///
-/// # Properties
-///
-/// * `text` - String used to display the text of the check box.
-/// * `font_icon` - String used to display the font icon of the check box.
-/// * `selector` - CSS selector with  element name `checkbox`, used to request the theme of the widget.
-/// * `selected` - Bool value represents the selected state of the widget.
-pub struct CheckBox;
 
-impl Widget for CheckBox {
-    type Template = CheckBoxTemplate;
+widget!(
+    /// The `CheckBox` widget can be switch its selected state. It contains a selection box and a text.
+    /// 
+    /// * CSS element: `check-box`
+    CheckBox: ClickHandler {
+        /// Sets or shares the background property.
+        background: Background,
 
-    fn create() -> Self::Template {
-        let text = SharedProperty::new(Text::default());
-        let icon = SharedProperty::new(FontIcon::from(material_font_icons::CHECK_FONT_ICON));
-        let selector = SharedProperty::new(Selector::from("checkbox"));
+        /// Sets or shares the border radius property.
+        border_radius: BorderRadius,
 
-        CheckBoxTemplate::new()
-            .height(24.0)
+        /// Sets or shares the border thickness property.
+        border_thickness: BorderThickness,
+
+        /// Sets or shares the border brush property.
+        border_brush: BorderBrush,
+
+        /// Sets or shares the padding property.
+        padding: Padding,
+
+        /// Sets or shares the foreground property.
+        foreground: Foreground,
+
+        /// Sets or shares the text property.
+        text: Text,
+
+        /// Sets or share the font size property.
+        font_size: FontSize,
+
+        /// Sets or shares the font property.
+        font: Font,
+
+        /// Sets or shares the icon property.
+        icon: FontIcon,
+
+        /// Sets or shares the icon brush property.
+        icon_brush: IconBrush,
+
+        /// Sets or share the icon font size property.
+        icon_size: IconSize,
+
+        /// Sets or shares the icon font property.
+        icon_font: IconFont,
+
+        /// Sets or shares the css selector property. 
+        selector: Selector,
+
+        /// Sets or shares the pressed property. 
+        pressed: Pressed,
+
+        /// Sets or shares the selected property. 
+        selected: Selected
+    }
+);
+
+impl Template for CheckBox {
+    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+        self.name("CheckBox")
+            .selector("check-box")
             .selected(false)
-            .debug_name("CheckBox")
+            .height(24.0)
+            .background(colors::LYNCH_COLOR)
+            .border_radius(2.0)
+            .border_thickness(0.0)
+            .border_brush("transparent")
+            .padding((8.0, 0.0, 8.0, 0.0))
+            .foreground(colors::LINK_WATER_COLOR)
+            .text("")
+            .font_size(fonts::FONT_SIZE_12)
+            .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
+            .icon(material_font_icons::CHECK_FONT_ICON)
+            .icon_font(fonts::font_into_box(fonts::MATERIAL_ICONS_REGULAR_FONT))
+            .icon_size(fonts::ICON_FONT_SIZE_12)
+            .icon_brush(colors::LINK_WATER_COLOR)
+            .pressed(false)
             .child(
                 Stack::create()
                     .orientation("Horizontal")
                     .child(
                         Container::create()
                             .size(24.0, 24.0)
-                            .shared_selector(selector.clone())
+                            .background(id)
+                            .border_radius(id)
+                            .border_thickness(id)
+                            .border_brush(id)
+                            .padding(id)
                             .child(
                                 FontIconBlock::create()
                                     .vertical_alignment("Center")
                                     .horizontal_alignment("Center")
-                                    .shared_font_icon(icon.clone())
-                                    .shared_selector(selector.clone()),
-                            ),
+                                    .icon(id)
+                                    .brush(id)
+                                    .icon_size(id)
+                                    .font(id)
+                                    .build(context),
+                            )
+                            .build(context),
                     )
                     .child(
                         TextBlock::create()
                             .vertical_alignment("Center")
                             .margin((8.0, 0.0, 0.0, 0.0))
-                            .shared_text(text.clone())
-                            .shared_selector(selector.clone()),
-                    ),
+                            .foreground(id)
+                            .text(id)
+                            .font_size(id)
+                            .font(id)
+                            .build(context),
+                    )
+                    .build(context),
             )
-            .shared_font_icon(icon)
-            .shared_text(text)
-            .shared_selector(selector)
     }
 }
-
-template!(
-    CheckBoxTemplate,
-    [
-        TextProperty,
-        FontIconProperty,
-        PressedProperty,
-        SelectedProperty
-    ]
-);

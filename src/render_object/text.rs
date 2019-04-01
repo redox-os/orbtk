@@ -1,12 +1,14 @@
+use orbgl_api::Canvas;
+
 use crate::{
     backend::Renderer,
-    properties::{Bounds, Text, WaterMark},
+    properties::*,
     render_object::RenderObject,
     structs::Point,
-    theme::Selector,
     widget::Context,
 };
 
+/// Used to render a text.
 pub struct TextRenderObject;
 
 impl Into<Box<dyn RenderObject>> for TextRenderObject {
@@ -18,49 +20,36 @@ impl Into<Box<dyn RenderObject>> for TextRenderObject {
 impl RenderObject for TextRenderObject {
     fn render(
         &self,
+        _canvas: &mut Canvas,
         renderer: &mut dyn Renderer,
         context: &mut Context<'_>,
         global_position: &Point,
     ) {
         let parent_bounds = if let Some(parent) = context.parent_widget() {
-            if let Ok(bounds) = parent.borrow_property::<Bounds>() {
-                bounds.clone()
-            } else {
-                Bounds::default()
-            }
+            parent.clone_or_default::<Bounds>()
         } else {
             Bounds::default()
         };
 
-        let theme = context.theme;
         let widget = context.widget();
+        let text = widget.clone::<Text>();
 
-        if let Ok(selector) = widget.borrow_property::<Selector>() {
-            if let Ok(bounds) = widget.borrow_property::<Bounds>() {
-                if let Ok(text) = widget.borrow_property::<Text>() {
-                    if !text.0.is_empty() {
-                        renderer.render_text(
-                            &text.0,
-                            bounds,
-                            &parent_bounds,
-                            global_position,
-                            theme.uint("font-size", selector),
-                            theme.color("color", selector),
-                            &theme.string("font-family", selector),
-                        );
-                    } else if let Ok(text) = widget.borrow_property::<WaterMark>() {
-                        renderer.render_text(
-                            &text.0,
-                            bounds,
-                            &parent_bounds,
-                            global_position,
-                            theme.uint("font-size", selector),
-                            theme.color("color", selector),
-                            &theme.string("font-family", selector),
-                        );
-                    }
-                }
+        let txt = {
+            if !text.0.is_empty() {
+                text.0.clone()
+            } else {
+                widget.clone_or_default::<WaterMark>().0
             }
-        }
+        };
+
+        renderer.render_text(
+            &txt,
+            &widget.get::<Bounds>(),
+            &parent_bounds,
+            global_position,
+            widget.get::<FontSize>().0 as u32,
+            widget.clone::<Foreground>().into(),
+            &(widget.get::<Font>().0).0,
+        );
     }
 }

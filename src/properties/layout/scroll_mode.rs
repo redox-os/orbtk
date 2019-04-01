@@ -1,5 +1,5 @@
 /// The `ScrollMode` defines the mode of a scroll direction.
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Debug, Clone, PartialEq)]
 pub enum ScrollMode {
     /// Scrolling will process by `ScrollViewer` logic
     Auto,
@@ -11,5 +11,14 @@ pub enum ScrollMode {
 impl Default for ScrollMode {
     fn default() -> Self {
         ScrollMode::Auto
+    }
+}
+
+impl From<(&str)> for ScrollMode {
+    fn from(s: &str) -> ScrollMode {
+        match s {
+            "Auto" | "auto" => ScrollMode::Auto,
+            _ => ScrollMode::None
+        }
     }
 }

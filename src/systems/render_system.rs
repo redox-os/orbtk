@@ -9,10 +9,9 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 use crate::{
     application::Tree,
     backend::Backend,
-    properties::{Bounds, Visibility},
+    properties::*,
     render_object::RenderObject,
     structs::{Point, Position},
-    theme::Selector,
     widget::Context,
 };
 
@@ -40,9 +39,9 @@ impl System<Tree> for RenderSystem {
         offsets.insert(tree.root, (0.0, 0.0));
 
         // render window background
-        render_context
-            .renderer
-            .render(render_context.theme.color("background", &"window".into()));
+        if let Some(background) = render_context.theme.brush("background", &"window".into()) {
+            render_context.renderer.render(background.into())
+        }
 
         for node in tree.into_iter() {
             let mut global_position = Point::default();
@@ -63,7 +62,7 @@ impl System<Tree> for RenderSystem {
 
             // hide hidden widget
             if let Ok(visibility) = ecm.borrow_component::<Visibility>(node) {
-                if *visibility != Visibility::Visible {
+                if visibility.0 != VisibilityValue::Visible {
                     hidden_parents.insert(node);
                     continue;
                 }
@@ -71,6 +70,7 @@ impl System<Tree> for RenderSystem {
 
             if let Some(render_object) = self.render_objects.borrow().get(&node) {
                 render_object.render(
+                    render_context.canvas,
                     render_context.renderer,
                     &mut Context::new(
                         node,
@@ -85,26 +85,26 @@ impl System<Tree> for RenderSystem {
             }
 
             // render debug border for each widget
-            if self.debug_flag.get() {
-                if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
-                    if let Some(parent) = tree.parent[&node] {
-                        if let Ok(parent_bounds) = ecm.borrow_component::<Bounds>(parent) {
-                            let selector = Selector::from("debugborder");
+            // if self.debug_flag.get() {
+            //     if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
+            //         if let Some(parent) = tree.parent[&node] {
+            //             if let Ok(parent_bounds) = ecm.borrow_component::<Bounds>(parent) {
+            //                 let selector = Selector::from("debugborder");
 
-                            render_context.renderer.render_rectangle(
-                                bounds,
-                                parent_bounds,
-                                &global_position,
-                                render_context.theme.uint("border-radius", &selector),
-                                render_context.theme.color("background", &selector),
-                                render_context.theme.uint("border-width", &selector),
-                                render_context.theme.color("border-color", &selector),
-                                render_context.theme.float("opcaity", &selector),
-                            );
-                        }
-                    }
-                }
-            }
+            //                 render_context.renderer.render_rectangle(
+            //                     bounds,
+            //                     parent_bounds,
+            //                     &global_position,
+            //                     render_context.theme.uint("border-radius", &selector),
+            //                     render_context.theme.brush("background", &selector).into(),
+            //                     render_context.theme.uint("border-width", &selector),
+            //                     render_context.theme.brush("border-color", &selector).into(),
+            //                     render_context.theme.float("opcaity", &selector),
+            //                 );
+            //             }
+            //         }
+            //     }
+            // }
 
             let mut global_pos = (0.0, 0.0);
 

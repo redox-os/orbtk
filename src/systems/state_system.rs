@@ -9,7 +9,7 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 use crate::{
     application::Tree,
     backend::Backend,
-    properties::{Enabled, Focused, Pressed, Selected},
+    properties::*,
     widget::{
         add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
     },
@@ -25,29 +25,13 @@ pub struct StateSystem {
 
 impl StateSystem {
     fn has_default_flags(&self, widget: &WidgetContainer<'_>) -> bool {
-        if let Ok(_) = widget.borrow_property::<Enabled>() {
-            return true;
-        }
-
-        if let Ok(_) = widget.borrow_property::<Pressed>() {
-            return true;
-        }
-
-        if let Ok(_) = widget.borrow_property::<Focused>() {
-            return true;
-        }
-
-        if let Ok(_) = widget.borrow_property::<Selected>() {
-            return true;
-        }
-
-        return false;
+        return widget.has::<Enabled>() || widget.has::<Pressed>() || widget.has::<Focused>() || widget.has::<Selected>();
     }
 
     // Used to updates default states like Pressed, Focused and Enabled.
     fn update_default_states(&self, widget: &mut WidgetContainer<'_>) {
         let mut enabled = (false, false);
-        if let Ok(en) = widget.borrow_property::<Enabled>() {
+        if let Some(en) = widget.try_get::<Enabled>() {
             enabled = (true, en.0);
         }
 
@@ -56,7 +40,7 @@ impl StateSystem {
         }
 
         let mut pressed = (false, false);
-        if let Ok(pres) = widget.borrow_mut_property::<Pressed>() {
+        if let Some(pres) = widget.try_get::<Pressed>() {
             pressed = (true, pres.0);
         }
 
@@ -65,7 +49,7 @@ impl StateSystem {
         }
 
         let mut focused = (false, false);
-        if let Ok(foc) = widget.borrow_mut_property::<Focused>() {
+        if let Some(foc) = widget.try_get::<Focused>() {
             focused = (true, foc.0);
         }
 
@@ -74,7 +58,7 @@ impl StateSystem {
         }
 
         let mut selected = (false, false);
-        if let Ok(sel) = widget.borrow_mut_property::<Selected>() {
+        if let Some(sel) = widget.try_get::<Selected>() {
             selected = (true, sel.0);
         }
 
@@ -83,7 +67,7 @@ impl StateSystem {
         }
     }
 
-    // Updates the peseudo class of a widget by the given state.
+    // Updates the pseudo class of a widget by the given state.
     fn update_default_state(
         &self,
         state: bool,
@@ -117,15 +101,14 @@ impl System<Tree> for StateSystem {
         );
 
         for node in tree.into_iter() {
-            state_context.messages.borrow_mut().clear();
-
+            let mut skip = false;
             context.entity = node;
             {
                 let mut widget = context.widget();
 
                 let has_default_flags = self.has_default_flags(&widget);
                 if !has_default_flags && !self.states.borrow().contains_key(&node) {
-                    continue;
+                    skip = true;
                 }
 
                 if has_default_flags {
@@ -133,19 +116,13 @@ impl System<Tree> for StateSystem {
                 }
             }
 
-            if let Some(state) = self.states.borrow().get(&node) {
-                state.update(&mut context);
-            }
-
-            // Handle messages.
-            {
-                for (entity, messages) in state_context.messages.borrow_mut().iter() {
-                    if let Some(state) = self.states.borrow().get(&entity) {
-                        context.entity = *entity;
-                        state.receive_messages(&mut context, &messages);
-                    }
+            if !skip {
+                if let Some(state) = self.states.borrow().get(&node) {
+                    state.update(&mut context);
                 }
             }
+
+            context.theme.update_widget_theme(&mut context.widget());
         }
     }
 }

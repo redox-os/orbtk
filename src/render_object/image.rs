@@ -1,11 +1,14 @@
+use orbgl_api::Canvas;
+
 use crate::{
     backend::Renderer,
     properties::{Bounds, Image},
     render_object::RenderObject,
-    structs::Point,
+    structs::{Point, Size},
     widget::Context,
 };
 
+/// Used to render an image.
 pub struct ImageRenderObject;
 
 impl Into<Box<dyn RenderObject>> for ImageRenderObject {
@@ -17,26 +20,16 @@ impl Into<Box<dyn RenderObject>> for ImageRenderObject {
 impl RenderObject for ImageRenderObject {
     fn render(
         &self,
-        renderer: &mut dyn Renderer,
+        canvas: &mut Canvas,
+        _renderer: &mut dyn Renderer,
         context: &mut Context<'_>,
         global_position: &Point,
     ) {
-        let parent_bounds = if let Some(parent) = context.parent_widget() {
-            if let Ok(bounds) = parent.borrow_property::<Bounds>() {
-                bounds.clone()
-            } else {
-                Bounds::default()
-            }
-        } else {
-            Bounds::default()
-        };
+        let mut widget = context.widget();
+        let bounds = widget.clone::<Bounds>();
 
-        let widget = context.widget();
-
-        if let Ok(bounds) = widget.borrow_property::<Bounds>() {
-            if let Ok(image) = widget.borrow_property::<Image>() {
-                renderer.render_image(image.data(), bounds, &parent_bounds, global_position);
-            }
+        if let Some(image) = widget.try_get_mut::<Image>() {
+            canvas.draw_image_with_size(&mut (image.0).0, global_position.x, global_position.y, bounds.width(), bounds.height());
         }
     }
 }

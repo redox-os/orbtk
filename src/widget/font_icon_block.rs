@@ -1,33 +1,50 @@
+use dces::prelude::Entity;
+
 use crate::{
-    layout::FixedSizeLayout,
-    properties::FontIconProperty,
-    render_object::FontIconRenderObject,
-    widget::{Template, Widget},
+    layout::{FixedSizeLayout, Layout},
+    properties::*,
+    render_object::{FontIconRenderObject, RenderObject},
+    styling::{colors, fonts},
+    widget::Template,
 };
 
-/// The `FontIconBlock` widget is used to draw an font icon. It is not interactive.
-///
-/// # Properties
-///
-/// * `selector` - CSS selector with  element name `fonticon`, used to request the theme of the font icon block.
-///
-/// # Others
-///
-/// * `FixedSizeLayout` - Used to layout the widget.
-/// * `FontIconRenderObject` - Used to draw the text of the widget.
-pub struct FontIconBlock;
+widget!(
+    /// The `FontIconBlock` widget is used to draw text. It is not interactive.
+    /// 
+    /// * CSS element: `font-icon-block`
+    FontIconBlock {
+        /// Sets or shares the icon property.
+        icon: FontIcon,
 
-impl Widget for FontIconBlock {
-    type Template = FontIconBlockTemplate;
+        /// Sets or shares the icon brush property.
+        brush: IconBrush,
 
-    fn create() -> Self::Template {
-        FontIconBlockTemplate::new()
-            .layout(FixedSizeLayout::new())
-            .render_object(FontIconRenderObject)
-            .debug_name("FontIconBlock")
-            .font_icon("")
-            .selector("fonticon")
+        /// Sets or share the icon font size property.
+        icon_size: IconSize,
+
+        /// Sets or shares the icon font property.
+        font: IconFont,
+
+        /// Sets or shares the css selector property.
+        selector: Selector
+    }
+);
+
+impl Template for FontIconBlock {
+    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
+        self.name("FontIconBlock")
+            .selector("font-icon-block")
+            .icon("")
+            .brush(colors::LINK_WATER_COLOR)
+            .icon_size(fonts::ICON_FONT_SIZE_12)
+            .font(fonts::font_into_box(fonts::MATERIAL_ICONS_REGULAR_FONT))
+    }
+
+    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
+        Some(Box::new(FontIconRenderObject))
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(FixedSizeLayout::new())
     }
 }
-
-template!(FontIconBlockTemplate, [FontIconProperty]);

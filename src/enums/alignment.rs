@@ -4,13 +4,25 @@ pub enum Alignment {
     Start,
     Center,
     End,
-    Stretch
+    Stretch,
+}
+
+impl Default for Alignment {
+    fn default() -> Self {
+        Alignment::Stretch
+    }
 }
 
 impl Alignment {
     /// Calculates the position (x or y) of the widget depending on the available measure, the goal measure
     /// margin and alignment.
-    pub fn align_position(&self, available_measure: f64, measure: f64, margin_start: f64, margin_end: f64) -> f64 {
+    pub fn align_position(
+        &self,
+        available_measure: f64,
+        measure: f64,
+        margin_start: f64,
+        margin_end: f64,
+    ) -> f64 {
         match self {
             Alignment::End => available_measure - measure - margin_end,
             Alignment::Center => (available_measure - measure) / 2.0,
@@ -20,7 +32,13 @@ impl Alignment {
 
     /// Calculates the measure (measure or height) of the widget depending on the available measure, the goal measure
     /// margin and horizontal alignment.
-    pub fn align_measure(&self, available_measure: f64, measure: f64, margin_start: f64, margin_end: f64) -> f64 {
+    pub fn align_measure(
+        &self,
+        available_measure: f64,
+        measure: f64,
+        margin_start: f64,
+        margin_end: f64,
+    ) -> f64 {
         match self {
             Alignment::Stretch => available_measure - margin_start - margin_end,
             _ => measure,

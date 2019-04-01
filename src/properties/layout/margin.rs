@@ -1,91 +1,70 @@
 use crate::structs::{Spacer, Thickness};
 
-/// The `Margin` is used to define space around a widget.
-#[derive(Default, Clone, Copy)]
-pub struct Margin {
-    value: Thickness,
-}
+property!(
+    /// `Margin` describes the outer widget space.
+    Margin(Thickness)
+);
 
-property!(Margin, MarginProperty, margin, shared_margin);
-
-impl Margin {
-    pub fn new() -> Self {
-        Margin::default()
-    }
-}
+// --- Trait implementations ---
 
 impl Spacer for Margin {
-    /// Gets left.
     fn left(&self) -> f64 {
-        self.value.left
+        self.0.left
     }
 
-    /// Sets left.
     fn set_left(&mut self, left: f64) {
-        self.value.left = left;
+        self.0.left = left;
     }
 
-    /// Gets top.
     fn top(&self) -> f64 {
-        self.value.top
+        self.0.top
     }
 
-    /// Sets top.
     fn set_top(&mut self, top: f64) {
-        self.value.top = top;
+        self.0.top = top;
     }
 
-    /// Gets right.
     fn right(&self) -> f64 {
-        self.value.right
+        self.0.right
     }
 
-    /// Sets right.
     fn set_right(&mut self, right: f64) {
-        self.value.right = right;
+        self.0.right = right;
     }
 
-    /// Gets bottom.
     fn bottom(&self) -> f64 {
-        self.value.bottom
+        self.0.bottom
     }
 
-    /// Sets bottom.
     fn set_bottom(&mut self, bottom: f64) {
-        self.value.bottom = bottom;
+        self.0.bottom = bottom;
     }
 
-    /// Gets thickness.
     fn thickness(&self) -> Thickness {
-        self.value
+        self.0
     }
 
-    /// Sets thickness
-    fn set_thickness(&mut self, thickness: Thickness) {
-        self.value = thickness;
+    fn set_thickness<T: Into<Thickness>>(&mut self, thickness: T) {
+        self.0 = thickness.into();
     }
 }
+
+// --- Conversions ---
 
 impl From<(f64, f64, f64, f64)> for Margin {
     fn from(t: (f64, f64, f64, f64)) -> Self {
-        Margin {
-            value: Thickness::new(t.0, t.1, t.2, t.3),
-        }
+        Margin::from(Thickness::new(t.0, t.1, t.2, t.3))
     }
 }
 
 impl From<(f64, f64)> for Margin {
     fn from(t: (f64, f64)) -> Self {
-        Margin {
-            value: Thickness::new(t.0, t.1, t.0, t.1),
-        }
+        Margin::from(Thickness::new(t.0, t.1, t.0, t.1))
     }
 }
 
 impl From<f64> for Margin {
     fn from(t: f64) -> Self {
-        Margin {
-            value: Thickness::new(t, t, t, t),
-        }
+        Margin::from(Thickness::new(t, t, t, t))
     }
 }

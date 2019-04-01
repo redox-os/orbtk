@@ -10,22 +10,22 @@ use crate::{
     application::Tree,
     backend::{FontMeasure, FONT_MEASURE},
     properties::{
-        Bounds, Constraint, FontIcon, HorizontalAlignment, Image, Text, VerticalAlignment,
-        Visibility, WaterMark,
+        Bounds, Constraint, Font, FontIcon, FontSize, HorizontalAlignment, IconFont, IconSize,
+        Image, Text, VerticalAlignment, Visibility, VisibilityValue, WaterMark, ImageExtension, ConstraintExtension,
     },
+    enums::Alignment,
     structs::{DirtySize, Size},
-    theme::{Selector, Theme},
+    theme::Theme,
+    widget::WidgetContainer,
 };
 
-use super::{
-    get_constraint, get_horizontal_alignment, get_vertical_alignment, get_visibility, Layout,
-};
+use super::Layout;
 
 /// Fixed size layout is defined by fixed bounds like the size of an image or the size of a text.
 #[derive(Default)]
 pub struct FixedSizeLayout {
     desired_size: RefCell<DirtySize>,
-    old_alignment: Cell<(VerticalAlignment, HorizontalAlignment)>,
+    old_alignment: Cell<(Alignment, Alignment)>,
 }
 
 impl FixedSizeLayout {
@@ -43,13 +43,13 @@ impl Layout for FixedSizeLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &Theme,
     ) -> DirtySize {
-        if get_visibility(entity, ecm) == Visibility::Collapsed {
+        if Visibility::get(entity, ecm) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = get_horizontal_alignment(entity, ecm);
-        let vertical_alignment = get_vertical_alignment(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
+        let vertical_alignment = VerticalAlignment::get(entity, ecm);
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -57,63 +57,41 @@ impl Layout for FixedSizeLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
+        let widget = WidgetContainer::new(entity, ecm);
+
         // -- todo will be removed after orbgl merge --
 
-        let size = {
-            if let Ok(image) = ecm.borrow_component::<Image>(entity) {
-                Some((image.width(), image.height()))
-            } else if let Ok(selector) = ecm.borrow_component::<Selector>(entity) {
-                if let Ok(text) = ecm.borrow_component::<Text>(entity) {
+        let size = widget.try_get::<Image>()
+            .map(|image| (image.width(), image.height()))
+            .or_else(|| {
+                widget.try_get::<Text>().and_then(|text| {
+                    let font = widget.get::<Font>();
+                    let font_size = widget.get::<FontSize>();
+
                     if text.0.is_empty() {
-                        if let Ok(water_mark) = ecm.borrow_component::<WaterMark>(entity) {
-                            if water_mark.0.is_empty() {
-                                None
-                            } else {
-                                Some(FONT_MEASURE.measure(
-                                    &water_mark.0,
-                                    &theme.string("font-family", selector),
-                                    theme.uint("font-size", selector),
-                                ))
-                            }
-                        } else {
-                            None
-                        }
+                        widget.try_get::<WaterMark>()
+                            .filter(|water_mark| !water_mark.0.is_empty())
+                            .map(|water_mark| FONT_MEASURE.measure(&water_mark.0, &(font.0).0, font_size.0 as u32))
                     } else {
-                        let mut size = FONT_MEASURE.measure(
-                            &text.0,
-                            &theme.string("font-family", selector),
-                            theme.uint("font-size", selector),
-                        );
+                        let mut size = FONT_MEASURE.measure(&text.0, &(font.0).0, font_size.0 as u32);
 
                         if text.0.ends_with(" ") {
-                            size.0 += FONT_MEASURE
-                                .measure(
-                                    "a",
-                                    &theme.string("font-family", selector),
-                                    theme.uint("font-size", selector),
-                                )
-                                .0
-                                / 2;
+                            size.0 += FONT_MEASURE.measure("a", &(font.0).0, font_size.0 as u32).0 / 2;
                         }
                         Some(size)
                     }
-                } else if let Ok(font_icon) = ecm.borrow_component::<FontIcon>(entity) {
-                    if font_icon.0.is_empty() {
-                        None
-                    } else {
-                        Some(FONT_MEASURE.measure(
-                            &font_icon.0,
-                            &theme.string("icon-familiy", selector),
-                            theme.uint("icon-size", selector),
-                        ))
-                    }
-                } else {
-                    None
-                }
-            } else {
-                None
-            }
-        };
+                })
+            })
+            .or_else(|| {
+                widget.try_get::<FontIcon>()
+                    .filter(|font_icon| !font_icon.0.is_empty())
+                    .map(|font_icon| FONT_MEASURE.measure(
+                        &font_icon.0,
+                        &(widget.get::<IconFont>().0).0,
+                        widget.get::<IconSize>().0 as u32,
+                    ))
+            });
+
 
         if let Some(size) = size {
             if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(entity) {
@@ -124,7 +102,7 @@ impl Layout for FixedSizeLayout {
 
         // -- todo will be removed after orbgl merge --
 
-        let constraint = get_constraint(entity, ecm);
+        let constraint = Constraint::get(entity, ecm);
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());

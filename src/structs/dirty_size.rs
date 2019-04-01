@@ -67,7 +67,7 @@ impl Size for DirtySize {
     fn set_size(&mut self, width: f64, height: f64) {
         if self.width != width && self.height != height {
             self.dirty = true
-        } 
+        }
 
         self.width = width;
         self.height = height;

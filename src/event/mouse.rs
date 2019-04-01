@@ -2,26 +2,25 @@ use std::rc::Rc;
 
 use crate::{
     event::{Event, EventBox, EventHandler},
-    properties::Bounds,
-    structs::{Point, Position, Size},
-    widget::WidgetContainer,
+    properties::*,
+    structs::*,
+    widget::{Widget, WidgetContainer},
 };
 
-pub fn check_mouse_condition(position: Point, widget: &WidgetContainer<'_>) -> bool {
-    if let Ok(bounds) = widget.borrow_property::<Bounds>() {
-        let mut rect = Bounds::new(0.0, 0.0, bounds.width(), bounds.height());
+/// Checks if the given point is inside of a widget.
+pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>) -> bool {
+    let bounds = widget.get::<Bounds>();
+    let position = widget.get::<Point>();
 
-        if let Ok(g_pos) = widget.borrow_property::<Point>() {
-            rect.set_x(g_pos.x);
-            rect.set_y(g_pos.y);
-        }
+    let mut rect = Bounds::from(Rect::new(0.0, 0.0, bounds.width(), bounds.height()));
 
-        return rect.contains((position.x, position.y));
-    }
+    rect.set_x(position.x);
+    rect.set_y(position.y);
 
-    false
+    return rect.contains((mouse_position.x, mouse_position.y));
 }
 
+/// Describes a mouse button.
 pub enum MouseButton {
     Left,
     Middle,
@@ -56,8 +55,6 @@ impl Event for MouseDownEvent {}
 
 pub type MouseHandler = Fn(Point) -> bool + 'static;
 
-use crate::Template;
-
 /// Used to handle click events. Could be attached to a widget.
 pub struct ClickEventHandler {
     handler: Rc<MouseHandler>,
@@ -79,18 +76,27 @@ impl EventHandler for ClickEventHandler {
     }
 }
 
-pub trait ClickHandler: Sized + From<Template> + Into<Template> {
-    /// Transforms the handler into a template.
-    fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
-        Self::from(transform(self.into()))
-    }
+// pub trait ClickHandler: Sized + From<Template> + Into<Template> {
+//     /// Transforms the handler into a template.
+//     fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
+//         Self::from(transform(self.into()))
+//     }
 
+//     /// Inserts a handler.
+//     fn on_click<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
+//         self.template(|template| {
+//             template.event_handler(ClickEventHandler {
+//                 handler: Rc::new(handler),
+//             })
+//         })
+//     }
+// }
+
+pub trait ClickHandler: Sized + Widget {
     /// Inserts a handler.
     fn on_click<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
-        self.template(|template| {
-            template.event_handler(ClickEventHandler {
-                handler: Rc::new(handler),
-            })
+        self.insert_handler(ClickEventHandler {
+            handler: Rc::new(handler),
         })
     }
 }

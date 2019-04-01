@@ -1,35 +1,35 @@
 /// Is used to control the visibility of a widget
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub enum Visibility {
+pub enum VisibilityValue {
     /// The widget is visible.
     Visible,
 
     /// The widget will not be displayed but it takes its space in the layout.
     Hidden,
 
-    /// The widget will not be displayed but it doesen't takes space in the layout.
+    /// The widget will not be displayed but it doesn't takes space in the layout.
     Collapsed,
 }
 
-property!(
-    Visibility,
-    VisibilityProperty,
-    visibility,
-    shared_visibility
-);
-
-impl Default for Visibility {
-    fn default() -> Visibility {
-        Visibility::Visible
+impl Default for VisibilityValue {
+    fn default() -> VisibilityValue {
+        VisibilityValue::Visible
     }
 }
+
+property!(
+    /// `Visibility` describes the visibility of a widget.
+    Visibility(VisibilityValue)
+);
+
+// --- Conversions ---
 
 impl From<&str> for Visibility {
     fn from(t: &str) -> Self {
         match t {
-            "Hidden" | "hidden" => Visibility::Hidden,
-            "Collapsed" | "collapsed" => Visibility::Collapsed,
-            _ => Visibility::Visible,
+            "Hidden" | "hidden" => Visibility::from(VisibilityValue::Hidden),
+            "Collapsed" | "collapsed" => Visibility::from(VisibilityValue::Collapsed),
+            _ => Visibility::from(VisibilityValue::Visible),
         }
     }
 }

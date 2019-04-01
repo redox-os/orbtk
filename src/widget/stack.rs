@@ -1,32 +1,30 @@
+use dces::prelude::Entity;
+
 use crate::{
-    enums::ParentType,
-    layout::StackLayout,
-    properties::OrientationProperty,
-    widget::{Template, Widget},
+    layout::{Layout, StackLayout},
+    properties::*,
+    widget::Template,
 };
 
-/// The `Stack` represents a layout widget that is used to stack its children on the z-axis.
-///
-/// # Properties
-///
-/// * `orientation` - used to define the orientation of the stack layout vertical (default) of horizontal.
-/// 
-/// # Others
-///
-/// * `ParentType`- Mutli.
-/// * `StretchLayout` - Used to layout the widget.
-pub struct Stack;
+widget!(
+    /// The `Stack` defines a layout that is used to stack its children on the z-axis.
+    /// 
+    /// * CSS element: `stack`
+    Stack {
+        /// Sets or shares the orientation property.
+        orientation: Orientation,
 
-impl Widget for Stack {
-    type Template = StackTemplate;
+        /// Sets or shares the css selector property.
+        selector: Selector
+    }
+);
 
-    fn create() -> Self::Template {
-        StackTemplate::new()
-            .orientation("Vertical")
-            .parent_type(ParentType::Multi)
-            .layout(StackLayout::new())
-            .debug_name("Stack")
+impl Template for Stack {
+    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
+        self.name("Stack").selector("stack")
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(StackLayout::new())
     }
 }
-
-template!(StackTemplate, [OrientationProperty]);

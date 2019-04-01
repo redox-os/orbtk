@@ -1,22 +1,13 @@
-use std::{
-    cell::{Cell, RefCell},
-    rc::Rc,
-};
+use dces::prelude::Entity;
+
+use std::cell::Cell;
 
 use crate::{
     event::{Key, KeyDownHandler},
-    properties::{
-        Bounds, Focused, FocusedProperty, Margin, Offset, OffsetProperty,
-        PaddingProperty, ScrollMode, ScrollViewerMode, ScrollViewerModeProperty, Text,
-        TextProperty, TextSelection, TextSelectionProperty, WaterMark, WaterMarkProperty,
-        Padding,
-    },
-    structs::{Position, Size, Spacer},
-    theme::Selector,
-    widget::{
-        Container, Context, Cursor, Grid, ScrollViewer, SharedProperty, State, Template,
-        WaterMarkTextBlock, Widget,
-    },
+    properties::*,
+    structs::*,
+    styling::{colors, fonts},
+    widget::*,
 };
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
@@ -89,11 +80,9 @@ impl State for TextBoxState {
     fn update(&self, context: &mut Context<'_>) {
         let mut widget = context.widget();
 
-        if let Ok(focused) = widget.borrow_property::<Focused>() {
-            self.focused.set(focused.0);
-        }
+        self.focused.set(widget.get::<Focused>().0);
 
-        if let Ok(text) = widget.borrow_mut_property::<Text>() {
+        if let Some(text) = widget.try_get_mut::<Text>() {
             if text.0 != *self.text.borrow() {
                 if self.updated.get() {
                     text.0 = self.text.borrow().clone();
@@ -116,9 +105,15 @@ impl State for TextBoxState {
             }
         }
 
-        if let Ok(selection) = widget.borrow_mut_property::<TextSelection>() {
-            selection.start_index = self.selection_start.get();
-            selection.length = self.selection_length.get();
+        if let Some(selection) = widget.try_get_mut::<TextSelection>() {
+            selection.0.start_index = self.selection_start.get();
+            selection.0.length = self.selection_length.get();
+        }
+
+        if widget.get::<Text>().0.is_empty() {
+            add_selector_to_widget("water-mark", &mut widget);
+        } else {
+            remove_selector_from_widget("water-mark", &mut widget);
         }
     }
 
@@ -127,9 +122,10 @@ impl State for TextBoxState {
         let mut scroll_viewer_width = 0.0;
 
         {
-            let scroll_viewer = context.child_by_id("TextBoxScrollViewer");
+            let scroll_viewer = context.child_by_id("scroll_viewer");
 
-            if let Ok(bounds) = scroll_viewer.unwrap().borrow_property::<Bounds>() {
+
+            if let Some(bounds) = scroll_viewer.unwrap().try_get_mut::<Bounds>() {
                 scroll_viewer_width = bounds.width();
             }
         }
@@ -139,9 +135,9 @@ impl State for TextBoxState {
         // Adjust offset of text and cursor if cursor position is out of bounds
 
         {
-            let mut cursor = context.child_by_id("TextBoxCursor").unwrap();
+            let mut cursor = context.child_by_id("cursor").unwrap();
 
-            if let Ok(margin) = cursor.borrow_mut_property::<Margin>() {
+            if let Some(margin) = cursor.try_get_mut::<Margin>() {
                 if margin.left() < 0.0 || margin.left() > scroll_viewer_width {
                     cursor_x_delta = self.cursor_x.get() - margin.left();
                     margin.set_left(self.cursor_x.get());
@@ -149,121 +145,139 @@ impl State for TextBoxState {
                 self.cursor_x.set(margin.left());
             }
 
-            if let Ok(bounds) = cursor.borrow_mut_property::<Bounds>() {
+            if let Some(bounds) = cursor.try_get_mut::<Bounds>() {
                 bounds.set_x(self.cursor_x.get());
             }
         }
 
         if cursor_x_delta != 0.0 {
             {
-                let text_block = context.child_by_id("TextBoxTextBlock");
+                let text_block = context.child_by_id("text_block");
 
-                if let Ok(bounds) = text_block.unwrap().borrow_mut_property::<Bounds>() {
+                if let Some(bounds) = text_block.unwrap().try_get_mut::<Bounds>() {
                     bounds.set_x(bounds.x() + cursor_x_delta);
                 }
             }
 
-            if let Ok(offset) = context.widget().borrow_mut_property::<Offset>() {
-                offset.0 += cursor_x_delta;
+            if let Some(offset) = context.widget().try_get_mut::<Offset>() {
+                (offset.0).0 += cursor_x_delta;
             }
         }
     }
 }
 
-/// The `TextBox` represents a single line text input widget.
-///
-/// # Properties
-///
-/// * `text` - String used to display the text of the text box.
-/// * `water_mark` - String used to display a placeholder text if `Text` string is empty.
-/// * `selector` - CSS selector with  element name `textbox`, used to request the theme of the widget.
-/// * `text_selection` - Represents the current selection of the text used by the cursor.
-/// * `focused` - Defines if the widget is focused and handles the current text input.
-///
-/// # Others
-///
-/// * `TextBoxState` - Handles the inner state of the widget.
-pub struct TextBox;
+widget!(
+    /// The `TextBox` widget represents a single line text input widget.
+    ///
+    /// * CSS element: `text-box`
+    TextBox<TextBoxState>: KeyDownHandler {
+        /// Sets or shares the text property.
+        text: Text,
 
-impl Widget for TextBox {
-    type Template = TextBoxTemplate;
+        /// Sets or shares the placeholder text property.
+        placeholder: WaterMark,
 
-    fn create() -> Self::Template {
-        let text = SharedProperty::new(Text::default());
-        let water_mark = SharedProperty::new(WaterMark::default());
-        let selector = Selector::from("textbox");
-        let selection = SharedProperty::new(TextSelection::default());
-        let offset = SharedProperty::new(Offset::default());
-        let focused = SharedProperty::new(Focused(false));
-        let padding = SharedProperty::new(Padding::from(4.0));
-        let state = Rc::new(TextBoxState::default());
-        let _click_state = state.clone();
+        /// Sets or shares the text selection property.
+        selection: TextSelection,
 
-        TextBoxTemplate::new()
+        /// Sets or shares the foreground property.
+        foreground: Foreground,
+
+        /// Sets or share the font size property.
+        font_size: FontSize,
+
+        /// Sets or shares the font property.
+        font: Font,
+
+        /// Sets or shares the background property.
+        background: Background,
+
+        /// Sets or shares the border radius property.
+        border_radius: BorderRadius,
+
+        /// Sets or shares the border thickness property.
+        border_thickness: BorderThickness,
+
+        /// Sets or shares the border brush property.
+        border_brush: BorderBrush,
+
+        /// Sets or shares the padding property.
+        padding: Padding,
+
+        /// Sets or shares the text offset property.
+        offset: Offset,
+
+         /// Sets or shares the focused property.
+        focused: Focused,
+
+        /// Sets or shares the css selector property.
+        selector: Selector
+    }
+);
+
+impl Template for TextBox {
+    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+        let state = self.clone_state();
+
+        self.name("TextBox")
+            .selector("text-box")
+            .text("")
+            .foreground(colors::LINK_WATER_COLOR)
+            .font_size(fonts::FONT_SIZE_12)
+            .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
+            .selection(TextSelectionValue::default())
+            .offset(0.0)
+            .padding(4.0)
+            .background(colors::LYNCH_COLOR)
+            .border_brush("transparent")
+            .border_thickness(0.0)
+            .border_radius(2.0)
             .size(128.0, 32.0)
-            .state(state.clone())
-            .debug_name("TextBox")
+            .focused(false)
             .child(
                 Container::create()
+                    .background(id)
+                    .border_radius(id)
+                    .border_thickness(id)
+                    .border_brush(id)
+                    .padding(id)
                     .child(
                         Grid::create()
                             .child(
                                 ScrollViewer::create()
+                                    .selector(Selector::default().id("scroll_viewer"))
+                                    .offset(id)
+                                    .scroll_mode(("None", "None"))
                                     .child(
-                                        WaterMarkTextBlock::create()
+                                        TextBlock::create()
+                                            .selector(Selector::default().clone().id("text_block"))
                                             .vertical_alignment("Center")
-                                            .shared_text(text.clone())
-                                            .shared_water_mark(water_mark.clone())
-                                            .attach_shared_property(focused.clone())
-                                            .selector(selector.clone().id("TextBoxTextBlock")),
+                                            .foreground(id)
+                                            .text(id)
+                                            .font(id)
+                                            .font_size(id)
+                                            .attach_by_source::<WaterMark>(id)
+                                            .build(context),
                                     )
-                                    .shared_offset(offset.clone())
-                                    .scroll_viewer_mode(ScrollViewerMode::new(
-                                        ScrollMode::None,
-                                        ScrollMode::None,
-                                    ))
-                                    .selector(Selector::from("scrollviewer").id("TextBoxScrollViewer")),
+                                    .build(context),
                             )
                             .child(
                                 Cursor::create()
+                                    .selector(Selector::from("cursor").id("cursor"))
                                     .margin(0.0)
                                     .horizontal_alignment("Start")
-                                    .shared_text(text.clone())
-                                    .shared_text_selection(selection.clone())
-                                    .shared_offset(offset.clone())
-                                    .shared_focused(focused.clone())
-                                    .selector(Selector::from("cursor").id("TextBoxCursor")),
+                                    .text(id)
+                                    .font(id)
+                                    .font_size(id)
+                                    .offset(id)
+                                    .focused(id)
+                                    .selection(id)
+                                    .build(context),
                             )
-                            // .event_handler(MouseEventHandler::default().on_mouse_down(Rc::new(
-                            //     move |pos: Point| -> bool {
-                            //         click_state.click(pos);
-                            //         false
-                            //     },
-                            // ))),
+                            .build(context),
                     )
-                    .attach_property(selector.clone())
-                    .attach_shared_property(focused.clone())
-                    .shared_padding(padding.clone())
+                    .build(context),
             )
-            .shared_text(text)
-            .selector(selector)
-            .shared_water_mark(water_mark)
-            .shared_text_selection(selection)
-            .attach_shared_property(offset)
-            .shared_focused(focused)
-            .shared_padding(padding)
             .on_key_down(move |key: Key| -> bool { state.update_text(key) })
     }
 }
-
-template!(
-    TextBoxTemplate,
-    [
-        TextProperty,
-        FocusedProperty,
-        WaterMarkProperty,
-        TextSelectionProperty,
-        PaddingProperty,
-        KeyDownHandler
-    ]
-);

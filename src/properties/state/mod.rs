@@ -1,11 +1,11 @@
 // State related properties.
 
-pub use self::enabled::{Enabled, EnabledProperty};
-pub use self::focused::{Focused, FocusedProperty};
-pub use self::mouse_over::{MouseOver, MouseOverProperty};
-pub use self::pressed::{Pressed, PressedProperty};
-pub use self::selected::{Selected, SelectedProperty};
-pub use self::visibility::{Visibility, VisibilityProperty};
+pub use self::enabled::*;
+pub use self::focused::*;
+pub use self::mouse_over::*;
+pub use self::pressed::*;
+pub use self::selected::*;
+pub use self::visibility::*;
 
 mod enabled;
 mod focused;

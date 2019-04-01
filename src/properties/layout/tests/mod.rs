@@ -8,6 +8,5 @@ mod margin;
 mod offset;
 mod orientation;
 mod padding;
-mod point;
 mod rows;
 mod vertical_alignment;

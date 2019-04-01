@@ -1,38 +1,49 @@
+use dces::prelude::Entity;
+
 use crate::{
-    enums::ParentType,
-    layout::GridLayout,
-    properties::{Columns, ColumnsProperty, Rows, RowsProperty},
-    render_object::RectangleRenderObject,
-    widget::{Template, Widget},
+    layout::{GridLayout, Layout},
+    properties::*,
+    render_object::{RenderObject, RectangleRenderObject},
+    widget::Template,
 };
 
-/// Defines a flexible grid area that consists of columns and rows.
-///
-/// # Properties
-///
-/// * `columns` - used to define the columns of the grid.
-/// * `rows` - used to define the rows of the grid.
-/// * `selector` - css selector with element `grid`.
-///
-/// # Others
-///
-/// * `ParentType`- Multi.
-/// * `GridLayout` - used to layout the widget.
-pub struct Grid;
+widget!(
+    /// The `Grid` defines a flexible grid area that consists of columns and rows.
+    /// 
+    /// * CSS element: `grid`
+    Grid {
+        /// Sets or shares the background property.
+        background: Background,
 
-impl Widget for Grid {
-    type Template = GridTemplate;
+        /// Sets or shares the columns property.
+        columns: Columns,
 
-    fn create() -> Self::Template {
-        GridTemplate::new()
-            .columns(Columns::default())
-            .rows(Rows::default())
-            .parent_type(ParentType::Multi)
-            .layout(GridLayout::default())
-            .render_object(RectangleRenderObject)
+        /// Sets or shares the rows property.
+        rows: Rows,
+
+        /// Sets or shares the border radius property.
+        border_radius: BorderRadius,
+
+        /// Sets or shares the css selector property. 
+        selector: Selector
+    }
+);
+
+impl Template for Grid {
+    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
+        self.name("Grid")
             .selector("grid")
-            .debug_name("Grid")
+            .border_radius(0.0)
+            .background("transparent")
+            .rows(Rows::default())
+            .columns(Columns::default())
+    }
+
+    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
+        Some(Box::new(RectangleRenderObject))
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(GridLayout::new())
     }
 }
-
-template!(GridTemplate, [RowsProperty, ColumnsProperty]);

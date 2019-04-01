@@ -1,8 +1,8 @@
 use super::ScrollMode;
 
-/// The `ScrollViewerMode` struct is used to define the vertical and horizontal scroll behavior of the `ScrollViewer`.
-#[derive(Default)]
-pub struct ScrollViewerMode {
+/// `ScrollViewerMode` describes the vertical and horizontal scroll behavior of the `ScrollViewer`.
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct ScrollViewerModeValue {
     /// Vertical scroll mode.
     pub vertical: ScrollMode,
 
@@ -10,19 +10,27 @@ pub struct ScrollViewerMode {
     pub horizontal: ScrollMode,
 }
 
+impl Default for ScrollViewerModeValue {
+    fn default() -> ScrollViewerModeValue {
+        ScrollViewerModeValue {
+            vertical: ScrollMode::Auto,
+            horizontal: ScrollMode::Auto,
+        }
+    }
+}
+
 property!(
-    ScrollViewerMode,
-    ScrollViewerModeProperty,
-    scroll_viewer_mode,
-    shared_scroll_viewer_mode
+    /// `ScrollViewerMode` describes the vertical and horizontal scroll behavior of the `ScrollViewer`.
+    ScrollViewerMode(ScrollViewerModeValue)
 );
 
-impl ScrollViewerMode {
-    /// Creates a new scroll viewer mode.
-    pub fn new(vertical: ScrollMode, horizontal: ScrollMode) -> Self {
-        ScrollViewerMode {
-            vertical,
-            horizontal,
-        }
+// --- Conversions ---
+
+impl From<(&str, &str)> for ScrollViewerMode {
+    fn from(s: (&str, &str)) -> ScrollViewerMode {
+        ScrollViewerMode(ScrollViewerModeValue {
+            vertical: ScrollMode::from(s.0),
+            horizontal: ScrollMode::from(s.1),
+        })
     }
 }

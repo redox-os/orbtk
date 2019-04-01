@@ -5,9 +5,9 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use orbclient::{Window as OrbWindow, WindowFlag};
+use orbfont::Font;
 
 use self::backend::{OrbitalBackend, OrbitalBackendRunner};
-use self::renderer::FONT_RENDERER;
 use crate::backend::{Backend, FontMeasure};
 use crate::properties::Bounds;
 use crate::structs::{Position, Size};
@@ -37,7 +37,7 @@ pub fn target_backend(
             title,
             &flags,
         )
-        .unwrap(),
+            .unwrap(),
     )));
 
     let backend_runner = Box::new(OrbitalBackendRunner {
@@ -51,13 +51,12 @@ pub fn target_backend(
 pub struct OrbFontMeasure;
 
 impl FontMeasure for OrbFontMeasure {
-    fn measure(&self, text: &str, font: &str, font_size: u32) -> (u32, u32) {
-        if let Some(font) = &FONT_RENDERER.fonts.get(font) {
-            let text = font.render(text, font_size as f32);
-            return (text.width(), text.height());
+    fn measure(&self, text: &str, font: &Font, font_size: u32) -> (u32, u32) {
+        if font_size == 0 {
+            return (0, 0);
         }
-
-        (text.chars().count() as u32 * 8 + 2, 18)
+        let text = font.render(text, font_size as f32);
+        (text.width(), text.height())
     }
 }
 

@@ -1,32 +1,37 @@
+use dces::prelude::Entity;
+
 use crate::{
-    layout::FixedSizeLayout,
-    properties::ImageProperty,
-    render_object::ImageRenderObject,
-    widget::{Template, Widget},
+    layout::{FixedSizeLayout, Layout},
+    properties::*,
+    render_object::{RenderObject, ImageRenderObject},
+    widget::Template,
 };
 
-/// The `ImageWidget` widget is used to draw an image. It is not interactive.
-///
-/// # Properties
-///
-/// * `selector` - CSS selector with  element name `image`, used to request the theme of the image widget.
-///
-/// # Others
-///
-/// * `ImageSizeLayout` - Used to layout the widget.
-/// * `ImageRenderObject` - Used to draw the image of the widget.
-pub struct ImageWidget;
+widget!(
+    /// The `ImageWidget` widget is used to draw an image. It is not interactive.
+    /// 
+    /// * CSS element: `image-widget`
+    ImageWidget {
+        /// Sets or shares the image property.
+        image: Image,
 
-impl Widget for ImageWidget {
-    type Template = ImageTemplate;
+        /// Sets or shares the css selector property.
+        selector: Selector
+    }
+);
 
-    fn create() -> Self::Template {
-        ImageTemplate::new()
-            .selector("imagewidget")
-            .layout(FixedSizeLayout::new())
-            .render_object(ImageRenderObject)
-            .debug_name("ImageWidget")
+impl Template for ImageWidget {
+    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
+        self.name("ImageWidget")
+            .selector("image-widget")
+            .image("")
+    }
+
+    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
+        Some(Box::new(ImageRenderObject))
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(FixedSizeLayout::new())
     }
 }
-
-template!(ImageTemplate, [ImageProperty]);

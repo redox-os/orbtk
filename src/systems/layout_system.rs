@@ -21,7 +21,7 @@ pub struct LayoutSystem {
 
 impl System<Tree> for LayoutSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-        if! self.update.get() || !self.running.get() {
+        if !self.update.get() || !self.running.get() {
             return;
         }
 

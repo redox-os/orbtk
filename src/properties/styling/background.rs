@@ -1,14 +1,21 @@
-use crate::structs::Brush;
+use crate::
+structs::{Brush, Color};
 
-// todo: documentation and methods
-pub struct Background {
-    pub value: Brush,
+property!(
+    /// `Background` describes the background brush of a visual element.
+    Background(Brush)
+);
+
+// --- Conversions ---
+
+impl From<&str> for Background {
+    fn from(s: &str) -> Background {
+        Background(s.into())
+    }
 }
 
-impl Default for Background {
-    fn default() -> Background {
-        Background {
-            value: Brush::from("#000000"),
-        }
+impl From<Background> for Color {
+    fn from(b: Background) -> Color {
+        b.0.into()
     }
 }

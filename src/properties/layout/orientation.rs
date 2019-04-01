@@ -1,6 +1,6 @@
-/// Used to define the orientation of the `Stack`.
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub enum Orientation {
+/// Is used to control the orientation of the `Stack`.
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum OrientationValue {
     /// Vertical orientation.
     Vertical,
 
@@ -8,24 +8,24 @@ pub enum Orientation {
     Horizontal,
 }
 
-property!(
-    Orientation,
-    OrientationProperty,
-    orientation,
-    shared_orientation
-);
-
-impl Default for Orientation {
-    fn default() -> Self {
-        Orientation::Vertical
+impl Default for OrientationValue {
+    fn default() -> OrientationValue {
+        OrientationValue::Vertical
     }
 }
+
+property!(
+    /// `Orientation` describes the orientation of the `Stack`.
+    Orientation(OrientationValue)
+);
+
+// --- Conversions ---
 
 impl From<&str> for Orientation {
     fn from(t: &str) -> Self {
         match t {
-            "Horizontal" | "horizontal" => Orientation::Horizontal,
-            _ => Orientation::Vertical,
+            "Horizontal" | "horizontal" => Orientation::from(OrientationValue::Horizontal),
+            _ => Orientation::from(OrientationValue::Vertical),
         }
     }
 }
