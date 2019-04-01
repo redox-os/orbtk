@@ -238,7 +238,7 @@ impl ConstraintExtension for BoxConstraint {
         self.min_width = min_width;
         self.min_height = min_height;
     }
-   
+
     fn max_width(&self) -> f64 {
         self.max_width
     }

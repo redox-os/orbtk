@@ -15,7 +15,7 @@ impl Default for InnerImage {
 
 impl fmt::Debug for InnerImage {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "InnerImage(orbimage::Image)")
+        f.write_str("InnerImage(orbimage::Image)")
     }
 }
 

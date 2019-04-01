@@ -219,19 +219,19 @@ impl Theme {
     }
 
     pub fn brush(&self, property: &str, query: &Selector) -> Option<Brush> {
-        self.get(property, query).map_or(None, |v| v.brush())
+        self.get(property, query).and_then(|v| v.brush())
     }
 
     pub fn uint(&self, property: &str, query: &Selector) -> Option<u32> {
-        self.get(property, query).map_or(None, |v| v.uint())
+        self.get(property, query).and_then(|v| v.uint())
     }
 
     pub fn float(&self, property: &str, query: &Selector) -> Option<f32> {
-        self.get(property, query).map_or(None, |v| v.float())
+        self.get(property, query).and_then(|v| v.float())
     }
 
     pub fn string(&self, property: &str, query: &Selector) -> Option<String> {
-        self.get(property, query).map_or(None, |v| v.string())
+        self.get(property, query).and_then(|v| v.string())
     }
 
     /// Updates the given widget by theme and selector.

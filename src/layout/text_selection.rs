@@ -116,8 +116,7 @@ impl Layout for TextSelectionLayout {
 
             size.1 = vertical_alignment.align_measure(parent_size.1, size.1, margin.top(), margin.bottom());
 
-            if widget.has::<Text>() {
-                let text = widget.get::<Text>();
+            if let Some(text) = widget.try_get::<Text>() {
                 let font = widget.get::<Font>();
                 let font_size = widget.get::<FontSize>();
 
@@ -135,9 +134,7 @@ impl Layout for TextSelectionLayout {
                 }
             }
 
-            if let Some(off) = widget.try_get::<Offset>() {
-                pos += (off.0).0;
-            }
+            pos += widget.try_get::<Offset>().map_or(0.0, |off| (off.0).0);
 
             if let Some(margin) = widget.try_get_mut::<Margin>() {
                 margin.set_left(pos);

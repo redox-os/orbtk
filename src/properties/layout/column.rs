@@ -135,6 +135,22 @@ impl ColumnsBuilder {
         self
     }
 
+    /// Inserts a list of columns.
+    pub fn columns<R: Into<Column> + Clone>(mut self, columns: &[R]) -> Self {
+        for column in columns.to_vec() {
+            self.columns.push(column.into());
+        }
+        self
+    }
+
+    /// Inserts the given column as often as given.
+    pub fn repeat<R: Into<Column> + Copy>(mut self, column: R, count: usize) -> Self {
+        for _ in 0..count {
+            self.columns.push(column.into())
+        }
+        self
+    }
+
     /// Builds the columns.
     pub fn build(self) -> Columns {
         Columns(ColumnsContainer(self.columns))

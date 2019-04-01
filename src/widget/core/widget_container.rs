@@ -96,8 +96,8 @@ impl<'a> WidgetContainer<'a> {
     ///
     /// Panics if the widget does not contains the property.
     pub fn set<P>(&mut self, value: P)
-        where P: Component + Default + Clone,
-
+        where
+            P: Component + Default + Clone,
     {
         if let Ok(property) = self.ecm.borrow_mut_component::<P>(self.current_node) {
             *property = value;
@@ -116,30 +116,18 @@ impl<'a> WidgetContainer<'a> {
         where
             P: Clone + Component + Default,
     {
-        if let Ok(_) = self.ecm.borrow_component::<P>(self.current_node) {
-            return true;
-        }
-
-        false
+        self.ecm.borrow_component::<P>(self.current_node).is_ok()
     }
 
     /// Returns a reference of a property of type `P` from the given widget entity. If the entity does
     /// not exists or it doesn't have a component of type `P` `None` will be returned.
     pub fn try_get<P: Component + Default>(&self) -> Option<&P> {
-        if let Ok(property) = self.ecm.borrow_component::<P>(self.current_node) {
-            return Some(property);
-        }
-
-        None
+        self.ecm.borrow_component::<P>(self.current_node).ok()
     }
 
     /// Returns a mutable reference of a property of type `P` from the given widget entity. If the entity does
     /// not exists or it doesn't have a component of type `P` `None` will be returned.
     pub fn try_get_mut<P: Component + Default>(&mut self) -> Option<&mut P> {
-        if let Ok(property) = self.ecm.borrow_mut_component::<P>(self.current_node) {
-            return Some(property);
-        }
-
-        None
+        self.ecm.borrow_mut_component::<P>(self.current_node).ok()
     }
 }

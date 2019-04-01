@@ -134,6 +134,22 @@ impl RowsBuilder {
         self
     }
 
+    /// Inserts a list of rows.
+    pub fn rows<R: Into<Row> + Clone>(mut self, rows: &[R]) -> Self {
+        for row in rows.to_vec() {
+            self.row_definitions.push(row.into());
+        }
+        self
+    }
+
+    /// Inserts the given row as often as given.
+    pub fn repeat<R: Into<Row> + Copy>(mut self, row: R, count: usize) -> Self {
+        for _ in 0..count {
+            self.row_definitions.push(row.into())
+        }
+        self
+    }
+
     /// Builds the rows.
     pub fn build(self) -> Rows {
         Rows(RowsContainer(self.row_definitions))
@@ -153,6 +169,7 @@ property!(
 
 /// Provides additional operations on grid rows.
 pub trait RowExtension {
+    /// Returns a new Rows Builder.
     fn create() -> RowsBuilder;
 
     /// Returns the number of elements in the rows list, also referred to as its 'length'.

@@ -15,7 +15,7 @@ impl Default for InnerFont {
 
 impl fmt::Debug for InnerFont {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "InnerFont(orbfont::Font)")
+        f.write_str("InnerFont(orbfont::Font)")
     }
 }
 
@@ -38,10 +38,8 @@ impl From<Box<[u8]>> for InnerFont {
     }
 }
 
-property!(
-    /// `Font` describes the text font of a widget.
-    Font(InnerFont)
-);
+property!(/// `Font` describes the text font of a widget.
+Font(InnerFont));
 
 // --- Conversions ---
 

@@ -128,7 +128,7 @@ fn test_from() {
 
 #[test]
 fn test_into() {
-     let bounds: PropertySource<Bounds> = (17.0, 18.0, 19.0, 20.0).into();
+    let bounds: PropertySource<Bounds> = (17.0, 18.0, 19.0, 20.0).into();
 
-     assert_eq!(bounds, PropertySource::Value::<Bounds>(Bounds(Rect::new(17.0, 18.0, 19.0, 20.0))));
+    assert_eq!(bounds, PropertySource::Value::<Bounds>(Bounds(Rect::new(17.0, 18.0, 19.0, 20.0))));
 }

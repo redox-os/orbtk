@@ -35,13 +35,13 @@ impl RenderObject for TextRenderObject {
         let text = widget.clone::<Text>();
 
         let txt = {
-              if !text.0.is_empty() {
-                  text.0.clone()
-              } else {
-                  widget.clone_or_default::<WaterMark>().0
-              }
+            if !text.0.is_empty() {
+                text.0.clone()
+            } else {
+                widget.clone_or_default::<WaterMark>().0
+            }
         };
-     
+
         renderer.render_text(
             &txt,
             &widget.get::<Bounds>(),
@@ -50,6 +50,6 @@ impl RenderObject for TextRenderObject {
             widget.get::<FontSize>().0 as u32,
             widget.clone::<Foreground>().into(),
             &(widget.get::<Font>().0).0,
-        );   
+        );
     }
 }

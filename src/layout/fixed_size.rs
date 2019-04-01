@@ -61,51 +61,37 @@ impl Layout for FixedSizeLayout {
 
         // -- todo will be removed after orbgl merge --
 
-        let size = {
-            if widget.has::<Image>() {
-                if let Some(image) = widget.try_get::<Image>() {
-                    Some((image.width(), image.height()))
-                } else {
-                    None
-                }
-            } else if widget.has::<Text>() {
-                let text = widget.get::<Text>();
-                let font = widget.get::<Font>();
-                let font_size = widget.get::<FontSize>();
+        let size = widget.try_get::<Image>()
+            .map(|image| (image.width(), image.height()))
+            .or_else(|| {
+                widget.try_get::<Text>().and_then(|text| {
+                    let font = widget.get::<Font>();
+                    let font_size = widget.get::<FontSize>();
 
-                if text.0.is_empty() {
-                    if let Some(water_mark) = widget.try_get::<WaterMark>() {
-                        if water_mark.0.is_empty() {
-                            None
-                        } else {
-                            Some(FONT_MEASURE.measure(&water_mark.0, &(font.0).0, font_size.0 as u32))
-                        }
+                    if text.0.is_empty() {
+                        widget.try_get::<WaterMark>()
+                            .filter(|water_mark| !water_mark.0.is_empty())
+                            .map(|water_mark| FONT_MEASURE.measure(&water_mark.0, &(font.0).0, font_size.0 as u32))
                     } else {
-                        None
-                    }
-                } else {
-                    let mut size = FONT_MEASURE.measure(&text.0, &(font.0).0, font_size.0 as u32);
+                        let mut size = FONT_MEASURE.measure(&text.0, &(font.0).0, font_size.0 as u32);
 
-                    if text.0.ends_with(" ") {
-                        size.0 += FONT_MEASURE.measure("a", &(font.0).0, font_size.0 as u32).0 / 2;
+                        if text.0.ends_with(" ") {
+                            size.0 += FONT_MEASURE.measure("a", &(font.0).0, font_size.0 as u32).0 / 2;
+                        }
+                        Some(size)
                     }
-                    Some(size)
-                }
-            } else if widget.has::<FontIcon>() {
-                let font_icon = widget.get::<FontIcon>();
-                if font_icon.0.is_empty() {
-                    None
-                } else {
-                    Some(FONT_MEASURE.measure(
+                })
+            })
+            .or_else(|| {
+                widget.try_get::<FontIcon>()
+                    .filter(|font_icon| !font_icon.0.is_empty())
+                    .map(|font_icon| FONT_MEASURE.measure(
                         &font_icon.0,
                         &(widget.get::<IconFont>().0).0,
                         widget.get::<IconSize>().0 as u32,
                     ))
-                }
-            } else {
-                None
-            }
-        };
+            });
+
 
         if let Some(size) = size {
             if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(entity) {

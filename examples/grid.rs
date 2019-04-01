@@ -22,7 +22,7 @@ impl Template for MainView {
                         .child(
                             TextBlock::create()
                                 .text("(0,0)")
-                                .selector("white")
+                                .selector("light-text")
                                 .horizontal_alignment("Center")
                                 .vertical_alignment("Center")
                                 .build(context),

@@ -50,7 +50,7 @@ impl RectangleRenderObject {
             x + border_thickness.left,
             y + border_thickness.top,
             width - border_thickness.left - border_thickness.right,
-            height - border_thickness.top - border_thickness.right,
+            height - border_thickness.top - border_thickness.bottom,
             brush,
         );
     }
