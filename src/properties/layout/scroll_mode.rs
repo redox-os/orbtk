@@ -1,5 +1,3 @@
-use crate::prelude::*;
-
 /// The `ScrollMode` defines the mode of a scroll direction.
 #[derive(Copy, Debug, Clone, PartialEq)]
 pub enum ScrollMode {

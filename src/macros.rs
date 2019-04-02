@@ -84,8 +84,16 @@ macro_rules! widget {
             }
 
              /// Sets or shares the constraint property.
-            pub fn constraint<P: Into<PropertySource<Constraint>>>(self, constraint: P) -> Self {
-                self.attach(constraint)
+            pub fn constraint<P: Into<PropertySource<Constraint>>>(mut self, constraint: P) -> Self {
+                match constraint.into() {
+                    PropertySource::Value(value) => {
+                        self.constraint = value;
+                    },
+                    PropertySource::Source(source) => {
+                        self.shared_attached_properties.insert(TypeId::of::<Constraint>(), SharedComponentBox::new(TypeId::of::<Constraint>(), source));
+                    }
+                }
+                self
             }
 
             /// Sets or shares the vertical alignment property.
