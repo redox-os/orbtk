@@ -23,6 +23,8 @@ pub use crate::systems::*;
 pub use crate::theme::*;
 pub use crate::widget::*;
 
+pub use dces::prelude::*;
+
 pub mod application;
 pub mod backend;
 pub mod enums;
