@@ -1,6 +1,6 @@
 use orbfont::Font as OrbFont;
 
-use super::InnerFont;
+use crate::prelude::*;
 
 property!(
     /// `IconFont` describes the icon font of a widget.

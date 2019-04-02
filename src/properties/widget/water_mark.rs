@@ -1,3 +1,5 @@
+use crate::prelude::*;
+
 property!(
     /// `WaterMark` describes a placeholder text.
     WaterMark(String)

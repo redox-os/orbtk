@@ -1,11 +1,4 @@
-use dces::prelude::Entity;
-
-use crate::{
-    layout::{GridLayout, Layout},
-    properties::*,
-    render_object::{RenderObject, RectangleRenderObject},
-    widgets::Template,
-};
+use crate::prelude::*;
 
 widget!(
     /// The `Grid` defines a flexible grid area that consists of columns and rows.

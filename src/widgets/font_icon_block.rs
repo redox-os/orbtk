@@ -1,12 +1,4 @@
-use dces::prelude::Entity;
-
-use crate::{
-    layout::{FixedSizeLayout, Layout},
-    properties::*,
-    render_object::{FontIconRenderObject, RenderObject},
-    styling::{colors, fonts},
-    widgets::Template,
-};
+use crate::prelude::*;
 
 widget!(
     /// The `FontIconBlock` widget is used to draw text. It is not interactive.

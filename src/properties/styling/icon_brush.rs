@@ -1,5 +1,4 @@
-use crate::
-structs::{Brush, Color};
+use crate::prelude::*;
 
 property!(
     /// `IconBrush` describes the icon brush of a visual element.

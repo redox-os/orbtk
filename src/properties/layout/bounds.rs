@@ -1,4 +1,4 @@
-use crate::structs::{Position, Rect, Size};
+use crate::prelude::*;
 
 property!(
     /// `Bounds` describes the actual bounds (position and size) of a widget.

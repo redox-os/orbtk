@@ -1,12 +1,4 @@
-use dces::prelude::Entity;
-
-use crate::{
-    event::ClickHandler,
-    material_font_icons,
-    properties::*,
-    styling::{colors, fonts},
-    widgets::{Container, FontIconBlock, Stack, Template, TextBlock},
-};
+use crate::prelude::*;
 
 widget!(
     /// The `CheckBox` widget can be switch its selected state. It contains a selection box and a text.

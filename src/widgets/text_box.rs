@@ -1,14 +1,6 @@
-use dces::prelude::Entity;
-
 use std::cell::Cell;
 
-use crate::{
-    event::{Key, KeyDownHandler},
-    properties::*,
-    structs::*,
-    styling::{colors, fonts},
-    widgets::*,
-};
+use crate::prelude::*;
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
 #[derive(Default)]

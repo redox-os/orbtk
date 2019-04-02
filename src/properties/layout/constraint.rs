@@ -1,5 +1,7 @@
 use std::f64;
 
+use crate::prelude::*;
+
 /// Used to build a constraint, specifying additional details.
 #[derive(Default)]
 pub struct ConstraintBuilder {

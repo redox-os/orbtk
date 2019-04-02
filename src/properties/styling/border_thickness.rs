@@ -1,4 +1,4 @@
-use crate::structs::{Spacer, Thickness};
+use crate::prelude::*;
 
 property!(
     /// `BorderThickness` describes the relative thickness of a border.

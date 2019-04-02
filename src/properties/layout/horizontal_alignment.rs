@@ -1,5 +1,6 @@
 use super::Margin;
-use crate::{enums::Alignment, structs::Spacer};
+
+use crate::prelude::*;
 
 property!(
     /// `HorizontalAlignment` describes the vertical alignment of a widget.

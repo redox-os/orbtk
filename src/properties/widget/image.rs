@@ -1,8 +1,9 @@
 use std::fmt;
 
 use orbclient::Color;
-use orbclient::Renderer;
 use orbimage::Image as OrbImage;
+
+use crate::prelude::*;
 
 #[derive(Clone)]
 pub struct InnerImage(pub OrbImage);

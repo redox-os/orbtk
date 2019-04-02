@@ -1,4 +1,4 @@
-use orbtk::*;
+use orbtk::prelude::*;
 
 widget!(MainView);
 

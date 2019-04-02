@@ -1,3 +1,5 @@
+use crate::prelude::*;
+
 /// Is used to control the visibility of a widget
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum VisibilityValue {

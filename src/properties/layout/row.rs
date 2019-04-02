@@ -1,5 +1,7 @@
 use std::slice::{Iter, IterMut};
 
+use crate::prelude::*;
+
 /// Used to build a row, specifying additional details.
 #[derive(Default)]
 pub struct RowBuilder {

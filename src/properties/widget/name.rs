@@ -1,3 +1,5 @@
+use crate::prelude::*;
+
 property!(
     /// `Name` is use for debugging purposes.
     Name(String)

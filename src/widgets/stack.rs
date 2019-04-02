@@ -1,10 +1,4 @@
-use dces::prelude::Entity;
-
-use crate::{
-    layout::{Layout, StackLayout},
-    properties::*,
-    widgets::Template,
-};
+use crate::prelude::*;
 
 widget!(
     /// The `Stack` defines a layout that is used to stack its children on the z-axis.

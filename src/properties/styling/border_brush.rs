@@ -1,5 +1,4 @@
-use crate::
-structs::{Brush, Color};
+use crate::prelude::*;
 
 property!(
     /// `BorderBrush` describes the border brush.

@@ -1,4 +1,4 @@
-use super::ScrollMode;
+use crate::prelude::*;
 
 /// `ScrollViewerMode` describes the vertical and horizontal scroll behavior of the `ScrollViewer`.
 #[derive(Debug, Copy, Clone, PartialEq)]

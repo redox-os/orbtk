@@ -2,6 +2,8 @@ use std::{collections::HashSet, ops::Add};
 
 use std::fmt;
 
+use crate::prelude::*;
+
 #[derive(Clone, Debug)]
 pub enum SelectorRelation {
     Ancestor(SelectorValue),

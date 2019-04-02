@@ -1,6 +1,6 @@
 use std::cell::Cell;
 
-use orbtk::*;
+use orbtk::prelude::*;
 
 #[derive(Default)]
 pub struct MainViewState {

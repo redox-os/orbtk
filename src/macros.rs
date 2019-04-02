@@ -2,9 +2,6 @@
 #[macro_export]
 macro_rules! property {
     ($(#[$property_doc:meta])* $property:ident($type:ty)) => {
-        use dces::prelude::{Entity, EntityComponentManager};
-        use crate::properties::{PropertySource, get_property};
-
         #[derive(Default, Debug, Clone, PartialEq)]
         $(#[$property_doc])*
         pub struct $property(pub $type);
@@ -40,16 +37,6 @@ macro_rules! property {
 #[macro_export]
 macro_rules! widget {
     ( $(#[$widget_doc:meta])* $widget:ident $(<$state:ident>)* $(: $( $handler:ident ),*)* $( { $($(#[$prop_doc:meta])* $property:ident: $property_type:tt ),* } )* ) => {
-        #[allow(dead_code)]
-        use std::{ any::TypeId, rc::Rc, collections::HashMap, cell::RefCell, fmt::Debug };
-
-        use dces::prelude::{Component, ComponentBox, SharedComponentBox };
-
-        use crate::{event::EventHandler,
-            properties::{PropertySource, Bounds, Constraint, VerticalAlignment, HorizontalAlignment, Visibility, Name},
-            widgets::{Widget, BuildContext},
-            structs::Point};
-
         $(#[$widget_doc])*
         #[derive(Default)]
         pub struct $widget {

@@ -1,11 +1,4 @@
-use dces::prelude::Entity;
-
-use crate::{
-    event::ClickHandler,
-    properties::*,
-    styling::{colors, fonts},
-    widgets::{Container, FontIconBlock, Stack, Template, TextBlock},
-};
+use crate::prelude::*;
 
 widget!(
     /// The `ToggleButton` widget can be clicked by user and could switch between selected / not selected. 

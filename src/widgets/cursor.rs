@@ -1,12 +1,4 @@
-use dces::prelude::Entity;
-
-use crate::{
-    layout::{TextSelectionLayout, Layout},
-    properties::*,
-    render_object::{RenderObject, RectangleRenderObject},
-    styling::fonts,
-    widgets::{Template, State, Context, add_selector_to_widget, remove_selector_from_widget},
-};
+use crate::prelude::*;
 
 // Default state of the `Cursor` widget.
 #[derive(Default)]

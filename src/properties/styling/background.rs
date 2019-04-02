@@ -1,5 +1,4 @@
-use crate::
-structs::{Brush, Color};
+use crate::prelude::*;
 
 property!(
     /// `Background` describes the background brush of a visual element.

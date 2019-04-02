@@ -1,4 +1,4 @@
-use crate::structs::{Spacer, Thickness};
+use crate::prelude::*;
 
 property!(
     /// `Margin` describes the outer widget space.

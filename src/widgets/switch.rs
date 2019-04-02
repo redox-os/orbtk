@@ -1,10 +1,4 @@
-use dces::prelude::Entity;
-
-use crate::{
-    properties::*,
-    styling::colors,
-    widgets::{Container, Grid, Template, State, Context},
-};
+use crate::prelude::*;
 
 /// State to handle the position of switch toggle.
 #[derive(Default)]

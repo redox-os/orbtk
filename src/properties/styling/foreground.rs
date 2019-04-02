@@ -1,5 +1,4 @@
-use crate::
-structs::{Brush, Color};
+use crate::prelude::*;
 
 property!(
     /// `Foreground` describes the foreground brush of a visual element.

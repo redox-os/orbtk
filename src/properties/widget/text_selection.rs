@@ -1,3 +1,5 @@
+use crate::prelude::*;
+
 /// Is used to mark the selection of a text.
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct TextSelectionValue {

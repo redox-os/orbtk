@@ -1,4 +1,4 @@
-use orbtk::*;
+use orbtk::prelude::*;
 
 fn main() {
     let mut application = Application::default();

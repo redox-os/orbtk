@@ -1,3 +1,5 @@
+use crate::prelude::*;
+
 property!(
     /// `Text` describes the text of a widget.
     Text(String)

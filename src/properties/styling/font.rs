@@ -2,7 +2,7 @@ use std::fmt;
 
 use orbfont::Font as OrbFont;
 
-use crate::styling::fonts;
+use crate::prelude::*;
 
 #[derive(Clone)]
 pub struct InnerFont(pub OrbFont);

@@ -1,4 +1,4 @@
-use crate::structs::{Spacer, Thickness};
+use crate::prelude::*;
 
 property!(
     /// `Padding` describes the inner widget space.
