@@ -44,6 +44,14 @@ However you also need to have the SDL2 libraries installed on your
 system.  The best way to do this is documented [by the SDL2
 crate](https://github.com/AngryLawyer/rust-sdl2#user-content-requirements).
 
+## Use OrbTk with cairo
+
+If you want to use OrbTk with cairo (recommanded) you have to install cairo graphics. Otherwise you have to build OrbTk with the "plain" feature.
+
+* With Ubuntu, please to type ```sudo apt-get install libcairo2-dev``` in your console.
+* With macOS and homebrew, please to type ```brew install cairo``` in your console.
+* With macOS and macports, please to type ```sudo port install cairo``` in your console.
+
 ## Minimal Example
 
 ```rust
