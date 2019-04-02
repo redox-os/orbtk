@@ -6,7 +6,7 @@ use crate::{
     application::{Global, Tree},
     backend::Backend,
     properties::*,
-    widget::{Context, State},
+    widgets::{Context, State},
 };
 
 /// This system is used to initializes the widgets.

@@ -2,7 +2,7 @@
 
 pub use self::button::*;
 pub use self::core::*;
-// pub use self::canvas_widget::CanvasWidget;
+// pub use self::canvas_widgets::CanvasWidget;
 pub use self::check_box::*;
 pub use self::container::*;
 pub use self::cursor::*;

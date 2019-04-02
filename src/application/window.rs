@@ -18,7 +18,7 @@ use crate::{
         EventSystem, InitSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem,
     },
     theme::Theme,
-    widget::{State, BuildContext, Widget},
+    widgets::{State, BuildContext, Widget},
     Global,
 };
 

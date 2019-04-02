@@ -4,7 +4,7 @@ use crate::{
     layout::{GridLayout, Layout},
     properties::*,
     render_object::{RenderObject, RectangleRenderObject},
-    widget::Template,
+    widgets::Template,
 };
 
 widget!(

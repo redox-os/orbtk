@@ -12,7 +12,7 @@ use crate::{
     properties::*,
     render_object::RenderObject,
     structs::{Point, Position},
-    widget::Context,
+    widgets::Context,
 };
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.

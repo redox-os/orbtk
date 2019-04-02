@@ -16,7 +16,7 @@ use crate::{
     enums::Alignment,
     structs::{DirtySize, Size},
     theme::Theme,
-    widget::WidgetContainer,
+    widgets::WidgetContainer,
 };
 
 use super::Layout;

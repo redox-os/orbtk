@@ -10,7 +10,7 @@ use crate::{
     application::Tree,
     backend::Backend,
     properties::*,
-    widget::{
+    widgets::{
         add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
     },
 };

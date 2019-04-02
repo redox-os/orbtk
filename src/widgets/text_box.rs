@@ -7,7 +7,7 @@ use crate::{
     properties::*,
     structs::*,
     styling::{colors, fonts},
-    widget::*,
+    widgets::*,
 };
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.

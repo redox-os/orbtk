@@ -4,15 +4,14 @@ use crate::{
     event::ClickHandler,
     properties::*,
     styling::{colors, fonts},
-    widget::{Container, FontIconBlock, Stack, Template, TextBlock},
+    widgets::{Container, FontIconBlock, Stack, Template, TextBlock},
 };
 
 widget!(
-    /// The `ToggleButton` widget can be clicked by user and could switch between selected / not selected. 
-    /// It's used to perform an action.
+    /// The `Button` widget can be clicked by user. It's used to perform an action.
     /// 
-    /// * CSS element: `toggle-button`
-    ToggleButton: ClickHandler {
+    /// * CSS element: `button`
+    Button: ClickHandler {
         /// Sets or shares the background property.
         background: Background,
 
@@ -56,18 +55,14 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the pressed property. 
-        pressed: Pressed,
-
-        /// Sets or shares the selected property. 
-        selected: Selected
+        pressed: Pressed
     }
 );
 
-impl Template for ToggleButton {
+impl Template for Button {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
-        self.name("ToggleButton")
-            .selector("toggle-button")
-            .selected(false)
+        self.name("Button")
+            .selector("button")
             .height(32.0)
             .min_width(80.0)
             .background(colors::LYNCH_COLOR)

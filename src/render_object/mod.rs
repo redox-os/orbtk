@@ -6,7 +6,7 @@ use orbgl_api::Canvas;
 
 use crate::backend::Renderer;
 use crate::structs::Point;
-use crate::widget::Context;
+use crate::widgets::Context;
 
 pub use self::font_icon::*;
 pub use self::image::*;

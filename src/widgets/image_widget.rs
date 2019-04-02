@@ -4,7 +4,7 @@ use crate::{
     layout::{FixedSizeLayout, Layout},
     properties::*,
     render_object::{RenderObject, ImageRenderObject},
-    widget::Template,
+    widgets::Template,
 };
 
 widget!(

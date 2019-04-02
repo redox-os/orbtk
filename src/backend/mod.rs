@@ -15,7 +15,7 @@ use orbgl_api::prelude::Canvas;
 
 use crate::{
     application::Tree, event::EventQueue, properties::Bounds, structs::Point, theme::Theme,
-    widget::MessageBox,
+    widgets::MessageBox,
 };
 
 /// Provides the context for the `InitSystem`.

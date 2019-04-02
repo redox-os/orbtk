@@ -3,7 +3,7 @@ use dces::prelude::Entity;
 use crate::{
     layout::{Layout, ScrollLayout},
     properties::*,
-    widget::Template,
+    widgets::Template,
 };
 
 widget!(

@@ -5,7 +5,7 @@ use crate::{
     properties::*,
     render_object::{RenderObject, RectangleRenderObject},
     styling::fonts,
-    widget::{Template, State, Context, add_selector_to_widget, remove_selector_from_widget},
+    widgets::{Template, State, Context, add_selector_to_widget, remove_selector_from_widget},
 };
 
 // Default state of the `Cursor` widget.

@@ -19,7 +19,7 @@ use crate::event::{
 use crate::properties::Bounds;
 use crate::structs::{Point, Position, Size};
 use crate::theme::Theme;
-use crate::widget::MessageBox;
+use crate::widgets::MessageBox;
 
 /// Implementation of the OrbClient based backend.
 pub struct OrbitalBackend {

@@ -16,7 +16,7 @@ use crate::{
     },
     properties::{Bounds, Constraint, Enabled, Focused, Pressed, Selected, ConstraintExtension},
     structs::Size,
-    widget::WidgetContainer,
+    widgets::WidgetContainer,
     Global,
 };
 

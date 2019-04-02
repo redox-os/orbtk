@@ -5,7 +5,7 @@ use crate::{
     properties::*,
     render_object::RenderObject,
     structs::Point,
-    widget::Context,
+    widgets::Context,
 };
 
 /// Used to render a text.

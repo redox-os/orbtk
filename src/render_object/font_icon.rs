@@ -5,7 +5,7 @@ use crate::{
     properties::{Bounds, FontIcon, IconBrush, IconFont, IconSize},
     render_object::RenderObject,
     structs::Point,
-    widget::Context,
+    widgets::Context,
 };
 
 pub struct FontIconRenderObject;

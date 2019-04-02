@@ -3,7 +3,7 @@ use dces::prelude::Entity;
 use crate::{
     properties::*,
     styling::colors,
-    widget::{Container, Grid, Template, State, Context},
+    widgets::{Container, Grid, Template, State, Context},
 };
 
 /// State to handle the position of switch toggle.

@@ -2,17 +2,17 @@ use dces::prelude::Entity;
 
 use crate::{
     event::ClickHandler,
-    material_font_icons,
     properties::*,
     styling::{colors, fonts},
-    widget::{Container, FontIconBlock, Stack, Template, TextBlock},
+    widgets::{Container, FontIconBlock, Stack, Template, TextBlock},
 };
 
 widget!(
-    /// The `CheckBox` widget can be switch its selected state. It contains a selection box and a text.
+    /// The `ToggleButton` widget can be clicked by user and could switch between selected / not selected. 
+    /// It's used to perform an action.
     /// 
-    /// * CSS element: `check-box`
-    CheckBox: ClickHandler {
+    /// * CSS element: `toggle-button`
+    ToggleButton: ClickHandler {
         /// Sets or shares the background property.
         background: Background,
 
@@ -63,12 +63,13 @@ widget!(
     }
 );
 
-impl Template for CheckBox {
+impl Template for ToggleButton {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
-        self.name("CheckBox")
-            .selector("check-box")
+        self.name("ToggleButton")
+            .selector("toggle-button")
             .selected(false)
-            .height(24.0)
+            .height(32.0)
+            .min_width(80.0)
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
             .border_thickness(0.0)
@@ -78,42 +79,40 @@ impl Template for CheckBox {
             .text("")
             .font_size(fonts::FONT_SIZE_12)
             .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
-            .icon(material_font_icons::CHECK_FONT_ICON)
+            .icon("")
             .icon_font(fonts::font_into_box(fonts::MATERIAL_ICONS_REGULAR_FONT))
             .icon_size(fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
             .child(
-                Stack::create()
-                    .orientation("Horizontal")
+                Container::create()
+                    .background(id)
+                    .border_radius(id)
+                    .border_thickness(id)
+                    .border_brush(id)
+                    .padding(id)
                     .child(
-                        Container::create()
-                            .size(24.0, 24.0)
-                            .background(id)
-                            .border_radius(id)
-                            .border_thickness(id)
-                            .border_brush(id)
-                            .padding(id)
+                        Stack::create()
+                            .orientation("Horizontal")
+                            .vertical_alignment("Center")
+                            .horizontal_alignment("Center")
                             .child(
                                 FontIconBlock::create()
-                                    .vertical_alignment("Center")
-                                    .horizontal_alignment("Center")
+                                    .margin((0.0, 0.0, 2.0, 0.0))
                                     .icon(id)
                                     .brush(id)
                                     .icon_size(id)
                                     .font(id)
                                     .build(context),
                             )
-                            .build(context),
-                    )
-                    .child(
-                        TextBlock::create()
-                            .vertical_alignment("Center")
-                            .margin((8.0, 0.0, 0.0, 0.0))
-                            .foreground(id)
-                            .text(id)
-                            .font_size(id)
-                            .font(id)
+                            .child(
+                                TextBlock::create()
+                                    .foreground(id)
+                                    .text(id)
+                                    .font_size(id)
+                                    .font(id)
+                                    .build(context),
+                            )
                             .build(context),
                     )
                     .build(context),

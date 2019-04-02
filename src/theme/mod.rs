@@ -14,7 +14,7 @@ use crate::{
         fonts,
         theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS},
     },
-    widget::WidgetContainer,
+    widgets::WidgetContainer,
 };
 
 lazy_static! {

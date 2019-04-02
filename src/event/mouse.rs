@@ -4,7 +4,7 @@ use crate::{
     event::{Event, EventBox, EventHandler},
     properties::*,
     structs::*,
-    widget::{Widget, WidgetContainer},
+    widgets::{Widget, WidgetContainer},
 };
 
 /// Checks if the given point is inside of a widget.

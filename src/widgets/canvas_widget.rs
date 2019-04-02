@@ -2,7 +2,7 @@
 //     layout::FixedSizeLayout,
 //     render_object::ImageRenderObject,
 //     theme::Selector,
-//     widget::{Template, Widget},
+//     widgets::{Template, Widget},
 // };
 
 // // Unused at the moment!!!

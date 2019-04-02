@@ -47,7 +47,7 @@ macro_rules! widget {
 
         use crate::{event::EventHandler,
             properties::{PropertySource, Bounds, Constraint, VerticalAlignment, HorizontalAlignment, Visibility, Name},
-            widget::{Widget, BuildContext},
+            widgets::{Widget, BuildContext},
             structs::Point};
 
         $(#[$widget_doc])*

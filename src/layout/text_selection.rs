@@ -12,7 +12,7 @@ use crate::{
     properties::*,
     structs::{DirtySize, Size, Spacer},
     theme::Theme,
-    widget::WidgetContainer,
+    widgets::WidgetContainer,
 };
 
 use super::Layout;

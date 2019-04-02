@@ -5,7 +5,7 @@ use crate::{
     properties::*,
     render_object::RenderObject,
     structs::{Point, Brush, Position, Size, Thickness},
-    widget::Context,
+    widgets::Context,
 };
 
 pub struct RectangleRenderObject;

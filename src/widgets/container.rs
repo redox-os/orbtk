@@ -1,6 +1,6 @@
 use dces::prelude::Entity;
 
-use crate::{properties::*, widget::Template, render_object::{RenderObject, RectangleRenderObject}, layout::{Layout, PaddingLayout}};
+use crate::{properties::*, widgets::Template, render_object::{RenderObject, RectangleRenderObject}, layout::{Layout, PaddingLayout}};
 
 widget!(
     /// The `Container` layout widget surrounds its child with a padding. Draws a box around the child.

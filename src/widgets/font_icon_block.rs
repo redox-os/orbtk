@@ -5,7 +5,7 @@ use crate::{
     properties::*,
     render_object::{FontIconRenderObject, RenderObject},
     styling::{colors, fonts},
-    widget::Template,
+    widgets::Template,
 };
 
 widget!(

@@ -21,7 +21,7 @@ pub use crate::styling::theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS};
 pub use crate::styling::vector_graphics::*;
 pub use crate::systems::*;
 pub use crate::theme::*;
-pub use crate::widget::*;
+pub use crate::widgets::*;
 
 pub use dces::prelude::*;
 
@@ -36,4 +36,4 @@ pub mod structs;
 pub mod styling;
 pub mod systems;
 pub mod theme;
-pub mod widget;
+pub mod widgets;

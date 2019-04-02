@@ -5,7 +5,7 @@ use crate::{
     properties::{Bounds, Image},
     render_object::RenderObject,
     structs::{Point, Size},
-    widget::Context,
+    widgets::Context,
 };
 
 /// Used to render an image.
