@@ -7,7 +7,7 @@ pub use dces::prelude::*;
 extern crate lazy_static;
 
 #[macro_use]
-mod macros;
+pub mod macros;
 
 pub use crate::application::*;
 pub use crate::backend::*;
