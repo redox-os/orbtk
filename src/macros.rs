@@ -44,7 +44,12 @@ macro_rules! widget {
             shared_attached_properties: HashMap<TypeId, SharedComponentBox>,
             event_handlers: Vec<Rc<dyn EventHandler>>,
             bounds: Bounds,
-            constraint: Constraint,
+            min_width: Option<f64>,
+            min_height: Option<f64>,
+            max_width: Option<f64>,
+            max_height: Option<f64>,
+            width: Option<f64>,
+            height: Option<f64>,
             name: Option<Name>,
             horizontal_alignment: HorizontalAlignment,
             vertical_alignment: VerticalAlignment,
@@ -85,15 +90,7 @@ macro_rules! widget {
 
              /// Sets or shares the constraint property.
             pub fn constraint<P: Into<PropertySource<Constraint>>>(mut self, constraint: P) -> Self {
-                match constraint.into() {
-                    PropertySource::Value(value) => {
-                        self.constraint = value;
-                    },
-                    PropertySource::Source(source) => {
-                        self.shared_attached_properties.insert(TypeId::of::<Constraint>(), SharedComponentBox::new(TypeId::of::<Constraint>(), source));
-                    }
-                }
-                self
+                self.attach(constraint)
             }
 
             /// Sets or shares the vertical alignment property.
@@ -123,58 +120,88 @@ macro_rules! widget {
 
             /// Inserts a new width.
             pub fn width(mut self, width: f64) -> Self {
-                self.constraint.set_width(width);
+                if !self.width.is_none() {
+                    return self;
+                }
+                self.width = Some(width);
                 self
             }
 
             /// Inserts a new height.
             pub fn height(mut self, height: f64) -> Self {
-                self.constraint.set_height(height);
+                if !self.height.is_none() {
+                    return self;
+                }
+                self.height = Some(height);
                 self
             }
 
             /// Inserts a new size.
             pub fn size(mut self, width: f64, height: f64) -> Self {
-                self.constraint.set_width(width);
-                self.constraint.set_height(height);
+                if self.width.is_none() {
+                    self.width = Some(width);
+                }
+                if self.height.is_none() {
+                    self.height = Some(height);
+                }
                 self
             }
 
             /// Inserts a new min_width.
             pub fn min_width(mut self, min_width: f64) -> Self {
-                self.constraint.set_min_width(min_width);
+                if !self.min_width.is_none() {
+                    return self;
+                }
+                self.min_width = Some(min_width);
                 self
             }
 
             /// Inserts a new min_height.
             pub fn min_height(mut self, min_height: f64) -> Self {
-                self.constraint.set_min_height(min_height);
+                if !self.min_height.is_none() {
+                    return self;
+                }
+                self.min_height = Some(min_height);
                 self
             }
 
             /// Inserts a new min_size.
             pub fn min_size(mut self, min_width: f64, min_height: f64) -> Self {
-                self.constraint.set_min_width(min_width);
-                self.constraint.set_min_height(min_height);
+                if self.min_width.is_none() {
+                    self.min_width = Some(min_width);
+                }
+                if self.min_height.is_none() {
+                    self.min_height = Some(min_height);
+                }
                 self
             }
 
             /// Inserts a new max_width.
             pub fn max_width(mut self, max_width: f64) -> Self {
-                self.constraint.set_max_width(max_width);
+                if !self.max_width.is_none() {
+                    return self;
+                }
+                self.max_width = Some(max_width);
                 self
             }
 
             /// Inserts a new max_height.
             pub fn max_height(mut self, max_height: f64) -> Self {
-                self.constraint.set_max_height(max_height);
+                if !self.max_height.is_none() {
+                    return self;
+                }
+                self.max_height = Some(max_height);
                 self
             }
 
             /// Inserts a new min_size.
             pub fn max_size(mut self, max_width: f64, max_height: f64) -> Self {
-                self.constraint.set_max_width(max_width);
-                self.constraint.set_max_height(max_height);
+                if self.max_width.is_none() {
+                    self.max_width = Some(max_width);
+                }
+                if self.max_height.is_none() {
+                    self.max_height = Some(max_height);
+                }
                 self
             }
 
@@ -276,12 +303,33 @@ macro_rules! widget {
 
                 // register default set of properties
                 context.register_property(entity, this.bounds);
-                context.register_property(entity, this.constraint);
                 context.register_property(entity, this.vertical_alignment);
                 context.register_property(entity, this.horizontal_alignment);
                 context.register_property(entity, this.visibility);
                 context.register_property(entity, this.margin);
                 context.register_property(entity, this.enabled);
+
+                let mut constraint = Constraint::default();
+
+                if let Some(width) = this.width {
+                    constraint.set_width(width);
+                }
+                if let Some(height) = this.height {
+                    constraint.set_height(height);
+                }
+                if let Some(min_width) = this.min_width {
+                    constraint.set_min_width(min_width);
+                }
+                if let Some(min_height) = this.min_height {
+                    constraint.set_min_height(min_height);
+                }
+                if let Some(max_width) = this.max_width {
+                    constraint.set_max_width(max_width);
+                }
+                if let Some(max_height) = this.max_height {
+                    constraint.set_max_height(max_height);
+                }
+                context.register_property(entity, constraint);
 
                 // register helpers
                 context.register_property(entity, Point::default());
