@@ -89,7 +89,7 @@ macro_rules! widget {
             }
 
              /// Sets or shares the constraint property.
-            pub fn constraint<P: Into<PropertySource<Constraint>>>(self, constraint: P) -> Self {
+            pub fn constraint<P: Into<PropertySource<Constraint>>>(mut self, constraint: P) -> Self {
                 self.attach(constraint)
             }
 
