@@ -1,5 +1,7 @@
 use std::cell::{Cell, RefCell};
 use std::collections::BTreeMap;
+use std::thread;
+use std::time;
 use std::rc::Rc;
 
 use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
@@ -254,7 +256,10 @@ impl BackendRunner for OrbitalBackendRunner {
         self.world = Some(world);
     }
     fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>) {
+        const FRAMES_PER_SECOND: u64 = 60;
+        let duration_limit = time::Duration::from_millis(1000 / FRAMES_PER_SECOND);
         loop {
+            let sys_time = time::SystemTime::now();
             if !running.get() {
                 break;
             }
@@ -266,6 +271,10 @@ impl BackendRunner for OrbitalBackendRunner {
             update.set(false);
 
             self.backend.borrow_mut().drain_events();
+            let duration_since = sys_time.duration_since(sys_time).unwrap();
+            if duration_limit > duration_since {
+                thread::sleep(duration_limit - duration_since);
+            }
         }
     }
 }
