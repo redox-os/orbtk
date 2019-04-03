@@ -1,8 +1,7 @@
 use std::cell::{Cell, RefCell};
 use std::collections::BTreeMap;
-use std::thread;
-use std::time;
 use std::rc::Rc;
+use std::time;
 
 use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
 
@@ -256,25 +255,30 @@ impl BackendRunner for OrbitalBackendRunner {
         self.world = Some(world);
     }
     fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>) {
-        const FRAMES_PER_SECOND: u64 = 60;
-        let duration_limit = time::Duration::from_millis(1000 / FRAMES_PER_SECOND);
+        let target_fps = 60.0;
+        let target_fps_nanos = (1. / target_fps as f32) * 1_000_000_000.;
+        let mut last_tick_time = time::Instant::now();
+
         loop {
             let sys_time = time::SystemTime::now();
             if !running.get() {
                 break;
             }
 
-            if let Some(world) = &mut self.world {
-                world.run();
-            }
+            let time = last_tick_time.elapsed();
+            let total_nanos = time.as_secs() * 1_000_000_000 + time.subsec_nanos() as u64;
+            let elapsed = target_fps_nanos - (total_nanos as f32);
 
-            update.set(false);
+            if elapsed <= 0. {
+                if let Some(world) = &mut self.world {
+                    world.run();
+                }
+
+                last_tick_time = time::Instant::now();
+                update.set(false);
+            }
 
             self.backend.borrow_mut().drain_events();
-            let duration_since = sys_time.duration_since(sys_time).unwrap();
-            if duration_limit > duration_since {
-                thread::sleep(duration_limit - duration_since);
-            }
         }
     }
 }
