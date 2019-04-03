@@ -273,7 +273,6 @@ impl BackendRunner for OrbitalBackendRunner {
             self.backend.borrow_mut().drain_events();
             let duration_since = sys_time.duration_since(sys_time).unwrap();
             if duration_limit > duration_since {
-                println!("{:?}", duration_limit - duration_since);
                 thread::sleep(duration_limit - duration_since);
             }
         }
