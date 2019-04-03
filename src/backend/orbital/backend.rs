@@ -1,7 +1,6 @@
 use std::cell::{Cell, RefCell};
 use std::collections::BTreeMap;
 use std::rc::Rc;
-use std::time;
 
 use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
 
@@ -255,28 +254,16 @@ impl BackendRunner for OrbitalBackendRunner {
         self.world = Some(world);
     }
     fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>) {
-        let target_fps = 60.0;
-        let target_fps_nanos = (1. / target_fps as f32) * 1_000_000_000.;
-        let mut last_tick_time = time::Instant::now();
-
         loop {
-            let sys_time = time::SystemTime::now();
             if !running.get() {
                 break;
             }
 
-            let time = last_tick_time.elapsed();
-            let total_nanos = time.as_secs() * 1_000_000_000 + time.subsec_nanos() as u64;
-            let elapsed = target_fps_nanos - (total_nanos as f32);
-
-            if elapsed <= 0. {
-                if let Some(world) = &mut self.world {
-                    world.run();
-                }
-
-                last_tick_time = time::Instant::now();
-                update.set(false);
+            if let Some(world) = &mut self.world {
+                world.run();
             }
+
+            update.set(false);
 
             self.backend.borrow_mut().drain_events();
         }
