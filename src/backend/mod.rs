@@ -85,8 +85,6 @@ pub trait Renderer {
 /// This trait is used to define a backend for OrbTk.
 pub trait Backend {
     fn drain_events(&mut self);
-    fn bounds(&mut self, bounds: &Bounds);
-    fn size(&self) -> (u32, u32);
     fn init_context(&mut self) -> InitContext<'_>;
     fn render_context(&mut self) -> RenderContext<'_>;
     fn layout_context(&mut self) -> LayoutContext<'_>;

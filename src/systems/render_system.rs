@@ -11,7 +11,7 @@ use crate::{
     backend::Backend,
     properties::*,
     render_object::RenderObject,
-    structs::{Point, Position},
+    structs::{Point, Position, Brush, Size},
     widgets::Context,
 };
 
@@ -85,26 +85,20 @@ impl System<Tree> for RenderSystem {
             }
 
             // render debug border for each widget
-            // if self.debug_flag.get() {
-            //     if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
-            //         if let Some(parent) = tree.parent[&node] {
-            //             if let Ok(parent_bounds) = ecm.borrow_component::<Bounds>(parent) {
-            //                 let selector = Selector::from("debugborder");
+            if self.debug_flag.get() {
+                if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
+                    let selector = Selector::from("debug-border");
 
-            //                 render_context.renderer.render_rectangle(
-            //                     bounds,
-            //                     parent_bounds,
-            //                     &global_position,
-            //                     render_context.theme.uint("border-radius", &selector),
-            //                     render_context.theme.brush("background", &selector).into(),
-            //                     render_context.theme.uint("border-width", &selector),
-            //                     render_context.theme.brush("border-color", &selector).into(),
-            //                     render_context.theme.float("opcaity", &selector),
-            //                 );
-            //             }
-            //         }
-            //     }
-            // }
+                    let brush = render_context.theme.brush("border-color", &selector).unwrap();
+
+                    match brush {
+                        Brush::SolidColor(color) => render_context.canvas.set_stroke_style(color),
+                        _ => {} // todo: gradient
+                    }
+
+                    render_context.canvas.stroke_rect(global_position.x + bounds.x(), global_position.y + bounds.y(), bounds.width(), bounds.height());
+                }
+            }
 
             let mut global_pos = (0.0, 0.0);
 
