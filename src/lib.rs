@@ -24,6 +24,7 @@ pub use crate::theme::*;
 pub use crate::widgets::*;
 
 pub use dces::prelude::*;
+pub use orbtk_structs::prelude as structs;
 
 pub mod application;
 pub mod backend;
@@ -32,7 +33,6 @@ pub mod event;
 pub mod layout;
 pub mod properties;
 pub mod render_object;
-pub mod structs;
 pub mod styling;
 pub mod systems;
 pub mod theme;

@@ -31,6 +31,7 @@ orbimage = "0.1.17"
 orbclient = "0.3.21"
 
 [dependencies]
+orbtk-structs = { version = "0.1.0", path = "crates/structs" }
 cssparser = "0.17.0"
 lazy_static = "1.3.0"
 # dces = { path = "../dces-rust"}

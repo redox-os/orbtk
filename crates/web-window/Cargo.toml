@@ -10,4 +10,5 @@ edition = "2018"
 
 [dependencies]
 stdweb = "0.4.15"
+orbtk-structs = { version = "0.1.0", path = "../structs" }
 

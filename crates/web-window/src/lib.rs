@@ -10,6 +10,8 @@ use stdweb::{
     },
 };
 
+use orbtk_structs::{Position, Size};
+
 /// Used to initializes the web engine.
 ///
 /// This method must be called first!
@@ -72,3 +74,43 @@ pub struct WebWindow {
     canvas: CanvasElement,
     size: (f64, f64),
 }
+
+impl WebWindow {
+    /// Creates a new `WebWindowBuilder` with default values.
+    pub fn create() -> WebWindowBuilder {
+        WebWindowBuilder::new()
+    }
+
+    /// Gets the inner canvas.
+    pub fn canvas(&self) -> CanvasElement {
+        self.canvas.clone()
+    }
+}
+
+impl Size for WebWindow {
+    fn width(&self) -> f64 {
+       self.canvas.width() as f64
+    }
+
+    fn set_width(&mut self, width: f64) {
+       self.canvas.set_width(width as u32);
+    }
+
+    fn height(&self) -> f64 {
+        self.canvas.height() as f64
+    }
+
+    fn set_height(&mut self, height: f64) {
+        self.canvas.set_height(height as u32)
+    }
+
+    fn size(&self) -> (f64, f64) {
+        (self.canvas.width() as f64, self.canvas.height() as f64)
+    }
+
+    fn set_size(&mut self, width: f64, height: f64) {
+        self.set_width(width);
+        self.set_height(height);
+    }
+}
+

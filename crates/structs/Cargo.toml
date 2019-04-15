@@ -1,0 +1,12 @@
+[package]
+name = "orbtk-structs"
+version = "0.1.0"
+authors = ["Florian Blasius <flovanpt@posteo.de>"]
+description = "Helper structs and traits for OrbTk."
+repository = "https://gitlab.redox-os.org/redox-os/orbtk"
+license = "MIT"
+keywords = ["helpers", "structs", "traits", "ui"]
+edition = "2018"
+
+[dependencies]
+orbgl_api = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git" }

@@ -463,13 +463,22 @@ dependencies = [
  "orbgl 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
  "orbgl_api 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
  "orbimage 0.1.17 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-structs 0.1.0",
  "orbtk-web-window 0.1.0",
+]
+
+[[package]]
+name = "orbtk-structs"
+version = "0.1.0"
+dependencies = [
+ "orbgl_api 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
 ]
 
 [[package]]
 name = "orbtk-web-window"
 version = "0.1.0"
 dependencies = [
+ "orbtk-structs 0.1.0",
  "stdweb 0.4.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
