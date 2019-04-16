@@ -41,7 +41,7 @@ property!(
 // --- Trait implementations ---
 
 /// Provides additional methods for image objects.
-pub trait ImageExtension {
+pub trait ImageExt {
     /// Gets the width.
     fn width(&self) -> u32;
 
@@ -52,7 +52,7 @@ pub trait ImageExtension {
     fn data(&self) -> &[Color];
 }
 
-impl ImageExtension for InnerImage {
+impl ImageExt for InnerImage {
     fn width(&self) -> u32 {
         self.0.width()
     }
@@ -66,7 +66,7 @@ impl ImageExtension for InnerImage {
     }
 }
 
-impl ImageExtension for Image {
+impl ImageExt for Image {
     fn width(&self) -> u32 {
         self.0.width()
     }

@@ -20,5 +20,6 @@ pub use crate::{
     theme::*,
     widgets::*,
     widget,
-    property
+    property,
+    css_engine::Selector as SelectorValue
 };

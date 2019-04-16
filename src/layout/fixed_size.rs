@@ -11,7 +11,7 @@ use crate::{
     backend::{FontMeasure, FONT_MEASURE},
     properties::{
         Bounds, Constraint, Font, FontIcon, FontSize, HorizontalAlignment, IconFont, IconSize,
-        Image, Text, VerticalAlignment, Visibility, VisibilityValue, WaterMark, ImageExtension, ConstraintExtension,
+        Image, Text, VerticalAlignment, Visibility, VisibilityValue, WaterMark, ImageExt, ConstraintExt,
     },
     enums::Alignment,
     structs::{DirtySize, Size},

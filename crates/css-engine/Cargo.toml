@@ -1,14 +1,13 @@
 [package]
-name = "orbtk-web-window"
+name = "orbtk-css-engine"
 version = "0.1.0"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
-description = "OrbTk window library for wasm."
+description = "CSS engine used to theme OrbTk."
 repository = "https://gitlab.redox-os.org/redox-os/orbtk"
 license = "MIT"
-keywords = ["windowing", "wasm"]
+keywords = ["css", "theme", "styling", "ui"]
 edition = "2018"
 
 [dependencies]
-stdweb = "0.4.16"
 orbtk-structs = { version = "0.1.0", path = "../structs" }
-
+cssparser = "0.17.0"

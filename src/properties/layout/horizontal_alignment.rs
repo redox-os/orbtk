@@ -10,7 +10,7 @@ property!(
 // --- Trait implementations ---
 
 /// Used to align the position of a widget vertical.
-pub trait HorizontalAlignmentExtension {
+pub trait HorizontalAlignmentExt {
     /// Calculates the x position of the widget depending on the available width, the goal width
     /// margin and Horizontal alignment.
     fn align_x(&self, available_height: f64, height: f64, margin: Margin) -> f64;
@@ -20,7 +20,7 @@ pub trait HorizontalAlignmentExtension {
     fn align_width(&self, available_height: f64, height: f64, margin: Margin) -> f64;
 }
 
-impl HorizontalAlignmentExtension for HorizontalAlignment {
+impl HorizontalAlignmentExt for HorizontalAlignment {
     fn align_x(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
         self.0
             .align_position(available_height, height, margin.left(), margin.right())

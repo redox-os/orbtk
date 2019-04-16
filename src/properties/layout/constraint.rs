@@ -124,7 +124,7 @@ property!(
 // --- Trait implementations ---
 
 /// Provides operations on a box constraint.
-pub trait ConstraintExtension {
+pub trait ConstraintExt {
     /// Returns a constraint builder.
     fn create() -> ConstraintBuilder;
 
@@ -186,7 +186,7 @@ pub trait ConstraintExtension {
     fn perform(&self, size: (f64, f64)) -> (f64, f64);
 }
 
-impl ConstraintExtension for BoxConstraint {
+impl ConstraintExt for BoxConstraint {
     fn create() -> ConstraintBuilder {
         ConstraintBuilder::new()
     }
@@ -285,7 +285,7 @@ impl ConstraintExtension for BoxConstraint {
     }
 }
 
-impl ConstraintExtension for Constraint {
+impl ConstraintExt for Constraint {
     fn create() -> ConstraintBuilder {
         ConstraintBuilder::new()
     }

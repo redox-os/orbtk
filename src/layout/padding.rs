@@ -9,7 +9,7 @@ use dces::prelude::{Entity, EntityComponentManager};
 use crate::{
     application::Tree,
     properties::{
-        Bounds, Constraint, HorizontalAlignment, Margin, Padding, VerticalAlignment, Visibility, VisibilityValue, ConstraintExtension,
+        Bounds, Constraint, HorizontalAlignment, Margin, Padding, VerticalAlignment, Visibility, VisibilityValue, ConstraintExt,
     },
     enums::Alignment,
     structs::{DirtySize, Position, Size, Spacer},

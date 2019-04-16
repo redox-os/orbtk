@@ -9,6 +9,12 @@ property!(
 
 // --- Conversions ---
 
+impl From<OrbFont> for IconFont {
+    fn from(s: OrbFont) -> IconFont {
+        IconFont::from(InnerFont::from(s))
+    }
+}
+
 impl From<&str> for IconFont {
     fn from(s: &str) -> IconFont {
         IconFont::from(InnerFont::from(OrbFont::from_path(s).unwrap()))

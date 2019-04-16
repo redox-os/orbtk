@@ -8,7 +8,7 @@ property!(
 // --- Trait implementations ---
 
 /// Contains different methods to check the bounds.
-pub trait BoundsExtension {
+pub trait BoundsExt {
     /// Check if this rect contains the given `point`.
     fn contains(&self, point: (f64, f64)) -> bool;
 
@@ -19,7 +19,7 @@ pub trait BoundsExtension {
     fn intersects(&self, rect: &Bounds) -> bool;
 }
 
-impl BoundsExtension for Bounds {
+impl BoundsExt for Bounds {
     fn contains(&self, point: (f64, f64)) -> bool {
         point.0 >= self.0.x
             && point.0 < self.0.x + self.0.width

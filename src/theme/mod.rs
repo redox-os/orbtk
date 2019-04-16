@@ -14,6 +14,7 @@ use crate::{
         fonts,
         theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS},
     },
+    css_engine::{Selector as SelectorValue, Specificity, SelectorRelation},
     widgets::WidgetContainer,
 };
 

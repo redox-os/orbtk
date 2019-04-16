@@ -38,10 +38,18 @@ impl From<Box<[u8]>> for InnerFont {
     }
 }
 
-property!(/// `Font` describes the text font of a widget.
-Font(InnerFont));
+property!(
+    /// `Font` describes the text font of a widget.
+    Font(InnerFont)
+);
 
 // --- Conversions ---
+
+impl From<OrbFont> for Font {
+    fn from(s: OrbFont) -> Font {
+        Font::from(InnerFont::from(s))
+    }
+}
 
 impl From<&str> for Font {
     fn from(s: &str) -> Font {
