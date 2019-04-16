@@ -17,9 +17,8 @@ pub use crate::{
     render_object::*,
     structs::*,
     styling::*,
-    theme::*,
     widgets::*,
     widget,
     property,
-    css_engine::Selector as SelectorValue
+    css_engine::{Selector as SelectorValue, Theme, ThemeBuilder, SelectorRelation}
 };

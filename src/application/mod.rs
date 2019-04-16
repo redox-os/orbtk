@@ -1,6 +1,6 @@
 //! This module contains the base elements of an OrbTk application (Application, WindowBuilder and Window).
 
-use crate::{Bounds, Theme};
+use crate::prelude::*;
 
 pub use self::global::*;
 pub use self::tree::*;
@@ -28,7 +28,7 @@ impl Application {
             application: self,
             bounds: Bounds::default(),
             title: String::from(""),
-            theme: Theme::default(),
+            theme: default_theme(),
             resizable: false,
             debug_flag: false,
         }

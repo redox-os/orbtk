@@ -6,14 +6,8 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{
-    application::Tree,
-    backend::Backend,
-    properties::*,
-    render_object::RenderObject,
-    structs::{Point, Position, Brush, Size},
-    widgets::Context,
-};
+use crate::prelude::*;
+use crate::backend::*;
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {
@@ -39,7 +33,8 @@ impl System<Tree> for RenderSystem {
         offsets.insert(tree.root, (0.0, 0.0));
 
         // render window background
-        if let Some(background) = render_context.theme.brush("background", &"window".into()) {
+        let selector = SelectorValue::new().with("window");
+        if let Some(background) = render_context.theme.brush("background", &selector) {
             render_context.renderer.render(background.into())
         }
 
@@ -89,7 +84,7 @@ impl System<Tree> for RenderSystem {
                 if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
                     let selector = Selector::from("debug-border");
 
-                    let brush = render_context.theme.brush("border-color", &selector).unwrap();
+                    let brush = render_context.theme.brush("border-color", &selector.0).unwrap();
 
                     match brush {
                         Brush::SolidColor(color) => render_context.canvas.set_stroke_style(color),

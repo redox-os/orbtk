@@ -8,10 +8,8 @@ use orbclient::{Window as OrbWindow, WindowFlag};
 use orbfont::Font;
 
 use self::backend::{OrbitalBackend, OrbitalBackendRunner};
-use crate::backend::{Backend, FontMeasure};
-use crate::properties::Bounds;
-use crate::structs::{Position, Size};
-use crate::theme::Theme;
+use crate::prelude::*;
+use crate::backend::*;
 
 mod backend;
 mod renderer;

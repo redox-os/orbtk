@@ -13,10 +13,7 @@ use orbclient::Color;
 use orbfont::Font;
 use orbgl_api::prelude::Canvas;
 
-use crate::{
-    application::Tree, event::EventQueue, properties::Bounds, structs::Point, theme::Theme,
-    widgets::MessageBox,
-};
+use crate::prelude::*;
 
 /// Provides the context for the `InitSystem`.
 pub struct InitContext<'a> {

@@ -133,9 +133,9 @@ fn main() {
     application
         .create_window()
         .bounds((100.0, 100.0, 420.0, 730.0))
-        .title("OrbTk -- light theme example")
-        .debug_flag(true)
-        .theme(Theme::default_light())
+        .title("OrbTk - light theme example")
+        .debug_flag(false)
+        .theme(light_theme())
         .build(MainView::create());
     application.run();
 }
