@@ -103,5 +103,10 @@ pub trait FontMeasure {
 pub use self::target::target_backend;
 pub use self::target::FONT_MEASURE;
 
+#[cfg(target_arch = "wasm32")]
+#[path = "web/mod.rs"]
+mod target;
+
+#[cfg(not(target_arch = "wasm32"))]
 #[path = "orbital/mod.rs"]
 mod target;

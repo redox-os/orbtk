@@ -8,7 +8,6 @@ use dces::prelude::{Entity, World};
 use orbgl::prelude::{CairoRenderEngine, FramebufferSurface};
 use orbgl_api::Canvas;
 
-use crate::prelude::*;
 use crate::backend::*;
 
 /// Implementation of the OrbClient based backend.
@@ -197,6 +196,7 @@ impl BackendRunner for OrbitalBackendRunner {
     fn world(&mut self, world: World<Tree>) {
         self.world = Some(world);
     }
+    
     fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>) {
         loop {
             if !running.get() {
