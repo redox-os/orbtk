@@ -1,3 +1,7 @@
+use std::{
+    rc::Rc,
+    cell::RefCell,
+};
 
 use stdweb::{
     self, _js_impl, js,
@@ -11,6 +15,7 @@ use stdweb::{
 };
 
 use orbtk_structs::{Position, Size};
+pub use events::*;
 
 /// Used to initializes the web engine.
 ///
@@ -57,12 +62,35 @@ impl WebWindowBuilder {
         canvas.set_width(self.size.0 as u32);
         canvas.set_height(self.size.1 as u32);
 
+        let events = Rc::new(RefCell::new(vec![]));
+
+        let events_c = events.clone();
+        window().add_event_listener(move |e: event::MouseDownEvent| {
+            events_c.borrow_mut().push(Event::Mouse(Mouse::Down(e)));
+        });
+
+        let events_c = events.clone();
+        window().add_event_listener(move |e: event::MouseUpEvent| {
+            events_c.borrow_mut().push(Event::Mouse(Mouse::Up(e)));
+        });
+
+        let events_c = events.clone();
+        window().add_event_listener(move |e: event::KeyUpEvent| {
+            events_c.borrow_mut().push(Event::Key(Key::Up(e)));
+        });
+
+        let events_c = events.clone();
+        window().add_event_listener(move |e: event::KeyDownEvent| {
+            events_c.borrow_mut().push(Event::Key(Key::Down(e)));
+        });
+
         stdweb::event_loop();
 
         WebWindow {
             title: self.title,
             size: self.size,
             canvas,
+            events,
         }
     }
 }
@@ -73,6 +101,7 @@ pub struct WebWindow {
     title: String,
     canvas: CanvasElement,
     size: (f64, f64),
+    events: Rc<RefCell<Vec<Event>>>,
 }
 
 impl WebWindow {
@@ -89,11 +118,11 @@ impl WebWindow {
 
 impl Size for WebWindow {
     fn width(&self) -> f64 {
-       self.canvas.width() as f64
+        self.canvas.width() as f64
     }
 
     fn set_width(&mut self, width: f64) {
-       self.canvas.set_width(width as u32);
+        self.canvas.set_width(width as u32);
     }
 
     fn height(&self) -> f64 {
@@ -114,4 +143,6 @@ impl Size for WebWindow {
     }
 }
 
+
+mod events;
 pub mod prelude;
