@@ -171,7 +171,7 @@ property!(
 // --- Trait implementations ---
 
 /// Provides additional operations on grid columns.
-pub trait ColumnExtension {
+pub trait ColumnExt {
     fn create() -> ColumnsBuilder;
 
     /// Returns the number of elements in the columns list, also referred to as its 'length'.
@@ -190,7 +190,7 @@ pub trait ColumnExtension {
     fn iter_mut(&mut self) -> IterMut<Column>;
 }
 
-impl ColumnExtension for Columns {
+impl ColumnExt for Columns {
     /// Creates a new `ColumnsBuilder` object with default values.
     fn create() -> ColumnsBuilder {
         ColumnsBuilder::new()

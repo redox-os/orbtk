@@ -6,21 +6,9 @@ use std::{
 
 use dces::prelude::{Entity, World};
 
-use crate::{
-    application::{Application, Tree},
-    backend::{target_backend, BackendRunner},
-    event::EventHandler,
-    layout::Layout,
-    properties::*,
-    render_object::RenderObject,
-    structs::{Size, Rect, Point},
-    systems::{
-        EventSystem, InitSystem, LayoutSystem, PostLayoutStateSystem, RenderSystem, StateSystem,
-    },
-    theme::Theme,
-    widgets::{State, BuildContext, Widget},
-    Global,
-};
+use crate::prelude::*;
+use crate::backend::*;
+use crate::systems::*;
 
 /// Represents a window. Each window has its own tree, event pipeline and backend.
 pub struct Window {

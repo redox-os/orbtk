@@ -13,10 +13,7 @@ use orbclient::Color;
 use orbfont::Font;
 use orbgl_api::prelude::Canvas;
 
-use crate::{
-    application::Tree, event::EventQueue, properties::Bounds, structs::Point, theme::Theme,
-    widgets::MessageBox,
-};
+use crate::prelude::*;
 
 /// Provides the context for the `InitSystem`.
 pub struct InitContext<'a> {
@@ -85,8 +82,6 @@ pub trait Renderer {
 /// This trait is used to define a backend for OrbTk.
 pub trait Backend {
     fn drain_events(&mut self);
-    fn bounds(&mut self, bounds: &Bounds);
-    fn size(&self) -> (u32, u32);
     fn init_context(&mut self) -> InitContext<'_>;
     fn render_context(&mut self) -> RenderContext<'_>;
     fn layout_context(&mut self) -> LayoutContext<'_>;
@@ -108,5 +103,10 @@ pub trait FontMeasure {
 pub use self::target::target_backend;
 pub use self::target::FONT_MEASURE;
 
+#[cfg(target_arch = "wasm32")]
+#[path = "web/mod.rs"]
+mod target;
+
+#[cfg(not(target_arch = "wasm32"))]
 #[path = "orbital/mod.rs"]
 mod target;

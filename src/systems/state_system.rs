@@ -122,7 +122,7 @@ impl System<Tree> for StateSystem {
                 }
             }
 
-            context.theme.update_widget_theme(&mut context.widget());
+            context.update_theme_properties();
         }
     }
 }

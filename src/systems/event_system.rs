@@ -14,7 +14,7 @@ use crate::{
         check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
         MouseUpEvent, SystemEvent, WindowEvent,
     },
-    properties::{Bounds, Constraint, Enabled, Focused, Pressed, Selected, ConstraintExtension},
+    properties::{Bounds, Constraint, Enabled, Focused, Pressed, Selected, ConstraintExt},
     structs::Size,
     widgets::WidgetContainer,
     Global,

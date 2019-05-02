@@ -1,0 +1,13 @@
+[package]
+name = "orbtk-css-engine"
+version = "0.1.0"
+authors = ["Florian Blasius <flovanpt@posteo.de>"]
+description = "CSS engine used to theme OrbTk."
+repository = "https://gitlab.redox-os.org/redox-os/orbtk"
+license = "MIT"
+keywords = ["css", "theme", "styling", "ui"]
+edition = "2018"
+
+[dependencies]
+orbtk-structs = { version = "0.1.0", path = "../structs" }
+cssparser = "0.17.0"

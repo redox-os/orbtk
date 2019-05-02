@@ -1,18 +1,4 @@
-pub use orbclient::Color;
-
-pub use self::border::*;
-pub use self::brush::*;
-pub use self::dirty_size::DirtySize;
-pub use self::point::Point;
-pub use self::rect::*;
-pub use self::thickness::Thickness;
-
-mod border;
-mod brush;
-mod dirty_size;
-mod point;
-mod rect;
-mod thickness;
+use crate::Thickness;
 
 // todo:  documentation
 pub trait Spacer {
@@ -47,5 +33,4 @@ pub trait Spacer {
     fn set_thickness<T: Into<Thickness>>(&mut self, thickness: T);
 }
 
-#[cfg(test)]
-mod tests;
+

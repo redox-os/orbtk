@@ -20,10 +20,12 @@ pub use crate::structs::*;
 pub use crate::styling::theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS};
 pub use crate::styling::vector_graphics::*;
 pub use crate::systems::*;
-pub use crate::theme::*;
 pub use crate::widgets::*;
 
 pub use dces::prelude::*;
+pub use orbtk_css_engine::prelude as css_engine;
+pub use orbtk_structs::prelude as structs;
+
 
 pub mod application;
 pub mod backend;
@@ -32,9 +34,7 @@ pub mod event;
 pub mod layout;
 pub mod properties;
 pub mod render_object;
-pub mod structs;
 pub mod styling;
 pub mod systems;
-pub mod theme;
 pub mod widgets;
 pub mod prelude;

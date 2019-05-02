@@ -170,7 +170,7 @@ property!(
 // --- Trait implementations ---
 
 /// Provides additional operations on grid rows.
-pub trait RowExtension {
+pub trait RowExt {
     /// Returns a new Rows Builder.
     fn create() -> RowsBuilder;
 
@@ -190,7 +190,7 @@ pub trait RowExtension {
     fn iter_mut(&mut self) -> IterMut<Row>;
 }
 
-impl RowExtension for Rows {
+impl RowExt for Rows {
     /// Creates a new `RowsBuilder` object with default values.
     fn create() -> RowsBuilder {
         RowsBuilder::new()

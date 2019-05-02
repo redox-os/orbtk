@@ -7,29 +7,9 @@ use cssparser::{
     Token,
 };
 
-use crate::{
-    properties::*,
-    structs::{Brush, Spacer},
-    styling::{
-        fonts,
-        theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS},
-    },
-    widgets::WidgetContainer,
-};
+use orbtk_structs::prelude::*;
 
-lazy_static! {
-    static ref DEFAULT_THEME: Arc<Theme> = {
-        Arc::new(Theme {
-            parent: None,
-            rules: parse(DEFAULT_THEME_CSS),
-        })
-    };
-}
-
-lazy_static! {
-    pub static ref LIGHT_THEME_CSS: String =
-        format!("{}{}", LIGHT_THEME_EXTENSION_CSS, DEFAULT_THEME_CSS);
-}
+use crate::prelude::*;
 
 /// Used to build a theme, specifying additional details.
 pub struct ThemeBuilder {
@@ -106,36 +86,13 @@ pub struct Theme {
     rules: Vec<Rule>,
 }
 
-impl Default for Theme {
-    fn default() -> Theme {
-        Theme::parse(DEFAULT_THEME_CSS)
-    }
-}
 
 impl Theme {
-    /// Returns the default light theme.
-    pub fn default_light() -> Theme {
-        Theme::parse(&format!(
-            "{}{}",
-            LIGHT_THEME_EXTENSION_CSS, DEFAULT_THEME_CSS
-        ))
-    }
 
     /// Creates a new `ThemeBuilder` object with default theme as base.
     pub fn create() -> ThemeBuilder {
         ThemeBuilder {
-            theme_css: Some(DEFAULT_THEME_CSS.to_string()),
-            ..Default::default()
-        }
-    }
-
-    /// Creates a new `ThemeBuilder` object with light theme as base.
-    pub fn create_light_theme() -> ThemeBuilder {
-        ThemeBuilder {
-            theme_css: Some(format!(
-                "{}{}",
-                LIGHT_THEME_EXTENSION_CSS, DEFAULT_THEME_CSS
-            )),
+            theme_css: None,
             ..Default::default()
         }
     }
@@ -158,7 +115,7 @@ impl Theme {
 
     fn parse(s: &str) -> Self {
         Theme {
-            parent: Some(DEFAULT_THEME.clone()),
+            parent: None,
             rules: parse(s),
         }
     }
@@ -195,7 +152,7 @@ impl Theme {
             let matching_selectors = rule
                 .selectors
                 .iter()
-                .filter(|x| x.0.matches(&query.0))
+                .filter(|x| x.matches(&query))
                 .collect::<Vec<_>>();
 
             if !matching_selectors.is_empty() {
@@ -206,7 +163,7 @@ impl Theme {
                 {
                     let highest_specifity = matching_selectors
                         .iter()
-                        .map(|sel| sel.0.specificity())
+                        .map(|sel| sel.specificity())
                         .max()
                         .unwrap();
                     matches.push((decl.important, highest_specifity, decl.value.clone()));
@@ -232,117 +189,6 @@ impl Theme {
 
     pub fn string(&self, property: &str, query: &Selector) -> Option<String> {
         self.get(property, query).and_then(|v| v.string())
-    }
-
-    /// Updates the given widget by theme and selector.
-    pub fn update_widget_theme(&self, widget: &mut WidgetContainer) {
-        if !widget.has::<Selector>() {
-            return;
-        }
-
-        let selector = widget.clone::<Selector>();
-
-        if !selector.0.dirty() {
-            return;
-        }
-
-        if let Some(foreground) = widget.try_get_mut::<Foreground>() {
-            if let Some(color) = self.brush("color", &selector) {
-                foreground.0 = color;
-            }
-        }
-
-        if let Some(background) = widget.try_get_mut::<Background>() {
-            if let Some(bg) = self.brush("background", &selector) {
-                background.0 = bg;
-            }
-        }
-
-        if let Some(border_brush) = widget.try_get_mut::<BorderBrush>() {
-            if let Some(border_color) = self.brush("border-color", &selector) {
-                border_brush.0 = border_color;
-            }
-        }
-
-        if let Some(border_radius) = widget.try_get_mut::<BorderRadius>() {
-            if let Some(radius) = self.float("border-radius", &selector) {
-                border_radius.0 = radius as f64;
-            }
-        }
-
-        if let Some(border_thickness) = widget.try_get_mut::<BorderThickness>() {
-            if let Some(border_width) = self.uint("border-width", &selector) {
-                *border_thickness = BorderThickness::from(border_width as f64);
-            }
-        }
-
-        if let Some(font_size) = widget.try_get_mut::<FontSize>() {
-            if let Some(size) = self.uint("font-size", &selector) {
-                font_size.0 = size as f64;
-            }
-        }
-
-        if let Some(font) = widget.try_get_mut::<Font>() {
-            if let Some(font_family) = self.string("font-family", &selector) {
-                if let Some(inner_font) = fonts::font_by_key(&font_family[..]) {
-                    (font.0).0 = inner_font;
-                }
-            }
-        }
-
-        if let Some(icon_brush) = widget.try_get_mut::<IconBrush>() {
-            if let Some(color) = self.brush("icon-color", &selector) {
-                icon_brush.0 = color;
-            }
-        }
-
-        if let Some(icon_size) = widget.try_get_mut::<IconSize>() {
-            if let Some(size) = self.uint("icon-size", &selector) {
-                icon_size.0 = size as f64;
-            }
-        }
-
-        if let Some(icon_font) = widget.try_get_mut::<IconFont>() {
-            if let Some(font_family) = self.string("icon-family", &selector) {
-                if let Some(inner_font) = fonts::font_by_key(&font_family[..]) {
-                    (icon_font.0).0 = inner_font;
-                }
-            }
-        }
-
-        if let Some(padding) = widget.try_get_mut::<Padding>() {
-            if let Some(pad) = self.uint("padding", &selector) {
-                padding.set_thickness(pad as f64);
-            }
-        }
-
-        if let Some(padding) = widget.try_get_mut::<Padding>() {
-            if let Some(left) = self.uint("padding-left", &selector) {
-                padding.set_left(left as f64);
-            }
-        }
-
-        if let Some(padding) = widget.try_get_mut::<Padding>() {
-            if let Some(top) = self.uint("padding-top", &selector) {
-                padding.set_top(top as f64);
-            }
-        }
-
-        if let Some(padding) = widget.try_get_mut::<Padding>() {
-            if let Some(right) = self.uint("padding-right", &selector) {
-                padding.set_right(right as f64);
-            }
-        }
-
-        if let Some(padding) = widget.try_get_mut::<Padding>() {
-            if let Some(bottom) = self.uint("padding-bottom", &selector) {
-                padding.set_bottom(bottom as f64);
-            }
-        }
-
-        // todo padding, icon_margin
-
-        widget.get_mut::<Selector>().0.set_dirty(true);
     }
 }
 
@@ -473,7 +319,7 @@ fn parse_selectors<'i, 't>(
 ) -> Result<Vec<Selector>, ParseError<'i, CustomParseError>> {
     let mut selectors = Vec::new();
 
-    let mut selector = SelectorValue::default();
+    let mut selector = Selector::default();
 
     let mut first_token_in_selector = true;
     while let Ok(t) = input.next() {
@@ -483,14 +329,14 @@ fn parse_selectors<'i, 't>(
                 if first_token_in_selector {
                     selector.element = Some(element_name.to_string())
                 } else {
-                    let mut old_selector = SelectorValue::new().with(element_name.to_string());
+                    let mut old_selector = Selector::new().with(element_name.to_string());
                     mem::swap(&mut old_selector, &mut selector);
                     selector.relation = Some(Box::new(SelectorRelation::Ancestor(old_selector)));
                 }
             }
 
             Token::Delim('>') => {
-                let mut old_selector = SelectorValue::new().with(input.expect_ident()?.to_string());
+                let mut old_selector = Selector::new().with(input.expect_ident()?.to_string());
                 mem::swap(&mut old_selector, &mut selector);
                 selector.relation = Some(Box::new(SelectorRelation::Parent(old_selector)));
             }
@@ -518,7 +364,7 @@ fn parse_selectors<'i, 't>(
             // This selector is done, on to the next one
             Token::Comma => {
                 selectors.push(Selector::from(selector));
-                selector = SelectorValue::default();
+                selector = Selector::default();
                 first_token_in_selector = true;
                 continue; // need to continue to avoid `first_token_in_selector` being set to false
             }
@@ -534,7 +380,7 @@ fn parse_selectors<'i, 't>(
 
     selectors.push(Selector::from(selector));
 
-    if selectors.iter().any(|sel| sel.0.relation.is_some()) {
+    if selectors.iter().any(|sel| sel.relation.is_some()) {
         eprintln!("WARNING: Complex selector relations not implemented");
     }
 

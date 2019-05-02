@@ -6,18 +6,8 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager};
 
-use crate::{
-    application::Tree,
-    backend::{FontMeasure, FONT_MEASURE},
-    properties::{
-        Bounds, Constraint, Font, FontIcon, FontSize, HorizontalAlignment, IconFont, IconSize,
-        Image, Text, VerticalAlignment, Visibility, VisibilityValue, WaterMark, ImageExtension, ConstraintExtension,
-    },
-    enums::Alignment,
-    structs::{DirtySize, Size},
-    theme::Theme,
-    widgets::WidgetContainer,
-};
+use crate::prelude::*;
+use crate::backend::{FontMeasure, FONT_MEASURE};
 
 use super::Layout;
 

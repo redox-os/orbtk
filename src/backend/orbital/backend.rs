@@ -2,24 +2,13 @@ use std::cell::{Cell, RefCell};
 use std::collections::BTreeMap;
 use std::rc::Rc;
 
-use orbclient::{self, Color, Mode, Renderer as OrbRenderer, Window as OrbWindow};
+use orbclient::{self, Renderer as OrbRenderer, Window as OrbWindow};
 
 use dces::prelude::{Entity, World};
 use orbgl::prelude::{CairoRenderEngine, FramebufferSurface};
 use orbgl_api::Canvas;
 
-use crate::application::Tree;
-use crate::backend::{
-    Backend, BackendRunner, EventContext, InitContext, LayoutContext, RenderContext, StateContext,
-};
-use crate::event::{
-    EventQueue, Key, KeyDownEvent, KeyUpEvent, MouseButton, MouseDownEvent, MouseUpEvent,
-    SystemEvent, WindowEvent,
-};
-use crate::properties::Bounds;
-use crate::structs::{Point, Position, Size};
-use crate::theme::Theme;
-use crate::widgets::MessageBox;
+use crate::backend::*;
 
 /// Implementation of the OrbClient based backend.
 pub struct OrbitalBackend {
@@ -55,42 +44,6 @@ impl OrbitalBackend {
             messages: RefCell::new(BTreeMap::new()),
             canvas,
         }
-    }
-}
-
-impl OrbRenderer for OrbitalBackend {
-    fn width(&self) -> u32 {
-        self.inner.width()
-    }
-
-    fn height(&self) -> u32 {
-        self.inner.height()
-    }
-
-    fn data(&self) -> &[Color] {
-        self.inner.data()
-    }
-
-    fn data_mut(&mut self) -> &mut [Color] {
-        self.inner.data_mut()
-    }
-
-    fn sync(&mut self) -> bool {
-        self.inner.sync()
-    }
-
-    fn mode(&self) -> &Cell<Mode> {
-        &self.inner.mode()
-    }
-
-    fn char(&mut self, x: i32, y: i32, c: char, color: Color) {
-        // if let Some(ref font) = self.font {
-        //     let mut buf = [0; 4];
-        //     font.render(&c.encode_utf8(&mut buf), 16.0)
-        //         .draw(&mut self.inner, x, y, color)
-        // } else {
-        self.inner.char(x, y, c, color);
-        // }
     }
 }
 
@@ -198,16 +151,6 @@ impl Backend for OrbitalBackend {
         }
     }
 
-    fn size(&self) -> (u32, u32) {
-        (self.width(), self.height())
-    }
-
-    fn bounds(&mut self, bounds: &Bounds) {
-        self.inner.set_pos(bounds.x() as i32, bounds.y() as i32);
-        self.inner
-            .set_size(bounds.width() as u32, bounds.height() as u32);
-    }
-
     fn init_context(&mut self) -> InitContext<'_> {
         InitContext { theme: &self.theme }
     }
@@ -223,7 +166,7 @@ impl Backend for OrbitalBackend {
 
     fn layout_context(&mut self) -> LayoutContext<'_> {
         LayoutContext {
-            window_size: self.size(),
+            window_size: (self.inner.width(), self.inner.height()),
             theme: &self.theme,
         }
     }
@@ -253,6 +196,7 @@ impl BackendRunner for OrbitalBackendRunner {
     fn world(&mut self, world: World<Tree>) {
         self.world = Some(world);
     }
+    
     fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>) {
         loop {
             if !running.get() {

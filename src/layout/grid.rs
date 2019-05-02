@@ -6,13 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager};
 
-use crate::{
-    application::Tree,
-    properties::*,
-    structs::{DirtySize, Position, Size, Spacer},
-    enums::Alignment,
-    theme::Theme,
-};
+use crate::prelude::*;
 
 use super::Layout;
 
