@@ -114,6 +114,10 @@ impl WebWindow {
     pub fn canvas(&self) -> CanvasElement {
         self.canvas.clone()
     }
+
+    pub fn events(&self) -> Vec<Event> {
+        self.events.borrow().clone()
+    }
 }
 
 impl Size for WebWindow {
