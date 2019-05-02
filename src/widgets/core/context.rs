@@ -45,6 +45,11 @@ impl<'a> Context<'a> {
     pub fn widget(&mut self) -> WidgetContainer<'_> {
         WidgetContainer::new(self.entity, &mut self.ecm)
     }
+    
+    /// Returns the window widget.
+    pub fn window(&mut self) -> WidgetContainer<'_> {
+        WidgetContainer::new(0, &mut self.ecm)
+    }
 
     /// Returns a child of the widget of the current state referenced by css `id`.
     /// If the no id is defined None will returned.
