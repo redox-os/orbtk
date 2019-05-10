@@ -110,5 +110,7 @@ impl System<Tree> for RenderSystem {
                 g_pos.y = global_pos.1;
             }
         }
+
+        self.update.set(false);
     }
 }

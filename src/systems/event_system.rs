@@ -14,7 +14,7 @@ use crate::{
         check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
         MouseUpEvent, SystemEvent, WindowEvent,
     },
-    properties::{Bounds, Constraint, Enabled, Focused, Pressed, Selected, ConstraintExt},
+    properties::{Bounds, Constraint, ConstraintExt, Enabled, Focused, Pressed, Selected},
     structs::Size,
     widgets::WidgetContainer,
     Global,
@@ -35,7 +35,8 @@ impl EventSystem {
         _tree: &Tree,
         _ecm: &mut EntityComponentManager,
         _new_events: &mut Vec<EventBox>,
-    ) {}
+    ) {
+    }
 
     fn process_bottom_up_event(
         &self,
@@ -200,49 +201,59 @@ impl System<Tree> for EventSystem {
 
         let mut new_events = vec![];
 
-        for event in event_context.event_queue.borrow_mut().into_iter() {
-            if let Ok(event) = event.downcast_ref::<WindowEvent>() {
-                match event {
-                    WindowEvent::Resize { width, height } => {
-                        // update window size
-                        if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(0) {
-                            bounds.set_width(*width);
-                            bounds.set_height(*height);
-                        }
+        loop {
+            for event in event_context.event_queue.borrow_mut().into_iter() {
+                if let Ok(event) = event.downcast_ref::<WindowEvent>() {
+                    match event {
+                        WindowEvent::Resize { width, height } => {
+                            // update window size
+                            if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(0) {
+                                bounds.set_width(*width);
+                                bounds.set_height(*height);
+                            }
 
-                        if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(0) {
-                            constraint.set_width(*width);
-                            constraint.set_height(*height);
-                        }
+                            if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(0) {
+                                constraint.set_width(*width);
+                                constraint.set_height(*height);
+                            }
 
-                        self.update.set(true);
+                            self.update.set(true);
+                        }
                     }
                 }
-            }
 
-            if let Ok(event) = event.downcast_ref::<SystemEvent>() {
-                match event {
-                    SystemEvent::Quit => {
-                        self.running.set(false);
-                        return;
+
+                if let Ok(event) = event.downcast_ref::<SystemEvent>() {
+                    match event {
+                        SystemEvent::Quit => {
+                            self.running.set(false);
+                            return;
+                        }
                     }
                 }
+
+
+                match event.strategy {
+                    EventStrategy::TopDown => {
+                        self.process_top_down_event(&event, tree, ecm, &mut new_events);
+                    }
+                    EventStrategy::BottomUp => {
+                        self.process_bottom_up_event(&event, tree, ecm, &mut new_events);
+                    }
+                    _ => {}
+                }
+
             }
 
-            match event.strategy {
-                EventStrategy::TopDown => {
-                    self.process_top_down_event(&event, tree, ecm, &mut new_events);
-                }
-                EventStrategy::BottomUp => {
-                    self.process_bottom_up_event(&event, tree, ecm, &mut new_events);
-                }
-                _ => {}
+
+            event_context
+                .event_queue
+                .borrow_mut()
+                .append(&mut new_events);
+
+            if event_context.event_queue.borrow().len() == 0 {
+                break;
             }
         }
-
-        event_context
-            .event_queue
-            .borrow_mut()
-            .append(&mut new_events);
     }
 }

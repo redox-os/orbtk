@@ -83,6 +83,10 @@ impl EventQueue {
 
         None
     }
+
+    pub fn len(&self) -> usize {
+        self.event_queue.len()
+    }
 }
 
 impl<'a> IntoIterator for &'a mut EventQueue {
