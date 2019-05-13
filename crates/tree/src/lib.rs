@@ -1,3 +1,5 @@
+pub mod prelude;
+
 use std::{
     cell::{Cell, RefCell},
     collections::BTreeMap,
@@ -5,9 +7,17 @@ use std::{
 
 use dces::prelude::{Entity, EntityContainer};
 
-use crate::enums;
+/// Used as return type if a requested entity is not found on the tree.
+#[derive(Debug, PartialEq, Eq)]
+pub enum NotFound {
+    /// Parent could not be found.
+    Parent(Entity),
 
-/// Base data structure to manage the widget entities of a window in a tree based structure.
+    /// Child could not be found
+    Child(Entity),
+}
+
+/// Base data structure to manage the entity entities of a window in a tree based structure.
 #[derive(Default)]
 pub struct Tree {
     pub root: Entity,
@@ -23,7 +33,7 @@ impl Tree {
         self
     }
 
-    /// Registers a new widget `entity` as node.
+    /// Registers a new entity `entity` as node.
     pub fn register_node(&mut self, entity: Entity) {
         self.children.insert(entity, vec![]);
         self.parent.insert(entity, None);
@@ -35,11 +45,11 @@ impl Tree {
         &mut self,
         parent: Entity,
         child: Entity,
-    ) -> Result<Entity, enums::NotFound> {
+    ) -> Result<Entity, NotFound> {
         if let Some(p) = self.children.get_mut(&parent) {
             p.push(child);
         } else {
-            return Err(enums::NotFound::Parent(parent));
+            return Err(NotFound::Parent(parent));
         }
 
         self.parent.insert(child, Some(parent));

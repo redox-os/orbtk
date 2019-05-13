@@ -10,5 +10,3 @@ impl Point {
         Point { x, y }
     }
 }
-
-// property!(Point, PointProperty, point, shared_point);

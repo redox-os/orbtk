@@ -134,7 +134,7 @@ fn main() {
         .create_window()
         .bounds((100.0, 100.0, 420.0, 730.0))
         .title("OrbTk - widgets example")
-        .debug_flag(true)
+        .debug_flag(false)
         .build(MainView::create());
     application.run();
 }

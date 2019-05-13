@@ -6,9 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{
-    application::Tree, backend::Backend, layout::Layout, properties::Bounds, structs::Size,
-};
+use crate::{backend::Backend, prelude::*};
 
 /// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calulated by the layout objects of layout widgets.
 pub struct LayoutSystem {

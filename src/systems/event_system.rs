@@ -7,18 +7,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{
-    application::Tree,
-    backend::Backend,
-    event::{
-        check_mouse_condition, ClickEvent, EventBox, EventHandler, EventStrategy, MouseDownEvent,
-        MouseUpEvent, SystemEvent, WindowEvent,
-    },
-    properties::{Bounds, Constraint, ConstraintExt, Enabled, Focused, Pressed, Selected},
-    structs::Size,
-    widgets::WidgetContainer,
-    Global,
-};
+use crate::{backend::Backend, prelude::*};
 
 pub struct EventSystem {
     pub backend: Rc<RefCell<dyn Backend>>,

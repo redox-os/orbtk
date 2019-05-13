@@ -1,0 +1,12 @@
+[package]
+name = "orbtk-tree"
+version = "0.1.0"
+authors = ["Florian Blasius <flovanpt@posteo.de>"]
+description = "Tree structure based on DCES."
+repository = "https://gitlab.redox-os.org/redox-os/orbtk"
+license = "MIT"
+keywords = ["ecs", "tree"]
+edition = "2018"
+
+[dependencies]
+dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }

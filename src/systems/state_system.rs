@@ -6,14 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{
-    application::Tree,
-    backend::Backend,
-    properties::*,
-    widgets::{
-        add_selector_to_widget, remove_selector_from_widget, Context, State, WidgetContainer,
-    },
-};
+use crate::{backend::Backend, prelude::*};
 
 /// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {

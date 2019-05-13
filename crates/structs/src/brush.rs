@@ -69,3 +69,9 @@ fn get_color(hex: &str) -> Color {
         _ => Color { data: 0 },
     }
 }
+
+#[cfg(test)]
+mod tests {
+    //  use crate::prelude::*;
+    // todo: tbd after brush struct is finished
+}

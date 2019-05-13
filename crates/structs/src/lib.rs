@@ -15,6 +15,3 @@ pub mod prelude;
 mod rect;
 mod spacer;
 mod thickness;
-
-#[cfg(test)]
-mod tests;
