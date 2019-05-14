@@ -1,5 +1,6 @@
 use super::*;
-use crate::{structs::*, properties::PropertySource};
+
+use crate::prelude::*;
 
 #[test]
 fn test_contains() {

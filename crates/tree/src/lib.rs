@@ -1,3 +1,24 @@
+/*!
+
+This crate provides a index (entity) based tree structure compatible to the [DCES](https://gitlab.redox-os.org/redox-os/dces-rust)
+Entity Component System. The tree could be used as entity storage.
+
+# Example
+
+Basic usage of the tree:
+
+```rust,no_run
+
+use orbtk_tree::prelude::*;
+
+let mut tree = Tree::new();
+tree.register_node(0);
+tree.register_node(1);
+tree.append_child(0, 1);
+```
+
+ */
+
 pub mod prelude;
 
 use std::{
@@ -18,7 +39,7 @@ pub enum NotFound {
 }
 
 /// Base data structure to manage the entity entities of a window in a tree based structure.
-#[derive(Default)]
+#[derive(Clone, Default, Debug)]
 pub struct Tree {
     pub root: Entity,
     pub children: BTreeMap<Entity, Vec<Entity>>,
@@ -27,6 +48,11 @@ pub struct Tree {
 }
 
 impl Tree {
+    /// Creates a new tree with default values.
+    pub fn new() -> Self {
+        Tree::default()
+    }
+
     /// Configure the tree iterator with a start node.
     pub fn start_node(&self, start_node: Entity) -> &Self {
         self.iterator_start_node.set(start_node);
@@ -41,11 +67,7 @@ impl Tree {
 
     /// Appends a `child` entity to the given `parent` entity.
     /// Raised `NotFound` error if the parent is not part of the tree.
-    pub fn append_child(
-        &mut self,
-        parent: Entity,
-        child: Entity,
-    ) -> Result<Entity, NotFound> {
+    pub fn append_child(&mut self, parent: Entity, child: Entity) -> Result<Entity, NotFound> {
         if let Some(p) = self.children.get_mut(&parent) {
             p.push(child);
         } else {
@@ -151,5 +173,114 @@ impl<'a> Iterator for TreeIterator<'a> {
         }
 
         result
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use dces::prelude::*;
+    use super::*;
+
+    #[test]
+    fn test_register_node() {
+        let mut tree = Tree::new();
+        tree.register_node(0);
+
+        assert_eq!(tree.children.len(), 1);
+        assert_eq!(tree.parent.len(), 1);
+        assert!(tree.children.get(&0).is_some());
+    }
+
+    #[test]
+    fn test_append_child() {
+        let parent: u32 = 0;
+        let child: u32 = 1;
+
+        let mut tree = Tree::new();
+        tree.register_node(parent);
+        tree.register_node(child);
+        tree.append_child(parent, child).unwrap();
+
+        assert_eq!(tree.children.len(), 2);
+        assert_eq!(tree.parent.len(), 2);
+        assert_eq!(tree.children.get(&parent).unwrap()[0], child);
+        assert_eq!(tree.parent.get(&child).unwrap().unwrap(), parent);
+    }
+
+    #[test]
+    fn test_len() {
+        let mut tree = Tree::new();
+        assert_eq!(tree.children.len(), 0);
+
+        tree.register_node(0);
+        assert_eq!(tree.children.len(), 1);
+
+        tree.register_node(1);
+        assert_eq!(tree.children.len(), 2);
+    }
+
+    #[test]
+    fn test_is_empty() {
+        let mut tree = Tree::new();
+        assert!(tree.is_empty());
+
+        tree.register_node(0);
+        assert!(!tree.is_empty());
+    }
+
+    #[test]
+    fn test_register_entity() {
+        let mut tree = Tree::new();
+        tree.register_entity(0);
+
+        assert_eq!(tree.children.len(), 1);
+        assert_eq!(tree.parent.len(), 1);
+        assert!(tree.children.get(&0).is_some());
+    }
+
+    #[test]
+    fn test_remove_entity() {
+        let mut tree = Tree::new();
+
+        tree.register_entity(0);
+        assert_eq!(tree.children.len(), 1);
+        assert_eq!(tree.parent.len(), 1);
+        assert!(tree.children.get(&0).is_some());
+
+        tree.remove_entity(0);
+        assert_eq!(tree.children.len(), 0);
+        assert_eq!(tree.parent.len(), 0);
+        assert!(tree.children.get(&0).is_none());
+    }
+
+    #[test]
+    fn test_iterator_next() {
+        let mut tree = Tree::new();
+        tree.register_entity(0);
+        tree.register_entity(1);
+        tree.register_entity(2);
+        tree.register_entity(3);
+        tree.register_entity(4);
+        tree.register_entity(5);
+        tree.register_entity(6);
+
+        tree.append_child(0, 1).unwrap();
+        tree.append_child(0, 2).unwrap();
+        
+        tree.append_child(1, 3).unwrap();
+        tree.append_child(1, 4).unwrap();
+
+        tree.append_child(2, 5).unwrap();
+        tree.append_child(2, 6).unwrap();
+
+        let mut iterator = tree.into_iter();
+
+         assert_eq!(0, iterator.next().unwrap());
+         assert_eq!(1, iterator.next().unwrap());
+         assert_eq!(3, iterator.next().unwrap());
+         assert_eq!(4, iterator.next().unwrap());
+         assert_eq!(2, iterator.next().unwrap());
+         assert_eq!(5, iterator.next().unwrap());
+         assert_eq!(6, iterator.next().unwrap());
     }
 }

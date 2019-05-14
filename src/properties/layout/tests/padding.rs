@@ -1,6 +1,4 @@
-use crate::structs::{Spacer, Thickness};
-
-use super::*;
+use crate::prelude::*;
 
 #[test]
 fn test_set_left() {

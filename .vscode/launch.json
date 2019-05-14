@@ -7,7 +7,7 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug widgets",
+      "name": "OrbTk: Widgets",
       "program": "${workspaceFolder}/target/debug/examples/widgets",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
@@ -18,7 +18,7 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug canvas",
+      "name": "OrbTk: Canvas",
       "program": "${workspaceFolder}/target/debug/examples/canvas",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
@@ -29,7 +29,7 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug image",
+      "name": "OrbTk: Image",
       "program": "${workspaceFolder}/target/debug/examples/image",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
@@ -40,7 +40,7 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug light theme",
+      "name": "OrbTk: Light Theme",
       "program": "${workspaceFolder}/target/debug/examples/light-theme",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
@@ -51,7 +51,7 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug messages",
+      "name": "OrbTk: Messages",
       "program": "${workspaceFolder}/target/debug/examples/messages",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
@@ -62,7 +62,7 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug grid",
+      "name": "OrbTk: Grid",
       "program": "${workspaceFolder}/target/debug/examples/grid",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
@@ -73,7 +73,7 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug minimal",
+      "name": "OrbTk: Minimal",
       "program": "${workspaceFolder}/target/debug/examples/minimal",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
@@ -84,12 +84,11 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug tests",
+      "name": "OrbTk: Test",
       "cargo": {
         "args": [
           "test",
-          "--no-run",
-          "--lib"
+          "--all"
         ]
       },
       "args": [],

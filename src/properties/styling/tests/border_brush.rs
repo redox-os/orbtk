@@ -1,6 +1,5 @@
-use crate::structs::{Brush, Color};
+use crate::prelude::*;
 
-use super::*;
 
 #[test]
 fn test_into() {
