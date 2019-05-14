@@ -1,12 +1,6 @@
 use orbgl_api::Canvas;
 
-use crate::{
-    backend::Renderer,
-    properties::*,
-    render_object::RenderObject,
-    structs::{Point, Brush, Position, Size, Thickness},
-    widgets::Context,
-};
+use crate::{prelude::*, backend::Renderer};
 
 pub struct RectangleRenderObject;
 

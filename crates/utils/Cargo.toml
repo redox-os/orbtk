@@ -1,11 +1,11 @@
 [package]
-name = "orbtk-structs"
+name = "orbtk-utils"
 version = "0.1.0"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
-description = "Helper structs and traits for OrbTk."
+description = "Helper utils and traits for OrbTk."
 repository = "https://gitlab.redox-os.org/redox-os/orbtk"
 license = "MIT"
-keywords = ["helpers", "structs", "traits", "ui"]
+keywords = ["helpers", "utils", "traits", "ui"]
 edition = "2018"
 
 [dependencies]

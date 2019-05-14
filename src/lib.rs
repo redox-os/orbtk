@@ -16,7 +16,7 @@ pub use crate::event::*;
 pub use crate::layout::*;
 pub use crate::properties::*;
 pub use crate::render_object::*;
-pub use crate::structs::*;
+pub use crate::utils::*;
 pub use crate::styling::theme::{DEFAULT_THEME_CSS, LIGHT_THEME_EXTENSION_CSS};
 pub use crate::styling::vector_graphics::*;
 pub use crate::systems::*;
@@ -24,7 +24,7 @@ pub use crate::widgets::*;
 
 pub use dces::prelude::*;
 pub use orbtk_css_engine::prelude as css_engine;
-pub use orbtk_structs::prelude as structs;
+pub use orbtk_utils::prelude as utils;
 pub use orbtk_tree::prelude as tree;
 
 

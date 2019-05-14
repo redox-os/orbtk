@@ -1,12 +1,6 @@
 use orbgl_api::Canvas;
 
-use crate::{
-    backend::Renderer,
-    properties::{Bounds, FontIcon, IconBrush, IconFont, IconSize},
-    render_object::RenderObject,
-    structs::Point,
-    widgets::Context,
-};
+use crate::{prelude::*, backend::Renderer};
 
 pub struct FontIconRenderObject;
 

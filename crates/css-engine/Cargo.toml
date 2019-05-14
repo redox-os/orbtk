@@ -9,5 +9,5 @@ keywords = ["css", "theme", "styling", "ui"]
 edition = "2018"
 
 [dependencies]
-orbtk-structs = { version = "0.1.0", path = "../structs" }
+orbtk-utils = { version = "0.1.0", path = "../utils" }
 cssparser = "0.17.0"

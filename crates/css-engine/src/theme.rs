@@ -7,7 +7,7 @@ use cssparser::{
     Token,
 };
 
-use orbtk_structs::prelude::*;
+use orbtk_utils::prelude::*;
 
 use crate::prelude::*;
 

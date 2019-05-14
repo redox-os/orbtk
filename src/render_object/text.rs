@@ -1,12 +1,6 @@
 use orbgl_api::Canvas;
 
-use crate::{
-    backend::Renderer,
-    properties::*,
-    render_object::RenderObject,
-    structs::Point,
-    widgets::Context,
-};
+use crate::{prelude::*, backend::Renderer};
 
 /// Used to render a text.
 pub struct TextRenderObject;

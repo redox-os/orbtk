@@ -1,12 +1,6 @@
 use orbgl_api::Canvas;
 
-use crate::{
-    backend::Renderer,
-    properties::{Bounds, Image},
-    render_object::RenderObject,
-    structs::{Point, Size},
-    widgets::Context,
-};
+use crate::{prelude::*, backend::Renderer};
 
 /// Used to render an image.
 pub struct ImageRenderObject;

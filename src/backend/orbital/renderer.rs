@@ -4,10 +4,7 @@ use std::sync::Arc;
 use orbclient::{Color, Renderer as OrbRenderer, Window as OrbWindow};
 use orbfont::Font;
 
-use crate::backend::Renderer;
-use crate::properties::Bounds;
-use crate::structs::{Point, Position, Size};
-use crate::styling::fonts::*;
+use crate::{prelude::*, styling::fonts::*, backend::Renderer};
 
 pub struct OrbFontRenderer {
     pub fonts: HashMap<&'static str, Font>,

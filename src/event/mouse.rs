@@ -1,11 +1,6 @@
 use std::rc::Rc;
 
-use crate::{
-    event::{Event, EventBox, EventHandler},
-    properties::*,
-    structs::*,
-    widgets::{Widget, WidgetContainer},
-};
+use crate::prelude::*;
 
 /// Checks if the given point is inside of a widget.
 pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>) -> bool {
