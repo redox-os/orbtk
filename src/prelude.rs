@@ -11,12 +11,11 @@ pub use dces::prelude::*;
 pub use crate::{
     application::*,
     event::*,
-    enums::*,
     layout::*,
     properties::*,
     render_object::*,
     utils::*,
-    styling::*,
+    theme::{colors, fonts, vector_graphics::material_font_icons, default_theme, light_theme},
     widgets::*,
     widget,
     property,

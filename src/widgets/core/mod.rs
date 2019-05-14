@@ -36,6 +36,18 @@ pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContai
     }
 }
 
+/// Used to define the `parent_type`of a widget.
+pub enum ParentType {
+    /// None children could add to the widget.
+    None,
+
+    /// Only one child could be added to the widget.
+    Single,
+
+    /// Multiple children could be added tot the widget.
+    Multi,
+}
+
 /// The `Widget` trait is used to define a new widget.
 pub trait Widget: Template {
     /// Creates a new widget.

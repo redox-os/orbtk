@@ -1,5 +1,4 @@
-use super::*;
-use crate::enums::Alignment;
+use crate::prelude::*;
 
 #[test]
 fn test_align_y() {

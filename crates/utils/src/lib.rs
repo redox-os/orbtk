@@ -1,3 +1,4 @@
+pub use self::alignment::*;
 pub use self::border::*;
 pub use self::brush::*;
 pub use self::dirty_size::*;
@@ -7,6 +8,7 @@ pub use self::thickness::*;
 
 pub use orbgl_api::Color as Color;
 
+mod alignment;
 mod border;
 mod brush;
 mod dirty_size;

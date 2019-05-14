@@ -1,6 +1,21 @@
+/*!
+
+This crate provides the default theme resources of OrbTks default theme dark and light.
+It provides fonts, icons and colors.
+
+ */
+
+pub mod prelude;
+pub mod colors;
+pub mod fonts;
+pub mod vector_graphics;
+
 use std::sync::Arc;
 
-use crate::prelude::Theme;
+use orbtk_css_engine::prelude::*;
+
+#[macro_use]
+extern crate lazy_static;
 
 pub static DEFAULT_THEME_CSS: &'static str = include_str!("dark.css");
 pub static LIGHT_THEME_EXTENSION_CSS: &'static str = include_str!("light.css");

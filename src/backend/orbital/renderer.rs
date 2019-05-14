@@ -4,7 +4,7 @@ use std::sync::Arc;
 use orbclient::{Color, Renderer as OrbRenderer, Window as OrbWindow};
 use orbfont::Font;
 
-use crate::{prelude::*, styling::fonts::*, backend::Renderer};
+use crate::{prelude::*, backend::Renderer};
 
 pub struct OrbFontRenderer {
     pub fonts: HashMap<&'static str, Font>,
@@ -40,11 +40,11 @@ lazy_static! {
     pub static ref FONT_RENDERER: Arc<OrbFontRenderer> = {
         let mut fonts = HashMap::new();
 
-        if let Ok(font) = Font::from_data(ROBOTO_REGULAR_FONT.to_vec().into_boxed_slice()) {
+        if let Ok(font) = Font::from_data(fonts::ROBOTO_REGULAR_FONT.to_vec().into_boxed_slice()) {
             fonts.insert("Roboto Regular", font);
         }
 
-        if let Ok(font) = Font::from_data(MATERIAL_ICONS_REGULAR_FONT.to_vec().into_boxed_slice()) {
+        if let Ok(font) = Font::from_data(fonts::MATERIAL_ICONS_REGULAR_FONT.to_vec().into_boxed_slice()) {
             fonts.insert("Material Icons Regular", font);
         }
 
