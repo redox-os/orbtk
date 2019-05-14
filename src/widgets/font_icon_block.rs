@@ -3,7 +3,7 @@ use crate::prelude::*;
 widget!(
     /// The `FontIconBlock` widget is used to draw text. It is not interactive.
     /// 
-    /// * CSS element: `font-icon-block`
+    /// **CSS element:** `font-icon-block`
     FontIconBlock {
         /// Sets or shares the icon property.
         icon: FontIcon,

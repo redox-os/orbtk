@@ -21,7 +21,7 @@ impl State for SwitchState {
 widget!(
     /// The `Switch` widget can be switch between `on` and `off`.
     ///
-    /// * CSS element: `switch`
+    /// **CSS element:** `switch`
     Switch<SwitchState> {
         /// Sets or shares the background property.
         background: Background,

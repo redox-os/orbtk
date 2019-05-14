@@ -3,7 +3,7 @@ use crate::prelude::*;
 widget!(
     /// The `CheckBox` widget can be switch its selected state. It contains a selection box and a text.
     /// 
-    /// * CSS element: `check-box`
+    /// **CSS element:** `check-box`
     CheckBox: ClickHandler {
         /// Sets or shares the background property.
         background: Background,
