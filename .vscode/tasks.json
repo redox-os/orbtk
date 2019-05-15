@@ -19,6 +19,25 @@
         "kind": "build",
         "isDefault": true
       }
+    },
+    {
+      "label": "build debug",
+      "command": "cargo",
+      "type": "shell",
+      "args": [
+        "build",
+        "--examples=minimal",
+        "--features",
+        "debug"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     }
   ]
 }

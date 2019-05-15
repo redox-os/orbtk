@@ -13,7 +13,7 @@ pub struct Context<'a> {
     event_queue: &'a RefCell<EventQueue>,
     messages: Option<&'a RefCell<BTreeMap<Entity, Vec<MessageBox>>>>,
     pub entity: Entity,
-    pub theme: &'a Theme,
+    pub theme: &'a ThemeValue,
 }
 
 impl<'a> Context<'a> {
@@ -23,7 +23,7 @@ impl<'a> Context<'a> {
         ecm: &'a mut EntityComponentManager,
         tree: &'a Tree,
         event_queue: &'a RefCell<EventQueue>,
-        theme: &'a Theme,
+        theme: &'a ThemeValue,
         messages: Option<&'a RefCell<BTreeMap<Entity, Vec<MessageBox>>>>,
     ) -> Self {
         Context {
@@ -40,10 +40,10 @@ impl<'a> Context<'a> {
     pub fn widget(&mut self) -> WidgetContainer<'_> {
         WidgetContainer::new(self.entity, &mut self.ecm)
     }
-    
+
     /// Returns the window widget.
     pub fn window(&mut self) -> WidgetContainer<'_> {
-        WidgetContainer::new(0, &mut self.ecm)
+        WidgetContainer::new(self.tree.root, &mut self.ecm)
     }
 
     /// Returns a child of the widget of the current state referenced by css `id`.
@@ -133,8 +133,6 @@ impl<'a> Context<'a> {
 
     /// Update all css properties of the current widget by the current theme.
     pub fn update_theme_properties(&mut self) {
-       
-
         if !self.widget().has::<Selector>() {
             return;
         }
@@ -177,7 +175,7 @@ impl<'a> Context<'a> {
 
         if self.widget().has::<FontSize>() {
             if let Some(size) = self.theme.uint("font-size", &selector.0) {
-                 self.widget().set::<FontSize>(FontSize::from(size as f64));
+                self.widget().set::<FontSize>(FontSize::from(size as f64));
             }
         }
 

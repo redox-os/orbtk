@@ -80,12 +80,11 @@ impl ThemeBuilder {
 }
 
 /// `Theme` is the representation of a css styling.
-#[derive(Debug, Clone)]
+#[derive(Clone, PartialEq, Default, Debug)]
 pub struct Theme {
     parent: Option<Arc<Theme>>,
     rules: Vec<Rule>,
 }
-
 
 impl Theme {
     /// Creates a new `ThemeBuilder` object with default theme as base.
@@ -191,25 +190,31 @@ impl Theme {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Default, PartialEq, Debug)]
 pub struct Rule {
     pub selectors: Vec<Selector>,
     pub declarations: Vec<Declaration>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Default, PartialEq, Debug)]
 pub struct Declaration {
     pub property: String,
     pub value: Value,
     pub important: bool,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum Value {
     UInt(u32),
     Float(f32),
     Brush(Brush),
     Str(String),
+}
+
+impl Default for Value {
+    fn default() -> Self {
+        Value::UInt(0)
+    }
 }
 
 impl Value {

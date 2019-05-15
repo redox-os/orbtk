@@ -1,5 +1,5 @@
 // todo: documentation
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct Point {
     pub x: f64,
     pub y: f64,

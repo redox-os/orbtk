@@ -3,7 +3,7 @@ use crate::prelude::*;
 widget!(
     /// The `ScrollViewer` defines a layout that is used to stack its children on the z-axis.
     /// 
-    /// * CSS element: `scroll-viewer`
+    /// **CSS element:** `scroll-viewer`
     ScrollViewer {
         /// Sets or shares the orientation property.
         offset: Offset,

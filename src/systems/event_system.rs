@@ -24,8 +24,7 @@ impl EventSystem {
         _tree: &Tree,
         _ecm: &mut EntityComponentManager,
         _new_events: &mut Vec<EventBox>,
-    ) {
-    }
+    ) {}
 
     fn process_bottom_up_event(
         &self,
@@ -196,12 +195,12 @@ impl System<Tree> for EventSystem {
                     match event {
                         WindowEvent::Resize { width, height } => {
                             // update window size
-                            if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(0) {
+                            if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(tree.root) {
                                 bounds.set_width(*width);
                                 bounds.set_height(*height);
                             }
 
-                            if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(0) {
+                            if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(tree.root) {
                                 constraint.set_width(*width);
                                 constraint.set_height(*height);
                             }
@@ -210,7 +209,6 @@ impl System<Tree> for EventSystem {
                         }
                     }
                 }
-
 
                 if let Ok(event) = event.downcast_ref::<SystemEvent>() {
                     match event {
@@ -231,7 +229,6 @@ impl System<Tree> for EventSystem {
                     }
                     _ => {}
                 }
-
             }
 
 

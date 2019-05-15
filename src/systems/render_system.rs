@@ -14,7 +14,6 @@ pub struct RenderSystem {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub backend: Rc<RefCell<dyn Backend>>,
     pub update: Rc<Cell<bool>>,
-    pub debug_flag: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
 }
 
@@ -24,8 +23,15 @@ impl System<Tree> for RenderSystem {
             return;
         }
 
+        #[cfg(feature = "debug")]
+            let debug = true;
+        #[cfg(not(feature = "debug"))]
+            let debug = false;
+
         let mut backend = self.backend.borrow_mut();
         let render_context = backend.render_context();
+
+        let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
 
         let mut hidden_parents: HashSet<Entity> = HashSet::new();
 
@@ -33,10 +39,10 @@ impl System<Tree> for RenderSystem {
         offsets.insert(tree.root, (0.0, 0.0));
 
         // render window background
-        let selector = SelectorValue::new().with("window");
-        if let Some(background) = render_context.theme.brush("background", &selector) {
-            render_context.renderer.render(background.into())
-        }
+        // let selector = SelectorValue::new().with("window");
+        // if let Some(background) = render_context.theme.brush("background", &selector) {
+        //     render_context.renderer.render(background.into())
+        // }
 
         for node in tree.into_iter() {
             let mut global_position = Point::default();
@@ -72,7 +78,7 @@ impl System<Tree> for RenderSystem {
                         ecm,
                         tree,
                         &render_context.event_queue,
-                        &render_context.theme,
+                        &theme,
                         None,
                     ),
                     &global_position,
@@ -80,11 +86,11 @@ impl System<Tree> for RenderSystem {
             }
 
             // render debug border for each widget
-            if self.debug_flag.get() {
+            if debug {
                 if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
                     let selector = Selector::from("debug-border");
 
-                    let brush = render_context.theme.brush("border-color", &selector.0).unwrap();
+                    let brush = theme.brush("border-color", &selector.0).unwrap();
 
                     match brush {
                         Brush::SolidColor(color) => render_context.canvas.set_stroke_style(color),

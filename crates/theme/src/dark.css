@@ -8,6 +8,10 @@
     icon-family: "Material Icons Regular";
 }
 
+window {
+    background: #3b434a;
+}
+
 .body {
     color: #dfebf5;
     font-size: 16;

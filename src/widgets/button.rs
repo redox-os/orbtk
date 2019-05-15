@@ -3,7 +3,7 @@ use crate::prelude::*;
 widget!(
     /// The `Button` widget can be clicked by user. It's used to perform an action.
     /// 
-    /// * CSS element: `button`
+    /// **CSS element:** `button`
     Button: ClickHandler {
         /// Sets or shares the background property.
         background: Background,

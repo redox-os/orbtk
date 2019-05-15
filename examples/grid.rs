@@ -80,18 +80,19 @@ impl Template for MainView {
     }
 }
 
+
 fn main() {
-    let mut application = Application::default();
-    application
-        .create_window()
-        .bounds((100.0, 100.0, 420.0, 730.0))
-        .title("OrbTk - grid example")
-        .theme(
-            Theme::create()
-                .extension_path("examples/res/grid.css")
-                .build(),
-        )
-        .resizable(true)
-        .build(MainView::create());
-    application.run();
+    Application::new()
+        .window(|ctx| {
+            Window::create()
+                .title("OrbTk - grid example")
+                .position((100.0, 100.0))
+                .size(420.0, 730.0)
+                .theme(ThemeValue::create()
+                    .extension_path("examples/res/grid.css")
+                    .build())
+                .child(MainView::create().build(ctx))
+                .build(ctx)
+        })
+        .run();
 }

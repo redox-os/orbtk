@@ -128,14 +128,15 @@ impl Template for MainView {
 }
 
 fn main() {
-    let mut application = Application::default();
-
-    application
-        .create_window()
-        .bounds((100.0, 100.0, 420.0, 730.0))
-        .title("OrbTk - light theme example")
-        .debug_flag(false)
-        .theme(light_theme())
-        .build(MainView::create());
-    application.run();
+    Application::new()
+        .window(|ctx| {
+            Window::create()
+                .title("OrbTk - light theme example")
+                .position((100.0, 100.0))
+                .size(420.0, 730.0)
+                .theme(light_theme())
+                .child(MainView::create().build(ctx))
+                .build(ctx)
+        })
+        .run();
 }

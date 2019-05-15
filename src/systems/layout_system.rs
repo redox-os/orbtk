@@ -13,7 +13,6 @@ pub struct LayoutSystem {
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub backend: Rc<RefCell<dyn Backend>>,
     pub update: Rc<Cell<bool>>,
-    pub debug_flag: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
 }
 
@@ -36,17 +35,16 @@ impl System<Tree> for LayoutSystem {
 
         let root = tree.children[&tree.root][0];
 
-        let mut backend = self.backend.borrow_mut();
-        let render_context = backend.render_context();
+        let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
 
-        self.layouts.borrow()[&root].measure(root, ecm, tree, &self.layouts, &render_context.theme);
+        self.layouts.borrow()[&root].measure(root, ecm, tree, &self.layouts, &theme);
         self.layouts.borrow()[&root].arrange(
             window_size,
             root,
             ecm,
             tree,
             &self.layouts,
-            &render_context.theme,
+            &theme,
         );
 
         // if self.debug_flag.get() {

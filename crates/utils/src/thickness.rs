@@ -129,7 +129,7 @@ pub trait Spacer {
 #[cfg(test)]
 mod tests {
     use crate::prelude::*;
-    
+
     #[test]
     fn test_new() {
         let rect = Thickness::new(5.0, 10.0, 20.0, 30.0);

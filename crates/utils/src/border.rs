@@ -117,7 +117,7 @@ pub trait Bordered {
 #[cfg(test)]
 mod tests {
     use crate::prelude::*;
-    
+
     #[test]
     fn test_brush() {
         let brush = Brush::from("#000000");

@@ -27,7 +27,7 @@ impl State for CursorState {
 widget!(
     /// The `Cursor` widget represents a text cursor used to mark text.
     /// 
-    /// * CSS element: `cursor`
+    /// **CSS element:** `cursor`
     Cursor<CursorState> {
         /// Sets or shares the text property.
         text: Text,
