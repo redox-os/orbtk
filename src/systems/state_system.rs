@@ -84,12 +84,14 @@ impl System<Tree> for StateSystem {
         let mut backend = self.backend.borrow_mut();
         let state_context = backend.state_context();
 
+        let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
+
         let mut context = Context::new(
             tree.root,
             ecm,
             tree,
             &state_context.event_queue,
-            &state_context.theme,
+            &theme,
             Some(&state_context.messages),
         );
 
@@ -134,6 +136,8 @@ impl System<Tree> for PostLayoutStateSystem {
             return;
         }
 
+        let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
+
         let mut backend = self.backend.borrow_mut();
         let state_context = backend.state_context();
         let mut context = Context::new(
@@ -141,7 +145,7 @@ impl System<Tree> for PostLayoutStateSystem {
             ecm,
             tree,
             &state_context.event_queue,
-            &state_context.theme,
+            &theme,
             None,
         );
 

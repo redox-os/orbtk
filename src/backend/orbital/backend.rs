@@ -13,7 +13,6 @@ use crate::backend::*;
 /// Implementation of the OrbClient based backend.
 pub struct OrbitalBackend {
     inner: OrbWindow,
-    theme: Theme,
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
     event_queue: RefCell<EventQueue>,
@@ -22,7 +21,7 @@ pub struct OrbitalBackend {
 }
 
 impl OrbitalBackend {
-    pub fn new(theme: Theme, inner: OrbWindow) -> OrbitalBackend {
+    pub fn new(inner: OrbWindow) -> OrbitalBackend {
         let mut inner = inner;
 
         let surface = FramebufferSurface::new(
@@ -37,7 +36,6 @@ impl OrbitalBackend {
 
         OrbitalBackend {
             inner,
-            theme,
             mouse_buttons: (false, false, false),
             mouse_position: Point::default(),
             event_queue: RefCell::new(EventQueue::default()),
@@ -151,23 +149,11 @@ impl Backend for OrbitalBackend {
         }
     }
 
-    fn init_context(&mut self) -> InitContext<'_> {
-        InitContext { theme: &self.theme }
-    }
-
     fn render_context(&mut self) -> RenderContext<'_> {
         RenderContext {
             canvas: &mut self.canvas,
             renderer: &mut self.inner,
-            theme: &self.theme,
             event_queue: &self.event_queue,
-        }
-    }
-
-    fn layout_context(&mut self) -> LayoutContext<'_> {
-        LayoutContext {
-            window_size: (self.inner.width(), self.inner.height()),
-            theme: &self.theme,
         }
     }
 
@@ -179,7 +165,6 @@ impl Backend for OrbitalBackend {
 
     fn state_context(&mut self) -> StateContext<'_> {
         StateContext {
-            theme: &self.theme,
             event_queue: &self.event_queue,
             messages: &mut self.messages,
         }

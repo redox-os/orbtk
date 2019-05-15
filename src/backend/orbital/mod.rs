@@ -17,7 +17,6 @@ pub fn target_backend(
     title: &str,
     bounds: Bounds,
     resizable: bool,
-    theme: Theme,
 ) -> (Box<OrbitalBackendRunner>, Rc<RefCell<dyn Backend>>) {
     let mut flags = vec![];
     if resizable {
@@ -25,7 +24,6 @@ pub fn target_backend(
     }
 
     let backend = Rc::new(RefCell::new(OrbitalBackend::new(
-        theme,
         OrbWindow::new_flags(
             bounds.x() as i32,
             bounds.y() as i32,

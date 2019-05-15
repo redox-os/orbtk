@@ -27,7 +27,7 @@ pub trait Layout: Any {
         ecm: &mut EntityComponentManager,
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-        theme: &Theme,
+        theme: &ThemeValue,
     ) -> DirtySize;
 
     /// Arranges an sizes the children.
@@ -38,6 +38,6 @@ pub trait Layout: Any {
         ecm: &mut EntityComponentManager,
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-        theme: &Theme,
+        theme: &ThemeValue,
     ) -> (f64, f64);
 }

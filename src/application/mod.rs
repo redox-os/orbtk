@@ -64,10 +64,8 @@ impl Application {
         world.entity_component_manager().register_component(window, Global::default());
         world.entity_component_manager().register_component(window, Bounds::from((0.0, 0.0, constraint.width(), constraint.height())));
 
-        // todo: theme
-
         let (mut runner, backend) =
-            target_backend(&title.0, Bounds::from((position.0.x, position.0.y, constraint.width(), constraint.height())), false, default_theme());
+            target_backend(&title.0, Bounds::from((position.0.x, position.0.y, constraint.width(), constraint.height())), false);
 
         world.register_init_system(InitSystem {
             backend: backend.clone(),

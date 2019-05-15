@@ -31,6 +31,8 @@ impl System<Tree> for RenderSystem {
         let mut backend = self.backend.borrow_mut();
         let render_context = backend.render_context();
 
+        let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
+
         let mut hidden_parents: HashSet<Entity> = HashSet::new();
 
         let mut offsets = BTreeMap::new();
@@ -76,7 +78,7 @@ impl System<Tree> for RenderSystem {
                         ecm,
                         tree,
                         &render_context.event_queue,
-                        &render_context.theme,
+                        &theme,
                         None,
                     ),
                     &global_position,
@@ -88,7 +90,7 @@ impl System<Tree> for RenderSystem {
                 if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
                     let selector = Selector::from("debug-border");
 
-                    let brush = render_context.theme.brush("border-color", &selector.0).unwrap();
+                    let brush = theme.brush("border-color", &selector.0).unwrap();
 
                     match brush {
                         Brush::SolidColor(color) => render_context.canvas.set_stroke_style(color),

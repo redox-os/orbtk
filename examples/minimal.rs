@@ -1,7 +1,7 @@
 use orbtk::prelude::*;
 
 fn main() {
-      Application::new()
+    Application::new()
         .window(|ctx| {
             Window::create()
                 .title("OrbTk - minimal example")

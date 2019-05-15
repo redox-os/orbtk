@@ -19,6 +19,6 @@ pub use crate::{
     widgets::*,
     widget,
     property,
-    css_engine::{Selector as SelectorValue, Theme, ThemeBuilder, SelectorRelation},
+    css_engine::{Selector as SelectorValue, Theme as ThemeValue, ThemeBuilder, SelectorRelation},
     tree::*,
 };

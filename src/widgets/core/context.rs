@@ -13,7 +13,7 @@ pub struct Context<'a> {
     event_queue: &'a RefCell<EventQueue>,
     messages: Option<&'a RefCell<BTreeMap<Entity, Vec<MessageBox>>>>,
     pub entity: Entity,
-    pub theme: &'a Theme,
+    pub theme: &'a ThemeValue,
 }
 
 impl<'a> Context<'a> {
@@ -23,7 +23,7 @@ impl<'a> Context<'a> {
         ecm: &'a mut EntityComponentManager,
         tree: &'a Tree,
         event_queue: &'a RefCell<EventQueue>,
-        theme: &'a Theme,
+        theme: &'a ThemeValue,
         messages: Option<&'a RefCell<BTreeMap<Entity, Vec<MessageBox>>>>,
     ) -> Self {
         Context {
@@ -43,7 +43,7 @@ impl<'a> Context<'a> {
 
     /// Returns the window widget.
     pub fn window(&mut self) -> WidgetContainer<'_> {
-        WidgetContainer::new(0, &mut self.ecm)
+        WidgetContainer::new(self.tree.root, &mut self.ecm)
     }
 
     /// Returns a child of the widget of the current state referenced by css `id`.

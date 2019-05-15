@@ -42,6 +42,8 @@ impl System<Tree> for InitSystem {
         let mut backend = self.backend.borrow_mut();
         let state_context = backend.state_context();
 
+        let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
+
         #[cfg(feature = "debug")]
             let debug = true;
         #[cfg(not(feature = "debug"))]
@@ -54,6 +56,7 @@ impl System<Tree> for InitSystem {
 
             println!("\n------ Widget tree ------\n");
         }
+        
 
         // init css ids
         for node in tree.into_iter() {
@@ -64,14 +67,13 @@ impl System<Tree> for InitSystem {
                 ecm,
                 tree,
                 &state_context.event_queue,
-                &state_context.theme,
+                &theme,
                 None,
             );
 
             if let Some(state) = self.states.borrow().get(&node) {
                 state.init(&mut context);
             }
-
 
             self.read_init_from_theme(&mut context);
         }

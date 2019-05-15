@@ -33,7 +33,7 @@ impl Layout for ScrollLayout {
         ecm: &mut EntityComponentManager,
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-        theme: &Theme,
+        theme: &ThemeValue,
     ) -> DirtySize {
         if Visibility::get(entity, ecm) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
@@ -89,7 +89,7 @@ impl Layout for ScrollLayout {
         ecm: &mut EntityComponentManager,
         tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-        theme: &Theme,
+        theme: &ThemeValue,
     ) -> (f64, f64) {
         if !self.desired_size.borrow().dirty() {
             return self.desired_size.borrow().size();

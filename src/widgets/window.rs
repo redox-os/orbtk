@@ -19,7 +19,10 @@ widget!(
         resizeable: Resizeable,
 
         /// Sets or shares the position property. 
-        position: Pos
+        position: Pos,
+
+        /// Sets or shares the theme property. 
+        theme: Theme
     }
 );
 
@@ -30,6 +33,7 @@ impl Template for Window {
             .size(100.0, 100.0)
             .selector("window")
             .title("Window")
+            .theme(default_theme())
             .resizeable(false)
     }
 

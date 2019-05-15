@@ -15,28 +15,15 @@ use orbgl_api::prelude::Canvas;
 
 use crate::prelude::*;
 
-/// Provides the context for the `InitSystem`.
-pub struct InitContext<'a> {
-    pub theme: &'a Theme,
-}
-
 /// Is used to provides data from the `Backend` to the `RenderSystem`.
 pub struct RenderContext<'a> {
     pub canvas: &'a mut Canvas,
     pub renderer: &'a mut dyn Renderer,
-    pub theme: &'a Theme,
     pub event_queue: &'a RefCell<EventQueue>,
-}
-
-/// Is used to provides data from the `Backend` to the `LayoutSystem`.
-pub struct LayoutContext<'a> {
-    pub window_size: (u32, u32),
-    pub theme: &'a Theme,
 }
 
 /// Is used to provides data from the `Backend` to the `StateSystem` and `PostLayoutStateSystem`.
 pub struct StateContext<'a> {
-    pub theme: &'a Theme,
     pub event_queue: &'a RefCell<EventQueue>,
     pub messages: &'a RefCell<BTreeMap<Entity, Vec<MessageBox>>>,
 }
@@ -63,9 +50,7 @@ pub trait Renderer {
 /// This trait is used to define a backend for OrbTk.
 pub trait Backend {
     fn drain_events(&mut self);
-    fn init_context(&mut self) -> InitContext<'_>;
     fn render_context(&mut self) -> RenderContext<'_>;
-    fn layout_context(&mut self) -> LayoutContext<'_>;
     fn event_context(&mut self) -> EventContext<'_>;
     fn state_context(&mut self) -> StateContext<'_>;
 }
