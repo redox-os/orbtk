@@ -10,6 +10,10 @@
     color: #3b434a;
 }
 
+window {
+    background: #fafafa;
+}
+
 button, toggle-button {
     /* min-width: 60; */
     /* height: 40; */

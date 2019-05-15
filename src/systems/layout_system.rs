@@ -13,7 +13,6 @@ pub struct LayoutSystem {
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub backend: Rc<RefCell<dyn Backend>>,
     pub update: Rc<Cell<bool>>,
-    pub debug_flag: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
 }
 

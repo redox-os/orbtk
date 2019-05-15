@@ -14,7 +14,6 @@ pub struct RenderSystem {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub backend: Rc<RefCell<dyn Backend>>,
     pub update: Rc<Cell<bool>>,
-    pub debug_flag: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
 }
 
@@ -23,6 +22,11 @@ impl System<Tree> for RenderSystem {
         if !self.update.get() || tree.parent.is_empty() || !self.running.get() {
             return;
         }
+
+        #[cfg(feature = "debug")]
+            let debug = true;
+        #[cfg(not(feature = "debug"))]
+            let debug = false;
 
         let mut backend = self.backend.borrow_mut();
         let render_context = backend.render_context();
@@ -33,10 +37,10 @@ impl System<Tree> for RenderSystem {
         offsets.insert(tree.root, (0.0, 0.0));
 
         // render window background
-        let selector = SelectorValue::new().with("window");
-        if let Some(background) = render_context.theme.brush("background", &selector) {
-            render_context.renderer.render(background.into())
-        }
+        // let selector = SelectorValue::new().with("window");
+        // if let Some(background) = render_context.theme.brush("background", &selector) {
+        //     render_context.renderer.render(background.into())
+        // }
 
         for node in tree.into_iter() {
             let mut global_position = Point::default();
@@ -80,7 +84,7 @@ impl System<Tree> for RenderSystem {
             }
 
             // render debug border for each widget
-            if self.debug_flag.get() {
+            if debug {
                 if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
                     let selector = Selector::from("debug-border");
 

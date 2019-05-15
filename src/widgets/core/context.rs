@@ -40,7 +40,7 @@ impl<'a> Context<'a> {
     pub fn widget(&mut self) -> WidgetContainer<'_> {
         WidgetContainer::new(self.entity, &mut self.ecm)
     }
-    
+
     /// Returns the window widget.
     pub fn window(&mut self) -> WidgetContainer<'_> {
         WidgetContainer::new(0, &mut self.ecm)
@@ -133,8 +133,6 @@ impl<'a> Context<'a> {
 
     /// Update all css properties of the current widget by the current theme.
     pub fn update_theme_properties(&mut self) {
-       
-
         if !self.widget().has::<Selector>() {
             return;
         }
@@ -177,7 +175,7 @@ impl<'a> Context<'a> {
 
         if self.widget().has::<FontSize>() {
             if let Some(size) = self.theme.uint("font-size", &selector.0) {
-                 self.widget().set::<FontSize>(FontSize::from(size as f64));
+                self.widget().set::<FontSize>(FontSize::from(size as f64));
             }
         }
 

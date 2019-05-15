@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use orbclient::{Color, Renderer as OrbRenderer, Window as OrbWindow};
+use orbclient::{Color, Window as OrbWindow};
 use orbfont::Font;
 
 use crate::{prelude::*, backend::Renderer};
@@ -53,68 +53,6 @@ lazy_static! {
 }
 
 impl Renderer for OrbWindow {
-    fn render(&mut self, background: Color) {
-        // render window background
-        self.set(background);
-    }
-
-    fn render_rectangle(
-        &mut self,
-        bounds: &Bounds,
-        parent_bounds: &Bounds,
-        global_position: &Point,
-        border_radius: u32,
-        background: Color,
-        border_width: u32,
-        border_color: Color,
-        opacity: f32,
-    ) {
-        let background = {
-            if opacity < 1.0 {
-                Color {
-                    data: (((opacity * 255.0) as u32) << 24)
-                        | ((background.r() as u32) << 16)
-                        | ((background.g() as u32) << 8)
-                        | (background.b() as u32),
-                }
-            } else {
-                background
-            }
-        };
-
-        let border_color = {
-            if opacity < 1.0 {
-                Color {
-                    data: (((opacity * 255.0) as u32) << 24)
-                        | ((border_color.r() as u32) << 16)
-                        | ((border_color.g() as u32) << 8)
-                        | (border_color.b() as u32),
-                }
-            } else {
-                border_color
-            }
-        };
-
-        let x = (bounds.x() + global_position.x).max(parent_bounds.x()) as i32;
-        let y = (bounds.y() + global_position.y).max(parent_bounds.y()) as i32;
-        let width = bounds.width() as u32; //(bounds.width() as i32).min(parent_bounds.width() as i32) as u32;
-        let height = bounds.height() as u32; // (bounds.height() as i32).min(parent_bounds.height() as i32) as u32;
-
-        self.rounded_rect(
-            x,
-            y,
-            bounds.width() as u32,
-            height,
-            border_radius,
-            true,
-            background,
-        );
-
-        if border_width > 0 {
-            self.rounded_rect(x, y, width, height, border_radius, false, border_color);
-        }
-    }
-
     fn render_text(
         &mut self,
         text: &str,
@@ -141,20 +79,5 @@ impl Renderer for OrbWindow {
             color,
             font,
         );
-    }
-
-    fn render_image(
-        &mut self,
-        image: &[Color],
-        bounds: &Bounds,
-        parent_bounds: &Bounds,
-        global_position: &Point,
-    ) {
-        let x = (bounds.x() + global_position.x).max(parent_bounds.x()) as i32;
-        let y = (bounds.y() + global_position.y).max(parent_bounds.y()) as i32;
-        let width = (bounds.width() as i32).min(parent_bounds.width() as i32) as u32;
-        let height = (bounds.height() as i32).min(parent_bounds.height() as i32) as u32;
-
-        self.image_fast(x, y, width, height, image);
     }
 }

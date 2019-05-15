@@ -46,20 +46,8 @@ pub struct EventContext<'a> {
     pub event_queue: &'a RefCell<EventQueue>,
 }
 
-/// This trait is used to define a backend renderer for OrbTk.
+/// [obsolete] This trait is used to define a backend renderer for OrbTk.
 pub trait Renderer {
-    fn render(&mut self, background: Color);
-    fn render_rectangle(
-        &mut self,
-        bounds: &Bounds,
-        parent_bounds: &Bounds,
-        global_position: &Point,
-        border_radius: u32,
-        background: Color,
-        border_width: u32,
-        border_color: Color,
-        opacity: f32,
-    );
     fn render_text(
         &mut self,
         text: &str,
@@ -69,13 +57,6 @@ pub trait Renderer {
         font_size: u32,
         color: Color,
         font: &Font,
-    );
-    fn render_image(
-        &mut self,
-        image: &[Color],
-        bounds: &Bounds,
-        parent_bounds: &Bounds,
-        global_position: &Point,
     );
 }
 
@@ -102,10 +83,6 @@ pub trait FontMeasure {
 
 pub use self::target::target_backend;
 pub use self::target::FONT_MEASURE;
-
-#[cfg(target_arch = "wasm32")]
-#[path = "web/mod.rs"]
-mod target;
 
 #[cfg(not(target_arch = "wasm32"))]
 #[path = "orbital/mod.rs"]

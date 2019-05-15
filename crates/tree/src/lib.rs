@@ -266,7 +266,7 @@ mod tests {
 
         tree.append_child(0, 1).unwrap();
         tree.append_child(0, 2).unwrap();
-        
+
         tree.append_child(1, 3).unwrap();
         tree.append_child(1, 4).unwrap();
 
@@ -275,12 +275,12 @@ mod tests {
 
         let mut iterator = tree.into_iter();
 
-         assert_eq!(0, iterator.next().unwrap());
-         assert_eq!(1, iterator.next().unwrap());
-         assert_eq!(3, iterator.next().unwrap());
-         assert_eq!(4, iterator.next().unwrap());
-         assert_eq!(2, iterator.next().unwrap());
-         assert_eq!(5, iterator.next().unwrap());
-         assert_eq!(6, iterator.next().unwrap());
+        assert_eq!(0, iterator.next().unwrap());
+        assert_eq!(1, iterator.next().unwrap());
+        assert_eq!(3, iterator.next().unwrap());
+        assert_eq!(4, iterator.next().unwrap());
+        assert_eq!(2, iterator.next().unwrap());
+        assert_eq!(5, iterator.next().unwrap());
+        assert_eq!(6, iterator.next().unwrap());
     }
 }

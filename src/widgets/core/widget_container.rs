@@ -93,12 +93,12 @@ impl<'a> WidgetContainer<'a> {
     /// Clones the property of type `P` from the given widget entity. If the entity does
     /// not exists or it doesn't have a component of type `P` `None` will be returned.
     pub fn try_clone<P>(&self) -> Option<P> where
-            P: Clone + Component + Default, {
-       if let Ok(property) = self.ecm.borrow_component::<P>(self.current_node) {
-            return Some(property.clone())
-       }
+        P: Clone + Component + Default, {
+        if let Ok(property) = self.ecm.borrow_component::<P>(self.current_node) {
+            return Some(property.clone());
+        }
 
-       None
+        None
     }
 
     /// Sets the property of type `P`.

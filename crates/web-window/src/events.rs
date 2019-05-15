@@ -4,18 +4,18 @@ use stdweb::web::event::*;
 pub enum Mouse {
     Up(MouseUpEvent),
     Down(MouseDownEvent),
-    Move(MouseMoveEvent)
+    Move(MouseMoveEvent),
 }
 
 /// Defines web key events.
 pub enum Key {
     Up(KeyUpEvent),
-    Down(KeyDownEvent)
+    Down(KeyDownEvent),
 }
 
 /// Defines a web window event.
 pub enum Event {
     Mouse(Mouse),
-    Key(Key)
+    Key(Key),
 }
 

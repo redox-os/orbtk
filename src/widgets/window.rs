@@ -16,15 +16,28 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the resizeable property. 
-        resizeable: Resizeable
+        resizeable: Resizeable,
+
+        /// Sets or shares the position property. 
+        position: Pos
     }
 );
 
 impl Template for Window {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Window")
+            .background(colors::BRIGHT_GRAY_COLOR)
+            .size(100.0, 100.0)
             .selector("window")
             .title("Window")
             .resizeable(false)
+    }
+
+    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
+        Some(Box::new(RectangleRenderObject))
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(GridLayout::new())
     }
 }

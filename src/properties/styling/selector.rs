@@ -2,7 +2,7 @@ use crate::{
     Entity,
     EntityComponentManager,
     css_engine::{Selector as SelectorValue, Specificity},
-    properties::{get_property, PropertySource}
+    properties::{get_property, PropertySource},
 };
 
 property!(
@@ -26,21 +26,21 @@ impl Selector {
     }
 
     pub fn matches(&self, other: &SelectorValue) -> bool {
-       self.0.matches(other)
+        self.0.matches(other)
     }
 
     pub fn with<S: Into<String>>(mut self, element: S) -> Self {
-        self.0 =  self.0.with(element);
+        self.0 = self.0.with(element);
         self
     }
 
     pub fn id<S: Into<String>>(mut self, id: S) -> Self {
-        self.0 =  self.0.id(id);
+        self.0 = self.0.id(id);
         self
     }
 
     pub fn class<S: Into<String>>(mut self, class: S) -> Self {
-        self.0 =  self.0.class(class);
+        self.0 = self.0.class(class);
         self
     }
 
@@ -55,7 +55,7 @@ impl Selector {
     }
 
     pub fn without_pseudo_class<S: Into<String>>(mut self, pseudo_class: S) -> Self {
-        self.0 =  self.0.without_pseudo_class(pseudo_class);
+        self.0 = self.0.without_pseudo_class(pseudo_class);
         self
     }
 }

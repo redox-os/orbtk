@@ -196,7 +196,7 @@ impl BackendRunner for OrbitalBackendRunner {
     fn world(&mut self, world: World<Tree>) {
         self.world = Some(world);
     }
-    
+
     fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>) {
         loop {
             if !running.get() {

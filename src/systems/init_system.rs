@@ -1,4 +1,4 @@
-use std::{cell::{Cell, RefCell}, rc::Rc, collections::BTreeMap};
+use std::{cell::RefCell, rc::Rc, collections::BTreeMap};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -8,7 +8,6 @@ use crate::{backend::Backend, prelude::*};
 pub struct InitSystem {
     pub backend: Rc<RefCell<dyn Backend>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
-    pub debug_flag: Rc<Cell<bool>>,
 }
 
 impl InitSystem {
@@ -43,7 +42,12 @@ impl System<Tree> for InitSystem {
         let mut backend = self.backend.borrow_mut();
         let state_context = backend.state_context();
 
-        if self.debug_flag.get() {
+        #[cfg(feature = "debug")]
+            let debug = true;
+        #[cfg(not(feature = "debug"))]
+            let debug = false;
+
+        if debug {
             println!("\n------ Widget tree ------\n");
 
             print_tree(tree.root, 0, tree, ecm);

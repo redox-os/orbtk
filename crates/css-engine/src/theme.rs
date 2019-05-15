@@ -88,7 +88,6 @@ pub struct Theme {
 
 
 impl Theme {
-
     /// Creates a new `ThemeBuilder` object with default theme as base.
     pub fn create() -> ThemeBuilder {
         ThemeBuilder {
