@@ -11,7 +11,7 @@ use crate::backend::*;
 
 /// Represents a window. Each window has its own tree, event pipeline and backend.
 pub struct WindowShell {
-    pub backend_runner: Box<dyn BackendRunner>,
+    pub backend_runner: ShellRunner,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,

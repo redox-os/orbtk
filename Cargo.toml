@@ -29,6 +29,7 @@ orbclient = "0.3.22"
 
 [dependencies]
 orbtk-css-engine = { version = "0.1.0", path = "crates/css-engine" }
+orbtk-shell = { version = "0.1.0", path = "crates/shell" }
 orbtk-theme = { version = "0.1.0", path="crates/theme" }
 orbtk-utils = { version = "0.1.0", path = "crates/utils" }
 orbtk-tree = { version = "0.1.0", path="crates/tree" }
@@ -45,6 +46,7 @@ debug = []
 [workspace]
 members = [
     "crates/css-engine",
+    "crates/shell",
     "crates/theme",
     "crates/utils",
     "crates/tree"

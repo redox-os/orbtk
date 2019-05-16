@@ -64,17 +64,18 @@ impl Application {
         world.entity_component_manager().register_component(window, Global::default());
         world.entity_component_manager().register_component(window, Bounds::from((0.0, 0.0, constraint.width(), constraint.height())));
 
-        let (mut runner, backend) =
-            target_backend(&title.0, Bounds::from((position.0.x, position.0.y, constraint.width(), constraint.height())), false);
+        let window_shell = Rc::new(RefCell::new(WindowBuilder::new().title(&(title.0)[..]).bounds(Bounds::from((position.0.x, position.0.y, constraint.width(), constraint.height()))).resizeable(resizeable.0).build()));
+        // let (mut runner, backend) =
+        //     target_backend(&(title.0)[..], Bounds::from((position.0.x, position.0.y, constraint.width(), constraint.height())), false);
 
         world.register_init_system(InitSystem {
-            backend: backend.clone(),
+            backend: window_shell.clone(),
             states: states.clone(),
         });
 
         world
             .create_system(EventSystem {
-                backend: backend.clone(),
+                backend: window_shell.clone(),
                 handlers: handlers.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -84,7 +85,7 @@ impl Application {
 
         world
             .create_system(StateSystem {
-                backend: backend.clone(),
+                backend: window_shell.clone(),
                 states: states.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -94,7 +95,7 @@ impl Application {
 
         world
             .create_system(LayoutSystem {
-                backend: backend.clone(),
+                backend: window_shell.clone(),
                 layouts: layouts.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -104,7 +105,7 @@ impl Application {
 
         world
             .create_system(PostLayoutStateSystem {
-                backend: backend.clone(),
+                backend: window_shell.clone(),
                 states: states.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -114,7 +115,7 @@ impl Application {
 
         world
             .create_system(RenderSystem {
-                backend: backend.clone(),
+                backend: window_shell.clone(),
                 render_objects: render_objects.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -122,10 +123,13 @@ impl Application {
             .with_priority(4)
             .build();
 
-        runner.world(world);
+      
 
         self.windows.push(WindowShell {
-            backend_runner: runner,
+            backend_runner: ShellRunner {
+                world: Some(world),
+                window_shell
+            },
             render_objects,
             layouts,
             handlers,

@@ -7,10 +7,10 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{backend::Backend, prelude::*};
+use crate::{backend::OrbitalBackend, prelude::*};
 
 pub struct EventSystem {
-    pub backend: Rc<RefCell<dyn Backend>>,
+      pub backend: Rc<RefCell<OrbitalBackend>>,
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,

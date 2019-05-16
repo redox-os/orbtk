@@ -2,7 +2,7 @@ use std::cell::{Cell, RefCell};
 use std::collections::BTreeMap;
 use std::rc::Rc;
 
-use orbclient::{self, Renderer as OrbRenderer, Window as OrbWindow};
+use orbclient::{self, Renderer as OrbRenderer, Window as OrbWindow, WindowFlag};
 
 use dces::prelude::{Entity, World};
 use orbgl::prelude::{CairoRenderEngine, FramebufferSurface};
@@ -43,16 +43,8 @@ impl OrbitalBackend {
             canvas,
         }
     }
-}
 
-impl Drop for OrbitalBackend {
-    fn drop(&mut self) {
-        self.inner.sync();
-    }
-}
-
-impl Backend for OrbitalBackend {
-    fn drain_events(&mut self) {
+    pub fn drain_events(&mut self) {
         self.inner.sync();
 
         for event in self.inner.events() {
@@ -149,7 +141,7 @@ impl Backend for OrbitalBackend {
         }
     }
 
-    fn render_context(&mut self) -> RenderContext<'_> {
+    pub fn render_context(&mut self) -> RenderContext<'_> {
         RenderContext {
             canvas: &mut self.canvas,
             renderer: &mut self.inner,
@@ -157,13 +149,13 @@ impl Backend for OrbitalBackend {
         }
     }
 
-    fn event_context(&mut self) -> EventContext<'_> {
+    pub fn event_context(&mut self) -> EventContext<'_> {
         EventContext {
             event_queue: &self.event_queue,
         }
     }
 
-    fn state_context(&mut self) -> StateContext<'_> {
+    pub fn state_context(&mut self) -> StateContext<'_> {
         StateContext {
             event_queue: &self.event_queue,
             messages: &mut self.messages,
@@ -171,18 +163,24 @@ impl Backend for OrbitalBackend {
     }
 }
 
-/// Implementation of the OrbClient based backend runner.
-pub struct OrbitalBackendRunner {
-    pub world: Option<World<Tree>>,
-    pub backend: Rc<RefCell<OrbitalBackend>>,
+impl Drop for OrbitalBackend {
+    fn drop(&mut self) {
+        self.inner.sync();
+    }
 }
 
-impl BackendRunner for OrbitalBackendRunner {
-    fn world(&mut self, world: World<Tree>) {
-        self.world = Some(world);
-    }
+// impl Backend for OrbitalBackend {
+    
+// }
 
-    fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>) {
+/// Implementation of the OrbClient based backend runner.
+pub struct ShellRunner {
+    pub world: Option<World<Tree>>,
+    pub window_shell: Rc<RefCell<OrbitalBackend>>,
+}
+
+impl ShellRunner {
+    pub fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>) {
         loop {
             if !running.get() {
                 break;
@@ -194,7 +192,56 @@ impl BackendRunner for OrbitalBackendRunner {
 
             update.set(false);
 
-            self.backend.borrow_mut().drain_events();
+            self.window_shell.borrow_mut().drain_events();
         }
+    }
+}
+
+#[derive(Default)]
+pub struct WindowBuilder {
+    title: String,
+
+    resizeable: bool,
+
+    bounds: Bounds,
+}
+
+impl WindowBuilder {
+    pub fn new() -> Self {
+        WindowBuilder::default()
+    }
+
+    pub fn title(mut self, title: impl Into<String>) -> Self {
+        self.title = title.into();
+        self
+    }
+
+    pub fn resizeable(mut self, resizeable: bool) -> Self {
+        self.resizeable = resizeable;
+        self
+    }
+
+    pub fn bounds(mut self, bounds: impl Into<Bounds>) -> Self {
+        self.bounds = bounds.into();
+        self
+    }
+
+    pub fn build(self) -> OrbitalBackend {
+        let mut flags = vec![];
+        if self.resizeable {
+            flags.push(WindowFlag::Resizable);
+        }
+
+        OrbitalBackend::new(
+            OrbWindow::new_flags(
+                self.bounds.x() as i32,
+                self.bounds.y() as i32,
+                self.bounds.width() as u32,
+                self.bounds.height() as u32,
+                &self.title,
+                &flags,
+            )
+                .unwrap(),
+        )
     }
 }

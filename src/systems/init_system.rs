@@ -2,11 +2,11 @@ use std::{cell::RefCell, rc::Rc, collections::BTreeMap};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{backend::Backend, prelude::*};
+use crate::{backend::OrbitalBackend, prelude::*};
 
 /// This system is used to initializes the widgets.
 pub struct InitSystem {
-    pub backend: Rc<RefCell<dyn Backend>>,
+      pub backend: Rc<RefCell<OrbitalBackend>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
 }
 
@@ -56,7 +56,7 @@ impl System<Tree> for InitSystem {
 
             println!("\n------ Widget tree ------\n");
         }
-        
+
 
         // init css ids
         for node in tree.into_iter() {
