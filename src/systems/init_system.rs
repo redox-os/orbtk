@@ -2,11 +2,11 @@ use std::{cell::RefCell, rc::Rc, collections::BTreeMap};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{backend::OrbitalBackend, prelude::*};
+use crate::{backend::WindowShell, prelude::*};
 
 /// This system is used to initializes the widgets.
 pub struct InitSystem {
-      pub backend: Rc<RefCell<OrbitalBackend>>,
+      pub backend: Rc<RefCell<WindowShell>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
 }
 

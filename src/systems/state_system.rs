@@ -6,11 +6,11 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{backend::OrbitalBackend, prelude::*};
+use crate::{backend::WindowShell, prelude::*};
 
 /// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {
-      pub backend: Rc<RefCell<OrbitalBackend>>,
+      pub backend: Rc<RefCell<WindowShell>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
@@ -124,7 +124,7 @@ impl System<Tree> for StateSystem {
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 pub struct PostLayoutStateSystem {
-      pub backend: Rc<RefCell<OrbitalBackend>>,
+      pub backend: Rc<RefCell<WindowShell>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,

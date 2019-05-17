@@ -11,17 +11,18 @@ use orbgl_api::Canvas;
 use crate::backend::*;
 
 /// Implementation of the OrbClient based backend.
-pub struct OrbitalBackend {
+pub struct WindowShell {
     inner: OrbWindow,
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
     event_queue: RefCell<EventQueue>,
     messages: RefCell<BTreeMap<Entity, Vec<MessageBox>>>,
     canvas: Canvas,
+    adapter: Option<Box<WindowAdapter>>
 }
 
-impl OrbitalBackend {
-    pub fn new(inner: OrbWindow) -> OrbitalBackend {
+impl WindowShell {
+    pub fn new(inner: OrbWindow) -> WindowShell {
         let mut inner = inner;
 
         let surface = FramebufferSurface::new(
@@ -34,14 +35,19 @@ impl OrbitalBackend {
 
         let canvas = Canvas::new(render_engine.clone());
 
-        OrbitalBackend {
+        WindowShell {
             inner,
             mouse_buttons: (false, false, false),
             mouse_position: Point::default(),
             event_queue: RefCell::new(EventQueue::default()),
             messages: RefCell::new(BTreeMap::new()),
             canvas,
+            adapter: None,
         }
+    }
+
+    pub fn set_adapter(&mut self, adapter: impl Into<Box<WindowAdapter>>) {
+        self.adapter = Some(adapter.into());
     }
 
     pub fn drain_events(&mut self) {
@@ -163,26 +169,24 @@ impl OrbitalBackend {
     }
 }
 
-impl Drop for OrbitalBackend {
+impl Drop for WindowShell {
     fn drop(&mut self) {
         self.inner.sync();
     }
 }
 
-// impl Backend for OrbitalBackend {
-    
-// }
-
 /// Implementation of the OrbClient based backend runner.
 pub struct ShellRunner {
     pub world: Option<World<Tree>>,
-    pub window_shell: Rc<RefCell<OrbitalBackend>>,
+    pub window_shell: Rc<RefCell<WindowShell>>,
+    pub update: Rc<Cell<bool>>,
+    pub running: Rc<Cell<bool>>
 }
 
 impl ShellRunner {
-    pub fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>) {
+    pub fn run(&mut self) {
         loop {
-            if !running.get() {
+            if !self.running.get() {
                 break;
             }
 
@@ -190,7 +194,7 @@ impl ShellRunner {
                 world.run();
             }
 
-            update.set(false);
+            self.update.set(false);
 
             self.window_shell.borrow_mut().drain_events();
         }
@@ -226,13 +230,13 @@ impl WindowBuilder {
         self
     }
 
-    pub fn build(self) -> OrbitalBackend {
+    pub fn build(self) -> WindowShell {
         let mut flags = vec![];
         if self.resizeable {
             flags.push(WindowFlag::Resizable);
         }
 
-        OrbitalBackend::new(
+        WindowShell::new(
             OrbWindow::new_flags(
                 self.bounds.x() as i32,
                 self.bounds.y() as i32,
@@ -244,4 +248,8 @@ impl WindowBuilder {
                 .unwrap(),
         )
     }
+}
+
+pub trait WindowAdapter {
+    fn update(&mut self);
 }

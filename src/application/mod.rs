@@ -21,7 +21,7 @@ mod window;
 /// The `Application` represents the entry point of an OrbTk based application.
 #[derive(Default)]
 pub struct Application {
-    windows: Vec<WindowShell>,
+    runners: Vec<ShellRunner>,
 }
 
 impl Application {
@@ -123,29 +123,33 @@ impl Application {
             .with_priority(4)
             .build();
 
-      
-
-        self.windows.push(WindowShell {
-            backend_runner: ShellRunner {
-                world: Some(world),
-                window_shell
-            },
+        window_shell.borrow_mut().set_adapter(WindowAdapter {
             render_objects,
             layouts,
             handlers,
             states,
-            update,
-            running,
-            resizable: resizeable.0,
         });
+
+        //    backend_runner: ShellRunner {
+        //         world: Some(world),
+        //         window_shell
+        //     },
+
+
+        self.runners.push( ShellRunner {
+                world: Some(world),
+                window_shell,
+                update,
+                running
+            });
 
         self
     }
 
     /// Starts the application and run it until quit is requested.
     pub fn run(&mut self) {
-        for window in &mut self.windows {
-            window.run();
+        for runner in &mut self.runners {
+            runner.run();
         }
     }
 }

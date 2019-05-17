@@ -12,7 +12,7 @@ use crate::backend::*;
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-      pub backend: Rc<RefCell<OrbitalBackend>>,
+      pub backend: Rc<RefCell<WindowShell>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
 }

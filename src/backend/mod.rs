@@ -66,9 +66,9 @@ pub trait FontMeasure {
     fn measure(&self, text: &str, font: &Font, font_size: u32) -> (u32, u32);
 }
 
-pub use self::target::{WindowBuilder, ShellRunner, OrbitalBackend};
-pub use self::target::FONT_MEASURE;
+pub use self::platform::{WindowBuilder, ShellRunner, WindowShell};
+pub use self::platform::FONT_MEASURE;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(platform_arch = "wasm32"))]
 #[path = "orbital/mod.rs"]
-mod target;
+pub mod platform;
