@@ -7,10 +7,10 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{backend::WindowShell, prelude::*};
+use crate::{backend::{WindowShell}, prelude::*};
 
 pub struct EventSystem {
-      pub backend: Rc<RefCell<WindowShell>>,
+    pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
@@ -185,12 +185,14 @@ impl EventSystem {
 impl System<Tree> for EventSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
         let mut backend = self.backend.borrow_mut();
-        let event_context = backend.event_context();
+        let adapter = backend.adapter();
+        // let blub = adapter.context_provider();
+        
 
         let mut new_events = vec![];
 
         loop {
-            for event in event_context.event_queue.borrow_mut().into_iter() {
+            for event in adapter.event_queue.into_iter() {
                 if let Ok(event) = event.downcast_ref::<WindowEvent>() {
                     match event {
                         WindowEvent::Resize { width, height } => {
@@ -219,7 +221,6 @@ impl System<Tree> for EventSystem {
                     }
                 }
 
-
                 match event.strategy {
                     EventStrategy::TopDown => {
                         self.process_top_down_event(&event, tree, ecm, &mut new_events);
@@ -232,12 +233,11 @@ impl System<Tree> for EventSystem {
             }
 
 
-            event_context
+            adapter
                 .event_queue
-                .borrow_mut()
                 .append(&mut new_events);
 
-            if event_context.event_queue.borrow().len() == 0 {
+            if adapter.event_queue.len() == 0 {
                 break;
             }
         }

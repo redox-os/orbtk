@@ -1,6 +1,4 @@
 use std::cell::{Cell, RefCell};
-use std::collections::BTreeMap;
-use std::rc::Rc;
 
 use orbclient::{self, Renderer as OrbRenderer, Window as OrbWindow, WindowFlag};
 
@@ -10,19 +8,21 @@ use orbgl_api::Canvas;
 
 use crate::backend::*;
 
+// todo: generic adapter A where A : ShellAdapber...
+
 /// Implementation of the OrbClient based backend.
-pub struct WindowShell {
-    inner: OrbWindow,
+pub struct WindowShell<A> where A: WindowAdapter {
+    pub inner: OrbWindow,
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
-    event_queue: RefCell<EventQueue>,
-    messages: RefCell<BTreeMap<Entity, Vec<MessageBox>>>,
-    canvas: Canvas,
-    adapter: Option<Box<WindowAdapter>>
+    // event_queue: RefCell<EventQueue>,
+    // messages: RefCell<BTreeMap<Entity, Vec<MessageBox>>>,
+    pub canvas: Canvas,
+    adapter: A,
 }
 
-impl WindowShell {
-    pub fn new(inner: OrbWindow) -> WindowShell {
+impl<A> WindowShell<A> where A: WindowAdapter {
+    pub fn new(inner: OrbWindow, adapter: A) -> WindowShell<A> {
         let mut inner = inner;
 
         let surface = FramebufferSurface::new(
@@ -39,15 +39,15 @@ impl WindowShell {
             inner,
             mouse_buttons: (false, false, false),
             mouse_position: Point::default(),
-            event_queue: RefCell::new(EventQueue::default()),
-            messages: RefCell::new(BTreeMap::new()),
+            // event_queue: RefCell::new(EventQueue::default()),
+            // messages: RefCell::new(BTreeMap::new()),
             canvas,
-            adapter: None,
+            adapter,
         }
     }
 
-    pub fn set_adapter(&mut self, adapter: impl Into<Box<WindowAdapter>>) {
-        self.adapter = Some(adapter.into());
+    pub fn adapter(&mut self) -> &mut A {
+        &mut self.adapter
     }
 
     pub fn drain_events(&mut self) {
@@ -75,13 +75,15 @@ impl WindowShell {
                                 MouseButton::Right
                             }
                         };
-                        self.event_queue.borrow_mut().register_event(
-                            MouseUpEvent {
-                                button,
-                                position: self.mouse_position,
-                            },
-                            0,
-                        )
+
+                        // todo call adapter method
+                        // self.event_queue.borrow_mut().register_event(
+                        //     MouseUpEvent {
+                        //         button,
+                        //         position: self.mouse_position,
+                        //     },
+                        //     0,
+                        // )
                     } else {
                         let button = {
                             if button.left {
@@ -92,13 +94,15 @@ impl WindowShell {
                                 MouseButton::Right
                             }
                         };
-                        self.event_queue.borrow_mut().register_event(
-                            MouseDownEvent {
-                                button,
-                                position: self.mouse_position,
-                            },
-                            0,
-                        );
+
+                        // todo: call adapter method
+                        // self.event_queue.borrow_mut().register_event(
+                        //     MouseDownEvent {
+                        //         button,
+                        //         position: self.mouse_position,
+                        //     },
+                        //     0,
+                        // );
                     }
 
                     self.mouse_buttons = (button.left, button.middle, button.right);
@@ -119,71 +123,58 @@ impl WindowShell {
                     };
 
                     if key_event.pressed {
-                        self.event_queue
-                            .borrow_mut()
-                            .register_event(KeyUpEvent { key }, 0);
+                        // todo call adapter method
+
+                        // self.event_queue
+                        //     .borrow_mut()
+                        //     .register_event(KeyUpEvent { key }, 0);
                     } else {
-                        self.event_queue
-                            .borrow_mut()
-                            .register_event(KeyDownEvent { key }, 0);
+                        // todo call adapter method
+
+                        // self.event_queue
+                        //     .borrow_mut()
+                        //     .register_event(KeyDownEvent { key }, 0);
                     }
                 }
                 orbclient::EventOption::Quit(_quit_event) => {
-                    self.event_queue
-                        .borrow_mut()
-                        .register_event(SystemEvent::Quit, 0);
+                    // todo call adapter method
+
+                    // self.event_queue
+                    //     .borrow_mut()
+                    //     .register_event(SystemEvent::Quit, 0);
                 }
                 orbclient::EventOption::Resize(resize_event) => {
-                    self.event_queue.borrow_mut().register_event(
-                        WindowEvent::Resize {
-                            width: resize_event.width as f64,
-                            height: resize_event.height as f64,
-                        },
-                        0,
-                    );
+                    // todo call adapter method
+
+                    // self.event_queue.borrow_mut().register_event(
+                    //     WindowEvent::Resize {
+                    //         width: resize_event.width as f64,
+                    //         height: resize_event.height as f64,
+                    //     },
+                    //     0,
+                    // );
                 }
                 _ => {}
             }
         }
     }
-
-    pub fn render_context(&mut self) -> RenderContext<'_> {
-        RenderContext {
-            canvas: &mut self.canvas,
-            renderer: &mut self.inner,
-            event_queue: &self.event_queue,
-        }
-    }
-
-    pub fn event_context(&mut self) -> EventContext<'_> {
-        EventContext {
-            event_queue: &self.event_queue,
-        }
-    }
-
-    pub fn state_context(&mut self) -> StateContext<'_> {
-        StateContext {
-            event_queue: &self.event_queue,
-            messages: &mut self.messages,
-        }
-    }
 }
 
-impl Drop for WindowShell {
+impl<A> Drop for WindowShell<A> where A: WindowAdapter {
     fn drop(&mut self) {
         self.inner.sync();
     }
 }
 
 /// Implementation of the OrbClient based backend runner.
-pub struct ShellRunner {
+pub struct ShellRunner<A> where A: WindowAdapter {
     pub world: Option<World<Tree>>,
-    pub window_shell: Rc<RefCell<WindowShell>>,
+    pub window_shell: Rc<RefCell<WindowShell<A>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>
 }
 
-impl ShellRunner {
+impl<A> ShellRunner<A> where A: WindowAdapter {
     pub fn run(&mut self) {
         loop {
             if !self.running.get() {
@@ -201,18 +192,24 @@ impl ShellRunner {
     }
 }
 
-#[derive(Default)]
-pub struct WindowBuilder {
+pub struct WindowBuilder<A> where A: WindowAdapter {
     title: String,
 
     resizeable: bool,
 
     bounds: Bounds,
+
+    adapter: A,
 }
 
-impl WindowBuilder {
-    pub fn new() -> Self {
-        WindowBuilder::default()
+impl<A> WindowBuilder<A> where A: WindowAdapter {
+    pub fn new(adapter: A) -> Self {
+        WindowBuilder {
+            adapter,
+            title: String::default(),
+            resizeable: false,
+            bounds: Bounds::default(),
+        }
     }
 
     pub fn title(mut self, title: impl Into<String>) -> Self {
@@ -230,7 +227,7 @@ impl WindowBuilder {
         self
     }
 
-    pub fn build(self) -> WindowShell {
+    pub fn build(self) -> WindowShell<A> {
         let mut flags = vec![];
         if self.resizeable {
             flags.push(WindowFlag::Resizable);
@@ -244,12 +241,8 @@ impl WindowBuilder {
                 self.bounds.height() as u32,
                 &self.title,
                 &flags,
-            )
-                .unwrap(),
+            ).unwrap(),
+            self.adapter
         )
     }
-}
-
-pub trait WindowAdapter {
-    fn update(&mut self);
 }

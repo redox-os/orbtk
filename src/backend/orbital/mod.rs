@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use orbfont::Font;
 
-pub use self::backend::{WindowBuilder, WindowShell, ShellRunner, WindowAdapter};
+pub use self::backend::{WindowBuilder, WindowShell, ShellRunner};
 
 use crate::backend::*;
 

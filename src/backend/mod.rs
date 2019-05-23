@@ -49,10 +49,11 @@ pub trait Renderer {
 
 /// This trait is used to define a backend for OrbTk.
 pub trait Backend {
+    fn adapter(&mut self) -> Option<&mut WindowAdapter>;
     fn drain_events(&mut self);
-    fn render_context(&mut self) -> RenderContext<'_>;
-    fn event_context(&mut self) -> EventContext<'_>;
-    fn state_context(&mut self) -> StateContext<'_>;
+    // fn render_context(&mut self) -> RenderContext<'_>;
+    // fn event_context(&mut self) -> EventContext<'_>;
+    // fn state_context(&mut self) -> StateContext<'_>;
 }
 
 /// This trait is used to create a backend runner.
@@ -64,6 +65,10 @@ pub trait Runner {
 /// Helper trait to measure the font size of the given `text`.
 pub trait FontMeasure {
     fn measure(&self, text: &str, font: &Font, font_size: u32) -> (u32, u32);
+}
+
+pub trait WindowAdapter {
+    fn update(&mut self);
 }
 
 pub use self::platform::{WindowBuilder, ShellRunner, WindowShell};

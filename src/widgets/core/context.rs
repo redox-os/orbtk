@@ -1,17 +1,17 @@
-use std::{cell::RefCell, collections::BTreeMap};
+use std::collections::BTreeMap;
 
 use dces::prelude::{Entity, EntityComponentManager};
+use orbgl_api::Canvas;
 
 use super::{MessageBox, WidgetContainer};
 
-use crate::prelude::*;
+use crate::{backend::{WindowShell, Renderer}, prelude::*};
 
 /// The `Context` is provides access for the states to objects they could work with.
 pub struct Context<'a> {
     ecm: &'a mut EntityComponentManager,
     tree: &'a Tree,
-    event_queue: &'a RefCell<EventQueue>,
-    messages: Option<&'a RefCell<BTreeMap<Entity, Vec<MessageBox>>>>,
+    window_shell: &'a mut WindowShell<WindowAdapter>,
     pub entity: Entity,
     pub theme: &'a ThemeValue,
 }
@@ -22,16 +22,14 @@ impl<'a> Context<'a> {
         entity: Entity,
         ecm: &'a mut EntityComponentManager,
         tree: &'a Tree,
-        event_queue: &'a RefCell<EventQueue>,
+        window_shell: &'a mut WindowShell<WindowAdapter>,
         theme: &'a ThemeValue,
-        messages: Option<&'a RefCell<BTreeMap<Entity, Vec<MessageBox>>>>,
     ) -> Self {
         Context {
             entity,
             ecm,
             tree,
-            event_queue,
-            messages,
+            window_shell,
             theme,
         }
     }
@@ -90,8 +88,7 @@ impl<'a> Context<'a> {
     }
 
     /// Sends a message to the widget with the given id over the message channel.
-    pub fn send_message(&mut self, target_widget: &str, message: impl Into<MessageBox>) {
-        if let Some(messages) = &self.messages {
+    pub fn send_message(&mut self, target_widget: &str, message: impl Into<MessageBox>) {    
             let mut entity = None;
             if let Ok(global) = self.ecm.borrow_component::<Global>(0) {
                 if let Some(en) = global.id_map.get(target_widget) {
@@ -100,11 +97,10 @@ impl<'a> Context<'a> {
             }
 
             if let Some(entity) = entity {
-                if !messages.borrow().contains_key(&entity) {
-                    messages.borrow_mut().insert(entity, vec![]);
+                if !self.window_shell.adapter().messages.contains_key(&entity) {
+                    self.window_shell.adapter().messages.insert(entity, vec![]);
                 }
-                messages
-                    .borrow_mut()
+                self.window_shell.adapter().messages
                     .get_mut(&entity)
                     .unwrap()
                     .push(message.into());
@@ -114,20 +110,18 @@ impl<'a> Context<'a> {
                     target_widget
                 );
             }
-        }
+        
     }
 
     /// Pushes an event to the event queue with the given `strategy`.
     pub fn push_event_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
-        self.event_queue
-            .borrow_mut()
+        self.window_shell.adapter().event_queue
             .register_event_with_strategy(event, strategy, self.entity);
     }
 
     /// Pushes an event to the event queue.
-    pub fn push_event<E: Event>(&self, event: E) {
-        self.event_queue
-            .borrow_mut()
+    pub fn push_event<E: Event>(&mut self, event: E) {
+        self.window_shell.adapter().event_queue
             .register_event(event, self.entity);
     }
 
@@ -251,4 +245,16 @@ impl<'a> Context<'a> {
 
         self.widget().get_mut::<Selector>().0.set_dirty(true);
     }
+
+    pub fn canvas(&mut self) -> &mut Canvas {
+        &mut self.window_shell.canvas
+    }
+
+    pub fn renderer(&mut self) -> &mut Renderer {
+        &mut self.window_shell.inner
+    }
+
+    // pub fn next_message(&mut self) -> MessageBox {
+    //     self.adapter.messages.take(key: &Q)
+    // }
 }

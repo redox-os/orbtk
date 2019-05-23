@@ -6,7 +6,7 @@ use crate::{backend::WindowShell, prelude::*};
 
 /// This system is used to initializes the widgets.
 pub struct InitSystem {
-      pub backend: Rc<RefCell<WindowShell>>,
+    pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
 }
 
@@ -39,9 +39,6 @@ impl InitSystem {
 
 impl System<Tree> for InitSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-        let mut backend = self.backend.borrow_mut();
-        let state_context = backend.state_context();
-
         let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
 
         #[cfg(feature = "debug")]
@@ -57,6 +54,7 @@ impl System<Tree> for InitSystem {
             println!("\n------ Widget tree ------\n");
         }
 
+        let window_shell = &mut self.backend.borrow_mut();
 
         // init css ids
         for node in tree.into_iter() {
@@ -66,9 +64,8 @@ impl System<Tree> for InitSystem {
                 node,
                 ecm,
                 tree,
-                &state_context.event_queue,
+                window_shell,
                 &theme,
-                None,
             );
 
             if let Some(state) = self.states.borrow().get(&node) {

@@ -10,7 +10,7 @@ use crate::{backend::WindowShell, prelude::*};
 
 /// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {
-      pub backend: Rc<RefCell<WindowShell>>,
+    pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
@@ -81,18 +81,15 @@ impl System<Tree> for StateSystem {
             return;
         }
 
-        let mut backend = self.backend.borrow_mut();
-        let state_context = backend.state_context();
-
         let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
+        let window_shell = &mut self.backend.borrow_mut();
 
         let mut context = Context::new(
             tree.root,
             ecm,
             tree,
-            &state_context.event_queue,
+            window_shell,
             &theme,
-            Some(&state_context.messages),
         );
 
         for node in tree.into_iter() {
@@ -124,7 +121,7 @@ impl System<Tree> for StateSystem {
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 pub struct PostLayoutStateSystem {
-      pub backend: Rc<RefCell<WindowShell>>,
+      pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
@@ -136,17 +133,15 @@ impl System<Tree> for PostLayoutStateSystem {
             return;
         }
 
+        let window_shell = &mut self.backend.borrow_mut();
         let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
 
-        let mut backend = self.backend.borrow_mut();
-        let state_context = backend.state_context();
         let mut context = Context::new(
             tree.root,
             ecm,
             tree,
-            &state_context.event_queue,
+            window_shell,
             &theme,
-            None,
         );
 
         for (node, state) in &*self.states.borrow() {
@@ -156,12 +151,13 @@ impl System<Tree> for PostLayoutStateSystem {
 
             // Handle messages.
             {
-                for (entity, messages) in state_context.messages.borrow_mut().iter() {
-                    if let Some(state) = self.states.borrow().get(&entity) {
-                        context.entity = *entity;
-                        state.receive_messages(&mut context, &messages);
-                    }
-                }
+                // todo fix messages.
+                // for (entity, messages) in context.messages().iter() {
+                //     if let Some(state) = self.states.borrow().get(&entity) {
+                //         context.entity = *entity;
+                //         state.receive_messages(&mut context, &messages);
+                //     }
+                // }
             }
         }
     }

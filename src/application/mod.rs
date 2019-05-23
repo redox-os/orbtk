@@ -9,7 +9,7 @@ use std::{
 use dces::prelude::{Entity, World};
 
 use crate::prelude::*;
-use crate::backend::*;
+use crate::backend::{WindowBuilder, ShellRunner};
 use crate::systems::*;
 
 pub use self::global::*;
@@ -21,7 +21,7 @@ mod window;
 /// The `Application` represents the entry point of an OrbTk based application.
 #[derive(Default)]
 pub struct Application {
-    runners: Vec<ShellRunner>,
+    runners: Vec<ShellRunner<WindowAdapter>>,
 }
 
 impl Application {
@@ -64,9 +64,13 @@ impl Application {
         world.entity_component_manager().register_component(window, Global::default());
         world.entity_component_manager().register_component(window, Bounds::from((0.0, 0.0, constraint.width(), constraint.height())));
 
-        let window_shell = Rc::new(RefCell::new(WindowBuilder::new().title(&(title.0)[..]).bounds(Bounds::from((position.0.x, position.0.y, constraint.width(), constraint.height()))).resizeable(resizeable.0).build()));
-        // let (mut runner, backend) =
-        //     target_backend(&(title.0)[..], Bounds::from((position.0.x, position.0.y, constraint.width(), constraint.height())), false);
+        let window_shell = Rc::new(RefCell::new(WindowBuilder::new(WindowAdapter {
+            render_objects: render_objects.clone(),
+            layouts: layouts.clone(),
+            handlers: handlers.clone(),
+            states: states.clone(),
+            ..Default::default()
+        }).title(&(title.0)[..]).bounds(Bounds::from((position.0.x, position.0.y, constraint.width(), constraint.height()))).resizeable(resizeable.0).build()));
 
         world.register_init_system(InitSystem {
             backend: window_shell.clone(),
@@ -123,12 +127,7 @@ impl Application {
             .with_priority(4)
             .build();
 
-        window_shell.borrow_mut().set_adapter(WindowAdapter {
-            render_objects,
-            layouts,
-            handlers,
-            states,
-        });
+       
 
         //    backend_runner: ShellRunner {
         //         world: Some(world),

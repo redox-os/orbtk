@@ -14,16 +14,16 @@ impl Into<Box<dyn RenderObject>> for ImageRenderObject {
 impl RenderObject for ImageRenderObject {
     fn render(
         &self,
-        canvas: &mut Canvas,
-        _renderer: &mut dyn Renderer,
         context: &mut Context<'_>,
         global_position: &Point,
     ) {
-        let mut widget = context.widget();
-        let bounds = widget.clone::<Bounds>();
+         let (bounds, mut image) = {
+            let widget = context.widget();
+            (widget.clone::<Bounds>(), widget.try_clone::<Image>().clone())
+        };
 
-        if let Some(image) = widget.try_get_mut::<Image>() {
-            canvas.draw_image_with_size(&mut (image.0).0, global_position.x, global_position.y, bounds.width(), bounds.height());
+        if let Some(image) = &mut image {
+            context.canvas().draw_image_with_size(&mut (image.0).0, global_position.x, global_position.y, bounds.width(), bounds.height());
         }
     }
 }

@@ -19,8 +19,6 @@ mod text;
 pub trait RenderObject: Any {
     fn render(
         &self,
-        canvas: &mut Canvas,
-        renderer: &mut dyn Renderer,
         context: &mut Context<'_>,
         global_position: &Point,
     );

@@ -139,68 +139,63 @@ impl Into<Box<dyn RenderObject>> for RectangleRenderObject {
 impl RenderObject for RectangleRenderObject {
     fn render(
         &self,
-        canvas: &mut Canvas,
-        _renderer: &mut dyn Renderer,
         context: &mut Context<'_>,
         global_position: &Point,
     ) {
-        let widget = context.widget();
+        let (bounds, background, border_radius, border_thickness, border_brush) = {
+            let widget = context.widget();
+            (widget.clone::<Bounds>(), widget.get::<Background>().0.clone(),  widget.clone_or_default::<BorderRadius>().0,  widget.clone_or_default::<BorderThickness>().0, widget.clone_or_default::<BorderBrush>().0)
+        };
 
-        let bounds = widget.get::<Bounds>();
-        let background = widget.clone::<Background>();
-        let border_radius = widget.clone_or_default::<BorderRadius>();
-        let border_thickness = widget.clone_or_default::<BorderThickness>();
-        let border_brush = widget.clone_or_default::<BorderBrush>();
+        let has_thickness = border_thickness.left > 0.0
+            || border_thickness.top > 0.0
+            || border_thickness.right > 0.0
+            || border_thickness.bottom > 0.0;
 
-        let has_thickness = border_thickness.0.left > 0.0
-            || border_thickness.0.top > 0.0
-            || border_thickness.0.right > 0.0
-            || border_thickness.0.bottom > 0.0;
-
-        if border_radius.0 > 0.0 {
+        if border_radius > 0.0 {
             if has_thickness {
                 self.render_rounded_bordered_rect_path(
-                    canvas,
+                    context.canvas(),
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
                     bounds.width(),
                     bounds.height(),
-                    border_radius.0,
-                    background.0,
-                    border_brush.0,
-                    border_thickness.0,
+                    border_radius,
+                    background,
+                    border_brush,
+                    border_thickness,
                 );
             } else {
                 self.render_rounded_rect_path(
-                    canvas,
+                    context.canvas(),
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
                     bounds.width(),
                     bounds.height(),
-                    border_radius.0,
-                    background.0,
+                    border_radius,
+                    background,
                 );
             }
         } else {
             if has_thickness {
                 self.render_bordered_rect_path(
-                    canvas,
+                    context.canvas(),
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
                     bounds.width(),
                     bounds.height(),
-                    background.0,
-                    border_brush.0,
-                    border_thickness.0,
+                    background,
+                    border_brush,
+                    border_thickness,
                 );
             } else {
                 self.render_rect_path(
-                    canvas,
+                    context.canvas(),
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
                     bounds.width(),
                     bounds.height(),
-                    background.0,
+                    background,
                 );
             }
         }
