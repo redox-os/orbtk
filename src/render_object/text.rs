@@ -23,18 +23,18 @@ impl RenderObject for TextRenderObject {
             Bounds::default()
         };
 
-       let (bounds, text, foreground, font, font_size) = {
+        let (bounds, text, foreground, font, font_size) = {
             let widget = context.widget();
             let text = widget.clone::<Text>();
 
             let txt = {
-            if !text.0.is_empty() {
-                text.0.clone()
-            } else {
-                widget.clone_or_default::<WaterMark>().0
-            }
-        };
-            (widget.clone::<Bounds>(), txt.to_string(),  widget.get::<Foreground>().0.clone(),  widget.get::<Font>().0.clone(), widget.get::<FontSize>().0 as u32)
+                if !text.0.is_empty() {
+                    text.0.clone()
+                } else {
+                    widget.clone_or_default::<WaterMark>().0
+                }
+            };
+            (widget.clone::<Bounds>(), txt.to_string(), widget.get::<Foreground>().0.clone(), widget.get::<Font>().0.clone(), widget.get::<FontSize>().0 as u32)
         };
 
         context.renderer().render_text(
@@ -43,7 +43,7 @@ impl RenderObject for TextRenderObject {
             &parent_bounds,
             global_position,
             font_size,
-           foreground.into(),
+            foreground.into(),
             &font.0,
         );
     }

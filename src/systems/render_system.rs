@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{backend::{WindowShell}, prelude::*};
+use crate::{backend::WindowShell, prelude::*};
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {

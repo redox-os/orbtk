@@ -30,9 +30,7 @@ pub struct WindowAdapter {
 // }
 
 impl backend::WindowAdapter for WindowAdapter {
-    fn update(&mut self) {
-
-    }
+    fn update(&mut self) {}
 }
 
 impl Into<Box<backend::WindowAdapter>> for WindowAdapter {
@@ -42,6 +40,4 @@ impl Into<Box<backend::WindowAdapter>> for WindowAdapter {
 }
 
 #[derive(Default, Debug)]
-pub struct ContextProvider {
-    
-}
+pub struct ContextProvider {}

@@ -88,29 +88,28 @@ impl<'a> Context<'a> {
     }
 
     /// Sends a message to the widget with the given id over the message channel.
-    pub fn send_message(&mut self, target_widget: &str, message: impl Into<MessageBox>) {    
-            let mut entity = None;
-            if let Ok(global) = self.ecm.borrow_component::<Global>(0) {
-                if let Some(en) = global.id_map.get(target_widget) {
-                    entity = Some(*en);
-                }
+    pub fn send_message(&mut self, target_widget: &str, message: impl Into<MessageBox>) {
+        let mut entity = None;
+        if let Ok(global) = self.ecm.borrow_component::<Global>(0) {
+            if let Some(en) = global.id_map.get(target_widget) {
+                entity = Some(*en);
             }
+        }
 
-            if let Some(entity) = entity {
-                if !self.window_shell.adapter().messages.contains_key(&entity) {
-                    self.window_shell.adapter().messages.insert(entity, vec![]);
-                }
-                self.window_shell.adapter().messages
-                    .get_mut(&entity)
-                    .unwrap()
-                    .push(message.into());
-            } else {
-                println!(
-                    "Context send_message: widget id {} not found.",
-                    target_widget
-                );
+        if let Some(entity) = entity {
+            if !self.window_shell.adapter().messages.contains_key(&entity) {
+                self.window_shell.adapter().messages.insert(entity, vec![]);
             }
-        
+            self.window_shell.adapter().messages
+                .get_mut(&entity)
+                .unwrap()
+                .push(message.into());
+        } else {
+            println!(
+                "Context send_message: widget id {} not found.",
+                target_widget
+            );
+        }
     }
 
     /// Pushes an event to the event queue with the given `strategy`.

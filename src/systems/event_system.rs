@@ -7,7 +7,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{backend::{WindowShell}, prelude::*};
+use crate::{backend::WindowShell, prelude::*};
 
 pub struct EventSystem {
     pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
@@ -187,7 +187,7 @@ impl System<Tree> for EventSystem {
         let mut backend = self.backend.borrow_mut();
         let adapter = backend.adapter();
         // let blub = adapter.context_provider();
-        
+
 
         let mut new_events = vec![];
 

@@ -17,7 +17,7 @@ impl RenderObject for ImageRenderObject {
         context: &mut Context<'_>,
         global_position: &Point,
     ) {
-         let (bounds, mut image) = {
+        let (bounds, mut image) = {
             let widget = context.widget();
             (widget.clone::<Bounds>(), widget.try_clone::<Image>().clone())
         };

@@ -127,7 +127,6 @@ impl Application {
             .with_priority(4)
             .build();
 
-       
 
         //    backend_runner: ShellRunner {
         //         world: Some(world),
@@ -135,12 +134,12 @@ impl Application {
         //     },
 
 
-        self.runners.push( ShellRunner {
-                world: Some(world),
-                window_shell,
-                update,
-                running
-            });
+        self.runners.push(ShellRunner {
+            world: Some(world),
+            window_shell,
+            update,
+            running,
+        });
 
         self
     }

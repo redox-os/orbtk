@@ -171,7 +171,7 @@ pub struct ShellRunner<A> where A: WindowAdapter {
     pub world: Option<World<Tree>>,
     pub window_shell: Rc<RefCell<WindowShell<A>>>,
     pub update: Rc<Cell<bool>>,
-    pub running: Rc<Cell<bool>>
+    pub running: Rc<Cell<bool>>,
 }
 
 impl<A> ShellRunner<A> where A: WindowAdapter {
@@ -242,7 +242,7 @@ impl<A> WindowBuilder<A> where A: WindowAdapter {
                 &self.title,
                 &flags,
             ).unwrap(),
-            self.adapter
+            self.adapter,
         )
     }
 }

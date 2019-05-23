@@ -121,7 +121,7 @@ impl System<Tree> for StateSystem {
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 pub struct PostLayoutStateSystem {
-      pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
+    pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
