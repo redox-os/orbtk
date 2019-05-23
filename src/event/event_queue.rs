@@ -9,6 +9,7 @@ pub enum EventError {
     WrongType(TypeId),
 }
 
+#[derive(Debug)]
 pub struct EventBox {
     event: Box<dyn Any>,
     event_type: TypeId,
@@ -51,7 +52,7 @@ impl EventBox {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct EventQueue {
     event_queue: Vec<EventBox>,
 }

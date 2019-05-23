@@ -17,7 +17,7 @@ mod system;
 mod window;
 
 /// Defines the strategy a event moves through the tree.
-#[derive(PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum EventStrategy {
     /// From root to leaf.
     TopDown,

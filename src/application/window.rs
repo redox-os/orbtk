@@ -1,5 +1,5 @@
 use std::{
-    cell::{Cell, RefCell},
+    cell::RefCell,
     collections::BTreeMap,
     rc::Rc,
 };
@@ -7,7 +7,6 @@ use std::{
 use dces::prelude::Entity;
 
 use crate::prelude::*;
-use crate::backend::*;
 
 use crate::backend::platform;
 
@@ -17,8 +16,6 @@ pub struct WindowAdapter {
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
-    // pub update: Rc<Cell<bool>>,
-    // pub running: Rc<Cell<bool>>,
 }
 
 impl platform::WindowAdapter for WindowAdapter {
@@ -31,4 +28,13 @@ impl Into<Box<platform::WindowAdapter>> for WindowAdapter {
     fn into(self) -> Box<platform::WindowAdapter> {
         Box::new(self)
     }
+}
+
+pub struct ContextProvider {
+    event_queue: EventQueue,
+    messages: BTreeMap<Entity, Vec<MessageBox>>,
+}
+
+impl ContextProvider {
+    
 }

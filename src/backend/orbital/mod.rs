@@ -1,10 +1,7 @@
 //! This module contains the concrete implementation of the OrbClient based backend.
 
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::sync::Arc;
 
-use orbclient::{Window as OrbWindow, WindowFlag};
 use orbfont::Font;
 
 pub use self::backend::{WindowBuilder, WindowShell, ShellRunner, WindowAdapter};
