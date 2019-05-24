@@ -8,6 +8,31 @@ use orbgl_api::Canvas;
 
 use crate::backend::*;
 
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
+pub enum MouseButton {
+    Left,
+    Middle,
+    Right,
+}
+
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
+pub enum ButtonState {
+    Down,
+
+    Up
+}
+
+#[derive(Debug)]
+pub struct MouseEvent {
+    pub x: f64,
+
+    pub y: f64,
+
+    pub button: MouseButton,
+
+    pub state: ButtonState
+}
+
 // todo: generic adapter A where A : ShellAdapber...
 
 /// Implementation of the OrbClient based backend.
@@ -15,8 +40,6 @@ pub struct WindowShell<A> where A: WindowAdapter {
     pub inner: OrbWindow,
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
-    // event_queue: RefCell<EventQueue>,
-    // messages: RefCell<BTreeMap<Entity, Vec<MessageBox>>>,
     pub canvas: Canvas,
     adapter: A,
 }
@@ -39,8 +62,6 @@ impl<A> WindowShell<A> where A: WindowAdapter {
             inner,
             mouse_buttons: (false, false, false),
             mouse_position: Point::default(),
-            // event_queue: RefCell::new(EventQueue::default()),
-            // messages: RefCell::new(BTreeMap::new()),
             canvas,
             adapter,
         }
@@ -76,14 +97,12 @@ impl<A> WindowShell<A> where A: WindowAdapter {
                             }
                         };
 
-                        // todo call adapter method
-                        // self.event_queue.borrow_mut().register_event(
-                        //     MouseUpEvent {
-                        //         button,
-                        //         position: self.mouse_position,
-                        //     },
-                        //     0,
-                        // )
+                        self.adapter.mouse_event(MouseEvent {
+                            x: self.mouse_position.x,
+                            y: self.mouse_position.y,
+                            button,
+                            state: ButtonState::Up
+                        });
                     } else {
                         let button = {
                             if button.left {
@@ -95,14 +114,12 @@ impl<A> WindowShell<A> where A: WindowAdapter {
                             }
                         };
 
-                        // todo: call adapter method
-                        // self.event_queue.borrow_mut().register_event(
-                        //     MouseDownEvent {
-                        //         button,
-                        //         position: self.mouse_position,
-                        //     },
-                        //     0,
-                        // );
+                        self.adapter.mouse_event(MouseEvent {
+                            x: self.mouse_position.x,
+                            y: self.mouse_position.y,
+                            button,
+                            state: ButtonState::Down
+                        });
                     }
 
                     self.mouse_buttons = (button.left, button.middle, button.right);
@@ -168,10 +185,14 @@ impl<A> Drop for WindowShell<A> where A: WindowAdapter {
 
 /// Implementation of the OrbClient based backend runner.
 pub struct ShellRunner<A> where A: WindowAdapter {
-    pub world: Option<World<Tree>>,
     pub window_shell: Rc<RefCell<WindowShell<A>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
+    pub updater: Box<Updater>,
+}
+
+pub trait Updater {
+    fn update(&mut self);
 }
 
 impl<A> ShellRunner<A> where A: WindowAdapter {
@@ -181,9 +202,7 @@ impl<A> ShellRunner<A> where A: WindowAdapter {
                 break;
             }
 
-            if let Some(world) = &mut self.world {
-                world.run();
-            }
+            self.updater.update();
 
             self.update.set(false);
 

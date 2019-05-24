@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::prelude::*;
+use crate::{prelude::*, backend::MouseButton};
 
 /// Checks if the given point is inside of a widget.
 pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>) -> bool {
@@ -15,13 +15,6 @@ pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>
     return rect.contains((mouse_position.x, mouse_position.y));
 }
 
-/// Describes a mouse button.
-pub enum MouseButton {
-    Left,
-    Middle,
-    Right,
-}
-
 pub struct MouseMoveEvent {
     pub position: Point,
 }
@@ -30,7 +23,9 @@ impl Event for MouseMoveEvent {}
 
 pub struct MouseUpEvent {
     pub button: MouseButton,
-    pub position: Point,
+      pub x: f64,
+
+    pub y: f64,
 }
 
 impl Event for MouseUpEvent {}
@@ -43,7 +38,9 @@ impl Event for ClickEvent {}
 
 pub struct MouseDownEvent {
     pub button: MouseButton,
-    pub position: Point,
+      pub x: f64,
+
+    pub y: f64,
 }
 
 impl Event for MouseDownEvent {}

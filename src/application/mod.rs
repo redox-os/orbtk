@@ -9,7 +9,7 @@ use std::{
 use dces::prelude::{Entity, World};
 
 use crate::prelude::*;
-use crate::backend::{WindowBuilder, ShellRunner};
+use crate::backend::{WindowBuilder, ShellRunner, Updater};
 use crate::systems::*;
 
 pub use self::global::*;
@@ -65,6 +65,7 @@ impl Application {
         world.entity_component_manager().register_component(window, Bounds::from((0.0, 0.0, constraint.width(), constraint.height())));
 
         let window_shell = Rc::new(RefCell::new(WindowBuilder::new(WindowAdapter {
+            root: window,
             render_objects: render_objects.clone(),
             layouts: layouts.clone(),
             handlers: handlers.clone(),
@@ -135,7 +136,9 @@ impl Application {
 
 
         self.runners.push(ShellRunner {
-            world: Some(world),
+            updater: Box::new(WorldWrapper {
+                world
+            }),
             window_shell,
             update,
             running,

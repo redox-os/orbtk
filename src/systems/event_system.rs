@@ -40,7 +40,7 @@ impl EventSystem {
 
             // MouseDownEvent handling
             if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
-                if check_mouse_condition(event.position, &widget) {
+                if check_mouse_condition(Point::new(event.x, event.y), &widget) {
                     matching_nodes.push(node);
                 }
 
@@ -121,7 +121,7 @@ impl EventSystem {
                 let mut pressed = false;
                 let mut in_mouse_pos = false;
 
-                if check_mouse_condition(event.position, &widget) {
+                if check_mouse_condition(Point::new(event.x, event.y), &widget) {
                     in_mouse_pos = true;
                 }
 
@@ -142,7 +142,7 @@ impl EventSystem {
                     if in_mouse_pos {
                         new_events.push(EventBox::new(
                             ClickEvent {
-                                position: event.position,
+                                position: Point::new(event.x, event.y),
                             },
                             EventStrategy::BottomUp,
                             *node,
@@ -186,8 +186,6 @@ impl System<Tree> for EventSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
         let mut backend = self.backend.borrow_mut();
         let adapter = backend.adapter();
-        // let blub = adapter.context_provider();
-
 
         let mut new_events = vec![];
 

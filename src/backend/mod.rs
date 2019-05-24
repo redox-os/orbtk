@@ -69,9 +69,10 @@ pub trait FontMeasure {
 
 pub trait WindowAdapter {
     fn update(&mut self);
+    fn mouse_event(&mut self, event: MouseEvent);
 }
 
-pub use self::platform::{WindowBuilder, ShellRunner, WindowShell};
+pub use self::platform::{WindowBuilder, ShellRunner, WindowShell, Updater, MouseButton, MouseEvent, ButtonState };
 pub use self::platform::FONT_MEASURE;
 
 #[cfg(not(platform_arch = "wasm32"))]

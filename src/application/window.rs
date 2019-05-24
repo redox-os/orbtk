@@ -4,7 +4,7 @@ use std::{
     rc::Rc,
 };
 
-use dces::prelude::Entity;
+use dces::prelude::{Entity, World};
 
 use crate::prelude::*;
 
@@ -19,6 +19,7 @@ pub struct WindowAdapter {
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub event_queue: EventQueue,
     pub messages: BTreeMap<Entity, Vec<MessageBox>>,
+    pub root: Entity,
 }
 
 // todo: remove all render_objects etc. from system, handle all with window adapter
@@ -29,8 +30,39 @@ pub struct WindowAdapter {
 //     }
 // }
 
+pub struct WorldWrapper {
+    pub world: World<Tree>,
+}
+
+impl backend::Updater for WorldWrapper {
+    fn update(&mut self) {
+        self.world.run();
+    }
+}
+
 impl backend::WindowAdapter for WindowAdapter {
     fn update(&mut self) {}
+    fn mouse_event(&mut self, event: backend::MouseEvent) {
+        match event.state {
+            backend::ButtonState::Up => {
+                self.event_queue.register_event(MouseUpEvent {
+                    x: event.x,
+                    y: event.y,
+                    button: event.button,
+
+                }, self.root)
+            },
+            backend::ButtonState::Down => {
+                self.event_queue.register_event(MouseDownEvent {
+                    x: event.x,
+                    y: event.y,
+                    button: event.button,
+
+                }, self.root)
+            }
+        }
+        // self.event_queue.register_event(event: E, source: Entity)
+    }
 }
 
 impl Into<Box<backend::WindowAdapter>> for WindowAdapter {
