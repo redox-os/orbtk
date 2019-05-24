@@ -15,24 +15,6 @@ use orbgl_api::prelude::Canvas;
 
 use crate::prelude::*;
 
-/// Is used to provides data from the `Backend` to the `RenderSystem`.
-pub struct RenderContext<'a> {
-    pub canvas: &'a mut Canvas,
-    pub renderer: &'a mut dyn Renderer,
-    pub event_queue: &'a RefCell<EventQueue>,
-}
-
-/// Is used to provides data from the `Backend` to the `StateSystem` and `PostLayoutStateSystem`.
-pub struct StateContext<'a> {
-    pub event_queue: &'a RefCell<EventQueue>,
-    pub messages: &'a RefCell<BTreeMap<Entity, Vec<MessageBox>>>,
-}
-
-/// Is used to provides data from the `Backend` to the `EventSystem`.
-pub struct EventContext<'a> {
-    pub event_queue: &'a RefCell<EventQueue>,
-}
-
 /// [obsolete] This trait is used to define a backend renderer for OrbTk.
 pub trait Renderer {
     fn render_text(
@@ -51,15 +33,6 @@ pub trait Renderer {
 pub trait Backend {
     fn adapter(&mut self) -> Option<&mut WindowAdapter>;
     fn drain_events(&mut self);
-    // fn render_context(&mut self) -> RenderContext<'_>;
-    // fn event_context(&mut self) -> EventContext<'_>;
-    // fn state_context(&mut self) -> StateContext<'_>;
-}
-
-/// This trait is used to create a backend runner.
-pub trait Runner {
-    fn world(&mut self, world: World<Tree>);
-    fn run(&mut self, update: Rc<Cell<bool>>, running: Rc<Cell<bool>>);
 }
 
 /// Helper trait to measure the font size of the given `text`.
