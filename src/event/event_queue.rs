@@ -72,6 +72,7 @@ impl EventQueue {
             .push(EventBox::new::<E>(event, strategy, source));
     }
 
+    // todo rename to enqueue event
     pub fn register_event<E: Event>(&mut self, event: E, source: Entity) {
         self.event_queue
             .push(EventBox::new::<E>(event, EventStrategy::BottomUp, source));

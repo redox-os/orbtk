@@ -33,6 +33,13 @@ pub struct MouseEvent {
     pub state: ButtonState
 }
 
+#[derive(Debug)]
+pub struct KeyEvent {
+    pub key: Key,
+
+    pub state: ButtonState
+}
+
 // todo: generic adapter A where A : ShellAdapber...
 
 /// Implementation of the OrbClient based backend.
@@ -76,14 +83,10 @@ impl<A> WindowShell<A> where A: WindowAdapter {
 
         for event in self.inner.events() {
             match event.to_option() {
-                orbclient::EventOption::Mouse(mouse) => {
-                    self.mouse_position.x = mouse.x as f64;
-                    self.mouse_position.y = mouse.y as f64;
-                    // self.event_queue
-                    //     .borrow_mut()
-                    //     .register_event(MouseMoveEvent {
-                    //         position: self.mouse_position,
-                    //     });
+                orbclient::EventOption::Mouse(event) => {
+                    self.mouse_position.x = event.x as f64;
+                    self.mouse_position.y = event.y as f64;
+                    self.adapter.mouse(event.x as f64, event.y as f64);
                 }
                 orbclient::EventOption::Button(button) => {
                     if !button.left && !button.middle && !button.right {
@@ -140,36 +143,16 @@ impl<A> WindowShell<A> where A: WindowAdapter {
                     };
 
                     if key_event.pressed {
-                        // todo call adapter method
-
-                        // self.event_queue
-                        //     .borrow_mut()
-                        //     .register_event(KeyUpEvent { key }, 0);
+                        self.adapter.key_event(KeyEvent { key, state: ButtonState::Up} );
                     } else {
-                        // todo call adapter method
-
-                        // self.event_queue
-                        //     .borrow_mut()
-                        //     .register_event(KeyDownEvent { key }, 0);
+                        self.adapter.key_event(KeyEvent { key, state: ButtonState::Down} );
                     }
                 }
                 orbclient::EventOption::Quit(_quit_event) => {
-                    // todo call adapter method
-
-                    // self.event_queue
-                    //     .borrow_mut()
-                    //     .register_event(SystemEvent::Quit, 0);
+                    self.adapter.quite_event();
                 }
-                orbclient::EventOption::Resize(resize_event) => {
-                    // todo call adapter method
-
-                    // self.event_queue.borrow_mut().register_event(
-                    //     WindowEvent::Resize {
-                    //         width: resize_event.width as f64,
-                    //         height: resize_event.height as f64,
-                    //     },
-                    //     0,
-                    // );
+                orbclient::EventOption::Resize(event) => {
+                    self.adapter.resize(event.width as f64, event.height as f64);
                 }
                 _ => {}
             }

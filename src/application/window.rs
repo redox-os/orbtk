@@ -1,8 +1,4 @@
-use std::{
-    cell::RefCell,
-    collections::BTreeMap,
-    rc::Rc,
-};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, World};
 
@@ -42,26 +38,59 @@ impl backend::Updater for WorldWrapper {
 
 impl backend::WindowAdapter for WindowAdapter {
     fn update(&mut self) {}
+
+    fn resize(&mut self, width: f64, height: f64) {
+        self.event_queue
+            .register_event(WindowEvent::Resize { width, height }, self.root);
+    }
+
+    fn mouse(&mut self, x: f64, y: f64) {
+        self.event_queue.register_event(MouseMoveEvent {
+            position: Point::new(x, y)
+        }, self.root)
+    }
+
     fn mouse_event(&mut self, event: backend::MouseEvent) {
         match event.state {
-            backend::ButtonState::Up => {
-                self.event_queue.register_event(MouseUpEvent {
+            backend::ButtonState::Up => self.event_queue.register_event(
+                MouseUpEvent {
                     x: event.x,
                     y: event.y,
                     button: event.button,
-
-                }, self.root)
-            },
-            backend::ButtonState::Down => {
-                self.event_queue.register_event(MouseDownEvent {
+                },
+                self.root,
+            ),
+            backend::ButtonState::Down => self.event_queue.register_event(
+                MouseDownEvent {
                     x: event.x,
                     y: event.y,
                     button: event.button,
-
-                }, self.root)
-            }
+                },
+                self.root,
+            ),
         }
-        // self.event_queue.register_event(event: E, source: Entity)
+    }
+
+    fn key_event(&mut self, event: backend::KeyEvent) {
+         match event.state {
+            backend::ButtonState::Up => self.event_queue.register_event(
+                KeyUpEvent {
+                    key: event.key
+                },
+                self.root,
+            ),
+            backend::ButtonState::Down => self.event_queue.register_event(
+                 KeyDownEvent {
+                    key: event.key
+                },
+                self.root,
+            ),
+        }
+    }
+
+    fn quite_event(&mut self) {
+        self.event_queue
+            .register_event(SystemEvent::Quit, self.root);
     }
 }
 
