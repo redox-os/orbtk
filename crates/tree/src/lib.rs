@@ -19,14 +19,14 @@ tree.append_child(0, 1);
 
  */
 
-pub mod prelude;
-
 use std::{
     cell::{Cell, RefCell},
     collections::BTreeMap,
 };
 
 use dces::prelude::{Entity, EntityContainer};
+
+pub mod prelude;
 
 /// Used as return type if a requested entity is not found on the tree.
 #[derive(Debug, PartialEq, Eq)]
@@ -179,6 +179,7 @@ impl<'a> Iterator for TreeIterator<'a> {
 #[cfg(test)]
 mod tests {
     use dces::prelude::*;
+
     use super::*;
 
     #[test]

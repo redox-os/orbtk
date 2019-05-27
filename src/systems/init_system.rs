@@ -1,8 +1,8 @@
-use std::{cell::RefCell, rc::Rc, collections::BTreeMap};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{shell::WindowShell, prelude::*};
+use crate::{prelude::*, shell::WindowShell};
 
 /// This system is used to initializes the widgets.
 pub struct InitSystem {

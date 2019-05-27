@@ -1,6 +1,6 @@
-use super::*;
-
 use crate::prelude::*;
+
+use super::*;
 
 #[test]
 fn test_contains() {

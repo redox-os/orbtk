@@ -23,7 +23,7 @@ impl Event for MouseMoveEvent {}
 
 pub struct MouseUpEvent {
     pub button: MouseButton,
-      pub x: f64,
+    pub x: f64,
 
     pub y: f64,
 }
@@ -38,7 +38,7 @@ impl Event for ClickEvent {}
 
 pub struct MouseDownEvent {
     pub button: MouseButton,
-      pub x: f64,
+    pub x: f64,
 
     pub y: f64,
 }

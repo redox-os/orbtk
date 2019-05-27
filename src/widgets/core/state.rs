@@ -1,5 +1,4 @@
 use super::Context;
-
 use super::MessageBox;
 
 /// Used to define a state of a widget.

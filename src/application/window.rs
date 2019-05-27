@@ -3,7 +3,6 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 use dces::prelude::{Entity, World};
 
 use crate::prelude::*;
-
 use crate::shell;
 
 /// Represents a window. Each window has its own tree, event pipeline and shell.
@@ -25,7 +24,7 @@ pub struct WindowAdapter {
 //         &mut self.context_provider
 //     }
 // }
- 
+
 pub struct WorldWrapper {
     pub world: World<Tree>,
 }
@@ -72,7 +71,7 @@ impl shell::WindowAdapter for WindowAdapter {
     }
 
     fn key_event(&mut self, event: shell::KeyEvent) {
-         match event.state {
+        match event.state {
             shell::ButtonState::Up => self.event_queue.register_event(
                 KeyUpEvent {
                     key: event.key
@@ -80,7 +79,7 @@ impl shell::WindowAdapter for WindowAdapter {
                 self.root,
             ),
             shell::ButtonState::Down => self.event_queue.register_event(
-                 KeyDownEvent {
+                KeyDownEvent {
                     key: event.key
                 },
                 self.root,

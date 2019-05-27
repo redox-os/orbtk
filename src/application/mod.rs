@@ -9,7 +9,7 @@ use std::{
 use dces::prelude::{Entity, World};
 
 use crate::prelude::*;
-use crate::shell::{WindowBuilder, ShellRunner};
+use crate::shell::{ShellRunner, WindowBuilder};
 use crate::systems::*;
 
 pub use self::global::*;

@@ -1,10 +1,10 @@
 //! This module contains the base structures for widget creation and concrete implementations of OrbTk 's default widgets. It contains also layout widgets.
 
 pub use self::button::*;
-pub use self::core::*;
 // pub use self::canvas_widgets::CanvasWidget;
 pub use self::check_box::*;
 pub use self::container::*;
+pub use self::core::*;
 pub use self::cursor::*;
 pub use self::font_icon_block::*;
 pub use self::grid::*;

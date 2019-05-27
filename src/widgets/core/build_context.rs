@@ -3,6 +3,7 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 use dces::prelude::{Component, ComponentBox, Entity, SharedComponentBox, World};
 
 use crate::prelude::*;
+
 use super::State;
 
 /// Used to create an entity for a widget with its properties as components.

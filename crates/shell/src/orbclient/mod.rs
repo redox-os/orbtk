@@ -1,11 +1,11 @@
 //! This module contains a platform specific implementation of the window shell.
 
-use std::{collections::HashMap, sync::Arc, cell::{Cell, RefCell}, rc::Rc};
+use std::{cell::{Cell, RefCell}, collections::HashMap, rc::Rc, sync::Arc};
 
-use orbclient::{Color, Window, WindowFlag, Renderer};
+use orbclient::{Color, Renderer, Window, WindowFlag};
 use orbfont::Font;
-use orbgl_api::Canvas;
 use orbgl::prelude::{CairoRenderEngine, FramebufferSurface};
+use orbgl_api::Canvas;
 
 use orbtk_utils::{Point, Rect};
 
@@ -77,7 +77,7 @@ impl<A> WindowShell<A> where A: WindowAdapter {
                             x: self.mouse_position.x,
                             y: self.mouse_position.y,
                             button,
-                            state: ButtonState::Up
+                            state: ButtonState::Up,
                         });
                     } else {
                         let button = {
@@ -94,7 +94,7 @@ impl<A> WindowShell<A> where A: WindowAdapter {
                             x: self.mouse_position.x,
                             y: self.mouse_position.y,
                             button,
-                            state: ButtonState::Down
+                            state: ButtonState::Down,
                         });
                     }
 
@@ -104,6 +104,11 @@ impl<A> WindowShell<A> where A: WindowAdapter {
                     let key = {
                         match key_event.scancode {
                             orbclient::K_BKSP => Key::Backspace,
+                            orbclient::K_DEL => Key::Delete,
+                            orbclient::K_CTRL => Key::Control,
+                            orbclient::K_LEFT_SHIFT => Key::ShiftL,
+                            orbclient::K_RIGHT_SHIFT => Key::ShiftR,
+                            orbclient::K_ALT => Key::Alt,
                             orbclient::K_UP => Key::Up,
                             orbclient::K_DOWN => Key::Down,
                             orbclient::K_LEFT => Key::Left,
@@ -116,9 +121,9 @@ impl<A> WindowShell<A> where A: WindowAdapter {
                     };
 
                     if key_event.pressed {
-                        self.adapter.key_event(KeyEvent { key, state: ButtonState::Up} );
+                        self.adapter.key_event(KeyEvent { key, state: ButtonState::Up });
                     } else {
-                        self.adapter.key_event(KeyEvent { key, state: ButtonState::Down} );
+                        self.adapter.key_event(KeyEvent { key, state: ButtonState::Down });
                     }
                 }
                 orbclient::EventOption::Quit(_quit_event) => {

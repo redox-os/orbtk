@@ -1,6 +1,6 @@
 use std::cell::Cell;
 
-use crate::{shell::Key, prelude::*};
+use crate::{prelude::*, shell::Key};
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
 #[derive(Default)]
@@ -55,6 +55,17 @@ impl TextBoxState {
                                 (*self.text.borrow_mut()).remove(self.selection_start.get() - 1);
                             }
                             self.update_selection_start(self.selection_start.get() as i32 - 1);
+                        }
+                    }
+                }
+                Key::Delete => {
+                    let len = self.text.borrow().len();
+                    if len > 0 {
+                        if self.selection_start.get() < len {
+                            for _ in 0..(self.selection_length.get() + 1) {
+                                (*self.text.borrow_mut()).remove(self.selection_start.get());
+                            }
+                            self.update_selection_start(self.selection_start.get() as i32);
                         }
                     }
                 }

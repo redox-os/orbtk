@@ -1,16 +1,21 @@
 //! This module contains elements to work with window events.
 
 /// Represents a keyboard key.
-#[derive(Copy, Clone, Debug, Hash, PartialEq)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum Key {
     Unknown,
     Backspace,
     Up,
     Down,
+    Delete,
     Left,
     Right,
     Space,
     Enter,
+    Control,
+    ShiftL,
+    ShiftR,
+    Alt,
     A(bool),
     B(bool),
     C(bool),
@@ -293,7 +298,7 @@ pub enum MouseButton {
 pub enum ButtonState {
     Down,
 
-    Up
+    Up,
 }
 
 /// Represents a mouse event.
@@ -305,7 +310,7 @@ pub struct MouseEvent {
 
     pub button: MouseButton,
 
-    pub state: ButtonState
+    pub state: ButtonState,
 }
 
 /// Represents a keyboard key event.
@@ -313,5 +318,5 @@ pub struct MouseEvent {
 pub struct KeyEvent {
     pub key: Key,
 
-    pub state: ButtonState
+    pub state: ButtonState,
 }

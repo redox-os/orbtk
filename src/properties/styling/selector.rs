@@ -1,7 +1,7 @@
 use crate::{
+    css_engine::{Selector as SelectorValue, Specificity},
     Entity,
     EntityComponentManager,
-    css_engine::{Selector as SelectorValue, Specificity},
     properties::{get_property, PropertySource},
 };
 

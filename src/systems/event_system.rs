@@ -159,6 +159,22 @@ impl EventSystem {
             }
         }
 
+         // KeyDown handling
+        if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
+            if let Ok(global) = ecm.borrow_mut_component::<Global>(tree.root) {
+                // Set this value on the keyboard state
+                global.keyboard_state.set_key_state(event.key, true);
+            }
+        }
+
+        // KeyUp handling
+        if let Ok(event) = event.downcast_ref::<KeyUpEvent>() {
+            if let Ok(global) = ecm.borrow_mut_component::<Global>(tree.root) {
+                // Set this value on the keyboard state
+                global.keyboard_state.set_key_state(event.key, false);
+            }
+        }
+
         // remove focus from previous focused entity
         let mut old_focused_widget = None;
 

@@ -1,6 +1,6 @@
-use super::Margin;
-
 use crate::prelude::*;
+
+use super::Margin;
 
 property!(
     /// `HorizontalAlignment` describes the vertical alignment of a widget.

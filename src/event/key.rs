@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::{shell::Key, Event, EventBox, EventHandler, Widget};
+use crate::{Event, EventBox, EventHandler, shell::Key, Widget};
 
 pub struct KeyDownEvent {
     pub key: Key,

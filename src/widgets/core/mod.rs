@@ -3,7 +3,6 @@ use std::rc::Rc;
 use dces::prelude::Entity;
 
 use crate::event::EventHandler;
-
 use crate::properties::*;
 
 pub use self::build_context::*;

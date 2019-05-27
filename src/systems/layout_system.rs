@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{shell::WindowShell, prelude::*};
+use crate::{prelude::*, shell::WindowShell};
 
 /// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calulated by the layout objects of layout widgets.
 pub struct LayoutSystem {
