@@ -88,7 +88,7 @@ impl<'a> Context<'a> {
     /// Sends a message to the widget with the given id over the message channel.
     pub fn send_message(&mut self, target_widget: &str, message: impl Into<MessageBox>) {
         let mut entity = None;
-        if let Ok(global) = self.ecm.borrow_component::<Global>(0) {
+        if let Ok(global) = self.ecm.borrow_component::<Global>(0.into()) {
             if let Some(en) = global.id_map.get(target_widget) {
                 entity = Some(*en);
             }

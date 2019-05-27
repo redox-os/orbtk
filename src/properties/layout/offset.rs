@@ -10,3 +10,9 @@ impl From<f64> for Offset {
         Offset((t, t))
     }
 }
+
+impl From<(i32, i32)> for Offset {
+    fn from(s: (i32, i32)) -> Offset {
+        Offset::from((s.0 as f64, s.1 as f64))
+    }
+}

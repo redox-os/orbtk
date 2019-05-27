@@ -32,7 +32,7 @@ impl<'a> WidgetContainer<'a> {
 
         panic!(
             "Entity {} does not contain property type {:?}",
-            self.current_node,
+            self.current_node.0,
             TypeId::of::<P>()
         );
     }
@@ -52,7 +52,7 @@ impl<'a> WidgetContainer<'a> {
 
         panic!(
             "Entity {} does not contain property type {:?}",
-            self.current_node,
+            self.current_node.0,
             TypeId::of::<P>()
         );
     }
@@ -85,7 +85,7 @@ impl<'a> WidgetContainer<'a> {
 
         panic!(
             "Entity {} does not contain property type {:?}",
-            self.current_node,
+            self.current_node.0,
             TypeId::of::<P>()
         );
     }
@@ -117,7 +117,7 @@ impl<'a> WidgetContainer<'a> {
 
         panic!(
             "Entity {} does not contain property type {:?}",
-            self.current_node,
+            self.current_node.0,
             TypeId::of::<P>()
         );
     }

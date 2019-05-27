@@ -54,20 +54,23 @@ impl Tree {
     }
 
     /// Configure the tree iterator with a start node.
-    pub fn start_node(&self, start_node: Entity) -> &Self {
-        self.iterator_start_node.set(start_node);
+    pub fn start_node(&self, start_node: impl Into<Entity>) -> &Self {
+        self.iterator_start_node.set(start_node.into());
         self
     }
 
     /// Registers a new entity `entity` as node.
-    pub fn register_node(&mut self, entity: Entity) {
+    pub fn register_node(&mut self, entity: impl Into<Entity>) {
+        let entity = entity.into();
         self.children.insert(entity, vec![]);
         self.parent.insert(entity, None);
     }
 
     /// Appends a `child` entity to the given `parent` entity.
     /// Raised `NotFound` error if the parent is not part of the tree.
-    pub fn append_child(&mut self, parent: Entity, child: Entity) -> Result<Entity, NotFound> {
+    pub fn append_child(&mut self, parent: impl Into<Entity>, child: impl Into<Entity>) -> Result<Entity, NotFound> {
+        let parent = parent.into();
+        let child = child.into();
         if let Some(p) = self.children.get_mut(&parent) {
             p.push(child);
         } else {
@@ -97,11 +100,12 @@ impl Tree {
 }
 
 impl EntityContainer for Tree {
-    fn register_entity(&mut self, entity: Entity) {
-        self.register_node(entity);
+    fn register_entity(&mut self, entity: impl Into<Entity>) {
+        self.register_node(entity.into());
     }
 
-    fn remove_entity(&mut self, entity: Entity) {
+    fn remove_entity(&mut self, entity: impl Into<Entity>) {
+        let entity = entity.into();
         self.children.remove(&entity);
         self.parent.remove(&entity);
     }
@@ -189,13 +193,13 @@ mod tests {
 
         assert_eq!(tree.children.len(), 1);
         assert_eq!(tree.parent.len(), 1);
-        assert!(tree.children.get(&0).is_some());
+        assert!(tree.children.get(&Entity(0)).is_some());
     }
 
     #[test]
     fn test_append_child() {
-        let parent: u32 = 0;
-        let child: u32 = 1;
+        let parent = Entity(0);
+        let child = Entity(1);
 
         let mut tree = Tree::new();
         tree.register_node(parent);
@@ -236,7 +240,7 @@ mod tests {
 
         assert_eq!(tree.children.len(), 1);
         assert_eq!(tree.parent.len(), 1);
-        assert!(tree.children.get(&0).is_some());
+        assert!(tree.children.get(&Entity(0)).is_some());
     }
 
     #[test]
@@ -246,12 +250,12 @@ mod tests {
         tree.register_entity(0);
         assert_eq!(tree.children.len(), 1);
         assert_eq!(tree.parent.len(), 1);
-        assert!(tree.children.get(&0).is_some());
+        assert!(tree.children.get(&Entity(0)).is_some());
 
         tree.remove_entity(0);
         assert_eq!(tree.children.len(), 0);
         assert_eq!(tree.parent.len(), 0);
-        assert!(tree.children.get(&0).is_none());
+        assert!(tree.children.get(&Entity(0)).is_none());
     }
 
     #[test]
@@ -276,12 +280,12 @@ mod tests {
 
         let mut iterator = tree.into_iter();
 
-        assert_eq!(0, iterator.next().unwrap());
-        assert_eq!(1, iterator.next().unwrap());
-        assert_eq!(3, iterator.next().unwrap());
-        assert_eq!(4, iterator.next().unwrap());
-        assert_eq!(2, iterator.next().unwrap());
-        assert_eq!(5, iterator.next().unwrap());
-        assert_eq!(6, iterator.next().unwrap());
+        assert_eq!(Entity(0), iterator.next().unwrap());
+        assert_eq!(Entity(1), iterator.next().unwrap());
+        assert_eq!(Entity(3), iterator.next().unwrap());
+        assert_eq!(Entity(4), iterator.next().unwrap());
+        assert_eq!(Entity(2), iterator.next().unwrap());
+        assert_eq!(Entity(5), iterator.next().unwrap());
+        assert_eq!(Entity(6), iterator.next().unwrap());
     }
 }
