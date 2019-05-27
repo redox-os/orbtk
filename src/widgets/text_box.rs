@@ -1,6 +1,6 @@
 use std::cell::Cell;
 
-use crate::prelude::*;
+use crate::{shell::Key, prelude::*};
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
 #[derive(Default)]

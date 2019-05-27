@@ -9,7 +9,7 @@ use std::{
 use dces::prelude::{Entity, World};
 
 use crate::prelude::*;
-use crate::backend::*;
+use crate::shell::{WindowBuilder, ShellRunner};
 use crate::systems::*;
 
 pub use self::global::*;
@@ -21,7 +21,7 @@ mod window;
 /// The `Application` represents the entry point of an OrbTk based application.
 #[derive(Default)]
 pub struct Application {
-    windows: Vec<WindowShell>,
+    runners: Vec<ShellRunner<WindowAdapter>>,
 }
 
 impl Application {
@@ -64,17 +64,23 @@ impl Application {
         world.entity_component_manager().register_component(window, Global::default());
         world.entity_component_manager().register_component(window, Bounds::from((0.0, 0.0, constraint.width(), constraint.height())));
 
-        let (mut runner, backend) =
-            target_backend(&title.0, Bounds::from((position.0.x, position.0.y, constraint.width(), constraint.height())), false);
+        let window_shell = Rc::new(RefCell::new(WindowBuilder::new(WindowAdapter {
+            root: window,
+            render_objects: render_objects.clone(),
+            layouts: layouts.clone(),
+            handlers: handlers.clone(),
+            states: states.clone(),
+            ..Default::default()
+        }).title(&(title.0)[..]).bounds(Bounds::from((position.0.x, position.0.y, constraint.width(), constraint.height()))).resizeable(resizeable.0).build()));
 
         world.register_init_system(InitSystem {
-            backend: backend.clone(),
+            backend: window_shell.clone(),
             states: states.clone(),
         });
 
         world
             .create_system(EventSystem {
-                backend: backend.clone(),
+                backend: window_shell.clone(),
                 handlers: handlers.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -84,7 +90,7 @@ impl Application {
 
         world
             .create_system(StateSystem {
-                backend: backend.clone(),
+                backend: window_shell.clone(),
                 states: states.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -94,7 +100,7 @@ impl Application {
 
         world
             .create_system(LayoutSystem {
-                backend: backend.clone(),
+                backend: window_shell.clone(),
                 layouts: layouts.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -104,7 +110,7 @@ impl Application {
 
         world
             .create_system(PostLayoutStateSystem {
-                backend: backend.clone(),
+                backend: window_shell.clone(),
                 states: states.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -114,7 +120,7 @@ impl Application {
 
         world
             .create_system(RenderSystem {
-                backend: backend.clone(),
+                backend: window_shell.clone(),
                 render_objects: render_objects.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -122,17 +128,20 @@ impl Application {
             .with_priority(4)
             .build();
 
-        runner.world(world);
 
-        self.windows.push(WindowShell {
-            backend_runner: runner,
-            render_objects,
-            layouts,
-            handlers,
-            states,
+        //    backend_runner: ShellRunner {
+        //         world: Some(world),
+        //         window_shell
+        //     },
+
+
+        self.runners.push(ShellRunner {
+            updater: Box::new(WorldWrapper {
+                world
+            }),
+            window_shell,
             update,
             running,
-            resizable: resizeable.0,
         });
 
         self
@@ -140,8 +149,8 @@ impl Application {
 
     /// Starts the application and run it until quit is requested.
     pub fn run(&mut self) {
-        for window in &mut self.windows {
-            window.run();
+        for runner in &mut self.runners {
+            runner.run();
         }
     }
 }

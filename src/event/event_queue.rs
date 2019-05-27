@@ -9,6 +9,7 @@ pub enum EventError {
     WrongType(TypeId),
 }
 
+#[derive(Debug)]
 pub struct EventBox {
     event: Box<dyn Any>,
     event_type: TypeId,
@@ -51,7 +52,7 @@ impl EventBox {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct EventQueue {
     event_queue: Vec<EventBox>,
 }
@@ -71,6 +72,7 @@ impl EventQueue {
             .push(EventBox::new::<E>(event, strategy, source));
     }
 
+    // todo rename to enqueue event
     pub fn register_event<E: Event>(&mut self, event: E, source: Entity) {
         self.event_queue
             .push(EventBox::new::<E>(event, EventStrategy::BottomUp, source));

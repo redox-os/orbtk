@@ -7,10 +7,10 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{backend::Backend, prelude::*};
+use crate::{shell::WindowShell, prelude::*};
 
 pub struct EventSystem {
-    pub backend: Rc<RefCell<dyn Backend>>,
+    pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
@@ -40,7 +40,7 @@ impl EventSystem {
 
             // MouseDownEvent handling
             if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
-                if check_mouse_condition(event.position, &widget) {
+                if check_mouse_condition(Point::new(event.x, event.y), &widget) {
                     matching_nodes.push(node);
                 }
 
@@ -121,7 +121,7 @@ impl EventSystem {
                 let mut pressed = false;
                 let mut in_mouse_pos = false;
 
-                if check_mouse_condition(event.position, &widget) {
+                if check_mouse_condition(Point::new(event.x, event.y), &widget) {
                     in_mouse_pos = true;
                 }
 
@@ -142,7 +142,7 @@ impl EventSystem {
                     if in_mouse_pos {
                         new_events.push(EventBox::new(
                             ClickEvent {
-                                position: event.position,
+                                position: Point::new(event.x, event.y),
                             },
                             EventStrategy::BottomUp,
                             *node,
@@ -185,12 +185,12 @@ impl EventSystem {
 impl System<Tree> for EventSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
         let mut backend = self.backend.borrow_mut();
-        let event_context = backend.event_context();
+        let adapter = backend.adapter();
 
         let mut new_events = vec![];
 
         loop {
-            for event in event_context.event_queue.borrow_mut().into_iter() {
+            for event in adapter.event_queue.into_iter() {
                 if let Ok(event) = event.downcast_ref::<WindowEvent>() {
                     match event {
                         WindowEvent::Resize { width, height } => {
@@ -219,7 +219,6 @@ impl System<Tree> for EventSystem {
                     }
                 }
 
-
                 match event.strategy {
                     EventStrategy::TopDown => {
                         self.process_top_down_event(&event, tree, ecm, &mut new_events);
@@ -232,12 +231,11 @@ impl System<Tree> for EventSystem {
             }
 
 
-            event_context
+            adapter
                 .event_queue
-                .borrow_mut()
                 .append(&mut new_events);
 
-            if event_context.event_queue.borrow().len() == 0 {
+            if adapter.event_queue.len() == 0 {
                 break;
             }
         }

@@ -1,6 +1,4 @@
-use orbgl_api::Canvas;
-
-use crate::{prelude::*, backend::Renderer};
+use crate::prelude::*;
 
 /// Used to render a text.
 pub struct TextRenderObject;
@@ -14,8 +12,6 @@ impl Into<Box<dyn RenderObject>> for TextRenderObject {
 impl RenderObject for TextRenderObject {
     fn render(
         &self,
-        _canvas: &mut Canvas,
-        renderer: &mut dyn Renderer,
         context: &mut Context<'_>,
         global_position: &Point,
     ) {
@@ -25,25 +21,28 @@ impl RenderObject for TextRenderObject {
             Bounds::default()
         };
 
-        let widget = context.widget();
-        let text = widget.clone::<Text>();
+        let (bounds, text, foreground, font, font_size) = {
+            let widget = context.widget();
+            let text = widget.clone::<Text>();
 
-        let txt = {
-            if !text.0.is_empty() {
-                text.0.clone()
-            } else {
-                widget.clone_or_default::<WaterMark>().0
-            }
+            let txt = {
+                if !text.0.is_empty() {
+                    text.0.clone()
+                } else {
+                    widget.clone_or_default::<WaterMark>().0
+                }
+            };
+            (widget.clone::<Bounds>(), txt.to_string(), widget.get::<Foreground>().0.clone(), widget.get::<Font>().0.clone(), widget.get::<FontSize>().0 as u32)
         };
 
-        renderer.render_text(
-            &txt,
-            &widget.get::<Bounds>(),
-            &parent_bounds,
+        context.renderer().render_text(
+            &text,
+            &bounds.0,
+            &parent_bounds.0,
             global_position,
-            widget.get::<FontSize>().0 as u32,
-            widget.clone::<Foreground>().into(),
-            &(widget.get::<Font>().0).0,
+            font_size,
+            foreground.into(),
+            &font.0,
         );
     }
 }

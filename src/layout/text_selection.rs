@@ -6,8 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager};
 
-use crate::prelude::*;
-use crate::backend::FontMeasure;
+use crate::{shell::FontMeasure, prelude::*};
 
 use super::Layout;
 
@@ -116,13 +115,13 @@ impl Layout for TextSelectionLayout {
 
                 if let Some(selection) = widget.try_get::<TextSelection>() {
                     if let Some(text_part) = text.0.get(0..selection.0.start_index) {
-                        pos = crate::FONT_MEASURE
+                        pos = crate::shell::FONT_MEASURE
                             .measure(text_part, &(font.0).0, font_size.0 as u32)
                             .0 as f64;
 
                         if text_part.ends_with(" ") {
                             pos +=
-                                (crate::FONT_MEASURE.measure("a", &(font.0).0, font_size.0 as u32).0 / 2) as f64;
+                                (crate::shell::FONT_MEASURE.measure("a", &(font.0).0, font_size.0 as u32).0 / 2) as f64;
                         }
                     }
                 }

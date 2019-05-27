@@ -21,4 +21,5 @@ pub use crate::{
     property,
     css_engine::{Selector as SelectorValue, Theme as ThemeValue, ThemeBuilder, SelectorRelation},
     tree::*,
+    shell,
 };

@@ -6,12 +6,12 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{backend::Backend, prelude::*};
+use crate::{shell::WindowShell, prelude::*};
 
 /// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calulated by the layout objects of layout widgets.
 pub struct LayoutSystem {
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub backend: Rc<RefCell<dyn Backend>>,
+    pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
 }

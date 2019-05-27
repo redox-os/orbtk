@@ -6,6 +6,7 @@ pub enum MessageError {
 }
 
 /// A message box is a container for wrapping a message.
+#[derive(Debug)]
 pub struct MessageBox {
     message: Box<dyn Any>,
     message_type: TypeId,
