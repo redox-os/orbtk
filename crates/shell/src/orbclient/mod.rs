@@ -1,3 +1,5 @@
+//! This module contains a platform specific implementation of the window shell.
+
 use std::{collections::HashMap, sync::Arc, cell::{Cell, RefCell}, rc::Rc};
 
 use orbclient::{Color, Window, WindowFlag, Renderer};
@@ -5,10 +7,13 @@ use orbfont::Font;
 use orbgl_api::Canvas;
 use orbgl::prelude::{CairoRenderEngine, FramebufferSurface};
 
-use orbtk_utils::{Point, Rect, Position, Size};
+use orbtk_utils::{Point, Rect};
 
-use crate::{window, obsolete, prelude::*};
+use crate::{obsolete, prelude::*};
 
+pub mod fonts;
+
+/// Concrete implementation of the window shell.
 pub struct WindowShell<A> where A: WindowAdapter {
     pub inner: Window,
     mouse_buttons: (bool, bool, bool),
@@ -18,6 +23,7 @@ pub struct WindowShell<A> where A: WindowAdapter {
 }
 
 impl<A> WindowShell<A> where A: WindowAdapter {
+    /// Creates a new window shell with an adapter.
     pub fn new(inner: Window, adapter: A) -> WindowShell<A> {
         let mut inner = inner;
 
@@ -40,11 +46,12 @@ impl<A> WindowShell<A> where A: WindowAdapter {
         }
     }
 
+    /// Gets the shell adapter.
     pub fn adapter(&mut self) -> &mut A {
         &mut self.adapter
     }
 
-    pub fn drain_events(&mut self) {
+    fn drain_events(&mut self) {
         self.inner.sync();
 
         for event in self.inner.events() {
@@ -140,8 +147,8 @@ pub struct ShellRunner<A> where A: WindowAdapter {
     pub updater: Box<Updater>,
 }
 
-impl<A> window::ShellRunner for ShellRunner<A> where A: WindowAdapter {
-    fn run(&mut self) {
+impl<A> ShellRunner<A> where A: WindowAdapter {
+    pub fn run(&mut self) {
         loop {
             if !self.running.get() {
                 break;
@@ -156,6 +163,7 @@ impl<A> window::ShellRunner for ShellRunner<A> where A: WindowAdapter {
     }
 }
 
+/// Constructs the window shell
 pub struct WindowBuilder<A> where A: WindowAdapter {
     title: String,
 
@@ -167,6 +175,7 @@ pub struct WindowBuilder<A> where A: WindowAdapter {
 }
 
 impl<A> WindowBuilder<A> where A: WindowAdapter {
+    /// Create a new window builder with the given adapter.
     pub fn new(adapter: A) -> Self {
         WindowBuilder {
             adapter,
@@ -176,21 +185,25 @@ impl<A> WindowBuilder<A> where A: WindowAdapter {
         }
     }
 
+    /// Sets the title.
     pub fn title(mut self, title: impl Into<String>) -> Self {
         self.title = title.into();
         self
     }
 
+    /// Sets resizeable.
     pub fn resizeable(mut self, resizeable: bool) -> Self {
         self.resizeable = resizeable;
         self
     }
 
+    /// Sets the bounds.
     pub fn bounds(mut self, bounds: impl Into<Rect>) -> Self {
         self.bounds = bounds.into();
         self
     }
 
+    /// Builds the window shell.
     pub fn build(self) -> WindowShell<A> {
         let mut flags = vec![];
         if self.resizeable {
@@ -259,50 +272,50 @@ impl OrbFontRenderer {
     }
 }
 
-// lazy_static! {
-//     pub static ref FONT_RENDERER: Arc<OrbFontRenderer> = {
-//         let mut fonts = HashMap::new();
+lazy_static! {
+    pub static ref FONT_RENDERER: Arc<OrbFontRenderer> = {
+        let mut fonts = HashMap::new();
 
-//         if let Ok(font) = Font::from_data(fonts::ROBOTO_REGULAR_FONT.to_vec().into_boxed_slice()) {
-//             fonts.insert("Roboto Regular", font);
-//         }
+        if let Ok(font) = Font::from_data(fonts::ROBOTO_REGULAR_FONT.to_vec().into_boxed_slice()) {
+            fonts.insert("Roboto Regular", font);
+        }
 
-//         if let Ok(font) = Font::from_data(fonts::MATERIAL_ICONS_REGULAR_FONT.to_vec().into_boxed_slice()) {
-//             fonts.insert("Material Icons Regular", font);
-//         }
+        if let Ok(font) = Font::from_data(fonts::MATERIAL_ICONS_REGULAR_FONT.to_vec().into_boxed_slice()) {
+            fonts.insert("Material Icons Regular", font);
+        }
 
-//         Arc::new(OrbFontRenderer { fonts })
-//     };
-// }
+        Arc::new(OrbFontRenderer { fonts })
+    };
+}
 
-// impl obsolete::Renderer for Window {
-//     fn render_text(
-//         &mut self,
-//         text: &str,
-//         bounds: &Rect,
-//         parent_bounds: &Rect,
-//         global_position: &Point,
-//         font_size: u32,
-//         color: Color,
-//         font: &Font,
-//     ) {
-//         let alpha = (color.data >> 24) & 0xFF;
+impl obsolete::Renderer for Window {
+    fn render_text(
+        &mut self,
+        text: &str,
+        bounds: &Rect,
+        parent_bounds: &Rect,
+        global_position: &Point,
+        font_size: u32,
+        color: Color,
+        font: &Font,
+    ) {
+        let alpha = (color.data >> 24) & 0xFF;
 
-//         if alpha == 0 {
-//             return;
-//         }
+        if alpha == 0 {
+            return;
+        }
 
-//         FONT_RENDERER.render(
-//             text,
-//             bounds,
-//             parent_bounds,
-//             global_position,
-//             self,
-//             font_size as f32,
-//             color,
-//             font,
-//         );
-//     }
-// }
+        FONT_RENDERER.render(
+            text,
+            bounds,
+            parent_bounds,
+            global_position,
+            self,
+            font_size as f32,
+            color,
+            font,
+        );
+    }
+}
 
 // --- obsolete will be removed after OrbGL supports text rendering ---

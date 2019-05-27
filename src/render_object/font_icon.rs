@@ -1,6 +1,4 @@
-use orbgl_api::Canvas;
-
-use crate::{prelude::*, backend::Renderer};
+use crate::prelude::*;
 
 pub struct FontIconRenderObject;
 
@@ -30,8 +28,8 @@ impl RenderObject for FontIconRenderObject {
         if !icon.0.is_empty() {
             context.renderer().render_text(
                 &icon.0,
-                &bounds,
-                &parent_bounds,
+                &bounds.0,
+                &parent_bounds.0,
                 global_position,
                 icon_size,
                 icon_brush.into(),

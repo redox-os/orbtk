@@ -1,6 +1,4 @@
-use orbgl_api::Canvas;
-
-use crate::{prelude::*, backend::Renderer};
+use crate::prelude::*;
 
 /// Used to render an image.
 pub struct ImageRenderObject;

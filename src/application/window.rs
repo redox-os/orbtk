@@ -4,9 +4,9 @@ use dces::prelude::{Entity, World};
 
 use crate::prelude::*;
 
-use crate::backend;
+use crate::shell;
 
-/// Represents a window. Each window has its own tree, event pipeline and backend.
+/// Represents a window. Each window has its own tree, event pipeline and shell.
 #[derive(Default)]
 pub struct WindowAdapter {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
@@ -25,18 +25,18 @@ pub struct WindowAdapter {
 //         &mut self.context_provider
 //     }
 // }
-
+ 
 pub struct WorldWrapper {
     pub world: World<Tree>,
 }
 
-impl backend::Updater for WorldWrapper {
+impl shell::Updater for WorldWrapper {
     fn update(&mut self) {
         self.world.run();
     }
 }
 
-impl backend::WindowAdapter for WindowAdapter {
+impl shell::WindowAdapter for WindowAdapter {
     fn update(&mut self) {}
 
     fn resize(&mut self, width: f64, height: f64) {
@@ -50,9 +50,9 @@ impl backend::WindowAdapter for WindowAdapter {
         }, self.root)
     }
 
-    fn mouse_event(&mut self, event: backend::MouseEvent) {
+    fn mouse_event(&mut self, event: shell::MouseEvent) {
         match event.state {
-            backend::ButtonState::Up => self.event_queue.register_event(
+            shell::ButtonState::Up => self.event_queue.register_event(
                 MouseUpEvent {
                     x: event.x,
                     y: event.y,
@@ -60,7 +60,7 @@ impl backend::WindowAdapter for WindowAdapter {
                 },
                 self.root,
             ),
-            backend::ButtonState::Down => self.event_queue.register_event(
+            shell::ButtonState::Down => self.event_queue.register_event(
                 MouseDownEvent {
                     x: event.x,
                     y: event.y,
@@ -71,15 +71,15 @@ impl backend::WindowAdapter for WindowAdapter {
         }
     }
 
-    fn key_event(&mut self, event: backend::KeyEvent) {
+    fn key_event(&mut self, event: shell::KeyEvent) {
          match event.state {
-            backend::ButtonState::Up => self.event_queue.register_event(
+            shell::ButtonState::Up => self.event_queue.register_event(
                 KeyUpEvent {
                     key: event.key
                 },
                 self.root,
             ),
-            backend::ButtonState::Down => self.event_queue.register_event(
+            shell::ButtonState::Down => self.event_queue.register_event(
                  KeyDownEvent {
                     key: event.key
                 },
@@ -94,8 +94,8 @@ impl backend::WindowAdapter for WindowAdapter {
     }
 }
 
-impl Into<Box<backend::WindowAdapter>> for WindowAdapter {
-    fn into(self) -> Box<backend::WindowAdapter> {
+impl Into<Box<shell::WindowAdapter>> for WindowAdapter {
+    fn into(self) -> Box<shell::WindowAdapter> {
         Box::new(self)
     }
 }

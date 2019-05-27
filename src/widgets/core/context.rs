@@ -3,7 +3,7 @@ use orbgl_api::Canvas;
 
 use super::{MessageBox, WidgetContainer};
 
-use crate::{backend::{WindowShell, Renderer}, prelude::*};
+use crate::{shell::{WindowShell, Renderer}, prelude::*};
 
 /// The `Context` is provides access for the states to objects they could work with.
 pub struct Context<'a> {

@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{backend::WindowShell, prelude::*};
+use crate::{shell::WindowShell, prelude::*};
 
 /// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {

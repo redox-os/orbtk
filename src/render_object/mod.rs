@@ -2,9 +2,7 @@
 
 use std::any::Any;
 
-use orbgl_api::Canvas;
-
-use crate::{prelude::*, backend::Renderer};
+use crate::prelude::*;
 
 pub use self::font_icon::*;
 pub use self::image::*;

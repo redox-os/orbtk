@@ -1,3 +1,5 @@
+//! This module contains elements to work with window events.
+
 /// Represents a keyboard key.
 #[derive(Copy, Clone, Debug, Hash, PartialEq)]
 pub enum Key {
@@ -278,6 +280,7 @@ impl From<char> for Key {
     }
 }
 
+/// Describes a specific mouse button.
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
 pub enum MouseButton {
     Left,
@@ -285,6 +288,7 @@ pub enum MouseButton {
     Right,
 }
 
+/// Describes the position / state of a button.
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
 pub enum ButtonState {
     Down,
@@ -292,6 +296,7 @@ pub enum ButtonState {
     Up
 }
 
+/// Represents a mouse event.
 #[derive(Debug)]
 pub struct MouseEvent {
     pub x: f64,
@@ -303,6 +308,7 @@ pub struct MouseEvent {
     pub state: ButtonState
 }
 
+/// Represents a keyboard key event.
 #[derive(Debug)]
 pub struct KeyEvent {
     pub key: Key,

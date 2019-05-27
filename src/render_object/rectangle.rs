@@ -1,6 +1,6 @@
 use orbgl_api::Canvas;
 
-use crate::{prelude::*, backend::Renderer};
+use crate::prelude::*;
 
 pub struct RectangleRenderObject;
 

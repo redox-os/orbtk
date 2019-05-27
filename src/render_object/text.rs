@@ -1,6 +1,4 @@
-use orbgl_api::Canvas;
-
-use crate::{prelude::*, backend::Renderer};
+use crate::prelude::*;
 
 /// Used to render a text.
 pub struct TextRenderObject;
@@ -39,8 +37,8 @@ impl RenderObject for TextRenderObject {
 
         context.renderer().render_text(
             &text,
-            &bounds,
-            &parent_bounds,
+            &bounds.0,
+            &parent_bounds.0,
             global_position,
             font_size,
             foreground.into(),

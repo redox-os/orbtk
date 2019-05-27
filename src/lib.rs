@@ -4,13 +4,9 @@
 pub use dces::prelude::*;
 
 #[macro_use]
-extern crate lazy_static;
-
-#[macro_use]
 pub mod macros;
 
 pub use crate::application::*;
-pub use crate::backend::*;
 pub use crate::event::*;
 pub use crate::layout::*;
 pub use crate::properties::*;
@@ -21,13 +17,12 @@ pub use crate::widgets::*;
 
 pub use dces::prelude::*;
 pub use orbtk_css_engine::prelude as css_engine;
-pub use orbtk_shell as shell;
+pub use orbtk_shell::prelude as shell;
 pub use orbtk_theme::prelude as theme;
 pub use orbtk_utils::prelude as utils;
 pub use orbtk_tree::prelude as tree;
 
 pub mod application;
-pub mod backend;
 pub mod event;
 pub mod layout;
 pub mod properties;

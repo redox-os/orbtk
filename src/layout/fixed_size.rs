@@ -7,7 +7,7 @@ use std::{
 use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::prelude::*;
-use crate::backend::{FontMeasure, FONT_MEASURE};
+use crate::shell::{FontMeasure, FONT_MEASURE};
 
 use super::Layout;
 
