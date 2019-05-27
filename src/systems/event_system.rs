@@ -7,7 +7,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{shell::WindowShell, prelude::*};
+use crate::{prelude::*, shell::WindowShell};
 
 pub struct EventSystem {
     pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
@@ -159,7 +159,7 @@ impl EventSystem {
             }
         }
 
-         // KeyDown handling
+        // KeyDown handling
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
             if let Ok(global) = ecm.borrow_mut_component::<Global>(tree.root) {
                 // Set this value on the keyboard state

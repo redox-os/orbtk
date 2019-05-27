@@ -10,6 +10,7 @@ impl From<(f64, f64)> for Pos {
         Pos::from(Point::new(t.0, t.1))
     }
 }
+
 impl From<(i32, i32)> for Pos {
     fn from(s: (i32, i32)) -> Pos {
         Pos::from((s.0 as f64, s.1 as f64))
