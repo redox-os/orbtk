@@ -126,9 +126,50 @@ impl<A> WindowBuilder<A> where A: WindowAdapter {
         canvas.set_width(self.bounds.width as u32);
         canvas.set_height(self.bounds.height as u32);
 
-        document().body().unwrap().append_child(&canvas);
+        js! {
+            document.body.style.padding = 0;
+            document.body.style.margin = 0;
+            @{&canvas}.style.display = "block";
+            @{&canvas}.style.margin = "0";
+        }
 
-        let surface = WebSurface::new(self.bounds.width as u32, self.bounds.height as u32, canvas.get_context().unwrap());
+
+        document().body().unwrap().append_child(&canvas);
+        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
+        context.set_font("Roboto");
+
+           let devicePixelRatio = window().device_pixel_ratio();
+
+        let backingStoreRatio = js! {
+            var context = @{&context};
+             return context.webkitBackingStorePixelRatio ||
+                 context.mozBackingStorePixelRatio ||
+                 context.msBackingStorePixelRatio ||
+                 context.oBackingStorePixelRatio ||
+                 context.backingStorePixelRatio || 1;
+        };
+
+        let ratio: f64 = js! {
+            return @{&devicePixelRatio} / @{&backingStoreRatio};
+        }
+        .try_into()
+        .unwrap();
+
+        if devicePixelRatio != backingStoreRatio {
+            let old_width = canvas.width();
+            let old_height = canvas.height();
+            canvas.set_width((old_width as f64 * ratio) as u32);
+            canvas.set_height((old_height as f64 * ratio) as u32);
+
+            js! {
+                @{&canvas}.style.width = @{&old_width} + "px";
+                @{&canvas}.style.height = @{&old_height} + "px";
+            }
+
+            context.scale(ratio, ratio);
+        }
+
+        let surface = WebSurface::new(self.bounds.width as u32, self.bounds.height as u32, context);
         let render_engine = WebRenderEngine::new(surface);
         let mut canvas = Canvas::new(render_engine.clone());
 
@@ -150,7 +191,12 @@ pub struct WebFontMeasure;
 
 impl FontMeasure for WebFontMeasure {
     fn measure(&self, text: &str, font: &Font, font_size: u32) -> (u32, u32) {
-        (0, 0)
+       
+        let canvas: CanvasElement = document().query_selector( "canvas" ).unwrap().unwrap().try_into().unwrap();
+        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
+        context.set_font(&format!("{}px Roboto ", font_size));
+       
+       (context.measure_text(text).unwrap().get_width() as u32, font_size)
     }
 }
 
@@ -165,15 +211,23 @@ pub struct WebRenderer {
 impl obsolete::Renderer for WebRenderer {
     fn render_text(
         &mut self,
-        _text: &str,
-        _bounds: &Rect,
-        _parent_bounds: &Rect,
-        _global_position: &Point,
-        _font_size: u32,
-        _color: Color,
+        text: &str,
+        bounds: &Rect,
+        parent_bounds: &Rect,
+        global_position: &Point,
+        font_size: u32,
+        color: Color,
         _font: &Font,
     ) {
-       
+        if color.r() == 0 && color.g() == 0 && color.b() == 0 && color.a() == 0 {
+                    return;
+                }
+        let canvas: CanvasElement = document().query_selector( "canvas" ).unwrap().unwrap().try_into().unwrap();
+        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
+
+        context.set_font(&format!("{}px Roboto ", font_size));
+        context.set_fill_style_color(&color.to_string());
+        context.fill_text(text, global_position.x + bounds.x, global_position.y + bounds.y + font_size as f64 - 2.0, Some(parent_bounds.width));
     }
 }
 

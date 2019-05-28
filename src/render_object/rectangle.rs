@@ -98,8 +98,13 @@ impl RectangleRenderObject {
             270.0 * degrees,
         );
 
-        match brush {
-            Brush::SolidColor(color) => canvas.set_fill_style(color),
+         match brush {
+            Brush::SolidColor(color) => {
+                if color.r() == 0 && color.g() == 0 && color.b() == 0 && color.a() == 0 {
+                    return;
+                }
+                canvas.set_fill_style(color)
+            }
             _ => {} // todo: gradient
         }
 
