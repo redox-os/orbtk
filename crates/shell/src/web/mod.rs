@@ -57,7 +57,7 @@ impl<A> WindowShell<A> where A: WindowAdapter {
 // }
 
 /// Implementation of the OrbClient based shell runner.
-pub struct ShellRunner<A> where A: WindowAdapter {
+pub struct ShellRunner<A> where A: WindowAdapter + 'static {
     pub window_shell: Rc<RefCell<WindowShell<A>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
@@ -65,18 +65,12 @@ pub struct ShellRunner<A> where A: WindowAdapter {
 }
 
 impl<A> ShellRunner<A> where A: WindowAdapter {
-    pub fn run(&mut self) {
-        // loop {
-        //     if !self.running.get() {
-        //         break;
-        //     }
+    pub fn run(mut self) {
 
-        //     self.updater.update();
-
-        //     self.update.set(false);
-
-        //     self.window_shell.borrow_mut().drain_events();
-        // }
+        window().request_animation_frame(move |_| {
+            self.updater.update();
+            self.update.set(false);
+        });
     }
 }
 
@@ -128,6 +122,9 @@ impl<A> WindowBuilder<A> where A: WindowAdapter {
             .unwrap()
             .try_into()
             .unwrap();
+        
+        canvas.set_width(self.bounds.width as u32);
+        canvas.set_height(self.bounds.height as u32);
 
         document().body().unwrap().append_child(&canvas);
 
@@ -138,7 +135,6 @@ impl<A> WindowBuilder<A> where A: WindowAdapter {
         document().set_title(&self.title[..]);
 
         stdweb::event_loop();
-
 
         WindowShell::new(
             WebRenderer {},

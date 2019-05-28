@@ -4,6 +4,8 @@
 pub use dces::prelude::*;
 pub use dces::prelude::*;
 
+pub use shell::initialize;
+
 pub use orbtk_css_engine::prelude as css_engine;
 pub use orbtk_shell::prelude as shell;
 pub use orbtk_theme::prelude as theme;

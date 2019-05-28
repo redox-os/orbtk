@@ -128,13 +128,6 @@ impl Application {
             .with_priority(4)
             .build();
 
-
-        //    shell_runner: ShellRunner {
-        //         world: Some(world),
-        //         window_shell
-        //     },
-
-
         self.runners.push(ShellRunner {
             updater: Box::new(WorldWrapper {
                 world
@@ -148,8 +141,9 @@ impl Application {
     }
 
     /// Starts the application and run it until quit is requested.
-    pub fn run(&mut self) {
-        for runner in &mut self.runners {
+    pub fn run(mut self) {
+        while let Some(runner) = self.runners.pop() {
+            let mut runner = runner;
             runner.run();
         }
     }

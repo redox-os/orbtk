@@ -1,4 +1,4 @@
-use orbgl_api::Canvas;
+use orbgl_api::{Canvas, Color};
 
 use crate::prelude::*;
 
@@ -16,7 +16,12 @@ impl RectangleRenderObject {
         brush: Brush,
     ) {
         match brush {
-            Brush::SolidColor(color) => canvas.set_fill_style(color),
+            Brush::SolidColor(color) => {
+                if color.r() == 0 && color.g() == 0 && color.b() == 0 && color.a() == 0 {
+                    return;
+                }
+                canvas.set_fill_style(color)
+            }
             _ => {} // todo: gradient
         }
 
@@ -142,6 +147,7 @@ impl RenderObject for RectangleRenderObject {
         context: &mut Context<'_>,
         global_position: &Point,
     ) {
+        context.canvas().begin_path();
         let (bounds, background, border_radius, border_thickness, border_brush) = {
             let widget = context.widget();
             (widget.clone::<Bounds>(), widget.get::<Background>().0.clone(), widget.clone_or_default::<BorderRadius>().0, widget.clone_or_default::<BorderThickness>().0, widget.clone_or_default::<BorderBrush>().0)
@@ -198,6 +204,7 @@ impl RenderObject for RectangleRenderObject {
                     background,
                 );
             }
+            context.canvas().close_path();
         }
     }
 }
