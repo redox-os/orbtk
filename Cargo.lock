@@ -459,6 +459,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "orbgl_web"
+version = "0.1.0"
+source = "git+https://gitlab.redox-os.org/redox-os/orbgl.git#715fc579acf3cc2b449bf54f5cf3e4667bd82a93"
+dependencies = [
+ "orbgl_api 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
+ "stdweb 0.4.17 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "orbimage"
 version = "0.1.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -502,7 +511,9 @@ dependencies = [
  "orbfont 0.1.9 (git+https://gitlab.redox-os.org/redox-os/orbfont.git)",
  "orbgl 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
  "orbgl_api 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
+ "orbgl_web 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
  "orbtk-utils 0.1.0",
+ "stdweb 0.4.17 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1164,6 +1175,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum orbfont 0.1.9 (git+https://gitlab.redox-os.org/redox-os/orbfont.git)" = "<none>"
 "checksum orbgl 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)" = "<none>"
 "checksum orbgl_api 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)" = "<none>"
+"checksum orbgl_web 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)" = "<none>"
 "checksum orbimage 0.1.17 (registry+https://github.com/rust-lang/crates.io-index)" = "39fe3f9612b797a312bf122a67ebce408936b34996b9be419dbf0b3d4638c424"
 "checksum ordered-float 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "18869315e81473c951eb56ad5558bbc56978562d3ecfb87abb7a1e944cea4518"
 "checksum phf 0.7.24 (registry+https://github.com/rust-lang/crates.io-index)" = "b3da44b85f8e8dfaec21adae67f95d93244b2ecf6ad2a692320598dcc8e6dd18"

@@ -27,8 +27,6 @@ runner.run()
 
  */
 
-
-
 #[macro_use]
 extern crate lazy_static;
 
@@ -41,3 +39,6 @@ pub mod window;
 #[path = "orbclient/mod.rs"]
 pub mod platform;
 
+#[cfg(target_arch = "wasm32")]
+#[path = "web/mod.rs"]
+pub mod platform;

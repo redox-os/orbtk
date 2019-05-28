@@ -39,6 +39,28 @@
         "kind": "build",
         "isDefault": true
       }
-    }
+    },
+    {
+      "label": "build-web",
+      "command": "cargo",
+      "type": "shell",
+      "args": [
+          "web",
+          "start",
+          "--target=wasm32-unknown-unknown",
+          "--auto-reload",
+          "--example",
+          "widgets"
+      ],
+      "presentation": {
+          "reveal": "always",
+          "panel": "new"
+      },
+      "group": {
+          "kind": "build",
+          "isDefault": true
+      }
+  },
+
   ]
 }

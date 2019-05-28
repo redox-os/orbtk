@@ -16,6 +16,15 @@
       ]
     },
     {
+      "name": "Widgets web",
+      "type": "firefox",
+      "request": "launch",
+      "reAttach": true,
+      "preLaunchTask": "build-web",
+      "url": "http://localhost:8000",
+    },
+
+    {
       "type": "lldb",
       "request": "launch",
       "name": "Widgets debug",
