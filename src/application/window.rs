@@ -36,8 +36,6 @@ impl shell::Updater for WorldWrapper {
 }
 
 impl shell::WindowAdapter for WindowAdapter {
-    fn update(&mut self) {}
-
     fn resize(&mut self, width: f64, height: f64) {
         self.event_queue
             .register_event(WindowEvent::Resize { width, height }, self.root);

@@ -6,7 +6,7 @@ use crate::{prelude::*, shell::WindowShell};
 
 /// This system is used to initializes the widgets.
 pub struct InitSystem {
-    pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
+    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
 }
 
@@ -54,7 +54,7 @@ impl System<Tree> for InitSystem {
             println!("\n------ Widget tree ------\n");
         }
 
-        let window_shell = &mut self.backend.borrow_mut();
+        let window_shell = &mut self.shell.borrow_mut();
 
         // init css ids
         let root = tree.root;

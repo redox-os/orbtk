@@ -3,15 +3,16 @@
 use std::{cell::{Cell, RefCell}, collections::HashMap, rc::Rc, sync::Arc};
 
 use orbclient::{Color, Renderer, Window, WindowFlag};
-use orbfont::Font;
 use orbgl::prelude::{CairoRenderEngine, FramebufferSurface};
-use orbgl_api::Canvas;
+use orbgl_api::{Canvas, Font};
 
 use orbtk_utils::{Point, Rect};
 
 use crate::{obsolete, prelude::*};
 
 pub mod fonts;
+
+pub fn initialize() {}
 
 /// Concrete implementation of the window shell.
 pub struct WindowShell<A> where A: WindowAdapter {
@@ -144,7 +145,7 @@ impl<A> Drop for WindowShell<A> where A: WindowAdapter {
     }
 }
 
-/// Implementation of the OrbClient based backend runner.
+/// Implementation of the OrbClient based shell runner.
 pub struct ShellRunner<A> where A: WindowAdapter {
     pub window_shell: Rc<RefCell<WindowShell<A>>>,
     pub update: Rc<Cell<bool>>,

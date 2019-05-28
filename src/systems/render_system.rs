@@ -11,7 +11,7 @@ use crate::{prelude::*, shell::WindowShell};
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
+    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
 }
@@ -71,7 +71,7 @@ impl System<Tree> for RenderSystem {
                         node,
                         ecm,
                         tree,
-                        &mut self.backend.borrow_mut(),
+                        &mut self.shell.borrow_mut(),
                         &theme,
                     ),
                     &global_position,
@@ -86,11 +86,11 @@ impl System<Tree> for RenderSystem {
                     let brush = theme.brush("border-color", &selector.0).unwrap();
 
                     match brush {
-                        Brush::SolidColor(color) => self.backend.borrow_mut().canvas.set_stroke_style(color),
+                        Brush::SolidColor(color) => self.shell.borrow_mut().canvas.set_stroke_style(color),
                         _ => {} // todo: gradient
                     }
 
-                    self.backend.borrow_mut().canvas.stroke_rect(global_position.x + bounds.x(), global_position.y + bounds.y(), bounds.width(), bounds.height());
+                    self.shell.borrow_mut().canvas.stroke_rect(global_position.x + bounds.x(), global_position.y + bounds.y(), bounds.width(), bounds.height());
                 }
             }
 

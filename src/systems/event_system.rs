@@ -10,7 +10,7 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 use crate::{prelude::*, shell::WindowShell};
 
 pub struct EventSystem {
-    pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
+    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
@@ -200,8 +200,8 @@ impl EventSystem {
 
 impl System<Tree> for EventSystem {
     fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
-        let mut backend = self.backend.borrow_mut();
-        let adapter = backend.adapter();
+        let mut shell = self.shell.borrow_mut();
+        let adapter = shell.adapter();
 
         let mut new_events = vec![];
 

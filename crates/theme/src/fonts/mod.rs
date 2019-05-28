@@ -1,10 +1,13 @@
-use orbfont::Font;
+use orbgl_api::Font;
 
 /// Reference to the material icon font.
 pub static MATERIAL_ICONS_REGULAR_FONT: &'static [u8; 128180] =
     include_bytes!("MaterialIcons-Regular.ttf");
 pub static ROBOTO_REGULAR_FONT: &'static [u8; 145348] = include_bytes!("Roboto-Regular.ttf");
 
+// todo load web font
+
+#[cfg(not(target_arch = "wasm32"))]
 pub fn font_by_key(key: &str) -> Option<Font> {
     match key {
         "Roboto Regular" => {
@@ -15,6 +18,11 @@ pub fn font_by_key(key: &str) -> Option<Font> {
         }
         _ => return None,
     }
+}
+
+#[cfg(target_arch = "wasm32")]
+pub fn font_by_key(key: &str) -> Option<Font> {
+    None
 }
 
 pub fn font_into_box(font: &[u8]) -> Box<[u8]> {

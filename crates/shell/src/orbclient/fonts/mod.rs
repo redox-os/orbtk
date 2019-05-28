@@ -1,4 +1,4 @@
-use orbfont::Font;
+use orbgl_api::Font;
 
 /// Reference to the material icon font.
 pub static MATERIAL_ICONS_REGULAR_FONT: &'static [u8; 128180] =

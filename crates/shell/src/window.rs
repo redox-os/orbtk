@@ -1,7 +1,5 @@
 //! This module contains traits to inject custom logic into the window shell.
 
-use orbgl_api::Canvas;
-
 use crate::event::*;
 
 /// The window adapter is used to work with the window shell.ButtonState
@@ -9,11 +7,11 @@ use crate::event::*;
 /// It handles updates from the shell and provides method to update and render
 /// its content.
 pub trait WindowAdapter {
-    /// Renders the content.
-    fn render(&mut self, _canvas: &mut Canvas) {}
+    // /// Renders the content.
+    // fn render(&mut self, _canvas: &mut Canvas) {}
 
-    /// Updates the content.
-    fn update(&mut self) {}
+    // /// Updates the content.
+    // fn update(&mut self) {}
 
     /// Is called after the window is resized.
     fn resize(&mut self, _width: f64, _height: f64) {}

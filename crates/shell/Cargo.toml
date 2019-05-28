@@ -8,7 +8,7 @@ license = "MIT"
 keywords = ["shell", "window", "ui"]
 edition = "2018"
 
-[target.'cfg(target_arch = "wasm32")'.dependencies]
+[target.wasm32-unknown-unknown.dependencies]
 orbgl_web = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git" }
 stdweb = "0.4.17"
 

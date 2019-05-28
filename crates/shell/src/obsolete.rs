@@ -1,6 +1,6 @@
 // !!! The complete components of this module will be deleted after OrbGL supports text rendering !!!
 
-use orbfont::Font;
+use orbgl_api::Font;
 
 use orbtk_utils::prelude::*;
 

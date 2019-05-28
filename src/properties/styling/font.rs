@@ -1,6 +1,6 @@
 use std::fmt;
 
-use orbfont::Font as OrbFont;
+use orbgl_api::Font as OrbFont;
 
 use crate::prelude::*;
 

@@ -74,13 +74,13 @@ impl Application {
         }).title(&(title.0)[..]).bounds(Bounds::from((position.0.x, position.0.y, constraint.width(), constraint.height()))).resizeable(resizeable.0).build()));
 
         world.register_init_system(InitSystem {
-            backend: window_shell.clone(),
+            shell: window_shell.clone(),
             states: states.clone(),
         });
 
         world
             .create_system(EventSystem {
-                backend: window_shell.clone(),
+                shell: window_shell.clone(),
                 handlers: handlers.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -90,7 +90,7 @@ impl Application {
 
         world
             .create_system(StateSystem {
-                backend: window_shell.clone(),
+                shell: window_shell.clone(),
                 states: states.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -100,7 +100,7 @@ impl Application {
 
         world
             .create_system(LayoutSystem {
-                backend: window_shell.clone(),
+                shell: window_shell.clone(),
                 layouts: layouts.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -110,7 +110,7 @@ impl Application {
 
         world
             .create_system(PostLayoutStateSystem {
-                backend: window_shell.clone(),
+                shell: window_shell.clone(),
                 states: states.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -120,7 +120,7 @@ impl Application {
 
         world
             .create_system(RenderSystem {
-                backend: window_shell.clone(),
+                shell: window_shell.clone(),
                 render_objects: render_objects.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -129,7 +129,7 @@ impl Application {
             .build();
 
 
-        //    backend_runner: ShellRunner {
+        //    shell_runner: ShellRunner {
         //         world: Some(world),
         //         window_shell
         //     },

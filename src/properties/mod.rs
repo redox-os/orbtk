@@ -3,8 +3,7 @@
 use std::fmt::Debug;
 
 use dces::prelude::{Component, Entity, EntityComponentManager};
-pub use orbclient::color::Color;
-pub use orbclient::Renderer as OrbRenderer;
+pub use orbgl_api::Color;
 
 pub use self::layout::*;
 pub use self::state::*;

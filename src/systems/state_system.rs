@@ -10,7 +10,7 @@ use crate::{prelude::*, shell::WindowShell};
 
 /// The `StateSystem` calls the update methods of widget states.
 pub struct StateSystem {
-    pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
+    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
@@ -82,7 +82,7 @@ impl System<Tree> for StateSystem {
         }
 
         let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
-        let window_shell = &mut self.backend.borrow_mut();
+        let window_shell = &mut self.shell.borrow_mut();
 
         let mut context = Context::new(
             tree.root,
@@ -121,7 +121,7 @@ impl System<Tree> for StateSystem {
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 pub struct PostLayoutStateSystem {
-    pub backend: Rc<RefCell<WindowShell<WindowAdapter>>>,
+    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
@@ -133,7 +133,7 @@ impl System<Tree> for PostLayoutStateSystem {
             return;
         }
 
-        let window_shell = &mut self.backend.borrow_mut();
+        let window_shell = &mut self.shell.borrow_mut();
         let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
 
         let mut context = Context::new(
