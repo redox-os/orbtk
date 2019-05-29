@@ -10,10 +10,10 @@ pub static ROBOTO_REGULAR_FONT: &'static [u8; 145348] = include_bytes!("Roboto-R
 #[cfg(not(target_arch = "wasm32"))]
 pub fn font_by_key(key: &str) -> Option<Font> {
     match key {
-        "Roboto Regular" => {
+        "Roboto" => {
             return Some(Font::from_data(font_into_box(ROBOTO_REGULAR_FONT)).unwrap());
         }
-        "Material Icons Regular" => {
+        "Material Icons" => {
             return Some(Font::from_data(font_into_box(MATERIAL_ICONS_REGULAR_FONT)).unwrap());
         }
         _ => return None,
@@ -22,7 +22,7 @@ pub fn font_by_key(key: &str) -> Option<Font> {
 
 #[cfg(target_arch = "wasm32")]
 pub fn font_by_key(key: &str) -> Option<Font> {
-    None
+    Some(Font::from_family(key))
 }
 
 pub fn font_into_box(font: &[u8]) -> Box<[u8]> {

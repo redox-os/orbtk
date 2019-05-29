@@ -425,7 +425,7 @@ dependencies = [
 [[package]]
 name = "orbgl"
 version = "0.1.0"
-source = "git+https://gitlab.redox-os.org/redox-os/orbgl.git#c4f914c4b5914c30ca4a434dd1ac6c6e516b3509"
+source = "git+https://gitlab.redox-os.org/redox-os/orbgl.git#837cfbabc9d70607a8aed2c317b0dfd0e9765481"
 dependencies = [
  "orbclient 0.3.22 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbgl_api 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
@@ -436,7 +436,7 @@ dependencies = [
 [[package]]
 name = "orbgl_api"
 version = "0.1.0"
-source = "git+https://gitlab.redox-os.org/redox-os/orbgl.git#c4f914c4b5914c30ca4a434dd1ac6c6e516b3509"
+source = "git+https://gitlab.redox-os.org/redox-os/orbgl.git#837cfbabc9d70607a8aed2c317b0dfd0e9765481"
 dependencies = [
  "orbclient 0.3.22 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbfont 0.1.9 (git+https://gitlab.redox-os.org/redox-os/orbfont.git)",
@@ -447,7 +447,7 @@ dependencies = [
 [[package]]
 name = "orbgl_web"
 version = "0.1.0"
-source = "git+https://gitlab.redox-os.org/redox-os/orbgl.git#c4f914c4b5914c30ca4a434dd1ac6c6e516b3509"
+source = "git+https://gitlab.redox-os.org/redox-os/orbgl.git#837cfbabc9d70607a8aed2c317b0dfd0e9765481"
 dependencies = [
  "orbgl_api 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
  "stdweb 0.4.17 (registry+https://github.com/rust-lang/crates.io-index)",

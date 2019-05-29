@@ -227,7 +227,7 @@ impl Template for TextBox {
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
-            .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
+            .font(fonts::font_by_key("Roboto").unwrap())
             .selection(TextSelectionValue::default())
             .offset(0.0)
             .padding(4.0)

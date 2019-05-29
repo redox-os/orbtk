@@ -68,7 +68,7 @@ impl RectangleRenderObject {
         let m_pi = 3.14159265;
         let degrees = m_pi / 180.0;
 
-        // canvas.begin_path();
+        canvas.begin_path();
         canvas.arc(
             x + width - radius,
             y + radius,
@@ -109,6 +109,7 @@ impl RectangleRenderObject {
         }
 
         canvas.fill();
+        canvas.close_path();
     }
 
     // Renders rectangle with border and radius.
@@ -152,7 +153,6 @@ impl RenderObject for RectangleRenderObject {
         context: &mut Context<'_>,
         global_position: &Point,
     ) {
-        context.canvas().begin_path();
         let (bounds, background, border_radius, border_thickness, border_brush) = {
             let widget = context.widget();
             (widget.clone::<Bounds>(), widget.get::<Background>().0.clone(), widget.clone_or_default::<BorderRadius>().0, widget.clone_or_default::<BorderThickness>().0, widget.clone_or_default::<BorderBrush>().0)
@@ -209,7 +209,6 @@ impl RenderObject for RectangleRenderObject {
                     background,
                 );
             }
-            context.canvas().close_path();
         }
     }
 }

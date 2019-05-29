@@ -73,7 +73,7 @@ impl Template for ToggleButton {
             .font_size(fonts::FONT_SIZE_12)
             .font(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
             .icon("")
-            .icon_font(fonts::font_into_box(fonts::MATERIAL_ICONS_REGULAR_FONT))
+            .icon_font(fonts::font_by_key("Material Icons").unwrap())
             .icon_size(fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)

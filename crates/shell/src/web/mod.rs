@@ -217,7 +217,7 @@ impl obsolete::Renderer for WebRenderer {
         global_position: &Point,
         font_size: u32,
         color: Color,
-        _font: &Font,
+        font: &Font,
     ) {
         if color.r() == 0 && color.g() == 0 && color.b() == 0 && color.a() == 0 {
                     return;
@@ -225,7 +225,10 @@ impl obsolete::Renderer for WebRenderer {
         let canvas: CanvasElement = document().query_selector( "canvas" ).unwrap().unwrap().try_into().unwrap();
         let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
 
-        context.set_font(&format!("{}px Roboto ", font_size));
+        js! {
+            console.log(@{&font.family})
+        }
+        context.set_font(&format!("{}px {}", font_size, font.family));
         context.set_fill_style_color(&color.to_string());
         context.fill_text(text, global_position.x + bounds.x, global_position.y + bounds.y + font_size as f64 - 2.0, Some(parent_bounds.width));
     }
