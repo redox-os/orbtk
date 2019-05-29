@@ -47,11 +47,11 @@ impl System<Tree> for InitSystem {
             let debug = false;
 
         if debug {
-            println!("\n------ Widget tree ------\n");
+            crate::shell::log("\n------ Widget tree ------\n".to_string());
 
             print_tree(tree.root, 0, tree, ecm);
 
-            println!("\n------ Widget tree ------\n");
+            crate::shell::log("\n------ Widget tree ------\n".to_string());
         }
 
         let window_shell = &mut self.shell.borrow_mut();
@@ -82,7 +82,7 @@ fn print_tree(entity: Entity, depth: usize, tree: &Tree, ecm: &mut EntityCompone
     let name = Name::get(entity, ecm);
     let selector = Selector::get(entity, ecm);
 
-    println!("{}{} (entity: {}{})", "| ".repeat(depth), name, entity.0, selector);
+    crate::shell::log(format!("{}{} (entity: {}{})", "| ".repeat(depth), name, entity.0, selector));
 
     for child in tree.children.get(&entity).unwrap() {
         print_tree(*child, depth + 1, tree, ecm);

@@ -23,7 +23,6 @@
       "preLaunchTask": "build-web",
       "url": "http://localhost:8000",
     },
-
     {
       "type": "lldb",
       "request": "launch",

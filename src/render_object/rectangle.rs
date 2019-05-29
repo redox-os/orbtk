@@ -1,4 +1,4 @@
-use orbgl_api::{Canvas, Color};
+use orbgl_api::Canvas;
 
 use crate::prelude::*;
 
@@ -16,10 +16,7 @@ impl RectangleRenderObject {
         brush: Brush,
     ) {
         match brush {
-            Brush::SolidColor(color) => {
-                if color.r() == 0 && color.g() == 0 && color.b() == 0 && color.a() == 0 {
-                    return;
-                }
+            Brush::SolidColor(color) => {             
                 canvas.set_fill_style(color)
             }
             _ => {} // todo: gradient
@@ -98,11 +95,9 @@ impl RectangleRenderObject {
             270.0 * degrees,
         );
 
-         match brush {
+        match brush {
             Brush::SolidColor(color) => {
-                if color.r() == 0 && color.g() == 0 && color.b() == 0 && color.a() == 0 {
-                    return;
-                }
+             
                 canvas.set_fill_style(color)
             }
             _ => {} // todo: gradient

@@ -23,7 +23,7 @@ impl System<Tree> for LayoutSystem {
         }
 
         // if self.debug_flag.get() {
-        //     println!("\n------ Start layout update  ------\n");
+        //     shell::log("\n------ Start layout update  ------\n".to_string());
         // }
 
         let mut window_size = (0.0, 0.0);

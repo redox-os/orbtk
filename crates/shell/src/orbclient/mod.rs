@@ -230,6 +230,10 @@ impl<A> WindowBuilder<A> where A: WindowAdapter {
     }
 }
 
+pub fn log(message: String) {
+    println!("{}", message);
+}
+
 // --- obsolete will be removed after OrbGL supports text rendering ---
 
 pub struct OrbFontMeasure;
@@ -264,7 +268,6 @@ impl OrbFontRenderer {
         color: Color,
         font: &Font,
     ) {
-        println!("{} {}", global_position.y, text);
         if font_size > 0.0 {
             let line = font.render(text, font_size);
             line.draw_clipped(

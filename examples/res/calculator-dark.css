@@ -1,0 +1,36 @@
+container.header {
+    background: #444e55;
+}
+
+container.content {
+    background: #3b434a;
+}
+
+text-box {
+    background: transparent;
+    border-width: 0;
+    color: #9dafbf;
+    font-size: 16;
+}
+
+#input {
+    font-size: 16;
+}
+
+text-block {
+    font-size: 42;
+    color: #dfebf5;
+}
+
+#input {
+    background: transparent;
+}
+
+container {
+    background: "green";
+}
+
+button {
+    border-radius: 1;
+    font-size: 20;
+}

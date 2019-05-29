@@ -1,10 +1,9 @@
 use std::fmt;
 
-use orbgl_api::Color;
-use orbgl_api::Image as OrbImage;
-
 #[cfg(not(target_arch = "wasm32"))]
 use orbclient::Renderer;
+use orbgl_api::Color;
+use orbgl_api::Image as OrbImage;
 
 use crate::prelude::*;
 
@@ -12,15 +11,15 @@ use crate::prelude::*;
 pub struct InnerImage(pub OrbImage);
 
 impl Default for InnerImage {
-     #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_arch = "wasm32"))]
     fn default() -> Self {
-        InnerImage(OrbImage::new(0, 0))     
+        InnerImage(OrbImage::new(0, 0))
     }
 
-     #[cfg(target_arch = "wasm32")]
-     fn default() -> Self {      
-          InnerImage(OrbImage::new())     
-    }      
+    #[cfg(target_arch = "wasm32")]
+    fn default() -> Self {
+        InnerImage(OrbImage::new())
+    }
 }
 
 impl fmt::Debug for InnerImage {
@@ -57,7 +56,7 @@ pub trait ImageExt {
     /// Gets the height.
     fn height(&self) -> u32;
 
-     #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_arch = "wasm32"))]
     /// Gets the color data.
     fn data(&self) -> &[Color];
 }
@@ -95,7 +94,7 @@ impl ImageExt for Image {
 // --- Conversions ---
 
 impl From<&str> for Image {
-     #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_arch = "wasm32"))]
     fn from(s: &str) -> Image {
         Image::from(InnerImage::from(OrbImage::from_path(s).unwrap()))
     }

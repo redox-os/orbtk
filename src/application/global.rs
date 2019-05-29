@@ -62,7 +62,7 @@ impl KeyboardState {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     /// A quick test to ensure that the items are properly set.
     fn basic_test() {

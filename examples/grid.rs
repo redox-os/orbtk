@@ -91,7 +91,7 @@ fn main() {
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
                 .theme(ThemeValue::create()
-                    .extension_path("examples/res/grid.css")
+                    .extension_css(include_str!("res/grid.css"))
                     .build())
                 .child(MainView::create().build(ctx))
                 .build(ctx)
