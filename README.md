@@ -81,6 +81,36 @@ You can start the widgets example by executing the following command:
 cargo run --example widgets --release
 ```
 
+## Additional Examples on Web
+
+To run the examples on a browser you have to install 
+
+```text
+cargo install -f cargo-web
+```
+
+## Run
+
+You can start the widgets example by executing the following command:
+
+* Compile to [WebAssembly](https://en.wikipedia.org/wiki/WebAssembly) using Rust's native WebAssembly backend:
+
+```text
+cargo web start --target=wasm32-unknown-unknown --auto-reload --example widgets
+```
+
+* Compile to [asm.js](https://en.wikipedia.org/wiki/Asm.js) using Emscripten:
+
+```text
+$ cargo web start --target=asmjs-unknown-emscripten --auto-reload --example widgets
+```
+
+* Compile to WebAssembly using Emscripten:
+
+```text
+$ cargo web start --target=wasm32-unknown-emscripten --auto-reload --example widgets
+```
+
 ## Build and run documentation
 
 You can build and run the latest documentation y executing the following command:
