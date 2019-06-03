@@ -469,8 +469,6 @@ version = "0.3.0"
 dependencies = [
  "dces 0.1.7 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)",
  "orbclient 0.3.22 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbfont 0.1.9 (git+https://gitlab.redox-os.org/redox-os/orbfont.git)",
- "orbgl 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
  "orbgl_api 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
  "orbtk-css-engine 0.1.0",
  "orbtk-shell 0.1.0",

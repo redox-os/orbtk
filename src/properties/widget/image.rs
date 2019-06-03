@@ -2,8 +2,7 @@ use std::fmt;
 
 #[cfg(not(target_arch = "wasm32"))]
 use orbclient::Renderer;
-use orbgl_api::Color;
-use orbgl_api::Image as OrbImage;
+use orbgl_api::{Color, Image as OrbImage, FromSource};
 
 use crate::prelude::*;
 
@@ -94,25 +93,13 @@ impl ImageExt for Image {
 // --- Conversions ---
 
 impl From<&str> for Image {
-    #[cfg(not(target_arch = "wasm32"))]
     fn from(s: &str) -> Image {
-        Image::from(InnerImage::from(OrbImage::from_path(s).unwrap()))
-    }
-
-    #[cfg(target_arch = "wasm32")]
-    fn from(s: &str) -> Image {
-        Image::from(InnerImage::from(OrbImage::new()))
+        Image::from(InnerImage::from(OrbImage::from_source(s).unwrap()))
     }
 }
 
 impl From<String> for Image {
-    #[cfg(not(target_arch = "wasm32"))]
     fn from(s: String) -> Image {
-        Image::from(InnerImage::from(OrbImage::from_path(s).unwrap()))
-    }
-
-    #[cfg(target_arch = "wasm32")]
-    fn from(s: String) -> Image {
-        Image::from(InnerImage::from(OrbImage::new()))
+        Image::from(InnerImage::from(OrbImage::from_source(&s).unwrap()))
     }
 }
