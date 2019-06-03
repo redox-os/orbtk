@@ -89,7 +89,7 @@ To run the examples on a browser you have to install
 cargo install -f cargo-web
 ```
 
-## Run
+### Run
 
 You can start the widgets example by executing the following command:
 
