@@ -10,7 +10,9 @@ static LIGHT_EXT: &'static str = include_str!("res/calculator-light.css");
 
 #[cfg(not(feature = "light-theme"))]
 fn get_theme() -> ThemeValue {
-    ThemeValue::create_from_css(DEFAULT_THEME_CSS).extension_css(DARK_EXT).build()
+    ThemeValue::create_from_css(DEFAULT_THEME_CSS)
+        .extension_css(DARK_EXT)
+        .build()
 }
 
 #[cfg(feature = "light-theme")]
@@ -21,71 +23,125 @@ fn get_theme() -> ThemeValue {
         .build()
 }
 
+#[derive(Debug, Copy, Clone)]
+enum Action {
+    Digit(char),
+    Operator(char),
+}
+
 #[derive(Default)]
 pub struct MainViewState {
-    result: RefCell<String>,
     input: RefCell<String>,
-    eval: Cell<bool>,
-    clear: Cell<bool>,
-    updated: Cell<bool>,
+    operator: Cell<Option<char>>,
+    left_side: Cell<Option<f64>>,
+    right_side: Cell<Option<f64>>,
+    action: Cell<Option<Action>>,
 }
 
 impl MainViewState {
-    fn clear(&self) {
-        self.result.borrow_mut().clear();
-        self.input.borrow_mut().clear();
-        self.clear.set(true);
-        self.updated.set(true);
+    fn action(&self, action: impl Into<Option<Action>>) {
+        self.action.set(action.into());
     }
 
-    fn eval(&self) {
-        self.eval.set(true);
-        self.updated.set(true);
-    }
-    fn input(&self, sight: &str) {
-        *self.input.borrow_mut() = sight.to_string();
-        self.updated.set(true);
+    fn calculate(&self, context: &mut Context) {
+        let mut result = 0.0;
+        if let Some(operator) = self.operator.get() {
+            if let Some(left_side) = self.left_side.get() {
+                if let Some(right_side) = self.right_side.get() {
+                    match operator {
+                        '+' => {
+                            result = left_side + right_side;
+                        }
+                        '-' => {
+                            result = left_side - right_side;
+                        }
+                        '*' => {
+                            result = left_side * right_side;
+                        }
+                        '/' => {
+                            result = left_side / right_side;
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+
+        context.widget().get_mut::<Text>().0 = result.to_string();
+        self.left_side.set(Some(result));
+        self.right_side.set(None);
     }
 }
 
 impl State for MainViewState {
     fn update(&self, context: &mut Context) {
-        let mut result = None;
-
-        if let Some(child) = &mut context.child_by_id("input") {
-            if let Some(text) = child.try_get_mut::<Text>() {
-                if self.clear.get() {
-                    text.0.clear();
-                    self.clear.set(false);
-                } else if self.updated.get() {
-                    text.0.push_str(&*self.input.borrow());
+        if let Some(action) = self.action.get() {
+            match action {
+                Action::Digit(digit) => {
+                    self.input.borrow_mut().push(digit);
+                    context
+                        .child_by_id("input")
+                        .unwrap()
+                        .get_mut::<Text>()
+                        .0
+                        .push(digit);
                 }
+                Action::Operator(operator) => match operator {
+                    'C' => {
+                        self.input.borrow_mut().clear();
+                        self.left_side.set(None);
+                        self.operator.set(None);
+                        self.right_side.set(None);
+                        context.widget().get_mut::<Text>().0.clear();
+                        context
+                            .child_by_id("input")
+                            .unwrap()
+                            .get_mut::<Text>()
+                            .0
+                            .clear()
+                    }
+                    '=' => {
+                        self.right_side
+                            .set(Some(self.input.borrow().parse().unwrap_or(0.0)));
+                        self.calculate(context);
+                        self.input.borrow_mut().clear();
+                        self.left_side.set(None);
+                        self.operator.set(None);
+                        self.right_side.set(None);
+                        context
+                            .child_by_id("input")
+                            .unwrap()
+                            .get_mut::<Text>()
+                            .0
+                            .clear()
+                    }
+                    _ => {
+                        if self.input.borrow().is_empty() {
+                            return
+                        }
+                        if self.left_side.get().is_none() {
+                            self.left_side
+                                .set(Some(self.input.borrow().parse().unwrap_or(0.0)));
+                        } else {
+                            self.right_side
+                                .set(Some(self.input.borrow().parse().unwrap_or(0.0)));
+                            self.calculate(context);
+                        }
 
-                if self.eval.get() {
-                    // let res = match calc::eval(&text.0) {
-                    //     Ok(s) => s.to_string(),
-                    //     Err(e) => e.into(),
-                    // };
-
-                    // result = Some(res);
-                    self.eval.set(false);
-                }
-
-                self.input.borrow_mut().clear();
+                        context
+                            .child_by_id("input")
+                            .unwrap()
+                            .get_mut::<Text>()
+                            .0
+                            .push(operator);
+                        self.input.borrow_mut().clear();
+                        self.operator.set(Some(operator));
+                    }
+                },
             }
-        }
 
-        if let Some(result) = result {
-            *self.result.borrow_mut() = result;
+            self.action.set(None);
         }
-
-        if self.updated.get() || self.clear.get() {
-            if let Some(text) = context.widget().try_get_mut::<Text>() {
-                text.0 = self.result.borrow().clone();
-            }
-        }
-
-        self.updated.set(false);
     }
 }
 
@@ -99,53 +155,64 @@ fn get_button_selector(primary: bool) -> Selector {
     }
 }
 
-fn generate_button(
+fn generate_digit_button(
     context: &mut BuildContext,
     state: &Rc<MainViewState>,
-    sight: &str,
+    sight: char,
     primary: bool,
     column: usize,
+    column_span: usize,
     row: usize,
 ) -> Entity {
-    let sight = String::from(sight);
     let state = state.clone();
 
     Button::create()
         .min_size(48.0, 48.0)
-        .max_size(48.0, 48.0)
-        .size(48.0, 48.0)
-        .text(sight.clone())
+        .text(sight.to_string())
         .selector(get_button_selector(primary))
         .on_click(move |_| -> bool {
-            state.input(&String::from(sight.clone()));
+            state.action(Action::Digit(sight));
             true
         })
         .attach(GridColumn(column))
         .attach(GridRow(row))
+        .attach(ColumnSpan(column_span))
         .build(context)
 }
 
-fn generate_operation_button(sight: &str, primary: bool, column: usize, row: usize) -> Button {
+fn generate_operation_button(
+    context: &mut BuildContext,
+    state: &Rc<MainViewState>,
+    sight: char,
+    primary: bool,
+    column: usize,
+    column_span: usize,
+    row: usize,
+) -> Entity {
+    let state = state.clone();
     Button::create()
         .min_size(48.0, 48.0)
-        .max_size(48.0, 48.0)
-        .size(48.0, 48.0)
         .text(sight.to_string())
         .selector(get_button_selector(primary).class("square"))
+        .on_click(move |_| -> bool {
+            state.action(Action::Operator(sight));
+            true
+        })
         .attach(GridColumn(column))
+        .attach(ColumnSpan(column_span))
         .attach(GridRow(row))
+        .build(context)
 }
 
 widget!(MainView<MainViewState> {
-    text: Text
+    result: Text
 });
 
 impl Template for MainView {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
         let state = self.clone_state();
-        let clear_state = state.clone();
 
-        self.name("MainView").text("").child(
+        self.name("MainView").result("").child(
             Grid::create()
                 .rows(Rows::create().row(72.0).row("*").build())
                 .child(
@@ -156,12 +223,16 @@ impl Template for MainView {
                         .child(
                             Grid::create()
                                 .child(
-                                    TextBlock::create()
-                                        .width(0.0)
-                                        .height(14.0)
-                                        .text("")
-                                        .selector(Selector::from("text-block").id("input"))
-                                        .vertical_alignment("Start")
+                                    ScrollViewer::create()
+                                        .child(
+                                            TextBlock::create()
+                                                .width(0.0)
+                                                .height(14.0)
+                                                .text("")
+                                                .selector(Selector::from("text-block").id("input"))
+                                                .vertical_alignment("Start")
+                                                .build(context),
+                                        )
                                         .build(context),
                                 )
                                 .child(
@@ -208,44 +279,39 @@ impl Template for MainView {
                                         .build(),
                                 )
                                 // row 0
-                                .child(generate_button(context, &state, "(", false, 0, 0))
-                                .child(generate_button(context, &state, ")", false, 2, 0))
-                                .child(generate_button(context, &state, "^", false, 4, 0))
-                                .child(generate_button(context, &state, "/", true, 6, 0))
+                                .child(generate_operation_button(
+                                    context, &state, 'C', false, 0, 5, 0,
+                                ))
+                                .child(generate_operation_button(
+                                    context, &state, '/', true, 6, 3, 0,
+                                ))
                                 // row 2
-                                .child(generate_button(context, &state, "7", false, 0, 2))
-                                .child(generate_button(context, &state, "8", false, 2, 2))
-                                .child(generate_button(context, &state, "9", false, 4, 2))
-                                .child(generate_button(context, &state, "*", true, 6, 2))
+                                .child(generate_digit_button(context, &state, '7', false, 0, 1, 2))
+                                .child(generate_digit_button(context, &state, '8', false, 2, 1, 2))
+                                .child(generate_digit_button(context, &state, '9', false, 4, 1, 2))
+                                .child(generate_operation_button(
+                                    context, &state, '*', true, 6, 1, 2,
+                                ))
                                 // row 4
-                                .child(generate_button(context, &state, "4", false, 0, 4))
-                                .child(generate_button(context, &state, "5", false, 2, 4))
-                                .child(generate_button(context, &state, "6", false, 4, 4))
-                                .child(generate_button(context, &state, "-", true, 6, 4))
+                                .child(generate_digit_button(context, &state, '4', false, 0, 1, 4))
+                                .child(generate_digit_button(context, &state, '5', false, 2, 1, 4))
+                                .child(generate_digit_button(context, &state, '6', false, 4, 1, 4))
+                                .child(generate_operation_button(
+                                    context, &state, '-', true, 6, 1, 4,
+                                ))
                                 // row 6
-                                .child(generate_button(context, &state, "1", false, 0, 6))
-                                .child(generate_button(context, &state, "2", false, 2, 6))
-                                .child(generate_button(context, &state, "3", false, 4, 6))
-                                .child(generate_button(context, &state, "+", true, 6, 6))
+                                .child(generate_digit_button(context, &state, '1', false, 0, 1, 6))
+                                .child(generate_digit_button(context, &state, '2', false, 2, 1, 6))
+                                .child(generate_digit_button(context, &state, '3', false, 4, 1, 6))
+                                .child(generate_operation_button(
+                                    context, &state, '+', true, 6, 1, 6,
+                                ))
                                 // row 8
-                                .child(generate_button(context, &state, "0", false, 0, 8))
-                                .child(generate_button(context, &state, ".", false, 2, 8))
-                                .child(
-                                    generate_operation_button("C", false, 4, 8)
-                                        .on_click(move |_| {
-                                            clear_state.clear();
-                                            true
-                                        })
-                                        .build(context),
-                                )
-                                .child(
-                                    generate_operation_button("=", true, 6, 8)
-                                        .on_click(move |_| {
-                                            state.eval();
-                                            true
-                                        })
-                                        .build(context),
-                                )
+                                .child(generate_digit_button(context, &state, '0', false, 0, 3, 8))
+                                .child(generate_digit_button(context, &state, '.', false, 4, 1, 8))
+                                .child(generate_operation_button(
+                                    context, &state, '=', true, 6, 1, 8,
+                                ))
                                 .build(context),
                         )
                         .build(context),
@@ -256,7 +322,7 @@ impl Template for MainView {
 }
 
 fn main() {
-     Application::new()
+    Application::new()
         .window(|ctx| {
             Window::create()
                 .title("Calculator")

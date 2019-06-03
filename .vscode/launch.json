@@ -37,8 +37,8 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Canvas",
-      "program": "${workspaceFolder}/target/debug/examples/canvas",
+      "name": "Calculator",
+      "program": "${workspaceFolder}/target/debug/examples/calculator",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
       "sourceLanguages": [
