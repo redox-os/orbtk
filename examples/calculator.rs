@@ -325,7 +325,7 @@ fn main() {
     Application::new()
         .window(|ctx| {
             Window::create()
-                .title("Calculator")
+                .title("OrbTk - Calculator example")
                 .position((100.0, 100.0))
                 .size(220.0, 344.0)
                 .theme(get_theme())

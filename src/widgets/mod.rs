@@ -4,7 +4,6 @@ pub use self::button::*;
 // pub use self::canvas_widgets::CanvasWidget;
 pub use self::check_box::*;
 pub use self::container::*;
-pub use self::core::*;
 pub use self::cursor::*;
 pub use self::font_icon_block::*;
 pub use self::grid::*;
@@ -18,7 +17,6 @@ pub use self::toggle_button::*;
 pub use self::window::*;
 
 mod button;
-mod core;
 // mod canvas_widget;
 mod check_box;
 mod container;

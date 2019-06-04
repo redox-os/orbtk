@@ -25,6 +25,7 @@ path = "src/lib.rs"
 orbclient = "0.3.22"
 
 [dependencies]
+orbtk-api = { version = "0.1.0", path = "crates/api" }
 orbtk-css-engine = { version = "0.1.0", path = "crates/css-engine" }
 orbtk-shell = { version = "0.1.0", path = "crates/shell" }
 orbtk-theme = { version = "0.1.0", path="crates/theme" }
