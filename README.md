@@ -132,6 +132,16 @@ cargo doc --no-deps --open
 * Support for Android, iOS, Ubuntu Touch and WebAssembly
 * Vulkan / OpenGL Support 
 
+## Sub Crates
+
+* api: base api elements of OrbTk e.g. widget and application parts
+* css-engine: parse and read values from a css file
+* shell: cross platform window and event handling
+* theme: OrbTk's default theme (light and dark)
+* tree: Tree structure based on DCES
+* utils: Helper structs and traits
+* widgets: Base widget library
+
 ## Dependencies
 
 * [OrbGL](https://gitlab.redox-os.org/redox-os/orbgl): 2D/3D drawing
