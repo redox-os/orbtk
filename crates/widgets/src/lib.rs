@@ -1,4 +1,15 @@
-//! This module contains the base structures for widget creation and concrete implementations of OrbTk 's default widgets. It contains also layout widgets.
+/*!
+    Base OrbTk widget library.
+ */
+
+pub mod prelude;
+
+pub use dces::prelude as ecs;
+
+pub use orbtk_api::prelude as api;
+pub use orbtk_shell::prelude as shell;
+pub use orbtk_theme::prelude as theme;
+pub use orbtk_utils::prelude as utils;
 
 pub use self::button::*;
 // pub use self::canvas_widgets::CanvasWidget;

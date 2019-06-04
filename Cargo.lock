@@ -468,14 +468,13 @@ name = "orbtk"
 version = "0.3.0"
 dependencies = [
  "dces 0.1.7 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)",
- "orbclient 0.3.22 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbgl_api 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
  "orbtk-api 0.1.0",
  "orbtk-css-engine 0.1.0",
  "orbtk-shell 0.1.0",
  "orbtk-theme 0.1.0",
  "orbtk-tree 0.1.0",
  "orbtk-utils 0.1.0",
+ "orbtk-widgets 0.1.0",
 ]
 
 [[package]]
@@ -535,6 +534,17 @@ name = "orbtk-utils"
 version = "0.1.0"
 dependencies = [
  "orbgl_api 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
+]
+
+[[package]]
+name = "orbtk-widgets"
+version = "0.1.0"
+dependencies = [
+ "dces 0.1.7 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)",
+ "orbtk-api 0.1.0",
+ "orbtk-shell 0.1.0",
+ "orbtk-theme 0.1.0",
+ "orbtk-utils 0.1.0",
 ]
 
 [[package]]
