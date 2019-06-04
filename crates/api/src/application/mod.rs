@@ -8,7 +8,7 @@ use std::{
 
 use dces::prelude::{Entity, World};
 
-use crate::{shell::{ShellRunner, WindowBuilder}, tree::*, utils::*, prelude::*};
+use crate::{prelude::*, shell::{ShellRunner, WindowBuilder}, tree::* };
 
 pub use self::global::*;
 pub use self::window::*;

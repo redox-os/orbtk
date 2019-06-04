@@ -7,7 +7,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{prelude::*, shell::WindowShell};
+use crate::{prelude::*, shell::WindowShell, tree::Tree, utils::*};
 
 pub struct EventSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,

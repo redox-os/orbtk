@@ -9,7 +9,7 @@ pub struct InnerFont(pub OrbFont);
 
 impl Default for InnerFont {
     fn default() -> Self {
-        InnerFont::from(fonts::font_into_box(fonts::ROBOTO_REGULAR_FONT))
+        InnerFont(OrbFont::from_path("").unwrap())
     }
 }
 

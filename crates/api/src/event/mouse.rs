@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::{utils::*, shell::MouseButton};
+use crate::{prelude::*, shell::MouseButton, utils::*};
 
 /// Checks if the given point is inside of a widget.
 pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>) -> bool {

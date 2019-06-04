@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{prelude::*, utils::*};
 
 /// Used to render a text.
 pub struct TextRenderObject;

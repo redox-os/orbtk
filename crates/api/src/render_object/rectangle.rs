@@ -1,6 +1,6 @@
 use orbgl_api::Canvas;
 
-use crate::prelude::*;
+use crate::{prelude::*, utils::*};
 
 pub struct RectangleRenderObject;
 
@@ -16,7 +16,7 @@ impl RectangleRenderObject {
         brush: Brush,
     ) {
         match brush {
-            Brush::SolidColor(color) => {             
+            Brush::SolidColor(color) => {
                 canvas.set_fill_style(color)
             }
             _ => {} // todo: gradient
@@ -97,7 +97,6 @@ impl RectangleRenderObject {
 
         match brush {
             Brush::SolidColor(color) => {
-             
                 canvas.set_fill_style(color)
             }
             _ => {} // todo: gradient

@@ -15,7 +15,6 @@ pub use crate::{
     theme::{colors, default_theme, fonts, light_theme, vector_graphics::material_font_icons},
     tree::*,
     utils::*,
-    widget,
     widgets::*,
 };
 

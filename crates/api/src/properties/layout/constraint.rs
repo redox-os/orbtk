@@ -1,6 +1,6 @@
 use std::f64;
 
-use crate::{prelude::*, utils::prelude::*};
+use crate::prelude::*;
 
 /// Used to build a constraint, specifying additional details.
 #[derive(Default)]

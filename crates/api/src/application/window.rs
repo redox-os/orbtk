@@ -2,7 +2,7 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, World};
 
-use crate::{utils::Point, shell, tree::Tree, prelude::*};
+use crate::{prelude::*, shell, tree::Tree, utils::Point};
 
 /// Represents a window. Each window has its own tree, event pipeline and shell.
 #[derive(Default)]

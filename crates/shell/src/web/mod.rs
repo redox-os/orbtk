@@ -98,7 +98,7 @@ impl<A> WindowShell<A> where A: WindowAdapter {
             });
         }
 
-         while let Some(event) = self.key_up_events.borrow_mut().pop() {
+        while let Some(event) = self.key_up_events.borrow_mut().pop() {
             self.adapter.key_event(KeyEvent {
                 key: get_key(event.code().as_str(), event.key().remove(0)),
                 state: ButtonState::Up,
@@ -323,7 +323,7 @@ impl obsolete::Renderer for WebRenderer {
         context.set_font(&format!("{}px {}", font_size, font.family));
         context.set_fill_style_color(&color.to_string());
         context.set_text_baseline(web::TextBaseline::Top);
-        context.fill_text(text, global_position.x + bounds.x, global_position.y + bounds.y , None);
+        context.fill_text(text, global_position.x + bounds.x, global_position.y + bounds.y, None);
         context.close_path();
         context.restore();
     }

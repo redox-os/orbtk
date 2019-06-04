@@ -1,6 +1,7 @@
 use std::rc::Rc;
 
-use crate::shell::Key;
+use crate::{prelude::*, shell::Key};
+
 use super::{Event, EventBox, EventHandler};
 
 pub struct KeyDownEvent {

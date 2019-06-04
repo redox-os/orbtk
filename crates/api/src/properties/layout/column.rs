@@ -1,6 +1,6 @@
 use std::slice::{Iter, IterMut};
 
-use crate::{prelude::*, utils::prelude::*};
+use crate::prelude::*;
 
 /// Used to build a column, specifying additional details.
 #[derive(Default)]

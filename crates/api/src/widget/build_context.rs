@@ -2,7 +2,7 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Component, ComponentBox, Entity, SharedComponentBox, World};
 
-use crate::prelude::*;
+use crate::{prelude::*, tree::Tree};
 
 use super::State;
 

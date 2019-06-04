@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{prelude::*, utils::*};
 
 /// Used to render an image.
 pub struct ImageRenderObject;

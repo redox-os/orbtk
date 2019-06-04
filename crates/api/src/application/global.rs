@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use dces::prelude::Entity;
 
-use crate::{shell::Key, prelude::*};
+use crate::shell::Key;
 
 #[derive(Default)]
 /// The `Global` struct is used to define global `properties` that could be access application width.

@@ -53,11 +53,11 @@ impl ThemeBuilder {
 
         for extension_path in self.theme_extension_paths.iter().rev() {
             if let Ok(file) = File::open(extension_path) {
-                  let mut reader = BufReader::new(file);
-                    let mut css = String::new();
-                    let _ = reader.read_to_string(&mut css).unwrap();
+                let mut reader = BufReader::new(file);
+                let mut css = String::new();
+                let _ = reader.read_to_string(&mut css).unwrap();
 
-                    theme.push_str(&css);
+                theme.push_str(&css);
             }
         }
 
@@ -67,12 +67,11 @@ impl ThemeBuilder {
 
         if let Some(path) = self.theme_path {
             if let Ok(file) = File::open(path) {
+                let mut reader = BufReader::new(file);
+                let mut css = String::new();
+                let _ = reader.read_to_string(&mut css).unwrap();
 
-            let mut reader = BufReader::new(file);
-            let mut css = String::new();
-            let _ = reader.read_to_string(&mut css).unwrap();
-
-            theme.push_str(&css);
+                theme.push_str(&css);
             }
         };
 

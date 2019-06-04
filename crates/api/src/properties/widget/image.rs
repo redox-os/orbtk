@@ -2,7 +2,7 @@ use std::fmt;
 
 #[cfg(not(target_arch = "wasm32"))]
 use orbclient::Renderer;
-use orbgl_api::{Color, Image as OrbImage, FromSource};
+use orbgl_api::{Color, FromSource, Image as OrbImage};
 
 use crate::prelude::*;
 

@@ -2,8 +2,7 @@ use std::rc::Rc;
 
 use dces::prelude::Entity;
 
-use crate::event::EventHandler;
-use crate::properties::*;
+use crate::{event::EventHandler, prelude::*};
 
 pub use self::build_context::*;
 pub use self::context::*;
