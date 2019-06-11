@@ -45,7 +45,7 @@ pub struct MouseDownEvent {
 
 impl Event for MouseDownEvent {}
 
-pub type MouseHandler = Fn(Point) -> bool + 'static;
+pub type MouseHandler = dyn Fn(Point) -> bool + 'static;
 
 /// Used to handle click events. Could be attached to a widget.
 pub struct ClickEventHandler {

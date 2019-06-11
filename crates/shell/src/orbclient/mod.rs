@@ -150,7 +150,7 @@ pub struct ShellRunner<A> where A: WindowAdapter {
     pub window_shell: Rc<RefCell<WindowShell<A>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
-    pub updater: Box<Updater>,
+    pub updater: Box<dyn Updater>,
 }
 
 impl<A> ShellRunner<A> where A: WindowAdapter {

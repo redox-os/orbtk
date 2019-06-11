@@ -75,7 +75,7 @@ impl<'a> BuildContext<'a> {
     }
 
     /// Registers a state with a widget.
-    pub fn register_state(&self, widget: Entity, state: Rc<State>) {
+    pub fn register_state(&self, widget: Entity, state: Rc<dyn State>) {
         self.states.borrow_mut().insert(widget, state);
     }
 

@@ -58,7 +58,7 @@ pub trait Widget: Template {
     fn insert_handler(self, handler: impl Into<Rc<dyn EventHandler>>) -> Self;
 
     /// Returns the state of the widget.
-    fn state(&self) -> Option<Rc<State>> {
+    fn state(&self) -> Option<Rc<dyn State>> {
         None
     }
 

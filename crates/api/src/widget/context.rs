@@ -247,7 +247,7 @@ impl<'a> Context<'a> {
         &mut self.window_shell.canvas
     }
 
-    pub fn renderer(&mut self) -> &mut Renderer {
+    pub fn renderer(&mut self) -> &mut dyn Renderer {
         &mut self.window_shell.inner
     }
 

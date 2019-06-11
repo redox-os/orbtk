@@ -16,7 +16,7 @@ pub struct KeyUpEvent {
 
 impl Event for KeyUpEvent {}
 
-pub type KeyHandler = Fn(Key) -> bool + 'static;
+pub type KeyHandler = dyn Fn(Key) -> bool + 'static;
 
 /// Used to handle key down events. Could be attached to a widget.
 pub struct KeyDownEventHandler {

@@ -82,8 +82,8 @@ impl shell::WindowAdapter for WindowAdapter {
     }
 }
 
-impl Into<Box<shell::WindowAdapter>> for WindowAdapter {
-    fn into(self) -> Box<shell::WindowAdapter> {
+impl Into<Box<dyn shell::WindowAdapter>> for WindowAdapter {
+    fn into(self) -> Box<dyn shell::WindowAdapter> {
         Box::new(self)
     }
 }
