@@ -1,21 +1,27 @@
 //! This module contains a platform specific implementation of the window shell.
 
-use std::{cell::{Cell, RefCell}, collections::HashMap, rc::Rc, sync::Arc};
+use std::{
+    cell::{Cell, RefCell},
+    collections::HashMap,
+    rc::Rc,
+    sync::Arc,
+};
 
 use orbclient::{Color, Renderer, Window, WindowFlag};
 use orbgl::prelude::{CairoRenderEngine, FramebufferSurface};
 use orbgl_api::{Canvas, Font};
 
-use orbtk_utils::{Point, Rect};
-
-use crate::{obsolete, prelude::*};
+use crate::{obsolete, prelude::*, utils::*};
 
 pub mod fonts;
 
 pub fn initialize() {}
 
 /// Concrete implementation of the window shell.
-pub struct WindowShell<A> where A: WindowAdapter {
+pub struct WindowShell<A>
+where
+    A: WindowAdapter,
+{
     pub inner: Window,
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
@@ -23,7 +29,10 @@ pub struct WindowShell<A> where A: WindowAdapter {
     adapter: A,
 }
 
-impl<A> WindowShell<A> where A: WindowAdapter {
+impl<A> WindowShell<A>
+where
+    A: WindowAdapter,
+{
     /// Creates a new window shell with an adapter.
     pub fn new(inner: Window, adapter: A) -> WindowShell<A> {
         let mut inner = inner;
@@ -122,9 +131,15 @@ impl<A> WindowShell<A> where A: WindowAdapter {
                     };
 
                     if key_event.pressed {
-                        self.adapter.key_event(KeyEvent { key, state: ButtonState::Up });
+                        self.adapter.key_event(KeyEvent {
+                            key,
+                            state: ButtonState::Up,
+                        });
                     } else {
-                        self.adapter.key_event(KeyEvent { key, state: ButtonState::Down });
+                        self.adapter.key_event(KeyEvent {
+                            key,
+                            state: ButtonState::Down,
+                        });
                     }
                 }
                 orbclient::EventOption::Quit(_quit_event) => {
@@ -139,21 +154,30 @@ impl<A> WindowShell<A> where A: WindowAdapter {
     }
 }
 
-impl<A> Drop for WindowShell<A> where A: WindowAdapter {
+impl<A> Drop for WindowShell<A>
+where
+    A: WindowAdapter,
+{
     fn drop(&mut self) {
         self.inner.sync();
     }
 }
 
 /// Implementation of the OrbClient based shell runner.
-pub struct ShellRunner<A> where A: WindowAdapter {
+pub struct ShellRunner<A>
+where
+    A: WindowAdapter,
+{
     pub window_shell: Rc<RefCell<WindowShell<A>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
     pub updater: Box<dyn Updater>,
 }
 
-impl<A> ShellRunner<A> where A: WindowAdapter {
+impl<A> ShellRunner<A>
+where
+    A: WindowAdapter,
+{
     pub fn run(&mut self) {
         loop {
             if !self.running.get() {
@@ -170,7 +194,10 @@ impl<A> ShellRunner<A> where A: WindowAdapter {
 }
 
 /// Constructs the window shell
-pub struct WindowBuilder<A> where A: WindowAdapter {
+pub struct WindowBuilder<A>
+where
+    A: WindowAdapter,
+{
     title: String,
 
     resizeable: bool,
@@ -180,7 +207,10 @@ pub struct WindowBuilder<A> where A: WindowAdapter {
     adapter: A,
 }
 
-impl<A> WindowBuilder<A> where A: WindowAdapter {
+impl<A> WindowBuilder<A>
+where
+    A: WindowAdapter,
+{
     /// Create a new window builder with the given adapter.
     pub fn new(adapter: A) -> Self {
         WindowBuilder {
@@ -224,7 +254,8 @@ impl<A> WindowBuilder<A> where A: WindowAdapter {
                 self.bounds.height as u32,
                 &self.title,
                 &flags,
-            ).unwrap(),
+            )
+            .unwrap(),
             self.adapter,
         )
     }
@@ -290,7 +321,11 @@ lazy_static! {
             fonts.insert("Roboto Regular", font);
         }
 
-        if let Ok(font) = Font::from_data(fonts::MATERIAL_ICONS_REGULAR_FONT.to_vec().into_boxed_slice()) {
+        if let Ok(font) = Font::from_data(
+            fonts::MATERIAL_ICONS_REGULAR_FONT
+                .to_vec()
+                .into_boxed_slice(),
+        ) {
             fonts.insert("Material Icons Regular", font);
         }
 

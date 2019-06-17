@@ -8,7 +8,11 @@ use std::{
 
 use dces::prelude::{Entity, World};
 
-use crate::{prelude::*, shell::{ShellRunner, WindowBuilder}, tree::* };
+use crate::{
+    prelude::*,
+    shell::{ShellRunner, WindowBuilder},
+    tree::*,
+};
 
 pub use self::global::*;
 pub use self::window::*;
@@ -53,23 +57,57 @@ impl Application {
             tree.root = window;
         }
 
-        let title = world.entity_component_manager().borrow_component::<Title>(window).unwrap().clone();
-        let resizeable = world.entity_component_manager().borrow_component::<Resizeable>(window).unwrap().clone();
-        let position = world.entity_component_manager().borrow_component::<Pos>(window).unwrap().clone();
-        let constraint = world.entity_component_manager().borrow_component::<Constraint>(window).unwrap().clone();
+        let title = world
+            .entity_component_manager()
+            .borrow_component::<Title>(window)
+            .unwrap()
+            .clone();
+        let resizeable = world
+            .entity_component_manager()
+            .borrow_component::<Resizeable>(window)
+            .unwrap()
+            .clone();
+        let position = world
+            .entity_component_manager()
+            .borrow_component::<Pos>(window)
+            .unwrap()
+            .clone();
+        let constraint = world
+            .entity_component_manager()
+            .borrow_component::<Constraint>(window)
+            .unwrap()
+            .clone();
 
-        world.entity_component_manager().register_component(window, Global::default());
-        world.entity_component_manager().register_component(window, Global::default());
-        world.entity_component_manager().register_component(window, Bounds::from((0.0, 0.0, constraint.width(), constraint.height())));
+        world
+            .entity_component_manager()
+            .register_component(window, Global::default());
+        world
+            .entity_component_manager()
+            .register_component(window, Global::default());
+        world.entity_component_manager().register_component(
+            window,
+            Bounds::from((0.0, 0.0, constraint.width(), constraint.height())),
+        );
 
-        let window_shell = Rc::new(RefCell::new(WindowBuilder::new(WindowAdapter {
-            root: window,
-            render_objects: render_objects.clone(),
-            layouts: layouts.clone(),
-            handlers: handlers.clone(),
-            states: states.clone(),
-            ..Default::default()
-        }).title(&(title.0)[..]).bounds(Bounds::from((position.0.x, position.0.y, constraint.width(), constraint.height()))).resizeable(resizeable.0).build()));
+        let window_shell = Rc::new(RefCell::new(
+            WindowBuilder::new(WindowAdapter {
+                root: window,
+                render_objects: render_objects.clone(),
+                layouts: layouts.clone(),
+                handlers: handlers.clone(),
+                states: states.clone(),
+                ..Default::default()
+            })
+            .title(&(title.0)[..])
+            .bounds(Bounds::from((
+                position.0.x,
+                position.0.y,
+                constraint.width(),
+                constraint.height(),
+            )))
+            .resizeable(resizeable.0)
+            .build(),
+        ));
 
         world.register_init_system(InitSystem {
             shell: window_shell.clone(),
@@ -127,9 +165,7 @@ impl Application {
             .build();
 
         self.runners.push(ShellRunner {
-            updater: Box::new(WorldWrapper {
-                world
-            }),
+            updater: Box::new(WorldWrapper { world }),
             window_shell,
             update,
             running,

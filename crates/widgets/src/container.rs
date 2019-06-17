@@ -18,14 +18,15 @@ widget!(
         /// Sets or shares the padding property.
         padding: Padding,
 
-        /// Sets or shares the css selector property. 
+        /// Sets or shares the css selector property.
         selector: Selector
     }
 );
 
 impl Template for Container {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        self.name("Container").padding(0.0)
+        self.name("Container")
+            .padding(0.0)
             .background("transparent")
             .border_radius(0.0)
             .border_thickness(0.0)

@@ -1,7 +1,1 @@
-pub use crate::{
-    event::*,
-    obsolete::*,
-    platform::*,
-    window::*,
-};
-
+pub use crate::{event::*, obsolete::*, platform::*, window::*};

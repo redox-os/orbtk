@@ -115,7 +115,6 @@ fn test_set_position() {
     assert_eq!(7.0, bounds.y());
 }
 
-
 #[test]
 fn test_from() {
     let bounds = Bounds::from((9.0, 10.0, 11.0, 12.0));
@@ -126,10 +125,12 @@ fn test_from() {
     assert_eq!(12.0, bounds.height());
 }
 
-
 #[test]
 fn test_into() {
     let bounds: PropertySource<Bounds> = (17.0, 18.0, 19.0, 20.0).into();
 
-    assert_eq!(bounds, PropertySource::Value::<Bounds>(Bounds(Rect::new(17.0, 18.0, 19.0, 20.0))));
+    assert_eq!(
+        bounds,
+        PropertySource::Value::<Bounds>(Bounds(Rect::new(17.0, 18.0, 19.0, 20.0)))
+    );
 }

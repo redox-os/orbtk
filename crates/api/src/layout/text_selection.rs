@@ -104,10 +104,17 @@ impl Layout for TextSelectionLayout {
 
         let vertical_alignment = VerticalAlignment::get(entity, ecm);
         let margin = Margin::get(entity, ecm);
+
+        #[cfg(not(feature = "experimental"))]
         {
             let mut widget = WidgetContainer::new(entity, ecm);
 
-            size.1 = vertical_alignment.align_measure(parent_size.1, size.1, margin.top(), margin.bottom());
+            size.1 = vertical_alignment.align_measure(
+                parent_size.1,
+                size.1,
+                margin.top(),
+                margin.bottom(),
+            );
 
             if let Some(text) = widget.try_get::<Text>() {
                 let font = widget.get::<Font>();
@@ -120,8 +127,10 @@ impl Layout for TextSelectionLayout {
                             .0 as f64;
 
                         if text_part.ends_with(" ") {
-                            pos +=
-                                (crate::shell::FONT_MEASURE.measure("a", &(font.0).0, font_size.0 as u32).0 / 2) as f64;
+                            pos += (crate::shell::FONT_MEASURE
+                                .measure("a", &(font.0).0, font_size.0 as u32)
+                                .0
+                                / 2) as f64;
                         }
                     }
                 }

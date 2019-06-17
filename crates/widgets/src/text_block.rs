@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 widget!(
     /// The `TextBlock` widget is used to draw text. It is not interactive.
-    /// 
+    ///
     /// **CSS element:** `text-block`
     TextBlock {
         /// Sets or shares the text property.

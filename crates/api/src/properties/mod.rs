@@ -17,8 +17,8 @@ mod widget;
 
 /// Used to the a property of a widget.
 pub fn get_property<T>(entity: Entity, ecm: &EntityComponentManager) -> T
-    where
-        T: Clone + Component + Default,
+where
+    T: Clone + Component + Default,
 {
     ecm.borrow_component::<T>(entity)
         .map(|r| r.clone())

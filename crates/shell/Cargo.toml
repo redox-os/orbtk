@@ -13,6 +13,7 @@ orbgl_web = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git" }
 stdweb = "0.4.17"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+glutin = "0.21.0"
 orbgl = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git" }
 orbfont = { git = "https://gitlab.redox-os.org/redox-os/orbfont.git" }
 orbclient = "0.3.22"
@@ -21,3 +22,6 @@ orbclient = "0.3.22"
 orbgl_api = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git" }
 orbtk-utils = { version = "0.1.0", path = "../utils" }
 lazy_static = "1.3.0"
+
+[features]
+experimental = []

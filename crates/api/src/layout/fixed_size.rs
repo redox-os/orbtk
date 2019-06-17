@@ -7,7 +7,9 @@ use std::{
 use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{prelude::*, tree::Tree, utils::prelude::*};
-use crate::shell::{FONT_MEASURE, FontMeasure};
+
+#[cfg(not(feature = "experimental"))]
+use crate::shell::{FontMeasure, FONT_MEASURE};
 
 use super::Layout;
 
@@ -51,7 +53,9 @@ impl Layout for FixedSizeLayout {
 
         // -- todo will be removed after orbgl merge --
 
-        let size = widget.try_get::<Image>()
+        #[cfg(not(feature = "experimental"))]
+        let size = widget
+            .try_get::<Image>()
             .map(|image| (image.width(), image.height()))
             .or_else(|| {
                 widget.try_get::<Text>().and_then(|text| {
@@ -59,29 +63,42 @@ impl Layout for FixedSizeLayout {
                     let font_size = widget.get::<FontSize>();
 
                     if text.0.is_empty() {
-                        widget.try_get::<WaterMark>()
+                        #[cfg(not(feature = "experimental"))]
+                        widget
+                            .try_get::<WaterMark>()
                             .filter(|water_mark| !water_mark.0.is_empty())
-                            .map(|water_mark| FONT_MEASURE.measure(&water_mark.0, &(font.0).0, font_size.0 as u32))
+                            .map(|water_mark| {
+                                FONT_MEASURE.measure(&water_mark.0, &(font.0).0, font_size.0 as u32)
+                            })
                     } else {
-                        let mut size = FONT_MEASURE.measure(&text.0, &(font.0).0, font_size.0 as u32);
+                        #[cfg(not(feature = "experimental"))]
+                        let mut size =
+                            FONT_MEASURE.measure(&text.0, &(font.0).0, font_size.0 as u32);
 
                         if text.0.ends_with(" ") {
-                            size.0 += FONT_MEASURE.measure("a", &(font.0).0, font_size.0 as u32).0 / 2;
+                            size.0 +=
+                                FONT_MEASURE.measure("a", &(font.0).0, font_size.0 as u32).0 / 2;
                         }
                         Some(size)
                     }
                 })
             })
             .or_else(|| {
-                widget.try_get::<FontIcon>()
+                #[cfg(not(feature = "experimental"))]
+                widget
+                    .try_get::<FontIcon>()
                     .filter(|font_icon| !font_icon.0.is_empty())
-                    .map(|font_icon| FONT_MEASURE.measure(
-                        &font_icon.0,
-                        &(widget.get::<IconFont>().0).0,
-                        widget.get::<IconSize>().0 as u32,
-                    ))
+                    .map(|font_icon| {
+                        FONT_MEASURE.measure(
+                            &font_icon.0,
+                            &(widget.get::<IconFont>().0).0,
+                            widget.get::<IconSize>().0 as u32,
+                        )
+                    })
             });
 
+        #[cfg(feature = "experimental")]
+        let size = Some((0.0, 0.0));
 
         if let Some(size) = size {
             if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(entity) {

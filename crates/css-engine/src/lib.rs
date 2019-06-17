@@ -1,7 +1,7 @@
 /*!
 
 This crate provides functions to load a css files as theme and access it properties with
-selectors. 
+selectors.
 
 This crate depends on the orbtk_utils crate.
 

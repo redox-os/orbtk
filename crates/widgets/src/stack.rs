@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 widget!(
     /// The `Stack` defines a layout that is used to stack its children on the z-axis.
-    /// 
+    ///
     /// **CSS element:** `stack`
     Stack {
         /// Sets or shares the orientation property.

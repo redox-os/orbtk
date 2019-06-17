@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 widget!(
     /// The `Grid` defines a flexible grid area that consists of columns and rows.
-    /// 
+    ///
     /// **CSS element:** `grid`
     Grid {
         /// Sets or shares the background property.
@@ -17,7 +17,7 @@ widget!(
         /// Sets or shares the border radius property.
         border_radius: BorderRadius,
 
-        /// Sets or shares the css selector property. 
+        /// Sets or shares the css selector property.
         selector: Selector
     }
 );

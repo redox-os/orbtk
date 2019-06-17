@@ -68,7 +68,11 @@ impl Tree {
 
     /// Appends a `child` entity to the given `parent` entity.
     /// Raised `NotFound` error if the parent is not part of the tree.
-    pub fn append_child(&mut self, parent: impl Into<Entity>, child: impl Into<Entity>) -> Result<Entity, NotFound> {
+    pub fn append_child(
+        &mut self,
+        parent: impl Into<Entity>,
+        child: impl Into<Entity>,
+    ) -> Result<Entity, NotFound> {
         let parent = parent.into();
         let child = child.into();
         if let Some(p) = self.children.get_mut(&parent) {

@@ -33,9 +33,12 @@ impl shell::WindowAdapter for WindowAdapter {
     }
 
     fn mouse(&mut self, x: f64, y: f64) {
-        self.event_queue.register_event(MouseMoveEvent {
-            position: Point::new(x, y)
-        }, self.root)
+        self.event_queue.register_event(
+            MouseMoveEvent {
+                position: Point::new(x, y),
+            },
+            self.root,
+        )
     }
 
     fn mouse_event(&mut self, event: shell::MouseEvent) {
@@ -61,18 +64,12 @@ impl shell::WindowAdapter for WindowAdapter {
 
     fn key_event(&mut self, event: shell::KeyEvent) {
         match event.state {
-            shell::ButtonState::Up => self.event_queue.register_event(
-                KeyUpEvent {
-                    key: event.key
-                },
-                self.root,
-            ),
-            shell::ButtonState::Down => self.event_queue.register_event(
-                KeyDownEvent {
-                    key: event.key
-                },
-                self.root,
-            ),
+            shell::ButtonState::Up => self
+                .event_queue
+                .register_event(KeyUpEvent { key: event.key }, self.root),
+            shell::ButtonState::Down => self
+                .event_queue
+                .register_event(KeyDownEvent { key: event.key }, self.root),
         }
     }
 

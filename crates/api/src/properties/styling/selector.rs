@@ -1,9 +1,8 @@
 use crate::{
     css_engine::{Selector as SelectorValue, Specificity},
-    Entity,
-    EntityComponentManager,
     prelude::*,
     properties::{get_property, PropertySource},
+    Entity, EntityComponentManager,
 };
 
 property!(

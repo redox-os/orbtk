@@ -2,7 +2,8 @@ use crate::{prelude::*, utils::*};
 
 property!(
     /// `IconBrush` describes the icon brush of a visual element.
-    IconBrush(Brush));
+    IconBrush(Brush)
+);
 
 // --- Conversions ---
 

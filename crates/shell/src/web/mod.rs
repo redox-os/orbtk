@@ -1,6 +1,11 @@
 //! This module contains a platform specific implementation of the window shell.
 
-use std::{cell::{Cell, RefCell}, collections::HashMap, rc::Rc, sync::Arc};
+use std::{
+    cell::{Cell, RefCell},
+    collections::HashMap,
+    rc::Rc,
+    sync::Arc,
+};
 
 use orbgl_api::{Canvas, Font};
 use orbgl_web::prelude::*;
@@ -9,15 +14,13 @@ use stdweb::{
     traits::*,
     unstable::TryInto,
     web::{
-        self, CanvasRenderingContext2d, document,
-        event,
-        FillRule, html_element::{CanvasElement, ImageElement}, window,
+        self, document, event,
+        html_element::{CanvasElement, ImageElement},
+        window, CanvasRenderingContext2d, FillRule,
     },
 };
 
-use orbtk_utils::{Point, Rect};
-
-use crate::{obsolete, prelude::*};
+use crate::{obsolete, prelude::*, utils::*};
 
 pub fn initialize() {
     stdweb::initialize();
@@ -45,13 +48,16 @@ fn get_key(code: &str, key: char) -> Key {
         "ArrowDown" => Key::Down,
         _ => match key {
             '\n' => Key::Enter,
-            _ => Key::from(key)
-        }
+            _ => Key::from(key),
+        },
     }
 }
 
 /// Concrete implementation of the window shell.
-pub struct WindowShell<A> where A: WindowAdapter {
+pub struct WindowShell<A>
+where
+    A: WindowAdapter,
+{
     pub inner: WebRenderer,
     pub canvas: Canvas,
     pub mouse_move_events: Rc<RefCell<Vec<event::MouseMoveEvent>>>,
@@ -62,7 +68,10 @@ pub struct WindowShell<A> where A: WindowAdapter {
     adapter: A,
 }
 
-impl<A> WindowShell<A> where A: WindowAdapter {
+impl<A> WindowShell<A>
+where
+    A: WindowAdapter,
+{
     /// Gets the shell adapter.
     pub fn adapter(&mut self) -> &mut A {
         &mut self.adapter
@@ -70,7 +79,8 @@ impl<A> WindowShell<A> where A: WindowAdapter {
 
     fn drain_events(&mut self) {
         while let Some(event) = self.mouse_move_events.borrow_mut().pop() {
-            self.adapter.mouse(event.client_x() as f64, event.client_y() as f64);
+            self.adapter
+                .mouse(event.client_x() as f64, event.client_y() as f64);
         }
 
         while let Some(event) = self.mouse_down_events.borrow_mut().pop() {
@@ -108,14 +118,20 @@ impl<A> WindowShell<A> where A: WindowAdapter {
 }
 
 /// Implementation of the OrbClient based shell runner.
-pub struct ShellRunner<A> where A: WindowAdapter + 'static {
+pub struct ShellRunner<A>
+where
+    A: WindowAdapter + 'static,
+{
     pub window_shell: Rc<RefCell<WindowShell<A>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
     pub updater: Box<Updater>,
 }
 
-impl<A> ShellRunner<A> where A: WindowAdapter {
+impl<A> ShellRunner<A>
+where
+    A: WindowAdapter,
+{
     pub fn run(mut self) {
         window().request_animation_frame(move |_| {
             self.updater.update();
@@ -127,7 +143,10 @@ impl<A> ShellRunner<A> where A: WindowAdapter {
 }
 
 /// Constructs the window shell
-pub struct WindowBuilder<A> where A: WindowAdapter {
+pub struct WindowBuilder<A>
+where
+    A: WindowAdapter,
+{
     title: String,
 
     resizeable: bool,
@@ -137,7 +156,10 @@ pub struct WindowBuilder<A> where A: WindowAdapter {
     adapter: A,
 }
 
-impl<A> WindowBuilder<A> where A: WindowAdapter {
+impl<A> WindowBuilder<A>
+where
+    A: WindowAdapter,
+{
     /// Create a new window builder with the given adapter.
     pub fn new(adapter: A) -> Self {
         WindowBuilder {
@@ -235,8 +257,8 @@ impl<A> WindowBuilder<A> where A: WindowAdapter {
         let ratio: f64 = js! {
             return @{&devicePixelRatio} / @{&backingStoreRatio};
         }
-            .try_into()
-            .unwrap();
+        .try_into()
+        .unwrap();
 
         if devicePixelRatio != backingStoreRatio {
             let old_width = canvas.width();
@@ -285,11 +307,19 @@ pub struct WebFontMeasure;
 
 impl FontMeasure for WebFontMeasure {
     fn measure(&self, text: &str, font: &Font, font_size: u32) -> (u32, u32) {
-        let canvas: CanvasElement = document().query_selector("canvas").unwrap().unwrap().try_into().unwrap();
+        let canvas: CanvasElement = document()
+            .query_selector("canvas")
+            .unwrap()
+            .unwrap()
+            .try_into()
+            .unwrap();
         let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
         context.set_font(&format!("{}px {}", font_size, font.family));
 
-        (context.measure_text(text).unwrap().get_width() as u32, font_size)
+        (
+            context.measure_text(text).unwrap().get_width() as u32,
+            font_size,
+        )
     }
 }
 
@@ -313,17 +343,32 @@ impl obsolete::Renderer for WebRenderer {
         if color.r() == 0 && color.g() == 0 && color.b() == 0 && color.a() == 0 {
             return;
         }
-        let canvas: CanvasElement = document().query_selector("canvas").unwrap().unwrap().try_into().unwrap();
+        let canvas: CanvasElement = document()
+            .query_selector("canvas")
+            .unwrap()
+            .unwrap()
+            .try_into()
+            .unwrap();
         let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
 
         context.save();
         context.begin_path();
-        context.rect(global_position.x, global_position.y, parent_bounds.width, parent_bounds.height);
+        context.rect(
+            global_position.x,
+            global_position.y,
+            parent_bounds.width,
+            parent_bounds.height,
+        );
         context.clip(FillRule::EvenOdd);
         context.set_font(&format!("{}px {}", font_size, font.family));
         context.set_fill_style_color(&color.to_string());
         context.set_text_baseline(web::TextBaseline::Top);
-        context.fill_text(text, global_position.x + bounds.x, global_position.y + bounds.y, None);
+        context.fill_text(
+            text,
+            global_position.x + bounds.x,
+            global_position.y + bounds.y,
+            None,
+        );
         context.close_path();
         context.restore();
     }

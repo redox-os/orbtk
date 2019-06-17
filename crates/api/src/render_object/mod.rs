@@ -15,9 +15,5 @@ mod rectangle;
 mod text;
 
 pub trait RenderObject: Any {
-    fn render(
-        &self,
-        context: &mut Context<'_>,
-        global_position: &Point,
-    );
+    fn render(&self, context: &mut Context<'_>, global_position: &Point);
 }

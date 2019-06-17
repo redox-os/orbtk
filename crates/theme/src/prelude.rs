@@ -1,10 +1,4 @@
 pub use crate::{
-    colors,
-    default_theme,
-    DEFAULT_THEME_CSS,
-    fonts,
-    light_theme,
+    colors, default_theme, fonts, light_theme, vector_graphics, DEFAULT_THEME_CSS,
     LIGHT_THEME_EXTENSION_CSS,
-    vector_graphics,
 };
-

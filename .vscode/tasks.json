@@ -22,6 +22,26 @@
       "problemMatcher": []
     },
     {
+      "label": "build experimental",
+      "command": "cargo",
+      "type": "shell",
+      "args": [
+        "build",
+        "--examples=minimal",
+        "--features",
+        "experimental"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "build debug",
       "command": "cargo",
       "type": "shell",

@@ -3,7 +3,7 @@ use crate::prelude::*;
 widget!(
     /// The `Window` widget provides access to the properties of a application window.
     /// It also contains global properties like keyboard modifier and focused widget.
-    /// 
+    ///
     /// **CSS element:** `window`
     Window {
         /// Sets or shares the background property.
@@ -12,16 +12,16 @@ widget!(
         /// Sets or shares the title property.
         title: Title,
 
-        /// Sets or shares the css selector property. 
+        /// Sets or shares the css selector property.
         selector: Selector,
 
-        /// Sets or shares the resizeable property. 
+        /// Sets or shares the resizeable property.
         resizeable: Resizeable,
 
-        /// Sets or shares the position property. 
+        /// Sets or shares the position property.
         position: Pos,
 
-        /// Sets or shares the theme property. 
+        /// Sets or shares the theme property.
         theme: Theme
     }
 );

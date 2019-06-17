@@ -92,7 +92,11 @@ impl<'a> BuildContext<'a> {
             self.handlers.borrow_mut().insert(widget, vec![]);
         }
 
-        self.handlers.borrow_mut().get_mut(&widget).unwrap().push(handler);
+        self.handlers
+            .borrow_mut()
+            .get_mut(&widget)
+            .unwrap()
+            .push(handler);
     }
 
     /// Registers a layout object with a widget.

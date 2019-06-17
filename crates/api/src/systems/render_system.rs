@@ -23,9 +23,9 @@ impl System<Tree> for RenderSystem {
         }
 
         #[cfg(feature = "debug")]
-            let debug = true;
+        let debug = true;
         #[cfg(not(feature = "debug"))]
-            let debug = false;
+        let debug = false;
 
         let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
 
@@ -67,13 +67,7 @@ impl System<Tree> for RenderSystem {
 
             if let Some(render_object) = self.render_objects.borrow().get(&node) {
                 render_object.render(
-                    &mut Context::new(
-                        node,
-                        ecm,
-                        tree,
-                        &mut self.shell.borrow_mut(),
-                        &theme,
-                    ),
+                    &mut Context::new(node, ecm, tree, &mut self.shell.borrow_mut(), &theme),
                     &global_position,
                 );
             }
@@ -85,12 +79,21 @@ impl System<Tree> for RenderSystem {
 
                     let brush = theme.brush("border-color", &selector.0).unwrap();
 
+                    #[cfg(not(feature = "experimental"))]
                     match brush {
-                        Brush::SolidColor(color) => self.shell.borrow_mut().canvas.set_stroke_style(color),
+                        Brush::SolidColor(color) => {
+                            self.shell.borrow_mut().canvas.set_stroke_style(color)
+                        }
                         _ => {} // todo: gradient
                     }
 
-                    self.shell.borrow_mut().canvas.stroke_rect(global_position.x + bounds.x(), global_position.y + bounds.y(), bounds.width(), bounds.height());
+                    #[cfg(not(feature = "experimental"))]
+                    self.shell.borrow_mut().canvas.stroke_rect(
+                        global_position.x + bounds.x(),
+                        global_position.y + bounds.y(),
+                        bounds.width(),
+                        bounds.height(),
+                    );
                 }
             }
 

@@ -39,7 +39,10 @@ fn test_set_current_height() {
     let max_height = 64.0;
 
     let builder = RowBuilder::new();
-    let mut row = builder.min_height(min_height).max_height(max_height).build();
+    let mut row = builder
+        .min_height(min_height)
+        .max_height(max_height)
+        .build();
 
     row.set_current_height(out_one_height);
     assert_eq!(row.current_height(), min_height);

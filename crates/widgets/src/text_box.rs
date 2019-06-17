@@ -127,7 +127,6 @@ impl State for TextBoxState {
         {
             let scroll_viewer = context.child_by_id("scroll_viewer");
 
-
             if let Some(bounds) = scroll_viewer.unwrap().try_get_mut::<Bounds>() {
                 scroll_viewer_width = bounds.width();
             }

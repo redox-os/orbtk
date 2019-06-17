@@ -23,8 +23,8 @@ impl<'a> WidgetContainer<'a> {
     ///
     /// Panics if the widget does not contains the property.
     pub fn get<P>(&self) -> &P
-        where
-            P: Clone + Component + Default,
+    where
+        P: Clone + Component + Default,
     {
         if let Ok(property) = self.ecm.borrow_component::<P>(self.current_node) {
             return property;
@@ -43,8 +43,8 @@ impl<'a> WidgetContainer<'a> {
     ///
     /// Panics if the widget does not contains the property.
     pub fn get_mut<P>(&mut self) -> &mut P
-        where
-            P: Clone + Component + Default,
+    where
+        P: Clone + Component + Default,
     {
         if let Ok(property) = self.ecm.borrow_mut_component::<P>(self.current_node) {
             return property;
@@ -60,8 +60,8 @@ impl<'a> WidgetContainer<'a> {
     /// Clones the property. If the property does not exists for the widget the
     /// default of the property value will be returned,
     pub fn clone_or_default<P>(&self) -> P
-        where
-            P: Clone + Component + Default,
+    where
+        P: Clone + Component + Default,
     {
         if let Ok(property) = self.ecm.borrow_component::<P>(self.current_node) {
             return property.clone();
@@ -76,8 +76,8 @@ impl<'a> WidgetContainer<'a> {
     ///
     /// Panics if the widget does not contains the property.
     pub fn clone<P>(&self) -> P
-        where
-            P: Clone + Component + Default,
+    where
+        P: Clone + Component + Default,
     {
         if let Ok(property) = self.ecm.borrow_component::<P>(self.current_node) {
             return property.clone();
@@ -92,8 +92,10 @@ impl<'a> WidgetContainer<'a> {
 
     /// Clones the property of type `P` from the given widget entity. If the entity does
     /// not exists or it doesn't have a component of type `P` `None` will be returned.
-    pub fn try_clone<P>(&self) -> Option<P> where
-        P: Clone + Component + Default, {
+    pub fn try_clone<P>(&self) -> Option<P>
+    where
+        P: Clone + Component + Default,
+    {
         if let Ok(property) = self.ecm.borrow_component::<P>(self.current_node) {
             return Some(property.clone());
         }
@@ -107,8 +109,8 @@ impl<'a> WidgetContainer<'a> {
     ///
     /// Panics if the widget does not contains the property.
     pub fn set<P>(&mut self, value: P)
-        where
-            P: Component + Default + Clone,
+    where
+        P: Component + Default + Clone,
     {
         if let Ok(property) = self.ecm.borrow_mut_component::<P>(self.current_node) {
             *property = value;
@@ -124,8 +126,8 @@ impl<'a> WidgetContainer<'a> {
 
     /// Returns `true` if the widget has a property of type `P` otherwise `false`.
     pub fn has<P>(&self) -> bool
-        where
-            P: Clone + Component + Default,
+    where
+        P: Clone + Component + Default,
     {
         self.ecm.borrow_component::<P>(self.current_node).is_ok()
     }

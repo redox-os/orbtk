@@ -83,16 +83,18 @@ impl Template for MainView {
 fn main() {
     // use this only if you want to run it as web application.
     orbtk::initialize();
-    
+
     Application::new()
         .window(|ctx| {
             Window::create()
                 .title("OrbTk - grid example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
-                .theme(ThemeValue::create()
-                    .extension_css(include_str!("res/grid.css"))
-                    .build())
+                .theme(
+                    ThemeValue::create()
+                        .extension_css(include_str!("res/grid.css"))
+                        .build(),
+                )
                 .child(MainView::create().build(ctx))
                 .build(ctx)
         })

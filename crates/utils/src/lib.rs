@@ -1,4 +1,4 @@
-pub use orbgl_api::Color as Color;
+pub use orbgl_api::Color;
 
 pub use self::alignment::*;
 pub use self::border::*;
