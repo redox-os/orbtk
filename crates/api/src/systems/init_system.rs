@@ -42,9 +42,9 @@ impl System<Tree> for InitSystem {
         let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
 
         #[cfg(feature = "debug")]
-            let debug = true;
+        let debug = true;
         #[cfg(not(feature = "debug"))]
-            let debug = false;
+        let debug = false;
 
         if debug {
             crate::shell::log("\n------ Widget tree ------\n".to_string());
@@ -61,13 +61,7 @@ impl System<Tree> for InitSystem {
         for node in tree.into_iter() {
             self.init_id(node, ecm, root);
 
-            let mut context = Context::new(
-                node,
-                ecm,
-                tree,
-                window_shell,
-                &theme,
-            );
+            let mut context = Context::new(node, ecm, tree, window_shell, &theme);
 
             if let Some(state) = self.states.borrow().get(&node) {
                 state.init(&mut context);
@@ -82,7 +76,13 @@ fn print_tree(entity: Entity, depth: usize, tree: &Tree, ecm: &mut EntityCompone
     let name = Name::get(entity, ecm);
     let selector = Selector::get(entity, ecm);
 
-    crate::shell::log(format!("{}{} (entity: {}{})", "| ".repeat(depth), name, entity.0, selector));
+    crate::shell::log(format!(
+        "{}{} (entity: {}{})",
+        "| ".repeat(depth),
+        name,
+        entity.0,
+        selector
+    ));
 
     for child in tree.children.get(&entity).unwrap() {
         print_tree(*child, depth + 1, tree, ecm);

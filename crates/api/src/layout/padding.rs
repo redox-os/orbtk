@@ -151,20 +151,20 @@ impl Layout for PaddingLayout {
                 child_bounds.set_x(
                     padding.left()
                         + child_horizontal_alignment.align_position(
-                        available_size.0,
-                        child_bounds.width(),
-                        child_margin.left(),
-                        child_margin.right(),
-                    ),
+                            available_size.0,
+                            child_bounds.width(),
+                            child_margin.left(),
+                            child_margin.right(),
+                        ),
                 );
                 child_bounds.set_y(
                     padding.top()
                         + child_vertical_alignment.align_position(
-                        available_size.1,
-                        child_bounds.height(),
-                        child_margin.top(),
-                        child_margin.bottom(),
-                    ),
+                            available_size.1,
+                            child_bounds.height(),
+                            child_margin.top(),
+                            child_margin.bottom(),
+                        ),
                 );
             }
         }

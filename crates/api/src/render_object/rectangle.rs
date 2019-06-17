@@ -16,9 +16,7 @@ impl RectangleRenderObject {
         brush: Brush,
     ) {
         match brush {
-            Brush::SolidColor(color) => {
-                canvas.set_fill_style(color)
-            }
+            Brush::SolidColor(color) => canvas.set_fill_style(color),
             _ => {} // todo: gradient
         }
 
@@ -96,9 +94,7 @@ impl RectangleRenderObject {
         );
 
         match brush {
-            Brush::SolidColor(color) => {
-                canvas.set_fill_style(color)
-            }
+            Brush::SolidColor(color) => canvas.set_fill_style(color),
             _ => {} // todo: gradient
         }
 
@@ -142,14 +138,16 @@ impl Into<Box<dyn RenderObject>> for RectangleRenderObject {
 }
 
 impl RenderObject for RectangleRenderObject {
-    fn render(
-        &self,
-        context: &mut Context<'_>,
-        global_position: &Point,
-    ) {
+    fn render(&self, context: &mut Context<'_>, global_position: &Point) {
         let (bounds, background, border_radius, border_thickness, border_brush) = {
             let widget = context.widget();
-            (widget.clone::<Bounds>(), widget.get::<Background>().0.clone(), widget.clone_or_default::<BorderRadius>().0, widget.clone_or_default::<BorderThickness>().0, widget.clone_or_default::<BorderBrush>().0)
+            (
+                widget.clone::<Bounds>(),
+                widget.get::<Background>().0.clone(),
+                widget.clone_or_default::<BorderRadius>().0,
+                widget.clone_or_default::<BorderThickness>().0,
+                widget.clone_or_default::<BorderBrush>().0,
+            )
         };
 
         let has_thickness = border_thickness.left > 0.0
@@ -159,6 +157,7 @@ impl RenderObject for RectangleRenderObject {
 
         if border_radius > 0.0 {
             if has_thickness {
+                #[cfg(not(feature = "experimental"))]
                 self.render_rounded_bordered_rect_path(
                     context.canvas(),
                     global_position.x + bounds.x(),
@@ -171,6 +170,7 @@ impl RenderObject for RectangleRenderObject {
                     border_thickness,
                 );
             } else {
+                #[cfg(not(feature = "experimental"))]
                 self.render_rounded_rect_path(
                     context.canvas(),
                     global_position.x + bounds.x(),
@@ -183,6 +183,7 @@ impl RenderObject for RectangleRenderObject {
             }
         } else {
             if has_thickness {
+                #[cfg(not(feature = "experimental"))]
                 self.render_bordered_rect_path(
                     context.canvas(),
                     global_position.x + bounds.x(),
@@ -194,6 +195,7 @@ impl RenderObject for RectangleRenderObject {
                     border_thickness,
                 );
             } else {
+                #[cfg(not(feature = "experimental"))]
                 self.render_rect_path(
                     context.canvas(),
                     global_position.x + bounds.x(),

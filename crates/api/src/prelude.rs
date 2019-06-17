@@ -9,7 +9,6 @@ pub use crate::{
     property,
     render_object::*,
     systems::*,
-    widget::*,
     widget,
+    widget::*,
 };
-

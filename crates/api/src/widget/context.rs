@@ -1,7 +1,13 @@
 use dces::prelude::{Entity, EntityComponentManager};
 use orbgl_api::Canvas;
 
-use crate::{prelude::*, shell::{Renderer, WindowShell}, tree::Tree, theme::fonts, utils::* };
+use crate::{
+    prelude::*,
+    shell::{Renderer, WindowShell},
+    theme::fonts,
+    tree::Tree,
+    utils::*,
+};
 
 use super::{MessageBox, WidgetContainer};
 
@@ -98,7 +104,9 @@ impl<'a> Context<'a> {
             if !self.window_shell.adapter().messages.contains_key(&entity) {
                 self.window_shell.adapter().messages.insert(entity, vec![]);
             }
-            self.window_shell.adapter().messages
+            self.window_shell
+                .adapter()
+                .messages
                 .get_mut(&entity)
                 .unwrap()
                 .push(message.into());
@@ -112,13 +120,17 @@ impl<'a> Context<'a> {
 
     /// Pushes an event to the event queue with the given `strategy`.
     pub fn push_event_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
-        self.window_shell.adapter().event_queue
+        self.window_shell
+            .adapter()
+            .event_queue
             .register_event_with_strategy(event, strategy, self.entity);
     }
 
     /// Pushes an event to the event queue.
     pub fn push_event<E: Event>(&mut self, event: E) {
-        self.window_shell.adapter().event_queue
+        self.window_shell
+            .adapter()
+            .event_queue
             .register_event(event, self.entity);
     }
 
@@ -142,25 +154,29 @@ impl<'a> Context<'a> {
 
         if self.widget().has::<Background>() {
             if let Some(background) = self.theme.brush("background", &selector.0) {
-                self.widget().set::<Background>(Background::from(background));
+                self.widget()
+                    .set::<Background>(Background::from(background));
             }
         }
 
         if self.widget().has::<BorderBrush>() {
             if let Some(border_color) = self.theme.brush("border-color", &selector.0) {
-                self.widget().set::<BorderBrush>(BorderBrush::from(border_color));
+                self.widget()
+                    .set::<BorderBrush>(BorderBrush::from(border_color));
             }
         }
 
         if self.widget().has::<BorderRadius>() {
             if let Some(radius) = self.theme.float("border-radius", &selector.0) {
-                self.widget().set::<BorderRadius>(BorderRadius::from(radius as f64));
+                self.widget()
+                    .set::<BorderRadius>(BorderRadius::from(radius as f64));
             }
         }
 
         if self.widget().has::<BorderThickness>() {
             if let Some(border_width) = self.theme.uint("border-width", &selector.0) {
-                self.widget().set::<BorderThickness>(BorderThickness::from(border_width as f64));
+                self.widget()
+                    .set::<BorderThickness>(BorderThickness::from(border_width as f64));
             }
         }
 
@@ -243,10 +259,12 @@ impl<'a> Context<'a> {
         self.widget().get_mut::<Selector>().0.set_dirty(true);
     }
 
+    #[cfg(not(feature = "experimental"))]
     pub fn canvas(&mut self) -> &mut Canvas {
         &mut self.window_shell.canvas
     }
 
+    #[cfg(not(feature = "experimental"))]
     pub fn renderer(&mut self) -> &mut dyn Renderer {
         &mut self.window_shell.inner
     }

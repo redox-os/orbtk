@@ -43,7 +43,7 @@ pub trait KeyDownHandler: Sized + Widget {
     /// Inserts a handler.
     fn on_key_down<H: Fn(Key) -> bool + 'static>(self, handler: H) -> Self {
         self.insert_handler(KeyDownEventHandler {
-            handler: Rc::new(handler)
+            handler: Rc::new(handler),
         })
     }
 }

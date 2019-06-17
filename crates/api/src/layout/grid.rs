@@ -260,9 +260,9 @@ impl Layout for GridLayout {
 
                 let stretch_width = ((size.0 - used_width)
                     / columns
-                    .iter()
-                    .filter(|column| column.width == ColumnWidth::Stretch)
-                    .count() as f64)
+                        .iter()
+                        .filter(|column| column.width == ColumnWidth::Stretch)
+                        .count() as f64)
                     .trunc();
 
                 columns
@@ -324,9 +324,9 @@ impl Layout for GridLayout {
 
                 let stretch_height = ((size.1 - used_height)
                     / rows
-                    .iter()
-                    .filter(|row| row.height == RowHeight::Stretch)
-                    .count() as f64)
+                        .iter()
+                        .filter(|row| row.height == RowHeight::Stretch)
+                        .count() as f64)
                     .trunc();
 
                 rows.iter_mut()
@@ -428,11 +428,21 @@ impl Layout for GridLayout {
             if let Ok(child_bounds) = ecm.borrow_mut_component::<Bounds>(*child) {
                 child_bounds.set_x(
                     cell_position.0
-                        + c_horizontal_alignment.align_position(size.0, available_size.0, c_margin.left(), c_margin.right()),
+                        + c_horizontal_alignment.align_position(
+                            size.0,
+                            available_size.0,
+                            c_margin.left(),
+                            c_margin.right(),
+                        ),
                 );
                 child_bounds.set_y(
                     cell_position.1
-                        + c_vertical_alignment.align_position(size.1, available_size.1, c_margin.top(), c_margin.bottom()),
+                        + c_vertical_alignment.align_position(
+                            size.1,
+                            available_size.1,
+                            c_margin.top(),
+                            c_margin.bottom(),
+                        ),
                 );
             }
         }

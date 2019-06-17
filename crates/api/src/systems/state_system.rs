@@ -18,7 +18,10 @@ pub struct StateSystem {
 
 impl StateSystem {
     fn has_default_flags(&self, widget: &WidgetContainer<'_>) -> bool {
-        return widget.has::<Enabled>() || widget.has::<Pressed>() || widget.has::<Focused>() || widget.has::<Selected>();
+        return widget.has::<Enabled>()
+            || widget.has::<Pressed>()
+            || widget.has::<Focused>()
+            || widget.has::<Selected>();
     }
 
     // Used to updates default states like Pressed, Focused and Enabled.
@@ -84,13 +87,7 @@ impl System<Tree> for StateSystem {
         let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
         let window_shell = &mut self.shell.borrow_mut();
 
-        let mut context = Context::new(
-            tree.root,
-            ecm,
-            tree,
-            window_shell,
-            &theme,
-        );
+        let mut context = Context::new(tree.root, ecm, tree, window_shell, &theme);
 
         for node in tree.into_iter() {
             let mut skip = false;
@@ -136,13 +133,7 @@ impl System<Tree> for PostLayoutStateSystem {
         let window_shell = &mut self.shell.borrow_mut();
         let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
 
-        let mut context = Context::new(
-            tree.root,
-            ecm,
-            tree,
-            window_shell,
-            &theme,
-        );
+        let mut context = Context::new(tree.root, ecm, tree, window_shell, &theme);
 
         for (node, state) in &*self.states.borrow() {
             context.entity = *node;

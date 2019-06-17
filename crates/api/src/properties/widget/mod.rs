@@ -10,9 +10,9 @@ pub use self::water_mark::*;
 
 mod font_icon;
 mod image;
-mod text;
 mod name;
 mod resizeable;
+mod text;
 mod text_selection;
 mod title;
 mod water_mark;

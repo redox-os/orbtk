@@ -73,7 +73,8 @@ impl Template for MainView {
                         .on_click(move |_| {
                             state.increment();
                             true
-                        }).build(context)
+                        })
+                        .build(context),
                 )
                 .child(
                     Button::create()
@@ -82,27 +83,31 @@ impl Template for MainView {
                         .margin((0.0, 8.0, 0.0, 0.0))
                         .icon(material_font_icons::CHECK_FONT_ICON)
                         .attach(GridColumn(0))
-                        .attach(GridRow(2)).build(context)
+                        .attach(GridRow(2))
+                        .build(context),
                 )
                 .child(
                     ToggleButton::create()
                         .text("ToggleButton")
                         .margin((0.0, 8.0, 0.0, 0.0))
                         .attach(GridColumn(0))
-                        .attach(GridRow(3)).build(context)
+                        .attach(GridRow(3))
+                        .build(context),
                 )
                 .child(
                     CheckBox::create()
                         .text("CheckBox")
                         .margin((0.0, 8.0, 0.0, 0.0))
                         .attach(GridColumn(0))
-                        .attach(GridRow(4)).build(context)
+                        .attach(GridRow(4))
+                        .build(context),
                 )
                 .child(
                     Switch::create()
                         .margin((0.0, 8.0, 0.0, 0.0))
                         .attach(GridColumn(0))
-                        .attach(GridRow(5)).build(context)
+                        .attach(GridRow(5))
+                        .build(context),
                 )
                 // Column 2
                 .child(create_header(context, "Text", 2, 0))
@@ -112,7 +117,8 @@ impl Template for MainView {
                         .text(id)
                         .margin((0.0, 8.0, 0.0, 0.0))
                         .attach(GridColumn(2))
-                        .attach(GridRow(1)).build(context)
+                        .attach(GridRow(1))
+                        .build(context),
                 )
                 .child(
                     TextBox::create()
@@ -120,9 +126,10 @@ impl Template for MainView {
                         .text("")
                         .margin((0.0, 8.0, 0.0, 0.0))
                         .attach(GridColumn(2))
-                        .attach(GridRow(2)).build(context)
+                        .attach(GridRow(2))
+                        .build(context),
                 )
-                .build(context)
+                .build(context),
         )
     }
 }
@@ -130,7 +137,7 @@ impl Template for MainView {
 fn main() {
     // use this only if you want to run it as web application.
     orbtk::initialize();
-    
+
     Application::new()
         .window(|ctx| {
             Window::create()

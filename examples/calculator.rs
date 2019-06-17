@@ -117,7 +117,7 @@ impl State for MainViewState {
                     }
                     _ => {
                         if self.input.borrow().is_empty() {
-                            return
+                            return;
                         }
                         if self.left_side.get().is_none() {
                             self.left_side

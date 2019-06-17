@@ -24,7 +24,8 @@ impl EventSystem {
         _tree: &Tree,
         _ecm: &mut EntityComponentManager,
         _new_events: &mut Vec<EventBox>,
-    ) {}
+    ) {
+    }
 
     fn process_bottom_up_event(
         &self,
@@ -216,7 +217,9 @@ impl System<Tree> for EventSystem {
                                 bounds.set_height(*height);
                             }
 
-                            if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(tree.root) {
+                            if let Ok(constraint) =
+                                ecm.borrow_mut_component::<Constraint>(tree.root)
+                            {
                                 constraint.set_width(*width);
                                 constraint.set_height(*height);
                             }
@@ -246,10 +249,7 @@ impl System<Tree> for EventSystem {
                 }
             }
 
-
-            adapter
-                .event_queue
-                .append(&mut new_events);
+            adapter.event_queue.append(&mut new_events);
 
             if adapter.event_queue.len() == 0 {
                 break;

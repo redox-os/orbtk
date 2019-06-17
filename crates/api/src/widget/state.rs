@@ -2,7 +2,7 @@ use super::Context;
 use super::MessageBox;
 
 /// Used to define a state of a widget.
-/// 
+///
 /// A state is used to operate on the properties (components) of the widget, its parent or children.
 pub trait State {
     /// Init is used for initial setup.

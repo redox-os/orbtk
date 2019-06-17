@@ -15,7 +15,6 @@ pub struct Global {
 
     /// Stores the state of the keyboard
     pub keyboard_state: KeyboardState,
-
 }
 
 #[derive(Default)]

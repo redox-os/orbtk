@@ -1,5 +1,5 @@
-use std::{collections::HashSet, ops::Add};
 use std::fmt;
+use std::{collections::HashSet, ops::Add};
 
 #[derive(Clone, Debug)]
 pub enum SelectorRelation {
