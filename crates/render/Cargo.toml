@@ -1,0 +1,17 @@
+[package]
+name = "orbtk-render"
+version = "0.1.0"
+authors = ["Florian Blasius <flovanpt@posteo.de>"]
+description = "2D Render library use by OrbTk."
+repository = "https://gitlab.redox-os.org/redox-os/orbtk"
+license = "MIT"
+keywords = ["2D", "render", "canvas"]
+edition = "2018"
+
+[dependencies]
+pathfinder_canvas = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_geometry = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_gl = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_gpu = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_renderer = { git = "https://github.com/servo/pathfinder.git" }
+

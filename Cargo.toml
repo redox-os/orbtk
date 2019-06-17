@@ -24,6 +24,7 @@ path = "src/lib.rs"
 [dependencies]
 orbtk-api = { version = "0.1.0", path = "crates/api" }
 orbtk-css-engine = { version = "0.1.0", path = "crates/css-engine" }
+orbtk-render = { version = "0.1.0", path = "crates/render" }
 orbtk-shell = { version = "0.1.0", path = "crates/shell" }
 orbtk-theme = { version = "0.1.0", path="crates/theme" }
 orbtk-utils = { version = "0.1.0", path = "crates/utils" }
@@ -39,6 +40,7 @@ experimental = ["orbtk-shell/experimental", "orbtk-api/experimental"]
 members = [
     "crates/api",
     "crates/css-engine",
+    "crates/render",
     "crates/shell",
     "crates/theme",
     "crates/utils",
