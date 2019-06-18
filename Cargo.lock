@@ -997,11 +997,13 @@ dependencies = [
 name = "orbtk-render"
 version = "0.1.0"
 dependencies = [
+ "orbtk-utils 0.1.0",
  "pathfinder_canvas 0.1.0 (git+https://github.com/servo/pathfinder.git)",
  "pathfinder_geometry 0.3.0 (git+https://github.com/servo/pathfinder.git)",
  "pathfinder_gl 0.1.0 (git+https://github.com/servo/pathfinder.git)",
  "pathfinder_gpu 0.1.0 (git+https://github.com/servo/pathfinder.git)",
  "pathfinder_renderer 0.1.0 (git+https://github.com/servo/pathfinder.git)",
+ "stdweb 0.4.17 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1015,6 +1017,7 @@ dependencies = [
  "orbgl 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
  "orbgl_api 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
  "orbgl_web 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
+ "orbtk-render 0.1.0",
  "orbtk-utils 0.1.0",
  "stdweb 0.4.17 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

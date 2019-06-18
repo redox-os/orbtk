@@ -8,10 +8,16 @@ license = "MIT"
 keywords = ["2D", "render", "canvas"]
 edition = "2018"
 
-[dependencies]
+[target.wasm32-unknown-unknown.dependencies]
+stdweb = "0.4.17"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 pathfinder_canvas = { git = "https://github.com/servo/pathfinder.git" }
 pathfinder_geometry = { git = "https://github.com/servo/pathfinder.git" }
 pathfinder_gl = { git = "https://github.com/servo/pathfinder.git" }
 pathfinder_gpu = { git = "https://github.com/servo/pathfinder.git" }
 pathfinder_renderer = { git = "https://github.com/servo/pathfinder.git" }
 
+
+[dependencies]
+orbtk-utils = { version = "0.1.0", path = "../utils" }
