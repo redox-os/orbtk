@@ -11,6 +11,11 @@ use stdweb::{
 
 use crate::{utils::*, TextMetrics};
 
+// todo define platform specific image object (web version image storage on document)
+pub struct Image {
+
+}
+
 pub struct RenderContext2D {
     canvas_render_context_2D: CanvasRenderingContext2d
 }
@@ -101,7 +106,7 @@ impl RenderContext2D {
            if(!(@{&src} in @{&self.canvas_render_context_2D}.images)) {
                 var img = new Image();
                 img.src = @{&src};
-
+               
                 img.onload = function() {
                     @{&self.canvas_render_context_2D}.images[@{&src}] = img;
                     @{&self.canvas_render_context_2D}.drawImage(img, @{&dx}, @{&dy});
@@ -110,8 +115,24 @@ impl RenderContext2D {
         );
     }
 
-    pub fn draw_image_width_size(&self, path: &str) {
-        unimplemented!()
+    pub fn draw_image_with_size(&self, src: &str, x: f64, y: f64, width: f64, height: f64) {
+        let src = src.to_string();
+        js!(
+            if(@{&src} in @{&self.canvas_render_context_2D}.images) {
+                @{&self.canvas_render_context_2D}.draw_image(@{&self.canvas_render_context_2D}.images[@{&src}], @{x}, @{&y})
+            }
+        );
+
+        js!(
+           if(!(@{&src} in @{&self.canvas_render_context_2D}.images)) {
+                var img = new Image();
+                img.src = @{&src};             
+                img.onload = function() {
+                    @{&self.canvas_render_context_2D}.images[@{&src}] = img;
+                    @{&self.canvas_render_context_2D}.drawImage(img, @{&x}, @{&y}, @{&height}, @{&height});
+                };
+            }
+        );
     }
 
     pub fn draw_image_with_clip_and_size(&self, path: &str, x: f64, y: f64, width: f64, height: f64) {
@@ -170,9 +191,6 @@ impl RenderContext2D {
     }
 
     pub fn save(&self) {
-        js!(
-            console.log(@{&self.canvas_render_context_2D}.blub);
-        );
         self.canvas_render_context_2D.save();
     }
 

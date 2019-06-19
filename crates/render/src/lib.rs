@@ -1,3 +1,6 @@
+#![recursion_limit="128"]
+
+
 pub mod prelude;
 
 pub use orbtk_utils::prelude as utils;

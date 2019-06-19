@@ -78,6 +78,10 @@ where
         &mut self.adapter
     }
 
+    pub fn render_context_2D(&mut self) -> &mut RenderContext2D {
+        &mut self.render_context_2D
+    }
+
     fn drain_events(&mut self) {
         while let Some(event) = self.mouse_move_events.borrow_mut().pop() {
             self.adapter
@@ -278,8 +282,6 @@ where
         let surface = WebSurface::new(self.bounds.width as u32, self.bounds.height as u32, context);
         let render_engine = WebRenderEngine::new(surface);
         let render_context_2D = RenderContext2D::new(canvas.get_context().unwrap());
-        render_context_2D.draw_image("res/orbtk-space.png", 0.0, 0.0);
-        render_context_2D.save();
         let mut canvas = Canvas::new(render_engine.clone());
 
         document().set_title(&self.title[..]);

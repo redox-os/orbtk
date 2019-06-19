@@ -3,6 +3,7 @@ use orbgl_api::Canvas;
 
 use crate::{
     prelude::*,
+    render::*,
     shell::{Renderer, WindowShell},
     theme::fonts,
     tree::Tree,
@@ -262,6 +263,10 @@ impl<'a> Context<'a> {
     #[cfg(not(feature = "experimental"))]
     pub fn canvas(&mut self) -> &mut Canvas {
         &mut self.window_shell.canvas
+    }
+
+    pub fn render_context_2D(&mut self) -> &mut RenderContext2D {
+        self.window_shell.render_context_2D()
     }
 
     #[cfg(not(feature = "experimental"))]
