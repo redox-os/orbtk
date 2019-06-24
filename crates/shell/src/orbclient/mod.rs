@@ -8,8 +8,6 @@ use std::{
 };
 
 use orbclient::{Color, Renderer, Window, WindowFlag};
-use orbgl::prelude::{CairoRenderEngine, FramebufferSurface};
-use orbgl_api::{Canvas, Font};
 
 use crate::{obsolete, prelude::*, utils::*};
 

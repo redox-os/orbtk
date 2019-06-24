@@ -1,14 +1,6 @@
 use dces::prelude::{Entity, EntityComponentManager};
-use orbgl_api::Canvas;
 
-use crate::{
-    prelude::*,
-    render::*,
-    shell::{Renderer, WindowShell},
-    theme::fonts,
-    tree::Tree,
-    utils::*,
-};
+use crate::{prelude::*, render::*, shell::WindowShell, tree::Tree, utils::*};
 
 use super::{MessageBox, WidgetContainer};
 
@@ -189,9 +181,7 @@ impl<'a> Context<'a> {
 
         if self.widget().has::<Font>() {
             if let Some(font_family) = self.theme.string("font-family", &selector.0) {
-                if let Some(inner_font) = fonts::font_by_key(&font_family[..]) {
-                    self.widget().set::<Font>(Font::from(inner_font));
-                }
+                self.widget().set::<Font>(Font::from(font_family));
             }
         }
 
@@ -209,9 +199,7 @@ impl<'a> Context<'a> {
 
         if self.widget().has::<IconFont>() {
             if let Some(font_family) = self.theme.string("icon-family", &selector.0) {
-                if let Some(inner_font) = fonts::font_by_key(&font_family[..]) {
-                    self.widget().set::<IconFont>(IconFont::from(inner_font));
-                }
+                self.widget().set::<IconFont>(IconFont::from(font_family));
             }
         }
 
@@ -260,18 +248,8 @@ impl<'a> Context<'a> {
         self.widget().get_mut::<Selector>().0.set_dirty(true);
     }
 
-    #[cfg(not(feature = "experimental"))]
-    pub fn canvas(&mut self) -> &mut Canvas {
-        &mut self.window_shell.canvas
-    }
-
-    pub fn render_context_2D(&mut self) -> &mut RenderContext2D {
-        self.window_shell.render_context_2D()
-    }
-
-    #[cfg(not(feature = "experimental"))]
-    pub fn renderer(&mut self) -> &mut dyn Renderer {
-        &mut self.window_shell.inner
+    pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
+        self.window_shell.render_context_2_d()
     }
 
     // pub fn next_message(&mut self) -> MessageBox {

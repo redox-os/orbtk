@@ -1,5 +1,4 @@
-#![recursion_limit="128"]
-
+#![recursion_limit = "128"]
 
 pub mod prelude;
 
@@ -88,15 +87,32 @@ pub trait RenderContext2D {
     fn draw_image(&mut self, path: &str, dx: f64, dy: f64);
 
     /// Draws the image with the given size.
-    fn draw_image_width_size(&mut self, path: &str, );
+    fn draw_image_width_size(&mut self, path: &str);
 
     /// Draws the given part of the image.
-    fn draw_image_with_clip_and_size(&mut self, path: &str, x: f64, y: f64, width: f64, height: f64);
+    fn draw_image_with_clip_and_size(
+        &mut self,
+        path: &str,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+    );
 
     // Line styles
 
     /// Sets the thickness of lines.
-    fn set_line_width(&mut self, clip_x: f64, clip_y: f64, clip_width: f64, clip_height: f64, x: f64, y: f64, width: f64, height: f64);
+    fn set_line_width(
+        &mut self,
+        clip_x: f64,
+        clip_y: f64,
+        clip_width: f64,
+        clip_height: f64,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+    );
 
     // fn set_line_cap(&mut self);
 

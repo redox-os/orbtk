@@ -1,4 +1,4 @@
-use orbgl_api::Color;
+use crate::prelude::*;
 
 /// Describes a position on a colorful gradient.
 #[derive(Clone, PartialEq, Debug)]
@@ -34,39 +34,19 @@ impl Default for Brush {
 
 impl From<&str> for Brush {
     fn from(s: &str) -> Brush {
-        Brush::SolidColor(get_color(s))
+        Brush::SolidColor(Color::from(s))
     }
 }
 
 impl From<String> for Brush {
     fn from(s: String) -> Brush {
-        Brush::SolidColor(get_color(&s))
+        Brush::SolidColor(Color::from(s))
     }
 }
 
 impl From<Vec<GradientStop>> for Brush {
     fn from(gradient: Vec<GradientStop>) -> Brush {
         Brush::Gradient(gradient)
-    }
-}
-
-// Todo: this helper could me removed after orbgl_api is providing an own color struct
-fn get_color(hex: &str) -> Color {
-    let clean_hex = hex.trim_start_matches("#");
-    match clean_hex.len() {
-        6 | 8 => {
-            let mut x = match u32::from_str_radix(&clean_hex, 16) {
-                Ok(x) => x,
-                Err(_) => 0,
-            };
-
-            if clean_hex.len() == 6 {
-                x |= 0xFF_000_000;
-            }
-
-            Color { data: x }
-        }
-        _ => Color { data: 0 },
     }
 }
 

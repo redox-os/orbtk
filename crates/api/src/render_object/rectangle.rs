@@ -1,6 +1,4 @@
-use orbgl_api::Canvas;
-
-use crate::{prelude::*, utils::*};
+use crate::{prelude::*, render::RenderContext2D, utils::*};
 
 pub struct RectangleRenderObject;
 
@@ -8,25 +6,21 @@ impl RectangleRenderObject {
     // Renders rectangle without border and radius.
     fn render_rect_path(
         &self,
-        canvas: &mut Canvas,
+        render_context_2_d: &mut RenderContext2D,
         x: f64,
         y: f64,
         width: f64,
         height: f64,
         brush: Brush,
     ) {
-        match brush {
-            Brush::SolidColor(color) => canvas.set_fill_style(color),
-            _ => {} // todo: gradient
-        }
-
-        canvas.fill_rect(x, y, width, height);
+        render_context_2_d.set_fill_style(brush);
+        render_context_2_d.fill_rect(x, y, width, height);
     }
 
     // Renders rectangle with border and without radius.
     fn render_bordered_rect_path(
         &self,
-        canvas: &mut Canvas,
+        render_context_2_d: &mut RenderContext2D,
         x: f64,
         y: f64,
         width: f64,
@@ -36,11 +30,11 @@ impl RectangleRenderObject {
         border_thickness: Thickness,
     ) {
         // border
-        self.render_rect_path(canvas, x, y, width, height, border_brush);
+        self.render_rect_path(render_context_2_d, x, y, width, height, border_brush);
 
         // content
         self.render_rect_path(
-            canvas,
+            render_context_2_d,
             x + border_thickness.left,
             y + border_thickness.top,
             width - border_thickness.left - border_thickness.right,
@@ -52,7 +46,7 @@ impl RectangleRenderObject {
     // Builds rectangle path with radius and without border.
     fn render_rounded_rect_path(
         &self,
-        canvas: &mut Canvas,
+        render_context_2_d: &mut RenderContext2D,
         x: f64,
         y: f64,
         width: f64,
@@ -63,49 +57,50 @@ impl RectangleRenderObject {
         let m_pi = 3.14159265;
         let degrees = m_pi / 180.0;
 
-        canvas.begin_path();
-        canvas.arc(
+        render_context_2_d.begin_path();
+        render_context_2_d.arc(
             x + width - radius,
             y + radius,
             radius,
             -90.0 * degrees,
             0.0 * degrees,
+            false,
         );
-        canvas.arc(
+        render_context_2_d.arc(
             x + width - radius,
             y + height - radius,
             radius,
             0.0 * degrees,
             90.0 * degrees,
+            false,
         );
-        canvas.arc(
+        render_context_2_d.arc(
             x + radius,
             y + height - radius,
             radius,
             90.0 * degrees,
             180.0 * degrees,
+            false,
         );
-        canvas.arc(
+        render_context_2_d.arc(
             x + radius,
             y + radius,
             radius,
             180.0 * degrees,
             270.0 * degrees,
+            false,
         );
 
-        match brush {
-            Brush::SolidColor(color) => canvas.set_fill_style(color),
-            _ => {} // todo: gradient
-        }
+        render_context_2_d.set_fill_style(brush);
 
-        canvas.fill();
-        canvas.close_path();
+        render_context_2_d.fill();
+        render_context_2_d.close_path();
     }
 
     // Renders rectangle with border and radius.
     fn render_rounded_bordered_rect_path(
         &self,
-        canvas: &mut Canvas,
+        render_context_2_d: &mut RenderContext2D,
         x: f64,
         y: f64,
         width: f64,
@@ -116,11 +111,11 @@ impl RectangleRenderObject {
         border_thickness: Thickness,
     ) {
         // border
-        self.render_rounded_rect_path(canvas, x, y, width, height, radius, border_brush);
+        self.render_rounded_rect_path(render_context_2_d, x, y, width, height, radius, border_brush);
 
         // content
         self.render_rounded_rect_path(
-            canvas,
+            render_context_2_d,
             x + border_thickness.left,
             y + border_thickness.top,
             width - border_thickness.left - border_thickness.right,
@@ -159,7 +154,7 @@ impl RenderObject for RectangleRenderObject {
             if has_thickness {
                 #[cfg(not(feature = "experimental"))]
                 self.render_rounded_bordered_rect_path(
-                    context.canvas(),
+                    context.render_context_2_d(),
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
                     bounds.width(),
@@ -172,7 +167,7 @@ impl RenderObject for RectangleRenderObject {
             } else {
                 #[cfg(not(feature = "experimental"))]
                 self.render_rounded_rect_path(
-                    context.canvas(),
+                    context.render_context_2_d(),
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
                     bounds.width(),
@@ -185,7 +180,7 @@ impl RenderObject for RectangleRenderObject {
             if has_thickness {
                 #[cfg(not(feature = "experimental"))]
                 self.render_bordered_rect_path(
-                    context.canvas(),
+                    context.render_context_2_d(),
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
                     bounds.width(),
@@ -197,7 +192,7 @@ impl RenderObject for RectangleRenderObject {
             } else {
                 #[cfg(not(feature = "experimental"))]
                 self.render_rect_path(
-                    context.canvas(),
+                    context.render_context_2_d(),
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
                     bounds.width(),

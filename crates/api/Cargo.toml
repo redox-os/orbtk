@@ -13,7 +13,6 @@ orbclient = "0.3.22"
 
 [dependencies]
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }
-orbgl_api = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git" }
 orbtk-css-engine = { version = "0.1.0", path = "../css-engine" }
 orbtk-render = { version = "0.1.0", path = "../render" }
 orbtk-shell = { version = "0.1.0", path = "../shell" }

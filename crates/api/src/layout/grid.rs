@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager};
 
-use crate::{prelude::*, tree::Tree, utils::prelude::*};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
 use super::Layout;
 
@@ -88,6 +88,7 @@ impl GridLayout {
 impl Layout for GridLayout {
     fn measure(
         &self,
+        render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager,
         tree: &Tree,
@@ -113,7 +114,8 @@ impl Layout for GridLayout {
 
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
-                let child_desired_size = child_layout.measure(*child, ecm, tree, layouts, theme);
+                let child_desired_size =
+                    child_layout.measure(render_context_2_d, *child, ecm, tree, layouts, theme);
 
                 let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
 
@@ -140,6 +142,7 @@ impl Layout for GridLayout {
 
     fn arrange(
         &self,
+        render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager,
@@ -421,8 +424,15 @@ impl Layout for GridLayout {
             }
 
             if let Some(child_layout) = layouts.borrow().get(child) {
-                available_size =
-                    child_layout.arrange(available_size, *child, ecm, tree, layouts, theme);
+                available_size = child_layout.arrange(
+                    render_context_2_d,
+                    available_size,
+                    *child,
+                    ecm,
+                    tree,
+                    layouts,
+                    theme,
+                );
             }
 
             if let Ok(child_bounds) = ecm.borrow_mut_component::<Bounds>(*child) {

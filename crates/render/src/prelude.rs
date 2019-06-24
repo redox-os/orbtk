@@ -1,7 +1,1 @@
-
-
-
-pub use crate::{
-    TextMetrics,
-    platform::*,
-};
+pub use crate::{platform::*, TextMetrics};

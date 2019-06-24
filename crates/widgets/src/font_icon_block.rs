@@ -29,7 +29,7 @@ impl Template for FontIconBlock {
             .icon("")
             .brush(colors::LINK_WATER_COLOR)
             .icon_size(fonts::ICON_FONT_SIZE_12)
-            .font(fonts::font_by_key("Material Icons").unwrap())
+            .font("Material Icons")
     }
 
     fn render_object(&self) -> Option<Box<dyn RenderObject>> {

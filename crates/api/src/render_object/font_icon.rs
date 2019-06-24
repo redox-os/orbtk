@@ -16,27 +16,31 @@ impl RenderObject for FontIconRenderObject {
             Bounds::default()
         };
 
-        let (bounds, icon, icon_brush, icon_font, icon_size) = {
+        let (icon, icon_brush, icon_font, icon_size) = {
             let widget = context.widget();
             (
-                widget.clone::<Bounds>(),
-                widget.clone::<FontIcon>(),
+                widget.clone::<FontIcon>().0,
                 widget.get::<IconBrush>().0.clone(),
                 widget.get::<IconFont>().0.clone(),
-                widget.get::<IconSize>().0 as u32,
+                widget.get::<IconSize>().0,
             )
         };
 
-        if !icon.0.is_empty() {
-            #[cfg(not(feature = "experimental"))]
-            context.renderer().render_text(
-                &icon.0,
-                &bounds.0,
-                &parent_bounds.0,
-                global_position,
-                icon_size,
-                icon_brush.into(),
-                &icon_font.0,
+        if !icon.is_empty() {
+            context.render_context_2_d().set_font_family(icon_font);
+            context.render_context_2_d().set_font_size(icon_size);
+            context.render_context_2_d().set_fill_style(icon_brush);
+            context.render_context_2_d().rect(
+                global_position.x,
+                global_position.y,
+                parent_bounds.width(),
+                parent_bounds.height(),
+            );
+            context.render_context_2_d().fill_text(
+                &icon,
+                global_position.x,
+                global_position.y,
+                None,
             );
         }
     }

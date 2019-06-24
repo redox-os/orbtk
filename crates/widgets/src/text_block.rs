@@ -28,7 +28,7 @@ impl Template for TextBlock {
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
-            .font(fonts::font_by_key("Roboto").unwrap())
+            .font("Roboto")
     }
 
     fn render_object(&self) -> Option<Box<dyn RenderObject>> {

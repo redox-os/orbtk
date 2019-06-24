@@ -2,25 +2,23 @@
 
 use std::{
     cell::{Cell, RefCell},
-    collections::HashMap,
     rc::Rc,
-    sync::Arc,
 };
 
-use orbgl_api::{Canvas, Font};
-use orbgl_web::prelude::*;
 use stdweb::{
     _js_impl, js,
     traits::*,
     unstable::TryInto,
     web::{
-        self, document, event,
-        html_element::{CanvasElement, ImageElement},
-        window, CanvasRenderingContext2d, FillRule,
+        document, event, html_element::CanvasElement, window, CanvasRenderingContext2d,
     },
 };
 
-use crate::{obsolete, prelude::*, utils::*, render::*};
+use crate::{
+    prelude::*,
+    render::*,
+    utils::*,
+};
 
 pub fn initialize() {
     stdweb::initialize();
@@ -58,9 +56,7 @@ pub struct WindowShell<A>
 where
     A: WindowAdapter,
 {
-    render_context_2D: RenderContext2D,
-    pub inner: WebRenderer,
-    pub canvas: Canvas,
+    render_context_2_d: RenderContext2D,
     pub mouse_move_events: Rc<RefCell<Vec<event::MouseMoveEvent>>>,
     pub mouse_up_events: Rc<RefCell<Vec<event::MouseUpEvent>>>,
     pub mouse_down_events: Rc<RefCell<Vec<event::MouseDownEvent>>>,
@@ -78,8 +74,8 @@ where
         &mut self.adapter
     }
 
-    pub fn render_context_2D(&mut self) -> &mut RenderContext2D {
-        &mut self.render_context_2D
+    pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
+        &mut self.render_context_2_d
     }
 
     fn drain_events(&mut self) {
@@ -130,7 +126,7 @@ where
     pub window_shell: Rc<RefCell<WindowShell<A>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
-    pub updater: Box<Updater>,
+    pub updater: Box<dyn Updater>,
 }
 
 impl<A> ShellRunner<A>
@@ -248,9 +244,9 @@ where
         document().body().unwrap().append_child(&canvas);
         let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
 
-        let devicePixelRatio = window().device_pixel_ratio();
+        let device_pixel_ratio = window().device_pixel_ratio();
 
-        let backingStoreRatio = js! {
+        let backing_store_ratio = js! {
             var context = @{&context};
              return context.webkitBackingStorePixelRatio ||
                  context.mozBackingStorePixelRatio ||
@@ -260,12 +256,12 @@ where
         };
 
         let ratio: f64 = js! {
-            return @{&devicePixelRatio} / @{&backingStoreRatio};
+            return @{&device_pixel_ratio} / @{&backing_store_ratio};
         }
         .try_into()
         .unwrap();
 
-        if devicePixelRatio != backingStoreRatio {
+        if device_pixel_ratio != backing_store_ratio {
             let old_width = canvas.width();
             let old_height = canvas.height();
             canvas.set_width((old_width as f64 * ratio) as u32);
@@ -279,19 +275,14 @@ where
             context.scale(ratio, ratio);
         }
 
-        let surface = WebSurface::new(self.bounds.width as u32, self.bounds.height as u32, context);
-        let render_engine = WebRenderEngine::new(surface);
-        let render_context_2D = RenderContext2D::new(canvas.get_context().unwrap());
-        let mut canvas = Canvas::new(render_engine.clone());
+        let render_context_2_d = RenderContext2D::new(canvas.get_context().unwrap());
 
         document().set_title(&self.title[..]);
 
         stdweb::event_loop();
 
         WindowShell {
-            render_context_2D,
-            inner: WebRenderer {},
-            canvas,
+            render_context_2_d,
             adapter: self.adapter,
             mouse_move_events: mouse_move,
             mouse_up_events: mouse_up,
@@ -307,78 +298,3 @@ pub fn log(message: String) {
         console.log(@{&message});
     }
 }
-
-// --- obsolete will be removed after OrbGL supports text rendering ---
-
-pub struct WebFontMeasure;
-
-impl FontMeasure for WebFontMeasure {
-    fn measure(&self, text: &str, font: &Font, font_size: u32) -> (u32, u32) {
-        let canvas: CanvasElement = document()
-            .query_selector("canvas")
-            .unwrap()
-            .unwrap()
-            .try_into()
-            .unwrap();
-        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
-        context.set_font(&format!("{}px {}", font_size, font.family));
-
-        (
-            context.measure_text(text).unwrap().get_width() as u32,
-            font_size,
-        )
-    }
-}
-
-lazy_static! {
-    pub static ref FONT_MEASURE: Arc<WebFontMeasure> = { Arc::new(WebFontMeasure) };
-}
-
-pub struct WebRenderer {}
-
-impl obsolete::Renderer for WebRenderer {
-    fn render_text(
-        &mut self,
-        text: &str,
-        bounds: &Rect,
-        parent_bounds: &Rect,
-        global_position: &Point,
-        font_size: u32,
-        color: Color,
-        font: &Font,
-    ) {
-        if color.r() == 0 && color.g() == 0 && color.b() == 0 && color.a() == 0 {
-            return;
-        }
-        let canvas: CanvasElement = document()
-            .query_selector("canvas")
-            .unwrap()
-            .unwrap()
-            .try_into()
-            .unwrap();
-        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
-
-        context.save();
-        context.begin_path();
-        context.rect(
-            global_position.x,
-            global_position.y,
-            parent_bounds.width,
-            parent_bounds.height,
-        );
-        context.clip(FillRule::EvenOdd);
-        context.set_font(&format!("{}px {}", font_size, font.family));
-        context.set_fill_style_color(&color.to_string());
-        context.set_text_baseline(web::TextBaseline::Top);
-        context.fill_text(
-            text,
-            global_position.x + bounds.x,
-            global_position.y + bounds.y,
-            None,
-        );
-        context.close_path();
-        context.restore();
-    }
-}
-
-// --- obsolete will be removed after OrbGL supports text rendering ---

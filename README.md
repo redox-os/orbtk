@@ -144,10 +144,6 @@ cargo doc --no-deps --open
 
 ## Dependencies
 
-* [OrbGL](https://gitlab.redox-os.org/redox-os/orbgl): 2D/3D drawing
-* [OrbClient](https://gitlab.redox-os.org/redox-os/orbclient): window creation, window events
-* [OrbFont](https://gitlab.redox-os.org/redox-os/orbfont): font rendering
-* [OrbImage](https://gitlab.redox-os.org/redox-os/orbimage/tree/master/src): image loading
 * [DCES](https://gitlab.redox-os.org/redox-os/dces-rust): Entity Component System
 * [rust-cssparser](https://github.com/servo/rust-cssparser): CSS parsing
 

@@ -31,7 +31,6 @@ runner.run()
 extern crate lazy_static;
 
 pub mod event;
-pub mod obsolete;
 pub mod prelude;
 pub mod window;
 

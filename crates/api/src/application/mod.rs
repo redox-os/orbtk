@@ -177,7 +177,7 @@ impl Application {
     /// Starts the application and run it until quit is requested.
     pub fn run(mut self) {
         while let Some(runner) = self.runners.pop() {
-            let mut runner = runner;
+            let runner = runner;
             runner.run();
         }
     }
