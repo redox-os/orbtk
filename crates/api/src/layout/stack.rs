@@ -139,8 +139,15 @@ impl Layout for StackLayout {
         for child in &tree.children[&entity] {
             let mut child_desired_size = (0.0, 0.0);
             if let Some(child_layout) = layouts.borrow().get(child) {
-                child_desired_size =
-                    child_layout.arrange(render_context_2_d, size, *child, ecm, tree, layouts, theme);
+                child_desired_size = child_layout.arrange(
+                    render_context_2_d,
+                    size,
+                    *child,
+                    ecm,
+                    tree,
+                    layouts,
+                    theme,
+                );
             }
 
             let child_margin = {

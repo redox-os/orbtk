@@ -9,16 +9,10 @@ use stdweb::{
     _js_impl, js,
     traits::*,
     unstable::TryInto,
-    web::{
-        document, event, html_element::CanvasElement, window, CanvasRenderingContext2d,
-    },
+    web::{document, event, html_element::CanvasElement, window, CanvasRenderingContext2d},
 };
 
-use crate::{
-    prelude::*,
-    render::*,
-    utils::*,
-};
+use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {
     stdweb::initialize();

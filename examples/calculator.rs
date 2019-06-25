@@ -327,7 +327,7 @@ fn main() {
             Window::create()
                 .title("OrbTk - Calculator example")
                 .position((100.0, 100.0))
-                .size(220.0, 344.0)
+                .size(212.0, 336.0)
                 .theme(get_theme())
                 .child(MainView::create().build(ctx))
                 .build(ctx)

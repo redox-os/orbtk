@@ -6,6 +6,7 @@ pub use self::dirty_size::*;
 pub use self::point::*;
 pub use self::rect::*;
 pub use self::text_alignment::*;
+pub use self::text_baseline::*;
 pub use self::thickness::*;
 
 mod alignment;
@@ -18,4 +19,5 @@ pub mod prelude;
 mod rect;
 mod spacer;
 mod text_alignment;
+mod text_baseline;
 mod thickness;

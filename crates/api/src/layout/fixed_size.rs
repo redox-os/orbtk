@@ -62,7 +62,6 @@ impl Layout for FixedSizeLayout {
                     render_context_2_d.set_font_family(&font.0);
 
                     if text.0.is_empty() {
-                        #[cfg(not(feature = "experimental"))]
                         widget
                             .try_get::<WaterMark>()
                             .filter(|water_mark| !water_mark.0.is_empty())
@@ -73,10 +72,14 @@ impl Layout for FixedSizeLayout {
                                 )
                             })
                     } else {
-                        let mut size = (render_context_2_d.measure_text(&text.0).width, font_size.0);
+                        let mut size =
+                            (render_context_2_d.measure_text(&text.0).width, font_size.0);
 
                         if text.0.ends_with(" ") {
-                            size.0 += render_context_2_d.measure_text(&text.0).width / 2.0;
+                            size.0 += render_context_2_d
+                                .measure_text(&format!("{}a", text.0))
+                                .width
+                                - render_context_2_d.measure_text("a").width;
                         }
                         Some(size)
                     }
@@ -87,12 +90,12 @@ impl Layout for FixedSizeLayout {
                     .try_clone::<FontIcon>()
                     .filter(|font_icon| !font_icon.0.is_empty())
                     .map(|font_icon| {
-                        let font_size = widget.get::<FontSize>().0;
-                        render_context_2_d.set_font_size(font_size);
+                        let icon_size = widget.get::<IconSize>().0;
+                        render_context_2_d.set_font_size(icon_size);
                         render_context_2_d.set_font_family(&widget.get::<IconFont>().0);
                         (
                             render_context_2_d.measure_text(&font_icon.0).width,
-                            font_size,
+                            icon_size,
                         )
                     })
             });

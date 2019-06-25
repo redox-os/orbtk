@@ -20,6 +20,19 @@ pub struct TextMetrics {
     pub width: f64,
 }
 
+// Internal font helper.
+#[derive(Default, Clone, PartialEq, Debug)]
+pub struct FontConfig {
+    pub family: String,
+    pub font_size: f64,
+}
+
+impl ToString for FontConfig {
+    fn to_string(&self) -> String {
+        format!("{}px {}", self.font_size, self.family)
+    }
+}
+
 /// The RenderContext2D trait, provides the 2D rendering context. It is used for drawing shapes, text, images, and other objects.
 pub trait RenderContext2D {
     // Rectangles

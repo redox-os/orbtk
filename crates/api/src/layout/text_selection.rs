@@ -107,7 +107,6 @@ impl Layout for TextSelectionLayout {
         let vertical_alignment = VerticalAlignment::get(entity, ecm);
         let margin = Margin::get(entity, ecm);
 
-        #[cfg(not(feature = "experimental"))]
         {
             let mut widget = WidgetContainer::new(entity, ecm);
 
@@ -127,10 +126,6 @@ impl Layout for TextSelectionLayout {
                 if let Some(selection) = widget.try_get::<TextSelection>() {
                     if let Some(text_part) = text.0.get(0..selection.0.start_index) {
                         pos = render_context_2_d.measure_text(text_part).width;
-
-                        if text_part.ends_with(" ") {
-                            pos += (render_context_2_d.measure_text("a").width / 2.0) as f64;
-                        }
                     }
                 }
             }

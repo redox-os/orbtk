@@ -111,7 +111,15 @@ impl RectangleRenderObject {
         border_thickness: Thickness,
     ) {
         // border
-        self.render_rounded_rect_path(render_context_2_d, x, y, width, height, radius, border_brush);
+        self.render_rounded_rect_path(
+            render_context_2_d,
+            x,
+            y,
+            width,
+            height,
+            radius,
+            border_brush,
+        );
 
         // content
         self.render_rounded_rect_path(
