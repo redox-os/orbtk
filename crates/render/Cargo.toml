@@ -12,6 +12,8 @@ edition = "2018"
 stdweb = "0.4.17"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+orbclient = { version = "0.3.22", optional = true }
+orbgl = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git", optional = true }
 pathfinder_canvas = { git = "https://github.com/servo/pathfinder.git", optional = true }
 pathfinder_geometry = { git = "https://github.com/servo/pathfinder.git", optional = true }
 pathfinder_gl = { git = "https://github.com/servo/pathfinder.git", optional = true }
@@ -20,7 +22,8 @@ pathfinder_renderer = { git = "https://github.com/servo/pathfinder.git", optiona
 
 [dependencies]
 orbtk-utils = { version = "0.1.0", path = "../utils" }
+orbgl_api = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git", optional = true }
 
 [features]
-default = []
+default = ["orbgl_api", "orbgl", "orbclient"]
 experimental = ["pathfinder_canvas", "pathfinder_geometry", "pathfinder_gl", "pathfinder_gpu", "pathfinder_renderer"]

@@ -20,9 +20,8 @@ impl RenderObject for ImageRenderObject {
         };
 
         if let Some(image) = &mut image {
-            #[cfg(not(feature = "experimental"))]
             context.render_context_2_d().draw_image_with_size(
-                &image.0,
+                &mut image.0,
                 global_position.x,
                 global_position.y,
                 bounds.width(),

@@ -9,7 +9,7 @@ use std::{
 
 use orbclient::{Color, Renderer, Window, WindowFlag};
 
-use crate::{prelude::*,render::*, utils::*};
+use crate::{prelude::*, render::*, utils::*};
 
 pub mod fonts;
 
@@ -20,7 +20,6 @@ pub struct WindowShell<A>
 where
     A: WindowAdapter,
 {
-    pub inner: Window,
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
     render_context_2_d: RenderContext2D,
@@ -33,11 +32,16 @@ where
 {
     /// Creates a new window shell with an adapter.
     pub fn new(inner: Window, adapter: A) -> WindowShell<A> {
+        let mut inner = inner;
+
+        let render_context_2_d = RenderContext2D::new(
+           inner,
+        );
+
         WindowShell {
-            inner,
             mouse_buttons: (false, false, false),
             mouse_position: Point::default(),
-            render_context_2_d: RenderContext2D::new(),
+            render_context_2_d,
             adapter,
         }
     }
@@ -53,9 +57,9 @@ where
     }
 
     fn drain_events(&mut self) {
-        self.inner.sync();
+        self.render_context_2_d.window.sync();
 
-        for event in self.inner.events() {
+        for event in self.render_context_2_d.window.events() {
             match event.to_option() {
                 orbclient::EventOption::Mouse(event) => {
                     self.mouse_position.x = event.x as f64;
@@ -150,7 +154,7 @@ where
     A: WindowAdapter,
 {
     fn drop(&mut self) {
-        self.inner.sync();
+        self.render_context_2_d.window.sync();
     }
 }
 

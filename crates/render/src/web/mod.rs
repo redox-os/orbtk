@@ -210,7 +210,7 @@ impl RenderContext2D {
     // Draw image
 
     /// Draws the image.
-    pub fn draw_image(&mut self, image: &Image, x: f64, y: f64) {
+    pub fn draw_image(&mut self, image: &mut Image, x: f64, y: f64) {
         js!(
             var img = document.image_store.image(@{&image.source});
 
@@ -228,7 +228,7 @@ impl RenderContext2D {
     }
 
     /// Draws the image with the given size.
-    pub fn draw_image_with_size(&mut self, image: &Image, x: f64, y: f64, width: f64, height: f64) {
+    pub fn draw_image_with_size(&mut self, image: &mut Image, x: f64, y: f64, width: f64, height: f64) {
         js!(
             var img = document.image_store.image(@{&image.source});
 
@@ -248,7 +248,7 @@ impl RenderContext2D {
     /// Draws the given part of the image.
     pub fn draw_image_with_clip_and_size(
         &mut self,
-        image: &Image,
+        image: &mut Image,
         clip_x: f64,
         clip_y: f64,
         clip_width: f64,
