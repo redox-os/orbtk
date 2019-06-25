@@ -9,7 +9,7 @@ use std::{
 
 use orbclient::{Color, Renderer, Window, WindowFlag};
 
-use crate::{obsolete, prelude::*, utils::*};
+use crate::{prelude::*,render::*, utils::*};
 
 pub mod fonts;
 
@@ -23,7 +23,7 @@ where
     pub inner: Window,
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
-    pub canvas: Canvas,
+    render_context_2_d: RenderContext2D,
     adapter: A,
 }
 
@@ -33,23 +33,11 @@ where
 {
     /// Creates a new window shell with an adapter.
     pub fn new(inner: Window, adapter: A) -> WindowShell<A> {
-        let mut inner = inner;
-
-        let surface = FramebufferSurface::new(
-            inner.width(),
-            inner.height(),
-            inner.data_mut().as_mut_ptr() as *mut u8,
-        );
-
-        let render_engine = CairoRenderEngine::new(surface.clone());
-
-        let canvas = Canvas::new(render_engine.clone());
-
         WindowShell {
             inner,
             mouse_buttons: (false, false, false),
             mouse_position: Point::default(),
-            canvas,
+            render_context_2_d: RenderContext2D::new(),
             adapter,
         }
     }
@@ -57,6 +45,11 @@ where
     /// Gets the shell adapter.
     pub fn adapter(&mut self) -> &mut A {
         &mut self.adapter
+    }
+
+    /// Gets the render context 2D.
+    pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
+        &mut self.render_context_2_d
     }
 
     fn drain_events(&mut self) {
@@ -262,103 +255,3 @@ where
 pub fn log(message: String) {
     println!("{}", message);
 }
-
-// --- obsolete will be removed after OrbGL supports text rendering ---
-
-pub struct OrbFontMeasure;
-
-impl FontMeasure for OrbFontMeasure {
-    fn measure(&self, text: &str, font: &Font, font_size: u32) -> (u32, u32) {
-        if font_size == 0 {
-            return (0, 0);
-        }
-        let text = font.render(text, font_size as f32);
-        (text.width(), text.height())
-    }
-}
-
-lazy_static! {
-    pub static ref FONT_MEASURE: Arc<OrbFontMeasure> = { Arc::new(OrbFontMeasure) };
-}
-
-pub struct OrbFontRenderer {
-    pub fonts: HashMap<&'static str, Font>,
-}
-
-impl OrbFontRenderer {
-    fn render(
-        &self,
-        text: &str,
-        bounds: &Rect,
-        parent_bounds: &Rect,
-        global_position: &Point,
-        renderer: &mut Window,
-        font_size: f32,
-        color: Color,
-        font: &Font,
-    ) {
-        if font_size > 0.0 {
-            let line = font.render(text, font_size);
-            line.draw_clipped(
-                renderer,
-                (global_position.x + bounds.x) as i32,
-                (global_position.y + bounds.y) as i32,
-                global_position.x as i32,
-                parent_bounds.width as u32,
-                color,
-            );
-        }
-    }
-}
-
-lazy_static! {
-    pub static ref FONT_RENDERER: Arc<OrbFontRenderer> = {
-        let mut fonts = HashMap::new();
-
-        if let Ok(font) = Font::from_data(fonts::ROBOTO_REGULAR_FONT.to_vec().into_boxed_slice()) {
-            fonts.insert("Roboto Regular", font);
-        }
-
-        if let Ok(font) = Font::from_data(
-            fonts::MATERIAL_ICONS_REGULAR_FONT
-                .to_vec()
-                .into_boxed_slice(),
-        ) {
-            fonts.insert("Material Icons Regular", font);
-        }
-
-        Arc::new(OrbFontRenderer { fonts })
-    };
-}
-
-impl obsolete::Renderer for Window {
-    fn render_text(
-        &mut self,
-        text: &str,
-        bounds: &Rect,
-        parent_bounds: &Rect,
-        global_position: &Point,
-        font_size: u32,
-        color: Color,
-        font: &Font,
-    ) {
-        let alpha = (color.data >> 24) & 0xFF;
-
-        if alpha == 0 {
-            return;
-        }
-
-        FONT_RENDERER.render(
-            text,
-            bounds,
-            parent_bounds,
-            global_position,
-            self,
-            font_size as f32,
-            color,
-            font,
-        );
-    }
-}
-
-// --- obsolete will be removed after OrbGL supports text rendering ---
