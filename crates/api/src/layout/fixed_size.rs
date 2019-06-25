@@ -59,7 +59,7 @@ impl Layout for FixedSizeLayout {
                     let font = widget.get::<Font>();
                     let font_size = widget.get::<FontSize>();
                     render_context_2_d.set_font_size(font_size.0);
-                    render_context_2_d.set_font_family(&font.0);
+                    render_context_2_d.set_font_family(&font.0[..]);
 
                     if text.0.is_empty() {
                         widget
@@ -92,7 +92,7 @@ impl Layout for FixedSizeLayout {
                     .map(|font_icon| {
                         let icon_size = widget.get::<IconSize>().0;
                         render_context_2_d.set_font_size(icon_size);
-                        render_context_2_d.set_font_family(&widget.get::<IconFont>().0);
+                        render_context_2_d.set_font_family(&widget.get::<IconFont>().0[..]);
                         (
                             render_context_2_d.measure_text(&font_icon.0).width,
                             icon_size,

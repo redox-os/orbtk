@@ -12,9 +12,9 @@ edition = "2018"
 stdweb = "0.4.17"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-glutin = "0.21.0"
-orbfont = { git = "https://gitlab.redox-os.org/redox-os/orbfont.git" }
-orbclient = "0.3.22"
+glutin = { version = "0.21.0", optional = true }
+orbfont = { git = "https://gitlab.redox-os.org/redox-os/orbfont.git", optional = true }
+orbclient = { version = "0.3.22", optional = true }
 
 [dependencies]
 orbtk-render = { version = "0.1.0", path = "../render" }
@@ -22,4 +22,5 @@ orbtk-utils = { version = "0.1.0", path = "../utils" }
 lazy_static = "1.3.0"
 
 [features]
-experimental = []
+default = ["orbfont", "orbclient"]
+experimental = ["glutin"]
