@@ -49,8 +49,6 @@ impl Layout for FixedSizeLayout {
 
         let widget = WidgetContainer::new(entity, ecm);
 
-        // -- todo will be removed after orbgl merge --
-
         let size = widget
             .try_get::<Image>()
             .map(|image| (image.width(), image.height()))
@@ -66,14 +64,13 @@ impl Layout for FixedSizeLayout {
                             .try_get::<WaterMark>()
                             .filter(|water_mark| !water_mark.0.is_empty())
                             .map(|water_mark| {
-                                (
-                                    render_context_2_d.measure_text(&water_mark.0).width,
-                                    font_size.0,
-                                )
+                                let text_metrics = render_context_2_d.measure_text(&water_mark.0);
+                                (text_metrics.width, text_metrics.height)
                             })
                     } else {
-                        let mut size =
-                            (render_context_2_d.measure_text(&text.0).width, font_size.0);
+                        let text_metrics = render_context_2_d.measure_text(&text.0);
+
+                        let mut size = (text_metrics.width, text_metrics.height);
 
                         if text.0.ends_with(" ") {
                             size.0 += render_context_2_d
@@ -93,10 +90,8 @@ impl Layout for FixedSizeLayout {
                         let icon_size = widget.get::<IconSize>().0;
                         render_context_2_d.set_font_size(icon_size);
                         render_context_2_d.set_font_family(&widget.get::<IconFont>().0[..]);
-                        (
-                            render_context_2_d.measure_text(&font_icon.0).width,
-                            icon_size,
-                        )
+                        let text_metrics = render_context_2_d.measure_text(&font_icon.0);
+                        (text_metrics.width, text_metrics.height)
                     })
             });
 

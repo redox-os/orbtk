@@ -2,16 +2,12 @@
 
 use std::{
     cell::{Cell, RefCell},
-    collections::HashMap,
     rc::Rc,
-    sync::Arc,
 };
 
 use orbclient::{Renderer, Window, WindowFlag};
 
 use crate::{prelude::*, render::*, utils::*};
-
-pub mod fonts;
 
 pub fn initialize() {}
 
@@ -22,6 +18,7 @@ where
 {
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
+    window_size: (f64, f64),
     render_context_2_d: RenderContext2D,
     adapter: A,
 }
@@ -32,9 +29,11 @@ where
 {
     /// Creates a new window shell with an adapter.
     pub fn new(inner: Window, adapter: A) -> WindowShell<A> {
+        let window_size = (inner.width() as f64, inner.height() as f64);
         let render_context_2_d = RenderContext2D::new(inner);
 
         WindowShell {
+            window_size: window_size,
             mouse_buttons: (false, false, false),
             mouse_position: Point::default(),
             render_context_2_d,
@@ -53,8 +52,6 @@ where
     }
 
     fn drain_events(&mut self) {
-        self.render_context_2_d.window.sync();
-
         for event in self.render_context_2_d.window.events() {
             match event.to_option() {
                 orbclient::EventOption::Mouse(event) => {
@@ -137,6 +134,7 @@ where
                     self.adapter.quite_event();
                 }
                 orbclient::EventOption::Resize(event) => {
+                    self.window_size = (event.width as f64, event.height as f64);
                     self.adapter.resize(event.width as f64, event.height as f64);
                 }
                 _ => {}
@@ -177,7 +175,14 @@ where
 
             self.updater.update();
 
-            self.update.set(false);
+            if self.update.get() {
+                self.update.set(false);
+                self.window_shell
+                    .borrow_mut()
+                    .render_context_2_d
+                    .window
+                    .sync();
+            }
 
             self.window_shell.borrow_mut().drain_events();
         }

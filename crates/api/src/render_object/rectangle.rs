@@ -160,7 +160,6 @@ impl RenderObject for RectangleRenderObject {
 
         if border_radius > 0.0 {
             if has_thickness {
-                #[cfg(not(feature = "experimental"))]
                 self.render_rounded_bordered_rect_path(
                     context.render_context_2_d(),
                     global_position.x + bounds.x(),
@@ -173,7 +172,6 @@ impl RenderObject for RectangleRenderObject {
                     border_thickness,
                 );
             } else {
-                #[cfg(not(feature = "experimental"))]
                 self.render_rounded_rect_path(
                     context.render_context_2_d(),
                     global_position.x + bounds.x(),
@@ -186,7 +184,6 @@ impl RenderObject for RectangleRenderObject {
             }
         } else {
             if has_thickness {
-                #[cfg(not(feature = "experimental"))]
                 self.render_bordered_rect_path(
                     context.render_context_2_d(),
                     global_position.x + bounds.x(),
@@ -198,7 +195,6 @@ impl RenderObject for RectangleRenderObject {
                     border_thickness,
                 );
             } else {
-                #[cfg(not(feature = "experimental"))]
                 self.render_rect_path(
                     context.render_context_2_d(),
                     global_position.x + bounds.x(),

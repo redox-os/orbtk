@@ -106,6 +106,6 @@ impl System<Tree> for RenderSystem {
             }
         }
 
-        self.update.set(false);
+        // self.update.set(false);
     }
 }

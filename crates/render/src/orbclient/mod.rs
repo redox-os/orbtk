@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::fmt;
 
 use orbclient::Renderer;
-use orbfont::*;
 use orbgl::prelude::{CairoRenderEngine, FramebufferSurface};
 use orbgl_api::{Canvas, Font};
 
@@ -98,8 +97,11 @@ impl RenderContext2D {
         }
     }
 
+    /// Registers a new font file.
     pub fn register_font(&mut self, family: &str, font_file: &[u8]) {
-
+        if let Ok(font) = Font::from_data(font_file.to_vec().into_boxed_slice()) {
+            self.fonts.insert(family.to_string(), font);
+        }
     }
 
     // Rectangles
@@ -117,23 +119,27 @@ impl RenderContext2D {
     // Text
 
     /// Draws (fills) a given text at the given (x, y) position.
-    pub fn fill_text(&mut self, text: &str, x: f64, y: f64, max_width: Option<f64>) {
+    pub fn fill_text(&mut self, text: &str, x: f64, y: f64, _: Option<f64>) {
+        if self.fill_color.a() == 0 {
+            return;
+        }
+
         if let Some(font) = self.fonts.get(&self.font_config.family) {
             let line = font.render(text, self.font_config.font_size as f32);
             if self.clip {
                 line.draw_clipped(
                     &mut self.window,
                     x as i32,
-                    y as i32,
+                    y as i32 - line.height() as i32 / 2,
                     self.clip_rect.x as i32,
                     self.clip_rect.width as u32,
                     self.fill_color,
                 );
             } else {
-                 line.draw(
+                line.draw(
                     &mut self.window,
                     x as i32,
-                    y as i32,
+                    y as i32 - line.height() as i32 / 2,
                     self.fill_color,
                 );
             }
@@ -141,7 +147,9 @@ impl RenderContext2D {
     }
 
     /// Draws (strokes) a given text at the given (x, y) position.
-    pub fn stroke_text(&mut self, text: &str, x: f64, y: f64, max_width: Option<f64>) {}
+    pub fn stroke_text(&mut self, _: &str, _: f64, _: f64, _: Option<f64>) {
+        println!("fn stroke_text is not implemented for orbclient renderer");
+    }
 
     /// Returns a TextMetrics object.
     pub fn measure_text(&mut self, text: &str) -> TextMetrics {
@@ -270,16 +278,24 @@ impl RenderContext2D {
     }
 
     /// Specific the font family.
-    pub fn set_font_family(&mut self, family: impl Into<String>) {}
+    pub fn set_font_family(&mut self, family: impl Into<String>) {
+        self.font_config.family = family.into();
+    }
 
     /// Specifies the font size.
-    pub fn set_font_size(&mut self, size: f64) {}
+    pub fn set_font_size(&mut self, size: f64) {
+        self.font_config.font_size = size * 1.35;
+    }
 
     /// Specifies the text alignment.
-    pub fn set_text_align(&mut self, alignment: TextAlignment) {}
+    pub fn set_text_align(&mut self, _: TextAlignment) {
+        println!("fn set_text_align is not implemented for orbclient renderer");
+    }
 
     /// Baseline alignment setting.
-    pub fn set_text_baseline(&mut self, text_baseline: TextBaseline) {}
+    pub fn set_text_baseline(&mut self, _: TextBaseline) {
+        println!("fn set_text_baseline is not implemented for orbclient renderer");
+    }
 
     // Fill and stroke style
 
@@ -307,9 +323,13 @@ impl RenderContext2D {
 
     // Shadows
 
-    pub fn set_shadow_color(&mut self, color: Color) {}
+    pub fn set_shadow_color(&mut self, _: Color) {
+        println!("fn set_shadow_color is not implemented for orbclient renderer");
+    }
 
-    pub fn set_shadow_offset(&mut self, x: f64, y: f64) {}
+    pub fn set_shadow_offset(&mut self, _: f64, _: f64) {
+        println!("fn set_shadow_offset is not implemented for orbclient renderer");
+    }
 
     // Transformations
 
