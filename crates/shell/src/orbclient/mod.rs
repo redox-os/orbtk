@@ -7,7 +7,7 @@ use std::{
     sync::Arc,
 };
 
-use orbclient::{Color, Renderer, Window, WindowFlag};
+use orbclient::{Renderer, Window, WindowFlag};
 
 use crate::{prelude::*, render::*, utils::*};
 
@@ -32,11 +32,7 @@ where
 {
     /// Creates a new window shell with an adapter.
     pub fn new(inner: Window, adapter: A) -> WindowShell<A> {
-        let mut inner = inner;
-
-        let render_context_2_d = RenderContext2D::new(
-           inner,
-        );
+        let render_context_2_d = RenderContext2D::new(inner);
 
         WindowShell {
             mouse_buttons: (false, false, false),

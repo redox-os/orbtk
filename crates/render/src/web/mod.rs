@@ -142,6 +142,7 @@ impl RenderContext2D {
                 .measure_text(text)
                 .unwrap()
                 .get_width(),
+            height: self.font_config.font_size,
         }
     }
 
@@ -228,7 +229,14 @@ impl RenderContext2D {
     }
 
     /// Draws the image with the given size.
-    pub fn draw_image_with_size(&mut self, image: &mut Image, x: f64, y: f64, width: f64, height: f64) {
+    pub fn draw_image_with_size(
+        &mut self,
+        image: &mut Image,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+    ) {
         js!(
             var img = document.image_store.image(@{&image.source});
 

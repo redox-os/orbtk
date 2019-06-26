@@ -15,9 +15,10 @@ pub mod platform;
 pub mod platform;
 
 /// The TextMetrics struct represents the dimension of a text.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Default, Debug)]
 pub struct TextMetrics {
     pub width: f64,
+    pub height: f64,
 }
 
 // Internal font helper.

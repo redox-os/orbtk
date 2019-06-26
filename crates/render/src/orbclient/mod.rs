@@ -1,8 +1,10 @@
+use std::collections::HashMap;
 use std::fmt;
 
+use orbclient::Renderer;
+use orbfont::*;
 use orbgl::prelude::{CairoRenderEngine, FramebufferSurface};
 use orbgl_api::{Canvas, Font};
-use orbclient::Renderer;
 
 use crate::{utils::*, FontConfig, TextMetrics};
 
@@ -38,7 +40,10 @@ impl Image {
     pub fn new(source: impl Into<String>) -> Self {
         let source = source.into();
 
-        Image { inner: orbgl::prelude::Image::from_path(source.clone()).unwrap(), source }
+        Image {
+            inner: orbgl::prelude::Image::from_path(source.clone()).unwrap(),
+            source,
+        }
     }
 
     /// Gets the width.
@@ -60,15 +65,23 @@ impl Image {
 pub struct RenderContext2D {
     font_config: FontConfig,
     canvas: Canvas,
+    fill_color: orbclient::Color,
+    clip_rect: Rect,
+    fonts: HashMap<String, Font>,
+    clip: bool,
     pub window: orbclient::Window,
 }
 
 impl RenderContext2D {
     /// Creates a new render context 2d.
     pub fn new(window: orbclient::Window) -> Self {
-         let mut window = window;
+        let mut window = window;
 
-        let surface = FramebufferSurface::new(window.width(), window.height(), window.data_mut().as_mut_ptr() as *mut u8);
+        let surface = FramebufferSurface::new(
+            window.width(),
+            window.height(),
+            window.data_mut().as_mut_ptr() as *mut u8,
+        );
 
         let render_engine = CairoRenderEngine::new(surface.clone());
 
@@ -76,9 +89,17 @@ impl RenderContext2D {
 
         RenderContext2D {
             font_config: FontConfig::default(),
+            fonts: HashMap::new(),
+            fill_color: orbclient::Color::rgb(0, 0, 0),
             canvas,
-            window
+            window,
+            clip: false,
+            clip_rect: Rect::default(),
         }
+    }
+
+    pub fn register_font(&mut self, family: &str, font_file: &[u8]) {
+
     }
 
     // Rectangles
@@ -96,14 +117,45 @@ impl RenderContext2D {
     // Text
 
     /// Draws (fills) a given text at the given (x, y) position.
-    pub fn fill_text(&mut self, text: &str, x: f64, y: f64, max_width: Option<f64>) {}
+    pub fn fill_text(&mut self, text: &str, x: f64, y: f64, max_width: Option<f64>) {
+        if let Some(font) = self.fonts.get(&self.font_config.family) {
+            let line = font.render(text, self.font_config.font_size as f32);
+            if self.clip {
+                line.draw_clipped(
+                    &mut self.window,
+                    x as i32,
+                    y as i32,
+                    self.clip_rect.x as i32,
+                    self.clip_rect.width as u32,
+                    self.fill_color,
+                );
+            } else {
+                 line.draw(
+                    &mut self.window,
+                    x as i32,
+                    y as i32,
+                    self.fill_color,
+                );
+            }
+        }
+    }
 
     /// Draws (strokes) a given text at the given (x, y) position.
     pub fn stroke_text(&mut self, text: &str, x: f64, y: f64, max_width: Option<f64>) {}
 
     /// Returns a TextMetrics object.
     pub fn measure_text(&mut self, text: &str) -> TextMetrics {
-        TextMetrics { width: 0.0 }
+        if let Some(font) = self.fonts.get(&self.font_config.family) {
+            let text = font.render(text, self.font_config.font_size as f32);
+            return TextMetrics {
+                width: text.width() as f64,
+                height: text.height() as f64,
+            };
+        }
+        TextMetrics {
+            width: 0.0,
+            height: 0.0,
+        }
     }
 
     /// Fills the current or given path with the current file style.
@@ -123,12 +175,14 @@ impl RenderContext2D {
 
     /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
     pub fn close_path(&mut self) {
+        self.clip = false;
         self.canvas.close_path();
     }
 
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
         self.canvas.rect(x, y, width, height);
+        self.clip_rect = Rect::new(x, y, width, height);
     }
 
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
@@ -161,19 +215,20 @@ impl RenderContext2D {
 
     /// Draws the image.
     pub fn draw_image(&mut self, image: &mut Image, x: f64, y: f64) {
-        self.canvas
-            .draw_image(image.inner(), x, y);
+        self.canvas.draw_image(image.inner(), x, y);
     }
 
     /// Draws the image with the given size.
-    pub fn draw_image_with_size(&mut self, image: &mut Image, x: f64, y: f64, width: f64, height: f64) {
-        self.canvas.draw_image_with_size(
-            image.inner(),
-            x,
-            y,
-            width,
-            height,
-        );
+    pub fn draw_image_with_size(
+        &mut self,
+        image: &mut Image,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+    ) {
+        self.canvas
+            .draw_image_with_size(image.inner(), x, y, width, height);
     }
 
     /// Draws the given part of the image.
@@ -203,7 +258,9 @@ impl RenderContext2D {
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
-    pub fn clip(&mut self) {}
+    pub fn clip(&mut self) {
+        self.clip = true;
+    }
 
     // Line styles
 
@@ -229,9 +286,11 @@ impl RenderContext2D {
     /// Specifies the fill color to use inside shapes.
     pub fn set_fill_style(&mut self, brush: Brush) {
         match brush {
-            Brush::SolidColor(color) => self
-                .canvas
-                .set_fill_style(orbgl::prelude::Color { data: color.data }),
+            Brush::SolidColor(color) => {
+                self.fill_color = orbclient::Color { data: color.data };
+                self.canvas
+                    .set_fill_style(orbgl::prelude::Color { data: color.data });
+            }
             _ => (),
         }
     }
