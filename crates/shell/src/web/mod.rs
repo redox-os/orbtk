@@ -26,8 +26,10 @@ fn get_mouse_button(button: event::MouseButton) -> MouseButton {
     }
 }
 
-fn get_key(code: &str, key: char) -> Key {
-    match code {
+fn get_key(code: &str, key: String) -> (Key, String) {
+    let mut text = String::from("");
+
+    let code = match code {
         "Backspace" => Key::Backspace,
         "Delete" => Key::Delete,
         "ControlLeft" => Key::Control,
@@ -38,11 +40,13 @@ fn get_key(code: &str, key: char) -> Key {
         "ArrowLeft" => Key::Left,
         "ArrowRight" => Key::Right,
         "ArrowDown" => Key::Down,
-        _ => match key {
-            '\n' => Key::Enter,
-            _ => Key::from(key),
-        },
-    }
+        _ => {
+            text = key.clone();
+            Key::from(key.chars().next().unwrap())
+        }
+    };
+
+    (code, text)
 }
 
 /// Concrete implementation of the window shell.
@@ -98,16 +102,22 @@ where
         }
 
         while let Some(event) = self.key_down_events.borrow_mut().pop() {
+            let key = get_key(event.code().as_str(), event.key());
+
             self.adapter.key_event(KeyEvent {
-                key: get_key(event.code().as_str(), event.key().remove(0)),
+                key: key.0,
                 state: ButtonState::Down,
+                text: key.1,
             });
         }
 
         while let Some(event) = self.key_up_events.borrow_mut().pop() {
+            let key = get_key(event.code().as_str(), event.key());
+
             self.adapter.key_event(KeyEvent {
-                key: get_key(event.code().as_str(), event.key().remove(0)),
+                key: key.0,
                 state: ButtonState::Up,
+                text: key.1,
             });
         }
     }

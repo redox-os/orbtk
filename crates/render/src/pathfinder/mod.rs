@@ -118,9 +118,9 @@ impl RenderContext2D {
 
     /// Draws (fills) a given text at the given (x, y) position.
     pub fn fill_text(&mut self, text: &str, x: f64, y: f64, _: Option<f64>) {
-         if let Some(canvas) = &mut self.canvas.get_mut(0) {
-             canvas.fill_text(text, Vector2F::new(x as f32, y as f32));
-         }
+        if let Some(canvas) = &mut self.canvas.get_mut(0) {
+            canvas.fill_text(text, Vector2F::new(x as f32, y as f32));
+        }
     }
 
     /// Draws (strokes) a given text at the given (x, y) position.
@@ -128,16 +128,19 @@ impl RenderContext2D {
 
     /// Returns a TextMetrics object.
     pub fn measure_text(&mut self, text: &str) -> TextMetrics {
-
         let mut text_metrics = TextMetrics {
             width: 0.0,
             height: 0.0,
         };
 
-         if let Some(canvas) = &mut self.canvas.get(0) {
-             text_metrics.width = canvas.measure_text(text).width as f64;
-             text_metrics.height = self.font_config.font_size;
-         }
+        if let Some(canvas) = &mut self.canvas.get(0) {
+            text_metrics.width = canvas.measure_text(text).width as f64;
+
+            //  skribo::layout(&TextStyle { size: self.font_config.font_size },
+            //                        &self.,
+            // text)
+            text_metrics.height = self.font_config.font_size;
+        }
 
         text_metrics
     }
@@ -259,9 +262,9 @@ impl RenderContext2D {
     /// Specifies the font size.
     pub fn set_font_size(&mut self, size: f64) {
         self.font_config.font_size = size;
-         if let Some(canvas) = &mut self.canvas.get_mut(0) {
-             canvas.set_font_size(size as f32);
-         }
+        if let Some(canvas) = &mut self.canvas.get_mut(0) {
+            canvas.set_font_size(size as f32);
+        }
     }
 
     /// Specifies the text alignment.

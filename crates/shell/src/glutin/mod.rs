@@ -23,6 +23,7 @@ where
     render_context_2_d: RenderContext2D,
     window_builder_helper: WindowBuilderHelper,
     adapter: A,
+    key_state: Option<ButtonState>,
 }
 
 impl<A> WindowShell<A>
@@ -47,6 +48,25 @@ where
                         self.window_size = (size.width, size.height);
                     }
                     WindowEvent::CloseRequested => self.adapter.quite_event(),
+                    WindowEvent::ReceivedCharacter(c) => {
+                        if let Some(key_state) = self.key_state {
+                            if key_state == ButtonState::Down {
+                                self.adapter.key_event(KeyEvent {
+                                    key: Key::from(c),
+                                    state: ButtonState::Down,
+                                    text: c.to_string(),
+                                })
+                            } else {
+                                self.adapter.key_event(KeyEvent {
+                                    key: Key::from(c),
+                                    state: ButtonState::Up,
+                                    text: c.to_string(),
+                                })
+                            }
+                        }
+
+                        self.key_state = None;
+                    }
                     WindowEvent::KeyboardInput {
                         input:
                             KeyboardInput {
@@ -59,36 +79,43 @@ where
                     } => {
                         let key = {
                             match keycode {
-                                VirtualKeyCode::Back => Key::Backspace,
-                                VirtualKeyCode::Delete => Key::Delete,
-                                VirtualKeyCode::LControl => Key::Control,
-                                VirtualKeyCode::LShift => Key::ShiftL,
-                                VirtualKeyCode::RShift => Key::ShiftR,
-                                VirtualKeyCode::LAlt => Key::Alt,
-                                VirtualKeyCode::RAlt => Key::Alt,
-                                VirtualKeyCode::Up => Key::Up,
-                                VirtualKeyCode::Down => Key::Down,
-                                VirtualKeyCode::Left => Key::Left,
-                                VirtualKeyCode::Right => Key::Right,
-                                _ => match std::char::from_u32(scancode).unwrap() {
-                                    '\n' => Key::Enter,
-                                    _ => Key::from(std::char::from_u32(scancode).unwrap()),
-                                },
+                                VirtualKeyCode::Back => Some(Key::Backspace),
+                                VirtualKeyCode::Delete => Some(Key::Delete),
+                                VirtualKeyCode::LControl => Some(Key::Control),
+                                VirtualKeyCode::LShift => Some(Key::ShiftL),
+                                VirtualKeyCode::RShift => Some(Key::ShiftR),
+                                VirtualKeyCode::LAlt => Some(Key::Alt),
+                                VirtualKeyCode::RAlt => Some(Key::Alt),
+                                VirtualKeyCode::Up => Some(Key::Up),
+                                VirtualKeyCode::Down => Some(Key::Down),
+                                VirtualKeyCode::Left => Some(Key::Left),
+                                VirtualKeyCode::Right => Some(Key::Right),
+                                _ => None,
                             }
                         };
 
                         match state {
                             ElementState::Pressed => {
-                                self.adapter.key_event(KeyEvent {
-                                    key,
-                                    state: ButtonState::Down,
-                                });
+                                if let Some(key) = key {
+                                    self.adapter.key_event(KeyEvent {
+                                        key,
+                                        state: ButtonState::Down,
+                                        text: String::from(""),
+                                    });
+                                } else {
+                                    self.key_state = Some(ButtonState::Down);
+                                }
                             }
                             _ => {
-                                self.adapter.key_event(KeyEvent {
-                                    key,
-                                    state: ButtonState::Down,
-                                });
+                                if let Some(key) = key {
+                                    self.adapter.key_event(KeyEvent {
+                                        key,
+                                        state: ButtonState::Up,
+                                        text: String::from(""),
+                                    });
+                                } else {
+                                    self.key_state = Some(ButtonState::Up);
+                                }
                             }
                         }
                     }
@@ -274,6 +301,7 @@ where
             events: vec![],
             mouse_position: Point::default(),
             adapter: self.adapter,
+            key_state: None,
         }
     }
 }

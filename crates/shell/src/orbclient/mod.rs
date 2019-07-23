@@ -99,6 +99,8 @@ where
                     self.mouse_buttons = (button.left, button.middle, button.right);
                 }
                 orbclient::EventOption::Key(key_event) => {
+                    let mut text = String::from("");
+
                     let key = {
                         match key_event.scancode {
                             orbclient::K_BKSP => Key::Backspace,
@@ -111,10 +113,10 @@ where
                             orbclient::K_DOWN => Key::Down,
                             orbclient::K_LEFT => Key::Left,
                             orbclient::K_RIGHT => Key::Right,
-                            _ => match key_event.character {
-                                '\n' => Key::Enter,
-                                _ => Key::from(key_event.character),
-                            },
+                            _ => {
+                                text = key_event.character.to_string();
+                                Key::from(key_event.character)
+                            }
                         }
                     };
 
@@ -122,11 +124,13 @@ where
                         self.adapter.key_event(KeyEvent {
                             key,
                             state: ButtonState::Up,
+                            text,
                         });
                     } else {
                         self.adapter.key_event(KeyEvent {
                             key,
                             state: ButtonState::Down,
+                            text,
                         });
                     }
                 }

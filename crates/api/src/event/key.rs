@@ -1,22 +1,22 @@
 use std::rc::Rc;
 
-use crate::{prelude::*, shell::Key};
+use crate::{prelude::*, shell::KeyEvent};
 
 use super::{Event, EventBox, EventHandler};
 
 pub struct KeyDownEvent {
-    pub key: Key,
+    pub event: KeyEvent,
 }
 
 impl Event for KeyDownEvent {}
 
 pub struct KeyUpEvent {
-    pub key: Key,
+    pub event: KeyEvent,
 }
 
 impl Event for KeyUpEvent {}
 
-pub type KeyHandler = dyn Fn(Key) -> bool + 'static;
+pub type KeyHandler = dyn Fn(KeyEvent) -> bool + 'static;
 
 /// Used to handle key down events. Could be attached to a widget.
 pub struct KeyDownEventHandler {
@@ -32,7 +32,7 @@ impl Into<Rc<dyn EventHandler>> for KeyDownEventHandler {
 impl EventHandler for KeyDownEventHandler {
     fn handle_event(&self, event: &EventBox) -> bool {
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
-            return (self.handler)(event.key);
+            return (self.handler)(event.event.clone());
         }
 
         return false;
@@ -41,7 +41,7 @@ impl EventHandler for KeyDownEventHandler {
 
 pub trait KeyDownHandler: Sized + Widget {
     /// Inserts a handler.
-    fn on_key_down<H: Fn(Key) -> bool + 'static>(self, handler: H) -> Self {
+    fn on_key_down<H: Fn(KeyEvent) -> bool + 'static>(self, handler: H) -> Self {
         self.insert_handler(KeyDownEventHandler {
             handler: Rc::new(handler),
         })

@@ -21,6 +21,7 @@ pathfinder_gl = { git = "https://github.com/servo/pathfinder.git", optional = tr
 pathfinder_gpu = { git = "https://github.com/servo/pathfinder.git", optional = true }
 pathfinder_renderer = { git = "https://github.com/servo/pathfinder.git", optional = true }
 pathfinder_content = { git = "https://github.com/servo/pathfinder.git", optional = true }
+skribo = { git = "https://github.com/linebender/skribo.git", optional = true }
 
 [dependencies]
 orbtk-utils = { version = "0.1.0", path = "../utils" }
@@ -28,4 +29,4 @@ orbgl_api = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git", optional =
 
 [features]
 default = ["orbgl_api", "orbgl", "orbclient", "orbfont"]
-experimental = ["pathfinder_canvas", "pathfinder_geometry", "pathfinder_gl", "pathfinder_gpu", "pathfinder_renderer", "pathfinder_content"]
+experimental = ["pathfinder_canvas", "pathfinder_geometry", "pathfinder_gl", "pathfinder_gpu", "pathfinder_renderer", "pathfinder_content", "skribo"]
