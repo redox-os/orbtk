@@ -95,6 +95,7 @@ fn main() {
                         .extension_css(include_str!("res/grid.css"))
                         .build(),
                 )
+                .resizeable(true)
                 .child(MainView::create().build(ctx))
                 .build(ctx)
         })

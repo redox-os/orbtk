@@ -37,8 +37,23 @@ impl System<Tree> for LayoutSystem {
 
         let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
 
-        self.layouts.borrow()[&root].measure(root, ecm, tree, &self.layouts, &theme);
-        self.layouts.borrow()[&root].arrange(window_size, root, ecm, tree, &self.layouts, &theme);
+        self.layouts.borrow()[&root].measure(
+            self.shell.borrow_mut().render_context_2_d(),
+            root,
+            ecm,
+            tree,
+            &self.layouts,
+            &theme,
+        );
+        self.layouts.borrow()[&root].arrange(
+            self.shell.borrow_mut().render_context_2_d(),
+            window_size,
+            root,
+            ecm,
+            tree,
+            &self.layouts,
+            &theme,
+        );
 
         // if self.debug_flag.get() {
         //     println!("\n------ End layout update   ------\n");

@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager};
 
-use crate::{prelude::*, shell::FontMeasure, tree::Tree, utils::prelude::*};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
 use super::Layout;
 
@@ -32,6 +32,7 @@ impl Into<Box<dyn Layout>> for TextSelectionLayout {
 impl Layout for TextSelectionLayout {
     fn measure(
         &self,
+        render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager,
         tree: &Tree,
@@ -56,7 +57,7 @@ impl Layout for TextSelectionLayout {
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let dirty = child_layout
-                    .measure(*child, ecm, tree, layouts, theme)
+                    .measure(render_context_2_d, *child, ecm, tree, layouts, theme)
                     .dirty()
                     || self.desired_size.borrow().dirty();
                 self.desired_size.borrow_mut().set_dirty(dirty);
@@ -76,7 +77,7 @@ impl Layout for TextSelectionLayout {
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let dirty = child_layout
-                    .measure(*child, ecm, tree, layouts, theme)
+                    .measure(render_context_2_d, *child, ecm, tree, layouts, theme)
                     .dirty()
                     || self.desired_size.borrow().dirty();
                 self.desired_size.borrow_mut().set_dirty(dirty);
@@ -88,6 +89,7 @@ impl Layout for TextSelectionLayout {
 
     fn arrange(
         &self,
+        render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager,
@@ -105,7 +107,6 @@ impl Layout for TextSelectionLayout {
         let vertical_alignment = VerticalAlignment::get(entity, ecm);
         let margin = Margin::get(entity, ecm);
 
-        #[cfg(not(feature = "experimental"))]
         {
             let mut widget = WidgetContainer::new(entity, ecm);
 
@@ -119,19 +120,12 @@ impl Layout for TextSelectionLayout {
             if let Some(text) = widget.try_get::<Text>() {
                 let font = widget.get::<Font>();
                 let font_size = widget.get::<FontSize>();
+                render_context_2_d.set_font_size(font_size.0);
+                render_context_2_d.set_font_family(&font.0[..]);
 
                 if let Some(selection) = widget.try_get::<TextSelection>() {
-                    if let Some(text_part) = text.0.get(0..selection.0.start_index) {
-                        pos = crate::shell::FONT_MEASURE
-                            .measure(text_part, &(font.0).0, font_size.0 as u32)
-                            .0 as f64;
-
-                        if text_part.ends_with(" ") {
-                            pos += (crate::shell::FONT_MEASURE
-                                .measure("a", &(font.0).0, font_size.0 as u32)
-                                .0
-                                / 2) as f64;
-                        }
+                    if let Some(text_part) = text.0.get_string(0, selection.0.start_index) {
+                        pos = render_context_2_d.measure_text(text_part.as_str()).width;
                     }
                 }
             }
@@ -150,7 +144,7 @@ impl Layout for TextSelectionLayout {
 
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
-                child_layout.arrange(size, *child, ecm, tree, layouts, theme);
+                child_layout.arrange(render_context_2_d, size, *child, ecm, tree, layouts, theme);
             }
         }
 

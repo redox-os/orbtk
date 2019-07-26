@@ -2,18 +2,12 @@
 
 use std::{
     cell::{Cell, RefCell},
-    collections::HashMap,
     rc::Rc,
-    sync::Arc,
 };
 
-use orbclient::{Color, Renderer, Window, WindowFlag};
-use orbgl::prelude::{CairoRenderEngine, FramebufferSurface};
-use orbgl_api::{Canvas, Font};
+use orbclient::{Renderer, Window, WindowFlag};
 
-use crate::{obsolete, prelude::*, utils::*};
-
-pub mod fonts;
+use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {}
 
@@ -22,10 +16,10 @@ pub struct WindowShell<A>
 where
     A: WindowAdapter,
 {
-    pub inner: Window,
     mouse_buttons: (bool, bool, bool),
     mouse_position: Point,
-    pub canvas: Canvas,
+    window_size: (f64, f64),
+    render_context_2_d: RenderContext2D,
     adapter: A,
 }
 
@@ -35,23 +29,14 @@ where
 {
     /// Creates a new window shell with an adapter.
     pub fn new(inner: Window, adapter: A) -> WindowShell<A> {
-        let mut inner = inner;
-
-        let surface = FramebufferSurface::new(
-            inner.width(),
-            inner.height(),
-            inner.data_mut().as_mut_ptr() as *mut u8,
-        );
-
-        let render_engine = CairoRenderEngine::new(surface.clone());
-
-        let canvas = Canvas::new(render_engine.clone());
+        let window_size = (inner.width() as f64, inner.height() as f64);
+        let render_context_2_d = RenderContext2D::new(inner);
 
         WindowShell {
-            inner,
+            window_size: window_size,
             mouse_buttons: (false, false, false),
             mouse_position: Point::default(),
-            canvas,
+            render_context_2_d,
             adapter,
         }
     }
@@ -61,10 +46,13 @@ where
         &mut self.adapter
     }
 
-    fn drain_events(&mut self) {
-        self.inner.sync();
+    /// Gets the render context 2D.
+    pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
+        &mut self.render_context_2_d
+    }
 
-        for event in self.inner.events() {
+    fn drain_events(&mut self) {
+        for event in self.render_context_2_d.window.events() {
             match event.to_option() {
                 orbclient::EventOption::Mouse(event) => {
                     self.mouse_position.x = event.x as f64;
@@ -111,6 +99,8 @@ where
                     self.mouse_buttons = (button.left, button.middle, button.right);
                 }
                 orbclient::EventOption::Key(key_event) => {
+                    let mut text = String::from("");
+
                     let key = {
                         match key_event.scancode {
                             orbclient::K_BKSP => Key::Backspace,
@@ -123,10 +113,10 @@ where
                             orbclient::K_DOWN => Key::Down,
                             orbclient::K_LEFT => Key::Left,
                             orbclient::K_RIGHT => Key::Right,
-                            _ => match key_event.character {
-                                '\n' => Key::Enter,
-                                _ => Key::from(key_event.character),
-                            },
+                            _ => {
+                                text = key_event.character.to_string();
+                                Key::from(key_event.character)
+                            }
                         }
                     };
 
@@ -134,11 +124,13 @@ where
                         self.adapter.key_event(KeyEvent {
                             key,
                             state: ButtonState::Up,
+                            text,
                         });
                     } else {
                         self.adapter.key_event(KeyEvent {
                             key,
                             state: ButtonState::Down,
+                            text,
                         });
                     }
                 }
@@ -146,6 +138,9 @@ where
                     self.adapter.quite_event();
                 }
                 orbclient::EventOption::Resize(event) => {
+                    self.window_size = (event.width as f64, event.height as f64);
+                    self.render_context_2_d
+                        .resize(self.window_size.0, self.window_size.1);
                     self.adapter.resize(event.width as f64, event.height as f64);
                 }
                 _ => {}
@@ -159,7 +154,7 @@ where
     A: WindowAdapter,
 {
     fn drop(&mut self) {
-        self.inner.sync();
+        self.render_context_2_d.window.sync();
     }
 }
 
@@ -186,7 +181,14 @@ where
 
             self.updater.update();
 
-            self.update.set(false);
+            if self.update.get() {
+                self.update.set(false);
+                self.window_shell
+                    .borrow_mut()
+                    .render_context_2_d
+                    .window
+                    .sync();
+            }
 
             self.window_shell.borrow_mut().drain_events();
         }
@@ -264,103 +266,3 @@ where
 pub fn log(message: String) {
     println!("{}", message);
 }
-
-// --- obsolete will be removed after OrbGL supports text rendering ---
-
-pub struct OrbFontMeasure;
-
-impl FontMeasure for OrbFontMeasure {
-    fn measure(&self, text: &str, font: &Font, font_size: u32) -> (u32, u32) {
-        if font_size == 0 {
-            return (0, 0);
-        }
-        let text = font.render(text, font_size as f32);
-        (text.width(), text.height())
-    }
-}
-
-lazy_static! {
-    pub static ref FONT_MEASURE: Arc<OrbFontMeasure> = { Arc::new(OrbFontMeasure) };
-}
-
-pub struct OrbFontRenderer {
-    pub fonts: HashMap<&'static str, Font>,
-}
-
-impl OrbFontRenderer {
-    fn render(
-        &self,
-        text: &str,
-        bounds: &Rect,
-        parent_bounds: &Rect,
-        global_position: &Point,
-        renderer: &mut Window,
-        font_size: f32,
-        color: Color,
-        font: &Font,
-    ) {
-        if font_size > 0.0 {
-            let line = font.render(text, font_size);
-            line.draw_clipped(
-                renderer,
-                (global_position.x + bounds.x) as i32,
-                (global_position.y + bounds.y) as i32,
-                global_position.x as i32,
-                parent_bounds.width as u32,
-                color,
-            );
-        }
-    }
-}
-
-lazy_static! {
-    pub static ref FONT_RENDERER: Arc<OrbFontRenderer> = {
-        let mut fonts = HashMap::new();
-
-        if let Ok(font) = Font::from_data(fonts::ROBOTO_REGULAR_FONT.to_vec().into_boxed_slice()) {
-            fonts.insert("Roboto Regular", font);
-        }
-
-        if let Ok(font) = Font::from_data(
-            fonts::MATERIAL_ICONS_REGULAR_FONT
-                .to_vec()
-                .into_boxed_slice(),
-        ) {
-            fonts.insert("Material Icons Regular", font);
-        }
-
-        Arc::new(OrbFontRenderer { fonts })
-    };
-}
-
-impl obsolete::Renderer for Window {
-    fn render_text(
-        &mut self,
-        text: &str,
-        bounds: &Rect,
-        parent_bounds: &Rect,
-        global_position: &Point,
-        font_size: u32,
-        color: Color,
-        font: &Font,
-    ) {
-        let alpha = (color.data >> 24) & 0xFF;
-
-        if alpha == 0 {
-            return;
-        }
-
-        FONT_RENDERER.render(
-            text,
-            bounds,
-            parent_bounds,
-            global_position,
-            self,
-            font_size as f32,
-            color,
-            font,
-        );
-    }
-}
-
-// --- obsolete will be removed after OrbGL supports text rendering ---

@@ -67,7 +67,7 @@ impl MainViewState {
             }
         }
 
-        context.widget().get_mut::<Text>().0 = result.to_string();
+        context.widget().get_mut::<Text>().0 = String16::from(result.to_string());
         self.left_side.set(Some(result));
         self.right_side.set(None);
     }
@@ -327,7 +327,7 @@ fn main() {
             Window::create()
                 .title("OrbTk - Calculator example")
                 .position((100.0, 100.0))
-                .size(220.0, 344.0)
+                .size(212.0, 336.0)
                 .theme(get_theme())
                 .child(MainView::create().build(ctx))
                 .build(ctx)

@@ -109,6 +109,21 @@ impl Application {
             .build(),
         ));
 
+        #[cfg(not(target_arch = "wasm32"))]
+        window_shell
+            .borrow_mut()
+            .render_context_2_d()
+            .register_font("Roboto Regular", crate::theme::fonts::ROBOTO_REGULAR_FONT);
+
+        #[cfg(not(target_arch = "wasm32"))]
+        window_shell
+            .borrow_mut()
+            .render_context_2_d()
+            .register_font(
+                "Material Icons",
+                crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
+            );
+
         world.register_init_system(InitSystem {
             shell: window_shell.clone(),
             states: states.clone(),

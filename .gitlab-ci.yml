@@ -21,6 +21,17 @@ build:linux:
       - cargo/
       - target/
 
+build:web:
+  stage: build
+  before_script:
+    - cargo install --force cargo-web
+  script:
+    - cargo web build
+  cache:
+    paths:
+      - cargo/
+      - target/
+
 build:redox:
   stage: build
   variables:

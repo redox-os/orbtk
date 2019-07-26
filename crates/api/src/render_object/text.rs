@@ -29,23 +29,41 @@ impl RenderObject for TextRenderObject {
                 }
             };
             (
-                widget.clone::<Bounds>(),
+                widget.get::<Bounds>().0,
                 txt.to_string(),
                 widget.get::<Foreground>().0.clone(),
                 widget.get::<Font>().0.clone(),
-                widget.get::<FontSize>().0 as u32,
+                widget.get::<FontSize>().0,
             )
         };
 
-        #[cfg(not(feature = "experimental"))]
-        context.renderer().render_text(
-            &text,
-            &bounds.0,
-            &parent_bounds.0,
-            global_position,
-            font_size,
-            foreground.into(),
-            &font.0,
-        );
+        if !text.is_empty() {
+            context.render_context_2_d().save();
+            context.render_context_2_d().begin_path();
+            context.render_context_2_d().rect(
+                global_position.x,
+                global_position.y,
+                parent_bounds.width(),
+                parent_bounds.height(),
+            );
+            context.render_context_2_d().clip();
+
+            context.render_context_2_d().set_font_family(font);
+            context.render_context_2_d().set_font_size(font_size);
+            context.render_context_2_d().set_fill_style(foreground);
+
+            context
+                .render_context_2_d()
+                .set_text_baseline(TextBaseline::Middle);
+
+            context.render_context_2_d().fill_text(
+                &text,
+                global_position.x + bounds.x,
+                global_position.y + bounds.y + bounds.height / 2.0,
+                None,
+            );
+            context.render_context_2_d().close_path();
+            context.render_context_2_d().restore();
+        }
     }
 }

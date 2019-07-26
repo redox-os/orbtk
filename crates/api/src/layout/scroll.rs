@@ -7,7 +7,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager};
 
-use crate::{prelude::*, tree::Tree, utils::prelude::*};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
 use super::Layout;
 
@@ -29,6 +29,7 @@ impl ScrollLayout {
 impl Layout for ScrollLayout {
     fn measure(
         &self,
+        render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager,
         tree: &Tree,
@@ -64,7 +65,7 @@ impl Layout for ScrollLayout {
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let dirty = child_layout
-                    .measure(*child, ecm, tree, layouts, theme)
+                    .measure(render_context_2_d, *child, ecm, tree, layouts, theme)
                     .dirty()
                     || self.desired_size.borrow().dirty();
 
@@ -84,6 +85,7 @@ impl Layout for ScrollLayout {
 
     fn arrange(
         &self,
+        render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager,
@@ -141,8 +143,15 @@ impl Layout for ScrollLayout {
             let child_margin = Margin::get(*child, ecm);
 
             if let Some(child_layout) = layouts.borrow().get(child) {
-                child_size =
-                    child_layout.arrange((f64::MAX, f64::MAX), *child, ecm, tree, layouts, theme);
+                child_size = child_layout.arrange(
+                    render_context_2_d,
+                    (f64::MAX, f64::MAX),
+                    *child,
+                    ecm,
+                    tree,
+                    layouts,
+                    theme,
+                );
             }
 
             if child_size.0 > size.0 {

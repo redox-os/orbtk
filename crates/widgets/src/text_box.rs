@@ -1,11 +1,14 @@
 use std::cell::Cell;
 
-use crate::{prelude::*, shell::Key};
+use crate::{
+    prelude::*,
+    shell::{Key, KeyEvent},
+};
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
 #[derive(Default)]
 pub struct TextBoxState {
-    text: RefCell<String>,
+    text: RefCell<String16>,
     focused: Cell<bool>,
     updated: Cell<bool>,
     selection_start: Cell<usize>,
@@ -29,17 +32,16 @@ impl TextBoxState {
             .set(selection.max(0).min(self.text.borrow().len() as i32) as usize);
     }
 
-    fn update_text(&self, key: Key) -> bool {
+    fn update_text(&self, key_event: KeyEvent) -> bool {
         if !self.focused.get() {
             return false;
         }
 
-        match <Option<u8>>::from(key) {
-            Some(byte) => {
-                (*self.text.borrow_mut()).insert(self.selection_start.get(), byte as char);
-                self.update_selection_start(self.selection_start.get() as i32 + 1);
-            }
-            None => match key {
+        if !key_event.text.is_empty() {
+            (*self.text.borrow_mut()).insert_str(self.selection_start.get(), &key_event.text);
+            self.update_selection_start(self.selection_start.get() as i32 + 1);
+        } else {
+            match key_event.key {
                 Key::Left => {
                     self.update_selection_start(self.selection_start.get() as i32 - 1);
                     self.selection_length.set(0);
@@ -70,7 +72,7 @@ impl TextBoxState {
                     }
                 }
                 _ => {}
-            },
+            }
         }
 
         self.updated.set(true);
@@ -91,10 +93,10 @@ impl State for TextBoxState {
                     text.0 = self.text.borrow().clone();
                 } else {
                     let text_length = self.text.borrow().len();
-                    let origin_text_length = text.0.len();
+                    let origin_text_length = String16::from(text.0.to_string().as_str()).len();
                     let delta = text_length as i32 - origin_text_length as i32;
 
-                    *self.text.borrow_mut() = text.0.clone();
+                    *self.text.borrow_mut() = String16::from(text.0.to_string().as_str());
 
                     // adjust cursor position after label is changed from outside
                     if text_length < origin_text_length {
@@ -226,7 +228,7 @@ impl Template for TextBox {
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
-            .font(fonts::font_by_key("Roboto").unwrap())
+            .font("Roboto Regular")
             .selection(TextSelectionValue::default())
             .offset(0.0)
             .padding(4.0)
@@ -280,6 +282,6 @@ impl Template for TextBox {
                     )
                     .build(context),
             )
-            .on_key_down(move |key: Key| -> bool { state.update_text(key) })
+            .on_key_down(move |event: KeyEvent| -> bool { state.update_text(event) })
     }
 }

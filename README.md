@@ -44,9 +44,7 @@ However you also need to have the SDL2 libraries installed on your
 system.  The best way to do this is documented [by the SDL2
 crate](https://github.com/AngryLawyer/rust-sdl2#user-content-requirements).
 
-## Use OrbTk with cairo
-
-If you want to use OrbTk with cairo (recommanded) you have to install cairo graphics. Otherwise you have to build OrbTk with the "plain" feature.
+## Use OrbTk with cairoe.
 
 * With Ubuntu, please to type ```sudo apt-get install libcairo2-dev``` in your console.
 * With macOS and homebrew, please to type ```brew install cairo``` in your console.
@@ -111,6 +109,18 @@ $ cargo web start --target=asmjs-unknown-emscripten --auto-reload --example widg
 $ cargo web start --target=wasm32-unknown-emscripten --auto-reload --example widgets
 ```
 
+## Run examples with Glutin and Pathfinder
+
+OrbTk includes a preview with [Glutin](https://github.com/rust-windowing/glutin) and [Pathfinder](https://github.com/servo/pathfinder). To start the *preview* mode you have to use the feature *preview*.
+
+By problems running OrbTk with cairo on Windows you should try the *preview*.
+
+Pathfinder is currently not available for the web.
+
+```text
+cargo run --example widgets --release --features preview
+```
+
 ## Build and run documentation
 
 You can build and run the latest documentation y executing the following command:
@@ -144,10 +154,6 @@ cargo doc --no-deps --open
 
 ## Dependencies
 
-* [OrbGL](https://gitlab.redox-os.org/redox-os/orbgl): 2D/3D drawing
-* [OrbClient](https://gitlab.redox-os.org/redox-os/orbclient): window creation, window events
-* [OrbFont](https://gitlab.redox-os.org/redox-os/orbfont): font rendering
-* [OrbImage](https://gitlab.redox-os.org/redox-os/orbimage/tree/master/src): image loading
 * [DCES](https://gitlab.redox-os.org/redox-os/dces-rust): Entity Component System
 * [rust-cssparser](https://github.com/servo/rust-cssparser): CSS parsing
 

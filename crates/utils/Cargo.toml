@@ -7,6 +7,3 @@ repository = "https://gitlab.redox-os.org/redox-os/orbtk"
 license = "MIT"
 keywords = ["helpers", "utils", "traits", "ui"]
 edition = "2018"
-
-[dependencies]
-orbgl_api = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git" }

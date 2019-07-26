@@ -27,26 +27,26 @@ runner.run()
 
  */
 
-#[macro_use]
 extern crate lazy_static;
 
 pub mod event;
-pub mod obsolete;
 pub mod prelude;
 pub mod window;
 
 pub use orbtk_utils::prelude as utils;
 
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(not(feature = "experimental"))]
+#[cfg(not(feature = "preview"))]
 #[path = "orbclient/mod.rs"]
 pub mod platform;
 
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(feature = "experimental")]
+#[cfg(feature = "preview")]
 #[path = "glutin/mod.rs"]
 pub mod platform;
 
 #[cfg(target_arch = "wasm32")]
 #[path = "web/mod.rs"]
 pub mod platform;
+
+pub use orbtk_render::prelude as render;

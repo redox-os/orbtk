@@ -76,19 +76,12 @@ impl System<Tree> for RenderSystem {
             if debug {
                 if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
                     let selector = Selector::from("debug-border");
-
                     let brush = theme.brush("border-color", &selector.0).unwrap();
-
-                    #[cfg(not(feature = "experimental"))]
-                    match brush {
-                        Brush::SolidColor(color) => {
-                            self.shell.borrow_mut().canvas.set_stroke_style(color)
-                        }
-                        _ => {} // todo: gradient
-                    }
-
-                    #[cfg(not(feature = "experimental"))]
-                    self.shell.borrow_mut().canvas.stroke_rect(
+                    self.shell
+                        .borrow_mut()
+                        .render_context_2_d()
+                        .set_stroke_style(brush);
+                    self.shell.borrow_mut().render_context_2_d().stroke_rect(
                         global_position.x + bounds.x(),
                         global_position.y + bounds.y(),
                         bounds.width(),
@@ -113,6 +106,6 @@ impl System<Tree> for RenderSystem {
             }
         }
 
-        self.update.set(false);
+        // self.update.set(false);
     }
 }

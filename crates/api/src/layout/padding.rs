@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager};
 
-use crate::{prelude::*, tree::Tree, utils::prelude::*};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
 use super::Layout;
 
@@ -26,6 +26,7 @@ impl PaddingLayout {
 impl Layout for PaddingLayout {
     fn measure(
         &self,
+        render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager,
         tree: &Tree,
@@ -61,7 +62,8 @@ impl Layout for PaddingLayout {
 
         for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
-                let child_desired_size = child_layout.measure(*child, ecm, tree, layouts, theme);
+                let child_desired_size =
+                    child_layout.measure(render_context_2_d, *child, ecm, tree, layouts, theme);
                 let mut desired_size = self.desired_size.borrow().size();
 
                 let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
@@ -95,6 +97,7 @@ impl Layout for PaddingLayout {
 
     fn arrange(
         &self,
+        render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager,
@@ -141,7 +144,15 @@ impl Layout for PaddingLayout {
             let child_margin = Margin::get(*child, ecm);
 
             if let Some(child_layout) = layouts.borrow().get(child) {
-                child_layout.arrange(available_size, *child, ecm, tree, layouts, theme);
+                child_layout.arrange(
+                    render_context_2_d,
+                    available_size,
+                    *child,
+                    ecm,
+                    tree,
+                    layouts,
+                    theme,
+                );
             }
 
             let child_horizontal_alignment = HorizontalAlignment::get(*child, ecm);

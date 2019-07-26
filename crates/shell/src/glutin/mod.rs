@@ -9,7 +9,7 @@ use glutin::{
     GlRequest, KeyboardInput, VirtualKeyCode, WindowBuilder as GlutinWindowBuilder, WindowEvent,
 };
 
-use crate::{obsolete, prelude::*, utils::*};
+use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {}
 
@@ -19,8 +19,11 @@ where
 {
     events: Vec<Event>,
     mouse_position: Point,
+    window_size: (f64, f64),
+    render_context_2_d: RenderContext2D,
     window_builder_helper: WindowBuilderHelper,
     adapter: A,
+    key_state: Option<ButtonState>,
 }
 
 impl<A> WindowShell<A>
@@ -32,11 +35,40 @@ where
         &mut self.adapter
     }
 
+    /// Gets the render context 2D.
+    pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
+        &mut self.render_context_2_d
+    }
+
     fn drain_events(&mut self) {
         if let Some(event) = self.events.pop() {
             match event {
                 Event::WindowEvent { event, .. } => match event {
+                    WindowEvent::Resized(size) => {
+                        self.window_size = (size.width, size.height);
+                        self.render_context_2_d.resize(size.width, size.height);
+                        self.adapter.resize(size.width, size.height);
+                    }
                     WindowEvent::CloseRequested => self.adapter.quite_event(),
+                    WindowEvent::ReceivedCharacter(c) => {
+                        if let Some(key_state) = self.key_state {
+                            if key_state == ButtonState::Down {
+                                self.adapter.key_event(KeyEvent {
+                                    key: Key::from(c),
+                                    state: ButtonState::Down,
+                                    text: c.to_string(),
+                                })
+                            } else {
+                                self.adapter.key_event(KeyEvent {
+                                    key: Key::from(c),
+                                    state: ButtonState::Up,
+                                    text: c.to_string(),
+                                })
+                            }
+                        }
+
+                        self.key_state = None;
+                    }
                     WindowEvent::KeyboardInput {
                         input:
                             KeyboardInput {
@@ -49,36 +81,43 @@ where
                     } => {
                         let key = {
                             match keycode {
-                                VirtualKeyCode::Back => Key::Backspace,
-                                VirtualKeyCode::Delete => Key::Delete,
-                                VirtualKeyCode::LControl => Key::Control,
-                                VirtualKeyCode::LShift => Key::ShiftL,
-                                VirtualKeyCode::RShift => Key::ShiftR,
-                                VirtualKeyCode::LAlt => Key::Alt,
-                                VirtualKeyCode::RAlt => Key::Alt,
-                                VirtualKeyCode::Up => Key::Up,
-                                VirtualKeyCode::Down => Key::Down,
-                                VirtualKeyCode::Left => Key::Left,
-                                VirtualKeyCode::Right => Key::Right,
-                                _ => match std::char::from_u32(scancode).unwrap() {
-                                    '\n' => Key::Enter,
-                                    _ => Key::from(std::char::from_u32(scancode).unwrap()),
-                                },
+                                VirtualKeyCode::Back => Some(Key::Backspace),
+                                VirtualKeyCode::Delete => Some(Key::Delete),
+                                VirtualKeyCode::LControl => Some(Key::Control),
+                                VirtualKeyCode::LShift => Some(Key::ShiftL),
+                                VirtualKeyCode::RShift => Some(Key::ShiftR),
+                                VirtualKeyCode::LAlt => Some(Key::Alt),
+                                VirtualKeyCode::RAlt => Some(Key::Alt),
+                                VirtualKeyCode::Up => Some(Key::Up),
+                                VirtualKeyCode::Down => Some(Key::Down),
+                                VirtualKeyCode::Left => Some(Key::Left),
+                                VirtualKeyCode::Right => Some(Key::Right),
+                                _ => None,
                             }
                         };
 
                         match state {
                             ElementState::Pressed => {
-                                self.adapter.key_event(KeyEvent {
-                                    key,
-                                    state: ButtonState::Down,
-                                });
+                                if let Some(key) = key {
+                                    self.adapter.key_event(KeyEvent {
+                                        key,
+                                        state: ButtonState::Down,
+                                        text: String::from(""),
+                                    });
+                                } else {
+                                    self.key_state = Some(ButtonState::Down);
+                                }
                             }
                             _ => {
-                                self.adapter.key_event(KeyEvent {
-                                    key,
-                                    state: ButtonState::Down,
-                                });
+                                if let Some(key) = key {
+                                    self.adapter.key_event(KeyEvent {
+                                        key,
+                                        state: ButtonState::Up,
+                                        text: String::from(""),
+                                    });
+                                } else {
+                                    self.key_state = Some(ButtonState::Up);
+                                }
                             }
                         }
                     }
@@ -86,7 +125,7 @@ where
                     WindowEvent::MouseInput { state, button, .. } => {
                         let button = {
                             match button {
-                                glutin::MouseButton::Right => MouseButton::Left,
+                                glutin::MouseButton::Left => MouseButton::Left,
                                 glutin::MouseButton::Right => MouseButton::Right,
                                 _ => MouseButton::Middle,
                             }
@@ -111,10 +150,10 @@ where
                             }
                         }
                     }
-                    WindowEvent::Moved(pos) => {
-                        self.mouse_position.x = pos.x;
-                        self.mouse_position.y = pos.y;
-                        self.adapter.mouse(pos.x, pos.y);
+                    WindowEvent::CursorMoved { position, .. } => {
+                        self.mouse_position.x = position.x;
+                        self.mouse_position.y = position.y;
+                        self.adapter.mouse(position.x, position.y);
                     }
                     // `CloseRequested` and `KeyboardInput` events won't appear here.
                     _ => (),
@@ -167,31 +206,38 @@ where
 
         // Load OpenGL, and make the context current.
         let gl_context = unsafe { gl_context.make_current().unwrap() };
-        // gl::load_with(|name| gl_context.get_proc_address(name) as *const _);
+        gl::load_with(|name| gl_context.get_proc_address(name) as *const _);
 
-        // gl_context.swap_buffers().unwrap();
+        self.window_shell
+            .borrow_mut()
+            .render_context_2_d
+            .init_renderer();
 
         events_loop.run_forever(|event| {
             if !self.running.get() {
                 return ControlFlow::Break;
             }
 
+            match event {
+                Event::WindowEvent { ref event, .. } => match event {
+                    WindowEvent::Resized(logical_size) => {
+                        let dpi = gl_context.window().get_hidpi_factor();
+                        gl_context.resize(logical_size.to_physical(dpi));
+                    }
+                    _ => (),
+                },
+                _ => (),
+            }
+
             self.updater.update();
 
-            self.update.set(false);
+            if self.update.get() {
+                self.update.set(false);
+                self.window_shell.borrow_mut().render_context_2_d.render();
+                gl_context.swap_buffers().unwrap();
+            }
 
             self.window_shell.borrow_mut().events.push(event);
-            // match event {
-
-            //     Event::WindowEvent {
-            //         event: WindowEvent::CloseRequested,
-            //         ..
-            //     } => {
-            //         println!("The close button was pressed; stopping");
-            //         self.running.set(false);
-            //     }
-            //     _ => ()
-            // }
 
             self.window_shell.borrow_mut().drain_events();
             ControlFlow::Continue
@@ -257,6 +303,8 @@ where
     /// Builds the window shell.
     pub fn build(self) -> WindowShell<A> {
         WindowShell {
+            window_size: (self.bounds.width, self.bounds.height),
+            render_context_2_d: RenderContext2D::new(self.bounds.width, self.bounds.height),
             window_builder_helper: WindowBuilderHelper {
                 title: self.title,
                 bounds: self.bounds,
@@ -265,6 +313,7 @@ where
             events: vec![],
             mouse_position: Point::default(),
             adapter: self.adapter,
+            key_state: None,
         }
     }
 }

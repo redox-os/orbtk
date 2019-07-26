@@ -20,16 +20,16 @@
       "type": "firefox",
       "request": "launch",
       "reAttach": true,
-      "preLaunchTask": "build-web",
       "url": "http://localhost:8000",
+      "webRoot": "${workspaceFolder}"
     },
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Widgets experimental",
+      "name": "Widgets preview",
       "program": "${workspaceFolder}/target/debug/examples/widgets",
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build experimental",
+      "preLaunchTask": "build preview",
       "sourceLanguages": [
         "rust"
       ]
@@ -96,6 +96,17 @@
       "program": "${workspaceFolder}/target/debug/examples/grid",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Grid preview",
+      "program": "${workspaceFolder}/target/debug/examples/grid",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build preview",
       "sourceLanguages": [
         "rust"
       ]

@@ -302,7 +302,7 @@ pub enum ButtonState {
 }
 
 /// Represents a mouse event.
-#[derive(Debug)]
+#[derive(PartialEq, Clone, Copy, Debug)]
 pub struct MouseEvent {
     pub x: f64,
 
@@ -314,9 +314,11 @@ pub struct MouseEvent {
 }
 
 /// Represents a keyboard key event.
-#[derive(Debug)]
+#[derive(PartialEq, Eq, Clone, Debug)]
 pub struct KeyEvent {
     pub key: Key,
 
     pub state: ButtonState,
+
+    pub text: String,
 }

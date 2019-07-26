@@ -66,10 +66,10 @@ impl shell::WindowAdapter for WindowAdapter {
         match event.state {
             shell::ButtonState::Up => self
                 .event_queue
-                .register_event(KeyUpEvent { key: event.key }, self.root),
+                .register_event(KeyUpEvent { event: event }, self.root),
             shell::ButtonState::Down => self
                 .event_queue
-                .register_event(KeyDownEvent { key: event.key }, self.root),
+                .register_event(KeyDownEvent { event: event }, self.root),
         }
     }
 
