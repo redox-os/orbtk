@@ -3,7 +3,7 @@
     /* background: #F5F6F7; */
     background: #3b434a;
     font-size: 16;
-    font-family: "Roboto";
+    font-family: "Roboto Regular";
     icon-size: 16;
     icon-family: "Material Icons";
 }
@@ -15,7 +15,7 @@ window {
 .body {
     color: #dfebf5;
     font-size: 16;
-    font-family: "Roboto ";
+    font-family: "Roboto Regular";
 }
 
 check-box {

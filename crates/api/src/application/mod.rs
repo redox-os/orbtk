@@ -113,7 +113,7 @@ impl Application {
         window_shell
             .borrow_mut()
             .render_context_2_d()
-            .register_font("Roboto", crate::theme::fonts::ROBOTO_REGULAR_FONT);
+            .register_font("Roboto Regular", crate::theme::fonts::ROBOTO_REGULAR_FONT);
 
         #[cfg(not(target_arch = "wasm32"))]
         window_shell

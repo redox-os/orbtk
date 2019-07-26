@@ -36,12 +36,12 @@ pub mod window;
 pub use orbtk_utils::prelude as utils;
 
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(not(feature = "experimental"))]
+#[cfg(not(feature = "preview"))]
 #[path = "orbclient/mod.rs"]
 pub mod platform;
 
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(feature = "experimental")]
+#[cfg(feature = "preview")]
 #[path = "glutin/mod.rs"]
 pub mod platform;
 

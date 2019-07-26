@@ -16,7 +16,7 @@ impl MainViewState {
 impl State for MainViewState {
     fn update(&self, context: &mut Context<'_>) {
         if let Some(button_count_text) = context.widget().try_get_mut::<Text>() {
-            button_count_text.0 = format!("Button count: {}", self.counter.get());
+            button_count_text.0 = String16::from(format!("Button count: {}", self.counter.get()));
         }
     }
 }
@@ -144,6 +144,7 @@ fn main() {
                 .title("OrbTk - widgets example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
+                .resizeable(true)
                 .child(MainView::create().build(ctx))
                 .build(ctx)
         })

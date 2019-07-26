@@ -64,7 +64,7 @@ impl Template for Cursor {
             .offset(0.0)
             .background("transparent")
             .font_size(fonts::FONT_SIZE_12)
-            .font("Roboto")
+            .font("Roboto Regular")
             .focused(false)
     }
 

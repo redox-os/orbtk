@@ -88,15 +88,15 @@ impl State for TextBoxState {
         self.focused.set(widget.get::<Focused>().0);
 
         if let Some(text) = widget.try_get_mut::<Text>() {
-            if text.0 != *self.text.borrow().to_string() {
+            if text.0 != *self.text.borrow() {
                 if self.updated.get() {
-                    text.0 = self.text.borrow().to_string();
+                    text.0 = self.text.borrow().clone();
                 } else {
                     let text_length = self.text.borrow().len();
-                    let origin_text_length = String16::from(text.0.as_str()).len();
+                    let origin_text_length = String16::from(text.0.to_string().as_str()).len();
                     let delta = text_length as i32 - origin_text_length as i32;
 
-                    *self.text.borrow_mut() = String16::from(text.0.as_str());
+                    *self.text.borrow_mut() = String16::from(text.0.to_string().as_str());
 
                     // adjust cursor position after label is changed from outside
                     if text_length < origin_text_length {
@@ -228,7 +228,7 @@ impl Template for TextBox {
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
-            .font("Roboto")
+            .font("Roboto Regular")
             .selection(TextSelectionValue::default())
             .offset(0.0)
             .padding(4.0)

@@ -43,57 +43,77 @@ pub struct RenderContext2D {
     renderer: Option<Renderer<GLDevice>>,
     canvas: Vec<CanvasRenderingContext2D>,
     scene: SceneProxy,
-    path: Vec<Path2D>,
+    path: Path2D,
     font_config: FontConfig,
+    window_size: Vector2F,
 }
 
 impl RenderContext2D {
     /// Creates a new render context 2d.
-    pub fn new() -> Self {
+    pub fn new(width: f64, height: f64) -> Self {
+        let window_size = Vector2F::new(width as f32, height as f32);
+        let font_config = FontConfig::default();
+        let font_context = CanvasFontContext::from_system_source();
+
         RenderContext2D {
-            font_context: CanvasFontContext::from_system_source(),
+            font_context: font_context.clone(),
             scene: SceneProxy::new(RayonExecutor),
             renderer: None,
-            canvas: vec![],
-            path: vec![],
+            canvas: vec![CanvasRenderingContext2D::new(
+                font_context.clone(),
+                window_size,
+            )],
+            path: Path2D::new(),
             font_config: FontConfig::default(),
+            window_size,
         }
     }
 
-    pub fn refresh(&mut self, width: f64, height: f64) {
-        self.begin_path();
-        let window_size = Vector2I::new(width as i32, height as i32);
+    pub fn init_renderer(&mut self) {
+        self.renderer = Some(Renderer::new(
+            GLDevice::new(GLVersion::GL3, 0),
+            &FilesystemResourceLoader::locate(),
+            DestFramebuffer::full_window(self.window_size.to_i32()),
+            RendererOptions {
+                background_color: Some(ColorF::white()),
+            },
+        ));
+    }
 
-        if self.renderer.is_none() {
-            // Create a Pathfinder renderer.
-            self.renderer = Some(Renderer::new(
-                GLDevice::new(GLVersion::GL3, 0),
-                &FilesystemResourceLoader::locate(),
-                DestFramebuffer::full_window(window_size),
-                RendererOptions {
-                    background_color: Some(ColorF::white()),
-                },
-            ));
+    pub fn resize(&mut self, width: f64, height: f64) {
+        self.window_size = Vector2F::new(width as f32, height as f32);
+
+        if let Some(renderer) = &mut self.renderer {
+            renderer
+                .replace_dest_framebuffer(DestFramebuffer::full_window(self.window_size.to_i32()));
         }
 
+        self.canvas.clear();
+        self.path = Path2D::new();
         self.canvas.push(CanvasRenderingContext2D::new(
             self.font_context.clone(),
-            window_size.to_f32(),
+            self.window_size,
         ));
     }
 
     pub fn render(&mut self) {
-        let mut canvas = self.canvas.remove(0);
-
-        if let Some(render) = &mut self.renderer {
-            // Build and render scene.
-            // Clear to background color.
-            render.set_options(RendererOptions {
+        // Build and render scene.
+        // Clear to background color.
+        if let Some(renderer) = &mut self.renderer {
+            renderer.set_options(RendererOptions {
                 background_color: Some(ColorF::new(0.0, 0.0, 0.0, 0.0)),
             });
-            self.scene.replace_scene(canvas.into_scene());
-            self.scene.build_and_render(render, BuildOptions::default());
+
+            self.scene.replace_scene(self.canvas.remove(0).into_scene());
+            self.scene
+                .build_and_render(renderer, BuildOptions::default());
         }
+
+        self.begin_path();
+        self.canvas.push(CanvasRenderingContext2D::new(
+            self.font_context.clone(),
+            self.window_size,
+        ));
     }
 
     /// Registers a new font file.
@@ -103,12 +123,10 @@ impl RenderContext2D {
 
     /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        if let Some(canvas) = &mut self.canvas.get_mut(0) {
-            canvas.fill_rect(RectF::new(
-                Vector2F::new(x as f32, y as f32),
-                Vector2F::new(width as f32, height as f32),
-            ));
-        }
+        self.canvas.get_mut(0).unwrap().fill_rect(RectF::new(
+            Vector2F::new(x as f32, y as f32),
+            Vector2F::new(width as f32, height as f32),
+        ));
     }
 
     /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other context settings.
@@ -118,9 +136,10 @@ impl RenderContext2D {
 
     /// Draws (fills) a given text at the given (x, y) position.
     pub fn fill_text(&mut self, text: &str, x: f64, y: f64, _: Option<f64>) {
-        if let Some(canvas) = &mut self.canvas.get_mut(0) {
-            canvas.fill_text(text, Vector2F::new(x as f32, y as f32));
-        }
+        self.canvas
+            .get_mut(0)
+            .unwrap()
+            .fill_text(text, Vector2F::new(x as f32, y as f32));
     }
 
     /// Draws (strokes) a given text at the given (x, y) position.
@@ -133,23 +152,19 @@ impl RenderContext2D {
             height: 0.0,
         };
 
-        if let Some(canvas) = &mut self.canvas.get(0) {
-            text_metrics.width = canvas.measure_text(text).width as f64;
+        text_metrics.width = self.canvas.get_mut(0).unwrap().measure_text(text).width as f64;
 
-            //  skribo::layout(&TextStyle { size: self.font_config.font_size },
-            //                        &self.,
-            // text)
-            text_metrics.height = self.font_config.font_size;
-        }
+        //  skribo::layout(&TextStyle { size: self.font_config.font_size },
+        //                        &self.,
+        // text)
+        text_metrics.height = self.font_config.font_size;
 
         text_metrics
     }
 
     /// Fills the current or given path with the current file style.
     pub fn fill(&mut self) {
-        if let Some(canvas) = &mut self.canvas.get_mut(0) {
-            canvas.fill_path(self.path.remove(0));
-        }
+        self.canvas.get_mut(0).unwrap().fill_path(self.path.clone());
     }
 
     /// Strokes {outlines} the current or given path with the current stroke style.
@@ -157,56 +172,42 @@ impl RenderContext2D {
 
     /// Starts a new path by emptying the list of sub-paths. Call this when you want to create a new path.
     pub fn begin_path(&mut self) {
-        if self.path.len() > 0 {
-            self.path.remove(0);
-        }
-
-        self.path.push(Path2D::new());
+        self.path = Path2D::new();
     }
 
     /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
     pub fn close_path(&mut self) {
-        if let Some(path) = &mut self.path.get_mut(0) {
-            path.close_path();
-        }
+        self.path.close_path();
     }
 
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        if let Some(path) = &mut self.path.get_mut(0) {
-            path.rect(RectF::new(
-                Vector2F::new(x as f32, y as f32),
-                Vector2F::new(width as f32, y as f32),
-            ));
-        }
+        self.path.rect(RectF::new(
+            Vector2F::new(x as f32, y as f32),
+            Vector2F::new(width as f32, y as f32),
+        ));
     }
 
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
     pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64, _: bool) {
-        if let Some(path) = &mut self.path.get_mut(0) {
-            path.arc(
-                Vector2F::new(x as f32, y as f32),
-                radius as f32,
-                start_angle as f32,
-                end_angle as f32,
-                ArcDirection::CW,
-            );
-        }
+        self.path.arc(
+            Vector2F::new(x as f32, y as f32),
+            radius as f32,
+            start_angle as f32,
+            end_angle as f32,
+            ArcDirection::CW,
+        );
     }
 
     /// Begins a new sub-path at the point specified by the given {x, y} coordinates.
 
     pub fn move_to(&mut self, x: f64, y: f64) {
-        if let Some(path) = &mut self.path.get_mut(0) {
-            path.move_to(Vector2F::new(x as f32, y as f32));
-        }
+        self.path.move_to(Vector2F::new(x as f32, y as f32));
     }
 
     /// Adds a straight line to the current sub-path by connecting the sub-path's last point to the specified {x, y} coordinates.
     pub fn line_to(&mut self, x: f64, y: f64) {
-        if let Some(path) = &mut self.path.get_mut(0) {
-            path.line_to(Vector2F::new(x as f32, y as f32));
-        }
+        self.path.line_to(Vector2F::new(x as f32, y as f32));
     }
 
     /// Adds a quadratic Bézier curve to the current sub-path.
@@ -257,14 +258,19 @@ impl RenderContext2D {
     pub fn set_line_width(&mut self, line_width: f64) {}
 
     /// Specific the font family.
-    pub fn set_font_family(&mut self, family: impl Into<String>) {}
+    pub fn set_font_family(&mut self, family: impl Into<String>) {
+        self.font_config.family = family.into();
+        self.canvas
+            .get_mut(0)
+            .unwrap()
+            .set_font_by_postscript_name(self.font_config.family.as_str());
+    }
 
     /// Specifies the font size.
     pub fn set_font_size(&mut self, size: f64) {
         self.font_config.font_size = size;
-        if let Some(canvas) = &mut self.canvas.get_mut(0) {
-            canvas.set_font_size(size as f32);
-        }
+
+        self.canvas.get_mut(0).unwrap().set_font_size(size as f32);
     }
 
     /// Specifies the text alignment.
@@ -277,31 +283,37 @@ impl RenderContext2D {
 
     /// Specifies the fill color to use inside shapes.
     pub fn set_fill_style(&mut self, brush: Brush) {
-        if let Some(canvas) = &mut self.canvas.get_mut(0) {
-            match brush {
-                Brush::SolidColor(color) => canvas.set_fill_style(FillStyle::Color(ColorU {
-                    r: color.r(),
-                    g: color.g(),
-                    b: color.b(),
-                    a: color.a(),
-                })),
-                _ => (),
+        match brush {
+            Brush::SolidColor(color) => {
+                self.canvas
+                    .get_mut(0)
+                    .unwrap()
+                    .set_fill_style(FillStyle::Color(ColorU {
+                        r: color.r(),
+                        g: color.g(),
+                        b: color.b(),
+                        a: color.a(),
+                    }))
             }
+            _ => (),
         }
     }
 
     /// Specifies the fill stroke to use inside shapes.
     pub fn set_stroke_style(&mut self, brush: Brush) {
-        if let Some(canvas) = &mut self.canvas.get_mut(0) {
-            match brush {
-                Brush::SolidColor(color) => canvas.set_stroke_style(FillStyle::Color(ColorU {
-                    r: color.r(),
-                    g: color.g(),
-                    b: color.b(),
-                    a: color.a(),
-                })),
-                _ => (),
+        match brush {
+            Brush::SolidColor(color) => {
+                self.canvas
+                    .get_mut(0)
+                    .unwrap()
+                    .set_stroke_style(FillStyle::Color(ColorU {
+                        r: color.r(),
+                        g: color.g(),
+                        b: color.b(),
+                        a: color.a(),
+                    }))
             }
+            _ => (),
         }
     }
 
@@ -323,15 +335,11 @@ impl RenderContext2D {
 
     /// Saves the entire state of the canvas by pushing the current state onto a stack.
     pub fn save(&mut self) {
-        if let Some(canvas) = &mut self.canvas.get_mut(0) {
-            canvas.save();
-        }
+        self.canvas.get_mut(0).unwrap().save();
     }
 
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
-        if let Some(canvas) = &mut self.canvas.get_mut(0) {
-            canvas.restore();
-        }
+        self.canvas.get_mut(0).unwrap().restore();
     }
 }

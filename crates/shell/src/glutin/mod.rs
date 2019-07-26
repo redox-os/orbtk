@@ -46,6 +46,8 @@ where
                 Event::WindowEvent { event, .. } => match event {
                     WindowEvent::Resized(size) => {
                         self.window_size = (size.width, size.height);
+                        self.render_context_2_d.resize(size.width, size.height);
+                        self.adapter.resize(size.width, size.height);
                     }
                     WindowEvent::CloseRequested => self.adapter.quite_event(),
                     WindowEvent::ReceivedCharacter(c) => {
@@ -206,16 +208,26 @@ where
         let gl_context = unsafe { gl_context.make_current().unwrap() };
         gl::load_with(|name| gl_context.get_proc_address(name) as *const _);
 
+        self.window_shell
+            .borrow_mut()
+            .render_context_2_d
+            .init_renderer();
+
         events_loop.run_forever(|event| {
             if !self.running.get() {
                 return ControlFlow::Break;
             }
 
-            let window_size = self.window_shell.borrow().window_size;
-            self.window_shell
-                .borrow_mut()
-                .render_context_2_d
-                .refresh(window_size.0, window_size.1);
+            match event {
+                Event::WindowEvent { ref event, .. } => match event {
+                    WindowEvent::Resized(logical_size) => {
+                        let dpi = gl_context.window().get_hidpi_factor();
+                        gl_context.resize(logical_size.to_physical(dpi));
+                    }
+                    _ => (),
+                },
+                _ => (),
+            }
 
             self.updater.update();
 
@@ -292,7 +304,7 @@ where
     pub fn build(self) -> WindowShell<A> {
         WindowShell {
             window_size: (self.bounds.width, self.bounds.height),
-            render_context_2_d: RenderContext2D::new(),
+            render_context_2_d: RenderContext2D::new(self.bounds.width, self.bounds.height),
             window_builder_helper: WindowBuilderHelper {
                 title: self.title,
                 bounds: self.bounds,

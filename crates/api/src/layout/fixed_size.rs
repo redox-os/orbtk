@@ -64,7 +64,8 @@ impl Layout for FixedSizeLayout {
                             .try_get::<WaterMark>()
                             .filter(|water_mark| !water_mark.0.is_empty())
                             .map(|water_mark| {
-                                let text_metrics = render_context_2_d.measure_text(&water_mark.0);
+                                let text_metrics = render_context_2_d
+                                    .measure_text(water_mark.0.to_string().as_str());
                                 (text_metrics.width, text_metrics.height)
                             })
                     } else {

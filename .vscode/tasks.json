@@ -22,14 +22,14 @@
       "problemMatcher": []
     },
     {
-      "label": "build experimental",
+      "label": "build preview",
       "command": "cargo",
       "type": "shell",
       "args": [
         "build",
         "--examples=minimal",
         "--features",
-        "experimental"
+        "preview"
       ],
       "presentation": {
         "reveal": "always",
@@ -61,7 +61,7 @@
       }
     },
     {
-      "label": "build-web",
+      "label": "run-web",
       "command": "cargo",
       "type": "shell",
       "args": [

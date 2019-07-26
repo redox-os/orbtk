@@ -124,8 +124,8 @@ impl Layout for TextSelectionLayout {
                 render_context_2_d.set_font_family(&font.0[..]);
 
                 if let Some(selection) = widget.try_get::<TextSelection>() {
-                    if let Some(text_part) = text.0.get(0..selection.0.start_index) {
-                        pos = render_context_2_d.measure_text(text_part).width;
+                    if let Some(text_part) = text.0.get_string(0, selection.0.start_index) {
+                        pos = render_context_2_d.measure_text(text_part.as_str()).width;
                     }
                 }
             }

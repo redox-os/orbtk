@@ -97,6 +97,18 @@ impl RenderContext2D {
         }
     }
 
+    pub fn resize(&mut self, width: f64, height: f64) {
+        let surface = FramebufferSurface::new(
+            width as u32,
+            height as u32,
+            self.window.data_mut().as_mut_ptr() as *mut u8,
+        );
+
+        let render_engine = CairoRenderEngine::new(surface.clone());
+
+        self.canvas = Canvas::new(render_engine.clone());
+    }
+
     /// Registers a new font file.
     pub fn register_font(&mut self, family: &str, font_file: &[u8]) {
         if let Ok(font) = Font::from_data(font_file.to_vec().into_boxed_slice()) {

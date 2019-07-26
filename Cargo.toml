@@ -33,8 +33,8 @@ orbtk-widgets = { version = "0.1.0", path="crates/widgets" }
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }
 
 [features]
-debug = []
-experimental = ["orbtk-shell/experimental", "orbtk-api/experimental", "orbtk-render/experimental"]
+debug = ["orbtk-api/debug"]
+preview = ["orbtk-shell/preview", "orbtk-api/preview", "orbtk-render/preview"]
 
 [workspace]
 members = [

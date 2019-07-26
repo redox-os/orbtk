@@ -29,4 +29,4 @@ orbgl_api = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git", optional =
 
 [features]
 default = ["orbgl_api", "orbgl", "orbclient", "orbfont"]
-experimental = ["pathfinder_canvas", "pathfinder_geometry", "pathfinder_gl", "pathfinder_gpu", "pathfinder_renderer", "pathfinder_content", "skribo"]
+preview = ["pathfinder_canvas", "pathfinder_geometry", "pathfinder_gl", "pathfinder_gpu", "pathfinder_renderer", "pathfinder_content", "skribo"]

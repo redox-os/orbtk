@@ -67,7 +67,7 @@ impl MainViewState {
             }
         }
 
-        context.widget().get_mut::<Text>().0 = result.to_string();
+        context.widget().get_mut::<Text>().0 = String16::from(result.to_string());
         self.left_side.set(Some(result));
         self.right_side.set(None);
     }

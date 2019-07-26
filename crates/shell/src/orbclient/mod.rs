@@ -139,6 +139,8 @@ where
                 }
                 orbclient::EventOption::Resize(event) => {
                     self.window_size = (event.width as f64, event.height as f64);
+                    self.render_context_2_d
+                        .resize(self.window_size.0, self.window_size.1);
                     self.adapter.resize(event.width as f64, event.height as f64);
                 }
                 _ => {}
