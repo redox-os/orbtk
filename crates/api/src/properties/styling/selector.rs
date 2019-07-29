@@ -7,7 +7,7 @@ use crate::{
 
 property!(
     /// `Selector` describes the css selector of a widget.
-    Selector(SelectorValue)
+    Selector(SelectorValue) : &str, String
 );
 
 // --- Trait implementations ---
@@ -57,19 +57,5 @@ impl Selector {
     pub fn without_pseudo_class<S: Into<String>>(mut self, pseudo_class: S) -> Self {
         self.0 = self.0.without_pseudo_class(pseudo_class);
         self
-    }
-}
-
-// --- Conversions ---
-
-impl From<String> for Selector {
-    fn from(s: String) -> Selector {
-        Selector(SelectorValue::new().with(s))
-    }
-}
-
-impl From<&str> for Selector {
-    fn from(s: &str) -> Selector {
-        Selector(SelectorValue::new().with(s.to_string()))
     }
 }

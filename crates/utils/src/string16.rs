@@ -1,4 +1,4 @@
-use std::{fmt, slice::SliceIndex};
+use std::fmt;
 
 /// A UTF-16 encoded, growable string.
 ///
@@ -23,11 +23,9 @@ impl String16 {
     ///
     /// Basic usage:
     ///
-    /// ```
-    /// let a = String::from("Übung");
+    /// let a = String16::from("Übung");
     ///
     /// assert_eq!(a.len(), 5);
-    /// ```
     #[inline]
     pub fn len(&self) -> usize {
         self.utf16.len()

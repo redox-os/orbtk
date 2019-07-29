@@ -1,7 +1,7 @@
 /// Used to define a property.
 #[macro_export]
 macro_rules! property {
-    ($(#[$property_doc:meta])* $property:ident($type:ty)) => {
+    ($(#[$property_doc:meta])* $property:ident($type:ty) $(: $( $ex_type:ty ),*)* ) => {
         #[derive(Default, Debug, Clone, PartialEq)]
         $(#[$property_doc])*
         pub struct $property(pub $type);
@@ -13,9 +13,37 @@ macro_rules! property {
             }
         }
 
-        impl<T: Into<$property>> From<T> for PropertySource<$property> {
-            fn from(value: T) -> Self {
-                PropertySource::Value(value.into())
+        impl IntoPropertySource<$property> for $type {
+            fn into_source(self) -> PropertySource<$property> {
+                PropertySource::Value(self.into())
+            }
+        }
+
+         impl IntoPropertySource<$property> for $property {
+            fn into_source(self) -> PropertySource<$property> {
+                PropertySource::Value(self)
+            }
+        }
+
+        $(
+            $(
+                impl IntoPropertySource<$property> for $ex_type {
+                    fn into_source(self) -> PropertySource<$property> {
+                        PropertySource::Value(self.into())
+                    }
+                }
+
+                impl From<$ex_type> for $property {
+                    fn from(value: $ex_type) -> $property {
+                        $property(value.into())
+                    }
+                }
+            )*
+        )*
+
+        impl IntoPropertySource<$property> for Entity {
+            fn into_source(self) -> PropertySource<$property> {
+                PropertySource::Source(self)
             }
         }
 
@@ -70,8 +98,8 @@ macro_rules! widget {
 
         impl $widget {
             /// Sets or shares an attached property.
-            pub fn attach<P: Component + PartialEq + Debug>(mut self, property: impl Into<PropertySource<P>>) -> Self {
-                match property.into() {
+            pub fn attach<P: Component + PartialEq + Debug>(mut self, property: impl IntoPropertySource<P>) -> Self {
+                match property.into_source() {
                     PropertySource::Value(value) => {
                         self.attached_properties.insert(TypeId::of::<P>(), ComponentBox::new(value));
                     },
@@ -89,32 +117,32 @@ macro_rules! widget {
             }
 
              /// Sets or shares the constraint property.
-            pub fn constraint<P: Into<PropertySource<Constraint>>>(self, constraint: P) -> Self {
+            pub fn constraint(self, constraint: impl IntoPropertySource<Constraint>) -> Self {
                 self.attach(constraint)
             }
 
             /// Sets or shares the vertical alignment property.
-            pub fn vertical_alignment<P: Into<PropertySource<VerticalAlignment>>>(self, vertical_alignment: P) -> Self {
+            pub fn vertical_alignment(self, vertical_alignment: impl IntoPropertySource<VerticalAlignment>) -> Self {
                 self.attach(vertical_alignment)
             }
 
             /// Sets or shares the horizontal alignment property.
-            pub fn horizontal_alignment<P: Into<PropertySource<HorizontalAlignment>>>(self, horizontal_alignment: P) -> Self {
+            pub fn horizontal_alignment(self, horizontal_alignment: impl IntoPropertySource<HorizontalAlignment>) -> Self {
                 self.attach(horizontal_alignment)
             }
 
             /// Sets or shares the visibility property.
-            pub fn visibility<P: Into<PropertySource<Visibility>>>(self, visibility: P) -> Self {
+            pub fn visibility(self, visibility: impl IntoPropertySource<Visibility>) -> Self {
                 self.attach(visibility)
             }
 
             /// Sets or shares the margin property.
-            pub fn margin<P: Into<PropertySource<Margin>>>(self, margin: P) -> Self {
+            pub fn margin(self, margin: impl IntoPropertySource<Margin>) -> Self {
                 self.attach(margin)
             }
 
             /// Sets or shares the enabled property.
-            pub fn enabled<P: Into<PropertySource<Enabled>>>(self, enabled: P) -> Self {
+            pub fn enabled(self, enabled: impl IntoPropertySource<Enabled>) -> Self {
                 self.attach(enabled)
             }
 
@@ -228,12 +256,12 @@ macro_rules! widget {
             $(
                 $(
                     $(#[$prop_doc])*
-                    pub fn $property<P: Into<PropertySource<$property_type>>>(mut self, $property: P) -> Self {
+                    pub fn $property<P: IntoPropertySource<$property_type>>(mut self, $property: P) -> Self {
                         if !self.$property.is_none() {
                             return self;
                         }
 
-                        self.$property = Some($property.into());
+                        self.$property = Some($property.into_source());
                         self
                     }
                 )*

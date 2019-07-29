@@ -75,8 +75,8 @@ impl Layout for ScrollLayout {
 
         let off = Offset::get(entity, ecm);
 
-        if self.old_offset.get().0 != off.0 || self.old_offset.get().1 != off.1 {
-            self.old_offset.set((off.0, off.1));
+        if self.old_offset.get().0 != off.x || self.old_offset.get().1 != off.y {
+            self.old_offset.set((off.x, off.y));
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
@@ -132,7 +132,7 @@ impl Layout for ScrollLayout {
         // }
 
         let off = Offset::get(entity, ecm);
-        let mut offset = (off.0, off.1);
+        let mut offset = (off.x, off.y);
 
         let old_child_size = self.old_child_size.get();
 
@@ -171,8 +171,8 @@ impl Layout for ScrollLayout {
             }
 
             if let Ok(off) = ecm.borrow_mut_component::<Offset>(entity) {
-                (off.0).0 = offset.0;
-                (off.0).1 = offset.1;
+                (off.0).x = offset.0;
+                (off.0).y = offset.1;
             }
 
             self.old_child_size.set(child_size);

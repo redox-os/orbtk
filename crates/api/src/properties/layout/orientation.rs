@@ -10,6 +10,18 @@ pub enum OrientationValue {
     Horizontal,
 }
 
+// --- Conversions ---
+
+impl From<&str> for OrientationValue {
+    fn from(t: &str) -> Self {
+        match t {
+            "Horizontal" | "horizontal" => OrientationValue::Horizontal,
+            _ => OrientationValue::Vertical,
+        }
+    }
+}
+
+
 impl Default for OrientationValue {
     fn default() -> OrientationValue {
         OrientationValue::Vertical
@@ -18,16 +30,5 @@ impl Default for OrientationValue {
 
 property!(
     /// `Orientation` describes the orientation of the `Stack`.
-    Orientation(OrientationValue)
+    Orientation(OrientationValue) : &str
 );
-
-// --- Conversions ---
-
-impl From<&str> for Orientation {
-    fn from(t: &str) -> Self {
-        match t {
-            "Horizontal" | "horizontal" => Orientation::from(OrientationValue::Horizontal),
-            _ => Orientation::from(OrientationValue::Vertical),
-        }
-    }
-}

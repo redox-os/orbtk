@@ -164,3 +164,17 @@ impl fmt::Display for Selector {
         write!(f, "")
     }
 }
+
+// --- Conversions ---
+
+impl From<String> for Selector {
+    fn from(s: String) -> Selector {
+        Selector::new().with(s)
+    }
+}
+
+impl From<&str> for Selector {
+    fn from(s: &str) -> Selector {
+        Selector::new().with(s.to_string())
+    }
+}

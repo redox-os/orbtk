@@ -32,6 +32,12 @@ impl Default for Brush {
     }
 }
 
+impl From<Color> for Brush {
+    fn from(c: Color) -> Brush {
+        Brush::SolidColor(c)
+    }
+}
+
 impl From<&str> for Brush {
     fn from(s: &str) -> Brush {
         Brush::SolidColor(Color::from(s))

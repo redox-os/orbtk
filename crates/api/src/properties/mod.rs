@@ -36,3 +36,7 @@ impl<P: Component + PartialEq + Debug> From<Entity> for PropertySource<P> {
         PropertySource::Source(entity)
     }
 }
+
+pub trait IntoPropertySource<P: Component + PartialEq + Debug> {
+    fn into_source(self) -> PropertySource<P>;
+}

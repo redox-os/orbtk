@@ -130,7 +130,7 @@ impl Layout for TextSelectionLayout {
                 }
             }
 
-            pos += widget.try_get::<Offset>().map_or(0.0, |off| (off.0).0);
+            pos += widget.try_get::<Offset>().map_or(0.0, |off| (off.0).x);
 
             if let Some(margin) = widget.try_get_mut::<Margin>() {
                 margin.set_left(pos);

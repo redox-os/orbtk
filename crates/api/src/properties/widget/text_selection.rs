@@ -7,16 +7,18 @@ pub struct TextSelectionValue {
     pub length: usize,
 }
 
-property!(
-    // The `TextSelection` property is used to mark the selection of a text.
-    TextSelection(TextSelectionValue)
-);
-
-impl From<(usize, usize)> for TextSelection {
+impl From<(usize, usize)> for TextSelectionValue {
     fn from(t: (usize, usize)) -> Self {
-        TextSelection(TextSelectionValue {
+        TextSelectionValue {
             start_index: t.0,
             length: t.1,
-        })
+        }
     }
 }
+
+
+property!(
+    // The `TextSelection` property is used to mark the selection of a text.
+    TextSelection(TextSelectionValue) : (usize, usize)
+);
+

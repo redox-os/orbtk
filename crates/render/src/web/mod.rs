@@ -397,3 +397,17 @@ impl RenderContext2D {
         self.canvas_render_context_2_d.restore();
     }
 }
+
+// --- Conversions ---
+
+impl From<&str> for Image {
+    fn from(s: &str) -> Image {
+        Image::new(s)
+    }
+}
+
+impl From<String> for Image {
+    fn from(s: String) -> Image {
+        Image::new(s)
+    }
+}

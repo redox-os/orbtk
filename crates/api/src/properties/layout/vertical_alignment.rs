@@ -2,7 +2,7 @@ use crate::{prelude::*, utils::prelude::*};
 
 property!(
     /// `VerticalAlignment` describes the vertical alignment of a widget.
-    VerticalAlignment(Alignment)
+    VerticalAlignment(Alignment) : &str
 );
 
 // --- Trait implementations ---
@@ -27,13 +27,5 @@ impl VerticalAlignmentExt for VerticalAlignment {
     fn align_height(&self, available_height: f64, height: f64, margin: Margin) -> f64 {
         self.0
             .align_measure(available_height, height, margin.top(), margin.bottom())
-    }
-}
-
-// --- Conversions ---
-
-impl From<&str> for VerticalAlignment {
-    fn from(s: &str) -> VerticalAlignment {
-        VerticalAlignment(s.into())
     }
 }

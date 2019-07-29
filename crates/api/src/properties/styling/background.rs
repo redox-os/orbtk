@@ -2,19 +2,5 @@ use crate::{prelude::*, utils::*};
 
 property!(
     /// `Background` describes the background brush of a visual element.
-    Background(Brush)
+    Background(Brush) : &str, String
 );
-
-// --- Conversions ---
-
-impl From<&str> for Background {
-    fn from(s: &str) -> Background {
-        Background(s.into())
-    }
-}
-
-impl From<Background> for Color {
-    fn from(b: Background) -> Color {
-        b.0.into()
-    }
-}

@@ -73,7 +73,7 @@ impl Template for Switch {
                         Grid::create()
                             .child(Container::create().size(24.0, 24.0).build(context))
                             .border_radius(1.0)
-                            .selector(Selector::from("switch-toggle").id("SwitchSwitchToggle"))
+                            .selector(SelectorValue::from("switch-toggle").id("SwitchSwitchToggle"))
                             .vertical_alignment("Center")
                             .horizontal_alignment("Start")
                             .attach_by_source::<Selected>(id)

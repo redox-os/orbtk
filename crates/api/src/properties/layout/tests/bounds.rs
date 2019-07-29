@@ -1,7 +1,5 @@
 use crate::{prelude::*, utils::*};
 
-use super::*;
-
 #[test]
 fn test_contains() {
     let rect = Bounds(Rect::new(5.0, 8.0, 100.0, 80.0));
@@ -113,24 +111,4 @@ fn test_set_position() {
 
     assert_eq!(6.0, bounds.x());
     assert_eq!(7.0, bounds.y());
-}
-
-#[test]
-fn test_from() {
-    let bounds = Bounds::from((9.0, 10.0, 11.0, 12.0));
-
-    assert_eq!(9.0, bounds.x());
-    assert_eq!(10.0, bounds.y());
-    assert_eq!(11.0, bounds.width());
-    assert_eq!(12.0, bounds.height());
-}
-
-#[test]
-fn test_into() {
-    let bounds: PropertySource<Bounds> = (17.0, 18.0, 19.0, 20.0).into();
-
-    assert_eq!(
-        bounds,
-        PropertySource::Value::<Bounds>(Bounds(Rect::new(17.0, 18.0, 19.0, 20.0)))
-    );
 }

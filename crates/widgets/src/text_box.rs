@@ -164,7 +164,7 @@ impl State for TextBoxState {
             }
 
             if let Some(offset) = context.widget().try_get_mut::<Offset>() {
-                (offset.0).0 += cursor_x_delta;
+                (offset.0).x += cursor_x_delta;
             }
         }
     }
@@ -249,12 +249,12 @@ impl Template for TextBox {
                         Grid::create()
                             .child(
                                 ScrollViewer::create()
-                                    .selector(Selector::default().id("scroll_viewer"))
+                                    .selector(SelectorValue::default().id("scroll_viewer"))
                                     .offset(id)
                                     .scroll_mode(("None", "None"))
                                     .child(
                                         TextBlock::create()
-                                            .selector(Selector::default().clone().id("text_block"))
+                                            .selector(SelectorValue::default().clone().id("text_block"))
                                             .vertical_alignment("Center")
                                             .foreground(id)
                                             .text(id)
@@ -267,7 +267,7 @@ impl Template for TextBox {
                             )
                             .child(
                                 Cursor::create()
-                                    .selector(Selector::from("cursor").id("cursor"))
+                                    .selector(SelectorValue::from("cursor").id("cursor"))
                                     .margin(0.0)
                                     .horizontal_alignment("Start")
                                     .text(id)

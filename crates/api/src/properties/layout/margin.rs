@@ -2,7 +2,7 @@ use crate::{prelude::*, utils::prelude::*};
 
 property!(
     /// `Margin` describes the outer widget space.
-    Margin(Thickness)
+    Margin(Thickness) : f64, (f64, f64), (f64, f64, f64, f64)
 );
 
 // --- Trait implementations ---
@@ -46,25 +46,5 @@ impl Spacer for Margin {
 
     fn set_thickness<T: Into<Thickness>>(&mut self, thickness: T) {
         self.0 = thickness.into();
-    }
-}
-
-// --- Conversions ---
-
-impl From<(f64, f64, f64, f64)> for Margin {
-    fn from(t: (f64, f64, f64, f64)) -> Self {
-        Margin::from(Thickness::new(t.0, t.1, t.2, t.3))
-    }
-}
-
-impl From<(f64, f64)> for Margin {
-    fn from(t: (f64, f64)) -> Self {
-        Margin::from(Thickness::new(t.0, t.1, t.0, t.1))
-    }
-}
-
-impl From<f64> for Margin {
-    fn from(t: f64) -> Self {
-        Margin::from(Thickness::new(t, t, t, t))
     }
 }

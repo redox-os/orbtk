@@ -2,7 +2,7 @@ use crate::{prelude::*, render::Image as Img};
 
 property!(
     /// `Image` describes an image property of a widget.
-    Image(Img)
+    Image(Img) : &str, String
 );
 
 impl Image {
@@ -12,19 +12,5 @@ impl Image {
 
     pub fn height(&self) -> f64 {
         self.0.height()
-    }
-}
-
-// --- Conversions ---
-
-impl From<&str> for Image {
-    fn from(s: &str) -> Image {
-        Image::from(Img::new(s))
-    }
-}
-
-impl From<String> for Image {
-    fn from(s: String) -> Image {
-        Image::from(Img::new(s))
     }
 }

@@ -2,7 +2,7 @@ use crate::{prelude::*, utils::prelude::*};
 
 property!(
     /// `Bounds` describes the actual bounds (position and size) of a widget.
-    Bounds(Rect)
+    Bounds(Rect) : (f64, f64, f64, f64)
 );
 
 // --- Trait implementations ---
@@ -92,13 +92,5 @@ impl Position for Bounds {
     fn set_position(&mut self, x: f64, y: f64) {
         self.0.x = x;
         self.0.y = y;
-    }
-}
-
-// --- Conversions ---
-
-impl From<(f64, f64, f64, f64)> for Bounds {
-    fn from(t: (f64, f64, f64, f64)) -> Self {
-        Bounds::from(Rect::new(t.0, t.1, t.2, t.3))
     }
 }
