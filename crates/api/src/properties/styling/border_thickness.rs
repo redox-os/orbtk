@@ -2,7 +2,9 @@ use crate::{prelude::*, utils::*};
 
 property!(
     /// `BorderThickness` describes the relative thickness of a border.
-    BorderThickness(Thickness) : f64, (f64, f64), (f64, f64, f64, f64)
+    BorderThickness(Thickness) : f64,
+    (f64, f64),
+    (f64, f64, f64, f64)
 );
 
 // --- Trait implementations ---

@@ -14,7 +14,7 @@ pub struct ScrollViewerModeValue {
 
 impl From<(&str, &str)> for ScrollViewerModeValue {
     fn from(s: (&str, &str)) -> ScrollViewerModeValue {
-    ScrollViewerModeValue {
+        ScrollViewerModeValue {
             vertical: ScrollMode::from(s.0),
             horizontal: ScrollMode::from(s.1),
         }
@@ -34,4 +34,3 @@ property!(
     /// `ScrollViewerMode` describes the vertical and horizontal scroll behavior of the `ScrollViewer`.
     ScrollViewerMode(ScrollViewerModeValue) : (&str, &str)
 );
-

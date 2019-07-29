@@ -30,14 +30,14 @@ impl EventSystem {
     fn process_bottom_up_event(
         &self,
         event: &EventBox,
-        tree: &Tree,
+        tree: &mut Tree,
         ecm: &mut EntityComponentManager,
         new_events: &mut Vec<EventBox>,
     ) {
         let mut matching_nodes = vec![];
 
-        for node in tree.start_node(event.source).into_iter() {
-            let widget = WidgetContainer::new(node, ecm);
+        for node in tree.clone().start_node(event.source).into_iter() {
+            let widget = WidgetContainer::new(node, ecm, tree);
 
             // MouseDownEvent handling
             if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
@@ -91,7 +91,7 @@ impl EventSystem {
                     continue;
                 }
             }
-            let mut widget = WidgetContainer::new(*node, ecm);
+            let mut widget = WidgetContainer::new(*node, ecm, tree);
 
             if let Some(handlers) = self.handlers.borrow().get(node) {
                 for handler in handlers {
@@ -200,7 +200,7 @@ impl EventSystem {
 }
 
 impl System<Tree> for EventSystem {
-    fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
+    fn run(&self, tree: &mut Tree, ecm: &mut EntityComponentManager) {
         let mut shell = self.shell.borrow_mut();
         let adapter = shell.adapter();
 

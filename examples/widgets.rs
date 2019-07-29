@@ -59,6 +59,7 @@ impl Template for MainView {
                         .row("Auto")
                         .row("Auto")
                         .row("Auto")
+                        .row("*")
                         .build(),
                 )
                 // Column 0
@@ -107,6 +108,13 @@ impl Template for MainView {
                         .margin((0.0, 8.0, 0.0, 0.0))
                         .attach(GridColumn(0))
                         .attach(GridRow(5))
+                        .build(context),
+                )
+                .child(
+                    ItemsWidget::create()
+                        .margin((0.0, 8.0, 0.0, 0.0))
+                        .attach(GridColumn(0))
+                        .attach(GridRow(6))
                         .build(context),
                 )
                 // Column 2

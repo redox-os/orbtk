@@ -7,7 +7,8 @@ use crate::{
 
 property!(
     /// `Selector` describes the css selector of a widget.
-    Selector(SelectorValue) : &str, String
+    Selector(SelectorValue) : &str,
+    String
 );
 
 // --- Trait implementations ---

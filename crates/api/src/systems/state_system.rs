@@ -79,7 +79,7 @@ impl StateSystem {
 }
 
 impl System<Tree> for StateSystem {
-    fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
+    fn run(&self, tree: &mut Tree, ecm: &mut EntityComponentManager) {
         if !self.update.get() || !self.running.get() {
             return;
         }
@@ -87,10 +87,13 @@ impl System<Tree> for StateSystem {
         let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
         let window_shell = &mut self.shell.borrow_mut();
 
-        let mut context = Context::new(tree.root, ecm, tree, window_shell, &theme);
+        
 
-        for node in tree.into_iter() {
+        for node in tree.clone().into_iter() {
             let mut skip = false;
+
+            let mut context = Context::new(tree.root, ecm, tree, window_shell, &theme);
+            
             context.entity = node;
             {
                 let mut widget = context.widget();
@@ -125,7 +128,7 @@ pub struct PostLayoutStateSystem {
 }
 
 impl System<Tree> for PostLayoutStateSystem {
-    fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
+    fn run(&self, tree: &mut Tree, ecm: &mut EntityComponentManager) {
         if !self.update.get() || !self.running.get() {
             return;
         }

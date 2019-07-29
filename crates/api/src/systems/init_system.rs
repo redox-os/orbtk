@@ -38,7 +38,7 @@ impl InitSystem {
 }
 
 impl System<Tree> for InitSystem {
-    fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
+    fn run(&self, tree: &mut Tree, ecm: &mut EntityComponentManager) {
         let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
 
         #[cfg(feature = "debug")]
@@ -58,7 +58,7 @@ impl System<Tree> for InitSystem {
 
         // init css ids
         let root = tree.root;
-        for node in tree.into_iter() {
+        for node in tree.clone().into_iter() {
             self.init_id(node, ecm, root);
 
             let mut context = Context::new(node, ecm, tree, window_shell, &theme);

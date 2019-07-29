@@ -21,7 +21,6 @@ impl From<&str> for OrientationValue {
     }
 }
 
-
 impl Default for OrientationValue {
     fn default() -> OrientationValue {
         OrientationValue::Vertical

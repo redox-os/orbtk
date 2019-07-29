@@ -7,7 +7,7 @@ use super::{MessageBox, WidgetContainer};
 /// The `Context` is provides access for the states to objects they could work with.
 pub struct Context<'a> {
     ecm: &'a mut EntityComponentManager,
-    tree: &'a Tree,
+    tree: &'a mut Tree,
     window_shell: &'a mut WindowShell<WindowAdapter>,
     pub entity: Entity,
     pub theme: &'a ThemeValue,
@@ -18,7 +18,7 @@ impl<'a> Context<'a> {
     pub fn new(
         entity: Entity,
         ecm: &'a mut EntityComponentManager,
-        tree: &'a Tree,
+        tree: &'a mut Tree,
         window_shell: &'a mut WindowShell<WindowAdapter>,
         theme: &'a ThemeValue,
     ) -> Self {
@@ -33,12 +33,12 @@ impl<'a> Context<'a> {
 
     /// Returns the widget of the current state context.
     pub fn widget(&mut self) -> WidgetContainer<'_> {
-        WidgetContainer::new(self.entity, &mut self.ecm)
+        WidgetContainer::new(self.entity, &mut self.ecm, &mut self.tree)
     }
 
     /// Returns the window widget.
     pub fn window(&mut self) -> WidgetContainer<'_> {
-        WidgetContainer::new(self.tree.root, &mut self.ecm)
+        WidgetContainer::new(self.tree.root, &mut self.ecm, &mut self.tree)
     }
 
     /// Returns a child of the widget of the current state referenced by css `id`.
@@ -49,7 +49,7 @@ impl<'a> Context<'a> {
             if let Ok(selector) = self.ecm.borrow_component::<Selector>(child) {
                 if let Some(child_id) = &selector.0.id {
                     if child_id.eq(&id) {
-                        return Some(WidgetContainer::new(child, &mut self.ecm));
+                        return Some(WidgetContainer::new(child, &mut self.ecm, &mut self.tree));
                     }
                 }
             }
@@ -68,6 +68,7 @@ impl<'a> Context<'a> {
         Some(WidgetContainer::new(
             self.tree.children[&self.entity][index],
             &mut self.ecm,
+            &mut self.tree,
         ))
     }
 
@@ -81,6 +82,7 @@ impl<'a> Context<'a> {
         Some(WidgetContainer::new(
             self.tree.parent[&self.entity].unwrap(),
             &mut self.ecm,
+            &mut self.tree,
         ))
     }
 

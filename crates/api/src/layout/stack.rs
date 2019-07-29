@@ -29,7 +29,7 @@ impl Layout for StackLayout {
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager,
-        tree: &Tree,
+         tree: &mut Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
@@ -50,7 +50,7 @@ impl Layout for StackLayout {
         let orientation = Orientation::get(entity, ecm);
         let mut desired_size: (f64, f64) = (0.0, 0.0);
 
-        for child in &tree.children[&entity] {
+        for child in &tree.clone().children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let child_desired_size =
                     child_layout.measure(render_context_2_d, *child, ecm, tree, layouts, theme);
@@ -99,7 +99,7 @@ impl Layout for StackLayout {
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager,
-        tree: &Tree,
+        tree: &mut Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
@@ -136,7 +136,7 @@ impl Layout for StackLayout {
 
         let available_size = size;
 
-        for child in &tree.children[&entity] {
+        for child in &tree.clone().children[&entity] {
             let mut child_desired_size = (0.0, 0.0);
             if let Some(child_layout) = layouts.borrow().get(child) {
                 child_desired_size = child_layout.arrange(

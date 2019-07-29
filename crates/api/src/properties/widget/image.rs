@@ -2,7 +2,8 @@ use crate::{prelude::*, render::Image as Img};
 
 property!(
     /// `Image` describes an image property of a widget.
-    Image(Img) : &str, String
+    Image(Img) : &str,
+    String
 );
 
 impl Image {

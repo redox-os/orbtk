@@ -29,7 +29,7 @@ impl Layout for FixedSizeLayout {
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager,
-        tree: &Tree,
+        tree: &mut Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
@@ -47,7 +47,7 @@ impl Layout for FixedSizeLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let widget = WidgetContainer::new(entity, ecm);
+        let widget = WidgetContainer::new(entity, ecm, tree);
 
         let size = widget
             .try_get::<Image>()
@@ -118,7 +118,7 @@ impl Layout for FixedSizeLayout {
                 .set_height(constraint.height());
         }
 
-        for child in &tree.children[&entity] {
+        for child in &tree.clone().children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let dirty = child_layout
                     .measure(render_context_2_d, *child, ecm, tree, layouts, theme)
@@ -138,7 +138,7 @@ impl Layout for FixedSizeLayout {
         _parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager,
-        tree: &Tree,
+        tree: &mut Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
@@ -151,7 +151,7 @@ impl Layout for FixedSizeLayout {
             bounds.set_height(self.desired_size.borrow().height());
         }
 
-        for child in &tree.children[&entity] {
+        for child in &tree.clone().children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 child_layout.arrange(
                     render_context_2_d,

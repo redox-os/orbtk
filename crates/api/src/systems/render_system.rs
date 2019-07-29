@@ -17,7 +17,7 @@ pub struct RenderSystem {
 }
 
 impl System<Tree> for RenderSystem {
-    fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
+    fn run(&self, tree: &mut Tree, ecm: &mut EntityComponentManager) {
         if !self.update.get() || tree.parent.is_empty() || !self.running.get() {
             return;
         }
@@ -40,7 +40,7 @@ impl System<Tree> for RenderSystem {
         //     render_context.renderer.render(background.into())
         // }
 
-        for node in tree.into_iter() {
+        for node in tree.clone().into_iter() {
             let mut global_position = Point::default();
 
             if let Some(parent) = tree.parent[&node] {

@@ -29,7 +29,7 @@ impl Layout for PaddingLayout {
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager,
-        tree: &Tree,
+         tree: &mut Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
@@ -60,7 +60,7 @@ impl Layout for PaddingLayout {
 
         let padding = Padding::get(entity, ecm);
 
-        for child in &tree.children[&entity] {
+        for child in &tree.clone().children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let child_desired_size =
                     child_layout.measure(render_context_2_d, *child, ecm, tree, layouts, theme);
@@ -101,7 +101,7 @@ impl Layout for PaddingLayout {
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager,
-        tree: &Tree,
+         tree: &mut Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
@@ -140,7 +140,7 @@ impl Layout for PaddingLayout {
             size.1 - padding.top() - padding.bottom(),
         );
 
-        for child in &tree.children[&entity] {
+        for child in &tree.clone().children[&entity] {
             let child_margin = Margin::get(*child, ecm);
 
             if let Some(child_layout) = layouts.borrow().get(child) {
