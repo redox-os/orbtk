@@ -91,7 +91,7 @@ impl Layout for GridLayout {
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager,
-        tree: &mut Tree,
+        tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
@@ -112,7 +112,7 @@ impl Layout for GridLayout {
         self.children_sizes.borrow_mut().clear();
         let mut desired_size: (f64, f64) = (0.0, 0.0);
 
-        for child in &tree.clone().children[&entity] {
+        for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let child_desired_size =
                     child_layout.measure(render_context_2_d, *child, ecm, tree, layouts, theme);
@@ -146,7 +146,7 @@ impl Layout for GridLayout {
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager,
-        tree: &mut Tree,
+        tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
@@ -180,7 +180,7 @@ impl Layout for GridLayout {
         let mut rows_cache = BTreeMap::new();
 
         // calculates the auto column widths
-        for child in &tree.clone().children[&entity] {
+        for child in &tree.children[&entity] {
             let margin = Margin::get(*child, ecm);
 
             if let Ok(grid_column) = ecm.borrow_component::<GridColumn>(*child) {
@@ -366,7 +366,7 @@ impl Layout for GridLayout {
             bounds.set_height(size.1);
         }
 
-        for child in &tree.clone().children[&entity] {
+        for child in &tree.children[&entity] {
             let mut cell_position = (0.0, 0.0);
             let mut available_size = *self.children_sizes.borrow().get(child).unwrap();
 

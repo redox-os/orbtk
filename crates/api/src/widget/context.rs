@@ -33,12 +33,12 @@ impl<'a> Context<'a> {
 
     /// Returns the widget of the current state context.
     pub fn widget(&mut self) -> WidgetContainer<'_> {
-        WidgetContainer::new(self.entity, &mut self.ecm, &mut self.tree)
+        WidgetContainer::new(self.entity, &mut self.ecm)
     }
 
     /// Returns the window widget.
     pub fn window(&mut self) -> WidgetContainer<'_> {
-        WidgetContainer::new(self.tree.root, &mut self.ecm, &mut self.tree)
+        WidgetContainer::new(self.tree.root, &mut self.ecm)
     }
 
     /// Returns a child of the widget of the current state referenced by css `id`.
@@ -49,7 +49,7 @@ impl<'a> Context<'a> {
             if let Ok(selector) = self.ecm.borrow_component::<Selector>(child) {
                 if let Some(child_id) = &selector.0.id {
                     if child_id.eq(&id) {
-                        return Some(WidgetContainer::new(child, &mut self.ecm, &mut self.tree));
+                        return Some(WidgetContainer::new(child, &mut self.ecm));
                     }
                 }
             }
@@ -68,7 +68,6 @@ impl<'a> Context<'a> {
         Some(WidgetContainer::new(
             self.tree.children[&self.entity][index],
             &mut self.ecm,
-            &mut self.tree,
         ))
     }
 
@@ -82,7 +81,6 @@ impl<'a> Context<'a> {
         Some(WidgetContainer::new(
             self.tree.parent[&self.entity].unwrap(),
             &mut self.ecm,
-            &mut self.tree,
         ))
     }
 
@@ -252,6 +250,10 @@ impl<'a> Context<'a> {
 
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
         self.window_shell.render_context_2_d()
+    }
+
+    pub fn create_child<F: Fn(&mut BuildContext) -> Entity + 'static>(&mut self, parent: Entity, create_fn: F) {
+        // self.ecm.entities.
     }
 
     // pub fn next_message(&mut self) -> MessageBox {

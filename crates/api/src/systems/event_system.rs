@@ -37,7 +37,7 @@ impl EventSystem {
         let mut matching_nodes = vec![];
 
         for node in tree.clone().start_node(event.source).into_iter() {
-            let widget = WidgetContainer::new(node, ecm, tree);
+            let widget = WidgetContainer::new(node, ecm);
 
             // MouseDownEvent handling
             if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
@@ -91,7 +91,7 @@ impl EventSystem {
                     continue;
                 }
             }
-            let mut widget = WidgetContainer::new(*node, ecm, tree);
+            let mut widget = WidgetContainer::new(*node, ecm);
 
             if let Some(handlers) = self.handlers.borrow().get(node) {
                 for handler in handlers {

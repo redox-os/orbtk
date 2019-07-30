@@ -45,6 +45,7 @@ impl System<Tree> for LayoutSystem {
             &self.layouts,
             &theme,
         );
+
         self.layouts.borrow()[&root].arrange(
             self.shell.borrow_mut().render_context_2_d(),
             window_size,

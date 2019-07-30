@@ -32,7 +32,7 @@ impl Layout for ScrollLayout {
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager,
-         tree: &mut Tree,
+        tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
@@ -62,7 +62,7 @@ impl Layout for ScrollLayout {
                 .set_height(constraint.height());
         }
 
-        for child in &tree.clone().children[&entity] {
+        for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let dirty = child_layout
                     .measure(render_context_2_d, *child, ecm, tree, layouts, theme)
@@ -89,7 +89,7 @@ impl Layout for ScrollLayout {
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager,
-         tree: &mut Tree,
+        tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
@@ -136,7 +136,7 @@ impl Layout for ScrollLayout {
 
         let old_child_size = self.old_child_size.get();
 
-        for child in &tree.clone().children[&entity] {
+        for child in &tree.children[&entity] {
             // let child_margin = get_margin(*child, ecm);
             let mut child_size = old_child_size;
             let child_vertical_alignment = VerticalAlignment::get(*child, ecm);

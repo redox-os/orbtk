@@ -35,7 +35,7 @@ impl Layout for TextSelectionLayout {
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager,
-         tree: &mut Tree,
+        tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
@@ -54,7 +54,7 @@ impl Layout for TextSelectionLayout {
             self.old_text_selection.set(selection.0);
         }
 
-        for child in &tree.clone().children[&entity] {
+        for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let dirty = child_layout
                     .measure(render_context_2_d, *child, ecm, tree, layouts, theme)
@@ -74,7 +74,7 @@ impl Layout for TextSelectionLayout {
                 .set_height(constraint.height());
         }
 
-        for child in &tree.clone().children[&entity] {
+        for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let dirty = child_layout
                     .measure(render_context_2_d, *child, ecm, tree, layouts, theme)
@@ -93,7 +93,7 @@ impl Layout for TextSelectionLayout {
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager,
-         tree: &mut Tree,
+        tree: &Tree,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
@@ -108,7 +108,7 @@ impl Layout for TextSelectionLayout {
         let margin = Margin::get(entity, ecm);
 
         {
-            let mut widget = WidgetContainer::new(entity, ecm, tree);
+            let mut widget = WidgetContainer::new(entity, ecm);
 
             size.1 = vertical_alignment.align_measure(
                 parent_size.1,
@@ -142,7 +142,7 @@ impl Layout for TextSelectionLayout {
             }
         }
 
-        for child in &tree.clone().children[&entity] {
+        for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 child_layout.arrange(render_context_2_d, size, *child, ecm, tree, layouts, theme);
             }

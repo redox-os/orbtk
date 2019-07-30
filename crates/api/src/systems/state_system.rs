@@ -87,13 +87,11 @@ impl System<Tree> for StateSystem {
         let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
         let window_shell = &mut self.shell.borrow_mut();
 
-        
-
         for node in tree.clone().into_iter() {
             let mut skip = false;
 
             let mut context = Context::new(tree.root, ecm, tree, window_shell, &theme);
-            
+
             context.entity = node;
             {
                 let mut widget = context.widget();

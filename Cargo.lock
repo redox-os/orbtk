@@ -291,7 +291,7 @@ dependencies = [
 [[package]]
 name = "dces"
 version = "0.1.7"
-source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git#0daae1b658fc948a8832d560995f1f3d91d523d5"
+source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=orbtk#0daae1b658fc948a8832d560995f1f3d91d523d5"
 
 [[package]]
 name = "deflate"
@@ -937,7 +937,7 @@ dependencies = [
 name = "orbtk"
 version = "0.3.0"
 dependencies = [
- "dces 0.1.7 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)",
+ "dces 0.1.7 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=orbtk)",
  "orbtk-api 0.1.0",
  "orbtk-css-engine 0.1.0",
  "orbtk-render 0.1.0",
@@ -952,7 +952,7 @@ dependencies = [
 name = "orbtk-api"
 version = "0.1.0"
 dependencies = [
- "dces 0.1.7 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)",
+ "dces 0.1.7 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=orbtk)",
  "orbclient 0.3.24 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbtk-css-engine 0.1.0",
  "orbtk-render 0.1.0",
@@ -1015,7 +1015,7 @@ dependencies = [
 name = "orbtk-tree"
 version = "0.1.0"
 dependencies = [
- "dces 0.1.7 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)",
+ "dces 0.1.7 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=orbtk)",
 ]
 
 [[package]]
@@ -1026,7 +1026,7 @@ version = "0.1.0"
 name = "orbtk-widgets"
 version = "0.1.0"
 dependencies = [
- "dces 0.1.7 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)",
+ "dces 0.1.7 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=orbtk)",
  "orbtk-api 0.1.0",
  "orbtk-shell 0.1.0",
  "orbtk-theme 0.1.0",
@@ -2013,7 +2013,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum crossbeam-utils 0.6.6 (registry+https://github.com/rust-lang/crates.io-index)" = "04973fa96e96579258a5091af6003abde64af786b860f18622b82e026cca60e6"
 "checksum cssparser 0.17.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e7063452c60432cb306ed54d538178c20792d47fa960c240ce6c083239ee55ec"
 "checksum cssparser-macros 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)" = "b16e382d9b983fdb9ac6a36b37fdeb84ce3ea81f749febfee3463cfa7f24275e"
-"checksum dces 0.1.7 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)" = "<none>"
+"checksum dces 0.1.7 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=orbtk)" = "<none>"
 "checksum deflate 0.7.20 (registry+https://github.com/rust-lang/crates.io-index)" = "707b6a7b384888a70c8d2e8650b3e60170dfc6a67bb4aa67b6dfca57af4bedb4"
 "checksum derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "6073e9676dbebdddeabaeb63e3b7cefd23c86f5c41d381ee1237cc77b1079898"
 "checksum dirs 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)" = "3fd78930633bd1c6e35c4b42b1df7b0cbc6bc191146e512bb3bedf243fcc3901"
