@@ -343,3 +343,13 @@ impl RenderContext2D {
         self.canvas.get_mut(0).unwrap().restore();
     }
 }
+
+// --- Conversions ---
+
+impl<T: Into<String>> From<T> for Image {
+    fn from(source: T) -> Image {
+        Image {
+            source: source.into()
+        }
+    }
+}
