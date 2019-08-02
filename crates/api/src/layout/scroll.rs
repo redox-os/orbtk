@@ -31,8 +31,8 @@ impl Layout for ScrollLayout {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        ecm: &mut EntityComponentManager,
-        tree: &Tree,
+        ecm: &mut EntityComponentManager<Tree>,
+
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
@@ -62,10 +62,10 @@ impl Layout for ScrollLayout {
                 .set_height(constraint.height());
         }
 
-        for child in &tree.children[&entity] {
+        for child in &ecm.entity_store().clone().children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let dirty = child_layout
-                    .measure(render_context_2_d, *child, ecm, tree, layouts, theme)
+                    .measure(render_context_2_d, *child, ecm, layouts, theme)
                     .dirty()
                     || self.desired_size.borrow().dirty();
 
@@ -88,8 +88,8 @@ impl Layout for ScrollLayout {
         render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
-        ecm: &mut EntityComponentManager,
-        tree: &Tree,
+        ecm: &mut EntityComponentManager<Tree>,
+
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
@@ -118,7 +118,10 @@ impl Layout for ScrollLayout {
             ),
         ));
 
-        if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(entity) {
+        if let Ok(bounds) = ecm
+            .component_store_mut()
+            .borrow_mut_component::<Bounds>(entity)
+        {
             bounds.set_width(size.0);
             bounds.set_height(size.1);
         }
@@ -136,7 +139,7 @@ impl Layout for ScrollLayout {
 
         let old_child_size = self.old_child_size.get();
 
-        for child in &tree.children[&entity] {
+        for child in &ecm.entity_store().clone().children[&entity] {
             // let child_margin = get_margin(*child, ecm);
             let mut child_size = old_child_size;
             let child_vertical_alignment = VerticalAlignment::get(*child, ecm);
@@ -148,7 +151,6 @@ impl Layout for ScrollLayout {
                     (f64::MAX, f64::MAX),
                     *child,
                     ecm,
-                    tree,
                     layouts,
                     theme,
                 );
@@ -160,7 +162,10 @@ impl Layout for ScrollLayout {
                 offset.0 = 0.0;
             }
 
-            if let Ok(child_bounds) = ecm.borrow_mut_component::<Bounds>(*child) {
+            if let Ok(child_bounds) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Bounds>(*child)
+            {
                 child_bounds.set_x(offset.0);
                 child_bounds.set_y(child_vertical_alignment.align_position(
                     size.1,
@@ -170,7 +175,10 @@ impl Layout for ScrollLayout {
                 ));
             }
 
-            if let Ok(off) = ecm.borrow_mut_component::<Offset>(entity) {
+            if let Ok(off) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Offset>(entity)
+            {
                 (off.0).x = offset.0;
                 (off.0).y = offset.1;
             }

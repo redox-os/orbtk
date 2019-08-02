@@ -17,8 +17,8 @@ pub struct RenderSystem {
 }
 
 impl System<Tree> for RenderSystem {
-    fn run(&self, tree: &mut Tree, ecm: &mut EntityComponentManager) {
-        if !self.update.get() || tree.parent.is_empty() || !self.running.get() {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
+        if !self.update.get() || ecm.entity_store().parent.is_empty() || !self.running.get() {
             return;
         }
 
@@ -27,12 +27,19 @@ impl System<Tree> for RenderSystem {
         #[cfg(not(feature = "debug"))]
         let debug = false;
 
-        let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
+        let root = ecm.entity_store().root;
+
+        let theme = ecm
+            .component_store()
+            .borrow_component::<Theme>(root)
+            .unwrap()
+            .0
+            .clone();
 
         let mut hidden_parents: HashSet<Entity> = HashSet::new();
 
         let mut offsets = BTreeMap::new();
-        offsets.insert(tree.root, (0.0, 0.0));
+        offsets.insert(ecm.entity_store().root, (0.0, 0.0));
 
         // render window background
         // let selector = SelectorValue::new().with("window");
@@ -40,17 +47,17 @@ impl System<Tree> for RenderSystem {
         //     render_context.renderer.render(background.into())
         // }
 
-        for node in tree.clone().into_iter() {
+        for node in ecm.entity_store().clone().into_iter() {
             let mut global_position = Point::default();
 
-            if let Some(parent) = tree.parent[&node] {
+            if let Some(parent) = ecm.entity_store().parent[&node] {
                 if let Some(offset) = offsets.get(&parent) {
                     global_position = Point::new(offset.0, offset.1);
                 }
             }
 
             // Hide all children of a hidden parent
-            if let Some(parent) = tree.parent[&node] {
+            if let Some(parent) = ecm.entity_store().parent[&node] {
                 if hidden_parents.contains(&parent) {
                     hidden_parents.insert(node);
                     continue;
@@ -58,7 +65,7 @@ impl System<Tree> for RenderSystem {
             }
 
             // hide hidden widget
-            if let Ok(visibility) = ecm.borrow_component::<Visibility>(node) {
+            if let Ok(visibility) = ecm.component_store().borrow_component::<Visibility>(node) {
                 if visibility.0 != VisibilityValue::Visible {
                     hidden_parents.insert(node);
                     continue;
@@ -67,14 +74,14 @@ impl System<Tree> for RenderSystem {
 
             if let Some(render_object) = self.render_objects.borrow().get(&node) {
                 render_object.render(
-                    &mut Context::new(node, ecm, tree, &mut self.shell.borrow_mut(), &theme),
+                    &mut Context::new(node, ecm, &mut self.shell.borrow_mut(), &theme),
                     &global_position,
                 );
             }
 
             // render debug border for each widget
             if debug {
-                if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
+                if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(node) {
                     let selector = Selector::from("debug-border");
                     let brush = theme.brush("border-color", &selector.0).unwrap();
                     self.shell
@@ -92,7 +99,7 @@ impl System<Tree> for RenderSystem {
 
             let mut global_pos = (0.0, 0.0);
 
-            if let Ok(bounds) = ecm.borrow_component::<Bounds>(node) {
+            if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(node) {
                 global_pos = (
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
@@ -100,7 +107,7 @@ impl System<Tree> for RenderSystem {
                 offsets.insert(node, global_pos);
             }
 
-            if let Ok(g_pos) = ecm.borrow_mut_component::<Point>(node) {
+            if let Ok(g_pos) = ecm.component_store_mut().borrow_mut_component::<Point>(node) {
                 g_pos.x = global_pos.0;
                 g_pos.y = global_pos.1;
             }

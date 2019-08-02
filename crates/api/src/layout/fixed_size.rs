@@ -28,8 +28,7 @@ impl Layout for FixedSizeLayout {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        ecm: &mut EntityComponentManager,
-        tree: &Tree,
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
@@ -98,7 +97,10 @@ impl Layout for FixedSizeLayout {
             });
 
         if let Some(size) = size {
-            if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(entity) {
+            if let Ok(constraint) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Constraint>(entity)
+            {
                 constraint.set_width(size.0 as f64);
                 constraint.set_height(size.1 as f64);
             }
@@ -118,10 +120,10 @@ impl Layout for FixedSizeLayout {
                 .set_height(constraint.height());
         }
 
-        for child in &tree.children[&entity] {
+        for child in &ecm.entity_store().clone().children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let dirty = child_layout
-                    .measure(render_context_2_d, *child, ecm, tree, layouts, theme)
+                    .measure(render_context_2_d, *child, ecm, layouts, theme)
                     .dirty()
                     || self.desired_size.borrow().dirty();
 
@@ -137,8 +139,7 @@ impl Layout for FixedSizeLayout {
         render_context_2_d: &mut RenderContext2D,
         _parent_size: (f64, f64),
         entity: Entity,
-        ecm: &mut EntityComponentManager,
-        tree: &Tree,
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
@@ -146,12 +147,15 @@ impl Layout for FixedSizeLayout {
             return self.desired_size.borrow().size();
         }
 
-        if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(entity) {
+        if let Ok(bounds) = ecm
+            .component_store_mut()
+            .borrow_mut_component::<Bounds>(entity)
+        {
             bounds.set_width(self.desired_size.borrow().width());
             bounds.set_height(self.desired_size.borrow().height());
         }
 
-        for child in &tree.children[&entity] {
+        for child in &ecm.entity_store().clone().children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 child_layout.arrange(
                     render_context_2_d,
@@ -161,7 +165,6 @@ impl Layout for FixedSizeLayout {
                     ),
                     *child,
                     ecm,
-                    tree,
                     layouts,
                     theme,
                 );

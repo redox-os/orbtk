@@ -8,7 +8,7 @@ macro_rules! property {
 
         impl $property {
             /// Returns the value of a property.
-            pub fn get(entity: Entity, ecm: &EntityComponentManager) -> $type {
+            pub fn get(entity: Entity, ecm: &EntityComponentManager<Tree>) -> $type {
                 get_property::<$property>(entity, ecm).0
             }
         }

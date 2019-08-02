@@ -28,8 +28,8 @@ impl Layout for PaddingLayout {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        ecm: &mut EntityComponentManager,
-        tree: &Tree,
+        ecm: &mut EntityComponentManager<Tree>,
+
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
@@ -60,10 +60,10 @@ impl Layout for PaddingLayout {
 
         let padding = Padding::get(entity, ecm);
 
-        for child in &tree.children[&entity] {
+        for child in &ecm.entity_store().clone().children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let child_desired_size =
-                    child_layout.measure(render_context_2_d, *child, ecm, tree, layouts, theme);
+                    child_layout.measure(render_context_2_d, *child, ecm, layouts, theme);
                 let mut desired_size = self.desired_size.borrow().size();
 
                 let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
@@ -100,8 +100,8 @@ impl Layout for PaddingLayout {
         render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
-        ecm: &mut EntityComponentManager,
-        tree: &Tree,
+        ecm: &mut EntityComponentManager<Tree>,
+
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
@@ -130,7 +130,10 @@ impl Layout for PaddingLayout {
             ),
         ));
 
-        if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(entity) {
+        if let Ok(bounds) = ecm
+            .component_store_mut()
+            .borrow_mut_component::<Bounds>(entity)
+        {
             bounds.set_width(size.0);
             bounds.set_height(size.1);
         }
@@ -140,7 +143,7 @@ impl Layout for PaddingLayout {
             size.1 - padding.top() - padding.bottom(),
         );
 
-        for child in &tree.children[&entity] {
+        for child in &ecm.entity_store().clone().children[&entity] {
             let child_margin = Margin::get(*child, ecm);
 
             if let Some(child_layout) = layouts.borrow().get(child) {
@@ -149,7 +152,6 @@ impl Layout for PaddingLayout {
                     available_size,
                     *child,
                     ecm,
-                    tree,
                     layouts,
                     theme,
                 );
@@ -158,7 +160,10 @@ impl Layout for PaddingLayout {
             let child_horizontal_alignment = HorizontalAlignment::get(*child, ecm);
             let child_vertical_alignment = VerticalAlignment::get(*child, ecm);
 
-            if let Ok(child_bounds) = ecm.borrow_mut_component::<Bounds>(*child) {
+            if let Ok(child_bounds) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Bounds>(*child)
+            {
                 child_bounds.set_x(
                     padding.left()
                         + child_horizontal_alignment.align_position(

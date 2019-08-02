@@ -41,7 +41,8 @@ impl<'a> BuildContext<'a> {
     /// Appends a child to a parent.
     pub fn append_child(&mut self, parent: Entity, child: Entity) {
         self.world
-            .entity_container()
+            .entity_component_manager()
+            .entity_store_mut()
             .append_child(parent, child)
             .unwrap();
     }

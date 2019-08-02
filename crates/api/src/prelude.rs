@@ -7,6 +7,7 @@ pub use crate::{
     layout::*,
     properties::*,
     property,
+    tree::Tree,
     render_object::*,
     systems::*,
     widget,

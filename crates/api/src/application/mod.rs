@@ -53,27 +53,31 @@ impl Application {
         let window = create_fn(&mut context);
 
         {
-            let tree: &mut Tree = world.entity_container();
+            let tree: &mut Tree = world.entity_component_manager().entity_store_mut();
             tree.root = window;
         }
 
         let title = world
             .entity_component_manager()
+            .component_store()
             .borrow_component::<Title>(window)
             .unwrap()
             .clone();
         let resizeable = world
             .entity_component_manager()
+            .component_store()
             .borrow_component::<Resizeable>(window)
             .unwrap()
             .clone();
         let position = world
             .entity_component_manager()
+            .component_store()
             .borrow_component::<Pos>(window)
             .unwrap()
             .clone();
         let constraint = world
             .entity_component_manager()
+            .component_store()
             .borrow_component::<Constraint>(window)
             .unwrap()
             .clone();

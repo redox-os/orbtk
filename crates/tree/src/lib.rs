@@ -24,7 +24,7 @@ use std::{
     collections::BTreeMap,
 };
 
-use dces::prelude::{Entity, EntityContainer};
+use dces::prelude::{Entity, EntityStore};
 
 pub mod prelude;
 
@@ -103,7 +103,7 @@ impl Tree {
     }
 }
 
-impl EntityContainer for Tree {
+impl EntityStore for Tree {
     fn register_entity(&mut self, entity: impl Into<Entity>) {
         self.register_node(entity.into());
     }

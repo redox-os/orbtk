@@ -230,7 +230,6 @@ impl RenderContext2D {
         width: f64,
         height: f64,
     ) {
-
     }
 
     /// Draws the given part of the image.
@@ -246,7 +245,6 @@ impl RenderContext2D {
         width: f64,
         height: f64,
     ) {
-
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.

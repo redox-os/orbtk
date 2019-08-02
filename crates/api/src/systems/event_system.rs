@@ -21,8 +21,7 @@ impl EventSystem {
     fn process_top_down_event(
         &self,
         _event: &EventBox,
-        _tree: &Tree,
-        _ecm: &mut EntityComponentManager,
+        _ecm: &mut EntityComponentManager<Tree>,
         _new_events: &mut Vec<EventBox>,
     ) {
     }
@@ -30,13 +29,12 @@ impl EventSystem {
     fn process_bottom_up_event(
         &self,
         event: &EventBox,
-        tree: &mut Tree,
-        ecm: &mut EntityComponentManager,
+        ecm: &mut EntityComponentManager<Tree>,
         new_events: &mut Vec<EventBox>,
     ) {
         let mut matching_nodes = vec![];
 
-        for node in tree.clone().start_node(event.source).into_iter() {
+        for node in ecm.entity_store().clone().start_node(event.source).clone().into_iter() {
             let widget = WidgetContainer::new(node, ecm);
 
             // MouseDownEvent handling
@@ -77,7 +75,7 @@ impl EventSystem {
 
         for node in matching_nodes.iter().rev() {
             if let Some(dp) = disabled_parent {
-                if tree.parent[&node] == Some(dp) {
+                if ecm.entity_store().parent[&node] == Some(dp) {
                     disabled_parent = Some(*node);
                     continue;
                 } else {
@@ -85,7 +83,7 @@ impl EventSystem {
                 }
             }
 
-            if let Ok(enabled) = ecm.borrow_component::<Enabled>(*node) {
+            if let Ok(enabled) = ecm.component_store().borrow_component::<Enabled>(*node) {
                 if !enabled.0 {
                     disabled_parent = Some(*node);
                     continue;
@@ -160,9 +158,14 @@ impl EventSystem {
             }
         }
 
+        let root = ecm.entity_store().root;
+
         // KeyDown handling
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
-            if let Ok(global) = ecm.borrow_mut_component::<Global>(tree.root) {
+            if let Ok(global) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Global>(root)
+            {
                 // Set this value on the keyboard state
                 global.keyboard_state.set_key_state(event.event.key, true);
             }
@@ -170,7 +173,10 @@ impl EventSystem {
 
         // KeyUp handling
         if let Ok(event) = event.downcast_ref::<KeyUpEvent>() {
-            if let Ok(global) = ecm.borrow_mut_component::<Global>(tree.root) {
+            if let Ok(global) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Global>(root)
+            {
                 // Set this value on the keyboard state
                 global.keyboard_state.set_key_state(event.event.key, false);
             }
@@ -179,7 +185,10 @@ impl EventSystem {
         // remove focus from previous focused entity
         let mut old_focused_widget = None;
 
-        if let Ok(global) = ecm.borrow_mut_component::<Global>(tree.root) {
+        if let Ok(global) = ecm
+            .component_store_mut()
+            .borrow_mut_component::<Global>(root)
+        {
             if let Some(new_focused_widget) = new_focused_widget {
                 if let Some(focused_widget) = global.focused_widget {
                     if focused_widget != new_focused_widget {
@@ -191,7 +200,10 @@ impl EventSystem {
         }
 
         if let Some(old_focused_widget) = old_focused_widget {
-            if let Ok(focused) = ecm.borrow_mut_component::<Focused>(old_focused_widget) {
+            if let Ok(focused) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Focused>(old_focused_widget)
+            {
                 focused.0 = false;
                 self.update.set(true);
             }
@@ -200,11 +212,12 @@ impl EventSystem {
 }
 
 impl System<Tree> for EventSystem {
-    fn run(&self, tree: &mut Tree, ecm: &mut EntityComponentManager) {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
         let mut shell = self.shell.borrow_mut();
         let adapter = shell.adapter();
 
         let mut new_events = vec![];
+        let root = ecm.entity_store().root;
 
         loop {
             for event in adapter.event_queue.into_iter() {
@@ -212,13 +225,17 @@ impl System<Tree> for EventSystem {
                     match event {
                         WindowEvent::Resize { width, height } => {
                             // update window size
-                            if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(tree.root) {
+                            if let Ok(bounds) = ecm
+                                .component_store_mut()
+                                .borrow_mut_component::<Bounds>(root)
+                            {
                                 bounds.set_width(*width);
                                 bounds.set_height(*height);
                             }
 
-                            if let Ok(constraint) =
-                                ecm.borrow_mut_component::<Constraint>(tree.root)
+                            if let Ok(constraint) = ecm
+                                .component_store_mut()
+                                .borrow_mut_component::<Constraint>(root)
                             {
                                 constraint.set_width(*width);
                                 constraint.set_height(*height);
@@ -240,10 +257,10 @@ impl System<Tree> for EventSystem {
 
                 match event.strategy {
                     EventStrategy::TopDown => {
-                        self.process_top_down_event(&event, tree, ecm, &mut new_events);
+                        self.process_top_down_event(&event, ecm, &mut new_events);
                     }
                     EventStrategy::BottomUp => {
-                        self.process_bottom_up_event(&event, tree, ecm, &mut new_events);
+                        self.process_bottom_up_event(&event, ecm, &mut new_events);
                     }
                     _ => {}
                 }

@@ -79,18 +79,25 @@ impl StateSystem {
 }
 
 impl System<Tree> for StateSystem {
-    fn run(&self, tree: &mut Tree, ecm: &mut EntityComponentManager) {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
         if !self.update.get() || !self.running.get() {
             return;
         }
 
-        let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
+        let root = ecm.entity_store().root;
+
+        let theme = ecm
+            .component_store()
+            .borrow_component::<Theme>(root)
+            .unwrap()
+            .0
+            .clone();
         let window_shell = &mut self.shell.borrow_mut();
 
-        for node in tree.clone().into_iter() {
+        for node in ecm.entity_store().clone().into_iter() {
             let mut skip = false;
 
-            let mut context = Context::new(tree.root, ecm, tree, window_shell, &theme);
+            let mut context = Context::new(ecm.entity_store().root, ecm, window_shell, &theme);
 
             context.entity = node;
             {
@@ -126,15 +133,22 @@ pub struct PostLayoutStateSystem {
 }
 
 impl System<Tree> for PostLayoutStateSystem {
-    fn run(&self, tree: &mut Tree, ecm: &mut EntityComponentManager) {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
         if !self.update.get() || !self.running.get() {
             return;
         }
 
-        let window_shell = &mut self.shell.borrow_mut();
-        let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
+        let root = ecm.entity_store().root;
 
-        let mut context = Context::new(tree.root, ecm, tree, window_shell, &theme);
+        let window_shell = &mut self.shell.borrow_mut();
+        let theme = ecm
+            .component_store()
+            .borrow_component::<Theme>(root)
+            .unwrap()
+            .0
+            .clone();
+
+        let mut context = Context::new(ecm.entity_store().root, ecm, window_shell, &theme);
 
         for (node, state) in &*self.states.borrow() {
             context.entity = *node;

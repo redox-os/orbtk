@@ -2,6 +2,7 @@
 
 use std::fmt::Debug;
 
+use crate::tree::Tree;
 use dces::prelude::{Component, Entity, EntityComponentManager};
 
 pub use self::layout::*;
@@ -15,11 +16,12 @@ mod styling;
 mod widget;
 
 /// Used to the a property of a widget.
-pub fn get_property<T>(entity: Entity, ecm: &EntityComponentManager) -> T
+pub fn get_property<T>(entity: Entity, ecm: &EntityComponentManager<Tree>) -> T
 where
     T: Clone + Component + Default,
 {
-    ecm.borrow_component::<T>(entity)
+    ecm.component_store()
+        .borrow_component::<T>(entity)
         .map(|r| r.clone())
         .unwrap_or_default()
 }
