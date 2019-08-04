@@ -30,12 +30,13 @@ impl<'a> Context<'a> {
 
     /// Returns the widget of the current state context.
     pub fn widget(&mut self) -> WidgetContainer<'_> {
-        WidgetContainer::new(self.entity, &mut self.ecm)
+        WidgetContainer::new(self.entity, self.ecm.component_store_mut())
     }
 
     /// Returns the window widget.
     pub fn window(&mut self) -> WidgetContainer<'_> {
-        WidgetContainer::new(self.ecm.entity_store().root, &mut self.ecm)
+        let root = self.ecm.entity_store().root;
+        WidgetContainer::new(root, self.ecm.component_store_mut())
     }
 
     /// Returns a child of the widget of the current state referenced by css `id`.
@@ -45,11 +46,11 @@ impl<'a> Context<'a> {
 
         let (tree, c_store) = self.ecm.stores_mut();
 
-        for child in tree.start_node(self.entity).into_iter() {
+        for child in tree.clone().start_node(self.entity).into_iter() {
             if let Ok(selector) = c_store.borrow_component::<Selector>(child) {
                 if let Some(child_id) = &selector.0.id {
                     if child_id.eq(&id) {
-                        return Some(WidgetContainer::new(child, &mut self.ecm));
+                        return Some(WidgetContainer::new(child, c_store));
                     }
                 }
             }
@@ -65,10 +66,9 @@ impl<'a> Context<'a> {
             return None;
         }
 
-        Some(WidgetContainer::new(
-            self.ecm.entity_store().children[&self.entity][index],
-            &mut self.ecm,
-        ))
+        let entity = self.ecm.entity_store().children[&self.entity][index];
+
+        Some(WidgetContainer::new(entity, self.ecm.component_store_mut()))
     }
 
     /// Returns the parent of the current widget.
@@ -78,10 +78,9 @@ impl<'a> Context<'a> {
             return None;
         }
 
-        Some(WidgetContainer::new(
-            self.ecm.entity_store().parent[&self.entity].unwrap(),
-            &mut self.ecm,
-        ))
+        let entity = self.ecm.entity_store().parent[&self.entity].unwrap();
+
+        Some(WidgetContainer::new(entity, self.ecm.component_store_mut()))
     }
 
     /// Sends a message to the widget with the given id over the message channel.

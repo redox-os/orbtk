@@ -66,6 +66,12 @@ impl Tree {
         self.parent.insert(entity, None);
     }
 
+    /// Sets the root.
+    pub fn set_root(&mut self, root: impl Into<Entity>) {
+        self.root = root.into();
+        self.iterator_start_node.set(self.root);
+    }
+
     /// Appends a `child` entity to the given `parent` entity.
     /// Raised `NotFound` error if the parent is not part of the tree.
     pub fn append_child(

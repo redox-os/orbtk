@@ -28,36 +28,34 @@ impl System<Tree> for LayoutSystem {
 
         let mut window_size = (0.0, 0.0);
 
-        let root = ecm.entity_store().root;
+        let (tree, store) = ecm.stores_mut();
 
-        if let Ok(bounds) = ecm
-            .component_store()
-            .borrow_component::<Bounds>(root)
-        {
+        if let Ok(bounds) = store.borrow_component::<Bounds>(tree.root) {
             window_size.0 = bounds.width();
             window_size.1 = bounds.height();
         };
 
-        let theme = ecm
-            .component_store()
-            .borrow_component::<Theme>(root)
+        let theme = store
+            .borrow_component::<Theme>(tree.root)
             .unwrap()
             .0
             .clone();
 
-        self.layouts.borrow()[&root].measure(
+        self.layouts.borrow()[&tree.root].measure(
             self.shell.borrow_mut().render_context_2_d(),
-            root,
-            ecm,
+            tree.root,
+            tree,
+            store,
             &self.layouts,
             &theme,
         );
 
-        self.layouts.borrow()[&root].arrange(
+        self.layouts.borrow()[&tree.root].arrange(
             self.shell.borrow_mut().render_context_2_d(),
             window_size,
-            root,
-            ecm,
+            tree.root,
+            tree,
+            store,
             &self.layouts,
             &theme,
         );

@@ -83,8 +83,8 @@ impl System<Tree> for InitSystem {
 }
 
 fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tree>) {
-    let name = Name::get(entity, ecm);
-    let selector = Selector::get(entity, ecm);
+    let name = Name::get(entity, ecm.component_store());
+    let selector = Selector::get(entity, ecm.component_store());
 
     crate::shell::log(format!(
         "{}{} (entity: {}{})",

@@ -107,7 +107,10 @@ impl System<Tree> for RenderSystem {
                 offsets.insert(node, global_pos);
             }
 
-            if let Ok(g_pos) = ecm.component_store_mut().borrow_mut_component::<Point>(node) {
+            if let Ok(g_pos) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Point>(node)
+            {
                 g_pos.x = global_pos.0;
                 g_pos.y = global_pos.1;
             }

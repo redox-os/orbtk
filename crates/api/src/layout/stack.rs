@@ -4,7 +4,7 @@ use std::{
     rc::Rc,
 };
 
-use dces::prelude::{Entity, EntityComponentManager};
+use dces::prelude::Entity;
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
@@ -28,18 +28,19 @@ impl Layout for StackLayout {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree>,
+        tree: &Tree,
+        store: &mut ComponentStore,
 
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if Visibility::get(entity, ecm) == VisibilityValue::Collapsed {
+        if Visibility::get(entity, store) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
-        let vertical_alignment = VerticalAlignment::get(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, store);
+        let vertical_alignment = VerticalAlignment::get(entity, store);
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -47,16 +48,16 @@ impl Layout for StackLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let orientation = Orientation::get(entity, ecm);
+        let orientation = Orientation::get(entity, store);
         let mut desired_size: (f64, f64) = (0.0, 0.0);
 
-        for child in &ecm.entity_store().clone().children[&entity] {
+        for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let child_desired_size =
-                    child_layout.measure(render_context_2_d, *child, ecm, layouts, theme);
+                    child_layout.measure(render_context_2_d, *child, tree, store, layouts, theme);
                 let child_margin = {
                     if child_desired_size.width() > 0.0 && child_desired_size.height() > 0.0 {
-                        Margin::get(*child, ecm)
+                        Margin::get(*child, store)
                     } else {
                         Margin::default().0
                     }
@@ -98,7 +99,8 @@ impl Layout for StackLayout {
         render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree>,
+        tree: &Tree,
+        store: &mut ComponentStore,
 
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
@@ -107,11 +109,11 @@ impl Layout for StackLayout {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
-        let vertical_alignment = VerticalAlignment::get(entity, ecm);
-        let margin = Margin::get(entity, ecm);
-        let constraint = Constraint::get(entity, ecm);
-        let orientation = Orientation::get(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, store);
+        let vertical_alignment = VerticalAlignment::get(entity, store);
+        let margin = Margin::get(entity, store);
+        let constraint = Constraint::get(entity, store);
+        let orientation = Orientation::get(entity, store);
         let mut size_counter = 0.0;
 
         let size = constraint.perform((
@@ -129,38 +131,39 @@ impl Layout for StackLayout {
             ),
         ));
 
-        if let Ok(bounds) = ecm
-            .component_store_mut()
-            .borrow_mut_component::<Bounds>(entity)
-        {
+        if let Ok(bounds) = store.borrow_mut_component::<Bounds>(entity) {
             bounds.set_width(size.0);
             bounds.set_height(size.1);
         }
 
         let available_size = size;
 
-        for child in &ecm.entity_store().clone().children[&entity] {
+        for child in &tree.children[&entity] {
             let mut child_desired_size = (0.0, 0.0);
             if let Some(child_layout) = layouts.borrow().get(child) {
-                child_desired_size =
-                    child_layout.arrange(render_context_2_d, size, *child, ecm, layouts, theme);
+                child_desired_size = child_layout.arrange(
+                    render_context_2_d,
+                    size,
+                    *child,
+                    tree,
+                    store,
+                    layouts,
+                    theme,
+                );
             }
 
             let child_margin = {
                 if child_desired_size.0 > 0.0 && child_desired_size.1 > 0.0 {
-                    Margin::get(*child, ecm)
+                    Margin::get(*child, store)
                 } else {
                     Margin::default().0
                 }
             };
 
-            let child_horizontal_alignment = HorizontalAlignment::get(*child, ecm);
-            let child_vertical_alignment = VerticalAlignment::get(*child, ecm);
+            let child_horizontal_alignment = HorizontalAlignment::get(*child, store);
+            let child_vertical_alignment = VerticalAlignment::get(*child, store);
 
-            if let Ok(child_bounds) = ecm
-                .component_store_mut()
-                .borrow_mut_component::<Bounds>(*child)
-            {
+            if let Ok(child_bounds) = store.borrow_mut_component::<Bounds>(*child) {
                 match orientation {
                     OrientationValue::Horizontal => {
                         child_bounds.set_x(

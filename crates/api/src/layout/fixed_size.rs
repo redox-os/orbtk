@@ -4,7 +4,7 @@ use std::{
     rc::Rc,
 };
 
-use dces::prelude::{Entity, EntityComponentManager};
+use dces::prelude::{ComponentStore, Entity};
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
@@ -28,17 +28,18 @@ impl Layout for FixedSizeLayout {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree>,
+        tree: &Tree,
+        store: &mut ComponentStore,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if Visibility::get(entity, ecm) == VisibilityValue::Collapsed {
+        if Visibility::get(entity, store) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
-        let vertical_alignment = VerticalAlignment::get(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, store);
+        let vertical_alignment = VerticalAlignment::get(entity, store);
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -46,7 +47,7 @@ impl Layout for FixedSizeLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let widget = WidgetContainer::new(entity, ecm);
+        let widget = WidgetContainer::new(entity, store);
 
         let size = widget
             .try_get::<Image>()
@@ -97,10 +98,7 @@ impl Layout for FixedSizeLayout {
             });
 
         if let Some(size) = size {
-            if let Ok(constraint) = ecm
-                .component_store_mut()
-                .borrow_mut_component::<Constraint>(entity)
-            {
+            if let Ok(constraint) = store.borrow_mut_component::<Constraint>(entity) {
                 constraint.set_width(size.0 as f64);
                 constraint.set_height(size.1 as f64);
             }
@@ -108,7 +106,7 @@ impl Layout for FixedSizeLayout {
 
         // -- todo will be removed after orbgl merge --
 
-        let constraint = Constraint::get(entity, ecm);
+        let constraint = Constraint::get(entity, store);
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());
@@ -120,10 +118,10 @@ impl Layout for FixedSizeLayout {
                 .set_height(constraint.height());
         }
 
-        for child in &ecm.entity_store().clone().children[&entity] {
+        for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 let dirty = child_layout
-                    .measure(render_context_2_d, *child, ecm, layouts, theme)
+                    .measure(render_context_2_d, *child, tree, store, layouts, theme)
                     .dirty()
                     || self.desired_size.borrow().dirty();
 
@@ -139,7 +137,8 @@ impl Layout for FixedSizeLayout {
         render_context_2_d: &mut RenderContext2D,
         _parent_size: (f64, f64),
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree>,
+        tree: &Tree,
+        store: &mut ComponentStore,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
@@ -147,15 +146,12 @@ impl Layout for FixedSizeLayout {
             return self.desired_size.borrow().size();
         }
 
-        if let Ok(bounds) = ecm
-            .component_store_mut()
-            .borrow_mut_component::<Bounds>(entity)
-        {
+        if let Ok(bounds) = store.borrow_mut_component::<Bounds>(entity) {
             bounds.set_width(self.desired_size.borrow().width());
             bounds.set_height(self.desired_size.borrow().height());
         }
 
-        for child in &ecm.entity_store().clone().children[&entity] {
+        for child in &tree.children[&entity] {
             if let Some(child_layout) = layouts.borrow().get(child) {
                 child_layout.arrange(
                     render_context_2_d,
@@ -164,7 +160,8 @@ impl Layout for FixedSizeLayout {
                         self.desired_size.borrow().height(),
                     ),
                     *child,
-                    ecm,
+                    tree,
+                    store,
                     layouts,
                     theme,
                 );

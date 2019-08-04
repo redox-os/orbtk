@@ -54,7 +54,7 @@ impl Application {
 
         {
             let tree: &mut Tree = world.entity_component_manager().entity_store_mut();
-            tree.root = window;
+            tree.set_root(window);
         }
 
         let title = world
