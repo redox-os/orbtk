@@ -34,19 +34,21 @@ impl Layout for TextSelectionLayout {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        tree: &Tree,
-        store: &mut ComponentStore,
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if Visibility::get(entity, store) == VisibilityValue::Collapsed {
+        if Visibility::get(entity, ecm.component_store()) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let constraint = Constraint::get(entity, store);
+        let constraint = Constraint::get(entity, ecm.component_store());
 
-        if let Ok(selection) = store.borrow_component::<TextSelection>(entity) {
+        if let Ok(selection) = ecm
+            .component_store()
+            .borrow_component::<TextSelection>(entity)
+        {
             if selection.0 != self.old_text_selection.get() {
                 self.desired_size.borrow_mut().set_dirty(true);
             }
@@ -54,13 +56,24 @@ impl Layout for TextSelectionLayout {
             self.old_text_selection.set(selection.0);
         }
 
-        for child in &tree.children[&entity] {
-            if let Some(child_layout) = layouts.borrow().get(child) {
-                let dirty = child_layout
-                    .measure(render_context_2_d, *child, tree, store, layouts, theme)
-                    .dirty()
-                    || self.desired_size.borrow().dirty();
-                self.desired_size.borrow_mut().set_dirty(dirty);
+        if ecm.entity_store().children[&entity].len() > 0 {
+            let mut index = 0;
+
+            loop {
+                let child = ecm.entity_store().children[&entity][index];
+
+                if let Some(child_layout) = layouts.borrow().get(&child) {
+                    let dirty = child_layout
+                        .measure(render_context_2_d, child, ecm, layouts, theme)
+                        .dirty()
+                        || self.desired_size.borrow().dirty();
+                    self.desired_size.borrow_mut().set_dirty(dirty);
+                }
+                if index + 1 < ecm.entity_store().children[&entity].len() {
+                    index += 1;
+                } else {
+                    break;
+                }
             }
         }
 
@@ -74,13 +87,25 @@ impl Layout for TextSelectionLayout {
                 .set_height(constraint.height());
         }
 
-        for child in &tree.children[&entity] {
-            if let Some(child_layout) = layouts.borrow().get(child) {
-                let dirty = child_layout
-                    .measure(render_context_2_d, *child, tree, store, layouts, theme)
-                    .dirty()
-                    || self.desired_size.borrow().dirty();
-                self.desired_size.borrow_mut().set_dirty(dirty);
+        if ecm.entity_store().children[&entity].len() > 0 {
+            let mut index = 0;
+
+            loop {
+                let child = ecm.entity_store().children[&entity][index];
+
+                if let Some(child_layout) = layouts.borrow().get(&child) {
+                    let dirty = child_layout
+                        .measure(render_context_2_d, child, ecm, layouts, theme)
+                        .dirty()
+                        || self.desired_size.borrow().dirty();
+                    self.desired_size.borrow_mut().set_dirty(dirty);
+                }
+
+                if index + 1 < ecm.entity_store().children[&entity].len() {
+                    index += 1;
+                } else {
+                    break;
+                }
             }
         }
 
@@ -92,9 +117,7 @@ impl Layout for TextSelectionLayout {
         render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
-        tree: &Tree,
-        store: &mut ComponentStore,
-
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
@@ -105,11 +128,11 @@ impl Layout for TextSelectionLayout {
         let mut pos = 0.0;
         let mut size = self.desired_size.borrow().size();
 
-        let vertical_alignment = VerticalAlignment::get(entity, store);
-        let margin = Margin::get(entity, store);
+        let vertical_alignment = VerticalAlignment::get(entity, ecm.component_store());
+        let margin = Margin::get(entity, ecm.component_store());
 
         {
-            let mut widget = WidgetContainer::new(entity, store);
+            let mut widget = WidgetContainer::new(entity, ecm);
 
             size.1 = vertical_alignment.align_measure(
                 parent_size.1,
@@ -143,17 +166,21 @@ impl Layout for TextSelectionLayout {
             }
         }
 
-        for child in &tree.children[&entity] {
-            if let Some(child_layout) = layouts.borrow().get(child) {
-                child_layout.arrange(
-                    render_context_2_d,
-                    size,
-                    *child,
-                    tree,
-                    store,
-                    layouts,
-                    theme,
-                );
+        if ecm.entity_store().children[&entity].len() > 0 {
+            let mut index = 0;
+
+            loop {
+                let child = ecm.entity_store().children[&entity][index];
+
+                if let Some(child_layout) = layouts.borrow().get(&child) {
+                    child_layout.arrange(render_context_2_d, size, child, ecm, layouts, theme);
+                }
+
+                if index + 1 < ecm.entity_store().children[&entity].len() {
+                    index += 1;
+                } else {
+                    break;
+                }
             }
         }
 

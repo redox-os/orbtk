@@ -28,19 +28,18 @@ impl Layout for PaddingLayout {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        tree: &Tree,
-        store: &mut ComponentStore,
+        ecm: &mut EntityComponentManager<Tree>,
 
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if Visibility::get(entity, store) == VisibilityValue::Collapsed {
+        if Visibility::get(entity, ecm.component_store()) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get(entity, store);
-        let vertical_alignment = VerticalAlignment::get(entity, store);
+        let horizontal_alignment = HorizontalAlignment::get(entity, ecm.component_store());
+        let vertical_alignment = VerticalAlignment::get(entity, ecm.component_store());
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -48,7 +47,7 @@ impl Layout for PaddingLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let constraint = Constraint::get(entity, store);
+        let constraint = Constraint::get(entity, ecm.component_store());
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());
         }
@@ -59,37 +58,49 @@ impl Layout for PaddingLayout {
                 .set_height(constraint.height());
         }
 
-        let padding = Padding::get(entity, store);
+        let padding = Padding::get(entity, ecm.component_store());
 
-        for child in &tree.children[&entity] {
-            if let Some(child_layout) = layouts.borrow().get(child) {
-                let child_desired_size =
-                    child_layout.measure(render_context_2_d, *child, tree, store, layouts, theme);
-                let mut desired_size = self.desired_size.borrow().size();
+        if ecm.entity_store().children[&entity].len() > 0 {
+            let mut index = 0;
 
-                let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
-                self.desired_size.borrow_mut().set_dirty(dirty);
+            loop {
+                let child = ecm.entity_store().children[&entity][index];
 
-                let child_margin = Margin::get(*child, store);
+                if let Some(child_layout) = layouts.borrow().get(&child) {
+                    let child_desired_size =
+                        child_layout.measure(render_context_2_d, child, ecm, layouts, theme);
+                    let mut desired_size = self.desired_size.borrow().size();
 
-                desired_size.0 = desired_size.0.max(
-                    child_desired_size.width()
-                        + padding.left()
-                        + padding.right()
-                        + child_margin.left()
-                        + child_margin.right(),
-                );
-                desired_size.1 = desired_size.1.max(
-                    child_desired_size.height()
-                        + padding.top()
-                        + padding.bottom()
-                        + child_margin.top()
-                        + child_margin.left(),
-                );
+                    let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
+                    self.desired_size.borrow_mut().set_dirty(dirty);
 
-                self.desired_size
-                    .borrow_mut()
-                    .set_size(desired_size.0, desired_size.1);
+                    let child_margin = Margin::get(child, ecm.component_store());
+
+                    desired_size.0 = desired_size.0.max(
+                        child_desired_size.width()
+                            + padding.left()
+                            + padding.right()
+                            + child_margin.left()
+                            + child_margin.right(),
+                    );
+                    desired_size.1 = desired_size.1.max(
+                        child_desired_size.height()
+                            + padding.top()
+                            + padding.bottom()
+                            + child_margin.top()
+                            + child_margin.left(),
+                    );
+
+                    self.desired_size
+                        .borrow_mut()
+                        .set_size(desired_size.0, desired_size.1);
+                }
+
+                if index + 1 < ecm.entity_store().children[&entity].len() {
+                    index += 1;
+                } else {
+                    break;
+                }
             }
         }
 
@@ -101,8 +112,7 @@ impl Layout for PaddingLayout {
         render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
-        tree: &Tree,
-        store: &mut ComponentStore,
+        ecm: &mut EntityComponentManager<Tree>,
 
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
@@ -111,11 +121,11 @@ impl Layout for PaddingLayout {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get(entity, store);
-        let vertical_alignment = VerticalAlignment::get(entity, store);
-        let margin = Margin::get(entity, store);
-        let padding = Padding::get(entity, store);
-        let constraint = Constraint::get(entity, store);
+        let horizontal_alignment = HorizontalAlignment::get(entity, ecm.component_store());
+        let vertical_alignment = VerticalAlignment::get(entity, ecm.component_store());
+        let margin = Margin::get(entity, ecm.component_store());
+        let padding = Padding::get(entity, ecm.component_store());
+        let constraint = Constraint::get(entity, ecm.component_store());
 
         let size = constraint.perform((
             horizontal_alignment.align_measure(
@@ -132,7 +142,10 @@ impl Layout for PaddingLayout {
             ),
         ));
 
-        if let Ok(bounds) = store.borrow_mut_component::<Bounds>(entity) {
+        if let Ok(bounds) = ecm
+            .component_store_mut()
+            .borrow_mut_component::<Bounds>(entity)
+        {
             bounds.set_width(size.0);
             bounds.set_height(size.1);
         }
@@ -142,43 +155,58 @@ impl Layout for PaddingLayout {
             size.1 - padding.top() - padding.bottom(),
         );
 
-        for child in &tree.children[&entity] {
-            let child_margin = Margin::get(*child, store);
+        if ecm.entity_store().children[&entity].len() > 0 {
+            let mut index = 0;
 
-            if let Some(child_layout) = layouts.borrow().get(child) {
-                child_layout.arrange(
-                    render_context_2_d,
-                    available_size,
-                    *child,
-                    tree,
-                    store,
-                    layouts,
-                    theme,
-                );
-            }
+            loop {
+                let child = ecm.entity_store().children[&entity][index];
 
-            let child_horizontal_alignment = HorizontalAlignment::get(*child, store);
-            let child_vertical_alignment = VerticalAlignment::get(*child, store);
+                let child_margin = Margin::get(child, ecm.component_store());
 
-            if let Ok(child_bounds) = store.borrow_mut_component::<Bounds>(*child) {
-                child_bounds.set_x(
-                    padding.left()
-                        + child_horizontal_alignment.align_position(
-                            available_size.0,
-                            child_bounds.width(),
-                            child_margin.left(),
-                            child_margin.right(),
-                        ),
-                );
-                child_bounds.set_y(
-                    padding.top()
-                        + child_vertical_alignment.align_position(
-                            available_size.1,
-                            child_bounds.height(),
-                            child_margin.top(),
-                            child_margin.bottom(),
-                        ),
-                );
+                if let Some(child_layout) = layouts.borrow().get(&child) {
+                    child_layout.arrange(
+                        render_context_2_d,
+                        available_size,
+                        child,
+                        ecm,
+                        layouts,
+                        theme,
+                    );
+                }
+
+                let child_horizontal_alignment =
+                    HorizontalAlignment::get(child, ecm.component_store());
+                let child_vertical_alignment = VerticalAlignment::get(child, ecm.component_store());
+
+                if let Ok(child_bounds) = ecm
+                    .component_store_mut()
+                    .borrow_mut_component::<Bounds>(child)
+                {
+                    child_bounds.set_x(
+                        padding.left()
+                            + child_horizontal_alignment.align_position(
+                                available_size.0,
+                                child_bounds.width(),
+                                child_margin.left(),
+                                child_margin.right(),
+                            ),
+                    );
+                    child_bounds.set_y(
+                        padding.top()
+                            + child_vertical_alignment.align_position(
+                                available_size.1,
+                                child_bounds.height(),
+                                child_margin.top(),
+                                child_margin.bottom(),
+                            ),
+                    );
+                }
+
+                if index + 1 < ecm.entity_store().children[&entity].len() {
+                    index += 1;
+                } else {
+                    break;
+                }
             }
         }
 

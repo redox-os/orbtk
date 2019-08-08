@@ -76,18 +76,29 @@ impl StateSystem {
             remove_selector_from_widget(pseudo_class, widget);
         }
     }
+}
 
-    fn update(&self, tree: &Tree, store: &mut ComponentStore) {
-        let root = tree.root;
+impl System<Tree> for StateSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
+        if !self.update.get() || !self.running.get() {
+            return;
+        }
 
-        let theme = store.borrow_component::<Theme>(root).unwrap().0.clone();
+        let root = ecm.entity_store().root;
+
+        let theme = ecm
+            .component_store()
+            .borrow_component::<Theme>(root)
+            .unwrap()
+            .0
+            .clone();
         let window_shell = &mut self.shell.borrow_mut();
-        let mut current_node = tree.root;
+        let mut current_node = root;
 
         loop {
             let mut skip = false;
 
-            let mut context = Context::new(current_node, tree, store, window_shell, &theme);
+            let mut context = Context::new(current_node, ecm, window_shell, &theme);
 
             {
                 let mut widget = context.widget();
@@ -110,7 +121,7 @@ impl StateSystem {
 
             context.update_theme_properties();
 
-            let mut it = tree.start_node(current_node).into_iter();
+            let mut it = ecm.entity_store().start_node(current_node).into_iter();
             it.next();
 
             if let Some(node) = it.next() {
@@ -122,17 +133,6 @@ impl StateSystem {
     }
 }
 
-impl System<Tree> for StateSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
-        if !self.update.get() || !self.running.get() {
-            return;
-        }
-
-        let (tree, store) = ecm.stores_mut();
-        self.update(tree, store);
-    }
-}
-
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 pub struct PostLayoutStateSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
@@ -141,14 +141,23 @@ pub struct PostLayoutStateSystem {
     pub running: Rc<Cell<bool>>,
 }
 
-impl PostLayoutStateSystem {
-    fn update(&self, tree: &Tree, store: &mut ComponentStore) {
-        let root = tree.root;
+impl System<Tree> for PostLayoutStateSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
+        if !self.update.get() || !self.running.get() {
+            return;
+        }
+
+        let root = ecm.entity_store().root;
 
         let window_shell = &mut self.shell.borrow_mut();
-        let theme = store.borrow_component::<Theme>(root).unwrap().0.clone();
+        let theme = ecm
+            .component_store()
+            .borrow_component::<Theme>(root)
+            .unwrap()
+            .0
+            .clone();
 
-        let mut context = Context::new(root, tree, store, window_shell, &theme);
+        let mut context = Context::new(root, ecm, window_shell, &theme);
 
         for (node, state) in &*self.states.borrow() {
             context.entity = *node;
@@ -166,16 +175,5 @@ impl PostLayoutStateSystem {
                 // }
             }
         }
-    }
-}
-
-impl System<Tree> for PostLayoutStateSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
-        if !self.update.get() || !self.running.get() {
-            return;
-        }
-
-        let (tree, store) = ecm.stores_mut();
-        self.update(tree, store);
     }
 }

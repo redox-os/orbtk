@@ -1,6 +1,6 @@
 use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc};
 
-use dces::prelude::{ComponentStore, Entity};
+use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::*};
 
@@ -25,8 +25,7 @@ pub trait Layout: Any {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        tree: &Tree,
-        store: &mut ComponentStore,
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize;
@@ -37,8 +36,7 @@ pub trait Layout: Any {
         render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
-        tree: &Tree,
-        store: &mut ComponentStore,
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64);

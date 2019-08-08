@@ -34,40 +34,54 @@ impl EventSystem {
     ) {
         let mut matching_nodes = vec![];
 
-        let (tree, store) = ecm.stores_mut();
+        let mut current_node = event.source;
+        let mut cont = false;
 
-        for node in tree.start_node(event.source).into_iter() {
-            let widget = WidgetContainer::new(node, store);
+        loop {
+            let widget = WidgetContainer::new(current_node, ecm);
 
             // MouseDownEvent handling
             if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
                 if check_mouse_condition(Point::new(event.x, event.y), &widget) {
-                    matching_nodes.push(node);
+                    matching_nodes.push(current_node);
                 }
 
-                continue;
+                cont = true;
             }
 
-            // MouseUpEvent handling
-            if event.event_type() == TypeId::of::<MouseUpEvent>() {
-                if let Some(pressed) = widget.try_get::<Pressed>() {
-                    if pressed.0 {
-                        matching_nodes.push(node);
-                        break;
+            if !cont {
+                // MouseUpEvent handling
+                if event.event_type() == TypeId::of::<MouseUpEvent>() {
+                    if let Some(pressed) = widget.try_get::<Pressed>() {
+                        if pressed.0 {
+                            matching_nodes.push(current_node);
+                            break;
+                        }
                     }
                 }
-            }
 
-            // Click handling
-            if let Ok(event) = event.downcast_ref::<ClickEvent>() {
-                if check_mouse_condition(event.position, &widget) {
-                    matching_nodes.push(node);
+                // Click handling
+                if let Ok(event) = event.downcast_ref::<ClickEvent>() {
+                    if check_mouse_condition(event.position, &widget) {
+                        matching_nodes.push(current_node);
+                    }
+
+                    cont = true;
                 }
 
-                continue;
+                if !cont {
+                    matching_nodes.push(current_node);
+                }
             }
 
-            matching_nodes.push(node);
+            let mut it = ecm.entity_store().start_node(current_node).into_iter();
+            it.next();
+
+            if let Some(node) = it.next() {
+                current_node = node;
+            } else {
+                break;
+            }
         }
 
         let mut handled = false;
@@ -92,7 +106,7 @@ impl EventSystem {
                 }
             }
 
-            let mut widget = WidgetContainer::new(*node, ecm.component_store_mut());
+            let mut widget = WidgetContainer::new(*node, ecm);
 
             if let Some(handlers) = self.handlers.borrow().get(node) {
                 for handler in handlers {

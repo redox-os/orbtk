@@ -35,27 +35,6 @@ impl InitSystem {
     fn read_init_from_theme(&self, context: &mut Context) {
         context.update_theme_properties();
     }
-
-    fn initialize_css_ids(&self, tree: &Tree, store: &mut ComponentStore) {
-        let window_shell = &mut self.shell.borrow_mut();
-        let theme = store
-            .borrow_component::<Theme>(tree.root)
-            .unwrap()
-            .0
-            .clone();
-
-        for node in tree.into_iter() {
-            self.init_id(node, store, tree.root);
-
-            let mut context = Context::new(node, tree, store, window_shell, &theme);
-
-            if let Some(state) = self.states.borrow().get(&node) {
-                state.init(&mut context);
-            }
-
-            self.read_init_from_theme(&mut context);
-        }
-    }
 }
 
 impl System<Tree> for InitSystem {
@@ -75,10 +54,37 @@ impl System<Tree> for InitSystem {
             crate::shell::log("\n------ Widget tree ------\n".to_string());
         }
 
-        let (tree, store) = ecm.stores_mut();
-
         // init css ids
-        self.initialize_css_ids(tree, store);
+        let window_shell = &mut self.shell.borrow_mut();
+        let theme = ecm
+            .component_store()
+            .borrow_component::<Theme>(root)
+            .unwrap()
+            .0
+            .clone();
+
+        let mut current_node = root;
+
+        loop {
+            self.init_id(current_node, ecm.component_store_mut(), root);
+
+            let mut context = Context::new(current_node, ecm, window_shell, &theme);
+
+            if let Some(state) = self.states.borrow().get(&current_node) {
+                state.init(&mut context);
+            }
+
+            self.read_init_from_theme(&mut context);
+
+            let mut it = ecm.entity_store().start_node(current_node).into_iter();
+            it.next();
+
+            if let Some(node) = it.next() {
+                current_node = node;
+            } else {
+                break;
+            }
+        }
     }
 }
 

@@ -16,57 +16,74 @@ pub struct RenderSystem {
     pub running: Rc<Cell<bool>>,
 }
 
-impl RenderSystem {
-    fn render(&self, tree: &Tree, store: &mut ComponentStore) {
+impl System<Tree> for RenderSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
+        if !self.update.get() || ecm.entity_store().parent.is_empty() || !self.running.get() {
+            return;
+        }
+
         #[cfg(feature = "debug")]
         let debug = true;
         #[cfg(not(feature = "debug"))]
         let debug = false;
 
-        let root = tree.root;
+        let root = ecm.entity_store().root;
 
-        let theme = store.borrow_component::<Theme>(root).unwrap().0.clone();
+        let theme = ecm
+            .component_store()
+            .borrow_component::<Theme>(root)
+            .unwrap()
+            .0
+            .clone();
 
         let mut hidden_parents: HashSet<Entity> = HashSet::new();
 
         let mut offsets = BTreeMap::new();
         offsets.insert(root, (0.0, 0.0));
 
-        for node in tree.into_iter() {
+        let mut current_node = root;
+
+        loop {
             let mut global_position = Point::default();
 
-            if let Some(parent) = tree.parent[&node] {
+            if let Some(parent) = ecm.entity_store().parent[&current_node] {
                 if let Some(offset) = offsets.get(&parent) {
                     global_position = Point::new(offset.0, offset.1);
                 }
             }
 
             // Hide all children of a hidden parent
-            if let Some(parent) = tree.parent[&node] {
+            if let Some(parent) = ecm.entity_store().parent[&current_node] {
                 if hidden_parents.contains(&parent) {
-                    hidden_parents.insert(node);
+                    hidden_parents.insert(current_node);
                     continue;
                 }
             }
 
             // hide hidden widget
-            if let Ok(visibility) = store.borrow_component::<Visibility>(node) {
+            if let Ok(visibility) = ecm
+                .component_store()
+                .borrow_component::<Visibility>(current_node)
+            {
                 if visibility.0 != VisibilityValue::Visible {
-                    hidden_parents.insert(node);
+                    hidden_parents.insert(current_node);
                     continue;
                 }
             }
 
-            if let Some(render_object) = self.render_objects.borrow().get(&node) {
+            if let Some(render_object) = self.render_objects.borrow().get(&current_node) {
                 render_object.render(
-                    &mut Context::new(node, tree, store, &mut self.shell.borrow_mut(), &theme),
+                    &mut Context::new(current_node, ecm, &mut self.shell.borrow_mut(), &theme),
                     &global_position,
                 );
             }
 
             // render debug border for each widget
             if debug {
-                if let Ok(bounds) = store.borrow_component::<Bounds>(node) {
+                if let Ok(bounds) = ecm
+                    .component_store()
+                    .borrow_component::<Bounds>(current_node)
+                {
                     let selector = Selector::from("debug-border");
                     let brush = theme.brush("border-color", &selector.0).unwrap();
                     self.shell
@@ -84,30 +101,33 @@ impl RenderSystem {
 
             let mut global_pos = (0.0, 0.0);
 
-            if let Ok(bounds) = store.borrow_component::<Bounds>(node) {
+            if let Ok(bounds) = ecm
+                .component_store()
+                .borrow_component::<Bounds>(current_node)
+            {
                 global_pos = (
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
                 );
-                offsets.insert(node, global_pos);
+                offsets.insert(current_node, global_pos);
             }
 
-            if let Ok(g_pos) = store.borrow_mut_component::<Point>(node) {
+            if let Ok(g_pos) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Point>(current_node)
+            {
                 g_pos.x = global_pos.0;
                 g_pos.y = global_pos.1;
             }
+
+            let mut it = ecm.entity_store().start_node(current_node).into_iter();
+            it.next();
+
+            if let Some(node) = it.next() {
+                current_node = node;
+            } else {
+                break;
+            }
         }
-    }
-}
-
-impl System<Tree> for RenderSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
-        if !self.update.get() || ecm.entity_store().parent.is_empty() || !self.running.get() {
-            return;
-        }
-
-        let (tree, store) = ecm.stores_mut();
-
-        self.render(tree, store);
     }
 }
