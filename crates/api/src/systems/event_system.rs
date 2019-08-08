@@ -36,7 +36,7 @@ impl EventSystem {
 
         let (tree, store) = ecm.stores_mut();
 
-        for node in tree.clone().start_node(event.source).clone().into_iter() {
+        for node in tree.start_node(event.source).into_iter() {
             let widget = WidgetContainer::new(node, store);
 
             // MouseDownEvent handling

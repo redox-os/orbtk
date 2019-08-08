@@ -1,4 +1,4 @@
-use dces::prelude::{Entity, EntityComponentManager};
+use dces::prelude::{ComponentStore, Entity};
 
 use crate::{prelude::*, render::*, shell::WindowShell, tree::Tree, utils::*};
 
@@ -6,7 +6,8 @@ use super::{MessageBox, WidgetContainer};
 
 /// The `Context` is provides access for the states to objects they could work with.
 pub struct Context<'a> {
-    ecm: &'a mut EntityComponentManager<Tree>,
+    store: &'a mut ComponentStore,
+    tree: &'a Tree,
     window_shell: &'a mut WindowShell<WindowAdapter>,
     pub entity: Entity,
     pub theme: &'a ThemeValue,
@@ -16,13 +17,15 @@ impl<'a> Context<'a> {
     /// Creates a new container.
     pub fn new(
         entity: Entity,
-        ecm: &'a mut EntityComponentManager<Tree>,
+        tree: &'a Tree,
+        store: &'a mut ComponentStore,
         window_shell: &'a mut WindowShell<WindowAdapter>,
         theme: &'a ThemeValue,
     ) -> Self {
         Context {
             entity,
-            ecm,
+            tree,
+            store,
             window_shell,
             theme,
         }
@@ -30,13 +33,12 @@ impl<'a> Context<'a> {
 
     /// Returns the widget of the current state context.
     pub fn widget(&mut self) -> WidgetContainer<'_> {
-        WidgetContainer::new(self.entity, self.ecm.component_store_mut())
+        WidgetContainer::new(self.entity, self.store)
     }
 
     /// Returns the window widget.
     pub fn window(&mut self) -> WidgetContainer<'_> {
-        let root = self.ecm.entity_store().root;
-        WidgetContainer::new(root, self.ecm.component_store_mut())
+        WidgetContainer::new(self.tree.root, self.store)
     }
 
     /// Returns a child of the widget of the current state referenced by css `id`.
@@ -44,15 +46,24 @@ impl<'a> Context<'a> {
     pub fn child_by_id<S: Into<String>>(&mut self, id: S) -> Option<WidgetContainer<'_>> {
         let id = id.into();
 
-        let (tree, c_store) = self.ecm.stores_mut();
+        let mut current_node = self.entity;
 
-        for child in tree.clone().start_node(self.entity).into_iter() {
-            if let Ok(selector) = c_store.borrow_component::<Selector>(child) {
+        loop {
+            if let Ok(selector) = self.store.borrow_component::<Selector>(current_node) {
                 if let Some(child_id) = &selector.0.id {
                     if child_id.eq(&id) {
-                        return Some(WidgetContainer::new(child, c_store));
+                        return Some(WidgetContainer::new(current_node, self.store));
                     }
                 }
+            }
+
+            let mut it = self.tree.start_node(current_node).into_iter();
+            it.next();
+
+            if let Some(node) = it.next() {
+                current_node = node;
+            } else {
+                break;
             }
         }
 
@@ -62,35 +73,31 @@ impl<'a> Context<'a> {
     /// Returns the child of the current widget.
     /// If the index is out of the children index bounds or the widget has no children None will be returned.
     pub fn widget_from_child_index(&mut self, index: usize) -> Option<WidgetContainer<'_>> {
-        if index >= self.ecm.entity_store().children[&self.entity].len() {
+        if index >= self.tree.children[&self.entity].len() {
             return None;
         }
 
-        let entity = self.ecm.entity_store().children[&self.entity][index];
+        let entity = self.tree.children[&self.entity][index];
 
-        Some(WidgetContainer::new(entity, self.ecm.component_store_mut()))
+        Some(WidgetContainer::new(entity, self.store))
     }
 
     /// Returns the parent of the current widget.
     /// If the current widget is the root None will be returned.
     pub fn parent_widget(&mut self) -> Option<WidgetContainer<'_>> {
-        if self.ecm.entity_store().parent[&self.entity] == None {
+        if self.tree.parent[&self.entity] == None {
             return None;
         }
 
-        let entity = self.ecm.entity_store().parent[&self.entity].unwrap();
+        let entity = self.tree.parent[&self.entity].unwrap();
 
-        Some(WidgetContainer::new(entity, self.ecm.component_store_mut()))
+        Some(WidgetContainer::new(entity, self.store))
     }
 
     /// Sends a message to the widget with the given id over the message channel.
     pub fn send_message(&mut self, target_widget: &str, message: impl Into<MessageBox>) {
         let mut entity = None;
-        if let Ok(global) = self
-            .ecm
-            .component_store()
-            .borrow_component::<Global>(0.into())
-        {
+        if let Ok(global) = self.store.borrow_component::<Global>(0.into()) {
             if let Some(en) = global.id_map.get(target_widget) {
                 entity = Some(*en);
             }

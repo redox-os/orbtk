@@ -12,9 +12,9 @@ pub struct InitSystem {
 
 impl InitSystem {
     // init css ids.
-    fn init_id(&self, node: Entity, ecm: &mut EntityComponentManager<Tree>, root: Entity) {
+    fn init_id(&self, node: Entity, store: &mut ComponentStore, root: Entity) {
         // Add css id to global id map.
-        let id = if let Ok(selector) = ecm.component_store().borrow_component::<Selector>(node) {
+        let id = if let Ok(selector) = store.borrow_component::<Selector>(node) {
             if let Some(id) = &selector.0.id {
                 Some((node, id.clone()))
             } else {
@@ -25,10 +25,7 @@ impl InitSystem {
         };
 
         if let Some((entity, id)) = id {
-            if let Ok(global) = ecm
-                .component_store_mut()
-                .borrow_mut_component::<Global>(root)
-            {
+            if let Ok(global) = store.borrow_mut_component::<Global>(root) {
                 global.id_map.insert(id, entity);
             }
         }
@@ -38,18 +35,32 @@ impl InitSystem {
     fn read_init_from_theme(&self, context: &mut Context) {
         context.update_theme_properties();
     }
+
+    fn initialize_css_ids(&self, tree: &Tree, store: &mut ComponentStore) {
+        let window_shell = &mut self.shell.borrow_mut();
+        let theme = store
+            .borrow_component::<Theme>(tree.root)
+            .unwrap()
+            .0
+            .clone();
+
+        for node in tree.into_iter() {
+            self.init_id(node, store, tree.root);
+
+            let mut context = Context::new(node, tree, store, window_shell, &theme);
+
+            if let Some(state) = self.states.borrow().get(&node) {
+                state.init(&mut context);
+            }
+
+            self.read_init_from_theme(&mut context);
+        }
+    }
 }
 
 impl System<Tree> for InitSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
         let root = ecm.entity_store().root;
-
-        let theme = ecm
-            .component_store()
-            .borrow_component::<Theme>(root)
-            .unwrap()
-            .0
-            .clone();
 
         #[cfg(feature = "debug")]
         let debug = true;
@@ -64,21 +75,10 @@ impl System<Tree> for InitSystem {
             crate::shell::log("\n------ Widget tree ------\n".to_string());
         }
 
-        let window_shell = &mut self.shell.borrow_mut();
+        let (tree, store) = ecm.stores_mut();
 
         // init css ids
-        let root = ecm.entity_store().root;
-        for node in ecm.entity_store().clone().into_iter() {
-            self.init_id(node, ecm, root);
-
-            let mut context = Context::new(node, ecm, window_shell, &theme);
-
-            if let Some(state) = self.states.borrow().get(&node) {
-                state.init(&mut context);
-            }
-
-            self.read_init_from_theme(&mut context);
-        }
+        self.initialize_css_ids(tree, store);
     }
 }
 

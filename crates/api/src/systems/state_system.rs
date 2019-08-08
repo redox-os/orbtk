@@ -76,35 +76,24 @@ impl StateSystem {
             remove_selector_from_widget(pseudo_class, widget);
         }
     }
-}
 
-impl System<Tree> for StateSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
-        if !self.update.get() || !self.running.get() {
-            return;
-        }
+    fn update(&self, tree: &Tree, store: &mut ComponentStore) {
+        let root = tree.root;
 
-        let root = ecm.entity_store().root;
-
-        let theme = ecm
-            .component_store()
-            .borrow_component::<Theme>(root)
-            .unwrap()
-            .0
-            .clone();
+        let theme = store.borrow_component::<Theme>(root).unwrap().0.clone();
         let window_shell = &mut self.shell.borrow_mut();
+        let mut current_node = tree.root;
 
-        for node in ecm.entity_store().clone().into_iter() {
+        loop {
             let mut skip = false;
 
-            let mut context = Context::new(ecm.entity_store().root, ecm, window_shell, &theme);
+            let mut context = Context::new(current_node, tree, store, window_shell, &theme);
 
-            context.entity = node;
             {
                 let mut widget = context.widget();
 
                 let has_default_flags = self.has_default_flags(&widget);
-                if !has_default_flags && !self.states.borrow().contains_key(&node) {
+                if !has_default_flags && !self.states.borrow().contains_key(&current_node) {
                     skip = true;
                 }
 
@@ -114,13 +103,33 @@ impl System<Tree> for StateSystem {
             }
 
             if !skip {
-                if let Some(state) = self.states.borrow().get(&node) {
+                if let Some(state) = self.states.borrow().get(&current_node) {
                     state.update(&mut context);
                 }
             }
 
             context.update_theme_properties();
+
+            let mut it = tree.start_node(current_node).into_iter();
+            it.next();
+
+            if let Some(node) = it.next() {
+                current_node = node;
+            } else {
+                break;
+            }
         }
+    }
+}
+
+impl System<Tree> for StateSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
+        if !self.update.get() || !self.running.get() {
+            return;
+        }
+
+        let (tree, store) = ecm.stores_mut();
+        self.update(tree, store);
     }
 }
 
@@ -132,23 +141,14 @@ pub struct PostLayoutStateSystem {
     pub running: Rc<Cell<bool>>,
 }
 
-impl System<Tree> for PostLayoutStateSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
-        if !self.update.get() || !self.running.get() {
-            return;
-        }
-
-        let root = ecm.entity_store().root;
+impl PostLayoutStateSystem {
+    fn update(&self, tree: &Tree, store: &mut ComponentStore) {
+        let root = tree.root;
 
         let window_shell = &mut self.shell.borrow_mut();
-        let theme = ecm
-            .component_store()
-            .borrow_component::<Theme>(root)
-            .unwrap()
-            .0
-            .clone();
+        let theme = store.borrow_component::<Theme>(root).unwrap().0.clone();
 
-        let mut context = Context::new(ecm.entity_store().root, ecm, window_shell, &theme);
+        let mut context = Context::new(root, tree, store, window_shell, &theme);
 
         for (node, state) in &*self.states.borrow() {
             context.entity = *node;
@@ -166,5 +166,16 @@ impl System<Tree> for PostLayoutStateSystem {
                 // }
             }
         }
+    }
+}
+
+impl System<Tree> for PostLayoutStateSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
+        if !self.update.get() || !self.running.get() {
+            return;
+        }
+
+        let (tree, store) = ecm.stores_mut();
+        self.update(tree, store);
     }
 }
