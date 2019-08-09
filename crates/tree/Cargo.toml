@@ -9,5 +9,5 @@ keywords = ["ecs", "tree"]
 edition = "2018"
 
 [dependencies]
-dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git", branch = "orbtk" }
+dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }
 # dces = { path = "../../../dces-rust" }
