@@ -14,6 +14,9 @@ pub struct RenderSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
 }
 
 impl System<Tree> for RenderSystem {
@@ -73,7 +76,16 @@ impl System<Tree> for RenderSystem {
 
             if let Some(render_object) = self.render_objects.borrow().get(&current_node) {
                 render_object.render(
-                    &mut Context::new(current_node, ecm, &mut self.shell.borrow_mut(), &theme),
+                    &mut Context::new(
+                        current_node,
+                        ecm,
+                        &mut self.shell.borrow_mut(),
+                        &theme,
+                        self.render_objects.clone(),
+                        self.layouts.clone(),
+                        self.handlers.clone(),
+                        self.states.clone(),
+                    ),
                     &global_position,
                 );
             }

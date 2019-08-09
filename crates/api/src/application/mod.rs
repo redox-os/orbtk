@@ -43,7 +43,7 @@ impl Application {
         let running = Rc::new(Cell::new(true));
 
         let mut context = BuildContext::new(
-            &mut world,
+            world.entity_component_manager(),
             render_objects.clone(),
             layouts.clone(),
             handlers.clone(),
@@ -130,6 +130,9 @@ impl Application {
 
         world.register_init_system(InitSystem {
             shell: window_shell.clone(),
+            layouts: layouts.clone(),
+            render_objects: render_objects.clone(),
+            handlers: handlers.clone(),
             states: states.clone(),
         });
 
@@ -146,6 +149,9 @@ impl Application {
         world
             .create_system(StateSystem {
                 shell: window_shell.clone(),
+                layouts: layouts.clone(),
+                render_objects: render_objects.clone(),
+                handlers: handlers.clone(),
                 states: states.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -166,6 +172,9 @@ impl Application {
         world
             .create_system(PostLayoutStateSystem {
                 shell: window_shell.clone(),
+                layouts: layouts.clone(),
+                render_objects: render_objects.clone(),
+                handlers: handlers.clone(),
                 states: states.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -176,7 +185,10 @@ impl Application {
         world
             .create_system(RenderSystem {
                 shell: window_shell.clone(),
+                layouts: layouts.clone(),
                 render_objects: render_objects.clone(),
+                handlers: handlers.clone(),
+                states: states.clone(),
                 update: update.clone(),
                 running: running.clone(),
             })

@@ -8,6 +8,9 @@ use crate::{prelude::*, shell::WindowShell, tree::Tree};
 pub struct InitSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
 }
 
 impl InitSystem {
@@ -68,7 +71,16 @@ impl System<Tree> for InitSystem {
         loop {
             self.init_id(current_node, ecm.component_store_mut(), root);
 
-            let mut context = Context::new(current_node, ecm, window_shell, &theme);
+            let mut context = Context::new(
+                current_node,
+                ecm,
+                window_shell,
+                &theme,
+                self.render_objects.clone(),
+                self.layouts.clone(),
+                self.handlers.clone(),
+                self.states.clone(),
+            );
 
             if let Some(state) = self.states.borrow().get(&current_node) {
                 state.init(&mut context);

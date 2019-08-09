@@ -11,7 +11,9 @@ impl Into<Rc<dyn State>> for ItemsWidgetState {
 
 impl State for ItemsWidgetState {
     fn update(&self, context: &mut Context<'_>) {
-        let _items_panel = context.child_by_id("items_panel");
+        if let Some(items_panel) = context.entity_of_child("items_panel") {
+            context.append_child_to(items_panel, Button::create().text("Test"))
+        }
     }
 }
 

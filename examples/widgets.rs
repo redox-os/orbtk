@@ -48,6 +48,8 @@ impl Template for MainView {
                         .column("Auto")
                         .column(32.0)
                         .column("Auto")
+                        .column(32.0)
+                        .column(120.0)
                         .column("*")
                         .build(),
                 )
@@ -110,13 +112,6 @@ impl Template for MainView {
                         .attach(GridRow(5))
                         .build(context),
                 )
-                .child(
-                    ItemsWidget::create()
-                        .margin((0.0, 8.0, 0.0, 0.0))
-                        .attach(GridColumn(0))
-                        .attach(GridRow(6))
-                        .build(context),
-                )
                 // Column 2
                 .child(create_header(context, "Text", 2, 0))
                 .child(
@@ -137,6 +132,16 @@ impl Template for MainView {
                         .attach(GridRow(2))
                         .build(context),
                 )
+                // Column 4
+                .child(create_header(context, "Items", 4, 0))
+                .child(
+                    ItemsWidget::create()
+                        .margin((0.0, 8.0, 0.0, 0.0))
+                        .attach(GridColumn(4))
+                        .attach(GridRow(1))
+                        .attach(RowSpan(5))
+                        .build(context),
+                )
                 .build(context),
         )
     }
@@ -151,7 +156,7 @@ fn main() {
             Window::create()
                 .title("OrbTk - widgets example")
                 .position((100.0, 100.0))
-                .size(420.0, 730.0)
+                .size(458.0, 730.0)
                 .resizeable(true)
                 .child(MainView::create().build(ctx))
                 .build(ctx)
