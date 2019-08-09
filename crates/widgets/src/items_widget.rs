@@ -1,7 +1,9 @@
 use crate::prelude::*;
 
 #[derive(Default)]
-pub struct ItemsWidgetState {}
+pub struct ItemsWidgetState {
+    builder: RefCell<Option<Box<dyn Fn(&mut BuildContext) -> Entity + 'static>>>,
+}
 
 impl Into<Rc<dyn State>> for ItemsWidgetState {
     fn into(self) -> Rc<dyn State> {
@@ -11,8 +13,12 @@ impl Into<Rc<dyn State>> for ItemsWidgetState {
 
 impl State for ItemsWidgetState {
     fn update(&self, context: &mut Context<'_>) {
-        if let Some(items_panel) = context.entity_of_child("items_panel") {
-            context.append_child_to(items_panel, Button::create().text("Test"))
+        if let Some(builder) = &*self.builder.borrow() {
+            if let Some(items_panel) = context.entity_of_child("items_panel") {
+                let mut build_context = context.build_context();
+                let child = builder(&mut build_context);
+                build_context.append_child(items_panel, child);
+            }
         }
     }
 }
@@ -44,6 +50,13 @@ widget!(
         selector: Selector
     }
 );
+
+impl ItemsWidget {
+    pub fn items_builder<F: Fn(&mut BuildContext) -> Entity + 'static>(self, builder: F) -> Self {
+        *self.clone_state().builder.borrow_mut() = Some(Box::new(builder));
+        self
+    }
+}
 
 impl Template for ItemsWidget {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {

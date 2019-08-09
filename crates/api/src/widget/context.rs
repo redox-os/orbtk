@@ -47,22 +47,27 @@ impl<'a> Context<'a> {
         WidgetContainer::new(self.entity, self.ecm)
     }
 
-    /// Appends a child widget to the given parent.
-    pub fn append_child_to<W: Widget>(&mut self, parent: Entity, child: W) {
-        let mut build_context = BuildContext::new(
+    /// Returns the current build context.
+    pub fn build_context(&mut self) -> BuildContext {
+        BuildContext::new(
             self.ecm,
             self.render_objects.clone(),
             self.layouts.clone(),
             self.handlers.clone(),
             self.states.clone(),
-        );
+        )
+    }
+
+    /// Appends a child widget to the given parent.
+    pub fn append_child_to<W: Widget>(&mut self, child: W, parent: Entity) {
+        let mut build_context = self.build_context();
         let child = child.build(&mut build_context);
         build_context.append_child(parent, child);
     }
 
     /// Appends a child to the current widget.
     pub fn append_child<W: Widget>(&mut self, child: W) {
-        self.append_child_to(self.entity, child);
+        self.append_child_to(child, self.entity);
     }
 
     /// Returns the window widget.

@@ -137,6 +137,7 @@ impl Template for MainView {
                 .child(
                     ItemsWidget::create()
                         .margin((0.0, 8.0, 0.0, 0.0))
+                        .items_builder(|bc| Button::create().text("Test 1").build(bc))
                         .attach(GridColumn(4))
                         .attach(GridRow(1))
                         .attach(RowSpan(5))

@@ -20,7 +20,7 @@ tree.append_child(0, 1);
  */
 
 use std::{
-    cell::{Cell, RefCell},
+    cell::Cell,
     collections::BTreeMap,
 };
 
