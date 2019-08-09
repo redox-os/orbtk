@@ -19,10 +19,7 @@ tree.append_child(0, 1);
 
  */
 
-use std::{
-    cell::Cell,
-    collections::BTreeMap,
-};
+use std::{cell::Cell, collections::BTreeMap};
 
 use dces::prelude::{Entity, EntityStore};
 
@@ -110,6 +107,14 @@ impl EntityStore for Tree {
 
     fn remove_entity(&mut self, entity: impl Into<Entity>) {
         let entity = entity.into();
+
+        if let Some(parent_index) = self.parent[&entity] {
+            if let Some(parent_children) = self.children.get_mut(&parent_index) {
+                let index = parent_children.iter().position(|&r| r == entity).unwrap();
+                parent_children.remove(index);
+            }
+        }
+
         self.children.remove(&entity);
         self.parent.remove(&entity);
     }

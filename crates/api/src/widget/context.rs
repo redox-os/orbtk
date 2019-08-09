@@ -70,6 +70,24 @@ impl<'a> Context<'a> {
         self.append_child_to(child, self.entity);
     }
 
+    /// Clears all children of the current widget.
+    pub fn clear_children(&mut self) {
+        self.clear_children_of(self.entity);
+    }
+
+    /// Clears all children of the given widget.
+    pub fn clear_children_of(&mut self, parent: Entity) {
+        loop {
+            if self.ecm.entity_store().children[&parent].len() == 0 {
+                break;
+            }
+
+            let child = self.ecm.entity_store().children[&parent][0];
+
+            self.ecm.remove_entity(child);
+        }
+    }
+
     /// Returns the window widget.
     pub fn window(&mut self) -> WidgetContainer<'_> {
         WidgetContainer::new(self.ecm.entity_store().root, self.ecm)
@@ -312,16 +330,4 @@ impl<'a> Context<'a> {
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
         self.window_shell.render_context_2_d()
     }
-
-    pub fn create_child<F: Fn(&mut BuildContext) -> Entity + 'static>(
-        &mut self,
-        parent: Entity,
-        create_fn: F,
-    ) {
-        // self.ecm.entities.
-    }
-
-    // pub fn next_message(&mut self) -> MessageBox {
-    //     self.adapter.messages.take(key: &Q)
-    // }
 }

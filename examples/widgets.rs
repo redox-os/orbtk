@@ -2,9 +2,23 @@ use std::cell::Cell;
 
 use orbtk::prelude::*;
 
-#[derive(Default)]
 pub struct MainViewState {
     counter: Cell<i32>,
+    list: Vec<String>,
+}
+
+impl Default for MainViewState {
+    fn default() -> Self {
+        MainViewState {
+            counter: Cell::new(0),
+            list: vec![
+                "Item 1".to_string(),
+                "Item 2".to_string(),
+                "Item 3".to_string(),
+                "Last Item".to_string(),
+            ],
+        }
+    }
 }
 
 impl MainViewState {
@@ -39,6 +53,8 @@ widget!(
 impl Template for MainView {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
         let state = self.clone_state();
+
+        let list_state = self.clone_state();
 
         self.name("MainView").count_text("Button count: 0").child(
             Grid::create()
@@ -136,8 +152,14 @@ impl Template for MainView {
                 .child(create_header(context, "Items", 4, 0))
                 .child(
                     ItemsWidget::create()
+                        .max_height(192.0)
                         .margin((0.0, 8.0, 0.0, 0.0))
-                        .items_builder(|bc| Button::create().text("Test 1").build(bc))
+                        .items_builder(move |bc, index| {
+                            Button::create()
+                                .text(list_state.list[index].as_str())
+                                .build(bc)
+                        })
+                        .items_count(4)
                         .attach(GridColumn(4))
                         .attach(GridRow(1))
                         .attach(RowSpan(5))
@@ -157,7 +179,7 @@ fn main() {
             Window::create()
                 .title("OrbTk - widgets example")
                 .position((100.0, 100.0))
-                .size(458.0, 730.0)
+                .size(468.0, 730.0)
                 .resizeable(true)
                 .child(MainView::create().build(ctx))
                 .build(ctx)

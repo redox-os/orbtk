@@ -1,8 +1,11 @@
+use std::cell::Cell;
+
 use crate::prelude::*;
 
 #[derive(Default)]
 pub struct ItemsWidgetState {
-    builder: RefCell<Option<Box<dyn Fn(&mut BuildContext) -> Entity + 'static>>>,
+    builder: RefCell<Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
+    count: Cell<usize>,
 }
 
 impl Into<Rc<dyn State>> for ItemsWidgetState {
@@ -13,12 +16,22 @@ impl Into<Rc<dyn State>> for ItemsWidgetState {
 
 impl State for ItemsWidgetState {
     fn update(&self, context: &mut Context<'_>) {
-        if let Some(builder) = &*self.builder.borrow() {
-            if let Some(items_panel) = context.entity_of_child("items_panel") {
-                let mut build_context = context.build_context();
-                let child = builder(&mut build_context);
-                build_context.append_child(items_panel, child);
+        let count = context.widget().clone_or_default::<Count>().0;
+
+        if count != self.count.get() {
+            if let Some(builder) = &*self.builder.borrow() {
+                if let Some(items_panel) = context.entity_of_child("items_panel") {
+                    context.clear_children_of(items_panel);
+                    let mut build_context = context.build_context();
+
+                    for i in 0..count {
+                        let child = builder(&mut build_context, i);
+                        build_context.append_child(items_panel, child);
+                    }
+                }
             }
+
+            self.count.set(count);
         }
     }
 }
@@ -46,13 +59,19 @@ widget!(
         /// Sets or shares the orientation property.
         orientation: Orientation,
 
+        /// Sets or shared the items_count.
+        items_count: Count,
+
         /// Sets or shares the css selector property.
         selector: Selector
     }
 );
 
 impl ItemsWidget {
-    pub fn items_builder<F: Fn(&mut BuildContext) -> Entity + 'static>(self, builder: F) -> Self {
+    pub fn items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(
+        self,
+        builder: F,
+    ) -> Self {
         *self.clone_state().builder.borrow_mut() = Some(Box::new(builder));
         self
     }
