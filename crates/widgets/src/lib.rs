@@ -26,6 +26,7 @@ pub use self::text_block::*;
 pub use self::text_box::*;
 pub use self::toggle_button::*;
 pub use self::window::*;
+pub use self::progressbar::*;
 
 mod button;
 // mod canvas_widget;
@@ -42,3 +43,4 @@ mod text_block;
 mod text_box;
 mod toggle_button;
 mod window;
+mod progressbar;

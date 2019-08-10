@@ -5,11 +5,23 @@ use orbtk::prelude::*;
 #[derive(Default)]
 pub struct MainViewState {
     counter: Cell<i32>,
+    progress: Cell<f64>,
 }
 
 impl MainViewState {
     fn increment(&self) {
-        self.counter.set(self.counter.get() + 1)
+        self.counter.set(self.counter.get() + 1);
+    }
+
+    fn changeProgress(&self) {
+        if self.progress.get() >= 0.9
+        {
+            self.progress.set(0.0);
+        }
+        else
+        {
+            self.progress.set(self.progress.get() + 0.1);
+        }
     }
 }
 
@@ -18,6 +30,10 @@ impl State for MainViewState {
         if let Some(button_count_text) = context.widget().try_get_mut::<Text>() {
             button_count_text.0 = String16::from(format!("Button count: {}", self.counter.get()));
         }
+
+
+        let mut bar = context.child_by_id("progress").unwrap();
+        bar.set(Value::from(self.progress.get()));
     }
 }
 
@@ -30,6 +46,7 @@ fn create_header(context: &mut BuildContext, text: &str, grid: usize, column: us
         .build(context)
 }
 
+
 widget!(
     MainView<MainViewState> {
         count_text: Text
@@ -39,6 +56,7 @@ widget!(
 impl Template for MainView {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
         let state = self.clone_state();
+        let state_two = self.clone_state();
 
         self.name("MainView").count_text("Button count: 0").child(
             Grid::create()
@@ -53,6 +71,8 @@ impl Template for MainView {
                 )
                 .rows(
                     Rows::create()
+                        .row("Auto")
+                        .row("Auto")
                         .row("Auto")
                         .row("Auto")
                         .row("Auto")
@@ -107,6 +127,26 @@ impl Template for MainView {
                         .margin((0.0, 8.0, 0.0, 0.0))
                         .attach(GridColumn(0))
                         .attach(GridRow(5))
+                        .build(context),
+                )
+                .child(
+                    Button::create()
+                        .text("Lets make some progress!")
+                        .margin((0.0, 8.0, 0.0, 0.0))
+                        .attach(GridColumn(0))
+                        .attach(GridRow(6))
+                        .on_click(move  |_| {
+                            state_two.changeProgress();
+                            true
+                        })
+                        .build(context),
+                )
+                .child(
+                    ProgressBar::create()
+                        .selector(SelectorValue::from("progress").id("progress"))
+                        .margin((0.0, 8.0, 0.0, 0.0))
+                        .attach(GridColumn(0))
+                        .attach(GridRow(7))
                         .build(context),
                 )
                 // Column 2

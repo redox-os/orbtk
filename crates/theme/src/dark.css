@@ -36,6 +36,16 @@ grid {
     background: transparent;
 }
 
+progressbar {
+    border-color: #adb3b8;
+    background: black;
+}
+
+progressbar-indicator {
+    border-radius: 1;
+    background: #F8DE4C;
+}
+
 switch {
     border-radius: 2;
     border-width: 1;
