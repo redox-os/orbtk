@@ -43,7 +43,7 @@ impl Application {
         let running = Rc::new(Cell::new(true));
 
         let mut context = BuildContext::new(
-            &mut world,
+            world.entity_component_manager(),
             render_objects.clone(),
             layouts.clone(),
             handlers.clone(),
@@ -53,27 +53,31 @@ impl Application {
         let window = create_fn(&mut context);
 
         {
-            let tree: &mut Tree = world.entity_container();
-            tree.root = window;
+            let tree: &mut Tree = world.entity_component_manager().entity_store_mut();
+            tree.set_root(window);
         }
 
         let title = world
             .entity_component_manager()
+            .component_store()
             .borrow_component::<Title>(window)
             .unwrap()
             .clone();
         let resizeable = world
             .entity_component_manager()
+            .component_store()
             .borrow_component::<Resizeable>(window)
             .unwrap()
             .clone();
         let position = world
             .entity_component_manager()
+            .component_store()
             .borrow_component::<Pos>(window)
             .unwrap()
             .clone();
         let constraint = world
             .entity_component_manager()
+            .component_store()
             .borrow_component::<Constraint>(window)
             .unwrap()
             .clone();
@@ -126,6 +130,9 @@ impl Application {
 
         world.register_init_system(InitSystem {
             shell: window_shell.clone(),
+            layouts: layouts.clone(),
+            render_objects: render_objects.clone(),
+            handlers: handlers.clone(),
             states: states.clone(),
         });
 
@@ -142,6 +149,9 @@ impl Application {
         world
             .create_system(StateSystem {
                 shell: window_shell.clone(),
+                layouts: layouts.clone(),
+                render_objects: render_objects.clone(),
+                handlers: handlers.clone(),
                 states: states.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -162,6 +172,9 @@ impl Application {
         world
             .create_system(PostLayoutStateSystem {
                 shell: window_shell.clone(),
+                layouts: layouts.clone(),
+                render_objects: render_objects.clone(),
+                handlers: handlers.clone(),
                 states: states.clone(),
                 update: update.clone(),
                 running: running.clone(),
@@ -172,7 +185,10 @@ impl Application {
         world
             .create_system(RenderSystem {
                 shell: window_shell.clone(),
+                layouts: layouts.clone(),
                 render_objects: render_objects.clone(),
+                handlers: handlers.clone(),
+                states: states.clone(),
                 update: update.clone(),
                 running: running.clone(),
             })

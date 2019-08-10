@@ -254,7 +254,9 @@ impl Template for TextBox {
                                     .scroll_mode(("None", "None"))
                                     .child(
                                         TextBlock::create()
-                                            .selector(SelectorValue::default().clone().id("text_block"))
+                                            .selector(
+                                                SelectorValue::default().clone().id("text_block"),
+                                            )
                                             .vertical_alignment("Center")
                                             .foreground(id)
                                             .text(id)

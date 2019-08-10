@@ -2,12 +2,13 @@ use crate::{
     css_engine::{Selector as SelectorValue, Specificity},
     prelude::*,
     properties::{get_property, PropertySource},
-    Entity, EntityComponentManager,
+    Entity,
 };
 
 property!(
     /// `Selector` describes the css selector of a widget.
-    Selector(SelectorValue) : &str, String
+    Selector(SelectorValue) : &str,
+    String
 );
 
 // --- Trait implementations ---

@@ -9,7 +9,7 @@ keywords = ["ui", "api"]
 edition = "2018"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-orbclient = "0.3.22"
+orbclient = "0.3.24"
 
 [dependencies]
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }

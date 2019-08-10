@@ -1,3 +1,5 @@
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+
 use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{prelude::*, render::*, shell::WindowShell, tree::Tree, utils::*};
@@ -6,53 +8,128 @@ use super::{MessageBox, WidgetContainer};
 
 /// The `Context` is provides access for the states to objects they could work with.
 pub struct Context<'a> {
-    ecm: &'a mut EntityComponentManager,
-    tree: &'a Tree,
+    ecm: &'a mut EntityComponentManager<Tree>,
     window_shell: &'a mut WindowShell<WindowAdapter>,
     pub entity: Entity,
     pub theme: &'a ThemeValue,
+    render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+    layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+    handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
+    states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
 }
 
 impl<'a> Context<'a> {
     /// Creates a new container.
     pub fn new(
         entity: Entity,
-        ecm: &'a mut EntityComponentManager,
-        tree: &'a Tree,
+        ecm: &'a mut EntityComponentManager<Tree>,
         window_shell: &'a mut WindowShell<WindowAdapter>,
         theme: &'a ThemeValue,
+        render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+        layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+        handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
+        states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     ) -> Self {
         Context {
             entity,
             ecm,
-            tree,
             window_shell,
             theme,
+            render_objects,
+            layouts,
+            handlers,
+            states,
         }
     }
 
     /// Returns the widget of the current state context.
     pub fn widget(&mut self) -> WidgetContainer<'_> {
-        WidgetContainer::new(self.entity, &mut self.ecm)
+        WidgetContainer::new(self.entity, self.ecm)
+    }
+
+    /// Returns the current build context.
+    pub fn build_context(&mut self) -> BuildContext {
+        BuildContext::new(
+            self.ecm,
+            self.render_objects.clone(),
+            self.layouts.clone(),
+            self.handlers.clone(),
+            self.states.clone(),
+        )
+    }
+
+    /// Appends a child widget to the given parent.
+    pub fn append_child_to<W: Widget>(&mut self, child: W, parent: Entity) {
+        let mut build_context = self.build_context();
+        let child = child.build(&mut build_context);
+        build_context.append_child(parent, child);
+    }
+
+    /// Appends a child to the current widget.
+    pub fn append_child<W: Widget>(&mut self, child: W) {
+        self.append_child_to(child, self.entity);
+    }
+
+    /// Clears all children of the current widget.
+    pub fn clear_children(&mut self) {
+        self.clear_children_of(self.entity);
+    }
+
+    /// Clears all children of the given widget.
+    pub fn clear_children_of(&mut self, parent: Entity) {
+        loop {
+            if self.ecm.entity_store().children[&parent].len() == 0 {
+                break;
+            }
+
+            let child = self.ecm.entity_store().children[&parent][0];
+
+            self.ecm.remove_entity(child);
+        }
     }
 
     /// Returns the window widget.
     pub fn window(&mut self) -> WidgetContainer<'_> {
-        WidgetContainer::new(self.tree.root, &mut self.ecm)
+        WidgetContainer::new(self.ecm.entity_store().root, self.ecm)
+    }
+
+    /// Returns the entity id of an child by the given name.
+    pub fn entity_of_child(&mut self, id: impl Into<String>) -> Option<Entity> {
+        let id = id.into();
+
+        let mut current_node = self.entity;
+
+        loop {
+            if let Ok(selector) = self
+                .ecm
+                .component_store()
+                .borrow_component::<Selector>(current_node)
+            {
+                if let Some(child_id) = &selector.0.id {
+                    if child_id.eq(&id) {
+                        return Some(current_node);
+                    }
+                }
+            }
+
+            let mut it = self.ecm.entity_store().start_node(current_node).into_iter();
+            it.next();
+
+            if let Some(node) = it.next() {
+                current_node = node;
+            } else {
+                break;
+            }
+        }
+
+        None
     }
 
     /// Returns a child of the widget of the current state referenced by css `id`.
     /// If the no id is defined None will returned.
-    pub fn child_by_id<S: Into<String>>(&mut self, id: S) -> Option<WidgetContainer<'_>> {
-        let id = id.into();
-        for child in self.tree.start_node(self.entity).into_iter() {
-            if let Ok(selector) = self.ecm.borrow_component::<Selector>(child) {
-                if let Some(child_id) = &selector.0.id {
-                    if child_id.eq(&id) {
-                        return Some(WidgetContainer::new(child, &mut self.ecm));
-                    }
-                }
-            }
+    pub fn child_by_id(&mut self, id: impl Into<String>) -> Option<WidgetContainer<'_>> {
+        if let Some(child) = self.entity_of_child(id) {
+            return Some(WidgetContainer::new(child, self.ecm));
         }
 
         None
@@ -61,33 +138,35 @@ impl<'a> Context<'a> {
     /// Returns the child of the current widget.
     /// If the index is out of the children index bounds or the widget has no children None will be returned.
     pub fn widget_from_child_index(&mut self, index: usize) -> Option<WidgetContainer<'_>> {
-        if index >= self.tree.children[&self.entity].len() {
+        if index >= self.ecm.entity_store().children[&self.entity].len() {
             return None;
         }
 
-        Some(WidgetContainer::new(
-            self.tree.children[&self.entity][index],
-            &mut self.ecm,
-        ))
+        let entity = self.ecm.entity_store().children[&self.entity][index];
+
+        Some(WidgetContainer::new(entity, self.ecm))
     }
 
     /// Returns the parent of the current widget.
     /// If the current widget is the root None will be returned.
     pub fn parent_widget(&mut self) -> Option<WidgetContainer<'_>> {
-        if self.tree.parent[&self.entity] == None {
+        if self.ecm.entity_store().parent[&self.entity] == None {
             return None;
         }
 
-        Some(WidgetContainer::new(
-            self.tree.parent[&self.entity].unwrap(),
-            &mut self.ecm,
-        ))
+        let entity = self.ecm.entity_store().parent[&self.entity].unwrap();
+
+        Some(WidgetContainer::new(entity, self.ecm))
     }
 
     /// Sends a message to the widget with the given id over the message channel.
     pub fn send_message(&mut self, target_widget: &str, message: impl Into<MessageBox>) {
         let mut entity = None;
-        if let Ok(global) = self.ecm.borrow_component::<Global>(0.into()) {
+        if let Ok(global) = self
+            .ecm
+            .component_store()
+            .borrow_component::<Global>(0.into())
+        {
             if let Some(en) = global.id_map.get(target_widget) {
                 entity = Some(*en);
             }
@@ -251,8 +330,4 @@ impl<'a> Context<'a> {
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
         self.window_shell.render_context_2_d()
     }
-
-    // pub fn next_message(&mut self) -> MessageBox {
-    //     self.adapter.messages.take(key: &Q)
-    // }
 }

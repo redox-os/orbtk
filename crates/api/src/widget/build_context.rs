@@ -1,6 +1,6 @@
 use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
-use dces::prelude::{Component, ComponentBox, Entity, SharedComponentBox, World};
+use dces::prelude::{Component, ComponentBox, Entity, EntityComponentManager, SharedComponentBox};
 
 use crate::{prelude::*, tree::Tree};
 
@@ -8,7 +8,7 @@ use super::State;
 
 /// Used to create an entity for a widget with its properties as components.
 pub struct BuildContext<'a> {
-    world: &'a mut World<Tree>,
+    ecm: &'a mut EntityComponentManager<Tree>,
     render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
@@ -18,14 +18,14 @@ pub struct BuildContext<'a> {
 impl<'a> BuildContext<'a> {
     /// Creates a new `BuildContext`.
     pub fn new(
-        world: &'a mut World<Tree>,
+        ecm: &'a mut EntityComponentManager<Tree>,
         render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
         layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
         states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     ) -> Self {
         BuildContext {
-            world,
+            ecm,
             render_objects,
             layouts,
             handlers,
@@ -35,43 +35,35 @@ impl<'a> BuildContext<'a> {
 
     /// Creates a new entity.
     pub fn create_entity(&mut self) -> Entity {
-        self.world.create_entity().build()
+        self.ecm.create_entity().build()
     }
 
     /// Appends a child to a parent.
     pub fn append_child(&mut self, parent: Entity, child: Entity) {
-        self.world
-            .entity_container()
+        self.ecm
+            .entity_store_mut()
             .append_child(parent, child)
             .unwrap();
     }
 
     /// Registers a property as component.
     pub fn register_property<P: Component>(&mut self, widget: Entity, property: P) {
-        self.world
-            .entity_component_manager()
-            .register_component(widget, property);
+        self.ecm.register_component(widget, property);
     }
 
     /// Registers a property box as component.
     pub fn register_property_box(&mut self, widget: Entity, property: ComponentBox) {
-        self.world
-            .entity_component_manager()
-            .register_component_box(widget, property);
+        self.ecm.register_component_box(widget, property);
     }
 
     /// Registers a shared property.
     pub fn register_shared_property<P: Component>(&mut self, target: Entity, source: Entity) {
-        self.world
-            .entity_component_manager()
-            .register_shared_component::<P>(target, source);
+        self.ecm.register_shared_component::<P>(target, source);
     }
 
     /// Registers a shared component box.
     pub fn register_property_shared_box(&mut self, widget: Entity, property: SharedComponentBox) {
-        self.world
-            .entity_component_manager()
-            .register_shared_component_box(widget, property);
+        self.ecm.register_shared_component_box(widget, property);
     }
 
     /// Registers a state with a widget.

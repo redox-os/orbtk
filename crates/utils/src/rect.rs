@@ -72,7 +72,7 @@ pub trait Size {
 
 impl From<(f64, f64, f64, f64)> for Rect {
     fn from(t: (f64, f64, f64, f64)) -> Self {
-       Rect::new(t.0, t.1, t.2, t.3)
+        Rect::new(t.0, t.1, t.2, t.3)
     }
 }
 

@@ -2,7 +2,9 @@ use crate::{prelude::*, utils::prelude::*};
 
 property!(
     /// `Padding` describes the inner widget space.
-    Padding(Thickness) : f64, (f64, f64), (f64, f64, f64, f64)
+    Padding(Thickness) : f64,
+    (f64, f64),
+    (f64, f64, f64, f64)
 );
 
 // --- Trait implementations ---

@@ -1,4 +1,4 @@
-pub use dces::prelude::{Entity, EntityComponentManager};
+pub use dces::prelude::{ComponentStore, Entity, EntityComponentManager};
 
 pub use crate::{
     application::*,
@@ -9,6 +9,7 @@ pub use crate::{
     property,
     render_object::*,
     systems::*,
+    tree::Tree,
     widget,
     widget::*,
 };

@@ -4,7 +4,7 @@ use std::{
     rc::Rc,
 };
 
-use dces::prelude::{Entity, EntityComponentManager};
+use dces::prelude::Entity;
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
@@ -28,18 +28,17 @@ impl Layout for FixedSizeLayout {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        ecm: &mut EntityComponentManager,
-        tree: &Tree,
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if Visibility::get(entity, ecm) == VisibilityValue::Collapsed {
+        if Visibility::get(entity, ecm.component_store()) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get(entity, ecm);
-        let vertical_alignment = VerticalAlignment::get(entity, ecm);
+        let horizontal_alignment = HorizontalAlignment::get(entity, ecm.component_store());
+        let vertical_alignment = VerticalAlignment::get(entity, ecm.component_store());
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -98,7 +97,10 @@ impl Layout for FixedSizeLayout {
             });
 
         if let Some(size) = size {
-            if let Ok(constraint) = ecm.borrow_mut_component::<Constraint>(entity) {
+            if let Ok(constraint) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Constraint>(entity)
+            {
                 constraint.set_width(size.0 as f64);
                 constraint.set_height(size.1 as f64);
             }
@@ -106,7 +108,7 @@ impl Layout for FixedSizeLayout {
 
         // -- todo will be removed after orbgl merge --
 
-        let constraint = Constraint::get(entity, ecm);
+        let constraint = Constraint::get(entity, ecm.component_store());
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());
@@ -118,14 +120,25 @@ impl Layout for FixedSizeLayout {
                 .set_height(constraint.height());
         }
 
-        for child in &tree.children[&entity] {
-            if let Some(child_layout) = layouts.borrow().get(child) {
-                let dirty = child_layout
-                    .measure(render_context_2_d, *child, ecm, tree, layouts, theme)
-                    .dirty()
-                    || self.desired_size.borrow().dirty();
+        if ecm.entity_store().children[&entity].len() > 0 {
+            let mut index = 0;
 
-                self.desired_size.borrow_mut().set_dirty(dirty);
+            loop {
+                let child = ecm.entity_store().children[&entity][index];
+                if let Some(child_layout) = layouts.borrow().get(&child) {
+                    let dirty = child_layout
+                        .measure(render_context_2_d, child, ecm, layouts, theme)
+                        .dirty()
+                        || self.desired_size.borrow().dirty();
+
+                    self.desired_size.borrow_mut().set_dirty(dirty);
+                }
+
+                if index + 1 < ecm.entity_store().children[&entity].len() {
+                    index += 1;
+                } else {
+                    break;
+                }
             }
         }
 
@@ -137,8 +150,7 @@ impl Layout for FixedSizeLayout {
         render_context_2_d: &mut RenderContext2D,
         _parent_size: (f64, f64),
         entity: Entity,
-        ecm: &mut EntityComponentManager,
-        tree: &Tree,
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
@@ -146,25 +158,38 @@ impl Layout for FixedSizeLayout {
             return self.desired_size.borrow().size();
         }
 
-        if let Ok(bounds) = ecm.borrow_mut_component::<Bounds>(entity) {
+        if let Ok(bounds) = ecm
+            .component_store_mut()
+            .borrow_mut_component::<Bounds>(entity)
+        {
             bounds.set_width(self.desired_size.borrow().width());
             bounds.set_height(self.desired_size.borrow().height());
         }
 
-        for child in &tree.children[&entity] {
-            if let Some(child_layout) = layouts.borrow().get(child) {
-                child_layout.arrange(
-                    render_context_2_d,
-                    (
-                        self.desired_size.borrow().width(),
-                        self.desired_size.borrow().height(),
-                    ),
-                    *child,
-                    ecm,
-                    tree,
-                    layouts,
-                    theme,
-                );
+        if ecm.entity_store().children[&entity].len() > 0 {
+            let mut index = 0;
+
+            loop {
+                let child = ecm.entity_store().children[&entity][index];
+                if let Some(child_layout) = layouts.borrow().get(&child) {
+                    child_layout.arrange(
+                        render_context_2_d,
+                        (
+                            self.desired_size.borrow().width(),
+                            self.desired_size.borrow().height(),
+                        ),
+                        child,
+                        ecm,
+                        layouts,
+                        theme,
+                    );
+                }
+
+                if index + 1 < ecm.entity_store().children[&entity].len() {
+                    index += 1;
+                } else {
+                    break;
+                }
             }
         }
 

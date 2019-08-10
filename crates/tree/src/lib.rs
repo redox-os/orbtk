@@ -19,12 +19,9 @@ tree.append_child(0, 1);
 
  */
 
-use std::{
-    cell::{Cell, RefCell},
-    collections::BTreeMap,
-};
+use std::{cell::Cell, collections::BTreeMap};
 
-use dces::prelude::{Entity, EntityContainer};
+use dces::prelude::{Entity, EntityStore};
 
 pub mod prelude;
 
@@ -44,7 +41,7 @@ pub struct Tree {
     pub root: Entity,
     pub children: BTreeMap<Entity, Vec<Entity>>,
     pub parent: BTreeMap<Entity, Option<Entity>>,
-    iterator_start_node: Cell<Entity>,
+    iterator_start_node: Cell<Option<Entity>>,
 }
 
 impl Tree {
@@ -53,9 +50,9 @@ impl Tree {
         Tree::default()
     }
 
-    /// Configure the tree iterator with a start node.
+    // /// Configure the tree iterator with a start node.
     pub fn start_node(&self, start_node: impl Into<Entity>) -> &Self {
-        self.iterator_start_node.set(start_node.into());
+        self.iterator_start_node.set(Some(start_node.into()));
         self
     }
 
@@ -64,6 +61,12 @@ impl Tree {
         let entity = entity.into();
         self.children.insert(entity, vec![]);
         self.parent.insert(entity, None);
+    }
+
+    /// Sets the root.
+    pub fn set_root(&mut self, root: impl Into<Entity>) {
+        self.root = root.into();
+        // self.iterator_start_node.set(self.root);
     }
 
     /// Appends a `child` entity to the given `parent` entity.
@@ -95,21 +98,23 @@ impl Tree {
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
-
-    fn request_start_node(&self) -> Entity {
-        let start_node = self.iterator_start_node.get();
-        self.iterator_start_node.set(self.root);
-        start_node
-    }
 }
 
-impl EntityContainer for Tree {
+impl EntityStore for Tree {
     fn register_entity(&mut self, entity: impl Into<Entity>) {
         self.register_node(entity.into());
     }
 
     fn remove_entity(&mut self, entity: impl Into<Entity>) {
         let entity = entity.into();
+
+        if let Some(parent_index) = self.parent[&entity] {
+            if let Some(parent_children) = self.children.get_mut(&parent_index) {
+                let index = parent_children.iter().position(|&r| r == entity).unwrap();
+                parent_children.remove(index);
+            }
+        }
+
         self.children.remove(&entity);
         self.parent.remove(&entity);
     }
@@ -120,12 +125,20 @@ impl<'a> IntoIterator for &'a Tree {
     type IntoIter = TreeIterator<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
-        let start_node = self.request_start_node();
+        let start_node = {
+            if let Some(start_node) = self.iterator_start_node.get() {
+                start_node
+            } else {
+                self.root
+            }
+        };
+
+        self.iterator_start_node.set(None);
 
         TreeIterator {
             tree: self,
-            path: RefCell::new(vec![]),
             start_node,
+            current_node: None,
         }
     }
 }
@@ -133,54 +146,43 @@ impl<'a> IntoIterator for &'a Tree {
 /// Used to create an iterator for the tree.
 pub struct TreeIterator<'a> {
     tree: &'a Tree,
-    path: RefCell<Vec<Entity>>,
     start_node: Entity,
+    current_node: Option<Entity>,
 }
 
 impl<'a> Iterator for TreeIterator<'a> {
     type Item = Entity;
 
     fn next(&mut self) -> Option<Entity> {
-        let mut path = self.path.borrow_mut();
-        let mut result = None;
-
-        if path.is_empty() {
-            result = Some(self.start_node);
-        } else {
-            let mut current_node = path[path.len() - 1];
-
-            // if current node has children return the first child
-            if !self.tree.children[&current_node].is_empty() {
-                result = Some(self.tree.children[&current_node][0]);
+        if let Some(node) = self.current_node {
+            if self.tree.children[&node].len() > 0 {
+                self.current_node = Some(self.tree.children[&node][0]);
+                return self.current_node;
             } else {
-                // if the node doesn't have kids check its siblings
+                let mut tree_node = node;
                 loop {
-                    path.pop();
+                    if let Some(parent) = self.tree.parent[&tree_node] {
+                        let siblings = &self.tree.children[&parent];
 
-                    if path.is_empty() {
-                        break;
-                    }
+                        let sibling_index =
+                            siblings.iter().position(|&r| r == tree_node).unwrap() + 1;
 
-                    let parent = self.tree.parent[&current_node];
-                    let siblings = &self.tree.children[&parent.unwrap()];
-                    let sibling_index =
-                        siblings.iter().position(|&r| r == current_node).unwrap() + 1;
-
-                    if sibling_index < siblings.len() {
-                        result = Some(siblings[sibling_index]);
-                        break;
+                        if sibling_index < siblings.len() {
+                            self.current_node = Some(siblings[sibling_index]);
+                            return self.current_node;
+                        } else {
+                            tree_node = parent;
+                        }
                     } else {
-                        current_node = parent.unwrap();
+                        // root
+                        return None;
                     }
                 }
             }
         }
 
-        if let Some(result) = result {
-            path.push(result);
-        }
-
-        result
+        self.current_node = Some(self.start_node);
+        self.current_node
     }
 }
 

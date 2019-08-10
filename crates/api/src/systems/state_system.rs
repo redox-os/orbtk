@@ -12,6 +12,9 @@ use crate::{prelude::*, shell::WindowShell, tree::Tree};
 pub struct StateSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
 }
@@ -79,24 +82,41 @@ impl StateSystem {
 }
 
 impl System<Tree> for StateSystem {
-    fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
         if !self.update.get() || !self.running.get() {
             return;
         }
 
-        let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
+        let root = ecm.entity_store().root;
+
+        let theme = ecm
+            .component_store()
+            .borrow_component::<Theme>(root)
+            .unwrap()
+            .0
+            .clone();
         let window_shell = &mut self.shell.borrow_mut();
+        let mut current_node = root;
 
-        let mut context = Context::new(tree.root, ecm, tree, window_shell, &theme);
-
-        for node in tree.into_iter() {
+        loop {
             let mut skip = false;
-            context.entity = node;
+
+            let mut context = Context::new(
+                current_node,
+                ecm,
+                window_shell,
+                &theme,
+                self.render_objects.clone(),
+                self.layouts.clone(),
+                self.handlers.clone(),
+                self.states.clone(),
+            );
+
             {
                 let mut widget = context.widget();
 
                 let has_default_flags = self.has_default_flags(&widget);
-                if !has_default_flags && !self.states.borrow().contains_key(&node) {
+                if !has_default_flags && !self.states.borrow().contains_key(&current_node) {
                     skip = true;
                 }
 
@@ -106,12 +126,21 @@ impl System<Tree> for StateSystem {
             }
 
             if !skip {
-                if let Some(state) = self.states.borrow().get(&node) {
+                if let Some(state) = self.states.borrow().get(&current_node) {
                     state.update(&mut context);
                 }
             }
 
             context.update_theme_properties();
+
+            let mut it = ecm.entity_store().start_node(current_node).into_iter();
+            it.next();
+
+            if let Some(node) = it.next() {
+                current_node = node;
+            } else {
+                break;
+            }
         }
     }
 }
@@ -120,20 +149,39 @@ impl System<Tree> for StateSystem {
 pub struct PostLayoutStateSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
 }
 
 impl System<Tree> for PostLayoutStateSystem {
-    fn run(&self, tree: &Tree, ecm: &mut EntityComponentManager) {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
         if !self.update.get() || !self.running.get() {
             return;
         }
 
-        let window_shell = &mut self.shell.borrow_mut();
-        let theme = ecm.borrow_component::<Theme>(tree.root).unwrap().0.clone();
+        let root = ecm.entity_store().root;
 
-        let mut context = Context::new(tree.root, ecm, tree, window_shell, &theme);
+        let window_shell = &mut self.shell.borrow_mut();
+        let theme = ecm
+            .component_store()
+            .borrow_component::<Theme>(root)
+            .unwrap()
+            .0
+            .clone();
+
+        let mut context = Context::new(
+            root,
+            ecm,
+            window_shell,
+            &theme,
+            self.render_objects.clone(),
+            self.layouts.clone(),
+            self.handlers.clone(),
+            self.states.clone(),
+        );
 
         for (node, state) in &*self.states.borrow() {
             context.entity = *node;
