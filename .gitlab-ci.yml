@@ -1,4 +1,4 @@
-image: "redoxos/redoxer:latest"
+image: "rust:latest"
 
 stages:
   - build
