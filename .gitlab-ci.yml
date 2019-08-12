@@ -33,7 +33,6 @@ build:web:
       - target/
 
 build:redox:
- build:redox:
   stage: build
   script:
     - redoxer build --verbose
