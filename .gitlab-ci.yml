@@ -30,16 +30,14 @@ build:web:
       - cargo/
       - target/
 
-#build:redox:
-#  stage: build
-#  variables:
-#        TARGET: x86_64-unknown-redox
-#  script:
-#    - redoxer build --verbose
-#  cache:
-#    paths:
-#      - cargo/
-#      - target/
+build:redox:
+  stage: build
+  script:
+    - redoxer build --verbose
+  cache:
+    paths:
+      - cargo/
+      - target/
 
 test:linux:
   stage: test
