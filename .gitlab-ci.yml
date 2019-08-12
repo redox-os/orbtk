@@ -1,4 +1,4 @@
-image: "rust:latest"
+image: 'rust:latest'
 
 stages:
   - build
@@ -12,9 +12,6 @@ before_script:
 
 build:linux:
   stage: build
-  before_script:
-    - add-apt-repository ppa:glasen/freetype2
-    - apt-get update && apt-get -y install cmake freetype2-demos
   script:
     - cargo build
   cache:
