@@ -1,10 +1,30 @@
 use crate::prelude::*;
 
+/// The `CheckBoxState` handles the text processing of the `CheckBox` widget.
+#[derive(Default)]
+pub struct CheckBoxState {}
+
+impl PressedState for CheckBoxState {}
+impl SelectedState for CheckBoxState {}
+
+impl Into<Rc<dyn State>> for CheckBoxState {
+    fn into(self) -> Rc<dyn State> {
+        Rc::new(self)
+    }
+}
+
+impl State for CheckBoxState {
+    fn update(&self, context: &mut Context<'_>) {
+        self.update_pressed(&mut context.widget());
+        self.update_selected(&mut context.widget());
+    }
+}
+
 widget!(
     /// The `CheckBox` widget can be switch its selected state. It contains a selection box and a text.
     /// 
     /// **CSS element:** `check-box`
-    CheckBox: ClickHandler {
+    CheckBox<CheckBoxState>: ClickHandler {
         /// Sets or shares the background property.
         background: Background,
 

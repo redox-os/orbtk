@@ -112,6 +112,7 @@ impl Template for MainView {
         let add_item_state = self.clone_state();
         let remove_item_state = self.clone_state();
         let list_state = self.clone_state();
+        let list_view_state = self.clone_state();
         let list_count = list_state.list.borrow().len();
 
         self.name("MainView").count_text("Button count: 0").child(
@@ -205,7 +206,14 @@ impl Template for MainView {
                 )
                 .child(
                     Grid::create()
-                        .rows(Rows::create().row("Auto").row(192.0).row("Auto").build())
+                        .rows(
+                            Rows::create()
+                                .row("Auto")
+                                .row(192.0)
+                                .row("Auto")
+                                .row(192.0)
+                                .build(),
+                        )
                         .columns(
                             Columns::create()
                                 .column("*")
@@ -264,6 +272,22 @@ impl Template for MainView {
                                 .min_width(0.0)
                                 .attach(GridColumn(2))
                                 .attach(GridRow(2))
+                                .build(context),
+                        )
+                        .child(
+                            ListView::create()
+                                .attach(GridColumn(0))
+                                .attach(ColumnSpan(3))
+                                .attach(GridRow(3))
+                                .margin((0.0, 16.0, 0.0, 8.0))
+                                .items_builder(move |bc, index| {
+                                    TextBlock::create()
+                                        .margin((0.0, 0.0, 0.0, 2.0))
+                                        .vertical_alignment("Center")
+                                        .text(list_view_state.list.borrow()[index].as_str())
+                                        .build(bc)
+                                })
+                                .items_count(list_count)
                                 .build(context),
                         )
                         .build(context),

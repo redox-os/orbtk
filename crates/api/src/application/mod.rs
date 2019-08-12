@@ -42,15 +42,17 @@ impl Application {
         let update = Rc::new(Cell::new(true));
         let running = Rc::new(Cell::new(true));
 
-        let mut context = BuildContext::new(
-            world.entity_component_manager(),
-            render_objects.clone(),
-            layouts.clone(),
-            handlers.clone(),
-            states.clone(),
-        );
+        let window = {
+            let mut context = BuildContext::new(
+                world.entity_component_manager(),
+                render_objects.clone(),
+                layouts.clone(),
+                handlers.clone(),
+                states.clone(),
+            );
 
-        let window = create_fn(&mut context);
+            create_fn(&mut context)
+        };
 
         {
             let tree: &mut Tree = world.entity_component_manager().entity_store_mut();

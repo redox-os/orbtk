@@ -4,11 +4,16 @@ use crate::prelude::*;
 #[derive(Default)]
 pub struct SwitchState;
 
+impl SelectedState for SwitchState {}
+
 impl State for SwitchState {
     fn update(&self, context: &mut Context<'_>) {
+        self.update_selected(&mut context.widget());
+
         let selected = context.widget().get::<Selected>().0;
 
         let mut switch_toggle = context.child_by_id("SwitchSwitchToggle").unwrap();
+        self.update_selected(&mut switch_toggle);
 
         if selected {
             switch_toggle.set(HorizontalAlignment::from("End"));
@@ -73,6 +78,7 @@ impl Template for Switch {
                         Grid::create()
                             .child(Container::create().size(24.0, 24.0).build(context))
                             .border_radius(1.0)
+                            .attach_by_source::<Selected>(id)
                             .selector(SelectorValue::from("switch-toggle").id("SwitchSwitchToggle"))
                             .vertical_alignment("Center")
                             .horizontal_alignment("Start")

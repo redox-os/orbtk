@@ -16,6 +16,15 @@ pub struct Context<'a> {
     layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
     states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    new_states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+}
+
+impl<'a> Drop for Context<'a> {
+    fn drop(&mut self) {
+        self.states
+            .borrow_mut()
+            .append(&mut self.new_states.borrow_mut());
+    }
 }
 
 impl<'a> Context<'a> {
@@ -39,6 +48,7 @@ impl<'a> Context<'a> {
             layouts,
             handlers,
             states,
+            new_states: Rc::new(RefCell::new(BTreeMap::new())),
         }
     }
 
@@ -54,7 +64,7 @@ impl<'a> Context<'a> {
             self.render_objects.clone(),
             self.layouts.clone(),
             self.handlers.clone(),
-            self.states.clone(),
+            self.new_states.clone(),
         )
     }
 
@@ -135,16 +145,51 @@ impl<'a> Context<'a> {
         None
     }
 
-    /// Returns the child of the current widget.
+    /// Returns a parent of the widget of the current state referenced by css `id`.
+    /// If the no id is defined None will returned.
+    pub fn parent_by_id(&mut self, id: impl Into<String>) -> Option<WidgetContainer<'_>> {
+        let mut current = self.entity;
+        let id = id.into();
+
+        loop {
+            if let Some(parent) = self.ecm.entity_store().parent[&current] {
+                if let Ok(selector) = self
+                    .ecm
+                    .component_store()
+                    .borrow_component::<Selector>(parent)
+                {
+                    if let Some(parent_id) = &selector.0.id {
+                        if parent_id.eq(&id) {
+                            return Some(WidgetContainer::new(parent, self.ecm));
+                        }
+                    }
+                }
+
+                current = parent;
+            } else {
+                break;
+            }
+        }
+
+        None
+    }
+
+    /// Returns the child of the given widget.
     /// If the index is out of the children index bounds or the widget has no children None will be returned.
-    pub fn widget_from_child_index(&mut self, index: usize) -> Option<WidgetContainer<'_>> {
-        if index >= self.ecm.entity_store().children[&self.entity].len() {
+    pub fn child_of_parent(&mut self, parent: Entity, index: usize) -> Option<WidgetContainer<'_>> {
+        if index >= self.ecm.entity_store().children[&parent].len() {
             return None;
         }
 
-        let entity = self.ecm.entity_store().children[&self.entity][index];
+        let entity = self.ecm.entity_store().children[&parent][index];
 
         Some(WidgetContainer::new(entity, self.ecm))
+    }
+
+    /// Returns the child of the current widget.
+    /// If the index is out of the children index bounds or the widget has no children None will be returned.
+    pub fn widget_from_child_index(&mut self, index: usize) -> Option<WidgetContainer<'_>> {
+       self.child_of_parent(self.entity, index)
     }
 
     /// Returns the parent of the current widget.

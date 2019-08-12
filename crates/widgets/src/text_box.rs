@@ -16,11 +16,7 @@ pub struct TextBoxState {
     cursor_x: Cell<f64>,
 }
 
-impl Into<Rc<dyn State>> for TextBoxState {
-    fn into(self) -> Rc<dyn State> {
-        Rc::new(self)
-    }
-}
+impl FocusedState for TextBoxState {}
 
 impl TextBoxState {
     // fn click(&self, point: Point) {
@@ -84,6 +80,7 @@ impl TextBoxState {
 impl State for TextBoxState {
     fn update(&self, context: &mut Context<'_>) {
         let mut widget = context.widget();
+        self.update_focused(&mut widget);
 
         self.focused.set(widget.get::<Focused>().0);
 

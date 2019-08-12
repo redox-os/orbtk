@@ -1,10 +1,22 @@
 use crate::prelude::*;
 
+/// The `ButtonState` handles the text processing of the `Button` widget.
+#[derive(Default)]
+pub struct ButtonState {}
+
+impl PressedState for ButtonState {}
+
+impl State for ButtonState {
+    fn update(&self, context: &mut Context<'_>) {
+        self.update_pressed(&mut context.widget());
+    }
+}
+
 widget!(
     /// The `Button` widget can be clicked by user. It's used to perform an action.
     /// 
     /// **CSS element:** `button`
-    Button: ClickHandler {
+    Button<ButtonState>: ClickHandler {
         /// Sets or shares the background property.
         background: Background,
 

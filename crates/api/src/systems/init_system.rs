@@ -71,22 +71,24 @@ impl System<Tree> for InitSystem {
         loop {
             self.init_id(current_node, ecm.component_store_mut(), root);
 
-            let mut context = Context::new(
-                current_node,
-                ecm,
-                window_shell,
-                &theme,
-                self.render_objects.clone(),
-                self.layouts.clone(),
-                self.handlers.clone(),
-                self.states.clone(),
-            );
+            {
+                let mut context = Context::new(
+                    current_node,
+                    ecm,
+                    window_shell,
+                    &theme,
+                    self.render_objects.clone(),
+                    self.layouts.clone(),
+                    self.handlers.clone(),
+                    self.states.clone(),
+                );
 
-            if let Some(state) = self.states.borrow().get(&current_node) {
-                state.init(&mut context);
+                if let Some(state) = self.states.borrow().get(&current_node) {
+                    state.init(&mut context);
+                }
+
+                self.read_init_from_theme(&mut context);
             }
-
-            self.read_init_from_theme(&mut context);
 
             let mut it = ecm.entity_store().start_node(current_node).into_iter();
             it.next();

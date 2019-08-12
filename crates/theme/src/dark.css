@@ -138,3 +138,30 @@ debug-border {
 #test {
     background: green;
 }
+
+items-widget {
+    border-color: #647b91;
+    border-width: 1;
+    border-radius: 2;
+    padding: 4;
+}
+
+list-view {
+    background: #444e55;
+    border-color: #212121;
+    border-width: 1;
+    border-radius: 2;
+}
+
+list-view-item {
+    font-size: 12;
+    color: #ccdeed;
+    background: transparent;
+    padding-left: 8;
+    padding-right: 8;
+}
+
+list-view-item:selected, list-view-item:active {
+    color: #3b434a;
+    background: #e1bc21;
+}
