@@ -29,13 +29,33 @@ impl State for SwitchState {
             remove_selector_from_widget("selected", &mut context.widget());
         }
 
-        let mut switch_toggle = context.child_by_id("SwitchSwitchToggle").unwrap();
+        let element = context.widget().clone::<Selector>().0.element.unwrap();
 
-        if self.selected.get() {
-            switch_toggle.set(HorizontalAlignment::from("End"));
-        } else {
-            switch_toggle.set(HorizontalAlignment::from("Start"));
+        if let Some(parent) = context.parent_entity_by_element(element) {
+            context.update_theme_properties(parent);
         }
+
+        {
+            let mut switch_toggle = context.child_by_id("SwitchSwitchToggle").unwrap();
+
+            switch_toggle.set(Selected(self.selected.get()));
+
+            if self.selected.get() {
+                add_selector_to_widget("selected", &mut switch_toggle);
+            } else {
+                remove_selector_from_widget("selected", &mut switch_toggle);
+            }
+
+            if self.selected.get() {
+                switch_toggle.set(HorizontalAlignment::from("End"));
+            } else {
+                switch_toggle.set(HorizontalAlignment::from("Start"));
+            }
+        }
+
+        let entity = context.entity_of_child("SwitchSwitchToggle").unwrap();
+
+        context.update_theme_properties(entity);
     }
 }
 
@@ -87,6 +107,7 @@ impl Template for Switch {
             .child(
                 MouseBehavior::create()
                     .pressed(id)
+                    .enabled(id)
                     .selector(id)
                     .on_click(move |_| {
                         state.toggle_selection();

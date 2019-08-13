@@ -79,10 +79,12 @@ impl Template for CheckBox {
             .child(
                 MouseBehavior::create()
                     .pressed(id)
+                    .enabled(id)
                     .selector(id)
                     .child(
                         SelectionBehavior::create()
                             .selected(id)
+                            .enabled(id)
                             .selector(id)
                             .child(
                                 Stack::create()

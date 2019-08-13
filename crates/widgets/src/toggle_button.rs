@@ -81,10 +81,12 @@ impl Template for ToggleButton {
             .child(
                 MouseBehavior::create()
                     .pressed(id)
+                    .enabled(id)
                     .selector(id)
                     .child(
                         SelectionBehavior::create()
                             .selected(id)
+                            .enabled(id)
                             .selector(id)
                             .child(
                                 Container::create()

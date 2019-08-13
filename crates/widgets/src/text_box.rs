@@ -1,5 +1,6 @@
 use std::cell::Cell;
 
+use super::behaviors::FocusBehavior;
 use crate::{
     prelude::*,
     shell::{Key, KeyEvent},
@@ -233,45 +234,54 @@ impl Template for TextBox {
             .size(128.0, 32.0)
             .focused(false)
             .child(
-                Container::create()
-                    .background(id)
-                    .border_radius(id)
-                    .border_thickness(id)
-                    .border_brush(id)
-                    .padding(id)
+                FocusBehavior::create()
+                    .enabled(id)
+                    .focused(id)
+                    .selector(id)
                     .child(
-                        Grid::create()
+                        Container::create()
+                            .background(id)
+                            .border_radius(id)
+                            .border_thickness(id)
+                            .border_brush(id)
+                            .padding(id)
                             .child(
-                                ScrollViewer::create()
-                                    .selector(SelectorValue::default().id("scroll_viewer"))
-                                    .offset(id)
-                                    .scroll_mode(("None", "None"))
+                                Grid::create()
                                     .child(
-                                        TextBlock::create()
-                                            .selector(
-                                                SelectorValue::default().clone().id("text_block"),
+                                        ScrollViewer::create()
+                                            .selector(SelectorValue::default().id("scroll_viewer"))
+                                            .offset(id)
+                                            .scroll_mode(("None", "None"))
+                                            .child(
+                                                TextBlock::create()
+                                                    .selector(
+                                                        SelectorValue::default()
+                                                            .clone()
+                                                            .id("text_block"),
+                                                    )
+                                                    .vertical_alignment("Center")
+                                                    .foreground(id)
+                                                    .text(id)
+                                                    .font(id)
+                                                    .font_size(id)
+                                                    .attach_by_source::<WaterMark>(id)
+                                                    .build(context),
                                             )
-                                            .vertical_alignment("Center")
-                                            .foreground(id)
+                                            .build(context),
+                                    )
+                                    .child(
+                                        Cursor::create()
+                                            .selector(SelectorValue::from("cursor").id("cursor"))
+                                            .margin(0.0)
+                                            .horizontal_alignment("Start")
                                             .text(id)
                                             .font(id)
                                             .font_size(id)
-                                            .attach_by_source::<WaterMark>(id)
+                                            .offset(id)
+                                            .focused(id)
+                                            .selection(id)
                                             .build(context),
                                     )
-                                    .build(context),
-                            )
-                            .child(
-                                Cursor::create()
-                                    .selector(SelectorValue::from("cursor").id("cursor"))
-                                    .margin(0.0)
-                                    .horizontal_alignment("Start")
-                                    .text(id)
-                                    .font(id)
-                                    .font_size(id)
-                                    .offset(id)
-                                    .focused(id)
-                                    .selection(id)
                                     .build(context),
                             )
                             .build(context),

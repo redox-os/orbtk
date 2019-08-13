@@ -22,6 +22,10 @@ impl MouseBehaviorState {
 
 impl State for MouseBehaviorState {
     fn update(&self, context: &mut Context<'_>) {
+        if !context.widget().get::<Enabled>().0 {
+            return;
+        }
+        
         if let Some(action) = self.action.get() {
             match action {
                 Action::Press(_) => {

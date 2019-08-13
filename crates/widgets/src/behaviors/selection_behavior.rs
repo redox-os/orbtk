@@ -16,7 +16,7 @@ impl SelectionBehaviorState {
 
 impl State for SelectionBehaviorState {
     fn update(&self, context: &mut Context<'_>) {
-        if context.widget().get::<Selected>().0 == self.selected.get() {
+        if !context.widget().get::<Enabled>().0 || context.widget().get::<Selected>().0 == self.selected.get() {
             return;
         }
 

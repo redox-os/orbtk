@@ -251,13 +251,33 @@ impl System<Tree> for EventStateSystem {
                     {
                         let mut widget = context.widget();
 
-                        let has_default_flags = self.has_default_flags(&widget);
-                        if !has_default_flags && !self.states.borrow().contains_key(&current_node) {
-                            skip = true;
+                        // handle enabled
+                        if let Some(enabled) = widget.try_clone::<Enabled>() {
+                            let mut remove_disabled = false;
+                            let mut add_disabled = false;
+                            if let Some(selector) = widget.try_get::<Selector>() {
+                                if enabled.0 && selector.0.pseudo_classes.contains("disabled") {
+                                    remove_disabled = true;
+                                } else if !enabled.0
+                                    && !selector.0.pseudo_classes.contains("disabled")
+                                {
+                                    add_disabled = true;
+                                }
+                            }
+
+                            if remove_disabled {
+                                remove_selector_from_widget("disabled", &mut context.widget());
+                                context.update_theme_properties(context.entity);
+                            }
+
+                            if add_disabled {
+                                add_selector_to_widget("disabled", &mut context.widget());
+                                context.update_theme_properties(context.entity);
+                            }
                         }
 
-                        if has_default_flags {
-                            self.update_default_states(&mut widget);
+                        if !self.states.borrow().contains_key(&current_node) {
+                            skip = true;
                         }
                     }
 

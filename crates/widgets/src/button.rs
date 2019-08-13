@@ -76,6 +76,7 @@ impl Template for Button {
             .child(
                 MouseBehavior::create()
                     .pressed(id)
+                    .enabled(id)
                     .selector(id)
                     .child(
                         Container::create()
