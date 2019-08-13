@@ -115,6 +115,8 @@ impl State for TextBoxState {
         } else {
             remove_selector_from_widget("water-mark", &mut widget);
         }
+
+        context.update_theme_properties(context.entity);
     }
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
