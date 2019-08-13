@@ -117,7 +117,7 @@
       "name": "Minimal",
       "program": "${workspaceFolder}/target/debug/examples/minimal",
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build",
+      "preLaunchTask": "build debug",
       "sourceLanguages": [
         "rust"
       ]

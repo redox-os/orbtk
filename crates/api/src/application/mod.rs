@@ -139,26 +139,17 @@ impl Application {
         });
 
         world
-            .create_system(EventSystem {
+            .create_system(EventStateSystem {
                 shell: window_shell.clone(),
                 handlers: handlers.clone(),
                 update: update.clone(),
                 running: running.clone(),
+                mouse_down_nodes: RefCell::new(vec![]),
+                render_objects: render_objects.clone(),
+                states: states.clone(),
+                layouts: layouts.clone(),
             })
             .with_priority(0)
-            .build();
-
-        world
-            .create_system(StateSystem {
-                shell: window_shell.clone(),
-                layouts: layouts.clone(),
-                render_objects: render_objects.clone(),
-                handlers: handlers.clone(),
-                states: states.clone(),
-                update: update.clone(),
-                running: running.clone(),
-            })
-            .with_priority(1)
             .build();
 
         world
@@ -168,7 +159,7 @@ impl Application {
                 update: update.clone(),
                 running: running.clone(),
             })
-            .with_priority(2)
+            .with_priority(1)
             .build();
 
         world
@@ -181,7 +172,7 @@ impl Application {
                 update: update.clone(),
                 running: running.clone(),
             })
-            .with_priority(3)
+            .with_priority(2)
             .build();
 
         world
@@ -194,7 +185,7 @@ impl Application {
                 update: update.clone(),
                 running: running.clone(),
             })
-            .with_priority(4)
+            .with_priority(3)
             .build();
 
         self.runners.push(ShellRunner {

@@ -1,11 +1,11 @@
-use super::helper::PressedHelper;
+use super::behaviors::MouseBehavior;
 use crate::prelude::*;
 
 widget!(
     /// The `Button` widget can be clicked by user. It's used to perform an action.
     /// 
     /// **CSS element:** `button`
-    Button: ClickHandler {
+    Button: MouseHandler {
         /// Sets or shares the background property.
         background: Background,
 
@@ -74,7 +74,7 @@ impl Template for Button {
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
             .child(
-                PressedHelper::create()
+                MouseBehavior::create()
                     .pressed(id)
                     .selector(id)
                     .child(

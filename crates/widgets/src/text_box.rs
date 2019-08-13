@@ -16,8 +16,6 @@ pub struct TextBoxState {
     cursor_x: Cell<f64>,
 }
 
-impl FocusedState for TextBoxState {}
-
 impl TextBoxState {
     // fn click(&self, point: Point) {
     //     println!("Clicked text box point: ({}, {})", point.x, point.y);
@@ -80,7 +78,6 @@ impl TextBoxState {
 impl State for TextBoxState {
     fn update(&self, context: &mut Context<'_>) {
         let mut widget = context.widget();
-        self.update_focused(&mut widget);
 
         self.focused.set(widget.get::<Focused>().0);
 

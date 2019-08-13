@@ -36,7 +36,7 @@ impl InitSystem {
 
     // Read all initial data from css
     fn read_init_from_theme(&self, context: &mut Context) {
-        context.update_theme_properties();
+        context.update_theme_properties(context.entity);
     }
 }
 

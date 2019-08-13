@@ -25,6 +25,8 @@ impl System<Tree> for RenderSystem {
             return;
         }
 
+        let mut shell = &mut self.shell.borrow_mut();
+
         #[cfg(feature = "debug")]
         let debug = true;
         #[cfg(not(feature = "debug"))]
@@ -74,20 +76,21 @@ impl System<Tree> for RenderSystem {
                 }
             }
 
-            if let Some(render_object) = self.render_objects.borrow().get(&current_node) {
-                render_object.render(
-                    &mut Context::new(
-                        current_node,
-                        ecm,
-                        &mut self.shell.borrow_mut(),
-                        &theme,
-                        self.render_objects.clone(),
-                        self.layouts.clone(),
-                        self.handlers.clone(),
-                        self.states.clone(),
-                    ),
-                    &global_position,
+            {
+                let mut context = Context::new(
+                    current_node,
+                    ecm,
+                    &mut shell,
+                    &theme,
+                    self.render_objects.clone(),
+                    self.layouts.clone(),
+                    self.handlers.clone(),
+                    self.states.clone(),
                 );
+
+                if let Some(render_object) = self.render_objects.borrow().get(&current_node) {
+                    render_object.render(&mut context, &global_position);
+                }
             }
 
             // render debug border for each widget
@@ -98,11 +101,8 @@ impl System<Tree> for RenderSystem {
                 {
                     let selector = Selector::from("debug-border");
                     let brush = theme.brush("border-color", &selector.0).unwrap();
-                    self.shell
-                        .borrow_mut()
-                        .render_context_2_d()
-                        .set_stroke_style(brush);
-                    self.shell.borrow_mut().render_context_2_d().stroke_rect(
+                    shell.render_context_2_d().set_stroke_style(brush);
+                    shell.render_context_2_d().stroke_rect(
                         global_position.x + bounds.x(),
                         global_position.y + bounds.y(),
                         bounds.width(),

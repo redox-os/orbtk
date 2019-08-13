@@ -145,6 +145,37 @@ impl<'a> Context<'a> {
         None
     }
 
+    /// Returns the entity of the parent referenced by css `element`.
+    /// If the no id is defined None will returned.
+    pub fn parent_entity_by_element(&mut self, element: impl Into<String>) -> Option<Entity> {
+        let mut current = self.entity;
+        let element = element.into();
+
+        loop {
+            if let Some(parent) = self.ecm.entity_store().parent[&current] {
+                if let Ok(selector) = self
+                    .ecm
+                    .component_store()
+                    .borrow_component::<Selector>(parent)
+                {
+                    if let Some(parent_element) = &selector.0.element {
+                        if parent_element.eq(&element) {
+                            if self.ecm.component_store().is_origin::<Selector>(parent) {
+                                return Some(parent);
+                            }
+                        }
+                    }
+                }
+
+                current = parent;
+            } else {
+                break;
+            }
+        }
+
+        None
+    }
+
     /// Returns a parent of the widget of the current state referenced by css `id`.
     /// If the no id is defined None will returned.
     pub fn parent_by_id(&mut self, id: impl Into<String>) -> Option<WidgetContainer<'_>> {
@@ -190,6 +221,11 @@ impl<'a> Context<'a> {
     /// If the index is out of the children index bounds or the widget has no children None will be returned.
     pub fn widget_from_child_index(&mut self, index: usize) -> Option<WidgetContainer<'_>> {
         self.child_of_parent(self.entity, index)
+    }
+
+    /// Returns the entity of the parent.
+    pub fn entity_of_parent(&mut self) -> Option<Entity> {
+        self.ecm.entity_store().parent[&self.entity]
     }
 
     /// Returns the parent of the current widget.
@@ -251,8 +287,19 @@ impl<'a> Context<'a> {
             .register_event(event, self.entity);
     }
 
+    /// Pushes an event to the event queue.
+    pub fn push_event_by_entity<E: Event>(&mut self, event: E, entity: Entity) {
+        self.window_shell
+            .adapter()
+            .event_queue
+            .register_event(event, entity);
+    }
+
     /// Update all css properties of the current widget by the current theme.
-    pub fn update_theme_properties(&mut self) {
+    pub fn update_theme_properties(&mut self, entity: Entity) {
+        let current_entity = self.entity;
+        self.entity = entity;
+
         if !self.widget().has::<Selector>() {
             return;
         }
@@ -370,6 +417,7 @@ impl<'a> Context<'a> {
         // todo padding, icon_margin
 
         self.widget().get_mut::<Selector>().0.set_dirty(true);
+        self.entity = current_entity;
     }
 
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {

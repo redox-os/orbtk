@@ -306,7 +306,7 @@ impl RenderContext2D {
 
     /// Baseline alignment setting.
     pub fn set_text_baseline(&mut self, _: TextBaseline) {
-        println!("fn set_text_baseline is not implemented for orbclient renderer");
+        // println!("fn set_text_baseline is not implemented for orbclient renderer");
     }
 
     // Fill and stroke style

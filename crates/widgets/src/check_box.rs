@@ -1,30 +1,11 @@
+use super::behaviors::{MouseBehavior, SelectionBehavior};
 use crate::prelude::*;
-
-/// The `CheckBoxState` handles the `CheckBox` widget.
-#[derive(Default)]
-pub struct CheckBoxState {}
-
-impl PressedState for CheckBoxState {}
-impl SelectedState for CheckBoxState {}
-
-impl Into<Rc<dyn State>> for CheckBoxState {
-    fn into(self) -> Rc<dyn State> {
-        Rc::new(self)
-    }
-}
-
-impl State for CheckBoxState {
-    fn update(&self, context: &mut Context<'_>) {
-        self.update_pressed(&mut context.widget());
-        self.update_selected(&mut context.widget());
-    }
-}
 
 widget!(
     /// The `CheckBox` widget can be switch its selected state. It contains a selection box and a text.
     /// 
     /// **CSS element:** `check-box`
-    CheckBox<CheckBoxState>: ClickHandler {
+    CheckBox: MouseHandler {
         /// Sets or shares the background property.
         background: Background,
 
@@ -96,36 +77,48 @@ impl Template for CheckBox {
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
             .child(
-                Stack::create()
-                    .orientation("Horizontal")
+                MouseBehavior::create()
+                    .pressed(id)
+                    .selector(id)
                     .child(
-                        Container::create()
-                            .size(24.0, 24.0)
-                            .background(id)
-                            .border_radius(id)
-                            .border_thickness(id)
-                            .border_brush(id)
-                            .padding(id)
+                        SelectionBehavior::create()
+                            .selected(id)
+                            .selector(id)
                             .child(
-                                FontIconBlock::create()
-                                    .vertical_alignment("Center")
-                                    .horizontal_alignment("Center")
-                                    .icon(id)
-                                    .brush(id)
-                                    .icon_size(id)
-                                    .font(id)
+                                Stack::create()
+                                    .orientation("Horizontal")
+                                    .child(
+                                        Container::create()
+                                            .size(24.0, 24.0)
+                                            .background(id)
+                                            .border_radius(id)
+                                            .border_thickness(id)
+                                            .border_brush(id)
+                                            .padding(id)
+                                            .child(
+                                                FontIconBlock::create()
+                                                    .vertical_alignment("Center")
+                                                    .horizontal_alignment("Center")
+                                                    .icon(id)
+                                                    .brush(id)
+                                                    .icon_size(id)
+                                                    .font(id)
+                                                    .build(context),
+                                            )
+                                            .build(context),
+                                    )
+                                    .child(
+                                        TextBlock::create()
+                                            .vertical_alignment("Center")
+                                            .margin((8.0, 0.0, 0.0, 0.0))
+                                            .foreground(id)
+                                            .text(id)
+                                            .font_size(id)
+                                            .font(id)
+                                            .build(context),
+                                    )
                                     .build(context),
                             )
-                            .build(context),
-                    )
-                    .child(
-                        TextBlock::create()
-                            .vertical_alignment("Center")
-                            .margin((8.0, 0.0, 0.0, 0.0))
-                            .foreground(id)
-                            .text(id)
-                            .font_size(id)
-                            .font(id)
                             .build(context),
                     )
                     .build(context),

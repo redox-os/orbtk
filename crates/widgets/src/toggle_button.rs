@@ -1,31 +1,12 @@
+use super::behaviors::{MouseBehavior, SelectionBehavior};
 use crate::prelude::*;
-
-/// The `ToggleButtonState` handles the `CheckBox` widget.
-#[derive(Default)]
-pub struct ToggleButtonState {}
-
-impl PressedState for ToggleButtonState {}
-impl SelectedState for ToggleButtonState {}
-
-impl Into<Rc<dyn State>> for ToggleButtonState {
-    fn into(self) -> Rc<dyn State> {
-        Rc::new(self)
-    }
-}
-
-impl State for ToggleButtonState {
-    fn update(&self, context: &mut Context<'_>) {
-        self.update_pressed(&mut context.widget());
-        self.update_selected(&mut context.widget());
-    }
-}
 
 widget!(
     /// The `ToggleButton` widget can be clicked by user and could switch between selected / not selected. 
     /// It's used to perform an action.
     /// 
     /// **CSS element:** `toggle-button`
-    ToggleButton<ToggleButtonState>: ClickHandler {
+    ToggleButton: MouseHandler {
         /// Sets or shares the background property.
         background: Background,
 
@@ -98,32 +79,44 @@ impl Template for ToggleButton {
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
             .child(
-                Container::create()
-                    .background(id)
-                    .border_radius(id)
-                    .border_thickness(id)
-                    .border_brush(id)
-                    .padding(id)
+                MouseBehavior::create()
+                    .pressed(id)
+                    .selector(id)
                     .child(
-                        Stack::create()
-                            .orientation("Horizontal")
-                            .vertical_alignment("Center")
-                            .horizontal_alignment("Center")
+                        SelectionBehavior::create()
+                            .selected(id)
+                            .selector(id)
                             .child(
-                                FontIconBlock::create()
-                                    .margin((0.0, 0.0, 2.0, 0.0))
-                                    .icon(id)
-                                    .brush(id)
-                                    .icon_size(id)
-                                    .font(id)
-                                    .build(context),
-                            )
-                            .child(
-                                TextBlock::create()
-                                    .foreground(id)
-                                    .text(id)
-                                    .font_size(id)
-                                    .font(id)
+                                Container::create()
+                                    .background(id)
+                                    .border_radius(id)
+                                    .border_thickness(id)
+                                    .border_brush(id)
+                                    .padding(id)
+                                    .child(
+                                        Stack::create()
+                                            .orientation("Horizontal")
+                                            .vertical_alignment("Center")
+                                            .horizontal_alignment("Center")
+                                            .child(
+                                                FontIconBlock::create()
+                                                    .margin((0.0, 0.0, 2.0, 0.0))
+                                                    .icon(id)
+                                                    .brush(id)
+                                                    .icon_size(id)
+                                                    .font(id)
+                                                    .build(context),
+                                            )
+                                            .child(
+                                                TextBlock::create()
+                                                    .foreground(id)
+                                                    .text(id)
+                                                    .font_size(id)
+                                                    .font(id)
+                                                    .build(context),
+                                            )
+                                            .build(context),
+                                    )
                                     .build(context),
                             )
                             .build(context),

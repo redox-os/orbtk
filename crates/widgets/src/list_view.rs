@@ -17,16 +17,22 @@ impl State for ListViewState {
             if let Some(builder) = &*self.builder.borrow() {
                 if let Some(items_panel) = context.entity_of_child("items_panel") {
                     context.clear_children_of(items_panel);
-                    let mut build_context = context.build_context();
 
                     for i in 0..count {
-                        let child = builder(&mut build_context, i);
-                        let item = ListViewItem::create().build(&mut build_context);
-                        build_context.register_shared_property::<Foreground>(child, item);
-                        build_context.register_shared_property::<FontSize>(child, item);
-                        build_context.register_property(item, Index(i));
-                        build_context.append_child(items_panel, item);
-                        build_context.append_child(item, child);
+                        let mut build_context = context.build_context();
+
+                        let item = {
+                            let child = builder(&mut build_context, i);
+                            let item = ListViewItem::create().build(&mut build_context);
+                            build_context.register_shared_property::<Foreground>(child, item);
+                            build_context.register_shared_property::<FontSize>(child, item);
+                            build_context.register_property(item, Index(i));
+                            build_context.append_child(items_panel, item);
+                            build_context.append_child(item, child);
+
+                            item
+                        };
+                        context.update_theme_properties(item);
                     }
                 }
             }
@@ -68,8 +74,6 @@ pub struct ListViewItemState {}
 
 impl State for ListViewItemState {
     fn update(&self, context: &mut Context<'_>) {
-        self.update_pressed(&mut context.widget());
-
         if !context.widget().get::<Pressed>().0 {
             return;
         }
@@ -92,16 +96,11 @@ impl State for ListViewItemState {
         }
     }
 
-    fn update_post_layout(&self, context: &mut Context<'_>) {
-        self.update_selected(&mut context.widget());
-    }
+    fn update_post_layout(&self, context: &mut Context<'_>) {}
 }
 
-impl PressedState for ListViewItemState {}
-impl SelectedState for ListViewItemState {}
-
 widget!(
-    ListViewItem<ListViewItemState>: ClickHandler {
+    ListViewItem<ListViewItemState>: MouseHandler {
         // Sets or shares the index property.
         index: Index,
 
