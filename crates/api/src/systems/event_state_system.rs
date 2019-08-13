@@ -111,6 +111,7 @@ impl EventStateSystem {
         let root = ecm.entity_store().root;
 
         // KeyDown handling
+        let mut focus = None;
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
             if let Ok(global) = ecm
                 .component_store_mut()
@@ -118,6 +119,29 @@ impl EventStateSystem {
             {
                 // Set this value on the keyboard state
                 global.keyboard_state.set_key_state(event.event.key, true);
+            }
+
+            if let Some(focused_element) = ecm
+                .component_store_mut()
+                .borrow_component::<Global>(root)
+                .unwrap()
+                .focused_widget
+            {
+                focus = Some(focused_element);
+            }
+        }
+
+        if let Some(focus) = focus {
+            if let Some(handlers) = self.handlers.borrow().get(&focus) {
+                for handler in handlers {
+                    handled = handler.handle_event(event);
+
+                    if handled {
+                        break;
+                    }
+                }
+
+                self.update.set(true);
             }
         }
 
@@ -130,7 +154,30 @@ impl EventStateSystem {
                 // Set this value on the keyboard state
                 global.keyboard_state.set_key_state(event.event.key, false);
             }
+
+            //  if let Some(focused_element) = ecm
+            //     .component_store_mut()
+            //     .borrow_component::<Global>(root)
+            //     .unwrap()
+            //     .focused_widget
+            // {
+            //     focus = Some(focused_element);
+            // }
         }
+
+        //   if let Some(focus) = focus {
+        //     if let Some(handlers) = self.handlers.borrow().get(&focus) {
+        //         for handler in handlers {
+        //             handled = handler.handle_event(event);
+
+        //             if handled {
+        //                 break;
+        //             }
+        //         }
+
+        //         self.update.set(true);
+        //     }
+        // }
     }
 
     fn has_default_flags(&self, widget: &WidgetContainer<'_>) -> bool {
