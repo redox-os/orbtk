@@ -1,13 +1,28 @@
+use std::cell::Cell;
+
 use crate::prelude::*;
 
 /// State to handle the position of switch toggle.
 #[derive(Default)]
-pub struct SwitchState;
+pub struct SwitchState {
+    selected: Cell<bool>,
+}
 
+impl SwitchState {
+    fn select(&self) {
+        self.selected.set(!self.selected.get());
+    }
+}
+
+// todo: selection helper
+
+impl PressedState for SwitchState {}
 impl SelectedState for SwitchState {}
 
 impl State for SwitchState {
     fn update(&self, context: &mut Context<'_>) {
+        context.widget().set(Selected(self.selected.get()));
+        self.update_pressed(&mut context.widget());
         self.update_selected(&mut context.widget());
 
         let selected = context.widget().get::<Selected>().0;
@@ -27,7 +42,7 @@ widget!(
     /// The `Switch` widget can be switch between `on` and `off`.
     ///
     /// **CSS element:** `switch`
-    Switch<SwitchState> {
+    Switch<SwitchState>: ClickHandler {
         /// Sets or shares the background property.
         background: Background,
 
@@ -56,7 +71,13 @@ widget!(
 
 impl Template for Switch {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+        let state = self.clone_state();
+
         self.name("Switch")
+            .on_click(move |_| {
+                state.select();
+                true
+            })
             .selector("switch")
             .pressed(false)
             .selected(false)

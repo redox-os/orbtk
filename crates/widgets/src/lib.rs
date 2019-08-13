@@ -29,6 +29,7 @@ pub use self::text_box::*;
 pub use self::toggle_button::*;
 pub use self::window::*;
 
+pub mod helper;
 mod button;
 // mod canvas_widget;
 mod check_box;

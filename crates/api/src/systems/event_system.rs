@@ -141,12 +141,12 @@ impl EventSystem {
                     in_mouse_pos = true;
                 }
 
-                if in_mouse_pos {
-                    if let Some(selected) = widget.try_get_mut::<Selected>() {
-                        selected.0 = !selected.0;
-                        self.update.set(true);
-                    }
-                }
+                // if in_mouse_pos {
+                //     if let Some(selected) = widget.try_get_mut::<Selected>() {
+                //         selected.0 = !selected.0;
+                //         self.update.set(true);
+                //     }
+                // }
 
                 if let Some(pres) = widget.try_get_mut::<Pressed>() {
                     pressed = pres.0;

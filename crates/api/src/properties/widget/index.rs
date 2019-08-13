@@ -2,5 +2,5 @@ use crate::prelude::*;
 
 property!(
     /// `Index` index of a list item.
-    Index(i32)
+    Index(usize)
 );

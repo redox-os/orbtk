@@ -1,11 +1,31 @@
 use crate::prelude::*;
 
+/// The `ToggleButtonState` handles the `CheckBox` widget.
+#[derive(Default)]
+pub struct ToggleButtonState {}
+
+impl PressedState for ToggleButtonState {}
+impl SelectedState for ToggleButtonState {}
+
+impl Into<Rc<dyn State>> for ToggleButtonState {
+    fn into(self) -> Rc<dyn State> {
+        Rc::new(self)
+    }
+}
+
+impl State for ToggleButtonState {
+    fn update(&self, context: &mut Context<'_>) {
+        self.update_pressed(&mut context.widget());
+        self.update_selected(&mut context.widget());
+    }
+}
+
 widget!(
     /// The `ToggleButton` widget can be clicked by user and could switch between selected / not selected. 
     /// It's used to perform an action.
     /// 
     /// **CSS element:** `toggle-button`
-    ToggleButton: ClickHandler {
+    ToggleButton<ToggleButtonState>: ClickHandler {
         /// Sets or shares the background property.
         background: Background,
 

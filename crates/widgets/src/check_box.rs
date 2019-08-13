@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-/// The `CheckBoxState` handles the text processing of the `CheckBox` widget.
+/// The `CheckBoxState` handles the `CheckBox` widget.
 #[derive(Default)]
 pub struct CheckBoxState {}
 

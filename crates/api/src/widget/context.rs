@@ -189,7 +189,7 @@ impl<'a> Context<'a> {
     /// Returns the child of the current widget.
     /// If the index is out of the children index bounds or the widget has no children None will be returned.
     pub fn widget_from_child_index(&mut self, index: usize) -> Option<WidgetContainer<'_>> {
-       self.child_of_parent(self.entity, index)
+        self.child_of_parent(self.entity, index)
     }
 
     /// Returns the parent of the current widget.

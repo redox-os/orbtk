@@ -173,6 +173,10 @@ impl Template for MainView {
                         )
                         .child(
                             Switch::create()
+                                .on_click(|_| {
+                                    println!("Test");
+                                    false
+                                })
                                 .margin((0.0, 8.0, 0.0, 0.0))
                                 .attach(GridColumn(0))
                                 .attach(GridRow(5))

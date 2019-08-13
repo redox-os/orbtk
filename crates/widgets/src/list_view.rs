@@ -1,18 +1,17 @@
 use std::cell::Cell;
 
-use crate::prelude::*;
+use crate::{prelude::*, utils::SelectionMode as SelMode};
 
 #[derive(Default)]
 pub struct ListViewState {
     builder: RefCell<Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
     count: Cell<usize>,
-    selected_index: Cell<i32>,
 }
 
 impl State for ListViewState {
     fn update(&self, context: &mut Context<'_>) {
         let count = context.widget().clone_or_default::<Count>().0;
-        self.selected_index.set(context.widget().clone_or_default::<Index>().0);
+        // self.selected_index.set(context.widget().clone_or_default::<Index>().0);
 
         if count != self.count.get() {
             if let Some(builder) = &*self.builder.borrow() {
@@ -25,7 +24,7 @@ impl State for ListViewState {
                         let item = ListViewItem::create().build(&mut build_context);
                         build_context.register_shared_property::<Foreground>(child, item);
                         build_context.register_shared_property::<FontSize>(child, item);
-                        build_context.register_property(item, Index(i as i32));
+                        build_context.register_property(item, Index(i));
                         build_context.append_child(items_panel, item);
                         build_context.append_child(item, child);
                     }
@@ -37,19 +36,30 @@ impl State for ListViewState {
     }
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
-        let selected_index = context.widget().clone_or_default::<Index>().0;
+        let mut count = 0;
 
-        if selected_index < 0 {
-            return;
-        }
+        loop {
+            if count >= context.widget().get::<SelectedIndices>().0.len() {
+                break;
+            }
 
-        if selected_index != self.selected_index.get() {
-             if let Some(items_panel) = context.entity_of_child("items_panel") {
-                 if let Some(old_selected_item) = &mut context.child_of_parent(items_panel, selected_index as usize) {
-                     old_selected_item.set(Selected(false));
-                 }
-             }
+            let index = context.widget().get::<SelectedIndices>().0[count];
+
+            count += 1;
         }
+        // let selected_index = context.widget().clone_or_default::<Index>().0;
+
+        // if selected_index < 0 {
+        //     return;
+        // }
+
+        // if selected_index != self.selected_index.get() {
+        //      if let Some(items_panel) = context.entity_of_child("items_panel") {
+        //          if let Some(old_selected_item) = &mut context.child_of_parent(items_panel, selected_index as usize) {
+        //              old_selected_item.set(Selected(false));
+        //          }
+        //      }
+        // }
     }
 }
 
@@ -64,24 +74,27 @@ impl State for ListViewItemState {
             return;
         }
 
-        context.widget().set(Selected(true));
-
         let index = context.widget().clone::<Index>();
 
         if let Some(parent) = &mut context.parent_by_id("ListView") {
+            let selection_mode = parent.get::<SelectionMode>().0;
+            let selected_indices = parent.get_mut::<SelectedIndices>();
 
-            let blub = parent.has::<Index>();
-            if *parent.get::<Index>() == index {
+            if selected_indices.0.contains(&index.0) || selection_mode == SelMode::None {
                 return;
             }
 
-            parent.set(index);
+            if selection_mode == SelMode::Single {
+                selected_indices.0.clear();
+            }
+
+            selected_indices.0.push(index.0);
         }
     }
 
-     fn update_post_layout(&self, context: &mut Context<'_>) {
-         self.update_selected(&mut context.widget());
-     }
+    fn update_post_layout(&self, context: &mut Context<'_>) {
+        self.update_selected(&mut context.widget());
+    }
 }
 
 impl PressedState for ListViewItemState {}
@@ -185,8 +198,11 @@ widget!(
         /// Sets or shares the css selector property.
         selector: Selector,
 
-        /// Sets or shares the index of the selected item.
-        selected_index: Index
+        /// Sets or shares the selection mode property.
+        selection_mode: SelectionMode,
+
+        /// Sets or shares the list of selected indices.
+        selected_indices: SelectedIndices
     }
 );
 
@@ -209,7 +225,8 @@ impl Template for ListView {
             .border_thickness(1.0)
             .border_brush(colors::BOMBAY_COLOR)
             .padding(2.0)
-            .selected_index(-1)
+            .selection_mode("Single")
+            .selected_indices(vec![])
             .child(
                 Container::create()
                     .background(id)

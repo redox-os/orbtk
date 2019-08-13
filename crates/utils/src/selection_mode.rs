@@ -17,7 +17,7 @@ impl From<&str> for SelectionMode {
         match t {
             "Single" | "single" => SelectionMode::Single,
             "Multiple" | "multiple" => SelectionMode::Multiple,
-            _ => SelectionMode::None
+            _ => SelectionMode::None,
         }
     }
 }
