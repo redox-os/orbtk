@@ -132,7 +132,7 @@ impl Layout for TextSelectionLayout {
         let margin = Margin::get(entity, ecm.component_store());
 
         {
-            let mut widget = WidgetContainer::new(entity, ecm);
+            let mut widget = WidgetContainer::new(entity, ecm, &theme);
 
             size.1 = vertical_alignment.align_measure(
                 parent_size.1,

@@ -46,7 +46,7 @@ impl Layout for FixedSizeLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let widget = WidgetContainer::new(entity, ecm);
+        let widget = WidgetContainer::new(entity, ecm, theme);
 
         let size = widget
             .try_get::<Image>()

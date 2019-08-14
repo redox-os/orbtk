@@ -27,9 +27,17 @@ impl EventStateSystem {
         let mut matching_nodes = vec![];
 
         let mut current_node = event.source;
+        let root = ecm.entity_store().root;
+
+        let theme = ecm
+            .component_store()
+            .borrow_component::<Theme>(root)
+            .unwrap()
+            .0
+            .clone();
 
         loop {
-            let widget = WidgetContainer::new(current_node, ecm);
+            let widget = WidgetContainer::new(current_node, ecm, &theme);
 
             // click handling
             if let Ok(event) = event.downcast_ref::<ClickEvent>() {

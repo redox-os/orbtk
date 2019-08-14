@@ -1,6 +1,6 @@
 use std::any::TypeId;
 
-use crate::prelude::Tree;
+use crate::prelude::*;
 
 use dces::prelude::{Component, Entity, EntityComponentManager};
 
@@ -8,14 +8,16 @@ use dces::prelude::{Component, Entity, EntityComponentManager};
 pub struct WidgetContainer<'a> {
     ecm: &'a mut EntityComponentManager<Tree>,
     current_node: Entity,
+    theme: &'a ThemeValue,
 }
 
 impl<'a> WidgetContainer<'a> {
     /// Creates a new widget container for the given `entity`.
-    pub fn new(root: Entity, ecm: &'a mut EntityComponentManager<Tree>) -> Self {
+    pub fn new(root: Entity, ecm: &'a mut EntityComponentManager<Tree>, theme: &'a ThemeValue) -> Self {
         WidgetContainer {
             ecm,
             current_node: root,
+            theme
         }
     }
 

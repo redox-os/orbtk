@@ -52,9 +52,14 @@ impl<'a> Context<'a> {
         }
     }
 
+    // Returns a specific widget.
+    fn get_widget(&mut self, entity: Entity) -> WidgetContainer<'_> {
+        WidgetContainer::new(entity, self.ecm, self.theme)
+    }
+
     /// Returns the widget of the current state context.
     pub fn widget(&mut self) -> WidgetContainer<'_> {
-        WidgetContainer::new(self.entity, self.ecm)
+        self.get_widget(self.entity)
     }
 
     /// Returns the current build context.
@@ -100,7 +105,8 @@ impl<'a> Context<'a> {
 
     /// Returns the window widget.
     pub fn window(&mut self) -> WidgetContainer<'_> {
-        WidgetContainer::new(self.ecm.entity_store().root, self.ecm)
+        let root = self.ecm.entity_store().root;
+        self.get_widget(root)
     }
 
     /// Returns the entity id of an child by the given name.
@@ -139,7 +145,7 @@ impl<'a> Context<'a> {
     /// If the no id is defined None will returned.
     pub fn child_by_id(&mut self, id: impl Into<String>) -> Option<WidgetContainer<'_>> {
         if let Some(child) = self.entity_of_child(id) {
-            return Some(WidgetContainer::new(child, self.ecm));
+            return Some(self.get_widget(child));
         }
 
         None
@@ -191,7 +197,7 @@ impl<'a> Context<'a> {
                 {
                     if let Some(parent_id) = &selector.0.id {
                         if parent_id.eq(&id) {
-                            return Some(WidgetContainer::new(parent, self.ecm));
+                            return Some(self.get_widget(parent));
                         }
                     }
                 }
@@ -214,7 +220,7 @@ impl<'a> Context<'a> {
 
         let entity = self.ecm.entity_store().children[&parent][index];
 
-        Some(WidgetContainer::new(entity, self.ecm))
+        Some(self.get_widget(entity))
     }
 
     /// Returns the child of the current widget.
@@ -237,7 +243,7 @@ impl<'a> Context<'a> {
 
         let entity = self.ecm.entity_store().parent[&self.entity].unwrap();
 
-        Some(WidgetContainer::new(entity, self.ecm))
+        Some(self.get_widget(entity))
     }
 
     /// Sends a message to the widget with the given id over the message channel.
