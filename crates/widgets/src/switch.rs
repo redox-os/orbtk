@@ -23,16 +23,10 @@ impl State for SwitchState {
 
         context.widget().set(Selected(self.selected.get()));
 
-        if self.selected.get() {
-            add_selector_to_widget("selected", &mut context.widget());
-        } else {
-            remove_selector_from_widget("selected", &mut context.widget());
-        }
-
         let element = context.widget().clone::<Selector>().0.element.unwrap();
 
         if let Some(parent) = context.parent_entity_by_element(element) {
-            context.update_theme_properties(parent);
+            context.get_widget(parent).update_theme_by_state(false);
         }
 
         {
@@ -41,21 +35,17 @@ impl State for SwitchState {
             switch_toggle.set(Selected(self.selected.get()));
 
             if self.selected.get() {
-                add_selector_to_widget("selected", &mut switch_toggle);
-            } else {
-                remove_selector_from_widget("selected", &mut switch_toggle);
-            }
-
-            if self.selected.get() {
                 switch_toggle.set(HorizontalAlignment::from("End"));
             } else {
                 switch_toggle.set(HorizontalAlignment::from("Start"));
             }
+
+            switch_toggle.update_theme_by_state(true);
         }
 
         let entity = context.entity_of_child("SwitchSwitchToggle").unwrap();
 
-        context.update_theme_properties(entity);
+        context.get_widget(entity).update_theme_by_state(false);
     }
 }
 

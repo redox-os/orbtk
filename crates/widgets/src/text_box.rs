@@ -1,6 +1,6 @@
 use std::cell::Cell;
 
-use super::behaviors::FocusBehavior;
+use super::behaviors::MouseBehavior;
 use crate::{
     prelude::*,
     shell::{Key, KeyEvent},
@@ -15,12 +15,16 @@ pub struct TextBoxState {
     selection_start: Cell<usize>,
     selection_length: Cell<usize>,
     cursor_x: Cell<f64>,
+    request_focus: Cell<bool>,
 }
 
 impl TextBoxState {
     // fn click(&self, point: Point) {
     //     println!("Clicked text box point: ({}, {})", point.x, point.y);
     // }
+    fn request_focus(&self) {
+        self.request_focus.set(!self.request_focus.get());
+    }
 
     fn update_selection_start(&self, selection: i32) {
         self.selection_start
@@ -74,10 +78,36 @@ impl TextBoxState {
 
         true
     }
+
+    fn check_focus_request(&self, context: &mut Context<'_>) {
+        if !self.request_focus.get() || !context.widget().get::<Enabled>().0 {
+            return;
+        }
+
+        if let Some(old_focused_element) = context.window().get::<Global>().focused_widget {
+            let mut old_focused_element = context.get_widget(old_focused_element);
+            old_focused_element.set(Focused(false));
+            old_focused_element.update_theme_by_state(false);
+        }
+
+        context.window().get_mut::<Global>().focused_widget = Some(context.entity);
+
+        self.focused.set(true);
+        context.widget().set(Focused(true));
+        context.widget().update_theme_by_state(false);
+        context
+            .child_by_id("cursor")
+            .unwrap()
+            .update_theme_by_state(false);
+
+        self.request_focus.set(false);
+    }
 }
 
 impl State for TextBoxState {
     fn update(&self, context: &mut Context<'_>) {
+        self.check_focus_request(context);
+
         let mut widget = context.widget();
 
         self.focused.set(widget.get::<Focused>().0);
@@ -105,18 +135,12 @@ impl State for TextBoxState {
             }
         }
 
+        widget.update_theme_by_state(false);
+
         if let Some(selection) = widget.try_get_mut::<TextSelection>() {
             selection.0.start_index = self.selection_start.get();
             selection.0.length = self.selection_length.get();
         }
-
-        if widget.get::<Text>().0.is_empty() {
-            add_selector_to_widget("water-mark", &mut widget);
-        } else {
-            remove_selector_from_widget("water-mark", &mut widget);
-        }
-
-        context.update_theme_properties(context.entity);
     }
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
@@ -219,6 +243,7 @@ widget!(
 impl Template for TextBox {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
         let state = self.clone_state();
+        let mouse_state = self.clone_state();
 
         self.name("TextBox")
             .selector("text-box")
@@ -236,10 +261,11 @@ impl Template for TextBox {
             .size(128.0, 32.0)
             .focused(false)
             .child(
-                FocusBehavior::create()
-                    .enabled(id)
-                    .focused(id)
-                    .selector(id)
+                MouseBehavior::create()
+                    .on_mouse_down(move |_| {
+                        mouse_state.request_focus();
+                        false
+                    })
                     .child(
                         Container::create()
                             .background(id)

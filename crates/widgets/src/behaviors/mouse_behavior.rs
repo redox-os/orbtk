@@ -25,16 +25,14 @@ impl State for MouseBehaviorState {
         if !context.widget().get::<Enabled>().0 {
             return;
         }
-        
+
         if let Some(action) = self.action.get() {
             match action {
                 Action::Press(_) => {
                     context.widget().set(Pressed(true));
-                    add_selector_to_widget("active", &mut context.widget());
                 }
                 Action::Release(p) => {
                     context.widget().set(Pressed(false));
-                    remove_selector_from_widget("active", &mut context.widget());
 
                     if check_mouse_condition(p, &context.widget()) {
                         let parent = context.entity_of_parent().unwrap();
@@ -46,7 +44,7 @@ impl State for MouseBehaviorState {
             let element = context.widget().clone::<Selector>().0.element.unwrap();
 
             if let Some(parent) = context.parent_entity_by_element(element) {
-                context.update_theme_properties(parent);
+                context.get_widget(parent).update_theme_by_state(false);
             }
 
             self.action.set(None);

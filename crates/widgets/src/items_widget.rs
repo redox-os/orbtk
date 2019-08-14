@@ -31,7 +31,7 @@ impl State for ItemsWidgetState {
                             child
                         };
 
-                        context.update_theme_properties(child);
+                        context.get_widget(child).update_properties_by_theme();
                     }
                 }
             }

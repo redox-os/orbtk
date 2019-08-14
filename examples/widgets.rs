@@ -1,4 +1,7 @@
-use std::cell::{Cell, RefCell};
+use std::{
+    cell::{Cell, RefCell},
+    collections::HashSet,
+};
 
 use orbtk::prelude::*;
 
@@ -91,6 +94,19 @@ impl State for MainViewState {
             self.action.set(None);
         }
     }
+
+    fn update_post_layout(&self, context: &mut Context<'_>) {
+        let mut selection_string = "Selected:".to_string();
+
+        for index in &context.widget().get::<SelectedIndices>().0 {
+            selection_string = format!("{} {}", selection_string, index);
+        }
+
+        context
+            .child_by_id("selection")
+            .unwrap()
+            .set(Text(String16::from(selection_string)));
+    }
 }
 
 fn create_header(context: &mut BuildContext, text: &str) -> Entity {
@@ -102,6 +118,7 @@ fn create_header(context: &mut BuildContext, text: &str) -> Entity {
 
 widget!(
     MainView<MainViewState> {
+        selected_items: SelectedIndices,
         count_text: Text
     }
 );
@@ -115,185 +132,202 @@ impl Template for MainView {
         let list_view_state = self.clone_state();
         let list_count = list_state.list.borrow().len();
 
-        self.name("MainView").count_text("Button count: 0").child(
-            Grid::create()
-                .margin(8.0)
-                .columns(
-                    Columns::create()
-                        .column("Auto")
-                        .column(16.0)
-                        .column("Auto")
-                        .column(16.0)
-                        .column("Auto")
-                        .build(),
-                )
-                .child(
-                    Stack::create()
-                        .attach(GridColumn(0))
-                        // Column 0
-                        .child(create_header(context, "Buttons"))
-                        .child(
-                            Button::create()
-                                .text("Button")
-                                .margin((0.0, 8.0, 0.0, 0.0))
-                                .icon(material_font_icons::CHECK_FONT_ICON)
-                                .attach(GridColumn(0))
-                                .attach(GridRow(1))
-                                .on_click(move |_| {
-                                    state.action(Action::IncrementCounter);
-                                    true
-                                })
-                                .build(context),
-                        )
-                        .child(
-                            Button::create()
-                                .text("Primary")
-                                .selector(SelectorValue::new().with("button").class("primary"))
-                                .margin((0.0, 8.0, 0.0, 0.0))
-                                .icon(material_font_icons::CHECK_FONT_ICON)
-                                .attach(GridColumn(0))
-                                .attach(GridRow(2))
-                                .build(context),
-                        )
-                        .child(
-                            ToggleButton::create()
-                                .text("ToggleButton")
-                                .margin((0.0, 8.0, 0.0, 0.0))
-                                .attach(GridColumn(0))
-                                .attach(GridRow(3))
-                                .build(context),
-                        )
-                        .child(
-                            CheckBox::create()
-                                .text("CheckBox")
-                                .margin((0.0, 8.0, 0.0, 0.0))
-                                .attach(GridColumn(0))
-                                .attach(GridRow(4))
-                                .build(context),
-                        )
-                        .child(
-                            Switch::create()
-                                .margin((0.0, 8.0, 0.0, 0.0))
-                                .attach(GridColumn(0))
-                                .attach(GridRow(5))
-                                .build(context),
-                        )
-                        .build(context),
-                )
-                .child(
-                    Stack::create()
-                        .attach(GridColumn(2))
-                        .child(create_header(context, "Text"))
-                        .child(
-                            TextBlock::create()
-                                .selector(SelectorValue::new().class("body"))
-                                .text(id)
-                                .margin((0.0, 8.0, 0.0, 0.0))
-                                .attach(GridColumn(2))
-                                .attach(GridRow(1))
-                                .build(context),
-                        )
-                        .child(
-                            TextBox::create()
-                                .placeholder("TextBox...")
-                                .text("")
-                                .margin((0.0, 8.0, 0.0, 0.0))
-                                .attach(GridColumn(2))
-                                .attach(GridRow(2))
-                                .build(context),
-                        )
-                        .build(context),
-                )
-                .child(
-                    Grid::create()
-                        .rows(
-                            Rows::create()
-                                .row("Auto")
-                                .row(192.0)
-                                .row("Auto")
-                                .row(192.0)
-                                .build(),
-                        )
-                        .columns(
-                            Columns::create()
-                                .column("*")
-                                .column(4.0)
-                                .column("*")
-                                .build(),
-                        )
-                        .attach(GridColumn(4))
-                        .child(
-                            TextBlock::create()
-                                .text("Items")
-                                .selector(SelectorValue::new().with("text-block").class("h1"))
-                                .attach(GridColumn(0))
-                                .attach(ColumnSpan(3))
-                                .attach(GridRow(0))
-                                .build(context),
-                        )
-                        .child(
-                            ItemsWidget::create()
-                                .selector(Selector::from("items-widget").id("items"))
-                                .padding((4.0, 4.0, 4.0, 2.0))
-                                .attach(GridColumn(0))
-                                .attach(ColumnSpan(3))
-                                .attach(GridRow(1))
-                                .margin((0.0, 8.0, 0.0, 8.0))
-                                .items_builder(move |bc, index| {
-                                    Button::create()
-                                        .margin((0.0, 0.0, 0.0, 2.0))
-                                        .text(list_state.list.borrow()[index].as_str())
-                                        .build(bc)
-                                })
-                                .items_count(list_count)
-                                .build(context),
-                        )
-                        .child(
-                            Button::create()
-                                .selector(Selector::from("button").id("remove-item-button"))
-                                .icon(material_font_icons::MINUS_FONT_ICON)
-                                .on_click(move |_| {
-                                    remove_item_state.action(Action::RemoveItem);
-                                    true
-                                })
-                                .min_width(0.0)
-                                .attach(GridColumn(0))
-                                .attach(GridRow(2))
-                                .build(context),
-                        )
-                        .child(
-                            Button::create()
-                                .selector(Selector::from("button").id("add-item-button"))
-                                .icon(material_font_icons::ADD_FONT_ICON)
-                                .on_click(move |_| {
-                                    add_item_state.action(Action::AddItem);
-                                    true
-                                })
-                                .min_width(0.0)
-                                .attach(GridColumn(2))
-                                .attach(GridRow(2))
-                                .build(context),
-                        )
-                        .child(
-                            ListView::create()
-                                .attach(GridColumn(0))
-                                .attach(ColumnSpan(3))
-                                .attach(GridRow(3))
-                                .margin((0.0, 16.0, 0.0, 8.0))
-                                .items_builder(move |bc, index| {
-                                    TextBlock::create()
-                                        .margin((0.0, 0.0, 0.0, 2.0))
-                                        .vertical_alignment("Center")
-                                        .text(list_view_state.list.borrow()[index].as_str())
-                                        .build(bc)
-                                })
-                                .items_count(list_count)
-                                .build(context),
-                        )
-                        .build(context),
-                )
-                .build(context),
-        )
+        self.name("MainView")
+            .count_text("Button count: 0")
+            .selected_items(HashSet::new())
+            .child(
+                Grid::create()
+                    .margin(8.0)
+                    .columns(
+                        Columns::create()
+                            .column("Auto")
+                            .column(16.0)
+                            .column("Auto")
+                            .column(16.0)
+                            .column(120.0)
+                            .build(),
+                    )
+                    .child(
+                        Stack::create()
+                            .attach(GridColumn(0))
+                            // Column 0
+                            .child(create_header(context, "Buttons"))
+                            .child(
+                                Button::create()
+                                    .text("Button")
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .icon(material_font_icons::CHECK_FONT_ICON)
+                                    .attach(GridColumn(0))
+                                    .attach(GridRow(1))
+                                    .on_click(move |_| {
+                                        state.action(Action::IncrementCounter);
+                                        true
+                                    })
+                                    .build(context),
+                            )
+                            .child(
+                                Button::create()
+                                    .text("Primary")
+                                    .selector(SelectorValue::new().with("button").class("primary"))
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .icon(material_font_icons::CHECK_FONT_ICON)
+                                    .attach(GridColumn(0))
+                                    .attach(GridRow(2))
+                                    .build(context),
+                            )
+                            .child(
+                                ToggleButton::create()
+                                    .text("ToggleButton")
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .attach(GridColumn(0))
+                                    .attach(GridRow(3))
+                                    .build(context),
+                            )
+                            .child(
+                                CheckBox::create()
+                                    .text("CheckBox")
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .attach(GridColumn(0))
+                                    .attach(GridRow(4))
+                                    .build(context),
+                            )
+                            .child(
+                                Switch::create()
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .attach(GridColumn(0))
+                                    .attach(GridRow(5))
+                                    .build(context),
+                            )
+                            .build(context),
+                    )
+                    .child(
+                        Stack::create()
+                            .attach(GridColumn(2))
+                            .child(create_header(context, "Text"))
+                            .child(
+                                TextBlock::create()
+                                    .selector(SelectorValue::new().class("body"))
+                                    .text(id)
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .attach(GridColumn(2))
+                                    .attach(GridRow(1))
+                                    .build(context),
+                            )
+                            .child(
+                                TextBox::create()
+                                    .placeholder("TextBox...")
+                                    .text("")
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .attach(GridColumn(2))
+                                    .attach(GridRow(2))
+                                    .build(context),
+                            )
+                            .build(context),
+                    )
+                    .child(
+                        Grid::create()
+                            .rows(
+                                Rows::create()
+                                    .row("Auto")
+                                    .row(192.0)
+                                    .row("Auto")
+                                    .row(192.0)
+                                    .row("Auto")
+                                    .build(),
+                            )
+                            .columns(
+                                Columns::create()
+                                    .column("*")
+                                    .column(4.0)
+                                    .column("*")
+                                    .build(),
+                            )
+                            .attach(GridColumn(4))
+                            .child(
+                                TextBlock::create()
+                                    .text("Items")
+                                    .selector(SelectorValue::new().with("text-block").class("h1"))
+                                    .attach(GridColumn(0))
+                                    .attach(ColumnSpan(3))
+                                    .attach(GridRow(0))
+                                    .build(context),
+                            )
+                            .child(
+                                ItemsWidget::create()
+                                    .selector(Selector::from("items-widget").id("items"))
+                                    .padding((4.0, 4.0, 4.0, 2.0))
+                                    .attach(GridColumn(0))
+                                    .attach(ColumnSpan(3))
+                                    .attach(GridRow(1))
+                                    .margin((0.0, 8.0, 0.0, 8.0))
+                                    .items_builder(move |bc, index| {
+                                        Button::create()
+                                            .margin((0.0, 0.0, 0.0, 2.0))
+                                            .text(list_state.list.borrow()[index].as_str())
+                                            .build(bc)
+                                    })
+                                    .items_count(list_count)
+                                    .build(context),
+                            )
+                            .child(
+                                Button::create()
+                                    .selector(Selector::from("button").id("remove-item-button"))
+                                    .icon(material_font_icons::MINUS_FONT_ICON)
+                                    .on_click(move |_| {
+                                        remove_item_state.action(Action::RemoveItem);
+                                        true
+                                    })
+                                    .min_width(0.0)
+                                    .attach(GridColumn(0))
+                                    .attach(GridRow(2))
+                                    .build(context),
+                            )
+                            .child(
+                                Button::create()
+                                    .selector(Selector::from("button").id("add-item-button"))
+                                    .icon(material_font_icons::ADD_FONT_ICON)
+                                    .on_click(move |_| {
+                                        add_item_state.action(Action::AddItem);
+                                        true
+                                    })
+                                    .min_width(0.0)
+                                    .attach(GridColumn(2))
+                                    .attach(GridRow(2))
+                                    .build(context),
+                            )
+                            .child(
+                                ListView::create()
+                                    .attach(GridColumn(0))
+                                    .attach(ColumnSpan(3))
+                                    .attach(GridRow(3))
+                                    .selected_indices(id)
+                                    .margin((0.0, 16.0, 0.0, 8.0))
+                                    .items_builder(move |bc, index| {
+                                        TextBlock::create()
+                                            .margin((0.0, 0.0, 0.0, 2.0))
+                                            .vertical_alignment("Center")
+                                            .text(list_view_state.list.borrow()[index].as_str())
+                                            .build(bc)
+                                    })
+                                    .items_count(list_count)
+                                    .build(context),
+                            )
+                            .child(
+                                // todo: wrong text width????
+                                TextBlock::create()
+                                    .selector(Selector::from("text-block").id("selection"))
+                                    .max_width(120.0)
+                                    .attach(GridColumn(0))
+                                    .attach(ColumnSpan(3))
+                                    .attach(ColumnSpan(2))
+                                    .attach(GridRow(4))
+                                    .text("Selected: ")
+                                    .build(context),
+                            )
+                            .build(context),
+                    )
+                    .build(context),
+            )
     }
 }
 

@@ -16,22 +16,18 @@ impl SelectionBehaviorState {
 
 impl State for SelectionBehaviorState {
     fn update(&self, context: &mut Context<'_>) {
-        if !context.widget().get::<Enabled>().0 || context.widget().get::<Selected>().0 == self.selected.get() {
+        if !context.widget().get::<Enabled>().0
+            || context.widget().get::<Selected>().0 == self.selected.get()
+        {
             return;
         }
 
         context.widget().set(Selected(self.selected.get()));
 
-        if self.selected.get() {
-            add_selector_to_widget("selected", &mut context.widget());
-        } else {
-            remove_selector_from_widget("selected", &mut context.widget());
-        }
-
         let element = context.widget().clone::<Selector>().0.element.unwrap();
 
         if let Some(parent) = context.parent_entity_by_element(element) {
-            context.update_theme_properties(parent);
+            context.get_widget(parent).update_theme_by_state(false);
         }
     }
 }

@@ -1,11 +1,16 @@
-use std::cell::Cell;
+use std::{
+    cell::Cell,
+    collections::{HashMap, HashSet},
+};
 
+use super::behaviors::MouseBehavior;
 use crate::{prelude::*, utils::SelectionMode as SelMode};
 
 #[derive(Default)]
 pub struct ListViewState {
     builder: RefCell<Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
     count: Cell<usize>,
+    selected_entities: RefCell<HashSet<Entity>>,
 }
 
 impl State for ListViewState {
@@ -24,15 +29,21 @@ impl State for ListViewState {
                         let item = {
                             let child = builder(&mut build_context, i);
                             let item = ListViewItem::create().build(&mut build_context);
+
+                            let mouse_behavior = MouseBehavior::create().build(&mut build_context);
+                            build_context
+                                .register_shared_property::<Selector>(mouse_behavior, item);
+                            build_context.register_shared_property::<Pressed>(mouse_behavior, item);
+                            build_context.append_child(item, mouse_behavior);
+
                             build_context.register_shared_property::<Foreground>(child, item);
                             build_context.register_shared_property::<FontSize>(child, item);
-                            build_context.register_property(item, Index(i));
                             build_context.append_child(items_panel, item);
-                            build_context.append_child(item, child);
+                            build_context.append_child(mouse_behavior, child);
 
                             item
                         };
-                        context.update_theme_properties(item);
+                        context.get_widget(item).update_properties_by_theme();
                     }
                 }
             }
@@ -42,68 +53,74 @@ impl State for ListViewState {
     }
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
-        let mut count = 0;
+        for index in context
+            .widget()
+            .get::<SelectedEntities>()
+            .0
+            .clone()
+            .symmetric_difference(&*self.selected_entities.borrow())
+        {
+            let mut widget = context.get_widget(*index);
+            widget.set(Selected(!widget.get::<Selected>().0));
 
-        loop {
-            if count >= context.widget().get::<SelectedIndices>().0.len() {
-                break;
-            }
-
-            let index = context.widget().get::<SelectedIndices>().0[count];
-
-            count += 1;
+            widget.update_theme_by_state(false);
         }
-        // let selected_index = context.widget().clone_or_default::<Index>().0;
 
-        // if selected_index < 0 {
-        //     return;
-        // }
-
-        // if selected_index != self.selected_index.get() {
-        //      if let Some(items_panel) = context.entity_of_child("items_panel") {
-        //          if let Some(old_selected_item) = &mut context.child_of_parent(items_panel, selected_index as usize) {
-        //              old_selected_item.set(Selected(false));
-        //          }
-        //      }
-        // }
+        *self.selected_entities.borrow_mut() = context.widget().get::<SelectedEntities>().0.clone();
     }
 }
 
 #[derive(Default)]
-pub struct ListViewItemState {}
+pub struct ListViewItemState {
+    request_selection_toggle: Cell<bool>,
+}
+
+impl ListViewItemState {
+    fn toggle_selection(&self) {
+        self.request_selection_toggle.set(true);
+    }
+}
 
 impl State for ListViewItemState {
     fn update(&self, context: &mut Context<'_>) {
-        if !context.widget().get::<Pressed>().0 {
+        if !context.widget().get::<Enabled>().0 || !self.request_selection_toggle.get() {
             return;
         }
+        self.request_selection_toggle.set(false);
 
-        let index = context.widget().clone::<Index>();
+        let selected = context.widget().get::<Selected>().0;
+
+        let entity = context.entity;
+        let index = context.index_as_child(entity).unwrap();
 
         if let Some(parent) = &mut context.parent_by_id("ListView") {
             let selection_mode = parent.get::<SelectionMode>().0;
-            let selected_indices = parent.get_mut::<SelectedIndices>();
+            // deselect item
+            if selected {
+                parent.get_mut::<SelectedEntities>().0.remove(&entity);
+                parent.get_mut::<SelectedIndices>().0.remove(&index);
+                return;
+            }
 
-            if selected_indices.0.contains(&index.0) || selection_mode == SelMode::None {
+            if parent.get::<SelectedEntities>().0.contains(&entity)
+                || selection_mode == SelMode::None
+            {
                 return;
             }
 
             if selection_mode == SelMode::Single {
-                selected_indices.0.clear();
+                parent.get_mut::<SelectedEntities>().0.clear();
+                parent.get_mut::<SelectedIndices>().0.clear();
             }
 
-            selected_indices.0.push(index.0);
+            parent.get_mut::<SelectedEntities>().0.insert(entity);
+            parent.get_mut::<SelectedIndices>().0.insert(index);
         }
     }
-
-    fn update_post_layout(&self, context: &mut Context<'_>) {}
 }
 
 widget!(
     ListViewItem<ListViewItemState>: MouseHandler {
-        // Sets or shares the index property.
-        index: Index,
-
         /// Sets or shares the background property.
         background: Background,
 
@@ -141,8 +158,9 @@ widget!(
 
 impl Template for ListViewItem {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
+        let state = self.clone_state();
+
         self.name("ListViewItem")
-            .index(0)
             .height(24.0)
             .selected(false)
             .pressed(false)
@@ -155,6 +173,10 @@ impl Template for ListViewItem {
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(32.0)
             .font("Roboto Regular")
+            .on_click(move |_| {
+                state.toggle_selection();
+                false
+            })
     }
 
     fn render_object(&self) -> Option<Box<dyn RenderObject>> {
@@ -200,8 +222,11 @@ widget!(
         /// Sets or shares the selection mode property.
         selection_mode: SelectionMode,
 
+        /// Sets or shares the selected indices.
+        selected_indices: SelectedIndices,
+
         /// Sets or shares the list of selected indices.
-        selected_indices: SelectedIndices
+        selected_entities: SelectedEntities
     }
 );
 
@@ -225,7 +250,8 @@ impl Template for ListView {
             .border_brush(colors::BOMBAY_COLOR)
             .padding(2.0)
             .selection_mode("Single")
-            .selected_indices(vec![])
+            .selected_indices(HashSet::new())
+            .selected_entities(HashSet::new())
             .child(
                 Container::create()
                     .background(id)

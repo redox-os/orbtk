@@ -21,22 +21,17 @@ impl State for FocusBehaviorState {
         }
 
         if let Some(old_focused_element) = context.window().get::<Global>().focused_widget {
-            let current_widget = context.entity;
-
-            context.entity = old_focused_element;
-            context.widget().set(Focused(false));
-            remove_selector_from_widget("focus", &mut context.widget());
-            context.update_theme_properties(old_focused_element);
-
-            context.entity = current_widget;
+            let mut old_focused_element = context.get_widget(old_focused_element);
+            old_focused_element.set(Focused(false));
+            old_focused_element.update_theme_by_state(false);
         }
+
         context.widget().set(Focused(true));
-        add_selector_to_widget("focus", &mut context.widget());
 
         let element = context.widget().clone::<Selector>().0.element.unwrap();
 
         if let Some(parent) = context.parent_entity_by_element(element) {
-            context.update_theme_properties(parent);
+            context.get_widget(parent).update_theme_by_state(false);
             context.window().get_mut::<Global>().focused_widget = Some(parent);
         }
 

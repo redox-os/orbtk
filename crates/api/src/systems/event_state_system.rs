@@ -162,59 +162,6 @@ impl EventStateSystem {
                 // Set this value on the keyboard state
                 global.keyboard_state.set_key_state(event.event.key, false);
             }
-
-            //  if let Some(focused_element) = ecm
-            //     .component_store_mut()
-            //     .borrow_component::<Global>(root)
-            //     .unwrap()
-            //     .focused_widget
-            // {
-            //     focus = Some(focused_element);
-            // }
-        }
-
-        //   if let Some(focus) = focus {
-        //     if let Some(handlers) = self.handlers.borrow().get(&focus) {
-        //         for handler in handlers {
-        //             handled = handler.handle_event(event);
-
-        //             if handled {
-        //                 break;
-        //             }
-        //         }
-
-        //         self.update.set(true);
-        //     }
-        // }
-    }
-
-    fn has_default_flags(&self, widget: &WidgetContainer<'_>) -> bool {
-        return widget.has::<Enabled>();
-    }
-
-    // Used to updates default states like Pressed, Focused and Enabled.
-    fn update_default_states(&self, widget: &mut WidgetContainer<'_>) {
-        let mut enabled = (false, false);
-        if let Some(en) = widget.try_get::<Enabled>() {
-            enabled = (true, en.0);
-        }
-
-        if enabled.0 {
-            self.update_default_state(!enabled.1, "disabled", widget);
-        }
-    }
-
-    // Updates the pseudo class of a widget by the given state.
-    fn update_default_state(
-        &self,
-        state: bool,
-        pseudo_class: &str,
-        widget: &mut WidgetContainer<'_>,
-    ) {
-        if state {
-            add_selector_to_widget(pseudo_class, widget)
-        } else {
-            remove_selector_from_widget(pseudo_class, widget);
         }
     }
 }
@@ -303,37 +250,8 @@ impl System<Tree> for EventStateSystem {
                         self.states.clone(),
                     );
 
-                    {
-                        let mut widget = context.widget();
-
-                        // handle enabled
-                        if let Some(enabled) = widget.try_clone::<Enabled>() {
-                            let mut remove_disabled = false;
-                            let mut add_disabled = false;
-                            if let Some(selector) = widget.try_get::<Selector>() {
-                                if enabled.0 && selector.0.pseudo_classes.contains("disabled") {
-                                    remove_disabled = true;
-                                } else if !enabled.0
-                                    && !selector.0.pseudo_classes.contains("disabled")
-                                {
-                                    add_disabled = true;
-                                }
-                            }
-
-                            if remove_disabled {
-                                remove_selector_from_widget("disabled", &mut context.widget());
-                                context.update_theme_properties(context.entity);
-                            }
-
-                            if add_disabled {
-                                add_selector_to_widget("disabled", &mut context.widget());
-                                context.update_theme_properties(context.entity);
-                            }
-                        }
-
-                        if !self.states.borrow().contains_key(&current_node) {
-                            skip = true;
-                        }
+                    if !self.states.borrow().contains_key(&current_node) {
+                        skip = true;
                     }
 
                     if !skip {
@@ -356,39 +274,5 @@ impl System<Tree> for EventStateSystem {
                 break;
             }
         }
-
-        // // update theme properties
-        // let theme = ecm
-        //     .component_store()
-        //     .borrow_component::<Theme>(root)
-        //     .unwrap()
-        //     .0
-        //     .clone();
-        // let mut current_node = ecm.entity_store().root;
-
-        // loop {
-        //     {
-        //         let mut context = Context::new(
-        //             current_node,
-        //             ecm,
-        //             &mut shell,
-        //             &theme,
-        //             self.render_objects.clone(),
-        //             self.layouts.clone(),
-        //             self.handlers.clone(),
-        //             self.states.clone(),
-        //         );
-
-        //         context.update_theme_properties();
-        //     }
-        //     let mut it = ecm.entity_store().start_node(current_node).into_iter();
-        //     it.next();
-
-        //     if let Some(node) = it.next() {
-        //         current_node = node;
-        //     } else {
-        //         break;
-        //     }
-        // }
     }
 }

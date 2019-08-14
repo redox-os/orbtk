@@ -88,6 +88,7 @@ impl System<Tree> for RenderSystem {
                     self.states.clone(),
                 );
 
+                context.widget().update_theme_by_state(false);
                 if let Some(render_object) = self.render_objects.borrow().get(&current_node) {
                     render_object.render(&mut context, &global_position);
                 }
