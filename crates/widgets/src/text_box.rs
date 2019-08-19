@@ -184,8 +184,8 @@ impl State for TextBoxState {
                 }
             }
 
-            if let Some(offset) = context.widget().try_get_mut::<Offset>() {
-                (offset.0).x += cursor_x_delta;
+            if let Some(scroll_offset) = context.widget().try_get_mut::<ScrollOffset>() {
+                (scroll_offset.0).x += cursor_x_delta;
             }
         }
     }
@@ -230,7 +230,10 @@ widget!(
         padding: Padding,
 
         /// Sets or shares the text offset property.
-        offset: Offset,
+        scroll_offset: ScrollOffset,
+
+        /// Sets or shares the (wheel, scroll) delta property. 
+        delta: Delta,
 
          /// Sets or shares the focused property.
         focused: Focused,
@@ -252,7 +255,7 @@ impl Template for TextBox {
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto Regular")
             .selection(TextSelectionValue::default())
-            .offset(0.0)
+            .scroll_offset(0.0)
             .padding(4.0)
             .background(colors::LYNCH_COLOR)
             .border_brush("transparent")
@@ -260,6 +263,7 @@ impl Template for TextBox {
             .border_radius(2.0)
             .size(128.0, 32.0)
             .focused(false)
+            .delta(0.0)
             .child(
                 MouseBehavior::create()
                     .on_mouse_down(move |_| {
@@ -278,8 +282,9 @@ impl Template for TextBox {
                                     .child(
                                         ScrollViewer::create()
                                             .selector(SelectorValue::default().id("scroll_viewer"))
-                                            .offset(id)
-                                            .scroll_mode(("None", "None"))
+                                            .scroll_offset(id)
+                                            .scroll_mode(("Custom", "Disabled"))
+                                            .delta(id)
                                             .child(
                                                 TextBlock::create()
                                                     .selector(
@@ -305,7 +310,7 @@ impl Template for TextBox {
                                             .text(id)
                                             .font(id)
                                             .font_size(id)
-                                            .offset(id)
+                                            .scroll_offset(id)
                                             .focused(id)
                                             .selection(id)
                                             .build(context),

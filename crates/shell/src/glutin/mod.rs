@@ -150,6 +150,10 @@ where
                             }
                         }
                     }
+                    WindowEvent::MouseWheel { delta, .. } => {
+                        // todo: scroll delta
+                        // self.adapter.scroll(delta.x)
+                    },
                     WindowEvent::CursorMoved { position, .. } => {
                         self.mouse_position.x = position.x;
                         self.mouse_position.y = position.y;

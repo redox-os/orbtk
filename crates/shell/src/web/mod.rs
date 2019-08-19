@@ -58,6 +58,7 @@ where
     pub mouse_move_events: Rc<RefCell<Vec<event::MouseMoveEvent>>>,
     pub mouse_up_events: Rc<RefCell<Vec<event::MouseUpEvent>>>,
     pub mouse_down_events: Rc<RefCell<Vec<event::MouseDownEvent>>>,
+    pub scroll_events: Rc<RefCell<Vec<event::MouseWheelEvent>>>,
     pub key_up_events: Rc<RefCell<Vec<event::KeyUpEvent>>>,
     pub key_down_events: Rc<RefCell<Vec<event::KeyDownEvent>>>,
     adapter: A,
@@ -99,6 +100,10 @@ where
                 button: get_mouse_button(event.button()),
                 state: ButtonState::Up,
             });
+        }
+
+        while let Some(event) = self.scroll_events.borrow_mut().pop() {
+            self.adapter.scroll(event.delta_x(), event.delta_y());
         }
 
         while let Some(event) = self.key_down_events.borrow_mut().pop() {
@@ -216,9 +221,9 @@ where
         let mouse_move = Rc::new(RefCell::new(vec![]));
         let mouse_up = Rc::new(RefCell::new(vec![]));
         let mouse_down = Rc::new(RefCell::new(vec![]));
+        let scroll = Rc::new(RefCell::new(vec![]));
         let key_down = Rc::new(RefCell::new(vec![]));
         let key_up = Rc::new(RefCell::new(vec![]));
-
         let mouse_down_c = mouse_down.clone();
         canvas.add_event_listener(move |e: event::MouseDownEvent| {
             mouse_down_c.borrow_mut().push(e);
@@ -232,6 +237,11 @@ where
         let mouse_move_c = mouse_move.clone();
         canvas.add_event_listener(move |e: event::MouseMoveEvent| {
             mouse_move_c.borrow_mut().push(e);
+        });
+
+        let scroll_c = scroll.clone();
+        canvas.add_event_listener(move |e: event::MouseWheelEvent| {
+            scroll_c.borrow_mut().push(e);
         });
 
         let key_down_c = key_down.clone();
@@ -292,6 +302,7 @@ where
             mouse_move_events: mouse_move,
             mouse_up_events: mouse_up,
             mouse_down_events: mouse_down,
+            scroll_events: scroll,
             key_down_events: key_down,
             key_up_events: key_up,
         }

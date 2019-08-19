@@ -46,14 +46,23 @@ impl System<Tree> for RenderSystem {
         let mut offsets = BTreeMap::new();
         offsets.insert(root, (0.0, 0.0));
 
+        let mut parent_size = (0.0, 0.0);
+
         let mut current_node = root;
 
         loop {
             let mut global_position = Point::default();
 
             if let Some(parent) = ecm.entity_store().parent[&current_node] {
+                if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(parent) {
+                    parent_size = (bounds.width(), bounds.height())
+                }
                 if let Some(offset) = offsets.get(&parent) {
                     global_position = Point::new(offset.0, offset.1);
+                }
+            } else {
+                if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(root) {
+                    parent_size = (bounds.width(), bounds.height())
                 }
             }
 
@@ -76,6 +85,13 @@ impl System<Tree> for RenderSystem {
                 }
             }
 
+            // clip if needed
+            // shell.render_context_2_d().save();
+            //  shell.render_context_2_d().begin_path();
+            // shell.render_context_2_d().rect(global_position.x, global_position.y, parent_size.0, parent_size.1);
+            // shell.render_context_2_d().clip();
+
+
             {
                 let mut context = Context::new(
                     current_node,
@@ -93,6 +109,9 @@ impl System<Tree> for RenderSystem {
                     render_object.render(&mut context, &global_position);
                 }
             }
+
+            //  shell.render_context_2_d().close_path();
+            //  shell.render_context_2_d().restore();
 
             // render debug border for each widget
             if debug {

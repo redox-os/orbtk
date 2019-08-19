@@ -58,7 +58,10 @@ where
                     self.mouse_position.x = event.x as f64;
                     self.mouse_position.y = event.y as f64;
                     self.adapter.mouse(event.x as f64, event.y as f64);
-                }
+                },
+                orbclient::EventOption::Scroll(event) => {
+                    self.adapter.scroll(event.x as f64, event.y as f64);
+                },
                 orbclient::EventOption::Button(button) => {
                     if !button.left && !button.middle && !button.right {
                         let button = {

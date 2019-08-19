@@ -226,7 +226,10 @@ widget!(
         selected_indices: SelectedIndices,
 
         /// Sets or shares the list of selected indices.
-        selected_entities: SelectedEntities
+        selected_entities: SelectedEntities,
+
+        /// Sets or shares the (wheel, scroll) delta property. 
+        delta: Delta
     }
 );
 
@@ -252,6 +255,7 @@ impl Template for ListView {
             .selection_mode("Single")
             .selected_indices(HashSet::new())
             .selected_entities(HashSet::new())
+            .delta(0.0)
             .child(
                 Container::create()
                     .background(id)
@@ -260,9 +264,16 @@ impl Template for ListView {
                     .border_brush(id)
                     .padding(id)
                     .child(
-                        Stack::create()
-                            .selector(SelectorValue::default().clone().id("items_panel"))
-                            .orientation(id)
+                        ScrollViewer::create()
+                            .scroll_mode(("Disabled", "Auto"))
+                            .delta(id)
+                            .child(
+                                Stack::create()
+                                    .vertical_alignment("Start")
+                                    .selector(SelectorValue::default().clone().id("items_panel"))
+                                    .orientation(id)
+                                    .build(context),
+                            )
                             .build(context),
                     )
                     .build(context),

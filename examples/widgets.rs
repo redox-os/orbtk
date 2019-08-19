@@ -15,6 +15,7 @@ enum Action {
 pub struct MainViewState {
     counter: Cell<i32>,
     list: RefCell<Vec<String>>,
+    selection_list: RefCell<Vec<String>>,
     action: Cell<Option<Action>>,
 }
 
@@ -26,6 +27,18 @@ impl Default for MainViewState {
                 "Item 1".to_string(),
                 "Item 2".to_string(),
                 "Item 3".to_string(),
+            ]),
+             selection_list: RefCell::new(vec![
+                "Item 1".to_string(),
+                "Item 2".to_string(),
+                "Item 3".to_string(),
+                "Item 4".to_string(),
+                "Item 5".to_string(),
+                "Item 6".to_string(),
+                "Item 7".to_string(),
+                "Item 8".to_string(),
+                "Item 9".to_string(),
+                "Item 10".to_string(),
             ]),
             action: Cell::new(None),
         }
@@ -131,6 +144,7 @@ impl Template for MainView {
         let list_state = self.clone_state();
         let list_view_state = self.clone_state();
         let list_count = list_state.list.borrow().len();
+        let selection_list_count = list_state.selection_list.borrow().len();
 
         self.name("MainView")
             .count_text("Button count: 0")
@@ -140,11 +154,11 @@ impl Template for MainView {
                     .margin(8.0)
                     .columns(
                         Columns::create()
-                            .column("Auto")
+                            .column(132.0)
                             .column(16.0)
-                            .column("Auto")
+                            .column(132.0)
                             .column(16.0)
-                            .column(120.0)
+                            .column(132.0)
                             .build(),
                     )
                     .child(
@@ -213,15 +227,15 @@ impl Template for MainView {
                                     .attach(GridRow(1))
                                     .build(context),
                             )
-                            .child(
-                                TextBox::create()
-                                    .placeholder("TextBox...")
-                                    .text("")
-                                    .margin((0.0, 8.0, 0.0, 0.0))
-                                    .attach(GridColumn(2))
-                                    .attach(GridRow(2))
-                                    .build(context),
-                            )
+                            // .child(
+                            //     TextBox::create()
+                            //         .placeholder("TextBox...")
+                            //         .text("")
+                            //         .margin((0.0, 8.0, 0.0, 0.0))
+                            //         .attach(GridColumn(2))
+                            //         .attach(GridRow(2))
+                            //         .build(context),
+                            // )
                             .build(context),
                     )
                     .child(
@@ -306,10 +320,10 @@ impl Template for MainView {
                                         TextBlock::create()
                                             .margin((0.0, 0.0, 0.0, 2.0))
                                             .vertical_alignment("Center")
-                                            .text(list_view_state.list.borrow()[index].as_str())
+                                            .text(list_view_state.selection_list.borrow()[index].as_str())
                                             .build(bc)
                                     })
-                                    .items_count(list_count)
+                                    .items_count(selection_list_count)
                                     .build(context),
                             )
                             .child(

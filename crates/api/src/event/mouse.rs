@@ -21,6 +21,12 @@ pub struct MouseMoveEvent {
 
 impl Event for MouseMoveEvent {}
 
+pub struct ScrollEvent {
+    pub delta: Point,
+}
+
+impl Event for ScrollEvent {}
+
 pub struct MouseUpEvent {
     pub button: MouseButton,
     pub x: f64,
@@ -66,6 +72,10 @@ impl EventHandler for ClickEventHandler {
 
         return false;
     }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<ClickEvent>()
+    }
 }
 
 /// Used to handle mouse down events. Could be attached to a widget.
@@ -86,6 +96,10 @@ impl EventHandler for MouseDownEventHandler {
         }
 
         return false;
+    }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<MouseDownEvent>()
     }
 }
 
@@ -108,6 +122,34 @@ impl EventHandler for MouseUpEventHandler {
 
         return false;
     }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<MouseUpEvent>()
+    }
+}
+
+pub struct ScrollEventHandler {
+    handler: Rc<MouseHandlerFunction>,
+}
+
+impl Into<Rc<dyn EventHandler>> for ScrollEventHandler {
+    fn into(self) -> Rc<dyn EventHandler> {
+        Rc::new(self)
+    }
+}
+
+impl EventHandler for ScrollEventHandler {
+    fn handle_event(&self, event: &EventBox) -> bool {
+        if let Ok(event) = event.downcast_ref::<ScrollEvent>() {
+            return (self.handler)(Point::new(event.delta.x, event.delta.y));
+        }
+
+        return false;
+    }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<ScrollEvent>()
+    }
 }
 
 pub trait MouseHandler: Sized + Widget {
@@ -128,6 +170,13 @@ pub trait MouseHandler: Sized + Widget {
     /// Insert a mouse up handler.
     fn on_mouse_up<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
         self.insert_handler(MouseUpEventHandler {
+            handler: Rc::new(handler),
+        })
+    }
+
+    /// Insert a mouse up handler.
+    fn on_scroll<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
+        self.insert_handler(ScrollEventHandler {
             handler: Rc::new(handler),
         })
     }

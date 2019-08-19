@@ -6,7 +6,12 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{prelude::*, shell::WindowShell, tree::Tree, utils::*};
+use crate::{
+    prelude::*,
+    shell::WindowShell,
+    tree::Tree,
+    utils::*,
+};
 
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
 pub struct EventStateSystem {
@@ -23,7 +28,12 @@ pub struct EventStateSystem {
 impl EventStateSystem {
     fn process_top_down_event(&self, _event: &EventBox, _ecm: &mut EntityComponentManager<Tree>) {}
 
-    fn process_bottom_up_event(&self, event: &EventBox, ecm: &mut EntityComponentManager<Tree>) {
+    fn process_bottom_up_event(
+        &self,
+        mouse_position: Point,
+        event: &EventBox,
+        ecm: &mut EntityComponentManager<Tree>,
+    ) {
         let mut matching_nodes = vec![];
 
         let mut current_node = event.source;
@@ -36,14 +46,76 @@ impl EventStateSystem {
             .0
             .clone();
 
+        // global key handling
+        if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
+            if let Ok(global) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Global>(root)
+            {
+                // Set this value on the keyboard state
+                global.keyboard_state.set_key_state(event.event.key, true);
+            }
+        }
+
+        if let Ok(event) = event.downcast_ref::<KeyUpEvent>() {
+            if let Ok(global) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Global>(root)
+            {
+                // Set this value on the keyboard state
+                global.keyboard_state.set_key_state(event.event.key, false);
+            }
+        }
+
+        let mut unknown_event = true;
+
         loop {
+            // key down event
+            if let Ok(_) = event.downcast_ref::<KeyDownEvent>() {
+                if let Some(focused) = ecm
+                    .component_store()
+                    .borrow_component::<Global>(root)
+                    .unwrap()
+                    .focused_widget
+                {
+                    if current_node == focused {
+                        matching_nodes.push(current_node);
+                        unknown_event = false;
+                    }
+                }
+            }
+
+            // key up event
+            if let Ok(_) = event.downcast_ref::<KeyUpEvent>() {
+                if let Some(focused) = ecm
+                    .component_store()
+                    .borrow_component::<Global>(root)
+                    .unwrap()
+                    .focused_widget
+                {
+                    if current_node == focused {
+                        matching_nodes.push(current_node);
+                        unknown_event = false;
+                    }
+                }
+            }
+
             let widget = WidgetContainer::new(current_node, ecm, &theme);
+
+            // scroll handling
+            if let Ok(_) = event.downcast_ref::<ScrollEvent>() {
+                if check_mouse_condition(mouse_position, &widget) {
+                    matching_nodes.push(current_node);
+                    unknown_event = false;
+                }
+            }
 
             // click handling
             if let Ok(event) = event.downcast_ref::<ClickEvent>() {
                 if check_mouse_condition(event.position, &widget) {
                     matching_nodes.push(current_node);
                     self.mouse_down_nodes.borrow_mut().push(current_node);
+                    unknown_event = false;
                 }
             }
 
@@ -52,6 +124,7 @@ impl EventStateSystem {
                 if check_mouse_condition(Point::new(event.x, event.y), &widget) {
                     matching_nodes.push(current_node);
                     self.mouse_down_nodes.borrow_mut().push(current_node);
+                    unknown_event = false;
                 }
             }
 
@@ -66,6 +139,18 @@ impl EventStateSystem {
                         .position(|x| *x == current_node)
                         .unwrap();
                     self.mouse_down_nodes.borrow_mut().remove(index);
+                    unknown_event = false;
+                }
+            }
+
+            if unknown_event && widget.get::<Enabled>().0 {
+                if let Some(handlers) = self.handlers.borrow().get(&current_node) {
+                    for handler in handlers {
+                        if handler.handles_event(&event) {
+                            matching_nodes.push(current_node);
+                            break;
+                        }
+                    }
                 }
             }
 
@@ -115,54 +200,6 @@ impl EventStateSystem {
                 break;
             }
         }
-
-        let root = ecm.entity_store().root;
-
-        // KeyDown handling
-        let mut focus = None;
-        if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
-            if let Ok(global) = ecm
-                .component_store_mut()
-                .borrow_mut_component::<Global>(root)
-            {
-                // Set this value on the keyboard state
-                global.keyboard_state.set_key_state(event.event.key, true);
-            }
-
-            if let Some(focused_element) = ecm
-                .component_store_mut()
-                .borrow_component::<Global>(root)
-                .unwrap()
-                .focused_widget
-            {
-                focus = Some(focused_element);
-            }
-        }
-
-        if let Some(focus) = focus {
-            if let Some(handlers) = self.handlers.borrow().get(&focus) {
-                for handler in handlers {
-                    handled = handler.handle_event(event);
-
-                    if handled {
-                        break;
-                    }
-                }
-
-                self.update.set(true);
-            }
-        }
-
-        // KeyUp handling
-        if let Ok(event) = event.downcast_ref::<KeyUpEvent>() {
-            if let Ok(global) = ecm
-                .component_store_mut()
-                .borrow_mut_component::<Global>(root)
-            {
-                // Set this value on the keyboard state
-                global.keyboard_state.set_key_state(event.event.key, false);
-            }
-        }
     }
 }
 
@@ -176,6 +213,7 @@ impl System<Tree> for EventStateSystem {
         loop {
             {
                 let adapter = shell.adapter();
+                let mouse_position = adapter.mouse_position;
                 for event in adapter.event_queue.into_iter() {
                     if let Ok(event) = event.downcast_ref::<WindowEvent>() {
                         match event {
@@ -216,7 +254,7 @@ impl System<Tree> for EventStateSystem {
                             self.process_top_down_event(&event, ecm);
                         }
                         EventStrategy::BottomUp => {
-                            self.process_bottom_up_event(&event, ecm);
+                            self.process_bottom_up_event(mouse_position, &event, ecm);
                         }
                         _ => {}
                     }

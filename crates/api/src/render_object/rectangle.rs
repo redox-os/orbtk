@@ -94,7 +94,7 @@ impl RectangleRenderObject {
         render_context_2_d.set_fill_style(brush);
 
         render_context_2_d.fill();
-        render_context_2_d.close_path();
+        // render_context_2_d.close_path();
     }
 
     // Renders rectangle with border and radius.

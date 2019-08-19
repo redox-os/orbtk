@@ -14,6 +14,7 @@ pub struct WindowAdapter {
     pub event_queue: EventQueue,
     pub messages: BTreeMap<Entity, Vec<MessageBox>>,
     pub root: Entity,
+    pub mouse_position: Point,
 }
 
 pub struct WorldWrapper {
@@ -33,11 +34,21 @@ impl shell::WindowAdapter for WindowAdapter {
     }
 
     fn mouse(&mut self, x: f64, y: f64) {
+        self.mouse_position = Point::new(x, y);
         self.event_queue.register_event(
             MouseMoveEvent {
-                position: Point::new(x, y),
+                position: self.mouse_position,
             },
             self.root,
+        )
+    }
+
+    fn scroll(&mut self, delta_x: f64, delta_y: f64) {
+        self.event_queue.register_event(
+            ScrollEvent {
+                delta: Point::new(delta_x, delta_y)
+            },
+            self.root
         )
     }
 
@@ -60,6 +71,10 @@ impl shell::WindowAdapter for WindowAdapter {
                 self.root,
             ),
         }
+    }
+
+    fn mouse_position(&self) -> Point {
+        self.mouse_position
     }
 
     fn key_event(&mut self, event: shell::KeyEvent) {
