@@ -32,8 +32,8 @@ impl Template for FontIconBlock {
             .font("Material Icons")
     }
 
-    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
-        Some(Box::new(FontIconRenderObject))
+    fn render_object(&self) -> Box<dyn RenderObject> {
+        Box::new(FontIconRenderObject)
     }
 
     fn layout(&self) -> Box<dyn Layout> {

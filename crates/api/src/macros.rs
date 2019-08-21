@@ -318,10 +318,7 @@ macro_rules! widget {
 
                 let this = self.template(entity, context);
 
-                if let Some(render_object) = this.render_object() {
-                    context.register_render_object(entity, render_object);
-                }
-
+                context.register_render_object(entity, this.render_object());
                 context.register_layout(entity, this.layout());
 
                  // register state

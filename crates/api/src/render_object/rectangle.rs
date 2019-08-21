@@ -57,6 +57,7 @@ impl RectangleRenderObject {
         let m_pi = 3.14159265;
         let degrees = m_pi / 180.0;
 
+        render_context_2_d.save();
         render_context_2_d.begin_path();
         render_context_2_d.arc(
             x + width - radius,
@@ -94,7 +95,8 @@ impl RectangleRenderObject {
         render_context_2_d.set_fill_style(brush);
 
         render_context_2_d.fill();
-        // render_context_2_d.close_path();
+        render_context_2_d.close_path();
+        render_context_2_d.restore();
     }
 
     // Renders rectangle with border and radius.
@@ -141,7 +143,7 @@ impl Into<Box<dyn RenderObject>> for RectangleRenderObject {
 }
 
 impl RenderObject for RectangleRenderObject {
-    fn render(&self, context: &mut Context<'_>, global_position: &Point) {
+    fn render_self(&self, context: &mut Context<'_>, global_position: &Point) {
         let (bounds, background, border_radius, border_thickness, border_brush) = {
             let widget = context.widget();
             (

@@ -19,6 +19,22 @@ pub struct RenderSystem {
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
 }
 
+// todo: implement render system like layout system
+
+// parent calls the render methods of child render methods
+
+// default render object calls only the render methods of its children
+
+// fn render() {
+//    save()
+///   render_context_2d.begin_path();
+///   // do clip if needed!!!
+//    self.do_render(); // implement
+//    self.render_children(); // call children render and finish
+//    self.render_context_2d.close_path();
+//    restore()
+// }
+
 impl System<Tree> for RenderSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
         if !self.update.get() || ecm.entity_store().parent.is_empty() || !self.running.get() {
@@ -41,125 +57,20 @@ impl System<Tree> for RenderSystem {
             .0
             .clone();
 
-        let mut hidden_parents: HashSet<Entity> = HashSet::new();
-
         let mut offsets = BTreeMap::new();
         offsets.insert(root, (0.0, 0.0));
 
-        let mut parent_size = (0.0, 0.0);
-
-        let mut current_node = root;
-
-        loop {
-            let mut global_position = Point::default();
-
-            if let Some(parent) = ecm.entity_store().parent[&current_node] {
-                if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(parent) {
-                    parent_size = (bounds.width(), bounds.height())
-                }
-                if let Some(offset) = offsets.get(&parent) {
-                    global_position = Point::new(offset.0, offset.1);
-                }
-            } else {
-                if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(root) {
-                    parent_size = (bounds.width(), bounds.height())
-                }
-            }
-
-            // Hide all children of a hidden parent
-            if let Some(parent) = ecm.entity_store().parent[&current_node] {
-                if hidden_parents.contains(&parent) {
-                    hidden_parents.insert(current_node);
-                    continue;
-                }
-            }
-
-            // hide hidden widget
-            if let Ok(visibility) = ecm
-                .component_store()
-                .borrow_component::<Visibility>(current_node)
-            {
-                if visibility.0 != VisibilityValue::Visible {
-                    hidden_parents.insert(current_node);
-                    continue;
-                }
-            }
-
-            // clip if needed
-            // shell.render_context_2_d().save();
-            //  shell.render_context_2_d().begin_path();
-            // shell.render_context_2_d().rect(global_position.x, global_position.y, parent_size.0, parent_size.1);
-            // shell.render_context_2_d().clip();
-
-
-            {
-                let mut context = Context::new(
-                    current_node,
-                    ecm,
-                    &mut shell,
-                    &theme,
-                    self.render_objects.clone(),
-                    self.layouts.clone(),
-                    self.handlers.clone(),
-                    self.states.clone(),
-                );
-
-                context.widget().update_theme_by_state(false);
-                if let Some(render_object) = self.render_objects.borrow().get(&current_node) {
-                    render_object.render(&mut context, &global_position);
-                }
-            }
-
-            //  shell.render_context_2_d().close_path();
-            //  shell.render_context_2_d().restore();
-
-            // render debug border for each widget
-            if debug {
-                if let Ok(bounds) = ecm
-                    .component_store()
-                    .borrow_component::<Bounds>(current_node)
-                {
-                    let selector = Selector::from("debug-border");
-                    let brush = theme.brush("border-color", &selector.0).unwrap();
-                    shell.render_context_2_d().set_stroke_style(brush);
-                    shell.render_context_2_d().stroke_rect(
-                        global_position.x + bounds.x(),
-                        global_position.y + bounds.y(),
-                        bounds.width(),
-                        bounds.height(),
-                    );
-                }
-            }
-
-            let mut global_pos = (0.0, 0.0);
-
-            if let Ok(bounds) = ecm
-                .component_store()
-                .borrow_component::<Bounds>(current_node)
-            {
-                global_pos = (
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
-                );
-                offsets.insert(current_node, global_pos);
-            }
-
-            if let Ok(g_pos) = ecm
-                .component_store_mut()
-                .borrow_mut_component::<Point>(current_node)
-            {
-                g_pos.x = global_pos.0;
-                g_pos.y = global_pos.1;
-            }
-
-            let mut it = ecm.entity_store().start_node(current_node).into_iter();
-            it.next();
-
-            if let Some(node) = it.next() {
-                current_node = node;
-            } else {
-                break;
-            }
-        }
+        self.render_objects.borrow()[&root].render(
+            &mut shell,
+            root,
+            ecm,
+            &self.render_objects,
+            &self.layouts,
+            &self.handlers,
+            &self.states,
+            &theme,
+            &mut offsets,
+            debug,
+        );
     }
 }

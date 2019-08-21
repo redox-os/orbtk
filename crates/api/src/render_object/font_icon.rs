@@ -1,4 +1,6 @@
-use crate::{prelude::*, utils::*};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+
+use crate::{prelude::*, utils::*, render::RenderContext2D};
 
 pub struct FontIconRenderObject;
 
@@ -9,7 +11,7 @@ impl Into<Box<dyn RenderObject>> for FontIconRenderObject {
 }
 
 impl RenderObject for FontIconRenderObject {
-    fn render(&self, context: &mut Context<'_>, global_position: &Point) {
+    fn render_self(&self, context: &mut Context<'_>, global_position: &Point) {
         let parent_bounds = if let Some(parent) = context.parent_widget() {
             parent.clone_or_default::<Bounds>()
         } else {
