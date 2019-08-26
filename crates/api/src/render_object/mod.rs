@@ -31,7 +31,6 @@ pub trait RenderObject: Any {
         debug: bool,
     ) {
         let mut global_position = Point::default();
-        let root = ecm.entity_store().root;
 
         if let Some(parent) = ecm.entity_store().parent[&entity] {
             if let Some(offset) = offsets.get(&parent) {
@@ -46,7 +45,20 @@ pub trait RenderObject: Any {
         } else {
             return;
         }
-        
+
+        shell.render_context_2_d().save();
+        shell.render_context_2_d().begin_path();
+
+        if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(entity) {
+            shell.render_context_2_d().rect(
+                global_position.x + bounds.x(),
+                global_position.y + bounds.y(),
+                bounds.width(),
+                bounds.height(),
+            );
+            shell.render_context_2_d().clip();
+        }
+
         {
             let mut context = Context::new(
                 entity,
@@ -92,6 +104,9 @@ pub trait RenderObject: Any {
             offsets,
             debug,
         );
+
+        shell.render_context_2_d().close_path();
+        shell.render_context_2_d().restore();
 
         // render debug border for each widget
         if debug {
