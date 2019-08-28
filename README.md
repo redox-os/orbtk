@@ -100,13 +100,13 @@ cargo web start --target=wasm32-unknown-unknown --auto-reload --example widgets
 * Compile to [asm.js](https://en.wikipedia.org/wiki/Asm.js) using Emscripten:
 
 ```text
-$ cargo web start --target=asmjs-unknown-emscripten --auto-reload --example widgets
+cargo web start --target=asmjs-unknown-emscripten --auto-reload --example widgets
 ```
 
 * Compile to WebAssembly using Emscripten:
 
 ```text
-$ cargo web start --target=wasm32-unknown-emscripten --auto-reload --example widgets
+cargo web start --target=wasm32-unknown-emscripten --auto-reload --example widgets
 ```
 
 ## Run examples with Glutin and Pathfinder
