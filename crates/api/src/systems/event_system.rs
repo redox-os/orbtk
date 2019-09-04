@@ -1,3 +1,4 @@
+use orbtk_shell::prelude::log;
 use std::{
     any::TypeId,
     cell::{Cell, RefCell},
@@ -36,10 +37,22 @@ impl EventSystem {
 
         let mut current_node = event.source;
         let mut cont = false;
+        let root = ecm.entity_store().root;
 
         loop {
-            let widget = WidgetContainer::new(current_node, ecm);
+            let mut widget = WidgetContainer::new(current_node, ecm);
 
+            if current_node == root {
+                if let Ok(event) = event.downcast_ref::<WindowEvent>() {
+                    log("Test".to_string());
+                    if let WindowEvent::Resize { width, height } = event {
+                         if let Some(bounds) = widget.try_get_mut::<Bounds>() {
+                             bounds.set_width(*width);
+                             bounds.set_height(*height);
+                         }
+                    }
+                }
+            }
             // MouseDownEvent handling
             if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
                 if check_mouse_condition(Point::new(event.x, event.y), &widget) {
@@ -259,7 +272,8 @@ impl System<Tree> for EventSystem {
                             }
 
                             self.update.set(true);
-                        }
+                        },
+                        _ => {}
                     }
                 }
 

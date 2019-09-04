@@ -347,7 +347,7 @@ impl RenderContext2D {
 impl<T: Into<String>> From<T> for Image {
     fn from(source: T) -> Image {
         Image {
-            source: source.into()
+            source: source.into(),
         }
     }
 }

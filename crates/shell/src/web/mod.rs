@@ -60,6 +60,8 @@ where
     pub mouse_down_events: Rc<RefCell<Vec<event::MouseDownEvent>>>,
     pub key_up_events: Rc<RefCell<Vec<event::KeyUpEvent>>>,
     pub key_down_events: Rc<RefCell<Vec<event::KeyDownEvent>>>,
+    pub resize_events: Rc<RefCell<Vec<event::ResizeEvent>>>,
+    canvas: CanvasElement,
     adapter: A,
 }
 
@@ -111,14 +113,43 @@ where
             });
         }
 
-        while let Some(event) = self.key_up_events.borrow_mut().pop() {
-            let key = get_key(event.code().as_str(), event.key());
+        while let Some(event) = self.resize_events.borrow_mut().pop() {
+            log("Blub");
+            let window_size = (
+                window().inner_width() as f64,
+                window().inner_height() as f64,
+            );
+            let device_pixel_ratio = window().device_pixel_ratio();
+            let context: CanvasRenderingContext2d = self.canvas.get_context().unwrap();
 
-            self.adapter.key_event(KeyEvent {
-                key: key.0,
-                state: ButtonState::Up,
-                text: key.1,
-            });
+            let backing_store_ratio = js! {
+                var context = @{&context};
+                 return context.webkitBackingStorePixelRatio ||
+                     context.mozBackingStorePixelRatio ||
+                     context.msBackingStorePixelRatio ||
+                     context.oBackingStorePixelRatio ||
+                     context.backingStorePixelRatio || 1;
+            };
+
+            let ratio: f64 = js! {
+                return @{&device_pixel_ratio} / @{&backing_store_ratio};
+            }
+            .try_into()
+            .unwrap();
+
+            if device_pixel_ratio != backing_store_ratio {
+                self.canvas.set_width((window_size.0 * ratio) as u32);
+                self.canvas.set_height((window_size.1 * ratio) as u32);
+
+                js! {
+                    @{&self.canvas}.style.width = @{&window_size.0} + "px";
+                    @{&self.canvas}.style.height = @{&window_size.1} + "px";
+                }
+
+                context.scale(ratio, ratio);
+            }
+            // self.render_context_2_d.resize(window_size.0, window_size.1);
+            self.adapter.resize(window_size.0, window_size.1);
         }
     }
 }
@@ -195,15 +226,23 @@ where
     }
 
     /// Builds the window shell.
-    pub fn build(self) -> WindowShell<A> {
+    pub fn build(mut self) -> WindowShell<A> {
         let canvas: CanvasElement = document()
             .create_element("canvas")
             .unwrap()
             .try_into()
             .unwrap();
 
-        canvas.set_width(self.bounds.width as u32);
-        canvas.set_height(self.bounds.height as u32);
+        let window_size = (
+            window().inner_width() as f64,
+            window().inner_height() as f64,
+        );
+
+        canvas.set_width(window_size.0 as u32);
+        canvas.set_height(window_size.1 as u32);
+
+        let adapter = &mut self.adapter;
+        adapter.resize(window_size.0, window_size.1);
 
         js! {
             document.body.style.padding = 0;
@@ -218,6 +257,7 @@ where
         let mouse_down = Rc::new(RefCell::new(vec![]));
         let key_down = Rc::new(RefCell::new(vec![]));
         let key_up = Rc::new(RefCell::new(vec![]));
+        let resize = Rc::new(RefCell::new(vec![]));
 
         let mouse_down_c = mouse_down.clone();
         canvas.add_event_listener(move |e: event::MouseDownEvent| {
@@ -244,6 +284,12 @@ where
         document().add_event_listener(move |e: event::KeyUpEvent| {
             e.prevent_default();
             key_up_c.borrow_mut().push(e);
+        });
+
+        let resize_c = resize.clone();
+        document().add_event_listener(move |e: event::ResizeEvent| {
+             e.prevent_default();
+            resize_c.borrow_mut().push(e);
         });
 
         document().body().unwrap().append_child(&canvas);
@@ -294,6 +340,8 @@ where
             mouse_down_events: mouse_down,
             key_down_events: key_down,
             key_up_events: key_up,
+            resize_events: resize,
+            canvas,
         }
     }
 }

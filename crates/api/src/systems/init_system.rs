@@ -47,7 +47,7 @@ impl System<Tree> for InitSystem {
         #[cfg(feature = "debug")]
         let debug = true;
         #[cfg(not(feature = "debug"))]
-        let debug = false;;
+        let debug = false;
 
         if debug {
             crate::shell::log("\n------ Widget tree ------\n".to_string());
