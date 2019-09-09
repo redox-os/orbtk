@@ -2,3 +2,8 @@
 name = "widgets"
 width = 468
 height = 730
+
+[[windows]]
+name = "calculator"
+width = 212
+height = 360

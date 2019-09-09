@@ -46,10 +46,10 @@ impl EventSystem {
                 if let Ok(event) = event.downcast_ref::<WindowEvent>() {
                     log("Test".to_string());
                     if let WindowEvent::Resize { width, height } = event {
-                         if let Some(bounds) = widget.try_get_mut::<Bounds>() {
-                             bounds.set_width(*width);
-                             bounds.set_height(*height);
-                         }
+                        if let Some(bounds) = widget.try_get_mut::<Bounds>() {
+                            bounds.set_width(*width);
+                            bounds.set_height(*height);
+                        }
                     }
                 }
             }
@@ -272,7 +272,7 @@ impl System<Tree> for EventSystem {
                             }
 
                             self.update.set(true);
-                        },
+                        }
                         _ => {}
                     }
                 }
