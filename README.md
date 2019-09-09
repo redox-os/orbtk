@@ -5,10 +5,10 @@
 [![crates.io](https://img.shields.io/badge/crates.io-v0.2.27-orange.svg)](https://crates.io/crates/orbtk)
 [![docs.rs](https://docs.rs/orbtk/badge.svg)](https://docs.rs/orbtk)
 
-> OrbTk 0.3.0 is under heavy development and it's not compatible to earlier releases.
+> OrbTk 0.3.0 is under heavy development and is not compatible with earlier releases.
 
 The Orbital Widget Toolkit is a multi platform (G)UI toolkit for building scalable user interfaces with the programming language Rust. It's based
-on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity%E2%80%93component%E2%80%93system) and provides a functional-reactive like API. 
+on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity_component_system) and provides a functional-reactive like API.
 
 The main goals of OrbTk are speed, ease of use, and being cross platform.
 
@@ -40,15 +40,15 @@ line to your `Cargo.toml` file:
 orbtk = { git = "https://gitlab.redox-os.org/redox-os/orbtk.git" }
 ```
 
-However you also need to have the SDL2 libraries installed on your
+Note: You also need to have the SDL2 libraries installed on your
 system.  The best way to do this is documented [by the SDL2
 crate](https://github.com/AngryLawyer/rust-sdl2#user-content-requirements).
 
-## Use OrbTk with cairoe.
+## Use OrbTk with cairo
 
-* With Ubuntu, please to type ```sudo apt-get install libcairo2-dev``` in your console.
-* With macOS and homebrew, please to type ```brew install cairo``` in your console.
-* With macOS and macports, please to type ```sudo port install cairo``` in your console.
+* With Ubuntu, execute ```sudo apt-get install libcairo2-dev``` in your console.
+* With macOS and homebrew, execute ```brew install cairo``` in your console.
+* With macOS and macports, execute ```sudo port install cairo``` in your console.
 
 ## Minimal Example
 
@@ -71,7 +71,7 @@ fn main() {
 
 ## Additional Examples
 
-You find the examples in the `examples/` directory.
+You can find examples in the `examples/` directory.
 
 You can start the widgets example by executing the following command:
 
@@ -81,7 +81,7 @@ cargo run --example widgets --release
 
 ## Additional Examples on Web
 
-To run the examples on a browser you have to install 
+To run the examples on a browser you have to install
 
 ```text
 cargo install -f cargo-web
@@ -113,7 +113,7 @@ cargo web start --target=wasm32-unknown-emscripten --auto-reload --example widge
 
 OrbTk includes a preview with [Glutin](https://github.com/rust-windowing/glutin) and [Pathfinder](https://github.com/servo/pathfinder). To start the *preview* mode you have to use the feature *preview*.
 
-By problems running OrbTk with cairo on Windows you should try the *preview*.
+If you have problems running OrbTk with cairo on Windows you should try the *preview* feature.
 
 Pathfinder is currently not available for the web.
 
@@ -123,7 +123,7 @@ cargo run --example widgets --release --features preview
 
 ## Build and run documentation
 
-You can build and run the latest documentation y executing the following command:
+You can build and run the latest documentation by executing the following command:
 
 ```text
 cargo doc --no-deps --open
@@ -140,7 +140,7 @@ cargo doc --no-deps --open
 * Split application in modules
 * Theme update
 * Support for Android, iOS, Ubuntu Touch and WebAssembly
-* Vulkan / OpenGL Support 
+* Vulkan / OpenGL Support
 
 ## Sub Crates
 
@@ -162,4 +162,3 @@ cargo doc --no-deps --open
 * [Flutter](https://flutter.io/)
 * [React](https://reactjs.org/)
 * [Yew](https://github.com/DenisKolodin/yew)
-
