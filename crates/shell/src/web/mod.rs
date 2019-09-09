@@ -114,7 +114,6 @@ where
         }
 
         while let Some(event) = self.resize_events.borrow_mut().pop() {
-            log("Blub");
             let window_size = (
                 window().inner_width() as f64,
                 window().inner_height() as f64,
