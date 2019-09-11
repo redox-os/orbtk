@@ -1,7 +1,7 @@
 use stdweb::{
     _js_impl, js,
     unstable::TryInto,
-    web::{html_element::CanvasElement, window, CanvasRenderingContext2d, FillRule, TextAlign},
+    web::{CanvasRenderingContext2d, FillRule, TextAlign},
 };
 
 use crate::{utils::*, FontConfig, TextMetrics};
@@ -93,59 +93,16 @@ impl Image {
 
 /// The RenderContext2D trait, provides the 2D rendering context. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
-    canvas_buffer: (CanvasElement, CanvasElement),
-    active_canvas: usize,
     canvas_render_context_2_d: CanvasRenderingContext2d,
     font_config: FontConfig,
 }
 
 impl RenderContext2D {
     /// Creates a new render context 2d.
-    pub fn new(canvas_buffer: (CanvasElement, CanvasElement)) -> Self {
+    pub fn new(canvas_render_context_2_d: CanvasRenderingContext2d) -> Self {
         RenderContext2D {
-            canvas_render_context_2_d: canvas_buffer.0.get_context().unwrap(),
-            canvas_buffer,
+            canvas_render_context_2_d,
             font_config: FontConfig::default(),
-            active_canvas: 0,
-        }
-    }
-
-    pub fn resize(&self, width: f64, height: f64) {
-        let canvas = {
-            if self.active_canvas == 0 {
-                &self.canvas_buffer.0
-            } else {
-                &self.canvas_buffer.1
-            }
-        };
-        let device_pixel_ratio = window().device_pixel_ratio();
-        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
-
-        let backing_store_ratio = js! {
-            var context = @{&context};
-             return context.webkitBackingStorePixelRatio ||
-                 context.mozBackingStorePixelRatio ||
-                 context.msBackingStorePixelRatio ||
-                 context.oBackingStorePixelRatio ||
-                 context.backingStorePixelRatio || 1;
-        };
-
-        let ratio: f64 = js! {
-            return @{&device_pixel_ratio} / @{&backing_store_ratio};
-        }
-        .try_into()
-        .unwrap();
-
-        if device_pixel_ratio != backing_store_ratio {
-            canvas.set_width((width as f64 * ratio) as u32);
-            canvas.set_height((height as f64 * ratio) as u32);
-
-            js! {
-                @{&canvas}.style.width = @{&width} + "px";
-                @{&canvas}.style.height = @{&height} + "px";
-            }
-
-            context.scale(ratio, ratio);
         }
     }
 
@@ -439,6 +396,10 @@ impl RenderContext2D {
     pub fn restore(&mut self) {
         self.canvas_render_context_2_d.restore();
     }
+
+    pub fn set_canvas_render_context_2d(&mut self, canvas_render_context_2_d: CanvasRenderingContext2d) {
+        self.canvas_render_context_2_d = canvas_render_context_2_d;
+    } 
 }
 
 // --- Conversions ---

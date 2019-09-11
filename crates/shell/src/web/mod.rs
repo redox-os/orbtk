@@ -49,54 +49,6 @@ fn get_key(code: &str, key: String) -> (Key, String) {
     (code, text)
 }
 
-fn adjust_ratio(canvas: &CanvasElement, device_pixel_ratio: f64, size: (f64, f64)) {
-    let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
-
-    let backing_store_ratio = js! {
-        var context = @{&context};
-         return context.webkitBackingStorePixelRatio ||
-             context.mozBackingStorePixelRatio ||
-             context.msBackingStorePixelRatio ||
-             context.oBackingStorePixelRatio ||
-             context.backingStorePixelRatio || 1;
-    };
-
-    let ratio: f64 = js! {
-        return @{&device_pixel_ratio} / @{&backing_store_ratio};
-    }
-    .try_into()
-    .unwrap();
-
-    if device_pixel_ratio != backing_store_ratio {
-        canvas.set_width((size.0 as f64 * ratio) as u32);
-        canvas.set_height((size.1 as f64 * ratio) as u32);
-
-        js! {
-            @{&canvas}.style.width = @{&size.0} + "px";
-            @{&canvas}.style.height = @{&size.1} + "px";
-        }
-
-        context.scale(ratio, ratio);
-    }
-}
-
-fn create_canvas(window_size: (f64, f64)) -> CanvasElement {
-    let canvas: CanvasElement = document()
-        .create_element("canvas")
-        .unwrap()
-        .try_into()
-        .unwrap();
-
-    adjust_ratio(&canvas, window().device_pixel_ratio(), window_size);
-
-    js! {
-        @{&canvas}.style.display = "block";
-        @{&canvas}.style.margin = "0";
-    };
-
-    canvas
-}
-
 /// Concrete implementation of the window shell.
 pub struct WindowShell<A>
 where
@@ -109,7 +61,9 @@ where
     pub key_up_events: Rc<RefCell<Vec<event::KeyUpEvent>>>,
     pub key_down_events: Rc<RefCell<Vec<event::KeyDownEvent>>>,
     pub resize_events: Rc<RefCell<Vec<event::ResizeEvent>>>,
-    device_pixel_ratio: f64,
+    canvas: CanvasElement,
+    pub old_canvas: Option<CanvasElement>,
+    pub flip: bool,
     adapter: A,
 }
 
@@ -161,23 +115,65 @@ where
             });
         }
 
-        let mut resize = false;
-
-        while let Some(_) = self.resize_events.borrow_mut().pop() {
-            resize = true;
-        }
-
-        if resize {
+        while let Some(event) = self.resize_events.borrow_mut().pop() {
             let window_size = (
                 window().inner_width() as f64,
                 window().inner_height() as f64,
             );
 
-            self.render_context_2_d()
-                .resize(window_size.0, window_size.1);
+            let canvas: CanvasElement = document()
+                .create_element("canvas")
+                .unwrap()
+                .try_into()
+                .unwrap();
 
+            let device_pixel_ratio = window().device_pixel_ratio();
+            let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
+
+            let backing_store_ratio = js! {
+                var context = @{&context};
+                 return context.webkitBackingStorePixelRatio ||
+                     context.mozBackingStorePixelRatio ||
+                     context.msBackingStorePixelRatio ||
+                     context.oBackingStorePixelRatio ||
+                     context.backingStorePixelRatio || 1;
+            };
+
+            let ratio: f64 = js! {
+                return @{&device_pixel_ratio} / @{&backing_store_ratio};
+            }
+            .try_into()
+            .unwrap();
+
+            if device_pixel_ratio != backing_store_ratio {
+                canvas.set_width((window_size.0 * ratio) as u32);
+                canvas.set_height((window_size.1 * ratio) as u32);
+
+                js! {
+                    @{&canvas}.style.width = @{&window_size.0} + "px";
+                    @{&canvas}.style.height = @{&window_size.1} + "px";
+                }
+
+                context.scale(ratio, ratio);
+            }
+      
+            self.render_context_2_d.set_canvas_render_context_2d(context);
             self.adapter.resize(window_size.0, window_size.1);
+            self.old_canvas = Some(self.canvas.clone());
+            self.canvas = canvas;
+            self.flip = true;
         }
+    }
+
+    pub fn flip(&mut self) {
+        if !self.flip || !self.old_canvas.is_some() {
+            return;
+        } 
+
+        document().body().unwrap().replace_child(&self.canvas, self.old_canvas.as_ref().unwrap());
+
+        self.old_canvas = None;
+        self.flip = false;
     }
 }
 
@@ -201,19 +197,6 @@ where
             self.updater.update();
             self.update.set(false);
             self.window_shell.borrow_mut().drain_events();
-            // if self.window_shell.borrow_mut().device_pixel_ratio != window().device_pixel_ratio() {
-            //     log(format!("ratio"));
-            //     (*self.window_shell.borrow_mut()).device_pixel_ratio =
-            //         window().device_pixel_ratio();
-            //     adjust_ratio(
-            //         &self.window_shell.borrow().canvas,
-            //         window().device_pixel_ratio(),
-            //         (
-            //             window().inner_width() as f64,
-            //             window().inner_height() as f64,
-            //         ),
-            //     );
-            // }
             self.run();
         });
     }
@@ -267,10 +250,19 @@ where
 
     /// Builds the window shell.
     pub fn build(mut self) -> WindowShell<A> {
+        let canvas: CanvasElement = document()
+            .create_element("canvas")
+            .unwrap()
+            .try_into()
+            .unwrap();
+
         let window_size = (
             window().inner_width() as f64,
             window().inner_height() as f64,
         );
+
+        canvas.set_width(window_size.0 as u32);
+        canvas.set_height(window_size.1 as u32);
 
         let adapter = &mut self.adapter;
         adapter.resize(window_size.0, window_size.1);
@@ -278,16 +270,9 @@ where
         js! {
             document.body.style.padding = 0;
             document.body.style.margin = 0;
+            @{&canvas}.style.display = "block";
+            @{&canvas}.style.margin = "0";
         }
-
-        let first_canvas = create_canvas(window_size);
-        document().body().unwrap().append_child(&first_canvas);
-
-        let second_canvas = create_canvas(window_size);
-        js! {
-            @{&second_canvas}.style.visibility = "hidden";
-        }
-        document().body().unwrap().append_child(&second_canvas);
 
         // web event queues
         let mouse_move = Rc::new(RefCell::new(vec![]));
@@ -298,22 +283,22 @@ where
         let resize = Rc::new(RefCell::new(vec![]));
 
         let mouse_down_c = mouse_down.clone();
-        window().add_event_listener(move |e: event::MouseDownEvent| {
+        document().body().unwrap().add_event_listener(move |e: event::MouseDownEvent| {
             mouse_down_c.borrow_mut().push(e);
         });
 
         let mouse_up_c = mouse_up.clone();
-        window().add_event_listener(move |e: event::MouseUpEvent| {
+        document().body().unwrap().add_event_listener(move |e: event::MouseUpEvent| {
             mouse_up_c.borrow_mut().push(e);
         });
 
         let mouse_move_c = mouse_move.clone();
-        window().add_event_listener(move |e: event::MouseMoveEvent| {
+        document().body().unwrap().add_event_listener(move |e: event::MouseMoveEvent| {
             mouse_move_c.borrow_mut().push(e);
         });
 
         let key_down_c = key_down.clone();
-        document().add_event_listener(move |e: event::KeyDownEvent| {
+        document().body().unwrap().add_event_listener(move |e: event::KeyDownEvent| {
             e.prevent_default();
             key_down_c.borrow_mut().push(e);
         });
@@ -330,7 +315,41 @@ where
             resize_c.borrow_mut().push(e);
         });
 
-        let render_context_2_d = RenderContext2D::new((first_canvas, second_canvas));
+        document().body().unwrap().append_child(&canvas);
+        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
+
+        let device_pixel_ratio = window().device_pixel_ratio();
+
+        let backing_store_ratio = js! {
+            var context = @{&context};
+             return context.webkitBackingStorePixelRatio ||
+                 context.mozBackingStorePixelRatio ||
+                 context.msBackingStorePixelRatio ||
+                 context.oBackingStorePixelRatio ||
+                 context.backingStorePixelRatio || 1;
+        };
+
+        let ratio: f64 = js! {
+            return @{&device_pixel_ratio} / @{&backing_store_ratio};
+        }
+        .try_into()
+        .unwrap();
+
+        if device_pixel_ratio != backing_store_ratio {
+            let old_width = canvas.width();
+            let old_height = canvas.height();
+            canvas.set_width((old_width as f64 * ratio) as u32);
+            canvas.set_height((old_height as f64 * ratio) as u32);
+
+            js! {
+                @{&canvas}.style.width = @{&old_width} + "px";
+                @{&canvas}.style.height = @{&old_height} + "px";
+            }
+
+            context.scale(ratio, ratio);
+        }
+
+        let render_context_2_d = RenderContext2D::new(canvas.get_context().unwrap());
 
         document().set_title(&self.title[..]);
 
@@ -345,7 +364,9 @@ where
             key_down_events: key_down,
             key_up_events: key_up,
             resize_events: resize,
-            device_pixel_ratio: window().device_pixel_ratio(),
+            flip: false,
+            canvas,
+            old_canvas: None,
         }
     }
 }
