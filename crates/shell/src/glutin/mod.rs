@@ -163,6 +163,8 @@ where
             }
         }
     }
+
+    pub fn flip(&mut self) {}
 }
 
 /// Implementation of the OrbClient based shell runner.

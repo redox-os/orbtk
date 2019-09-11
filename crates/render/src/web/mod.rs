@@ -397,9 +397,12 @@ impl RenderContext2D {
         self.canvas_render_context_2_d.restore();
     }
 
-    pub fn set_canvas_render_context_2d(&mut self, canvas_render_context_2_d: CanvasRenderingContext2d) {
+    pub fn set_canvas_render_context_2d(
+        &mut self,
+        canvas_render_context_2_d: CanvasRenderingContext2d,
+    ) {
         self.canvas_render_context_2_d = canvas_render_context_2_d;
-    } 
+    }
 }
 
 // --- Conversions ---

@@ -156,8 +156,9 @@ where
 
                 context.scale(ratio, ratio);
             }
-      
-            self.render_context_2_d.set_canvas_render_context_2d(context);
+
+            self.render_context_2_d
+                .set_canvas_render_context_2d(context);
             self.adapter.resize(window_size.0, window_size.1);
             self.old_canvas = Some(self.canvas.clone());
             self.canvas = canvas;
@@ -168,9 +169,12 @@ where
     pub fn flip(&mut self) {
         if !self.flip || !self.old_canvas.is_some() {
             return;
-        } 
+        }
 
-        document().body().unwrap().replace_child(&self.canvas, self.old_canvas.as_ref().unwrap());
+        document()
+            .body()
+            .unwrap()
+            .replace_child(&self.canvas, self.old_canvas.as_ref().unwrap());
 
         self.old_canvas = None;
         self.flip = false;
@@ -283,25 +287,37 @@ where
         let resize = Rc::new(RefCell::new(vec![]));
 
         let mouse_down_c = mouse_down.clone();
-        document().body().unwrap().add_event_listener(move |e: event::MouseDownEvent| {
-            mouse_down_c.borrow_mut().push(e);
-        });
+        document()
+            .body()
+            .unwrap()
+            .add_event_listener(move |e: event::MouseDownEvent| {
+                mouse_down_c.borrow_mut().push(e);
+            });
 
         let mouse_up_c = mouse_up.clone();
-        document().body().unwrap().add_event_listener(move |e: event::MouseUpEvent| {
-            mouse_up_c.borrow_mut().push(e);
-        });
+        document()
+            .body()
+            .unwrap()
+            .add_event_listener(move |e: event::MouseUpEvent| {
+                mouse_up_c.borrow_mut().push(e);
+            });
 
         let mouse_move_c = mouse_move.clone();
-        document().body().unwrap().add_event_listener(move |e: event::MouseMoveEvent| {
-            mouse_move_c.borrow_mut().push(e);
-        });
+        document()
+            .body()
+            .unwrap()
+            .add_event_listener(move |e: event::MouseMoveEvent| {
+                mouse_move_c.borrow_mut().push(e);
+            });
 
         let key_down_c = key_down.clone();
-        document().body().unwrap().add_event_listener(move |e: event::KeyDownEvent| {
-            e.prevent_default();
-            key_down_c.borrow_mut().push(e);
-        });
+        document()
+            .body()
+            .unwrap()
+            .add_event_listener(move |e: event::KeyDownEvent| {
+                e.prevent_default();
+                key_down_c.borrow_mut().push(e);
+            });
 
         let key_up_c = key_up.clone();
         document().add_event_listener(move |e: event::KeyUpEvent| {

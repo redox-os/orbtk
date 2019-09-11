@@ -147,6 +147,8 @@ where
             }
         }
     }
+
+    pub fn flip(&mut self) {}
 }
 
 impl<A> Drop for WindowShell<A>
