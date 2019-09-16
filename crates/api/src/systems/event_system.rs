@@ -44,7 +44,6 @@ impl EventSystem {
 
             if current_node == root {
                 if let Ok(event) = event.downcast_ref::<WindowEvent>() {
-                    log("Test".to_string());
                     if let WindowEvent::Resize { width, height } = event {
                         if let Some(bounds) = widget.try_get_mut::<Bounds>() {
                             bounds.set_width(*width);

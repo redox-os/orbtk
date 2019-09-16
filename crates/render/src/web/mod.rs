@@ -223,7 +223,7 @@ impl RenderContext2D {
                     }
                 )
             } else {
-                 @{&self.canvas_render_context_2_d}.drawImage(img, @{&x}, @{&y});
+                //  @{&self.canvas_render_context_2_d}.drawImage(img, @{&x}, @{&y});
             }
         );
     }
@@ -242,6 +242,7 @@ impl RenderContext2D {
 
             if(img == null) {
                 img = document.image_store.load_image(@{&image.source});
+               
                 img.then(
                     function(i) {
                          @{&self.canvas_render_context_2_d}.drawImage(i, @{&x}, @{&y}, @{&width}, @{&height});

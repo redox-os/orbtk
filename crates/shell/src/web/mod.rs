@@ -127,6 +127,16 @@ where
                 .try_into()
                 .unwrap();
 
+            canvas.set_width(window_size.0 as u32);
+            canvas.set_height(window_size.1 as u32);
+
+            js! {
+                document.body.style.padding = 0;
+                document.body.style.margin = 0;
+                @{&canvas}.style.display = "block";
+                @{&canvas}.style.margin = "0";
+            }
+
             let device_pixel_ratio = window().device_pixel_ratio();
             let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
 
@@ -146,12 +156,14 @@ where
             .unwrap();
 
             if device_pixel_ratio != backing_store_ratio {
-                canvas.set_width((window_size.0 * ratio) as u32);
-                canvas.set_height((window_size.1 * ratio) as u32);
+                let old_width = canvas.width();
+                let old_height = canvas.height();
+                canvas.set_width((old_width as f64 * ratio) as u32);
+                canvas.set_height((old_height as f64 * ratio) as u32);
 
                 js! {
-                    @{&canvas}.style.width = @{&window_size.0} + "px";
-                    @{&canvas}.style.height = @{&window_size.1} + "px";
+                    @{&canvas}.style.width = @{&old_width} + "px";
+                    @{&canvas}.style.height = @{&old_height} + "px";
                 }
 
                 context.scale(ratio, ratio);
@@ -159,7 +171,8 @@ where
 
             self.render_context_2_d
                 .set_canvas_render_context_2d(context);
-            self.adapter.resize(window_size.0, window_size.1);
+            self.adapter
+                .resize(window_size.0, window_size.1);
             self.old_canvas = Some(self.canvas.clone());
             self.canvas = canvas;
             self.flip = true;
@@ -170,6 +183,12 @@ where
         if !self.flip || !self.old_canvas.is_some() {
             return;
         }
+
+        log(format!(
+            "CSize: {},{}",
+            self.canvas.width(),
+            self.canvas.height()
+        ));
 
         document()
             .body()
@@ -387,8 +406,8 @@ where
     }
 }
 
-pub fn log(message: String) {
+pub fn log(message: impl Into<String>) {
     js! {
-        console.log(@{&message});
+        console.log(@{&message.into()});
     }
 }

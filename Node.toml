@@ -1,9 +1,15 @@
-[[windows]]
+[[apps]]
 name = "widgets"
 width = 468
 height = 730
 
-[[windows]]
+[[apps]]
 name = "calculator"
 width = 212
 height = 360
+
+[[apps]]
+name = "image"
+width = 800
+height = 420
+assets = "res/"

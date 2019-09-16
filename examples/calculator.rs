@@ -3,10 +3,10 @@ use orbtk::theme::DEFAULT_THEME_CSS;
 
 use std::cell::Cell;
 
-static DARK_EXT: &'static str = include_str!("res/calculator-dark.css");
+static DARK_EXT: &'static str = include_str!("../res/calculator-dark.css");
 
 #[cfg(feature = "light-theme")]
-static LIGHT_EXT: &'static str = include_str!("res/calculator-light.css");
+static LIGHT_EXT: &'static str = include_str!("../res/calculator-light.css");
 
 #[cfg(not(feature = "light-theme"))]
 fn get_theme() -> ThemeValue {
@@ -212,7 +212,7 @@ impl Template for MainView {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
         let state = self.clone_state();
 
-        self.name("MainView").result("").child(
+        self.name("MainView").width(212.0).height(336.0).result("").child(
             Grid::create()
                 .rows(Rows::create().row(72.0).row("*").build())
                 .child(

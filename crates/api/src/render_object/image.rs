@@ -11,7 +11,7 @@ impl Into<Box<dyn RenderObject>> for ImageRenderObject {
 
 impl RenderObject for ImageRenderObject {
     fn render(&self, context: &mut Context<'_>, global_position: &Point) {
-        let (bounds, mut image) = {
+        let (_, mut image) = {
             let widget = context.widget();
             (
                 widget.clone::<Bounds>(),
@@ -20,12 +20,10 @@ impl RenderObject for ImageRenderObject {
         };
 
         if let Some(image) = &mut image {
-            context.render_context_2_d().draw_image_with_size(
+            context.render_context_2_d().draw_image(
                 &mut image.0,
                 global_position.x,
                 global_position.y,
-                bounds.width(),
-                bounds.height(),
             );
         }
     }
