@@ -57,6 +57,8 @@ where
     render_context_2_d: RenderContext2D,
     pub mouse_move_events: Rc<RefCell<Vec<event::MouseMoveEvent>>>,
     pub mouse_up_events: Rc<RefCell<Vec<event::MouseUpEvent>>>,
+    pub touch_start_events: Rc<RefCell<Vec<event::TouchStart>>>,
+    pub touch_end_events: Rc<RefCell<Vec<event::TouchEnd>>>,
     pub mouse_down_events: Rc<RefCell<Vec<event::MouseDownEvent>>>,
     pub key_up_events: Rc<RefCell<Vec<event::KeyUpEvent>>>,
     pub key_down_events: Rc<RefCell<Vec<event::KeyDownEvent>>>,
@@ -104,6 +106,24 @@ where
                 state: ButtonState::Up,
             });
         }
+
+        // while let Some(event) = self.touch_start_events.borrow_mut().pop() {
+        //     self.adapter.mouse_event(MouseEvent {
+        //         x: event.touches()[0].client_x() as f64,
+        //         y: event.touches()[0].client_y() as f64,
+        //         button: MouseButton::Left,
+        //         state: ButtonState::Down,
+        //     });
+        // }
+
+        //   while let Some(event) = self.touch_end_events.borrow_mut().pop() {
+        //     self.adapter.mouse_event(MouseEvent {
+        //         x: event.touches()[0].client_x() as f64,
+        //         y: event.touches()[0].client_y() as f64,
+        //         button: MouseButton::Left,
+        //         state: ButtonState::Up,
+        //     });
+        // }
 
         while let Some(event) = self.key_down_events.borrow_mut().pop() {
             let key = get_key(event.code().as_str(), event.key());
@@ -171,8 +191,7 @@ where
 
             self.render_context_2_d
                 .set_canvas_render_context_2d(context);
-            self.adapter
-                .resize(window_size.0, window_size.1);
+            self.adapter.resize(window_size.0, window_size.1);
             self.old_canvas = Some(self.canvas.clone());
             self.canvas = canvas;
             self.flip = true;
@@ -300,6 +319,8 @@ where
         // web event queues
         let mouse_move = Rc::new(RefCell::new(vec![]));
         let mouse_up = Rc::new(RefCell::new(vec![]));
+        let touch_start = Rc::new(RefCell::new(vec![]));
+        let touch_end = Rc::new(RefCell::new(vec![]));
         let mouse_down = Rc::new(RefCell::new(vec![]));
         let key_down = Rc::new(RefCell::new(vec![]));
         let key_up = Rc::new(RefCell::new(vec![]));
@@ -319,6 +340,22 @@ where
             .unwrap()
             .add_event_listener(move |e: event::MouseUpEvent| {
                 mouse_up_c.borrow_mut().push(e);
+            });
+
+        let touch_start_c = touch_start.clone();
+        document()
+            .body()
+            .unwrap()
+            .add_event_listener(move |e: event::TouchStart| {
+                touch_start_c.borrow_mut().push(e);
+            });
+
+        let touch_end_c = touch_end.clone();
+        document()
+            .body()
+            .unwrap()
+            .add_event_listener(move |e: event::TouchEnd| {
+                touch_end_c.borrow_mut().push(e);
             });
 
         let mouse_move_c = mouse_move.clone();
@@ -395,6 +432,8 @@ where
             adapter: self.adapter,
             mouse_move_events: mouse_move,
             mouse_up_events: mouse_up,
+            touch_start_events: touch_start,
+            touch_end_events: touch_end,
             mouse_down_events: mouse_down,
             key_down_events: key_down,
             key_up_events: key_up,

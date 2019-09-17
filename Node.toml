@@ -2,6 +2,12 @@
 name = "widgets"
 width = 468
 height = 730
+    [[apps.fonts]]
+    font_family = "Material Icons"
+    src = "crates/theme/src/fonts/MaterialIcons-Regular.ttf"
+    [[apps.fonts]]
+    font_family = "Roboto Regular"
+    src = "crates/theme/src/fonts/Roboto-Regular.ttf"
 
 [[apps]]
 name = "calculator"
