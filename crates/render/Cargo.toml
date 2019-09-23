@@ -9,24 +9,19 @@ keywords = ["2D", "render", "canvas"]
 edition = "2018"
 
 [target.wasm32-unknown-unknown.dependencies]
-stdweb = "0.4.17"
+stdweb = "0.4.18"
 
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-orbclient = { version = "0.3.22", optional = true }
+[target.'cfg(redox)'.dependencies]
+orbclient = { version = "0.3.27", optional = true }
 orbfont = { git = "https://gitlab.redox-os.org/redox-os/orbfont.git", optional = true }
 orbgl = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git", optional = true }
-pathfinder_canvas = { git = "https://github.com/servo/pathfinder.git", optional = true }
-pathfinder_geometry = { git = "https://github.com/servo/pathfinder.git", optional = true }
-pathfinder_gl = { git = "https://github.com/servo/pathfinder.git", optional = true }
-pathfinder_gpu = { git = "https://github.com/servo/pathfinder.git", optional = true }
-pathfinder_renderer = { git = "https://github.com/servo/pathfinder.git", optional = true }
-pathfinder_content = { git = "https://github.com/servo/pathfinder.git", optional = true }
-skribo = { git = "https://github.com/linebender/skribo.git", optional = true }
+orbgl_api = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git", optional = true }
+
+[target.'cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))'.dependencies]
+minifb = "0.13"
 
 [dependencies]
 orbtk-utils = { version = "0.1.0", path = "../utils" }
-orbgl_api = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git", optional = true }
 
 [features]
-default = ["orbgl_api", "orbgl", "orbclient", "orbfont"]
-preview = ["pathfinder_canvas", "pathfinder_geometry", "pathfinder_gl", "pathfinder_gpu", "pathfinder_renderer", "pathfinder_content", "skribo"]
+default = []

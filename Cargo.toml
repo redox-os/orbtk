@@ -34,7 +34,6 @@ dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }
 
 [features]
 debug = ["orbtk-api/debug"]
-preview = ["orbtk-shell/preview", "orbtk-api/preview", "orbtk-render/preview"]
 
 [workspace]
 members = [

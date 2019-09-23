@@ -109,18 +109,6 @@ cargo web start --target=asmjs-unknown-emscripten --auto-reload --example widget
 cargo web start --target=wasm32-unknown-emscripten --auto-reload --example widgets
 ```
 
-## Run examples with Glutin and Pathfinder
-
-OrbTk includes a preview with [Glutin](https://github.com/rust-windowing/glutin) and [Pathfinder](https://github.com/servo/pathfinder). To start the *preview* mode you have to use the feature *preview*.
-
-If you have problems running OrbTk with cairo on Windows you should try the *preview* feature.
-
-Pathfinder is currently not available for the web.
-
-```text
-cargo run --example widgets --release --features preview
-```
-
 ## Build and run documentation
 
 You can build and run the latest documentation by executing the following command:

@@ -4,18 +4,16 @@ pub mod prelude;
 
 pub use orbtk_utils::prelude as utils;
 
-#[cfg(not(target_arch = "wasm32"))]
-#[cfg(feature = "preview")]
-#[path = "pathfinder/mod.rs"]
-pub mod platform;
-
-#[cfg(not(target_arch = "wasm32"))]
-#[cfg(not(feature = "preview"))]
+#[cfg(target_os = "redox")]
 #[path = "orbclient/mod.rs"]
 pub mod platform;
 
 #[cfg(target_arch = "wasm32")]
 #[path = "web/mod.rs"]
+pub mod platform;
+
+#[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
+#[path = "raqote/mod.rs"]
 pub mod platform;
 
 /// The TextMetrics struct represents the dimension of a text.
