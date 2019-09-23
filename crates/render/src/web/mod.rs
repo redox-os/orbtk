@@ -223,7 +223,7 @@ impl RenderContext2D {
                     }
                 )
             } else {
-                 @{&self.canvas_render_context_2_d}.drawImage(img, @{&x}, @{&y});
+                //  @{&self.canvas_render_context_2_d}.drawImage(img, @{&x}, @{&y});
             }
         );
     }
@@ -242,6 +242,7 @@ impl RenderContext2D {
 
             if(img == null) {
                 img = document.image_store.load_image(@{&image.source});
+
                 img.then(
                     function(i) {
                          @{&self.canvas_render_context_2_d}.drawImage(i, @{&x}, @{&y}, @{&width}, @{&height});
@@ -395,6 +396,13 @@ impl RenderContext2D {
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
         self.canvas_render_context_2_d.restore();
+    }
+
+    pub fn set_canvas_render_context_2d(
+        &mut self,
+        canvas_render_context_2_d: CanvasRenderingContext2d,
+    ) {
+        self.canvas_render_context_2_d = canvas_render_context_2_d;
     }
 }
 

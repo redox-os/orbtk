@@ -62,7 +62,7 @@ impl Template for ScrollViewer {
                 false
             })
     }
-    
+
     fn layout(&self) -> Box<dyn Layout> {
         Box::new(ScrollLayout::new())
     }

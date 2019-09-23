@@ -200,7 +200,9 @@ impl Layout for ScrollLayout {
                     }
                     ScrollMode::Auto => {
                         // todo: refactor * 1.5
-                        offset.0 = (offset.0 + delta.x * 1.5).min(0.0).max(size.0 - child_size.0);
+                        offset.0 = (offset.0 + delta.x * 1.5)
+                            .min(0.0)
+                            .max(size.0 - child_size.0);
                     }
                     _ => {}
                 }
@@ -215,7 +217,9 @@ impl Layout for ScrollLayout {
                     }
                     ScrollMode::Auto => {
                         // todo: refactor * 1.5
-                        offset.1 = (offset.1 + delta.y * 1.5).min(1.1).max(size.1 - child_size.1);
+                        offset.1 = (offset.1 + delta.y * 1.5)
+                            .min(1.1)
+                            .max(size.1 - child_size.1);
                     }
                     _ => {}
                 }

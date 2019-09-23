@@ -19,7 +19,7 @@ impl Template for ImageWidget {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-       Box::new(ImageRenderObject)
+        Box::new(ImageRenderObject)
     }
 
     fn layout(&self) -> Box<dyn Layout> {

@@ -8,7 +8,7 @@ pub enum ScrollMode {
     Custom,
 
     /// Scrolling will be disabled.
-    Disabled
+    Disabled,
 }
 
 impl Default for ScrollMode {

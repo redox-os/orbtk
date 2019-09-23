@@ -1,6 +1,6 @@
 use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
-use crate::{prelude::*, utils::*, render::RenderContext2D};
+use crate::{prelude::*, render::RenderContext2D, utils::*};
 
 pub struct FontIconRenderObject;
 

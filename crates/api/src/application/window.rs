@@ -46,9 +46,9 @@ impl shell::WindowAdapter for WindowAdapter {
     fn scroll(&mut self, delta_x: f64, delta_y: f64) {
         self.event_queue.register_event(
             ScrollEvent {
-                delta: Point::new(delta_x, delta_y)
+                delta: Point::new(delta_x, delta_y),
             },
-            self.root
+            self.root,
         )
     }
 

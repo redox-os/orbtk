@@ -6,12 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{
-    prelude::*,
-    shell::WindowShell,
-    tree::Tree,
-    utils::*,
-};
+use crate::{prelude::*, shell::WindowShell, tree::Tree, utils::*, shell::log};
 
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
 pub struct EventStateSystem {
@@ -237,6 +232,7 @@ impl System<Tree> for EventStateSystem {
 
                                 self.update.set(true);
                             }
+                            _ => {}
                         }
                     }
 

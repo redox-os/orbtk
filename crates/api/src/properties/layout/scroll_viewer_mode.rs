@@ -16,7 +16,7 @@ impl From<(&str, &str)> for ScrollViewerModeValue {
     fn from(s: (&str, &str)) -> ScrollViewerModeValue {
         ScrollViewerModeValue {
             horizontal: ScrollMode::from(s.0),
-            vertical: ScrollMode::from(s.1)
+            vertical: ScrollMode::from(s.1),
         }
     }
 }

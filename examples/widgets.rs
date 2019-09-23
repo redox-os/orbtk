@@ -28,7 +28,7 @@ impl Default for MainViewState {
                 "Item 2".to_string(),
                 "Item 3".to_string(),
             ]),
-             selection_list: RefCell::new(vec![
+            selection_list: RefCell::new(vec![
                 "Item 1".to_string(),
                 "Item 2".to_string(),
                 "Item 3".to_string(),
@@ -227,15 +227,15 @@ impl Template for MainView {
                                     .attach(GridRow(1))
                                     .build(context),
                             )
-                            // .child(
-                            //     TextBox::create()
-                            //         .placeholder("TextBox...")
-                            //         .text("")
-                            //         .margin((0.0, 8.0, 0.0, 0.0))
-                            //         .attach(GridColumn(2))
-                            //         .attach(GridRow(2))
-                            //         .build(context),
-                            // )
+                            .child(
+                                TextBox::create()
+                                    .placeholder("TextBox...")
+                                    .text("")
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .attach(GridColumn(2))
+                                    .attach(GridRow(2))
+                                    .build(context),
+                            )
                             .build(context),
                     )
                     .child(
@@ -320,7 +320,10 @@ impl Template for MainView {
                                         TextBlock::create()
                                             .margin((0.0, 0.0, 0.0, 2.0))
                                             .vertical_alignment("Center")
-                                            .text(list_view_state.selection_list.borrow()[index].as_str())
+                                            .text(
+                                                list_view_state.selection_list.borrow()[index]
+                                                    .as_str(),
+                                            )
                                             .build(bc)
                                     })
                                     .items_count(selection_list_count)

@@ -153,7 +153,7 @@ where
                     WindowEvent::MouseWheel { delta, .. } => {
                         // todo: scroll delta
                         // self.adapter.scroll(delta.x)
-                    },
+                    }
                     WindowEvent::CursorMoved { position, .. } => {
                         self.mouse_position.x = position.x;
                         self.mouse_position.y = position.y;
@@ -167,6 +167,8 @@ where
             }
         }
     }
+
+    pub fn flip(&mut self) {}
 }
 
 /// Implementation of the OrbClient based shell runner.

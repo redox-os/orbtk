@@ -1,6 +1,6 @@
 use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
-use crate::{prelude::*, utils::*, render::RenderContext2D};
+use crate::{prelude::*, render::RenderContext2D, utils::*};
 
 pub struct DefaultRenderObject;
 
@@ -10,5 +10,4 @@ impl Into<Box<dyn RenderObject>> for DefaultRenderObject {
     }
 }
 
-impl RenderObject for DefaultRenderObject {
-}
+impl RenderObject for DefaultRenderObject {}
