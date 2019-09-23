@@ -1,5 +1,7 @@
 use std::fmt;
 
+use raqote;
+
 use crate::{utils::*, FontConfig, TextMetrics};
 
 #[derive(Clone)]
@@ -32,9 +34,7 @@ impl Image {
     pub fn new(source: impl Into<String>) -> Self {
         let source = source.into();
 
-        Image {
-            source,
-        }
+        Image { source }
     }
 
     /// Gets the width.
@@ -44,25 +44,29 @@ impl Image {
 
     /// Gets the height.
     pub fn height(&self) -> f64 {
-       0.0
+        0.0
     }
-
 }
 
 /// The RenderContext2D trait, provides the 2D rendering context. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
+    draw_target: raqote::DrawTarget,
+    fill_style: Brush,
     // pub window: orbclient::Window,
 }
 
 impl RenderContext2D {
     /// Creates a new render context 2d.
-    pub fn new() -> Self {
+    pub fn new(width: f64, height: f64) -> Self {
         RenderContext2D {
-            // window
+            fill_style: Brush::from("#000000"),
+            draw_target: raqote::DrawTarget::new(width as i32, height as i32), // window
         }
     }
 
-    pub fn resize(&mut self, width: f64, height: f64) {}
+    pub fn resize(&mut self, width: f64, height: f64) {
+        self.draw_target = raqote::DrawTarget::new(width as i32, height as i32);
+    }
 
     /// Registers a new font file.
     pub fn register_font(&mut self, family: &str, font_file: &[u8]) {}
@@ -70,7 +74,22 @@ impl RenderContext2D {
     // Rectangles
 
     /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
-    pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {}
+    pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        let mut path_builder = raqote::PathBuilder::new();
+        path_builder.rect(x as f32, y as f32, width as f32, height as f32);
+        path_builder.close();
+        let path = path_builder.finish();
+        self.draw_target.fill(
+            &path,
+            &raqote::Source::Solid(raqote::SolidSource {
+                r: 0x0,
+                g: 0x0,
+                b: 0x80,
+                a: 0x80,
+            }),
+            &raqote::DrawOptions::new(),
+        );
+    }
 
     /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other context settings.
     pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {}
@@ -178,7 +197,9 @@ impl RenderContext2D {
     // Fill and stroke style
 
     /// Specifies the fill color to use inside shapes.
-    pub fn set_fill_style(&mut self, brush: Brush) {}
+    pub fn set_fill_style(&mut self, fill_style: Brush) {
+        self.fill_style = fill_style;
+    }
 
     /// Specifies the fill stroke to use inside shapes.
     pub fn set_stroke_style(&mut self, brush: Brush) {}
@@ -204,6 +225,10 @@ impl RenderContext2D {
 
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {}
+
+    pub fn data(&self) -> &[u32] {
+        self.draw_target.get_data()
+    }
 }
 
 // --- Conversions ---

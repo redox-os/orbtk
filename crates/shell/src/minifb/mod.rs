@@ -27,7 +27,8 @@ where
 {
     /// Creates a new window shell with an adapter.
     pub fn new(window: minifb::Window, adapter: A) -> WindowShell<A> {
-        let render_context_2_d = RenderContext2D::new();
+        let size = window.get_size();
+        let render_context_2_d = RenderContext2D::new(size.0 as f64, size.1 as f64);
 
         WindowShell {
             window,
@@ -51,7 +52,11 @@ where
 
     fn drain_events(&mut self) {}
 
-    pub fn flip(&mut self) {}
+    pub fn flip(&mut self) {
+        self.window
+            .update_with_buffer(self.render_context_2_d.data())
+            .unwrap();
+    }
 }
 
 impl<A> Drop for WindowShell<A>
@@ -78,7 +83,7 @@ where
 {
     pub fn run(&mut self) {
         loop {
-            if !self.running.get() || !self.window_shell.borrow().window.is_open()  {
+            if !self.running.get() || !self.window_shell.borrow().window.is_open() {
                 break;
             }
 
@@ -94,7 +99,7 @@ where
             }
 
             self.window_shell.borrow_mut().drain_events();
-            self.window_shell.borrow_mut().window.update();
+            self.window_shell.borrow_mut().flip();
         }
     }
 }

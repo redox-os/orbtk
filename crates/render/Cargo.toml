@@ -11,14 +11,14 @@ edition = "2018"
 [target.wasm32-unknown-unknown.dependencies]
 stdweb = "0.4.18"
 
-[target.'cfg(redox)'.dependencies]
+[target.'cfg(target_os = "redox")'.dependencies]
 orbclient = { version = "0.3.27", optional = true }
 orbfont = { git = "https://gitlab.redox-os.org/redox-os/orbfont.git", optional = true }
 orbgl = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git", optional = true }
 orbgl_api = { git = "https://gitlab.redox-os.org/redox-os/orbgl.git", optional = true }
 
 [target.'cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))'.dependencies]
-minifb = "0.13"
+raqote = "0.7.0"
 
 [dependencies]
 orbtk-utils = { version = "0.1.0", path = "../utils" }
