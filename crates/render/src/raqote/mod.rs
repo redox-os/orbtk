@@ -52,6 +52,8 @@ impl Image {
 pub struct RenderContext2D {
     draw_target: raqote::DrawTarget,
     fill_style: Brush,
+    stroke_style: Brush,
+    path: raqote::Path,
     // pub window: orbclient::Window,
 }
 
@@ -59,8 +61,13 @@ impl RenderContext2D {
     /// Creates a new render context 2d.
     pub fn new(width: f64, height: f64) -> Self {
         RenderContext2D {
-            fill_style: Brush::from("#000000"),
-            draw_target: raqote::DrawTarget::new(width as i32, height as i32), // window
+            fill_style: Brush::default(),
+            stroke_style: Brush::default(),
+            draw_target: raqote::DrawTarget::new(width as i32, height as i32),
+            path: raqote::Path {
+                ops: Vec::new(),
+                winding: raqote::Winding::NonZero,
+            },
         }
     }
 
@@ -75,24 +82,15 @@ impl RenderContext2D {
 
     /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        let mut path_builder = raqote::PathBuilder::new();
-        path_builder.rect(x as f32, y as f32, width as f32, height as f32);
-        path_builder.close();
-        let path = path_builder.finish();
-        self.draw_target.fill(
-            &path,
-            &raqote::Source::Solid(raqote::SolidSource {
-                r: 0x0,
-                g: 0x0,
-                b: 0x80,
-                a: 0x80,
-            }),
-            &raqote::DrawOptions::new(),
-        );
+        self.rect(x, y, width, height);
+        self.fill();
     }
 
     /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other context settings.
-    pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {}
+    pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.rect(x, y, width, height);
+        self.stroke();
+    }
 
     // Text
 
@@ -111,29 +109,73 @@ impl RenderContext2D {
     }
 
     /// Fills the current or given path with the current file style.
-    pub fn fill(&mut self) {}
+    pub fn fill(&mut self) {
+        self.draw_target.fill(
+            &self.path,
+            &brush_to_source(&self.fill_style),
+            &raqote::DrawOptions::new(),
+        );
+    }
 
     /// Strokes {outlines} the current or given path with the current stroke style.
-    pub fn stroke(&mut self) {}
+    pub fn stroke(&mut self) {
+        self.draw_target.stroke(
+            &self.path,
+            &brush_to_source(&self.stroke_style),
+            &raqote::StrokeStyle::default(),
+            &raqote::DrawOptions::new(),
+        );
+    }
 
     /// Starts a new path by emptying the list of sub-paths. Call this when you want to create a new path.
-    pub fn begin_path(&mut self) {}
+    pub fn begin_path(&mut self) {
+        self.path = raqote::Path {
+            ops: Vec::new(),
+            winding: raqote::Winding::NonZero,
+        };
+    }
 
     /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
-    pub fn close_path(&mut self) {}
+    pub fn close_path(&mut self) {
+        let mut path_builder = raqote::PathBuilder::from(self.path.clone());
+        path_builder.close();
+        self.path = path_builder.finish();
+    }
 
     /// Adds a rectangle to the current path.
-    pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {}
+    pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        let mut path_builder = raqote::PathBuilder::from(self.path.clone());
+        path_builder.rect(x as f32, y as f32, width as f32, height as f32);
+        self.path = path_builder.finish();
+    }
 
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
-    pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64, _: bool) {}
+    pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64, _: bool) {
+        let mut path_builder = raqote::PathBuilder::from(self.path.clone());
+        path_builder.arc(
+            x as f32,
+            y as f32,
+            radius as f32,
+            start_angle as f32,
+            end_angle as f32,
+        );
+        self.path = path_builder.finish();
+    }
 
     /// Begins a new sub-path at the point specified by the given {x, y} coordinates.
 
-    pub fn move_to(&mut self, x: f64, y: f64) {}
+    pub fn move_to(&mut self, x: f64, y: f64) {
+        let mut path_builder = raqote::PathBuilder::from(self.path.clone());
+        path_builder.move_to(x as f32, y as f32);
+        self.path = path_builder.finish();
+    }
 
     /// Adds a straight line to the current sub-path by connecting the sub-path's last point to the specified {x, y} coordinates.
-    pub fn line_to(&mut self, x: f64, y: f64) {}
+    pub fn line_to(&mut self, x: f64, y: f64) {
+        let mut path_builder = raqote::PathBuilder::from(self.path.clone());
+        path_builder.line_to(x as f32, y as f32);
+        self.path = path_builder.finish();
+    }
 
     /// Adds a quadratic Bézier curve to the current sub-path.
     pub fn quadratic_curve_to(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {}
@@ -202,7 +244,9 @@ impl RenderContext2D {
     }
 
     /// Specifies the fill stroke to use inside shapes.
-    pub fn set_stroke_style(&mut self, brush: Brush) {}
+    pub fn set_stroke_style(&mut self, stroke_style: Brush) {
+        self.stroke_style = stroke_style;
+    }
 
     // Shadows
 
@@ -242,5 +286,28 @@ impl From<&str> for Image {
 impl From<String> for Image {
     fn from(s: String) -> Image {
         Image::new(s)
+    }
+}
+
+// --- Conversions ---
+
+fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
+    match *brush {
+        Brush::SolidColor(color) => {
+            return raqote::Source::Solid(raqote::SolidSource {
+                r: color.r(),
+                g: color.g(),
+                b: color.b(),
+                a: color.a(),
+            })
+        }
+        _ => {
+            return raqote::Source::Solid(raqote::SolidSource {
+                r: 0x0,
+                g: 0x0,
+                b: 0x80,
+                a: 0x80,
+            })
+        }
     }
 }

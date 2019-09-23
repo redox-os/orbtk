@@ -3,20 +3,6 @@ use crate::{prelude::*, render::RenderContext2D, utils::*};
 pub struct RectangleRenderObject;
 
 impl RectangleRenderObject {
-    // Renders rectangle without border and radius.
-    fn render_rect_path(
-        &self,
-        render_context_2_d: &mut RenderContext2D,
-        x: f64,
-        y: f64,
-        width: f64,
-        height: f64,
-        brush: Brush,
-    ) {
-        render_context_2_d.set_fill_style(brush);
-        render_context_2_d.fill_rect(x, y, width, height);
-    }
-
     // Renders rectangle with border and without radius.
     fn render_bordered_rect_path(
         &self,
@@ -29,18 +15,13 @@ impl RectangleRenderObject {
         border_brush: Brush,
         border_thickness: Thickness,
     ) {
-        // border
-        self.render_rect_path(render_context_2_d, x, y, width, height, border_brush);
+        render_context_2_d.rect(x, y, width, height);
 
-        // content
-        self.render_rect_path(
-            render_context_2_d,
-            x + border_thickness.left,
-            y + border_thickness.top,
-            width - border_thickness.left - border_thickness.right,
-            height - border_thickness.top - border_thickness.bottom,
-            brush,
-        );
+        render_context_2_d.set_fill_style(brush);
+        render_context_2_d.fill();
+
+        render_context_2_d.set_stroke_style(border_brush);
+        render_context_2_d.stroke();
     }
 
     // Builds rectangle path with radius and without border.
@@ -52,13 +33,10 @@ impl RectangleRenderObject {
         width: f64,
         height: f64,
         radius: f64,
-        brush: Brush,
     ) {
         let m_pi = 3.14159265;
         let degrees = m_pi / 180.0;
 
-        render_context_2_d.save();
-        render_context_2_d.begin_path();
         render_context_2_d.arc(
             x + width - radius,
             y + radius,
@@ -91,12 +69,7 @@ impl RectangleRenderObject {
             270.0 * degrees,
             false,
         );
-
-        render_context_2_d.set_fill_style(brush);
-
-        render_context_2_d.fill();
         render_context_2_d.close_path();
-        render_context_2_d.restore();
     }
 
     // Renders rectangle with border and radius.
@@ -110,29 +83,17 @@ impl RectangleRenderObject {
         radius: f64,
         brush: Brush,
         border_brush: Brush,
-        border_thickness: Thickness,
+        _border_thickness: Thickness,
     ) {
-        // border
-        self.render_rounded_rect_path(
-            render_context_2_d,
-            x,
-            y,
-            width,
-            height,
-            radius,
-            border_brush,
-        );
-
         // content
-        self.render_rounded_rect_path(
-            render_context_2_d,
-            x + border_thickness.left,
-            y + border_thickness.top,
-            width - border_thickness.left - border_thickness.right,
-            height - border_thickness.top - border_thickness.right,
-            radius,
-            brush,
-        );
+        // render_context_2_d.begin_path();
+        self.render_rounded_rect_path(render_context_2_d, x, y, width, height, radius);
+
+        render_context_2_d.set_fill_style(brush);
+        render_context_2_d.fill();
+
+        render_context_2_d.set_stroke_style(border_brush);
+        render_context_2_d.stroke();
     }
 }
 
@@ -181,8 +142,10 @@ impl RenderObject for RectangleRenderObject {
                     bounds.width(),
                     bounds.height(),
                     border_radius,
-                    background,
                 );
+
+                context.render_context_2_d().set_fill_style(background);
+                context.render_context_2_d().fill();
             }
         } else {
             if has_thickness {
@@ -197,14 +160,14 @@ impl RenderObject for RectangleRenderObject {
                     border_thickness,
                 );
             } else {
-                self.render_rect_path(
-                    context.render_context_2_d(),
+                context.render_context_2_d().rect(
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
                     bounds.width(),
                     bounds.height(),
-                    background,
                 );
+                context.render_context_2_d().set_fill_style(background);
+                context.render_context_2_d().fill();
             }
         }
     }
