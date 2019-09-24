@@ -13,7 +13,7 @@ impl RectangleRenderObject {
         height: f64,
         brush: Brush,
         border_brush: Brush,
-        border_thickness: Thickness,
+        _border_thickness: Thickness,
     ) {
         render_context_2_d.rect(x, y, width, height);
 
@@ -34,41 +34,18 @@ impl RectangleRenderObject {
         height: f64,
         radius: f64,
     ) {
-        let m_pi = 3.14159265;
-        let degrees = m_pi / 180.0;
+        let r = x + width;
+        let b = y + height;
 
-        render_context_2_d.arc(
-            x + width - radius,
-            y + radius,
-            radius,
-            -90.0 * degrees,
-            0.0 * degrees,
-            false,
-        );
-        render_context_2_d.arc(
-            x + width - radius,
-            y + height - radius,
-            radius,
-            0.0 * degrees,
-            90.0 * degrees,
-            false,
-        );
-        render_context_2_d.arc(
-            x + radius,
-            y + height - radius,
-            radius,
-            90.0 * degrees,
-            180.0 * degrees,
-            false,
-        );
-        render_context_2_d.arc(
-            x + radius,
-            y + radius,
-            radius,
-            180.0 * degrees,
-            270.0 * degrees,
-            false,
-        );
+        render_context_2_d.move_to(x + radius, y);
+        render_context_2_d.line_to(r - radius, y);
+        render_context_2_d.quadratic_curve_to(r, y, r, y + radius);
+        render_context_2_d.line_to(r, y + height - radius);
+        render_context_2_d.quadratic_curve_to(r, b, r - radius, b);
+        render_context_2_d.line_to(x + radius, b);
+        render_context_2_d.quadratic_curve_to(x, b, x, b - radius);
+        render_context_2_d.line_to(x, y + radius);
+        render_context_2_d.quadratic_curve_to(x, y, x + radius, y);
         render_context_2_d.close_path();
     }
 
@@ -85,8 +62,6 @@ impl RectangleRenderObject {
         border_brush: Brush,
         _border_thickness: Thickness,
     ) {
-        // content
-        // render_context_2_d.begin_path();
         self.render_rounded_rect_path(render_context_2_d, x, y, width, height, radius);
 
         render_context_2_d.set_fill_style(brush);

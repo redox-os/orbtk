@@ -16,6 +16,15 @@ pub mod platform;
 #[path = "raqote/mod.rs"]
 pub mod platform;
 
+/// Defines the current configuration of the render context.
+#[derive(Default, Debug, Clone)]
+pub struct RenderConfig {
+    pub fill_style: utils::Brush,
+    pub stroke_style: utils::Brush,
+    pub line_width: f64,
+    pub font_config: FontConfig,
+}
+
 /// The TextMetrics struct represents the dimension of a text.
 #[derive(Clone, Copy, Default, Debug)]
 pub struct TextMetrics {

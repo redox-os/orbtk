@@ -17,6 +17,7 @@ orbclient = { version = "0.3.27", optional = true }
 
 [target.'cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))'.dependencies]
 minifb = "0.13"
+spin_sleep = "0.3.7"
 
 [dependencies]
 orbtk-render = { version = "0.1.0", path = "../render" }

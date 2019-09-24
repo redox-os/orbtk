@@ -7,6 +7,8 @@ use std::{
 
 use minifb;
 
+use spin_sleep::LoopHelper;
+
 use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {}
@@ -82,9 +84,22 @@ where
     A: WindowAdapter,
 {
     pub fn run(&mut self) {
+        let mut loop_helper = LoopHelper::builder()
+            .report_interval_s(0.5)
+            .build_with_target_rate(60.0);
+
+        let mut current_fps = None;
+
         loop {
             if !self.running.get() || !self.window_shell.borrow().window.is_open() {
                 break;
+            }
+
+            let delta = loop_helper.loop_start();
+
+            if let Some(fps) = loop_helper.report_rate() {
+                current_fps = Some(fps);
+                // println!("fps: {}", fps);
             }
 
             self.updater.update();
@@ -96,10 +111,13 @@ where
                 //     .render_context_2_d
                 //     .window
                 //     .sync();
+
+                self.window_shell.borrow_mut().drain_events();
+                self.window_shell.borrow_mut().flip();
             }
 
-            self.window_shell.borrow_mut().drain_events();
-            self.window_shell.borrow_mut().flip();
+            self.window_shell.borrow_mut().window.update();
+            loop_helper.loop_sleep();
         }
     }
 }
