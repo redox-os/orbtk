@@ -4,15 +4,11 @@ pub mod prelude;
 
 pub use orbtk_utils::prelude as utils;
 
-#[cfg(target_os = "redox")]
-#[path = "orbclient/mod.rs"]
-pub mod platform;
-
 #[cfg(target_arch = "wasm32")]
 #[path = "web/mod.rs"]
 pub mod platform;
 
-#[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
+#[cfg(not(target_arch = "wasm32"))]
 #[path = "raqote/mod.rs"]
 pub mod platform;
 

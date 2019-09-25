@@ -35,12 +35,8 @@ pub mod window;
 
 pub use orbtk_utils::prelude as utils;
 
-#[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
+#[cfg(not(target_arch = "wasm32"))]
 #[path = "minifb/mod.rs"]
-pub mod platform;
-
-#[cfg(target_os = "redox")]
-#[path = "orbclient/mod.rs"]
 pub mod platform;
 
 #[cfg(target_arch = "wasm32")]

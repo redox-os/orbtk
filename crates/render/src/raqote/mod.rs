@@ -2,15 +2,6 @@ use std::{collections::HashMap, fmt, path::Path, sync::Arc};
 
 use raqote;
 
-// use rusttype::{point, Font, Scale};
-
-use euclid::{Point2D, Size2D};
-
-// use font_kit::canvas::{Canvas, Format, RasterizationOptions};
-// use font_kit::font::Font;
-// use font_kit::hinting::HintingOptions;
-// use font_kit::loader::FontTransform;
-
 use crate::{utils::*, RenderConfig, TextMetrics};
 
 pub use self::font::*;

@@ -67,5 +67,7 @@ impl Font {
                 });
             }
         }
+
+        // pub render_to_image(&self, text: &str,)
     }
 }
