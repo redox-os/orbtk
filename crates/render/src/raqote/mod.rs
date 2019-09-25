@@ -102,8 +102,9 @@ impl RenderContext2D {
 
             // image.data_mut()[0] = Color::from("#ffffff").data;
             // image.data_mut()[100] = Color::from("#ffffff").data;
-            font.render_text(text, self.config.font_config.font_size, &mut image, &Brush::from("#ffffff"));
-            self.draw_image(&mut image, x, y);
+            let width = self.draw_target.width() as f64;
+            font.render_text(text, self.config.font_config.font_size, self.draw_target.get_data_mut(), &Brush::from("#ffffff"), width, x, y);
+            // self.draw_image(&mut image, x, y);
             // self.draw_target.draw_text(
             //     &font,
             //     self.config.font_config.font_size as f32,

@@ -1,8 +1,6 @@
-
 use rusttype;
 
-
-use crate::utils::{Color, Brush};
+use crate::utils::{Brush, Color};
 
 use super::Image;
 
@@ -24,7 +22,7 @@ impl Font {
         (0.0, 0.0)
     }
 
-    pub fn render_text(&self, text: &str, size: f64, image: &mut Image, brush: &Brush) {
+    pub fn render_text(&self, text: &str, size: f64, data: &mut [u32], brush: &Brush, width: f64, x: f64, y: f64) {
         let scale = rusttype::Scale::uniform(size as f32);
 
         // The origin of a line of text is at the baseline (roughly where non-descending letters sit).
@@ -36,24 +34,23 @@ impl Font {
 
         // Glyphs to draw for "RustType". Feel free to try other strings.
         let glyphs: Vec<rusttype::PositionedGlyph> =
-            self.inner.layout("B", scale, offset).collect();
+            self.inner.layout("B i t t e", scale, offset).collect();
 
         let col = match brush {
             Brush::SolidColor(color) => color.clone(),
-            _ => Color::from("#000000")
+            _ => Color::from("#000000"),
         };
 
-        let width = image.width();
+       
 
         for g in glyphs.iter() {
             if let Some(bb) = g.pixel_bounding_box() {
                 g.draw(|off_x, off_y, v| {
-                    let off_x = off_x as i32 + bb.min.x;
-                    let off_y = off_y as i32 + bb.min.y;
-            
+                    let off_x = off_x as i32 + bb.min.x + x as i32;
+                    let off_y = off_y as i32 + bb.min.y + y as i32;
                     let c = (v * 255.0) as u32;
                     let color = c << 24 | (col.data & 0xFFFFFF);
-                    image.data_mut()[(off_y * width as i32 + off_x) as usize] = color;
+                    data[(off_y * width as i32 + off_x) as usize] = Color::rgba(col.r(), col.g(), col.b(), (v * 255.0) as u8).data;
                 });
             }
         }

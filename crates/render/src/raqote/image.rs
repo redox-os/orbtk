@@ -8,7 +8,7 @@ use crate::{utils::*};
 pub struct Image {
     width: u32,
     height: u32,
-    data: Vec<u32>,
+    pub data: Vec<u32>,
     source: String,
 }
 
@@ -40,7 +40,7 @@ impl Image {
         Image {
             width,
             height,
-            data: vec![0; width as usize * height as usize],
+            data: vec![Color::rgb(0, 0, 0).data; width as usize * height as usize],
             source: String::default(),
         }
     }
