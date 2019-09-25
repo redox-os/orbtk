@@ -22,7 +22,7 @@ impl Font {
         (0.0, 0.0)
     }
 
-    pub fn render_text(&self, text: &str, size: f64, data: &mut [u32], brush: &Brush, width: f64, x: f64, y: f64) {
+    pub fn render_text(&self, text: &str, size: f64, data: &mut [u32], brush: &Brush, width: f64) {
         let scale = rusttype::Scale::uniform(size as f32);
 
         // The origin of a line of text is at the baseline (roughly where non-descending letters sit).
@@ -34,23 +34,36 @@ impl Font {
 
         // Glyphs to draw for "RustType". Feel free to try other strings.
         let glyphs: Vec<rusttype::PositionedGlyph> =
-            self.inner.layout("B i t t e", scale, offset).collect();
+            self.inner.layout(text, scale, offset).collect();
 
         let col = match brush {
             Brush::SolidColor(color) => color.clone(),
             _ => Color::from("#000000"),
         };
 
-       
-
         for g in glyphs.iter() {
             if let Some(bb) = g.pixel_bounding_box() {
                 g.draw(|off_x, off_y, v| {
-                    let off_x = off_x as i32 + bb.min.x + x as i32;
-                    let off_y = off_y as i32 + bb.min.y + y as i32;
-                    let c = (v * 255.0) as u32;
-                    let color = c << 24 | (col.data & 0xFFFFFF);
-                    data[(off_y * width as i32 + off_x) as usize] = Color::rgba(col.r(), col.g(), col.b(), (v * 255.0) as u8).data;
+                    let off_x = off_x as i32 + bb.min.x;
+                    let off_y = off_y as i32 + bb.min.y;
+
+                    // Alpha blending from orbclient
+                    {
+                        let alpha = (v * 255.0) as u32;
+                        let new = (alpha << 24) | (col.data & 0xFFFFFF);
+                        let old = &mut data[(off_y * width as i32 + off_x) as usize];
+
+                        if alpha >= 255 {
+                            *old = new;
+                        } else if alpha > 0 {
+                            let n_alpha = 255 - alpha;
+                            let rb = ((n_alpha * (*old & 0x00FF00FF)) + (alpha * (new & 0x00FF00FF))) >> 8;
+                            let ag = (n_alpha * ((*old & 0xFF00FF00) >> 8))
+                                + (alpha * (0x01000000 | ((new & 0x0000FF00) >> 8)));
+
+                            *old = (rb & 0x00FF00FF) | (ag & 0xFF00FF00);
+                        }
+                    }
                 });
             }
         }

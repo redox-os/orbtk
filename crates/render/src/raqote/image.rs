@@ -40,7 +40,7 @@ impl Image {
         Image {
             width,
             height,
-            data: vec![Color::rgb(0, 0, 0).data; width as usize * height as usize],
+            data: vec![Color::rgba(0, 0, 0, 0).data; width as usize * height as usize],
             source: String::default(),
         }
     }
