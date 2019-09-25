@@ -19,10 +19,28 @@ impl Font {
     }
 
     pub fn measure_text(&self, text: &str, size: f64) -> (f64, f64) {
-        (0.0, 0.0)
+        let scale = rusttype::Scale::uniform(size as f32);
+        let v_metrics = self.inner.v_metrics(scale);
+        let offset = rusttype::point(0.0, v_metrics.ascent);
+
+        let pixel_height = size.ceil();
+
+        // Glyphs to draw for "RustType". Feel free to try other strings.
+        let glyphs: Vec<rusttype::PositionedGlyph> =
+            self.inner.layout(text, scale, offset).collect();
+
+        let width = glyphs
+            .iter()
+            .rev()
+            .map(|g| g.position().x as f32 + g.unpositioned().h_metrics().advance_width)
+            .next()
+            .unwrap_or(0.0)
+            .ceil() as f64;
+
+        (width, pixel_height)
     }
 
-    pub fn render_text(&self, text: &str, size: f64, data: &mut [u32], brush: &Brush, width: f64) {
+    pub fn render_text(&self, text: &str, size: f64, data: &mut [u32], col: &Color, width: f64) {
         let scale = rusttype::Scale::uniform(size as f32);
 
         // The origin of a line of text is at the baseline (roughly where non-descending letters sit).
@@ -35,11 +53,6 @@ impl Font {
         // Glyphs to draw for "RustType". Feel free to try other strings.
         let glyphs: Vec<rusttype::PositionedGlyph> =
             self.inner.layout(text, scale, offset).collect();
-
-        let col = match brush {
-            Brush::SolidColor(color) => color.clone(),
-            _ => Color::from("#000000"),
-        };
 
         for g in glyphs.iter() {
             if let Some(bb) = g.pixel_bounding_box() {
@@ -57,7 +70,9 @@ impl Font {
                             *old = new;
                         } else if alpha > 0 {
                             let n_alpha = 255 - alpha;
-                            let rb = ((n_alpha * (*old & 0x00FF00FF)) + (alpha * (new & 0x00FF00FF))) >> 8;
+                            let rb = ((n_alpha * (*old & 0x00FF00FF))
+                                + (alpha * (new & 0x00FF00FF)))
+                                >> 8;
                             let ag = (n_alpha * ((*old & 0xFF00FF00) >> 8))
                                 + (alpha * (0x01000000 | ((new & 0x0000FF00) >> 8)));
 

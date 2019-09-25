@@ -71,16 +71,28 @@ impl RenderContext2D {
             return;
         }
 
+        let color = match self.config.fill_style {
+            Brush::SolidColor(color) => color.clone(),
+            _ => Color::from("#000000"),
+        };
+
+        if color.a() == 0 {
+            return;
+        }
+
         if let Some(font) = self.fonts.get(&self.config.font_config.family) {
             let mut image = Image::new(100, 100);
 
-            font.render_text(text, self.config.font_config.font_size, image.data_mut(), &Brush::from("#ffffff"), 100.0);
+            font.render_text(
+                text,
+                self.config.font_config.font_size,
+                image.data_mut(),
+                &color,
+                100.0,
+            );
             self.draw_image(&mut image, x, y);
         }
     }
-
-    /// Draws (strokes) a given text at the given (x, y) position.
-    pub fn stroke_text(&mut self, _: &str, _: f64, _: f64, _: Option<f64>) {}
 
     /// Returns a TextMetrics object.
     pub fn measure_text(&mut self, text: &str) -> TextMetrics {
@@ -88,6 +100,13 @@ impl RenderContext2D {
 
         if text.len() == 0 {
             return text_metrics;
+        }
+
+        if let Some(font) = self.fonts.get(&self.config.font_config.family) {
+            let (width, height) = font.measure_text(text, self.config.font_config.font_size);
+
+            text_metrics.width = width;
+            text_metrics.height = height;
         }
 
         text_metrics
@@ -122,6 +141,7 @@ impl RenderContext2D {
 
     /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
     pub fn close_path(&mut self) {
+        self.draw_target.pop_clip();
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.close();
         self.path = path_builder.finish();
@@ -169,7 +189,17 @@ impl RenderContext2D {
     }
 
     /// Adds a cubic Bézier curve to the current sub-path. It requires three points: the first two are control points and the third one is the end point. The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
-    pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {}
+    pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
+        let mut path_builder = raqote::PathBuilder::from(self.path.clone());
+        path_builder.cubic_to(
+            cp1x as f32,
+            cp1y as f32,
+            cp2x as f32,
+            cp2y as f32,
+            x as f32,
+            y as f32,
+        );
+    }
 
     // Draw image
 
@@ -226,7 +256,9 @@ impl RenderContext2D {
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
-    pub fn clip(&mut self) {}
+    pub fn clip(&mut self) {
+        self.draw_target.push_clip(&self.path);
+    }
 
     // Line styles
 
@@ -243,14 +275,6 @@ impl RenderContext2D {
     /// Specifies the font size.
     pub fn set_font_size(&mut self, size: f64) {
         self.config.font_config.font_size = size;
-    }
-
-    /// Specifies the text alignment.
-    pub fn set_text_align(&mut self, _: TextAlignment) {}
-
-    /// Baseline alignment setting.
-    pub fn set_text_baseline(&mut self, _: TextBaseline) {
-        // println!("fn set_text_baseline is not implemented for orbclient renderer");
     }
 
     // Fill and stroke style

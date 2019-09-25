@@ -1,95 +1,13 @@
 use stdweb::{
-    _js_impl, js,
-    unstable::TryInto,
-    web::{CanvasRenderingContext2d, FillRule, TextAlign},
+    js,
+    web::{CanvasRenderingContext2d, FillRule},
 };
 
 use crate::{utils::*, FontConfig, TextMetrics};
 
-#[derive(Default, Clone, Debug, PartialEq)]
-pub struct Image {
-    source: String,
-}
+pub use self::image::*;
 
-impl Image {
-    /// Constructs a new image with the given source.
-    pub fn new(source: impl Into<String>) -> Self {
-        let source = source.into();
-
-        // Register image store if not registered.
-        js!(
-            if(!document.hasOwnProperty("image_store")) {
-                document.image_store = {
-                    images: {}
-                };
-
-                document.image_store.load_image = function (src) {
-                    var img = new Image();
-
-                    var d = new Promise(function (resolve, reject) {
-                        img.onload = function () {
-                            this.images[src] = img;
-                            resolve(img);
-                        }.bind(this);
-
-                        img.onerror = function () {
-                            reject("Could not load image: " + src);
-                        };
-                    }.bind(this));
-
-                    img.src = src;
-                    return d;
-                };
-            }
-        );
-
-        js!(
-            document.image_store.image = function (src) {
-                return (src in this.images) ? this.images[src] : null;
-            };
-        );
-
-        // load the image
-        js!(
-            document.image_store.load_image(@{&source});
-        );
-
-        Image { source }
-    }
-
-    /// Gets the width.
-    pub fn width(&self) -> f64 {
-        let width: u64 = js!(
-            var image = document.image_store.image(@{&self.source});
-
-            if(image == null) {
-                return 0;
-            }
-
-            return image.width;
-        )
-        .try_into()
-        .unwrap();
-        width as f64
-    }
-
-    /// Gets the height.
-    pub fn height(&self) -> f64 {
-        let height: u64 = js!(
-            var image = document.image_store.image(@{&self.source});
-
-            if(image == null) {
-                return 0;
-            }
-
-            return image.height;
-        )
-        .try_into()
-        .unwrap();
-
-        height as f64
-    }
-}
+mod image;
 
 /// The RenderContext2D trait, provides the 2D rendering context. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
@@ -100,6 +18,7 @@ pub struct RenderContext2D {
 impl RenderContext2D {
     /// Creates a new render context 2d.
     pub fn new(canvas_render_context_2_d: CanvasRenderingContext2d) -> Self {
+        canvas_render_context_2_d.set_text_baseline(stdweb::web::TextBaseline::Middle);
         RenderContext2D {
             canvas_render_context_2_d,
             font_config: FontConfig::default(),
@@ -125,13 +44,13 @@ impl RenderContext2D {
     /// Draws (fills) a given text at the given (x, y) position.
     pub fn fill_text(&mut self, text: &str, x: f64, y: f64, max_width: Option<f64>) {
         self.canvas_render_context_2_d
-            .fill_text(text, x, y, max_width);
-    }
-
-    /// Draws (strokes) a given text at the given (x, y) position.
-    pub fn stroke_text(&mut self, text: &str, x: f64, y: f64, max_width: Option<f64>) {
-        self.canvas_render_context_2_d
-            .stroke_text(text, x, y, max_width);
+            .set_text_baseline(stdweb::web::TextBaseline::Middle);
+        self.canvas_render_context_2_d.fill_text(
+            text,
+            x,
+            y + self.font_config.font_size.ceil() / 2.0,
+            max_width,
+        );
     }
 
     /// Returns a TextMetrics object.
@@ -142,7 +61,7 @@ impl RenderContext2D {
                 .measure_text(text)
                 .unwrap()
                 .get_width(),
-            height: self.font_config.font_size,
+            height: self.font_config.font_size.ceil(),
         }
     }
 
@@ -309,34 +228,6 @@ impl RenderContext2D {
             .set_font(&self.font_config.to_string());
     }
 
-    /// Specifies the text alignment.
-    pub fn set_text_align(&mut self, alignment: TextAlignment) {
-        let text_alignment = match alignment {
-            TextAlignment::Left => TextAlign::Left,
-            TextAlignment::Right => TextAlign::Right,
-            TextAlignment::Center => TextAlign::Center,
-            TextAlignment::Start => TextAlign::Start,
-            TextAlignment::End => TextAlign::End,
-        };
-        self.canvas_render_context_2_d
-            .set_text_align(text_alignment);
-    }
-
-    /// Baseline alignment setting.
-    pub fn set_text_baseline(&mut self, text_baseline: TextBaseline) {
-        let text_baseline = match text_baseline {
-            TextBaseline::Top => stdweb::web::TextBaseline::Top,
-            TextBaseline::Hanging => stdweb::web::TextBaseline::Hanging,
-            TextBaseline::Middle => stdweb::web::TextBaseline::Middle,
-            TextBaseline::Alphabetic => stdweb::web::TextBaseline::Alphabetic,
-            TextBaseline::Ideographic => stdweb::web::TextBaseline::Ideographic,
-            TextBaseline::Bottom => stdweb::web::TextBaseline::Bottom,
-        };
-
-        self.canvas_render_context_2_d
-            .set_text_baseline(text_baseline);
-    }
-
     // Fill and stroke style
 
     /// Specifies the fill color to use inside shapes.
@@ -359,18 +250,6 @@ impl RenderContext2D {
             }
             _ => (),
         }
-    }
-
-    // Shadows
-
-    pub fn set_shadow_color(&mut self, color: Color) {
-        self.canvas_render_context_2_d
-            .set_shadow_color(&color.to_string());
-    }
-
-    pub fn set_shadow_offset(&mut self, x: f64, y: f64) {
-        self.canvas_render_context_2_d.set_shadow_offset_x(x);
-        self.canvas_render_context_2_d.set_shadow_offset_y(y);
     }
 
     // Transformations

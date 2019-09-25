@@ -47,19 +47,14 @@ impl RenderObject for TextRenderObject {
                 parent_bounds.height(),
             );
             context.render_context_2_d().clip();
-
             context.render_context_2_d().set_font_family(font);
             context.render_context_2_d().set_font_size(font_size);
             context.render_context_2_d().set_fill_style(foreground);
 
-            context
-                .render_context_2_d()
-                .set_text_baseline(TextBaseline::Middle);
-
             context.render_context_2_d().fill_text(
                 &text,
                 global_position.x + bounds.x,
-                global_position.y + bounds.y + bounds.height / 2.0,
+                global_position.y + bounds.y,
                 None,
             );
             context.render_context_2_d().close_path();

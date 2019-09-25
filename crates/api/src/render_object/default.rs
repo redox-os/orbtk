@@ -1,6 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
-
-use crate::{prelude::*, render::RenderContext2D, utils::*};
+use crate::prelude::*;
 
 pub struct DefaultRenderObject;
 

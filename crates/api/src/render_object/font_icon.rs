@@ -1,6 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
-
-use crate::{prelude::*, render::RenderContext2D, utils::*};
+use crate::{prelude::*, utils::*};
 
 pub struct FontIconRenderObject;
 
@@ -39,9 +37,6 @@ impl RenderObject for FontIconRenderObject {
                 parent_bounds.height(),
             );
             context.render_context_2_d().clip();
-            context
-                .render_context_2_d()
-                .set_text_baseline(TextBaseline::Middle);
             context.render_context_2_d().set_font_family(icon_font);
             context.render_context_2_d().set_font_size(icon_size);
             context.render_context_2_d().set_fill_style(icon_brush);
@@ -49,7 +44,7 @@ impl RenderObject for FontIconRenderObject {
             context.render_context_2_d().fill_text(
                 &icon,
                 global_position.x + bounds.x,
-                global_position.y + bounds.y + bounds.height / 2.0,
+                global_position.y + bounds.y,
                 None,
             );
             context.render_context_2_d().close_path();

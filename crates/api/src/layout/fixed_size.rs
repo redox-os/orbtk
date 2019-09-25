@@ -71,7 +71,7 @@ impl Layout for FixedSizeLayout {
                         let text_metrics =
                             render_context_2_d.measure_text(text.0.to_string().as_str());
 
-                        let mut size = (text_metrics.width, text_metrics.height);
+                        let size = (text_metrics.width, text_metrics.height);
 
                         // if text.0.to_string().ends_with(" ") {
                         //     size.0 += render_context_2_d

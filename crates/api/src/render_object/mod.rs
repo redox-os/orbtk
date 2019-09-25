@@ -2,7 +2,7 @@
 
 use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc};
 
-use crate::{prelude::*, render::*, shell::WindowShell, utils::*};
+use crate::{prelude::*, shell::WindowShell, utils::*};
 
 pub use self::default::*;
 pub use self::font_icon::*;

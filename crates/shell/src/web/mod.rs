@@ -6,7 +6,7 @@ use std::{
 };
 
 use stdweb::{
-    _js_impl, js,
+    js,
     traits::*,
     unstable::TryInto,
     web::{document, event, html_element::CanvasElement, window, CanvasRenderingContext2d},
@@ -139,7 +139,7 @@ where
             });
         }
 
-        while let Some(event) = self.resize_events.borrow_mut().pop() {
+        while let Some(_) = self.resize_events.borrow_mut().pop() {
             let window_size = (
                 window().inner_width() as f64,
                 window().inner_height() as f64,
@@ -216,7 +216,8 @@ where
         document()
             .body()
             .unwrap()
-            .replace_child(&self.canvas, self.old_canvas.as_ref().unwrap());
+            .replace_child(&self.canvas, self.old_canvas.as_ref().unwrap())
+            .expect("Could not open document");
 
         self.old_canvas = None;
         self.flip = false;

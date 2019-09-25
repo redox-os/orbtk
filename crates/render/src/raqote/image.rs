@@ -2,7 +2,7 @@ use std::{fmt, path::Path};
 
 use image;
 
-use crate::{utils::*};
+use crate::utils::*;
 
 #[derive(Clone)]
 pub struct Image {
@@ -85,7 +85,7 @@ impl Image {
         &self.data
     }
 
-    pub fn data_mut(&mut self) -> &mut[u32] {
+    pub fn data_mut(&mut self) -> &mut [u32] {
         &mut self.data
     }
 }

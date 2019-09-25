@@ -1,6 +1,6 @@
 use std::{
     cell::{Cell, RefCell},
-    collections::{BTreeMap, HashSet},
+    collections::BTreeMap,
     rc::Rc,
 };
 
@@ -8,9 +8,8 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 
 use crate::{
     prelude::*,
-    shell::{log, WindowShell},
+    shell::WindowShell,
     tree::Tree,
-    utils::*,
 };
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
