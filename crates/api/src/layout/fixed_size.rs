@@ -73,12 +73,12 @@ impl Layout for FixedSizeLayout {
 
                         let mut size = (text_metrics.width, text_metrics.height);
 
-                        if text.0.to_string().ends_with(" ") {
-                            size.0 += render_context_2_d
-                                .measure_text(&format!("{}a", text.0.to_string()))
-                                .width
-                                - render_context_2_d.measure_text("a").width;
-                        }
+                        // if text.0.to_string().ends_with(" ") {
+                        //     size.0 += render_context_2_d
+                        //         .measure_text(&format!("{}a", text.0.to_string()))
+                        //         .width
+                        //         - render_context_2_d.measure_text("a").width;
+                        // }
                         Some(size)
                     }
                 })

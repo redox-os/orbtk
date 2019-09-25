@@ -338,7 +338,7 @@ impl Template for MainView {
                                     .attach(ColumnSpan(3))
                                     .attach(ColumnSpan(2))
                                     .attach(GridRow(4))
-                                    .text("Selected: ")
+                                    .text("Selected:")
                                     .build(context),
                             )
                             .build(context),

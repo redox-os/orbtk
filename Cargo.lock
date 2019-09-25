@@ -727,6 +727,7 @@ dependencies = [
 name = "orbtk-render"
 version = "0.1.0"
 dependencies = [
+ "euclid 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "font-kit 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.22.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbclient 0.3.27 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -735,6 +736,7 @@ dependencies = [
  "orbgl_api 0.1.0 (git+https://gitlab.redox-os.org/redox-os/orbgl.git)",
  "orbtk-utils 0.1.0",
  "raqote 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rusttype 0.7.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "stdweb 0.4.18 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

@@ -1,80 +1,23 @@
 use std::{collections::HashMap, fmt, path::Path, sync::Arc};
 
-use font_kit;
-use image;
 use raqote;
 
-use crate::{utils::*, FontConfig, RenderConfig, TextMetrics};
+// use rusttype::{point, Font, Scale};
 
-#[derive(Clone)]
-pub struct Image {
-    width: u32,
-    height: u32,
-    data: Vec<u32>,
-    source: String,
-}
+use euclid::{Point2D, Size2D};
 
-impl Default for Image {
-    fn default() -> Self {
-        Image {
-            width: 0,
-            height: 0,
-            data: vec![],
-            source: String::default(),
-        }
-    }
-}
+// use font_kit::canvas::{Canvas, Format, RasterizationOptions};
+// use font_kit::font::Font;
+// use font_kit::hinting::HintingOptions;
+// use font_kit::loader::FontTransform;
 
-impl fmt::Debug for Image {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Image ( source: {})", self.source)
-    }
-}
+use crate::{utils::*, RenderConfig, TextMetrics};
 
-impl std::cmp::PartialEq for Image {
-    fn eq(&self, other: &Self) -> bool {
-        self.source == other.source
-    }
-}
+pub use self::font::*;
+pub use self::image::*;
 
-impl Image {
-    /// Create a new image from a boxed slice of colors
-    pub fn from_data(width: u32, height: u32, data: Vec<u32>) -> Result<Self, String> {
-        Ok(Image {
-            width: width,
-            height: height,
-            data: data,
-            source: String::new(),
-        })
-    }
-
-    fn from_dynamic_image(d_img: image::ImageResult<image::DynamicImage>) -> Result<Self, String> {
-        let img = d_img.map_err(|e| e.to_string())?.to_rgba();
-        let data: Vec<u32> = img
-            .pixels()
-            .map(|p| {
-                ((p[3] as u32) << 24) | ((p[0] as u32) << 16) | ((p[1] as u32) << 8) | (p[2] as u32)
-            })
-            .collect();
-        Self::from_data(img.width(), img.height(), data)
-    }
-
-    /// Load an image from file path. Supports BMP and PNG
-    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Self, String> {
-        let img = image::open(path);
-        Self::from_dynamic_image(img)
-    }
-
-    /// Gets the width.
-    pub fn width(&self) -> f64 {
-        self.width as f64
-    }
-
-    /// Gets the height.
-    pub fn height(&self) -> f64 {
-        self.height as f64
-    }
-}
+mod font;
+mod image;
 
 /// The RenderContext2D trait, provides the 2D rendering context. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
@@ -82,7 +25,7 @@ pub struct RenderContext2D {
     path: raqote::Path,
     config: RenderConfig,
     saved_config: Option<RenderConfig>,
-    fonts: HashMap<String, font_kit::font::Font>,
+    fonts: HashMap<String, Font>,
 }
 
 impl RenderContext2D {
@@ -105,16 +48,31 @@ impl RenderContext2D {
     }
 
     /// Registers a new font file.
-    pub fn register_font(&mut self, family: &str, font_file: &[u8]) {
+    pub fn register_font(&mut self, family: &str, font_file: &'static [u8]) {
         if self.fonts.contains_key(family) {
             return;
         }
 
-        if let Ok(font) =
-            font_kit::font::Font::from_bytes(Arc::new(font_file.iter().map(|a| *a).collect()), 0)
-        {
+        if let Ok(font) = Font::from_bytes(font_file) {
             self.fonts.insert(family.to_string(), font);
         }
+
+        // // if let Ok(font) = Font::from_bytes(font_file) {
+        // //     self.fonts.insert(family.to_string(), font);
+        // // }
+
+        // // if let Ok(collection) = rusttype::FontCollection::from_bytes(font_file) {
+        // //     if let Ok(font) = collection.into_font() {
+        // //         self.fonts.insert(family.to_string(), font);
+        // //     }
+        // // }
+
+        // if let Ok(font) =
+        //     font_kit::font::Font::from_bytes(Arc::new(font_file.iter().map(|a| *a).collect()), 0)
+        // {
+        //     println!("Font Name: {}", font.full_name());
+        //     self.fonts.insert(family.to_string(), font);
+        // }
     }
 
     // Rectangles
@@ -135,15 +93,198 @@ impl RenderContext2D {
 
     /// Draws (fills) a given text at the given (x, y) position.
     pub fn fill_text(&mut self, text: &str, x: f64, y: f64, _: Option<f64>) {
+        if text.len() == 0 {
+            return;
+        }
+
         if let Some(font) = self.fonts.get(&self.config.font_config.family) {
-                self.draw_target.draw_text(
-                &font,
-                self.config.font_config.font_size as f32,
-                text,
-                raqote::Point::new(x as f32, y as f32),
-                &brush_to_source(&self.config.fill_style),
-                &raqote::DrawOptions::new(),
-            );
+            let mut image = Image::new(100, 100);
+
+            // image.data_mut()[0] = Color::from("#ffffff").data;
+            // image.data_mut()[100] = Color::from("#ffffff").data;
+            font.render_text(text, self.config.font_config.font_size, &mut image, &Brush::from("#ffffff"));
+            self.draw_image(&mut image, x, y);
+            // self.draw_target.draw_text(
+            //     &font,
+            //     self.config.font_config.font_size as f32,
+            //     text,
+            //     raqote::Point::new(x as f32, y as f32),
+            //     &brush_to_source(&self.config.fill_style),
+            //     &raqote::DrawOptions::new(),
+            // );
+            // if let Some(glyph_id) = font.glyph_for_char('A') {
+            //     let mut canvas = Canvas::new(&Size2D::new(32, 32), Format::A8);
+
+            //     font.rasterize_glyph(
+            //         &mut canvas,
+            //         glyph_id,
+            //         32.0,
+            //         &FontTransform::identity(),
+            //         &Point2D::new(0.0, 32.0),
+            //         HintingOptions::None,
+            //         RasterizationOptions::GrayscaleAa,
+            //     )
+            //     .unwrap();
+
+            //     let mut image =
+            //         Image::from_data(32, 32, canvas.pixels.iter().map(|a| *a as u32).collect())
+            //             .unwrap();
+
+            //     self.draw_image(&mut image, x, y);
+            // }
+            // let scale = Scale::uniform(self.config.font_config.font_size as f32);
+
+            // // The origin of a line of text is at the baseline (roughly where non-descending letters sit).
+            // // We don't want to clip the text, so we shift it down with an offset when laying it out.
+            // // v_metrics.ascent is the distance between the baseline and the highest edge of any glyph in
+            // // the font. That's enough to guarantee that there's no clipping.
+            // let v_metrics = font.v_metrics(scale);
+            // let offset = point(0.0, v_metrics.ascent);
+
+            // // Glyphs to draw for "RustType". Feel free to try other strings.
+            // let glyphs: Vec<_> = font.layout(text, scale, offset).collect();
+
+            // // Find the most visually pleasing width to display
+            // let width = glyphs
+            //     .iter()
+            //     .rev()
+            //     .filter_map(|g| {
+            //         g.pixel_bounding_box()
+            //             .map(|b| b.min.x as f32 + g.unpositioned().h_metrics().advance_width)
+            //     })
+            //     .next()
+            //     .unwrap_or(0.0);
+
+            // let mut data: Vec<u32> =
+            //     vec![0; width as usize * self.config.font_config.font_size as usize];
+
+            // for g in glyphs.iter() {
+            //     if let Some(bb) = g.pixel_bounding_box() {
+            //         g.draw(|off_x, off_y, v| {
+            //             let off_x = off_x as i32 + bb.min.x;
+            //             let off_y = off_y as i32 + bb.min.y;
+            //             // There's still a possibility that the glyph clips the boundaries of the bitmap
+
+            //             data.insert(
+            //                 (off_y * width as i32 + off_x) as usize,
+            //                 Color::rgb(0, 0, 0).data,
+            //             );
+            //         });
+            //     }
+            // }
+
+            // self.draw_image(
+            //     &mut Image::from_data(width as u32, self.config.font_config.font_size as u32, data)
+            //         .unwrap(),
+            //     x,
+            //     y,
+            // );
+            // let scale = Scale::uniform(self.config.font_config.font_size as f32);
+
+            // let v_metrics = font.v_metrics(scale);
+            // let glyphs: Vec<_> = font
+            //     .layout(text, scale, point(20.0, 20.0 + v_metrics.ascent))
+            //     .collect();
+
+            // let height = (v_metrics.ascent - v_metrics.descent).ceil() as u32;
+            // let width = {
+            //     let min_x = glyphs
+            //         .first()
+            //         .map(|g| g.pixel_bounding_box().unwrap().min.x)
+            //         .unwrap();
+            //     let max_x = glyphs
+            //         .last()
+            //         .map(|g| g.pixel_bounding_box().unwrap().max.x)
+            //         .unwrap();
+            //     (max_x - min_x) as u32
+            // };
+
+            // let mut image = image::DynamicImage::new_rgba8(width + 40, height + 40).to_rgba();
+
+            // let mut data: Vec<u32> = vec![0; width as usize * height as usize];
+
+            //   let colour = (0, 0, 0);
+
+            // for glyph in glyphs {
+            //     if let Some(bounding_box) = glyph.pixel_bounding_box() {
+            //         // Draw the glyph into the image per-pixel by using the draw closure
+            //         glyph.draw(|x, y, v| {
+            //             // let y = y as usize + bounding_box.min.y as usize;
+            //             // let x =  x as usize + bounding_box.min.x as usize;
+            //             // data.insert(y * width as usize + x, Color::rgb(0, 0, 0).data);
+            //             image.put_pixel(
+            //                 // Offset the position by the glyph bounding box
+            //                 x + bounding_box.min.x as u32,
+            //                 y + bounding_box.min.y as u32,
+            //                 // Turn the coverage into an alpha value
+            //                 image::Rgba([colour.0, colour.1, colour.2, (1.0 * 255.0) as u8]),
+            //             );
+            //         });
+            //     }
+            // }
+            // let mut image = Image::from_rgba_image(image).unwrap();
+
+            // self.draw_image(&mut image, x, y);
+
+            //     let mut canvas = font_kit::canvas::Canvas::new(
+            //         &euclid::Size2D::new(
+            //             self.draw_target.width() as u32,
+            //             self.draw_target.height() as u32,
+            //         ),
+            //         font_kit::canvas::Format::Rgba32,
+            //     );
+
+            //     let mut pos = raqote::Point::new(x as f32, y as f32);
+
+            //     for c in text.chars() {
+            //         let id = font.glyph_for_char(c).unwrap();
+
+            //         if let Ok(bounds) = font.raster_bounds(
+            //             id,
+            //             self.config.font_config.font_size as f32,
+            //             &font_kit::loader::FontTransform::identity(),
+            //             &pos,
+            //             font_kit::hinting::HintingOptions::None,
+            //             font_kit::canvas::RasterizationOptions::GrayscaleAa,
+            //         ) {
+            //             font.rasterize_glyph(
+            //                 &mut canvas,
+            //                 id,
+            //                 self.config.font_config.font_size as f32,
+            //                 &font_kit::loader::FontTransform::identity(),
+            //                 &pos,
+            //                 font_kit::hinting::HintingOptions::None,
+            //                 font_kit::canvas::RasterizationOptions::GrayscaleAa,
+            //             )
+            //             .unwrap();
+            //             pos.x += bounds.origin.x as f32 + bounds.size.width as f32;
+            //         }
+            //     }
+
+            //     let mut image = Image::from_data(
+            //         self.draw_target.width() as u32,
+            //         self.draw_target.height() as u32,
+            //         canvas.pixels.iter().map(|a| *a as u32).collect(),
+            //     ).unwrap();
+
+            //     self.draw_image(&mut image, x, y);
+            //     // self.draw_target.composite(
+            //     //     brush_to_source(&self.config.fill_style),
+            //     //     &canvas.pixels,
+            //     //     raqote::geom::intrect(0, 0, self.draw_target.width(), self.draw_target.height()),
+            //     //     raqote::gemo::intrect(0, 0, canvas.size.width as i32, canvas.size.height as i32),
+            //     //     raqote::BlendMode::SrcOver,
+            //     //     1.,
+            //     // );
+
+            //     // self.draw_target.draw_text(
+            //     //     &font,
+            //     //     self.config.font_config.font_size as f32,
+            //     //     text,
+            //     //     raqote::Point::new(x as f32, y as f32),
+            //     //     &brush_to_source(&self.config.fill_style),
+            //     //     &raqote::DrawOptions::new(),
+            //     // );
         }
     }
 
@@ -152,10 +293,59 @@ impl RenderContext2D {
 
     /// Returns a TextMetrics object.
     pub fn measure_text(&mut self, text: &str) -> TextMetrics {
-        TextMetrics {
-            width: 0.0,
-            height: 0.0,
+        let mut text_metrics = TextMetrics::default();
+
+        if text.len() == 0 {
+            return text_metrics;
         }
+
+        // if let Some(font) = self.fonts.get(&self.config.font_config.family) {
+        //     let scale = Scale::uniform(self.config.font_config.font_size as f32);
+
+        //     let v_metrics = font.v_metrics(scale);
+        //     let glyphs: Vec<_> = font
+        //         .layout(text, scale, point(0.0, 0.0 + v_metrics.ascent))
+        //         .collect();
+
+        //     // work out the layout size
+        //     text_metrics.height = (v_metrics.ascent - v_metrics.descent).ceil() as f64;
+        //     text_metrics.width = {
+        //         let min_x = glyphs
+        //             .first()
+        //             .map(|g| g.pixel_bounding_box().unwrap().min.x)
+        //             .unwrap();
+        //         let max_x = glyphs
+        //             .last()
+        //             .map(|g| g.pixel_bounding_box().unwrap().max.x)
+        //             .unwrap();
+        //         (max_x - min_x) as f64
+        //     };
+        // }
+
+        // if let Some(font) = self.fonts.get(&self.config.font_config.family) {
+        //     for c in text.chars() {
+        //         let id = font.glyph_for_char(c).unwrap();
+
+        //         if let Ok(bounds) = font.raster_bounds(
+        //             id,
+        //             self.config.font_config.font_size as f32,
+        //             &font_kit::loader::FontTransform::identity(),
+        //             &raqote::Point::new(0.0, 0.0),
+        //             font_kit::hinting::HintingOptions::None,
+        //             font_kit::canvas::RasterizationOptions::GrayscaleAa,
+        //         ) {
+        //             width += bounds.size.width as f64;
+
+        //             let h = bounds.size.height as f64;
+
+        //             if h > height {
+        //                 height = h;
+        //             }
+        //         }
+        //     }
+        // }
+
+        text_metrics
     }
 
     /// Fills the current or given path with the current file style.
@@ -244,9 +434,9 @@ impl RenderContext2D {
             x as f32,
             y as f32,
             &raqote::Image {
-                data: &image.data,
-                width: image.width as i32,
-                height: image.height as i32,
+                data: &image.data(),
+                width: image.width() as i32,
+                height: image.height() as i32,
             },
             &raqote::DrawOptions::default(),
         );
@@ -267,9 +457,9 @@ impl RenderContext2D {
             width as f32,
             height as f32,
             &raqote::Image {
-                data: &image.data,
-                width: image.width as i32,
-                height: image.height as i32,
+                data: image.data(),
+                width: image.width() as i32,
+                height: image.height() as i32,
             },
             &raqote::DrawOptions::default(),
         );
