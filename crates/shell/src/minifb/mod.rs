@@ -1,6 +1,7 @@
 //! This module contains a platform specific implementation of the window shell.
 
 use std::{
+    char,
     cell::{Cell, RefCell},
     rc::Rc,
 };
@@ -13,6 +14,33 @@ use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {}
 
+fn unicode_to_key_event(uni_char: u32) -> KeyEvent  {
+    let mut text = String::new();
+
+    let key = if let Some(character) = char::from_u32(uni_char) {
+        text = character.to_string();
+        Key::from(character)
+    } else {
+        Key::Unknown
+    };
+
+   KeyEvent {
+       key,
+       state: ButtonState::Down,
+       text,
+   }
+}
+
+pub struct KeyInputCallBack {
+    key_events: Rc<RefCell<Vec<KeyEvent>>>
+}
+
+impl minifb::InputCallback for KeyInputCallBack {
+    fn add_char(&mut self, uni_char: u32) {
+        self.key_events.borrow_mut().push(unicode_to_key_event(uni_char));
+    }
+}
+
 /// Concrete implementation of the window shell.
 pub struct WindowShell<A>
 where
@@ -23,6 +51,7 @@ where
     adapter: A,
     mouse_pos: (f32, f32),
     button_down: (bool, bool, bool),
+    key_events: Rc<RefCell<Vec<KeyEvent>>>,
 }
 
 impl<A> WindowShell<A>
@@ -30,7 +59,7 @@ where
     A: WindowAdapter,
 {
     /// Creates a new window shell with an adapter.
-    pub fn new(window: minifb::Window, adapter: A) -> WindowShell<A> {
+    pub fn new(window: minifb::Window, adapter: A, key_events: Rc<RefCell<Vec<KeyEvent>>>) -> WindowShell<A> {
         let size = window.get_size();
         let render_context_2_d = RenderContext2D::new(size.0 as f64, size.1 as f64);
 
@@ -43,6 +72,7 @@ where
             adapter,
             mouse_pos: (0.0, 0.0),
             button_down: (false, false, false),
+            key_events
         }
     }
 
@@ -100,6 +130,11 @@ where
         // scroll
         if let Some(delta) = self.window.get_scroll_wheel() {
             self.adapter.scroll(delta.0 as f64, delta.1 as f64);
+        }
+
+        // key
+        while let Some(event) = self.key_events.borrow_mut().pop() {
+            self.adapter.key_event(event);
         }
     }
 
@@ -251,9 +286,13 @@ where
             panic!("{}", e);
         });
 
+        let key_events = Rc::new(RefCell::new(vec![]));
+
+        window.set_input_callback(Box::new(KeyInputCallBack { key_events: key_events.clone() }));
+
         window.set_position(self.bounds.x as isize, self.bounds.y as isize);
 
-        WindowShell::new(window, self.adapter)
+        WindowShell::new(window, self.adapter, key_events)
     }
 }
 
