@@ -57,33 +57,65 @@ where
     }
 
     fn drain_events(&mut self) {
+        // mouse move
         if let Some(pos) = self.window.get_mouse_pos(minifb::MouseMode::Discard) {
-            if (pos != self.mouse_pos) {
+            if pos != self.mouse_pos {
                 self.adapter.mouse(pos.0 as f64, pos.1 as f64);
                 self.mouse_pos = pos;
             }
         }
 
+        // mouse
         let left_button_down = self.window.get_mouse_down(minifb::MouseButton::Left);
+        let middle_button_down = self.window.get_mouse_down(minifb::MouseButton::Middle);
+        let right_button_down = self.window.get_mouse_down(minifb::MouseButton::Right);
 
         if left_button_down != self.button_down.0 {
             if left_button_down {
-                self.adapter.mouse_event(MouseEvent {
-                    x: self.mouse_pos.0 as f64,
-                    y: self.mouse_pos.1 as f64,
-                    button: MouseButton::Left,
-                    state: ButtonState::Down,
-                });
+                self.push_mouse_event(true, MouseButton::Left);
             } else {
-                self.adapter.mouse_event(MouseEvent {
-                    x: self.mouse_pos.0 as f64,
-                    y: self.mouse_pos.1 as f64,
-                    button: MouseButton::Left,
-                    state: ButtonState::Up,
-                });
+                self.push_mouse_event(false, MouseButton::Left);
             }
             self.button_down.0 = left_button_down;
         }
+
+        if middle_button_down != self.button_down.1 {
+            if middle_button_down {
+                self.push_mouse_event(true, MouseButton::Middle);
+            } else {
+                self.push_mouse_event(false, MouseButton::Middle);
+            }
+            self.button_down.1 = middle_button_down;
+        }
+
+        if right_button_down != self.button_down.2 {
+            if right_button_down {
+                self.push_mouse_event(true, MouseButton::Right);
+            } else {
+                self.push_mouse_event(false, MouseButton::Right);
+            }
+            self.button_down.2 = right_button_down;
+        }
+
+        // scroll
+        if let Some(delta) = self.window.get_scroll_wheel() {
+            self.adapter.scroll(delta.0 as f64, delta.1 as f64);
+        }
+    }
+
+    fn push_mouse_event(&mut self, pressed: bool, button: MouseButton) {
+        let state = if pressed {
+            ButtonState::Down
+        } else {
+            ButtonState::Up
+        };
+
+        self.adapter.mouse_event(MouseEvent {
+            x: self.mouse_pos.0 as f64,
+            y: self.mouse_pos.1 as f64,
+            button,
+            state,
+        });
     }
 
     pub fn flip(&mut self) {
@@ -120,7 +152,7 @@ where
             .report_interval_s(0.5)
             .build_with_target_rate(60.0);
 
-        let mut current_fps = None;
+        let mut _current_fps = None;
         let mut skip = false;
 
         loop {
@@ -128,10 +160,10 @@ where
                 break;
             }
 
-            let delta = loop_helper.loop_start();
+            let _delta = loop_helper.loop_start();
 
             if let Some(fps) = loop_helper.report_rate() {
-                current_fps = Some(fps);
+                _current_fps = Some(fps);
                 println!("fps: {}", fps);
             }
 

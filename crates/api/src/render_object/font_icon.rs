@@ -10,12 +10,6 @@ impl Into<Box<dyn RenderObject>> for FontIconRenderObject {
 
 impl RenderObject for FontIconRenderObject {
     fn render_self(&self, context: &mut Context<'_>, global_position: &Point) {
-        let parent_bounds = if let Some(parent) = context.parent_widget() {
-            parent.clone_or_default::<Bounds>()
-        } else {
-            Bounds::default()
-        };
-
         let (bounds, icon, icon_brush, icon_font, icon_size) = {
             let widget = context.widget();
             (
