@@ -1,4 +1,5 @@
 // Widget related properties.
+pub use self::clip::*;
 pub use self::count::*;
 pub use self::font_icon::*;
 pub use self::image::*;
@@ -12,6 +13,7 @@ pub use self::text_selection::*;
 pub use self::title::*;
 pub use self::water_mark::*;
 
+mod clip;
 mod count;
 mod font_icon;
 mod image;

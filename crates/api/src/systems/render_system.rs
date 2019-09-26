@@ -12,6 +12,8 @@ use crate::{
     tree::Tree,
 };
 
+// use std::time::{Duration, Instant};
+
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
@@ -45,6 +47,8 @@ impl System<Tree> for RenderSystem {
             return;
         }
 
+        // let now = Instant::now(); 
+
         let mut shell = &mut self.shell.borrow_mut();
 
         #[cfg(feature = "debug")]
@@ -77,6 +81,7 @@ impl System<Tree> for RenderSystem {
             debug,
         );
 
-        shell.flip();
+//  println!("{}", now.elapsed().as_millis());
+        // shell.flip();
     }
 }

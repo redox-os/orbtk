@@ -56,6 +56,7 @@ impl Template for ScrollViewer {
             .selector("scroll-viewer")
             .scroll_offset(0.0)
             .delta(0.0)
+            .clip(true)
             .scroll_mode(ScrollViewerModeValue::default())
             .on_scroll(move |p| {
                 state.scroll(p);

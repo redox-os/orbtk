@@ -83,6 +83,7 @@ macro_rules! widget {
             vertical_alignment: VerticalAlignment,
             margin: Margin,
             enabled: Enabled,
+            clip: Clip,
             visibility: Visibility,
             _empty: Option<RefCell<i32>>,
              $(
@@ -144,6 +145,11 @@ macro_rules! widget {
             /// Sets or shares the enabled property.
             pub fn enabled(self, enabled: impl IntoPropertySource<Enabled>) -> Self {
                 self.attach(enabled)
+            }
+
+            /// Sets or shares the clip property.
+            pub fn clip(self, clip: impl IntoPropertySource<Clip>) -> Self {
+                self.attach(clip)
             }
 
             /// Inserts a new width.
@@ -279,6 +285,7 @@ macro_rules! widget {
                 $widget {
                     event_handlers: vec![],
                     enabled: Enabled(true),
+                    clip: Clip(false),
                     $(
                         $(
                             $property: None,
@@ -333,6 +340,7 @@ macro_rules! widget {
                 context.register_property(entity, this.visibility);
                 context.register_property(entity, this.margin);
                 context.register_property(entity, this.enabled);
+                context.register_property(entity, this.clip);
 
                 let mut constraint = Constraint::default();
 

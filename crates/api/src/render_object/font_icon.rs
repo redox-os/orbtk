@@ -28,15 +28,6 @@ impl RenderObject for FontIconRenderObject {
         };
 
         if !icon.is_empty() {
-            context.render_context_2_d().save();
-            context.render_context_2_d().begin_path();
-            context.render_context_2_d().rect(
-                global_position.x,
-                global_position.y,
-                parent_bounds.width(),
-                parent_bounds.height(),
-            );
-            context.render_context_2_d().clip();
             context.render_context_2_d().set_font_family(icon_font);
             context.render_context_2_d().set_font_size(icon_size);
             context.render_context_2_d().set_fill_style(icon_brush);
@@ -48,7 +39,6 @@ impl RenderObject for FontIconRenderObject {
                 None,
             );
             context.render_context_2_d().close_path();
-            context.render_context_2_d().restore();
         }
     }
 }

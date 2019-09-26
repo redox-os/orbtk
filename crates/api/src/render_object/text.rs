@@ -38,15 +38,6 @@ impl RenderObject for TextRenderObject {
         };
 
         if !text.is_empty() {
-            context.render_context_2_d().save();
-            context.render_context_2_d().begin_path();
-            context.render_context_2_d().rect(
-                global_position.x,
-                global_position.y,
-                parent_bounds.width(),
-                parent_bounds.height(),
-            );
-            context.render_context_2_d().clip();
             context.render_context_2_d().set_font_family(font);
             context.render_context_2_d().set_font_size(font_size);
             context.render_context_2_d().set_fill_style(foreground);
@@ -58,7 +49,6 @@ impl RenderObject for TextRenderObject {
                 None,
             );
             context.render_context_2_d().close_path();
-            context.render_context_2_d().restore();
         }
     }
 }

@@ -46,17 +46,25 @@ pub trait RenderObject: Any {
             return;
         }
 
-        shell.render_context_2_d().save();
         shell.render_context_2_d().begin_path();
 
-        if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(entity) {
-            shell.render_context_2_d().rect(
-                global_position.x + bounds.x(),
-                global_position.y + bounds.y(),
-                bounds.width(),
-                bounds.height(),
-            );
-            shell.render_context_2_d().clip();
+        // Could be unwrap because every widget has the clip property
+        let clip =  ecm
+            .component_store()
+            .borrow_component::<Clip>(entity)
+            .unwrap()
+            .0;
+        if clip {
+            if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(entity) {
+                shell.render_context_2_d().save();
+                shell.render_context_2_d().rect(
+                    global_position.x + bounds.x(),
+                    global_position.y + bounds.y(),
+                    bounds.width(),
+                    bounds.height(),
+                );
+                shell.render_context_2_d().clip();
+            }
         }
 
         {
@@ -106,7 +114,10 @@ pub trait RenderObject: Any {
         );
 
         shell.render_context_2_d().close_path();
-        shell.render_context_2_d().restore();
+
+        if clip {
+            shell.render_context_2_d().restore();
+        }      
 
         // render debug border for each widget
         if debug {

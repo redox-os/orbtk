@@ -21,6 +21,8 @@ where
     window: minifb::Window,
     render_context_2_d: RenderContext2D,
     adapter: A,
+    mouse_pos: (f32, f32),
+    button_down: (bool, bool, bool),
 }
 
 impl<A> WindowShell<A>
@@ -39,6 +41,8 @@ where
             // mouse_position: Point::default(),
             render_context_2_d,
             adapter,
+            mouse_pos: (0.0, 0.0),
+            button_down: (false, false, false),
         }
     }
 
@@ -52,7 +56,35 @@ where
         &mut self.render_context_2_d
     }
 
-    fn drain_events(&mut self) {}
+    fn drain_events(&mut self) {
+        if let Some(pos) = self.window.get_mouse_pos(minifb::MouseMode::Discard) {
+            if (pos != self.mouse_pos) {
+                self.adapter.mouse(pos.0 as f64, pos.1 as f64);
+                self.mouse_pos = pos;
+            }
+        }
+
+        let left_button_down = self.window.get_mouse_down(minifb::MouseButton::Left);
+
+        if left_button_down != self.button_down.0 {
+            if left_button_down {
+                self.adapter.mouse_event(MouseEvent {
+                    x: self.mouse_pos.0 as f64,
+                    y: self.mouse_pos.1 as f64,
+                    button: MouseButton::Left,
+                    state: ButtonState::Down,
+                });
+            } else {
+                self.adapter.mouse_event(MouseEvent {
+                    x: self.mouse_pos.0 as f64,
+                    y: self.mouse_pos.1 as f64,
+                    button: MouseButton::Left,
+                    state: ButtonState::Up,
+                });
+            }
+            self.button_down.0 = left_button_down;
+        }
+    }
 
     pub fn flip(&mut self) {
         self.window
@@ -79,6 +111,8 @@ where
     pub updater: Box<dyn Updater>,
 }
 
+
+
 impl<A> ShellRunner<A>
 where
     A: WindowAdapter,
@@ -88,19 +122,20 @@ where
             .report_interval_s(0.5)
             .build_with_target_rate(60.0);
 
-        let mut current_fps = None;
+        // let mut current_fps = None;
+        let mut skip = false;
 
         loop {
             if !self.running.get() || !self.window_shell.borrow().window.is_open() {
                 break;
             }
 
-            let delta = loop_helper.loop_start();
+            // let delta = loop_helper.loop_start();
 
-            if let Some(fps) = loop_helper.report_rate() {
-                current_fps = Some(fps);
-                // println!("fps: {}", fps);
-            }
+            // if let Some(fps) = loop_helper.report_rate() {
+            //     current_fps = Some(fps);
+            //     // println!("fps: {}", fps);
+            // }
 
             self.updater.update();
 
@@ -112,12 +147,14 @@ where
                 //     .window
                 //     .sync();
 
-                self.window_shell.borrow_mut().drain_events();
-                self.window_shell.borrow_mut().flip();
+                skip = true;
             }
 
-            self.window_shell.borrow_mut().window.update();
-            loop_helper.loop_sleep();
+            self.window_shell.borrow_mut().drain_events();
+
+           
+            self.window_shell.borrow_mut().flip();
+            // loop_helper.loop_sleep();
         }
     }
 }

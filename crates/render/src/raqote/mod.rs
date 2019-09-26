@@ -141,7 +141,6 @@ impl RenderContext2D {
 
     /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
     pub fn close_path(&mut self) {
-        self.draw_target.pop_clip();
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.close();
         self.path = path_builder.finish();
@@ -306,6 +305,7 @@ impl RenderContext2D {
 
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
+        self.draw_target.pop_clip();
         if let Some(config) = &self.saved_config {
             self.config = config.clone();
         }
