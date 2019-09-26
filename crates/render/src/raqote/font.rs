@@ -40,7 +40,39 @@ impl Font {
         (width, pixel_height)
     }
 
-    pub fn render_text(&self, text: &str, size: f64, data: &mut [u32], col: &Color, width: f64) {
+    pub fn render_text(
+        &self,
+        text: &str,
+        size: f64,
+        data: &mut [u32],
+        col: &Color,
+        width: f64,
+        x: f64,
+        y: f64,
+    ) {
+        self.render_text_clipped(
+            text,
+            size,
+            data,
+            col,
+            width,
+            x,
+            y,
+            (0.0, 0.0, width, std::f64::MAX),
+        );
+    }
+
+    pub fn render_text_clipped(
+        &self,
+        text: &str,
+        size: f64,
+        data: &mut [u32],
+        col: &Color,
+        width: f64,
+        x: f64,
+        y: f64,
+        clip_rect: (f64, f64, f64, f64),
+    ) {
         let scale = rusttype::Scale::uniform(size as f32);
 
         // The origin of a line of text is at the baseline (roughly where non-descending letters sit).
@@ -54,17 +86,36 @@ impl Font {
         let glyphs: Vec<rusttype::PositionedGlyph> =
             self.inner.layout(text, scale, offset).collect();
 
+        let pixel_width = glyphs
+            .iter()
+            .rev()
+            .map(|g| g.position().x as f32 + g.unpositioned().h_metrics().advance_width)
+            .next()
+            .unwrap_or(0.0)
+            .ceil() as i32;
+
+        let pixel_height = size.ceil() as i32;
+
         for g in glyphs.iter() {
             if let Some(bb) = g.pixel_bounding_box() {
                 g.draw(|off_x, off_y, v| {
                     let off_x = off_x as i32 + bb.min.x;
                     let off_y = off_y as i32 + bb.min.y;
 
-                    // Alpha blending from orbclient
+                    if off_x >= 0
+                        && off_x < pixel_width
+                        && off_y >= 0
+                        && off_y < pixel_height
+                        && x + off_x as f64 >= clip_rect.0
+                        && x + off_x as f64 <= clip_rect.0 + clip_rect.2
+                        && y + off_y as f64 >= clip_rect.1
+                        && y + off_y as f64 <= clip_rect.1 + clip_rect.3
                     {
+                        // Alpha blending from orbclient
                         let alpha = (v * 255.0) as u32;
                         let new = (alpha << 24) | (col.data & 0xFFFFFF);
-                        let old = &mut data[(off_y * width as i32 + off_x) as usize];
+                        let old = &mut data
+                            [((y as i32 + off_y) * width as i32 + x as i32 + off_x) as usize];
 
                         if alpha >= 255 {
                             *old = new;
@@ -82,7 +133,5 @@ impl Font {
                 });
             }
         }
-
-        // pub render_to_image(&self, text: &str,)
     }
 }

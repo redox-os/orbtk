@@ -277,6 +277,25 @@ impl RenderContext2D {
         self.canvas_render_context_2_d.restore();
     }
 
+    pub fn clear(&mut self, brush: &Brush) {
+        let color = match brush {
+            Brush::SolidColor(color) => color.to_string(),
+            _ => Color::rgba(0, 0, 0, 0).to_string(),
+        };
+
+        self.save();
+        self.canvas_render_context_2_d
+            .set_fill_style_color(color.as_str());
+        let canvas = self.canvas_render_context_2_d.get_canvas();
+        self.canvas_render_context_2_d.fill_rect(
+            0.0,
+            0.0,
+            canvas.width() as f64,
+            canvas.height() as f64,
+        );
+        self.restore();
+    }
+
     pub fn set_canvas_render_context_2d(
         &mut self,
         canvas_render_context_2_d: CanvasRenderingContext2d,

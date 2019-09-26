@@ -1,7 +1,4 @@
-use stdweb::{
-    js,
-    unstable::TryInto,
-};
+use stdweb::{js, unstable::TryInto};
 
 #[derive(Default, Clone, Debug, PartialEq)]
 pub struct Image {

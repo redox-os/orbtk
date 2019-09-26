@@ -4,12 +4,14 @@ use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use crate::{prelude::*, shell::WindowShell, utils::*};
 
+pub use self::clear::*;
 pub use self::default::*;
 pub use self::font_icon::*;
 pub use self::image::*;
 pub use self::rectangle::*;
 pub use self::text::*;
 
+mod clear;
 mod default;
 mod font_icon;
 mod image;
@@ -49,7 +51,7 @@ pub trait RenderObject: Any {
         shell.render_context_2_d().begin_path();
 
         // Could be unwrap because every widget has the clip property
-        let clip =  ecm
+        let clip = ecm
             .component_store()
             .borrow_component::<Clip>(entity)
             .unwrap()
@@ -117,7 +119,7 @@ pub trait RenderObject: Any {
 
         if clip {
             shell.render_context_2_d().restore();
-        }      
+        }
 
         // render debug border for each widget
         if debug {

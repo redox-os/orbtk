@@ -38,7 +38,7 @@ impl Template for Window {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(RectangleRenderObject)
+        Box::new(ClearRenderObject)
     }
 
     fn layout(&self) -> Box<dyn Layout> {

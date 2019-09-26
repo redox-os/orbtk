@@ -141,6 +141,7 @@ debug-border {
 }
 
 items-widget {
+    background: transparent;
     border-color: #647b91;
     border-width: 1;
     border-radius: 2;
@@ -148,7 +149,7 @@ items-widget {
 }
 
 list-view {
-    background: #444e55;
+    background: transparent;
     border-color: #212121;
     border-width: 1;
     border-radius: 2;

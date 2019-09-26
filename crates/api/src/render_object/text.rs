@@ -11,12 +11,6 @@ impl Into<Box<dyn RenderObject>> for TextRenderObject {
 
 impl RenderObject for TextRenderObject {
     fn render_self(&self, context: &mut Context<'_>, global_position: &Point) {
-        let parent_bounds = if let Some(parent) = context.parent_widget() {
-            parent.clone_or_default::<Bounds>()
-        } else {
-            Bounds::default()
-        };
-
         let (bounds, text, foreground, font, font_size) = {
             let widget = context.widget();
             let text = widget.clone::<Text>();
@@ -37,7 +31,17 @@ impl RenderObject for TextRenderObject {
             )
         };
 
+        if bounds.width == 0.0
+            || bounds.height == 0.0
+            || foreground.is_transparent()
+            || font_size == 0.0
+            || text.is_empty()
+        {
+            return;
+        }
+
         if !text.is_empty() {
+            context.render_context_2_d().begin_path();
             context.render_context_2_d().set_font_family(font);
             context.render_context_2_d().set_font_size(font_size);
             context.render_context_2_d().set_fill_style(foreground);

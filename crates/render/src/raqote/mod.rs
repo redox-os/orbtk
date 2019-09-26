@@ -17,6 +17,11 @@ pub struct RenderContext2D {
     config: RenderConfig,
     saved_config: Option<RenderConfig>,
     fonts: HashMap<String, Font>,
+
+    // hack / work around for faster text clipping
+    clip: bool,
+    last_rect: (f64, f64, f64, f64),
+    clip_rect: Option<(f64, f64, f64, f64)>,
 }
 
 impl RenderContext2D {
@@ -31,6 +36,9 @@ impl RenderContext2D {
             config: RenderConfig::default(),
             saved_config: None,
             fonts: HashMap::new(),
+            clip: false,
+            last_rect: (0.0, 0.0, width, height),
+            clip_rect: None,
         }
     }
 
@@ -81,16 +89,43 @@ impl RenderContext2D {
         }
 
         if let Some(font) = self.fonts.get(&self.config.font_config.family) {
-            let mut image = Image::new(100, 100);
+            let width = self.draw_target.width() as f64;
 
-            font.render_text(
-                text,
-                self.config.font_config.font_size,
-                image.data_mut(),
-                &color,
-                100.0,
-            );
-            self.draw_image(&mut image, x, y);
+            if self.clip {
+                if let Some(rect) = self.clip_rect {
+                    font.render_text_clipped(
+                        text,
+                        self.config.font_config.font_size,
+                        self.draw_target.get_data_mut(),
+                        &color,
+                        width,
+                        x,
+                        y,
+                        rect,
+                    );
+                } else {
+                    font.render_text(
+                        text,
+                        self.config.font_config.font_size,
+                        self.draw_target.get_data_mut(),
+                        &color,
+                        width,
+                        x,
+                        y,
+                    );
+                }
+            } else {
+                font.render_text(
+                    text,
+                    self.config.font_config.font_size,
+                    self.draw_target.get_data_mut(),
+                    &color,
+                    width,
+                    x,
+                    y,
+                );
+            }
+            // self.draw_image(&mut image, x, y);
         }
     }
 
@@ -147,6 +182,7 @@ impl RenderContext2D {
     }
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.last_rect = (x, y, width, height);
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.rect(x as f32, y as f32, width as f32, height as f32);
         self.path = path_builder.finish();
@@ -256,6 +292,8 @@ impl RenderContext2D {
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
     pub fn clip(&mut self) {
+        self.clip_rect = Some(self.last_rect);
+        self.clip = true;
         self.draw_target.push_clip(&self.path);
     }
 
@@ -273,7 +311,7 @@ impl RenderContext2D {
 
     /// Specifies the font size.
     pub fn set_font_size(&mut self, size: f64) {
-        self.config.font_config.font_size = size;
+        self.config.font_config.font_size = size + 4.0;
     }
 
     // Fill and stroke style
@@ -305,12 +343,34 @@ impl RenderContext2D {
 
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
+        self.clip = false;
+        self.clip_rect = None;
         self.draw_target.pop_clip();
         if let Some(config) = &self.saved_config {
             self.config = config.clone();
         }
 
         self.saved_config = None;
+    }
+
+    pub fn clear(&mut self, brush: &Brush) {
+        let solid = match *brush {
+            Brush::SolidColor(color) => raqote::SolidSource {
+                r: color.r(),
+                g: color.g(),
+                b: color.b(),
+                a: color.a(),
+            },
+
+            _ => raqote::SolidSource {
+                r: 0x0,
+                g: 0x0,
+                b: 0x80,
+                a: 0x80,
+            },
+        };
+
+        self.draw_target.clear(solid);
     }
 
     pub fn data(&self) -> &[u32] {

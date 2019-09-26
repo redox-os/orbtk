@@ -27,7 +27,17 @@ impl RenderObject for FontIconRenderObject {
             )
         };
 
+        if bounds.width == 0.0
+            || bounds.height == 0.0
+            || icon_brush.is_transparent()
+            || icon_size == 0.0
+            || icon.is_empty()
+        {
+            return;
+        }
+
         if !icon.is_empty() {
+            context.render_context_2_d().begin_path();
             context.render_context_2_d().set_font_family(icon_font);
             context.render_context_2_d().set_font_size(icon_size);
             context.render_context_2_d().set_fill_style(icon_brush);

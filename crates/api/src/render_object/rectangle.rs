@@ -17,11 +17,15 @@ impl RectangleRenderObject {
     ) {
         render_context_2_d.rect(x, y, width, height);
 
-        render_context_2_d.set_fill_style(brush);
-        render_context_2_d.fill();
+        if !brush.is_transparent() {
+            render_context_2_d.set_fill_style(brush);
+            render_context_2_d.fill();
+        }
 
-        render_context_2_d.set_stroke_style(border_brush);
-        render_context_2_d.stroke();
+        if !border_brush.is_transparent() {
+            render_context_2_d.set_stroke_style(border_brush);
+            render_context_2_d.stroke();
+        }
     }
 
     // Builds rectangle path with radius and without border.
@@ -36,7 +40,6 @@ impl RectangleRenderObject {
     ) {
         let r = x + width;
         let b = y + height;
-
         render_context_2_d.move_to(x + radius, y);
         render_context_2_d.line_to(r - radius, y);
         render_context_2_d.quadratic_curve_to(r, y, r, y + radius);
@@ -64,11 +67,15 @@ impl RectangleRenderObject {
     ) {
         self.render_rounded_rect_path(render_context_2_d, x, y, width, height, radius);
 
-        render_context_2_d.set_fill_style(brush);
-        render_context_2_d.fill();
+        if !brush.is_transparent() {
+            render_context_2_d.set_fill_style(brush);
+            render_context_2_d.fill();
+        }
 
-        render_context_2_d.set_stroke_style(border_brush);
-        render_context_2_d.stroke();
+        if !border_brush.is_transparent() {
+            render_context_2_d.set_stroke_style(border_brush);
+            render_context_2_d.stroke();
+        }
     }
 }
 
@@ -77,6 +84,8 @@ impl Into<Box<dyn RenderObject>> for RectangleRenderObject {
         Box::new(self)
     }
 }
+
+use std::time::{Duration, Instant};
 
 impl RenderObject for RectangleRenderObject {
     fn render_self(&self, context: &mut Context<'_>, global_position: &Point) {
@@ -91,10 +100,29 @@ impl RenderObject for RectangleRenderObject {
             )
         };
 
+        // if context.entity.0 == 63 {
+        //     println!("Yub");
+        // }
+
+        if (bounds.width() == 0.0
+            || bounds.height() == 0.0
+            || (background.is_transparent() && border_brush.is_transparent()))
+            && (border_thickness.left == 0.0
+                && border_thickness.top == 0.0
+                && border_thickness.right == 0.0
+                && border_thickness.bottom == 0.0)
+        {
+            return;
+        }
+
+        // let now = Instant::now();
+
         let has_thickness = border_thickness.left > 0.0
             || border_thickness.top > 0.0
             || border_thickness.right > 0.0
             || border_thickness.bottom > 0.0;
+
+        context.render_context_2_d().begin_path();
 
         if border_radius > 0.0 {
             if has_thickness {
@@ -145,5 +173,11 @@ impl RenderObject for RectangleRenderObject {
                 context.render_context_2_d().fill();
             }
         }
+
+        // println!(
+        //     "Rectangle render mils: {}, id: {}",
+        //     now.elapsed().as_millis(),
+        //     context.entity.0
+        // );
     }
 }

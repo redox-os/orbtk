@@ -111,8 +111,6 @@ where
     pub updater: Box<dyn Updater>,
 }
 
-
-
 impl<A> ShellRunner<A>
 where
     A: WindowAdapter,
@@ -122,7 +120,7 @@ where
             .report_interval_s(0.5)
             .build_with_target_rate(60.0);
 
-        // let mut current_fps = None;
+        let mut current_fps = None;
         let mut skip = false;
 
         loop {
@@ -130,31 +128,30 @@ where
                 break;
             }
 
-            // let delta = loop_helper.loop_start();
+            let delta = loop_helper.loop_start();
 
-            // if let Some(fps) = loop_helper.report_rate() {
-            //     current_fps = Some(fps);
-            //     // println!("fps: {}", fps);
-            // }
+            if let Some(fps) = loop_helper.report_rate() {
+                current_fps = Some(fps);
+                println!("fps: {}", fps);
+            }
 
             self.updater.update();
 
             if self.update.get() {
+                self.window_shell.borrow_mut().flip();
                 self.update.set(false);
-                // self.window_shell
-                //     .borrow_mut()
-                //     .render_context_2_d
-                //     .window
-                //     .sync();
 
                 skip = true;
             }
 
             self.window_shell.borrow_mut().drain_events();
 
-           
-            self.window_shell.borrow_mut().flip();
-            // loop_helper.loop_sleep();
+            if !skip {
+                self.window_shell.borrow_mut().window.update();
+            }
+
+            skip = false;
+            loop_helper.loop_sleep();
         }
     }
 }
@@ -207,33 +204,24 @@ where
 
     /// Builds the window shell.
     pub fn build(self) -> WindowShell<A> {
+        let window_options = minifb::WindowOptions {
+            resize: self.resizeable,
+            ..Default::default()
+        };
+
         let mut window = minifb::Window::new(
             self.title.as_str(),
             self.bounds.width as usize,
             self.bounds.height as usize,
-            minifb::WindowOptions::default(),
+            window_options,
         )
         .unwrap_or_else(|e| {
             panic!("{}", e);
         });
-        // let mut flags = vec![];
-        if self.resizeable {
-            // flags.push(WindowFlag::Resizable);
-        }
 
-        WindowShell::new(
-            window,
-            // Window::new_flags(
-            //     self.bounds.x as i32,
-            //     self.bounds.y as i32,
-            //     self.bounds.width as u32,
-            //     self.bounds.height as u32,
-            //     &self.title,
-            //     &flags,
-            // )
-            // .unwrap(),
-            self.adapter,
-        )
+        window.set_position(self.bounds.x as isize, self.bounds.y as isize);
+
+        WindowShell::new(window, self.adapter)
     }
 }
 
