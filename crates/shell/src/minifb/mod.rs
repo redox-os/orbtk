@@ -1,8 +1,8 @@
 //! This module contains a platform specific implementation of the window shell.
 
 use std::{
-    char,
     cell::{Cell, RefCell},
+    char,
     rc::Rc,
 };
 
@@ -14,7 +14,24 @@ use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {}
 
-fn unicode_to_key_event(uni_char: u32) -> KeyEvent  {
+fn key_event_helper<A>(key: &mut KeyHelper, adapter: &mut A, window: &minifb::Window)
+where
+    A: WindowAdapter,
+{
+    if !key.0 && window.is_key_down(key.1) {
+        adapter.key_event(KeyEvent {
+            key: key.2,
+            state: ButtonState::Down,
+            text: String::new(),
+        });
+
+        key.0 = true;
+    } else {
+        key.0 = false;
+    }
+}
+
+fn unicode_to_key_event(uni_char: u32) -> KeyEvent {
     let mut text = String::new();
 
     let key = if let Some(character) = char::from_u32(uni_char) {
@@ -24,22 +41,30 @@ fn unicode_to_key_event(uni_char: u32) -> KeyEvent  {
         Key::Unknown
     };
 
-   KeyEvent {
-       key,
-       state: ButtonState::Down,
-       text,
-   }
+    if key == Key::Up || key == Key::Down || key == Key::Left || key == Key::Right {
+        text = String::new()
+    }
+
+    KeyEvent {
+        key,
+        state: ButtonState::Down,
+        text,
+    }
 }
 
-pub struct KeyInputCallBack {
-    key_events: Rc<RefCell<Vec<KeyEvent>>>
+struct KeyInputCallBack {
+    key_events: Rc<RefCell<Vec<KeyEvent>>>,
 }
 
 impl minifb::InputCallback for KeyInputCallBack {
     fn add_char(&mut self, uni_char: u32) {
-        self.key_events.borrow_mut().push(unicode_to_key_event(uni_char));
+        self.key_events
+            .borrow_mut()
+            .push(unicode_to_key_event(uni_char));
     }
 }
+
+struct KeyHelper(bool, minifb::Key, Key);
 
 /// Concrete implementation of the window shell.
 pub struct WindowShell<A>
@@ -52,6 +77,14 @@ where
     mouse_pos: (f32, f32),
     button_down: (bool, bool, bool),
     key_events: Rc<RefCell<Vec<KeyEvent>>>,
+    // todo: temp solution
+    key_backspace: KeyHelper,
+    key_delete: KeyHelper,
+    key_enter: KeyHelper,
+    key_control: KeyHelper,
+    key_shift_l: KeyHelper,
+    key_shift_r: KeyHelper,
+    key_alt: KeyHelper,
 }
 
 impl<A> WindowShell<A>
@@ -59,7 +92,11 @@ where
     A: WindowAdapter,
 {
     /// Creates a new window shell with an adapter.
-    pub fn new(window: minifb::Window, adapter: A, key_events: Rc<RefCell<Vec<KeyEvent>>>) -> WindowShell<A> {
+    pub fn new(
+        window: minifb::Window,
+        adapter: A,
+        key_events: Rc<RefCell<Vec<KeyEvent>>>,
+    ) -> WindowShell<A> {
         let size = window.get_size();
         let render_context_2_d = RenderContext2D::new(size.0 as f64, size.1 as f64);
 
@@ -72,7 +109,14 @@ where
             adapter,
             mouse_pos: (0.0, 0.0),
             button_down: (false, false, false),
-            key_events
+            key_events,
+            key_backspace: KeyHelper(false, minifb::Key::Backspace, Key::Backspace),
+            key_delete: KeyHelper(false, minifb::Key::Delete, Key::Delete),
+            key_enter: KeyHelper(false, minifb::Key::Enter, Key::Enter),
+            key_control: KeyHelper(false, minifb::Key::LeftCtrl, Key::Control),
+            key_shift_l: KeyHelper(false, minifb::Key::LeftShift, Key::ShiftL),
+            key_shift_r: KeyHelper(false, minifb::Key::RightShift, Key::ShiftR),
+            key_alt: KeyHelper(false, minifb::Key::LeftAlt, Key::Alt),
         }
     }
 
@@ -136,6 +180,14 @@ where
         while let Some(event) = self.key_events.borrow_mut().pop() {
             self.adapter.key_event(event);
         }
+
+        key_event_helper(&mut self.key_backspace, &mut self.adapter, &mut self.window);
+        key_event_helper(&mut self.key_delete, &mut self.adapter, &mut self.window);
+        key_event_helper(&mut self.key_enter, &mut self.adapter, &mut self.window);
+        key_event_helper(&mut self.key_control, &mut self.adapter, &mut self.window);
+        key_event_helper(&mut self.key_shift_l, &mut self.adapter, &mut self.window);
+        key_event_helper(&mut self.key_shift_r, &mut self.adapter, &mut self.window);
+        key_event_helper(&mut self.key_alt, &mut self.adapter, &mut self.window);
     }
 
     fn push_mouse_event(&mut self, pressed: bool, button: MouseButton) {
@@ -288,7 +340,9 @@ where
 
         let key_events = Rc::new(RefCell::new(vec![]));
 
-        window.set_input_callback(Box::new(KeyInputCallBack { key_events: key_events.clone() }));
+        window.set_input_callback(Box::new(KeyInputCallBack {
+            key_events: key_events.clone(),
+        }));
 
         window.set_position(self.bounds.x as isize, self.bounds.y as isize);
 
