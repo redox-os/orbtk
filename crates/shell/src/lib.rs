@@ -26,7 +26,7 @@ runner.run()
 ```
 
  */
-
+#[macro_use]
 extern crate lazy_static;
 
 pub mod event;

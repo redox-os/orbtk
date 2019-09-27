@@ -85,8 +85,6 @@ impl Into<Box<dyn RenderObject>> for RectangleRenderObject {
     }
 }
 
-use std::time::{Duration, Instant};
-
 impl RenderObject for RectangleRenderObject {
     fn render_self(&self, context: &mut Context<'_>, global_position: &Point) {
         let (bounds, background, border_radius, border_thickness, border_brush) = {

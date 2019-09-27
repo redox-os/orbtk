@@ -50,11 +50,11 @@ impl System<Tree> for InitSystem {
         let debug = false;
 
         if debug {
-            crate::shell::log("\n------ Widget tree ------\n".to_string());
+            crate::shell::CONSOLE.log("\n------ Widget tree ------\n".to_string());
 
             print_tree(root, 0, ecm);
 
-            crate::shell::log("\n------ Widget tree ------\n".to_string());
+            crate::shell::CONSOLE.log("\n------ Widget tree ------\n".to_string());
         }
 
         // init css ids
@@ -106,7 +106,7 @@ fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tre
     let name = Name::get(entity, ecm.component_store());
     let selector = Selector::get(entity, ecm.component_store());
 
-    crate::shell::log(format!(
+    crate::shell::CONSOLE.log(format!(
         "{}{} (entity: {}{})",
         "| ".repeat(depth),
         name,

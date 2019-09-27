@@ -12,6 +12,8 @@ use stdweb::{
     web::{document, event, html_element::CanvasElement, window, CanvasRenderingContext2d},
 };
 
+use lazy_static;
+
 use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {
@@ -206,12 +208,6 @@ where
         if !self.flip || !self.old_canvas.is_some() {
             return;
         }
-
-        log(format!(
-            "CSize: {},{}",
-            self.canvas.width(),
-            self.canvas.height()
-        ));
 
         document()
             .body()
@@ -460,8 +456,28 @@ where
     }
 }
 
-pub fn log(message: impl Into<String>) {
-    js! {
-        console.log(@{&message.into()});
+lazy_static! {
+    pub static ref CONSOLE: Console = Console;
+}
+
+pub struct Console;
+
+impl Console {
+    pub fn time(&self, name: impl Into<String>) {
+        js! {
+            console.time(@{&name.into()})
+        }
+    }
+
+    pub fn time_end(&self, name: impl Into<String>) {
+        js! {
+            console.timeEnd(@{&name.into()})
+        }
+    }
+
+    pub fn log(&self, message: impl Into<String>) {
+        js! {
+            console.log(@{&message.into()});
+        }
     }
 }

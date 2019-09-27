@@ -1,7 +1,9 @@
 //! This module contains a platform specific implementation of the window shell.
 
 use std::{
+    sync::Mutex,
     cell::{Cell, RefCell},
+    collections::HashMap,
     char,
     rc::Rc,
 };
@@ -9,6 +11,8 @@ use std::{
 use minifb;
 
 use spin_sleep::LoopHelper;
+
+use image;
 
 use crate::{prelude::*, render::*, utils::*};
 
@@ -76,6 +80,7 @@ where
     adapter: A,
     mouse_pos: (f32, f32),
     button_down: (bool, bool, bool),
+    window_size: (usize, usize),
     key_events: Rc<RefCell<Vec<KeyEvent>>>,
     // todo: temp solution
     key_backspace: KeyHelper,
@@ -108,6 +113,7 @@ where
             render_context_2_d,
             adapter,
             mouse_pos: (0.0, 0.0),
+            window_size: size,
             button_down: (false, false, false),
             key_events,
             key_backspace: KeyHelper(false, minifb::Key::Backspace, Key::Backspace),
@@ -188,6 +194,15 @@ where
         key_event_helper(&mut self.key_shift_l, &mut self.adapter, &mut self.window);
         key_event_helper(&mut self.key_shift_r, &mut self.adapter, &mut self.window);
         key_event_helper(&mut self.key_alt, &mut self.adapter, &mut self.window);
+
+        // resize
+        if self.window_size != self.window.get_size() {
+            self.window_size = self.window.get_size();
+            self.render_context_2_d
+                .resize(self.window_size.0 as f64, self.window_size.1 as f64);
+            self.adapter
+                .resize(self.window_size.0 as f64, self.window_size.1 as f64);
+        }
     }
 
     fn push_mouse_event(&mut self, pressed: bool, button: MouseButton) {
@@ -206,8 +221,24 @@ where
     }
 
     pub fn flip(&mut self) {
+        let size = self.window.get_size();
+
+        // let mut imgbuf = image::ImageBuffer::new(size.0 as u32, size.1 as u32);
+        // let mut counter = 0;
+
+        // let mut data = self.render_context_2_d.data_u8_mut();
+
+        // let mut u8_data = vec![];
+
+        // for pixel in data {
+        //    u8_data.push(*pixel as u32);
+        //     // *pixel = image::Rgba([color.r(), color.g(), color.b(), color.a()]);
+        // }
+
+        //  imgbuf.save("fractal.png").unwrap();
+
         self.window
-            .update_with_buffer(self.render_context_2_d.data())
+            .update_with_buffer(&self.render_context_2_d.data())
             .unwrap();
     }
 }
@@ -350,6 +381,30 @@ where
     }
 }
 
-pub fn log(message: String) {
-    println!("{}", message);
+use std::time::{Duration, Instant};
+
+lazy_static! {
+    pub static ref CONSOLE: Console = Console {
+        instants: Mutex::new(HashMap::new())
+    };
+}
+
+pub struct Console {
+    instants: Mutex<HashMap<String, Instant>>
+}
+
+impl Console {
+    pub fn time(&self, name: impl Into<String>) {
+        self.instants.lock().unwrap().insert(name.into(), Instant::now());
+    }
+
+    pub fn time_end(&self, name: impl Into<String>) {
+        if let Some((k, v)) = self.instants.lock().unwrap().remove_entry(&name.into()) {
+            println!("{} {}ms - timer ended", k, v.elapsed().as_millis());
+        }
+    }
+
+    pub fn log(&self, message: impl Into<String>) {
+       println!("{}", message.into());
+    }
 }

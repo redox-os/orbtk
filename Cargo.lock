@@ -425,6 +425,7 @@ dependencies = [
 name = "orbtk-shell"
 version = "0.1.0"
 dependencies = [
+ "image 0.22.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "minifb 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbtk-render 0.1.0",

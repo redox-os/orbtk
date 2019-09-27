@@ -41,6 +41,33 @@ impl EventStateSystem {
             .0
             .clone();
 
+        // resize
+        if let Ok(event) = event.downcast_ref::<WindowEvent>() {
+            match event {
+                WindowEvent::Resize { width, height } => {
+                    // update window size
+                    if let Ok(bounds) = ecm
+                        .component_store_mut()
+                        .borrow_mut_component::<Bounds>(root)
+                    {
+                        bounds.set_width(*width);
+                        bounds.set_height(*height);
+                    }
+
+                    if let Ok(constraint) = ecm
+                        .component_store_mut()
+                        .borrow_mut_component::<Constraint>(root)
+                    {
+                        constraint.set_width(*width);
+                        constraint.set_height(*height);
+                    }
+
+                    self.update.set(true);
+                }
+                _ => {}
+            }
+        }
+
         // global key handling
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
             if let Ok(global) = ecm
@@ -210,32 +237,6 @@ impl System<Tree> for EventStateSystem {
                 let adapter = shell.adapter();
                 let mouse_position = adapter.mouse_position;
                 for event in adapter.event_queue.into_iter() {
-                    if let Ok(event) = event.downcast_ref::<WindowEvent>() {
-                        match event {
-                            WindowEvent::Resize { width, height } => {
-                                // update window size
-                                if let Ok(bounds) = ecm
-                                    .component_store_mut()
-                                    .borrow_mut_component::<Bounds>(root)
-                                {
-                                    bounds.set_width(*width);
-                                    bounds.set_height(*height);
-                                }
-
-                                if let Ok(constraint) = ecm
-                                    .component_store_mut()
-                                    .borrow_mut_component::<Constraint>(root)
-                                {
-                                    constraint.set_width(*width);
-                                    constraint.set_height(*height);
-                                }
-
-                                self.update.set(true);
-                            }
-                            _ => {}
-                        }
-                    }
-
                     if let Ok(event) = event.downcast_ref::<SystemEvent>() {
                         match event {
                             SystemEvent::Quit => {
