@@ -1,1 +1,4 @@
-pub use crate::{platform::*, TextMetrics};
+pub use crate::{
+    platform::{Font, Image},
+    *,
+};

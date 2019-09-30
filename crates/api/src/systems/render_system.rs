@@ -6,8 +6,11 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{prelude::*, shell::{WindowShell, CONSOLE}, tree::Tree};
-
+use crate::{
+    prelude::*,
+    shell::{WindowShell, CONSOLE},
+    tree::Tree,
+};
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {
@@ -46,7 +49,7 @@ impl System<Tree> for RenderSystem {
         offsets.insert(root, (0.0, 0.0));
 
         CONSOLE.time("render");
-
+        
         shell.render_context_2_d().begin_path();
         self.render_objects.borrow()[&root].render(
             &mut shell,
@@ -60,7 +63,6 @@ impl System<Tree> for RenderSystem {
             &mut offsets,
             debug,
         );
-
-        CONSOLE.time_end("render");
+       shell.render_context_2_d().finish();
     }
 }

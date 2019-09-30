@@ -377,7 +377,7 @@ impl RenderContext2D {
         self.draw_target.get_data()
     }
 
-     pub fn data_mut(&mut self) -> &mut [u32] {
+    pub fn data_mut(&mut self) -> &mut [u32] {
         self.draw_target.get_data_mut()
     }
 

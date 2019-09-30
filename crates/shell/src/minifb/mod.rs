@@ -1,11 +1,11 @@
 //! This module contains a platform specific implementation of the window shell.
 
 use std::{
-    sync::Mutex,
     cell::{Cell, RefCell},
-    collections::HashMap,
     char,
+    collections::HashMap,
     rc::Rc,
+    sync::Mutex,
 };
 
 use minifb;
@@ -237,9 +237,10 @@ where
 
         //  imgbuf.save("fractal.png").unwrap();
 
-        self.window
-            .update_with_buffer(&self.render_context_2_d.data())
-            .unwrap();
+        if let Some(data) = self.render_context_2_d.data() {
+            self.window.update_with_buffer(data).unwrap();
+             CONSOLE.time_end("render");
+        }
     }
 }
 
@@ -278,8 +279,6 @@ where
                 break;
             }
 
-           
-
             let _delta = loop_helper.loop_start();
 
             if let Some(fps) = loop_helper.report_rate() {
@@ -287,12 +286,14 @@ where
                 // println!("fps: {}", fps);
             }
 
-             CONSOLE.time("complete run");
+            CONSOLE.time("complete run");
 
             self.updater.update();
 
+            self.window_shell.borrow_mut().flip();
+
             if self.update.get() {
-                self.window_shell.borrow_mut().flip();
+                
                 self.update.set(false);
 
                 skip = true;
@@ -395,21 +396,24 @@ lazy_static! {
 }
 
 pub struct Console {
-    instants: Mutex<HashMap<String, Instant>>
+    instants: Mutex<HashMap<String, Instant>>,
 }
 
 impl Console {
     pub fn time(&self, name: impl Into<String>) {
-        self.instants.lock().unwrap().insert(name.into(), Instant::now());
+        self.instants
+            .lock()
+            .unwrap()
+            .insert(name.into(), Instant::now());
     }
 
     pub fn time_end(&self, name: impl Into<String>) {
         if let Some((k, v)) = self.instants.lock().unwrap().remove_entry(&name.into()) {
-            println!("{} {}ms - timer ended", k, v.elapsed().as_millis());
+                       println!("{} {}ms - timer ended", k, v.elapsed().as_millis());
         }
     }
 
     pub fn log(&self, message: impl Into<String>) {
-       println!("{}", message.into());
+        println!("{}", message.into());
     }
 }
