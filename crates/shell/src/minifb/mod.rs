@@ -278,12 +278,16 @@ where
                 break;
             }
 
+           
+
             let _delta = loop_helper.loop_start();
 
             if let Some(fps) = loop_helper.report_rate() {
                 _current_fps = Some(fps);
-                println!("fps: {}", fps);
+                // println!("fps: {}", fps);
             }
+
+             CONSOLE.time("complete run");
 
             self.updater.update();
 
@@ -302,6 +306,7 @@ where
 
             skip = false;
             loop_helper.loop_sleep();
+            CONSOLE.time_end("complete run");
         }
     }
 }
