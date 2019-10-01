@@ -239,7 +239,7 @@ where
 
         if let Some(data) = self.render_context_2_d.data() {
             self.window.update_with_buffer(data).unwrap();
-             CONSOLE.time_end("render");
+            CONSOLE.time_end("render");
         }
     }
 }
@@ -293,7 +293,6 @@ where
             self.window_shell.borrow_mut().flip();
 
             if self.update.get() {
-                
                 self.update.set(false);
 
                 skip = true;
@@ -409,7 +408,7 @@ impl Console {
 
     pub fn time_end(&self, name: impl Into<String>) {
         if let Some((k, v)) = self.instants.lock().unwrap().remove_entry(&name.into()) {
-                       println!("{} {}ms - timer ended", k, v.elapsed().as_millis());
+            println!("{} {}ms - timer ended", k, v.elapsed().as_millis());
         }
     }
 

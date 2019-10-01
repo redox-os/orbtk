@@ -49,7 +49,8 @@ impl System<Tree> for RenderSystem {
         offsets.insert(root, (0.0, 0.0));
 
         CONSOLE.time("render");
-        
+
+        shell.render_context_2_d().start();
         shell.render_context_2_d().begin_path();
         self.render_objects.borrow()[&root].render(
             &mut shell,
@@ -63,6 +64,6 @@ impl System<Tree> for RenderSystem {
             &mut offsets,
             debug,
         );
-       shell.render_context_2_d().finish();
+        shell.render_context_2_d().finish();
     }
 }

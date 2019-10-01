@@ -99,56 +99,41 @@ pub enum RenderTask {
     Clear {
         brush: Brush,
     }, // todo: transform
-    Finish()
+    Finish(),
 }
 
 pub enum RenderResult {
     TextMetrics(TextMetrics),
-    Finish { data: Vec<u32> }
+    Finish { data: Vec<u32> },
 }
 
-/// The RenderContext2D provides a concurrent 2D render context.
-pub struct RenderContext2D {
-    output: Vec<u32>,
+struct RenderWorker {
     render_thread: thread::JoinHandle<()>,
-    sender: mpsc::Sender<RenderTask>,
-    result_receiver: mpsc::Receiver<RenderResult>,
-    finished: bool,
 }
 
-impl RenderContext2D {
-    /// Creates a new render context 2d.
-    pub fn new(width: f64, height: f64) -> Self {
-        let (sender, receiver) = mpsc::channel();
-
-        let (result_sender, result_receiver) = mpsc::channel();
-
-        let task = RenderTask::Clip();
-       
-
+impl RenderWorker {
+    fn new(
+        width: f64,
+        height: f64,
+        receiver: Arc<Mutex<mpsc::Receiver<RenderTask>>>,
+        sender: Arc<Mutex<mpsc::Sender<RenderResult>>>,
+    ) -> Self {
         let render_thread = thread::spawn(move || {
-
             let mut tasks = vec![];
 
-             let mut render_context_2_d = platform::RenderContext2D::new(width, height);
+            let mut render_context_2_d = platform::RenderContext2D::new(width, height);
 
             loop {
-                let task = receiver.recv().unwrap();
+                let task = receiver.lock().unwrap().recv().unwrap();
 
                 tasks.push(task);
 
                 if tasks.len() > 0 {
                     match tasks.remove(0) {
-                        RenderTask::Resize {
-                            width,
-                            height,
-                        } => {
+                        RenderTask::Resize { width, height } => {
                             render_context_2_d.resize(width, height);
                         }
-                        RenderTask::RegisterFont {
-                            family,
-                            font_file,
-                        } => {
+                        RenderTask::RegisterFont { family, font_file } => {
                             render_context_2_d.register_font(family.as_str(), font_file);
                         }
                         RenderTask::FillRect {
@@ -157,7 +142,7 @@ impl RenderContext2D {
                             width,
                             height,
                         } => {
-                             render_context_2_d.fill_rect(x, y, width, height);
+                            render_context_2_d.fill_rect(x, y, width, height);
                         }
                         RenderTask::StrokeRect {
                             x,
@@ -167,18 +152,16 @@ impl RenderContext2D {
                         } => {
                             render_context_2_d.stroke_rect(x, y, width, height);
                         }
-                        RenderTask::FillText {
-                            text,
-                            x,
-                            y,
-                        } => {
+                        RenderTask::FillText { text, x, y } => {
                             render_context_2_d.fill_text(text.as_str(), x, y, None);
                         }
                         RenderTask::MeasureText { text } => {
-                            result_sender.send(RenderResult::TextMetrics(render_context_2_d.measure_text(text.as_str())));
+                            sender.lock().unwrap().send(RenderResult::TextMetrics(
+                                render_context_2_d.measure_text(text.as_str()),
+                            ));
                         }
                         RenderTask::Fill() => {
-                             render_context_2_d.fill();
+                            render_context_2_d.fill();
                         }
                         RenderTask::Stroke() => {
                             render_context_2_d.stroke();
@@ -212,12 +195,7 @@ impl RenderContext2D {
                         RenderTask::LineTo { x, y } => {
                             render_context_2_d.line_to(x, y);
                         }
-                        RenderTask::QuadraticCurveTo {
-                            cpx,
-                            cpy,
-                            x,
-                            y,
-                        } => {
+                        RenderTask::QuadraticCurveTo { cpx, cpy, x, y } => {
                             render_context_2_d.quadratic_curve_to(cpx, cpy, x, y);
                         }
                         RenderTask::BesierCurveTo {
@@ -258,34 +236,85 @@ impl RenderContext2D {
                             render_context_2_d.clear(&brush);
                         }
                         Finish => {
-                            result_sender.send(RenderResult::Finish { data: render_context_2_d.data().iter().map(|a| *a).collect()});
+                            sender.lock().unwrap().send(RenderResult::Finish {
+                                data: render_context_2_d.data().iter().map(|a| *a).collect(),
+                            });
+
+                            return;
                         }
                     };
                 }
-
-
             }
         });
 
+        RenderWorker {
+            render_thread
+        }
+    }
+}
+
+/// The RenderContext2D provides a concurrent 2D render context.
+pub struct RenderContext2D {
+    width: f64,
+    height: f64,
+    output: Vec<u32>,
+    worker: Option<RenderWorker>,
+    sender: mpsc::Sender<RenderTask>,
+    receiver: Arc<Mutex<mpsc::Receiver<RenderTask>>>,
+    result_sender: Arc<Mutex<mpsc::Sender<RenderResult>>>,
+    result_receiver: mpsc::Receiver<RenderResult>,
+    finished: bool,
+}
+
+impl RenderContext2D {
+    /// Creates a new render context 2d.
+    pub fn new(width: f64, height: f64) -> Self {
+        let (sender, receiver) = mpsc::channel();
+
+        let (result_sender, result_receiver) = mpsc::channel();
+
+        let task = RenderTask::Clip();
+
         RenderContext2D {
+            width,
+            height,
             output: vec![0; width as usize * height as usize],
-            render_thread,
+            worker: None,
             sender,
+            receiver: Arc::new(Mutex::new(receiver)),
+            result_sender: Arc::new(Mutex::new(result_sender)),
             result_receiver,
             finished: false,
         }
     }
 
+    pub fn start(&mut self) {
+        if self.worker.is_some() {
+            return;
+        }
+
+        self.worker = Some(RenderWorker::new(
+            self.width,
+            self.height,
+            self.receiver.clone(),
+            self.result_sender.clone(),
+        ));
+    }
+
     pub fn finish(&mut self) {
+        self.start();
         self.sender.send(RenderTask::Finish());
     }
 
     pub fn resize(&mut self, width: f64, height: f64) {
+        self.start();
         self.sender.send(RenderTask::Resize { width, height });
     }
 
     /// Registers a new font file.
     pub fn register_font(&mut self, family: &str, font_file: &'static [u8]) {
+        // todo: fix font loading
+        self.start();
         self.sender.send(RenderTask::RegisterFont {
             family: family.to_string(),
             font_file,
@@ -296,6 +325,7 @@ impl RenderContext2D {
 
     /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.start();
         self.sender.send(RenderTask::FillRect {
             x,
             y,
@@ -306,6 +336,7 @@ impl RenderContext2D {
 
     /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other context settings.
     pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.start();
         self.sender.send(RenderTask::StrokeRect {
             x,
             y,
@@ -318,6 +349,7 @@ impl RenderContext2D {
 
     /// Draws (fills) a given text at the given (x, y) position.
     pub fn fill_text(&mut self, text: &str, x: f64, y: f64, o: Option<f64>) {
+        self.start();
         self.sender.send(RenderTask::FillText {
             text: text.to_string(),
             x,
@@ -327,38 +359,44 @@ impl RenderContext2D {
 
     /// Returns a TextMetrics object.
     pub fn measure_text(&mut self, text: &str) -> TextMetrics {
+        self.start();
         let mut text_metrics = TextMetrics::default();
-       self.sender.send(RenderTask::MeasureText {
-           text: text.to_string(),
-       });
-       if let RenderResult::TextMetrics(t_m) = self.result_receiver.recv().unwrap() {
-           text_metrics = t_m;
-       }
+        self.sender.send(RenderTask::MeasureText {
+            text: text.to_string(),
+        });
+        if let RenderResult::TextMetrics(t_m) = self.result_receiver.recv().unwrap() {
+            text_metrics = t_m;
+        }
 
         text_metrics
     }
 
     /// Fills the current or given path with the current file style.
     pub fn fill(&mut self) {
+        self.start();
         self.sender.send(RenderTask::Fill());
     }
 
     /// Strokes {outlines} the current or given path with the current stroke style.
     pub fn stroke(&mut self) {
+        self.start();
         self.sender.send(RenderTask::Stroke());
     }
 
     /// Starts a new path by emptying the list of sub-paths. Call this when you want to create a new path.
     pub fn begin_path(&mut self) {
+        self.start();
         self.sender.send(RenderTask::BeginPath());
     }
 
     /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
     pub fn close_path(&mut self) {
+        self.start();
         self.sender.send(RenderTask::ClosePath());
     }
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.start();
         self.sender.send(RenderTask::Rect {
             x,
             y,
@@ -369,6 +407,7 @@ impl RenderContext2D {
 
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
     pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64, o: bool) {
+        self.start();
         self.sender.send(RenderTask::Arc {
             x,
             y,
@@ -381,22 +420,26 @@ impl RenderContext2D {
     /// Begins a new sub-path at the point specified by the given {x, y} coordinates.
 
     pub fn move_to(&mut self, x: f64, y: f64) {
+        self.start();
         self.sender.send(RenderTask::MoveTo { x, y });
     }
 
     /// Adds a straight line to the current sub-path by connecting the sub-path's last point to the specified {x, y} coordinates.
     pub fn line_to(&mut self, x: f64, y: f64) {
+        self.start();
         self.sender.send(RenderTask::LineTo { x, y });
     }
 
     /// Adds a quadratic Bézier curve to the current sub-path.
     pub fn quadratic_curve_to(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
+        self.start();
         self.sender
             .send(RenderTask::QuadraticCurveTo { cpx, cpy, x, y });
     }
 
     /// Adds a cubic Bézier curve to the current sub-path. It requires three points: the first two are control points and the third one is the end point. The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
     pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
+        self.start();
         self.sender.send(RenderTask::BesierCurveTo {
             cp1x,
             cp1y,
@@ -440,6 +483,7 @@ impl RenderContext2D {
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
     pub fn clip(&mut self) {
+        self.start();
         self.sender.send(RenderTask::Clip());
     }
 
@@ -447,17 +491,20 @@ impl RenderContext2D {
 
     /// Sets the thickness of lines.
     pub fn set_line_width(&mut self, line_width: f64) {
+        self.start();
         self.sender.send(RenderTask::SetLineWidth { line_width });
     }
 
     /// Specific the font family.
     pub fn set_font_family(&mut self, family: impl Into<String>) {
+        self.start();
         let family = family.into();
         self.sender.send(RenderTask::SetFontFamily { family });
     }
 
     /// Specifies the font size.
     pub fn set_font_size(&mut self, size: f64) {
+        self.start();
         self.sender.send(RenderTask::SetFontSize { size });
     }
 
@@ -465,11 +512,13 @@ impl RenderContext2D {
 
     /// Specifies the fill color to use inside shapes.
     pub fn set_fill_style(&mut self, fill_style: Brush) {
+        self.start();
         self.sender.send(RenderTask::SetFillStyle { fill_style });
     }
 
     /// Specifies the fill stroke to use inside shapes.
     pub fn set_stroke_style(&mut self, stroke_style: Brush) {
+        self.start();
         self.sender
             .send(RenderTask::SetStrokeStyle { stroke_style });
     }
@@ -486,15 +535,18 @@ impl RenderContext2D {
 
     /// Saves the entire state of the canvas by pushing the current state onto a stack.
     pub fn save(&mut self) {
+        self.start();
         self.sender.send(RenderTask::Save());
     }
 
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
+        self.start();
         self.sender.send(RenderTask::Restore());
     }
 
     pub fn clear(&mut self, brush: &Brush) {
+        self.start();
         let brush = brush.clone();
         self.sender.send(RenderTask::Clear { brush });
     }
@@ -502,8 +554,9 @@ impl RenderContext2D {
     pub fn data(&mut self) -> Option<&[u32]> {
         if let Ok(result) = self.result_receiver.try_recv() {
             if let RenderResult::Finish { data } = result {
+                self.worker = None;
                 self.output = data;
-                return Some(&self.output)
+                return Some(&self.output);
             }
         }
 
