@@ -9,7 +9,10 @@ use crate::{
     TextMetrics,
 };
 
+#[derive(Clone, PartialEq)]
 pub enum RenderTask {
+    Start(),
+
     Resize {
         width: f64,
         height: f64,
@@ -37,6 +40,8 @@ pub enum RenderTask {
     },
     MeasureText {
         text: String,
+        font_size: f64,
+        font_family: String,
     },
     Fill(),
     Stroke(),
@@ -115,141 +120,158 @@ impl RenderWorker {
     fn new(
         width: f64,
         height: f64,
-        receiver: Arc<Mutex<mpsc::Receiver<RenderTask>>>,
+        receiver: Arc<Mutex<mpsc::Receiver<Vec<RenderTask>>>>,
         sender: Arc<Mutex<mpsc::Sender<RenderResult>>>,
     ) -> Self {
         let render_thread = thread::spawn(move || {
-            let mut tasks = vec![];
+            // let mut tasks = vec![];
 
-            let mut render_context_2_d = platform::RenderContext2D::new(width, height);
+            // let mut render_context_2_d = platform::RenderContext2D::new(width, height);
 
-            loop {
-                let task = receiver.lock().unwrap().recv().unwrap();
+            // loop {
+            //     let task = receiver.lock().unwrap().recv().unwrap();
 
-                tasks.push(task);
+            //     // direct tasks
+            //     match task {
+            //         // RenderTask::Start() => {
+            //         //     tasks.clear();
+            //         //     continue;
+            //         // }
+            //         RenderTask::MeasureText {
+            //             text,
+            //             font_size,
+            //             font_family,
+            //         } => {
+            //             render_context_2_d.save();
+            //             render_context_2_d.set_font_family(font_family);
+            //             render_context_2_d.set_font_size(font_size);
+            //             let text_metrics = render_context_2_d.measure_text(text.as_str());
+            //             render_context_2_d.restore();
 
-                if tasks.len() > 0 {
-                    match tasks.remove(0) {
-                        RenderTask::Resize { width, height } => {
-                            render_context_2_d.resize(width, height);
-                        }
-                        RenderTask::RegisterFont { family, font_file } => {
-                            render_context_2_d.register_font(family.as_str(), font_file);
-                        }
-                        RenderTask::FillRect {
-                            x,
-                            y,
-                            width,
-                            height,
-                        } => {
-                            render_context_2_d.fill_rect(x, y, width, height);
-                        }
-                        RenderTask::StrokeRect {
-                            x,
-                            y,
-                            width,
-                            height,
-                        } => {
-                            render_context_2_d.stroke_rect(x, y, width, height);
-                        }
-                        RenderTask::FillText { text, x, y } => {
-                            render_context_2_d.fill_text(text.as_str(), x, y, None);
-                        }
-                        RenderTask::MeasureText { text } => {
-                            sender.lock().unwrap().send(RenderResult::TextMetrics(
-                                render_context_2_d.measure_text(text.as_str()),
-                            ));
-                        }
-                        RenderTask::Fill() => {
-                            render_context_2_d.fill();
-                        }
-                        RenderTask::Stroke() => {
-                            render_context_2_d.stroke();
-                        }
-                        RenderTask::BeginPath() => {
-                            render_context_2_d.begin_path();
-                        }
-                        RenderTask::ClosePath() => {
-                            render_context_2_d.close_path();
-                        }
-                        RenderTask::Rect {
-                            x,
-                            y,
-                            width,
-                            height,
-                        } => {
-                            render_context_2_d.rect(x, y, width, height);
-                        }
-                        RenderTask::Arc {
-                            x,
-                            y,
-                            radius,
-                            start_angle,
-                            end_angle,
-                        } => {
-                            render_context_2_d.arc(x, y, radius, start_angle, end_angle, true);
-                        }
-                        RenderTask::MoveTo { x, y } => {
-                            render_context_2_d.move_to(x, y);
-                        }
-                        RenderTask::LineTo { x, y } => {
-                            render_context_2_d.line_to(x, y);
-                        }
-                        RenderTask::QuadraticCurveTo { cpx, cpy, x, y } => {
-                            render_context_2_d.quadratic_curve_to(cpx, cpy, x, y);
-                        }
-                        RenderTask::BesierCurveTo {
-                            cp1x,
-                            cp1y,
-                            cp2x,
-                            cp2y,
-                            x,
-                            y,
-                        } => {
-                            render_context_2_d.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y);
-                        }
-                        RenderTask::SetLineWidth { line_width } => {
-                            render_context_2_d.set_line_width(line_width);
-                        }
-                        RenderTask::Clip() => {
-                            render_context_2_d.clip();
-                        }
-                        RenderTask::SetFontFamily { family } => {
-                            render_context_2_d.set_font_family(family);
-                        }
-                        RenderTask::SetFontSize { size } => {
-                            render_context_2_d.set_font_size(size);
-                        }
-                        RenderTask::SetFillStyle { fill_style } => {
-                            render_context_2_d.set_fill_style(fill_style);
-                        }
-                        RenderTask::SetStrokeStyle { stroke_style } => {
-                            render_context_2_d.set_stroke_style(stroke_style);
-                        }
-                        RenderTask::Save() => {
-                            render_context_2_d.save();
-                        }
-                        RenderTask::Restore() => {
-                            render_context_2_d.restore();
-                        }
-                        RenderTask::Clear { brush } => {
-                            render_context_2_d.clear(&brush);
-                        }
-                        Finish => {
-                            sender.lock().unwrap().send(RenderResult::Finish {
-                                data: render_context_2_d.data().iter().map(|a| *a).collect(),
-                            });
+            //             sender
+            //                 .lock()
+            //                 .unwrap()
+            //                 .send(RenderResult::TextMetrics(text_metrics));
+            //             continue;
+            //         },
+            //         _ => {}
+            //     };
 
-                            return;
-                        }
-                    };
-                }
-            }
+            //     tasks.push(task);
+
+            //     if tasks.len() > 0 {
+            //         match tasks.remove(0) {
+            //             RenderTask::Resize { width, height } => {
+            //                 render_context_2_d.resize(width, height);
+            //             }
+            //             RenderTask::RegisterFont { family, font_file } => {
+            //                 render_context_2_d.register_font(family.as_str(), font_file);
+            //             }
+            //             RenderTask::FillRect {
+            //                 x,
+            //                 y,
+            //                 width,
+            //                 height,
+            //             } => {
+            //                 render_context_2_d.fill_rect(x, y, width, height);
+            //             }
+            //             RenderTask::StrokeRect {
+            //                 x,
+            //                 y,
+            //                 width,
+            //                 height,
+            //             } => {
+            //                 render_context_2_d.stroke_rect(x, y, width, height);
+            //             }
+            //             RenderTask::FillText { text, x, y } => {
+            //                 render_context_2_d.fill_text(text.as_str(), x, y, None);
+            //             }
+            //             RenderTask::Fill() => {
+            //                 render_context_2_d.fill();
+            //             }
+            //             RenderTask::Stroke() => {
+            //                 render_context_2_d.stroke();
+            //             }
+            //             RenderTask::BeginPath() => {
+            //                 render_context_2_d.begin_path();
+            //             }
+            //             RenderTask::ClosePath() => {
+            //                 render_context_2_d.close_path();
+            //             }
+            //             RenderTask::Rect {
+            //                 x,
+            //                 y,
+            //                 width,
+            //                 height,
+            //             } => {
+            //                 render_context_2_d.rect(x, y, width, height);
+            //             }
+            //             RenderTask::Arc {
+            //                 x,
+            //                 y,
+            //                 radius,
+            //                 start_angle,
+            //                 end_angle,
+            //             } => {
+            //                 render_context_2_d.arc(x, y, radius, start_angle, end_angle, true);
+            //             }
+            //             RenderTask::MoveTo { x, y } => {
+            //                 render_context_2_d.move_to(x, y);
+            //             }
+            //             RenderTask::LineTo { x, y } => {
+            //                 render_context_2_d.line_to(x, y);
+            //             }
+            //             RenderTask::QuadraticCurveTo { cpx, cpy, x, y } => {
+            //                 render_context_2_d.quadratic_curve_to(cpx, cpy, x, y);
+            //             }
+            //             RenderTask::BesierCurveTo {
+            //                 cp1x,
+            //                 cp1y,
+            //                 cp2x,
+            //                 cp2y,
+            //                 x,
+            //                 y,
+            //             } => {
+            //                 render_context_2_d.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y);
+            //             }
+            //             RenderTask::SetLineWidth { line_width } => {
+            //                 render_context_2_d.set_line_width(line_width);
+            //             }
+            //             RenderTask::Clip() => {
+            //                 render_context_2_d.clip();
+            //             }
+            //             RenderTask::SetFontFamily { family } => {
+            //                 render_context_2_d.set_font_family(family);
+            //             }
+            //             RenderTask::SetFontSize { size } => {
+            //                 render_context_2_d.set_font_size(size);
+            //             }
+            //             RenderTask::SetFillStyle { fill_style } => {
+            //                 render_context_2_d.set_fill_style(fill_style);
+            //             }
+            //             RenderTask::SetStrokeStyle { stroke_style } => {
+            //                 render_context_2_d.set_stroke_style(stroke_style);
+            //             }
+            //             RenderTask::Save() => {
+            //                 render_context_2_d.save();
+            //             }
+            //             RenderTask::Restore() => {
+            //                 render_context_2_d.restore();
+            //             }
+            //             RenderTask::Clear { brush } => {
+            //                 render_context_2_d.clear(&brush);
+            //             }
+            //             Finish => {
+            //                 sender.lock().unwrap().send(RenderResult::Finish {
+            //                     data: render_context_2_d.data().iter().map(|a| *a).collect(),
+            //                 });
+            //             }
+            //         };
+            //     }
+            // }
         });
 
-        RenderWorker {
-            render_thread
-        }
+        RenderWorker { render_thread }
     }
 }
 
@@ -259,11 +281,12 @@ pub struct RenderContext2D {
     height: f64,
     output: Vec<u32>,
     worker: Option<RenderWorker>,
-    sender: mpsc::Sender<RenderTask>,
-    receiver: Arc<Mutex<mpsc::Receiver<RenderTask>>>,
+    sender: mpsc::Sender<Vec<RenderTask>>,
+    receiver: Arc<Mutex<mpsc::Receiver<Vec<RenderTask>>>>,
     result_sender: Arc<Mutex<mpsc::Sender<RenderResult>>>,
     result_receiver: mpsc::Receiver<RenderResult>,
     finished: bool,
+    tasks: Vec<RenderTask>,
 }
 
 impl RenderContext2D {
@@ -275,47 +298,56 @@ impl RenderContext2D {
 
         let task = RenderTask::Clip();
 
+        let receiver = Arc::new(Mutex::new(receiver));
+        let result_sender = Arc::new(Mutex::new(result_sender));
+
+        let worker = Some(RenderWorker::new(
+            width,
+            height,
+            receiver.clone(),
+            result_sender.clone(),
+        ));
+
         RenderContext2D {
             width,
             height,
             output: vec![0; width as usize * height as usize],
-            worker: None,
+            worker,
             sender,
-            receiver: Arc::new(Mutex::new(receiver)),
-            result_sender: Arc::new(Mutex::new(result_sender)),
+            receiver,
+            result_sender,
             result_receiver,
             finished: false,
+            tasks: vec![],
         }
     }
 
-    pub fn start(&mut self) {
-        if self.worker.is_some() {
+    fn send_tasks(&mut self) {
+        if self.tasks.len() == 0 {
             return;
         }
 
-        self.worker = Some(RenderWorker::new(
-            self.width,
-            self.height,
-            self.receiver.clone(),
-            self.result_sender.clone(),
-        ));
+        self.sender.send(self.tasks.to_vec());
+        self.tasks.clear();
+    }
+
+    pub fn start(&mut self) {
+        self.tasks.push(RenderTask::Start());
     }
 
     pub fn finish(&mut self) {
-        self.start();
-        self.sender.send(RenderTask::Finish());
+        self.tasks.push(RenderTask::Finish());
+        self.send_tasks();
     }
 
     pub fn resize(&mut self, width: f64, height: f64) {
-        self.start();
-        self.sender.send(RenderTask::Resize { width, height });
+        self.tasks.push(RenderTask::Resize { width, height });
     }
 
     /// Registers a new font file.
     pub fn register_font(&mut self, family: &str, font_file: &'static [u8]) {
         // todo: fix font loading
-        self.start();
-        self.sender.send(RenderTask::RegisterFont {
+        self.tasks.push(RenderTask::RegisterFont {
             family: family.to_string(),
             font_file,
         });
@@ -325,8 +357,7 @@ impl RenderContext2D {
 
     /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.start();
-        self.sender.send(RenderTask::FillRect {
+        self.tasks.push(RenderTask::FillRect {
             x,
             y,
             width,
@@ -336,8 +367,7 @@ impl RenderContext2D {
 
     /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other context settings.
     pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.start();
-        self.sender.send(RenderTask::StrokeRect {
+        self.tasks.push(RenderTask::StrokeRect {
             x,
             y,
             width,
@@ -349,20 +379,24 @@ impl RenderContext2D {
 
     /// Draws (fills) a given text at the given (x, y) position.
     pub fn fill_text(&mut self, text: &str, x: f64, y: f64, o: Option<f64>) {
-        self.start();
-        self.sender.send(RenderTask::FillText {
+        self.tasks.push(RenderTask::FillText {
             text: text.to_string(),
             x,
             y,
         });
     }
 
-    /// Returns a TextMetrics object.
-    pub fn measure_text(&mut self, text: &str) -> TextMetrics {
-        self.start();
+    pub fn measure(
+        &mut self,
+        text: &str,
+        font_size: f64,
+        family: impl Into<String>,
+    ) -> TextMetrics {
         let mut text_metrics = TextMetrics::default();
-        self.sender.send(RenderTask::MeasureText {
+        self.tasks.push(RenderTask::MeasureText {
             text: text.to_string(),
+            font_size,
+            font_family: family.into(),
         });
         if let RenderResult::TextMetrics(t_m) = self.result_receiver.recv().unwrap() {
             text_metrics = t_m;
@@ -371,33 +405,43 @@ impl RenderContext2D {
         text_metrics
     }
 
+    /// Returns a TextMetrics object.
+    pub fn measure_text(&mut self, text: &str) -> TextMetrics {
+        let mut text_metrics = TextMetrics::default();
+        // self.tasks.push(RenderTask::MeasureText {
+        //     text: text.to_string(),
+        // });
+        // if let RenderResult::TextMetrics(t_m) = self.result_receiver.recv().unwrap() {
+        //     text_metrics = t_m;
+        // }
+
+        text_metrics
+    }
+
     /// Fills the current or given path with the current file style.
     pub fn fill(&mut self) {
-        self.start();
-        self.sender.send(RenderTask::Fill());
+        self.tasks.push(RenderTask::Fill());
     }
 
     /// Strokes {outlines} the current or given path with the current stroke style.
     pub fn stroke(&mut self) {
-        self.start();
-        self.sender.send(RenderTask::Stroke());
+        self.tasks.push(RenderTask::Stroke());
     }
 
     /// Starts a new path by emptying the list of sub-paths. Call this when you want to create a new path.
     pub fn begin_path(&mut self) {
-        self.start();
-        self.sender.send(RenderTask::BeginPath());
+        self.send_tasks();
+        self.tasks.push(RenderTask::BeginPath());
     }
 
     /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
     pub fn close_path(&mut self) {
-        self.start();
-        self.sender.send(RenderTask::ClosePath());
+        self.tasks.push(RenderTask::ClosePath());
+        self.send_tasks();
     }
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.start();
-        self.sender.send(RenderTask::Rect {
+        self.tasks.push(RenderTask::Rect {
             x,
             y,
             width,
@@ -407,8 +451,7 @@ impl RenderContext2D {
 
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
     pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64, o: bool) {
-        self.start();
-        self.sender.send(RenderTask::Arc {
+        self.tasks.push(RenderTask::Arc {
             x,
             y,
             radius,
@@ -420,27 +463,23 @@ impl RenderContext2D {
     /// Begins a new sub-path at the point specified by the given {x, y} coordinates.
 
     pub fn move_to(&mut self, x: f64, y: f64) {
-        self.start();
-        self.sender.send(RenderTask::MoveTo { x, y });
+        self.tasks.push(RenderTask::MoveTo { x, y });
     }
 
     /// Adds a straight line to the current sub-path by connecting the sub-path's last point to the specified {x, y} coordinates.
     pub fn line_to(&mut self, x: f64, y: f64) {
-        self.start();
-        self.sender.send(RenderTask::LineTo { x, y });
+        self.tasks.push(RenderTask::LineTo { x, y });
     }
 
     /// Adds a quadratic Bézier curve to the current sub-path.
     pub fn quadratic_curve_to(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
-        self.start();
-        self.sender
-            .send(RenderTask::QuadraticCurveTo { cpx, cpy, x, y });
+        self.tasks
+            .push(RenderTask::QuadraticCurveTo { cpx, cpy, x, y });
     }
 
     /// Adds a cubic Bézier curve to the current sub-path. It requires three points: the first two are control points and the third one is the end point. The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
     pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
-        self.start();
-        self.sender.send(RenderTask::BesierCurveTo {
+        self.tasks.push(RenderTask::BesierCurveTo {
             cp1x,
             cp1y,
             cp2x,
@@ -483,44 +522,37 @@ impl RenderContext2D {
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
     pub fn clip(&mut self) {
-        self.start();
-        self.sender.send(RenderTask::Clip());
+        self.tasks.push(RenderTask::Clip());
     }
 
     // Line styles
 
     /// Sets the thickness of lines.
     pub fn set_line_width(&mut self, line_width: f64) {
-        self.start();
-        self.sender.send(RenderTask::SetLineWidth { line_width });
+        self.tasks.push(RenderTask::SetLineWidth { line_width });
     }
 
     /// Specific the font family.
     pub fn set_font_family(&mut self, family: impl Into<String>) {
-        self.start();
         let family = family.into();
-        self.sender.send(RenderTask::SetFontFamily { family });
+        self.tasks.push(RenderTask::SetFontFamily { family });
     }
 
     /// Specifies the font size.
     pub fn set_font_size(&mut self, size: f64) {
-        self.start();
-        self.sender.send(RenderTask::SetFontSize { size });
+        self.tasks.push(RenderTask::SetFontSize { size });
     }
 
     // Fill and stroke style
 
     /// Specifies the fill color to use inside shapes.
     pub fn set_fill_style(&mut self, fill_style: Brush) {
-        self.start();
-        self.sender.send(RenderTask::SetFillStyle { fill_style });
+        self.tasks.push(RenderTask::SetFillStyle { fill_style });
     }
 
     /// Specifies the fill stroke to use inside shapes.
     pub fn set_stroke_style(&mut self, stroke_style: Brush) {
-        self.start();
-        self.sender
-            .send(RenderTask::SetStrokeStyle { stroke_style });
+        self.tasks.push(RenderTask::SetStrokeStyle { stroke_style });
     }
 
     // Transformations
@@ -535,20 +567,17 @@ impl RenderContext2D {
 
     /// Saves the entire state of the canvas by pushing the current state onto a stack.
     pub fn save(&mut self) {
-        self.start();
-        self.sender.send(RenderTask::Save());
+        self.tasks.push(RenderTask::Save());
     }
 
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
-        self.start();
-        self.sender.send(RenderTask::Restore());
+        self.tasks.push(RenderTask::Restore());
     }
 
     pub fn clear(&mut self, brush: &Brush) {
-        self.start();
         let brush = brush.clone();
-        self.sender.send(RenderTask::Clear { brush });
+        self.tasks.push(RenderTask::Clear { brush });
     }
 
     pub fn data(&mut self) -> Option<&[u32]> {

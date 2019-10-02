@@ -220,27 +220,14 @@ where
         });
     }
 
-    pub fn flip(&mut self) {
-        let size = self.window.get_size();
-
-        // let mut imgbuf = image::ImageBuffer::new(size.0 as u32, size.1 as u32);
-        // let mut counter = 0;
-
-        // let mut data = self.render_context_2_d.data_u8_mut();
-
-        // let mut u8_data = vec![];
-
-        // for pixel in data {
-        //    u8_data.push(*pixel as u32);
-        //     // *pixel = image::Rgba([color.r(), color.g(), color.b(), color.a()]);
-        // }
-
-        //  imgbuf.save("fractal.png").unwrap();
-
+    pub fn flip(&mut self) -> bool {
         if let Some(data) = self.render_context_2_d.data() {
             self.window.update_with_buffer(data).unwrap();
             CONSOLE.time_end("render");
+            return true;
         }
+
+        false
     }
 }
 
@@ -290,19 +277,17 @@ where
 
             self.updater.update();
 
-            self.window_shell.borrow_mut().flip();
-
             if self.update.get() {
                 self.update.set(false);
 
                 skip = true;
             }
 
-            self.window_shell.borrow_mut().drain_events();
-
-            if !skip {
+            if !self.window_shell.borrow_mut().flip() {
                 self.window_shell.borrow_mut().window.update();
             }
+
+            self.window_shell.borrow_mut().drain_events();
 
             skip = false;
             loop_helper.loop_sleep();
