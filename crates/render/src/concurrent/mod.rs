@@ -124,151 +124,172 @@ impl RenderWorker {
         sender: Arc<Mutex<mpsc::Sender<RenderResult>>>,
     ) -> Self {
         let render_thread = thread::spawn(move || {
-            // let mut tasks = vec![];
+            let mut tasks_collection = vec![];
 
-            // let mut render_context_2_d = platform::RenderContext2D::new(width, height);
+            let mut render_context_2_d = platform::RenderContext2D::new(width, height);
 
-            // loop {
-            //     let task = receiver.lock().unwrap().recv().unwrap();
+            loop {
+                let mut tasks = receiver.lock().unwrap().recv().unwrap();
 
-            //     // direct tasks
-            //     match task {
-            //         // RenderTask::Start() => {
-            //         //     tasks.clear();
-            //         //     continue;
-            //         // }
-            //         RenderTask::MeasureText {
-            //             text,
-            //             font_size,
-            //             font_family,
-            //         } => {
-            //             render_context_2_d.save();
-            //             render_context_2_d.set_font_family(font_family);
-            //             render_context_2_d.set_font_size(font_size);
-            //             let text_metrics = render_context_2_d.measure_text(text.as_str());
-            //             render_context_2_d.restore();
+                // if tasks.len() == 1 {
+                //     // direct tasks
+                //     match tasks.get(0).unwrap() {
+                //         // RenderTask::Start() => {
+                //         //     tasks.clear();
+                //         //     continue;
+                //         // }
+                //         RenderTask::MeasureText {
+                //             text,
+                //             font_size,
+                //             font_family,
+                //         } => {
+                //             render_context_2_d.save();
+                //             render_context_2_d.set_font_family(font_family);
+                //             render_context_2_d.set_font_size(*font_size);
+                //             let text_metrics = render_context_2_d.measure_text(text.as_str());
+                //             render_context_2_d.restore();
 
-            //             sender
-            //                 .lock()
-            //                 .unwrap()
-            //                 .send(RenderResult::TextMetrics(text_metrics));
-            //             continue;
-            //         },
-            //         _ => {}
-            //     };
+                //             sender
+                //                 .lock()
+                //                 .unwrap()
+                //                 .send(RenderResult::TextMetrics(text_metrics));
+                //             tasks.remove(0);
+                //             continue;
+                //         }
+                //         _ => {}
+                //     };
+                // }
 
-            //     tasks.push(task);
+                tasks_collection.push(tasks);
 
-            //     if tasks.len() > 0 {
-            //         match tasks.remove(0) {
-            //             RenderTask::Resize { width, height } => {
-            //                 render_context_2_d.resize(width, height);
-            //             }
-            //             RenderTask::RegisterFont { family, font_file } => {
-            //                 render_context_2_d.register_font(family.as_str(), font_file);
-            //             }
-            //             RenderTask::FillRect {
-            //                 x,
-            //                 y,
-            //                 width,
-            //                 height,
-            //             } => {
-            //                 render_context_2_d.fill_rect(x, y, width, height);
-            //             }
-            //             RenderTask::StrokeRect {
-            //                 x,
-            //                 y,
-            //                 width,
-            //                 height,
-            //             } => {
-            //                 render_context_2_d.stroke_rect(x, y, width, height);
-            //             }
-            //             RenderTask::FillText { text, x, y } => {
-            //                 render_context_2_d.fill_text(text.as_str(), x, y, None);
-            //             }
-            //             RenderTask::Fill() => {
-            //                 render_context_2_d.fill();
-            //             }
-            //             RenderTask::Stroke() => {
-            //                 render_context_2_d.stroke();
-            //             }
-            //             RenderTask::BeginPath() => {
-            //                 render_context_2_d.begin_path();
-            //             }
-            //             RenderTask::ClosePath() => {
-            //                 render_context_2_d.close_path();
-            //             }
-            //             RenderTask::Rect {
-            //                 x,
-            //                 y,
-            //                 width,
-            //                 height,
-            //             } => {
-            //                 render_context_2_d.rect(x, y, width, height);
-            //             }
-            //             RenderTask::Arc {
-            //                 x,
-            //                 y,
-            //                 radius,
-            //                 start_angle,
-            //                 end_angle,
-            //             } => {
-            //                 render_context_2_d.arc(x, y, radius, start_angle, end_angle, true);
-            //             }
-            //             RenderTask::MoveTo { x, y } => {
-            //                 render_context_2_d.move_to(x, y);
-            //             }
-            //             RenderTask::LineTo { x, y } => {
-            //                 render_context_2_d.line_to(x, y);
-            //             }
-            //             RenderTask::QuadraticCurveTo { cpx, cpy, x, y } => {
-            //                 render_context_2_d.quadratic_curve_to(cpx, cpy, x, y);
-            //             }
-            //             RenderTask::BesierCurveTo {
-            //                 cp1x,
-            //                 cp1y,
-            //                 cp2x,
-            //                 cp2y,
-            //                 x,
-            //                 y,
-            //             } => {
-            //                 render_context_2_d.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y);
-            //             }
-            //             RenderTask::SetLineWidth { line_width } => {
-            //                 render_context_2_d.set_line_width(line_width);
-            //             }
-            //             RenderTask::Clip() => {
-            //                 render_context_2_d.clip();
-            //             }
-            //             RenderTask::SetFontFamily { family } => {
-            //                 render_context_2_d.set_font_family(family);
-            //             }
-            //             RenderTask::SetFontSize { size } => {
-            //                 render_context_2_d.set_font_size(size);
-            //             }
-            //             RenderTask::SetFillStyle { fill_style } => {
-            //                 render_context_2_d.set_fill_style(fill_style);
-            //             }
-            //             RenderTask::SetStrokeStyle { stroke_style } => {
-            //                 render_context_2_d.set_stroke_style(stroke_style);
-            //             }
-            //             RenderTask::Save() => {
-            //                 render_context_2_d.save();
-            //             }
-            //             RenderTask::Restore() => {
-            //                 render_context_2_d.restore();
-            //             }
-            //             RenderTask::Clear { brush } => {
-            //                 render_context_2_d.clear(&brush);
-            //             }
-            //             Finish => {
-            //                 sender.lock().unwrap().send(RenderResult::Finish {
-            //                     data: render_context_2_d.data().iter().map(|a| *a).collect(),
-            //                 });
-            //             }
-            //         };
-            //     }
-            // }
+                if tasks_collection.len() > 0 {
+                    for task in tasks_collection.remove(0) {
+                        match task {
+                            RenderTask::MeasureText {
+                                text,
+                                font_size,
+                                font_family,
+                            } => {
+                                render_context_2_d.save();
+                                render_context_2_d.set_font_family(font_family);
+                                render_context_2_d.set_font_size(font_size);
+                                let text_metrics = render_context_2_d.measure_text(text.as_str());
+                                render_context_2_d.restore();
+
+                                sender
+                                    .lock()
+                                    .unwrap()
+                                    .send(RenderResult::TextMetrics(text_metrics));
+                            }
+                            RenderTask::Resize { width, height } => {
+                                render_context_2_d.resize(width, height);
+                            }
+                            RenderTask::RegisterFont { family, font_file } => {
+                                render_context_2_d.register_font(family.as_str(), font_file);
+                            }
+                            RenderTask::FillRect {
+                                x,
+                                y,
+                                width,
+                                height,
+                            } => {
+                                render_context_2_d.fill_rect(x, y, width, height);
+                            }
+                            RenderTask::StrokeRect {
+                                x,
+                                y,
+                                width,
+                                height,
+                            } => {
+                                render_context_2_d.stroke_rect(x, y, width, height);
+                            }
+                            RenderTask::FillText { text, x, y } => {
+                                render_context_2_d.fill_text(text.as_str(), x, y, None);
+                            }
+                            RenderTask::Fill() => {
+                                render_context_2_d.fill();
+                            }
+                            RenderTask::Stroke() => {
+                                render_context_2_d.stroke();
+                            }
+                            RenderTask::BeginPath() => {
+                                render_context_2_d.begin_path();
+                            }
+                            RenderTask::ClosePath() => {
+                                render_context_2_d.close_path();
+                            }
+                            RenderTask::Rect {
+                                x,
+                                y,
+                                width,
+                                height,
+                            } => {
+                                render_context_2_d.rect(x, y, width, height);
+                            }
+                            RenderTask::Arc {
+                                x,
+                                y,
+                                radius,
+                                start_angle,
+                                end_angle,
+                            } => {
+                                render_context_2_d.arc(x, y, radius, start_angle, end_angle, true);
+                            }
+                            RenderTask::MoveTo { x, y } => {
+                                render_context_2_d.move_to(x, y);
+                            }
+                            RenderTask::LineTo { x, y } => {
+                                render_context_2_d.line_to(x, y);
+                            }
+                            RenderTask::QuadraticCurveTo { cpx, cpy, x, y } => {
+                                render_context_2_d.quadratic_curve_to(cpx, cpy, x, y);
+                            }
+                            RenderTask::BesierCurveTo {
+                                cp1x,
+                                cp1y,
+                                cp2x,
+                                cp2y,
+                                x,
+                                y,
+                            } => {
+                                render_context_2_d.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y);
+                            }
+                            RenderTask::SetLineWidth { line_width } => {
+                                render_context_2_d.set_line_width(line_width);
+                            }
+                            RenderTask::Clip() => {
+                                render_context_2_d.clip();
+                            }
+                            RenderTask::SetFontFamily { family } => {
+                                render_context_2_d.set_font_family(family);
+                            }
+                            RenderTask::SetFontSize { size } => {
+                                render_context_2_d.set_font_size(size);
+                            }
+                            RenderTask::SetFillStyle { fill_style } => {
+                                render_context_2_d.set_fill_style(fill_style);
+                            }
+                            RenderTask::SetStrokeStyle { stroke_style } => {
+                                render_context_2_d.set_stroke_style(stroke_style);
+                            }
+                            RenderTask::Save() => {
+                                render_context_2_d.save();
+                            }
+                            RenderTask::Restore() => {
+                                render_context_2_d.restore();
+                            }
+                            RenderTask::Clear { brush } => {
+                                render_context_2_d.clear(&brush);
+                            }
+                            Finish => {
+                                sender.lock().unwrap().send(RenderResult::Finish {
+                                    data: render_context_2_d.data().iter().map(|a| *a).collect(),
+                                });
+                            }
+                        };
+                    }
+                }
+            }
         });
 
         RenderWorker { render_thread }
@@ -398,6 +419,7 @@ impl RenderContext2D {
             font_size,
             font_family: family.into(),
         });
+        self.send_tasks();
         if let RenderResult::TextMetrics(t_m) = self.result_receiver.recv().unwrap() {
             text_metrics = t_m;
         }
