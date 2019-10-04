@@ -9,12 +9,12 @@ keywords = ["2D", "render", "canvas"]
 edition = "2018"
 
 [target.wasm32-unknown-unknown.dependencies]
-stdweb = "0.4.18"
+stdweb = "0.4.19"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-raqote = { version = "0.7.0", default-features = false}
-rusttype = "0.8.0"
-image = "0.22.2"
+raqote = { version = "0.7.3", default-features = false}
+rusttype = "0.8.1"
+image = "0.22.3"
 
 [dependencies]
 orbtk-utils = { version = "0.1.0", path = "../utils" }
