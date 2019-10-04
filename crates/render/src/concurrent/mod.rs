@@ -1,18 +1,19 @@
 use std::{
-    sync::{mpsc, Arc, Mutex, MutexGuard},
+    sync::{mpsc, Arc, Mutex},
     thread,
 };
 
 use crate::{
-    platform::{self, Font, Image},
+    platform::{self, Image},
     utils::*,
     TextMetrics,
 };
 
+// Used to sent render tasks to render thread.
 #[derive(Clone, PartialEq)]
-pub enum RenderTask {
+enum RenderTask {
+    // Single tasks
     Start(),
-
     Resize {
         width: f64,
         height: f64,
@@ -21,6 +22,8 @@ pub enum RenderTask {
         family: String,
         font_file: &'static [u8],
     },
+
+    // Mutli tasks
     FillRect {
         x: f64,
         y: f64,
@@ -37,11 +40,6 @@ pub enum RenderTask {
         text: String,
         x: f64,
         y: f64,
-    },
-    MeasureText {
-        text: String,
-        font_size: f64,
-        font_family: String,
     },
     Fill(),
     Stroke(),
@@ -82,7 +80,29 @@ pub enum RenderTask {
         x: f64,
         y: f64,
     },
-    // todo: draw image
+    DrawImage {
+        image: Image,
+        x: f64,
+        y: f64,
+    },
+    DrawImageWithSize {
+        image: Image,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+    },
+    DrawImageWithClipAndSize {
+        image: Image,
+        clip_x: f64,
+        clip_y: f64,
+        clip_width: f64,
+        clip_height: f64,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+    },
     Clip(),
     SetLineWidth {
         line_width: f64,
@@ -103,17 +123,35 @@ pub enum RenderTask {
     Restore(),
     Clear {
         brush: Brush,
-    }, // todo: transform
+    },
+    Transform {
+        a: f64,
+        b: f64,
+        c: f64,
+        d: f64,
+        e: f64,
+        f: f64,
+    },
+    SetTransform {
+        a: f64,
+        b: f64,
+        c: f64,
+        d: f64,
+        e: f64,
+        f: f64,
+    },
     Finish(),
+    Terminate(),
 }
 
-pub enum RenderResult {
-    TextMetrics(TextMetrics),
+// Used to send results to the main thread.
+enum RenderResult {
     Finish { data: Vec<u32> },
 }
 
+// Wrapper for the render thread.
 struct RenderWorker {
-    render_thread: thread::JoinHandle<()>,
+    render_thread: Option<thread::JoinHandle<()>>,
 }
 
 impl RenderWorker {
@@ -129,64 +167,76 @@ impl RenderWorker {
             let mut render_context_2_d = platform::RenderContext2D::new(width, height);
 
             loop {
-                let mut tasks = receiver.lock().unwrap().recv().unwrap();
+                let tasks = receiver.lock().unwrap().recv().unwrap();
 
-                // if tasks.len() == 1 {
-                //     // direct tasks
-                //     match tasks.get(0).unwrap() {
-                //         // RenderTask::Start() => {
-                //         //     tasks.clear();
-                //         //     continue;
-                //         // }
-                //         RenderTask::MeasureText {
-                //             text,
-                //             font_size,
-                //             font_family,
-                //         } => {
-                //             render_context_2_d.save();
-                //             render_context_2_d.set_font_family(font_family);
-                //             render_context_2_d.set_font_size(*font_size);
-                //             let text_metrics = render_context_2_d.measure_text(text.as_str());
-                //             render_context_2_d.restore();
-
-                //             sender
-                //                 .lock()
-                //                 .unwrap()
-                //                 .send(RenderResult::TextMetrics(text_metrics));
-                //             tasks.remove(0);
-                //             continue;
-                //         }
-                //         _ => {}
-                //     };
-                // }
+                // single tasks
+                if tasks.len() == 1 {
+                    match tasks.get(0).unwrap() {
+                        RenderTask::Start() => {
+                            tasks_collection.clear();
+                            continue;
+                        }
+                        RenderTask::Resize { width, height } => {
+                            render_context_2_d.resize(*width, *height);
+                            continue;
+                        }
+                        RenderTask::RegisterFont { family, font_file } => {
+                            render_context_2_d.register_font(family.as_str(), font_file);
+                            continue;
+                        }
+                        RenderTask::DrawImage { image, x, y } => {
+                            render_context_2_d.draw_image(&image, *x, *y);
+                        }
+                        RenderTask::DrawImageWithSize {
+                            image,
+                            x,
+                            y,
+                            width,
+                            height,
+                        } => {
+                            render_context_2_d.draw_image_with_size(image, *x, *y, *width, *height);
+                        }
+                        RenderTask::DrawImageWithClipAndSize {
+                            image,
+                            clip_x,
+                            clip_y,
+                            clip_width,
+                            clip_height,
+                            x,
+                            y,
+                            width,
+                            height,
+                        } => {
+                            render_context_2_d.draw_image_with_clip_and_size(
+                                image,
+                                *clip_x,
+                                *clip_y,
+                                *clip_width,
+                                *clip_height,
+                                *x,
+                                *y,
+                                *width,
+                                *height,
+                            );
+                        }
+                        RenderTask::Transform { a, b, c, d, e, f} => {
+                            render_context_2_d.transform(*a, *b, *c, *d, *e, *f);
+                        }
+                         RenderTask::SetTransform { a, b, c, d, e, f} => {
+                            render_context_2_d.set_transform(*a, *b, *c, *d, *e, *f);
+                        }
+                        RenderTask::Terminate() => {
+                            return;
+                        }
+                        _ => {}
+                    };
+                }
 
                 tasks_collection.push(tasks);
 
                 if tasks_collection.len() > 0 {
                     for task in tasks_collection.remove(0) {
                         match task {
-                            RenderTask::MeasureText {
-                                text,
-                                font_size,
-                                font_family,
-                            } => {
-                                render_context_2_d.save();
-                                render_context_2_d.set_font_family(font_family);
-                                render_context_2_d.set_font_size(font_size);
-                                let text_metrics = render_context_2_d.measure_text(text.as_str());
-                                render_context_2_d.restore();
-
-                                sender
-                                    .lock()
-                                    .unwrap()
-                                    .send(RenderResult::TextMetrics(text_metrics));
-                            }
-                            RenderTask::Resize { width, height } => {
-                                render_context_2_d.resize(width, height);
-                            }
-                            RenderTask::RegisterFont { family, font_file } => {
-                                render_context_2_d.register_font(family.as_str(), font_file);
-                            }
                             RenderTask::FillRect {
                                 x,
                                 y,
@@ -204,7 +254,7 @@ impl RenderWorker {
                                 render_context_2_d.stroke_rect(x, y, width, height);
                             }
                             RenderTask::FillText { text, x, y } => {
-                                render_context_2_d.fill_text(text.as_str(), x, y, None);
+                                render_context_2_d.fill_text(text.as_str(), x, y);
                             }
                             RenderTask::Fill() => {
                                 render_context_2_d.fill();
@@ -233,7 +283,7 @@ impl RenderWorker {
                                 start_angle,
                                 end_angle,
                             } => {
-                                render_context_2_d.arc(x, y, radius, start_angle, end_angle, true);
+                                render_context_2_d.arc(x, y, radius, start_angle, end_angle);
                             }
                             RenderTask::MoveTo { x, y } => {
                                 render_context_2_d.move_to(x, y);
@@ -281,33 +331,41 @@ impl RenderWorker {
                             RenderTask::Clear { brush } => {
                                 render_context_2_d.clear(&brush);
                             }
-                            Finish => {
+                            RenderTask::Finish() => {
                                 sender.lock().unwrap().send(RenderResult::Finish {
                                     data: render_context_2_d.data().iter().map(|a| *a).collect(),
-                                });
-                            }
+                                }).expect("Could not send render result to main thread.");
+                            },
+                            _ => {}
                         };
                     }
                 }
             }
         });
 
-        RenderWorker { render_thread }
+        RenderWorker {
+            render_thread: Some(render_thread),
+        }
     }
 }
 
 /// The RenderContext2D provides a concurrent 2D render context.
 pub struct RenderContext2D {
-    width: f64,
-    height: f64,
     output: Vec<u32>,
-    worker: Option<RenderWorker>,
+    worker: RenderWorker,
     sender: mpsc::Sender<Vec<RenderTask>>,
-    receiver: Arc<Mutex<mpsc::Receiver<Vec<RenderTask>>>>,
-    result_sender: Arc<Mutex<mpsc::Sender<RenderResult>>>,
     result_receiver: mpsc::Receiver<RenderResult>,
-    finished: bool,
     tasks: Vec<RenderTask>,
+    measure_context: platform::RenderContext2D,
+}
+
+impl Drop for RenderContext2D {
+    fn drop(&mut self) {
+        self.sender.send(vec![RenderTask::Terminate()]).expect("Could not send terminate to render thread.");
+        if let Some(thread) = self.worker.render_thread.take() {
+            thread.join().unwrap();
+        }
+    }
 }
 
 impl RenderContext2D {
@@ -317,61 +375,54 @@ impl RenderContext2D {
 
         let (result_sender, result_receiver) = mpsc::channel();
 
-        let task = RenderTask::Clip();
-
         let receiver = Arc::new(Mutex::new(receiver));
         let result_sender = Arc::new(Mutex::new(result_sender));
 
-        let worker = Some(RenderWorker::new(
-            width,
-            height,
-            receiver.clone(),
-            result_sender.clone(),
-        ));
+        let worker = RenderWorker::new(width, height, receiver.clone(), result_sender.clone());
 
         RenderContext2D {
-            width,
-            height,
             output: vec![0; width as usize * height as usize],
             worker,
             sender,
-            receiver,
-            result_sender,
             result_receiver,
-            finished: false,
             tasks: vec![],
+            measure_context: platform::RenderContext2D::new(width, height),
         }
     }
 
+    // Sends a render task to the render thread.
     fn send_tasks(&mut self) {
         if self.tasks.len() == 0 {
             return;
         }
 
-        self.sender.send(self.tasks.to_vec());
+        self.sender.send(self.tasks.to_vec()).expect("Could not send render task.");
         self.tasks.clear();
     }
 
+    /// Starts a new render pipeline.
     pub fn start(&mut self) {
-        self.tasks.push(RenderTask::Start());
+        self.sender.send(vec![RenderTask::Start()]).expect("Could not send start ot render thread.");
     }
 
+    /// Finishes the current render pipeline.
     pub fn finish(&mut self) {
         self.tasks.push(RenderTask::Finish());
         self.send_tasks();
     }
 
+    /// Resizes the render context.
     pub fn resize(&mut self, width: f64, height: f64) {
-        self.tasks.push(RenderTask::Resize { width, height });
+        self.sender.send(vec![RenderTask::Resize { width, height }]).expect("Could not send resize to render thread.");
     }
 
     /// Registers a new font file.
     pub fn register_font(&mut self, family: &str, font_file: &'static [u8]) {
-        // todo: fix font loading
-        self.tasks.push(RenderTask::RegisterFont {
+        self.measure_context.register_font(family, font_file);
+        self.sender.send(vec![RenderTask::RegisterFont {
             family: family.to_string(),
             font_file,
-        });
+        }]).expect("Could not send register font to render thread.");
     }
 
     // Rectangles
@@ -399,7 +450,7 @@ impl RenderContext2D {
     // Text
 
     /// Draws (fills) a given text at the given (x, y) position.
-    pub fn fill_text(&mut self, text: &str, x: f64, y: f64, o: Option<f64>) {
+    pub fn fill_text(&mut self, text: &str, x: f64, y: f64) {
         self.tasks.push(RenderTask::FillText {
             text: text.to_string(),
             x,
@@ -413,31 +464,14 @@ impl RenderContext2D {
         font_size: f64,
         family: impl Into<String>,
     ) -> TextMetrics {
-        let mut text_metrics = TextMetrics::default();
-        self.tasks.push(RenderTask::MeasureText {
-            text: text.to_string(),
-            font_size,
-            font_family: family.into(),
-        });
-        self.send_tasks();
-        if let RenderResult::TextMetrics(t_m) = self.result_receiver.recv().unwrap() {
-            text_metrics = t_m;
-        }
-
-        text_metrics
+        self.measure_context.set_font_family(family);
+        self.measure_context.set_font_size(font_size);
+        self.measure_text(text)
     }
 
     /// Returns a TextMetrics object.
     pub fn measure_text(&mut self, text: &str) -> TextMetrics {
-        let mut text_metrics = TextMetrics::default();
-        // self.tasks.push(RenderTask::MeasureText {
-        //     text: text.to_string(),
-        // });
-        // if let RenderResult::TextMetrics(t_m) = self.result_receiver.recv().unwrap() {
-        //     text_metrics = t_m;
-        // }
-
-        text_metrics
+        self.measure_context.measure_text(text)
     }
 
     /// Fills the current or given path with the current file style.
@@ -472,7 +506,7 @@ impl RenderContext2D {
     }
 
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
-    pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64, o: bool) {
+    pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
         self.tasks.push(RenderTask::Arc {
             x,
             y,
@@ -514,7 +548,13 @@ impl RenderContext2D {
     // Draw image
 
     /// Draws the image.
-    pub fn draw_image(&mut self, image: &mut Image, x: f64, y: f64) {}
+    pub fn draw_image(&mut self, image: &mut Image, x: f64, y: f64) {
+        self.sender.send(vec![RenderTask::DrawImage {
+            image: image.clone(),
+            x,
+            y,
+        }]).expect("Could not send image to render thread.");
+    }
 
     /// Draws the image with the given size.
     pub fn draw_image_with_size(
@@ -525,6 +565,13 @@ impl RenderContext2D {
         width: f64,
         height: f64,
     ) {
+        self.sender.send(vec![RenderTask::DrawImageWithSize {
+            image: image.clone(),
+            x,
+            y,
+            width,
+            height,
+        }]).expect("Could not send image to render thread.");
     }
 
     /// Draws the given part of the image.
@@ -540,6 +587,17 @@ impl RenderContext2D {
         width: f64,
         height: f64,
     ) {
+        self.sender.send(vec![RenderTask::DrawImageWithClipAndSize {
+            image: image.clone(),
+            clip_x,
+            clip_y,
+            clip_width,
+            clip_height,
+            x,
+            y,
+            width,
+            height,
+        }]).expect("Could not send clipped image to render thread.");
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
@@ -580,10 +638,14 @@ impl RenderContext2D {
     // Transformations
 
     /// Multiplies the current transformation with the matrix described by the arguments of this method. You are able to scale, rotate, move and skew the context.
-    pub fn transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {}
+    pub fn transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
+         self.tasks.push(RenderTask::Transform { a, b, c, d, e, f });
+    }
 
     /// Sets the tranformation.
-    pub fn set_transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {}
+    pub fn set_transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
+        self.tasks.push(RenderTask::SetTransform { a, b, c, d, e, f });
+    }
 
     // Canvas states
 
@@ -605,7 +667,6 @@ impl RenderContext2D {
     pub fn data(&mut self) -> Option<&[u32]> {
         if let Ok(result) = self.result_receiver.try_recv() {
             if let RenderResult::Finish { data } = result {
-                self.worker = None;
                 self.output = data;
                 return Some(&self.output);
             }

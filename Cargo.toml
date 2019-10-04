@@ -21,8 +21,8 @@ edition = "2018"
 name = "orbtk"
 path = "src/lib.rs"
 
-#[profile.dev]
-#opt-level = 1
+[profile.dev]
+opt-level = 1
 
 [dependencies]
 orbtk-api = { version = "0.1.0", path = "crates/api" }

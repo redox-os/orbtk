@@ -12,8 +12,6 @@ use minifb;
 
 use spin_sleep::LoopHelper;
 
-use image;
-
 use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {}
@@ -259,7 +257,6 @@ where
             .build_with_target_rate(60.0);
 
         let mut _current_fps = None;
-        let mut skip = false;
 
         loop {
             if !self.running.get() || !self.window_shell.borrow().window.is_open() {
@@ -279,8 +276,6 @@ where
 
             if self.update.get() {
                 self.update.set(false);
-
-                skip = true;
             }
 
             if !self.window_shell.borrow_mut().flip() {
@@ -288,8 +283,7 @@ where
             }
 
             self.window_shell.borrow_mut().drain_events();
-
-            skip = false;
+      
             loop_helper.loop_sleep();
             CONSOLE.time_end("complete run");
         }
@@ -371,7 +365,7 @@ where
     }
 }
 
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 lazy_static! {
     pub static ref CONSOLE: Console = Console {

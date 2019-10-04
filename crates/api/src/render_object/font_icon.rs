@@ -40,7 +40,6 @@ impl RenderObject for FontIconRenderObject {
                 &icon,
                 global_position.x + bounds.x,
                 global_position.y + bounds.y,
-                None,
             );
             context.render_context_2_d().close_path();
         }

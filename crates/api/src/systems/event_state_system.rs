@@ -229,9 +229,6 @@ impl System<Tree> for EventStateSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
         let mut shell = self.shell.borrow_mut();
 
-        // let mut new_events = vec![];
-        let root = ecm.entity_store().root;
-
         loop {
             {
                 let adapter = shell.adapter();

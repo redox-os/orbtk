@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt, path::Path, sync::Arc};
+use std::{collections::HashMap};
 
 use raqote;
 
@@ -74,7 +74,7 @@ impl RenderContext2D {
     // Text
 
     /// Draws (fills) a given text at the given (x, y) position.
-    pub fn fill_text(&mut self, text: &str, x: f64, y: f64, _: Option<f64>) {
+    pub fn fill_text(&mut self, text: &str, x: f64, y: f64) {
         if text.len() == 0 {
             return;
         }
@@ -125,7 +125,6 @@ impl RenderContext2D {
                     y,
                 );
             }
-            // self.draw_image(&mut image, x, y);
         }
     }
 
@@ -189,7 +188,7 @@ impl RenderContext2D {
     }
 
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
-    pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64, _: bool) {
+    pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.arc(
             x as f32,
@@ -239,7 +238,7 @@ impl RenderContext2D {
     // Draw image
 
     /// Draws the image.
-    pub fn draw_image(&mut self, image: &mut Image, x: f64, y: f64) {
+    pub fn draw_image(&mut self, image: &Image, x: f64, y: f64) {
         self.draw_target.draw_image_at(
             x as f32,
             y as f32,
@@ -255,7 +254,7 @@ impl RenderContext2D {
     /// Draws the image with the given size.
     pub fn draw_image_with_size(
         &mut self,
-        image: &mut Image,
+        image: &Image,
         x: f64,
         y: f64,
         width: f64,
@@ -278,7 +277,7 @@ impl RenderContext2D {
     /// Draws the given part of the image.
     pub fn draw_image_with_clip_and_size(
         &mut self,
-        image: &mut Image,
+        image: &Image,
         clip_x: f64,
         clip_y: f64,
         clip_width: f64,
@@ -384,6 +383,9 @@ impl RenderContext2D {
     pub fn data_u8_mut(&mut self) -> &mut [u8] {
         self.draw_target.get_data_u8_mut()
     }
+
+    pub fn start(&mut self) {}
+    pub fn finish(&mut self) {}
 }
 
 // --- Conversions ---

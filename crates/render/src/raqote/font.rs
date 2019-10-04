@@ -1,8 +1,6 @@
 use rusttype;
 
-use crate::utils::{Brush, Color};
-
-use super::Image;
+use crate::utils::Color;
 
 #[derive(Debug, Clone)]
 pub struct Font {

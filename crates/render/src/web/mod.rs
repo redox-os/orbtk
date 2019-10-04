@@ -42,15 +42,26 @@ impl RenderContext2D {
     // Text
 
     /// Draws (fills) a given text at the given (x, y) position.
-    pub fn fill_text(&mut self, text: &str, x: f64, y: f64, max_width: Option<f64>) {
+    pub fn fill_text(&mut self, text: &str, x: f64, y: f64) {
         self.canvas_render_context_2_d
             .set_text_baseline(stdweb::web::TextBaseline::Middle);
         self.canvas_render_context_2_d.fill_text(
             text,
             x,
             y + self.font_config.font_size.ceil() / 2.0,
-            max_width,
+            None,
         );
+    }
+
+    pub fn measure(
+        &mut self,
+        text: &str,
+        font_size: f64,
+        family: impl Into<String>,
+    ) -> TextMetrics {
+        self.set_font_family(family);
+        self.set_font_size(font_size);
+        self.measure_text(text)
     }
 
     /// Returns a TextMetrics object.
@@ -98,10 +109,9 @@ impl RenderContext2D {
         radius: f64,
         start_angle: f64,
         end_angle: f64,
-        anticlockwise: bool,
     ) {
         self.canvas_render_context_2_d
-            .arc(x, y, radius, start_angle, end_angle, anticlockwise);
+            .arc(x, y, radius, start_angle, end_angle, false);
     }
 
     /// Begins a new sub-path at the point specified by the given {x, y} coordinates.
@@ -130,7 +140,7 @@ impl RenderContext2D {
     // Draw image
 
     /// Draws the image.
-    pub fn draw_image(&mut self, image: &mut Image, x: f64, y: f64) {
+    pub fn draw_image(&mut self, image: &Image, x: f64, y: f64) {
         js!(
             var img = document.image_store.image(@{&image.source});
 
@@ -150,7 +160,7 @@ impl RenderContext2D {
     /// Draws the image with the given size.
     pub fn draw_image_with_size(
         &mut self,
-        image: &mut Image,
+        image: &Image,
         x: f64,
         y: f64,
         width: f64,
@@ -176,7 +186,7 @@ impl RenderContext2D {
     /// Draws the given part of the image.
     pub fn draw_image_with_clip_and_size(
         &mut self,
-        image: &mut Image,
+        image: &Image,
         clip_x: f64,
         clip_y: f64,
         clip_width: f64,
@@ -302,6 +312,9 @@ impl RenderContext2D {
     ) {
         self.canvas_render_context_2_d = canvas_render_context_2_d;
     }
+
+    pub fn start(&mut self) {}
+    pub fn finish(&mut self) {}
 }
 
 // --- Conversions ---
