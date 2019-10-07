@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "API crate that provides base api and elements for OrbTk like widgets basis."
 repository = "https://gitlab.redox-os.org/redox-os/orbtk"
+readme = "README.md"
 license = "MIT"
 keywords = ["ui", "api"]
 edition = "2018"

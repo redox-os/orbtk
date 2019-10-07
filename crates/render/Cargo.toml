@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "2D Render library use by OrbTk."
 repository = "https://gitlab.redox-os.org/redox-os/orbtk"
+readme = "README.md"
 license = "MIT"
 keywords = ["2D", "render", "canvas"]
 edition = "2018"

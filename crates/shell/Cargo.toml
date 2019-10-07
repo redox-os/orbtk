@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Window shell crate used by OrbTk."
 repository = "https://gitlab.redox-os.org/redox-os/orbtk"
+readme = "README.md"
 license = "MIT"
 keywords = ["shell", "window", "ui"]
 edition = "2018"

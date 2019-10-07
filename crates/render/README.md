@@ -21,7 +21,7 @@ Cross platform 2D/3D render library. It's part of [OrbTk](https://gitlab.redox-o
 
 * [stdweb](https://github.com/koute/stdweb) (Apache 2.0, MIT): 2D render context web
 * [raqote](https://github.com/jrmuizel/raqote) (BSD-3-Clause): 2D render context
-* [rusttype](https://gitlab.redox-os.org/redox-os/rusttype) (Apache 2.0, MIT): Font processing
+* [rusttype](https://gitlab.redox-os.org/redox-os/rusttype) (Apache 2.0, MIT): font processing
 * [image](https://github.com/image-rs/image) (MIT): load pixel images e.g. png
 
 ## License

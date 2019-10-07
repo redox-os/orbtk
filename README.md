@@ -40,16 +40,6 @@ line to your `Cargo.toml` file:
 orbtk = { git = "https://gitlab.redox-os.org/redox-os/orbtk.git" }
 ```
 
-Note: You also need to have the SDL2 libraries installed on your
-system.  The best way to do this is documented [by the SDL2
-crate](https://github.com/AngryLawyer/rust-sdl2#user-content-requirements).
-
-## Use OrbTk with cairo
-
-* With Ubuntu, execute ```sudo apt-get install libcairo2-dev``` in your console.
-* With macOS and homebrew, execute ```brew install cairo``` in your console.
-* With macOS and macports, execute ```sudo port install cairo``` in your console.
-
 ## Minimal Example
 
 ```rust
@@ -128,25 +118,25 @@ cargo doc --no-deps --open
 * Split application in modules
 * Theme update
 * Support for Android, iOS, Ubuntu Touch and WebAssembly
-* Vulkan / OpenGL Support
+* 3D support
 
 ## Sub Crates
 
-* api: base api elements of OrbTk e.g. widget and application parts
-* css-engine: parse and read values from a css file
-* shell: cross platform window and event handling
-* theme: OrbTk's default theme (light and dark)
-* tree: Tree structure based on DCES
-* utils: Helper structs and traits
-* widgets: Base widget library
-
-## Dependencies
-
-* [DCES](https://gitlab.redox-os.org/redox-os/dces-rust): Entity Component System
-* [rust-cssparser](https://github.com/servo/rust-cssparser): CSS parsing
+* [api](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/api): base api elements of OrbTk e.g. widget and application parts
+* [css-engine](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/css-engine): parse and read values from a css file
+* [render](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/render): cross platform 2D/3D render library
+* [shell](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/api): cross platform window and event handling
+* [theme](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/theme): OrbTks default theme (light and dark)
+* [tree](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/tree): tree structure based on DCES
+* [utils](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/utils): helper structs and traits
+* [widgets](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/widgets): base widget library
 
 ## Inspirations
 
 * [Flutter](https://flutter.io/)
 * [React](https://reactjs.org/)
 * [Yew](https://github.com/DenisKolodin/yew)
+
+## License
+
+Licensed under MIT license ([LICENSE](.LICENSE)).
