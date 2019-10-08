@@ -283,7 +283,7 @@ where
             }
 
             self.window_shell.borrow_mut().drain_events();
-      
+
             loop_helper.loop_sleep();
             CONSOLE.time_end("complete run");
         }

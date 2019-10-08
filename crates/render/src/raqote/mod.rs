@@ -1,4 +1,4 @@
-use std::{collections::HashMap};
+use std::{cmp, collections::HashMap};
 
 use raqote;
 
@@ -252,14 +252,7 @@ impl RenderContext2D {
     }
 
     /// Draws the image with the given size.
-    pub fn draw_image_with_size(
-        &mut self,
-        image: &Image,
-        x: f64,
-        y: f64,
-        width: f64,
-        height: f64,
-    ) {
+    pub fn draw_image_with_size(&mut self, image: &Image, x: f64, y: f64, width: f64, height: f64) {
         self.draw_target.draw_image_with_size_at(
             x as f32,
             y as f32,
@@ -287,6 +280,31 @@ impl RenderContext2D {
         width: f64,
         height: f64,
     ) {
+        //
+        let mut y = y as u32;
+        let stride = clip_width;
+        let mut offset = (clip_y * stride + clip_x) as usize;
+        let last_offset = cmp::min(
+            ((clip_y + clip_height) * stride + clip_x) as usize,
+            image.data().len(),
+        );
+        while offset < last_offset {
+            let next_offset = offset + stride as usize;
+            self.draw_image_with_size(
+                &Image::from_data(
+                    clip_width as u32,
+                    clip_height as u32,
+                    image.data()[offset..].iter().map(|p| *p).collect(),
+                )
+                .unwrap(),
+                x,
+                y.into(),
+                width,
+                height,
+            );
+            offset = next_offset;
+            y += 1;
+        }
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
@@ -327,11 +345,18 @@ impl RenderContext2D {
 
     // Transformations
 
-    /// Multiplies the current transformation with the matrix described by the arguments of this method. You are able to scale, rotate, move and skew the context.
-    pub fn transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {}
-
     /// Sets the tranformation.
-    pub fn set_transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {}
+    pub fn set_transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
+        self.draw_target
+            .set_transform(&raqote::Transform::row_major(
+                a as f32,
+                b as f32,
+                c as f32,
+                d as f32,
+                e as f32,
+                f as f32,
+            ));
+    }
 
     // Canvas states
 

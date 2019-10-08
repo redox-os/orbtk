@@ -167,3 +167,8 @@ list-view-item:selected, list-view-item:active {
     color: #3b434a;
     background: #e1bc21;
 }
+
+scroll-bar {
+    background: "#647b91";
+    border-radius: 4;
+}

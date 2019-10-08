@@ -24,6 +24,18 @@ The main goals of OrbTk are speed, ease of use, and being cross platform.
 * Cross platform: Redox OS, Linux, macOS, Windows
 * CSS theming
 
+## Platforms
+
+* Redox OS (native | cargo-node)
+* Linux (native | cargo-node)
+* macOS (native | cargo-node)
+* Windows (native | cargo-node)
+* openBSD (not tested, but should work)
+* Web (cargo-node)
+* Android (native planned after 0.3 | cargo-node)
+* iOS (native planned after 0.3 | cargo-node planned after 0.3)
+* Ubuntu Touch (native planned  after 0.3 | cargo-node planned for 0.3)
+
 ## Usage
 
 To include OrbTk in your project, just add the dependency
@@ -59,7 +71,7 @@ fn main() {
 }
 ```
 
-## Additional Examples
+## Run Examples
 
 You can find examples in the `examples/` directory.
 
@@ -69,34 +81,38 @@ You can start the widgets example by executing the following command:
 cargo run --example widgets --release
 ```
 
-## Additional Examples on Web
+## Run Examples with cargo-node
 
-To run the examples on a browser you have to install
+To run the examples on as browser, electron or cordova app you have to install
 
 ```text
-cargo install -f cargo-web
+cargo install -f cargo-node
 ```
 
-### Run
+Before you could use cargo node you have to install `npm` version 6.9.0. It is included in the `Node.js` version 10.16.3. You could download it from https://nodejs.org/dist/v10.16.3/. 
+
+Rust's `cargo` is presumed. All other dependencies of cargo node will be installed automatic.
+
+### Start examples
 
 You can start the widgets example by executing the following command:
 
-* Compile to [WebAssembly](https://en.wikipedia.org/wiki/WebAssembly) using Rust's native WebAssembly backend:
+* Run as browser app:
 
 ```text
-cargo web start --target=wasm32-unknown-unknown --auto-reload --example widgets
+cargo node run --browser --example widgets
 ```
 
-* Compile to [asm.js](https://en.wikipedia.org/wiki/Asm.js) using Emscripten:
+* Run as electron app:
 
 ```text
-cargo web start --target=asmjs-unknown-emscripten --auto-reload --example widgets
+cargo node run --electron --example widgets
 ```
 
-* Compile to WebAssembly using Emscripten:
+* Run as cordova app on android:
 
 ```text
-cargo web start --target=wasm32-unknown-emscripten --auto-reload --example widgets
+cargo node run --android --example widgets
 ```
 
 ## Build and run documentation
@@ -139,4 +155,4 @@ cargo doc --no-deps --open
 
 ## License
 
-Licensed under MIT license ([LICENSE](.LICENSE)).
+Licensed under MIT license ([LICENSE](LICENSE)).

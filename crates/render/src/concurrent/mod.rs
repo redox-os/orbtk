@@ -219,10 +219,7 @@ impl RenderWorker {
                                 *height,
                             );
                         }
-                        RenderTask::Transform { a, b, c, d, e, f} => {
-                            render_context_2_d.transform(*a, *b, *c, *d, *e, *f);
-                        }
-                         RenderTask::SetTransform { a, b, c, d, e, f} => {
+                        RenderTask::SetTransform { a, b, c, d, e, f } => {
                             render_context_2_d.set_transform(*a, *b, *c, *d, *e, *f);
                         }
                         RenderTask::Terminate() => {
@@ -332,10 +329,18 @@ impl RenderWorker {
                                 render_context_2_d.clear(&brush);
                             }
                             RenderTask::Finish() => {
-                                sender.lock().unwrap().send(RenderResult::Finish {
-                                    data: render_context_2_d.data().iter().map(|a| *a).collect(),
-                                }).expect("Could not send render result to main thread.");
-                            },
+                                sender
+                                    .lock()
+                                    .unwrap()
+                                    .send(RenderResult::Finish {
+                                        data: render_context_2_d
+                                            .data()
+                                            .iter()
+                                            .map(|a| *a)
+                                            .collect(),
+                                    })
+                                    .expect("Could not send render result to main thread.");
+                            }
                             _ => {}
                         };
                     }
@@ -361,7 +366,9 @@ pub struct RenderContext2D {
 
 impl Drop for RenderContext2D {
     fn drop(&mut self) {
-        self.sender.send(vec![RenderTask::Terminate()]).expect("Could not send terminate to render thread.");
+        self.sender
+            .send(vec![RenderTask::Terminate()])
+            .expect("Could not send terminate to render thread.");
         if let Some(thread) = self.worker.render_thread.take() {
             thread.join().unwrap();
         }
@@ -396,13 +403,17 @@ impl RenderContext2D {
             return;
         }
 
-        self.sender.send(self.tasks.to_vec()).expect("Could not send render task.");
+        self.sender
+            .send(self.tasks.to_vec())
+            .expect("Could not send render task.");
         self.tasks.clear();
     }
 
     /// Starts a new render pipeline.
     pub fn start(&mut self) {
-        self.sender.send(vec![RenderTask::Start()]).expect("Could not send start ot render thread.");
+        self.sender
+            .send(vec![RenderTask::Start()])
+            .expect("Could not send start ot render thread.");
     }
 
     /// Finishes the current render pipeline.
@@ -413,16 +424,20 @@ impl RenderContext2D {
 
     /// Resizes the render context.
     pub fn resize(&mut self, width: f64, height: f64) {
-        self.sender.send(vec![RenderTask::Resize { width, height }]).expect("Could not send resize to render thread.");
+        self.sender
+            .send(vec![RenderTask::Resize { width, height }])
+            .expect("Could not send resize to render thread.");
     }
 
     /// Registers a new font file.
     pub fn register_font(&mut self, family: &str, font_file: &'static [u8]) {
         self.measure_context.register_font(family, font_file);
-        self.sender.send(vec![RenderTask::RegisterFont {
-            family: family.to_string(),
-            font_file,
-        }]).expect("Could not send register font to render thread.");
+        self.sender
+            .send(vec![RenderTask::RegisterFont {
+                family: family.to_string(),
+                font_file,
+            }])
+            .expect("Could not send register font to render thread.");
     }
 
     // Rectangles
@@ -549,11 +564,13 @@ impl RenderContext2D {
 
     /// Draws the image.
     pub fn draw_image(&mut self, image: &mut Image, x: f64, y: f64) {
-        self.sender.send(vec![RenderTask::DrawImage {
-            image: image.clone(),
-            x,
-            y,
-        }]).expect("Could not send image to render thread.");
+        self.sender
+            .send(vec![RenderTask::DrawImage {
+                image: image.clone(),
+                x,
+                y,
+            }])
+            .expect("Could not send image to render thread.");
     }
 
     /// Draws the image with the given size.
@@ -565,13 +582,15 @@ impl RenderContext2D {
         width: f64,
         height: f64,
     ) {
-        self.sender.send(vec![RenderTask::DrawImageWithSize {
-            image: image.clone(),
-            x,
-            y,
-            width,
-            height,
-        }]).expect("Could not send image to render thread.");
+        self.sender
+            .send(vec![RenderTask::DrawImageWithSize {
+                image: image.clone(),
+                x,
+                y,
+                width,
+                height,
+            }])
+            .expect("Could not send image to render thread.");
     }
 
     /// Draws the given part of the image.
@@ -587,17 +606,19 @@ impl RenderContext2D {
         width: f64,
         height: f64,
     ) {
-        self.sender.send(vec![RenderTask::DrawImageWithClipAndSize {
-            image: image.clone(),
-            clip_x,
-            clip_y,
-            clip_width,
-            clip_height,
-            x,
-            y,
-            width,
-            height,
-        }]).expect("Could not send clipped image to render thread.");
+        self.sender
+            .send(vec![RenderTask::DrawImageWithClipAndSize {
+                image: image.clone(),
+                clip_x,
+                clip_y,
+                clip_width,
+                clip_height,
+                x,
+                y,
+                width,
+                height,
+            }])
+            .expect("Could not send clipped image to render thread.");
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
@@ -637,14 +658,10 @@ impl RenderContext2D {
 
     // Transformations
 
-    /// Multiplies the current transformation with the matrix described by the arguments of this method. You are able to scale, rotate, move and skew the context.
-    pub fn transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
-         self.tasks.push(RenderTask::Transform { a, b, c, d, e, f });
-    }
-
     /// Sets the tranformation.
     pub fn set_transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
-        self.tasks.push(RenderTask::SetTransform { a, b, c, d, e, f });
+        self.tasks
+            .push(RenderTask::SetTransform { a, b, c, d, e, f });
     }
 
     // Canvas states

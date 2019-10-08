@@ -102,14 +102,7 @@ impl RenderContext2D {
     }
 
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
-    pub fn arc(
-        &mut self,
-        x: f64,
-        y: f64,
-        radius: f64,
-        start_angle: f64,
-        end_angle: f64,
-    ) {
+    pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
         self.canvas_render_context_2_d
             .arc(x, y, radius, start_angle, end_angle, false);
     }
@@ -158,14 +151,7 @@ impl RenderContext2D {
     }
 
     /// Draws the image with the given size.
-    pub fn draw_image_with_size(
-        &mut self,
-        image: &Image,
-        x: f64,
-        y: f64,
-        width: f64,
-        height: f64,
-    ) {
+    pub fn draw_image_with_size(&mut self, image: &Image, x: f64, y: f64, width: f64, height: f64) {
         js!(
             var img = document.image_store.image(@{&image.source});
 
@@ -203,7 +189,7 @@ impl RenderContext2D {
                 img = document.image_store.load_image(@{&image.source});
                 img.then(
                     function(i) {
-                         @{&self.canvas_render_context_2_d}.drawImage(i,, @{&clip_x}, @{&clip_y}, @{&clip_width}, @{&clip_height}, @{&x}, @{&y}, @{&width}, @{&height});
+                         @{&self.canvas_render_context_2_d}.drawImage(img, @{&clip_x}, @{&clip_y}, @{&clip_width}, @{&clip_height}, @{&x}, @{&y}, @{&width}, @{&height});
                     }
                 )
             } else {
@@ -263,11 +249,6 @@ impl RenderContext2D {
     }
 
     // Transformations
-
-    /// Multiplies the current transformation with the matrix described by the arguments of this method. You are able to scale, rotate, move and skew the context.
-    pub fn transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
-        self.canvas_render_context_2_d.transform(a, b, c, d, e, f);
-    }
 
     /// Sets the tranformation.
     pub fn set_transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
