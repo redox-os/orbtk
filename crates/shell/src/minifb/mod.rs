@@ -11,7 +11,7 @@ use std::{
 #[cfg(not(target_os = "redox"))]
 use minifb;
 
-#[cfg(redox)]
+#[cfg(target_os = "redox")]
 use minifb_fix as minifb;
 
 use spin_sleep::LoopHelper;
