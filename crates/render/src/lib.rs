@@ -5,18 +5,30 @@ pub mod prelude;
 pub use orbtk_utils::prelude as utils;
 
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(feature = "preview")]
-#[path = "pathfinder/mod.rs"]
-pub mod platform;
+pub mod concurrent;
 
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(not(feature = "preview"))]
-#[path = "orbclient/mod.rs"]
-pub mod platform;
+pub use self::concurrent::*;
 
 #[cfg(target_arch = "wasm32")]
 #[path = "web/mod.rs"]
 pub mod platform;
+
+#[cfg(target_arch = "wasm32")]
+pub use platform::RenderContext2D;
+
+#[cfg(not(target_arch = "wasm32"))]
+#[path = "raqote/mod.rs"]
+pub mod platform;
+
+/// Defines the current configuration of the render context.
+#[derive(Default, Debug, Clone)]
+pub struct RenderConfig {
+    pub fill_style: utils::Brush,
+    pub stroke_style: utils::Brush,
+    pub line_width: f64,
+    pub font_config: FontConfig,
+}
 
 /// The TextMetrics struct represents the dimension of a text.
 #[derive(Clone, Copy, Default, Debug)]

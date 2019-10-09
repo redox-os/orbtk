@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Base OrbTk widget library."
 repository = "https://gitlab.redox-os.org/redox-os/orbtk"
+readme = "README.md"
 license = "MIT"
 keywords = ["ui", "widgets"]
 edition = "2018"

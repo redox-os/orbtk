@@ -5,7 +5,10 @@ pub enum ScrollMode {
     Auto,
 
     /// Scrolling could be handled from outside. It will not be process by `ScrollViewer` logic.
-    None,
+    Custom,
+
+    /// Scrolling will be disabled.
+    Disabled,
 }
 
 impl Default for ScrollMode {
@@ -17,8 +20,9 @@ impl Default for ScrollMode {
 impl From<(&str)> for ScrollMode {
     fn from(s: &str) -> ScrollMode {
         match s {
-            "Auto" | "auto" => ScrollMode::Auto,
-            _ => ScrollMode::None,
+            "Custom" | "custom" => ScrollMode::Custom,
+            "Disabled" | "disabled" => ScrollMode::Disabled,
+            _ => ScrollMode::Auto,
         }
     }
 }

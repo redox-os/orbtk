@@ -85,7 +85,7 @@ impl Layout for ScrollLayout {
             }
         }
 
-        let off = Offset::get(entity, ecm.component_store());
+        let off = ScrollOffset::get(entity, ecm.component_store());
 
         if self.old_offset.get().0 != off.x || self.old_offset.get().1 != off.y {
             self.old_offset.set((off.x, off.y));
@@ -138,15 +138,30 @@ impl Layout for ScrollLayout {
             bounds.set_height(size.1);
         }
 
-        // let mut vertical_scroll_mode = ScrollMode::default();
-        // let mut horizontal_scroll_mode = ScrollMode::default();
+        let scroll_viewer_mode = ScrollViewerMode::get(entity, ecm.component_store());
 
-        // if let Ok(mode) = ecm.borrow_component::<ScrollViewerMode>(entity) {
-        //     vertical_scroll_mode = mode.vertical;
-        //     horizontal_scroll_mode = mode.horizontal;
-        // }
+        let available_size = {
+            let width = if scroll_viewer_mode.horizontal == ScrollMode::Custom
+                || scroll_viewer_mode.horizontal == ScrollMode::Auto
+            {
+                f64::MAX
+            } else {
+                size.0
+            };
 
-        let off = Offset::get(entity, ecm.component_store());
+            let height = if scroll_viewer_mode.vertical == ScrollMode::Custom
+                || scroll_viewer_mode.vertical == ScrollMode::Auto
+            {
+                f64::MAX
+            } else {
+                size.1
+            };
+
+            (width, height)
+        };
+
+        let off = ScrollOffset::get(entity, ecm.component_store());
+        let delta = Delta::get(entity, ecm.component_store());
         let mut offset = (off.x, off.y);
 
         let old_child_size = self.old_child_size.get();
@@ -160,12 +175,14 @@ impl Layout for ScrollLayout {
                 // let child_margin = get_margin(*child, store);
                 let mut child_size = old_child_size;
                 let child_vertical_alignment = VerticalAlignment::get(child, ecm.component_store());
+                let child_horizontal_alignment =
+                    HorizontalAlignment::get(child, ecm.component_store());
                 let child_margin = Margin::get(child, ecm.component_store());
 
                 if let Some(child_layout) = layouts.borrow().get(&child) {
                     child_size = child_layout.arrange(
                         render_context_2_d,
-                        (f64::MAX, f64::MAX),
+                        available_size,
                         child,
                         ecm,
                         layouts,
@@ -173,28 +190,75 @@ impl Layout for ScrollLayout {
                     );
                 }
 
-                if child_size.0 > size.0 {
-                    offset.0 = (offset.0 + old_child_size.0 - child_size.0).min(0.0);
-                } else {
-                    offset.0 = 0.0;
+                match scroll_viewer_mode.horizontal {
+                    ScrollMode::Custom => {
+                        if child_size.0 > size.0 {
+                            offset.0 = (offset.0 + old_child_size.0 - child_size.0).min(0.0);
+                        } else {
+                            offset.0 = 0.0;
+                        }
+                    }
+                    ScrollMode::Auto => {
+                        // todo: refactor * 1.5
+                        offset.0 = (offset.0 + delta.x * 1.5)
+                            .min(0.0)
+                            .max(size.0 - child_size.0);
+                    }
+                    _ => {}
+                }
+
+                match scroll_viewer_mode.vertical {
+                    ScrollMode::Custom => {
+                        if child_size.1 > size.1 {
+                            offset.1 = (offset.1 + old_child_size.1 - child_size.1).min(1.1);
+                        } else {
+                            offset.1 = 1.1;
+                        }
+                    }
+                    ScrollMode::Auto => {
+                        // todo: refactor * 1.5
+                        offset.1 = (offset.1 + delta.y * 1.5)
+                            .min(1.1)
+                            .max(size.1 - child_size.1);
+                    }
+                    _ => {}
                 }
 
                 if let Ok(child_bounds) = ecm
                     .component_store_mut()
                     .borrow_mut_component::<Bounds>(child)
                 {
-                    child_bounds.set_x(offset.0);
-                    child_bounds.set_y(child_vertical_alignment.align_position(
-                        size.1,
-                        child_bounds.height(),
-                        child_margin.top(),
-                        child_margin.bottom(),
-                    ));
+                    // todo: add check
+                    if scroll_viewer_mode.horizontal == ScrollMode::Custom
+                        || scroll_viewer_mode.horizontal == ScrollMode::Auto
+                    {
+                        child_bounds.set_x(offset.0);
+                    } else {
+                        child_bounds.set_x(child_horizontal_alignment.align_position(
+                            size.0,
+                            child_bounds.width(),
+                            child_margin.left(),
+                            child_margin.right(),
+                        ));
+                    }
+
+                    if scroll_viewer_mode.vertical == ScrollMode::Custom
+                        || scroll_viewer_mode.vertical == ScrollMode::Auto
+                    {
+                        child_bounds.set_y(offset.1);
+                    } else {
+                        child_bounds.set_y(child_vertical_alignment.align_position(
+                            size.1,
+                            child_bounds.height(),
+                            child_margin.top(),
+                            child_margin.bottom(),
+                        ));
+                    }
                 }
 
                 if let Ok(off) = ecm
                     .component_store_mut()
-                    .borrow_mut_component::<Offset>(entity)
+                    .borrow_mut_component::<ScrollOffset>(entity)
                 {
                     (off.0).x = offset.0;
                     (off.0).y = offset.1;

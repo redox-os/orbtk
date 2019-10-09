@@ -36,7 +36,7 @@ impl InitSystem {
 
     // Read all initial data from css
     fn read_init_from_theme(&self, context: &mut Context) {
-        context.update_theme_properties();
+        context.widget().update_theme_by_state(true);
     }
 }
 
@@ -50,11 +50,11 @@ impl System<Tree> for InitSystem {
         let debug = false;
 
         if debug {
-            crate::shell::log("\n------ Widget tree ------\n".to_string());
+            crate::shell::CONSOLE.log("\n------ Widget tree ------\n".to_string());
 
             print_tree(root, 0, ecm);
 
-            crate::shell::log("\n------ Widget tree ------\n".to_string());
+            crate::shell::CONSOLE.log("\n------ Widget tree ------\n".to_string());
         }
 
         // init css ids
@@ -71,22 +71,24 @@ impl System<Tree> for InitSystem {
         loop {
             self.init_id(current_node, ecm.component_store_mut(), root);
 
-            let mut context = Context::new(
-                current_node,
-                ecm,
-                window_shell,
-                &theme,
-                self.render_objects.clone(),
-                self.layouts.clone(),
-                self.handlers.clone(),
-                self.states.clone(),
-            );
+            {
+                let mut context = Context::new(
+                    current_node,
+                    ecm,
+                    window_shell,
+                    &theme,
+                    self.render_objects.clone(),
+                    self.layouts.clone(),
+                    self.handlers.clone(),
+                    self.states.clone(),
+                );
 
-            if let Some(state) = self.states.borrow().get(&current_node) {
-                state.init(&mut context);
+                if let Some(state) = self.states.borrow().get(&current_node) {
+                    state.init(&mut context);
+                }
+
+                self.read_init_from_theme(&mut context);
             }
-
-            self.read_init_from_theme(&mut context);
 
             let mut it = ecm.entity_store().start_node(current_node).into_iter();
             it.next();
@@ -100,11 +102,11 @@ impl System<Tree> for InitSystem {
     }
 }
 
-fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tree>) {
+pub fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tree>) {
     let name = Name::get(entity, ecm.component_store());
     let selector = Selector::get(entity, ecm.component_store());
 
-    crate::shell::log(format!(
+    crate::shell::CONSOLE.log(format!(
         "{}{} (entity: {}{})",
         "| ".repeat(depth),
         name,

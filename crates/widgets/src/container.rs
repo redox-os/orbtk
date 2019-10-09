@@ -33,8 +33,8 @@ impl Template for Container {
             .border_brush("transparent")
     }
 
-    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
-        Some(Box::new(RectangleRenderObject))
+    fn render_object(&self) -> Box<dyn RenderObject> {
+        Box::new(RectangleRenderObject)
     }
 
     fn layout(&self) -> Box<dyn Layout> {

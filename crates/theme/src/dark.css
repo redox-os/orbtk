@@ -55,6 +55,7 @@ switch-toggle:selected {
 button, toggle-button {
     background: #647b91;
     border-radius: 2;
+    font-family: "Roboto Medium";
 }
 
 button.primary {
@@ -75,7 +76,6 @@ button:disabled, toggle-button:disabled {
 
 button.square {
     border-radius: 1;
-    min-width: 0;
 }
 
 container {
@@ -88,8 +88,6 @@ text-block.h1 {
 
 text-box {
     color: #dfebf5;
-    width: 100;
-    height: 32;
     background: #3b434a;
     border-color: #647b91;
     border-width: 1;
@@ -104,12 +102,11 @@ menu {
 menuitem {
     padding-left: 8;
     padding-right: 8;
-    height: 32;
     color: #9dafbf;
     font-size: 12;
 }
 
-text-box:water-mark {
+text-box:empty {
     color: #9E9E9E
 }
 
@@ -137,4 +134,37 @@ debug-border {
 
 #test {
     background: green;
+}
+
+items-widget {
+    background: transparent;
+    border-color: #647b91;
+    border-width: 1;
+    border-radius: 2;
+    padding: 4;
+}
+
+list-view {
+    background: transparent;
+    border-color: #212121;
+    border-width: 1;
+    border-radius: 2;
+}
+
+list-view-item {
+    font-size: 12;
+    color: #ccdeed;
+    background: transparent;
+    padding-left: 8;
+    padding-right: 8;
+}
+
+list-view-item:selected, list-view-item:active {
+    color: #3b434a;
+    background: #e1bc21;
+}
+
+scroll-bar {
+    background: #647b91;
+    border-radius: 2;
 }

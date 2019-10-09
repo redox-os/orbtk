@@ -37,8 +37,8 @@ impl Template for Window {
             .resizeable(false)
     }
 
-    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
-        Some(Box::new(RectangleRenderObject))
+    fn render_object(&self) -> Box<dyn RenderObject> {
+        Box::new(ClearRenderObject)
     }
 
     fn layout(&self) -> Box<dyn Layout> {

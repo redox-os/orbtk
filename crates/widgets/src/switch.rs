@@ -1,20 +1,51 @@
+use std::cell::Cell;
+
+use super::behaviors::MouseBehavior;
 use crate::prelude::*;
 
 /// State to handle the position of switch toggle.
 #[derive(Default)]
-pub struct SwitchState;
+pub struct SwitchState {
+    selected: Cell<bool>,
+}
+
+impl SwitchState {
+    fn toggle_selection(&self) {
+        self.selected.set(!self.selected.get());
+    }
+}
 
 impl State for SwitchState {
     fn update(&self, context: &mut Context<'_>) {
-        let selected = context.widget().get::<Selected>().0;
-
-        let mut switch_toggle = context.child_by_id("SwitchSwitchToggle").unwrap();
-
-        if selected {
-            switch_toggle.set(HorizontalAlignment::from("End"));
-        } else {
-            switch_toggle.set(HorizontalAlignment::from("Start"));
+        if context.widget().get::<Selected>().0 == self.selected.get() {
+            return;
         }
+
+        context.widget().set(Selected(self.selected.get()));
+
+        let element = context.widget().clone::<Selector>().0.element.unwrap();
+
+        if let Some(parent) = context.parent_entity_by_element(element) {
+            context.get_widget(parent).update_theme_by_state(false);
+        }
+
+        {
+            let mut switch_toggle = context.child_by_id("SwitchSwitchToggle").unwrap();
+
+            switch_toggle.set(Selected(self.selected.get()));
+
+            if self.selected.get() {
+                switch_toggle.set(HorizontalAlignment::from("End"));
+            } else {
+                switch_toggle.set(HorizontalAlignment::from("Start"));
+            }
+
+            switch_toggle.update_theme_by_state(true);
+        }
+
+        let entity = context.entity_of_child("SwitchSwitchToggle").unwrap();
+
+        context.get_widget(entity).update_theme_by_state(false);
     }
 }
 
@@ -22,7 +53,7 @@ widget!(
     /// The `Switch` widget can be switch between `on` and `off`.
     ///
     /// **CSS element:** `switch`
-    Switch<SwitchState> {
+    Switch<SwitchState>: MouseHandler {
         /// Sets or shares the background property.
         background: Background,
 
@@ -51,6 +82,7 @@ widget!(
 
 impl Template for Switch {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+        let state = self.clone_state();
         self.name("Switch")
             .selector("switch")
             .pressed(false)
@@ -63,20 +95,35 @@ impl Template for Switch {
             .border_thickness(1.0)
             .padding(4.0)
             .child(
-                Container::create()
-                    .background(id)
-                    .border_radius(id)
-                    .border_thickness(id)
-                    .border_brush(id)
-                    .padding(id)
+                MouseBehavior::create()
+                    .pressed(id)
+                    .enabled(id)
+                    .selector(id)
+                    .on_click(move |_| {
+                        state.toggle_selection();
+                        false
+                    })
                     .child(
-                        Grid::create()
-                            .child(Container::create().size(24.0, 24.0).build(context))
-                            .border_radius(1.0)
-                            .selector(SelectorValue::from("switch-toggle").id("SwitchSwitchToggle"))
-                            .vertical_alignment("Center")
-                            .horizontal_alignment("Start")
-                            .attach_by_source::<Selected>(id)
+                        Container::create()
+                            .background(id)
+                            .border_radius(id)
+                            .border_thickness(id)
+                            .border_brush(id)
+                            .padding(id)
+                            .child(
+                                Grid::create()
+                                    .child(Container::create().size(24.0, 24.0).build(context))
+                                    .border_radius(1.0)
+                                    .attach_by_source::<Selected>(id)
+                                    .selector(
+                                        SelectorValue::from("switch-toggle")
+                                            .id("SwitchSwitchToggle"),
+                                    )
+                                    .vertical_alignment("Center")
+                                    .horizontal_alignment("Start")
+                                    .attach_by_source::<Selected>(id)
+                                    .build(context),
+                            )
                             .build(context),
                     )
                     .build(context),

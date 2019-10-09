@@ -280,6 +280,10 @@ impl From<char> for Key {
             '.' => Key::Dot,
             '?' => Key::QuestionMark,
             '!' => Key::ExclamationMark,
+            '\u{f700}' => Key::Up,
+            '\u{f701}' => Key::Down,
+            '\u{f702}' => Key::Left,
+            '\u{f703}' => Key::Right,
             _ => Key::Unknown,
         }
     }

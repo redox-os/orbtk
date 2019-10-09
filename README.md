@@ -24,6 +24,18 @@ The main goals of OrbTk are speed, ease of use, and being cross platform.
 * Cross platform: Redox OS, Linux, macOS, Windows
 * CSS theming
 
+## Platforms
+
+* Redox OS (native | cargo-node)
+* Linux (native | cargo-node)
+* macOS (native | cargo-node)
+* Windows (native | cargo-node)
+* openBSD (not tested, but should work)
+* Web (cargo-node)
+* Android (native planned after 0.3 | cargo-node)
+* iOS (native planned after 0.3 | cargo-node planned after 0.3)
+* Ubuntu Touch (native planned  after 0.3 | cargo-node planned for 0.3)
+
 ## Usage
 
 To include OrbTk in your project, just add the dependency
@@ -39,16 +51,6 @@ line to your `Cargo.toml` file:
 ```text
 orbtk = { git = "https://gitlab.redox-os.org/redox-os/orbtk.git" }
 ```
-
-Note: You also need to have the SDL2 libraries installed on your
-system.  The best way to do this is documented [by the SDL2
-crate](https://github.com/AngryLawyer/rust-sdl2#user-content-requirements).
-
-## Use OrbTk with cairo
-
-* With Ubuntu, execute ```sudo apt-get install libcairo2-dev``` in your console.
-* With macOS and homebrew, execute ```brew install cairo``` in your console.
-* With macOS and macports, execute ```sudo port install cairo``` in your console.
 
 ## Minimal Example
 
@@ -69,7 +71,7 @@ fn main() {
 }
 ```
 
-## Additional Examples
+## Run Examples
 
 You can find examples in the `examples/` directory.
 
@@ -79,46 +81,38 @@ You can start the widgets example by executing the following command:
 cargo run --example widgets --release
 ```
 
-## Additional Examples on Web
+## Run Examples with cargo-node
 
-To run the examples on a browser you have to install
+To run the examples on as browser, electron or cordova app you have to install
 
 ```text
-cargo install -f cargo-web
+cargo install -f cargo-node
 ```
 
-### Run
+Before you could use cargo node you have to install `npm` version 6.9.0. It is included in the `Node.js` version 10.16.3. You could download it from https://nodejs.org/dist/v10.16.3/. 
+
+Rust's `cargo` is presumed. All other dependencies of cargo node will be installed automatic.
+
+### Start examples
 
 You can start the widgets example by executing the following command:
 
-* Compile to [WebAssembly](https://en.wikipedia.org/wiki/WebAssembly) using Rust's native WebAssembly backend:
+* Run as browser app:
 
 ```text
-cargo web start --target=wasm32-unknown-unknown --auto-reload --example widgets
+cargo node run --browser --example widgets
 ```
 
-* Compile to [asm.js](https://en.wikipedia.org/wiki/Asm.js) using Emscripten:
+* Run as electron app:
 
 ```text
-cargo web start --target=asmjs-unknown-emscripten --auto-reload --example widgets
+cargo node run --electron --example widgets
 ```
 
-* Compile to WebAssembly using Emscripten:
+* Run as cordova app on android:
 
 ```text
-cargo web start --target=wasm32-unknown-emscripten --auto-reload --example widgets
-```
-
-## Run examples with Glutin and Pathfinder
-
-OrbTk includes a preview with [Glutin](https://github.com/rust-windowing/glutin) and [Pathfinder](https://github.com/servo/pathfinder). To start the *preview* mode you have to use the feature *preview*.
-
-If you have problems running OrbTk with cairo on Windows you should try the *preview* feature.
-
-Pathfinder is currently not available for the web.
-
-```text
-cargo run --example widgets --release --features preview
+cargo node run --android --example widgets
 ```
 
 ## Build and run documentation
@@ -140,25 +134,25 @@ cargo doc --no-deps --open
 * Split application in modules
 * Theme update
 * Support for Android, iOS, Ubuntu Touch and WebAssembly
-* Vulkan / OpenGL Support
+* 3D support
 
 ## Sub Crates
 
-* api: base api elements of OrbTk e.g. widget and application parts
-* css-engine: parse and read values from a css file
-* shell: cross platform window and event handling
-* theme: OrbTk's default theme (light and dark)
-* tree: Tree structure based on DCES
-* utils: Helper structs and traits
-* widgets: Base widget library
-
-## Dependencies
-
-* [DCES](https://gitlab.redox-os.org/redox-os/dces-rust): Entity Component System
-* [rust-cssparser](https://github.com/servo/rust-cssparser): CSS parsing
+* [api](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/api): base api elements of OrbTk e.g. widget and application parts
+* [css-engine](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/css-engine): parse and read values from a css file
+* [render](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/render): cross platform 2D/3D render library
+* [shell](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/api): cross platform window and event handling
+* [theme](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/theme): OrbTks default theme (light and dark)
+* [tree](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/tree): tree structure based on DCES
+* [utils](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/utils): helper structs and traits
+* [widgets](https://gitlab.redox-os.org/redox-os/orbtk/tree/master/crates/widgets): base widget library
 
 ## Inspirations
 
 * [Flutter](https://flutter.io/)
 * [React](https://reactjs.org/)
 * [Yew](https://github.com/DenisKolodin/yew)
+
+## License
+
+Licensed under MIT license ([LICENSE](LICENSE)).

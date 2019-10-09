@@ -1,5 +1,6 @@
 use std::cell::Cell;
 
+use super::behaviors::MouseBehavior;
 use crate::{
     prelude::*,
     shell::{Key, KeyEvent},
@@ -14,18 +15,16 @@ pub struct TextBoxState {
     selection_start: Cell<usize>,
     selection_length: Cell<usize>,
     cursor_x: Cell<f64>,
-}
-
-impl Into<Rc<dyn State>> for TextBoxState {
-    fn into(self) -> Rc<dyn State> {
-        Rc::new(self)
-    }
+    request_focus: Cell<bool>,
 }
 
 impl TextBoxState {
     // fn click(&self, point: Point) {
     //     println!("Clicked text box point: ({}, {})", point.x, point.y);
     // }
+    fn request_focus(&self) {
+        self.request_focus.set(!self.request_focus.get());
+    }
 
     fn update_selection_start(&self, selection: i32) {
         self.selection_start
@@ -79,10 +78,36 @@ impl TextBoxState {
 
         true
     }
+
+    fn check_focus_request(&self, context: &mut Context<'_>) {
+        if !self.request_focus.get() || !context.widget().get::<Enabled>().0 {
+            return;
+        }
+
+        if let Some(old_focused_element) = context.window().get::<Global>().focused_widget {
+            let mut old_focused_element = context.get_widget(old_focused_element);
+            old_focused_element.set(Focused(false));
+            old_focused_element.update_theme_by_state(false);
+        }
+
+        context.window().get_mut::<Global>().focused_widget = Some(context.entity);
+
+        self.focused.set(true);
+        context.widget().set(Focused(true));
+        context.widget().update_theme_by_state(false);
+        context
+            .child_by_id("cursor")
+            .unwrap()
+            .update_theme_by_state(false);
+
+        self.request_focus.set(false);
+    }
 }
 
 impl State for TextBoxState {
     fn update(&self, context: &mut Context<'_>) {
+        self.check_focus_request(context);
+
         let mut widget = context.widget();
 
         self.focused.set(widget.get::<Focused>().0);
@@ -110,15 +135,11 @@ impl State for TextBoxState {
             }
         }
 
+        widget.update_theme_by_state(false);
+
         if let Some(selection) = widget.try_get_mut::<TextSelection>() {
             selection.0.start_index = self.selection_start.get();
             selection.0.length = self.selection_length.get();
-        }
-
-        if widget.get::<Text>().0.is_empty() {
-            add_selector_to_widget("water-mark", &mut widget);
-        } else {
-            remove_selector_from_widget("water-mark", &mut widget);
         }
     }
 
@@ -163,8 +184,8 @@ impl State for TextBoxState {
                 }
             }
 
-            if let Some(offset) = context.widget().try_get_mut::<Offset>() {
-                (offset.0).x += cursor_x_delta;
+            if let Some(scroll_offset) = context.widget().try_get_mut::<ScrollOffset>() {
+                (scroll_offset.0).x += cursor_x_delta;
             }
         }
     }
@@ -209,7 +230,10 @@ widget!(
         padding: Padding,
 
         /// Sets or shares the text offset property.
-        offset: Offset,
+        scroll_offset: ScrollOffset,
+
+        /// Sets or shares the (wheel, scroll) delta property. 
+        delta: Delta,
 
          /// Sets or shares the focused property.
         focused: Focused,
@@ -222,6 +246,7 @@ widget!(
 impl Template for TextBox {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
         let state = self.clone_state();
+        let mouse_state = self.clone_state();
 
         self.name("TextBox")
             .selector("text-box")
@@ -230,7 +255,7 @@ impl Template for TextBox {
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto Regular")
             .selection(TextSelectionValue::default())
-            .offset(0.0)
+            .scroll_offset(0.0)
             .padding(4.0)
             .background(colors::LYNCH_COLOR)
             .border_brush("transparent")
@@ -238,46 +263,58 @@ impl Template for TextBox {
             .border_radius(2.0)
             .size(128.0, 32.0)
             .focused(false)
+            .delta(0.0)
             .child(
-                Container::create()
-                    .background(id)
-                    .border_radius(id)
-                    .border_thickness(id)
-                    .border_brush(id)
-                    .padding(id)
+                MouseBehavior::create()
+                    .on_mouse_down(move |_| {
+                        mouse_state.request_focus();
+                        false
+                    })
                     .child(
-                        Grid::create()
+                        Container::create()
+                            .background(id)
+                            .border_radius(id)
+                            .border_thickness(id)
+                            .border_brush(id)
+                            .padding(id)
                             .child(
-                                ScrollViewer::create()
-                                    .selector(SelectorValue::default().id("scroll_viewer"))
-                                    .offset(id)
-                                    .scroll_mode(("None", "None"))
+                                Grid::create()
                                     .child(
-                                        TextBlock::create()
-                                            .selector(
-                                                SelectorValue::default().clone().id("text_block"),
+                                        ScrollViewer::create()
+                                            .selector(SelectorValue::default().id("scroll_viewer"))
+                                            .scroll_offset(id)
+                                            .scroll_mode(("Custom", "Disabled"))
+                                            .delta(id)
+                                            .child(
+                                                TextBlock::create()
+                                                    .selector(
+                                                        SelectorValue::default()
+                                                            .clone()
+                                                            .id("text_block"),
+                                                    )
+                                                    .vertical_alignment("Center")
+                                                    .foreground(id)
+                                                    .text(id)
+                                                    .font(id)
+                                                    .font_size(id)
+                                                    .attach_by_source::<WaterMark>(id)
+                                                    .build(context),
                                             )
-                                            .vertical_alignment("Center")
-                                            .foreground(id)
+                                            .build(context),
+                                    )
+                                    .child(
+                                        Cursor::create()
+                                            .selector(SelectorValue::from("cursor").id("cursor"))
+                                            .margin(0.0)
+                                            .horizontal_alignment("Start")
                                             .text(id)
                                             .font(id)
                                             .font_size(id)
-                                            .attach_by_source::<WaterMark>(id)
+                                            .scroll_offset(id)
+                                            .focused(id)
+                                            .selection(id)
                                             .build(context),
                                     )
-                                    .build(context),
-                            )
-                            .child(
-                                Cursor::create()
-                                    .selector(SelectorValue::from("cursor").id("cursor"))
-                                    .margin(0.0)
-                                    .horizontal_alignment("Start")
-                                    .text(id)
-                                    .font(id)
-                                    .font_size(id)
-                                    .offset(id)
-                                    .focused(id)
-                                    .selection(id)
                                     .build(context),
                             )
                             .build(context),

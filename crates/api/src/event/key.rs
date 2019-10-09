@@ -37,6 +37,10 @@ impl EventHandler for KeyDownEventHandler {
 
         return false;
     }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<KeyDownEvent>()
+    }
 }
 
 pub trait KeyDownHandler: Sized + Widget {
