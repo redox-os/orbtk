@@ -8,7 +8,7 @@ use std::{
     sync::Mutex,
 };
 
-#[cfg(not(redox))]
+#[cfg(not(target_os = "redox"))]
 use minifb;
 
 #[cfg(redox)]
