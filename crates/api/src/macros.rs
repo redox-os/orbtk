@@ -388,6 +388,8 @@ macro_rules! widget {
                                     context.register_shared_property::<$property_type>(entity, source);
                                 }
                             }
+                        } else {
+                            context.register_property(entity, $property_type::default());
                         }
                     )*
                 )*

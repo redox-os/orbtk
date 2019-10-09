@@ -90,8 +90,19 @@ impl EventStateSystem {
         }
 
         let mut unknown_event = true;
+        let mut clipped_parent = vec![];
 
         loop {
+            if clipped_parent.len() > 0 {
+                if let Some(cp) = clipped_parent.get(clipped_parent.len() - 1) {
+                    if ecm.entity_store().parent[&current_node] == Some(*cp) {
+                        clipped_parent.push(current_node);
+                    } else {
+                        clipped_parent.pop();
+                    }
+                }
+            }
+
             // key down event
             if let Ok(_) = event.downcast_ref::<KeyDownEvent>() {
                 if let Some(focused) = ecm
@@ -102,9 +113,10 @@ impl EventStateSystem {
                 {
                     if current_node == focused {
                         matching_nodes.push(current_node);
-                        unknown_event = false;
                     }
                 }
+
+                unknown_event = false;
             }
 
             // key up event
@@ -117,37 +129,73 @@ impl EventStateSystem {
                 {
                     if current_node == focused {
                         matching_nodes.push(current_node);
-                        unknown_event = false;
                     }
                 }
-            }
 
-            let widget = WidgetContainer::new(current_node, ecm, &theme);
+                unknown_event = false;
+            }
 
             // scroll handling
             if let Ok(_) = event.downcast_ref::<ScrollEvent>() {
-                if check_mouse_condition(mouse_position, &widget) {
+                if check_mouse_condition(
+                    mouse_position,
+                    &WidgetContainer::new(current_node, ecm, &theme),
+                ) {
                     matching_nodes.push(current_node);
-                    unknown_event = false;
                 }
+
+                unknown_event = false;
             }
 
             // click handling
             if let Ok(event) = event.downcast_ref::<ClickEvent>() {
-                if check_mouse_condition(event.position, &widget) {
-                    matching_nodes.push(current_node);
-                    self.mouse_down_nodes.borrow_mut().push(current_node);
-                    unknown_event = false;
+                if check_mouse_condition(
+                    event.position,
+                    &WidgetContainer::new(current_node, ecm, &theme),
+                ) {
+                    let mut add = true;
+                    if let Some(op) = clipped_parent.get(0) {
+                        if !check_mouse_condition(
+                            event.position,
+                            &WidgetContainer::new(*op, ecm, &theme),
+                        ) {
+                            add = false;
+                        }
+                    }
+
+                    if add {
+                        matching_nodes.push(current_node);
+                        self.mouse_down_nodes.borrow_mut().push(current_node);
+                    }
                 }
+
+                unknown_event = false;
             }
 
             // mouse down handling
             if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
-                if check_mouse_condition(Point::new(event.x, event.y), &widget) {
-                    matching_nodes.push(current_node);
-                    self.mouse_down_nodes.borrow_mut().push(current_node);
-                    unknown_event = false;
+                if check_mouse_condition(
+                    Point::new(event.x, event.y),
+                    &WidgetContainer::new(current_node, ecm, &theme),
+                ) {
+                    let mut add = true;
+                    if let Some(op) = clipped_parent.get(0) {
+                        // todo: improve check path if exists
+                        if !check_mouse_condition(
+                            Point::new(event.x, event.y),
+                            &WidgetContainer::new(*op, ecm, &theme),
+                        ) {
+                            add = false;
+                        }
+                    }
+
+                    if add {
+                        matching_nodes.push(current_node);
+                        self.mouse_down_nodes.borrow_mut().push(current_node);
+                    }
                 }
+
+                unknown_event = false;
             }
 
             // mouse up handling
@@ -161,11 +209,16 @@ impl EventStateSystem {
                         .position(|x| *x == current_node)
                         .unwrap();
                     self.mouse_down_nodes.borrow_mut().remove(index);
-                    unknown_event = false;
                 }
+
+                unknown_event = false;
             }
 
-            if unknown_event && widget.get::<Enabled>().0 {
+            if unknown_event
+                && WidgetContainer::new(current_node, ecm, &theme)
+                    .get::<Enabled>()
+                    .0
+            {
                 if let Some(handlers) = self.handlers.borrow().get(&current_node) {
                     for handler in handlers {
                         if handler.handles_event(&event) {
@@ -173,6 +226,13 @@ impl EventStateSystem {
                             break;
                         }
                     }
+                }
+            }
+
+            if let Ok(clip) = ecm.component_store().borrow_component::<Clip>(current_node) {
+                if clip.0 {
+                    clipped_parent.clear();
+                    clipped_parent.push(current_node);
                 }
             }
 

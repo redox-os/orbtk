@@ -8,7 +8,11 @@ use std::{
     sync::Mutex,
 };
 
+#[cfg(not(redox_os))]
 use minifb;
+
+#[cfg(redox_os)]
+use minifb_fix as minifb;
 
 use spin_sleep::LoopHelper;
 
@@ -221,7 +225,7 @@ where
     pub fn flip(&mut self) -> bool {
         if let Some(data) = self.render_context_2_d.data() {
             self.window.update_with_buffer(data).unwrap();
-            CONSOLE.time_end("render");
+            // CONSOLE.time_end("render");
             return true;
         }
 
@@ -270,7 +274,7 @@ where
                 // println!("fps: {}", fps);
             }
 
-            CONSOLE.time("complete run");
+            // CONSOLE.time("complete run");
 
             self.updater.update();
 
@@ -285,7 +289,7 @@ where
             self.window_shell.borrow_mut().drain_events();
 
             loop_helper.loop_sleep();
-            CONSOLE.time_end("complete run");
+            // CONSOLE.time_end("complete run");
         }
     }
 }

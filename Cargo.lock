@@ -300,6 +300,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "minifb-fix"
+version = "0.13.0"
+source = "git+https://github.com/FloVanGH/rust_minifb?branch=redox_unix#091f58fb23acd98040d4331e9a5657bdaa004e79"
+dependencies = [
+ "cast 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "cc 1.0.40 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbclient 0.3.27 (registry+https://github.com/rust-lang/crates.io-index)",
+ "time 0.1.42 (git+https://gitlab.redox-os.org/redox-os/time?branch=redox-unix)",
+ "winapi 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "x11-dl 2.18.4 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "nodrop"
 version = "0.1.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -432,6 +445,7 @@ dependencies = [
  "image 0.22.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "minifb 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "minifb-fix 0.13.0 (git+https://github.com/FloVanGH/rust_minifb?branch=redox_unix)",
  "orbtk-render 0.1.0",
  "orbtk-utils 0.1.0",
  "spin_sleep 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -936,6 +950,15 @@ dependencies = [
 [[package]]
 name = "time"
 version = "0.1.42"
+source = "git+https://gitlab.redox-os.org/redox-os/time?branch=redox-unix#fc118e5752aaac833808a25f0850606b675b32ec"
+dependencies = [
+ "libc 0.2.62 (registry+https://github.com/rust-lang/crates.io-index)",
+ "winapi 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "time"
+version = "0.1.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc 0.2.62 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1084,6 +1107,7 @@ dependencies = [
 "checksum maybe-uninit 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "60302e4db3a61da70c0cb7991976248362f30319e88850c487b9b95bbf059e00"
 "checksum memoffset 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "ce6075db033bbbb7ee5a0bbd3a3186bbae616f57fb001c485c7ff77955f8177f"
 "checksum minifb 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)" = "55cbdf43445926b65e07992f06019321e7481df8fd656dcb6871d00cdbd9fc73"
+"checksum minifb-fix 0.13.0 (git+https://github.com/FloVanGH/rust_minifb?branch=redox_unix)" = "<none>"
 "checksum nodrop 0.1.13 (registry+https://github.com/rust-lang/crates.io-index)" = "2f9667ddcc6cc8a43afc9b7917599d7216aa09c463919ea32c59ed6cac8bc945"
 "checksum num 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)" = "4703ad64153382334aa8db57c637364c322d3372e097840c72000dabdcf6156e"
 "checksum num-derive 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "eafd0b45c5537c3ba526f79d3e75120036502bebacbb3f3220914067ce39dbf2"
@@ -1147,6 +1171,7 @@ dependencies = [
 "checksum syn 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)" = "158521e6f544e7e3dcfc370ac180794aa38cb34a1b1e07609376d4adcf429b93"
 "checksum synom 0.11.3 (registry+https://github.com/rust-lang/crates.io-index)" = "a393066ed9010ebaed60b9eafa373d4b1baac186dd7e008555b0f702b51945b6"
 "checksum tiff 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "d7b7c2cfc4742bd8a32f2e614339dd8ce30dbcf676bb262bd63a2327bc5df57d"
+"checksum time 0.1.42 (git+https://gitlab.redox-os.org/redox-os/time?branch=redox-unix)" = "<none>"
 "checksum time 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)" = "db8dcfca086c1143c9270ac42a2bbd8a7ee477b78ac8e45b19abfb0cbede4b6f"
 "checksum typed-arena 1.6.1 (registry+https://github.com/rust-lang/crates.io-index)" = "9c0704a799d314795d3d847d519b284bae681ef9b1f3da99f7ebc7b47ba2e607"
 "checksum unicode-xid 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)" = "8c1f860d7d29cf02cb2f3f359fd35991af3d30bac52c57d265a3c461074cb4dc"

@@ -119,7 +119,7 @@ impl Theme {
     }
 
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Theme, String> {
-        let file = r#try!(File::open(path).map_err(|err| format!("failed to open css: {}", err)));
+        let file = File::open(path).map_err(|err| format!("failed to open css: {}", err))?;
         let mut reader = BufReader::new(file);
         let mut css = String::new();
         let res = reader

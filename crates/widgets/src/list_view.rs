@@ -245,6 +245,18 @@ impl ListView {
 
 impl Template for ListView {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+        let items_panel = Stack::create()
+            .vertical_alignment("Start")
+            .selector(SelectorValue::default().clone().id("items_panel"))
+            .orientation(id)
+            .build(context);
+
+        let scroll_viewer = ScrollViewer::create()
+            .scroll_mode(("Disabled", "Auto"))
+            .delta(id)
+            .child(items_panel)
+            .build(context);
+
         self.name("ListView")
             .selector(SelectorValue::from("list-view").id("ListView"))
             .background(colors::LYNCH_COLOR)
@@ -263,17 +275,12 @@ impl Template for ListView {
                     .border_thickness(id)
                     .border_brush(id)
                     .padding(id)
+                    .child(scroll_viewer)
                     .child(
-                        ScrollViewer::create()
-                            .scroll_mode(("Disabled", "Auto"))
-                            .delta(id)
-                            .child(
-                                Stack::create()
-                                    .vertical_alignment("Start")
-                                    .selector(SelectorValue::default().clone().id("items_panel"))
-                                    .orientation(id)
-                                    .build(context),
-                            )
+                        ScrollIndicator::create()
+                            .padding(2.0)
+                            .content_id(ContentId::from(items_panel.0))
+                            .scroll_offset(scroll_viewer)
                             .build(context),
                     )
                     .build(context),

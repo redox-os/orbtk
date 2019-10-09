@@ -49,7 +49,7 @@ widget!(
 );
 
 impl Template for ScrollViewer {
-    fn template(self, _: Entity, ctx: &mut BuildContext) -> Self {
+    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         let state = self.clone_state();
 
         self.name("ScrollViewer")
@@ -62,7 +62,6 @@ impl Template for ScrollViewer {
                 state.scroll(p);
                 false
             })
-            .child(ScrollBar::create().height(100.0).horizontal_alignment("End").build(ctx))
     }
 
     fn layout(&self) -> Box<dyn Layout> {

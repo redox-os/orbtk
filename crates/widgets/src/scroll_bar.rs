@@ -1,9 +1,9 @@
 use crate::prelude::*;
 
 widget!(
-    /// The `ScrollBar` widget represents a position inside of a scroll viewer.
+    /// The `ScrollBar` widget represents a position inside of a scroll container.
     /// 
-    /// **CSS element:** `cursor`
+    /// **CSS element:** `scroll-bar`
     ScrollBar {
         /// Sets or shares the background property.
         background: Background,
@@ -20,7 +20,7 @@ impl Template for ScrollBar {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("ScrollBar")
             .width(4.0)
-            .border_radius(4.0)
+            .border_radius(2.0)
             .background("#647b91")
             .selector("scroll-bar")
     }
@@ -28,8 +28,5 @@ impl Template for ScrollBar {
     fn render_object(&self) -> Box<dyn RenderObject> {
         Box::new(RectangleRenderObject)
     }
-
-    fn layout(&self) -> Box<dyn Layout> {
-        Box::new(TextSelectionLayout::default())
-    }
 }
+

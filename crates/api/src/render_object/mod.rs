@@ -126,6 +126,7 @@ pub trait RenderObject: Any {
             if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(entity) {
                 let selector = Selector::from("debug-border");
                 let brush = theme.brush("border-color", &selector.0).unwrap();
+                shell.render_context_2_d().begin_path();
                 shell.render_context_2_d().set_stroke_style(brush);
                 shell.render_context_2_d().stroke_rect(
                     global_position.x + bounds.x(),
@@ -133,6 +134,7 @@ pub trait RenderObject: Any {
                     bounds.width(),
                     bounds.height(),
                 );
+                shell.render_context_2_d().close_path();
             }
         }
     }

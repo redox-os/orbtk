@@ -102,7 +102,7 @@ impl System<Tree> for InitSystem {
     }
 }
 
-fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tree>) {
+pub fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tree>) {
     let name = Name::get(entity, ecm.component_store());
     let selector = Selector::get(entity, ecm.component_store());
 
