@@ -8,10 +8,10 @@ use std::{
     sync::Mutex,
 };
 
-#[cfg(not(redox_os))]
+#[cfg(not(redox))]
 use minifb;
 
-#[cfg(redox_os)]
+#[cfg(redox)]
 use minifb_fix as minifb;
 
 use spin_sleep::LoopHelper;
