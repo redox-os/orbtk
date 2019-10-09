@@ -21,6 +21,12 @@ pub struct MouseMoveEvent {
 
 impl Event for MouseMoveEvent {}
 
+pub struct ScrollEvent {
+    pub delta: Point,
+}
+
+impl Event for ScrollEvent {}
+
 pub struct MouseUpEvent {
     pub button: MouseButton,
     pub x: f64,
@@ -45,11 +51,11 @@ pub struct MouseDownEvent {
 
 impl Event for MouseDownEvent {}
 
-pub type MouseHandler = dyn Fn(Point) -> bool + 'static;
+pub type MouseHandlerFunction = dyn Fn(Point) -> bool + 'static;
 
 /// Used to handle click events. Could be attached to a widget.
 pub struct ClickEventHandler {
-    handler: Rc<MouseHandler>,
+    handler: Rc<MouseHandlerFunction>,
 }
 
 impl Into<Rc<dyn EventHandler>> for ClickEventHandler {
@@ -66,28 +72,111 @@ impl EventHandler for ClickEventHandler {
 
         return false;
     }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<ClickEvent>()
+    }
 }
 
-// pub trait ClickHandler: Sized + From<Template> + Into<Template> {
-//     /// Transforms the handler into a template.
-//     fn template<F: FnOnce(Template) -> Template>(self, transform: F) -> Self {
-//         Self::from(transform(self.into()))
-//     }
+/// Used to handle mouse down events. Could be attached to a widget.
+pub struct MouseDownEventHandler {
+    handler: Rc<MouseHandlerFunction>,
+}
 
-//     /// Inserts a handler.
-//     fn on_click<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
-//         self.template(|template| {
-//             template.event_handler(ClickEventHandler {
-//                 handler: Rc::new(handler),
-//             })
-//         })
-//     }
-// }
+impl Into<Rc<dyn EventHandler>> for MouseDownEventHandler {
+    fn into(self) -> Rc<dyn EventHandler> {
+        Rc::new(self)
+    }
+}
 
-pub trait ClickHandler: Sized + Widget {
-    /// Inserts a handler.
+impl EventHandler for MouseDownEventHandler {
+    fn handle_event(&self, event: &EventBox) -> bool {
+        if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
+            return (self.handler)(Point::new(event.x, event.y));
+        }
+
+        return false;
+    }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<MouseDownEvent>()
+    }
+}
+
+/// Used to handle mouse down events. Could be attached to a widget.
+pub struct MouseUpEventHandler {
+    handler: Rc<MouseHandlerFunction>,
+}
+
+impl Into<Rc<dyn EventHandler>> for MouseUpEventHandler {
+    fn into(self) -> Rc<dyn EventHandler> {
+        Rc::new(self)
+    }
+}
+
+impl EventHandler for MouseUpEventHandler {
+    fn handle_event(&self, event: &EventBox) -> bool {
+        if let Ok(event) = event.downcast_ref::<MouseUpEvent>() {
+            return (self.handler)(Point::new(event.x, event.y));
+        }
+
+        return false;
+    }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<MouseUpEvent>()
+    }
+}
+
+pub struct ScrollEventHandler {
+    handler: Rc<MouseHandlerFunction>,
+}
+
+impl Into<Rc<dyn EventHandler>> for ScrollEventHandler {
+    fn into(self) -> Rc<dyn EventHandler> {
+        Rc::new(self)
+    }
+}
+
+impl EventHandler for ScrollEventHandler {
+    fn handle_event(&self, event: &EventBox) -> bool {
+        if let Ok(event) = event.downcast_ref::<ScrollEvent>() {
+            return (self.handler)(Point::new(event.delta.x, event.delta.y));
+        }
+
+        return false;
+    }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<ScrollEvent>()
+    }
+}
+
+pub trait MouseHandler: Sized + Widget {
+    /// Inserts a click handler.
     fn on_click<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
         self.insert_handler(ClickEventHandler {
+            handler: Rc::new(handler),
+        })
+    }
+
+    /// Insert a mouse down handler.
+    fn on_mouse_down<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
+        self.insert_handler(MouseDownEventHandler {
+            handler: Rc::new(handler),
+        })
+    }
+
+    /// Insert a mouse up handler.
+    fn on_mouse_up<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
+        self.insert_handler(MouseUpEventHandler {
+            handler: Rc::new(handler),
+        })
+    }
+
+    /// Insert a mouse up handler.
+    fn on_scroll<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
+        self.insert_handler(ScrollEventHandler {
             handler: Rc::new(handler),
         })
     }

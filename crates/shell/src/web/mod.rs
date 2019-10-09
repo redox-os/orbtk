@@ -6,11 +6,13 @@ use std::{
 };
 
 use stdweb::{
-    _js_impl, js,
+    js,
     traits::*,
     unstable::TryInto,
     web::{document, event, html_element::CanvasElement, window, CanvasRenderingContext2d},
 };
+
+use lazy_static;
 
 use crate::{prelude::*, render::*, utils::*};
 
@@ -60,6 +62,7 @@ where
     pub touch_start_events: Rc<RefCell<Vec<event::TouchStart>>>,
     pub touch_end_events: Rc<RefCell<Vec<event::TouchEnd>>>,
     pub mouse_down_events: Rc<RefCell<Vec<event::MouseDownEvent>>>,
+    pub scroll_events: Rc<RefCell<Vec<event::MouseWheelEvent>>>,
     pub key_up_events: Rc<RefCell<Vec<event::KeyUpEvent>>>,
     pub key_down_events: Rc<RefCell<Vec<event::KeyDownEvent>>>,
     pub resize_events: Rc<RefCell<Vec<event::ResizeEvent>>>,
@@ -107,6 +110,9 @@ where
             });
         }
 
+        while let Some(event) = self.scroll_events.borrow_mut().pop() {
+            self.adapter.scroll(event.delta_x(), event.delta_y());
+        }
         // while let Some(event) = self.touch_start_events.borrow_mut().pop() {
         //     self.adapter.mouse_event(MouseEvent {
         //         x: event.touches()[0].client_x() as f64,
@@ -135,7 +141,7 @@ where
             });
         }
 
-        while let Some(event) = self.resize_events.borrow_mut().pop() {
+        while let Some(_) = self.resize_events.borrow_mut().pop() {
             let window_size = (
                 window().inner_width() as f64,
                 window().inner_height() as f64,
@@ -203,16 +209,11 @@ where
             return;
         }
 
-        log(format!(
-            "CSize: {},{}",
-            self.canvas.width(),
-            self.canvas.height()
-        ));
-
         document()
             .body()
             .unwrap()
-            .replace_child(&self.canvas, self.old_canvas.as_ref().unwrap());
+            .replace_child(&self.canvas, self.old_canvas.as_ref().unwrap())
+            .expect("Could not open document");
 
         self.old_canvas = None;
         self.flip = false;
@@ -322,6 +323,7 @@ where
         let touch_start = Rc::new(RefCell::new(vec![]));
         let touch_end = Rc::new(RefCell::new(vec![]));
         let mouse_down = Rc::new(RefCell::new(vec![]));
+        let scroll = Rc::new(RefCell::new(vec![]));
         let key_down = Rc::new(RefCell::new(vec![]));
         let key_up = Rc::new(RefCell::new(vec![]));
         let resize = Rc::new(RefCell::new(vec![]));
@@ -364,6 +366,14 @@ where
             .unwrap()
             .add_event_listener(move |e: event::MouseMoveEvent| {
                 mouse_move_c.borrow_mut().push(e);
+            });
+
+        let scroll_c = scroll.clone();
+        document()
+            .body()
+            .unwrap()
+            .add_event_listener(move |e: event::MouseWheelEvent| {
+                scroll_c.borrow_mut().push(e);
             });
 
         let key_down_c = key_down.clone();
@@ -435,6 +445,7 @@ where
             touch_start_events: touch_start,
             touch_end_events: touch_end,
             mouse_down_events: mouse_down,
+            scroll_events: scroll,
             key_down_events: key_down,
             key_up_events: key_up,
             resize_events: resize,
@@ -445,8 +456,28 @@ where
     }
 }
 
-pub fn log(message: impl Into<String>) {
-    js! {
-        console.log(@{&message.into()});
+lazy_static! {
+    pub static ref CONSOLE: Console = Console;
+}
+
+pub struct Console;
+
+impl Console {
+    pub fn time(&self, name: impl Into<String>) {
+        js! {
+            console.time(@{&name.into()})
+        }
+    }
+
+    pub fn time_end(&self, name: impl Into<String>) {
+        js! {
+            console.timeEnd(@{&name.into()})
+        }
+    }
+
+    pub fn log(&self, message: impl Into<String>) {
+        js! {
+            console.log(@{&message.into()});
+        }
     }
 }

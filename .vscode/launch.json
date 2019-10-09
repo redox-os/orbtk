@@ -50,25 +50,6 @@
       ]
     },
     {
-      "name": "Widgets web",
-      "type": "firefox",
-      "request": "launch",
-      "reAttach": true,
-      "url": "http://localhost:8000",
-      "webRoot": "${workspaceFolder}"
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "name": "Widgets preview",
-      "program": "${workspaceFolder}/target/debug/examples/widgets",
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build preview",
-      "sourceLanguages": [
-        "rust"
-      ]
-    },
-    {
       "type": "lldb",
       "request": "launch",
       "name": "Widgets debug",
@@ -104,17 +85,6 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Light Theme",
-      "program": "${workspaceFolder}/target/debug/examples/light-theme",
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build",
-      "sourceLanguages": [
-        "rust"
-      ]
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
       "name": "Messages",
       "program": "${workspaceFolder}/target/debug/examples/messages",
       "cwd": "${workspaceFolder}",
@@ -130,17 +100,6 @@
       "program": "${workspaceFolder}/target/debug/examples/grid",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
-      "sourceLanguages": [
-        "rust"
-      ]
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "name": "Grid preview",
-      "program": "${workspaceFolder}/target/debug/examples/grid",
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build preview",
       "sourceLanguages": [
         "rust"
       ]

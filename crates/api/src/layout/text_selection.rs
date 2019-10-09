@@ -132,7 +132,7 @@ impl Layout for TextSelectionLayout {
         let margin = Margin::get(entity, ecm.component_store());
 
         {
-            let mut widget = WidgetContainer::new(entity, ecm);
+            let mut widget = WidgetContainer::new(entity, ecm, &theme);
 
             size.1 = vertical_alignment.align_measure(
                 parent_size.1,
@@ -144,17 +144,21 @@ impl Layout for TextSelectionLayout {
             if let Some(text) = widget.try_get::<Text>() {
                 let font = widget.get::<Font>();
                 let font_size = widget.get::<FontSize>();
-                render_context_2_d.set_font_size(font_size.0);
-                render_context_2_d.set_font_family(&font.0[..]);
+                // render_context_2_d.set_font_size(font_size.0);
+                // render_context_2_d.set_font_family(&font.0[..]);
 
                 if let Some(selection) = widget.try_get::<TextSelection>() {
                     if let Some(text_part) = text.0.get_string(0, selection.0.start_index) {
-                        pos = render_context_2_d.measure_text(text_part.as_str()).width;
+                        pos = render_context_2_d
+                            .measure(text_part.as_str(), font_size.0, &font.0[..])
+                            .width;
                     }
                 }
             }
 
-            pos += widget.try_get::<Offset>().map_or(0.0, |off| (off.0).x);
+            pos += widget
+                .try_get::<ScrollOffset>()
+                .map_or(0.0, |off| (off.0).x);
 
             if let Some(margin) = widget.try_get_mut::<Margin>() {
                 margin.set_left(pos);

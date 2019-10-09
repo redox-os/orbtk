@@ -46,7 +46,7 @@ impl Layout for FixedSizeLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let widget = WidgetContainer::new(entity, ecm);
+        let widget = WidgetContainer::new(entity, ecm, theme);
 
         let size = widget
             .try_get::<Image>()
@@ -55,30 +55,36 @@ impl Layout for FixedSizeLayout {
                 widget.try_get::<Text>().and_then(|text| {
                     let font = widget.get::<Font>();
                     let font_size = widget.get::<FontSize>();
-                    render_context_2_d.set_font_size(font_size.0);
-                    render_context_2_d.set_font_family(&font.0[..]);
+                    // render_context_2_d.set_font_size(font_size.0);
+                    // render_context_2_d.set_font_family(&font.0[..]);
 
                     if text.0.is_empty() {
                         widget
                             .try_get::<WaterMark>()
                             .filter(|water_mark| !water_mark.0.is_empty())
                             .map(|water_mark| {
-                                let text_metrics = render_context_2_d
-                                    .measure_text(water_mark.0.to_string().as_str());
+                                let text_metrics = render_context_2_d.measure(
+                                    water_mark.0.to_string().as_str(),
+                                    font_size.0,
+                                    &font.0[..],
+                                );
                                 (text_metrics.width, text_metrics.height)
                             })
                     } else {
-                        let text_metrics =
-                            render_context_2_d.measure_text(text.0.to_string().as_str());
+                        let text_metrics = render_context_2_d.measure(
+                            text.0.to_string().as_str(),
+                            font_size.0,
+                            &font.0[..],
+                        );
 
-                        let mut size = (text_metrics.width, text_metrics.height);
+                        let size = (text_metrics.width, text_metrics.height);
 
-                        if text.0.to_string().ends_with(" ") {
-                            size.0 += render_context_2_d
-                                .measure_text(&format!("{}a", text.0.to_string()))
-                                .width
-                                - render_context_2_d.measure_text("a").width;
-                        }
+                        // if text.0.to_string().ends_with(" ") {
+                        //     size.0 += render_context_2_d
+                        //         .measure_text(&format!("{}a", text.0.to_string()))
+                        //         .width
+                        //         - render_context_2_d.measure_text("a").width;
+                        // }
                         Some(size)
                     }
                 })
@@ -89,9 +95,13 @@ impl Layout for FixedSizeLayout {
                     .filter(|font_icon| !font_icon.0.is_empty())
                     .map(|font_icon| {
                         let icon_size = widget.get::<IconSize>().0;
-                        render_context_2_d.set_font_size(icon_size);
-                        render_context_2_d.set_font_family(&widget.get::<IconFont>().0[..]);
-                        let text_metrics = render_context_2_d.measure_text(&font_icon.0);
+                        // render_context_2_d.set_font_size(icon_size);
+                        // render_context_2_d.set_font_family(&widget.get::<IconFont>().0[..]);
+                        let text_metrics = render_context_2_d.measure(
+                            &font_icon.0,
+                            icon_size,
+                            &widget.get::<IconFont>().0[..],
+                        );
                         (text_metrics.width, text_metrics.height)
                     })
             });
