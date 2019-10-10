@@ -10,6 +10,7 @@ pub use self::selected_indices::*;
 pub use self::selection_mode::*;
 pub use self::text::*;
 pub use self::text_selection::*;
+pub use self::three_pipeline::*;
 pub use self::title::*;
 pub use self::water_mark::*;
 
@@ -24,6 +25,7 @@ mod selected_indices;
 mod selection_mode;
 mod text;
 mod text_selection;
+mod three_pipeline;
 mod title;
 mod water_mark;
 

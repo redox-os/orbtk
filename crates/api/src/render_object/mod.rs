@@ -10,6 +10,7 @@ pub use self::font_icon::*;
 pub use self::image::*;
 pub use self::rectangle::*;
 pub use self::text::*;
+pub use self::three::*;
 
 mod clear;
 mod default;
@@ -17,6 +18,7 @@ mod font_icon;
 mod image;
 mod rectangle;
 mod text;
+mod three;
 
 pub trait RenderObject: Any {
     fn render(

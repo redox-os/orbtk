@@ -18,10 +18,7 @@ fn main() {
                         .border_thickness(1.0)
                         .border_brush("#000000")
                         .child(
-                            Button::create()
-                                .text("Test")
-                                .icon(material_font_icons::CHECK_FONT_ICON)
-                                .build(ctx),
+                          CanvasThree::create().build(ctx)
                         )
                         .build(ctx),
                 )

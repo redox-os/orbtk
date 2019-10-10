@@ -1,5 +1,7 @@
 #![recursion_limit = "128"]
 
+use std::{any::Any, fmt};
+
 pub mod prelude;
 
 pub use orbtk_utils::prelude as utils;
@@ -49,5 +51,42 @@ pub struct FontConfig {
 impl ToString for FontConfig {
     fn to_string(&self) -> String {
         format!("{}px {}", self.font_size, self.family)
+    }
+}
+
+/// Used to implement a 3D render pipeline to render 3D objects.
+pub trait ThreePipeline: Any {
+    /// Equality for two ThreePipeline objects.
+    fn box_eq(&self, other: &dyn Any) -> bool;
+
+    /// Converts self to an any reference.
+    fn as_any(&self) -> &dyn Any;
+
+    /// Clones self as box.
+    fn clone_box(&self) -> Box<ThreePipeline>;
+
+    /// Draws the context of the pipeline.
+    fn draw(
+        &self,
+        buffer: &mut three::buffer::Buffer2d<f64>,
+        depth: &mut three::buffer::Buffer2d<f64>,
+    );
+}
+
+impl PartialEq for Box<dyn ThreePipeline> {
+    fn eq(&self, other: &Box<dyn ThreePipeline>) -> bool {
+        self.box_eq(other.as_any())
+    }
+}
+
+impl Clone for Box<dyn ThreePipeline> {
+    fn clone(&self) -> Self {
+        self.clone_box()
+    }
+}
+
+impl fmt::Debug for Box<dyn ThreePipeline> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Box<ThreePipeline>")
     }
 }

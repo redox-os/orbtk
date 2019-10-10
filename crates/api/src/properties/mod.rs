@@ -27,17 +27,17 @@ where
 
 /// Use to build a property or to share it.
 #[derive(PartialEq, Debug)]
-pub enum PropertySource<P: Component + PartialEq + Debug> {
+pub enum PropertySource<P: Component + Debug> {
     Source(Entity),
     Value(P),
 }
 
-impl<P: Component + PartialEq + Debug> From<Entity> for PropertySource<P> {
+impl<P: Component + Debug> From<Entity> for PropertySource<P> {
     fn from(entity: Entity) -> Self {
         PropertySource::Source(entity)
     }
 }
 
-pub trait IntoPropertySource<P: Component + PartialEq + Debug> {
+pub trait IntoPropertySource<P: Component + Debug> {
     fn into_source(self) -> PropertySource<P>;
 }

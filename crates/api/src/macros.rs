@@ -2,7 +2,7 @@
 #[macro_export]
 macro_rules! property {
     ($(#[$property_doc:meta])* $property:ident($type:ty) $(: $( $ex_type:ty ),*)* ) => {
-        #[derive(Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone)]
         $(#[$property_doc])*
         pub struct $property(pub $type);
 
@@ -99,7 +99,7 @@ macro_rules! widget {
 
         impl $widget {
             /// Sets or shares an attached property.
-            pub fn attach<P: Component + PartialEq + Debug>(mut self, property: impl IntoPropertySource<P>) -> Self {
+            pub fn attach<P: Component + Debug>(mut self, property: impl IntoPropertySource<P>) -> Self {
                 match property.into_source() {
                     PropertySource::Value(value) => {
                         self.attached_properties.insert(TypeId::of::<P>(), ComponentBox::new(value));
@@ -113,7 +113,7 @@ macro_rules! widget {
 
             /// Shares an attached property.
             pub fn attach_by_source<P: Component>(mut self, source: Entity) -> Self {
-                 self.shared_attached_properties.insert(TypeId::of::<P>(), SharedComponentBox::new(TypeId::of::<P>(), source));
+                self.shared_attached_properties.insert(TypeId::of::<P>(), SharedComponentBox::new(TypeId::of::<P>(), source));
                 self
             }
 
@@ -388,9 +388,10 @@ macro_rules! widget {
                                     context.register_shared_property::<$property_type>(entity, source);
                                 }
                             }
-                        } else {
-                            context.register_property(entity, $property_type::default());
-                        }
+                        } 
+                        // else {
+                        //     context.register_property(entity, $property_type::default());
+                        // }
                     )*
                 )*
 
