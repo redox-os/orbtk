@@ -3,7 +3,7 @@ use stdweb::{
     web::{CanvasRenderingContext2d, FillRule},
 };
 
-use crate::{utils::*, FontConfig, TextMetrics};
+use crate::{utils::*, FontConfig, TextMetrics, RenderPipeline};
 
 pub use self::image::*;
 
@@ -196,6 +196,10 @@ impl RenderContext2D {
                  @{&self.canvas_render_context_2_d}.drawImage(img, @{&x}, @{&y});
             }
         );
+    }
+
+    pub fn draw_render_pipeline(&mut self, x: f64, y: f64, width: f64, height: f64, three_object: &Box<RenderPipeline>) {
+        // self.sender.send(vec![RenderTask::DrawThreeObject { x, y, width, height, three_object: three_object.clone()}]);
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.

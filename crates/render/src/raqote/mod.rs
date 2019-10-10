@@ -2,7 +2,7 @@ use std::{cmp, collections::HashMap};
 
 use raqote;
 
-use crate::{utils::*, RenderConfig, TextMetrics};
+use crate::{utils::*, RenderConfig, TextMetrics, RenderPipeline};
 
 pub use self::font::*;
 pub use self::image::*;
@@ -305,6 +305,10 @@ impl RenderContext2D {
             offset = next_offset;
             y += 1;
         }
+    }
+
+    pub fn draw_render_pipeline(&mut self, x: f64, y: f64, width: f64, height: f64, three_object: &Box<RenderPipeline>) {
+        // self.sender.send(vec![RenderTask::DrawThreeObject { x, y, width, height, three_object: three_object.clone()}]);
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.

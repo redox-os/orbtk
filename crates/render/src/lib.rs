@@ -55,38 +55,34 @@ impl ToString for FontConfig {
 }
 
 /// Used to implement a 3D render pipeline to render 3D objects.
-pub trait ThreePipeline: Any {
-    /// Equality for two ThreePipeline objects.
+pub trait RenderPipeline: Any {
+    /// Equality for two RenderPipeline objects.
     fn box_eq(&self, other: &dyn Any) -> bool;
 
     /// Converts self to an any reference.
     fn as_any(&self) -> &dyn Any;
 
     /// Clones self as box.
-    fn clone_box(&self) -> Box<ThreePipeline>;
+    fn clone_box(&self) -> Box<dyn RenderPipeline>;
 
     /// Draws the context of the pipeline.
-    fn draw(
-        &self,
-        buffer: &mut three::buffer::Buffer2d<f64>,
-        depth: &mut three::buffer::Buffer2d<f64>,
-    );
+    fn draw_pipeline(&self, image: &mut platform::Image);
 }
 
-impl PartialEq for Box<dyn ThreePipeline> {
-    fn eq(&self, other: &Box<dyn ThreePipeline>) -> bool {
+impl PartialEq for Box<dyn RenderPipeline> {
+    fn eq(&self, other: &Box<dyn RenderPipeline>) -> bool {
         self.box_eq(other.as_any())
     }
 }
 
-impl Clone for Box<dyn ThreePipeline> {
+impl Clone for Box<dyn RenderPipeline> {
     fn clone(&self) -> Self {
         self.clone_box()
     }
 }
 
-impl fmt::Debug for Box<dyn ThreePipeline> {
+impl fmt::Debug for Box<dyn RenderPipeline> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Box<ThreePipeline>")
+        write!(f, "Box<RenderPipeline>")
     }
 }

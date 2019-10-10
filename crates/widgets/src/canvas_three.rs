@@ -6,7 +6,7 @@ widget!(
     /// CanvasThree is used to render 3D graphics.
     CanvasThree {
         /// Sets or shares the three render pipeline. 
-        test: ThreePipeline,
+        pipeline: RenderPipeline,
 
         /// Sets or shares the css selector property. 
         selector: Selector

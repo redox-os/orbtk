@@ -7,6 +7,7 @@ use crate::{
     platform::{self, Image},
     utils::*,
     TextMetrics,
+    RenderPipeline
 };
 
 // Used to sent render tasks to render thread.
@@ -633,9 +634,9 @@ impl RenderContext2D {
             .expect("Could not send clipped image to render thread.");
     }
 
-    // pub fn draw_three_object(&mut self, x: f64, y: f64, width: f64, height: f64, three_object: &Box<ThreeObject>) {
-    //     // self.sender.send(vec![RenderTask::DrawThreeObject { x, y, width, height, three_object: three_object.clone()}]);
-    // }
+    pub fn draw_render_pipeline(&mut self, x: f64, y: f64, width: f64, height: f64, three_object: &Box<RenderPipeline>) {
+        // self.sender.send(vec![RenderTask::DrawThreeObject { x, y, width, height, three_object: three_object.clone()}]);
+    }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
     pub fn clip(&mut self) {

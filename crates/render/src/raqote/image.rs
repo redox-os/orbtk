@@ -36,6 +36,7 @@ impl std::cmp::PartialEq for Image {
 }
 
 impl Image {
+    /// Creates a new image with the given width and height.
     pub fn new(width: u32, height: u32) -> Self {
         Image {
             width,
@@ -43,6 +44,11 @@ impl Image {
             data: vec![Color::rgba(0, 0, 0, 0).data; width as usize * height as usize],
             source: String::default(),
         }
+    }
+
+    /// Draws a u32 slice into the image.
+    pub fn draw(&mut self, data: &[u32]) {
+        self.data.clone_from_slice(data);
     }
 
     /// Create a new image from a boxed slice of colors
