@@ -2,6 +2,7 @@ use crate::prelude::*;
 
 property!(
     /// `FontSize` describes the font size of a text element.
+    #[derive(Default)]
     FontSize(f64)
 );
 

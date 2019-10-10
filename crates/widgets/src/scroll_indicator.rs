@@ -56,6 +56,7 @@ impl State for ScrollIndicatorState {
 
 property!(
     /// Internal content id property of ScrollIndicator. Is used to get the size of the scrolled content.
+    #[derive(Default)]
     ContentId(u32)
 );
 

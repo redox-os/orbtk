@@ -19,3 +19,4 @@ image = "0.22.3"
 
 [dependencies]
 orbtk-utils = { version = "0.1.0", path = "../utils" }
+euc = "0.4.2"

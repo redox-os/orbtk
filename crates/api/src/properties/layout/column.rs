@@ -165,6 +165,7 @@ pub struct ColumnsContainer(pub Vec<Column>);
 
 property!(
     /// `Columns` describes a list of grid columns.
+    #[derive(Default)]
     Columns(ColumnsContainer)
 );
 

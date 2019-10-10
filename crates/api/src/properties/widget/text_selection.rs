@@ -17,6 +17,7 @@ impl From<(usize, usize)> for TextSelectionValue {
 }
 
 property!(
-    // The `TextSelection` property is used to mark the selection of a text.
+    /// The `TextSelection` property is used to mark the selection of a text.
+    #[derive(Default)]
     TextSelection(TextSelectionValue): (usize, usize)
 );

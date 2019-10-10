@@ -164,6 +164,7 @@ pub struct RowsContainer(Vec<Row>);
 
 property!(
     /// `Rows` describes a list of grid rows.
+    #[derive(Default)]
     Rows(RowsContainer)
 );
 

@@ -21,6 +21,8 @@ pub use platform::RenderContext2D;
 #[path = "raqote/mod.rs"]
 pub mod platform;
 
+pub use euc as three;
+
 /// Defines the current configuration of the render context.
 #[derive(Default, Debug, Clone)]
 pub struct RenderConfig {

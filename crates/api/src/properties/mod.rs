@@ -17,12 +17,12 @@ mod widget;
 /// Used to the a property of a widget.
 pub fn get_property<T>(entity: Entity, store: &ComponentStore) -> T
 where
-    T: Clone + Component + Default,
+    T: Clone + Component
 {
     store
         .borrow_component::<T>(entity)
         .map(|r| r.clone())
-        .unwrap_or_default()
+        .unwrap()
 }
 
 /// Use to build a property or to share it.

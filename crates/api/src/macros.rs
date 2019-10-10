@@ -2,7 +2,7 @@
 #[macro_export]
 macro_rules! property {
     ($(#[$property_doc:meta])* $property:ident($type:ty) $(: $( $ex_type:ty ),*)* ) => {
-        #[derive(Default, Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq)]
         $(#[$property_doc])*
         pub struct $property(pub $type);
 
