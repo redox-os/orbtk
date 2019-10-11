@@ -225,7 +225,7 @@ where
     pub fn flip(&mut self) -> bool {
         if let Some(data) = self.render_context_2_d.data() {
             self.window.update_with_buffer(data).unwrap();
-            // CONSOLE.time_end("render");
+            CONSOLE.time_end("render");
             return true;
         }
 

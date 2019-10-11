@@ -97,7 +97,7 @@ impl<'a> WidgetContainer<'a> {
     /// Panics if the widget does not contains the property.
     pub fn clone<P>(&self) -> P
     where
-        P: Clone + Component
+        P: Clone + Component,
     {
         if let Ok(property) = self
             .ecm
@@ -118,7 +118,7 @@ impl<'a> WidgetContainer<'a> {
     /// not exists or it doesn't have a component of type `P` `None` will be returned.
     pub fn try_clone<P>(&self) -> Option<P>
     where
-        P: Clone + Component
+        P: Clone + Component,
     {
         if let Ok(property) = self
             .ecm

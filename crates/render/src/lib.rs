@@ -23,7 +23,7 @@ pub use platform::RenderContext2D;
 #[path = "raqote/mod.rs"]
 pub mod platform;
 
-pub use euc as three;
+pub mod image;
 
 /// Defines the current configuration of the render context.
 #[derive(Default, Debug, Clone)]
@@ -54,8 +54,8 @@ impl ToString for FontConfig {
     }
 }
 
-/// Used to implement a 3D render pipeline to render 3D objects.
-pub trait RenderPipeline: Any {
+/// Used to implement a custom render pipeline.
+pub trait RenderPipeline: Any + Send {
     /// Equality for two RenderPipeline objects.
     fn box_eq(&self, other: &dyn Any) -> bool;
 
@@ -83,6 +83,6 @@ impl Clone for Box<dyn RenderPipeline> {
 
 impl fmt::Debug for Box<dyn RenderPipeline> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Box<RenderPipeline>")
+        write!(f, "Box<dyn RenderPipeline>")
     }
 }

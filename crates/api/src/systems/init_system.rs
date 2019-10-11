@@ -104,7 +104,7 @@ impl System<Tree> for InitSystem {
 
 pub fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tree>) {
     let name = Name::get(entity, ecm.component_store());
-    let selector = Selector::get(entity, ecm.component_store());
+    let selector = Selector::get_or_value(entity, ecm.component_store(), Selector::default());
 
     crate::shell::CONSOLE.log(format!(
         "{}{} (entity: {}{})",

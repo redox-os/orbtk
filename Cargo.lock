@@ -417,6 +417,7 @@ name = "orbtk"
 version = "0.3.0"
 dependencies = [
  "dces 0.2.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)",
+ "euc 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbtk-api 0.1.0",
  "orbtk-css-engine 0.1.0",
  "orbtk-render 0.1.0",
@@ -425,6 +426,7 @@ dependencies = [
  "orbtk-tree 0.1.0",
  "orbtk-utils 0.1.0",
  "orbtk-widgets 0.1.0",
+ "vek 0.9.9 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -452,7 +454,6 @@ dependencies = [
 name = "orbtk-render"
 version = "0.1.0"
 dependencies = [
- "euc 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.22.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbtk-utils 0.1.0",
  "raqote 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",

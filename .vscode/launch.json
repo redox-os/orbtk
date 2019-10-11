@@ -74,8 +74,8 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Canvas Three",
-      "program": "${workspaceFolder}/target/debug/examples/canvas_three",
+      "name": "Canvas",
+      "program": "${workspaceFolder}/target/debug/examples/canvas",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
       "sourceLanguages": [

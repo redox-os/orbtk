@@ -47,6 +47,8 @@ impl Layout for StackLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
+        println!("entity {:?}", entity);
+
         let orientation = Orientation::get(entity, ecm.component_store());
         let mut desired_size: (f64, f64) = (0.0, 0.0);
 

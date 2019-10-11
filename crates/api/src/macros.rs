@@ -11,6 +11,11 @@ macro_rules! property {
             pub fn get(entity: Entity, store: &ComponentStore) -> $type {
                 get_property::<$property>(entity, store).0
             }
+
+            /// Returns the value of a property if it exists otherwise the given value.
+            pub fn get_or_value(entity: Entity, store: &ComponentStore, value: $property) -> $type {
+                get_property_or_value::<$property>(entity, store, value).0
+            }
         }
 
         impl IntoPropertySource<$property> for $type {
@@ -388,10 +393,10 @@ macro_rules! widget {
                                     context.register_shared_property::<$property_type>(entity, source);
                                 }
                             }
-                        } 
-                        // else {
-                        //     context.register_property(entity, $property_type::default());
-                        // }
+                        }
+                        else {
+                            context.register_property(entity, $property_type::default());
+                        }
                     )*
                 )*
 

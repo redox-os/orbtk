@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 widget!(
     /// The `ScrollBar` widget represents a position inside of a scroll container.
-    /// 
+    ///
     /// **CSS element:** `scroll-bar`
     ScrollBar {
         /// Sets or shares the background property.
@@ -29,4 +29,3 @@ impl Template for ScrollBar {
         Box::new(RectangleRenderObject)
     }
 }
-

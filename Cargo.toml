@@ -35,6 +35,10 @@ orbtk-tree = { version = "0.1.0", path="crates/tree" }
 orbtk-widgets = { version = "0.1.0", path="crates/widgets" }
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }
 
+[dev-dependencies]
+euc = "0.4.2"
+vek = "0.9.9"
+
 [features]
 debug = ["orbtk-api/debug"]
  

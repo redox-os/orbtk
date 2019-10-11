@@ -3,7 +3,8 @@ use stdweb::{
     web::{CanvasRenderingContext2d, FillRule},
 };
 
-use crate::{utils::*, FontConfig, TextMetrics, RenderPipeline};
+pub use crate::image::Image as InnerImage;
+use crate::{utils::*, FontConfig, RenderPipeline, TextMetrics};
 
 pub use self::image::*;
 
@@ -198,7 +199,14 @@ impl RenderContext2D {
         );
     }
 
-    pub fn draw_render_pipeline(&mut self, x: f64, y: f64, width: f64, height: f64, three_object: &Box<RenderPipeline>) {
+    pub fn draw_pipeline(
+        &mut self,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+        pipeline: Box<dyn RenderPipeline>,
+    ) {
         // self.sender.send(vec![RenderTask::DrawThreeObject { x, y, width, height, three_object: three_object.clone()}]);
     }
 

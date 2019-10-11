@@ -407,14 +407,12 @@ impl Layout for GridLayout {
             loop {
                 let child = ecm.entity_store().children[&entity][index];
 
+                let child_horizontal_alignment =
+                    HorizontalAlignment::get(child, ecm.component_store());
+                let child_vertical_alignment = VerticalAlignment::get(child, ecm.component_store());
+
                 let mut cell_position = (0.0, 0.0);
-                let mut available_size = *self.children_sizes.borrow().get(&child).unwrap();
-
-                // child margin
-                let c_margin = Margin::get(child, ecm.component_store());
-
-                let c_vertical_alignment = VerticalAlignment::get(child, ecm.component_store());
-                let c_horizontal_alignment = HorizontalAlignment::get(child, ecm.component_store());
+                let mut available_size = size;
 
                 let has_columns = if let Ok(columns) =
                     ecm.component_store().borrow_component::<Columns>(entity)
@@ -477,37 +475,42 @@ impl Layout for GridLayout {
                     available_size.1 = size.1;
                 }
 
+                let mut child_desired_size = (0.0, 0.0);
                 if let Some(child_layout) = layouts.borrow().get(&child) {
-                    available_size = child_layout.arrange(
-                        render_context_2_d,
-                        available_size,
-                        child,
-                        ecm,
-                        layouts,
-                        theme,
-                    );
+                    child_desired_size =
+                        child_layout.arrange(render_context_2_d, available_size, child, ecm, layouts, theme);
                 }
+
+                let child_margin = {
+                    if child_desired_size.0 > 0.0 && child_desired_size.1 > 0.0 {
+                        Margin::get(child, ecm.component_store())
+                    } else {
+                        Margin::default().0
+                    }
+                };
 
                 if let Ok(child_bounds) = ecm
                     .component_store_mut()
                     .borrow_mut_component::<Bounds>(child)
                 {
+                    println!("AH {}", available_size.0);
+                    println!("CH {}", child_bounds.height());
                     child_bounds.set_x(
                         cell_position.0
-                            + c_horizontal_alignment.align_position(
-                                size.0,
+                            + child_horizontal_alignment.align_position(
                                 available_size.0,
-                                c_margin.left(),
-                                c_margin.right(),
+                                child_bounds.width(),
+                                child_margin.left(),
+                                child_margin.right(),
                             ),
                     );
                     child_bounds.set_y(
                         cell_position.1
-                            + c_vertical_alignment.align_position(
-                                size.1,
+                            + child_vertical_alignment.align_position(
                                 available_size.1,
-                                c_margin.top(),
-                                c_margin.bottom(),
+                                child_bounds.height(),
+                                child_margin.top(),
+                                child_margin.bottom(),
                             ),
                     );
                 }

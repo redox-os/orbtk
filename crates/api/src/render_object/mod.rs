@@ -8,17 +8,17 @@ pub use self::clear::*;
 pub use self::default::*;
 pub use self::font_icon::*;
 pub use self::image::*;
+pub use self::pipeline::*;
 pub use self::rectangle::*;
 pub use self::text::*;
-pub use self::three::*;
 
 mod clear;
 mod default;
 mod font_icon;
 mod image;
+mod pipeline;
 mod rectangle;
 mod text;
-mod three;
 
 pub trait RenderObject: Any {
     fn render(

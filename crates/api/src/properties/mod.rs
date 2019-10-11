@@ -17,12 +17,23 @@ mod widget;
 /// Used to the a property of a widget.
 pub fn get_property<T>(entity: Entity, store: &ComponentStore) -> T
 where
-    T: Clone + Component
+    T: Clone + Component,
 {
     store
         .borrow_component::<T>(entity)
         .map(|r| r.clone())
         .unwrap()
+}
+
+/// Returns the value of a property of a widget if it exists otherwise the given value.
+pub fn get_property_or_value<T>(entity: Entity, store: &ComponentStore, value: T) -> T
+where
+    T: Clone + Component,
+{
+    if let Ok(property) = store.borrow_component::<T>(entity).map(|r| r.clone()) {
+        return property;
+    }
+    value
 }
 
 /// Use to build a property or to share it.

@@ -2,13 +2,12 @@ use std::{cmp, collections::HashMap};
 
 use raqote;
 
-use crate::{utils::*, RenderConfig, TextMetrics, RenderPipeline};
+use crate::{utils::*, RenderConfig, RenderPipeline, TextMetrics};
 
 pub use self::font::*;
-pub use self::image::*;
+pub use crate::image::Image;
 
 mod font;
-mod image;
 
 /// The RenderContext2D trait, provides the 2D rendering context. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
@@ -179,6 +178,7 @@ impl RenderContext2D {
         path_builder.close();
         self.path = path_builder.finish();
     }
+
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
         self.last_rect = (x, y, width, height);
@@ -307,8 +307,17 @@ impl RenderContext2D {
         }
     }
 
-    pub fn draw_render_pipeline(&mut self, x: f64, y: f64, width: f64, height: f64, three_object: &Box<RenderPipeline>) {
-        // self.sender.send(vec![RenderTask::DrawThreeObject { x, y, width, height, three_object: three_object.clone()}]);
+    pub fn draw_pipeline(
+        &mut self,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+        pipeline: Box<dyn RenderPipeline>,
+    ) {
+        let mut image = Image::new(width as u32, height as u32);
+        pipeline.draw_pipeline(&mut image);
+        self.draw_image(&image, x, y);
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
@@ -353,12 +362,7 @@ impl RenderContext2D {
     pub fn set_transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
         self.draw_target
             .set_transform(&raqote::Transform::row_major(
-                a as f32,
-                b as f32,
-                c as f32,
-                d as f32,
-                e as f32,
-                f as f32,
+                a as f32, b as f32, c as f32, d as f32, e as f32, f as f32,
             ));
     }
 
