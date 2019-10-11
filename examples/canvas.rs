@@ -196,7 +196,7 @@ impl Template for MainView {
                             .margin(4.0)
                             .build(ctx),
                     )
-                    .child(Canvas::create().attach(GridRow(1)).pipeline(id).build(ctx))
+                    // .child(Canvas::create().attach(GridRow(1)).pipeline(id).build(ctx))
                     .build(ctx),
             )
     }

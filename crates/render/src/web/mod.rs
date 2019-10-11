@@ -215,7 +215,7 @@ impl RenderContext {
 
         let image_data = self
             .canvas_render_context_2_d
-            .create_image_data(width * device_pixel_ratio, height * device_pixel_ratio)
+            .create_image_data(width, height)
             .unwrap();
 
             
