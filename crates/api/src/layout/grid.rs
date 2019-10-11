@@ -493,8 +493,6 @@ impl Layout for GridLayout {
                     .component_store_mut()
                     .borrow_mut_component::<Bounds>(child)
                 {
-                    println!("AH {}", available_size.0);
-                    println!("CH {}", child_bounds.height());
                     child_bounds.set_x(
                         cell_position.0
                             + child_horizontal_alignment.align_position(

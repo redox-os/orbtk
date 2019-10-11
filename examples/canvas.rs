@@ -135,7 +135,7 @@ pub struct MainViewState {
 
 impl MainViewState {
     fn spin(&self) {
-        self.cube_spin.set(self.cube_spin.get() + 8.0);
+        self.cube_spin.set(self.cube_spin.get() + 16.0);
     }
 }
 
@@ -167,7 +167,15 @@ impl Template for MainView {
             .child(
                 Grid::create()
                     .rows(Rows::create().row("*").row("*").build())
-                    .child(Canvas::create().pipeline(id).build(ctx))
+                    .child(
+                        TextBlock::create()
+                            .attach(GridRow(0))
+                            .text("Canvas (3D pipeline)")
+                            .selector(SelectorValue::new().with("text-block").class("h1"))
+                            .margin(4.0)
+                            .build(ctx),
+                    )
+                    .child(Canvas::create().attach(GridRow(0)).pipeline(id).build(ctx))
                     .child(
                         Button::create()
                             .text("spin cube")
@@ -180,7 +188,15 @@ impl Template for MainView {
                             })
                             .build(ctx),
                     )
-                    .child(Grid::create().attach(GridRow(1)).build(ctx))
+                    .child(
+                        TextBlock::create()
+                            .attach(GridRow(1))
+                            .text("Canvas (2D pipeline)")
+                            .selector(SelectorValue::new().with("text-block").class("h1"))
+                            .margin(4.0)
+                            .build(ctx),
+                    )
+                    .child(Canvas::create().attach(GridRow(1)).build(ctx))
                     .build(ctx),
             )
     }
