@@ -15,7 +15,7 @@ impl render::RenderPipeline for EmptyRenderPipeline {
     fn clone_box(&self) -> Box<dyn render::RenderPipeline> {
         Box::new(self.clone())
     }
-    fn draw_pipeline(&self, image: &mut render::RenderTarget) {}
+    fn draw_pipeline(&self, _: &mut render::RenderTarget) {}
 }
 
 property!(

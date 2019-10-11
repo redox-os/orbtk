@@ -431,7 +431,7 @@ where
             context.scale(ratio, ratio);
         }
 
-        let render_context_2_d = RenderContext::new(canvas.get_context().unwrap());
+        let render_context_2_d = RenderContext::from_context(canvas.get_context().unwrap());
 
         document().set_title(&self.title[..]);
 

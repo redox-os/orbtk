@@ -52,7 +52,7 @@ impl Image {
     }
 
     /// Draws a u32 slice into the image.
-    pub fn draw(&mut self, data: &[u32]) {
+    pub fn draw(&mut self, _data: &[u32]) {
         // todo
     }
 

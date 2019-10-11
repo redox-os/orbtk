@@ -1,7 +1,7 @@
 use orbtk::prelude::*;
 use std::cell::Cell;
 
-use euc::{buffer::Buffer2d, rasterizer, Pipeline, Target};
+use euc::{buffer::Buffer2d, rasterizer, Pipeline};
 use vek::*;
 
 // Cube is copied from euc spinning_cube example

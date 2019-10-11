@@ -14,7 +14,7 @@ widget!(
 );
 
 impl Template for Canvas {
-    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Canvas").selector("canvas-three")
     }
 

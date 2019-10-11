@@ -1,6 +1,7 @@
 use stdweb::{
     js,
-    web::{window, CanvasRenderingContext2d, FillRule},
+    unstable::TryInto,
+    web::{document, html_element::CanvasElement, CanvasRenderingContext2d, FillRule, window},
 };
 
 // pub use crate::image::Image as InnerImage;
@@ -17,8 +18,54 @@ pub struct RenderContext {
 }
 
 impl RenderContext {
+    /// Creates a new render context with the given width and height.
+    pub fn new(width: f64, height: f64) -> Self {
+        let canvas: CanvasElement = document()
+            .create_element("canvas")
+            .unwrap()
+            .try_into()
+            .unwrap();
+
+        canvas.set_width(width as u32);
+        canvas.set_height(height as u32);
+
+        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
+        let device_pixel_ratio = window().device_pixel_ratio();
+
+        let backing_store_ratio = js! {
+            var context = @{&context};
+             return context.webkitBackingStorePixelRatio ||
+                 context.mozBackingStorePixelRatio ||
+                 context.msBackingStorePixelRatio ||
+                 context.oBackingStorePixelRatio ||
+                 context.backingStorePixelRatio || 1;
+        };
+
+        let ratio: f64 = js! {
+            return @{&device_pixel_ratio} / @{&backing_store_ratio};
+        }
+        .try_into()
+        .unwrap();
+
+        if device_pixel_ratio != backing_store_ratio {
+            let old_width = canvas.width();
+            let old_height = canvas.height();
+            canvas.set_width((old_width as f64 * ratio) as u32);
+            canvas.set_height((old_height as f64 * ratio) as u32);
+
+            js! {
+                @{&canvas}.style.width = @{&old_width} + "px";
+                @{&canvas}.style.height = @{&old_height} + "px";
+            }
+
+            context.scale(ratio, ratio);
+        }
+
+        Self::from_context(context)
+    }
+
     /// Creates a new render context 2d.
-    pub fn new(canvas_render_context_2_d: CanvasRenderingContext2d) -> Self {
+    pub fn from_context(canvas_render_context_2_d: CanvasRenderingContext2d) -> Self {
         canvas_render_context_2_d.set_text_baseline(stdweb::web::TextBaseline::Middle);
         RenderContext {
             canvas_render_context_2_d,
@@ -215,8 +262,6 @@ impl RenderContext {
             .create_image_data(width, height)
             .unwrap();
 
-            
-
         for i in 0..(render_target.data.len() - 1) {
             let pixel = render_target.data.get(i).unwrap();
             let r = ((pixel & 0x00FF0000) >> 16) as u8;
@@ -233,27 +278,30 @@ impl RenderContext {
             );
         }
 
+        let canvas: CanvasElement = document()
+            .create_element("canvas")
+            .unwrap()
+            .try_into()
+            .unwrap();
+
+        canvas.set_width(width as u32);
+        canvas.set_height(height as u32);
+
+        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
+        context
+            .put_image_data(image_data, 0.0, 0.0)
+            .expect("Could no draw pipeline.");
+
+        // todo: use await after stdweb futures are stable
         js!(
-            var tempCanvas=document.createElement("canvas");
-            var tempCtx=tempCanvas.getContext("2d");
-            var x = @{&x};
-            var y = @{&y};
-
-            // set the temp canvas size == the canvas size
-            tempCanvas.width=@{&width};
-            tempCanvas.height=@{&height};
-
-            // put the modified pixels on the temp canvas
-            tempCtx.putImageData(@{&image_data},0,0);
-            // tempCtx.scale(10 * @{&device_pixel_ratio}, 10 * @{&device_pixel_ratio});
-
             // use the tempCanvas.toDataURL to create an img object
-            var img=new Image();
-            img.src=tempCanvas.toDataURL();
-            img.onload=function(){
-                // drawImage the img on the canvas
-                @{&self.canvas_render_context_2_d}.drawImage(img,x,y);
-            }
+            var img = new Image();
+
+            img.onload = function () {
+                @{&self.canvas_render_context_2_d}.drawImage(img,@{&x},@{&y});
+            };
+
+            img.src = @{&canvas}.toDataURL();
         );
     }
 
