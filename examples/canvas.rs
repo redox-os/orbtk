@@ -170,7 +170,7 @@ impl Template for MainView {
                     .child(
                         TextBlock::create()
                             .attach(GridRow(0))
-                            .text("Canvas (3D pipeline)")
+                            .text("Canvas (euc crate pipeline)")
                             .selector(SelectorValue::new().with("text-block").class("h1"))
                             .margin(4.0)
                             .build(ctx),
@@ -191,7 +191,7 @@ impl Template for MainView {
                     .child(
                         TextBlock::create()
                             .attach(GridRow(1))
-                            .text("Canvas (2D pipeline)")
+                            .text("Canvas (OrbTk 2D pipeline)")
                             .selector(SelectorValue::new().with("text-block").class("h1"))
                             .margin(4.0)
                             .build(ctx),
