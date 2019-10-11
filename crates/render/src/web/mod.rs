@@ -210,9 +210,6 @@ impl RenderContext {
         let mut render_target = RenderTarget::new(width as u32, height as u32);
         pipeline.draw_pipeline(&mut render_target);
 
-        let device_pixel_ratio = window().device_pixel_ratio();
-        // let device_pixel_ratio = 1.0;
-
         let image_data = self
             .canvas_render_context_2_d
             .create_image_data(width, height)
@@ -257,8 +254,6 @@ impl RenderContext {
                 // drawImage the img on the canvas
                 @{&self.canvas_render_context_2_d}.drawImage(img,x,y);
             }
-            // console.log("Test")
-            // 
         );
     }
 
