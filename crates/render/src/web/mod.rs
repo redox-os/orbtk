@@ -1,26 +1,26 @@
 use stdweb::{
     js,
-    web::{CanvasRenderingContext2d, FillRule},
+    web::{window, CanvasRenderingContext2d, FillRule},
 };
 
-pub use crate::image::Image as InnerImage;
-use crate::{utils::*, FontConfig, RenderPipeline, TextMetrics};
+// pub use crate::image::Image as InnerImage;
+use crate::{utils::*, FontConfig, RenderPipeline, RenderTarget, TextMetrics};
 
 pub use self::image::*;
 
 mod image;
 
-/// The RenderContext2D trait, provides the 2D rendering context. It is used for drawing shapes, text, images, and other objects.
-pub struct RenderContext2D {
+/// The RenderContext trait, provides the rendering context. It is used for drawing shapes, text, images, and other objects.
+pub struct RenderContext {
     canvas_render_context_2_d: CanvasRenderingContext2d,
     font_config: FontConfig,
 }
 
-impl RenderContext2D {
+impl RenderContext {
     /// Creates a new render context 2d.
     pub fn new(canvas_render_context_2_d: CanvasRenderingContext2d) -> Self {
         canvas_render_context_2_d.set_text_baseline(stdweb::web::TextBaseline::Middle);
-        RenderContext2D {
+        RenderContext {
             canvas_render_context_2_d,
             font_config: FontConfig::default(),
         }
@@ -207,6 +207,59 @@ impl RenderContext2D {
         height: f64,
         pipeline: Box<dyn RenderPipeline>,
     ) {
+        let mut render_target = RenderTarget::new(width as u32, height as u32);
+        pipeline.draw_pipeline(&mut render_target);
+
+        // let device_pixel_ratio = window().device_pixel_ratio();
+        let device_pixel_ratio = 1.0;
+
+        let image_data = self
+            .canvas_render_context_2_d
+            .create_image_data(width * device_pixel_ratio, height * device_pixel_ratio)
+            .unwrap();
+
+            
+
+        for i in 0..(render_target.data.len() - 1) {
+            let pixel = render_target.data.get(i).unwrap();
+            let r = ((pixel & 0x00FF0000) >> 16) as u8;
+            let g = ((pixel & 0x0000FF00) >> 8) as u8;
+            let b = (pixel & 0x000000FF) as u8;
+            let a = ((pixel & 0xFF000000) >> 24) as u8;
+
+            let index = i as u32 * 4;
+            js!(
+                @{&image_data}.data[@{index} + 0] = @{r};  // R value
+                @{&image_data}.data[@{index} + 1] = @{g};    // G value
+                @{&image_data}.data[@{index} + 2] = @{b};  // B value
+                @{&image_data}.data[@{index} + 3] = @{a};  // A value
+            );
+        }
+
+        // js!(
+        //       console.log(@{&image_data}.data.length);
+        //     for(let i = 0; i < @{&image_data}.data.length; i+= 4) {
+        //         @{&image_data}.data[i + 0] = 190;  // R value
+        //         @{&image_data}.data[i + 1] = 0;    // G value
+        //         @{&image_data}.data[i + 2] = 210;  // B value
+        //         @{&image_data}.data[i + 3] = 255;  // A value
+        //     }
+        // );
+
+        js!(
+            // var img = new Image(@{&width}, @{&height});
+            // img.src = @{&image_data};
+            // console.log(img);
+            // @{&self.canvas_render_context_2_d}.drawImage(img, @{&x}, @{&y});
+            @{&self.canvas_render_context_2_d}.putImageData(@{&image_data}, 0, 0, @{&x}, @{&y}, @{&width}, @{&height});
+        );
+
+        // self.canvas_render_context_2_d.put_image_data(
+        //     image_data,
+        //     (x * device_pixel_ratio) as f32,
+        //     (y * device_pixel_ratio) as f32,
+        // );
+
         // self.sender.send(vec![RenderTask::DrawThreeObject { x, y, width, height, three_object: three_object.clone()}]);
     }
 

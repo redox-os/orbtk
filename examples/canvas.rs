@@ -46,14 +46,14 @@ impl render::RenderPipeline for CubePipeline {
     fn clone_box(&self) -> Box<dyn render::RenderPipeline> {
         Box::new(self.clone())
     }
-    fn draw_pipeline(&self, image: &mut render::Image) {
-        let mut color = Buffer2d::new([image.width() as usize, image.height() as usize], 0);
-        let mut depth = Buffer2d::new([image.width() as usize, image.height() as usize], 1.0);
+    fn draw_pipeline(&self, render_target: &mut render::RenderTarget) {
+        let mut color = Buffer2d::new([render_target.width() as usize, render_target.height() as usize], 0);
+        let mut depth = Buffer2d::new([render_target.width() as usize, render_target.height() as usize], 1.0);
 
         let mvp = Mat4::perspective_fov_rh_no(
             1.3,
-            image.width() as f32,
-            image.height() as f32,
+            render_target.width() as f32,
+            render_target.height() as f32,
             0.01,
             100.0,
         ) * Mat4::translation_3d(Vec3::new(0.0, 0.0, -2.0))
@@ -124,7 +124,7 @@ impl render::RenderPipeline for CubePipeline {
             &mut depth,
         );
 
-        image.draw(color.as_ref());
+        render_target.draw(color.as_ref());
     }
 }
 
@@ -135,7 +135,7 @@ pub struct MainViewState {
 
 impl MainViewState {
     fn spin(&self) {
-        self.cube_spin.set(self.cube_spin.get() + 16.0);
+        self.cube_spin.set(self.cube_spin.get() + 32.0);
     }
 }
 
@@ -166,7 +166,8 @@ impl Template for MainView {
             .cube_pipeline(RenderPipeline(Box::new(CubePipeline::default())))
             .child(
                 Grid::create()
-                    .rows(Rows::create().row("*").row("*").build())
+                    .rows(Rows::create().row("*").row("*").build())                   
+                    .child(Canvas::create().attach(GridRow(0)).pipeline(id).build(ctx))
                     .child(
                         TextBlock::create()
                             .attach(GridRow(0))
@@ -175,7 +176,6 @@ impl Template for MainView {
                             .margin(4.0)
                             .build(ctx),
                     )
-                    .child(Canvas::create().attach(GridRow(0)).pipeline(id).build(ctx))
                     .child(
                         Button::create()
                             .text("spin cube")
@@ -196,7 +196,7 @@ impl Template for MainView {
                             .margin(4.0)
                             .build(ctx),
                     )
-                    .child(Canvas::create().attach(GridRow(1)).build(ctx))
+                    .child(Canvas::create().attach(GridRow(1)).pipeline(id).build(ctx))
                     .build(ctx),
             )
     }

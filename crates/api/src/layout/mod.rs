@@ -2,7 +2,7 @@ use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager};
 
-use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::*};
+use crate::{prelude::*, render::RenderContext, tree::Tree, utils::*};
 
 pub use self::fixed_size::*;
 pub use self::grid::*;
@@ -23,7 +23,7 @@ pub trait Layout: Any {
     // Measure all children before the arrangement.
     fn measure(
         &self,
-        render_context_2_d: &mut RenderContext2D,
+        render_context_2_d: &mut RenderContext,
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
@@ -33,7 +33,7 @@ pub trait Layout: Any {
     /// Arranges an sizes the children.
     fn arrange(
         &self,
-        render_context_2_d: &mut RenderContext2D,
+        render_context_2_d: &mut RenderContext,
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree>,

@@ -2,15 +2,16 @@ use std::{cmp, collections::HashMap};
 
 use raqote;
 
-use crate::{utils::*, RenderConfig, RenderPipeline, TextMetrics};
+use crate::{utils::*, RenderConfig, RenderPipeline, TextMetrics, RenderTarget};
 
 pub use self::font::*;
-pub use crate::image::Image;
+pub use self::image::Image;
 
 mod font;
+mod image;
 
-/// The RenderContext2D trait, provides the 2D rendering context. It is used for drawing shapes, text, images, and other objects.
-pub struct RenderContext2D {
+/// The RenderContext trait, provides the rendering context. It is used for drawing shapes, text, images, and other objects.
+pub struct RenderContext {
     draw_target: raqote::DrawTarget,
     path: raqote::Path,
     config: RenderConfig,
@@ -23,10 +24,10 @@ pub struct RenderContext2D {
     clip_rect: Option<(f64, f64, f64, f64)>,
 }
 
-impl RenderContext2D {
+impl RenderContext {
     /// Creates a new render context 2d.
     pub fn new(width: f64, height: f64) -> Self {
-        RenderContext2D {
+        RenderContext {
             draw_target: raqote::DrawTarget::new(width as i32, height as i32),
             path: raqote::Path {
                 ops: Vec::new(),
@@ -237,6 +238,19 @@ impl RenderContext2D {
 
     // Draw image
 
+    fn draw_render_target(&mut self, render_target: &RenderTarget, x: f64, y: f64) {
+        self.draw_target.draw_image_at(
+            x as f32,
+            y as f32,
+            &raqote::Image {
+                data: &render_target.data(),
+                width: render_target.width() as i32,
+                height: render_target.height() as i32,
+            },
+            &raqote::DrawOptions::default(),
+        );
+    }
+
     /// Draws the image.
     pub fn draw_image(&mut self, image: &Image, x: f64, y: f64) {
         self.draw_target.draw_image_at(
@@ -315,9 +329,9 @@ impl RenderContext2D {
         height: f64,
         pipeline: Box<dyn RenderPipeline>,
     ) {
-        let mut image = Image::new(width as u32, height as u32);
-        pipeline.draw_pipeline(&mut image);
-        self.draw_image(&image, x, y);
+        let mut render_target = RenderTarget::new(width as u32, height as u32);
+        pipeline.draw_pipeline(&mut render_target);
+        self.draw_render_target(&render_target, x, y);
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.

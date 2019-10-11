@@ -56,7 +56,7 @@ pub struct WindowShell<A>
 where
     A: WindowAdapter,
 {
-    render_context_2_d: RenderContext2D,
+    render_context_2_d: RenderContext,
     pub mouse_move_events: Rc<RefCell<Vec<event::MouseMoveEvent>>>,
     pub mouse_up_events: Rc<RefCell<Vec<event::MouseUpEvent>>>,
     pub touch_start_events: Rc<RefCell<Vec<event::TouchStart>>>,
@@ -82,7 +82,7 @@ where
     }
 
     /// Gets the render context 2D.
-    pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
+    pub fn render_context_2_d(&mut self) -> &mut RenderContext {
         &mut self.render_context_2_d
     }
 
@@ -431,7 +431,7 @@ where
             context.scale(ratio, ratio);
         }
 
-        let render_context_2_d = RenderContext2D::new(canvas.get_context().unwrap());
+        let render_context_2_d = RenderContext::new(canvas.get_context().unwrap());
 
         document().set_title(&self.title[..]);
 

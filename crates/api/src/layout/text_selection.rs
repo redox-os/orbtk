@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::Entity;
 
-use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
+use crate::{prelude::*, render::RenderContext, tree::Tree, utils::prelude::*};
 
 use super::Layout;
 
@@ -32,7 +32,7 @@ impl Into<Box<dyn Layout>> for TextSelectionLayout {
 impl Layout for TextSelectionLayout {
     fn measure(
         &self,
-        render_context_2_d: &mut RenderContext2D,
+        render_context_2_d: &mut RenderContext,
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
@@ -114,7 +114,7 @@ impl Layout for TextSelectionLayout {
 
     fn arrange(
         &self,
-        render_context_2_d: &mut RenderContext2D,
+        render_context_2_d: &mut RenderContext,
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree>,

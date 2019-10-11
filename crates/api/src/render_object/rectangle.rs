@@ -1,4 +1,4 @@
-use crate::{prelude::*, render::RenderContext2D, utils::*};
+use crate::{prelude::*, render::RenderContext, utils::*};
 
 pub struct RectangleRenderObject;
 
@@ -6,7 +6,7 @@ impl RectangleRenderObject {
     // Renders rectangle with border and without radius.
     fn render_bordered_rect_path(
         &self,
-        render_context_2_d: &mut RenderContext2D,
+        render_context_2_d: &mut RenderContext,
         x: f64,
         y: f64,
         width: f64,
@@ -31,7 +31,7 @@ impl RectangleRenderObject {
     // Builds rectangle path with radius and without border.
     fn render_rounded_rect_path(
         &self,
-        render_context_2_d: &mut RenderContext2D,
+        render_context_2_d: &mut RenderContext,
         x: f64,
         y: f64,
         width: f64,
@@ -55,7 +55,7 @@ impl RectangleRenderObject {
     // Renders rectangle with border and radius.
     fn render_rounded_bordered_rect_path(
         &self,
-        render_context_2_d: &mut RenderContext2D,
+        render_context_2_d: &mut RenderContext,
         x: f64,
         y: f64,
         width: f64,

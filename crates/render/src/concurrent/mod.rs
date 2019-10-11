@@ -3,12 +3,13 @@ use std::{
     thread,
 };
 
-use crate::{image::Image, platform, utils::*, RenderPipeline, TextMetrics};
+use crate::{platform, utils::*, RenderPipeline, TextMetrics};
+use platform::Image;
 
 #[derive(Clone)]
-struct Blub(pub Box<dyn RenderPipeline>);
+struct PipelineWrapper(pub Box<dyn RenderPipeline>);
 
-impl PartialEq for Blub {
+impl PartialEq for PipelineWrapper {
     fn eq(&self, other: &Self) -> bool {
         true
     }
@@ -113,7 +114,7 @@ enum RenderTask {
         y: f64,
         width: f64,
         height: f64,
-        pipeline: Blub,
+        pipeline: PipelineWrapper,
     },
     Clip(),
     SetLineWidth {
@@ -191,7 +192,7 @@ impl RenderWorker {
         let render_thread = thread::spawn(move || {
             let mut tasks_collection = vec![];
 
-            let mut render_context_2_d = platform::RenderContext2D::new(width, height);
+            let mut render_context_2_d = platform::RenderContext::new(width, height);
 
             loop {
                 let mut tasks = receiver.lock().unwrap().recv().unwrap();
@@ -390,17 +391,17 @@ impl RenderWorker {
     }
 }
 
-/// The RenderContext2D provides a concurrent 2D render context.
-pub struct RenderContext2D {
+/// The RenderContext provides a concurrent render context.
+pub struct RenderContext {
     output: Vec<u32>,
     worker: RenderWorker,
     sender: mpsc::Sender<Vec<RenderTask>>,
     result_receiver: mpsc::Receiver<RenderResult>,
     tasks: Vec<RenderTask>,
-    measure_context: platform::RenderContext2D,
+    measure_context: platform::RenderContext,
 }
 
-impl Drop for RenderContext2D {
+impl Drop for RenderContext {
     fn drop(&mut self) {
         self.sender
             .send(vec![RenderTask::Terminate()])
@@ -411,7 +412,7 @@ impl Drop for RenderContext2D {
     }
 }
 
-impl RenderContext2D {
+impl RenderContext {
     /// Creates a new render context 2d.
     pub fn new(width: f64, height: f64) -> Self {
         let (sender, receiver) = mpsc::channel();
@@ -423,13 +424,13 @@ impl RenderContext2D {
 
         let worker = RenderWorker::new(width, height, receiver.clone(), result_sender.clone());
 
-        RenderContext2D {
+        RenderContext {
             output: vec![0; width as usize * height as usize],
             worker,
             sender,
             result_receiver,
             tasks: vec![],
-            measure_context: platform::RenderContext2D::new(width, height),
+            measure_context: platform::RenderContext::new(width, height),
         }
     }
 
@@ -671,7 +672,7 @@ impl RenderContext2D {
                 y,
                 width,
                 height,
-                pipeline: Blub(pipeline),
+                pipeline: PipelineWrapper(pipeline),
             }])
             .expect("Could not send draw_pipeline to render thread.");
     }
