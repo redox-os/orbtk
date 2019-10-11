@@ -210,8 +210,8 @@ impl RenderContext {
         let mut render_target = RenderTarget::new(width as u32, height as u32);
         pipeline.draw_pipeline(&mut render_target);
 
-        // let device_pixel_ratio = window().device_pixel_ratio();
-        let device_pixel_ratio = 1.0;
+        let device_pixel_ratio = window().device_pixel_ratio();
+        // let device_pixel_ratio = 1.0;
 
         let image_data = self
             .canvas_render_context_2_d
@@ -236,31 +236,30 @@ impl RenderContext {
             );
         }
 
-        // js!(
-        //       console.log(@{&image_data}.data.length);
-        //     for(let i = 0; i < @{&image_data}.data.length; i+= 4) {
-        //         @{&image_data}.data[i + 0] = 190;  // R value
-        //         @{&image_data}.data[i + 1] = 0;    // G value
-        //         @{&image_data}.data[i + 2] = 210;  // B value
-        //         @{&image_data}.data[i + 3] = 255;  // A value
-        //     }
-        // );
-
         js!(
-            // var img = new Image(@{&width}, @{&height});
-            // img.src = @{&image_data};
-            // console.log(img);
-            // @{&self.canvas_render_context_2_d}.drawImage(img, @{&x}, @{&y});
-            @{&self.canvas_render_context_2_d}.putImageData(@{&image_data}, 0, 0, @{&x}, @{&y}, @{&width}, @{&height});
+            var tempCanvas=document.createElement("canvas");
+            var tempCtx=tempCanvas.getContext("2d");
+            var x = @{&x};
+            var y = @{&y};
+
+            // set the temp canvas size == the canvas size
+            tempCanvas.width=@{&width};
+            tempCanvas.height=@{&height};
+
+            // put the modified pixels on the temp canvas
+            tempCtx.putImageData(@{&image_data},0,0);
+            // tempCtx.scale(10 * @{&device_pixel_ratio}, 10 * @{&device_pixel_ratio});
+
+            // use the tempCanvas.toDataURL to create an img object
+            var img=new Image();
+            img.src=tempCanvas.toDataURL();
+            img.onload=function(){
+                // drawImage the img on the canvas
+                @{&self.canvas_render_context_2_d}.drawImage(img,x,y);
+            }
+            // console.log("Test")
+            // 
         );
-
-        // self.canvas_render_context_2_d.put_image_data(
-        //     image_data,
-        //     (x * device_pixel_ratio) as f32,
-        //     (y * device_pixel_ratio) as f32,
-        // );
-
-        // self.sender.send(vec![RenderTask::DrawThreeObject { x, y, width, height, three_object: three_object.clone()}]);
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
