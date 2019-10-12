@@ -11,7 +11,11 @@ pub struct RenderTarget {
 
 impl fmt::Debug for RenderTarget {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "RenderTarget ( width: {}, height: {})", self.width, self.height)
+        write!(
+            f,
+            "RenderTarget ( width: {}, height: {})",
+            self.width, self.height
+        )
     }
 }
 

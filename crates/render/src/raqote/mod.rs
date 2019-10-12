@@ -2,7 +2,7 @@ use std::{cmp, collections::HashMap};
 
 use raqote;
 
-use crate::{utils::*, RenderConfig, RenderPipeline, TextMetrics, RenderTarget};
+use crate::{utils::*, RenderConfig, RenderPipeline, RenderTarget, TextMetrics};
 
 pub use self::font::*;
 pub use self::image::Image;

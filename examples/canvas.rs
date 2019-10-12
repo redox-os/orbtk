@@ -47,8 +47,20 @@ impl render::RenderPipeline for CubePipeline {
         Box::new(self.clone())
     }
     fn draw_pipeline(&self, render_target: &mut render::RenderTarget) {
-        let mut color = Buffer2d::new([render_target.width() as usize, render_target.height() as usize], 0);
-        let mut depth = Buffer2d::new([render_target.width() as usize, render_target.height() as usize], 1.0);
+        let mut color = Buffer2d::new(
+            [
+                render_target.width() as usize,
+                render_target.height() as usize,
+            ],
+            0,
+        );
+        let mut depth = Buffer2d::new(
+            [
+                render_target.width() as usize,
+                render_target.height() as usize,
+            ],
+            1.0,
+        );
 
         let mvp = Mat4::perspective_fov_rh_no(
             1.3,
@@ -143,13 +155,14 @@ impl render::RenderPipeline for Graphic2DPipeline {
         Box::new(self.clone())
     }
     fn draw_pipeline(&self, render_target: &mut render::RenderTarget) {
-        let mut render_context = RenderContext2D::new(render_target.width(), render_target.height());
+        let mut render_context =
+            RenderContext2D::new(render_target.width(), render_target.height());
         render_context.set_line_width(2.0);
         render_context.set_stroke_style(Brush::from("#0021EB"));
         render_context.move_to(20.0, 20.0);
         render_context.line_to(120.0, 20.0);
         render_context.stroke();
-      
+
         render_context.begin_path();
         render_context.move_to(120.0, 20.0);
         render_context.line_to(120.0, 120.0);
@@ -210,7 +223,14 @@ impl Template for MainView {
             .cube_pipeline(RenderPipeline(Box::new(CubePipeline::default())))
             .child(
                 Grid::create()
-                    .rows(Rows::create().row("auto").row("*").row("auto").row("*").build())                   
+                    .rows(
+                        Rows::create()
+                            .row("auto")
+                            .row("*")
+                            .row("auto")
+                            .row("*")
+                            .build(),
+                    )
                     .child(
                         TextBlock::create()
                             .attach(GridRow(0))
@@ -240,7 +260,12 @@ impl Template for MainView {
                             .margin(4.0)
                             .build(ctx),
                     )
-                    .child(Canvas::create().attach(GridRow(3)).pipeline(RenderPipeline(Box::new(Graphic2DPipeline::default()))).build(ctx))
+                    .child(
+                        Canvas::create()
+                            .attach(GridRow(3))
+                            .pipeline(RenderPipeline(Box::new(Graphic2DPipeline::default())))
+                            .build(ctx),
+                    )
                     .build(ctx),
             )
     }

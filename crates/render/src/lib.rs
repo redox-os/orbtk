@@ -28,12 +28,23 @@ pub use self::render_target::*;
 mod render_target;
 
 /// Defines the current configuration of the render context.
-#[derive(Default, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct RenderConfig {
     pub fill_style: utils::Brush,
     pub stroke_style: utils::Brush,
     pub line_width: f64,
     pub font_config: FontConfig,
+}
+
+impl Default for RenderConfig {
+    fn default() -> Self {
+        RenderConfig {
+            fill_style: utils::Brush::default(),
+            stroke_style: utils::Brush::default(),
+            line_width: 1.0,
+            font_config: FontConfig::default(),
+        }
+    }
 }
 
 /// The TextMetrics struct represents the dimension of a text.
