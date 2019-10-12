@@ -78,7 +78,7 @@ where
     A: WindowAdapter,
 {
     window: minifb::Window,
-    render_context_2_d: RenderContext,
+    render_context_2_d: RenderContext2D,
     adapter: A,
     mouse_pos: (f32, f32),
     button_down: (bool, bool, bool),
@@ -105,7 +105,7 @@ where
         key_events: Rc<RefCell<Vec<KeyEvent>>>,
     ) -> WindowShell<A> {
         let size = window.get_size();
-        let render_context_2_d = RenderContext::new(size.0 as f64, size.1 as f64);
+        let render_context_2_d = RenderContext2D::new(size.0 as f64, size.1 as f64);
 
         WindowShell {
             window,
@@ -134,7 +134,7 @@ where
     }
 
     /// Gets the render context 2D.
-    pub fn render_context_2_d(&mut self) -> &mut RenderContext {
+    pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
         &mut self.render_context_2_d
     }
 

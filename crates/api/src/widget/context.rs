@@ -313,7 +313,7 @@ impl<'a> Context<'a> {
     }
 
     /// Returns a mutable reference of the 2d render context.
-    pub fn render_context_2_d(&mut self) -> &mut RenderContext {
+    pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
         self.window_shell.render_context_2_d()
     }
 }

@@ -10,8 +10,8 @@ pub use self::image::Image;
 mod font;
 mod image;
 
-/// The RenderContext trait, provides the rendering context. It is used for drawing shapes, text, images, and other objects.
-pub struct RenderContext {
+/// The RenderContext2D trait, provides the rendering context. It is used for drawing shapes, text, images, and other objects.
+pub struct RenderContext2D {
     draw_target: raqote::DrawTarget,
     path: raqote::Path,
     config: RenderConfig,
@@ -24,10 +24,10 @@ pub struct RenderContext {
     clip_rect: Option<(f64, f64, f64, f64)>,
 }
 
-impl RenderContext {
+impl RenderContext2D {
     /// Creates a new render context 2d.
     pub fn new(width: f64, height: f64) -> Self {
-        RenderContext {
+        RenderContext2D {
             draw_target: raqote::DrawTarget::new(width as i32, height as i32),
             path: raqote::Path {
                 ops: Vec::new(),
@@ -160,7 +160,10 @@ impl RenderContext {
         self.draw_target.stroke(
             &self.path,
             &brush_to_source(&self.config.stroke_style),
-            &raqote::StrokeStyle::default(),
+            &raqote::StrokeStyle {
+                width: self.config.line_width as f32,
+                ..Default::default()
+            },
             &raqote::DrawOptions::new(),
         );
     }

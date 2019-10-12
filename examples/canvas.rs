@@ -1,4 +1,4 @@
-use orbtk::prelude::*;
+use orbtk::{prelude::*, render::platform::RenderContext2D};
 use std::cell::Cell;
 
 use euc::{buffer::Buffer2d, rasterizer, Pipeline};
@@ -128,6 +128,50 @@ impl render::RenderPipeline for CubePipeline {
     }
 }
 
+// OrbTk 2D drawing
+#[derive(Clone, Default, PartialEq)]
+struct Graphic2DPipeline;
+
+impl render::RenderPipeline for Graphic2DPipeline {
+    fn box_eq(&self, other: &dyn Any) -> bool {
+        other.downcast_ref::<Self>().map_or(false, |a| self == a)
+    }
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+    fn clone_box(&self) -> Box<dyn render::RenderPipeline> {
+        Box::new(self.clone())
+    }
+    fn draw_pipeline(&self, render_target: &mut render::RenderTarget) {
+        let mut render_context = RenderContext2D::new(render_target.width(), render_target.height());
+        render_context.set_line_width(2.0);
+        render_context.set_stroke_style(Brush::from("#0021EB"));
+        render_context.move_to(20.0, 20.0);
+        render_context.line_to(120.0, 20.0);
+        render_context.stroke();
+      
+        render_context.begin_path();
+        render_context.move_to(120.0, 20.0);
+        render_context.line_to(120.0, 120.0);
+        render_context.set_stroke_style(Brush::from("#CE2F24"));
+        render_context.stroke();
+
+        render_context.begin_path();
+        render_context.move_to(120.0, 120.0);
+        render_context.line_to(20.0, 120.0);
+        render_context.set_stroke_style(Brush::from("#70EF49"));
+        render_context.stroke();
+
+        render_context.begin_path();
+        render_context.move_to(20.0, 120.0);
+        render_context.line_to(20.0, 20.0);
+        render_context.set_stroke_style(Brush::from("#CE2F24"));
+        render_context.stroke();
+
+        render_target.draw(render_context.data());
+    }
+}
+
 #[derive(Default)]
 pub struct MainViewState {
     cube_spin: Cell<f32>,
@@ -166,21 +210,21 @@ impl Template for MainView {
             .cube_pipeline(RenderPipeline(Box::new(CubePipeline::default())))
             .child(
                 Grid::create()
-                    .rows(Rows::create().row("*").row("*").build())                   
-                    .child(Canvas::create().attach(GridRow(0)).pipeline(id).build(ctx))
+                    .rows(Rows::create().row("auto").row("*").row("auto").row("*").build())                   
                     .child(
                         TextBlock::create()
                             .attach(GridRow(0))
-                            .text("Canvas (euc crate pipeline)")
+                            .text("Canvas (render with euc crate)")
                             .selector(SelectorValue::new().with("text-block").class("h1"))
                             .margin(4.0)
                             .build(ctx),
                     )
+                    .child(Canvas::create().attach(GridRow(1)).pipeline(id).build(ctx))
                     .child(
                         Button::create()
                             .text("spin cube")
                             .vertical_alignment("End")
-                            .attach(GridRow(0))
+                            .attach(GridRow(1))
                             .margin(4.0)
                             .on_click(move |_| {
                                 state.spin();
@@ -190,13 +234,13 @@ impl Template for MainView {
                     )
                     .child(
                         TextBlock::create()
-                            .attach(GridRow(1))
-                            .text("Canvas (OrbTk 2D pipeline)")
+                            .attach(GridRow(2))
+                            .text("Canvas (render with OrbTk)")
                             .selector(SelectorValue::new().with("text-block").class("h1"))
                             .margin(4.0)
                             .build(ctx),
                     )
-                    // .child(Canvas::create().attach(GridRow(1)).pipeline(id).build(ctx))
+                    .child(Canvas::create().attach(GridRow(3)).pipeline(RenderPipeline(Box::new(Graphic2DPipeline::default()))).build(ctx))
                     .build(ctx),
             )
     }

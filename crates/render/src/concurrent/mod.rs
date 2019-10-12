@@ -192,7 +192,7 @@ impl RenderWorker {
         let render_thread = thread::spawn(move || {
             let mut tasks_collection = vec![];
 
-            let mut render_context_2_d = platform::RenderContext::new(width, height);
+            let mut render_context_2_d = platform::RenderContext2D::new(width, height);
 
             loop {
                 let mut tasks = receiver.lock().unwrap().recv().unwrap();
@@ -391,17 +391,17 @@ impl RenderWorker {
     }
 }
 
-/// The RenderContext provides a concurrent render context.
-pub struct RenderContext {
+/// The RenderContext2D provides a concurrent render context.
+pub struct RenderContext2D {
     output: Vec<u32>,
     worker: RenderWorker,
     sender: mpsc::Sender<Vec<RenderTask>>,
     result_receiver: mpsc::Receiver<RenderResult>,
     tasks: Vec<RenderTask>,
-    measure_context: platform::RenderContext,
+    measure_context: platform::RenderContext2D,
 }
 
-impl Drop for RenderContext {
+impl Drop for RenderContext2D {
     fn drop(&mut self) {
         self.sender
             .send(vec![RenderTask::Terminate()])
@@ -412,7 +412,7 @@ impl Drop for RenderContext {
     }
 }
 
-impl RenderContext {
+impl RenderContext2D {
     /// Creates a new render context 2d.
     pub fn new(width: f64, height: f64) -> Self {
         let (sender, receiver) = mpsc::channel();
@@ -424,13 +424,13 @@ impl RenderContext {
 
         let worker = RenderWorker::new(width, height, receiver.clone(), result_sender.clone());
 
-        RenderContext {
+        RenderContext2D {
             output: vec![0; width as usize * height as usize],
             worker,
             sender,
             result_receiver,
             tasks: vec![],
-            measure_context: platform::RenderContext::new(width, height),
+            measure_context: platform::RenderContext2D::new(width, height),
         }
     }
 

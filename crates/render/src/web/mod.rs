@@ -11,13 +11,13 @@ pub use self::image::*;
 
 mod image;
 
-/// The RenderContext trait, provides the rendering context. It is used for drawing shapes, text, images, and other objects.
-pub struct RenderContext {
+/// The RenderContext2D trait, provides the rendering context. It is used for drawing shapes, text, images, and other objects.
+pub struct RenderContext2D {
     canvas_render_context_2_d: CanvasRenderingContext2d,
     font_config: FontConfig,
 }
 
-impl RenderContext {
+impl RenderContext2D {
     /// Creates a new render context with the given width and height.
     pub fn new(width: f64, height: f64) -> Self {
         let canvas: CanvasElement = document()
@@ -67,7 +67,7 @@ impl RenderContext {
     /// Creates a new render context 2d.
     pub fn from_context(canvas_render_context_2_d: CanvasRenderingContext2d) -> Self {
         canvas_render_context_2_d.set_text_baseline(stdweb::web::TextBaseline::Middle);
-        RenderContext {
+        RenderContext2D {
             canvas_render_context_2_d,
             font_config: FontConfig::default(),
         }

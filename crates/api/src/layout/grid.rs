@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::Entity;
 
-use crate::{prelude::*, render::RenderContext, tree::Tree, utils::prelude::*};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
 use super::Layout;
 
@@ -88,7 +88,7 @@ impl GridLayout {
 impl Layout for GridLayout {
     fn measure(
         &self,
-        render_context_2_d: &mut RenderContext,
+        render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
@@ -153,7 +153,7 @@ impl Layout for GridLayout {
 
     fn arrange(
         &self,
-        render_context_2_d: &mut RenderContext,
+        render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree>,
