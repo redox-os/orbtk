@@ -15,6 +15,7 @@ mod image;
 pub struct RenderContext2D {
     canvas_render_context_2_d: CanvasRenderingContext2d,
     font_config: FontConfig,
+    export_data: Vec<u32>,
 }
 
 impl RenderContext2D {
@@ -66,10 +67,17 @@ impl RenderContext2D {
 
     /// Creates a new render context 2d.
     pub fn from_context(canvas_render_context_2_d: CanvasRenderingContext2d) -> Self {
+        let export_data = vec![
+            0;
+            (canvas_render_context_2_d.get_canvas().width()
+                * canvas_render_context_2_d.get_canvas().height())
+                as usize
+        ];
         canvas_render_context_2_d.set_text_baseline(stdweb::web::TextBaseline::Middle);
         RenderContext2D {
             canvas_render_context_2_d,
             font_config: FontConfig::default(),
+            export_data,
         }
     }
 
@@ -399,6 +407,17 @@ impl RenderContext2D {
         canvas_render_context_2_d: CanvasRenderingContext2d,
     ) {
         self.canvas_render_context_2_d = canvas_render_context_2_d;
+    }
+
+    pub fn data(&self) -> &[u32] {
+        let width = self.canvas_render_context_2_d.get_canvas().width();
+        let height = self.canvas_render_context_2_d.get_canvas().height();
+        let image_data = self.canvas_render_context_2_d.get_image_data(0.0, 0.0, width as f64, height as f64);
+
+        js!(
+
+        );
+        &self.export_data
     }
 
     pub fn start(&mut self) {}
