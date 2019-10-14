@@ -455,14 +455,35 @@ impl From<String> for Image {
 // --- Conversions ---
 
 fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
-    match *brush {
+    match brush {
         Brush::SolidColor(color) => {
             return raqote::Source::Solid(raqote::SolidSource {
                 r: color.r(),
                 g: color.g(),
                 b: color.b(),
                 a: color.a(),
-            })
+            });
+        }
+        Brush::LinearGradient { start, end, stops } => {
+            let mut g_stops = vec![];
+            for stop in stops {
+                g_stops.push(raqote::GradientStop {
+                    position: stop.position as f32,
+                    color: raqote::Color::new(
+                        stop.color.a(),
+                        stop.color.r(),
+                        stop.color.g(),
+                        stop.color.b(),
+                    ),
+                });
+            }
+
+            return raqote::Source::new_linear_gradient(
+                raqote::Gradient { stops: g_stops },
+                raqote::Point::new(start.x as f32, start.y as f32),
+                raqote::Point::new(end.x as f32, start.y as f32),
+                raqote::Spread::Pad,
+            );
         }
         _ => {
             return raqote::Source::Solid(raqote::SolidSource {
@@ -470,7 +491,7 @@ fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
                 g: 0x0,
                 b: 0x80,
                 a: 0x80,
-            })
+            });
         }
     }
 }

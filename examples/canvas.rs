@@ -157,30 +157,32 @@ impl render::RenderPipeline for Graphic2DPipeline {
     fn draw_pipeline(&self, render_target: &mut render::RenderTarget) {
         let mut render_context =
             RenderContext2D::new(render_target.width(), render_target.height());
-        render_context.set_line_width(2.0);
-        render_context.set_stroke_style(Brush::from("#0021EB"));
-        render_context.move_to(20.0, 20.0);
-        render_context.line_to(120.0, 20.0);
-        render_context.stroke();
+       
+        let width = 120.0;
+        let height = 120.0;
 
-        render_context.begin_path();
-        render_context.move_to(120.0, 20.0);
-        render_context.line_to(120.0, 120.0);
-        render_context.set_stroke_style(Brush::from("#CE2F24"));
-        render_context.stroke();
+        let x = (render_target.width() - width)  / 2.0;
+        let y = (render_target.height() - height) / 2.0;
 
-        render_context.begin_path();
-        render_context.move_to(120.0, 120.0);
-        render_context.line_to(20.0, 120.0);
-        render_context.set_stroke_style(Brush::from("#70EF49"));
-        render_context.stroke();
-
-        render_context.begin_path();
-        render_context.move_to(20.0, 120.0);
-        render_context.line_to(20.0, 20.0);
-        render_context.set_stroke_style(Brush::from("#CE2F24"));
-        render_context.stroke();
-
+        render_context.set_fill_style(Brush::LinearGradient {
+            start: Point::new(x, y),
+            end: Point::new(x + width, y + height),
+            stops: vec![
+                LinearGradientStop {
+                    position: 0.0,
+                    color: Color::from("#0021EB"),
+                },
+                LinearGradientStop {
+                    position: 0.5,
+                    color: Color::from("#CE2F24"),
+                },
+                LinearGradientStop {
+                    position: 1.0,
+                    color: Color::from("#70EF49"),
+                },
+            ],
+        });
+        render_context.fill_rect(x, y, width, height);
         render_target.draw(render_context.data());
     }
 }
