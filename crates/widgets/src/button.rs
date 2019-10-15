@@ -1,10 +1,11 @@
+use super::behaviors::MouseBehavior;
 use crate::prelude::*;
 
 widget!(
     /// The `Button` widget can be clicked by user. It's used to perform an action.
     /// 
     /// **CSS element:** `button`
-    Button: ClickHandler {
+    Button: MouseHandler {
         /// Sets or shares the background property.
         background: Background,
 
@@ -73,32 +74,39 @@ impl Template for Button {
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
             .child(
-                Container::create()
-                    .background(id)
-                    .border_radius(id)
-                    .border_thickness(id)
-                    .border_brush(id)
-                    .padding(id)
+                MouseBehavior::create()
+                    .pressed(id)
+                    .enabled(id)
+                    .selector(id)
                     .child(
-                        Stack::create()
-                            .orientation("Horizontal")
-                            .vertical_alignment("Center")
-                            .horizontal_alignment("Center")
+                        Container::create()
+                            .background(id)
+                            .border_radius(id)
+                            .border_thickness(id)
+                            .border_brush(id)
+                            .padding(id)
                             .child(
-                                FontIconBlock::create()
-                                    .margin((0.0, 0.0, 2.0, 0.0))
-                                    .icon(id)
-                                    .brush(id)
-                                    .icon_size(id)
-                                    .font(id)
-                                    .build(context),
-                            )
-                            .child(
-                                TextBlock::create()
-                                    .foreground(id)
-                                    .text(id)
-                                    .font_size(id)
-                                    .font(id)
+                                Stack::create()
+                                    .orientation("Horizontal")
+                                    .vertical_alignment("Center")
+                                    .horizontal_alignment("Center")
+                                    .child(
+                                        FontIconBlock::create()
+                                            .margin((0.0, 0.0, 2.0, 0.0))
+                                            .icon(id)
+                                            .brush(id)
+                                            .icon_size(id)
+                                            .font(id)
+                                            .build(context),
+                                    )
+                                    .child(
+                                        TextBlock::create()
+                                            .foreground(id)
+                                            .text(id)
+                                            .font_size(id)
+                                            .font(id)
+                                            .build(context),
+                                    )
                                     .build(context),
                             )
                             .build(context),

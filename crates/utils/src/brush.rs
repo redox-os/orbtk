@@ -17,6 +17,15 @@ pub enum Brush {
     Gradient(Vec<GradientStop>),
 }
 
+impl Brush {
+    pub fn is_transparent(&self) -> bool {
+        match self {
+            Brush::SolidColor(color) => color.a() == 0,
+            _ => false,
+        }
+    }
+}
+
 impl From<Brush> for Color {
     fn from(b: Brush) -> Color {
         match b {
@@ -28,7 +37,7 @@ impl From<Brush> for Color {
 
 impl Default for Brush {
     fn default() -> Self {
-        Brush::SolidColor(Color::rgb(0, 0, 0))
+        Brush::SolidColor(Color::rgba(0, 0, 0, 0))
     }
 }
 

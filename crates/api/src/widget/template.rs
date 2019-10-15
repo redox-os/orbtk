@@ -1,6 +1,6 @@
 use dces::prelude::Entity;
 
-use crate::prelude::{GridLayout, Layout, RenderObject};
+use crate::prelude::*;
 
 use super::BuildContext;
 
@@ -11,8 +11,8 @@ pub trait Template: Sized {
         self
     }
 
-    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
-        None
+    fn render_object(&self) -> Box<dyn RenderObject> {
+        Box::new(DefaultRenderObject)
     }
 
     fn layout(&self) -> Box<dyn Layout> {

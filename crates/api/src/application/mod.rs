@@ -42,15 +42,17 @@ impl Application {
         let update = Rc::new(Cell::new(true));
         let running = Rc::new(Cell::new(true));
 
-        let mut context = BuildContext::new(
-            world.entity_component_manager(),
-            render_objects.clone(),
-            layouts.clone(),
-            handlers.clone(),
-            states.clone(),
-        );
+        let window = {
+            let mut context = BuildContext::new(
+                world.entity_component_manager(),
+                render_objects.clone(),
+                layouts.clone(),
+                handlers.clone(),
+                states.clone(),
+            );
 
-        let window = create_fn(&mut context);
+            create_fn(&mut context)
+        };
 
         {
             let tree: &mut Tree = world.entity_component_manager().entity_store_mut();
@@ -123,6 +125,12 @@ impl Application {
         window_shell
             .borrow_mut()
             .render_context_2_d()
+            .register_font("Roboto Medium", crate::theme::fonts::ROBOTO_MEDIUM_FONT);
+
+        #[cfg(not(target_arch = "wasm32"))]
+        window_shell
+            .borrow_mut()
+            .render_context_2_d()
             .register_font(
                 "Material Icons",
                 crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
@@ -137,26 +145,17 @@ impl Application {
         });
 
         world
-            .create_system(EventSystem {
+            .create_system(EventStateSystem {
                 shell: window_shell.clone(),
                 handlers: handlers.clone(),
                 update: update.clone(),
                 running: running.clone(),
+                mouse_down_nodes: RefCell::new(vec![]),
+                render_objects: render_objects.clone(),
+                states: states.clone(),
+                layouts: layouts.clone(),
             })
             .with_priority(0)
-            .build();
-
-        world
-            .create_system(StateSystem {
-                shell: window_shell.clone(),
-                layouts: layouts.clone(),
-                render_objects: render_objects.clone(),
-                handlers: handlers.clone(),
-                states: states.clone(),
-                update: update.clone(),
-                running: running.clone(),
-            })
-            .with_priority(1)
             .build();
 
         world
@@ -166,7 +165,7 @@ impl Application {
                 update: update.clone(),
                 running: running.clone(),
             })
-            .with_priority(2)
+            .with_priority(1)
             .build();
 
         world
@@ -179,7 +178,7 @@ impl Application {
                 update: update.clone(),
                 running: running.clone(),
             })
-            .with_priority(3)
+            .with_priority(2)
             .build();
 
         world
@@ -192,7 +191,7 @@ impl Application {
                 update: update.clone(),
                 running: running.clone(),
             })
-            .with_priority(4)
+            .with_priority(3)
             .build();
 
         self.runners.push(ShellRunner {
@@ -208,7 +207,11 @@ impl Application {
     /// Starts the application and run it until quit is requested.
     pub fn run(mut self) {
         while let Some(runner) = self.runners.pop() {
+            #[cfg(not(target_arch = "wasm32"))]
             let mut runner = runner;
+
+            #[cfg(target_arch = "wasm32")]
+            let runner = runner;
             runner.run();
         }
     }

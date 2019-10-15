@@ -45,7 +45,7 @@ widget!(
         font: Font,
 
         /// Sets or shares the text offset property.
-        offset: Offset,
+        scroll_offset: ScrollOffset,
 
         /// Sets or shares the focused property.
         focused: Focused,
@@ -61,15 +61,15 @@ impl Template for Cursor {
             .width(1.0)
             .selector("cursor")
             .text("")
-            .offset(0.0)
+            .scroll_offset(0.0)
             .background("transparent")
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto Regular")
             .focused(false)
     }
 
-    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
-        Some(Box::new(RectangleRenderObject))
+    fn render_object(&self) -> Box<dyn RenderObject> {
+        Box::new(RectangleRenderObject)
     }
 
     fn layout(&self) -> Box<dyn Layout> {

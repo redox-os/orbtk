@@ -26,7 +26,7 @@ runner.run()
 ```
 
  */
-
+#[macro_use]
 extern crate lazy_static;
 
 pub mod event;
@@ -36,13 +36,7 @@ pub mod window;
 pub use orbtk_utils::prelude as utils;
 
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(not(feature = "preview"))]
-#[path = "orbclient/mod.rs"]
-pub mod platform;
-
-#[cfg(not(target_arch = "wasm32"))]
-#[cfg(feature = "preview")]
-#[path = "glutin/mod.rs"]
+#[path = "minifb/mod.rs"]
 pub mod platform;
 
 #[cfg(target_arch = "wasm32")]

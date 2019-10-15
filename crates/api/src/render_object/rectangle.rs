@@ -3,20 +3,6 @@ use crate::{prelude::*, render::RenderContext2D, utils::*};
 pub struct RectangleRenderObject;
 
 impl RectangleRenderObject {
-    // Renders rectangle without border and radius.
-    fn render_rect_path(
-        &self,
-        render_context_2_d: &mut RenderContext2D,
-        x: f64,
-        y: f64,
-        width: f64,
-        height: f64,
-        brush: Brush,
-    ) {
-        render_context_2_d.set_fill_style(brush);
-        render_context_2_d.fill_rect(x, y, width, height);
-    }
-
     // Renders rectangle with border and without radius.
     fn render_bordered_rect_path(
         &self,
@@ -27,20 +13,19 @@ impl RectangleRenderObject {
         height: f64,
         brush: Brush,
         border_brush: Brush,
-        border_thickness: Thickness,
+        _border_thickness: Thickness,
     ) {
-        // border
-        self.render_rect_path(render_context_2_d, x, y, width, height, border_brush);
+        render_context_2_d.rect(x, y, width, height);
 
-        // content
-        self.render_rect_path(
-            render_context_2_d,
-            x + border_thickness.left,
-            y + border_thickness.top,
-            width - border_thickness.left - border_thickness.right,
-            height - border_thickness.top - border_thickness.bottom,
-            brush,
-        );
+        if !brush.is_transparent() {
+            render_context_2_d.set_fill_style(brush);
+            render_context_2_d.fill();
+        }
+
+        if !border_brush.is_transparent() {
+            render_context_2_d.set_stroke_style(border_brush);
+            render_context_2_d.stroke();
+        }
     }
 
     // Builds rectangle path with radius and without border.
@@ -52,48 +37,18 @@ impl RectangleRenderObject {
         width: f64,
         height: f64,
         radius: f64,
-        brush: Brush,
     ) {
-        let m_pi = 3.14159265;
-        let degrees = m_pi / 180.0;
-
-        render_context_2_d.begin_path();
-        render_context_2_d.arc(
-            x + width - radius,
-            y + radius,
-            radius,
-            -90.0 * degrees,
-            0.0 * degrees,
-            false,
-        );
-        render_context_2_d.arc(
-            x + width - radius,
-            y + height - radius,
-            radius,
-            0.0 * degrees,
-            90.0 * degrees,
-            false,
-        );
-        render_context_2_d.arc(
-            x + radius,
-            y + height - radius,
-            radius,
-            90.0 * degrees,
-            180.0 * degrees,
-            false,
-        );
-        render_context_2_d.arc(
-            x + radius,
-            y + radius,
-            radius,
-            180.0 * degrees,
-            270.0 * degrees,
-            false,
-        );
-
-        render_context_2_d.set_fill_style(brush);
-
-        render_context_2_d.fill();
+        let r = x + width;
+        let b = y + height;
+        render_context_2_d.move_to(x + radius, y);
+        render_context_2_d.line_to(r - radius, y);
+        render_context_2_d.quadratic_curve_to(r, y, r, y + radius);
+        render_context_2_d.line_to(r, y + height - radius);
+        render_context_2_d.quadratic_curve_to(r, b, r - radius, b);
+        render_context_2_d.line_to(x + radius, b);
+        render_context_2_d.quadratic_curve_to(x, b, x, b - radius);
+        render_context_2_d.line_to(x, y + radius);
+        render_context_2_d.quadratic_curve_to(x, y, x + radius, y);
         render_context_2_d.close_path();
     }
 
@@ -108,29 +63,19 @@ impl RectangleRenderObject {
         radius: f64,
         brush: Brush,
         border_brush: Brush,
-        border_thickness: Thickness,
+        _border_thickness: Thickness,
     ) {
-        // border
-        self.render_rounded_rect_path(
-            render_context_2_d,
-            x,
-            y,
-            width,
-            height,
-            radius,
-            border_brush,
-        );
+        self.render_rounded_rect_path(render_context_2_d, x, y, width, height, radius);
 
-        // content
-        self.render_rounded_rect_path(
-            render_context_2_d,
-            x + border_thickness.left,
-            y + border_thickness.top,
-            width - border_thickness.left - border_thickness.right,
-            height - border_thickness.top - border_thickness.right,
-            radius,
-            brush,
-        );
+        if !brush.is_transparent() {
+            render_context_2_d.set_fill_style(brush);
+            render_context_2_d.fill();
+        }
+
+        if !border_brush.is_transparent() {
+            render_context_2_d.set_stroke_style(border_brush);
+            render_context_2_d.stroke();
+        }
     }
 }
 
@@ -141,7 +86,7 @@ impl Into<Box<dyn RenderObject>> for RectangleRenderObject {
 }
 
 impl RenderObject for RectangleRenderObject {
-    fn render(&self, context: &mut Context<'_>, global_position: &Point) {
+    fn render_self(&self, context: &mut Context<'_>, global_position: &Point) {
         let (bounds, background, border_radius, border_thickness, border_brush) = {
             let widget = context.widget();
             (
@@ -153,10 +98,29 @@ impl RenderObject for RectangleRenderObject {
             )
         };
 
+        // if context.entity.0 == 63 {
+        //     println!("Yub");
+        // }
+
+        if (bounds.width() == 0.0
+            || bounds.height() == 0.0
+            || (background.is_transparent() && border_brush.is_transparent()))
+            && (border_thickness.left == 0.0
+                && border_thickness.top == 0.0
+                && border_thickness.right == 0.0
+                && border_thickness.bottom == 0.0)
+        {
+            return;
+        }
+
+        // let now = Instant::now();
+
         let has_thickness = border_thickness.left > 0.0
             || border_thickness.top > 0.0
             || border_thickness.right > 0.0
             || border_thickness.bottom > 0.0;
+
+        context.render_context_2_d().begin_path();
 
         if border_radius > 0.0 {
             if has_thickness {
@@ -179,8 +143,10 @@ impl RenderObject for RectangleRenderObject {
                     bounds.width(),
                     bounds.height(),
                     border_radius,
-                    background,
                 );
+
+                context.render_context_2_d().set_fill_style(background);
+                context.render_context_2_d().fill();
             }
         } else {
             if has_thickness {
@@ -195,15 +161,21 @@ impl RenderObject for RectangleRenderObject {
                     border_thickness,
                 );
             } else {
-                self.render_rect_path(
-                    context.render_context_2_d(),
+                context.render_context_2_d().rect(
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
                     bounds.width(),
                     bounds.height(),
-                    background,
                 );
+                context.render_context_2_d().set_fill_style(background);
+                context.render_context_2_d().fill();
             }
         }
+
+        // println!(
+        //     "Rectangle render mils: {}, id: {}",
+        //     now.elapsed().as_millis(),
+        //     context.entity.0
+        // );
     }
 }

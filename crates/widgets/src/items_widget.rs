@@ -22,11 +22,16 @@ impl State for ItemsWidgetState {
             if let Some(builder) = &*self.builder.borrow() {
                 if let Some(items_panel) = context.entity_of_child("items_panel") {
                     context.clear_children_of(items_panel);
-                    let mut build_context = context.build_context();
 
                     for i in 0..count {
-                        let child = builder(&mut build_context, i);
-                        build_context.append_child(items_panel, child);
+                        let child = {
+                            let mut build_context = context.build_context();
+                            let child = builder(&mut build_context, i);
+                            build_context.append_child(items_panel, child);
+                            child
+                        };
+
+                        context.get_widget(child).update_properties_by_theme();
                     }
                 }
             }

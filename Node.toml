@@ -8,6 +8,9 @@ height = 730
     [[apps.fonts]]
     font_family = "Roboto Regular"
     src = "crates/theme/src/fonts/Roboto-Regular.ttf"
+    [[apps.fonts]]
+    font_family = "Roboto Medium"
+    src = "crates/theme/src/fonts/Roboto-Medium.ttf"
 
 [[apps]]
 name = "calculator"

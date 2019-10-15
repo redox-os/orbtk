@@ -63,7 +63,9 @@ impl ToString for Color {
             return String::from("transparent");
         }
 
-        let mut color = format!("#{:x}", self.data);
+        let data = self.data;
+
+        let mut color = format!("#{:x}", data);
         color.remove(1);
         color.remove(1);
         color

@@ -18,8 +18,8 @@ impl Template for ImageWidget {
         self.name("ImageWidget").selector("image-widget").image("")
     }
 
-    fn render_object(&self) -> Option<Box<dyn RenderObject>> {
-        Some(Box::new(ImageRenderObject))
+    fn render_object(&self) -> Box<dyn RenderObject> {
+        Box::new(ImageRenderObject)
     }
 
     fn layout(&self) -> Box<dyn Layout> {

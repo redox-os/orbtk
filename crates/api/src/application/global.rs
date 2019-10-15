@@ -4,7 +4,7 @@ use dces::prelude::Entity;
 
 use crate::shell::Key;
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 /// The `Global` struct is used to define global `properties` that could be access application width.
 pub struct Global {
     /// Contains the current focused widget.
@@ -17,7 +17,7 @@ pub struct Global {
     pub keyboard_state: KeyboardState,
 }
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 /// Contains the state information for the keyboard.
 ///
 /// This currently tracks which keys are currently pressed.
