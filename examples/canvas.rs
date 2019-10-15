@@ -157,11 +157,11 @@ impl render::RenderPipeline for Graphic2DPipeline {
     fn draw_pipeline(&self, render_target: &mut render::RenderTarget) {
         let mut render_context =
             RenderContext2D::new(render_target.width(), render_target.height());
-       
+
         let width = 120.0;
         let height = 120.0;
 
-        let x = (render_target.width() - width)  / 2.0;
+        let x = (render_target.width() - width) / 2.0;
         let y = (render_target.height() - height) / 2.0;
 
         render_context.set_fill_style(Brush::LinearGradient {
