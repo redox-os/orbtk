@@ -310,14 +310,14 @@ impl RenderContext2D {
             self.draw_image_with_size(
                 &Image::from_data(
                     clip_width as u32,
-                    clip_height as u32,
+                    1,
                     image.data()[offset..].iter().map(|p| *p).collect(),
                 )
                 .unwrap(),
                 x,
                 y.into(),
                 width,
-                height,
+                1,
             );
             offset = next_offset;
             y += 1;
