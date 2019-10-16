@@ -85,14 +85,7 @@ enum RenderTask {
         x: f64,
         y: f64,
     },
-    DrawImageWithSize {
-        image: Image,
-        x: f64,
-        y: f64,
-        width: f64,
-        height: f64,
-    },
-    DrawImageWithClipAndSize {
+    DrawImageWithClip {
         image: Image,
         clip_x: f64,
         clip_y: f64,
@@ -100,8 +93,6 @@ enum RenderTask {
         clip_height: f64,
         x: f64,
         y: f64,
-        width: f64,
-        height: f64,
     },
     Clip(),
     SetLineWidth {
@@ -187,16 +178,7 @@ impl RenderWorker {
                         RenderTask::DrawImage { image, x, y } => {
                             render_context_2_d.draw_image(&image, *x, *y);
                         }
-                        RenderTask::DrawImageWithSize {
-                            image,
-                            x,
-                            y,
-                            width,
-                            height,
-                        } => {
-                            render_context_2_d.draw_image_with_size(image, *x, *y, *width, *height);
-                        }
-                        RenderTask::DrawImageWithClipAndSize {
+                        RenderTask::DrawImageWithClip {
                             image,
                             clip_x,
                             clip_y,
@@ -204,10 +186,8 @@ impl RenderWorker {
                             clip_height,
                             x,
                             y,
-                            width,
-                            height,
                         } => {
-                            render_context_2_d.draw_image_with_clip_and_size(
+                            render_context_2_d.draw_image_with_clip(
                                 image,
                                 *clip_x,
                                 *clip_y,
@@ -215,8 +195,6 @@ impl RenderWorker {
                                 *clip_height,
                                 *x,
                                 *y,
-                                *width,
-                                *height,
                             );
                         }
                         RenderTask::SetTransform { a, b, c, d, e, f } => {
@@ -573,28 +551,8 @@ impl RenderContext2D {
             .expect("Could not send image to render thread.");
     }
 
-    /// Draws the image with the given size.
-    pub fn draw_image_with_size(
-        &mut self,
-        image: &mut Image,
-        x: f64,
-        y: f64,
-        width: f64,
-        height: f64,
-    ) {
-        self.sender
-            .send(vec![RenderTask::DrawImageWithSize {
-                image: image.clone(),
-                x,
-                y,
-                width,
-                height,
-            }])
-            .expect("Could not send image to render thread.");
-    }
-
     /// Draws the given part of the image.
-    pub fn draw_image_with_clip_and_size(
+    pub fn draw_image_with_clip(
         &mut self,
         image: &mut Image,
         clip_x: f64,
@@ -602,12 +560,10 @@ impl RenderContext2D {
         clip_width: f64,
         clip_height: f64,
         x: f64,
-        y: f64,
-        width: f64,
-        height: f64,
+        y: f64
     ) {
         self.sender
-            .send(vec![RenderTask::DrawImageWithClipAndSize {
+            .send(vec![RenderTask::DrawImageWithClip {
                 image: image.clone(),
                 clip_x,
                 clip_y,
@@ -615,8 +571,6 @@ impl RenderContext2D {
                 clip_height,
                 x,
                 y,
-                width,
-                height,
             }])
             .expect("Could not send clipped image to render thread.");
     }
