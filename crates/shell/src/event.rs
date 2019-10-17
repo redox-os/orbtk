@@ -16,6 +16,7 @@ pub enum Key {
     ShiftL,
     ShiftR,
     Alt,
+    Escape,
     A(bool),
     B(bool),
     C(bool),

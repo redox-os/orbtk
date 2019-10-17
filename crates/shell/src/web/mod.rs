@@ -42,6 +42,7 @@ fn get_key(code: &str, key: String) -> (Key, String) {
         "ArrowLeft" => Key::Left,
         "ArrowRight" => Key::Right,
         "ArrowDown" => Key::Down,
+        "Escape" => Key::Escape,
         _ => {
             text = key.clone();
             Key::from(key.chars().next().unwrap())
