@@ -115,10 +115,6 @@ text-box:focus {
 }
 
 cursor {
-    background: transparent;
-}
-
-cursor:focus {
     background: #f8de4c;
 }
 

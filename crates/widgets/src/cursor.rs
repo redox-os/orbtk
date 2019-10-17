@@ -17,10 +17,10 @@ impl State for CursorState {
         }
 
         if widget.get::<Focused>().0 {
-            add_selector_to_widget("focus", &mut widget);
+            widget.set(Visibility::from("visible"));
         } else {
-            remove_selector_from_widget("focus", &mut widget)
-        }
+            widget.set(Visibility::from("collapsed"));
+        } 
     }
 }
 
