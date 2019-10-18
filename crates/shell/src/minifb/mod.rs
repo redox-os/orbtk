@@ -89,10 +89,13 @@ where
     key_delete: KeyHelper,
     key_enter: KeyHelper,
     key_control: KeyHelper,
+    key_control_right: KeyHelper,
     key_shift_l: KeyHelper,
     key_shift_r: KeyHelper,
     key_alt: KeyHelper,
-    key_escape: KeyHelper
+    key_alt_r: KeyHelper,
+    key_escape: KeyHelper,
+    key_home: KeyHelper
 }
 
 impl<A> WindowShell<A>
@@ -123,10 +126,13 @@ where
             key_delete: KeyHelper(false, minifb::Key::Delete, Key::Delete),
             key_enter: KeyHelper(false, minifb::Key::Enter, Key::Enter),
             key_control: KeyHelper(false, minifb::Key::LeftCtrl, Key::Control),
+            key_control_right: KeyHelper(false, minifb::Key::RightCtrl, Key::Control),
             key_shift_l: KeyHelper(false, minifb::Key::LeftShift, Key::ShiftL),
             key_shift_r: KeyHelper(false, minifb::Key::RightShift, Key::ShiftR),
             key_alt: KeyHelper(false, minifb::Key::LeftAlt, Key::Alt),
+            key_alt_r: KeyHelper(false, minifb::Key::RightAlt, Key::Alt),
             key_escape: KeyHelper(false, minifb::Key::Escape, Key::Escape),
+            key_home: KeyHelper(false, minifb::Key::Home, Key::Home),
         }
     }
 
@@ -195,10 +201,13 @@ where
         key_event_helper(&mut self.key_delete, &mut self.adapter, &mut self.window);
         key_event_helper(&mut self.key_enter, &mut self.adapter, &mut self.window);
         key_event_helper(&mut self.key_control, &mut self.adapter, &mut self.window);
+        key_event_helper(&mut self.key_control_right, &mut self.adapter, &mut self.window);
         key_event_helper(&mut self.key_shift_l, &mut self.adapter, &mut self.window);
         key_event_helper(&mut self.key_shift_r, &mut self.adapter, &mut self.window);
         key_event_helper(&mut self.key_alt, &mut self.adapter, &mut self.window);
+        key_event_helper(&mut self.key_alt_r, &mut self.adapter, &mut self.window);
         key_event_helper(&mut self.key_escape, &mut self.adapter, &mut self.window);
+        key_event_helper(&mut self.key_home, &mut self.adapter, &mut self.window);
 
         // resize
         if self.window_size != self.window.get_size() {

@@ -17,6 +17,7 @@ pub enum Key {
     ShiftR,
     Alt,
     Escape,
+    Home,
     A(bool),
     B(bool),
     C(bool),
@@ -216,6 +217,7 @@ impl From<char> for Key {
     fn from(sight: char) -> Self {
         match sight {
             'a' => Key::A(false),
+            'å' => Key::A(false),
             'b' => Key::B(false),
             'c' => Key::C(false),
             'd' => Key::D(false),
@@ -237,6 +239,7 @@ impl From<char> for Key {
             't' => Key::T(false),
             'u' => Key::U(false),
             'v' => Key::V(false),
+            '√' => Key::V(false),
             'w' => Key::W(false),
             'x' => Key::X(false),
             'y' => Key::Y(false),
