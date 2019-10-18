@@ -281,12 +281,12 @@ impl RenderContext2D {
 
 impl From<&str> for Image {
     fn from(s: &str) -> Image {
-        Image::new(s)
+        Image::from_path(s).unwrap()
     }
 }
 
 impl From<String> for Image {
     fn from(s: String) -> Image {
-        Image::new(s)
+        Image::from_path(s).unwrap()
     }
 }
