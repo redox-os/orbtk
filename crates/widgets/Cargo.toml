@@ -11,6 +11,8 @@ edition = "2018"
 
 [dependencies]
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }
+# clipboard will be moved to shell crate
+clipboard = "0.5.0"
 orbtk-api = { version = "0.1.0", path = "../api" }
 orbtk-shell = { version = "0.1.0", path = "../shell" }
 orbtk-theme = { version = "0.1.0", path = "../theme" }
