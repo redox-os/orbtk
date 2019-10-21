@@ -1,7 +1,5 @@
 use std::cell::Cell;
 
-use clipboard::{ClipboardContext, ClipboardProvider};
-
 use super::behaviors::MouseBehavior;
 use crate::{
     prelude::*,
@@ -18,7 +16,6 @@ enum TextBoxAction {
 pub struct TextBoxState {
     action: RefCell<Option<TextBoxAction>>,
     cursor_x: Cell<f64>,
-    clipboard_context: RefCell<ClipboardContext>,
 }
 
 impl Default for TextBoxState {
@@ -26,7 +23,6 @@ impl Default for TextBoxState {
         TextBoxState {
             action: RefCell::new(None),
             cursor_x: Cell::new(0.0),
-            clipboard_context: RefCell::new(ClipboardProvider::new().unwrap()),
         }
     }
 }
@@ -99,43 +95,17 @@ impl TextBoxState {
                     return;
                 }
 
-                if ctx.window().get::<Global>().keyboard_state.is_alt_down() {
-                    match key_event.key {
-                        // paste
-                        Key::V(_b) => {
-                            if let Ok(content) = self.clipboard_context.borrow_mut().get_contents()
-                            {
-                                ctx.widget()
-                                    .get_mut::<Text>()
-                                    .0
-                                    .insert_str(current_selection.start_index, content.as_str());
+                ctx.widget()
+                    .get_mut::<Text>()
+                    .0
+                    .insert_str(current_selection.start_index, key_event.text.as_str());
 
-                                if let Some(selection) = ctx
-                                    .child_by_id("cursor")
-                                    .unwrap()
-                                    .try_get_mut::<TextSelection>()
-                                {
-                                    selection.0.start_index =
-                                        current_selection.start_index + content.len();
-                                }
-                            }
-                        }
-                        _ => {}
-                    }
-                } else {
-                    ctx.widget()
-                        .get_mut::<Text>()
-                        .0
-                        .insert_str(current_selection.start_index, key_event.text.as_str());
-
-                    if let Some(selection) = ctx
-                        .child_by_id("cursor")
-                        .unwrap()
-                        .try_get_mut::<TextSelection>()
-                    {
-                        selection.0.start_index =
-                            current_selection.start_index + key_event.text.len();
-                    }
+                if let Some(selection) = ctx
+                    .child_by_id("cursor")
+                    .unwrap()
+                    .try_get_mut::<TextSelection>()
+                {
+                    selection.0.start_index = current_selection.start_index + key_event.text.len();
                 }
             }
         }
