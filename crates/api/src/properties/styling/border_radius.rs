@@ -2,6 +2,7 @@ use crate::prelude::*;
 
 property!(
     /// `IconSize` describes the degree to which the corners of a Border are rounded.
+    #[derive(Default)]
     BorderRadius(f64)
 );
 

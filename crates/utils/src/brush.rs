@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 /// Describes a position on a colorful gradient.
 #[derive(Clone, PartialEq, Debug)]
-pub struct GradientStop {
+pub struct LinearGradientStop {
     pub position: f64,
     pub color: Color,
 }
@@ -14,7 +14,11 @@ pub enum Brush {
     SolidColor(Color),
 
     /// Paints an area with a linear gradient.
-    Gradient(Vec<GradientStop>),
+    LinearGradient {
+        start: Point,
+        end: Point,
+        stops: Vec<LinearGradientStop>,
+    },
 }
 
 impl Brush {
@@ -59,11 +63,11 @@ impl From<String> for Brush {
     }
 }
 
-impl From<Vec<GradientStop>> for Brush {
-    fn from(gradient: Vec<GradientStop>) -> Brush {
-        Brush::Gradient(gradient)
-    }
-}
+// impl From<Vec<LinearGradientStop>> for Brush {
+//     fn from(gradient: Vec<LinearGradientStop>) -> Brush {
+//         Brush::LinearGradient(gradient)
+//     }
+// }
 
 #[cfg(test)]
 mod tests {

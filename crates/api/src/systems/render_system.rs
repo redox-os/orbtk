@@ -48,7 +48,7 @@ impl System<Tree> for RenderSystem {
         let mut offsets = BTreeMap::new();
         offsets.insert(root, (0.0, 0.0));
 
-        // CONSOLE.time("render");
+        CONSOLE.time("render");
 
         shell.render_context_2_d().start();
         shell.render_context_2_d().begin_path();

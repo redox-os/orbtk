@@ -29,5 +29,6 @@ impl Default for OrientationValue {
 
 property!(
     /// `Orientation` describes the orientation of the `Stack`.
+    #[derive(Default)]
     Orientation(OrientationValue) : &str
 );

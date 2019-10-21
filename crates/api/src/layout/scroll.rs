@@ -112,7 +112,7 @@ impl Layout for ScrollLayout {
         let horizontal_alignment = HorizontalAlignment::get(entity, ecm.component_store());
         let vertical_alignment = VerticalAlignment::get(entity, ecm.component_store());
         let margin = Margin::get(entity, ecm.component_store());
-        let _padding = Padding::get(entity, ecm.component_store());
+        // let _padding = Padding::get(entity, ecm.component_store());
         let constraint = Constraint::get(entity, ecm.component_store());
 
         let size = constraint.perform((

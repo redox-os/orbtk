@@ -59,6 +59,11 @@ impl Image {
         Ok(Image { source })
     }
 
+    /// Draws a u32 slice into the image.
+    pub fn draw(&mut self, _data: &[u32]) {
+        // todo
+    }
+
     /// Gets the width.
     pub fn width(&self) -> f64 {
         let width: u64 = js!(

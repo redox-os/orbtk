@@ -32,5 +32,6 @@ impl Default for ScrollViewerModeValue {
 
 property!(
     /// `ScrollViewerMode` describes the vertical and horizontal scroll behavior of the `ScrollViewer`.
+    #[derive(Default)]
     ScrollViewerMode(ScrollViewerModeValue) : (&str, &str)
 );

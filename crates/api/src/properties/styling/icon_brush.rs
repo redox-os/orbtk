@@ -2,6 +2,7 @@ use crate::{prelude::*, utils::*};
 
 property!(
     /// `IconBrush` describes the icon brush of a visual element.
+    #[derive(Default)]
     IconBrush(Brush) : &str,
     String
 );

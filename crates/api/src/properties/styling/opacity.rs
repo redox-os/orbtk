@@ -2,6 +2,7 @@ use crate::prelude::*;
 
 property!(
     /// `Opacity` describes the opacity of a widget.
+    #[derive(Default)]
     Opacity(f64)
 );
 

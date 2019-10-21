@@ -21,6 +21,7 @@ impl Default for VisibilityValue {
 
 property!(
     /// `Visibility` describes the visibility of a widget.
+    #[derive(Default)]
     Visibility(VisibilityValue)
 );
 

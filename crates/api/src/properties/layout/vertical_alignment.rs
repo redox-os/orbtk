@@ -2,6 +2,7 @@ use crate::{prelude::*, utils::prelude::*};
 
 property!(
     /// `VerticalAlignment` describes the vertical alignment of a widget.
+    #[derive(Default)]
     VerticalAlignment(Alignment) : &str
 );
 
