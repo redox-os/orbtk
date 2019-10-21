@@ -32,7 +32,7 @@ impl<'a> WidgetContainer<'a> {
     /// Panics if the widget does not contains the property.
     pub fn get<P>(&self) -> &P
     where
-        P: Clone + Component + Default,
+        P: Clone + Component,
     {
         if let Ok(property) = self
             .ecm
@@ -56,7 +56,7 @@ impl<'a> WidgetContainer<'a> {
     /// Panics if the widget does not contains the property.
     pub fn get_mut<P>(&mut self) -> &mut P
     where
-        P: Clone + Component + Default,
+        P: Clone + Component,
     {
         if let Ok(property) = self
             .ecm
@@ -97,7 +97,7 @@ impl<'a> WidgetContainer<'a> {
     /// Panics if the widget does not contains the property.
     pub fn clone<P>(&self) -> P
     where
-        P: Clone + Component + Default,
+        P: Clone + Component,
     {
         if let Ok(property) = self
             .ecm
@@ -118,7 +118,7 @@ impl<'a> WidgetContainer<'a> {
     /// not exists or it doesn't have a component of type `P` `None` will be returned.
     pub fn try_clone<P>(&self) -> Option<P>
     where
-        P: Clone + Component + Default,
+        P: Clone + Component,
     {
         if let Ok(property) = self
             .ecm
@@ -138,7 +138,7 @@ impl<'a> WidgetContainer<'a> {
     /// Panics if the widget does not contains the property.
     pub fn set<P>(&mut self, value: P)
     where
-        P: Component + Default + Clone,
+        P: Component + Clone,
     {
         if let Ok(property) = self
             .ecm
@@ -159,7 +159,7 @@ impl<'a> WidgetContainer<'a> {
     /// Returns `true` if the widget has a property of type `P` otherwise `false`.
     pub fn has<P>(&self) -> bool
     where
-        P: Clone + Component + Default,
+        P: Clone + Component,
     {
         self.ecm
             .component_store()
@@ -169,7 +169,7 @@ impl<'a> WidgetContainer<'a> {
 
     /// Returns a reference of a property of type `P` from the given widget entity. If the entity does
     /// not exists or it doesn't have a component of type `P` `None` will be returned.
-    pub fn try_get<P: Component + Default>(&self) -> Option<&P> {
+    pub fn try_get<P: Component>(&self) -> Option<&P> {
         self.ecm
             .component_store()
             .borrow_component::<P>(self.current_node)
@@ -178,7 +178,7 @@ impl<'a> WidgetContainer<'a> {
 
     /// Returns a mutable reference of a property of type `P` from the given widget entity. If the entity does
     /// not exists or it doesn't have a component of type `P` `None` will be returned.
-    pub fn try_get_mut<P: Component + Default>(&mut self) -> Option<&mut P> {
+    pub fn try_get_mut<P: Component>(&mut self) -> Option<&mut P> {
         self.ecm
             .component_store_mut()
             .borrow_mut_component::<P>(self.current_node)

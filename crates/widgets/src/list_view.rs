@@ -268,6 +268,7 @@ impl Template for ListView {
             .selected_indices(HashSet::new())
             .selected_entities(HashSet::new())
             .delta(0.0)
+            .orientation("Vertical")
             .child(
                 Container::create()
                     .background(id)

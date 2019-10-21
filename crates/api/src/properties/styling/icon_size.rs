@@ -2,6 +2,7 @@ use crate::prelude::*;
 
 property!(
     /// `IconSize` describes the icon size of a text element.
+    #[derive(Default)]
     IconSize(f64)
 );
 

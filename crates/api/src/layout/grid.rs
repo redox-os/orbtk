@@ -407,112 +407,118 @@ impl Layout for GridLayout {
             loop {
                 let child = ecm.entity_store().children[&entity][index];
 
+                let child_horizontal_alignment =
+                    HorizontalAlignment::get(child, ecm.component_store());
+                let child_vertical_alignment = VerticalAlignment::get(child, ecm.component_store());
+
                 let mut cell_position = (0.0, 0.0);
-                if let Some(available_size) = self.children_sizes.borrow().get(&child) {
-                    let mut available_size = *available_size;
-                    // child margin
-                    let c_margin = Margin::get(child, ecm.component_store());
+                let mut available_size = size;
 
-                    let c_vertical_alignment = VerticalAlignment::get(child, ecm.component_store());
-                    let c_horizontal_alignment =
-                        HorizontalAlignment::get(child, ecm.component_store());
+                let has_columns = if let Ok(columns) =
+                    ecm.component_store().borrow_component::<Columns>(entity)
+                {
+                    columns.len() > 0
+                } else {
+                    false
+                };
 
-                    let has_columns = if let Ok(columns) =
-                        ecm.component_store().borrow_component::<Columns>(entity)
+                // column
+                if has_columns {
+                    let grid_column = if let Ok(grid_column) =
+                        ecm.component_store().borrow_component::<GridColumn>(child)
                     {
-                        columns.len() > 0
+                        grid_column.0
+                    } else {
+                        0
+                    };
+
+                    let (offset_x, available_width) = self.get_column_x_and_width(
+                        &columns_cache,
+                        child,
+                        ecm.component_store_mut(),
+                        grid_column,
+                    );
+
+                    cell_position.0 = offset_x;
+                    available_size.0 = available_width;
+                } else {
+                    available_size.0 = size.0;
+                }
+
+                let has_rows =
+                    if let Ok(rows) = ecm.component_store().borrow_component::<Rows>(entity) {
+                        rows.len() > 0
                     } else {
                         false
                     };
 
-                    // column
-                    if has_columns {
-                        let grid_column = if let Ok(grid_column) =
-                            ecm.component_store().borrow_component::<GridColumn>(child)
-                        {
-                            grid_column.0
-                        } else {
-                            0
-                        };
-
-                        let (offset_x, available_width) = self.get_column_x_and_width(
-                            &columns_cache,
-                            child,
-                            ecm.component_store_mut(),
-                            grid_column,
-                        );
-
-                        cell_position.0 = offset_x;
-                        available_size.0 = available_width;
-                    } else {
-                        available_size.0 = size.0;
-                    }
-
-                    let has_rows =
-                        if let Ok(rows) = ecm.component_store().borrow_component::<Rows>(entity) {
-                            rows.len() > 0
-                        } else {
-                            false
-                        };
-
-                    // rows
-                    if has_rows {
-                        let grid_row = if let Ok(grid_row) =
-                            ecm.component_store().borrow_component::<GridRow>(child)
-                        {
-                            grid_row.0
-                        } else {
-                            0
-                        };
-
-                        let (offset_y, available_height) = self.get_row_y_and_height(
-                            &rows_cache,
-                            child,
-                            ecm.component_store_mut(),
-                            grid_row,
-                        );
-
-                        cell_position.1 = offset_y;
-                        available_size.1 = available_height;
-                    } else {
-                        available_size.1 = size.1;
-                    }
-
-                    if let Some(child_layout) = layouts.borrow().get(&child) {
-                        available_size = child_layout.arrange(
-                            render_context_2_d,
-                            available_size,
-                            child,
-                            ecm,
-                            layouts,
-                            theme,
-                        );
-                    }
-
-                    if let Ok(child_bounds) = ecm
-                        .component_store_mut()
-                        .borrow_mut_component::<Bounds>(child)
+                // rows
+                if has_rows {
+                    let grid_row = if let Ok(grid_row) =
+                        ecm.component_store().borrow_component::<GridRow>(child)
                     {
-                        child_bounds.set_x(
-                            cell_position.0
-                                + c_horizontal_alignment.align_position(
-                                    size.0,
-                                    available_size.0,
-                                    c_margin.left(),
-                                    c_margin.right(),
-                                ),
-                        );
-                        child_bounds.set_y(
-                            cell_position.1
-                                + c_vertical_alignment.align_position(
-                                    size.1,
-                                    available_size.1,
-                                    c_margin.top(),
-                                    c_margin.bottom(),
-                                ),
-                        );
-                    }
+                        grid_row.0
+                    } else {
+                        0
+                    };
+
+                    let (offset_y, available_height) = self.get_row_y_and_height(
+                        &rows_cache,
+                        child,
+                        ecm.component_store_mut(),
+                        grid_row,
+                    );
+
+                    cell_position.1 = offset_y;
+                    available_size.1 = available_height;
+                } else {
+                    available_size.1 = size.1;
                 }
+
+                let mut child_desired_size = (0.0, 0.0);
+                if let Some(child_layout) = layouts.borrow().get(&child) {
+                    child_desired_size = child_layout.arrange(
+                        render_context_2_d,
+                        available_size,
+                        child,
+                        ecm,
+                        layouts,
+                        theme,
+                    );
+                }
+
+                let child_margin = {
+                    if child_desired_size.0 > 0.0 && child_desired_size.1 > 0.0 {
+                        Margin::get(child, ecm.component_store())
+                    } else {
+                        Margin::default().0
+                    }
+                };
+
+                if let Ok(child_bounds) = ecm
+                    .component_store_mut()
+                    .borrow_mut_component::<Bounds>(child)
+                {
+                    child_bounds.set_x(
+                        cell_position.0
+                            + child_horizontal_alignment.align_position(
+                                available_size.0,
+                                child_bounds.width(),
+                                child_margin.left(),
+                                child_margin.right(),
+                            ),
+                    );
+                    child_bounds.set_y(
+                        cell_position.1
+                            + child_vertical_alignment.align_position(
+                                available_size.1,
+                                child_bounds.height(),
+                                child_margin.top(),
+                                child_margin.bottom(),
+                            ),
+                    );
+                }
+
                 if index + 1 < ecm.entity_store().children[&entity].len() {
                     index += 1;
                 } else {

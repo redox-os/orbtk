@@ -91,6 +91,7 @@ impl Template for ItemsWidget {
             .border_thickness(1.0)
             .border_brush(colors::BOMBAY_COLOR)
             .padding(2.0)
+            .orientation("Vertical")
             .child(
                 Container::create()
                     .background(id)

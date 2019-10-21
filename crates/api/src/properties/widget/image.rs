@@ -1,8 +1,9 @@
-use crate::{prelude::*, render::Image as Img};
+use crate::{prelude::*, render};
 
 property!(
     /// `Image` describes an image property of a widget.
-    Image(Img) : &str,
+    #[derive(Default)]
+    Image(render::Image) : &str,
     String
 );
 

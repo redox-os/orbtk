@@ -2,6 +2,7 @@ use crate::prelude::*;
 
 property!(
     /// `Name` is use for debugging purposes.
+    #[derive(Default)]
     Name(String)
 );
 

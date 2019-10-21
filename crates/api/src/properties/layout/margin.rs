@@ -2,6 +2,7 @@ use crate::{prelude::*, utils::prelude::*};
 
 property!(
     /// `Margin` describes the outer widget space.
+    #[derive(Default)]
     Margin(Thickness) : f64,
     (f64, f64),
     (f64, f64, f64, f64)

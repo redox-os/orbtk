@@ -7,6 +7,7 @@ use crate::{
 
 property!(
     /// `Selector` describes the css selector of a widget.
+    #[derive(Default)]
     Selector(SelectorValue) : &str,
     String
 );

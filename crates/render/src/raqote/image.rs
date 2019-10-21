@@ -2,25 +2,12 @@ use std::{fmt, path::Path};
 
 use image;
 
-use crate::utils::*;
+use crate::RenderTarget;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Image {
-    width: u32,
-    height: u32,
-    pub data: Vec<u32>,
+    render_target: RenderTarget,
     source: String,
-}
-
-impl Default for Image {
-    fn default() -> Self {
-        Image {
-            width: 0,
-            height: 0,
-            data: vec![],
-            source: String::default(),
-        }
-    }
 }
 
 impl fmt::Debug for Image {
@@ -36,21 +23,23 @@ impl std::cmp::PartialEq for Image {
 }
 
 impl Image {
+    /// Creates a new image with the given width and height.
     pub fn new(width: u32, height: u32) -> Self {
         Image {
-            width,
-            height,
-            data: vec![Color::rgba(0, 0, 0, 0).data; width as usize * height as usize],
+            render_target: RenderTarget::new(width, height),
             source: String::default(),
         }
+    }
+
+    /// Draws a u32 slice into the image.
+    pub fn draw(&mut self, data: &[u32]) {
+        self.render_target.data.clone_from_slice(data);
     }
 
     /// Create a new image from a boxed slice of colors
     pub fn from_data(width: u32, height: u32, data: Vec<u32>) -> Result<Self, String> {
         Ok(Image {
-            width: width,
-            height: height,
-            data: data,
+            render_target: RenderTarget::from_data(width, height, data).unwrap(),
             source: String::new(),
         })
     }
@@ -77,19 +66,19 @@ impl Image {
 
     /// Gets the width.
     pub fn width(&self) -> f64 {
-        self.width as f64
+        self.render_target.width() as f64
     }
 
     /// Gets the height.
     pub fn height(&self) -> f64 {
-        self.height as f64
+        self.render_target.height() as f64
     }
 
     pub fn data(&self) -> &[u32] {
-        &self.data
+        &self.render_target.data
     }
 
     pub fn data_mut(&mut self) -> &mut [u32] {
-        &mut self.data
+        &mut self.render_target.data
     }
 }

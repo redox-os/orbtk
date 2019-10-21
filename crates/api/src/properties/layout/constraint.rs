@@ -116,6 +116,7 @@ impl Default for BoxConstraint {
 
 property!(
     /// `Constraint` describes the box constraint (min, max size) of a widget.
+    #[derive(Default)]
     Constraint(BoxConstraint)
 );
 

@@ -1,27 +1,65 @@
 use stdweb::{
     js,
-    web::{CanvasRenderingContext2d, FillRule},
+    unstable::TryInto,
+    web::{document, html_element::CanvasElement, window, CanvasRenderingContext2d, FillRule},
 };
 
-use crate::{utils::*, FontConfig, TextMetrics};
+// pub use crate::image::Image as InnerImage;
+use crate::{utils::*, FontConfig, RenderConfig, Pipeline, RenderTarget, TextMetrics};
 
 pub use self::image::*;
 
 mod image;
 
-/// The RenderContext2D trait, provides the 2D rendering context. It is used for drawing shapes, text, images, and other objects.
+/// The RenderContext2D trait, provides the rendering context. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
     canvas_render_context_2_d: CanvasRenderingContext2d,
     font_config: FontConfig,
+    config: RenderConfig,
+    saved_config: Option<RenderConfig>,
+    export_data: Vec<u32>,
 }
 
 impl RenderContext2D {
+    /// Creates a new render context with the given width and height.
+    pub fn new(width: f64, height: f64) -> Self {
+        let canvas: CanvasElement = document()
+            .create_element("canvas")
+            .unwrap()
+            .try_into()
+            .unwrap();
+
+        canvas.set_width(width as u32);
+        canvas.set_height(height as u32);
+
+        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
+
+        let export_data = vec![0; (width * height) as usize];
+        context.set_text_baseline(stdweb::web::TextBaseline::Middle);
+        RenderContext2D {
+            config: RenderConfig::default(),
+            saved_config: None,
+            canvas_render_context_2_d: context,
+            font_config: FontConfig::default(),
+            export_data,
+        }
+    }
+
     /// Creates a new render context 2d.
-    pub fn new(canvas_render_context_2_d: CanvasRenderingContext2d) -> Self {
+    pub fn from_context(canvas_render_context_2_d: CanvasRenderingContext2d) -> Self {
+        let export_data = vec![
+            0;
+            (canvas_render_context_2_d.get_canvas().width()
+                * canvas_render_context_2_d.get_canvas().height())
+                as usize
+        ];
         canvas_render_context_2_d.set_text_baseline(stdweb::web::TextBaseline::Middle);
         RenderContext2D {
+            config: RenderConfig::default(),
+            saved_config: None,
             canvas_render_context_2_d,
             font_config: FontConfig::default(),
+            export_data,
         }
     }
 
@@ -29,12 +67,14 @@ impl RenderContext2D {
 
     /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.fill_style(&self.config.fill_style);
         self.canvas_render_context_2_d
             .fill_rect(x, y, width, height);
     }
 
     /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other context settings.
     pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.stroke_style(&self.config.fill_style);
         self.canvas_render_context_2_d
             .stroke_rect(x, y, width, height);
     }
@@ -43,6 +83,7 @@ impl RenderContext2D {
 
     /// Draws (fills) a given text at the given (x, y) position.
     pub fn fill_text(&mut self, text: &str, x: f64, y: f64) {
+        self.fill_style(&self.config.fill_style);
         self.canvas_render_context_2_d
             .set_text_baseline(stdweb::web::TextBaseline::Middle);
         self.canvas_render_context_2_d.fill_text(
@@ -78,11 +119,13 @@ impl RenderContext2D {
 
     /// Fills the current or given path with the current file style.
     pub fn fill(&mut self) {
+        self.fill_style(&self.config.fill_style);
         self.canvas_render_context_2_d.fill(FillRule::default());
     }
 
     /// Strokes {outlines} the current or given path with the current stroke style.
     pub fn stroke(&mut self) {
+        self.stroke_style(&self.config.fill_style);
         self.canvas_render_context_2_d.stroke();
     }
 
@@ -177,6 +220,65 @@ impl RenderContext2D {
         );
     }
 
+    pub fn draw_pipeline(
+        &mut self,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+        pipeline: Box<dyn Pipeline>,
+    ) {
+        let mut render_target = RenderTarget::new(width as u32, height as u32);
+        pipeline.draw_pipeline(&mut render_target);
+
+        let image_data = self
+            .canvas_render_context_2_d
+            .create_image_data(width, height)
+            .unwrap();
+
+        for i in 0..(render_target.data.len() - 1) {
+            let pixel = render_target.data.get(i).unwrap();
+            let r = ((pixel & 0x00FF0000) >> 16) as u8;
+            let g = ((pixel & 0x0000FF00) >> 8) as u8;
+            let b = (pixel & 0x000000FF) as u8;
+            let a = ((pixel & 0xFF000000) >> 24) as u8;
+
+            let index = i as u32 * 4;
+            js!(
+                @{&image_data}.data[@{index} + 0] = @{r};  // R value
+                @{&image_data}.data[@{index} + 1] = @{g};    // G value
+                @{&image_data}.data[@{index} + 2] = @{b};  // B value
+                @{&image_data}.data[@{index} + 3] = @{a};  // A value
+            );
+        }
+
+        let canvas: CanvasElement = document()
+            .create_element("canvas")
+            .unwrap()
+            .try_into()
+            .unwrap();
+
+        canvas.set_width(width as u32);
+        canvas.set_height(height as u32);
+
+        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
+        context
+            .put_image_data(image_data, 0.0, 0.0)
+            .expect("Could no draw pipeline.");
+
+        // todo: use await after stdweb futures are stable
+        js!(
+            // use the tempCanvas.toDataURL to create an img object
+            var img = new Image();
+
+            img.onload = function () {
+                @{&self.canvas_render_context_2_d}.drawImage(img,@{&x},@{&y});
+            };
+
+            img.src = @{&canvas}.toDataURL();
+        );
+    }
+
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
     pub fn clip(&mut self) {
         self.canvas_render_context_2_d.clip(FillRule::EvenOdd);
@@ -206,25 +308,13 @@ impl RenderContext2D {
     // Fill and stroke style
 
     /// Specifies the fill color to use inside shapes.
-    pub fn set_fill_style(&mut self, brush: Brush) {
-        match brush {
-            Brush::SolidColor(color) => {
-                self.canvas_render_context_2_d
-                    .set_fill_style_color(&color.to_string());
-            }
-            _ => (),
-        }
+    pub fn set_fill_style(&mut self, fill_style: Brush) {
+        self.config.fill_style = fill_style;
     }
 
     /// Specifies the fill stroke to use inside shapes.
-    pub fn set_stroke_style(&mut self, brush: Brush) {
-        match brush {
-            Brush::SolidColor(color) => {
-                self.canvas_render_context_2_d
-                    .set_stroke_style_color(&color.to_string());
-            }
-            _ => (),
-        }
+    pub fn set_stroke_style(&mut self, stroke_style: Brush) {
+        self.config.stroke_style = stroke_style;
     }
 
     // Transformations
@@ -239,12 +329,18 @@ impl RenderContext2D {
 
     /// Saves the entire state of the canvas by pushing the current state onto a stack.
     pub fn save(&mut self) {
+        self.saved_config = Some(self.config.clone());
         self.canvas_render_context_2_d.save();
     }
 
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
         self.canvas_render_context_2_d.restore();
+        if let Some(config) = &self.saved_config {
+            self.config = config.clone();
+        }
+
+        self.saved_config = None;
     }
 
     pub fn clear(&mut self, brush: &Brush) {
@@ -273,8 +369,115 @@ impl RenderContext2D {
         self.canvas_render_context_2_d = canvas_render_context_2_d;
     }
 
+    pub fn data(&mut self) -> &[u32] {
+        let width = self.canvas_render_context_2_d.get_canvas().width();
+        let height = self.canvas_render_context_2_d.get_canvas().height();
+
+        // self.canvas_render_context_2_d.set_fill_style_color("#000000");
+        // self.canvas_render_context_2_d.fill_rect(0.0, 0.0, 10.0, height as f64 / 8.0);
+        
+        let image_data = self
+            .canvas_render_context_2_d
+            .get_image_data(0.0, 0.0, width as f64, height as f64)
+            .unwrap();
+
+        js!(
+            console.log(@{&image_data});
+        );
+
+        for i in 0..(self.export_data.len() - 1) {
+            let mut r: u8 = 0;
+            let mut g: u8 = 0;
+            let mut b: u8 = 0;
+            let mut a: u8 = 0;
+
+            let index = i as u32 * 4;
+            r = js!(
+                return @{&image_data}.data[@{index}];
+            )
+            .try_into()
+            .unwrap();
+
+            g = js!(
+                return @{&image_data}.data[@{index} + 1];
+            )
+            .try_into()
+            .unwrap();
+
+            b = js!(
+                return @{&image_data}.data[@{index} + 2];
+            )
+            .try_into()
+            .unwrap();
+
+            a = js!(
+                return @{&image_data}.data[@{index} + 3];
+            )
+            .try_into()
+            .unwrap();
+
+            js!(
+                if(@{&g} != 0) {
+                    console.log(@{&g});
+                }
+                
+            );
+
+            self.export_data[i] =
+                ((a as u32) << 24) | ((r as u32) << 16) | ((g as u32) << 8) | (b as u32);
+        }
+
+        &self.export_data
+    }
+
     pub fn start(&mut self) {}
     pub fn finish(&mut self) {}
+
+    fn fill_style<'a>(&self, brush: &Brush) {
+        match brush {
+            Brush::SolidColor(color) => {
+                self.canvas_render_context_2_d
+                    .set_fill_style_color(&color.to_string());
+            }
+            Brush::LinearGradient { start, end, stops } => {
+                let web_gradient = self
+                    .canvas_render_context_2_d
+                    .create_linear_gradient(start.x, start.y, end.x, end.y);
+
+                for stop in stops {
+                    web_gradient.add_color_stop(stop.position, stop.color.to_string().as_str()).unwrap();
+                }
+
+                self.canvas_render_context_2_d
+                    .set_fill_style_gradient(&web_gradient);
+            }
+            _ => {}
+        }
+    }
+
+    fn stroke_style<'a>(&self, brush: &Brush) {
+        match brush {
+            Brush::SolidColor(color) => {
+                self.canvas_render_context_2_d
+                    .set_stroke_style_color(&color.to_string());
+            }
+            Brush::LinearGradient { start, end, stops } => {
+                let web_gradient = self
+                    .canvas_render_context_2_d
+                    .create_linear_gradient(start.x, start.y, end.x, end.y);
+
+                for stop in stops {
+                    web_gradient
+                        .add_color_stop(stop.position, stop.color.to_string().as_str())
+                        .unwrap();
+                }
+
+                self.canvas_render_context_2_d
+                    .set_stroke_style_gradient(&web_gradient);
+            }
+            _ => {}
+        }
+    }
 }
 
 // --- Conversions ---

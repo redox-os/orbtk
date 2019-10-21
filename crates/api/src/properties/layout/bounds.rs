@@ -2,6 +2,7 @@ use crate::{prelude::*, utils::prelude::*};
 
 property!(
     /// `Bounds` describes the actual bounds (position and size) of a widget.
+    #[derive(Default)]
     Bounds(Rect) : (f64, f64, f64, f64)
 );
 

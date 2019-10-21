@@ -2,15 +2,15 @@ use std::{cmp, collections::HashMap};
 
 use raqote;
 
-use crate::{utils::*, RenderConfig, TextMetrics};
+use crate::{utils::*, RenderConfig, Pipeline, RenderTarget, TextMetrics};
 
 pub use self::font::*;
-pub use self::image::*;
+pub use self::image::Image;
 
 mod font;
 mod image;
 
-/// The RenderContext2D trait, provides the 2D rendering context. It is used for drawing shapes, text, images, and other objects.
+/// The RenderContext2D trait, provides the rendering context. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
     draw_target: raqote::DrawTarget,
     path: raqote::Path,
@@ -160,7 +160,10 @@ impl RenderContext2D {
         self.draw_target.stroke(
             &self.path,
             &brush_to_source(&self.config.stroke_style),
-            &raqote::StrokeStyle::default(),
+            &raqote::StrokeStyle {
+                width: self.config.line_width as f32,
+                ..Default::default()
+            },
             &raqote::DrawOptions::new(),
         );
     }
@@ -179,6 +182,7 @@ impl RenderContext2D {
         path_builder.close();
         self.path = path_builder.finish();
     }
+
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
         self.last_rect = (x, y, width, height);
@@ -237,6 +241,19 @@ impl RenderContext2D {
 
     // Draw image
 
+    fn draw_render_target(&mut self, render_target: &RenderTarget, x: f64, y: f64) {
+        self.draw_target.draw_image_at(
+            x as f32,
+            y as f32,
+            &raqote::Image {
+                data: &render_target.data(),
+                width: render_target.width() as i32,
+                height: render_target.height() as i32,
+            },
+            &raqote::DrawOptions::default(),
+        );
+    }
+
     /// Draws the image.
     pub fn draw_image(&mut self, image: &Image, x: f64, y: f64) {
         self.draw_target.draw_image_at(
@@ -285,6 +302,19 @@ impl RenderContext2D {
             offset = next_offset;
             y += 1;
         }
+    }
+
+    pub fn draw_pipeline(
+        &mut self,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+        pipeline: Box<dyn Pipeline>,
+    ) {
+        let mut render_target = RenderTarget::new(width as u32, height as u32);
+        pipeline.draw_pipeline(&mut render_target);
+        self.draw_render_target(&render_target, x, y);
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
@@ -405,22 +435,35 @@ impl From<String> for Image {
 // --- Conversions ---
 
 fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
-    match *brush {
+    match brush {
         Brush::SolidColor(color) => {
             return raqote::Source::Solid(raqote::SolidSource {
                 r: color.r(),
                 g: color.g(),
                 b: color.b(),
                 a: color.a(),
-            })
+            });
         }
-        _ => {
-            return raqote::Source::Solid(raqote::SolidSource {
-                r: 0x0,
-                g: 0x0,
-                b: 0x80,
-                a: 0x80,
-            })
+        Brush::LinearGradient { start, end, stops } => {
+            let mut g_stops = vec![];
+            for stop in stops {
+                g_stops.push(raqote::GradientStop {
+                    position: stop.position as f32,
+                    color: raqote::Color::new(
+                        stop.color.a(),
+                        stop.color.r(),
+                        stop.color.g(),
+                        stop.color.b(),
+                    ),
+                });
+            }
+
+            return raqote::Source::new_linear_gradient(
+                raqote::Gradient { stops: g_stops },
+                raqote::Point::new(start.x as f32, start.y as f32),
+                raqote::Point::new(end.x as f32, start.y as f32),
+                raqote::Spread::Pad,
+            );
         }
     }
 }

@@ -17,27 +17,38 @@ mod widget;
 /// Used to the a property of a widget.
 pub fn get_property<T>(entity: Entity, store: &ComponentStore) -> T
 where
-    T: Clone + Component + Default,
+    T: Clone + Component,
 {
     store
         .borrow_component::<T>(entity)
         .map(|r| r.clone())
-        .unwrap_or_default()
+        .unwrap()
+}
+
+/// Returns the value of a property of a widget if it exists otherwise the given value.
+pub fn get_property_or_value<T>(entity: Entity, store: &ComponentStore, value: T) -> T
+where
+    T: Clone + Component,
+{
+    if let Ok(property) = store.borrow_component::<T>(entity).map(|r| r.clone()) {
+        return property;
+    }
+    value
 }
 
 /// Use to build a property or to share it.
 #[derive(PartialEq, Debug)]
-pub enum PropertySource<P: Component + PartialEq + Debug> {
+pub enum PropertySource<P: Component + Debug> {
     Source(Entity),
     Value(P),
 }
 
-impl<P: Component + PartialEq + Debug> From<Entity> for PropertySource<P> {
+impl<P: Component + Debug> From<Entity> for PropertySource<P> {
     fn from(entity: Entity) -> Self {
         PropertySource::Source(entity)
     }
 }
 
-pub trait IntoPropertySource<P: Component + PartialEq + Debug> {
+pub trait IntoPropertySource<P: Component + Debug> {
     fn into_source(self) -> PropertySource<P>;
 }

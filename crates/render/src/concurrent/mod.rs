@@ -3,11 +3,17 @@ use std::{
     thread,
 };
 
-use crate::{
-    platform::{self, Image},
-    utils::*,
-    TextMetrics,
-};
+use crate::{platform, utils::*, Pipeline, TextMetrics};
+use platform::Image;
+
+#[derive(Clone)]
+struct PipelineWrapper(pub Box<dyn Pipeline>);
+
+impl PartialEq for PipelineWrapper {
+    fn eq(&self, _: &Self) -> bool {
+        true
+    }
+}
 
 // Used to sent render tasks to render thread.
 #[derive(Clone, PartialEq)]
@@ -94,6 +100,13 @@ enum RenderTask {
         x: f64,
         y: f64,
     },
+    DrawPipeline {
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+        pipeline: PipelineWrapper,
+    },
     Clip(),
     SetLineWidth {
         line_width: f64,
@@ -114,14 +127,6 @@ enum RenderTask {
     Restore(),
     Clear {
         brush: Brush,
-    },
-    Transform {
-        a: f64,
-        b: f64,
-        c: f64,
-        d: f64,
-        e: f64,
-        f: f64,
     },
     SetTransform {
         a: f64,
@@ -145,6 +150,20 @@ struct RenderWorker {
     render_thread: Option<thread::JoinHandle<()>>,
 }
 
+fn is_single_tasks(task: &RenderTask) -> bool {
+    match task {
+        RenderTask::Start() => true,
+        RenderTask::Resize { .. } => true,
+        RenderTask::RegisterFont { .. } => true,
+        RenderTask::DrawImage { .. } => true,
+        RenderTask::DrawImageWithClip { .. } => true,
+        RenderTask::DrawPipeline { .. } => true,
+        RenderTask::SetTransform { .. } => true,
+        RenderTask::Terminate { .. } => true,
+        _ => false,
+    }
+}
+
 impl RenderWorker {
     fn new(
         width: f64,
@@ -158,17 +177,17 @@ impl RenderWorker {
             let mut render_context_2_d = platform::RenderContext2D::new(width, height);
 
             loop {
-                let tasks = receiver.lock().unwrap().recv().unwrap();
+                let mut tasks = receiver.lock().unwrap().recv().unwrap();
 
                 // single tasks
-                if tasks.len() == 1 {
-                    match tasks.get(0).unwrap() {
+                if tasks.len() == 1 && is_single_tasks(tasks.get(0).unwrap()) {
+                    match tasks.remove(0) {
                         RenderTask::Start() => {
                             tasks_collection.clear();
                             continue;
                         }
                         RenderTask::Resize { width, height } => {
-                            render_context_2_d.resize(*width, *height);
+                            render_context_2_d.resize(width, height);
                             continue;
                         }
                         RenderTask::RegisterFont { family, font_file } => {
@@ -176,7 +195,7 @@ impl RenderWorker {
                             continue;
                         }
                         RenderTask::DrawImage { image, x, y } => {
-                            render_context_2_d.draw_image(&image, *x, *y);
+                            render_context_2_d.draw_image(&image, x, y);
                         }
                         RenderTask::DrawImageWithClip {
                             image,
@@ -188,17 +207,26 @@ impl RenderWorker {
                             y,
                         } => {
                             render_context_2_d.draw_image_with_clip(
-                                image,
-                                *clip_x,
-                                *clip_y,
-                                *clip_width,
-                                *clip_height,
-                                *x,
-                                *y,
+                                &image,
+                                clip_x,
+                                clip_y,
+                                clip_width,
+                                clip_height,
+                                x,
+                                y
                             );
                         }
+                        RenderTask::DrawPipeline {
+                            x,
+                            y,
+                            width,
+                            height,
+                            pipeline,
+                        } => {
+                            render_context_2_d.draw_pipeline(x, y, width, height, pipeline.0);
+                        }
                         RenderTask::SetTransform { a, b, c, d, e, f } => {
-                            render_context_2_d.set_transform(*a, *b, *c, *d, *e, *f);
+                            render_context_2_d.set_transform(a, b, c, d, e, f);
                         }
                         RenderTask::Terminate() => {
                             return;
@@ -332,7 +360,7 @@ impl RenderWorker {
     }
 }
 
-/// The RenderContext2D provides a concurrent 2D render context.
+/// The RenderContext2D provides a concurrent render context.
 pub struct RenderContext2D {
     output: Vec<u32>,
     worker: RenderWorker,
@@ -573,6 +601,25 @@ impl RenderContext2D {
                 y,
             }])
             .expect("Could not send clipped image to render thread.");
+    }
+
+    pub fn draw_pipeline(
+        &mut self,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+        pipeline: Box<dyn Pipeline>,
+    ) {
+        self.sender
+            .send(vec![RenderTask::DrawPipeline {
+                x,
+                y,
+                width,
+                height,
+                pipeline: PipelineWrapper(pipeline),
+            }])
+            .expect("Could not send draw_pipeline to render thread.");
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.

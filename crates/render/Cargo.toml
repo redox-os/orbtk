@@ -10,7 +10,7 @@ keywords = ["2D", "render", "canvas"]
 edition = "2018"
 
 [target.wasm32-unknown-unknown.dependencies]
-stdweb = "0.4.19"
+stdweb = "0.4.20"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 raqote = { version = "0.7.3", default-features = false}

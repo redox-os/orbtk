@@ -12,7 +12,7 @@ pub use orbtk_theme::prelude as theme;
 pub use orbtk_utils::prelude as utils;
 
 pub use self::button::*;
-// pub use self::canvas_widgets::CanvasWidget;
+pub use self::canvas::*;
 pub use self::check_box::*;
 pub use self::container::*;
 pub use self::cursor::*;
@@ -33,6 +33,7 @@ pub use self::window::*;
 
 pub mod behaviors;
 mod button;
+mod canvas;
 // mod canvas_widget;
 mod check_box;
 mod container;

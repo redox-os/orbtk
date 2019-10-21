@@ -432,7 +432,7 @@ where
             context.scale(ratio, ratio);
         }
 
-        let render_context_2_d = RenderContext2D::new(canvas.get_context().unwrap());
+        let render_context_2_d = RenderContext2D::from_context(canvas.get_context().unwrap());
 
         document().set_title(&self.title[..]);
 
