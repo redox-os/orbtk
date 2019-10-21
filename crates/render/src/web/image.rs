@@ -1,3 +1,4 @@
+use std::path::Path;
 use stdweb::{js, unstable::TryInto};
 
 #[derive(Default, Clone, Debug, PartialEq)]
@@ -6,9 +7,16 @@ pub struct Image {
 }
 
 impl Image {
-    /// Constructs a new image with the given source.
-    pub fn new(source: impl Into<String>) -> Self {
-        let source = source.into();
+    /// Creates a new render context 2d.
+    pub fn new(_: f64, _: f64) -> Self {
+        Image {
+            source: String::default(),
+        }
+    }
+
+    /// Load an image from file path. Supports BMP and PNG
+    pub fn from_path<P: std::string::ToString + AsRef<Path>>(path: P) -> Result<Self, String> {
+        let source = path.to_string();
 
         // Register image store if not registered.
         js!(
@@ -48,7 +56,7 @@ impl Image {
             document.image_store.load_image(@{&source});
         );
 
-        Image { source }
+        Ok(Image { source })
     }
 
     /// Draws a u32 slice into the image.

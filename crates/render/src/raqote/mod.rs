@@ -268,24 +268,8 @@ impl RenderContext2D {
         );
     }
 
-    /// Draws the image with the given size.
-    pub fn draw_image_with_size(&mut self, image: &Image, x: f64, y: f64, width: f64, height: f64) {
-        self.draw_target.draw_image_with_size_at(
-            x as f32,
-            y as f32,
-            width as f32,
-            height as f32,
-            &raqote::Image {
-                data: image.data(),
-                width: image.width() as i32,
-                height: image.height() as i32,
-            },
-            &raqote::DrawOptions::default(),
-        );
-    }
-
     /// Draws the given part of the image.
-    pub fn draw_image_with_clip_and_size(
+    pub fn draw_image_with_clip(
         &mut self,
         image: &Image,
         clip_x: f64,
@@ -294,12 +278,9 @@ impl RenderContext2D {
         clip_height: f64,
         x: f64,
         y: f64,
-        width: f64,
-        height: f64,
     ) {
-        //
-        let mut y = y as u32;
-        let stride = clip_width;
+        let mut y = y as i32;
+        let stride = image.width();
         let mut offset = (clip_y * stride + clip_x) as usize;
         let last_offset = cmp::min(
             ((clip_y + clip_height) * stride + clip_x) as usize,
@@ -307,17 +288,16 @@ impl RenderContext2D {
         );
         while offset < last_offset {
             let next_offset = offset + stride as usize;
-            self.draw_image_with_size(
-                &Image::from_data(
-                    clip_width as u32,
-                    1,
-                    image.data()[offset..].iter().map(|p| *p).collect(),
-                )
-                .unwrap(),
-                x,
-                y.into(),
-                width,
-                1.0,
+
+            self.draw_target.draw_image_at(
+                x as f32,
+                y as f32,
+                &raqote::Image {
+                    data: &image.data()[offset..],
+                    width: clip_width as i32,
+                    height: 1,
+                },
+                &raqote::DrawOptions::default(),
             );
             offset = next_offset;
             y += 1;
@@ -484,14 +464,6 @@ fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
                 raqote::Point::new(end.x as f32, start.y as f32),
                 raqote::Spread::Pad,
             );
-        }
-        _ => {
-            return raqote::Source::Solid(raqote::SolidSource {
-                r: 0x0,
-                g: 0x0,
-                b: 0x80,
-                a: 0x80,
-            });
         }
     }
 }

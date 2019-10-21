@@ -223,27 +223,8 @@ impl RenderContext2D {
         );
     }
 
-    /// Draws the image with the given size.
-    pub fn draw_image_with_size(&mut self, image: &Image, x: f64, y: f64, width: f64, height: f64) {
-        js!(
-            var img = document.image_store.image(@{&image.source});
-
-            if(img == null) {
-                img = document.image_store.load_image(@{&image.source});
-
-                img.then(
-                    function(i) {
-                         @{&self.canvas_render_context_2_d}.drawImage(i, @{&x}, @{&y}, @{&width}, @{&height});
-                    }
-                )
-            } else {
-                 @{&self.canvas_render_context_2_d}.drawImage(img, @{&x}, @{&y});
-            }
-        );
-    }
-
     /// Draws the given part of the image.
-    pub fn draw_image_with_clip_and_size(
+    pub fn draw_image_with_clip(
         &mut self,
         image: &Image,
         clip_x: f64,
@@ -252,8 +233,6 @@ impl RenderContext2D {
         clip_height: f64,
         x: f64,
         y: f64,
-        width: f64,
-        height: f64,
     ) {
         js!(
             var img = document.image_store.image(@{&image.source});
@@ -262,7 +241,7 @@ impl RenderContext2D {
                 img = document.image_store.load_image(@{&image.source});
                 img.then(
                     function(i) {
-                         @{&self.canvas_render_context_2_d}.drawImage(img, @{&clip_x}, @{&clip_y}, @{&clip_width}, @{&clip_height}, @{&x}, @{&y}, @{&width}, @{&height});
+                         @{&self.canvas_render_context_2_d}.drawImage(img, @{&clip_x}, @{&clip_y}, @{&clip_width}, @{&clip_height}, @{&x}, @{&y}, @{&clip_width}, @{&clip_height});
                     }
                 )
             } else {
@@ -532,12 +511,12 @@ impl RenderContext2D {
 
 impl From<&str> for Image {
     fn from(s: &str) -> Image {
-        Image::new(s)
+        Image::from_path(s).unwrap()
     }
 }
 
 impl From<String> for Image {
     fn from(s: String) -> Image {
-        Image::new(s)
+        Image::from_path(s).unwrap()
     }
 }

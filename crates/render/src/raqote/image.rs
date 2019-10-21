@@ -2,7 +2,6 @@ use std::{fmt, path::Path};
 
 use image;
 
-use crate::utils::*;
 use crate::RenderTarget;
 
 #[derive(Clone, Default)]
@@ -58,7 +57,11 @@ impl Image {
     /// Load an image from file path. Supports BMP and PNG
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Self, String> {
         let img = image::open(path);
-        Self::from_rgba_image(img.unwrap().to_rgba())
+        if let Ok(img) = img {
+            return Self::from_rgba_image(img.to_rgba());
+        }
+
+        Err("Could not load image.".to_string())
     }
 
     /// Gets the width.

@@ -236,6 +236,15 @@ impl Template for MainView {
                                     .attach(GridRow(2))
                                     .build(context),
                             )
+                            .child(
+                                TextBox::create()
+                                    .placeholder("TextBox...")
+                                    .text("")
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .attach(GridColumn(2))
+                                    .attach(GridRow(2))
+                                    .build(context),
+                            )
                             .build(context),
                     )
                     .child(

@@ -6,141 +6,151 @@ use crate::{
     shell::{Key, KeyEvent},
 };
 
+#[derive(Clone)]
+enum TextBoxAction {
+    Key(KeyEvent),
+    Mouse(Point),
+}
+
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
-#[derive(Default)]
 pub struct TextBoxState {
-    text: RefCell<String16>,
-    focused: Cell<bool>,
-    updated: Cell<bool>,
-    selection_start: Cell<usize>,
-    selection_length: Cell<usize>,
+    action: RefCell<Option<TextBoxAction>>,
     cursor_x: Cell<f64>,
-    request_focus: Cell<bool>,
+}
+
+impl Default for TextBoxState {
+    fn default() -> Self {
+        TextBoxState {
+            action: RefCell::new(None),
+            cursor_x: Cell::new(0.0),
+        }
+    }
 }
 
 impl TextBoxState {
-    // fn click(&self, point: Point) {
-    //     println!("Clicked text box point: ({}, {})", point.x, point.y);
-    // }
-    fn request_focus(&self) {
-        self.request_focus.set(!self.request_focus.get());
+    fn action(&self, action: TextBoxAction) {
+        *self.action.borrow_mut() = Some(action);
     }
 
-    fn update_selection_start(&self, selection: i32) {
-        self.selection_start
-            .set(selection.max(0).min(self.text.borrow().len() as i32) as usize);
-    }
-
-    fn update_text(&self, key_event: KeyEvent) -> bool {
-        if !self.focused.get() {
-            return false;
-        }
-
-        if !key_event.text.is_empty() {
-            (*self.text.borrow_mut()).insert_str(self.selection_start.get(), &key_event.text);
-            self.update_selection_start(self.selection_start.get() as i32 + 1);
-        } else {
-            match key_event.key {
-                Key::Left => {
-                    self.update_selection_start(self.selection_start.get() as i32 - 1);
-                    self.selection_length.set(0);
-                }
-                Key::Right => {
-                    self.update_selection_start(self.selection_start.get() as i32 + 1);
-                    self.selection_length.set(0);
-                }
-                Key::Backspace => {
-                    if self.text.borrow().len() > 0 {
-                        if self.selection_start.get() > 0 {
-                            for _ in 0..(self.selection_length.get() + 1) {
-                                (*self.text.borrow_mut()).remove(self.selection_start.get() - 1);
-                            }
-                            self.update_selection_start(self.selection_start.get() as i32 - 1);
-                        }
-                    }
-                }
-                Key::Delete => {
-                    let len = self.text.borrow().len();
-                    if len > 0 {
-                        if self.selection_start.get() < len {
-                            for _ in 0..(self.selection_length.get() + 1) {
-                                (*self.text.borrow_mut()).remove(self.selection_start.get());
-                            }
-                            self.update_selection_start(self.selection_start.get() as i32);
-                        }
-                    }
-                }
-                _ => {}
-            }
-        }
-
-        self.updated.set(true);
-
-        true
-    }
-
-    fn check_focus_request(&self, context: &mut Context<'_>) {
-        if !self.request_focus.get() || !context.widget().get::<Enabled>().0 {
+    fn handle_key_event(&self, key_event: KeyEvent, ctx: &mut Context<'_>) {
+        if !ctx.widget().get::<Focused>().0 {
             return;
         }
 
-        if let Some(old_focused_element) = context.window().get::<Global>().focused_widget {
-            let mut old_focused_element = context.get_widget(old_focused_element);
+        let text = ctx.widget().clone::<Text>().0;
+        let mut current_selection = ctx.child_by_id("cursor").unwrap().get::<TextSelection>().0;
+
+        match key_event.key {
+            Key::Left => {
+                if let Some(selection) = ctx
+                    .child_by_id("cursor")
+                    .unwrap()
+                    .try_get_mut::<TextSelection>()
+                {
+                    selection.0.start_index =
+                        (current_selection.start_index as i32 - 1).max(0) as usize;
+                }
+            }
+            Key::Right => {
+                if let Some(selection) = ctx
+                    .child_by_id("cursor")
+                    .unwrap()
+                    .try_get_mut::<TextSelection>()
+                {
+                    selection.0.start_index = (current_selection.start_index + 1).min(text.len());
+                }
+            }
+            Key::Backspace => {
+                if text.len() > 0 && current_selection.start_index > 0 {
+                    for _ in 0..(current_selection.length + 1) {
+                        ctx.widget()
+                            .get_mut::<Text>()
+                            .0
+                            .remove(current_selection.start_index - 1);
+                        current_selection.start_index =
+                            (current_selection.start_index as i32 - 1).max(0) as usize;
+                    }
+
+                    if let Some(selection) = ctx
+                        .child_by_id("cursor")
+                        .unwrap()
+                        .try_get_mut::<TextSelection>()
+                    {
+                        selection.0.start_index = current_selection.start_index;
+                    }
+                }
+            }
+            Key::Delete => {
+                if text.len() > 0 && text.len() < current_selection.start_index {
+                    for _ in 0..(current_selection.length + 1) {
+                        ctx.widget()
+                            .get_mut::<Text>()
+                            .0
+                            .remove(current_selection.start_index);
+                    }
+                }
+            }
+            _ => {
+                if key_event.text.is_empty() {
+                    return;
+                }
+
+                ctx.widget()
+                    .get_mut::<Text>()
+                    .0
+                    .insert_str(current_selection.start_index, key_event.text.as_str());
+
+                if let Some(selection) = ctx
+                    .child_by_id("cursor")
+                    .unwrap()
+                    .try_get_mut::<TextSelection>()
+                {
+                    selection.0.start_index = current_selection.start_index + key_event.text.len();
+                }
+            }
+        }
+    }
+
+    fn request_focus(&self, ctx: &mut Context<'_>) {
+        let focused_widget = ctx.window().get::<Global>().focused_widget;
+
+        if (focused_widget.is_some() && focused_widget.unwrap() == ctx.entity)
+            || !ctx.widget().get::<Enabled>().0
+        {
+            return;
+        }
+
+        if let Some(old_focused_element) = ctx.window().get::<Global>().focused_widget {
+            let mut old_focused_element = ctx.get_widget(old_focused_element);
             old_focused_element.set(Focused(false));
             old_focused_element.update_theme_by_state(false);
         }
 
-        context.window().get_mut::<Global>().focused_widget = Some(context.entity);
+        ctx.window().get_mut::<Global>().focused_widget = Some(ctx.entity);
 
-        self.focused.set(true);
-        context.widget().set(Focused(true));
-        context.widget().update_theme_by_state(false);
-        context
-            .child_by_id("cursor")
+        ctx.widget().set(Focused(true));
+        ctx.widget().update_theme_by_state(false);
+        ctx.child_by_id("cursor")
             .unwrap()
             .update_theme_by_state(false);
-
-        self.request_focus.set(false);
     }
 }
 
 impl State for TextBoxState {
-    fn update(&self, context: &mut Context<'_>) {
-        self.check_focus_request(context);
-
-        let mut widget = context.widget();
-
-        self.focused.set(widget.get::<Focused>().0);
-
-        if let Some(text) = widget.try_get_mut::<Text>() {
-            if text.0 != *self.text.borrow() {
-                if self.updated.get() {
-                    text.0 = self.text.borrow().clone();
-                } else {
-                    let text_length = self.text.borrow().len();
-                    let origin_text_length = String16::from(text.0.to_string().as_str()).len();
-                    let delta = text_length as i32 - origin_text_length as i32;
-
-                    *self.text.borrow_mut() = String16::from(text.0.to_string().as_str());
-
-                    // adjust cursor position after label is changed from outside
-                    if text_length < origin_text_length {
-                        self.update_selection_start(self.selection_start.get() as i32 - delta);
-                    } else {
-                        self.update_selection_start(self.selection_start.get() as i32 + delta);
-                    }
+    fn update(&self, ctx: &mut Context<'_>) {
+        if let Some(action) = self.action.borrow().clone() {
+            match action {
+                TextBoxAction::Key(event) => {
+                    self.handle_key_event(event, ctx);
                 }
-
-                self.updated.set(false);
+                TextBoxAction::Mouse(_p) => {
+                    self.request_focus(ctx);
+                }
             }
         }
 
-        widget.update_theme_by_state(false);
-
-        if let Some(selection) = widget.try_get_mut::<TextSelection>() {
-            selection.0.start_index = self.selection_start.get();
-            selection.0.length = self.selection_length.get();
-        }
+        *self.action.borrow_mut() = None;
+        ctx.widget().update_theme_by_state(false);
     }
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
@@ -266,9 +276,9 @@ impl Template for TextBox {
             .delta(0.0)
             .child(
                 MouseBehavior::create()
-                    .on_mouse_down(move |_| {
-                        mouse_state.request_focus();
-                        false
+                    .on_mouse_down(move |p| {
+                        mouse_state.action(TextBoxAction::Mouse(p));
+                        true
                     })
                     .child(
                         Container::create()
@@ -321,6 +331,9 @@ impl Template for TextBox {
                     )
                     .build(context),
             )
-            .on_key_down(move |event: KeyEvent| -> bool { state.update_text(event) })
+            .on_key_down(move |event: KeyEvent| -> bool {
+                state.action(TextBoxAction::Key(event));
+                false
+            })
     }
 }
