@@ -317,7 +317,7 @@ impl RenderContext2D {
                 x,
                 y.into(),
                 width,
-                1,
+                1.0,
             );
             offset = next_offset;
             y += 1;
