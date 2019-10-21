@@ -31,22 +31,13 @@ impl<'a> Pipeline for Cube<'a> {
     }
 }
 
-#[derive(Clone, Default, PartialEq)]
+#[derive(Clone, Default, PartialEq, Pipeline)]
 struct CubePipeline {
     spin: Cell<f32>,
 }
 
 impl render::RenderPipeline for CubePipeline {
-    fn box_eq(&self, other: &dyn Any) -> bool {
-        other.downcast_ref::<Self>().map_or(false, |a| self == a)
-    }
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-    fn clone_box(&self) -> Box<dyn render::RenderPipeline> {
-        Box::new(self.clone())
-    }
-    fn draw_pipeline(&self, render_target: &mut render::RenderTarget) {
+    fn draw(&self, render_target: &mut render::RenderTarget) {
         let mut color = Buffer2d::new(
             [
                 render_target.width() as usize,
@@ -141,20 +132,11 @@ impl render::RenderPipeline for CubePipeline {
 }
 
 // OrbTk 2D drawing
-#[derive(Clone, Default, PartialEq)]
+#[derive(Clone, Default, PartialEq, Pipeline)]
 struct Graphic2DPipeline;
 
 impl render::RenderPipeline for Graphic2DPipeline {
-    fn box_eq(&self, other: &dyn Any) -> bool {
-        other.downcast_ref::<Self>().map_or(false, |a| self == a)
-    }
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-    fn clone_box(&self) -> Box<dyn render::RenderPipeline> {
-        Box::new(self.clone())
-    }
-    fn draw_pipeline(&self, render_target: &mut render::RenderTarget) {
+    fn draw(&self, render_target: &mut render::RenderTarget) {
         let mut render_context =
             RenderContext2D::new(render_target.width(), render_target.height());
 

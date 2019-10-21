@@ -27,6 +27,7 @@ opt-level = 1
 [dependencies]
 orbtk-api = { version = "0.1.0", path = "crates/api" }
 orbtk-css-engine = { version = "0.1.0", path = "crates/css-engine" }
+orbtk-proc-macros = { version = "0.1.0", path = "crates/proc-macros" }
 orbtk-render = { version = "0.1.0", path = "crates/render" }
 orbtk-shell = { version = "0.1.0", path = "crates/shell" }
 orbtk-theme = { version = "0.1.0", path="crates/theme" }
@@ -46,6 +47,7 @@ debug = ["orbtk-api/debug"]
 members = [
     "crates/api",
     "crates/css-engine",
+    "crates/proc-macros",
     "crates/render",
     "crates/shell",
     "crates/theme",

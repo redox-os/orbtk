@@ -5,7 +5,7 @@ use stdweb::{
 };
 
 // pub use crate::image::Image as InnerImage;
-use crate::{utils::*, FontConfig, RenderConfig, RenderPipeline, RenderTarget, TextMetrics};
+use crate::{utils::*, FontConfig, RenderConfig, Pipeline, RenderTarget, TextMetrics};
 
 pub use self::image::*;
 
@@ -33,36 +33,6 @@ impl RenderContext2D {
         canvas.set_height(height as u32);
 
         let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
-        let device_pixel_ratio = window().device_pixel_ratio();
-
-        let backing_store_ratio = js! {
-            var context = @{&context};
-             return context.webkitBackingStorePixelRatio ||
-                 context.mozBackingStorePixelRatio ||
-                 context.msBackingStorePixelRatio ||
-                 context.oBackingStorePixelRatio ||
-                 context.backingStorePixelRatio || 1;
-        };
-
-        let ratio: f64 = js! {
-            return @{&device_pixel_ratio} / @{&backing_store_ratio};
-        }
-        .try_into()
-        .unwrap();
-
-        if device_pixel_ratio != backing_store_ratio {
-            let old_width = canvas.width();
-            let old_height = canvas.height();
-            canvas.set_width((old_width as f64 * ratio) as u32);
-            canvas.set_height((old_height as f64 * ratio) as u32);
-
-            js! {
-                @{&canvas}.style.width = @{&old_width} + "px";
-                @{&canvas}.style.height = @{&old_height} + "px";
-            }
-
-            context.scale(ratio, ratio);
-        }
 
         let export_data = vec![0; (width * height) as usize];
         context.set_text_baseline(stdweb::web::TextBaseline::Middle);
@@ -256,7 +226,7 @@ impl RenderContext2D {
         y: f64,
         width: f64,
         height: f64,
-        pipeline: Box<dyn RenderPipeline>,
+        pipeline: Box<dyn Pipeline>,
     ) {
         let mut render_target = RenderTarget::new(width as u32, height as u32);
         pipeline.draw_pipeline(&mut render_target);
@@ -402,6 +372,9 @@ impl RenderContext2D {
     pub fn data(&mut self) -> &[u32] {
         let width = self.canvas_render_context_2_d.get_canvas().width();
         let height = self.canvas_render_context_2_d.get_canvas().height();
+
+        // self.canvas_render_context_2_d.set_fill_style_color("#000000");
+        // self.canvas_render_context_2_d.fill_rect(0.0, 0.0, 10.0, height as f64 / 8.0);
         
         let image_data = self
             .canvas_render_context_2_d
@@ -472,7 +445,7 @@ impl RenderContext2D {
                     .create_linear_gradient(start.x, start.y, end.x, end.y);
 
                 for stop in stops {
-                    web_gradient.add_color_stop(stop.position, stop.color.to_string().as_str());
+                    web_gradient.add_color_stop(stop.position, stop.color.to_string().as_str()).unwrap();
                 }
 
                 self.canvas_render_context_2_d

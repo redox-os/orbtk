@@ -11,6 +11,7 @@ pub use dces::prelude::*;
 pub use crate::{
     api::*,
     css_engine::{Selector as SelectorValue, SelectorRelation, Theme as ThemeValue, ThemeBuilder},
+    proc_macros::*,
     render,
     shell::Key,
     theme::{colors, default_theme, fonts, light_theme, vector_graphics::material_font_icons},

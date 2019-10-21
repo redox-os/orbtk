@@ -420,6 +420,7 @@ dependencies = [
  "euc 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbtk-api 0.1.0",
  "orbtk-css-engine 0.1.0",
+ "orbtk-proc-macros 0.1.0",
  "orbtk-render 0.1.0",
  "orbtk-shell 0.1.0",
  "orbtk-theme 0.1.0",
@@ -448,6 +449,14 @@ version = "0.1.0"
 dependencies = [
  "cssparser 0.17.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbtk-utils 0.1.0",
+]
+
+[[package]]
+name = "orbtk-proc-macros"
+version = "0.1.0"
+dependencies = [
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
