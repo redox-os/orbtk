@@ -5,13 +5,11 @@ use std::fmt::Debug;
 use dces::prelude::{Component, StringComponentStore, Entity};
 
 pub use self::layout::*;
-pub use self::state::*;
 pub use self::styling::*;
 pub use self::widget::*;
-use crate::{prelude::*, utils::String16};
+use crate::{prelude::*, utils::String16, utils};
 
 mod layout;
-mod state;
 mod styling;
 mod widget;
 
@@ -60,3 +58,6 @@ into_property_source!(String: &str);
 into_property_source!(String16: &str, String);
 into_property_source!(usize);
 into_property_source!(f64: i32);
+
+// Implementation of PropertySource for utils types
+into_property_source!(utils::Visibility: &str);

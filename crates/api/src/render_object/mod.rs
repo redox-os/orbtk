@@ -43,7 +43,7 @@ pub trait RenderObject: Any {
         }
 
         if let Ok(visibility) = ecm.component_store().borrow_component::<Visibility>("visibility", entity) {
-            if visibility.0 != VisibilityValue::Visible {
+            if *visibility != Visibility::Visible {
                 return;
             }
         } else {

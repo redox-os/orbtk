@@ -10,6 +10,7 @@ pub use self::string16::*;
 pub use self::text_alignment::*;
 pub use self::text_baseline::*;
 pub use self::thickness::*;
+pub use self::visibility::*;
 
 mod alignment;
 mod border;
@@ -25,3 +26,4 @@ mod string16;
 mod text_alignment;
 mod text_baseline;
 mod thickness;
+mod visibility;

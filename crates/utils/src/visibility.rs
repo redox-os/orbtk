@@ -1,8 +1,6 @@
-use crate::prelude::*;
-
 /// Is used to control the visibility of a widget
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub enum VisibilityValue {
+pub enum Visibility {
     /// The widget is visible.
     Visible,
 
@@ -13,26 +11,20 @@ pub enum VisibilityValue {
     Collapsed,
 }
 
-impl Default for VisibilityValue {
-    fn default() -> VisibilityValue {
-        VisibilityValue::Visible
+impl Default for Visibility {
+    fn default() -> Visibility {
+        Visibility::Visible
     }
 }
-
-property!(
-    /// `Visibility` describes the visibility of a widget.
-    #[derive(Default)]
-    Visibility(VisibilityValue)
-);
 
 // --- Conversions ---
 
 impl From<&str> for Visibility {
     fn from(t: &str) -> Self {
         match t {
-            "Hidden" | "hidden" => Visibility::from(VisibilityValue::Hidden),
-            "Collapsed" | "collapsed" => Visibility::from(VisibilityValue::Collapsed),
-            _ => Visibility::from(VisibilityValue::Visible),
+            "Hidden" | "hidden" => Visibility::from(Visibility::Hidden),
+            "Collapsed" | "collapsed" => Visibility::from(Visibility::Collapsed),
+            _ => Visibility::from(Visibility::Visible),
         }
     }
 }
@@ -44,24 +36,24 @@ mod tests {
     #[test]
     fn test_into() {
         let visibility: Visibility = "Hidden".into();
-        assert_eq!(visibility.0, VisibilityValue::Hidden);
+        assert_eq!(visibility, Visibility::Hidden);
 
         let visibility: Visibility = "hidden".into();
-        assert_eq!(visibility.0, VisibilityValue::Hidden);
+        assert_eq!(visibility, Visibility::Hidden);
 
         let visibility: Visibility = "Collapsed".into();
-        assert_eq!(visibility.0, VisibilityValue::Collapsed);
+        assert_eq!(visibility, Visibility::Collapsed);
 
         let visibility: Visibility = "collapsed".into();
-        assert_eq!(visibility.0, VisibilityValue::Collapsed);
+        assert_eq!(visibility, Visibility::Collapsed);
 
         let visibility: Visibility = "Visible".into();
-        assert_eq!(visibility.0, VisibilityValue::Visible);
+        assert_eq!(visibility, Visibility::Visible);
 
         let visibility: Visibility = "visible".into();
-        assert_eq!(visibility.0, VisibilityValue::Visible);
+        assert_eq!(visibility, Visibility::Visible);
 
         let visibility: Visibility = "other".into();
-        assert_eq!(visibility.0, VisibilityValue::Visible);
+        assert_eq!(visibility, Visibility::Visible);
     }
 }
