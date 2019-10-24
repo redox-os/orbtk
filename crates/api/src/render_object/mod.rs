@@ -55,9 +55,8 @@ pub trait RenderObject: Any {
         // Could be unwrap because every widget has the clip property
         let clip = ecm
             .component_store()
-            .borrow_component::<Clip>("clip", entity)
-            .unwrap()
-            .0;
+            .borrow_component::<bool>("clip", entity)
+            .unwrap().clone();
         if clip {
             if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>("bounds", entity) {
                 shell.render_context_2_d().save();

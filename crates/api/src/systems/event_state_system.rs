@@ -234,9 +234,9 @@ impl EventStateSystem {
 
             if let Ok(clip) = ecm
                 .component_store()
-                .borrow_component::<Clip>("clip", current_node)
+                .borrow_component::<bool>("clip", current_node)
             {
-                if clip.0 {
+                if *clip {
                     clipped_parent.clear();
                     clipped_parent.push(current_node);
                 }

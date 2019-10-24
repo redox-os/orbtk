@@ -68,7 +68,7 @@ impl Application {
         let resizeable = world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<Resizeable>("resizeable", window)
+            .borrow_component::<bool>("resizeable", window)
             .unwrap()
             .clone();
         let position = world
@@ -117,7 +117,7 @@ impl Application {
                 constraint.width(),
                 constraint.height(),
             )))
-            .resizeable(resizeable.0)
+            .resizeable(resizeable)
             .build(),
         ));
 

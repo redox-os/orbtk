@@ -106,7 +106,7 @@ macro_rules! widget {
             vertical_alignment: VerticalAlignment,
             margin: Margin,
             enabled: bool,
-            clip: Clip,
+            clip: bool,
             visibility: Visibility,
             _empty: Option<RefCell<i32>>,
              $(
@@ -176,7 +176,7 @@ macro_rules! widget {
             }
 
             /// Sets or shares the clip property.
-            pub fn clip(self, clip: impl IntoPropertySource<Clip>) -> Self {
+            pub fn clip(self, clip: impl IntoPropertySource<bool>) -> Self {
                 self.attach("clip", clip)
             }
 
@@ -313,7 +313,7 @@ macro_rules! widget {
                 $widget {
                     event_handlers: vec![],
                     enabled: true,
-                    clip: Clip(false),
+                    clip: false,
                     $(
                         $(
                             $property: None,

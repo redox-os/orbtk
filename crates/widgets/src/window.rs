@@ -16,7 +16,7 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the resizeable property.
-        resizeable: Resizeable,
+        resizeable: bool,
 
         /// Sets or shares the theme property.
         theme: Theme
