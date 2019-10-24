@@ -53,10 +53,10 @@ impl Layout for FixedSizeLayout {
             .map(|image| (image.width(), image.height()))
             .or_else(|| {
                 widget.try_get::<String16>("text").and_then(|text| {
-                    let font = widget.get::<Font>("font");
-                    let font_size = widget.get::<FontSize>("font_size");
-                    // render_context_2_d.set_font_size(font_size.0);
-                    // render_context_2_d.set_font_family(&font.0[..]);
+                    let font = widget.get::<String>("font");
+                    let font_size = widget.get::<f64>("font_size");
+                    // render_context_2_d.set_font_size(font_size);
+                    // render_context_2_d.set_font_family(font.as_str());
 
                     if text.is_empty() {
                         widget
@@ -65,16 +65,16 @@ impl Layout for FixedSizeLayout {
                             .map(|water_mark| {
                                 let text_metrics = render_context_2_d.measure(
                                     water_mark.to_string().as_str(),
-                                    font_size.0,
-                                    &font.0[..],
+                                    *font_size,
+                                    font.as_str(),
                                 );
                                 (text_metrics.width, text_metrics.height)
                             })
                     } else {
                         let text_metrics = render_context_2_d.measure(
                             text.to_string().as_str(),
-                            font_size.0,
-                            &font.0[..],
+                            *font_size,
+                            font.as_str(),
                         );
 
                         Some((text_metrics.width, text_metrics.height))
@@ -83,14 +83,14 @@ impl Layout for FixedSizeLayout {
             })
             .or_else(|| {
                 widget
-                    .try_clone::<FontIcon>("icon")
-                    .filter(|font_icon| !font_icon.0.is_empty())
+                    .try_clone::<String>("icon")
+                    .filter(|font_icon| !font_icon.is_empty())
                     .map(|font_icon| {
-                        let icon_size = widget.get::<FontSize>("icon_size").0;
+                        let icon_size = widget.get::<f64>("icon_size");
                         let text_metrics = render_context_2_d.measure(
-                            &font_icon.0,
-                            icon_size,
-                            &widget.get::<Font>("icon_font").0[..],
+                            &font_icon,
+                            *icon_size,
+                            widget.get::<String>("icon_font").as_str(),
                         );
                         (text_metrics.width, text_metrics.height)
                     })

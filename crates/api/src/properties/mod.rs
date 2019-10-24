@@ -58,3 +58,5 @@ pub trait IntoPropertySource<P: Component + Debug> {
 into_property_source!(bool);
 into_property_source!(String: &str);
 into_property_source!(String16: &str, String);
+into_property_source!(usize);
+into_property_source!(f64: i32);

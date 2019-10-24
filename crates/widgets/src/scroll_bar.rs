@@ -9,7 +9,7 @@ widget!(
         background: Brush,
 
         /// Sets or shares the border radius property.
-        border_radius: BorderRadius,
+        border_radius: f64,
 
         /// Sets or shares the css selector property.
         selector: Selector

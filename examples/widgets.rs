@@ -62,7 +62,7 @@ impl State for MainViewState {
                         context
                             .child_by_id("items")
                             .unwrap()
-                            .set("count", Count(len + 1));
+                            .set("count", len + 1);
 
                         if len == 0 {
                             context
@@ -85,7 +85,7 @@ impl State for MainViewState {
                     context
                         .child_by_id("items")
                         .unwrap()
-                        .set("count", Count(len - 1));
+                        .set("count", len - 1);
 
                     if len == 1 {
                         context
@@ -117,7 +117,7 @@ impl State for MainViewState {
     }
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
-        let mut selection_string = "bool:".to_string();
+        let mut selection_string = "Selected:".to_string();
 
         for index in &context
             .widget()

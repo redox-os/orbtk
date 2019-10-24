@@ -279,9 +279,9 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
-        if self.has::<BorderRadius>("border_radius") {
+        if self.has::<f64>("border_radius") {
             if let Some(radius) = self.theme.float("border-radius", &selector.0) {
-                self.set::<BorderRadius>("border_radius", BorderRadius::from(radius as f64));
+                self.set::<f64>("border_radius", f64::from(radius as f64));
             }
         }
 
@@ -291,15 +291,15 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
-        if self.has::<FontSize>("font_size") {
+        if self.has::<f64>("font_size") {
             if let Some(size) = self.theme.uint("font-size", &selector.0) {
-                self.set::<FontSize>("font_size", FontSize::from(size as f64));
+                self.set::<f64>("font_size", f64::from(size as f64));
             }
         }
 
-        if self.has::<Font>("font_family") {
+        if self.has::<String>("font_family") {
             if let Some(font_family) = self.theme.string("font-family", &selector.0) {
-                self.set::<Font>("font_family", Font::from(font_family));
+                self.set::<String>("font_family", String::from(font_family));
             }
         }
 
@@ -309,15 +309,15 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
-        if self.has::<FontSize>("icon_size") {
+        if self.has::<f64>("icon_size") {
             if let Some(size) = self.theme.uint("icon-size", &selector.0) {
-                self.set::<FontSize>("icon_size", FontSize::from(size as f64));
+                self.set::<f64>("icon_size", f64::from(size as f64));
             }
         }
 
-        if self.has::<Font>("icon_family") {
+        if self.has::<String>("icon_family") {
             if let Some(font_family) = self.theme.string("icon-family", &selector.0) {
-                self.set::<Font>("icon_family", Font::from(font_family));
+                self.set::<String>("icon_family", String::from(font_family));
             }
         }
 

@@ -6,16 +6,16 @@ widget!(
     /// **CSS element:** `font-icon-block`
     FontIconBlock {
         /// Sets or shares the icon property.
-        icon: FontIcon,
+        icon: String,
 
         /// Sets or shares the icon brush property.
         icon_brush: Brush,
 
         /// Sets or share the icon font size property.
-        icon_size: FontSize,
+        icon_size: f64,
 
         /// Sets or shares the icon font property.
-        icon_font: Font,
+        icon_font: String,
 
         /// Sets or shares the css selector property.
         selector: Selector

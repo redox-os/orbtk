@@ -15,7 +15,7 @@ pub struct ListViewState {
 
 impl State for ListViewState {
     fn update(&self, context: &mut Context<'_>) {
-        let count = context.widget().clone_or_default::<Count>("count").0;
+        let count = context.widget().clone_or_default::<usize>("count");
         // self.selected_index.set(context.widget().clone_or_default::<Index>().0);
 
         if count != self.count.get() {
@@ -37,7 +37,7 @@ impl State for ListViewState {
                             build_context.append_child(item, mouse_behavior);
 
                             build_context.register_shared_property::<Brush>("foreground", child, item);
-                            build_context.register_shared_property::<FontSize>("font_size", child, item);
+                            build_context.register_shared_property::<f64>("font_size", child, item);
                             build_context.append_child(items_panel, item);
                             build_context.append_child(mouse_behavior, child);
 
@@ -125,7 +125,7 @@ widget!(
         background: Brush,
 
         /// Sets or shares the border radius property.
-        border_radius: BorderRadius,
+        border_radius: f64,
 
         /// Sets or shares the border thickness property.
         border_width: BorderThickness,
@@ -137,10 +137,10 @@ widget!(
         foreground: Brush,
 
         /// Sets or share the font size property.
-        font_size: FontSize,
+        font_size: f64,
 
         /// Sets or shares the font property.
-        font: Font,
+        font: String,
 
         /// Sets or shares the padding property.
         padding: Padding,
@@ -199,7 +199,7 @@ widget!(
         background: Brush,
 
         /// Sets or shares the border radius property.
-        border_radius: BorderRadius,
+        border_radius: f64,
 
         /// Sets or shares the border thickness property.
         border_width: BorderThickness,
@@ -214,7 +214,7 @@ widget!(
         orientation: Orientation,
 
         /// Sets or shared the count.
-        count: Count,
+        count: usize,
 
         /// Sets or shares the css selector property.
         selector: Selector,

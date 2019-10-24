@@ -16,7 +16,7 @@ impl Into<Rc<dyn State>> for ItemsWidgetState {
 
 impl State for ItemsWidgetState {
     fn update(&self, context: &mut Context<'_>) {
-        let count = context.widget().clone_or_default::<Count>("count").0;
+        let count = context.widget().clone_or_default::<usize>("count");
 
         if count != self.count.get() {
             if let Some(builder) = &*self.builder.borrow() {
@@ -50,7 +50,7 @@ widget!(
         background: Brush,
 
         /// Sets or shares the border radius property.
-        border_radius: BorderRadius,
+        border_radius: f64,
 
         /// Sets or shares the border thickness property.
         border_width: BorderThickness,
@@ -65,7 +65,7 @@ widget!(
         orientation: Orientation,
 
         /// Sets or shared the count.
-        count: Count,
+        count: usize,
 
         /// Sets or shares the css selector property.
         selector: Selector

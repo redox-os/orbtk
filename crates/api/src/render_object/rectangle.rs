@@ -92,7 +92,7 @@ impl RenderObject for RectangleRenderObject {
             (
                 widget.clone::<Bounds>("bounds"),
                 widget.get::<Brush>("background").0.clone(),
-                widget.clone_or_default::<BorderRadius>("border_radius").0,
+                widget.clone_or_default::<f64>("border_radius"),
                 widget.clone_or_default::<BorderThickness>("border_width").0,
                 widget.clone_or_default::<Brush>("border_brush").0,
             )

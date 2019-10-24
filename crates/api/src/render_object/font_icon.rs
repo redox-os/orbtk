@@ -14,10 +14,10 @@ impl RenderObject for FontIconRenderObject {
             let widget = context.widget();
             (
                 widget.get::<Bounds>("bounds").0,
-                widget.clone::<FontIcon>("icon").0,
+                widget.clone::<String>("icon"),
                 widget.get::<Brush>("icon_brush").0.clone(),
-                widget.get::<Font>("icon_font").0.clone(),
-                widget.get::<FontSize>("icon_size").0,
+                widget.get::<String>("icon_font").clone(),
+                *widget.get::<f64>("icon_size"),
             )
         };
 

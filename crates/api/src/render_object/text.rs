@@ -26,8 +26,8 @@ impl RenderObject for TextRenderObject {
                 widget.get::<Bounds>("bounds").0,
                 txt.to_string(),
                 widget.get::<Brush>("foreground").0.clone(),
-                widget.get::<Font>("font").0.clone(),
-                widget.get::<FontSize>("font_size").0,
+                widget.get::<String>("font").clone(),
+                *widget.get::<f64>("font_size"),
             )
         };
 

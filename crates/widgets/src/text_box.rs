@@ -223,16 +223,16 @@ widget!(
         foreground: Brush,
 
         /// Sets or share the font size property.
-        font_size: FontSize,
+        font_size: f64,
 
         /// Sets or shares the font property.
-        font: Font,
+        font: String,
 
         /// Sets or shares the background property.
         background: Brush,
 
         /// Sets or shares the border radius property.
-        border_radius: BorderRadius,
+        border_radius: f64,
 
         /// Sets or shares the border thickness property.
         border_width: BorderThickness,
