@@ -6,7 +6,7 @@ widget!(
     /// Canvas is used to render 3D graphics.
     Canvas {
         /// Sets or shares the three render pipeline.
-        pipeline: RenderPipeline,
+        render_pipeline: RenderPipeline,
 
         /// Sets or shares the css selector property.
         selector: Selector

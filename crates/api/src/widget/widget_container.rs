@@ -71,9 +71,10 @@ impl<'a> WidgetContainer<'a> {
         }
 
         panic!(
-            "Entity {} does not contain property type {:?}",
+            "Entity {} does not contain property type {:?}, with key: {}",
             self.current_node.0,
-            TypeId::of::<P>()
+            TypeId::of::<P>(),
+            key
         );
     }
 
@@ -305,9 +306,9 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
-        if self.has::<IconBrush>("icon_color") {
+        if self.has::<IconBrush>("icon_brush") {
             if let Some(color) = self.theme.brush("icon-color", &selector.0) {
-                self.set::<IconBrush>("icon_color", IconBrush::from(color));
+                self.set::<IconBrush>("icon_brush", IconBrush::from(color));
             }
         }
 

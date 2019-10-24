@@ -205,7 +205,7 @@ fn generate_operation_button(
 }
 
 widget!(MainView<MainViewState> {
-    result: Text
+    text: Text
 });
 
 impl Template for MainView {
@@ -215,7 +215,7 @@ impl Template for MainView {
         self.name("MainView")
             .width(212.0)
             .height(336.0)
-            .result("")
+            .text("")
             .child(
                 Grid::create()
                     .rows(Rows::create().row(72.0).row("*").build())

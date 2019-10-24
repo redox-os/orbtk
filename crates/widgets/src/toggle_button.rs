@@ -97,9 +97,9 @@ impl Template for ToggleButton {
                                     .padding(id)
                                     .child(
                                         Stack::create()
-                                            .orientation("Horizontal")
-                                            .vertical_alignment("Center")
-                                            .horizontal_alignment("Center")
+                                            .orientation("horizontal")
+                                            .vertical_alignment("center")
+                                            .horizontal_alignment("center")
                                             .child(
                                                 FontIconBlock::create()
                                                     .margin((0.0, 0.0, 2.0, 0.0))

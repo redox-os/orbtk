@@ -196,7 +196,7 @@ impl State for MainViewState {
 
 widget!(
     MainView<MainViewState> {
-         cube_pipeline: RenderPipeline
+         render_pipeline: RenderPipeline
     }
 );
 
@@ -204,7 +204,7 @@ impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let state = self.clone_state();
         self.name("MainView")
-            .cube_pipeline(RenderPipeline(Box::new(CubePipeline::default())))
+            .render_pipeline(RenderPipeline(Box::new(CubePipeline::default())))
             .child(
                 Grid::create()
                     .rows(
@@ -223,7 +223,12 @@ impl Template for MainView {
                             .margin(4.0)
                             .build(ctx),
                     )
-                    .child(Canvas::create().attach("grid_row", GridRow(1)).pipeline(id).build(ctx))
+                    .child(
+                        Canvas::create()
+                            .attach("grid_row", GridRow(1))
+                            .render_pipeline(id)
+                            .build(ctx),
+                    )
                     .child(
                         Button::create()
                             .text("spin cube")
@@ -247,7 +252,7 @@ impl Template for MainView {
                     .child(
                         Canvas::create()
                             .attach("grid_row", GridRow(3))
-                            .pipeline(RenderPipeline(Box::new(Graphic2DPipeline::default())))
+                            .render_pipeline(RenderPipeline(Box::new(Graphic2DPipeline::default())))
                             .build(ctx),
                     )
                     .build(ctx),

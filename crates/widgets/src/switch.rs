@@ -119,7 +119,7 @@ impl Template for Switch {
                                         SelectorValue::from("switch-toggle")
                                             .id("SwitchSwitchToggle"),
                                     )
-                                    .vertical_alignment("Center")
+                                    .vertical_alignment("center")
                                     .horizontal_alignment("Start")
                                     .attach_by_source::<Selected>("selected", id)
                                     .build(context),

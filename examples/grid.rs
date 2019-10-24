@@ -32,8 +32,8 @@ impl Template for MainView {
                             TextBlock::create()
                                 .text("(0,0)")
                                 .selector("light-text")
-                                .horizontal_alignment("Center")
-                                .vertical_alignment("Center")
+                                .horizontal_alignment("center")
+                                .vertical_alignment("center")
                                 .build(context),
                         )
                         .build(context),
@@ -48,8 +48,8 @@ impl Template for MainView {
                             TextBlock::create()
                                 .text("(1,0)")
                                 .selector("white")
-                                .horizontal_alignment("Center")
-                                .vertical_alignment("Center")
+                                .horizontal_alignment("center")
+                                .vertical_alignment("center")
                                 .build(context),
                         )
                         .build(context),
@@ -62,8 +62,8 @@ impl Template for MainView {
                             TextBlock::create()
                                 .text("(2,0)")
                                 .selector("linkwater")
-                                .horizontal_alignment("Center")
-                                .vertical_alignment("Center")
+                                .horizontal_alignment("center")
+                                .vertical_alignment("center")
                                 .build(context),
                         )
                         .build(context),

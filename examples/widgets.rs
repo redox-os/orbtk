@@ -328,7 +328,7 @@ impl Template for MainView {
                                     .items_builder(move |bc, index| {
                                         TextBlock::create()
                                             .margin((0.0, 0.0, 0.0, 2.0))
-                                            .vertical_alignment("Center")
+                                            .vertical_alignment("center")
                                             .text(
                                                 list_view_state.selection_list.borrow()[index]
                                                     .as_str(),

@@ -396,9 +396,6 @@ macro_rules! widget {
                                     context.register_property(stringify!($property), entity, value);
                                 },
                                 PropertySource::Source(source) => {
-                                    if stringify!($property) == "icon" {
-                                        println!("Icon:");
-                                    }
                                     context.register_shared_property::<$property_type>(stringify!($property), entity, source);
                                 }
                             }

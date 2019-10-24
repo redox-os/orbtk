@@ -305,7 +305,7 @@ impl Template for TextBox {
                                                             .clone()
                                                             .id("text_block"),
                                                     )
-                                                    .vertical_alignment("Center")
+                                                    .vertical_alignment("center")
                                                     .foreground(id)
                                                     .text(id)
                                                     .font(id)
