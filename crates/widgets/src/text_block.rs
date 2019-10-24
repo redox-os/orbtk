@@ -6,7 +6,7 @@ widget!(
     /// **CSS element:** `text-block`
     TextBlock {
         /// Sets or shares the text property.
-        text: Text,
+        text: String16,
 
         /// Sets or shares the foreground property.
         foreground: Brush,

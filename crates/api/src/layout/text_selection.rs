@@ -141,14 +141,14 @@ impl Layout for TextSelectionLayout {
                 margin.bottom(),
             );
 
-            if let Some(text) = widget.try_get::<Text>("text") {
+            if let Some(text) = widget.try_get::<String16>("text") {
                 let font = widget.get::<Font>("font");
                 let font_size = widget.get::<FontSize>("font_size");
                 // render_context_2_d.set_font_size(font_size.0);
                 // render_context_2_d.set_font_family(&font.0[..]);
 
                 if let Some(selection) = widget.try_get::<TextSelection>("text_selection") {
-                    if let Some(text_part) = text.0.get_string(0, selection.0.start_index) {
+                    if let Some(text_part) = text.get_string(0, selection.0.start_index) {
                         pos = render_context_2_d
                             .measure(text_part.as_str(), font_size.0, &font.0[..])
                             .width;

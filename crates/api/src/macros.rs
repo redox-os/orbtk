@@ -1,6 +1,6 @@
 #[macro_export]
 macro_rules! into_property_source {
-    ($type:ty) => {
+    ($type:ty $(: $( $ex_type:ty ),*)* ) => {
         impl IntoPropertySource<$type> for $type {
             fn into_source(self) -> PropertySource<$type> {
                 PropertySource::Value(self)
@@ -12,6 +12,16 @@ macro_rules! into_property_source {
                 PropertySource::Source(self)
             }
         }
+
+         $(
+            $(
+                impl IntoPropertySource<$type> for $ex_type {
+                    fn into_source(self) -> PropertySource<$type> {
+                        PropertySource::Value(self.into())
+                    }
+                }
+            )*
+        )*
     };
 }
 

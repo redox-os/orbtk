@@ -30,7 +30,7 @@ widget!(
     /// **CSS element:** `cursor`
     Cursor<CursorState> {
         /// Sets or shares the text property.
-        text: Text,
+        text: String16,
 
         /// Sets or shares the text selection property.
         text_selection: TextSelection,

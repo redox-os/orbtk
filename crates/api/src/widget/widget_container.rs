@@ -1,6 +1,6 @@
 use std::any::TypeId;
 
-use crate::{prelude::*, utils::Spacer};
+use crate::{prelude::*, utils::{Spacer, String16}};
 
 use dces::prelude::{Component, Entity, EntityComponentManager};
 
@@ -233,11 +233,11 @@ impl<'a> WidgetContainer<'a> {
                 }
             }
 
-            if let Some(text) = self.try_clone::<Text>("text") {
-                if text.0.len() == 0 && !selector.0.pseudo_classes.contains("empty") {
+            if let Some(text) = self.try_clone::<String16>("text") {
+                if text.len() == 0 && !selector.0.pseudo_classes.contains("empty") {
                     add_selector_to_widget("empty", self);
                     update = true;
-                } else if text.0.len() > 0 && selector.0.pseudo_classes.contains("empty") {
+                } else if text.len() > 0 && selector.0.pseudo_classes.contains("empty") {
                     remove_selector_from_widget("empty", self);
                     update = true;
                 }

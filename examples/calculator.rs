@@ -67,7 +67,7 @@ impl MainViewState {
             }
         }
 
-        context.widget().get_mut::<Text>("text").0 = String16::from(result.to_string());
+        *context.widget().get_mut::<String16>("text") = String16::from(result.to_string());
         self.left_side.set(Some(result));
         self.right_side.set(None);
     }
@@ -82,8 +82,7 @@ impl State for MainViewState {
                     context
                         .child_by_id("input")
                         .unwrap()
-                        .get_mut::<Text>("text")
-                        .0
+                        .get_mut::<String16>("text")
                         .push(digit);
                 }
                 Action::Operator(operator) => match operator {
@@ -92,12 +91,11 @@ impl State for MainViewState {
                         self.left_side.set(None);
                         self.operator.set(None);
                         self.right_side.set(None);
-                        context.widget().get_mut::<Text>("text").0.clear();
+                        context.widget().get_mut::<String16>("text").clear();
                         context
                             .child_by_id("input")
                             .unwrap()
-                            .get_mut::<Text>("text")
-                            .0
+                            .get_mut::<String16>("text")
                             .clear()
                     }
                     '=' => {
@@ -111,8 +109,7 @@ impl State for MainViewState {
                         context
                             .child_by_id("input")
                             .unwrap()
-                            .get_mut::<Text>("text")
-                            .0
+                            .get_mut::<String16>("text")
                             .clear()
                     }
                     _ => {
@@ -131,8 +128,7 @@ impl State for MainViewState {
                         context
                             .child_by_id("input")
                             .unwrap()
-                            .get_mut::<Text>("text")
-                            .0
+                            .get_mut::<String16>("text")
                             .push(operator);
                         self.input.borrow_mut().clear();
                         self.operator.set(Some(operator));
@@ -205,7 +201,7 @@ fn generate_operation_button(
 }
 
 widget!(MainView<MainViewState> {
-    text: Text
+    text: String16
 });
 
 impl Template for MainView {

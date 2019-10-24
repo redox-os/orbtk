@@ -37,8 +37,12 @@ impl TextBoxState {
             return;
         }
 
-        let text = ctx.widget().clone::<Text>("text").0;
-        let mut current_selection = ctx.child_by_id("cursor").unwrap().get::<TextSelection>("text_selection").0;
+        let text = ctx.widget().clone::<String16>("text");
+        let mut current_selection = ctx
+            .child_by_id("cursor")
+            .unwrap()
+            .get::<TextSelection>("text_selection")
+            .0;
 
         match key_event.key {
             Key::Left => {
@@ -64,8 +68,7 @@ impl TextBoxState {
                 if text.len() > 0 && current_selection.start_index > 0 {
                     for _ in 0..(current_selection.length + 1) {
                         ctx.widget()
-                            .get_mut::<Text>("text")
-                            .0
+                            .get_mut::<String16>("text")
                             .remove(current_selection.start_index - 1);
                         current_selection.start_index =
                             (current_selection.start_index as i32 - 1).max(0) as usize;
@@ -84,8 +87,7 @@ impl TextBoxState {
                 if text.len() > 0 && text.len() < current_selection.start_index {
                     for _ in 0..(current_selection.length + 1) {
                         ctx.widget()
-                            .get_mut::<Text>("text")
-                            .0
+                            .get_mut::<String16>("text")
                             .remove(current_selection.start_index);
                     }
                 }
@@ -96,8 +98,7 @@ impl TextBoxState {
                 }
 
                 ctx.widget()
-                    .get_mut::<Text>("text")
-                    .0
+                    .get_mut::<String16>("text")
                     .insert_str(current_selection.start_index, key_event.text.as_str());
 
                 if let Some(selection) = ctx
@@ -210,7 +211,7 @@ widget!(
     /// * CSS element: `text-box`
     TextBox<TextBoxState>: KeyDownHandler {
         /// Sets or shares the text property.
-        text: Text,
+        text: String16,
 
         /// Sets or shares the water_mark text property.
         water_mark: WaterMark,

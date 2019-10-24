@@ -59,7 +59,10 @@ impl State for MainViewState {
                     let len = self.list.borrow().len();
                     if len < 5 {
                         self.list.borrow_mut().push(format!("Item {}", len + 1));
-                        context.child_by_id("items").unwrap().set("count", Count(len + 1));
+                        context
+                            .child_by_id("items")
+                            .unwrap()
+                            .set("count", Count(len + 1));
 
                         if len == 0 {
                             context
@@ -79,7 +82,10 @@ impl State for MainViewState {
                 Action::RemoveItem => {
                     let len = self.list.borrow().len();
                     self.list.borrow_mut().remove(len - 1);
-                    context.child_by_id("items").unwrap().set("count", Count(len - 1));
+                    context
+                        .child_by_id("items")
+                        .unwrap()
+                        .set("count", Count(len - 1));
 
                     if len == 1 {
                         context
@@ -97,8 +103,10 @@ impl State for MainViewState {
                 }
                 Action::IncrementCounter => {
                     self.counter.set(self.counter.get() + 1);
-                    if let Some(button_count_text) = context.widget().try_get_mut::<Text>("text") {
-                        button_count_text.0 =
+                    if let Some(button_count_text) =
+                        context.widget().try_get_mut::<String16>("text")
+                    {
+                        *button_count_text =
                             String16::from(format!("Button count: {}", self.counter.get()));
                     }
                 }
@@ -111,14 +119,18 @@ impl State for MainViewState {
     fn update_post_layout(&self, context: &mut Context<'_>) {
         let mut selection_string = "bool:".to_string();
 
-        for index in &context.widget().get::<SelectedIndices>("selected_indices").0 {
+        for index in &context
+            .widget()
+            .get::<SelectedIndices>("selected_indices")
+            .0
+        {
             selection_string = format!("{} {}", selection_string, index);
         }
 
         context
             .child_by_id("selection")
             .unwrap()
-            .set("text", Text(String16::from(selection_string)));
+            .set("text", String16::from(selection_string));
     }
 }
 
@@ -132,7 +144,7 @@ fn create_header(context: &mut BuildContext, text: &str) -> Entity {
 widget!(
     MainView<MainViewState> {
         selected_indices: SelectedIndices,
-        text: Text
+        text: String16
     }
 );
 

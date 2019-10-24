@@ -52,13 +52,13 @@ impl Layout for FixedSizeLayout {
             .try_get::<Image>("image")
             .map(|image| (image.width(), image.height()))
             .or_else(|| {
-                widget.try_get::<Text>("text").and_then(|text| {
+                widget.try_get::<String16>("text").and_then(|text| {
                     let font = widget.get::<Font>("font");
                     let font_size = widget.get::<FontSize>("font_size");
                     // render_context_2_d.set_font_size(font_size.0);
                     // render_context_2_d.set_font_family(&font.0[..]);
 
-                    if text.0.is_empty() {
+                    if text.is_empty() {
                         widget
                             .try_get::<WaterMark>("water_mark")
                             .filter(|water_mark| !water_mark.0.is_empty())
@@ -72,7 +72,7 @@ impl Layout for FixedSizeLayout {
                             })
                     } else {
                         let text_metrics = render_context_2_d.measure(
-                            text.0.to_string().as_str(),
+                            text.to_string().as_str(),
                             font_size.0,
                             &font.0[..],
                         );

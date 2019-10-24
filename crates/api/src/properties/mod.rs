@@ -8,7 +8,7 @@ pub use self::layout::*;
 pub use self::state::*;
 pub use self::styling::*;
 pub use self::widget::*;
-use crate::prelude::*;
+use crate::{prelude::*, utils::String16};
 
 mod layout;
 mod state;
@@ -56,3 +56,5 @@ pub trait IntoPropertySource<P: Component + Debug> {
 
 // Implementation of PropertySource for default types
 into_property_source!(bool);
+into_property_source!(String);
+into_property_source!(String16: &str, String);
