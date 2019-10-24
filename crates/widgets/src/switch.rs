@@ -17,11 +17,11 @@ impl SwitchState {
 
 impl State for SwitchState {
     fn update(&self, context: &mut Context<'_>) {
-        if context.widget().get::<Selected>("selected").0 == self.selected.get() {
+        if *context.widget().get::<bool>("selected") == self.selected.get() {
             return;
         }
 
-        context.widget().set("selected", Selected(self.selected.get()));
+        context.widget().set("selected", self.selected.get());
 
         let element = context.widget().clone::<Selector>("selector").0.element.unwrap();
 
@@ -32,7 +32,7 @@ impl State for SwitchState {
         {
             let mut switch_toggle = context.child_by_id("SwitchSwitchToggle").unwrap();
 
-            switch_toggle.set("selected", Selected(self.selected.get()));
+            switch_toggle.set("selected", self.selected.get());
 
             if self.selected.get() {
                 switch_toggle.set("horizontal_alignment", HorizontalAlignment::from("End"));
@@ -73,10 +73,10 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the pressed property.
-        pressed: Pressed,
+        pressed: bool,
 
         /// Sets or shares the selected property.
-        selected: Selected
+        selected: bool
     }
 );
 
@@ -114,14 +114,14 @@ impl Template for Switch {
                                 Grid::create()
                                     .child(Container::create().size(24.0, 24.0).build(context))
                                     .border_radius(1.0)
-                                    .attach_by_source::<Selected>("selected", id)
+                                    .attach_by_source::<bool>("selected", id)
                                     .selector(
                                         SelectorValue::from("switch-toggle")
                                             .id("SwitchSwitchToggle"),
                                     )
                                     .vertical_alignment("center")
                                     .horizontal_alignment("Start")
-                                    .attach_by_source::<Selected>("selected", id)
+                                    .attach_by_source::<bool>("selected", id)
                                     .build(context),
                             )
                             .build(context),

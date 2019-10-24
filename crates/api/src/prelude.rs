@@ -8,6 +8,7 @@ pub use crate::{
     macros::*,
     properties::*,
     property,
+    into_property_source,
     render_object::*,
     systems::*,
     tree::Tree,

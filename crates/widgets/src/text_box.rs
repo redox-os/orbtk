@@ -33,7 +33,7 @@ impl TextBoxState {
     }
 
     fn handle_key_event(&self, key_event: KeyEvent, ctx: &mut Context<'_>) {
-        if !ctx.widget().get::<Focused>("focused").0 {
+        if !ctx.widget().get::<bool>("focused") {
             return;
         }
 
@@ -115,20 +115,20 @@ impl TextBoxState {
         let focused_widget = ctx.window().get::<Global>("global").focused_widget;
 
         if (focused_widget.is_some() && focused_widget.unwrap() == ctx.entity)
-            || !ctx.widget().get::<Enabled>("enabled").0
+            || !ctx.widget().get::<bool>("enabled")
         {
             return;
         }
 
         if let Some(old_focused_element) = ctx.window().get::<Global>("global").focused_widget {
             let mut old_focused_element = ctx.get_widget(old_focused_element);
-            old_focused_element.set("focused", Focused(false));
+            old_focused_element.set("focused", false);
             old_focused_element.update_theme_by_state(false);
         }
 
         ctx.window().get_mut::<Global>("global").focused_widget = Some(ctx.entity);
 
-        ctx.widget().set("focused", Focused(true));
+        ctx.widget().set("focused", true);
         ctx.widget().update_theme_by_state(false);
         ctx.child_by_id("cursor")
             .unwrap()
@@ -249,7 +249,7 @@ widget!(
         delta: Delta,
 
          /// Sets or shares the focused property.
-        focused: Focused,
+        focused: bool,
 
         /// Sets or shares the css selector property.
         selector: Selector

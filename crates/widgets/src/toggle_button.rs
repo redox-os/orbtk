@@ -50,10 +50,10 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the pressed property. 
-        pressed: Pressed,
+        pressed: bool,
 
         /// Sets or shares the selected property. 
-        selected: Selected
+        selected: bool
     }
 );
 

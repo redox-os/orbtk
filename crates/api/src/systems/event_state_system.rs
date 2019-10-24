@@ -21,7 +21,12 @@ pub struct EventStateSystem {
 }
 
 impl EventStateSystem {
-    fn process_top_down_event(&self, _event: &EventBox, _ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {}
+    fn process_top_down_event(
+        &self,
+        _event: &EventBox,
+        _ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+    ) {
+    }
 
     fn process_bottom_up_event(
         &self,
@@ -215,9 +220,7 @@ impl EventStateSystem {
             }
 
             if unknown_event
-                && WidgetContainer::new(current_node, ecm, &theme)
-                    .get::<Enabled>("enabled")
-                    .0
+                && *WidgetContainer::new(current_node, ecm, &theme).get::<bool>("enabled")
             {
                 if let Some(handlers) = self.handlers.borrow().get(&current_node) {
                     for handler in handlers {
@@ -229,7 +232,10 @@ impl EventStateSystem {
                 }
             }
 
-            if let Ok(clip) = ecm.component_store().borrow_component::<Clip>("clip", current_node) {
+            if let Ok(clip) = ecm
+                .component_store()
+                .borrow_component::<Clip>("clip", current_node)
+            {
                 if clip.0 {
                     clipped_parent.clear();
                     clipped_parent.push(current_node);
@@ -259,8 +265,11 @@ impl EventStateSystem {
                 }
             }
 
-            if let Ok(enabled) = ecm.component_store().borrow_component::<Enabled>("enabled", *node) {
-                if !enabled.0 {
+            if let Ok(enabled) = ecm
+                .component_store()
+                .borrow_component::<bool>("enabled", *node)
+            {
+                if !enabled {
                     disabled_parent = Some(*node);
                     continue;
                 }

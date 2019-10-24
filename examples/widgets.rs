@@ -65,14 +65,14 @@ impl State for MainViewState {
                             context
                                 .child_by_id("remove-item-button")
                                 .unwrap()
-                                .set("enabled", Enabled(true));
+                                .set("enabled", true);
                         }
 
                         if len == 4 {
                             context
                                 .child_by_id("add-item-button")
                                 .unwrap()
-                                .set("enabled", Enabled(false));
+                                .set("enabled", false);
                         }
                     }
                 }
@@ -85,14 +85,14 @@ impl State for MainViewState {
                         context
                             .child_by_id("remove-item-button")
                             .unwrap()
-                            .set("enabled", Enabled(false));
+                            .set("enabled", false);
                     }
 
                     if len < 6 {
                         context
                             .child_by_id("add-item-button")
                             .unwrap()
-                            .set("enabled", Enabled(true));
+                            .set("enabled", true);
                     }
                 }
                 Action::IncrementCounter => {
@@ -109,7 +109,7 @@ impl State for MainViewState {
     }
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
-        let mut selection_string = "Selected:".to_string();
+        let mut selection_string = "bool:".to_string();
 
         for index in &context.widget().get::<SelectedIndices>("selected_indices").0 {
             selection_string = format!("{} {}", selection_string, index);
@@ -347,7 +347,7 @@ impl Template for MainView {
                                     .attach("column_span", ColumnSpan(3))
                                     .attach("column_span", ColumnSpan(2))
                                     .attach("grid_row", GridRow(4))
-                                    .text("Selected:")
+                                    .text("bool:")
                                     .build(context),
                             )
                             .build(context),

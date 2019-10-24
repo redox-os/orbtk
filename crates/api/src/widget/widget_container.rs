@@ -193,41 +193,41 @@ impl<'a> WidgetContainer<'a> {
         if let Some(selector) = self.try_clone::<Selector>("selector") {
             let mut update = false;
 
-            if let Some(focus) = self.try_clone::<Focused>("focused") {
-                if focus.0 && !selector.0.pseudo_classes.contains("focus") {
+            if let Some(focus) = self.try_clone::<bool>("focused") {
+                if focus && !selector.0.pseudo_classes.contains("focus") {
                     add_selector_to_widget("focus", self);
                     update = true;
-                } else if !focus.0 && selector.0.pseudo_classes.contains("focus") {
+                } else if !focus && selector.0.pseudo_classes.contains("focus") {
                     remove_selector_from_widget("focus", self);
                     update = true;
                 }
             }
 
-            if let Some(selected) = self.try_clone::<Selected>("selected") {
-                if selected.0 && !selector.0.pseudo_classes.contains("selected") {
+            if let Some(selected) = self.try_clone::<bool>("selected") {
+                if selected && !selector.0.pseudo_classes.contains("selected") {
                     add_selector_to_widget("selected", self);
                     update = true;
-                } else if !selected.0 && selector.0.pseudo_classes.contains("selected") {
+                } else if !selected && selector.0.pseudo_classes.contains("selected") {
                     remove_selector_from_widget("selected", self);
                     update = true;
                 }
             }
 
-            if let Some(pressed) = self.try_clone::<Pressed>("pressed") {
-                if pressed.0 && !selector.0.pseudo_classes.contains("active") {
+            if let Some(pressed) = self.try_clone::<bool>("pressed") {
+                if pressed && !selector.0.pseudo_classes.contains("active") {
                     add_selector_to_widget("active", self);
                     update = true;
-                } else if !pressed.0 && selector.0.pseudo_classes.contains("active") {
+                } else if !pressed && selector.0.pseudo_classes.contains("active") {
                     remove_selector_from_widget("active", self);
                     update = true;
                 }
             }
 
-            if let Some(enabled) = self.try_clone::<Enabled>("enabled") {
-                if !enabled.0 && !selector.0.pseudo_classes.contains("disabled") {
+            if let Some(enabled) = self.try_clone::<bool>("enabled") {
+                if !enabled && !selector.0.pseudo_classes.contains("disabled") {
                     add_selector_to_widget("disabled", self);
                     update = true;
-                } else if enabled.0 && selector.0.pseudo_classes.contains("disabled") {
+                } else if enabled && selector.0.pseudo_classes.contains("disabled") {
                     remove_selector_from_widget("disabled", self);
                     update = true;
                 }

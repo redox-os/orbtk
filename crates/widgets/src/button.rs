@@ -49,7 +49,7 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the pressed property. 
-        pressed: Pressed
+        pressed: bool
     }
 );
 

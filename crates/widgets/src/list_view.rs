@@ -33,7 +33,7 @@ impl State for ListViewState {
                             let mouse_behavior = MouseBehavior::create().build(&mut build_context);
                             build_context
                                 .register_shared_property::<Selector>("selector", mouse_behavior, item);
-                            build_context.register_shared_property::<Pressed>("pressed", mouse_behavior, item);
+                            build_context.register_shared_property::<bool>("pressed", mouse_behavior, item);
                             build_context.append_child(item, mouse_behavior);
 
                             build_context.register_shared_property::<Brush>("foreground", child, item);
@@ -61,7 +61,7 @@ impl State for ListViewState {
             .symmetric_difference(&*self.selected_entities.borrow())
         {
             let mut widget = context.get_widget(*index);
-            widget.set("selected", Selected(!widget.get::<Selected>("selected").0));
+            widget.set("selected", !widget.get::<bool>("selected"));
 
             widget.update_theme_by_state(false);
         }
@@ -83,12 +83,12 @@ impl ListViewItemState {
 
 impl State for ListViewItemState {
     fn update(&self, context: &mut Context<'_>) {
-        if !context.widget().get::<Enabled>("enabled").0 || !self.request_selection_toggle.get() {
+        if !context.widget().get::<bool>("enabled") || !self.request_selection_toggle.get() {
             return;
         }
         self.request_selection_toggle.set(false);
 
-        let selected = context.widget().get::<Selected>("selected").0;
+        let selected = *context.widget().get::<bool>("selected");
 
         let entity = context.entity;
         let index = context.index_as_child(entity).unwrap();
@@ -149,10 +149,10 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the pressed property. 
-        pressed: Pressed,
+        pressed: bool,
 
         /// Sets or shares the selected property. 
-        selected: Selected
+        selected: bool
     }
 );
 

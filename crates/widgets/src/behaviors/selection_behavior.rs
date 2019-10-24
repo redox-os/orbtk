@@ -16,13 +16,13 @@ impl SelectionBehaviorState {
 
 impl State for SelectionBehaviorState {
     fn update(&self, context: &mut Context<'_>) {
-        if !context.widget().get::<Enabled>("enabled").0
-            || context.widget().get::<Selected>("selected").0 == self.selected.get()
+        if !context.widget().get::<bool>("enabled")
+            || *context.widget().get::<bool>("selected") == self.selected.get()
         {
             return;
         }
 
-        context.widget().set("selected", Selected(self.selected.get()));
+        context.widget().set("selected", self.selected.get());
 
         let element = context.widget().clone::<Selector>("selector").0.element.unwrap();
 
@@ -41,7 +41,7 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the selected property. 
-        selected: Selected
+        selected: bool
     }
 );
 

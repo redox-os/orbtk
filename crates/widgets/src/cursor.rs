@@ -16,7 +16,7 @@ impl State for CursorState {
             remove_selector_from_widget("expanded", &mut widget)
         }
 
-        if widget.get::<Focused>("focused").0 {
+        if *widget.get::<bool>("focused") {
             widget.set("visibility", Visibility::from("visible"));
         } else {
             widget.set("visibility", Visibility::from("collapsed"));
@@ -48,7 +48,7 @@ widget!(
         scroll_offset: ScrollOffset,
 
         /// Sets or shares the focused property.
-        focused: Focused,
+        focused: bool,
 
         /// Sets or shares the css selector property.
         selector: Selector

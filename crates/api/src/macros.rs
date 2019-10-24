@@ -1,3 +1,20 @@
+#[macro_export]
+macro_rules! into_property_source {
+    ($type:ty) => {
+        impl IntoPropertySource<$type> for $type {
+            fn into_source(self) -> PropertySource<$type> {
+                PropertySource::Value(self)
+            }
+        }
+
+        impl IntoPropertySource<$type> for Entity {
+            fn into_source(self) -> PropertySource<$type> {
+                PropertySource::Source(self)
+            }
+        }
+    };
+}
+
 /// Used to define a property.
 #[macro_export]
 macro_rules! property {
@@ -88,7 +105,7 @@ macro_rules! widget {
             horizontal_alignment: HorizontalAlignment,
             vertical_alignment: VerticalAlignment,
             margin: Margin,
-            enabled: Enabled,
+            enabled: bool,
             clip: Clip,
             visibility: Visibility,
             _empty: Option<RefCell<i32>>,
@@ -154,7 +171,7 @@ macro_rules! widget {
             }
 
             /// Sets or shares the enabled property.
-            pub fn enabled(self, enabled: impl IntoPropertySource<Enabled>) -> Self {
+            pub fn enabled(self, enabled: impl IntoPropertySource<bool>) -> Self {
                 self.attach("enabled", enabled)
             }
 
@@ -295,7 +312,7 @@ macro_rules! widget {
             fn create() -> Self {
                 $widget {
                     event_handlers: vec![],
-                    enabled: Enabled(true),
+                    enabled: true,
                     clip: Clip(false),
                     $(
                         $(
@@ -376,7 +393,6 @@ macro_rules! widget {
                 }
                 context.register_property("constraint", entity, constraint);
 
-                
 
                 // register attached properties
                 for (key, property) in this.attached_properties {

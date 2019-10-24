@@ -24,17 +24,17 @@ impl MouseBehaviorState {
 
 impl State for MouseBehaviorState {
     fn update(&self, context: &mut Context<'_>) {
-        if !context.widget().get::<Enabled>("enabled").0 {
+        if !context.widget().get::<bool>("enabled") {
             return;
         }
 
         if let Some(action) = self.action.get() {
             match action {
                 Action::Press(_) => {
-                    context.widget().set("pressed", Pressed(true));
+                    context.widget().set("pressed", true);
                 }
                 Action::Release(p) => {
-                    context.widget().set("pressed", Pressed(false));
+                    context.widget().set("pressed", false);
 
                     if check_mouse_condition(p, &context.widget()) {
                         let parent = context.entity_of_parent().unwrap();
@@ -74,7 +74,7 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the pressed property. 
-        pressed: Pressed,
+        pressed: bool,
 
         /// Sets or shares the (wheel, scroll) delta property. 
         delta: Delta

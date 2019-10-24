@@ -8,6 +8,7 @@ pub use self::layout::*;
 pub use self::state::*;
 pub use self::styling::*;
 pub use self::widget::*;
+use crate::prelude::*;
 
 mod layout;
 mod state;
@@ -52,3 +53,6 @@ impl<P: Component + Debug> From<Entity> for PropertySource<P> {
 pub trait IntoPropertySource<P: Component + Debug> {
     fn into_source(self) -> PropertySource<P>;
 }
+
+// Implementation of PropertySource for default types
+into_property_source!(bool);

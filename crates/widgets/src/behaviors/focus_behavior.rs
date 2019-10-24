@@ -16,17 +16,17 @@ impl FocusBehaviorState {
 
 impl State for FocusBehaviorState {
     fn update(&self, context: &mut Context<'_>) {
-        if !self.request_focus.get() || !context.widget().get::<Enabled>("enabled").0 {
+        if !self.request_focus.get() || !context.widget().get::<bool>("enabled") {
             return;
         }
 
         if let Some(old_focused_element) = context.window().get::<Global>("global").focused_widget {
             let mut old_focused_element = context.get_widget(old_focused_element);
-            old_focused_element.set("focused", Focused(false));
+            old_focused_element.set("focused", false);
             old_focused_element.update_theme_by_state(false);
         }
 
-        context.widget().set("focused", Focused(true));
+        context.widget().set("focused", true);
 
         let element = context.widget().clone::<Selector>("selector").0.element.unwrap();
 
@@ -48,7 +48,7 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the focused property. 
-        focused: Focused
+        focused: bool
     }
 );
 
