@@ -1,9 +1,9 @@
-use crate::{prelude::*, utils::*};
+use crate::{prelude::*, utils, utils::{Color}};
 
 property!(
     /// `IconBrush` describes the icon brush of a visual element.
     #[derive(Default)]
-    IconBrush(Brush) : &str,
+    IconBrush(utils::Brush) : &str,
     String
 );
 

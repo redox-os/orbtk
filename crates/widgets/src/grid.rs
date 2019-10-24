@@ -6,7 +6,7 @@ widget!(
     /// **CSS element:** `grid`
     Grid {
         /// Sets or shares the background property.
-        background: Background,
+        background: Brush,
 
         /// Sets or shares the columns property.
         columns: Columns,

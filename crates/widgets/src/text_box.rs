@@ -228,7 +228,7 @@ widget!(
         font: Font,
 
         /// Sets or shares the background property.
-        background: Background,
+        background: Brush,
 
         /// Sets or shares the border radius property.
         border_radius: BorderRadius,

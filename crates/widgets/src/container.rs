@@ -4,7 +4,7 @@ widget!(
     /// The `Container` layout widget surrounds its child with a padding. Draws a box around the child.
     Container {
         /// Sets or shares the background property.
-        background: Background,
+        background: Brush,
 
         /// Sets or shares the border radius property.
         border_radius: BorderRadius,

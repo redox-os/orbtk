@@ -36,7 +36,7 @@ widget!(
         text_selection: TextSelection,
 
         /// Sets or shares the background property.
-        background: Background,
+        background: Brush,
 
         /// Sets or share the font size property.
         font_size: FontSize,

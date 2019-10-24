@@ -1,4 +1,4 @@
-use orbtk::{prelude::*, render::platform::RenderContext2D};
+use orbtk::{prelude::*, utils, render::platform::RenderContext2D};
 use std::cell::Cell;
 
 use euc::{buffer::Buffer2d, rasterizer, Pipeline};
@@ -146,7 +146,7 @@ impl render::RenderPipeline for Graphic2DPipeline {
         let x = (render_target.width() - width) / 2.0;
         let y = (render_target.height() - height) / 2.0;
 
-        render_context.set_fill_style(Brush::LinearGradient {
+        render_context.set_fill_style(utils::Brush::LinearGradient {
             start: Point::new(x, y),
             end: Point::new(x + width, y + height),
             stops: vec![

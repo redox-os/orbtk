@@ -1,4 +1,4 @@
-use crate::{prelude::*, render::RenderContext2D, utils::*};
+use crate::{prelude::*, render::RenderContext2D, utils, utils::{Position, Size, Thickness, Point}};
 
 pub struct RectangleRenderObject;
 
@@ -11,8 +11,8 @@ impl RectangleRenderObject {
         y: f64,
         width: f64,
         height: f64,
-        brush: Brush,
-        border_brush: Brush,
+        brush: utils::Brush,
+        border_brush: utils::Brush,
         _border_thickness: Thickness,
     ) {
         render_context_2_d.rect(x, y, width, height);
@@ -61,8 +61,8 @@ impl RectangleRenderObject {
         width: f64,
         height: f64,
         radius: f64,
-        brush: Brush,
-        border_brush: Brush,
+        brush: utils::Brush,
+        border_brush: utils::Brush,
         _border_thickness: Thickness,
     ) {
         self.render_rounded_rect_path(render_context_2_d, x, y, width, height, radius);
@@ -91,7 +91,7 @@ impl RenderObject for RectangleRenderObject {
             let widget = context.widget();
             (
                 widget.clone::<Bounds>("bounds"),
-                widget.get::<Background>("background").0.clone(),
+                widget.get::<Brush>("background").0.clone(),
                 widget.clone_or_default::<BorderRadius>("border_radius").0,
                 widget.clone_or_default::<BorderThickness>("border_width").0,
                 widget.clone_or_default::<BorderBrush>("border_brush").0,

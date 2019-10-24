@@ -1,6 +1,6 @@
 use std::any::TypeId;
 
-use crate::{prelude::*, utils::*};
+use crate::{prelude::*, utils::Spacer};
 
 use dces::prelude::{Component, Entity, EntityComponentManager};
 
@@ -41,9 +41,6 @@ impl<'a> WidgetContainer<'a> {
         {
             return property;
         }
-
-        let blub = self.current_node;
-        println!("{:?}", blub);
 
         panic!(
             "Entity {} does not contain property type {:?} with key: {}",
@@ -270,9 +267,9 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
-        if self.has::<Background>("background") {
+        if self.has::<Brush>("background") {
             if let Some(background) = self.theme.brush("background", &selector.0) {
-                self.set::<Background>("background", Background::from(background));
+                self.set::<Brush>("background", Brush::from(background));
             }
         }
 

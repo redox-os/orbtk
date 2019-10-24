@@ -7,7 +7,7 @@ widget!(
     /// **CSS element:** `window`
     Window {
         /// Sets or shares the background property.
-        background: Background,
+        background: Brush,
 
         /// Sets or shares the title property.
         title: Title,

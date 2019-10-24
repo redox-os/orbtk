@@ -122,7 +122,7 @@ impl State for ListViewItemState {
 widget!(
     ListViewItem<ListViewItemState>: MouseHandler {
         /// Sets or shares the background property.
-        background: Background,
+        background: Brush,
 
         /// Sets or shares the border radius property.
         border_radius: BorderRadius,
@@ -196,7 +196,7 @@ widget!(
     /// **CSS element:** `items-widget`
     ListView<ListViewState> {
         /// Sets or shares the background property.
-        background: Background,
+        background: Brush,
 
         /// Sets or shares the border radius property.
         border_radius: BorderRadius,
