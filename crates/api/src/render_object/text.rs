@@ -19,7 +19,7 @@ impl RenderObject for TextRenderObject {
                 if !text.is_empty() {
                     text.clone()
                 } else {
-                    widget.clone_or_default::<WaterMark>("water_mark").0
+                    widget.clone_or_default::<String16>("water_mark")
                 }
             };
             (

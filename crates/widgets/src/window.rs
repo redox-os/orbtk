@@ -10,7 +10,7 @@ widget!(
         background: Brush,
 
         /// Sets or shares the title property.
-        title: Title,
+        title: String,
 
         /// Sets or shares the css selector property.
         selector: Selector,

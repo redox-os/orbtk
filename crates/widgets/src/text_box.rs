@@ -214,7 +214,7 @@ widget!(
         text: String16,
 
         /// Sets or shares the water_mark text property.
-        water_mark: WaterMark,
+        water_mark: String16,
 
         /// Sets or shares the text selection property.
         text_selection: TextSelection,
@@ -311,7 +311,7 @@ impl Template for TextBox {
                                                     .text(id)
                                                     .font(id)
                                                     .font_size(id)
-                                                    .attach_by_source::<WaterMark>("water_mark", id)
+                                                    .attach_by_source::<String16>("water_mark", id)
                                                     .build(context),
                                             )
                                             .build(context),

@@ -111,7 +111,7 @@ macro_rules! widget {
             max_height: Option<f64>,
             width: Option<f64>,
             height: Option<f64>,
-            name: Option<Name>,
+            name: Option<String>,
             horizontal_alignment: HorizontalAlignment,
             vertical_alignment: VerticalAlignment,
             margin: Margin,
@@ -278,7 +278,7 @@ macro_rules! widget {
             }
 
             /// Sets the debug name of the widget.
-            pub fn name<P: Into<Name>>(mut self, name: P) -> Self {
+            pub fn name<P: Into<String>>(mut self, name: P) -> Self {
                 self.name = Some(name.into());
                 self
             }

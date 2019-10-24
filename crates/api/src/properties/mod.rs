@@ -56,5 +56,5 @@ pub trait IntoPropertySource<P: Component + Debug> {
 
 // Implementation of PropertySource for default types
 into_property_source!(bool);
-into_property_source!(String);
+into_property_source!(String: &str);
 into_property_source!(String16: &str, String);

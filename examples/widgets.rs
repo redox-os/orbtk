@@ -359,7 +359,7 @@ impl Template for MainView {
                                     .attach("column_span", ColumnSpan(3))
                                     .attach("column_span", ColumnSpan(2))
                                     .attach("grid_row", GridRow(4))
-                                    .text("bool:")
+                                    .text("Selected:")
                                     .build(context),
                             )
                             .build(context),

@@ -62,7 +62,7 @@ impl Application {
         let title = world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<Title>("title", window)
+            .borrow_component::<String>("title", window)
             .unwrap()
             .clone();
         let resizeable = world
@@ -110,7 +110,7 @@ impl Application {
                 states: states.clone(),
                 ..Default::default()
             })
-            .title(&(title.0)[..])
+            .title(&(title)[..])
             .bounds(Bounds::from((
                 position.0.x,
                 position.0.y,

@@ -60,11 +60,11 @@ impl Layout for FixedSizeLayout {
 
                     if text.is_empty() {
                         widget
-                            .try_get::<WaterMark>("water_mark")
-                            .filter(|water_mark| !water_mark.0.is_empty())
+                            .try_get::<String16>("water_mark")
+                            .filter(|water_mark| !water_mark.is_empty())
                             .map(|water_mark| {
                                 let text_metrics = render_context_2_d.measure(
-                                    water_mark.0.to_string().as_str(),
+                                    water_mark.to_string().as_str(),
                                     font_size.0,
                                     &font.0[..],
                                 );
