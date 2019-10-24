@@ -77,15 +77,7 @@ impl Layout for FixedSizeLayout {
                             &font.0[..],
                         );
 
-                        let size = (text_metrics.width, text_metrics.height);
-
-                        // if text.0.to_string().ends_with(" ") {
-                        //     size.0 += render_context_2_d
-                        //         .measure_text(&format!("{}a", text.0.to_string()))
-                        //         .width
-                        //         - render_context_2_d.measure_text("a").width;
-                        // }
-                        Some(size)
+                        Some((text_metrics.width, text_metrics.height))
                     }
                 })
             })
@@ -94,13 +86,11 @@ impl Layout for FixedSizeLayout {
                     .try_clone::<FontIcon>("icon")
                     .filter(|font_icon| !font_icon.0.is_empty())
                     .map(|font_icon| {
-                        let icon_size = widget.get::<IconSize>("icon_size").0;
-                        // render_context_2_d.set_font_size(icon_size);
-                        // render_context_2_d.set_font_family(&widget.get::<IconFont>().0[..]);
+                        let icon_size = widget.get::<FontSize>("icon_size").0;
                         let text_metrics = render_context_2_d.measure(
                             &font_icon.0,
                             icon_size,
-                            &widget.get::<IconFont>("icon_font").0[..],
+                            &widget.get::<Font>("icon_font").0[..],
                         );
                         (text_metrics.width, text_metrics.height)
                     })

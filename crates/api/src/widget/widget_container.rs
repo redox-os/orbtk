@@ -312,15 +312,15 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
-        if self.has::<IconSize>("icon_size") {
+        if self.has::<FontSize>("icon_size") {
             if let Some(size) = self.theme.uint("icon-size", &selector.0) {
-                self.set::<IconSize>("icon_size", IconSize::from(size as f64));
+                self.set::<FontSize>("icon_size", FontSize::from(size as f64));
             }
         }
 
-        if self.has::<IconFont>("icon_family") {
+        if self.has::<Font>("icon_family") {
             if let Some(font_family) = self.theme.string("icon-family", &selector.0) {
-                self.set::<IconFont>("icon_family", IconFont::from(font_family));
+                self.set::<Font>("icon_family", Font::from(font_family));
             }
         }
 

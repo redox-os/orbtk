@@ -41,10 +41,10 @@ widget!(
         icon_brush: IconBrush,
 
         /// Sets or share the icon font size property.
-        icon_size: IconSize,
+        icon_size: FontSize,
 
         /// Sets or shares the icon font property.
-        icon_font: IconFont,
+        icon_font: Font,
 
         /// Sets or shares the css selector property. 
         selector: Selector,

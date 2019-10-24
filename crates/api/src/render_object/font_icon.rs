@@ -16,8 +16,8 @@ impl RenderObject for FontIconRenderObject {
                 widget.get::<Bounds>("bounds").0,
                 widget.clone::<FontIcon>("icon").0,
                 widget.get::<IconBrush>("icon_brush").0.clone(),
-                widget.get::<IconFont>("icon_font").0.clone(),
-                widget.get::<IconSize>("icon_size").0,
+                widget.get::<Font>("icon_font").0.clone(),
+                widget.get::<FontSize>("icon_size").0,
             )
         };
 

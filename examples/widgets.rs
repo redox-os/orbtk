@@ -229,7 +229,7 @@ impl Template for MainView {
                             )
                             .child(
                                 TextBox::create()
-                                    .placeholder("TextBox...")
+                                    .water_mark("TextBox...")
                                     .text("")
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach("grid_column", GridColumn(2))
@@ -238,7 +238,7 @@ impl Template for MainView {
                             )
                             .child(
                                 TextBox::create()
-                                    .placeholder("TextBox...")
+                                    .water_mark("TextBox...")
                                     .text("")
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach("grid_column", GridColumn(2))

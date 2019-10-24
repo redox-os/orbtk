@@ -212,8 +212,8 @@ widget!(
         /// Sets or shares the text property.
         text: Text,
 
-        /// Sets or shares the placeholder text property.
-        placeholder: WaterMark,
+        /// Sets or shares the water_mark text property.
+        water_mark: WaterMark,
 
         /// Sets or shares the text selection property.
         text_selection: TextSelection,
