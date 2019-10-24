@@ -261,9 +261,9 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
-        if self.has::<Foreground>("foreground") {
+        if self.has::<Brush>("foreground") {
             if let Some(color) = self.theme.brush("color", &selector.0) {
-                self.set::<Foreground>("foreground", Foreground::from(color));
+                self.set::<Brush>("foreground", Brush::from(color));
             }
         }
 

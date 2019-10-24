@@ -219,7 +219,7 @@ widget!(
         text_selection: TextSelection,
 
         /// Sets or shares the foreground property.
-        foreground: Foreground,
+        foreground: Brush,
 
         /// Sets or share the font size property.
         font_size: FontSize,

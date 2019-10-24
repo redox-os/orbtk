@@ -1,4 +1,4 @@
-use crate::{prelude::*, utils::*};
+use crate::{prelude::*, utils::{Point}};
 
 /// Used to render a text.
 pub struct TextRenderObject;
@@ -25,7 +25,7 @@ impl RenderObject for TextRenderObject {
             (
                 widget.get::<Bounds>("bounds").0,
                 txt.to_string(),
-                widget.get::<Foreground>("foreground").0.clone(),
+                widget.get::<Brush>("foreground").0.clone(),
                 widget.get::<Font>("font").0.clone(),
                 widget.get::<FontSize>("font_size").0,
             )

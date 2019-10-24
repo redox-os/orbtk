@@ -23,7 +23,7 @@ widget!(
         padding: Padding,
 
         /// Sets or shares the foreground property.
-        foreground: Foreground,
+        foreground: Brush,
 
         /// Sets or shares the text property.
         text: Text,

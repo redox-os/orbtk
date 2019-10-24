@@ -9,7 +9,7 @@ widget!(
         text: Text,
 
         /// Sets or shares the foreground property.
-        foreground: Foreground,
+        foreground: Brush,
 
         /// Sets or share the font size property.
         font_size: FontSize,

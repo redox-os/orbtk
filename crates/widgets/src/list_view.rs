@@ -36,7 +36,7 @@ impl State for ListViewState {
                             build_context.register_shared_property::<Pressed>("pressed", mouse_behavior, item);
                             build_context.append_child(item, mouse_behavior);
 
-                            build_context.register_shared_property::<Foreground>("foreground", child, item);
+                            build_context.register_shared_property::<Brush>("foreground", child, item);
                             build_context.register_shared_property::<FontSize>("font_size", child, item);
                             build_context.append_child(items_panel, item);
                             build_context.append_child(mouse_behavior, child);
@@ -134,7 +134,7 @@ widget!(
         border_brush: BorderBrush,
 
         /// Sets or shares the foreground property.
-        foreground: Foreground,
+        foreground: Brush,
 
         /// Sets or share the font size property.
         font_size: FontSize,
