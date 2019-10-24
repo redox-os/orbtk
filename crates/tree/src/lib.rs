@@ -189,6 +189,7 @@ impl<'a> Iterator for TreeIterator<'a> {
 #[cfg(test)]
 mod tests {
     use dces::prelude::*;
+    use dces::entity::EntityStore;
 
     use super::*;
 

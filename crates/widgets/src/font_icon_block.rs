@@ -9,7 +9,7 @@ widget!(
         icon: FontIcon,
 
         /// Sets or shares the icon brush property.
-        icon_brush: IconBrush,
+        icon_brush: Brush,
 
         /// Sets or share the icon font size property.
         icon_size: FontSize,

@@ -17,7 +17,7 @@ widget!(
         border_width: BorderThickness,
 
         /// Sets or shares the border brush property.
-        border_brush: BorderBrush,
+        border_brush: Brush,
 
         /// Sets or shares the padding property.
         padding: Padding,
@@ -38,7 +38,7 @@ widget!(
         icon: FontIcon,
 
         /// Sets or shares the icon brush property.
-        icon_brush: IconBrush,
+        icon_brush: Brush,
 
         /// Sets or share the icon font size property.
         icon_size: FontSize,

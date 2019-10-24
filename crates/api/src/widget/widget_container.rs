@@ -273,9 +273,9 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
-        if self.has::<BorderBrush>("border_brush") {
+        if self.has::<Brush>("border_brush") {
             if let Some(border_brush) = self.theme.brush("border-color", &selector.0) {
-                self.set::<BorderBrush>("border_brush", BorderBrush::from(border_brush));
+                self.set::<Brush>("border_brush", Brush::from(border_brush));
             }
         }
 
@@ -303,9 +303,9 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
-        if self.has::<IconBrush>("icon_brush") {
+        if self.has::<Brush>("icon_brush") {
             if let Some(color) = self.theme.brush("icon-color", &selector.0) {
-                self.set::<IconBrush>("icon_brush", IconBrush::from(color));
+                self.set::<Brush>("icon_brush", Brush::from(color));
             }
         }
 

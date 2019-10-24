@@ -11,3 +11,14 @@ impl From<i32> for Opacity {
         Opacity(s as f64)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_into() {
+        let opacity: Opacity = 20.0.into();
+        assert_eq!(opacity.0, 20.0);
+    }
+}

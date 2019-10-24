@@ -131,7 +131,7 @@ widget!(
         border_width: BorderThickness,
 
         /// Sets or shares the border brush property.
-        border_brush: BorderBrush,
+        border_brush: Brush,
 
         /// Sets or shares the foreground property.
         foreground: Brush,
@@ -205,7 +205,7 @@ widget!(
         border_width: BorderThickness,
 
         /// Sets or shares the border brush property.
-        border_brush: BorderBrush,
+        border_brush: Brush,
 
         /// Sets or shares the padding property.
         padding: Padding,
