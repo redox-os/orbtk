@@ -21,13 +21,13 @@ pub struct EventStateSystem {
 }
 
 impl EventStateSystem {
-    fn process_top_down_event(&self, _event: &EventBox, _ecm: &mut EntityComponentManager<Tree, ComponentStore>) {}
+    fn process_top_down_event(&self, _event: &EventBox, _ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {}
 
     fn process_bottom_up_event(
         &self,
         mouse_position: Point,
         event: &EventBox,
-        ecm: &mut EntityComponentManager<Tree, ComponentStore>,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
     ) {
         let mut matching_nodes = vec![];
 
@@ -36,7 +36,7 @@ impl EventStateSystem {
 
         let theme = ecm
             .component_store()
-            .borrow_component::<Theme>(root)
+            .borrow_component::<Theme>("theme", root)
             .unwrap()
             .0
             .clone();
@@ -48,7 +48,7 @@ impl EventStateSystem {
                     // update window size
                     if let Ok(bounds) = ecm
                         .component_store_mut()
-                        .borrow_mut_component::<Bounds>(root)
+                        .borrow_mut_component::<Bounds>("bounds", root)
                     {
                         bounds.set_width(*width);
                         bounds.set_height(*height);
@@ -56,7 +56,7 @@ impl EventStateSystem {
 
                     if let Ok(constraint) = ecm
                         .component_store_mut()
-                        .borrow_mut_component::<Constraint>(root)
+                        .borrow_mut_component::<Constraint>("constraint", root)
                     {
                         constraint.set_width(*width);
                         constraint.set_height(*height);
@@ -72,7 +72,7 @@ impl EventStateSystem {
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
             if let Ok(global) = ecm
                 .component_store_mut()
-                .borrow_mut_component::<Global>(root)
+                .borrow_mut_component::<Global>("global", root)
             {
                 // Set this value on the keyboard state
                 global.keyboard_state.set_key_state(event.event.key, true);
@@ -82,7 +82,7 @@ impl EventStateSystem {
         if let Ok(event) = event.downcast_ref::<KeyUpEvent>() {
             if let Ok(global) = ecm
                 .component_store_mut()
-                .borrow_mut_component::<Global>(root)
+                .borrow_mut_component::<Global>("global", root)
             {
                 // Set this value on the keyboard state
                 global.keyboard_state.set_key_state(event.event.key, false);
@@ -107,7 +107,7 @@ impl EventStateSystem {
             if let Ok(_) = event.downcast_ref::<KeyDownEvent>() {
                 if let Some(focused) = ecm
                     .component_store()
-                    .borrow_component::<Global>(root)
+                    .borrow_component::<Global>("global", root)
                     .unwrap()
                     .focused_widget
                 {
@@ -123,7 +123,7 @@ impl EventStateSystem {
             if let Ok(_) = event.downcast_ref::<KeyUpEvent>() {
                 if let Some(focused) = ecm
                     .component_store()
-                    .borrow_component::<Global>(root)
+                    .borrow_component::<Global>("global", root)
                     .unwrap()
                     .focused_widget
                 {
@@ -216,7 +216,7 @@ impl EventStateSystem {
 
             if unknown_event
                 && WidgetContainer::new(current_node, ecm, &theme)
-                    .get::<Enabled>()
+                    .get::<Enabled>("enabled")
                     .0
             {
                 if let Some(handlers) = self.handlers.borrow().get(&current_node) {
@@ -229,7 +229,7 @@ impl EventStateSystem {
                 }
             }
 
-            if let Ok(clip) = ecm.component_store().borrow_component::<Clip>(current_node) {
+            if let Ok(clip) = ecm.component_store().borrow_component::<Clip>("clip", current_node) {
                 if clip.0 {
                     clipped_parent.clear();
                     clipped_parent.push(current_node);
@@ -259,7 +259,7 @@ impl EventStateSystem {
                 }
             }
 
-            if let Ok(enabled) = ecm.component_store().borrow_component::<Enabled>(*node) {
+            if let Ok(enabled) = ecm.component_store().borrow_component::<Enabled>("enabled", *node) {
                 if !enabled.0 {
                     disabled_parent = Some(*node);
                     continue;
@@ -285,8 +285,8 @@ impl EventStateSystem {
     }
 }
 
-impl System<Tree, ComponentStore> for EventStateSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, ComponentStore>) {
+impl System<Tree, StringComponentStore> for EventStateSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         let mut shell = self.shell.borrow_mut();
 
         loop {
@@ -321,7 +321,7 @@ impl System<Tree, ComponentStore> for EventStateSystem {
 
             let theme = ecm
                 .component_store()
-                .borrow_component::<Theme>(root)
+                .borrow_component::<Theme>("theme", root)
                 .unwrap()
                 .0
                 .clone();

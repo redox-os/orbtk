@@ -13,7 +13,7 @@ widget!(
         border_radius: BorderRadius,
 
         /// Sets or shares the border thickness property.
-        border_thickness: BorderThickness,
+        border_width: BorderThickness,
 
         /// Sets or shares the border brush property.
         border_brush: BorderBrush,
@@ -61,7 +61,7 @@ impl Template for Button {
             .min_width(80.0)
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
-            .border_thickness(0.0)
+            .border_width(0.0)
             .border_brush("transparent")
             .padding((8.0, 0.0, 8.0, 0.0))
             .foreground(colors::LINK_WATER_COLOR)
@@ -82,7 +82,7 @@ impl Template for Button {
                         Container::create()
                             .background(id)
                             .border_radius(id)
-                            .border_thickness(id)
+                            .border_width(id)
                             .border_brush(id)
                             .padding(id)
                             .child(
@@ -94,9 +94,9 @@ impl Template for Button {
                                         FontIconBlock::create()
                                             .margin((0.0, 0.0, 2.0, 0.0))
                                             .icon(id)
-                                            .brush(id)
+                                            .icon_brush(id)
                                             .icon_size(id)
-                                            .font(id)
+                                            .icon_font(id)
                                             .build(context),
                                     )
                                     .child(

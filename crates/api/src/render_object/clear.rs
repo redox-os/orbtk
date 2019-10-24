@@ -10,7 +10,7 @@ impl Into<Box<dyn RenderObject>> for ClearRenderObject {
 
 impl RenderObject for ClearRenderObject {
     fn render_self(&self, context: &mut Context<'_>, _: &Point) {
-        let background = context.widget().get::<Background>().0.clone();
+        let background = context.widget().get::<Background>("background").0.clone();
 
         context.render_context_2_d().clear(&background);
     }

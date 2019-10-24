@@ -15,9 +15,9 @@ pub struct InitSystem {
 
 impl InitSystem {
     // init css ids.
-    fn init_id(&self, node: Entity, store: &mut ComponentStore, root: Entity) {
+    fn init_id(&self, node: Entity, store: &mut StringComponentStore, root: Entity) {
         // Add css id to global id map.
-        let id = if let Ok(selector) = store.borrow_component::<Selector>(node) {
+        let id = if let Ok(selector) = store.borrow_component::<Selector>("selector", node) {
             if let Some(id) = &selector.0.id {
                 Some((node, id.clone()))
             } else {
@@ -28,7 +28,7 @@ impl InitSystem {
         };
 
         if let Some((entity, id)) = id {
-            if let Ok(global) = store.borrow_mut_component::<Global>(root) {
+            if let Ok(global) = store.borrow_mut_component::<Global>("global", root) {
                 global.id_map.insert(id, entity);
             }
         }
@@ -40,8 +40,8 @@ impl InitSystem {
     }
 }
 
-impl System<Tree, ComponentStore> for InitSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, ComponentStore>) {
+impl System<Tree, StringComponentStore> for InitSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         let root = ecm.entity_store().root;
 
         #[cfg(feature = "debug")]
@@ -61,7 +61,7 @@ impl System<Tree, ComponentStore> for InitSystem {
         let window_shell = &mut self.shell.borrow_mut();
         let theme = ecm
             .component_store()
-            .borrow_component::<Theme>(root)
+            .borrow_component::<Theme>("theme", root)
             .unwrap()
             .0
             .clone();
@@ -102,9 +102,9 @@ impl System<Tree, ComponentStore> for InitSystem {
     }
 }
 
-pub fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tree, ComponentStore>) {
-    let name = Name::get(entity, ecm.component_store());
-    let selector = Selector::get_or_value(entity, ecm.component_store(), Selector::default());
+pub fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
+    let name = Name::get("name", entity, ecm.component_store());
+    let selector = Selector::get_or_value("selector", entity, ecm.component_store(), Selector::default());
 
     crate::shell::CONSOLE.log(format!(
         "{}{} (entity: {}{})",

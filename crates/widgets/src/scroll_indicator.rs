@@ -6,11 +6,11 @@ pub struct ScrollIndicatorState;
 
 impl State for ScrollIndicatorState {
     fn update_post_layout(&self, ctx: &mut Context<'_>) {
-        let padding = ctx.widget().get::<Padding>().0;
-        let scroll_offset = ctx.widget().get::<ScrollOffset>().0;
-        let content_id = ctx.widget().get::<ContentId>().0;
-        let content_bounds = ctx.get_widget(Entity::from(content_id)).get::<Bounds>().0;
-        let bounds = ctx.widget().get::<Bounds>().0;
+        let padding = ctx.widget().get::<Padding>("padding").0;
+        let scroll_offset = ctx.widget().get::<ScrollOffset>("scroll_offset").0;
+        let content_id = ctx.widget().get::<ContentId>("content_id").0;
+        let content_bounds = ctx.get_widget(Entity::from(content_id)).get::<Bounds>("bounds").0;
+        let bounds = ctx.widget().get::<Bounds>("bounds").0;
 
         let horizontal_p = bounds.width / content_bounds.width;
         let vertical_p = bounds.height / content_bounds.height;
@@ -18,37 +18,37 @@ impl State for ScrollIndicatorState {
         // calculate vertical scroll bar height and position.
         if let Some(mut vertical_scroll_bar) = ctx.child_by_id("vertical-scroll-bar") {
             if vertical_p < 1.0 {
-                vertical_scroll_bar.set(Visibility::from("Visible"));
-                let scroll_bar_margin_bottom = vertical_scroll_bar.get::<Margin>().0.bottom();
-                let vertical_min_height = vertical_scroll_bar.get::<Constraint>().0.min_height();
+                vertical_scroll_bar.set("visibility", Visibility::from("visible"));
+                let scroll_bar_margin_bottom = vertical_scroll_bar.get::<Margin>("margin").0.bottom();
+                let vertical_min_height = vertical_scroll_bar.get::<Constraint>("constraint").0.min_height();
                 let height =
                     ((bounds.height - padding.top - padding.bottom - scroll_bar_margin_bottom)
                         * vertical_p)
                         .max(vertical_min_height);
 
-                let scroll_bar_bounds = vertical_scroll_bar.get_mut::<Bounds>();
+                let scroll_bar_bounds = vertical_scroll_bar.get_mut::<Bounds>("bounds");
                 scroll_bar_bounds.0.height = height;
                 scroll_bar_bounds.0.y = -(scroll_offset.y as f64 * vertical_p);
             } else {
-                vertical_scroll_bar.set(Visibility::from("Collapsed"));
+                vertical_scroll_bar.set("visibility", Visibility::from("Collapsed"));
             }
         }
 
         // calculate horizontal scroll bar width and position.
         if let Some(mut horizontal_scroll_bar) = ctx.child_by_id("horizontal-scroll-bar") {
             if horizontal_p < 1.0 {
-                horizontal_scroll_bar.set(Visibility::from("Visible"));
-                let scroll_bar_margin_right = horizontal_scroll_bar.get::<Margin>().0.right();
-                let horizontal_min_width = horizontal_scroll_bar.get::<Constraint>().0.min_width();
+                horizontal_scroll_bar.set("visibility", Visibility::from("Visible"));
+                let scroll_bar_margin_right = horizontal_scroll_bar.get::<Margin>("margin").0.right();
+                let horizontal_min_width = horizontal_scroll_bar.get::<Constraint>("constraint").0.min_width();
                 let width =
                     ((bounds.width - padding.left - padding.right - scroll_bar_margin_right)
                         * horizontal_p)
                         .max(horizontal_min_width);
-                let scroll_bar_bounds = horizontal_scroll_bar.get_mut::<Bounds>();
+                let scroll_bar_bounds = horizontal_scroll_bar.get_mut::<Bounds>("bounds");
                 scroll_bar_bounds.0.width = width;
                 scroll_bar_bounds.0.x = -(scroll_offset.x as f64 * horizontal_p);
             } else {
-                horizontal_scroll_bar.set(Visibility::from("Collapsed"));
+                horizontal_scroll_bar.set("visibility", Visibility::from("Collapsed"));
             }
         }
     }

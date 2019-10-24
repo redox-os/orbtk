@@ -17,13 +17,13 @@ impl SwitchState {
 
 impl State for SwitchState {
     fn update(&self, context: &mut Context<'_>) {
-        if context.widget().get::<Selected>().0 == self.selected.get() {
+        if context.widget().get::<Selected>("selected").0 == self.selected.get() {
             return;
         }
 
-        context.widget().set(Selected(self.selected.get()));
+        context.widget().set("selected", Selected(self.selected.get()));
 
-        let element = context.widget().clone::<Selector>().0.element.unwrap();
+        let element = context.widget().clone::<Selector>("selector").0.element.unwrap();
 
         if let Some(parent) = context.parent_entity_by_element(element) {
             context.get_widget(parent).update_theme_by_state(false);
@@ -32,12 +32,12 @@ impl State for SwitchState {
         {
             let mut switch_toggle = context.child_by_id("SwitchSwitchToggle").unwrap();
 
-            switch_toggle.set(Selected(self.selected.get()));
+            switch_toggle.set("selected", Selected(self.selected.get()));
 
             if self.selected.get() {
-                switch_toggle.set(HorizontalAlignment::from("End"));
+                switch_toggle.set("horizontal_alignment", HorizontalAlignment::from("End"));
             } else {
-                switch_toggle.set(HorizontalAlignment::from("Start"));
+                switch_toggle.set("horizontal_alignment", HorizontalAlignment::from("Start"));
             }
 
             switch_toggle.update_theme_by_state(true);
@@ -61,7 +61,7 @@ widget!(
         border_radius: BorderRadius,
 
         /// Sets or shares the border thickness property.
-        border_thickness: BorderThickness,
+        border_width: BorderThickness,
 
         /// Sets or shares the border brush property.
         border_brush: BorderBrush,
@@ -92,7 +92,7 @@ impl Template for Switch {
             .border_brush(colors::BOMBAY_COLOR)
             .background(colors::SLATE_GRAY_COLOR)
             .border_radius(2.0)
-            .border_thickness(1.0)
+            .border_width(1.0)
             .padding(4.0)
             .child(
                 MouseBehavior::create()
@@ -107,21 +107,21 @@ impl Template for Switch {
                         Container::create()
                             .background(id)
                             .border_radius(id)
-                            .border_thickness(id)
+                            .border_width(id)
                             .border_brush(id)
                             .padding(id)
                             .child(
                                 Grid::create()
                                     .child(Container::create().size(24.0, 24.0).build(context))
                                     .border_radius(1.0)
-                                    .attach_by_source::<Selected>(id)
+                                    .attach_by_source::<Selected>("selected", id)
                                     .selector(
                                         SelectorValue::from("switch-toggle")
                                             .id("SwitchSwitchToggle"),
                                     )
                                     .vertical_alignment("Center")
                                     .horizontal_alignment("Start")
-                                    .attach_by_source::<Selected>(id)
+                                    .attach_by_source::<Selected>("selected", id)
                                     .build(context),
                             )
                             .build(context),

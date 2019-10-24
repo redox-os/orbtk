@@ -1,4 +1,4 @@
-pub use dces::prelude::{ComponentStore, Entity, EntityComponentManager};
+pub use dces::prelude::{StringComponentStore, Entity, EntityComponentManager};
 
 pub use crate::{
     application::*,

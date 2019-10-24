@@ -33,19 +33,19 @@ impl TextBoxState {
     }
 
     fn handle_key_event(&self, key_event: KeyEvent, ctx: &mut Context<'_>) {
-        if !ctx.widget().get::<Focused>().0 {
+        if !ctx.widget().get::<Focused>("focused").0 {
             return;
         }
 
-        let text = ctx.widget().clone::<Text>().0;
-        let mut current_selection = ctx.child_by_id("cursor").unwrap().get::<TextSelection>().0;
+        let text = ctx.widget().clone::<Text>("text").0;
+        let mut current_selection = ctx.child_by_id("cursor").unwrap().get::<TextSelection>("text_selection").0;
 
         match key_event.key {
             Key::Left => {
                 if let Some(selection) = ctx
                     .child_by_id("cursor")
                     .unwrap()
-                    .try_get_mut::<TextSelection>()
+                    .try_get_mut::<TextSelection>("text_selection")
                 {
                     selection.0.start_index =
                         (current_selection.start_index as i32 - 1).max(0) as usize;
@@ -55,7 +55,7 @@ impl TextBoxState {
                 if let Some(selection) = ctx
                     .child_by_id("cursor")
                     .unwrap()
-                    .try_get_mut::<TextSelection>()
+                    .try_get_mut::<TextSelection>("text_selection")
                 {
                     selection.0.start_index = (current_selection.start_index + 1).min(text.len());
                 }
@@ -64,7 +64,7 @@ impl TextBoxState {
                 if text.len() > 0 && current_selection.start_index > 0 {
                     for _ in 0..(current_selection.length + 1) {
                         ctx.widget()
-                            .get_mut::<Text>()
+                            .get_mut::<Text>("text")
                             .0
                             .remove(current_selection.start_index - 1);
                         current_selection.start_index =
@@ -74,7 +74,7 @@ impl TextBoxState {
                     if let Some(selection) = ctx
                         .child_by_id("cursor")
                         .unwrap()
-                        .try_get_mut::<TextSelection>()
+                        .try_get_mut::<TextSelection>("text_selection")
                     {
                         selection.0.start_index = current_selection.start_index;
                     }
@@ -84,7 +84,7 @@ impl TextBoxState {
                 if text.len() > 0 && text.len() < current_selection.start_index {
                     for _ in 0..(current_selection.length + 1) {
                         ctx.widget()
-                            .get_mut::<Text>()
+                            .get_mut::<Text>("text")
                             .0
                             .remove(current_selection.start_index);
                     }
@@ -96,14 +96,14 @@ impl TextBoxState {
                 }
 
                 ctx.widget()
-                    .get_mut::<Text>()
+                    .get_mut::<Text>("text")
                     .0
                     .insert_str(current_selection.start_index, key_event.text.as_str());
 
                 if let Some(selection) = ctx
                     .child_by_id("cursor")
                     .unwrap()
-                    .try_get_mut::<TextSelection>()
+                    .try_get_mut::<TextSelection>("text_selection")
                 {
                     selection.0.start_index = current_selection.start_index + key_event.text.len();
                 }
@@ -112,23 +112,23 @@ impl TextBoxState {
     }
 
     fn request_focus(&self, ctx: &mut Context<'_>) {
-        let focused_widget = ctx.window().get::<Global>().focused_widget;
+        let focused_widget = ctx.window().get::<Global>("global").focused_widget;
 
         if (focused_widget.is_some() && focused_widget.unwrap() == ctx.entity)
-            || !ctx.widget().get::<Enabled>().0
+            || !ctx.widget().get::<Enabled>("enabled").0
         {
             return;
         }
 
-        if let Some(old_focused_element) = ctx.window().get::<Global>().focused_widget {
+        if let Some(old_focused_element) = ctx.window().get::<Global>("global").focused_widget {
             let mut old_focused_element = ctx.get_widget(old_focused_element);
-            old_focused_element.set(Focused(false));
+            old_focused_element.set("focused", Focused(false));
             old_focused_element.update_theme_by_state(false);
         }
 
-        ctx.window().get_mut::<Global>().focused_widget = Some(ctx.entity);
+        ctx.window().get_mut::<Global>("global").focused_widget = Some(ctx.entity);
 
-        ctx.widget().set(Focused(true));
+        ctx.widget().set("focused", Focused(true));
         ctx.widget().update_theme_by_state(false);
         ctx.child_by_id("cursor")
             .unwrap()
@@ -160,7 +160,7 @@ impl State for TextBoxState {
         {
             let scroll_viewer = context.child_by_id("scroll_viewer");
 
-            if let Some(bounds) = scroll_viewer.unwrap().try_get_mut::<Bounds>() {
+            if let Some(bounds) = scroll_viewer.unwrap().try_get_mut::<Bounds>("bounds") {
                 scroll_viewer_width = bounds.width();
             }
         }
@@ -172,7 +172,7 @@ impl State for TextBoxState {
         {
             let mut cursor = context.child_by_id("cursor").unwrap();
 
-            if let Some(margin) = cursor.try_get_mut::<Margin>() {
+            if let Some(margin) = cursor.try_get_mut::<Margin>("margin") {
                 if margin.left() < 0.0 || margin.left() > scroll_viewer_width {
                     cursor_x_delta = self.cursor_x.get() - margin.left();
                     margin.set_left(self.cursor_x.get());
@@ -180,7 +180,7 @@ impl State for TextBoxState {
                 self.cursor_x.set(margin.left());
             }
 
-            if let Some(bounds) = cursor.try_get_mut::<Bounds>() {
+            if let Some(bounds) = cursor.try_get_mut::<Bounds>("bounds") {
                 bounds.set_x(self.cursor_x.get());
             }
         }
@@ -189,12 +189,15 @@ impl State for TextBoxState {
             {
                 let text_block = context.child_by_id("text_block");
 
-                if let Some(bounds) = text_block.unwrap().try_get_mut::<Bounds>() {
+                if let Some(bounds) = text_block.unwrap().try_get_mut::<Bounds>("bounds") {
                     bounds.set_x(bounds.x() + cursor_x_delta);
                 }
             }
 
-            if let Some(scroll_offset) = context.widget().try_get_mut::<ScrollOffset>() {
+            if let Some(scroll_offset) = context
+                .widget()
+                .try_get_mut::<ScrollOffset>("scroll_offset")
+            {
                 (scroll_offset.0).x += cursor_x_delta;
             }
         }
@@ -213,7 +216,7 @@ widget!(
         placeholder: WaterMark,
 
         /// Sets or shares the text selection property.
-        selection: TextSelection,
+        text_selection: TextSelection,
 
         /// Sets or shares the foreground property.
         foreground: Foreground,
@@ -231,7 +234,7 @@ widget!(
         border_radius: BorderRadius,
 
         /// Sets or shares the border thickness property.
-        border_thickness: BorderThickness,
+        border_width: BorderThickness,
 
         /// Sets or shares the border brush property.
         border_brush: BorderBrush,
@@ -264,12 +267,12 @@ impl Template for TextBox {
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto Regular")
-            .selection(TextSelectionValue::default())
+            .text_selection(TextSelectionValue::default())
             .scroll_offset(0.0)
             .padding(4.0)
             .background(colors::LYNCH_COLOR)
             .border_brush("transparent")
-            .border_thickness(0.0)
+            .border_width(0.0)
             .border_radius(2.0)
             .size(128.0, 32.0)
             .focused(false)
@@ -284,7 +287,7 @@ impl Template for TextBox {
                         Container::create()
                             .background(id)
                             .border_radius(id)
-                            .border_thickness(id)
+                            .border_width(id)
                             .border_brush(id)
                             .padding(id)
                             .child(
@@ -293,7 +296,7 @@ impl Template for TextBox {
                                         ScrollViewer::create()
                                             .selector(SelectorValue::default().id("scroll_viewer"))
                                             .scroll_offset(id)
-                                            .scroll_mode(("Custom", "Disabled"))
+                                            .scroll_viewer_mode(("Custom", "Disabled"))
                                             .delta(id)
                                             .child(
                                                 TextBlock::create()
@@ -307,7 +310,7 @@ impl Template for TextBox {
                                                     .text(id)
                                                     .font(id)
                                                     .font_size(id)
-                                                    .attach_by_source::<WaterMark>(id)
+                                                    .attach_by_source::<WaterMark>("water_mark", id)
                                                     .build(context),
                                             )
                                             .build(context),
@@ -322,7 +325,7 @@ impl Template for TextBox {
                                             .font_size(id)
                                             .scroll_offset(id)
                                             .focused(id)
-                                            .selection(id)
+                                            .text_selection(id)
                                             .build(context),
                                     )
                                     .build(context),

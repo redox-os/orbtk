@@ -28,17 +28,17 @@ impl Layout for FixedSizeLayout {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree, ComponentStore>,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if Visibility::get(entity, ecm.component_store()) == VisibilityValue::Collapsed {
+        if Visibility::get("visibility", entity, ecm.component_store()) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get(entity, ecm.component_store());
-        let vertical_alignment = VerticalAlignment::get(entity, ecm.component_store());
+        let horizontal_alignment = HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
+        let vertical_alignment = VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -49,18 +49,18 @@ impl Layout for FixedSizeLayout {
         let widget = WidgetContainer::new(entity, ecm, theme);
 
         let size = widget
-            .try_get::<Image>()
+            .try_get::<Image>("image")
             .map(|image| (image.width(), image.height()))
             .or_else(|| {
-                widget.try_get::<Text>().and_then(|text| {
-                    let font = widget.get::<Font>();
-                    let font_size = widget.get::<FontSize>();
+                widget.try_get::<Text>("text").and_then(|text| {
+                    let font = widget.get::<Font>("font");
+                    let font_size = widget.get::<FontSize>("font_size");
                     // render_context_2_d.set_font_size(font_size.0);
                     // render_context_2_d.set_font_family(&font.0[..]);
 
                     if text.0.is_empty() {
                         widget
-                            .try_get::<WaterMark>()
+                            .try_get::<WaterMark>("water_mark")
                             .filter(|water_mark| !water_mark.0.is_empty())
                             .map(|water_mark| {
                                 let text_metrics = render_context_2_d.measure(
@@ -91,16 +91,16 @@ impl Layout for FixedSizeLayout {
             })
             .or_else(|| {
                 widget
-                    .try_clone::<FontIcon>()
+                    .try_clone::<FontIcon>("icon")
                     .filter(|font_icon| !font_icon.0.is_empty())
                     .map(|font_icon| {
-                        let icon_size = widget.get::<IconSize>().0;
+                        let icon_size = widget.get::<IconSize>("icon_size").0;
                         // render_context_2_d.set_font_size(icon_size);
                         // render_context_2_d.set_font_family(&widget.get::<IconFont>().0[..]);
                         let text_metrics = render_context_2_d.measure(
                             &font_icon.0,
                             icon_size,
-                            &widget.get::<IconFont>().0[..],
+                            &widget.get::<IconFont>("icon_font").0[..],
                         );
                         (text_metrics.width, text_metrics.height)
                     })
@@ -109,7 +109,7 @@ impl Layout for FixedSizeLayout {
         if let Some(size) = size {
             if let Ok(constraint) = ecm
                 .component_store_mut()
-                .borrow_mut_component::<Constraint>(entity)
+                .borrow_mut_component::<Constraint>("constraint", entity)
             {
                 constraint.set_width(size.0 as f64);
                 constraint.set_height(size.1 as f64);
@@ -118,7 +118,7 @@ impl Layout for FixedSizeLayout {
 
         // -- todo will be removed after orbgl merge --
 
-        let constraint = Constraint::get(entity, ecm.component_store());
+        let constraint = Constraint::get("constraint", entity, ecm.component_store());
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());
@@ -160,7 +160,7 @@ impl Layout for FixedSizeLayout {
         render_context_2_d: &mut RenderContext2D,
         _parent_size: (f64, f64),
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree, ComponentStore>,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
@@ -170,7 +170,7 @@ impl Layout for FixedSizeLayout {
 
         if let Ok(bounds) = ecm
             .component_store_mut()
-            .borrow_mut_component::<Bounds>(entity)
+            .borrow_mut_component::<Bounds>("bounds", entity)
         {
             bounds.set_width(self.desired_size.borrow().width());
             bounds.set_height(self.desired_size.borrow().height());

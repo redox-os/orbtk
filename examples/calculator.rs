@@ -67,7 +67,7 @@ impl MainViewState {
             }
         }
 
-        context.widget().get_mut::<Text>().0 = String16::from(result.to_string());
+        context.widget().get_mut::<Text>("text").0 = String16::from(result.to_string());
         self.left_side.set(Some(result));
         self.right_side.set(None);
     }
@@ -82,7 +82,7 @@ impl State for MainViewState {
                     context
                         .child_by_id("input")
                         .unwrap()
-                        .get_mut::<Text>()
+                        .get_mut::<Text>("text")
                         .0
                         .push(digit);
                 }
@@ -92,11 +92,11 @@ impl State for MainViewState {
                         self.left_side.set(None);
                         self.operator.set(None);
                         self.right_side.set(None);
-                        context.widget().get_mut::<Text>().0.clear();
+                        context.widget().get_mut::<Text>("text").0.clear();
                         context
                             .child_by_id("input")
                             .unwrap()
-                            .get_mut::<Text>()
+                            .get_mut::<Text>("text")
                             .0
                             .clear()
                     }
@@ -111,7 +111,7 @@ impl State for MainViewState {
                         context
                             .child_by_id("input")
                             .unwrap()
-                            .get_mut::<Text>()
+                            .get_mut::<Text>("text")
                             .0
                             .clear()
                     }
@@ -131,7 +131,7 @@ impl State for MainViewState {
                         context
                             .child_by_id("input")
                             .unwrap()
-                            .get_mut::<Text>()
+                            .get_mut::<Text>("text")
                             .0
                             .push(operator);
                         self.input.borrow_mut().clear();
@@ -174,9 +174,9 @@ fn generate_digit_button(
             state.action(Action::Digit(sight));
             true
         })
-        .attach(GridColumn(column))
-        .attach(GridRow(row))
-        .attach(ColumnSpan(column_span))
+        .attach("grid_column", GridColumn(column))
+        .attach("grid_row", GridRow(row))
+        .attach("column_span", ColumnSpan(column_span))
         .build(context)
 }
 
@@ -198,9 +198,9 @@ fn generate_operation_button(
             state.action(Action::Operator(sight));
             true
         })
-        .attach(GridColumn(column))
-        .attach(ColumnSpan(column_span))
-        .attach(GridRow(row))
+        .attach("grid_column", GridColumn(column))
+        .attach("column_span", ColumnSpan(column_span))
+        .attach("grid_row", GridRow(row))
         .build(context)
 }
 
@@ -223,12 +223,12 @@ impl Template for MainView {
                         Container::create()
                             .padding(8.0)
                             .selector(Selector::from("container").class("header"))
-                            .attach(GridRow(0))
+                            .attach("grid_row", GridRow(0))
                             .child(
                                 Grid::create()
                                     .child(
                                         ScrollViewer::create()
-                                            .scroll_mode(("Custom", "Disabled"))
+                                            .scroll_viewer_mode(("Custom", "Disabled"))
                                             .child(
                                                 TextBlock::create()
                                                     .width(0.0)
@@ -258,7 +258,7 @@ impl Template for MainView {
                         Container::create()
                             .selector(Selector::from("container").class("content"))
                             .padding(8.0)
-                            .attach(GridRow(1))
+                            .attach("grid_row", GridRow(1))
                             .child(
                                 Grid::create()
                                     .columns(

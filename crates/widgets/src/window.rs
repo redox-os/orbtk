@@ -18,9 +18,6 @@ widget!(
         /// Sets or shares the resizeable property.
         resizeable: Resizeable,
 
-        /// Sets or shares the position property.
-        position: Pos,
-
         /// Sets or shares the theme property.
         theme: Theme
     }

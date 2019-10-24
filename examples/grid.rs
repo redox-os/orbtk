@@ -27,7 +27,7 @@ impl Template for MainView {
                     Grid::create()
                         .selector("lynch")
                         .margin((10.0, 0.0, 0.0, 4.0))
-                        .attach(GridColumn(0))
+                        .attach("grid_column", GridColumn(0))
                         .child(
                             TextBlock::create()
                                 .text("(0,0)")
@@ -43,7 +43,7 @@ impl Template for MainView {
                         .selector("bluebayoux")
                         .margin(10.0)
                         .constraint(Constraint::create().width(150.0).build())
-                        .attach(GridColumn(1))
+                        .attach("grid_column", GridColumn(1))
                         .child(
                             TextBlock::create()
                                 .text("(1,0)")
@@ -57,7 +57,7 @@ impl Template for MainView {
                 .child(
                     Grid::create()
                         .selector("linkwater")
-                        .attach(GridColumn(2))
+                        .attach("grid_column", GridColumn(2))
                         .child(
                             TextBlock::create()
                                 .text("(2,0)")
@@ -71,9 +71,9 @@ impl Template for MainView {
                 .child(
                     Grid::create()
                         .selector("goldendream")
-                        .attach(GridColumn(0))
-                        .attach(GridRow(1))
-                        .attach(ColumnSpan(3))
+                        .attach("grid_column", GridColumn(0))
+                        .attach("grid_row", GridRow(1))
+                        .attach("column_span", ColumnSpan(3))
                         .child(
                             TextBlock::create()
                                 .text("(0,1) - ColumnSpan 3")

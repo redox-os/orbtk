@@ -16,23 +16,23 @@ impl FocusBehaviorState {
 
 impl State for FocusBehaviorState {
     fn update(&self, context: &mut Context<'_>) {
-        if !self.request_focus.get() || !context.widget().get::<Enabled>().0 {
+        if !self.request_focus.get() || !context.widget().get::<Enabled>("enabled").0 {
             return;
         }
 
-        if let Some(old_focused_element) = context.window().get::<Global>().focused_widget {
+        if let Some(old_focused_element) = context.window().get::<Global>("global").focused_widget {
             let mut old_focused_element = context.get_widget(old_focused_element);
-            old_focused_element.set(Focused(false));
+            old_focused_element.set("focused", Focused(false));
             old_focused_element.update_theme_by_state(false);
         }
 
-        context.widget().set(Focused(true));
+        context.widget().set("focused", Focused(true));
 
-        let element = context.widget().clone::<Selector>().0.element.unwrap();
+        let element = context.widget().clone::<Selector>("selector").0.element.unwrap();
 
         if let Some(parent) = context.parent_entity_by_element(element) {
             context.get_widget(parent).update_theme_by_state(false);
-            context.window().get_mut::<Global>().focused_widget = Some(parent);
+            context.window().get_mut::<Global>("global").focused_widget = Some(parent);
         }
 
         self.request_focus.set(false);

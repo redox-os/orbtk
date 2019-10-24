@@ -23,8 +23,8 @@ pub struct RenderSystem {
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
 }
 
-impl System<Tree, ComponentStore> for RenderSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, ComponentStore>) {
+impl System<Tree, StringComponentStore> for RenderSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         if !self.update.get() || ecm.entity_store().parent.is_empty() || !self.running.get() {
             return;
         }
@@ -40,7 +40,7 @@ impl System<Tree, ComponentStore> for RenderSystem {
 
         let theme = ecm
             .component_store()
-            .borrow_component::<Theme>(root)
+            .borrow_component::<Theme>("theme", root)
             .unwrap()
             .0
             .clone();

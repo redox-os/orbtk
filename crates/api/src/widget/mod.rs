@@ -20,7 +20,7 @@ mod widget_container;
 
 /// Adds the given `pseudo_class` to the css selector of the given `widget`.
 pub fn add_selector_to_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
-    if let Some(selector) = widget.try_get_mut::<Selector>() {
+    if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
         selector.0.pseudo_classes.insert(String::from(pseudo_class));
         selector.0.set_dirty(true);
     }
@@ -28,7 +28,7 @@ pub fn add_selector_to_widget(pseudo_class: &str, widget: &mut WidgetContainer<'
 
 /// Removes the given `pseudo_class` from the css selector of the given `widget`.
 pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
-    if let Some(selector) = widget.try_get_mut::<Selector>() {
+    if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
         selector.0.pseudo_classes.remove(pseudo_class);
         selector.0.set_dirty(true);
     }

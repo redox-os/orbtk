@@ -19,8 +19,8 @@ pub struct PostLayoutStateSystem {
     pub running: Rc<Cell<bool>>,
 }
 
-impl System<Tree, ComponentStore> for PostLayoutStateSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, ComponentStore>) {
+impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         if !self.update.get() || !self.running.get() {
             return;
         }
@@ -30,7 +30,7 @@ impl System<Tree, ComponentStore> for PostLayoutStateSystem {
         let window_shell = &mut self.shell.borrow_mut();
         let theme = ecm
             .component_store()
-            .borrow_component::<Theme>(root)
+            .borrow_component::<Theme>("theme", root)
             .unwrap()
             .0
             .clone();

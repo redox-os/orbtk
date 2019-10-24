@@ -8,13 +8,13 @@ macro_rules! property {
 
         impl $property {
             /// Returns the value of a property.
-            pub fn get(entity: Entity, store: &ComponentStore) -> $type {
-                get_property::<$property>(entity, store).0
+            pub fn get(key: &str, entity: Entity, store: &StringComponentStore) -> $type {
+                get_property::<$property>(key, entity, store).0
             }
 
             /// Returns the value of a property if it exists otherwise the given value.
-            pub fn get_or_value(entity: Entity, store: &ComponentStore, value: $property) -> $type {
-                get_property_or_value::<$property>(entity, store, value).0
+            pub fn get_or_value(key: &str, entity: Entity, store: &StringComponentStore, value: $property) -> $type {
+                get_property_or_value::<$property>(key, entity, store, value).0
             }
         }
 
@@ -73,10 +73,11 @@ macro_rules! widget {
         $(#[$widget_doc])*
         #[derive(Default)]
         pub struct $widget {
-            attached_properties: HashMap<TypeId, ComponentBox>,
-            shared_attached_properties: HashMap<TypeId, SharedComponentBox>,
+            attached_properties: HashMap<String, ComponentBox>,
+            shared_attached_properties: HashMap<String, SharedComponentBox>,
             event_handlers: Vec<Rc<dyn EventHandler>>,
             bounds: Bounds,
+            position: Pos,
             min_width: Option<f64>,
             min_height: Option<f64>,
             max_width: Option<f64>,
@@ -104,57 +105,62 @@ macro_rules! widget {
 
         impl $widget {
             /// Sets or shares an attached property.
-            pub fn attach<P: Component + Debug>(mut self, property: impl IntoPropertySource<P>) -> Self {
+            pub fn attach<P: Component + Debug>(mut self, key: &str, property: impl IntoPropertySource<P>) -> Self {
                 match property.into_source() {
                     PropertySource::Value(value) => {
-                        self.attached_properties.insert(TypeId::of::<P>(), ComponentBox::new(value));
+                        self.attached_properties.insert(key.to_string(), ComponentBox::new(value));
                     },
                     PropertySource::Source(source) => {
-                        self.shared_attached_properties.insert(TypeId::of::<P>(), SharedComponentBox::new(TypeId::of::<P>(), source));
+                        self.shared_attached_properties.insert(key.to_string(), SharedComponentBox::new(TypeId::of::<P>(), source));
                     }
                 }
                 self
             }
 
             /// Shares an attached property.
-            pub fn attach_by_source<P: Component>(mut self, source: Entity) -> Self {
-                self.shared_attached_properties.insert(TypeId::of::<P>(), SharedComponentBox::new(TypeId::of::<P>(), source));
+            pub fn attach_by_source<P: Component>(mut self, key: &str, source: Entity) -> Self {
+                self.shared_attached_properties.insert(key.to_string(), SharedComponentBox::new(TypeId::of::<P>(), source));
                 self
             }
 
-             /// Sets or shares the constraint property.
+            /// Sets or shares the constraint property.
+            pub fn position(self, position: impl IntoPropertySource<Pos>) -> Self {
+                self.attach("position", position)
+            }
+
+            /// Sets or shares the constraint property.
             pub fn constraint(self, constraint: impl IntoPropertySource<Constraint>) -> Self {
-                self.attach(constraint)
+                self.attach("constraint", constraint)
             }
 
             /// Sets or shares the vertical alignment property.
             pub fn vertical_alignment(self, vertical_alignment: impl IntoPropertySource<VerticalAlignment>) -> Self {
-                self.attach(vertical_alignment)
+                self.attach("vertical_alignment", vertical_alignment)
             }
 
             /// Sets or shares the horizontal alignment property.
             pub fn horizontal_alignment(self, horizontal_alignment: impl IntoPropertySource<HorizontalAlignment>) -> Self {
-                self.attach(horizontal_alignment)
+                self.attach("horizontal_alignment", horizontal_alignment)
             }
 
             /// Sets or shares the visibility property.
             pub fn visibility(self, visibility: impl IntoPropertySource<Visibility>) -> Self {
-                self.attach(visibility)
+                self.attach("visibility", visibility)
             }
 
             /// Sets or shares the margin property.
             pub fn margin(self, margin: impl IntoPropertySource<Margin>) -> Self {
-                self.attach(margin)
+                self.attach("margin", margin)
             }
 
             /// Sets or shares the enabled property.
             pub fn enabled(self, enabled: impl IntoPropertySource<Enabled>) -> Self {
-                self.attach(enabled)
+                self.attach("enabled", enabled)
             }
 
             /// Sets or shares the clip property.
             pub fn clip(self, clip: impl IntoPropertySource<Clip>) -> Self {
-                self.attach(clip)
+                self.attach("clip", clip)
             }
 
             /// Inserts a new width.
@@ -339,13 +345,14 @@ macro_rules! widget {
                  }
 
                 // register default set of properties
-                context.register_property(entity, this.bounds);
-                context.register_property(entity, this.vertical_alignment);
-                context.register_property(entity, this.horizontal_alignment);
-                context.register_property(entity, this.visibility);
-                context.register_property(entity, this.margin);
-                context.register_property(entity, this.enabled);
-                context.register_property(entity, this.clip);
+                context.register_property("bounds", entity, this.bounds);
+                context.register_property("position", entity, this.position);
+                context.register_property("vertical_alignment", entity, this.vertical_alignment);
+                context.register_property("horizontal_alignment", entity, this.horizontal_alignment);
+                context.register_property("visibility", entity, this.visibility);
+                context.register_property("margin", entity, this.margin);
+                context.register_property("enabled", entity, this.enabled);
+                context.register_property("clip", entity, this.clip);
 
                 let mut constraint = Constraint::default();
 
@@ -367,18 +374,17 @@ macro_rules! widget {
                 if let Some(max_height) = this.max_height {
                     constraint.set_max_height(max_height);
                 }
-                context.register_property(entity, constraint);
+                context.register_property("constraint", entity, constraint);
 
-                // register helpers
-                context.register_property(entity, Point::default());
+                
 
                 // register attached properties
-                for (_, property) in this.attached_properties {
-                    context.register_property_box(entity, property);
+                for (key, property) in this.attached_properties {
+                    context.register_property_box(key.as_str(), entity, property);
                 }
 
-                for (_, property) in this.shared_attached_properties {
-                    context.register_property_shared_box(entity, property);
+                for (key, property) in this.shared_attached_properties {
+                    context.register_property_shared_box(key.as_str(), entity, property);
                 }
 
                 // register properties
@@ -387,15 +393,18 @@ macro_rules! widget {
                         if let Some($property) = this.$property {
                             match $property {
                                 PropertySource::Value(value) => {
-                                    context.register_property(entity, value);
+                                    context.register_property(stringify!($property), entity, value);
                                 },
                                 PropertySource::Source(source) => {
-                                    context.register_shared_property::<$property_type>(entity, source);
+                                    if stringify!($property) == "icon" {
+                                        println!("Icon:");
+                                    }
+                                    context.register_shared_property::<$property_type>(stringify!($property), entity, source);
                                 }
                             }
                         }
                         else {
-                            context.register_property(entity, $property_type::default());
+                            context.register_property(stringify!($property), entity, $property_type::default());
                         }
                     )*
                 )*
@@ -407,7 +416,7 @@ macro_rules! widget {
 
                 // register name
                 if let Some(name) = this.name {
-                    context.register_property(entity, name);
+                    context.register_property("name", entity, name);
                 }
 
                 for child in this.children {

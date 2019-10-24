@@ -13,21 +13,21 @@ impl RenderObject for TextRenderObject {
     fn render_self(&self, context: &mut Context<'_>, global_position: &Point) {
         let (bounds, text, foreground, font, font_size) = {
             let widget = context.widget();
-            let text = widget.clone::<Text>();
+            let text = widget.clone::<Text>("text");
 
             let txt = {
                 if !text.0.is_empty() {
                     text.0.clone()
                 } else {
-                    widget.clone_or_default::<WaterMark>().0
+                    widget.clone_or_default::<WaterMark>("water_mark").0
                 }
             };
             (
-                widget.get::<Bounds>().0,
+                widget.get::<Bounds>("bounds").0,
                 txt.to_string(),
-                widget.get::<Foreground>().0.clone(),
-                widget.get::<Font>().0.clone(),
-                widget.get::<FontSize>().0,
+                widget.get::<Foreground>("foreground").0.clone(),
+                widget.get::<Font>("font").0.clone(),
+                widget.get::<FontSize>("font_size").0,
             )
         };
 

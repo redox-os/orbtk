@@ -184,7 +184,7 @@ impl State for MainViewState {
     fn update(&self, context: &mut Context<'_>) {
         if let Some(cube) = context
             .widget()
-            .get_mut::<RenderPipeline>()
+            .get_mut::<RenderPipeline>("render_pipeline")
             .0
             .as_any()
             .downcast_ref::<CubePipeline>()
@@ -217,18 +217,18 @@ impl Template for MainView {
                     )
                     .child(
                         TextBlock::create()
-                            .attach(GridRow(0))
+                            .attach("grid_row", GridRow(0))
                             .text("Canvas (render with euc crate)")
                             .selector(SelectorValue::new().with("text-block").class("h1"))
                             .margin(4.0)
                             .build(ctx),
                     )
-                    .child(Canvas::create().attach(GridRow(1)).pipeline(id).build(ctx))
+                    .child(Canvas::create().attach("grid_row", GridRow(1)).pipeline(id).build(ctx))
                     .child(
                         Button::create()
                             .text("spin cube")
                             .vertical_alignment("End")
-                            .attach(GridRow(1))
+                            .attach("grid_row", GridRow(1))
                             .margin(4.0)
                             .on_click(move |_| {
                                 state.spin();
@@ -238,7 +238,7 @@ impl Template for MainView {
                     )
                     .child(
                         TextBlock::create()
-                            .attach(GridRow(2))
+                            .attach("grid_row", GridRow(2))
                             .text("Canvas (render with OrbTk)")
                             .selector(SelectorValue::new().with("text-block").class("h1"))
                             .margin(4.0)
@@ -246,7 +246,7 @@ impl Template for MainView {
                     )
                     .child(
                         Canvas::create()
-                            .attach(GridRow(3))
+                            .attach("grid_row", GridRow(3))
                             .pipeline(RenderPipeline(Box::new(Graphic2DPipeline::default())))
                             .build(ctx),
                     )

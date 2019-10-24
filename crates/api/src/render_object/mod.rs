@@ -25,7 +25,7 @@ pub trait RenderObject: Any {
         &self,
         shell: &mut WindowShell<WindowAdapter>,
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree, ComponentStore>,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         render_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
@@ -42,7 +42,7 @@ pub trait RenderObject: Any {
             }
         }
 
-        if let Ok(visibility) = ecm.component_store().borrow_component::<Visibility>(entity) {
+        if let Ok(visibility) = ecm.component_store().borrow_component::<Visibility>("visibility", entity) {
             if visibility.0 != VisibilityValue::Visible {
                 return;
             }
@@ -55,11 +55,11 @@ pub trait RenderObject: Any {
         // Could be unwrap because every widget has the clip property
         let clip = ecm
             .component_store()
-            .borrow_component::<Clip>(entity)
+            .borrow_component::<Clip>("clip", entity)
             .unwrap()
             .0;
         if clip {
-            if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(entity) {
+            if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>("bounds", entity) {
                 shell.render_context_2_d().save();
                 shell.render_context_2_d().rect(
                     global_position.x + bounds.x(),
@@ -88,7 +88,7 @@ pub trait RenderObject: Any {
 
         let mut global_pos = (0.0, 0.0);
 
-        if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(entity) {
+        if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>("bounds", entity) {
             global_pos = (
                 global_position.x + bounds.x(),
                 global_position.y + bounds.y(),
@@ -98,10 +98,10 @@ pub trait RenderObject: Any {
 
         if let Ok(g_pos) = ecm
             .component_store_mut()
-            .borrow_mut_component::<Point>(entity)
+            .borrow_mut_component::<Pos>("position", entity)
         {
-            g_pos.x = global_pos.0;
-            g_pos.y = global_pos.1;
+            g_pos.0.x = global_pos.0;
+            g_pos.0.y = global_pos.1;
         }
 
         self.render_children(
@@ -125,7 +125,7 @@ pub trait RenderObject: Any {
 
         // render debug border for each widget
         if debug {
-            if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(entity) {
+            if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>("bounds", entity) {
                 let selector = Selector::from("debug-border");
                 let brush = theme.brush("border-color", &selector.0).unwrap();
                 shell.render_context_2_d().begin_path();
@@ -149,7 +149,7 @@ pub trait RenderObject: Any {
         &self,
         shell: &mut WindowShell<WindowAdapter>,
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree, ComponentStore>,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         render_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,

@@ -24,17 +24,17 @@ impl MouseBehaviorState {
 
 impl State for MouseBehaviorState {
     fn update(&self, context: &mut Context<'_>) {
-        if !context.widget().get::<Enabled>().0 {
+        if !context.widget().get::<Enabled>("enabled").0 {
             return;
         }
 
         if let Some(action) = self.action.get() {
             match action {
                 Action::Press(_) => {
-                    context.widget().set(Pressed(true));
+                    context.widget().set("pressed", Pressed(true));
                 }
                 Action::Release(p) => {
-                    context.widget().set(Pressed(false));
+                    context.widget().set("pressed", Pressed(false));
 
                     if check_mouse_condition(p, &context.widget()) {
                         let parent = context.entity_of_parent().unwrap();
@@ -42,12 +42,12 @@ impl State for MouseBehaviorState {
                     }
                 }
                 Action::Scroll(p) => {
-                    context.widget().set(p);
+                    context.widget().set("position", Pos::from(p));
                     self.has_delta.set(true);
                 }
             };
 
-            let element = context.widget().clone::<Selector>().0.element.unwrap();
+            let element = context.widget().clone::<Selector>("selector").0.element.unwrap();
 
             if let Some(parent) = context.parent_entity_by_element(element) {
                 context.get_widget(parent).update_theme_by_state(false);
@@ -59,7 +59,7 @@ impl State for MouseBehaviorState {
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
         if self.has_delta.get() {
-            context.widget().set(Delta(Point::new(0.0, 0.0)));
+            context.widget().set("delta", Delta(Point::new(0.0, 0.0)));
             self.has_delta.set(false);
         }
     }

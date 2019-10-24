@@ -16,7 +16,7 @@ impl Into<Rc<dyn State>> for ItemsWidgetState {
 
 impl State for ItemsWidgetState {
     fn update(&self, context: &mut Context<'_>) {
-        let count = context.widget().clone_or_default::<Count>().0;
+        let count = context.widget().clone_or_default::<Count>("count").0;
 
         if count != self.count.get() {
             if let Some(builder) = &*self.builder.borrow() {
@@ -53,7 +53,7 @@ widget!(
         border_radius: BorderRadius,
 
         /// Sets or shares the border thickness property.
-        border_thickness: BorderThickness,
+        border_width: BorderThickness,
 
         /// Sets or shares the border brush property.
         border_brush: BorderBrush,
@@ -64,8 +64,8 @@ widget!(
         /// Sets or shares the orientation property.
         orientation: Orientation,
 
-        /// Sets or shared the items_count.
-        items_count: Count,
+        /// Sets or shared the count.
+        count: Count,
 
         /// Sets or shares the css selector property.
         selector: Selector
@@ -88,7 +88,7 @@ impl Template for ItemsWidget {
             .selector("items-widget")
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
-            .border_thickness(1.0)
+            .border_width(1.0)
             .border_brush(colors::BOMBAY_COLOR)
             .padding(2.0)
             .orientation("Vertical")
@@ -96,7 +96,7 @@ impl Template for ItemsWidget {
                 Container::create()
                     .background(id)
                     .border_radius(id)
-                    .border_thickness(id)
+                    .border_width(id)
                     .border_brush(id)
                     .padding(id)
                     .child(

@@ -8,7 +8,7 @@ use super::{MessageBox, WidgetContainer};
 
 /// The `Context` is provides access for the states to objects they could work with.
 pub struct Context<'a> {
-    ecm: &'a mut EntityComponentManager<Tree, ComponentStore>,
+    ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     window_shell: &'a mut WindowShell<WindowAdapter>,
     pub entity: Entity,
     pub theme: &'a ThemeValue,
@@ -31,7 +31,7 @@ impl<'a> Context<'a> {
     /// Creates a new container.
     pub fn new(
         entity: Entity,
-        ecm: &'a mut EntityComponentManager<Tree, ComponentStore>,
+        ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
         window_shell: &'a mut WindowShell<WindowAdapter>,
         theme: &'a ThemeValue,
         render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
@@ -119,7 +119,7 @@ impl<'a> Context<'a> {
             if let Ok(selector) = self
                 .ecm
                 .component_store()
-                .borrow_component::<Selector>(current_node)
+                .borrow_component::<Selector>("selector", current_node)
             {
                 if let Some(child_id) = &selector.0.id {
                     if child_id.eq(&id) {
@@ -162,11 +162,11 @@ impl<'a> Context<'a> {
                 if let Ok(selector) = self
                     .ecm
                     .component_store()
-                    .borrow_component::<Selector>(parent)
+                    .borrow_component::<Selector>("selector", parent)
                 {
                     if let Some(parent_element) = &selector.0.element {
                         if parent_element.eq(&element) {
-                            if self.ecm.component_store().is_origin::<Selector>(parent) {
+                            if self.ecm.component_store().is_origin::<Selector>("selector", parent) {
                                 return Some(parent);
                             }
                         }
@@ -193,7 +193,7 @@ impl<'a> Context<'a> {
                 if let Ok(selector) = self
                     .ecm
                     .component_store()
-                    .borrow_component::<Selector>(parent)
+                    .borrow_component::<Selector>("selector", parent)
                 {
                     if let Some(parent_id) = &selector.0.id {
                         if parent_id.eq(&id) {
@@ -263,7 +263,7 @@ impl<'a> Context<'a> {
         if let Ok(global) = self
             .ecm
             .component_store()
-            .borrow_component::<Global>(0.into())
+            .borrow_component::<Global>("global", 0.into())
         {
             if let Some(en) = global.id_map.get(target_widget) {
                 entity = Some(*en);

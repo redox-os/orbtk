@@ -2,7 +2,7 @@
 
 use std::fmt::Debug;
 
-use dces::prelude::{Component, ComponentStore, Entity};
+use dces::prelude::{Component, StringComponentStore, Entity};
 
 pub use self::layout::*;
 pub use self::state::*;
@@ -15,22 +15,22 @@ mod styling;
 mod widget;
 
 /// Used to the a property of a widget.
-pub fn get_property<T>(entity: Entity, store: &ComponentStore) -> T
+pub fn get_property<T>(key: &str, entity: Entity, store: &StringComponentStore) -> T
 where
     T: Clone + Component,
 {
     store
-        .borrow_component::<T>(entity)
+        .borrow_component::<T>(key, entity)
         .map(|r| r.clone())
         .unwrap()
 }
 
 /// Returns the value of a property of a widget if it exists otherwise the given value.
-pub fn get_property_or_value<T>(entity: Entity, store: &ComponentStore, value: T) -> T
+pub fn get_property_or_value<T>(key: &str, entity: Entity, store: &StringComponentStore, value: T) -> T
 where
     T: Clone + Component,
 {
-    if let Ok(property) = store.borrow_component::<T>(entity).map(|r| r.clone()) {
+    if let Ok(property) = store.borrow_component::<T>(key, entity).map(|r| r.clone()) {
         return property;
     }
     value

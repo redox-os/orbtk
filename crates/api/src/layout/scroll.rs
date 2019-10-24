@@ -31,18 +31,18 @@ impl Layout for ScrollLayout {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree, ComponentStore>,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
 
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if Visibility::get(entity, ecm.component_store()) == VisibilityValue::Collapsed {
+        if Visibility::get("visibility", entity, ecm.component_store()) == VisibilityValue::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get(entity, ecm.component_store());
-        let vertical_alignment = VerticalAlignment::get(entity, ecm.component_store());
+        let horizontal_alignment = HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
+        let vertical_alignment = VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -50,7 +50,7 @@ impl Layout for ScrollLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let constraint = Constraint::get(entity, ecm.component_store());
+        let constraint = Constraint::get("constraint", entity, ecm.component_store());
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());
@@ -85,7 +85,7 @@ impl Layout for ScrollLayout {
             }
         }
 
-        let off = ScrollOffset::get(entity, ecm.component_store());
+        let off = ScrollOffset::get("scroll_offset", entity, ecm.component_store());
 
         if self.old_offset.get().0 != off.x || self.old_offset.get().1 != off.y {
             self.old_offset.set((off.x, off.y));
@@ -100,7 +100,7 @@ impl Layout for ScrollLayout {
         render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree, ComponentStore>,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
 
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
@@ -109,11 +109,11 @@ impl Layout for ScrollLayout {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get(entity, ecm.component_store());
-        let vertical_alignment = VerticalAlignment::get(entity, ecm.component_store());
-        let margin = Margin::get(entity, ecm.component_store());
-        // let _padding = Padding::get(entity, ecm.component_store());
-        let constraint = Constraint::get(entity, ecm.component_store());
+        let horizontal_alignment = HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
+        let vertical_alignment = VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
+        let margin = Margin::get("margin", entity, ecm.component_store());
+        // let _padding = Padding::get("padding", entity, ecm.component_store());
+        let constraint = Constraint::get("constraint", entity, ecm.component_store());
 
         let size = constraint.perform((
             horizontal_alignment.align_measure(
@@ -132,13 +132,13 @@ impl Layout for ScrollLayout {
 
         if let Ok(bounds) = ecm
             .component_store_mut()
-            .borrow_mut_component::<Bounds>(entity)
+            .borrow_mut_component::<Bounds>("bounds", entity)
         {
             bounds.set_width(size.0);
             bounds.set_height(size.1);
         }
 
-        let scroll_viewer_mode = ScrollViewerMode::get(entity, ecm.component_store());
+        let scroll_viewer_mode = ScrollViewerMode::get("scroll_viewer_mode", entity, ecm.component_store());
 
         let available_size = {
             let width = if scroll_viewer_mode.horizontal == ScrollMode::Custom
@@ -160,8 +160,8 @@ impl Layout for ScrollLayout {
             (width, height)
         };
 
-        let off = ScrollOffset::get(entity, ecm.component_store());
-        let delta = Delta::get(entity, ecm.component_store());
+        let off = ScrollOffset::get("scroll_offset", entity, ecm.component_store());
+        let delta = Delta::get("delta", entity, ecm.component_store());
         let mut offset = (off.x, off.y);
 
         let old_child_size = self.old_child_size.get();
@@ -174,10 +174,10 @@ impl Layout for ScrollLayout {
 
                 // let child_margin = get_margin(*child, store);
                 let mut child_size = old_child_size;
-                let child_vertical_alignment = VerticalAlignment::get(child, ecm.component_store());
+                let child_vertical_alignment = VerticalAlignment::get("vertical_alignment", child, ecm.component_store());
                 let child_horizontal_alignment =
-                    HorizontalAlignment::get(child, ecm.component_store());
-                let child_margin = Margin::get(child, ecm.component_store());
+                    HorizontalAlignment::get("horizontal_alignment", child, ecm.component_store());
+                let child_margin = Margin::get("margin", child, ecm.component_store());
 
                 if let Some(child_layout) = layouts.borrow().get(&child) {
                     child_size = child_layout.arrange(
@@ -226,7 +226,7 @@ impl Layout for ScrollLayout {
 
                 if let Ok(child_bounds) = ecm
                     .component_store_mut()
-                    .borrow_mut_component::<Bounds>(child)
+                    .borrow_mut_component::<Bounds>("bounds", child)
                 {
                     // todo: add check
                     if scroll_viewer_mode.horizontal == ScrollMode::Custom
@@ -258,7 +258,7 @@ impl Layout for ScrollLayout {
 
                 if let Ok(off) = ecm
                     .component_store_mut()
-                    .borrow_mut_component::<ScrollOffset>(entity)
+                    .borrow_mut_component::<ScrollOffset>("scroll_offset", entity)
                 {
                     (off.0).x = offset.0;
                     (off.0).y = offset.1;

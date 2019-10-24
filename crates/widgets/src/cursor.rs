@@ -8,7 +8,7 @@ impl State for CursorState {
     fn update_post_layout(&self, context: &mut Context<'_>) {
         let mut widget = context.widget();
 
-        let selection_length = widget.get::<TextSelection>().0.length;
+        let selection_length = widget.get::<TextSelection>("text_selection").0.length;
 
         if selection_length > 0 {
             add_selector_to_widget("expanded", &mut widget);
@@ -16,10 +16,10 @@ impl State for CursorState {
             remove_selector_from_widget("expanded", &mut widget)
         }
 
-        if widget.get::<Focused>().0 {
-            widget.set(Visibility::from("visible"));
+        if widget.get::<Focused>("focused").0 {
+            widget.set("visibility", Visibility::from("visible"));
         } else {
-            widget.set(Visibility::from("collapsed"));
+            widget.set("visibility", Visibility::from("collapsed"));
         } 
     }
 }
@@ -33,7 +33,7 @@ widget!(
         text: Text,
 
         /// Sets or shares the text selection property.
-        selection: TextSelection,
+        text_selection: TextSelection,
 
         /// Sets or shares the background property.
         background: Background,

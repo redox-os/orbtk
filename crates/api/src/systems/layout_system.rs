@@ -16,8 +16,8 @@ pub struct LayoutSystem {
     pub running: Rc<Cell<bool>>,
 }
 
-impl System<Tree, ComponentStore> for LayoutSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, ComponentStore>) {
+impl System<Tree, StringComponentStore> for LayoutSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         if !self.update.get() || !self.running.get() {
             return;
         }
@@ -29,14 +29,14 @@ impl System<Tree, ComponentStore> for LayoutSystem {
         let mut window_size = (0.0, 0.0);
         let root = ecm.entity_store().root;
 
-        if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(root) {
+        if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>("bounds", root) {
             window_size.0 = bounds.width();
             window_size.1 = bounds.height();
         };
 
         let theme = ecm
             .component_store()
-            .borrow_component::<Theme>(root)
+            .borrow_component::<Theme>("theme", root)
             .unwrap()
             .0
             .clone();

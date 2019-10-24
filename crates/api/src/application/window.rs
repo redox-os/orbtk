@@ -18,7 +18,7 @@ pub struct WindowAdapter {
 }
 
 pub struct WorldWrapper {
-    pub world: World<Tree, ComponentStore>,
+    pub world: World<Tree, StringComponentStore>,
 }
 
 impl shell::Updater for WorldWrapper {

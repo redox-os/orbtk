@@ -10,7 +10,7 @@ widget!(
         border_radius: BorderRadius,
 
         /// Sets or shares the border thickness property.
-        border_thickness: BorderThickness,
+        border_width: BorderThickness,
 
         /// Sets or shares the border brush property.
         border_brush: BorderBrush,
@@ -29,7 +29,7 @@ impl Template for Container {
             .padding(0.0)
             .background("transparent")
             .border_radius(0.0)
-            .border_thickness(0.0)
+            .border_width(0.0)
             .border_brush("transparent")
     }
 

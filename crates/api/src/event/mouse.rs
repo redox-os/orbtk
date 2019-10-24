@@ -4,13 +4,13 @@ use crate::{prelude::*, shell::MouseButton, utils::*};
 
 /// Checks if the given point is inside of a widget.
 pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>) -> bool {
-    let bounds = widget.get::<Bounds>();
-    let position = widget.get::<Point>();
+    let bounds = widget.get::<Bounds>("bounds");
+    let position = widget.get::<Pos>("position");
 
     let mut rect = Bounds::from(Rect::new(0.0, 0.0, bounds.width(), bounds.height()));
 
-    rect.set_x(position.x);
-    rect.set_y(position.y);
+    rect.set_x(position.0.x);
+    rect.set_y(position.0.y);
 
     return rect.contains((mouse_position.x, mouse_position.y));
 }

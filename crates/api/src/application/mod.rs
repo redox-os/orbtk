@@ -33,7 +33,7 @@ impl Application {
     }
 
     pub fn window<F: Fn(&mut BuildContext) -> Entity + 'static>(mut self, create_fn: F) -> Self {
-        let mut world = World::from_stores(Tree::default(), ComponentStore::default());
+        let mut world = World::from_stores(Tree::default(), StringComponentStore::default());
 
         let render_objects = Rc::new(RefCell::new(BTreeMap::new()));
         let layouts = Rc::new(RefCell::new(BTreeMap::new()));
@@ -59,51 +59,44 @@ impl Application {
             tree.set_root(window);
         }
 
-        if let Err(err) = world
-            .entity_component_manager()
-            .component_store()
-            .borrow_component::<Title>(window)
-        {
-            println!("{:?}", err);
-        }
-
         let title = world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<Title>(window)
+            .borrow_component::<Title>("title", window)
             .unwrap()
             .clone();
         let resizeable = world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<Resizeable>(window)
+            .borrow_component::<Resizeable>("resizeable", window)
             .unwrap()
             .clone();
         let position = world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<Pos>(window)
+            .borrow_component::<Pos>("position", window)
             .unwrap()
             .clone();
         let constraint = world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<Constraint>(window)
+            .borrow_component::<Constraint>("constraint", window)
             .unwrap()
             .clone();
 
         world
             .entity_component_manager()
             .component_store_mut()
-            .register_component(window, Global::default());
+            .register_component("global", window, Global::default());
         world
             .entity_component_manager()
             .component_store_mut()
-            .register_component(window, Global::default());
+            .register_component("global", window, Global::default());
         world
             .entity_component_manager()
             .component_store_mut()
             .register_component(
+                "bounds",
                 window,
                 Bounds::from((0.0, 0.0, constraint.width(), constraint.height())),
             );

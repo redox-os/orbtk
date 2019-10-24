@@ -17,13 +17,13 @@ impl ScrollViewerState {
 impl State for ScrollViewerState {
     fn update(&self, context: &mut Context<'_>) {
         if let Some(delta) = self.delta.get() {
-            context.widget().set(Delta(delta));
+            context.widget().set("delta", Delta(delta));
         }
     }
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
         if let Some(_) = self.delta.get() {
-            context.widget().set(Delta(Point::new(0.0, 0.0)));
+            context.widget().set("delta", Delta(Point::new(0.0, 0.0)));
             self.delta.set(None);
         }
     }
@@ -38,7 +38,7 @@ widget!(
         scroll_offset: ScrollOffset,
 
         /// Sets or shares the scroll mode property.
-        scroll_mode: ScrollViewerMode,
+        scroll_viewer_mode: ScrollViewerMode,
 
         /// Sets or shares the css selector property.
         selector: Selector,
@@ -57,7 +57,7 @@ impl Template for ScrollViewer {
             .scroll_offset(0.0)
             .delta(0.0)
             .clip(true)
-            .scroll_mode(ScrollViewerModeValue::default())
+            .scroll_viewer_mode(ScrollViewerModeValue::default())
             .on_scroll(move |p| {
                 state.scroll(p);
                 false
