@@ -34,7 +34,7 @@ impl Layout for TextSelectionLayout {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree>,
+        ecm: &mut EntityComponentManager<Tree, ComponentStore>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
@@ -117,7 +117,7 @@ impl Layout for TextSelectionLayout {
         render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree>,
+        ecm: &mut EntityComponentManager<Tree, ComponentStore>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {

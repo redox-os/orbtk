@@ -23,8 +23,8 @@ pub struct RenderSystem {
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
 }
 
-impl System<Tree> for RenderSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
+impl System<Tree, ComponentStore> for RenderSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree, ComponentStore>) {
         if !self.update.get() || ecm.entity_store().parent.is_empty() || !self.running.get() {
             return;
         }

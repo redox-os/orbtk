@@ -8,7 +8,7 @@ use super::{MessageBox, WidgetContainer};
 
 /// The `Context` is provides access for the states to objects they could work with.
 pub struct Context<'a> {
-    ecm: &'a mut EntityComponentManager<Tree>,
+    ecm: &'a mut EntityComponentManager<Tree, ComponentStore>,
     window_shell: &'a mut WindowShell<WindowAdapter>,
     pub entity: Entity,
     pub theme: &'a ThemeValue,
@@ -31,7 +31,7 @@ impl<'a> Context<'a> {
     /// Creates a new container.
     pub fn new(
         entity: Entity,
-        ecm: &'a mut EntityComponentManager<Tree>,
+        ecm: &'a mut EntityComponentManager<Tree, ComponentStore>,
         window_shell: &'a mut WindowShell<WindowAdapter>,
         theme: &'a ThemeValue,
         render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,

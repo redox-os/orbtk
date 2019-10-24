@@ -33,7 +33,7 @@ impl Application {
     }
 
     pub fn window<F: Fn(&mut BuildContext) -> Entity + 'static>(mut self, create_fn: F) -> Self {
-        let mut world = World::from_container(Tree::default());
+        let mut world = World::from_stores(Tree::default(), ComponentStore::default());
 
         let render_objects = Rc::new(RefCell::new(BTreeMap::new()));
         let layouts = Rc::new(RefCell::new(BTreeMap::new()));
@@ -57,6 +57,14 @@ impl Application {
         {
             let tree: &mut Tree = world.entity_component_manager().entity_store_mut();
             tree.set_root(window);
+        }
+
+        if let Err(err) = world
+            .entity_component_manager()
+            .component_store()
+            .borrow_component::<Title>(window)
+        {
+            println!("{:?}", err);
         }
 
         let title = world
@@ -86,14 +94,19 @@ impl Application {
 
         world
             .entity_component_manager()
+            .component_store_mut()
             .register_component(window, Global::default());
         world
             .entity_component_manager()
+            .component_store_mut()
             .register_component(window, Global::default());
-        world.entity_component_manager().register_component(
-            window,
-            Bounds::from((0.0, 0.0, constraint.width(), constraint.height())),
-        );
+        world
+            .entity_component_manager()
+            .component_store_mut()
+            .register_component(
+                window,
+                Bounds::from((0.0, 0.0, constraint.width(), constraint.height())),
+            );
 
         let window_shell = Rc::new(RefCell::new(
             WindowBuilder::new(WindowAdapter {

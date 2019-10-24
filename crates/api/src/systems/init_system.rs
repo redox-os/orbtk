@@ -40,8 +40,8 @@ impl InitSystem {
     }
 }
 
-impl System<Tree> for InitSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
+impl System<Tree, ComponentStore> for InitSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree, ComponentStore>) {
         let root = ecm.entity_store().root;
 
         #[cfg(feature = "debug")]
@@ -102,7 +102,7 @@ impl System<Tree> for InitSystem {
     }
 }
 
-pub fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tree>) {
+pub fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tree, ComponentStore>) {
     let name = Name::get(entity, ecm.component_store());
     let selector = Selector::get_or_value(entity, ecm.component_store(), Selector::default());
 

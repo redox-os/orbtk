@@ -19,8 +19,8 @@ pub struct PostLayoutStateSystem {
     pub running: Rc<Cell<bool>>,
 }
 
-impl System<Tree> for PostLayoutStateSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
+impl System<Tree, ComponentStore> for PostLayoutStateSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree, ComponentStore>) {
         if !self.update.get() || !self.running.get() {
             return;
         }

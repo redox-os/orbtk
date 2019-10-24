@@ -21,7 +21,7 @@ tree.append_child(0, 1);
 
 use std::{cell::Cell, collections::BTreeMap};
 
-use dces::prelude::{Entity, EntityStore};
+use dces::{entity::EntityStore, prelude::Entity};
 
 pub mod prelude;
 

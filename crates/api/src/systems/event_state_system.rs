@@ -21,13 +21,13 @@ pub struct EventStateSystem {
 }
 
 impl EventStateSystem {
-    fn process_top_down_event(&self, _event: &EventBox, _ecm: &mut EntityComponentManager<Tree>) {}
+    fn process_top_down_event(&self, _event: &EventBox, _ecm: &mut EntityComponentManager<Tree, ComponentStore>) {}
 
     fn process_bottom_up_event(
         &self,
         mouse_position: Point,
         event: &EventBox,
-        ecm: &mut EntityComponentManager<Tree>,
+        ecm: &mut EntityComponentManager<Tree, ComponentStore>,
     ) {
         let mut matching_nodes = vec![];
 
@@ -285,8 +285,8 @@ impl EventStateSystem {
     }
 }
 
-impl System<Tree> for EventStateSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
+impl System<Tree, ComponentStore> for EventStateSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree, ComponentStore>) {
         let mut shell = self.shell.borrow_mut();
 
         loop {

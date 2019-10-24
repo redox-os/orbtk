@@ -16,8 +16,8 @@ pub struct LayoutSystem {
     pub running: Rc<Cell<bool>>,
 }
 
-impl System<Tree> for LayoutSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
+impl System<Tree, ComponentStore> for LayoutSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree, ComponentStore>) {
         if !self.update.get() || !self.running.get() {
             return;
         }

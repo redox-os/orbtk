@@ -213,7 +213,7 @@ impl RenderWorker {
                                 clip_width,
                                 clip_height,
                                 x,
-                                y
+                                y,
                             );
                         }
                         RenderTask::DrawPipeline {
@@ -588,7 +588,7 @@ impl RenderContext2D {
         clip_width: f64,
         clip_height: f64,
         x: f64,
-        y: f64
+        y: f64,
     ) {
         self.sender
             .send(vec![RenderTask::DrawImageWithClip {
@@ -684,9 +684,11 @@ impl RenderContext2D {
 
     pub fn data(&mut self) -> Option<&[u32]> {
         if let Ok(result) = self.result_receiver.try_recv() {
-            if let RenderResult::Finish { data } = result {
-                self.output = data;
-                return Some(&self.output);
+            match result {
+                RenderResult::Finish { data } => {
+                    self.output = data;
+                    return Some(&self.output);
+                }
             }
         }
 

@@ -8,7 +8,7 @@ use super::State;
 
 /// Used to create an entity for a widget with its properties as components.
 pub struct BuildContext<'a> {
-    ecm: &'a mut EntityComponentManager<Tree>,
+    ecm: &'a mut EntityComponentManager<Tree, ComponentStore>,
     render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
@@ -18,7 +18,7 @@ pub struct BuildContext<'a> {
 impl<'a> BuildContext<'a> {
     /// Creates a new `BuildContext`.
     pub fn new(
-        ecm: &'a mut EntityComponentManager<Tree>,
+        ecm: &'a mut EntityComponentManager<Tree, ComponentStore>,
         render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
         layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
@@ -48,22 +48,30 @@ impl<'a> BuildContext<'a> {
 
     /// Registers a property as component.
     pub fn register_property<P: Component>(&mut self, widget: Entity, property: P) {
-        self.ecm.register_component(widget, property);
+        self.ecm
+            .component_store_mut()
+            .register_component(widget, property);
     }
 
     /// Registers a property box as component.
     pub fn register_property_box(&mut self, widget: Entity, property: ComponentBox) {
-        self.ecm.register_component_box(widget, property);
+        self.ecm
+            .component_store_mut()
+            .register_component_box(widget, property);
     }
 
     /// Registers a shared property.
     pub fn register_shared_property<P: Component>(&mut self, target: Entity, source: Entity) {
-        self.ecm.register_shared_component::<P>(target, source);
+        self.ecm
+            .component_store_mut()
+            .register_shared_component::<P>(target, source);
     }
 
     /// Registers a shared component box.
     pub fn register_property_shared_box(&mut self, widget: Entity, property: SharedComponentBox) {
-        self.ecm.register_shared_component_box(widget, property);
+        self.ecm
+            .component_store_mut()
+            .register_shared_component_box(widget, property);
     }
 
     /// Registers a state with a widget.

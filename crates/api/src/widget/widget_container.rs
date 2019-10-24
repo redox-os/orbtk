@@ -6,7 +6,7 @@ use dces::prelude::{Component, Entity, EntityComponentManager};
 
 /// The `WidgetContainer` wraps the entity of a widget and provides access to its properties, its children properties and its parent properties.
 pub struct WidgetContainer<'a> {
-    ecm: &'a mut EntityComponentManager<Tree>,
+    ecm: &'a mut EntityComponentManager<Tree, ComponentStore>,
     current_node: Entity,
     theme: &'a ThemeValue,
 }
@@ -15,7 +15,7 @@ impl<'a> WidgetContainer<'a> {
     /// Creates a new widget container for the given `entity`.
     pub fn new(
         root: Entity,
-        ecm: &'a mut EntityComponentManager<Tree>,
+        ecm: &'a mut EntityComponentManager<Tree, ComponentStore>,
         theme: &'a ThemeValue,
     ) -> Self {
         WidgetContainer {
