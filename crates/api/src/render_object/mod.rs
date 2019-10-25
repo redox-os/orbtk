@@ -144,9 +144,7 @@ pub trait RenderObject: Any {
         }
     }
 
-    fn render_self(&self, _: &mut Context<'_>, _: &Point) {
-        return;
-    }
+    fn render_self(&self, _: &mut Context<'_>, _: &Point) {}
 
     fn render_children(
         &self,
@@ -161,13 +159,7 @@ pub trait RenderObject: Any {
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,
     ) {
-        if ecm.entity_store().children[&entity].len() == 0 {
-            return;
-        }
-
-        let mut index = 0;
-
-        loop {
+        for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
 
             if let Some(render_object) = render_objects.borrow().get(&child) {
@@ -183,12 +175,6 @@ pub trait RenderObject: Any {
                     offsets,
                     debug,
                 );
-            }
-
-            if index + 1 < ecm.entity_store().children[&entity].len() {
-                index += 1;
-            } else {
-                break;
             }
         }
     }

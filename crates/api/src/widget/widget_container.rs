@@ -222,10 +222,10 @@ impl<'a> WidgetContainer<'a> {
             }
 
             if let Some(text) = self.try_clone::<String16>("text") {
-                if text.len() == 0 && !selector.pseudo_classes.contains("empty") {
+                if text.is_empty() && !selector.pseudo_classes.contains("empty") {
                     add_selector_to_widget("empty", self);
                     update = true;
-                } else if text.len() > 0 && selector.pseudo_classes.contains("empty") {
+                } else if !text.is_empty() && selector.pseudo_classes.contains("empty") {
                     remove_selector_from_widget("empty", self);
                     update = true;
                 }
@@ -309,44 +309,27 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
-        if let Some(padding) = self.try_clone::<Thickness>("padding") {
+        if let Some(mut padding) = self.try_clone::<Thickness>("padding") {
             if let Some(pad) = self.theme.uint("padding", &selector) {
-                let mut padding = padding;
                 padding.set_thickness(pad as f64);
-                self.set::<Thickness>("padding", padding);
             }
-        }
 
-        if let Some(padding) = self.try_clone::<Thickness>("padding") {
             if let Some(left) = self.theme.uint("padding-left", &selector) {
-                let mut padding = padding;
                 padding.set_left(left as f64);
-                self.set::<Thickness>("padding", padding);
             }
-        }
 
-        if let Some(padding) = self.try_clone::<Thickness>("padding") {
             if let Some(top) = self.theme.uint("padding-top", &selector) {
-                let mut padding = padding;
                 padding.set_top(top as f64);
-                self.set::<Thickness>("padding", padding);
             }
-        }
 
-        if let Some(padding) = self.try_clone::<Thickness>("padding") {
             if let Some(right) = self.theme.uint("padding-right", &selector) {
-                let mut padding = padding;
                 padding.set_right(right as f64);
-                self.set::<Thickness>("padding", padding);
             }
-        }
 
-        if let Some(padding) = self.try_clone::<Thickness>("padding") {
             if let Some(bottom) = self.theme.uint("padding-bottom", &selector) {
-                let mut padding = padding;
                 padding.set_bottom(bottom as f64);
-                self.set::<Thickness>("padding", padding);
             }
+            self.set::<Thickness>("padding", padding);
         }
 
         // todo padding, icon_margin

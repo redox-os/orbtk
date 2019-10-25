@@ -127,54 +127,50 @@ impl RenderObject for RectangleRenderObject {
 
         context.render_context_2_d().begin_path();
 
-        if border_radius > 0.0 {
-            if has_thickness {
-                self.render_rounded_bordered_rect_path(
-                    context.render_context_2_d(),
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
-                    bounds.width(),
-                    bounds.height(),
-                    border_radius,
-                    background,
-                    border_brush,
-                    border_thickness,
-                );
-            } else {
-                self.render_rounded_rect_path(
-                    context.render_context_2_d(),
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
-                    bounds.width(),
-                    bounds.height(),
-                    border_radius,
-                );
+        if border_radius > 0. && has_thickness {
+            self.render_rounded_bordered_rect_path(
+                context.render_context_2_d(),
+                global_position.x + bounds.x(),
+                global_position.y + bounds.y(),
+                bounds.width(),
+                bounds.height(),
+                border_radius,
+                background,
+                border_brush,
+                border_thickness,
+            );
+        } else if border_radius > 0. {
+            self.render_rounded_rect_path(
+                context.render_context_2_d(),
+                global_position.x + bounds.x(),
+                global_position.y + bounds.y(),
+                bounds.width(),
+                bounds.height(),
+                border_radius,
+            );
 
-                context.render_context_2_d().set_fill_style(background);
-                context.render_context_2_d().fill();
-            }
+            context.render_context_2_d().set_fill_style(background);
+            context.render_context_2_d().fill();
+        } else if has_thickness {
+            self.render_bordered_rect_path(
+                context.render_context_2_d(),
+                global_position.x + bounds.x(),
+                global_position.y + bounds.y(),
+                bounds.width(),
+                bounds.height(),
+                background,
+                border_brush,
+                border_thickness,
+            );
         } else {
-            if has_thickness {
-                self.render_bordered_rect_path(
-                    context.render_context_2_d(),
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
-                    bounds.width(),
-                    bounds.height(),
-                    background,
-                    border_brush,
-                    border_thickness,
-                );
-            } else {
-                context.render_context_2_d().rect(
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
-                    bounds.width(),
-                    bounds.height(),
-                );
-                context.render_context_2_d().set_fill_style(background);
-                context.render_context_2_d().fill();
-            }
+            context.render_context_2_d().rect(
+                global_position.x + bounds.x(),
+                global_position.y + bounds.y(),
+                bounds.width(),
+                bounds.height(),
+            );
+            context.render_context_2_d().set_fill_style(background);
+            context.render_context_2_d().fill();
         }
 
         // println!(

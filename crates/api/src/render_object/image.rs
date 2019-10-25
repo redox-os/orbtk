@@ -15,7 +15,7 @@ impl RenderObject for ImageRenderObject {
             let widget = context.widget();
             (
                 widget.clone::<Rectangle>("bounds"),
-                widget.try_clone::<Image>("image").clone(),
+                widget.try_clone::<Image>("image"),
             )
         };
 

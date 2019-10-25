@@ -20,7 +20,7 @@ impl RenderObject for TextRenderObject {
 
             let txt = {
                 if !text.is_empty() {
-                    text.clone()
+                    text
                 } else {
                     widget.clone_or_default::<String16>("water_mark")
                 }

@@ -118,7 +118,7 @@ impl<'a> Context<'a> {
                 .get::<Selector>("selector", current_node)
             {
                 if let Some(child_id) = &selector.id {
-                    if child_id.eq(&id) {
+                    if child_id == id {
                         return Some(current_node);
                     }
                 }
@@ -187,7 +187,7 @@ impl<'a> Context<'a> {
                 .get::<Selector>("selector", parent)
             {
                 if let Some(parent_id) = &selector.id {
-                    if parent_id.eq(&id) {
+                    if parent_id == id {
                         return Some(self.get_widget(parent));
                     }
                 }
@@ -255,14 +255,11 @@ impl<'a> Context<'a> {
         }
 
         if let Some(entity) = entity {
-            if !self.window_shell.adapter().messages.contains_key(&entity) {
-                self.window_shell.adapter().messages.insert(entity, vec![]);
-            }
             self.window_shell
                 .adapter()
                 .messages
-                .get_mut(&entity)
-                .unwrap()
+                .entry(entity)
+                .or_insert_with(Vec::new)
                 .push(message.into());
         } else {
             println!(
