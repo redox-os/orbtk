@@ -1,12 +1,12 @@
 //! This sub module contains extra structs used as widget proerties.
 
-use std::{fmt::Debug, collections::HashSet};
+use std::{collections::HashSet, fmt::Debug};
 
 use dces::prelude::{Component, Entity, StringComponentStore};
 
 pub use self::layout::*;
 pub use self::widget::*;
-use crate::{prelude::*, utils, css_engine, render};
+use crate::{css_engine, prelude::*, render, utils};
 
 mod layout;
 mod widget;
@@ -16,10 +16,7 @@ pub fn get_property<T>(key: &str, entity: Entity, store: &StringComponentStore) 
 where
     T: Clone + Component,
 {
-    store
-        .borrow_component::<T>(key, entity)
-        .map(|r| r.clone())
-        .unwrap()
+    store.get::<T>(key, entity).map(|r| r.clone()).unwrap()
 }
 
 /// Returns the value of a property of a widget if it exists otherwise the given value.
@@ -32,7 +29,7 @@ pub fn get_property_or_value<T>(
 where
     T: Clone + Component,
 {
-    if let Ok(property) = store.borrow_component::<T>(key, entity).map(|r| r.clone()) {
+    if let Ok(property) = store.get::<T>(key, entity).map(|r| r.clone()) {
         return property;
     }
     value

@@ -8,6 +8,3 @@ mod render_pipeline;
 mod selected_entities;
 mod selected_indices;
 mod text_selection;
-
-#[cfg(test)]
-mod tests;

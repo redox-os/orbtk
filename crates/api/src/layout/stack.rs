@@ -35,7 +35,7 @@ impl Layout for StackLayout {
     ) -> DirtySize {
         if *ecm
             .component_store()
-            .borrow_component::<Visibility>("visibility", entity)
+            .get::<Visibility>("visibility", entity)
             .unwrap()
             == Visibility::Collapsed
         {
@@ -45,11 +45,11 @@ impl Layout for StackLayout {
 
         let horizontal_alignment: Alignment = *ecm
             .component_store()
-            .borrow_component("horizontal_alignment", entity)
+            .get("horizontal_alignment", entity)
             .unwrap();
         let vertical_alignment: Alignment = *ecm
             .component_store()
-            .borrow_component("vertical_alignment", entity)
+            .get("vertical_alignment", entity)
             .unwrap();
 
         if horizontal_alignment != self.old_alignment.get().1
@@ -58,10 +58,7 @@ impl Layout for StackLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let orientation: Orientation = *ecm
-            .component_store()
-            .borrow_component("orientation", entity)
-            .unwrap();
+        let orientation: Orientation = *ecm.component_store().get("orientation", entity).unwrap();
         let mut desired_size: (f64, f64) = (0.0, 0.0);
 
         if ecm.entity_store().children[&entity].len() > 0 {
@@ -76,7 +73,7 @@ impl Layout for StackLayout {
                     let child_margin = {
                         if child_desired_size.width() > 0.0 && child_desired_size.height() > 0.0 {
                             *ecm.component_store()
-                                .borrow_component::<Thickness>("margin", child)
+                                .get::<Thickness>("margin", child)
                                 .unwrap()
                         } else {
                             Thickness::default()
@@ -139,25 +136,19 @@ impl Layout for StackLayout {
 
         let horizontal_alignment: Alignment = *ecm
             .component_store()
-            .borrow_component("horizontal_alignment", entity)
+            .get("horizontal_alignment", entity)
             .unwrap();
         let vertical_alignment: Alignment = *ecm
             .component_store()
-            .borrow_component("vertical_alignment", entity)
+            .get("vertical_alignment", entity)
             .unwrap();
-        let margin: Thickness = *ecm
-            .component_store()
-            .borrow_component("margin", entity)
-            .unwrap();
+        let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
         let constraint = ecm
             .component_store()
-            .borrow_component::<Constraint>("constraint", entity)
+            .get::<Constraint>("constraint", entity)
             .unwrap()
             .clone();
-        let orientation: Orientation = *ecm
-            .component_store()
-            .borrow_component("orientation", entity)
-            .unwrap();
+        let orientation: Orientation = *ecm.component_store().get("orientation", entity).unwrap();
         let mut size_counter = 0.0;
 
         let size = constraint.perform((
@@ -177,7 +168,7 @@ impl Layout for StackLayout {
 
         if let Ok(bounds) = ecm
             .component_store_mut()
-            .borrow_mut_component::<Rectangle>("bounds", entity)
+            .get_mut::<Rectangle>("bounds", entity)
         {
             bounds.set_width(size.0);
             bounds.set_height(size.1);
@@ -200,7 +191,7 @@ impl Layout for StackLayout {
                 let child_margin = {
                     if child_desired_size.0 > 0.0 && child_desired_size.1 > 0.0 {
                         *ecm.component_store()
-                            .borrow_component::<Thickness>("margin", child)
+                            .get::<Thickness>("margin", child)
                             .unwrap()
                     } else {
                         Thickness::default()
@@ -209,15 +200,15 @@ impl Layout for StackLayout {
 
                 let child_horizontal_alignment: Alignment = *ecm
                     .component_store()
-                    .borrow_component("horizontal_alignment", child)
+                    .get("horizontal_alignment", child)
                     .unwrap();
                 let child_vertical_alignment: Alignment = *ecm
                     .component_store()
-                    .borrow_component("vertical_alignment", child)
+                    .get("vertical_alignment", child)
                     .unwrap();
                 if let Ok(child_bounds) = ecm
                     .component_store_mut()
-                    .borrow_mut_component::<Rectangle>("bounds", child)
+                    .get_mut::<Rectangle>("bounds", child)
                 {
                     match orientation {
                         Orientation::Horizontal => {

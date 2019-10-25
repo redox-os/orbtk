@@ -32,18 +32,18 @@ mod tests {
     #[test]
     fn test_into() {
         let orientation: Orientation = "Vertical".into();
-        assert_eq!(vertical_alignment.0, Orientation::Vertical);
+        assert_eq!(orientation, Orientation::Vertical);
 
         let orientation: Orientation = "vertical".into();
-        assert_eq!(vertical_alignment.0, Orientation::Vertical);
+        assert_eq!(orientation, Orientation::Vertical);
 
         let orientation: Orientation = "Horizontal".into();
-        assert_eq!(vertical_alignment.0, Orientation::Horizontal);
+        assert_eq!(orientation, Orientation::Horizontal);
 
         let orientation: Orientation = "horizontal".into();
-        assert_eq!(vertical_alignment.0, Orientation::Horizontal);
+        assert_eq!(orientation, Orientation::Horizontal);
 
         let orientation: Orientation = "other".into();
-        assert_eq!(vertical_alignment.0, Orientation::Vertical);
+        assert_eq!(orientation, Orientation::Vertical);
     }
 }

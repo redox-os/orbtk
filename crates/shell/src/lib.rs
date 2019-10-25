@@ -18,7 +18,7 @@ let shell = WindowBuilder::new(MyCustomWindowAdapter::new())
 let runner = ShellRunner {
     shell,
     update: Rc::new(Cell::new(true)),
-    running: Rc::new(Cell:new(true)),
+    running: Rc::new(CellL:new(true)),
     updater: Box::new(MyCustomUpdater::new())
 };
 

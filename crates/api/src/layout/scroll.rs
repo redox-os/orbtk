@@ -37,7 +37,7 @@ impl Layout for ScrollLayout {
     ) -> DirtySize {
         if *ecm
             .component_store()
-            .borrow_component::<Visibility>("visibility", entity)
+            .get::<Visibility>("visibility", entity)
             .unwrap()
             == Visibility::Collapsed
         {
@@ -47,11 +47,11 @@ impl Layout for ScrollLayout {
 
         let horizontal_alignment: Alignment = *ecm
             .component_store()
-            .borrow_component("horizontal_alignment", entity)
+            .get("horizontal_alignment", entity)
             .unwrap();
         let vertical_alignment: Alignment = *ecm
             .component_store()
-            .borrow_component("vertical_alignment", entity)
+            .get("vertical_alignment", entity)
             .unwrap();
 
         if horizontal_alignment != self.old_alignment.get().1
@@ -62,7 +62,7 @@ impl Layout for ScrollLayout {
 
         let constraint = ecm
             .component_store()
-            .borrow_component::<Constraint>("constraint", entity)
+            .get::<Constraint>("constraint", entity)
             .unwrap()
             .clone();
 
@@ -99,10 +99,7 @@ impl Layout for ScrollLayout {
             }
         }
 
-        let off: Point = *ecm
-            .component_store()
-            .borrow_component("scroll_offset", entity)
-            .unwrap();
+        let off: Point = *ecm.component_store().get("scroll_offset", entity).unwrap();
 
         if self.old_offset.get().0 != off.x || self.old_offset.get().1 != off.y {
             self.old_offset.set((off.x, off.y));
@@ -128,20 +125,17 @@ impl Layout for ScrollLayout {
 
         let horizontal_alignment: Alignment = *ecm
             .component_store()
-            .borrow_component("horizontal_alignment", entity)
+            .get("horizontal_alignment", entity)
             .unwrap();
         let vertical_alignment: Alignment = *ecm
             .component_store()
-            .borrow_component("vertical_alignment", entity)
+            .get("vertical_alignment", entity)
             .unwrap();
-        let margin: Thickness = *ecm
-            .component_store()
-            .borrow_component("margin", entity)
-            .unwrap();
+        let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
         // let _padding = Thickness::get("padding", entity, ecm.component_store());
         let constraint = ecm
             .component_store()
-            .borrow_component::<Constraint>("constraint", entity)
+            .get::<Constraint>("constraint", entity)
             .unwrap()
             .clone();
 
@@ -162,7 +156,7 @@ impl Layout for ScrollLayout {
 
         if let Ok(bounds) = ecm
             .component_store_mut()
-            .borrow_mut_component::<Rectangle>("bounds", entity)
+            .get_mut::<Rectangle>("bounds", entity)
         {
             bounds.set_width(size.0);
             bounds.set_height(size.1);
@@ -170,7 +164,7 @@ impl Layout for ScrollLayout {
 
         let scroll_viewer_mode = ecm
             .component_store()
-            .borrow_component::<ScrollViewerMode>("scroll_viewer_mode", entity)
+            .get::<ScrollViewerMode>("scroll_viewer_mode", entity)
             .unwrap()
             .clone();
 
@@ -194,14 +188,8 @@ impl Layout for ScrollLayout {
             (width, height)
         };
 
-        let off: Point = *ecm
-            .component_store()
-            .borrow_component("scroll_offset", entity)
-            .unwrap();
-        let delta: Point = *ecm
-            .component_store()
-            .borrow_component("delta", entity)
-            .unwrap();
+        let off: Point = *ecm.component_store().get("scroll_offset", entity).unwrap();
+        let delta: Point = *ecm.component_store().get("delta", entity).unwrap();
         let mut offset = (off.x, off.y);
 
         let old_child_size = self.old_child_size.get();
@@ -216,16 +204,13 @@ impl Layout for ScrollLayout {
                 let mut child_size = old_child_size;
                 let child_vertical_alignment: Alignment = *ecm
                     .component_store()
-                    .borrow_component("vertical_alignment", child)
+                    .get("vertical_alignment", child)
                     .unwrap();
                 let child_horizontal_alignment: Alignment = *ecm
                     .component_store()
-                    .borrow_component("horizontal_alignment", child)
+                    .get("horizontal_alignment", child)
                     .unwrap();
-                let child_margin: Thickness = *ecm
-                    .component_store()
-                    .borrow_component("margin", child)
-                    .unwrap();
+                let child_margin: Thickness = *ecm.component_store().get("margin", child).unwrap();
 
                 if let Some(child_layout) = layouts.borrow().get(&child) {
                     child_size = child_layout.arrange(
@@ -274,7 +259,7 @@ impl Layout for ScrollLayout {
 
                 if let Ok(child_bounds) = ecm
                     .component_store_mut()
-                    .borrow_mut_component::<Rectangle>("bounds", child)
+                    .get_mut::<Rectangle>("bounds", child)
                 {
                     // todo: add check
                     if scroll_viewer_mode.horizontal == ScrollMode::Custom
@@ -306,7 +291,7 @@ impl Layout for ScrollLayout {
 
                 if let Ok(off) = ecm
                     .component_store_mut()
-                    .borrow_mut_component::<Point>("scroll_offset", entity)
+                    .get_mut::<Point>("scroll_offset", entity)
                 {
                     off.x = offset.0;
                     off.y = offset.1;

@@ -2,7 +2,7 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager};
 
-use crate::{prelude::*, css_engine::*, render::*, shell::WindowShell, tree::Tree};
+use crate::{css_engine::*, prelude::*, render::*, shell::WindowShell, tree::Tree};
 
 use super::{MessageBox, WidgetContainer};
 
@@ -119,7 +119,7 @@ impl<'a> Context<'a> {
             if let Ok(selector) = self
                 .ecm
                 .component_store()
-                .borrow_component::<Selector>("selector", current_node)
+                .get::<Selector>("selector", current_node)
             {
                 if let Some(child_id) = &selector.id {
                     if child_id.eq(&id) {
@@ -162,7 +162,7 @@ impl<'a> Context<'a> {
                 if let Ok(selector) = self
                     .ecm
                     .component_store()
-                    .borrow_component::<Selector>("selector", parent)
+                    .get::<Selector>("selector", parent)
                 {
                     if let Some(parent_element) = &selector.element {
                         if parent_element.eq(&element) {
@@ -197,7 +197,7 @@ impl<'a> Context<'a> {
                 if let Ok(selector) = self
                     .ecm
                     .component_store()
-                    .borrow_component::<Selector>("selector", parent)
+                    .get::<Selector>("selector", parent)
                 {
                     if let Some(parent_id) = &selector.id {
                         if parent_id.eq(&id) {
@@ -264,11 +264,7 @@ impl<'a> Context<'a> {
     /// Sends a message to the widget with the given id over the message channel.
     pub fn send_message(&mut self, target_widget: &str, message: impl Into<MessageBox>) {
         let mut entity = None;
-        if let Ok(global) = self
-            .ecm
-            .component_store()
-            .borrow_component::<Global>("global", 0.into())
-        {
+        if let Ok(global) = self.ecm.component_store().get::<Global>("global", 0.into()) {
             if let Some(en) = global.id_map.get(target_widget) {
                 entity = Some(*en);
             }

@@ -17,7 +17,7 @@ impl InitSystem {
     // init css ids.
     fn init_id(&self, node: Entity, store: &mut StringComponentStore, root: Entity) {
         // Add css id to global id map.
-        let id = if let Ok(selector) = store.borrow_component::<Selector>("selector", node) {
+        let id = if let Ok(selector) = store.get::<Selector>("selector", node) {
             if let Some(id) = &selector.id {
                 Some((node, id.clone()))
             } else {
@@ -28,7 +28,7 @@ impl InitSystem {
         };
 
         if let Some((entity, id)) = id {
-            if let Ok(global) = store.borrow_mut_component::<Global>("global", root) {
+            if let Ok(global) = store.get_mut::<Global>("global", root) {
                 global.id_map.insert(id, entity);
             }
         }
@@ -61,7 +61,7 @@ impl System<Tree, StringComponentStore> for InitSystem {
         let window_shell = &mut self.shell.borrow_mut();
         let theme = ecm
             .component_store()
-            .borrow_component::<Theme>("theme", root)
+            .get::<Theme>("theme", root)
             .unwrap()
             .clone();
 
@@ -106,15 +106,9 @@ pub fn print_tree(
     depth: usize,
     ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
 ) {
-    let name = ecm
-        .component_store()
-        .borrow_component::<String>("name", entity)
-        .unwrap();
+    let name = ecm.component_store().get::<String>("name", entity).unwrap();
 
-    let selector = if let Ok(selector) = ecm
-        .component_store()
-        .borrow_component::<Selector>("selector", entity)
-    {
+    let selector = if let Ok(selector) = ecm.component_store().get::<Selector>("selector", entity) {
         selector.clone()
     } else {
         Selector::default()

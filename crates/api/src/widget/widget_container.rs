@@ -1,9 +1,9 @@
 use std::any::TypeId;
 
 use crate::{
+    css_engine::*,
     prelude::*,
     utils::{Brush, String16, Thickness},
-    css_engine::*,
 };
 
 use dces::prelude::{Component, Entity, EntityComponentManager};
@@ -38,11 +38,7 @@ impl<'a> WidgetContainer<'a> {
     where
         P: Clone + Component,
     {
-        if let Ok(property) = self
-            .ecm
-            .component_store()
-            .borrow_component::<P>(key, self.current_node)
-        {
+        if let Ok(property) = self.ecm.component_store().get::<P>(key, self.current_node) {
             return property;
         }
 
@@ -66,7 +62,7 @@ impl<'a> WidgetContainer<'a> {
         if let Ok(property) = self
             .ecm
             .component_store_mut()
-            .borrow_mut_component::<P>(key, self.current_node)
+            .get_mut::<P>(key, self.current_node)
         {
             return property;
         }
@@ -85,11 +81,7 @@ impl<'a> WidgetContainer<'a> {
     where
         P: Clone + Component + Default,
     {
-        if let Ok(property) = self
-            .ecm
-            .component_store()
-            .borrow_component::<P>(key, self.current_node)
-        {
+        if let Ok(property) = self.ecm.component_store().get::<P>(key, self.current_node) {
             return property.clone();
         }
 
@@ -105,11 +97,7 @@ impl<'a> WidgetContainer<'a> {
     where
         P: Clone + Component,
     {
-        if let Ok(property) = self
-            .ecm
-            .component_store()
-            .borrow_component::<P>(key, self.current_node)
-        {
+        if let Ok(property) = self.ecm.component_store().get::<P>(key, self.current_node) {
             return property.clone();
         }
 
@@ -127,11 +115,7 @@ impl<'a> WidgetContainer<'a> {
     where
         P: Clone + Component,
     {
-        if let Ok(property) = self
-            .ecm
-            .component_store()
-            .borrow_component::<P>(key, self.current_node)
-        {
+        if let Ok(property) = self.ecm.component_store().get::<P>(key, self.current_node) {
             return Some(property.clone());
         }
 
@@ -150,7 +134,7 @@ impl<'a> WidgetContainer<'a> {
         if let Ok(property) = self
             .ecm
             .component_store_mut()
-            .borrow_mut_component::<P>(key, self.current_node)
+            .get_mut::<P>(key, self.current_node)
         {
             *property = value;
             return;
@@ -170,7 +154,7 @@ impl<'a> WidgetContainer<'a> {
     {
         self.ecm
             .component_store()
-            .borrow_component::<P>(key, self.current_node)
+            .get::<P>(key, self.current_node)
             .is_ok()
     }
 
@@ -179,7 +163,7 @@ impl<'a> WidgetContainer<'a> {
     pub fn try_get<P: Component>(&self, key: &str) -> Option<&P> {
         self.ecm
             .component_store()
-            .borrow_component::<P>(key, self.current_node)
+            .get::<P>(key, self.current_node)
             .ok()
     }
 
@@ -188,7 +172,7 @@ impl<'a> WidgetContainer<'a> {
     pub fn try_get_mut<P: Component>(&mut self, key: &str) -> Option<&mut P> {
         self.ecm
             .component_store_mut()
-            .borrow_mut_component::<P>(key, self.current_node)
+            .get_mut::<P>(key, self.current_node)
             .ok()
     }
 

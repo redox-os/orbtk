@@ -40,7 +40,7 @@ impl Layout for TextSelectionLayout {
     ) -> DirtySize {
         if *ecm
             .component_store()
-            .borrow_component::<Visibility>("visibility", entity)
+            .get::<Visibility>("visibility", entity)
             .unwrap()
             == Visibility::Collapsed
         {
@@ -50,13 +50,13 @@ impl Layout for TextSelectionLayout {
 
         let constraint = ecm
             .component_store()
-            .borrow_component::<Constraint>("constraint", entity)
+            .get::<Constraint>("constraint", entity)
             .unwrap()
             .clone();
 
         if let Ok(selection) = ecm
             .component_store()
-            .borrow_component::<TextSelection>("text_selection", entity)
+            .get::<TextSelection>("text_selection", entity)
         {
             if *selection != self.old_text_selection.get() {
                 self.desired_size.borrow_mut().set_dirty(true);
@@ -139,12 +139,9 @@ impl Layout for TextSelectionLayout {
 
         let vertical_alignment: Alignment = *ecm
             .component_store()
-            .borrow_component("vertical_alignment", entity)
+            .get("vertical_alignment", entity)
             .unwrap();
-        let margin: Thickness = *ecm
-            .component_store()
-            .borrow_component("margin", entity)
-            .unwrap();
+        let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
 
         {
             let mut widget = WidgetContainer::new(entity, ecm, &theme);

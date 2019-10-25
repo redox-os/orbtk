@@ -22,7 +22,6 @@ impl render::RenderPipeline for EmptyRenderPipeline {
     fn draw(&self, _: &mut render::RenderTarget) {}
 }
 
-
 /// RenderPipeline object.
 #[derive(Clone, Debug)]
 pub struct RenderPipeline(pub Box<dyn render::Pipeline>);

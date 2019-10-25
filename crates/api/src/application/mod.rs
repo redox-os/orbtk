@@ -63,25 +63,25 @@ impl Application {
         let title = world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<String>("title", window)
+            .get::<String>("title", window)
             .unwrap()
             .clone();
         let resizeable = world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<bool>("resizeable", window)
+            .get::<bool>("resizeable", window)
             .unwrap()
             .clone();
         let position = world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<Point>("position", window)
+            .get::<Point>("position", window)
             .unwrap()
             .clone();
         let constraint = world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<Constraint>("constraint", window)
+            .get::<Constraint>("constraint", window)
             .unwrap()
             .clone();
 

@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{prelude::*, shell::WindowShell, tree::Tree, css_engine::*};
+use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree};
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 pub struct PostLayoutStateSystem {
@@ -30,7 +30,7 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
         let window_shell = &mut self.shell.borrow_mut();
         let theme = ecm
             .component_store()
-            .borrow_component::<Theme>("theme", root)
+            .get::<Theme>("theme", root)
             .unwrap()
             .clone();
 

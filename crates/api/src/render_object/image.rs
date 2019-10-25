@@ -1,4 +1,4 @@
-use crate::{prelude::*, utils::*, render::Image};
+use crate::{prelude::*, render::Image, utils::*};
 
 /// Used to render an image.
 pub struct ImageRenderObject;
@@ -20,11 +20,9 @@ impl RenderObject for ImageRenderObject {
         };
 
         if let Some(image) = &mut image {
-            context.render_context_2_d().draw_image(
-                image,
-                global_position.x,
-                global_position.y,
-            );
+            context
+                .render_context_2_d()
+                .draw_image(image, global_position.x, global_position.y);
         }
     }
 }

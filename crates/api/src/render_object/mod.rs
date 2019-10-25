@@ -2,7 +2,7 @@
 
 use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc};
 
-use crate::{prelude::*, shell::WindowShell, utils::*, css_engine::*};
+use crate::{css_engine::*, prelude::*, shell::WindowShell, utils::*};
 
 pub use self::clear::*;
 pub use self::default::*;
@@ -44,7 +44,7 @@ pub trait RenderObject: Any {
 
         if let Ok(visibility) = ecm
             .component_store()
-            .borrow_component::<Visibility>("visibility", entity)
+            .get::<Visibility>("visibility", entity)
         {
             if *visibility != Visibility::Visible {
                 return;
@@ -58,14 +58,11 @@ pub trait RenderObject: Any {
         // Could be unwrap because every widget has the clip property
         let clip = ecm
             .component_store()
-            .borrow_component::<bool>("clip", entity)
+            .get::<bool>("clip", entity)
             .unwrap()
             .clone();
         if clip {
-            if let Ok(bounds) = ecm
-                .component_store()
-                .borrow_component::<Rectangle>("bounds", entity)
-            {
+            if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
                 shell.render_context_2_d().save();
                 shell.render_context_2_d().rect(
                     global_position.x + bounds.x(),
@@ -94,10 +91,7 @@ pub trait RenderObject: Any {
 
         let mut global_pos = (0.0, 0.0);
 
-        if let Ok(bounds) = ecm
-            .component_store()
-            .borrow_component::<Rectangle>("bounds", entity)
-        {
+        if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
             global_pos = (
                 global_position.x + bounds.x(),
                 global_position.y + bounds.y(),
@@ -107,7 +101,7 @@ pub trait RenderObject: Any {
 
         if let Ok(g_pos) = ecm
             .component_store_mut()
-            .borrow_mut_component::<Point>("position", entity)
+            .get_mut::<Point>("position", entity)
         {
             g_pos.x = global_pos.0;
             g_pos.y = global_pos.1;
@@ -134,10 +128,7 @@ pub trait RenderObject: Any {
 
         // render debug border for each widget
         if debug {
-            if let Ok(bounds) = ecm
-                .component_store()
-                .borrow_component::<Rectangle>("bounds", entity)
-            {
+            if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
                 let selector = Selector::from("debug-border");
                 let brush = theme.brush("border-color", &selector).unwrap();
                 shell.render_context_2_d().begin_path();

@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::Entity;
 
-use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*, render::Image};
+use crate::{prelude::*, render::Image, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
 use super::Layout;
 
@@ -34,7 +34,7 @@ impl Layout for FixedSizeLayout {
     ) -> DirtySize {
         if *ecm
             .component_store()
-            .borrow_component::<Visibility>("visibility", entity)
+            .get::<Visibility>("visibility", entity)
             .unwrap()
             == Visibility::Collapsed
         {
@@ -102,7 +102,7 @@ impl Layout for FixedSizeLayout {
         if let Some(size) = size {
             if let Ok(constraint) = ecm
                 .component_store_mut()
-                .borrow_mut_component::<Constraint>("constraint", entity)
+                .get_mut::<Constraint>("constraint", entity)
             {
                 constraint.set_width(size.0 as f64);
                 constraint.set_height(size.1 as f64);
@@ -111,7 +111,7 @@ impl Layout for FixedSizeLayout {
 
         let constraint = ecm
             .component_store()
-            .borrow_component::<Constraint>("constraint", entity)
+            .get::<Constraint>("constraint", entity)
             .unwrap()
             .clone();
 
@@ -165,7 +165,7 @@ impl Layout for FixedSizeLayout {
 
         if let Ok(bounds) = ecm
             .component_store_mut()
-            .borrow_mut_component::<Rectangle>("bounds", entity)
+            .get_mut::<Rectangle>("bounds", entity)
         {
             bounds.set_width(self.desired_size.borrow().width());
             bounds.set_height(self.desired_size.borrow().height());
