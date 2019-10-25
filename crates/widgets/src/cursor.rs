@@ -45,7 +45,7 @@ widget!(
         font: String,
 
         /// Sets or shares the text offset property.
-        scroll_offset: ScrollOffset,
+        scroll_offset: Point,
 
         /// Sets or shares the focused property.
         focused: bool,

@@ -99,7 +99,10 @@ impl Layout for ScrollLayout {
             }
         }
 
-        let off = ScrollOffset::get("scroll_offset", entity, ecm.component_store());
+        let off: Point = *ecm
+            .component_store()
+            .borrow_component("scroll_offset", entity)
+            .unwrap();
 
         if self.old_offset.get().0 != off.x || self.old_offset.get().1 != off.y {
             self.old_offset.set((off.x, off.y));
@@ -165,8 +168,11 @@ impl Layout for ScrollLayout {
             bounds.set_height(size.1);
         }
 
-        let scroll_viewer_mode =
-            ScrollViewerMode::get("scroll_viewer_mode", entity, ecm.component_store());
+        let scroll_viewer_mode = ecm
+            .component_store()
+            .borrow_component::<ScrollViewerMode>("scroll_viewer_mode", entity)
+            .unwrap()
+            .clone();
 
         let available_size = {
             let width = if scroll_viewer_mode.horizontal == ScrollMode::Custom
@@ -188,7 +194,10 @@ impl Layout for ScrollLayout {
             (width, height)
         };
 
-        let off = ScrollOffset::get("scroll_offset", entity, ecm.component_store());
+        let off: Point = *ecm
+            .component_store()
+            .borrow_component("scroll_offset", entity)
+            .unwrap();
         let delta: Point = *ecm
             .component_store()
             .borrow_component("delta", entity)
@@ -297,10 +306,10 @@ impl Layout for ScrollLayout {
 
                 if let Ok(off) = ecm
                     .component_store_mut()
-                    .borrow_mut_component::<ScrollOffset>("scroll_offset", entity)
+                    .borrow_mut_component::<Point>("scroll_offset", entity)
                 {
-                    (off.0).x = offset.0;
-                    (off.0).y = offset.1;
+                    off.x = offset.0;
+                    off.y = offset.1;
                 }
 
                 self.old_child_size.set(child_size);

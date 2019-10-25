@@ -195,11 +195,8 @@ impl State for TextBoxState {
                 }
             }
 
-            if let Some(scroll_offset) = context
-                .widget()
-                .try_get_mut::<ScrollOffset>("scroll_offset")
-            {
-                (scroll_offset.0).x += cursor_x_delta;
+            if let Some(scroll_offset) = context.widget().try_get_mut::<Point>("scroll_offset") {
+                scroll_offset.x += cursor_x_delta;
             }
         }
     }
@@ -244,7 +241,7 @@ widget!(
         padding: Thickness,
 
         /// Sets or shares the text offset property.
-        scroll_offset: ScrollOffset,
+        scroll_offset: Point,
 
         /// Sets or shares the (wheel, scroll) delta property. 
         delta: Point,

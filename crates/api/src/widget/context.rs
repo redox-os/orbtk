@@ -2,7 +2,7 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager};
 
-use crate::{prelude::*, render::*, shell::WindowShell, tree::Tree};
+use crate::{prelude::*, css_engine::*, render::*, shell::WindowShell, tree::Tree};
 
 use super::{MessageBox, WidgetContainer};
 
@@ -121,7 +121,7 @@ impl<'a> Context<'a> {
                 .component_store()
                 .borrow_component::<Selector>("selector", current_node)
             {
-                if let Some(child_id) = &selector.0.id {
+                if let Some(child_id) = &selector.id {
                     if child_id.eq(&id) {
                         return Some(current_node);
                     }
@@ -164,7 +164,7 @@ impl<'a> Context<'a> {
                     .component_store()
                     .borrow_component::<Selector>("selector", parent)
                 {
-                    if let Some(parent_element) = &selector.0.element {
+                    if let Some(parent_element) = &selector.element {
                         if parent_element.eq(&element) {
                             if self
                                 .ecm
@@ -199,7 +199,7 @@ impl<'a> Context<'a> {
                     .component_store()
                     .borrow_component::<Selector>("selector", parent)
                 {
-                    if let Some(parent_id) = &selector.0.id {
+                    if let Some(parent_id) = &selector.id {
                         if parent_id.eq(&id) {
                             return Some(self.get_widget(parent));
                         }

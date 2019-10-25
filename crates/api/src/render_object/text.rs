@@ -1,6 +1,6 @@
 use crate::{
     prelude::*,
-    utils::{Point, Rectangle, String16, Brush},
+    utils::{Brush, Point, Rectangle, String16},
 };
 
 /// Used to render a text.

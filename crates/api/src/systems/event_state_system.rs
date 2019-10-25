@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{prelude::*, shell::WindowShell, tree::Tree, utils::*};
+use crate::{prelude::*, shell::WindowShell, tree::Tree, utils::*, css_engine::*};
 
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
 pub struct EventStateSystem {
@@ -43,7 +43,6 @@ impl EventStateSystem {
             .component_store()
             .borrow_component::<Theme>("theme", root)
             .unwrap()
-            .0
             .clone();
 
         // resize
@@ -332,7 +331,6 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                 .component_store()
                 .borrow_component::<Theme>("theme", root)
                 .unwrap()
-                .0
                 .clone();
             let mut current_node = root;
 

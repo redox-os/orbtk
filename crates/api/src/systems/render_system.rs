@@ -10,6 +10,7 @@ use crate::{
     prelude::*,
     shell::{WindowShell, CONSOLE},
     tree::Tree,
+    css_engine::*,
 };
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
@@ -42,7 +43,6 @@ impl System<Tree, StringComponentStore> for RenderSystem {
             .component_store()
             .borrow_component::<Theme>("theme", root)
             .unwrap()
-            .0
             .clone();
 
         let mut offsets = BTreeMap::new();

@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{prelude::*, shell::WindowShell, tree::Tree, utils::*};
+use crate::{prelude::*, shell::WindowShell, tree::Tree, utils::*, css_engine::*};
 
 /// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calulated by the layout objects of layout widgets.
 pub struct LayoutSystem {
@@ -41,7 +41,6 @@ impl System<Tree, StringComponentStore> for LayoutSystem {
             .component_store()
             .borrow_component::<Theme>("theme", root)
             .unwrap()
-            .0
             .clone();
 
         self.layouts.borrow()[&root].measure(

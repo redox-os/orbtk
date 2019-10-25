@@ -12,7 +12,7 @@ use crate::{
     prelude::*,
     shell::{ShellRunner, WindowBuilder},
     tree::*,
-    utils::Rectangle,
+    utils::{Point, Rectangle},
 };
 
 pub use self::global::*;
@@ -75,7 +75,7 @@ impl Application {
         let position = world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<Pos>("position", window)
+            .borrow_component::<Point>("position", window)
             .unwrap()
             .clone();
         let constraint = world
@@ -113,8 +113,8 @@ impl Application {
             })
             .title(&(title)[..])
             .bounds(Rectangle::from((
-                position.0.x,
-                position.0.y,
+                position.x,
+                position.y,
                 constraint.width(),
                 constraint.height(),
             )))

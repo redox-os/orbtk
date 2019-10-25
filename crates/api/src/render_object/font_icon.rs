@@ -1,6 +1,6 @@
 use crate::{
     prelude::*,
-    utils::{Point, Rectangle, Brush},
+    utils::{Brush, Point, Rectangle},
 };
 
 pub struct FontIconRenderObject;

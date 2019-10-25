@@ -107,7 +107,7 @@ macro_rules! widget {
             shared_attached_properties: HashMap<String, SharedComponentBox>,
             event_handlers: Vec<Rc<dyn EventHandler>>,
             bounds: Rectangle,
-            position: Pos,
+            position: Point,
             min_width: Option<f64>,
             min_height: Option<f64>,
             max_width: Option<f64>,
@@ -161,7 +161,7 @@ macro_rules! widget {
             }
 
             /// Sets or shares the constraint property.
-            pub fn position(self, position: impl IntoPropertySource<Pos>) -> Self {
+            pub fn position(self, position: impl IntoPropertySource<Point>) -> Self {
                 self.set_property("position", position)
             }
 

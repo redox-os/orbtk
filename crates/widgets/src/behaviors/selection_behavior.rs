@@ -27,7 +27,6 @@ impl State for SelectionBehaviorState {
         let element = context
             .widget()
             .clone::<Selector>("selector")
-            .0
             .element
             .unwrap();
 

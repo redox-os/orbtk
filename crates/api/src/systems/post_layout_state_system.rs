@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{prelude::*, shell::WindowShell, tree::Tree};
+use crate::{prelude::*, shell::WindowShell, tree::Tree, css_engine::*};
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 pub struct PostLayoutStateSystem {
@@ -32,7 +32,6 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
             .component_store()
             .borrow_component::<Theme>("theme", root)
             .unwrap()
-            .0
             .clone();
 
         let mut context = Context::new(

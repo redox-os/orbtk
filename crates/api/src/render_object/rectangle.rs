@@ -2,7 +2,7 @@ use crate::{
     prelude::*,
     render::RenderContext2D,
     utils,
-    utils::{Point, Rectangle, Thickness, Brush},
+    utils::{Brush, Point, Rectangle, Thickness},
 };
 
 pub struct RectangleRenderObject;

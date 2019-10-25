@@ -2,7 +2,7 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{prelude::*, shell::WindowShell, tree::Tree};
+use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree};
 
 /// This system is used to initializes the widgets.
 pub struct InitSystem {
@@ -18,7 +18,7 @@ impl InitSystem {
     fn init_id(&self, node: Entity, store: &mut StringComponentStore, root: Entity) {
         // Add css id to global id map.
         let id = if let Ok(selector) = store.borrow_component::<Selector>("selector", node) {
-            if let Some(id) = &selector.0.id {
+            if let Some(id) = &selector.id {
                 Some((node, id.clone()))
             } else {
                 None
@@ -63,7 +63,6 @@ impl System<Tree, StringComponentStore> for InitSystem {
             .component_store()
             .borrow_component::<Theme>("theme", root)
             .unwrap()
-            .0
             .clone();
 
         let mut current_node = root;
@@ -111,12 +110,15 @@ pub fn print_tree(
         .component_store()
         .borrow_component::<String>("name", entity)
         .unwrap();
-    let selector = Selector::get_or_value(
-        "selector",
-        entity,
-        ecm.component_store(),
-        Selector::default(),
-    );
+
+    let selector = if let Ok(selector) = ecm
+        .component_store()
+        .borrow_component::<Selector>("selector", entity)
+    {
+        selector.clone()
+    } else {
+        Selector::default()
+    };
 
     crate::shell::CONSOLE.log(format!(
         "{}{} (entity: {}{})",

@@ -2,7 +2,7 @@
 
 use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc};
 
-use crate::{prelude::*, shell::WindowShell, utils::*};
+use crate::{prelude::*, shell::WindowShell, utils::*, css_engine::*};
 
 pub use self::clear::*;
 pub use self::default::*;
@@ -107,10 +107,10 @@ pub trait RenderObject: Any {
 
         if let Ok(g_pos) = ecm
             .component_store_mut()
-            .borrow_mut_component::<Pos>("position", entity)
+            .borrow_mut_component::<Point>("position", entity)
         {
-            g_pos.0.x = global_pos.0;
-            g_pos.0.y = global_pos.1;
+            g_pos.x = global_pos.0;
+            g_pos.y = global_pos.1;
         }
 
         self.render_children(
@@ -139,7 +139,7 @@ pub trait RenderObject: Any {
                 .borrow_component::<Rectangle>("bounds", entity)
             {
                 let selector = Selector::from("debug-border");
-                let brush = theme.brush("border-color", &selector.0).unwrap();
+                let brush = theme.brush("border-color", &selector).unwrap();
                 shell.render_context_2_d().begin_path();
                 shell.render_context_2_d().set_stroke_style(brush);
                 shell.render_context_2_d().stroke_rect(

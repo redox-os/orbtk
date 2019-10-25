@@ -58,7 +58,10 @@ impl Layout for StackLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let orientation = Orientation::get("orientation", entity, ecm.component_store());
+        let orientation: Orientation = *ecm
+            .component_store()
+            .borrow_component("orientation", entity)
+            .unwrap();
         let mut desired_size: (f64, f64) = (0.0, 0.0);
 
         if ecm.entity_store().children[&entity].len() > 0 {
@@ -81,7 +84,7 @@ impl Layout for StackLayout {
                     };
 
                     match orientation {
-                        OrientationValue::Horizontal => {
+                        Orientation::Horizontal => {
                             desired_size.0 += child_desired_size.width()
                                 + child_margin.left()
                                 + child_margin.right();
@@ -151,7 +154,10 @@ impl Layout for StackLayout {
             .borrow_component::<Constraint>("constraint", entity)
             .unwrap()
             .clone();
-        let orientation = Orientation::get("orientation", entity, ecm.component_store());
+        let orientation: Orientation = *ecm
+            .component_store()
+            .borrow_component("orientation", entity)
+            .unwrap();
         let mut size_counter = 0.0;
 
         let size = constraint.perform((
@@ -214,7 +220,7 @@ impl Layout for StackLayout {
                     .borrow_mut_component::<Rectangle>("bounds", child)
                 {
                     match orientation {
-                        OrientationValue::Horizontal => {
+                        Orientation::Horizontal => {
                             child_bounds.set_x(
                                 size_counter
                                     + child_horizontal_alignment.align_position(

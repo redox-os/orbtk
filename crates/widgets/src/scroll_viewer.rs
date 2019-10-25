@@ -35,7 +35,7 @@ widget!(
     /// **CSS element:** `scroll-viewer`
     ScrollViewer<ScrollViewerState>: MouseHandler {
         /// Sets or shares the scroll offset property.
-        scroll_offset: ScrollOffset,
+        scroll_offset: Point,
 
         /// Sets or shares the scroll mode property.
         scroll_viewer_mode: ScrollViewerMode,
@@ -57,7 +57,7 @@ impl Template for ScrollViewer {
             .scroll_offset(0.0)
             .delta(0.0)
             .clip(true)
-            .scroll_viewer_mode(ScrollViewerModeValue::default())
+            .scroll_viewer_mode(ScrollViewerMode::default())
             .on_scroll(move |p| {
                 state.scroll(p);
                 false

@@ -1,4 +1,7 @@
-use crate::{prelude::*, utils::{Point, Brush}};
+use crate::{
+    prelude::*,
+    utils::{Brush, Point},
+};
 
 pub struct ClearRenderObject;
 

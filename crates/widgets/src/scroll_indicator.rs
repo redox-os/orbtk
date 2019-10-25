@@ -7,7 +7,7 @@ pub struct ScrollIndicatorState;
 impl State for ScrollIndicatorState {
     fn update_post_layout(&self, ctx: &mut Context<'_>) {
         let padding = *ctx.widget().get::<Thickness>("padding");
-        let scroll_offset = ctx.widget().get::<ScrollOffset>("scroll_offset").0;
+        let scroll_offset = *ctx.widget().get::<Point>("scroll_offset");
         let content_id = ctx.widget().get::<ContentId>("content_id").0;
         let content_bounds = ctx
             .get_widget(Entity::from(content_id))
@@ -78,7 +78,7 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the scroll offset property.
-        scroll_offset: ScrollOffset,
+        scroll_offset: Point,
 
         /// Sets or shares the padding property.
         padding: Thickness,

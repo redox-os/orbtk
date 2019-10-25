@@ -541,7 +541,8 @@ impl Layout for GridLayout {
 
                 let child_margin = {
                     if child_desired_size.0 > 0.0 && child_desired_size.1 > 0.0 {
-                        *ecm.component_store().borrow_component::<Thickness>("margin", child)
+                        *ecm.component_store()
+                            .borrow_component::<Thickness>("margin", child)
                             .unwrap()
                     } else {
                         Thickness::default()
