@@ -25,7 +25,7 @@ impl State for SwitchState {
 
         let element = context.widget().clone::<Selector>().0.element.unwrap();
 
-        if let Some(parent) = context.parent_entity_by_element(element) {
+        if let Some(parent) = context.parent_entity_by_element(&*element) {
             context.get_widget(parent).update_theme_by_state(false);
         }
 

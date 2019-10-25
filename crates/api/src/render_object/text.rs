@@ -17,7 +17,7 @@ impl RenderObject for TextRenderObject {
 
             let txt = {
                 if !text.0.is_empty() {
-                    text.0.clone()
+                    text.0
                 } else {
                     widget.clone_or_default::<WaterMark>().0
                 }

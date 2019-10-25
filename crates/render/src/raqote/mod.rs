@@ -2,7 +2,7 @@ use std::{cmp, collections::HashMap};
 
 use raqote;
 
-use crate::{utils::*, RenderConfig, Pipeline, RenderTarget, TextMetrics};
+use crate::{utils::*, Pipeline, RenderConfig, RenderTarget, TextMetrics};
 
 pub use self::font::*;
 pub use self::image::Image;
@@ -75,12 +75,12 @@ impl RenderContext2D {
 
     /// Draws (fills) a given text at the given (x, y) position.
     pub fn fill_text(&mut self, text: &str, x: f64, y: f64) {
-        if text.len() == 0 {
+        if text.is_empty() {
             return;
         }
 
         let color = match self.config.fill_style {
-            Brush::SolidColor(color) => color.clone(),
+            Brush::SolidColor(color) => color,
             _ => Color::from("#000000"),
         };
 
@@ -97,7 +97,7 @@ impl RenderContext2D {
                         text,
                         self.config.font_config.font_size,
                         self.draw_target.get_data_mut(),
-                        &color,
+                        color,
                         width,
                         x,
                         y,
@@ -108,7 +108,7 @@ impl RenderContext2D {
                         text,
                         self.config.font_config.font_size,
                         self.draw_target.get_data_mut(),
-                        &color,
+                        color,
                         width,
                         x,
                         y,
@@ -119,7 +119,7 @@ impl RenderContext2D {
                     text,
                     self.config.font_config.font_size,
                     self.draw_target.get_data_mut(),
-                    &color,
+                    color,
                     width,
                     x,
                     y,
@@ -132,7 +132,7 @@ impl RenderContext2D {
     pub fn measure_text(&mut self, text: &str) -> TextMetrics {
         let mut text_metrics = TextMetrics::default();
 
-        if text.len() == 0 {
+        if text.is_empty() {
             return text_metrics;
         }
 
@@ -436,18 +436,16 @@ impl From<String> for Image {
 
 fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
     match brush {
-        Brush::SolidColor(color) => {
-            return raqote::Source::Solid(raqote::SolidSource {
-                r: color.r(),
-                g: color.g(),
-                b: color.b(),
-                a: color.a(),
-            });
-        }
+        Brush::SolidColor(color) => raqote::Source::Solid(raqote::SolidSource {
+            r: color.r(),
+            g: color.g(),
+            b: color.b(),
+            a: color.a(),
+        }),
         Brush::LinearGradient { start, end, stops } => {
-            let mut g_stops = vec![];
-            for stop in stops {
-                g_stops.push(raqote::GradientStop {
+            let g_stops = stops
+                .iter()
+                .map(|stop| raqote::GradientStop {
                     position: stop.position as f32,
                     color: raqote::Color::new(
                         stop.color.a(),
@@ -455,15 +453,15 @@ fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
                         stop.color.g(),
                         stop.color.b(),
                     ),
-                });
-            }
+                })
+                .collect();
 
-            return raqote::Source::new_linear_gradient(
+            raqote::Source::new_linear_gradient(
                 raqote::Gradient { stops: g_stops },
                 raqote::Point::new(start.x as f32, start.y as f32),
                 raqote::Point::new(end.x as f32, start.y as f32),
                 raqote::Spread::Pad,
-            );
+            )
         }
     }
 }

@@ -33,7 +33,7 @@ impl Brush {
 impl From<Brush> for Color {
     fn from(b: Brush) -> Color {
         match b {
-            Brush::SolidColor(color) => color.clone(),
+            Brush::SolidColor(color) => color,
             _ => Color::rgb(0, 0, 0),
         }
     }

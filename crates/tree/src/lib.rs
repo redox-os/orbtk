@@ -155,29 +155,25 @@ impl<'a> Iterator for TreeIterator<'a> {
 
     fn next(&mut self) -> Option<Entity> {
         if let Some(node) = self.current_node {
-            if self.tree.children[&node].len() > 0 {
+            if !self.tree.children[&node].is_empty() {
                 self.current_node = Some(self.tree.children[&node][0]);
                 return self.current_node;
             } else {
                 let mut tree_node = node;
-                loop {
-                    if let Some(parent) = self.tree.parent[&tree_node] {
-                        let siblings = &self.tree.children[&parent];
+                while let Some(parent) = self.tree.parent[&tree_node] {
+                    let siblings = &self.tree.children[&parent];
 
-                        let sibling_index =
-                            siblings.iter().position(|&r| r == tree_node).unwrap() + 1;
+                    let sibling_index = siblings.iter().position(|&r| r == tree_node).unwrap() + 1;
 
-                        if sibling_index < siblings.len() {
-                            self.current_node = Some(siblings[sibling_index]);
-                            return self.current_node;
-                        } else {
-                            tree_node = parent;
-                        }
+                    if sibling_index < siblings.len() {
+                        self.current_node = Some(siblings[sibling_index]);
+                        return self.current_node;
                     } else {
-                        // root
-                        return None;
+                        tree_node = parent;
                     }
                 }
+                // root
+                return None;
             }
         }
 

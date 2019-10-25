@@ -178,6 +178,9 @@ pub trait RowExt {
     /// Returns the number of elements in the rows list, also referred to as its 'length'.
     fn len(&self) -> usize;
 
+    /// Is the row empty?
+    fn is_empty(&self) -> bool;
+
     /// Returns a reference to an row.
     fn get(&self, row: usize) -> Option<&Row>;
 
@@ -200,6 +203,11 @@ impl RowExt for Rows {
     /// Returns the number of elements in the rows list, also referred to as its 'length'.
     fn len(&self) -> usize {
         (self.0).0.len()
+    }
+
+    /// Is the row empty?
+    fn is_empty(&self) -> bool {
+        (self.0).0.is_empty()
     }
 
     /// Returns a reference to an row.
