@@ -42,30 +42,25 @@ impl EventStateSystem {
             .clone();
 
         // resize
-        if let Ok(event) = event.downcast_ref::<WindowEvent>() {
-            match event {
-                WindowEvent::Resize { width, height } => {
-                    // update window size
-                    if let Ok(bounds) = ecm
-                        .component_store_mut()
-                        .borrow_mut_component::<Bounds>(root)
-                    {
-                        bounds.set_width(*width);
-                        bounds.set_height(*height);
-                    }
-
-                    if let Ok(constraint) = ecm
-                        .component_store_mut()
-                        .borrow_mut_component::<Constraint>(root)
-                    {
-                        constraint.set_width(*width);
-                        constraint.set_height(*height);
-                    }
-
-                    self.update.set(true);
-                }
-                _ => {}
+        if let Ok(WindowEvent::Resize { width, height }) = event.downcast_ref::<WindowEvent>() {
+            // update window size
+            if let Ok(bounds) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Bounds>(root)
+            {
+                bounds.set_width(*width);
+                bounds.set_height(*height);
             }
+
+            if let Ok(constraint) = ecm
+                .component_store_mut()
+                .borrow_mut_component::<Constraint>(root)
+            {
+                constraint.set_width(*width);
+                constraint.set_height(*height);
+            }
+
+            self.update.set(true);
         }
 
         // global key handling
@@ -93,18 +88,16 @@ impl EventStateSystem {
         let mut clipped_parent = vec![];
 
         loop {
-            if clipped_parent.len() > 0 {
-                if let Some(cp) = clipped_parent.get(clipped_parent.len() - 1) {
-                    if ecm.entity_store().parent[&current_node] == Some(*cp) {
-                        clipped_parent.push(current_node);
-                    } else {
-                        clipped_parent.pop();
-                    }
+            if let Some(cp) = clipped_parent.last() {
+                if ecm.entity_store().parent[&current_node] == Some(*cp) {
+                    clipped_parent.push(current_node);
+                } else {
+                    clipped_parent.pop();
                 }
             }
 
             // key down event
-            if let Ok(_) = event.downcast_ref::<KeyDownEvent>() {
+            if event.downcast_ref::<KeyDownEvent>().is_ok() {
                 if let Some(focused) = ecm
                     .component_store()
                     .borrow_component::<Global>(root)
@@ -120,7 +113,7 @@ impl EventStateSystem {
             }
 
             // key up event
-            if let Ok(_) = event.downcast_ref::<KeyUpEvent>() {
+            if event.downcast_ref::<KeyUpEvent>().is_ok() {
                 if let Some(focused) = ecm
                     .component_store()
                     .borrow_component::<Global>(root)
@@ -136,7 +129,7 @@ impl EventStateSystem {
             }
 
             // scroll handling
-            if let Ok(_) = event.downcast_ref::<ScrollEvent>() {
+            if event.downcast_ref::<ScrollEvent>().is_ok() {
                 if check_mouse_condition(
                     mouse_position,
                     &WidgetContainer::new(current_node, ecm, &theme),
@@ -199,7 +192,7 @@ impl EventStateSystem {
             }
 
             // mouse up handling
-            if let Ok(_) = event.downcast_ref::<MouseUpEvent>() {
+            if event.downcast_ref::<MouseUpEvent>().is_ok() {
                 if self.mouse_down_nodes.borrow().contains(&current_node) {
                     matching_nodes.push(current_node);
                     let index = self
@@ -220,11 +213,8 @@ impl EventStateSystem {
                     .0
             {
                 if let Some(handlers) = self.handlers.borrow().get(&current_node) {
-                    for handler in handlers {
-                        if handler.handles_event(&event) {
-                            matching_nodes.push(current_node);
-                            break;
-                        }
+                    if handlers.iter().any(|handler| handler.handles_event(&event)) {
+                        matching_nodes.push(current_node);
                     }
                 }
             }
@@ -362,7 +352,7 @@ impl System<Tree> for EventStateSystem {
                 }
             }
 
-            if shell.adapter().event_queue.len() == 0 {
+            if shell.adapter().event_queue.is_empty() {
                 break;
             }
         }

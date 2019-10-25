@@ -41,7 +41,7 @@ impl Size for DirtySize {
     }
 
     fn set_width(&mut self, width: f64) {
-        if self.width != width {
+        if (self.width - width).abs() > std::f64::EPSILON {
             self.dirty = true;
         }
 
@@ -53,7 +53,7 @@ impl Size for DirtySize {
     }
 
     fn set_height(&mut self, height: f64) {
-        if self.height != height {
+        if (self.height - height).abs() > std::f64::EPSILON {
             self.dirty = true;
         }
 
@@ -65,7 +65,9 @@ impl Size for DirtySize {
     }
 
     fn set_size(&mut self, width: f64, height: f64) {
-        if self.width != width && self.height != height {
+        if (self.width - width).abs() > std::f64::EPSILON
+            && (self.height - height).abs() > std::f64::EPSILON
+        {
             self.dirty = true
         }
 

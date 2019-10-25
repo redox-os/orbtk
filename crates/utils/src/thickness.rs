@@ -62,7 +62,7 @@ impl Spacer for Thickness {
     }
 
     fn thickness(&self) -> Thickness {
-        self.clone()
+        *self
     }
 
     fn set_thickness<T: Into<Thickness>>(&mut self, thickness: T) {
