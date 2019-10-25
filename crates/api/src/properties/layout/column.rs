@@ -178,6 +178,9 @@ pub trait ColumnExt {
     /// Returns the number of elements in the columns list, also referred to as its 'length'.
     fn len(&self) -> usize;
 
+    /// Is the column empty?
+    fn is_empty(&self) -> bool;
+
     /// Returns a reference to an column.
     fn get(&self, column: usize) -> Option<&Column>;
 
@@ -200,6 +203,11 @@ impl ColumnExt for Columns {
     /// Returns the number of elements in the columns list, also referred to as its 'length'.
     fn len(&self) -> usize {
         (self.0).0.len()
+    }
+
+    /// Is the column empty?
+    fn is_empty(&self) -> bool {
+        (self.0).0.is_empty()
     }
 
     /// Returns a reference to an column.

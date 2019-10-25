@@ -61,8 +61,8 @@ impl TextBoxState {
                 }
             }
             Key::Backspace => {
-                if text.len() > 0 && current_selection.start_index > 0 {
-                    for _ in 0..(current_selection.length + 1) {
+                if !text.is_empty() && current_selection.start_index > 0 {
+                    for _ in 0..=current_selection.length {
                         ctx.widget()
                             .get_mut::<Text>()
                             .0
@@ -81,8 +81,8 @@ impl TextBoxState {
                 }
             }
             Key::Delete => {
-                if text.len() > 0 && text.len() < current_selection.start_index {
-                    for _ in 0..(current_selection.length + 1) {
+                if !text.is_empty() && text.len() < current_selection.start_index {
+                    for _ in 0..=current_selection.length {
                         ctx.widget()
                             .get_mut::<Text>()
                             .0
@@ -298,9 +298,7 @@ impl Template for TextBox {
                                             .child(
                                                 TextBlock::create()
                                                     .selector(
-                                                        SelectorValue::default()
-                                                            .clone()
-                                                            .id("text_block"),
+                                                        SelectorValue::default().id("text_block"),
                                                     )
                                                     .vertical_alignment("Center")
                                                     .foreground(id)

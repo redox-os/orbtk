@@ -17,7 +17,7 @@ impl Alignment {
     /// Calculates the position (x or y) of the widget depending on the available measure, the goal measure
     /// margin and alignment.
     pub fn align_position(
-        &self,
+        self,
         available_measure: f64,
         measure: f64,
         margin_start: f64,
@@ -33,7 +33,7 @@ impl Alignment {
     /// Calculates the measure (measure or height) of the widget depending on the available measure, the goal measure
     /// margin and horizontal alignment.
     pub fn align_measure(
-        &self,
+        self,
         available_measure: f64,
         measure: f64,
         margin_start: f64,

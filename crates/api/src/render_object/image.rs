@@ -13,10 +13,7 @@ impl RenderObject for ImageRenderObject {
     fn render_self(&self, context: &mut Context<'_>, global_position: &Point) {
         let (_, mut image) = {
             let widget = context.widget();
-            (
-                widget.clone::<Bounds>(),
-                widget.try_clone::<Image>().clone(),
-            )
+            (widget.clone::<Bounds>(), widget.try_clone::<Image>())
         };
 
         if let Some(image) = &mut image {
