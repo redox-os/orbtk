@@ -1,4 +1,9 @@
-use crate::{prelude::*, render::RenderContext2D, utils, utils::{Position, Size, Thickness, Point}};
+use crate::{
+    prelude::*,
+    render::RenderContext2D,
+    utils,
+    utils::{Point, Position, Size, Thickness},
+};
 
 pub struct RectangleRenderObject;
 

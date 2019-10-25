@@ -31,12 +31,23 @@ impl State for ListViewState {
                             let item = ListViewItem::create().build(&mut build_context);
 
                             let mouse_behavior = MouseBehavior::create().build(&mut build_context);
-                            build_context
-                                .register_shared_property::<Selector>("selector", mouse_behavior, item);
-                            build_context.register_shared_property::<bool>("pressed", mouse_behavior, item);
+                            build_context.register_shared_property::<Selector>(
+                                "selector",
+                                mouse_behavior,
+                                item,
+                            );
+                            build_context.register_shared_property::<bool>(
+                                "pressed",
+                                mouse_behavior,
+                                item,
+                            );
                             build_context.append_child(item, mouse_behavior);
 
-                            build_context.register_shared_property::<Brush>("foreground", child, item);
+                            build_context.register_shared_property::<Brush>(
+                                "foreground",
+                                child,
+                                item,
+                            );
                             build_context.register_shared_property::<f64>("font_size", child, item);
                             build_context.append_child(items_panel, item);
                             build_context.append_child(mouse_behavior, child);
@@ -66,7 +77,11 @@ impl State for ListViewState {
             widget.update_theme_by_state(false);
         }
 
-        *self.selected_entities.borrow_mut() = context.widget().get::<SelectedEntities>("selected_entities").0.clone();
+        *self.selected_entities.borrow_mut() = context
+            .widget()
+            .get::<SelectedEntities>("selected_entities")
+            .0
+            .clone();
     }
 }
 
@@ -97,24 +112,45 @@ impl State for ListViewItemState {
             let selection_mode = parent.get::<SelectionMode>("selection_mode").0;
             // deselect item
             if selected {
-                parent.get_mut::<SelectedEntities>("selected_entities").0.remove(&entity);
-                parent.get_mut::<SelectedIndices>("selected_indices").0.remove(&index);
+                parent
+                    .get_mut::<SelectedEntities>("selected_entities")
+                    .0
+                    .remove(&entity);
+                parent
+                    .get_mut::<SelectedIndices>("selected_indices")
+                    .0
+                    .remove(&index);
                 return;
             }
 
-            if parent.get::<SelectedEntities>("selected_entities").0.contains(&entity)
+            if parent
+                .get::<SelectedEntities>("selected_entities")
+                .0
+                .contains(&entity)
                 || selection_mode == SelMode::None
             {
                 return;
             }
 
             if selection_mode == SelMode::Single {
-                parent.get_mut::<SelectedEntities>("selected_entities").0.clear();
-                parent.get_mut::<SelectedIndices>("selected_indices").0.clear();
+                parent
+                    .get_mut::<SelectedEntities>("selected_entities")
+                    .0
+                    .clear();
+                parent
+                    .get_mut::<SelectedIndices>("selected_indices")
+                    .0
+                    .clear();
             }
 
-            parent.get_mut::<SelectedEntities>("selected_entities").0.insert(entity);
-            parent.get_mut::<SelectedIndices>("selected_indices").0.insert(index);
+            parent
+                .get_mut::<SelectedEntities>("selected_entities")
+                .0
+                .insert(entity);
+            parent
+                .get_mut::<SelectedIndices>("selected_indices")
+                .0
+                .insert(index);
         }
     }
 }

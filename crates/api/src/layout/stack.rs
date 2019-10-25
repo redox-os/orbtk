@@ -33,13 +33,20 @@ impl Layout for StackLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if *ecm.component_store().borrow_component::<Visibility>("visibility", entity).unwrap() == Visibility::Collapsed {
+        if *ecm
+            .component_store()
+            .borrow_component::<Visibility>("visibility", entity)
+            .unwrap()
+            == Visibility::Collapsed
+        {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
-        let vertical_alignment = VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
+        let horizontal_alignment =
+            HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
+        let vertical_alignment =
+            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -121,8 +128,10 @@ impl Layout for StackLayout {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
-        let vertical_alignment = VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
+        let horizontal_alignment =
+            HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
+        let vertical_alignment =
+            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
         let margin = Margin::get("margin", entity, ecm.component_store());
         let constraint = Constraint::get("constraint", entity, ecm.component_store());
         let orientation = Orientation::get("orientation", entity, ecm.component_store());
@@ -175,7 +184,8 @@ impl Layout for StackLayout {
 
                 let child_horizontal_alignment =
                     HorizontalAlignment::get("horizontal_alignment", child, ecm.component_store());
-                let child_vertical_alignment = VerticalAlignment::get("vertical_alignment", child, ecm.component_store());
+                let child_vertical_alignment =
+                    VerticalAlignment::get("vertical_alignment", child, ecm.component_store());
 
                 if let Ok(child_bounds) = ecm
                     .component_store_mut()

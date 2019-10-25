@@ -2,12 +2,12 @@
 
 use std::fmt::Debug;
 
-use dces::prelude::{Component, StringComponentStore, Entity};
+use dces::prelude::{Component, Entity, StringComponentStore};
 
 pub use self::layout::*;
 pub use self::styling::*;
 pub use self::widget::*;
-use crate::{prelude::*, utils::String16, utils};
+use crate::{prelude::*, utils, utils::String16};
 
 mod layout;
 mod styling;
@@ -25,7 +25,12 @@ where
 }
 
 /// Returns the value of a property of a widget if it exists otherwise the given value.
-pub fn get_property_or_value<T>(key: &str, entity: Entity, store: &StringComponentStore, value: T) -> T
+pub fn get_property_or_value<T>(
+    key: &str,
+    entity: Entity,
+    store: &StringComponentStore,
+    value: T,
+) -> T
 where
     T: Clone + Component,
 {

@@ -20,7 +20,7 @@ impl State for CursorState {
             widget.set("visibility", Visibility::from("visible"));
         } else {
             widget.set("visibility", Visibility::from("collapsed"));
-        } 
+        }
     }
 }
 

@@ -38,7 +38,12 @@ impl Layout for TextSelectionLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if *ecm.component_store().borrow_component::<Visibility>("visibility", entity).unwrap() == Visibility::Collapsed {
+        if *ecm
+            .component_store()
+            .borrow_component::<Visibility>("visibility", entity)
+            .unwrap()
+            == Visibility::Collapsed
+        {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
@@ -128,7 +133,8 @@ impl Layout for TextSelectionLayout {
         let mut pos = 0.0;
         let mut size = self.desired_size.borrow().size();
 
-        let vertical_alignment = VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
+        let vertical_alignment =
+            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
         let margin = Margin::get("margin", entity, ecm.component_store());
 
         {

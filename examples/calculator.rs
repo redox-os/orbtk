@@ -170,9 +170,9 @@ fn generate_digit_button(
             state.action(Action::Digit(sight));
             true
         })
-        .attach("grid_column", GridColumn(column))
-        .attach("grid_row", GridRow(row))
-        .attach("column_span", ColumnSpan(column_span))
+        .attach(Grid::column(column))
+        .attach(Grid::row(row))
+        .attach(Grid::column_span(column_span))
         .build(context)
 }
 
@@ -194,9 +194,9 @@ fn generate_operation_button(
             state.action(Action::Operator(sight));
             true
         })
-        .attach("grid_column", GridColumn(column))
-        .attach("column_span", ColumnSpan(column_span))
-        .attach("grid_row", GridRow(row))
+        .attach(Grid::column(column))
+        .attach(Grid::column_span(column_span))
+        .attach(Grid::row(row))
         .build(context)
 }
 
@@ -219,7 +219,7 @@ impl Template for MainView {
                         Container::create()
                             .padding(8.0)
                             .selector(Selector::from("container").class("header"))
-                            .attach("grid_row", GridRow(0))
+                            .attach(Grid::row(0))
                             .child(
                                 Grid::create()
                                     .child(
@@ -254,7 +254,7 @@ impl Template for MainView {
                         Container::create()
                             .selector(Selector::from("container").class("content"))
                             .padding(8.0)
-                            .attach("grid_row", GridRow(1))
+                            .attach(Grid::row(1))
                             .child(
                                 Grid::create()
                                     .columns(

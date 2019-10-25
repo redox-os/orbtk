@@ -23,7 +23,12 @@ impl State for SwitchState {
 
         context.widget().set("selected", self.selected.get());
 
-        let element = context.widget().clone::<Selector>("selector").0.element.unwrap();
+        let element = context
+            .widget()
+            .clone::<Selector>("selector")
+            .0
+            .element
+            .unwrap();
 
         if let Some(parent) = context.parent_entity_by_element(element) {
             context.get_widget(parent).update_theme_by_state(false);
@@ -114,14 +119,12 @@ impl Template for Switch {
                                 Grid::create()
                                     .child(Container::create().size(24.0, 24.0).build(context))
                                     .border_radius(1.0)
-                                    .attach_by_source::<bool>("selected", id)
                                     .selector(
                                         SelectorValue::from("switch-toggle")
                                             .id("SwitchSwitchToggle"),
                                     )
                                     .vertical_alignment("center")
                                     .horizontal_alignment("Start")
-                                    .attach_by_source::<bool>("selected", id)
                                     .build(context),
                             )
                             .build(context),

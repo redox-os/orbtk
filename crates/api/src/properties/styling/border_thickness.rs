@@ -54,8 +54,8 @@ impl Spacer for BorderThickness {
 
 #[cfg(test)]
 mod tests {
-    use crate::utils::*;
     use super::*;
+    use crate::utils::*;
 
     #[test]
     fn test_set_left() {

@@ -18,9 +18,7 @@ impl render::Pipeline for EmptyRenderPipeline {
 }
 
 impl render::RenderPipeline for EmptyRenderPipeline {
-     fn draw(&self, _: &mut render::RenderTarget) {
-
-     }
+    fn draw(&self, _: &mut render::RenderTarget) {}
 }
 
 property!(

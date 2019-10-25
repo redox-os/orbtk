@@ -59,10 +59,7 @@ impl State for MainViewState {
                     let len = self.list.borrow().len();
                     if len < 5 {
                         self.list.borrow_mut().push(format!("Item {}", len + 1));
-                        context
-                            .child_by_id("items")
-                            .unwrap()
-                            .set("count", len + 1);
+                        context.child_by_id("items").unwrap().set("count", len + 1);
 
                         if len == 0 {
                             context
@@ -82,10 +79,7 @@ impl State for MainViewState {
                 Action::RemoveItem => {
                     let len = self.list.borrow().len();
                     self.list.borrow_mut().remove(len - 1);
-                    context
-                        .child_by_id("items")
-                        .unwrap()
-                        .set("count", len - 1);
+                    context.child_by_id("items").unwrap().set("count", len - 1);
 
                     if len == 1 {
                         context
@@ -175,7 +169,7 @@ impl Template for MainView {
                     )
                     .child(
                         Stack::create()
-                            .attach("grid_column", GridColumn(0))
+                            .attach(Grid::column(0))
                             // Column 0
                             .child(create_header(context, "Buttons"))
                             .child(
@@ -183,8 +177,8 @@ impl Template for MainView {
                                     .text("Button")
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .icon(material_font_icons::CHECK_FONT_ICON)
-                                    .attach("grid_column", GridColumn(0))
-                                    .attach("grid_row", GridRow(1))
+                                    .attach(Grid::column(0))
+                                    .attach(Grid::row(1))
                                     .on_click(move |_| {
                                         state.action(Action::IncrementCounter);
                                         true
@@ -197,46 +191,46 @@ impl Template for MainView {
                                     .selector(SelectorValue::new().with("button").class("primary"))
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .icon(material_font_icons::CHECK_FONT_ICON)
-                                    .attach("grid_column", GridColumn(0))
-                                    .attach("grid_row", GridRow(2))
+                                    .attach(Grid::column(0))
+                                    .attach(Grid::row(2))
                                     .build(context),
                             )
                             .child(
                                 ToggleButton::create()
                                     .text("ToggleButton")
                                     .margin((0.0, 8.0, 0.0, 0.0))
-                                    .attach("grid_column", GridColumn(0))
-                                    .attach("grid_row", GridRow(3))
+                                    .attach(Grid::column(0))
+                                    .attach(Grid::row(3))
                                     .build(context),
                             )
                             .child(
                                 CheckBox::create()
                                     .text("CheckBox")
                                     .margin((0.0, 8.0, 0.0, 0.0))
-                                    .attach("grid_column", GridColumn(0))
-                                    .attach("grid_row", GridRow(4))
+                                    .attach(Grid::column(0))
+                                    .attach(Grid::row(4))
                                     .build(context),
                             )
                             .child(
                                 Switch::create()
                                     .margin((0.0, 8.0, 0.0, 0.0))
-                                    .attach("grid_column", GridColumn(0))
-                                    .attach("grid_row", GridRow(5))
+                                    .attach(Grid::column(0))
+                                    .attach(Grid::row(5))
                                     .build(context),
                             )
                             .build(context),
                     )
                     .child(
                         Stack::create()
-                            .attach("grid_column", GridColumn(2))
+                            .attach(Grid::column(2))
                             .child(create_header(context, "Text"))
                             .child(
                                 TextBlock::create()
                                     .selector(SelectorValue::new().class("body"))
                                     .text(id)
                                     .margin((0.0, 8.0, 0.0, 0.0))
-                                    .attach("grid_column", GridColumn(2))
-                                    .attach("grid_row", GridRow(1))
+                                    .attach(Grid::column(2))
+                                    .attach(Grid::row(1))
                                     .build(context),
                             )
                             .child(
@@ -244,8 +238,8 @@ impl Template for MainView {
                                     .water_mark("TextBox...")
                                     .text("")
                                     .margin((0.0, 8.0, 0.0, 0.0))
-                                    .attach("grid_column", GridColumn(2))
-                                    .attach("grid_row", GridRow(2))
+                                    .attach(Grid::column(2))
+                                    .attach(Grid::row(2))
                                     .build(context),
                             )
                             .child(
@@ -253,8 +247,8 @@ impl Template for MainView {
                                     .water_mark("TextBox...")
                                     .text("")
                                     .margin((0.0, 8.0, 0.0, 0.0))
-                                    .attach("grid_column", GridColumn(2))
-                                    .attach("grid_row", GridRow(2))
+                                    .attach(Grid::column(2))
+                                    .attach(Grid::row(2))
                                     .build(context),
                             )
                             .build(context),
@@ -277,23 +271,23 @@ impl Template for MainView {
                                     .column("*")
                                     .build(),
                             )
-                            .attach("grid_column", GridColumn(4))
+                            .attach(Grid::column(4))
                             .child(
                                 TextBlock::create()
                                     .text("Items")
                                     .selector(SelectorValue::new().with("text-block").class("h1"))
-                                    .attach("grid_column", GridColumn(0))
-                                    .attach("column_span", ColumnSpan(3))
-                                    .attach("grid_row", GridRow(0))
+                                    .attach(Grid::column(0))
+                                    .attach(Grid::column_span(3))
+                                    .attach(Grid::row(0))
                                     .build(context),
                             )
                             .child(
                                 ItemsWidget::create()
                                     .selector(Selector::from("items-widget").id("items"))
                                     .padding((4.0, 4.0, 4.0, 2.0))
-                                    .attach("grid_column", GridColumn(0))
-                                    .attach("column_span", ColumnSpan(3))
-                                    .attach("grid_row", GridRow(1))
+                                    .attach(Grid::column(0))
+                                    .attach(Grid::column_span(3))
+                                    .attach(Grid::row(1))
                                     .margin((0.0, 8.0, 0.0, 8.0))
                                     .items_builder(move |bc, index| {
                                         Button::create()
@@ -313,8 +307,8 @@ impl Template for MainView {
                                         true
                                     })
                                     .min_width(0.0)
-                                    .attach("grid_column", GridColumn(0))
-                                    .attach("grid_row", GridRow(2))
+                                    .attach(Grid::column(0))
+                                    .attach(Grid::row(2))
                                     .build(context),
                             )
                             .child(
@@ -326,15 +320,15 @@ impl Template for MainView {
                                         true
                                     })
                                     .min_width(0.0)
-                                    .attach("grid_column", GridColumn(2))
-                                    .attach("grid_row", GridRow(2))
+                                    .attach(Grid::column(2))
+                                    .attach(Grid::row(2))
                                     .build(context),
                             )
                             .child(
                                 ListView::create()
-                                    .attach("grid_column", GridColumn(0))
-                                    .attach("column_span", ColumnSpan(3))
-                                    .attach("grid_row", GridRow(3))
+                                    .attach(Grid::column(0))
+                                    .attach(Grid::column_span(3))
+                                    .attach(Grid::row(3))
                                     .selected_indices(id)
                                     .margin((0.0, 16.0, 0.0, 8.0))
                                     .items_builder(move |bc, index| {
@@ -355,10 +349,9 @@ impl Template for MainView {
                                 TextBlock::create()
                                     .selector(Selector::from("text-block").id("selection"))
                                     .max_width(120.0)
-                                    .attach("grid_column", GridColumn(0))
-                                    .attach("column_span", ColumnSpan(3))
-                                    .attach("column_span", ColumnSpan(2))
-                                    .attach("grid_row", GridRow(4))
+                                    .attach(Grid::column(0))
+                                    .attach(Grid::column_span(3))
+                                    .attach(Grid::row(4))
                                     .text("Selected:")
                                     .build(context),
                             )

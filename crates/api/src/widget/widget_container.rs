@@ -1,6 +1,9 @@
 use std::any::TypeId;
 
-use crate::{prelude::*, utils::{Spacer, String16}};
+use crate::{
+    prelude::*,
+    utils::{Spacer, String16},
+};
 
 use dces::prelude::{Component, Entity, EntityComponentManager};
 
@@ -287,7 +290,10 @@ impl<'a> WidgetContainer<'a> {
 
         if self.has::<BorderThickness>("border_width") {
             if let Some(border_width) = self.theme.uint("border-width", &selector.0) {
-                self.set::<BorderThickness>("border_width", BorderThickness::from(border_width as f64));
+                self.set::<BorderThickness>(
+                    "border_width",
+                    BorderThickness::from(border_width as f64),
+                );
             }
         }
 

@@ -22,6 +22,44 @@ widget!(
     }
 );
 
+pub struct AttachedProperty<P>
+where
+    P: Component + Debug,
+{
+    pub key: String,
+    pub property_source: PropertySource<P>,
+}
+
+impl<P> AttachedProperty<P>
+where
+    P: Component + Debug,
+{
+    fn new(key: impl Into<String>, property_source: impl IntoPropertySource<P>) -> Self {
+        AttachedProperty {
+            key: key.into(),
+            property_source: property_source.into_source(),
+        }
+    }
+}
+
+impl Grid {
+    pub fn column(property: impl IntoPropertySource<usize>) -> AttachedProperty<usize> {
+        AttachedProperty::new(stringify!(column), property)
+    }
+
+    pub fn column_span(property: impl IntoPropertySource<usize>) -> AttachedProperty<usize> {
+        AttachedProperty::new(stringify!(columns_span), property)
+    }
+
+    pub fn row(property: impl IntoPropertySource<usize>) -> AttachedProperty<usize> {
+        AttachedProperty::new(stringify!(row), property)
+    }
+
+    pub fn row_span(property: impl IntoPropertySource<usize>) -> AttachedProperty<usize> {
+        AttachedProperty::new(stringify!(row_span), property)
+    }
+}
+
 impl Template for Grid {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Grid")

@@ -311,7 +311,7 @@ impl Template for TextBox {
                                                     .text(id)
                                                     .font(id)
                                                     .font_size(id)
-                                                    .attach_by_source::<String16>("water_mark", id)
+                                                    // .attach_by_source::<String16>("water_mark", id)
                                                     .build(context),
                                             )
                                             .build(context),

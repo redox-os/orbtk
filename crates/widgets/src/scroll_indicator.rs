@@ -9,7 +9,10 @@ impl State for ScrollIndicatorState {
         let padding = ctx.widget().get::<Padding>("padding").0;
         let scroll_offset = ctx.widget().get::<ScrollOffset>("scroll_offset").0;
         let content_id = ctx.widget().get::<ContentId>("content_id").0;
-        let content_bounds = ctx.get_widget(Entity::from(content_id)).get::<Bounds>("bounds").0;
+        let content_bounds = ctx
+            .get_widget(Entity::from(content_id))
+            .get::<Bounds>("bounds")
+            .0;
         let bounds = ctx.widget().get::<Bounds>("bounds").0;
 
         let horizontal_p = bounds.width / content_bounds.width;
@@ -19,8 +22,12 @@ impl State for ScrollIndicatorState {
         if let Some(mut vertical_scroll_bar) = ctx.child_by_id("vertical-scroll-bar") {
             if vertical_p < 1.0 {
                 vertical_scroll_bar.set("visibility", Visibility::from("visible"));
-                let scroll_bar_margin_bottom = vertical_scroll_bar.get::<Margin>("margin").0.bottom();
-                let vertical_min_height = vertical_scroll_bar.get::<Constraint>("constraint").0.min_height();
+                let scroll_bar_margin_bottom =
+                    vertical_scroll_bar.get::<Margin>("margin").0.bottom();
+                let vertical_min_height = vertical_scroll_bar
+                    .get::<Constraint>("constraint")
+                    .0
+                    .min_height();
                 let height =
                     ((bounds.height - padding.top - padding.bottom - scroll_bar_margin_bottom)
                         * vertical_p)
@@ -38,8 +45,12 @@ impl State for ScrollIndicatorState {
         if let Some(mut horizontal_scroll_bar) = ctx.child_by_id("horizontal-scroll-bar") {
             if horizontal_p < 1.0 {
                 horizontal_scroll_bar.set("visibility", Visibility::from("Visible"));
-                let scroll_bar_margin_right = horizontal_scroll_bar.get::<Margin>("margin").0.right();
-                let horizontal_min_width = horizontal_scroll_bar.get::<Constraint>("constraint").0.min_width();
+                let scroll_bar_margin_right =
+                    horizontal_scroll_bar.get::<Margin>("margin").0.right();
+                let horizontal_min_width = horizontal_scroll_bar
+                    .get::<Constraint>("constraint")
+                    .0
+                    .min_width();
                 let width =
                     ((bounds.width - padding.left - padding.right - scroll_bar_margin_right)
                         * horizontal_p)

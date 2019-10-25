@@ -1,4 +1,7 @@
-use crate::{prelude::*, utils::{Point, String16}};
+use crate::{
+    prelude::*,
+    utils::{Point, String16},
+};
 
 /// Used to render a text.
 pub struct TextRenderObject;

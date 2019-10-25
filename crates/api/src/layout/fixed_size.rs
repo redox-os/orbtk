@@ -32,13 +32,20 @@ impl Layout for FixedSizeLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if *ecm.component_store().borrow_component::<Visibility>("visibility", entity).unwrap() == Visibility::Collapsed {
+        if *ecm
+            .component_store()
+            .borrow_component::<Visibility>("visibility", entity)
+            .unwrap()
+            == Visibility::Collapsed
+        {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
-        let vertical_alignment = VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
+        let horizontal_alignment =
+            HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
+        let vertical_alignment =
+            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0

@@ -42,7 +42,10 @@ pub trait RenderObject: Any {
             }
         }
 
-        if let Ok(visibility) = ecm.component_store().borrow_component::<Visibility>("visibility", entity) {
+        if let Ok(visibility) = ecm
+            .component_store()
+            .borrow_component::<Visibility>("visibility", entity)
+        {
             if *visibility != Visibility::Visible {
                 return;
             }
@@ -56,9 +59,13 @@ pub trait RenderObject: Any {
         let clip = ecm
             .component_store()
             .borrow_component::<bool>("clip", entity)
-            .unwrap().clone();
+            .unwrap()
+            .clone();
         if clip {
-            if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>("bounds", entity) {
+            if let Ok(bounds) = ecm
+                .component_store()
+                .borrow_component::<Bounds>("bounds", entity)
+            {
                 shell.render_context_2_d().save();
                 shell.render_context_2_d().rect(
                     global_position.x + bounds.x(),
@@ -87,7 +94,10 @@ pub trait RenderObject: Any {
 
         let mut global_pos = (0.0, 0.0);
 
-        if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>("bounds", entity) {
+        if let Ok(bounds) = ecm
+            .component_store()
+            .borrow_component::<Bounds>("bounds", entity)
+        {
             global_pos = (
                 global_position.x + bounds.x(),
                 global_position.y + bounds.y(),
@@ -124,7 +134,10 @@ pub trait RenderObject: Any {
 
         // render debug border for each widget
         if debug {
-            if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>("bounds", entity) {
+            if let Ok(bounds) = ecm
+                .component_store()
+                .borrow_component::<Bounds>("bounds", entity)
+            {
                 let selector = Selector::from("debug-border");
                 let brush = theme.brush("border-color", &selector.0).unwrap();
                 shell.render_context_2_d().begin_path();

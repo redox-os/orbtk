@@ -35,13 +35,20 @@ impl Layout for ScrollLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if *ecm.component_store().borrow_component::<Visibility>("visibility", entity).unwrap() == Visibility::Collapsed {
+        if *ecm
+            .component_store()
+            .borrow_component::<Visibility>("visibility", entity)
+            .unwrap()
+            == Visibility::Collapsed
+        {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
-        let vertical_alignment = VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
+        let horizontal_alignment =
+            HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
+        let vertical_alignment =
+            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -108,8 +115,10 @@ impl Layout for ScrollLayout {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment = HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
-        let vertical_alignment = VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
+        let horizontal_alignment =
+            HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
+        let vertical_alignment =
+            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
         let margin = Margin::get("margin", entity, ecm.component_store());
         // let _padding = Padding::get("padding", entity, ecm.component_store());
         let constraint = Constraint::get("constraint", entity, ecm.component_store());
@@ -137,7 +146,8 @@ impl Layout for ScrollLayout {
             bounds.set_height(size.1);
         }
 
-        let scroll_viewer_mode = ScrollViewerMode::get("scroll_viewer_mode", entity, ecm.component_store());
+        let scroll_viewer_mode =
+            ScrollViewerMode::get("scroll_viewer_mode", entity, ecm.component_store());
 
         let available_size = {
             let width = if scroll_viewer_mode.horizontal == ScrollMode::Custom
@@ -173,7 +183,8 @@ impl Layout for ScrollLayout {
 
                 // let child_margin = get_margin(*child, store);
                 let mut child_size = old_child_size;
-                let child_vertical_alignment = VerticalAlignment::get("vertical_alignment", child, ecm.component_store());
+                let child_vertical_alignment =
+                    VerticalAlignment::get("vertical_alignment", child, ecm.component_store());
                 let child_horizontal_alignment =
                     HorizontalAlignment::get("horizontal_alignment", child, ecm.component_store());
                 let child_margin = Margin::get("margin", child, ecm.component_store());

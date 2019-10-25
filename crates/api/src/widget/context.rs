@@ -166,7 +166,11 @@ impl<'a> Context<'a> {
                 {
                     if let Some(parent_element) = &selector.0.element {
                         if parent_element.eq(&element) {
-                            if self.ecm.component_store().is_origin::<Selector>("selector", parent) {
+                            if self
+                                .ecm
+                                .component_store()
+                                .is_origin::<Selector>("selector", parent)
+                            {
                                 return Some(parent);
                             }
                         }

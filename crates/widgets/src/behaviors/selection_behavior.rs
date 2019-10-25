@@ -24,7 +24,12 @@ impl State for SelectionBehaviorState {
 
         context.widget().set("selected", self.selected.get());
 
-        let element = context.widget().clone::<Selector>("selector").0.element.unwrap();
+        let element = context
+            .widget()
+            .clone::<Selector>("selector")
+            .0
+            .element
+            .unwrap();
 
         if let Some(parent) = context.parent_entity_by_element(element) {
             context.get_widget(parent).update_theme_by_state(false);

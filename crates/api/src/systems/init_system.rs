@@ -102,9 +102,21 @@ impl System<Tree, StringComponentStore> for InitSystem {
     }
 }
 
-pub fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
-    let name = ecm.component_store().borrow_component::<String>("name", entity).unwrap();
-    let selector = Selector::get_or_value("selector", entity, ecm.component_store(), Selector::default());
+pub fn print_tree(
+    entity: Entity,
+    depth: usize,
+    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+) {
+    let name = ecm
+        .component_store()
+        .borrow_component::<String>("name", entity)
+        .unwrap();
+    let selector = Selector::get_or_value(
+        "selector",
+        entity,
+        ecm.component_store(),
+        Selector::default(),
+    );
 
     crate::shell::CONSOLE.log(format!(
         "{}{} (entity: {}{})",

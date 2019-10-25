@@ -29,7 +29,10 @@ impl System<Tree, StringComponentStore> for LayoutSystem {
         let mut window_size = (0.0, 0.0);
         let root = ecm.entity_store().root;
 
-        if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>("bounds", root) {
+        if let Ok(bounds) = ecm
+            .component_store()
+            .borrow_component::<Bounds>("bounds", root)
+        {
             window_size.0 = bounds.width();
             window_size.1 = bounds.height();
         };

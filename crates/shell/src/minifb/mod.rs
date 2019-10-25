@@ -95,7 +95,7 @@ where
     key_alt: KeyHelper,
     key_alt_r: KeyHelper,
     key_escape: KeyHelper,
-    key_home: KeyHelper
+    key_home: KeyHelper,
 }
 
 impl<A> WindowShell<A>
@@ -201,7 +201,11 @@ where
         key_event_helper(&mut self.key_delete, &mut self.adapter, &mut self.window);
         key_event_helper(&mut self.key_enter, &mut self.adapter, &mut self.window);
         key_event_helper(&mut self.key_control, &mut self.adapter, &mut self.window);
-        key_event_helper(&mut self.key_control_right, &mut self.adapter, &mut self.window);
+        key_event_helper(
+            &mut self.key_control_right,
+            &mut self.adapter,
+            &mut self.window,
+        );
         key_event_helper(&mut self.key_shift_l, &mut self.adapter, &mut self.window);
         key_event_helper(&mut self.key_shift_r, &mut self.adapter, &mut self.window);
         key_event_helper(&mut self.key_alt, &mut self.adapter, &mut self.window);

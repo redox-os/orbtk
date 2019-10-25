@@ -132,7 +132,20 @@ macro_rules! widget {
 
         impl $widget {
             /// Sets or shares an attached property.
-            pub fn attach<P: Component + Debug>(mut self, key: &str, property: impl IntoPropertySource<P>) -> Self {
+            pub fn attach<P: Component + Debug>(mut self, property: AttachedProperty<P>) -> Self {
+                match property.property_source {
+                    PropertySource::Value(value) => {
+                        self.attached_properties.insert(property.key, ComponentBox::new(value));
+                    },
+                    PropertySource::Source(source) => {
+                        self.shared_attached_properties.insert(property.key, SharedComponentBox::new(TypeId::of::<P>(), source));
+                    }
+                }
+                self
+            }
+
+            // internal helper
+            fn set_property<P: Component + Debug>(mut self, key: &str, property: impl IntoPropertySource<P>) -> Self {
                 match property.into_source() {
                     PropertySource::Value(value) => {
                         self.attached_properties.insert(key.to_string(), ComponentBox::new(value));
@@ -144,50 +157,44 @@ macro_rules! widget {
                 self
             }
 
-            /// Shares an attached property.
-            pub fn attach_by_source<P: Component>(mut self, key: &str, source: Entity) -> Self {
-                self.shared_attached_properties.insert(key.to_string(), SharedComponentBox::new(TypeId::of::<P>(), source));
-                self
-            }
-
             /// Sets or shares the constraint property.
             pub fn position(self, position: impl IntoPropertySource<Pos>) -> Self {
-                self.attach("position", position)
+                self.set_property("position", position)
             }
 
             /// Sets or shares the constraint property.
             pub fn constraint(self, constraint: impl IntoPropertySource<Constraint>) -> Self {
-                self.attach("constraint", constraint)
+                self.set_property("constraint", constraint)
             }
 
             /// Sets or shares the vertical alignment property.
             pub fn vertical_alignment(self, vertical_alignment: impl IntoPropertySource<VerticalAlignment>) -> Self {
-                self.attach("vertical_alignment", vertical_alignment)
+                self.set_property("vertical_alignment", vertical_alignment)
             }
 
             /// Sets or shares the horizontal alignment property.
             pub fn horizontal_alignment(self, horizontal_alignment: impl IntoPropertySource<HorizontalAlignment>) -> Self {
-                self.attach("horizontal_alignment", horizontal_alignment)
+                self.set_property("horizontal_alignment", horizontal_alignment)
             }
 
             /// Sets or shares the visibility property.
             pub fn visibility(self, visibility: impl IntoPropertySource<Visibility>) -> Self {
-                self.attach("visibility", visibility)
+                self.set_property("visibility", visibility)
             }
 
             /// Sets or shares the margin property.
             pub fn margin(self, margin: impl IntoPropertySource<Margin>) -> Self {
-                self.attach("margin", margin)
+                self.set_property("margin", margin)
             }
 
             /// Sets or shares the enabled property.
             pub fn enabled(self, enabled: impl IntoPropertySource<bool>) -> Self {
-                self.attach("enabled", enabled)
+                self.set_property("enabled", enabled)
             }
 
             /// Sets or shares the clip property.
             pub fn clip(self, clip: impl IntoPropertySource<bool>) -> Self {
-                self.attach("clip", clip)
+                self.set_property("clip", clip)
             }
 
             /// Inserts a new width.
