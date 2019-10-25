@@ -43,10 +43,14 @@ impl Layout for StackLayout {
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment =
-            HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
-        let vertical_alignment =
-            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
+        let horizontal_alignment: Alignment = *ecm
+            .component_store()
+            .borrow_component("horizontal_alignment", entity)
+            .unwrap();
+        let vertical_alignment: Alignment = *ecm
+            .component_store()
+            .borrow_component("vertical_alignment", entity)
+            .unwrap();
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -68,9 +72,11 @@ impl Layout for StackLayout {
                         child_layout.measure(render_context_2_d, child, ecm, layouts, theme);
                     let child_margin = {
                         if child_desired_size.width() > 0.0 && child_desired_size.height() > 0.0 {
-                            Margin::get("margin", child, ecm.component_store())
+                            *ecm.component_store()
+                                .borrow_component::<Thickness>("margin", child)
+                                .unwrap()
                         } else {
-                            Margin::default().0
+                            Thickness::default()
                         }
                     };
 
@@ -128,12 +134,23 @@ impl Layout for StackLayout {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment =
-            HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
-        let vertical_alignment =
-            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
-        let margin = Margin::get("margin", entity, ecm.component_store());
-        let constraint = Constraint::get("constraint", entity, ecm.component_store());
+        let horizontal_alignment: Alignment = *ecm
+            .component_store()
+            .borrow_component("horizontal_alignment", entity)
+            .unwrap();
+        let vertical_alignment: Alignment = *ecm
+            .component_store()
+            .borrow_component("vertical_alignment", entity)
+            .unwrap();
+        let margin: Thickness = *ecm
+            .component_store()
+            .borrow_component("margin", entity)
+            .unwrap();
+        let constraint = ecm
+            .component_store()
+            .borrow_component::<Constraint>("constraint", entity)
+            .unwrap()
+            .clone();
         let orientation = Orientation::get("orientation", entity, ecm.component_store());
         let mut size_counter = 0.0;
 
@@ -176,17 +193,22 @@ impl Layout for StackLayout {
 
                 let child_margin = {
                     if child_desired_size.0 > 0.0 && child_desired_size.1 > 0.0 {
-                        Margin::get("margin", child, ecm.component_store())
+                        *ecm.component_store()
+                            .borrow_component::<Thickness>("margin", child)
+                            .unwrap()
                     } else {
-                        Margin::default().0
+                        Thickness::default()
                     }
                 };
 
-                let child_horizontal_alignment =
-                    HorizontalAlignment::get("horizontal_alignment", child, ecm.component_store());
-                let child_vertical_alignment =
-                    VerticalAlignment::get("vertical_alignment", child, ecm.component_store());
-
+                let child_horizontal_alignment: Alignment = *ecm
+                    .component_store()
+                    .borrow_component("horizontal_alignment", child)
+                    .unwrap();
+                let child_vertical_alignment: Alignment = *ecm
+                    .component_store()
+                    .borrow_component("vertical_alignment", child)
+                    .unwrap();
                 if let Ok(child_bounds) = ecm
                     .component_store_mut()
                     .borrow_mut_component::<Rectangle>("bounds", child)

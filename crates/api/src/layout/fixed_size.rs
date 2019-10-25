@@ -42,18 +42,16 @@ impl Layout for FixedSizeLayout {
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment =
-            HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
-        let vertical_alignment =
-            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
+        let widget = WidgetContainer::new(entity, ecm, theme);
+
+        let horizontal_alignment: Alignment = *widget.get("horizontal_alignment");
+        let vertical_alignment: Alignment = *widget.get("vertical_alignment");
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
         {
             self.desired_size.borrow_mut().set_dirty(true);
         }
-
-        let widget = WidgetContainer::new(entity, ecm, theme);
 
         let size = widget
             .try_get::<Image>("image")
@@ -62,8 +60,6 @@ impl Layout for FixedSizeLayout {
                 widget.try_get::<String16>("text").and_then(|text| {
                     let font = widget.get::<String>("font");
                     let font_size = widget.get::<f64>("font_size");
-                    // render_context_2_d.set_font_size(font_size);
-                    // render_context_2_d.set_font_family(font.as_str());
 
                     if text.is_empty() {
                         widget
@@ -113,9 +109,11 @@ impl Layout for FixedSizeLayout {
             }
         }
 
-        // -- todo will be removed after orbgl merge --
-
-        let constraint = Constraint::get("constraint", entity, ecm.component_store());
+        let constraint = ecm
+            .component_store()
+            .borrow_component::<Constraint>("constraint", entity)
+            .unwrap()
+            .clone();
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());

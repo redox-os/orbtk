@@ -38,10 +38,10 @@ impl State for SwitchState {
             let mut switch_toggle = context.child_by_id("switch_toggle").unwrap();
 
             if self.selected.get() {
-                switch_toggle.set("horizontal_alignment", HorizontalAlignment::from("end"));
+                switch_toggle.set("horizontal_alignment", Alignment::from("end"));
                 add_selector_to_widget("selected", &mut switch_toggle);
             } else {
-                switch_toggle.set("horizontal_alignment", HorizontalAlignment::from("start"));
+                switch_toggle.set("horizontal_alignment", Alignment::from("start"));
                 remove_selector_from_widget("selected", &mut switch_toggle);
             }
 
@@ -66,13 +66,13 @@ widget!(
         border_radius: f64,
 
         /// Sets or shares the border thickness property.
-        border_width: BorderThickness,
+        border_width: Thickness,
 
         /// Sets or shares the border brush property.
         border_brush: Brush,
 
         /// Sets or shares the padding property.
-        padding: Padding,
+        padding: Thickness,
 
         /// Sets or shares the css selector property.
         selector: Selector,
@@ -120,8 +120,7 @@ impl Template for Switch {
                                     .child(Container::create().size(24.0, 24.0).build(context))
                                     .border_radius(1.0)
                                     .selector(
-                                        SelectorValue::from("switch-toggle")
-                                            .id("switch_toggle"),
+                                        SelectorValue::from("switch-toggle").id("switch_toggle"),
                                     )
                                     .vertical_alignment("center")
                                     .horizontal_alignment("start")

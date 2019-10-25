@@ -1,4 +1,4 @@
-use crate::{prelude::*, utils::Point};
+use crate::{prelude::*, utils::{Point, Brush}};
 
 pub struct ClearRenderObject;
 
@@ -10,7 +10,7 @@ impl Into<Box<dyn RenderObject>> for ClearRenderObject {
 
 impl RenderObject for ClearRenderObject {
     fn render_self(&self, context: &mut Context<'_>, _: &Point) {
-        let background = context.widget().get::<Brush>("background").0.clone();
+        let background = context.widget().get::<Brush>("background").clone();
 
         context.render_context_2_d().clear(&background);
     }

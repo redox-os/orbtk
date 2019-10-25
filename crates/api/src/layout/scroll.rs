@@ -45,10 +45,14 @@ impl Layout for ScrollLayout {
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment =
-            HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
-        let vertical_alignment =
-            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
+        let horizontal_alignment: Alignment = *ecm
+            .component_store()
+            .borrow_component("horizontal_alignment", entity)
+            .unwrap();
+        let vertical_alignment: Alignment = *ecm
+            .component_store()
+            .borrow_component("vertical_alignment", entity)
+            .unwrap();
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -56,7 +60,11 @@ impl Layout for ScrollLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let constraint = Constraint::get("constraint", entity, ecm.component_store());
+        let constraint = ecm
+            .component_store()
+            .borrow_component::<Constraint>("constraint", entity)
+            .unwrap()
+            .clone();
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());
@@ -115,13 +123,24 @@ impl Layout for ScrollLayout {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment =
-            HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
-        let vertical_alignment =
-            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
-        let margin = Margin::get("margin", entity, ecm.component_store());
-        // let _padding = Padding::get("padding", entity, ecm.component_store());
-        let constraint = Constraint::get("constraint", entity, ecm.component_store());
+        let horizontal_alignment: Alignment = *ecm
+            .component_store()
+            .borrow_component("horizontal_alignment", entity)
+            .unwrap();
+        let vertical_alignment: Alignment = *ecm
+            .component_store()
+            .borrow_component("vertical_alignment", entity)
+            .unwrap();
+        let margin: Thickness = *ecm
+            .component_store()
+            .borrow_component("margin", entity)
+            .unwrap();
+        // let _padding = Thickness::get("padding", entity, ecm.component_store());
+        let constraint = ecm
+            .component_store()
+            .borrow_component::<Constraint>("constraint", entity)
+            .unwrap()
+            .clone();
 
         let size = constraint.perform((
             horizontal_alignment.align_measure(
@@ -170,7 +189,10 @@ impl Layout for ScrollLayout {
         };
 
         let off = ScrollOffset::get("scroll_offset", entity, ecm.component_store());
-        let delta = Delta::get("delta", entity, ecm.component_store());
+        let delta: Point = *ecm
+            .component_store()
+            .borrow_component("delta", entity)
+            .unwrap();
         let mut offset = (off.x, off.y);
 
         let old_child_size = self.old_child_size.get();
@@ -183,11 +205,18 @@ impl Layout for ScrollLayout {
 
                 // let child_margin = get_margin(*child, store);
                 let mut child_size = old_child_size;
-                let child_vertical_alignment =
-                    VerticalAlignment::get("vertical_alignment", child, ecm.component_store());
-                let child_horizontal_alignment =
-                    HorizontalAlignment::get("horizontal_alignment", child, ecm.component_store());
-                let child_margin = Margin::get("margin", child, ecm.component_store());
+                let child_vertical_alignment: Alignment = *ecm
+                    .component_store()
+                    .borrow_component("vertical_alignment", child)
+                    .unwrap();
+                let child_horizontal_alignment: Alignment = *ecm
+                    .component_store()
+                    .borrow_component("horizontal_alignment", child)
+                    .unwrap();
+                let child_margin: Thickness = *ecm
+                    .component_store()
+                    .borrow_component("margin", child)
+                    .unwrap();
 
                 if let Some(child_layout) = layouts.borrow().get(&child) {
                     child_size = child_layout.arrange(

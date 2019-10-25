@@ -1,6 +1,5 @@
 use super::*;
 
-mod column;
 mod constraint;
 mod horizontal_alignment;
 mod margin;

@@ -115,9 +115,9 @@ macro_rules! widget {
             width: Option<f64>,
             height: Option<f64>,
             name: Option<String>,
-            horizontal_alignment: HorizontalAlignment,
-            vertical_alignment: VerticalAlignment,
-            margin: Margin,
+            horizontal_alignment: Alignment,
+            vertical_alignment: Alignment,
+            margin: Thickness,
             enabled: bool,
             clip: bool,
             visibility: Visibility,
@@ -171,12 +171,12 @@ macro_rules! widget {
             }
 
             /// Sets or shares the vertical alignment property.
-            pub fn vertical_alignment(self, vertical_alignment: impl IntoPropertySource<VerticalAlignment>) -> Self {
+            pub fn vertical_alignment(self, vertical_alignment: impl IntoPropertySource<Alignment>) -> Self {
                 self.set_property("vertical_alignment", vertical_alignment)
             }
 
             /// Sets or shares the horizontal alignment property.
-            pub fn horizontal_alignment(self, horizontal_alignment: impl IntoPropertySource<HorizontalAlignment>) -> Self {
+            pub fn horizontal_alignment(self, horizontal_alignment: impl IntoPropertySource<Alignment>) -> Self {
                 self.set_property("horizontal_alignment", horizontal_alignment)
             }
 
@@ -186,7 +186,7 @@ macro_rules! widget {
             }
 
             /// Sets or shares the margin property.
-            pub fn margin(self, margin: impl IntoPropertySource<Margin>) -> Self {
+            pub fn margin(self, margin: impl IntoPropertySource<Thickness>) -> Self {
                 self.set_property("margin", margin)
             }
 

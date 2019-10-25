@@ -173,7 +173,7 @@ impl State for TextBoxState {
         {
             let mut cursor = context.child_by_id("cursor").unwrap();
 
-            if let Some(margin) = cursor.try_get_mut::<Margin>("margin") {
+            if let Some(margin) = cursor.try_get_mut::<Thickness>("margin") {
                 if margin.left() < 0.0 || margin.left() > scroll_viewer_width {
                     cursor_x_delta = self.cursor_x.get() - margin.left();
                     margin.set_left(self.cursor_x.get());
@@ -235,19 +235,19 @@ widget!(
         border_radius: f64,
 
         /// Sets or shares the border thickness property.
-        border_width: BorderThickness,
+        border_width: Thickness,
 
         /// Sets or shares the border brush property.
         border_brush: Brush,
 
         /// Sets or shares the padding property.
-        padding: Padding,
+        padding: Thickness,
 
         /// Sets or shares the text offset property.
         scroll_offset: ScrollOffset,
 
         /// Sets or shares the (wheel, scroll) delta property. 
-        delta: Delta,
+        delta: Point,
 
          /// Sets or shares the focused property.
         focused: bool,

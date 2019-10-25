@@ -48,7 +48,11 @@ impl Layout for TextSelectionLayout {
             return self.desired_size.borrow().clone();
         }
 
-        let constraint = Constraint::get("constraint", entity, ecm.component_store());
+        let constraint = ecm
+            .component_store()
+            .borrow_component::<Constraint>("constraint", entity)
+            .unwrap()
+            .clone();
 
         if let Ok(selection) = ecm
             .component_store()
@@ -133,9 +137,14 @@ impl Layout for TextSelectionLayout {
         let mut pos = 0.0;
         let mut size = self.desired_size.borrow().size();
 
-        let vertical_alignment =
-            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
-        let margin = Margin::get("margin", entity, ecm.component_store());
+        let vertical_alignment: Alignment = *ecm
+            .component_store()
+            .borrow_component("vertical_alignment", entity)
+            .unwrap();
+        let margin: Thickness = *ecm
+            .component_store()
+            .borrow_component("margin", entity)
+            .unwrap();
 
         {
             let mut widget = WidgetContainer::new(entity, ecm, &theme);
@@ -164,7 +173,7 @@ impl Layout for TextSelectionLayout {
                 .try_get::<ScrollOffset>("scroll_offset")
                 .map_or(0.0, |off| (off.0).x);
 
-            if let Some(margin) = widget.try_get_mut::<Margin>("margin") {
+            if let Some(margin) = widget.try_get_mut::<Thickness>("margin") {
                 margin.set_left(pos);
             }
 

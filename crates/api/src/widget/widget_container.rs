@@ -2,7 +2,7 @@ use std::any::TypeId;
 
 use crate::{
     prelude::*,
-    utils::{Spacer, String16},
+    utils::{Thickness, String16, Brush},
 };
 
 use dces::prelude::{Component, Entity, EntityComponentManager};
@@ -288,11 +288,11 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
-        if self.has::<BorderThickness>("border_width") {
+        if self.has::<Thickness>("border_width") {
             if let Some(border_width) = self.theme.uint("border-width", &selector.0) {
-                self.set::<BorderThickness>(
+                self.set::<Thickness>(
                     "border_width",
-                    BorderThickness::from(border_width as f64),
+                    Thickness::from(border_width as f64),
                 );
             }
         }
@@ -327,43 +327,43 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
-        if let Some(padding) = self.try_clone::<Padding>("padding") {
+        if let Some(padding) = self.try_clone::<Thickness>("padding") {
             if let Some(pad) = self.theme.uint("padding", &selector.0) {
                 let mut padding = padding;
                 padding.set_thickness(pad as f64);
-                self.set::<Padding>("padding", padding);
+                self.set::<Thickness>("padding", padding);
             }
         }
 
-        if let Some(padding) = self.try_clone::<Padding>("padding") {
+        if let Some(padding) = self.try_clone::<Thickness>("padding") {
             if let Some(left) = self.theme.uint("padding-left", &selector.0) {
                 let mut padding = padding;
                 padding.set_left(left as f64);
-                self.set::<Padding>("padding", padding);
+                self.set::<Thickness>("padding", padding);
             }
         }
 
-        if let Some(padding) = self.try_clone::<Padding>("padding") {
+        if let Some(padding) = self.try_clone::<Thickness>("padding") {
             if let Some(top) = self.theme.uint("padding-top", &selector.0) {
                 let mut padding = padding;
                 padding.set_top(top as f64);
-                self.set::<Padding>("padding", padding);
+                self.set::<Thickness>("padding", padding);
             }
         }
 
-        if let Some(padding) = self.try_clone::<Padding>("padding") {
+        if let Some(padding) = self.try_clone::<Thickness>("padding") {
             if let Some(right) = self.theme.uint("padding-right", &selector.0) {
                 let mut padding = padding;
                 padding.set_right(right as f64);
-                self.set::<Padding>("padding", padding);
+                self.set::<Thickness>("padding", padding);
             }
         }
 
-        if let Some(padding) = self.try_clone::<Padding>("padding") {
+        if let Some(padding) = self.try_clone::<Thickness>("padding") {
             if let Some(bottom) = self.theme.uint("padding-bottom", &selector.0) {
                 let mut padding = padding;
                 padding.set_bottom(bottom as f64);
-                self.set::<Padding>("padding", padding);
+                self.set::<Thickness>("padding", padding);
             }
         }
 

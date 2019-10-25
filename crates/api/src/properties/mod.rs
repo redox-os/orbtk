@@ -84,6 +84,15 @@ into_property_source!(usize);
 into_property_source!(f64: i32);
 
 // Implementation of PropertySource for utils types
+into_property_source!(utils::Alignment: &str);
+into_property_source!(utils::Brush: &str, utils::Color);
+into_property_source!(utils::Point: f64, i32, (i32, i32), (f64, f64));
+into_property_source!(utils::Rectangle: (i32, i32, i32, i32), (f64, f64, f64, f64));
+into_property_source!(utils::Thickness: i32, f64, (i32, i32), (f64, f64), (i32, i32, i32, i32), (f64, f64, f64, f64));
 into_property_source!(utils::String16: &str, String);
 into_property_source!(utils::Visibility: &str);
-into_property_source!(utils::Rectangle: (i32, i32, i32, i32), (f64, f64, f64, f64));
+
+
+// Implementation of custom property types
+into_property_source!(Columns);
+into_property_source!(Constraint);

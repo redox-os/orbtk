@@ -64,7 +64,7 @@ impl State for MouseBehaviorState {
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
         if self.has_delta.get() {
-            context.widget().set("delta", Delta(Point::new(0.0, 0.0)));
+            context.widget().set("delta", Point::new(0.0, 0.0));
             self.has_delta.set(false);
         }
     }
@@ -82,7 +82,7 @@ widget!(
         pressed: bool,
 
         /// Sets or shares the (wheel, scroll) delta property. 
-        delta: Delta
+        delta: Point
     }
 );
 

@@ -6,7 +6,7 @@ pub struct ScrollIndicatorState;
 
 impl State for ScrollIndicatorState {
     fn update_post_layout(&self, ctx: &mut Context<'_>) {
-        let padding = ctx.widget().get::<Padding>("padding").0;
+        let padding = *ctx.widget().get::<Thickness>("padding");
         let scroll_offset = ctx.widget().get::<ScrollOffset>("scroll_offset").0;
         let content_id = ctx.widget().get::<ContentId>("content_id").0;
         let content_bounds = ctx
@@ -23,10 +23,9 @@ impl State for ScrollIndicatorState {
             if vertical_p < 1.0 {
                 vertical_scroll_bar.set("visibility", Visibility::from("visible"));
                 let scroll_bar_margin_bottom =
-                    vertical_scroll_bar.get::<Margin>("margin").0.bottom();
+                    vertical_scroll_bar.get::<Thickness>("margin").bottom();
                 let vertical_min_height = vertical_scroll_bar
                     .get::<Constraint>("constraint")
-                    .0
                     .min_height();
                 let height =
                     ((bounds.height - padding.top - padding.bottom - scroll_bar_margin_bottom)
@@ -46,10 +45,9 @@ impl State for ScrollIndicatorState {
             if horizontal_p < 1.0 {
                 horizontal_scroll_bar.set("visibility", Visibility::from("Visible"));
                 let scroll_bar_margin_right =
-                    horizontal_scroll_bar.get::<Margin>("margin").0.right();
+                    horizontal_scroll_bar.get::<Thickness>("margin").right();
                 let horizontal_min_width = horizontal_scroll_bar
                     .get::<Constraint>("constraint")
-                    .0
                     .min_width();
                 let width =
                     ((bounds.width - padding.left - padding.right - scroll_bar_margin_right)
@@ -83,7 +81,7 @@ widget!(
         scroll_offset: ScrollOffset,
 
         /// Sets or shares the padding property.
-        padding: Padding,
+        padding: Thickness,
 
         /// Sets or shares the content id property.
         content_id: ContentId

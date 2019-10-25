@@ -164,7 +164,7 @@ widget!(
         border_radius: f64,
 
         /// Sets or shares the border thickness property.
-        border_width: BorderThickness,
+        border_width: Thickness,
 
         /// Sets or shares the border brush property.
         border_brush: Brush,
@@ -179,7 +179,7 @@ widget!(
         font: String,
 
         /// Sets or shares the padding property.
-        padding: Padding,
+        padding: Thickness,
 
         /// Sets or shares the css selector property.
         selector: Selector,
@@ -238,13 +238,13 @@ widget!(
         border_radius: f64,
 
         /// Sets or shares the border thickness property.
-        border_width: BorderThickness,
+        border_width: Thickness,
 
         /// Sets or shares the border brush property.
         border_brush: Brush,
 
         /// Sets or shares the padding property.
-        padding: Padding,
+        padding: Thickness,
 
         /// Sets or shares the orientation property.
         orientation: Orientation,
@@ -265,7 +265,7 @@ widget!(
         selected_entities: SelectedEntities,
 
         /// Sets or shares the (wheel, scroll) delta property. 
-        delta: Delta
+        delta: Point
     }
 );
 

@@ -1,7 +1,5 @@
 use std::slice::{Iter, IterMut};
 
-use crate::prelude::*;
-
 /// Used to build a column, specifying additional details.
 #[derive(Default)]
 pub struct ColumnBuilder {
@@ -155,70 +153,138 @@ impl ColumnsBuilder {
 
     /// Builds the columns.
     pub fn build(self) -> Columns {
-        Columns(ColumnsContainer(self.columns))
+        Columns(self.columns)
     }
 }
 
 /// Helper struct used inside of the columns Property.
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct ColumnsContainer(pub Vec<Column>);
+pub struct Columns(pub Vec<Column>);
 
-property!(
-    /// `Columns` describes a list of grid columns.
-    #[derive(Default)]
-    Columns(ColumnsContainer)
-);
-
-// --- Trait implementations ---
-
-/// Provides additional operations on grid columns.
-pub trait ColumnExt {
-    fn create() -> ColumnsBuilder;
-
-    /// Returns the number of elements in the columns list, also referred to as its 'length'.
-    fn len(&self) -> usize;
-
-    /// Returns a reference to an column.
-    fn get(&self, column: usize) -> Option<&Column>;
-
-    /// Returns a mutable reference to an column.
-    fn get_mut(&mut self, column: usize) -> Option<&mut Column>;
-
-    /// Returns an iterator over the slice.
-    fn iter(&self) -> Iter<Column>;
-
-    /// Returns a mutable iterator over the slice.
-    fn iter_mut(&mut self) -> IterMut<Column>;
-}
-
-impl ColumnExt for Columns {
+impl Columns {
     /// Creates a new `ColumnsBuilder` object with default values.
-    fn create() -> ColumnsBuilder {
+    pub fn create() -> ColumnsBuilder {
         ColumnsBuilder::new()
     }
 
     /// Returns the number of elements in the columns list, also referred to as its 'length'.
-    fn len(&self) -> usize {
-        (self.0).0.len()
+    pub fn len(&self) -> usize {
+        self.0.len()
     }
 
     /// Returns a reference to an column.
-    fn get(&self, column: usize) -> Option<&Column> {
-        (self.0).0.get(column)
+    pub fn get(&self, column: usize) -> Option<&Column> {
+        self.0.get(column)
     }
 
     /// Returns a mutable reference to an column.
-    fn get_mut(&mut self, column: usize) -> Option<&mut Column> {
-        (self.0).0.get_mut(column)
+    pub fn get_mut(&mut self, column: usize) -> Option<&mut Column> {
+        self.0.get_mut(column)
     }
 
     /// Returns an iterator over the slice.
-    fn iter(&self) -> Iter<Column> {
-        (self.0).0.iter()
+    pub fn iter(&self) -> Iter<Column> {
+        self.0.iter()
     }
 
     /// Returns a mutable iterator over the slice.
-    fn iter_mut(&mut self) -> IterMut<Column> {
-        (self.0).0.iter_mut()
+    pub fn iter_mut(&mut self) -> IterMut<Column> {
+        self.0.iter_mut()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_width() {
+        let width = ColumnWidth::Width(64.0);
+
+        let builder = ColumnBuilder::new();
+        let column = builder.width(width).build();
+
+        assert_eq!(column.width, width);
+    }
+
+    #[test]
+    fn test_min_width() {
+        let min_width = 64.0;
+
+        let builder = ColumnBuilder::new();
+        let column = builder.min_width(min_width).build();
+
+        assert_eq!(column.min_width, min_width);
+    }
+
+    #[test]
+    fn test_max_width() {
+        let max_width = 64.0;
+
+        let builder = ColumnBuilder::new();
+        let column = builder.max_width(max_width).build();
+
+        assert_eq!(column.max_width, max_width);
+    }
+
+    #[test]
+    fn test_set_current_width() {
+        let out_one_width = 10.0;
+        let out_two_width = 66.0;
+        let in_width = 33.0;
+        let min_width = 14.0;
+        let max_width = 64.0;
+
+        let builder = ColumnBuilder::new();
+        let mut column = builder.min_width(min_width).max_width(max_width).build();
+
+        column.set_current_width(out_one_width);
+        assert_eq!(column.current_width(), min_width);
+
+        column.set_current_width(out_two_width);
+        assert_eq!(column.current_width(), max_width);
+
+        column.set_current_width(in_width);
+        assert_eq!(column.current_width(), in_width);
+    }
+
+    #[test]
+    fn test_column() {
+        let builder = ColumnsBuilder::new();
+        let columns = builder.build();
+
+        assert_eq!(columns.len(), 0);
+
+        let builder = ColumnsBuilder::new();
+        let columns = builder
+            .column(Column::create().build())
+            .column(Column::create().build())
+            .build();
+
+        assert_eq!(columns.len(), 2);
+    }
+
+    #[test]
+    fn test_column_width_into() {
+        let column: Column = "Auto".into();
+        assert_eq!(column.width(), ColumnWidth::Auto);
+
+        let column: Column = "auto".into();
+        assert_eq!(column.width(), ColumnWidth::Auto);
+
+        let column: Column = "Stretch".into();
+        assert_eq!(column.width(), ColumnWidth::Stretch);
+
+        let column: Column = "stretch".into();
+        assert_eq!(column.width(), ColumnWidth::Stretch);
+
+        let column: Column = "*".into();
+        assert_eq!(column.width(), ColumnWidth::Stretch);
+
+        let column: Column = "other".into();
+        assert_eq!(column.width(), ColumnWidth::Stretch);
+
+        let column: Column = 64.0.into();
+        assert_eq!(column.width(), ColumnWidth::Width(64.0));
     }
 }

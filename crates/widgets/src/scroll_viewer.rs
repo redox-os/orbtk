@@ -17,13 +17,13 @@ impl ScrollViewerState {
 impl State for ScrollViewerState {
     fn update(&self, context: &mut Context<'_>) {
         if let Some(delta) = self.delta.get() {
-            context.widget().set("delta", Delta(delta));
+            context.widget().set("delta", delta);
         }
     }
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
         if let Some(_) = self.delta.get() {
-            context.widget().set("delta", Delta(Point::new(0.0, 0.0)));
+            context.widget().set("delta", Point::new(0.0, 0.0));
             self.delta.set(None);
         }
     }
@@ -44,7 +44,7 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the (wheel, scroll) delta property. 
-        delta: Delta
+        delta: Point
     }
 );
 

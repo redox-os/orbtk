@@ -1,6 +1,6 @@
 use crate::{
     prelude::*,
-    utils::{Point, Rectangle, String16},
+    utils::{Point, Rectangle, String16, Brush},
 };
 
 /// Used to render a text.
@@ -28,7 +28,7 @@ impl RenderObject for TextRenderObject {
             (
                 widget.get::<Rectangle>("bounds").clone(),
                 txt.to_string(),
-                widget.get::<Brush>("foreground").0.clone(),
+                widget.get::<Brush>("foreground").clone(),
                 widget.get::<String>("font").clone(),
                 *widget.get::<f64>("font_size"),
             )

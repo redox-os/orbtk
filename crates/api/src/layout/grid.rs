@@ -104,10 +104,14 @@ impl Layout for GridLayout {
             return self.desired_size.borrow().clone();
         }
 
-        let horizontal_alignment =
-            HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
-        let vertical_alignment =
-            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
+        let horizontal_alignment: Alignment = *ecm
+            .component_store()
+            .borrow_component("horizontal_alignment", entity)
+            .unwrap();
+        let vertical_alignment: Alignment = *ecm
+            .component_store()
+            .borrow_component("vertical_alignment", entity)
+            .unwrap();
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -151,7 +155,10 @@ impl Layout for GridLayout {
             .borrow_mut()
             .set_size(desired_size.0, desired_size.1);
 
-        let size = Constraint::get("constraint", entity, ecm.component_store())
+        let size = ecm
+            .component_store()
+            .borrow_component::<Constraint>("constraint", entity)
+            .unwrap()
             .perform(self.desired_size.borrow().size());
         self.desired_size.borrow_mut().set_size(size.0, size.1);
 
@@ -171,12 +178,23 @@ impl Layout for GridLayout {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment =
-            HorizontalAlignment::get("horizontal_alignment", entity, ecm.component_store());
-        let vertical_alignment =
-            VerticalAlignment::get("vertical_alignment", entity, ecm.component_store());
-        let margin = Margin::get("margin", entity, ecm.component_store());
-        let constraint = Constraint::get("constraint", entity, ecm.component_store());
+        let horizontal_alignment: Alignment = *ecm
+            .component_store()
+            .borrow_component("horizontal_alignment", entity)
+            .unwrap();
+        let vertical_alignment: Alignment = *ecm
+            .component_store()
+            .borrow_component("vertical_alignment", entity)
+            .unwrap();
+        let margin: Thickness = *ecm
+            .component_store()
+            .borrow_component("margin", entity)
+            .unwrap();
+        let constraint = ecm
+            .component_store()
+            .borrow_component::<Constraint>("constraint", entity)
+            .unwrap()
+            .clone();
 
         let size = constraint.perform((
             horizontal_alignment.align_measure(
@@ -206,7 +224,10 @@ impl Layout for GridLayout {
             loop {
                 let child = ecm.entity_store().children[&entity][index];
 
-                let margin = Margin::get("margin", child, ecm.component_store());
+                let margin: Thickness = *ecm
+                    .component_store()
+                    .borrow_component("margin", child)
+                    .unwrap();
 
                 if let Ok(grid_column) = ecm
                     .component_store()
@@ -429,11 +450,14 @@ impl Layout for GridLayout {
             loop {
                 let child = ecm.entity_store().children[&entity][index];
 
-                let child_horizontal_alignment =
-                    HorizontalAlignment::get("horizontal_alignment", child, ecm.component_store());
-                let child_vertical_alignment =
-                    VerticalAlignment::get("vertical_alignment", child, ecm.component_store());
-
+                let child_horizontal_alignment: Alignment = *ecm
+                    .component_store()
+                    .borrow_component("horizontal_alignment", child)
+                    .unwrap();
+                let child_vertical_alignment: Alignment = *ecm
+                    .component_store()
+                    .borrow_component("vertical_alignment", child)
+                    .unwrap();
                 let mut cell_position = (0.0, 0.0);
                 let mut available_size = size;
 
@@ -517,9 +541,10 @@ impl Layout for GridLayout {
 
                 let child_margin = {
                     if child_desired_size.0 > 0.0 && child_desired_size.1 > 0.0 {
-                        Margin::get("margin", child, ecm.component_store())
+                        *ecm.component_store().borrow_component::<Thickness>("margin", child)
+                            .unwrap()
                     } else {
-                        Margin::default().0
+                        Thickness::default()
                     }
                 };
 

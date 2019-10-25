@@ -1,6 +1,6 @@
 use crate::{
     prelude::*,
-    utils::{Point, Rectangle},
+    utils::{Point, Rectangle, Brush},
 };
 
 pub struct FontIconRenderObject;
@@ -18,7 +18,7 @@ impl RenderObject for FontIconRenderObject {
             (
                 widget.get::<Rectangle>("bounds").clone(),
                 widget.clone::<String>("icon"),
-                widget.get::<Brush>("icon_brush").0.clone(),
+                widget.get::<Brush>("icon_brush").clone(),
                 widget.get::<String>("icon_font").clone(),
                 *widget.get::<f64>("icon_size"),
             )

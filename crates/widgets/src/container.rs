@@ -10,13 +10,13 @@ widget!(
         border_radius: f64,
 
         /// Sets or shares the border thickness property.
-        border_width: BorderThickness,
+        border_width: Thickness,
 
         /// Sets or shares the border brush property.
         border_brush: Brush,
 
         /// Sets or shares the padding property.
-        padding: Padding,
+        padding: Thickness,
 
         /// Sets or shares the css selector property.
         selector: Selector

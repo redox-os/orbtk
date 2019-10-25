@@ -78,8 +78,8 @@ impl Template for MainView {
                             TextBlock::create()
                                 .text("(0,1) - ColumnSpan 3")
                                 .selector("goldendream")
-                                .horizontal_alignment(HorizontalAlignment(Alignment::Center))
-                                .vertical_alignment(VerticalAlignment(Alignment::Center))
+                                .horizontal_alignment("center")
+                                .vertical_alignment("center")
                                 .build(context),
                         )
                         .build(context),
