@@ -130,11 +130,10 @@ impl Layout for StackLayout {
             .get("vertical_alignment", entity)
             .unwrap();
         let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
-        let constraint = ecm
+        let constraint = *ecm
             .component_store()
             .get::<Constraint>("constraint", entity)
-            .unwrap()
-            .clone();
+            .unwrap();
         let orientation: Orientation = *ecm.component_store().get("orientation", entity).unwrap();
         let mut size_counter = 0.0;
 

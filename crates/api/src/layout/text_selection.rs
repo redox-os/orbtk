@@ -48,11 +48,10 @@ impl Layout for TextSelectionLayout {
             return *self.desired_size.borrow();
         }
 
-        let constraint = ecm
+        let constraint = *ecm
             .component_store()
             .get::<Constraint>("constraint", entity)
-            .unwrap()
-            .clone();
+            .unwrap();
 
         if let Ok(selection) = ecm
             .component_store()

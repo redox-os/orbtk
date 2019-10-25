@@ -9,11 +9,10 @@ impl State for ScrollIndicatorState {
         let padding = *ctx.widget().get::<Thickness>("padding");
         let scroll_offset = *ctx.widget().get::<Point>("scroll_offset");
         let content_id = *ctx.widget().get::<u32>("content_id");
-        let content_bounds = ctx
+        let content_bounds = *ctx
             .get_widget(Entity::from(content_id))
-            .get::<Rectangle>("bounds")
-            .clone();
-        let bounds = ctx.widget().get::<Rectangle>("bounds").clone();
+            .get::<Rectangle>("bounds");
+        let bounds = *ctx.widget().get::<Rectangle>("bounds");
 
         let horizontal_p = bounds.width / content_bounds.width;
         let vertical_p = bounds.height / content_bounds.height;

@@ -109,11 +109,10 @@ impl Layout for FixedSizeLayout {
             }
         }
 
-        let constraint = ecm
+        let constraint = *ecm
             .component_store()
             .get::<Constraint>("constraint", entity)
-            .unwrap()
-            .clone();
+            .unwrap();
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());

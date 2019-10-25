@@ -95,7 +95,7 @@ impl RenderObject for RectangleRenderObject {
         let (bounds, background, border_radius, border_thickness, border_brush) = {
             let widget = context.widget();
             (
-                widget.clone::<Rectangle>("bounds").clone(),
+                widget.clone::<Rectangle>("bounds"),
                 widget.get::<Brush>("background").clone(),
                 widget.clone_or_default::<f64>("border_radius"),
                 widget.clone_or_default::<Thickness>("border_width"),

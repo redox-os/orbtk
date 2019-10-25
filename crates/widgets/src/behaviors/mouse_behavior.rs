@@ -42,7 +42,7 @@ impl State for MouseBehaviorState {
                     }
                 }
                 Action::Scroll(p) => {
-                    context.widget().set("position", Point::from(p));
+                    context.widget().set("position", p);
                     self.has_delta.set(true);
                 }
             };

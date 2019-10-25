@@ -341,7 +341,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                 }
             }
 
-            if shell.adapter().event_queue.len() == 0 {
+            if shell.adapter().event_queue.is_empty() {
                 break;
             }
         }

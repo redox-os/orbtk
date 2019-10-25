@@ -58,11 +58,10 @@ impl Layout for PaddingLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let constraint = ecm
+        let constraint = *ecm
             .component_store()
             .get::<Constraint>("constraint", entity)
-            .unwrap()
-            .clone();
+            .unwrap();
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());
         }
@@ -73,11 +72,10 @@ impl Layout for PaddingLayout {
                 .set_height(constraint.height());
         }
 
-        let padding = ecm
+        let padding = *ecm
             .component_store()
             .get::<Thickness>("padding", entity)
-            .unwrap()
-            .clone();
+            .unwrap();
 
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
@@ -145,16 +143,14 @@ impl Layout for PaddingLayout {
             .component_store()
             .get::<Thickness>("margin", entity)
             .unwrap();
-        let padding = ecm
+        let padding = *ecm
             .component_store()
             .get::<Thickness>("padding", entity)
-            .unwrap()
-            .clone();
-        let constraint = ecm
+            .unwrap();
+        let constraint = *ecm
             .component_store()
             .get::<Constraint>("constraint", entity)
-            .unwrap()
-            .clone();
+            .unwrap();
 
         let size = constraint.perform((
             horizontal_alignment.align_measure(

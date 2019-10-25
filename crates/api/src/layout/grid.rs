@@ -27,7 +27,7 @@ impl GridLayout {
     // calculates the available width for a column
     fn get_column_x_and_width(
         &self,
-        columns_cache: &Vec<(f64, f64)>,
+        columns_cache: &[(f64, f64)],
         entity: Entity,
         store: &mut StringComponentStore,
         grid_column: usize,
@@ -51,7 +51,7 @@ impl GridLayout {
     // calculates the available height for a row
     fn get_row_y_and_height(
         &self,
-        rows_cache: &Vec<(f64, f64)>,
+        rows_cache: &[(f64, f64)],
         entity: Entity,
         store: &mut StringComponentStore,
         grid_row: usize,
@@ -165,11 +165,10 @@ impl Layout for GridLayout {
             .get("vertical_alignment", entity)
             .unwrap();
         let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
-        let constraint = ecm
+        let constraint = *ecm
             .component_store()
             .get::<Constraint>("constraint", entity)
-            .unwrap()
-            .clone();
+            .unwrap();
 
         let size = constraint.perform((
             horizontal_alignment.align_measure(
@@ -253,7 +252,7 @@ impl Layout for GridLayout {
             .component_store_mut()
             .get_mut::<Columns>("columns", entity)
         {
-            if columns.len() > 0 {
+            if !columns.is_empty() {
                 // sets auto columns width to the width of the largest child
                 for (grid_column, width) in column_widths {
                     if let Some(column) = columns.get_mut(grid_column) {

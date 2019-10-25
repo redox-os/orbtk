@@ -66,24 +66,21 @@ impl Application {
             .get::<String>("title", window)
             .unwrap()
             .clone();
-        let resizeable = world
+        let resizeable = *world
             .entity_component_manager()
             .component_store()
             .get::<bool>("resizeable", window)
-            .unwrap()
-            .clone();
-        let position = world
+            .unwrap();
+        let position = *world
             .entity_component_manager()
             .component_store()
             .get::<Point>("position", window)
-            .unwrap()
-            .clone();
-        let constraint = world
+            .unwrap();
+        let constraint = *world
             .entity_component_manager()
             .component_store()
             .get::<Constraint>("constraint", window)
-            .unwrap()
-            .clone();
+            .unwrap();
 
         world
             .entity_component_manager()

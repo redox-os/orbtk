@@ -42,7 +42,7 @@ impl Layout for ScrollLayout {
             == Visibility::Collapsed
         {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
-            return self.desired_size.borrow().clone();
+            return *self.desired_size.borrow();
         }
 
         let horizontal_alignment: Alignment = *ecm
@@ -60,11 +60,10 @@ impl Layout for ScrollLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let constraint = ecm
+        let constraint = *ecm
             .component_store()
             .get::<Constraint>("constraint", entity)
-            .unwrap()
-            .clone();
+            .unwrap();
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());
@@ -125,11 +124,10 @@ impl Layout for ScrollLayout {
             .unwrap();
         let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
         // let _padding = Thickness::get("padding", entity, ecm.component_store());
-        let constraint = ecm
+        let constraint = *ecm
             .component_store()
             .get::<Constraint>("constraint", entity)
-            .unwrap()
-            .clone();
+            .unwrap();
 
         let size = constraint.perform((
             horizontal_alignment.align_measure(
@@ -154,11 +152,10 @@ impl Layout for ScrollLayout {
             bounds.set_height(size.1);
         }
 
-        let scroll_viewer_mode = ecm
+        let scroll_viewer_mode = *ecm
             .component_store()
             .get::<ScrollViewerMode>("scroll_viewer_mode", entity)
-            .unwrap()
-            .clone();
+            .unwrap();
 
         let available_size = {
             let width = if scroll_viewer_mode.horizontal == ScrollMode::Custom

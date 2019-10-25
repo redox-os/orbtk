@@ -26,7 +26,7 @@ impl RenderObject for TextRenderObject {
                 }
             };
             (
-                widget.get::<Rectangle>("bounds").clone(),
+                *widget.get::<Rectangle>("bounds"),
                 txt.to_string(),
                 widget.get::<Brush>("foreground").clone(),
                 widget.get::<String>("font").clone(),
