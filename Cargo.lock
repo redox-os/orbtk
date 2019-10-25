@@ -509,6 +509,7 @@ version = "0.1.0"
 dependencies = [
  "dces 0.2.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=5-multiple-components-of-the-same-type-per-entity)",
  "orbtk-api 0.1.0",
+ "orbtk-render 0.1.0",
  "orbtk-shell 0.1.0",
  "orbtk-theme 0.1.0",
  "orbtk-utils 0.1.0",

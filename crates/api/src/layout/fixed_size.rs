@@ -6,7 +6,7 @@ use std::{
 
 use dces::prelude::Entity;
 
-use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*, render::Image};
 
 use super::Layout;
 

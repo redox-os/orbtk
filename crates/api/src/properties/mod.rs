@@ -6,7 +6,7 @@ use dces::prelude::{Component, Entity, StringComponentStore};
 
 pub use self::layout::*;
 pub use self::widget::*;
-use crate::{prelude::*, utils, css_engine};
+use crate::{prelude::*, utils, css_engine, render};
 
 mod layout;
 mod widget;
@@ -105,8 +105,12 @@ into_property_source!(utils::Visibility: &str);
 into_property_source!(css_engine::Selector: &str, String);
 into_property_source!(css_engine::Theme);
 
+// Implementation of render property types
+into_property_source!(render::Image: &str);
+
 // Implementation of custom property types
 into_property_source!(Columns);
 into_property_source!(Constraint);
+// into_property_source!(RenderPipeline);
 into_property_source!(Rows);
 into_property_source!(ScrollViewerMode: (&str, &str));
