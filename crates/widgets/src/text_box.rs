@@ -293,7 +293,7 @@ impl Template for TextBox {
                                         ScrollViewer::create()
                                             .selector(SelectorValue::default().id("scroll_viewer"))
                                             .scroll_offset(id)
-                                            .scroll_viewer_mode(("Custom", "Disabled"))
+                                            .scroll_viewer_mode(("custom", "disabled"))
                                             .delta(id)
                                             .child(
                                                 TextBlock::create()
@@ -305,9 +305,9 @@ impl Template for TextBox {
                                                     .vertical_alignment("center")
                                                     .foreground(id)
                                                     .text(id)
+                                                    .water_mark(id)
                                                     .font(id)
                                                     .font_size(id)
-                                                    // .attach_by_source::<String16>("water_mark", id)
                                                     .build(context),
                                             )
                                             .build(context),

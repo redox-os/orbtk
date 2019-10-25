@@ -288,7 +288,7 @@ impl Template for ListView {
             .build(context);
 
         let scroll_viewer = ScrollViewer::create()
-            .scroll_viewer_mode(("Disabled", "Auto"))
+            .scroll_viewer_mode(("disabled", "Auto"))
             .delta(id)
             .child(items_panel)
             .build(context);

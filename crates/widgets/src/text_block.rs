@@ -8,6 +8,9 @@ widget!(
         /// Sets or shares the text property.
         text: String16,
 
+        /// Sets or shares the water_mark text property.
+        water_mark: String16,
+
         /// Sets or shares the foreground property.
         foreground: Brush,
 

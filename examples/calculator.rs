@@ -224,7 +224,7 @@ impl Template for MainView {
                                 Grid::create()
                                     .child(
                                         ScrollViewer::create()
-                                            .scroll_viewer_mode(("Custom", "Disabled"))
+                                            .scroll_viewer_mode(("custom", "disabled"))
                                             .child(
                                                 TextBlock::create()
                                                     .width(0.0)
