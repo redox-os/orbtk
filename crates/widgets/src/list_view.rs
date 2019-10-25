@@ -282,7 +282,7 @@ impl ListView {
 impl Template for ListView {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
         let items_panel = Stack::create()
-            .vertical_alignment("Start")
+            .vertical_alignment("start")
             .selector(SelectorValue::default().clone().id("items_panel"))
             .orientation(id)
             .build(context);

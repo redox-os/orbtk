@@ -53,7 +53,7 @@ impl EventStateSystem {
                     // update window size
                     if let Ok(bounds) = ecm
                         .component_store_mut()
-                        .borrow_mut_component::<Bounds>("bounds", root)
+                        .borrow_mut_component::<Rectangle>("bounds", root)
                     {
                         bounds.set_width(*width);
                         bounds.set_height(*height);

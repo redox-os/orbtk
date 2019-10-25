@@ -123,7 +123,7 @@ mod tests {
 
     #[test]
     fn test_into() {
-        let alignment: Alignment = "Start".into();
+        let alignment: Alignment = "start".into();
         assert_eq!(alignment, Alignment::Start);
 
         let alignment: Alignment = "start".into();
@@ -135,7 +135,7 @@ mod tests {
         let alignment: Alignment = "center".into();
         assert_eq!(alignment, Alignment::Center);
 
-        let alignment: Alignment = "End".into();
+        let alignment: Alignment = "end".into();
         assert_eq!(alignment, Alignment::End);
 
         let alignment: Alignment = "end".into();

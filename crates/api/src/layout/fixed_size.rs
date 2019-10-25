@@ -167,7 +167,7 @@ impl Layout for FixedSizeLayout {
 
         if let Ok(bounds) = ecm
             .component_store_mut()
-            .borrow_mut_component::<Bounds>("bounds", entity)
+            .borrow_mut_component::<Rectangle>("bounds", entity)
         {
             bounds.set_width(self.desired_size.borrow().width());
             bounds.set_height(self.desired_size.borrow().height());

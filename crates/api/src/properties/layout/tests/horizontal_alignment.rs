@@ -64,7 +64,7 @@ fn test_align_width() {
 
 #[test]
 fn test_into() {
-    let horizontal_alignment: HorizontalAlignment = "Start".into();
+    let horizontal_alignment: HorizontalAlignment = "start".into();
     assert_eq!(horizontal_alignment.0, Alignment::Start);
 
     let horizontal_alignment: HorizontalAlignment = "start".into();
@@ -76,7 +76,7 @@ fn test_into() {
     let horizontal_alignment: HorizontalAlignment = "center".into();
     assert_eq!(horizontal_alignment.0, Alignment::Center);
 
-    let horizontal_alignment: HorizontalAlignment = "End".into();
+    let horizontal_alignment: HorizontalAlignment = "end".into();
     assert_eq!(horizontal_alignment.0, Alignment::End);
 
     let horizontal_alignment: HorizontalAlignment = "end".into();

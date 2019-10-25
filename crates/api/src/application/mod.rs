@@ -12,6 +12,7 @@ use crate::{
     prelude::*,
     shell::{ShellRunner, WindowBuilder},
     tree::*,
+    utils::Rectangle,
 };
 
 pub use self::global::*;
@@ -98,7 +99,7 @@ impl Application {
             .register_component(
                 "bounds",
                 window,
-                Bounds::from((0.0, 0.0, constraint.width(), constraint.height())),
+                Rectangle::from((0.0, 0.0, constraint.width(), constraint.height())),
             );
 
         let window_shell = Rc::new(RefCell::new(
@@ -111,7 +112,7 @@ impl Application {
                 ..Default::default()
             })
             .title(&(title)[..])
-            .bounds(Bounds::from((
+            .bounds(Rectangle::from((
                 position.0.x,
                 position.0.y,
                 constraint.width(),

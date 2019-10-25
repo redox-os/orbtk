@@ -7,7 +7,7 @@ use dces::prelude::{Component, Entity, StringComponentStore};
 pub use self::layout::*;
 pub use self::styling::*;
 pub use self::widget::*;
-use crate::{prelude::*, utils, utils::String16};
+use crate::{prelude::*, utils};
 
 mod layout;
 mod styling;
@@ -80,9 +80,10 @@ where
 // Implementation of PropertySource for default types
 into_property_source!(bool);
 into_property_source!(String: &str);
-into_property_source!(String16: &str, String);
 into_property_source!(usize);
 into_property_source!(f64: i32);
 
 // Implementation of PropertySource for utils types
+into_property_source!(utils::String16: &str, String);
 into_property_source!(utils::Visibility: &str);
+into_property_source!(utils::Rectangle: (i32, i32, i32, i32), (f64, f64, f64, f64));

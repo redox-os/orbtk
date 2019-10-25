@@ -35,20 +35,20 @@ impl State for SwitchState {
         }
 
         {
-            let mut switch_toggle = context.child_by_id("SwitchSwitchToggle").unwrap();
-
-            switch_toggle.set("selected", self.selected.get());
+            let mut switch_toggle = context.child_by_id("switch_toggle").unwrap();
 
             if self.selected.get() {
-                switch_toggle.set("horizontal_alignment", HorizontalAlignment::from("End"));
+                switch_toggle.set("horizontal_alignment", HorizontalAlignment::from("end"));
+                add_selector_to_widget("selected", &mut switch_toggle);
             } else {
-                switch_toggle.set("horizontal_alignment", HorizontalAlignment::from("Start"));
+                switch_toggle.set("horizontal_alignment", HorizontalAlignment::from("start"));
+                remove_selector_from_widget("selected", &mut switch_toggle);
             }
 
             switch_toggle.update_theme_by_state(true);
         }
 
-        let entity = context.entity_of_child("SwitchSwitchToggle").unwrap();
+        let entity = context.entity_of_child("switch_toggle").unwrap();
 
         context.get_widget(entity).update_theme_by_state(false);
     }
@@ -121,10 +121,10 @@ impl Template for Switch {
                                     .border_radius(1.0)
                                     .selector(
                                         SelectorValue::from("switch-toggle")
-                                            .id("SwitchSwitchToggle"),
+                                            .id("switch_toggle"),
                                     )
                                     .vertical_alignment("center")
-                                    .horizontal_alignment("Start")
+                                    .horizontal_alignment("start")
                                     .build(context),
                             )
                             .build(context),

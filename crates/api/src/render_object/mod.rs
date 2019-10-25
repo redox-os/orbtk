@@ -64,7 +64,7 @@ pub trait RenderObject: Any {
         if clip {
             if let Ok(bounds) = ecm
                 .component_store()
-                .borrow_component::<Bounds>("bounds", entity)
+                .borrow_component::<Rectangle>("bounds", entity)
             {
                 shell.render_context_2_d().save();
                 shell.render_context_2_d().rect(
@@ -96,7 +96,7 @@ pub trait RenderObject: Any {
 
         if let Ok(bounds) = ecm
             .component_store()
-            .borrow_component::<Bounds>("bounds", entity)
+            .borrow_component::<Rectangle>("bounds", entity)
         {
             global_pos = (
                 global_position.x + bounds.x(),
@@ -136,7 +136,7 @@ pub trait RenderObject: Any {
         if debug {
             if let Ok(bounds) = ecm
                 .component_store()
-                .borrow_component::<Bounds>("bounds", entity)
+                .borrow_component::<Rectangle>("bounds", entity)
             {
                 let selector = Selector::from("debug-border");
                 let brush = theme.brush("border-color", &selector.0).unwrap();

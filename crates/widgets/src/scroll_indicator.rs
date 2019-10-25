@@ -11,9 +11,9 @@ impl State for ScrollIndicatorState {
         let content_id = ctx.widget().get::<ContentId>("content_id").0;
         let content_bounds = ctx
             .get_widget(Entity::from(content_id))
-            .get::<Bounds>("bounds")
-            .0;
-        let bounds = ctx.widget().get::<Bounds>("bounds").0;
+            .get::<Rectangle>("bounds")
+            .clone();
+        let bounds = ctx.widget().get::<Rectangle>("bounds").clone();
 
         let horizontal_p = bounds.width / content_bounds.width;
         let vertical_p = bounds.height / content_bounds.height;
@@ -33,9 +33,9 @@ impl State for ScrollIndicatorState {
                         * vertical_p)
                         .max(vertical_min_height);
 
-                let scroll_bar_bounds = vertical_scroll_bar.get_mut::<Bounds>("bounds");
-                scroll_bar_bounds.0.height = height;
-                scroll_bar_bounds.0.y = -(scroll_offset.y as f64 * vertical_p);
+                let scroll_bar_bounds = vertical_scroll_bar.get_mut::<Rectangle>("bounds");
+                scroll_bar_bounds.height = height;
+                scroll_bar_bounds.y = -(scroll_offset.y as f64 * vertical_p);
             } else {
                 vertical_scroll_bar.set("visibility", Visibility::from("Collapsed"));
             }
@@ -55,9 +55,9 @@ impl State for ScrollIndicatorState {
                     ((bounds.width - padding.left - padding.right - scroll_bar_margin_right)
                         * horizontal_p)
                         .max(horizontal_min_width);
-                let scroll_bar_bounds = horizontal_scroll_bar.get_mut::<Bounds>("bounds");
-                scroll_bar_bounds.0.width = width;
-                scroll_bar_bounds.0.x = -(scroll_offset.x as f64 * horizontal_p);
+                let scroll_bar_bounds = horizontal_scroll_bar.get_mut::<Rectangle>("bounds");
+                scroll_bar_bounds.width = width;
+                scroll_bar_bounds.x = -(scroll_offset.x as f64 * horizontal_p);
             } else {
                 horizontal_scroll_bar.set("visibility", Visibility::from("Collapsed"));
             }
@@ -104,7 +104,7 @@ impl Template for ScrollIndicator {
                             .selector(SelectorValue::from("scroll-bar").id("vertical-scroll-bar"))
                             .min_height(8.0)
                             .margin((0.0, 0.0, 0.0, 6.0))
-                            .horizontal_alignment("End")
+                            .horizontal_alignment("end")
                             .build(ctx),
                     )
                     .child(
@@ -113,7 +113,7 @@ impl Template for ScrollIndicator {
                             .min_width(8.0)
                             .margin((0.0, 0.0, 6.0, 0.0))
                             .height(4.0)
-                            .vertical_alignment("End")
+                            .vertical_alignment("end")
                             .build(ctx),
                     )
                     .build(ctx),

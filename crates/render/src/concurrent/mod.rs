@@ -51,7 +51,7 @@ enum RenderTask {
     Stroke(),
     BeginPath(),
     ClosePath(),
-    Rect {
+    Rectangle {
         x: f64,
         y: f64,
         width: f64,
@@ -271,7 +271,7 @@ impl RenderWorker {
                             RenderTask::ClosePath() => {
                                 render_context_2_d.close_path();
                             }
-                            RenderTask::Rect {
+                            RenderTask::Rectangle {
                                 x,
                                 y,
                                 width,
@@ -518,7 +518,7 @@ impl RenderContext2D {
     }
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.tasks.push(RenderTask::Rect {
+        self.tasks.push(RenderTask::Rectangle {
             x,
             y,
             width,

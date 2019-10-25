@@ -31,7 +31,7 @@ impl System<Tree, StringComponentStore> for LayoutSystem {
 
         if let Ok(bounds) = ecm
             .component_store()
-            .borrow_component::<Bounds>("bounds", root)
+            .borrow_component::<Rectangle>("bounds", root)
         {
             window_size.0 = bounds.width();
             window_size.1 = bounds.height();

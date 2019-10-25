@@ -232,7 +232,7 @@ impl Template for MainView {
                     .child(
                         Button::create()
                             .text("spin cube")
-                            .vertical_alignment("End")
+                            .vertical_alignment("end")
                             .attach(Grid::row(1))
                             .margin(4.0)
                             .on_click(move |_| {

@@ -153,7 +153,7 @@ impl Layout for PaddingLayout {
 
         if let Ok(bounds) = ecm
             .component_store_mut()
-            .borrow_mut_component::<Bounds>("bounds", entity)
+            .borrow_mut_component::<Rectangle>("bounds", entity)
         {
             bounds.set_width(size.0);
             bounds.set_height(size.1);
@@ -190,7 +190,7 @@ impl Layout for PaddingLayout {
 
                 if let Ok(child_bounds) = ecm
                     .component_store_mut()
-                    .borrow_mut_component::<Bounds>("bounds", child)
+                    .borrow_mut_component::<Rectangle>("bounds", child)
                 {
                     child_bounds.set_x(
                         padding.left()

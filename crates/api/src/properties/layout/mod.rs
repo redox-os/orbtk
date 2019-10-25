@@ -1,6 +1,5 @@
 // Layout specific properties.
 
-pub use self::bounds::*;
 pub use self::column::*;
 pub use self::constraint::*;
 pub use self::delta::*;
@@ -15,7 +14,6 @@ pub use self::scroll_offset::*;
 pub use self::scroll_viewer_mode::*;
 pub use self::vertical_alignment::*;
 
-mod bounds;
 mod column;
 mod constraint;
 mod delta;

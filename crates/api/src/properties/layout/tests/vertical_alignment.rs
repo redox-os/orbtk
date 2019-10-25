@@ -64,7 +64,7 @@ fn test_align_height() {
 
 #[test]
 fn test_into() {
-    let vertical_alignment: VerticalAlignment = "Start".into();
+    let vertical_alignment: VerticalAlignment = "start".into();
     assert_eq!(vertical_alignment.0, Alignment::Start);
 
     let vertical_alignment: VerticalAlignment = "start".into();
@@ -76,7 +76,7 @@ fn test_into() {
     let vertical_alignment: VerticalAlignment = "center".into();
     assert_eq!(vertical_alignment.0, Alignment::Center);
 
-    let vertical_alignment: VerticalAlignment = "End".into();
+    let vertical_alignment: VerticalAlignment = "end".into();
     assert_eq!(vertical_alignment.0, Alignment::End);
 
     let vertical_alignment: VerticalAlignment = "end".into();

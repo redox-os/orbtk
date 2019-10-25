@@ -2,7 +2,7 @@ use crate::{
     prelude::*,
     render::RenderContext2D,
     utils,
-    utils::{Point, Position, Size, Thickness},
+    utils::{Point, Rectangle, Thickness},
 };
 
 pub struct RectangleRenderObject;
@@ -95,7 +95,7 @@ impl RenderObject for RectangleRenderObject {
         let (bounds, background, border_radius, border_thickness, border_brush) = {
             let widget = context.widget();
             (
-                widget.clone::<Bounds>("bounds"),
+                widget.clone::<Rectangle>("bounds").clone(),
                 widget.get::<Brush>("background").0.clone(),
                 widget.clone_or_default::<f64>("border_radius"),
                 widget.clone_or_default::<BorderThickness>("border_width").0,

@@ -168,7 +168,7 @@ impl Layout for TextSelectionLayout {
                 margin.set_left(pos);
             }
 
-            if let Some(bounds) = widget.try_get_mut::<Bounds>("bounds") {
+            if let Some(bounds) = widget.try_get_mut::<Rectangle>("bounds") {
                 bounds.set_width(size.0);
                 bounds.set_height(size.1);
             }

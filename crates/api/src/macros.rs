@@ -96,9 +96,9 @@ macro_rules! property {
 /// Used to define a widget, with properties and event handlers.
 #[macro_export]
 macro_rules! widget {
-    ( $(#[$widget_doc:meta])* $widget:ident $(<$state:ident>)* $(: $( $handler:ident ),*)* 
+    ( $(#[$widget_doc:meta])* $widget:ident $(<$state:ident>)* $(: $( $handler:ident ),*)*
             $( { $($(#[$prop_doc:meta])* $property:ident: $property_type:tt ),*
-                $( attached_properties: { $($(#[$att_prop_doc:meta])* $att_property:ident: $att_property_type:tt ),* } )*      
+                $( attached_properties: { $($(#[$att_prop_doc:meta])* $att_property:ident: $att_property_type:tt ),* } )*
              } )* ) => {
         $(#[$widget_doc])*
         #[derive(Default)]
@@ -106,7 +106,7 @@ macro_rules! widget {
             attached_properties: HashMap<String, ComponentBox>,
             shared_attached_properties: HashMap<String, SharedComponentBox>,
             event_handlers: Vec<Rc<dyn EventHandler>>,
-            bounds: Bounds,
+            bounds: Rectangle,
             position: Pos,
             min_width: Option<f64>,
             min_height: Option<f64>,

@@ -161,7 +161,7 @@ impl State for TextBoxState {
         {
             let scroll_viewer = context.child_by_id("scroll_viewer");
 
-            if let Some(bounds) = scroll_viewer.unwrap().try_get_mut::<Bounds>("bounds") {
+            if let Some(bounds) = scroll_viewer.unwrap().try_get_mut::<Rectangle>("bounds") {
                 scroll_viewer_width = bounds.width();
             }
         }
@@ -181,7 +181,7 @@ impl State for TextBoxState {
                 self.cursor_x.set(margin.left());
             }
 
-            if let Some(bounds) = cursor.try_get_mut::<Bounds>("bounds") {
+            if let Some(bounds) = cursor.try_get_mut::<Rectangle>("bounds") {
                 bounds.set_x(self.cursor_x.get());
             }
         }
@@ -190,7 +190,7 @@ impl State for TextBoxState {
             {
                 let text_block = context.child_by_id("text_block");
 
-                if let Some(bounds) = text_block.unwrap().try_get_mut::<Bounds>("bounds") {
+                if let Some(bounds) = text_block.unwrap().try_get_mut::<Rectangle>("bounds") {
                     bounds.set_x(bounds.x() + cursor_x_delta);
                 }
             }
@@ -320,7 +320,7 @@ impl Template for TextBox {
                                         Cursor::create()
                                             .selector(SelectorValue::from("cursor").id("cursor"))
                                             .margin(0.0)
-                                            .horizontal_alignment("Start")
+                                            .horizontal_alignment("start")
                                             .text(id)
                                             .font(id)
                                             .font_size(id)

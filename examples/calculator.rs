@@ -233,7 +233,7 @@ impl Template for MainView {
                                                     .selector(
                                                         Selector::from("text-block").id("input"),
                                                     )
-                                                    .vertical_alignment("Start")
+                                                    .vertical_alignment("start")
                                                     .build(context),
                                             )
                                             .build(context),
@@ -242,8 +242,8 @@ impl Template for MainView {
                                         TextBlock::create()
                                             .selector(Selector::from("text-block"))
                                             .text(id)
-                                            .vertical_alignment("End")
-                                            .horizontal_alignment("End")
+                                            .vertical_alignment("end")
+                                            .horizontal_alignment("end")
                                             .build(context),
                                     )
                                     .build(context),
