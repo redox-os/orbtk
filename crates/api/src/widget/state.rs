@@ -18,5 +18,5 @@ pub trait State {
     fn update_post_layout(&self, _context: &mut Context<'_>) {}
 
     /// Receives all messages from the message channel. This message is only called if the state has messages.
-    fn receive_messages(&self, _context: &mut Context<'_>, _messages: &Vec<MessageBox>) {}
+    fn receive_messages(&self, _context: &mut Context<'_>, _messages: &[MessageBox]) {}
 }

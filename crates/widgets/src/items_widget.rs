@@ -101,7 +101,7 @@ impl Template for ItemsWidget {
                     .padding(id)
                     .child(
                         Stack::create()
-                            .selector(SelectorValue::default().clone().id("items_panel"))
+                            .selector(SelectorValue::default().id("items_panel"))
                             .orientation(id)
                             .build(context),
                     )

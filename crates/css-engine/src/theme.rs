@@ -306,7 +306,7 @@ impl<'i> cssparser::QualifiedRuleParser<'i> for RuleParser {
         let decls = decls.into_iter().filter_map(|decl| decl.ok()).collect();
 
         Ok(Rule {
-            selectors: selectors,
+            selectors,
             declarations: decls,
         })
     }
@@ -367,7 +367,7 @@ fn parse_selectors<'i, 't>(
 
             // This selector is done, on to the next one
             Token::Comma => {
-                selectors.push(Selector::from(selector));
+                selectors.push(selector);
                 selector = Selector::default();
                 first_token_in_selector = true;
                 continue; // need to continue to avoid `first_token_in_selector` being set to false
@@ -382,7 +382,7 @@ fn parse_selectors<'i, 't>(
         first_token_in_selector = false;
     }
 
-    selectors.push(Selector::from(selector));
+    selectors.push(selector);
 
     if selectors.iter().any(|sel| sel.relation.is_some()) {
         eprintln!("WARNING: Complex selector relations not implemented");
@@ -431,7 +431,7 @@ impl<'i> cssparser::DeclarationParser<'i> for DeclarationParser {
 
         Ok(Declaration {
             property: name.into_owned(),
-            value: value,
+            value,
             important: input.r#try(cssparser::parse_important).is_ok(),
         })
     }

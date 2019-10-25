@@ -43,9 +43,9 @@ impl RenderTarget {
     /// Create a new image from a boxed slice of colors
     pub fn from_data(width: u32, height: u32, data: Vec<u32>) -> Result<Self, String> {
         Ok(RenderTarget {
-            width: width,
-            height: height,
-            data: data,
+            width,
+            height,
+            data,
         })
     }
 
