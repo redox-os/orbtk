@@ -34,7 +34,7 @@ impl State for FocusBehaviorState {
             .element
             .unwrap();
 
-        if let Some(parent) = context.parent_entity_by_element(element) {
+        if let Some(parent) = context.parent_entity_by_element(&*element) {
             context.get_widget(parent).update_theme_by_state(false);
             context.window().get_mut::<Global>("global").focused_widget = Some(parent);
         }

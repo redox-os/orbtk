@@ -92,11 +92,7 @@ impl<'a> Context<'a> {
 
     /// Clears all children of the given widget.
     pub fn clear_children_of(&mut self, parent: Entity) {
-        loop {
-            if self.ecm.entity_store().children[&parent].len() == 0 {
-                break;
-            }
-
+        while !self.ecm.entity_store().children[&parent].is_empty() {
             let child = self.ecm.entity_store().children[&parent][0];
 
             self.ecm.remove_entity(child);
@@ -110,7 +106,7 @@ impl<'a> Context<'a> {
     }
 
     /// Returns the entity id of an child by the given name.
-    pub fn entity_of_child(&mut self, id: impl Into<String>) -> Option<Entity> {
+    pub fn entity_of_child<'b>(&mut self, id: impl Into<&'b str>) -> Option<Entity> {
         let id = id.into();
 
         let mut current_node = self.entity;
@@ -143,44 +139,36 @@ impl<'a> Context<'a> {
 
     /// Returns a child of the widget of the current state referenced by css `id`.
     /// If the no id is defined None will returned.
-    pub fn child_by_id(&mut self, id: impl Into<String>) -> Option<WidgetContainer<'_>> {
-        if let Some(child) = self.entity_of_child(id) {
-            return Some(self.get_widget(child));
-        }
-
-        None
+    pub fn child_by_id<'b>(&mut self, id: impl Into<&'b str>) -> Option<WidgetContainer<'_>> {
+        self.entity_of_child(id)
+            .map(move |child| self.get_widget(child))
     }
 
     /// Returns the entity of the parent referenced by css `element`.
     /// If the no id is defined None will returned.
-    pub fn parent_entity_by_element(&mut self, element: impl Into<String>) -> Option<Entity> {
+    pub fn parent_entity_by_element<'b>(&mut self, element: impl Into<&'b str>) -> Option<Entity> {
         let mut current = self.entity;
         let element = element.into();
 
-        loop {
-            if let Some(parent) = self.ecm.entity_store().parent[&current] {
-                if let Ok(selector) = self
-                    .ecm
-                    .component_store()
-                    .get::<Selector>("selector", parent)
-                {
-                    if let Some(parent_element) = &selector.element {
-                        if parent_element.eq(&element) {
-                            if self
-                                .ecm
-                                .component_store()
-                                .is_origin::<Selector>("selector", parent)
-                            {
-                                return Some(parent);
-                            }
-                        }
+        while let Some(parent) = self.ecm.entity_store().parent[&current] {
+            if let Ok(selector) = self
+                .ecm
+                .component_store()
+                .get::<Selector>("selector", parent)
+            {
+                if let Some(parent_element) = &selector.element {
+                    if parent_element == element
+                        && self
+                            .ecm
+                            .component_store()
+                            .is_origin::<Selector>("selector", parent)
+                    {
+                        return Some(parent);
                     }
                 }
-
-                current = parent;
-            } else {
-                break;
             }
+
+            current = parent;
         }
 
         None
@@ -188,28 +176,24 @@ impl<'a> Context<'a> {
 
     /// Returns a parent of the widget of the current state referenced by css `id`.
     /// If the no id is defined None will returned.
-    pub fn parent_by_id(&mut self, id: impl Into<String>) -> Option<WidgetContainer<'_>> {
+    pub fn parent_by_id<'b>(&mut self, id: impl Into<&'b str>) -> Option<WidgetContainer<'_>> {
         let mut current = self.entity;
         let id = id.into();
 
-        loop {
-            if let Some(parent) = self.ecm.entity_store().parent[&current] {
-                if let Ok(selector) = self
-                    .ecm
-                    .component_store()
-                    .get::<Selector>("selector", parent)
-                {
-                    if let Some(parent_id) = &selector.id {
-                        if parent_id.eq(&id) {
-                            return Some(self.get_widget(parent));
-                        }
+        while let Some(parent) = self.ecm.entity_store().parent[&current] {
+            if let Ok(selector) = self
+                .ecm
+                .component_store()
+                .get::<Selector>("selector", parent)
+            {
+                if let Some(parent_id) = &selector.id {
+                    if parent_id.eq(&id) {
+                        return Some(self.get_widget(parent));
                     }
                 }
-
-                current = parent;
-            } else {
-                break;
             }
+
+            current = parent;
         }
 
         None

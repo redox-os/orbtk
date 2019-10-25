@@ -76,7 +76,7 @@ impl String16 {
 
     // Returns `true` if this `String16` ends with the given string slice, and `false` otherwise.
     pub fn ends_with(&self, pat: &str) -> bool {
-        self.to_string().ends_with(pat)
+        self.as_string().ends_with(pat)
     }
 
     /// Truncates this `String16`, removing all contents.
@@ -95,7 +95,7 @@ impl String16 {
     }
 
     /// Converts the `String16` value to a String.
-    pub fn to_string(&self) -> String {
+    pub fn as_string(&self) -> String {
         if let Ok(string) = String::from_utf16(&self.utf16) {
             return string;
         }
@@ -122,13 +122,13 @@ impl From<String> for String16 {
 
 impl fmt::Debug for String16 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "String16 {}", self.to_string())
+        write!(f, "String16 {}", self.as_string())
     }
 }
 
 impl fmt::Display for String16 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.to_string())
+        write!(f, "{}", self.as_string())
     }
 }
 

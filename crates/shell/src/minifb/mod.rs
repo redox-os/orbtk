@@ -197,21 +197,17 @@ where
             self.adapter.key_event(event);
         }
 
-        key_event_helper(&mut self.key_backspace, &mut self.adapter, &mut self.window);
-        key_event_helper(&mut self.key_delete, &mut self.adapter, &mut self.window);
-        key_event_helper(&mut self.key_enter, &mut self.adapter, &mut self.window);
-        key_event_helper(&mut self.key_control, &mut self.adapter, &mut self.window);
-        key_event_helper(
-            &mut self.key_control_right,
-            &mut self.adapter,
-            &mut self.window,
-        );
-        key_event_helper(&mut self.key_shift_l, &mut self.adapter, &mut self.window);
-        key_event_helper(&mut self.key_shift_r, &mut self.adapter, &mut self.window);
-        key_event_helper(&mut self.key_alt, &mut self.adapter, &mut self.window);
-        key_event_helper(&mut self.key_alt_r, &mut self.adapter, &mut self.window);
-        key_event_helper(&mut self.key_escape, &mut self.adapter, &mut self.window);
-        key_event_helper(&mut self.key_home, &mut self.adapter, &mut self.window);
+        key_event_helper(&mut self.key_backspace, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_delete, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_enter, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_control, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_control_right, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_shift_l, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_shift_r, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_alt, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_alt_r, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_escape, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_home, &mut self.adapter, &self.window);
 
         // resize
         if self.window_size != self.window.get_size() {

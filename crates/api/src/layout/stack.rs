@@ -40,7 +40,7 @@ impl Layout for StackLayout {
             == Visibility::Collapsed
         {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
-            return self.desired_size.borrow().clone();
+            return *self.desired_size.borrow();
         }
 
         let horizontal_alignment: Alignment = *ecm
@@ -61,64 +61,51 @@ impl Layout for StackLayout {
         let orientation: Orientation = *ecm.component_store().get("orientation", entity).unwrap();
         let mut desired_size: (f64, f64) = (0.0, 0.0);
 
-        if ecm.entity_store().children[&entity].len() > 0 {
-            let mut index = 0;
+        for index in 0..ecm.entity_store().children[&entity].len() {
+            let child = ecm.entity_store().children[&entity][index];
 
-            loop {
-                let child = ecm.entity_store().children[&entity][index];
-
-                if let Some(child_layout) = layouts.borrow().get(&child) {
-                    let child_desired_size =
-                        child_layout.measure(render_context_2_d, child, ecm, layouts, theme);
-                    let child_margin = {
-                        if child_desired_size.width() > 0.0 && child_desired_size.height() > 0.0 {
-                            *ecm.component_store()
-                                .get::<Thickness>("margin", child)
-                                .unwrap()
-                        } else {
-                            Thickness::default()
-                        }
-                    };
-
-                    match orientation {
-                        Orientation::Horizontal => {
-                            desired_size.0 += child_desired_size.width()
-                                + child_margin.left()
-                                + child_margin.right();
-                            desired_size.1 = desired_size.1.max(
-                                child_desired_size.height()
-                                    + child_margin.top()
-                                    + child_margin.bottom(),
-                            );
-                        }
-                        _ => {
-                            desired_size.0 = desired_size.0.max(
-                                child_desired_size.width()
-                                    + child_margin.left()
-                                    + child_margin.right(),
-                            );
-                            desired_size.1 += child_desired_size.height()
-                                + child_margin.top()
-                                + child_margin.bottom();
-                        }
+            if let Some(child_layout) = layouts.borrow().get(&child) {
+                let child_desired_size =
+                    child_layout.measure(render_context_2_d, child, ecm, layouts, theme);
+                let child_margin = {
+                    if child_desired_size.width() > 0.0 && child_desired_size.height() > 0.0 {
+                        *ecm.component_store()
+                            .get::<Thickness>("margin", child)
+                            .unwrap()
+                    } else {
+                        Thickness::default()
                     }
+                };
 
-                    let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
-                    self.desired_size.borrow_mut().set_dirty(dirty);
+                match orientation {
+                    Orientation::Horizontal => {
+                        desired_size.0 +=
+                            child_desired_size.width() + child_margin.left() + child_margin.right();
+                        desired_size.1 = desired_size.1.max(
+                            child_desired_size.height()
+                                + child_margin.top()
+                                + child_margin.bottom(),
+                        );
+                    }
+                    _ => {
+                        desired_size.0 = desired_size.0.max(
+                            child_desired_size.width() + child_margin.left() + child_margin.right(),
+                        );
+                        desired_size.1 += child_desired_size.height()
+                            + child_margin.top()
+                            + child_margin.bottom();
+                    }
                 }
 
-                if index + 1 < ecm.entity_store().children[&entity].len() {
-                    index += 1;
-                } else {
-                    break;
-                }
+                let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
+                self.desired_size.borrow_mut().set_dirty(dirty);
             }
         }
 
         self.desired_size
             .borrow_mut()
             .set_size(desired_size.0, desired_size.1);
-        self.desired_size.borrow().clone()
+        *self.desired_size.borrow()
     }
 
     fn arrange(
@@ -176,86 +163,76 @@ impl Layout for StackLayout {
 
         let available_size = size;
 
-        if ecm.entity_store().children[&entity].len() > 0 {
-            let mut index = 0;
+        for index in 0..ecm.entity_store().children[&entity].len() {
+            let child = ecm.entity_store().children[&entity][index];
 
-            loop {
-                let child = ecm.entity_store().children[&entity][index];
+            let mut child_desired_size = (0.0, 0.0);
+            if let Some(child_layout) = layouts.borrow().get(&child) {
+                child_desired_size =
+                    child_layout.arrange(render_context_2_d, size, child, ecm, layouts, theme);
+            }
 
-                let mut child_desired_size = (0.0, 0.0);
-                if let Some(child_layout) = layouts.borrow().get(&child) {
-                    child_desired_size =
-                        child_layout.arrange(render_context_2_d, size, child, ecm, layouts, theme);
-                }
-
-                let child_margin = {
-                    if child_desired_size.0 > 0.0 && child_desired_size.1 > 0.0 {
-                        *ecm.component_store()
-                            .get::<Thickness>("margin", child)
-                            .unwrap()
-                    } else {
-                        Thickness::default()
-                    }
-                };
-
-                let child_horizontal_alignment: Alignment = *ecm
-                    .component_store()
-                    .get("horizontal_alignment", child)
-                    .unwrap();
-                let child_vertical_alignment: Alignment = *ecm
-                    .component_store()
-                    .get("vertical_alignment", child)
-                    .unwrap();
-                if let Ok(child_bounds) = ecm
-                    .component_store_mut()
-                    .get_mut::<Rectangle>("bounds", child)
-                {
-                    match orientation {
-                        Orientation::Horizontal => {
-                            child_bounds.set_x(
-                                size_counter
-                                    + child_horizontal_alignment.align_position(
-                                        available_size.0,
-                                        child_bounds.width(),
-                                        child_margin.left(),
-                                        child_margin.right(),
-                                    ),
-                            );
-                            child_bounds.set_y(child_vertical_alignment.align_position(
-                                available_size.1,
-                                child_bounds.height(),
-                                child_margin.top(),
-                                child_margin.bottom(),
-                            ));
-                            size_counter +=
-                                child_bounds.width() + child_margin.left() + child_margin.right();
-                        }
-                        _ => {
-                            child_bounds.set_x(child_horizontal_alignment.align_position(
-                                available_size.0,
-                                child_bounds.width(),
-                                child_margin.left(),
-                                child_margin.right(),
-                            ));
-                            child_bounds.set_y(
-                                size_counter
-                                    + child_vertical_alignment.align_position(
-                                        available_size.1,
-                                        child_bounds.height(),
-                                        child_margin.top(),
-                                        child_margin.bottom(),
-                                    ),
-                            );
-                            size_counter +=
-                                child_bounds.height() + child_margin.top() + child_margin.bottom();
-                        }
-                    }
-                }
-
-                if index + 1 < ecm.entity_store().children[&entity].len() {
-                    index += 1;
+            let child_margin = {
+                if child_desired_size.0 > 0.0 && child_desired_size.1 > 0.0 {
+                    *ecm.component_store()
+                        .get::<Thickness>("margin", child)
+                        .unwrap()
                 } else {
-                    break;
+                    Thickness::default()
+                }
+            };
+
+            let child_horizontal_alignment: Alignment = *ecm
+                .component_store()
+                .get("horizontal_alignment", child)
+                .unwrap();
+            let child_vertical_alignment: Alignment = *ecm
+                .component_store()
+                .get("vertical_alignment", child)
+                .unwrap();
+            if let Ok(child_bounds) = ecm
+                .component_store_mut()
+                .get_mut::<Rectangle>("bounds", child)
+            {
+                match orientation {
+                    Orientation::Horizontal => {
+                        child_bounds.set_x(
+                            size_counter
+                                + child_horizontal_alignment.align_position(
+                                    available_size.0,
+                                    child_bounds.width(),
+                                    child_margin.left(),
+                                    child_margin.right(),
+                                ),
+                        );
+                        child_bounds.set_y(child_vertical_alignment.align_position(
+                            available_size.1,
+                            child_bounds.height(),
+                            child_margin.top(),
+                            child_margin.bottom(),
+                        ));
+                        size_counter +=
+                            child_bounds.width() + child_margin.left() + child_margin.right();
+                    }
+                    _ => {
+                        child_bounds.set_x(child_horizontal_alignment.align_position(
+                            available_size.0,
+                            child_bounds.width(),
+                            child_margin.left(),
+                            child_margin.right(),
+                        ));
+                        child_bounds.set_y(
+                            size_counter
+                                + child_vertical_alignment.align_position(
+                                    available_size.1,
+                                    child_bounds.height(),
+                                    child_margin.top(),
+                                    child_margin.bottom(),
+                                ),
+                        );
+                        size_counter +=
+                            child_bounds.height() + child_margin.top() + child_margin.bottom();
+                    }
                 }
             }
         }

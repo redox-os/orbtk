@@ -76,37 +76,29 @@ impl Layout for ScrollLayout {
                 .set_height(constraint.height());
         }
 
-        if ecm.entity_store().children[&entity].len() > 0 {
-            let mut index = 0;
+        for index in 0..ecm.entity_store().children[&entity].len() {
+            let child = ecm.entity_store().children[&entity][index];
 
-            loop {
-                let child = ecm.entity_store().children[&entity][index];
+            if let Some(child_layout) = layouts.borrow().get(&child) {
+                let dirty = child_layout
+                    .measure(render_context_2_d, child, ecm, layouts, theme)
+                    .dirty()
+                    || self.desired_size.borrow().dirty();
 
-                if let Some(child_layout) = layouts.borrow().get(&child) {
-                    let dirty = child_layout
-                        .measure(render_context_2_d, child, ecm, layouts, theme)
-                        .dirty()
-                        || self.desired_size.borrow().dirty();
-
-                    self.desired_size.borrow_mut().set_dirty(dirty);
-                }
-
-                if index + 1 < ecm.entity_store().children[&entity].len() {
-                    index += 1;
-                } else {
-                    break;
-                }
+                self.desired_size.borrow_mut().set_dirty(dirty);
             }
         }
 
         let off: Point = *ecm.component_store().get("scroll_offset", entity).unwrap();
 
-        if self.old_offset.get().0 != off.x || self.old_offset.get().1 != off.y {
+        if (self.old_offset.get().0 - off.x).abs() > std::f64::EPSILON
+            || (self.old_offset.get().1 - off.y).abs() > std::f64::EPSILON
+        {
             self.old_offset.set((off.x, off.y));
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        self.desired_size.borrow().clone()
+        *self.desired_size.borrow()
     }
 
     fn arrange(
@@ -194,117 +186,107 @@ impl Layout for ScrollLayout {
 
         let old_child_size = self.old_child_size.get();
 
-        if ecm.entity_store().children[&entity].len() > 0 {
-            let mut index = 0;
+        for index in 0..ecm.entity_store().children[&entity].len() {
+            let child = ecm.entity_store().children[&entity][index];
 
-            loop {
-                let child = ecm.entity_store().children[&entity][index];
+            // let child_margin = get_margin(*child, store);
+            let mut child_size = old_child_size;
+            let child_vertical_alignment: Alignment = *ecm
+                .component_store()
+                .get("vertical_alignment", child)
+                .unwrap();
+            let child_horizontal_alignment: Alignment = *ecm
+                .component_store()
+                .get("horizontal_alignment", child)
+                .unwrap();
+            let child_margin: Thickness = *ecm.component_store().get("margin", child).unwrap();
 
-                // let child_margin = get_margin(*child, store);
-                let mut child_size = old_child_size;
-                let child_vertical_alignment: Alignment = *ecm
-                    .component_store()
-                    .get("vertical_alignment", child)
-                    .unwrap();
-                let child_horizontal_alignment: Alignment = *ecm
-                    .component_store()
-                    .get("horizontal_alignment", child)
-                    .unwrap();
-                let child_margin: Thickness = *ecm.component_store().get("margin", child).unwrap();
+            if let Some(child_layout) = layouts.borrow().get(&child) {
+                child_size = child_layout.arrange(
+                    render_context_2_d,
+                    available_size,
+                    child,
+                    ecm,
+                    layouts,
+                    theme,
+                );
+            }
 
-                if let Some(child_layout) = layouts.borrow().get(&child) {
-                    child_size = child_layout.arrange(
-                        render_context_2_d,
-                        available_size,
-                        child,
-                        ecm,
-                        layouts,
-                        theme,
-                    );
-                }
-
-                match scroll_viewer_mode.horizontal {
-                    ScrollMode::Custom => {
-                        if child_size.0 > size.0 {
-                            offset.0 = (offset.0 + old_child_size.0 - child_size.0).min(0.0);
-                        } else {
-                            offset.0 = 0.0;
-                        }
-                    }
-                    ScrollMode::Auto => {
-                        // todo: refactor * 1.5
-                        offset.0 = (offset.0 + delta.x * 1.5)
-                            .min(0.0)
-                            .max(size.0 - child_size.0);
-                    }
-                    _ => {}
-                }
-
-                match scroll_viewer_mode.vertical {
-                    ScrollMode::Custom => {
-                        if child_size.1 > size.1 {
-                            offset.1 = (offset.1 + old_child_size.1 - child_size.1).min(1.1);
-                        } else {
-                            offset.1 = 1.1;
-                        }
-                    }
-                    ScrollMode::Auto => {
-                        // todo: refactor * 1.5
-                        offset.1 = (offset.1 + delta.y * 1.5)
-                            .min(1.1)
-                            .max(size.1 - child_size.1);
-                    }
-                    _ => {}
-                }
-
-                if let Ok(child_bounds) = ecm
-                    .component_store_mut()
-                    .get_mut::<Rectangle>("bounds", child)
-                {
-                    // todo: add check
-                    if scroll_viewer_mode.horizontal == ScrollMode::Custom
-                        || scroll_viewer_mode.horizontal == ScrollMode::Auto
-                    {
-                        child_bounds.set_x(offset.0);
+            match scroll_viewer_mode.horizontal {
+                ScrollMode::Custom => {
+                    if child_size.0 > size.0 {
+                        offset.0 = (offset.0 + old_child_size.0 - child_size.0).min(0.0);
                     } else {
-                        child_bounds.set_x(child_horizontal_alignment.align_position(
-                            size.0,
-                            child_bounds.width(),
-                            child_margin.left(),
-                            child_margin.right(),
-                        ));
+                        offset.0 = 0.0;
                     }
+                }
+                ScrollMode::Auto => {
+                    // todo: refactor * 1.5
+                    offset.0 = (offset.0 + delta.x * 1.5)
+                        .min(0.0)
+                        .max(size.0 - child_size.0);
+                }
+                _ => {}
+            }
 
-                    if scroll_viewer_mode.vertical == ScrollMode::Custom
-                        || scroll_viewer_mode.vertical == ScrollMode::Auto
-                    {
-                        child_bounds.set_y(offset.1);
+            match scroll_viewer_mode.vertical {
+                ScrollMode::Custom => {
+                    if child_size.1 > size.1 {
+                        offset.1 = (offset.1 + old_child_size.1 - child_size.1).min(1.1);
                     } else {
-                        child_bounds.set_y(child_vertical_alignment.align_position(
-                            size.1,
-                            child_bounds.height(),
-                            child_margin.top(),
-                            child_margin.bottom(),
-                        ));
+                        offset.1 = 1.1;
                     }
                 }
-
-                if let Ok(off) = ecm
-                    .component_store_mut()
-                    .get_mut::<Point>("scroll_offset", entity)
-                {
-                    off.x = offset.0;
-                    off.y = offset.1;
+                ScrollMode::Auto => {
+                    // todo: refactor * 1.5
+                    offset.1 = (offset.1 + delta.y * 1.5)
+                        .min(1.1)
+                        .max(size.1 - child_size.1);
                 }
+                _ => {}
+            }
 
-                self.old_child_size.set(child_size);
-
-                if index + 1 < ecm.entity_store().children[&entity].len() {
-                    index += 1;
+            if let Ok(child_bounds) = ecm
+                .component_store_mut()
+                .get_mut::<Rectangle>("bounds", child)
+            {
+                // todo: add check
+                if scroll_viewer_mode.horizontal == ScrollMode::Custom
+                    || scroll_viewer_mode.horizontal == ScrollMode::Auto
+                {
+                    child_bounds.set_x(offset.0);
                 } else {
-                    break;
+                    child_bounds.set_x(child_horizontal_alignment.align_position(
+                        size.0,
+                        child_bounds.width(),
+                        child_margin.left(),
+                        child_margin.right(),
+                    ));
+                }
+
+                if scroll_viewer_mode.vertical == ScrollMode::Custom
+                    || scroll_viewer_mode.vertical == ScrollMode::Auto
+                {
+                    child_bounds.set_y(offset.1);
+                } else {
+                    child_bounds.set_y(child_vertical_alignment.align_position(
+                        size.1,
+                        child_bounds.height(),
+                        child_margin.top(),
+                        child_margin.bottom(),
+                    ));
                 }
             }
+
+            if let Ok(off) = ecm
+                .component_store_mut()
+                .get_mut::<Point>("scroll_offset", entity)
+            {
+                off.x = offset.0;
+                off.y = offset.1;
+            }
+
+            self.old_child_size.set(child_size);
         }
 
         self.desired_size.borrow_mut().set_dirty(false);

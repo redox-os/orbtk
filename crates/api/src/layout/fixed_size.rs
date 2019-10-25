@@ -39,7 +39,7 @@ impl Layout for FixedSizeLayout {
             == Visibility::Collapsed
         {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
-            return self.desired_size.borrow();
+            return *self.desired_size.borrow();
         }
 
         let widget = WidgetContainer::new(entity, ecm, theme);
@@ -125,29 +125,19 @@ impl Layout for FixedSizeLayout {
                 .set_height(constraint.height());
         }
 
-        if ecm.entity_store().children[&entity].len() > 0 {
-            let mut index = 0;
+        for index in 0..ecm.entity_store().children[&entity].len() {
+            let child = ecm.entity_store().children[&entity][index];
+            if let Some(child_layout) = layouts.borrow().get(&child) {
+                let dirty = child_layout
+                    .measure(render_context_2_d, child, ecm, layouts, theme)
+                    .dirty()
+                    || self.desired_size.borrow().dirty();
 
-            loop {
-                let child = ecm.entity_store().children[&entity][index];
-                if let Some(child_layout) = layouts.borrow().get(&child) {
-                    let dirty = child_layout
-                        .measure(render_context_2_d, child, ecm, layouts, theme)
-                        .dirty()
-                        || self.desired_size.borrow().dirty();
-
-                    self.desired_size.borrow_mut().set_dirty(dirty);
-                }
-
-                if index + 1 < ecm.entity_store().children[&entity].len() {
-                    index += 1;
-                } else {
-                    break;
-                }
+                self.desired_size.borrow_mut().set_dirty(dirty);
             }
         }
 
-        self.desired_size.borrow().clone()
+        *self.desired_size.borrow()
     }
 
     fn arrange(
@@ -171,30 +161,20 @@ impl Layout for FixedSizeLayout {
             bounds.set_height(self.desired_size.borrow().height());
         }
 
-        if ecm.entity_store().children[&entity].len() > 0 {
-            let mut index = 0;
-
-            loop {
-                let child = ecm.entity_store().children[&entity][index];
-                if let Some(child_layout) = layouts.borrow().get(&child) {
-                    child_layout.arrange(
-                        render_context_2_d,
-                        (
-                            self.desired_size.borrow().width(),
-                            self.desired_size.borrow().height(),
-                        ),
-                        child,
-                        ecm,
-                        layouts,
-                        theme,
-                    );
-                }
-
-                if index + 1 < ecm.entity_store().children[&entity].len() {
-                    index += 1;
-                } else {
-                    break;
-                }
+        for index in 0..ecm.entity_store().children[&entity].len() {
+            let child = ecm.entity_store().children[&entity][index];
+            if let Some(child_layout) = layouts.borrow().get(&child) {
+                child_layout.arrange(
+                    render_context_2_d,
+                    (
+                        self.desired_size.borrow().width(),
+                        self.desired_size.borrow().height(),
+                    ),
+                    child,
+                    ecm,
+                    layouts,
+                    theme,
+                );
             }
         }
 

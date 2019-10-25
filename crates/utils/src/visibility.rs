@@ -22,9 +22,9 @@ impl Default for Visibility {
 impl From<&str> for Visibility {
     fn from(t: &str) -> Self {
         match t {
-            "Hidden" | "hidden" => Visibility::from(Visibility::Hidden),
-            "Collapsed" | "collapsed" => Visibility::from(Visibility::Collapsed),
-            _ => Visibility::from(Visibility::Visible),
+            "Hidden" | "hidden" => Visibility::Hidden,
+            "Collapsed" | "collapsed" => Visibility::Collapsed,
+            _ => Visibility::Visible,
         }
     }
 }

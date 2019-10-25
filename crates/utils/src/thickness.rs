@@ -67,7 +67,7 @@ impl Thickness {
 
     /// Gets thickness.
     pub fn thickness(&self) -> Thickness {
-        self.clone()
+        *self
     }
 
     /// Sets thickness.

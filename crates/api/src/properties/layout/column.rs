@@ -172,6 +172,11 @@ impl Columns {
         self.0.len()
     }
 
+    /// Is the column empty?
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
     /// Returns a reference to an column.
     pub fn get(&self, column: usize) -> Option<&Column> {
         self.0.get(column)
