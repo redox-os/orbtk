@@ -21,7 +21,7 @@ impl EventBox {
     pub fn new<E: Event>(event: E, strategy: EventStrategy, source: Entity) -> Self {
         EventBox {
             event: Box::new(event),
-            source: source,
+            source,
             event_type: TypeId::of::<E>(),
             strategy,
         }
@@ -88,6 +88,10 @@ impl EventQueue {
 
     pub fn len(&self) -> usize {
         self.event_queue.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.event_queue.is_empty()
     }
 }
 

@@ -12,7 +12,7 @@ pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>
     rect.set_x(position.x);
     rect.set_y(position.y);
 
-    return rect.contains((mouse_position.x, mouse_position.y));
+    rect.contains((mouse_position.x, mouse_position.y))
 }
 
 pub struct MouseMoveEvent {
@@ -66,11 +66,10 @@ impl Into<Rc<dyn EventHandler>> for ClickEventHandler {
 
 impl EventHandler for ClickEventHandler {
     fn handle_event(&self, event: &EventBox) -> bool {
-        if let Ok(event) = event.downcast_ref::<ClickEvent>() {
-            return (self.handler)(event.position);
-        }
-
-        return false;
+        event
+            .downcast_ref::<ClickEvent>()
+            .ok()
+            .map_or(false, |event| (self.handler)(event.position))
     }
 
     fn handles_event(&self, event: &EventBox) -> bool {
@@ -91,11 +90,10 @@ impl Into<Rc<dyn EventHandler>> for MouseDownEventHandler {
 
 impl EventHandler for MouseDownEventHandler {
     fn handle_event(&self, event: &EventBox) -> bool {
-        if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
-            return (self.handler)(Point::new(event.x, event.y));
-        }
-
-        return false;
+        event
+            .downcast_ref::<MouseDownEvent>()
+            .ok()
+            .map_or(false, |event| (self.handler)(Point::new(event.x, event.y)))
     }
 
     fn handles_event(&self, event: &EventBox) -> bool {
@@ -116,11 +114,10 @@ impl Into<Rc<dyn EventHandler>> for MouseUpEventHandler {
 
 impl EventHandler for MouseUpEventHandler {
     fn handle_event(&self, event: &EventBox) -> bool {
-        if let Ok(event) = event.downcast_ref::<MouseUpEvent>() {
-            return (self.handler)(Point::new(event.x, event.y));
-        }
-
-        return false;
+        event
+            .downcast_ref::<MouseUpEvent>()
+            .ok()
+            .map_or(false, |event| (self.handler)(Point::new(event.x, event.y)))
     }
 
     fn handles_event(&self, event: &EventBox) -> bool {
@@ -140,11 +137,12 @@ impl Into<Rc<dyn EventHandler>> for ScrollEventHandler {
 
 impl EventHandler for ScrollEventHandler {
     fn handle_event(&self, event: &EventBox) -> bool {
-        if let Ok(event) = event.downcast_ref::<ScrollEvent>() {
-            return (self.handler)(Point::new(event.delta.x, event.delta.y));
-        }
-
-        return false;
+        event
+            .downcast_ref::<ScrollEvent>()
+            .ok()
+            .map_or(false, |event| {
+                (self.handler)(Point::new(event.delta.x, event.delta.y))
+            })
     }
 
     fn handles_event(&self, event: &EventBox) -> bool {

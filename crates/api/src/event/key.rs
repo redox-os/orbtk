@@ -31,11 +31,10 @@ impl Into<Rc<dyn EventHandler>> for KeyDownEventHandler {
 
 impl EventHandler for KeyDownEventHandler {
     fn handle_event(&self, event: &EventBox) -> bool {
-        if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
-            return (self.handler)(event.event.clone());
-        }
-
-        return false;
+        event
+            .downcast_ref::<KeyDownEvent>()
+            .ok()
+            .map_or(false, |event| (self.handler)(event.event.clone()))
     }
 
     fn handles_event(&self, event: &EventBox) -> bool {

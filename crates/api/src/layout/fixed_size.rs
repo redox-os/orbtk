@@ -39,7 +39,7 @@ impl Layout for FixedSizeLayout {
             == Visibility::Collapsed
         {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
-            return self.desired_size.borrow().clone();
+            return self.desired_size.borrow();
         }
 
         let widget = WidgetContainer::new(entity, ecm, theme);
