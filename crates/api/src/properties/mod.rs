@@ -57,6 +57,26 @@ pub trait IntoPropertySource<P: Component + Debug> {
     fn into_source(self) -> PropertySource<P>;
 }
 
+pub struct AttachedProperty<P>
+where
+    P: Component + Debug,
+{
+    pub key: String,
+    pub property_source: PropertySource<P>,
+}
+
+impl<P> AttachedProperty<P>
+where
+    P: Component + Debug,
+{
+    pub fn new(key: impl Into<String>, property_source: impl IntoPropertySource<P>) -> Self {
+        AttachedProperty {
+            key: key.into(),
+            property_source: property_source.into_source(),
+        }
+    }
+}
+
 // Implementation of PropertySource for default types
 into_property_source!(bool);
 into_property_source!(String: &str);

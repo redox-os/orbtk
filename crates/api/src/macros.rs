@@ -96,7 +96,10 @@ macro_rules! property {
 /// Used to define a widget, with properties and event handlers.
 #[macro_export]
 macro_rules! widget {
-    ( $(#[$widget_doc:meta])* $widget:ident $(<$state:ident>)* $(: $( $handler:ident ),*)* $( { $($(#[$prop_doc:meta])* $property:ident: $property_type:tt ),* } )* ) => {
+    ( $(#[$widget_doc:meta])* $widget:ident $(<$state:ident>)* $(: $( $handler:ident ),*)* 
+            $( { $($(#[$prop_doc:meta])* $property:ident: $property_type:tt ),*
+                $( attached_properties: { $($(#[$att_prop_doc:meta])* $att_property:ident: $att_property_type:tt ),* } )*      
+             } )* ) => {
         $(#[$widget_doc])*
         #[derive(Default)]
         pub struct $widget {
@@ -315,6 +318,17 @@ macro_rules! widget {
                         self.$property = Some($property.into_source());
                         self
                     }
+                )*
+            )*
+
+            $(
+                $(
+                    $(
+                        $(#[$att_prop_doc])*
+                        pub fn $att_property(property: impl IntoPropertySource<$att_property_type>) -> AttachedProperty<$att_property_type> {
+                            AttachedProperty::new(stringify!($att_property), property)
+                        }
+                    )*
                 )*
             )*
         }

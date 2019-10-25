@@ -19,46 +19,22 @@ widget!(
 
         /// Sets or shares the css selector property.
         selector: Selector
-    }
-);
 
-pub struct AttachedProperty<P>
-where
-    P: Component + Debug,
-{
-    pub key: String,
-    pub property_source: PropertySource<P>,
-}
+        attached_properties: {
+            /// Attach a colum position to a widget.
+            column: usize,
 
-impl<P> AttachedProperty<P>
-where
-    P: Component + Debug,
-{
-    fn new(key: impl Into<String>, property_source: impl IntoPropertySource<P>) -> Self {
-        AttachedProperty {
-            key: key.into(),
-            property_source: property_source.into_source(),
+            /// Attach a colum span to a widget.
+            column_span: usize,
+
+            /// Attach a row position to a widget.
+            row: usize,
+
+            /// Attach a row span to a widget.
+            row_span: usize
         }
     }
-}
-
-impl Grid {
-    pub fn column(property: impl IntoPropertySource<usize>) -> AttachedProperty<usize> {
-        AttachedProperty::new(stringify!(column), property)
-    }
-
-    pub fn column_span(property: impl IntoPropertySource<usize>) -> AttachedProperty<usize> {
-        AttachedProperty::new(stringify!(columns_span), property)
-    }
-
-    pub fn row(property: impl IntoPropertySource<usize>) -> AttachedProperty<usize> {
-        AttachedProperty::new(stringify!(row), property)
-    }
-
-    pub fn row_span(property: impl IntoPropertySource<usize>) -> AttachedProperty<usize> {
-        AttachedProperty::new(stringify!(row_span), property)
-    }
-}
+);
 
 impl Template for Grid {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
