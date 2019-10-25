@@ -2,8 +2,12 @@ use std::collections::HashSet;
 
 use crate::prelude::*;
 
-property!(
-    /// `SelectedEntities` describes a list of selected entities.
-    #[derive(Default)]
-    SelectedEntities(HashSet<Entity>)
-);
+/// `SelectedEntities` describes a list of selected entities.
+#[derive(Clone, Default, Debug)]
+pub struct SelectedEntities(pub HashSet<Entity>);
+
+impl From<HashSet<Entity>> for SelectedEntities {
+    fn from(i: HashSet<Entity>) -> Self {
+        SelectedEntities(i)
+    }
+}

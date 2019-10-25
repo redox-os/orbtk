@@ -8,7 +8,7 @@ impl State for ScrollIndicatorState {
     fn update_post_layout(&self, ctx: &mut Context<'_>) {
         let padding = *ctx.widget().get::<Thickness>("padding");
         let scroll_offset = *ctx.widget().get::<Point>("scroll_offset");
-        let content_id = ctx.widget().get::<ContentId>("content_id").0;
+        let content_id = *ctx.widget().get::<u32>("content_id");
         let content_bounds = ctx
             .get_widget(Entity::from(content_id))
             .get::<Rectangle>("bounds")
@@ -36,14 +36,14 @@ impl State for ScrollIndicatorState {
                 scroll_bar_bounds.height = height;
                 scroll_bar_bounds.y = -(scroll_offset.y as f64 * vertical_p);
             } else {
-                vertical_scroll_bar.set("visibility", Visibility::from("Collapsed"));
+                vertical_scroll_bar.set("visibility", Visibility::from("collapsed"));
             }
         }
 
         // calculate horizontal scroll bar width and position.
         if let Some(mut horizontal_scroll_bar) = ctx.child_by_id("horizontal-scroll-bar") {
             if horizontal_p < 1.0 {
-                horizontal_scroll_bar.set("visibility", Visibility::from("Visible"));
+                horizontal_scroll_bar.set("visibility", Visibility::from("visible"));
                 let scroll_bar_margin_right =
                     horizontal_scroll_bar.get::<Thickness>("margin").right();
                 let horizontal_min_width = horizontal_scroll_bar
@@ -57,17 +57,11 @@ impl State for ScrollIndicatorState {
                 scroll_bar_bounds.width = width;
                 scroll_bar_bounds.x = -(scroll_offset.x as f64 * horizontal_p);
             } else {
-                horizontal_scroll_bar.set("visibility", Visibility::from("Collapsed"));
+                horizontal_scroll_bar.set("visibility", Visibility::from("collapsed"));
             }
         }
     }
 }
-
-property!(
-    /// Internal content id property of ScrollIndicator. Is used to get the size of the scrolled content.
-    #[derive(Default)]
-    ContentId(u32)
-);
 
 widget!(
     /// The `ScrollIndicator` widget contains two scroll bars.
@@ -84,7 +78,7 @@ widget!(
         padding: Thickness,
 
         /// Sets or shares the content id property.
-        content_id: ContentId
+        content_id: u32
     }
 );
 

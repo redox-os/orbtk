@@ -14,7 +14,7 @@ use super::Layout;
 #[derive(Default)]
 pub struct TextSelectionLayout {
     desired_size: RefCell<DirtySize>,
-    old_text_selection: Cell<TextSelectionValue>,
+    old_text_selection: Cell<TextSelection>,
 }
 
 impl TextSelectionLayout {
@@ -58,11 +58,11 @@ impl Layout for TextSelectionLayout {
             .component_store()
             .borrow_component::<TextSelection>("text_selection", entity)
         {
-            if selection.0 != self.old_text_selection.get() {
+            if *selection != self.old_text_selection.get() {
                 self.desired_size.borrow_mut().set_dirty(true);
             }
 
-            self.old_text_selection.set(selection.0);
+            self.old_text_selection.set(*selection);
         }
 
         if ecm.entity_store().children[&entity].len() > 0 {
@@ -161,7 +161,7 @@ impl Layout for TextSelectionLayout {
                 let font_size = widget.get::<f64>("font_size");
 
                 if let Some(selection) = widget.try_get::<TextSelection>("text_selection") {
-                    if let Some(text_part) = text.get_string(0, selection.0.start_index) {
+                    if let Some(text_part) = text.get_string(0, selection.start_index) {
                         pos = render_context_2_d
                             .measure(text_part.as_str(), *font_size, font.as_str())
                             .width;

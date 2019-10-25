@@ -8,7 +8,7 @@ impl State for CursorState {
     fn update_post_layout(&self, context: &mut Context<'_>) {
         let mut widget = context.widget();
 
-        let selection_length = widget.get::<TextSelection>("text_selection").0.length;
+        let selection_length = widget.get::<TextSelection>("text_selection").length;
 
         if selection_length > 0 {
             add_selector_to_widget("expanded", &mut widget);

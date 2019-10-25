@@ -8,7 +8,6 @@ pub use crate::{
     layout::*,
     macros::*,
     properties::*,
-    property,
     render_object::*,
     systems::*,
     tree::Tree,

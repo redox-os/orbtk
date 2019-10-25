@@ -1,6 +1,6 @@
-//! This module contains non visual structures like point, rectangle, color and thickness.
+//! This sub module contains extra structs used as widget proerties.
 
-use std::fmt::Debug;
+use std::{fmt::Debug, collections::HashSet};
 
 use dces::prelude::{Component, Entity, StringComponentStore};
 
@@ -82,6 +82,7 @@ where
 into_property_source!(bool);
 into_property_source!(String: &str);
 into_property_source!(usize);
+into_property_source!(u32);
 into_property_source!(f64: i32);
 
 // Implementation of PropertySource for utils types
@@ -99,6 +100,7 @@ into_property_source!(
     (f64, f64, f64, f64)
 );
 into_property_source!(utils::String16: &str, String);
+into_property_source!(utils::SelectionMode: &str);
 into_property_source!(utils::Visibility: &str);
 
 // Implementation of css types
@@ -111,6 +113,9 @@ into_property_source!(render::Image: &str);
 // Implementation of custom property types
 into_property_source!(Columns);
 into_property_source!(Constraint);
-// into_property_source!(RenderPipeline);
+into_property_source!(RenderPipeline);
 into_property_source!(Rows);
 into_property_source!(ScrollViewerMode: (&str, &str));
+into_property_source!(SelectedEntities: HashSet<Entity>);
+into_property_source!(SelectedIndices: HashSet<usize>);
+into_property_source!(TextSelection: (usize, usize));

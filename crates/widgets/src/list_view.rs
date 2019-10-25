@@ -109,7 +109,7 @@ impl State for ListViewItemState {
         let index = context.index_as_child(entity).unwrap();
 
         if let Some(parent) = &mut context.parent_by_id("ListView") {
-            let selection_mode = parent.get::<SelectionMode>("selection_mode").0;
+            let selection_mode = *parent.get::<SelectionMode>("selection_mode");
             // deselect item
             if selected {
                 parent
@@ -316,7 +316,7 @@ impl Template for ListView {
                     .child(
                         ScrollIndicator::create()
                             .padding(2.0)
-                            .content_id(ContentId::from(items_panel.0))
+                            .content_id(items_panel.0)
                             .scroll_offset(scroll_viewer)
                             .build(context),
                     )

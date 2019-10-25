@@ -38,11 +38,10 @@ impl TextBoxState {
         }
 
         let text = ctx.widget().clone::<String16>("text");
-        let mut current_selection = ctx
+        let mut current_selection = *ctx
             .child_by_id("cursor")
             .unwrap()
-            .get::<TextSelection>("text_selection")
-            .0;
+            .get::<TextSelection>("text_selection");
 
         match key_event.key {
             Key::Left => {
@@ -51,7 +50,7 @@ impl TextBoxState {
                     .unwrap()
                     .try_get_mut::<TextSelection>("text_selection")
                 {
-                    selection.0.start_index =
+                    selection.start_index =
                         (current_selection.start_index as i32 - 1).max(0) as usize;
                 }
             }
@@ -61,7 +60,7 @@ impl TextBoxState {
                     .unwrap()
                     .try_get_mut::<TextSelection>("text_selection")
                 {
-                    selection.0.start_index = (current_selection.start_index + 1).min(text.len());
+                    selection.start_index = (current_selection.start_index + 1).min(text.len());
                 }
             }
             Key::Backspace => {
@@ -79,7 +78,7 @@ impl TextBoxState {
                         .unwrap()
                         .try_get_mut::<TextSelection>("text_selection")
                     {
-                        selection.0.start_index = current_selection.start_index;
+                        selection.start_index = current_selection.start_index;
                     }
                 }
             }
@@ -106,7 +105,7 @@ impl TextBoxState {
                     .unwrap()
                     .try_get_mut::<TextSelection>("text_selection")
                 {
-                    selection.0.start_index = current_selection.start_index + key_event.text.len();
+                    selection.start_index = current_selection.start_index + key_event.text.len();
                 }
             }
         }
@@ -265,7 +264,7 @@ impl Template for TextBox {
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto Regular")
-            .text_selection(TextSelectionValue::default())
+            .text_selection(TextSelection::default())
             .scroll_offset(0.0)
             .padding(4.0)
             .background(colors::LYNCH_COLOR)
