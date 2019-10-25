@@ -55,15 +55,6 @@ impl String16 {
         self.utf16.push(ch as u16)
     }
 
-    /// Inserts a `String` into this `String16` at a byte position.
-    pub fn insert_string(&mut self, idx: usize, string: String) {
-        let mut counter = idx;
-        for u in string.encode_utf16() {
-            self.utf16.insert(counter, u);
-            counter += 1;
-        }
-    }
-
     /// Removes a [`char`] from this `String16` at a byte position and returns it.
     pub fn remove(&mut self, idx: usize) {
         self.utf16.remove(idx);
@@ -86,21 +77,12 @@ impl String16 {
 
     /// Returns a string part begins with the `start`and ends with the `end` index.
     pub fn get_string(&self, start: usize, end: usize) -> Option<String> {
-        if let Some(s) = self.utf16.get(start..end) {
-            if let Ok(string) = String::from_utf16(s) {
-                return Some(string);
-            }
-        }
-        None
+        self.utf16.get(start..end).map(String::from_utf16_lossy)
     }
 
     /// Converts the `String16` value to a String.
     pub fn as_string(&self) -> String {
-        if let Ok(string) = String::from_utf16(&self.utf16) {
-            return string;
-        }
-
-        String::from("")
+        String::from_utf16_lossy(&self.utf16)
     }
 }
 

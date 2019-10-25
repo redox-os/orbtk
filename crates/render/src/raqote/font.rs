@@ -8,12 +8,10 @@ pub struct Font {
 }
 
 impl Font {
-    pub fn from_bytes(bytes: &'static [u8]) -> Result<Self, String> {
-        if let Ok(font) = rusttype::Font::from_bytes(bytes) {
-            return Ok(Font { inner: font });
-        }
-
-        Err("Could not load font from bytes".to_string())
+    pub fn from_bytes(bytes: &'static [u8]) -> Result<Self, &'static str> {
+        rusttype::Font::from_bytes(bytes)
+            .map(|font| Font { inner: font })
+            .map_err(|_| "Could not load font from bytes")
     }
 
     pub fn measure_text(&self, text: &str, size: f64) -> (f64, f64) {
@@ -43,7 +41,7 @@ impl Font {
         text: &str,
         size: f64,
         data: &mut [u32],
-        col: &Color,
+        col: Color,
         width: f64,
         x: f64,
         y: f64,
@@ -65,7 +63,7 @@ impl Font {
         text: &str,
         size: f64,
         data: &mut [u32],
-        col: &Color,
+        col: Color,
         width: f64,
         x: f64,
         y: f64,
@@ -111,7 +109,7 @@ impl Font {
                     {
                         // Alpha blending from orbclient
                         let alpha = (v * 255.0) as u32;
-                        let new = (alpha << 24) | (col.data & 0xFFFFFF);
+                        let new = (alpha << 24) | (col.data & 0x00FF_FFFF);
                         let old = &mut data
                             [((y as i32 + off_y) * width as i32 + x as i32 + off_x) as usize];
 
@@ -119,13 +117,13 @@ impl Font {
                             *old = new;
                         } else if alpha > 0 {
                             let n_alpha = 255 - alpha;
-                            let rb = ((n_alpha * (*old & 0x00FF00FF))
-                                + (alpha * (new & 0x00FF00FF)))
+                            let rb = ((n_alpha * (*old & 0x00FF_00FF))
+                                + (alpha * (new & 0x00FF_00FF)))
                                 >> 8;
-                            let ag = (n_alpha * ((*old & 0xFF00FF00) >> 8))
-                                + (alpha * (0x01000000 | ((new & 0x0000FF00) >> 8)));
+                            let ag = (n_alpha * ((*old & 0xFF00_FF00) >> 8))
+                                + (alpha * (0x0100_0000 | ((new & 0x0000_FF00) >> 8)));
 
-                            *old = (rb & 0x00FF00FF) | (ag & 0xFF00FF00);
+                            *old = (rb & 0x00FF_00FF) | (ag & 0xFF00_FF00);
                         }
                     }
                 });

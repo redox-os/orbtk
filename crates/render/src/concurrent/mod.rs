@@ -237,7 +237,7 @@ impl RenderWorker {
 
                 tasks_collection.push(tasks);
 
-                if tasks_collection.len() > 0 {
+                if !tasks_collection.is_empty() {
                     for task in tasks_collection.remove(0) {
                         match task {
                             RenderTask::FillRect {
@@ -339,11 +339,7 @@ impl RenderWorker {
                                     .lock()
                                     .unwrap()
                                     .send(RenderResult::Finish {
-                                        data: render_context_2_d
-                                            .data()
-                                            .iter()
-                                            .map(|a| *a)
-                                            .collect(),
+                                        data: render_context_2_d.data().iter().copied().collect(),
                                     })
                                     .expect("Could not send render result to main thread.");
                             }
@@ -391,7 +387,7 @@ impl RenderContext2D {
         let receiver = Arc::new(Mutex::new(receiver));
         let result_sender = Arc::new(Mutex::new(result_sender));
 
-        let worker = RenderWorker::new(width, height, receiver.clone(), result_sender.clone());
+        let worker = RenderWorker::new(width, height, receiver, result_sender);
 
         RenderContext2D {
             output: vec![0; width as usize * height as usize],
@@ -405,14 +401,12 @@ impl RenderContext2D {
 
     // Sends a render task to the render thread.
     fn send_tasks(&mut self) {
-        if self.tasks.len() == 0 {
-            return;
+        if !self.tasks.is_empty() {
+            self.sender
+                .send(self.tasks.to_vec())
+                .expect("Could not send render task.");
+            self.tasks.clear();
         }
-
-        self.sender
-            .send(self.tasks.to_vec())
-            .expect("Could not send render task.");
-        self.tasks.clear();
     }
 
     /// Starts a new render pipeline.
@@ -683,16 +677,12 @@ impl RenderContext2D {
     }
 
     pub fn data(&mut self) -> Option<&[u32]> {
-        if let Ok(result) = self.result_receiver.try_recv() {
-            match result {
-                RenderResult::Finish { data } => {
-                    self.output = data;
-                    return Some(&self.output);
-                }
-            }
+        if let Ok(RenderResult::Finish { data }) = self.result_receiver.try_recv() {
+            self.output = data;
+            Some(&self.output)
+        } else {
+            None
         }
-
-        None
     }
 
     pub fn data_mut(&mut self) -> &mut [u32] {

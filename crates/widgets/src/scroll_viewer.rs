@@ -22,7 +22,7 @@ impl State for ScrollViewerState {
     }
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
-        if let Some(_) = self.delta.get() {
+        if self.delta.get().is_some() {
             context.widget().set("delta", Point::new(0.0, 0.0));
             self.delta.set(None);
         }
