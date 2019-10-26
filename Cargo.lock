@@ -159,7 +159,7 @@ dependencies = [
 [[package]]
 name = "dces"
 version = "0.2.0"
-source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git#f9b3a6f18169f1618997e774bbcc878b48c49397"
+source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git#aa10849af5629e71bbb2163736bedce0cfe8d327"
 
 [[package]]
 name = "deflate"
