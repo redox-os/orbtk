@@ -10,4 +10,4 @@ keywords = ["ecs", "tree"]
 edition = "2018"
 
 [dependencies]
-dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git", branch = "5-multiple-components-of-the-same-type-per-entity"  }
+dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }

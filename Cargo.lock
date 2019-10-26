@@ -159,7 +159,7 @@ dependencies = [
 [[package]]
 name = "dces"
 version = "0.2.0"
-source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=5-multiple-components-of-the-same-type-per-entity#f8d8ee237fd1eedf12d295e74d9c6e217e00deae"
+source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git#f9b3a6f18169f1618997e774bbcc878b48c49397"
 
 [[package]]
 name = "deflate"
@@ -416,7 +416,7 @@ dependencies = [
 name = "orbtk"
 version = "0.3.0"
 dependencies = [
- "dces 0.2.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=5-multiple-components-of-the-same-type-per-entity)",
+ "dces 0.2.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)",
  "euc 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbtk-api 0.1.0",
  "orbtk-css-engine 0.1.0",
@@ -434,7 +434,7 @@ dependencies = [
 name = "orbtk-api"
 version = "0.1.0"
 dependencies = [
- "dces 0.2.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=5-multiple-components-of-the-same-type-per-entity)",
+ "dces 0.2.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)",
  "orbtk-css-engine 0.1.0",
  "orbtk-render 0.1.0",
  "orbtk-shell 0.1.0",
@@ -496,7 +496,7 @@ dependencies = [
 name = "orbtk-tree"
 version = "0.1.0"
 dependencies = [
- "dces 0.2.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=5-multiple-components-of-the-same-type-per-entity)",
+ "dces 0.2.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)",
 ]
 
 [[package]]
@@ -507,7 +507,7 @@ version = "0.1.0"
 name = "orbtk-widgets"
 version = "0.1.0"
 dependencies = [
- "dces 0.2.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=5-multiple-components-of-the-same-type-per-entity)",
+ "dces 0.2.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)",
  "orbtk-api 0.1.0",
  "orbtk-render 0.1.0",
  "orbtk-shell 0.1.0",
@@ -1138,7 +1138,7 @@ dependencies = [
 "checksum crossbeam-utils 0.6.6 (registry+https://github.com/rust-lang/crates.io-index)" = "04973fa96e96579258a5091af6003abde64af786b860f18622b82e026cca60e6"
 "checksum cssparser 0.17.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e7063452c60432cb306ed54d538178c20792d47fa960c240ce6c083239ee55ec"
 "checksum cssparser-macros 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)" = "5bb1c84e87c717666564ec056105052331431803d606bd45529b28547b611eef"
-"checksum dces 0.2.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=5-multiple-components-of-the-same-type-per-entity)" = "<none>"
+"checksum dces 0.2.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git)" = "<none>"
 "checksum deflate 0.7.20 (registry+https://github.com/rust-lang/crates.io-index)" = "707b6a7b384888a70c8d2e8650b3e60170dfc6a67bb4aa67b6dfca57af4bedb4"
 "checksum discard 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)" = "212d0f5754cb6769937f4501cc0e67f4f4483c8d2c3e1e922ee9edbe4ab4c7c0"
 "checksum either 1.5.3 (registry+https://github.com/rust-lang/crates.io-index)" = "bb1f6b1ce1c140482ea30ddd3335fc0024ac7ee112895426e0a629a6c20adfe3"
