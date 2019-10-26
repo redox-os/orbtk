@@ -2,7 +2,7 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{prelude::*, shell::WindowShell, tree::Tree};
+use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree};
 
 /// This system is used to initializes the widgets.
 pub struct InitSystem {
@@ -15,10 +15,10 @@ pub struct InitSystem {
 
 impl InitSystem {
     // init css ids.
-    fn init_id(&self, node: Entity, store: &mut ComponentStore, root: Entity) {
+    fn init_id(&self, node: Entity, store: &mut StringComponentStore, root: Entity) {
         // Add css id to global id map.
-        let id = if let Ok(selector) = store.borrow_component::<Selector>(node) {
-            if let Some(id) = &selector.0.id {
+        let id = if let Ok(selector) = store.get::<Selector>("selector", node) {
+            if let Some(id) = &selector.id {
                 Some((node, id.clone()))
             } else {
                 None
@@ -28,7 +28,7 @@ impl InitSystem {
         };
 
         if let Some((entity, id)) = id {
-            if let Ok(global) = store.borrow_mut_component::<Global>(root) {
+            if let Ok(global) = store.get_mut::<Global>("global", root) {
                 global.id_map.insert(id, entity);
             }
         }
@@ -40,8 +40,8 @@ impl InitSystem {
     }
 }
 
-impl System<Tree> for InitSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
+impl System<Tree, StringComponentStore> for InitSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         let root = ecm.entity_store().root;
 
         #[cfg(feature = "debug")]
@@ -61,9 +61,8 @@ impl System<Tree> for InitSystem {
         let window_shell = &mut self.shell.borrow_mut();
         let theme = ecm
             .component_store()
-            .borrow_component::<Theme>(root)
+            .get::<Theme>("theme", root)
             .unwrap()
-            .0
             .clone();
 
         let mut current_node = root;
@@ -102,9 +101,18 @@ impl System<Tree> for InitSystem {
     }
 }
 
-pub fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tree>) {
-    let name = Name::get(entity, ecm.component_store());
-    let selector = Selector::get_or_value(entity, ecm.component_store(), Selector::default());
+pub fn print_tree(
+    entity: Entity,
+    depth: usize,
+    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+) {
+    let name = ecm.component_store().get::<String>("name", entity).unwrap();
+
+    let selector = if let Ok(selector) = ecm.component_store().get::<Selector>("selector", entity) {
+        selector.clone()
+    } else {
+        Selector::default()
+    };
 
     crate::shell::CONSOLE.log(format!(
         "{}{} (entity: {}{})",

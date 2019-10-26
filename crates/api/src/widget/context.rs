@@ -2,13 +2,13 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager};
 
-use crate::{prelude::*, render::*, shell::WindowShell, tree::Tree};
+use crate::{css_engine::*, prelude::*, render::*, shell::WindowShell, tree::Tree};
 
 use super::{MessageBox, WidgetContainer};
 
 /// The `Context` is provides access for the states to objects they could work with.
 pub struct Context<'a> {
-    ecm: &'a mut EntityComponentManager<Tree>,
+    ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     window_shell: &'a mut WindowShell<WindowAdapter>,
     pub entity: Entity,
     pub theme: &'a ThemeValue,
@@ -31,7 +31,7 @@ impl<'a> Context<'a> {
     /// Creates a new container.
     pub fn new(
         entity: Entity,
-        ecm: &'a mut EntityComponentManager<Tree>,
+        ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
         window_shell: &'a mut WindowShell<WindowAdapter>,
         theme: &'a ThemeValue,
         render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
@@ -115,9 +115,9 @@ impl<'a> Context<'a> {
             if let Ok(selector) = self
                 .ecm
                 .component_store()
-                .borrow_component::<Selector>(current_node)
+                .get::<Selector>("selector", current_node)
             {
-                if let Some(child_id) = &selector.0.id {
+                if let Some(child_id) = &selector.id {
                     if child_id == id {
                         return Some(current_node);
                     }
@@ -154,11 +154,14 @@ impl<'a> Context<'a> {
             if let Ok(selector) = self
                 .ecm
                 .component_store()
-                .borrow_component::<Selector>(parent)
+                .get::<Selector>("selector", parent)
             {
-                if let Some(parent_element) = &selector.0.element {
+                if let Some(parent_element) = &selector.element {
                     if parent_element == element
-                        && self.ecm.component_store().is_origin::<Selector>(parent)
+                        && self
+                            .ecm
+                            .component_store()
+                            .is_origin::<Selector>("selector", parent)
                     {
                         return Some(parent);
                     }
@@ -181,9 +184,9 @@ impl<'a> Context<'a> {
             if let Ok(selector) = self
                 .ecm
                 .component_store()
-                .borrow_component::<Selector>(parent)
+                .get::<Selector>("selector", parent)
             {
-                if let Some(parent_id) = &selector.0.id {
+                if let Some(parent_id) = &selector.id {
                     if parent_id == id {
                         return Some(self.get_widget(parent));
                     }
@@ -245,11 +248,7 @@ impl<'a> Context<'a> {
     /// Sends a message to the widget with the given id over the message channel.
     pub fn send_message(&mut self, target_widget: &str, message: impl Into<MessageBox>) {
         let mut entity = None;
-        if let Ok(global) = self
-            .ecm
-            .component_store()
-            .borrow_component::<Global>(0.into())
-        {
+        if let Ok(global) = self.ecm.component_store().get::<Global>("global", 0.into()) {
             if let Some(en) = global.id_map.get(target_widget) {
                 entity = Some(*en);
             }

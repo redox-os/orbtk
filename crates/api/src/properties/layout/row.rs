@@ -1,7 +1,5 @@
 use std::slice::{Iter, IterMut};
 
-use crate::prelude::*;
-
 /// Used to build a row, specifying additional details.
 #[derive(Default)]
 pub struct RowBuilder {
@@ -154,81 +152,146 @@ impl RowsBuilder {
 
     /// Builds the rows.
     pub fn build(self) -> Rows {
-        Rows(RowsContainer(self.row_definitions))
+        Rows(self.row_definitions)
     }
 }
 
 /// Helper struct used inside of the row Property.
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct RowsContainer(Vec<Row>);
+pub struct Rows(Vec<Row>);
 
-property!(
-    /// `Rows` describes a list of grid rows.
-    #[derive(Default)]
-    Rows(RowsContainer)
-);
-
-// --- Trait implementations ---
-
-/// Provides additional operations on grid rows.
-pub trait RowExt {
-    /// Returns a new Rows Builder.
-    fn create() -> RowsBuilder;
-
-    /// Returns the number of elements in the rows list, also referred to as its 'length'.
-    fn len(&self) -> usize;
-
-    /// Is the row empty?
-    fn is_empty(&self) -> bool;
-
-    /// Returns a reference to an row.
-    fn get(&self, row: usize) -> Option<&Row>;
-
-    /// Returns a mutable reference to an row.
-    fn get_mut(&mut self, row: usize) -> Option<&mut Row>;
-
-    /// Returns an iterator over the slice.
-    fn iter(&self) -> Iter<Row>;
-
-    /// Returns a mutable iterator over the slice.
-    fn iter_mut(&mut self) -> IterMut<Row>;
-}
-
-impl RowExt for Rows {
+impl Rows {
     /// Creates a new `RowsBuilder` object with default values.
-    fn create() -> RowsBuilder {
+    pub fn create() -> RowsBuilder {
         RowsBuilder::new()
     }
 
     /// Returns the number of elements in the rows list, also referred to as its 'length'.
-    fn len(&self) -> usize {
-        (self.0).0.len()
+    pub fn len(&self) -> usize {
+        self.0.len()
     }
 
     /// Is the row empty?
-    fn is_empty(&self) -> bool {
-        (self.0).0.is_empty()
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
     }
 
     /// Returns a reference to an row.
-    fn get(&self, row: usize) -> Option<&Row> {
-        (self.0).0.get(row)
+    pub fn get(&self, row: usize) -> Option<&Row> {
+        self.0.get(row)
     }
 
     /// Returns a mutable reference to an row.
-    fn get_mut(&mut self, row: usize) -> Option<&mut Row> {
-        (self.0).0.get_mut(row)
+    pub fn get_mut(&mut self, row: usize) -> Option<&mut Row> {
+        self.0.get_mut(row)
     }
 
     /// Returns an iterator over the slice.
-    fn iter(&self) -> Iter<Row> {
-        (self.0).0.iter()
+    pub fn iter(&self) -> Iter<Row> {
+        self.0.iter()
     }
 
     /// Returns a mutable iterator over the slice.
-    fn iter_mut(&mut self) -> IterMut<Row> {
-        (self.0).0.iter_mut()
+    pub fn iter_mut(&mut self) -> IterMut<Row> {
+        self.0.iter_mut()
     }
 }
 
-// --- Conversions ---
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_height() {
+        let height = RowHeight::Height(64.0);
+
+        let builder = RowBuilder::new();
+        let row = builder.height(height).build();
+
+        assert_eq!(row.height, height);
+    }
+
+    #[test]
+    fn test_min_height() {
+        let min_height = 64.0;
+
+        let builder = RowBuilder::new();
+        let row = builder.min_height(min_height).build();
+
+        assert_eq!(row.min_height, min_height);
+    }
+
+    #[test]
+    fn test_max_height() {
+        let max_height = 64.0;
+
+        let builder = RowBuilder::new();
+        let row = builder.max_height(max_height).build();
+
+        assert_eq!(row.max_height, max_height);
+    }
+
+    #[test]
+    fn test_set_current_height() {
+        let out_one_height = 10.0;
+        let out_two_height = 66.0;
+        let in_height = 33.0;
+        let min_height = 14.0;
+        let max_height = 64.0;
+
+        let builder = RowBuilder::new();
+        let mut row = builder
+            .min_height(min_height)
+            .max_height(max_height)
+            .build();
+
+        row.set_current_height(out_one_height);
+        assert_eq!(row.current_height(), min_height);
+
+        row.set_current_height(out_two_height);
+        assert_eq!(row.current_height(), max_height);
+
+        row.set_current_height(in_height);
+        assert_eq!(row.current_height(), in_height);
+    }
+
+    #[test]
+    fn test_row() {
+        let builder = RowsBuilder::new();
+        let rows = builder.build();
+
+        assert_eq!(rows.len(), 0);
+
+        let builder = RowsBuilder::new();
+        let rows = builder
+            .row(Row::create().build())
+            .row(Row::create().build())
+            .build();
+
+        assert_eq!(rows.len(), 2);
+    }
+
+    #[test]
+    fn test_row_height_into() {
+        let row: Row = "Auto".into();
+        assert_eq!(row.height(), RowHeight::Auto);
+
+        let row: Row = "auto".into();
+        assert_eq!(row.height(), RowHeight::Auto);
+
+        let row: Row = "Stretch".into();
+        assert_eq!(row.height(), RowHeight::Stretch);
+
+        let row: Row = "stretch".into();
+        assert_eq!(row.height(), RowHeight::Stretch);
+
+        let row: Row = "*".into();
+        assert_eq!(row.height(), RowHeight::Stretch);
+
+        let row: Row = "other".into();
+        assert_eq!(row.height(), RowHeight::Stretch);
+
+        let row: Row = 64.0.into();
+        assert_eq!(row.height(), RowHeight::Height(64.0));
+    }
+}

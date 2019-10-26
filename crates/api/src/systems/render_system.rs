@@ -7,6 +7,7 @@ use std::{
 use dces::prelude::{Entity, EntityComponentManager, System};
 
 use crate::{
+    css_engine::*,
     prelude::*,
     shell::{WindowShell, CONSOLE},
     tree::Tree,
@@ -23,8 +24,8 @@ pub struct RenderSystem {
     pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
 }
 
-impl System<Tree> for RenderSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree>) {
+impl System<Tree, StringComponentStore> for RenderSystem {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         if !self.update.get() || ecm.entity_store().parent.is_empty() || !self.running.get() {
             return;
         }
@@ -40,9 +41,8 @@ impl System<Tree> for RenderSystem {
 
         let theme = ecm
             .component_store()
-            .borrow_component::<Theme>(root)
+            .get::<Theme>("theme", root)
             .unwrap()
-            .0
             .clone();
 
         let mut offsets = BTreeMap::new();

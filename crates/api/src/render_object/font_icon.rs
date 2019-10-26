@@ -1,4 +1,7 @@
-use crate::{prelude::*, utils::*};
+use crate::{
+    prelude::*,
+    utils::{Brush, Point, Rectangle},
+};
 
 pub struct FontIconRenderObject;
 
@@ -13,11 +16,11 @@ impl RenderObject for FontIconRenderObject {
         let (bounds, icon, icon_brush, icon_font, icon_size) = {
             let widget = context.widget();
             (
-                widget.get::<Bounds>().0,
-                widget.clone::<FontIcon>().0,
-                widget.get::<IconBrush>().0.clone(),
-                widget.get::<IconFont>().0.clone(),
-                widget.get::<IconSize>().0,
+                *widget.get::<Rectangle>("bounds"),
+                widget.clone::<String>("icon"),
+                widget.get::<Brush>("icon_brush").clone(),
+                widget.get::<String>("icon_font").clone(),
+                *widget.get::<f64>("icon_size"),
             )
         };
 

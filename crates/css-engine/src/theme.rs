@@ -24,8 +24,8 @@ impl Default for ThemeBuilder {
         ThemeBuilder {
             theme_css: None,
             theme_path: None,
-            theme_extensions: vec![],
-            theme_extension_paths: vec![],
+            theme_extensions: Vec::new(),
+            theme_extension_paths: Vec::new(),
         }
     }
 }

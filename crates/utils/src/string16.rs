@@ -77,11 +77,10 @@ impl String16 {
 
     /// Returns a string part begins with the `start`and ends with the `end` index.
     pub fn get_string(&self, start: usize, end: usize) -> Option<String> {
-        self.utf16
-            .get(start..end)
-            .and_then(|s| String::from_utf16(s).ok())
+        self.utf16.get(start..end).map(String::from_utf16_lossy)
     }
 
+    /// Converts the `String16` value to a String.
     pub fn as_string(&self) -> String {
         String::from_utf16_lossy(&self.utf16)
     }
@@ -111,7 +110,7 @@ impl fmt::Debug for String16 {
 
 impl fmt::Display for String16 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", String::from_utf16_lossy(&self.utf16))
+        write!(f, "{}", self.as_string())
     }
 }
 

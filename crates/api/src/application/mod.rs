@@ -12,6 +12,7 @@ use crate::{
     prelude::*,
     shell::{ShellRunner, WindowBuilder},
     tree::*,
+    utils::{Point, Rectangle},
 };
 
 pub use self::global::*;
@@ -33,7 +34,7 @@ impl Application {
     }
 
     pub fn window<F: Fn(&mut BuildContext) -> Entity + 'static>(mut self, create_fn: F) -> Self {
-        let mut world = World::from_container(Tree::default());
+        let mut world = World::from_stores(Tree::default(), StringComponentStore::default());
 
         let render_objects = Rc::new(RefCell::new(BTreeMap::new()));
         let layouts = Rc::new(RefCell::new(BTreeMap::new()));
@@ -62,38 +63,41 @@ impl Application {
         let title = world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<Title>(window)
+            .get::<String>("title", window)
             .unwrap()
             .clone();
-        let resizeable = world
+        let resizeable = *world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<Resizeable>(window)
-            .unwrap()
-            .clone();
-        let position = world
+            .get::<bool>("resizeable", window)
+            .unwrap();
+        let position = *world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<Pos>(window)
-            .unwrap()
-            .clone();
-        let constraint = world
+            .get::<Point>("position", window)
+            .unwrap();
+        let constraint = *world
             .entity_component_manager()
             .component_store()
-            .borrow_component::<Constraint>(window)
-            .unwrap()
-            .clone();
+            .get::<Constraint>("constraint", window)
+            .unwrap();
 
         world
             .entity_component_manager()
-            .register_component(window, Global::default());
+            .component_store_mut()
+            .register_component("global", window, Global::default());
         world
             .entity_component_manager()
-            .register_component(window, Global::default());
-        world.entity_component_manager().register_component(
-            window,
-            Bounds::from((0.0, 0.0, constraint.width(), constraint.height())),
-        );
+            .component_store_mut()
+            .register_component("global", window, Global::default());
+        world
+            .entity_component_manager()
+            .component_store_mut()
+            .register_component(
+                "bounds",
+                window,
+                Rectangle::from((0.0, 0.0, constraint.width(), constraint.height())),
+            );
 
         let window_shell = Rc::new(RefCell::new(
             WindowBuilder::new(WindowAdapter {
@@ -104,14 +108,14 @@ impl Application {
                 states: states.clone(),
                 ..Default::default()
             })
-            .title(&(title.0)[..])
-            .bounds(Bounds::from((
-                position.0.x,
-                position.0.y,
+            .title(&(title)[..])
+            .bounds(Rectangle::from((
+                position.x,
+                position.y,
                 constraint.width(),
                 constraint.height(),
             )))
-            .resizeable(resizeable.0)
+            .resizeable(resizeable)
             .build(),
         ));
 

@@ -67,7 +67,7 @@ impl MainViewState {
             }
         }
 
-        context.widget().get_mut::<Text>().0 = String16::from(result.to_string());
+        *context.widget().get_mut::<String16>("text") = String16::from(result.to_string());
         self.left_side.set(Some(result));
         self.right_side.set(None);
     }
@@ -82,8 +82,7 @@ impl State for MainViewState {
                     context
                         .child_by_id("input")
                         .unwrap()
-                        .get_mut::<Text>()
-                        .0
+                        .get_mut::<String16>("text")
                         .push(digit);
                 }
                 Action::Operator(operator) => match operator {
@@ -92,12 +91,11 @@ impl State for MainViewState {
                         self.left_side.set(None);
                         self.operator.set(None);
                         self.right_side.set(None);
-                        context.widget().get_mut::<Text>().0.clear();
+                        context.widget().get_mut::<String16>("text").clear();
                         context
                             .child_by_id("input")
                             .unwrap()
-                            .get_mut::<Text>()
-                            .0
+                            .get_mut::<String16>("text")
                             .clear()
                     }
                     '=' => {
@@ -111,8 +109,7 @@ impl State for MainViewState {
                         context
                             .child_by_id("input")
                             .unwrap()
-                            .get_mut::<Text>()
-                            .0
+                            .get_mut::<String16>("text")
                             .clear()
                     }
                     _ => {
@@ -131,8 +128,7 @@ impl State for MainViewState {
                         context
                             .child_by_id("input")
                             .unwrap()
-                            .get_mut::<Text>()
-                            .0
+                            .get_mut::<String16>("text")
                             .push(operator);
                         self.input.borrow_mut().clear();
                         self.operator.set(Some(operator));
@@ -174,9 +170,9 @@ fn generate_digit_button(
             state.action(Action::Digit(sight));
             true
         })
-        .attach(GridColumn(column))
-        .attach(GridRow(row))
-        .attach(ColumnSpan(column_span))
+        .attach(Grid::column(column))
+        .attach(Grid::row(row))
+        .attach(Grid::column_span(column_span))
         .build(context)
 }
 
@@ -198,14 +194,14 @@ fn generate_operation_button(
             state.action(Action::Operator(sight));
             true
         })
-        .attach(GridColumn(column))
-        .attach(ColumnSpan(column_span))
-        .attach(GridRow(row))
+        .attach(Grid::column(column))
+        .attach(Grid::column_span(column_span))
+        .attach(Grid::row(row))
         .build(context)
 }
 
 widget!(MainView<MainViewState> {
-    result: Text
+    text: String16
 });
 
 impl Template for MainView {
@@ -215,7 +211,7 @@ impl Template for MainView {
         self.name("MainView")
             .width(212.0)
             .height(336.0)
-            .result("")
+            .text("")
             .child(
                 Grid::create()
                     .rows(Rows::create().row(72.0).row("*").build())
@@ -223,12 +219,12 @@ impl Template for MainView {
                         Container::create()
                             .padding(8.0)
                             .selector(Selector::from("container").class("header"))
-                            .attach(GridRow(0))
+                            .attach(Grid::row(0))
                             .child(
                                 Grid::create()
                                     .child(
                                         ScrollViewer::create()
-                                            .scroll_mode(("Custom", "Disabled"))
+                                            .scroll_viewer_mode(("custom", "disabled"))
                                             .child(
                                                 TextBlock::create()
                                                     .width(0.0)
@@ -237,7 +233,7 @@ impl Template for MainView {
                                                     .selector(
                                                         Selector::from("text-block").id("input"),
                                                     )
-                                                    .vertical_alignment("Start")
+                                                    .vertical_alignment("start")
                                                     .build(context),
                                             )
                                             .build(context),
@@ -246,8 +242,8 @@ impl Template for MainView {
                                         TextBlock::create()
                                             .selector(Selector::from("text-block"))
                                             .text(id)
-                                            .vertical_alignment("End")
-                                            .horizontal_alignment("End")
+                                            .vertical_alignment("end")
+                                            .horizontal_alignment("end")
                                             .build(context),
                                     )
                                     .build(context),
@@ -258,7 +254,7 @@ impl Template for MainView {
                         Container::create()
                             .selector(Selector::from("container").class("content"))
                             .padding(8.0)
-                            .attach(GridRow(1))
+                            .attach(Grid::row(1))
                             .child(
                                 Grid::create()
                                     .columns(

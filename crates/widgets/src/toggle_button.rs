@@ -8,52 +8,52 @@ widget!(
     /// **CSS element:** `toggle-button`
     ToggleButton: MouseHandler {
         /// Sets or shares the background property.
-        background: Background,
+        background: Brush,
 
         /// Sets or shares the border radius property.
-        border_radius: BorderRadius,
+        border_radius: f64,
 
         /// Sets or shares the border thickness property.
-        border_thickness: BorderThickness,
+        border_width: Thickness,
 
         /// Sets or shares the border brush property.
-        border_brush: BorderBrush,
+        border_brush: Brush,
 
         /// Sets or shares the padding property.
-        padding: Padding,
+        padding: Thickness,
 
         /// Sets or shares the foreground property.
-        foreground: Foreground,
+        foreground: Brush,
 
         /// Sets or shares the text property.
-        text: Text,
+        text: String16,
 
         /// Sets or share the font size property.
-        font_size: FontSize,
+        font_size: f64,
 
         /// Sets or shares the font property.
-        font: Font,
+        font: String,
 
         /// Sets or shares the icon property.
-        icon: FontIcon,
+        icon: String,
 
         /// Sets or shares the icon brush property.
-        icon_brush: IconBrush,
+        icon_brush: Brush,
 
         /// Sets or share the icon font size property.
-        icon_size: IconSize,
+        icon_size: f64,
 
         /// Sets or shares the icon font property.
-        icon_font: IconFont,
+        icon_font: String,
 
         /// Sets or shares the css selector property. 
         selector: Selector,
 
         /// Sets or shares the pressed property. 
-        pressed: Pressed,
+        pressed: bool,
 
         /// Sets or shares the selected property. 
-        selected: Selected
+        selected: bool
     }
 );
 
@@ -66,7 +66,7 @@ impl Template for ToggleButton {
             .min_width(80.0)
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
-            .border_thickness(0.0)
+            .border_width(0.0)
             .border_brush("transparent")
             .padding((8.0, 0.0, 8.0, 0.0))
             .foreground(colors::LINK_WATER_COLOR)
@@ -92,21 +92,21 @@ impl Template for ToggleButton {
                                 Container::create()
                                     .background(id)
                                     .border_radius(id)
-                                    .border_thickness(id)
+                                    .border_width(id)
                                     .border_brush(id)
                                     .padding(id)
                                     .child(
                                         Stack::create()
-                                            .orientation("Horizontal")
-                                            .vertical_alignment("Center")
-                                            .horizontal_alignment("Center")
+                                            .orientation("horizontal")
+                                            .vertical_alignment("center")
+                                            .horizontal_alignment("center")
                                             .child(
                                                 FontIconBlock::create()
                                                     .margin((0.0, 0.0, 2.0, 0.0))
                                                     .icon(id)
-                                                    .brush(id)
+                                                    .icon_brush(id)
                                                     .icon_size(id)
-                                                    .font(id)
+                                                    .icon_font(id)
                                                     .build(context),
                                             )
                                             .child(

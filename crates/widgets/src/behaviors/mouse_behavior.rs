@@ -24,17 +24,17 @@ impl MouseBehaviorState {
 
 impl State for MouseBehaviorState {
     fn update(&self, context: &mut Context<'_>) {
-        if !context.widget().get::<Enabled>().0 {
+        if !context.widget().get::<bool>("enabled") {
             return;
         }
 
         if let Some(action) = self.action.get() {
             match action {
                 Action::Press(_) => {
-                    context.widget().set(Pressed(true));
+                    context.widget().set("pressed", true);
                 }
                 Action::Release(p) => {
-                    context.widget().set(Pressed(false));
+                    context.widget().set("pressed", false);
 
                     if check_mouse_condition(p, &context.widget()) {
                         let parent = context.entity_of_parent().unwrap();
@@ -42,12 +42,16 @@ impl State for MouseBehaviorState {
                     }
                 }
                 Action::Scroll(p) => {
-                    context.widget().set(p);
+                    context.widget().set("position", p);
                     self.has_delta.set(true);
                 }
             };
 
-            let element = context.widget().clone::<Selector>().0.element.unwrap();
+            let element = context
+                .widget()
+                .clone::<Selector>("selector")
+                .element
+                .unwrap();
 
             if let Some(parent) = context.parent_entity_by_element(&*element) {
                 context.get_widget(parent).update_theme_by_state(false);
@@ -59,7 +63,7 @@ impl State for MouseBehaviorState {
 
     fn update_post_layout(&self, context: &mut Context<'_>) {
         if self.has_delta.get() {
-            context.widget().set(Delta(Point::new(0.0, 0.0)));
+            context.widget().set("delta", Point::new(0.0, 0.0));
             self.has_delta.set(false);
         }
     }
@@ -74,10 +78,10 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the pressed property. 
-        pressed: Pressed,
+        pressed: bool,
 
         /// Sets or shares the (wheel, scroll) delta property. 
-        delta: Delta
+        delta: Point
     }
 );
 

@@ -2,7 +2,7 @@
 
 use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc};
 
-use crate::{prelude::*, shell::WindowShell, utils::*};
+use crate::{css_engine::*, prelude::*, shell::WindowShell, utils::*};
 
 pub use self::clear::*;
 pub use self::default::*;
@@ -25,7 +25,7 @@ pub trait RenderObject: Any {
         &self,
         shell: &mut WindowShell<WindowAdapter>,
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree>,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         render_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
@@ -42,8 +42,11 @@ pub trait RenderObject: Any {
             }
         }
 
-        if let Ok(visibility) = ecm.component_store().borrow_component::<Visibility>(entity) {
-            if visibility.0 != VisibilityValue::Visible {
+        if let Ok(visibility) = ecm
+            .component_store()
+            .get::<Visibility>("visibility", entity)
+        {
+            if *visibility != Visibility::Visible {
                 return;
             }
         } else {
@@ -53,13 +56,9 @@ pub trait RenderObject: Any {
         shell.render_context_2_d().begin_path();
 
         // Could be unwrap because every widget has the clip property
-        let clip = ecm
-            .component_store()
-            .borrow_component::<Clip>(entity)
-            .unwrap()
-            .0;
+        let clip = *ecm.component_store().get::<bool>("clip", entity).unwrap();
         if clip {
-            if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(entity) {
+            if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
                 shell.render_context_2_d().save();
                 shell.render_context_2_d().rect(
                     global_position.x + bounds.x(),
@@ -88,7 +87,7 @@ pub trait RenderObject: Any {
 
         let mut global_pos = (0.0, 0.0);
 
-        if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(entity) {
+        if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
             global_pos = (
                 global_position.x + bounds.x(),
                 global_position.y + bounds.y(),
@@ -98,7 +97,7 @@ pub trait RenderObject: Any {
 
         if let Ok(g_pos) = ecm
             .component_store_mut()
-            .borrow_mut_component::<Point>(entity)
+            .get_mut::<Point>("position", entity)
         {
             g_pos.x = global_pos.0;
             g_pos.y = global_pos.1;
@@ -125,9 +124,9 @@ pub trait RenderObject: Any {
 
         // render debug border for each widget
         if debug {
-            if let Ok(bounds) = ecm.component_store().borrow_component::<Bounds>(entity) {
+            if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
                 let selector = Selector::from("debug-border");
-                let brush = theme.brush("border-color", &selector.0).unwrap();
+                let brush = theme.brush("border-color", &selector).unwrap();
                 shell.render_context_2_d().begin_path();
                 shell.render_context_2_d().set_stroke_style(brush);
                 shell.render_context_2_d().stroke_rect(
@@ -147,7 +146,7 @@ pub trait RenderObject: Any {
         &self,
         shell: &mut WindowShell<WindowAdapter>,
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree>,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         render_objects: &Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         handlers: &Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
@@ -156,10 +155,6 @@ pub trait RenderObject: Any {
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,
     ) {
-        if ecm.entity_store().children[&entity].is_empty() {
-            return;
-        }
-
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
 

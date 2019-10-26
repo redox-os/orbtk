@@ -1,4 +1,9 @@
-use crate::{prelude::*, render::RenderContext2D, utils::*};
+use crate::{
+    prelude::*,
+    render::RenderContext2D,
+    utils,
+    utils::{Brush, Point, Rectangle, Thickness},
+};
 
 pub struct RectangleRenderObject;
 
@@ -11,8 +16,8 @@ impl RectangleRenderObject {
         y: f64,
         width: f64,
         height: f64,
-        brush: Brush,
-        border_brush: Brush,
+        brush: utils::Brush,
+        border_brush: utils::Brush,
         _border_thickness: Thickness,
     ) {
         render_context_2_d.rect(x, y, width, height);
@@ -61,8 +66,8 @@ impl RectangleRenderObject {
         width: f64,
         height: f64,
         radius: f64,
-        brush: Brush,
-        border_brush: Brush,
+        brush: utils::Brush,
+        border_brush: utils::Brush,
         _border_thickness: Thickness,
     ) {
         self.render_rounded_rect_path(render_context_2_d, x, y, width, height, radius);
@@ -90,11 +95,11 @@ impl RenderObject for RectangleRenderObject {
         let (bounds, background, border_radius, border_thickness, border_brush) = {
             let widget = context.widget();
             (
-                widget.clone::<Bounds>(),
-                widget.get::<Background>().0.clone(),
-                widget.clone_or_default::<BorderRadius>().0,
-                widget.clone_or_default::<BorderThickness>().0,
-                widget.clone_or_default::<BorderBrush>().0,
+                widget.clone::<Rectangle>("bounds"),
+                widget.get::<Brush>("background").clone(),
+                widget.clone_or_default::<f64>("border_radius"),
+                widget.clone_or_default::<Thickness>("border_width"),
+                widget.clone_or_default::<Brush>("border_brush"),
             )
         };
 

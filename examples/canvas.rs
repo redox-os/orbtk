@@ -1,4 +1,4 @@
-use orbtk::{prelude::*, render::platform::RenderContext2D};
+use orbtk::{prelude::*, render::platform::RenderContext2D, utils};
 use std::cell::Cell;
 
 use euc::{buffer::Buffer2d, rasterizer, Pipeline};
@@ -146,7 +146,7 @@ impl render::RenderPipeline for Graphic2DPipeline {
         let x = (render_target.width() - width) / 2.0;
         let y = (render_target.height() - height) / 2.0;
 
-        render_context.set_fill_style(Brush::LinearGradient {
+        render_context.set_fill_style(utils::Brush::LinearGradient {
             start: Point::new(x, y),
             end: Point::new(x + width, y + height),
             stops: vec![
@@ -184,7 +184,7 @@ impl State for MainViewState {
     fn update(&self, context: &mut Context<'_>) {
         if let Some(cube) = context
             .widget()
-            .get_mut::<RenderPipeline>()
+            .get_mut::<RenderPipeline>("render_pipeline")
             .0
             .as_any()
             .downcast_ref::<CubePipeline>()
@@ -196,7 +196,7 @@ impl State for MainViewState {
 
 widget!(
     MainView<MainViewState> {
-         cube_pipeline: RenderPipeline
+         render_pipeline: RenderPipeline
     }
 );
 
@@ -204,7 +204,7 @@ impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let state = self.clone_state();
         self.name("MainView")
-            .cube_pipeline(RenderPipeline(Box::new(CubePipeline::default())))
+            .render_pipeline(RenderPipeline(Box::new(CubePipeline::default())))
             .child(
                 Grid::create()
                     .rows(
@@ -217,18 +217,23 @@ impl Template for MainView {
                     )
                     .child(
                         TextBlock::create()
-                            .attach(GridRow(0))
+                            .attach(Grid::row(0))
                             .text("Canvas (render with euc crate)")
                             .selector(SelectorValue::new().with("text-block").class("h1"))
                             .margin(4.0)
                             .build(ctx),
                     )
-                    .child(Canvas::create().attach(GridRow(1)).pipeline(id).build(ctx))
+                    .child(
+                        Canvas::create()
+                            .attach(Grid::row(1))
+                            .render_pipeline(id)
+                            .build(ctx),
+                    )
                     .child(
                         Button::create()
                             .text("spin cube")
-                            .vertical_alignment("End")
-                            .attach(GridRow(1))
+                            .vertical_alignment("end")
+                            .attach(Grid::row(1))
                             .margin(4.0)
                             .on_click(move |_| {
                                 state.spin();
@@ -238,7 +243,7 @@ impl Template for MainView {
                     )
                     .child(
                         TextBlock::create()
-                            .attach(GridRow(2))
+                            .attach(Grid::row(2))
                             .text("Canvas (render with OrbTk)")
                             .selector(SelectorValue::new().with("text-block").class("h1"))
                             .margin(4.0)
@@ -246,8 +251,8 @@ impl Template for MainView {
                     )
                     .child(
                         Canvas::create()
-                            .attach(GridRow(3))
-                            .pipeline(RenderPipeline(Box::new(Graphic2DPipeline::default())))
+                            .attach(Grid::row(3))
+                            .render_pipeline(RenderPipeline(Box::new(Graphic2DPipeline::default())))
                             .build(ctx),
                     )
                     .build(ctx),

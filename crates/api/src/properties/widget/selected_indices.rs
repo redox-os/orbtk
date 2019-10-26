@@ -1,9 +1,11 @@
 use std::collections::HashSet;
 
-use crate::prelude::*;
+/// `SelectedIndices` describes a list of selected indices.
+#[derive(Clone, Default, Debug)]
+pub struct SelectedIndices(pub HashSet<usize>);
 
-property!(
-    /// `SelectedIndices` describes a list of selected indices.
-    #[derive(Default)]
-    SelectedIndices(HashSet<usize>)
-);
+impl From<HashSet<usize>> for SelectedIndices {
+    fn from(i: HashSet<usize>) -> Self {
+        SelectedIndices(i)
+    }
+}

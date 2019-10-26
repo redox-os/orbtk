@@ -7,19 +7,16 @@ widget!(
     /// **CSS element:** `window`
     Window {
         /// Sets or shares the background property.
-        background: Background,
+        background: Brush,
 
         /// Sets or shares the title property.
-        title: Title,
+        title: String,
 
         /// Sets or shares the css selector property.
         selector: Selector,
 
         /// Sets or shares the resizeable property.
-        resizeable: Resizeable,
-
-        /// Sets or shares the position property.
-        position: Pos,
+        resizeable: bool,
 
         /// Sets or shares the theme property.
         theme: Theme
