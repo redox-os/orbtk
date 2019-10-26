@@ -6,9 +6,9 @@ use syn::{parse_macro_input, DeriveInput};
 
 #[proc_macro_derive(Pipeline)]
 pub fn derive_pipeline(input: TokenStream) -> TokenStream {
-     let input = parse_macro_input!(input as DeriveInput);
+    let input = parse_macro_input!(input as DeriveInput);
 
-     let ident = &input.ident;
+    let ident = &input.ident;
 
     let gen = quote! {
         impl render::Pipeline for #ident {
@@ -26,4 +26,3 @@ pub fn derive_pipeline(input: TokenStream) -> TokenStream {
 
     TokenStream::from(gen)
 }
-

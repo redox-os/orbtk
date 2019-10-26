@@ -1,4 +1,7 @@
-use crate::{prelude::*, utils::*};
+use crate::{
+    prelude::*,
+    utils::{Brush, Point, Rectangle, String16},
+};
 
 /// Used to render a text.
 pub struct TextRenderObject;
@@ -13,21 +16,21 @@ impl RenderObject for TextRenderObject {
     fn render_self(&self, context: &mut Context<'_>, global_position: &Point) {
         let (bounds, text, foreground, font, font_size) = {
             let widget = context.widget();
-            let text = widget.clone::<Text>();
+            let text = widget.clone::<String16>("text");
 
             let txt = {
-                if !text.0.is_empty() {
-                    text.0
+                if !text.is_empty() {
+                    text
                 } else {
-                    widget.clone_or_default::<WaterMark>().0
+                    widget.clone_or_default::<String16>("water_mark")
                 }
             };
             (
-                widget.get::<Bounds>().0,
+                *widget.get::<Rectangle>("bounds"),
                 txt.to_string(),
-                widget.get::<Foreground>().0.clone(),
-                widget.get::<Font>().0.clone(),
-                widget.get::<FontSize>().0,
+                widget.get::<Brush>("foreground").clone(),
+                widget.get::<String>("font").clone(),
+                *widget.get::<f64>("font_size"),
             )
         };
 

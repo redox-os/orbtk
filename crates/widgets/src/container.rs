@@ -4,19 +4,19 @@ widget!(
     /// The `Container` layout widget surrounds its child with a padding. Draws a box around the child.
     Container {
         /// Sets or shares the background property.
-        background: Background,
+        background: Brush,
 
         /// Sets or shares the border radius property.
-        border_radius: BorderRadius,
+        border_radius: f64,
 
         /// Sets or shares the border thickness property.
-        border_thickness: BorderThickness,
+        border_width: Thickness,
 
         /// Sets or shares the border brush property.
-        border_brush: BorderBrush,
+        border_brush: Brush,
 
         /// Sets or shares the padding property.
-        padding: Padding,
+        padding: Thickness,
 
         /// Sets or shares the css selector property.
         selector: Selector
@@ -29,7 +29,7 @@ impl Template for Container {
             .padding(0.0)
             .background("transparent")
             .border_radius(0.0)
-            .border_thickness(0.0)
+            .border_width(0.0)
             .border_brush("transparent")
     }
 

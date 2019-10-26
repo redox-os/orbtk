@@ -17,6 +17,12 @@ impl From<f64> for Point {
     }
 }
 
+impl From<i32> for Point {
+    fn from(t: i32) -> Self {
+        Point::new(t as f64, t as f64)
+    }
+}
+
 impl From<(f64, f64)> for Point {
     fn from(t: (f64, f64)) -> Self {
         Point::new(t.0, t.1)

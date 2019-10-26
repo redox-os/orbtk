@@ -26,10 +26,6 @@ text-block {
     background: transparent;
 }
 
-container {
-    background: "green";
-}
-
 button {
     border-radius: 1;
     font-size: 20;

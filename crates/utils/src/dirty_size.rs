@@ -1,5 +1,3 @@
-use super::Size;
-
 /// Size with width, height and dirty flag.
 #[derive(Copy, Clone, PartialEq)]
 pub struct DirtySize {
@@ -24,23 +22,11 @@ impl DirtySize {
         DirtySize::default()
     }
 
-    /// Gets the dirty flag.
-    pub fn dirty(&self) -> bool {
-        self.dirty
-    }
-
-    /// Sets the dirty flag.
-    pub fn set_dirty(&mut self, dirty: bool) {
-        self.dirty = dirty;
-    }
-}
-
-impl Size for DirtySize {
-    fn width(&self) -> f64 {
+    pub fn width(&self) -> f64 {
         self.width
     }
 
-    fn set_width(&mut self, width: f64) {
+    pub fn set_width(&mut self, width: f64) {
         if (self.width - width).abs() > std::f64::EPSILON {
             self.dirty = true;
         }
@@ -48,11 +34,11 @@ impl Size for DirtySize {
         self.width = width;
     }
 
-    fn height(&self) -> f64 {
+    pub fn height(&self) -> f64 {
         self.height
     }
 
-    fn set_height(&mut self, height: f64) {
+    pub fn set_height(&mut self, height: f64) {
         if (self.height - height).abs() > std::f64::EPSILON {
             self.dirty = true;
         }
@@ -60,11 +46,11 @@ impl Size for DirtySize {
         self.height = height;
     }
 
-    fn size(&self) -> (f64, f64) {
+    pub fn size(&self) -> (f64, f64) {
         (self.width, self.height)
     }
 
-    fn set_size(&mut self, width: f64, height: f64) {
+    pub fn set_size(&mut self, width: f64, height: f64) {
         if (self.width - width).abs() > std::f64::EPSILON
             && (self.height - height).abs() > std::f64::EPSILON
         {
@@ -73,6 +59,16 @@ impl Size for DirtySize {
 
         self.width = width;
         self.height = height;
+    }
+
+    /// Gets the dirty flag.
+    pub fn dirty(&self) -> bool {
+        self.dirty
+    }
+
+    /// Sets the dirty flag.
+    pub fn set_dirty(&mut self, dirty: bool) {
+        self.dirty = dirty;
     }
 }
 

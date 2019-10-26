@@ -1,6 +1,6 @@
 use std::any::Any;
 
-use crate::{prelude::*, render};
+use crate::render;
 
 #[derive(Clone, PartialEq)]
 struct EmptyRenderPipeline;
@@ -12,21 +12,19 @@ impl render::Pipeline for EmptyRenderPipeline {
     fn as_any(&self) -> &dyn Any {
         self
     }
+
     fn clone_box(&self) -> Box<dyn render::Pipeline> {
         Box::new(self.clone())
     }
 }
 
 impl render::RenderPipeline for EmptyRenderPipeline {
-     fn draw(&self, _: &mut render::RenderTarget) {
-
-     }
+    fn draw(&self, _: &mut render::RenderTarget) {}
 }
 
-property!(
-    /// Used to render a pipeline.
-    RenderPipeline(Box<dyn render::Pipeline>)
-);
+/// RenderPipeline object.
+#[derive(Clone, Debug)]
+pub struct RenderPipeline(pub Box<dyn render::Pipeline>);
 
 impl Default for RenderPipeline {
     fn default() -> Self {

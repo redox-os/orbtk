@@ -69,7 +69,7 @@ impl ToString for FontConfig {
 
 pub trait RenderPipeline {
     /// Draws the context of the pipeline.
-    fn draw(&self, image: &mut RenderTarget); 
+    fn draw(&self, image: &mut RenderTarget);
 }
 
 /// Used to implement a custom render pipeline.

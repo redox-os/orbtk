@@ -24,54 +24,80 @@ impl Thickness {
             bottom,
         }
     }
-}
 
-// --- Trait implementations ---
-
-impl Spacer for Thickness {
-    fn left(&self) -> f64 {
+    /// Gets left.
+    pub fn left(&self) -> f64 {
         self.left
     }
 
-    fn set_left(&mut self, left: f64) {
+    /// Sets left.
+    pub fn set_left(&mut self, left: f64) {
         self.left = left;
     }
 
-    fn top(&self) -> f64 {
+    /// Gets top.
+    pub fn top(&self) -> f64 {
         self.top
     }
 
-    fn set_top(&mut self, top: f64) {
+    /// Sets top.
+    pub fn set_top(&mut self, top: f64) {
         self.top = top;
     }
 
-    fn right(&self) -> f64 {
+    /// Gets right.
+    pub fn right(&self) -> f64 {
         self.right
     }
 
-    fn set_right(&mut self, right: f64) {
+    /// Sets right.
+    pub fn set_right(&mut self, right: f64) {
         self.right = right;
     }
 
-    fn bottom(&self) -> f64 {
+    /// Gets bottom.
+    pub fn bottom(&self) -> f64 {
         self.bottom
     }
 
-    fn set_bottom(&mut self, bottom: f64) {
+    /// Sets bottom.
+    pub fn set_bottom(&mut self, bottom: f64) {
         self.bottom = bottom;
     }
 
-    fn thickness(&self) -> Thickness {
+    /// Gets thickness.
+    pub fn thickness(&self) -> Thickness {
         *self
     }
 
-    fn set_thickness<T: Into<Thickness>>(&mut self, thickness: T) {
+    /// Sets thickness.
+    pub fn set_thickness<T: Into<Thickness>>(&mut self, thickness: T) {
         let other = thickness.into();
 
         self.set_left(other.left());
         self.set_top(other.top());
         self.set_right(other.right());
         self.set_bottom(other.bottom());
+    }
+}
+
+// --- Trait implementations ---
+
+impl From<(i32, i32, i32, i32)> for Thickness {
+    fn from(t: (i32, i32, i32, i32)) -> Self {
+        Thickness::new(t.0 as f64, t.1 as f64, t.2 as f64, t.3 as f64)
+    }
+}
+
+impl From<(i32, i32)> for Thickness {
+    fn from(t: (i32, i32)) -> Self {
+        Thickness::new(t.0 as f64, t.1 as f64, t.0 as f64, t.1 as f64)
+    }
+}
+
+impl From<i32> for Thickness {
+    fn from(t: i32) -> Self {
+        Thickness::new(t as f64, t as f64, t as f64, t as f64)
     }
 }
 
@@ -91,39 +117,6 @@ impl From<f64> for Thickness {
     fn from(t: f64) -> Self {
         Thickness::new(t, t, t, t)
     }
-}
-
-// todo:  documentation
-pub trait Spacer {
-    /// Gets left.
-    fn left(&self) -> f64;
-
-    /// Sets left.
-    fn set_left(&mut self, left: f64);
-
-    /// Gets top.
-    fn top(&self) -> f64;
-
-    /// Sets top.
-    fn set_top(&mut self, top: f64);
-
-    /// Gets right.
-    fn right(&self) -> f64;
-
-    /// Sets right.
-    fn set_right(&mut self, right: f64);
-
-    /// Gets bottom.
-    fn bottom(&self) -> f64;
-
-    /// Sets bottom.
-    fn set_bottom(&mut self, bottom: f64);
-
-    /// Gets thickness.
-    fn thickness(&self) -> Thickness;
-
-    /// Sets thickness.
-    fn set_thickness<T: Into<Thickness>>(&mut self, thickness: T);
 }
 
 #[cfg(test)]

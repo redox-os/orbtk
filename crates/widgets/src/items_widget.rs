@@ -16,7 +16,7 @@ impl Into<Rc<dyn State>> for ItemsWidgetState {
 
 impl State for ItemsWidgetState {
     fn update(&self, context: &mut Context<'_>) {
-        let count = context.widget().clone_or_default::<Count>().0;
+        let count = context.widget().clone_or_default::<usize>("count");
 
         if count != self.count.get() {
             if let Some(builder) = &*self.builder.borrow() {
@@ -47,25 +47,25 @@ widget!(
     /// **CSS element:** `items-widget`
     ItemsWidget<ItemsWidgetState> {
         /// Sets or shares the background property.
-        background: Background,
+        background: Brush,
 
         /// Sets or shares the border radius property.
-        border_radius: BorderRadius,
+        border_radius: f64,
 
         /// Sets or shares the border thickness property.
-        border_thickness: BorderThickness,
+        border_width: Thickness,
 
         /// Sets or shares the border brush property.
-        border_brush: BorderBrush,
+        border_brush: Brush,
 
         /// Sets or shares the padding property.
-        padding: Padding,
+        padding: Thickness,
 
         /// Sets or shares the orientation property.
         orientation: Orientation,
 
-        /// Sets or shared the items_count.
-        items_count: Count,
+        /// Sets or shared the count.
+        count: usize,
 
         /// Sets or shares the css selector property.
         selector: Selector
@@ -88,7 +88,7 @@ impl Template for ItemsWidget {
             .selector("items-widget")
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
-            .border_thickness(1.0)
+            .border_width(1.0)
             .border_brush(colors::BOMBAY_COLOR)
             .padding(2.0)
             .orientation("Vertical")
@@ -96,7 +96,7 @@ impl Template for ItemsWidget {
                 Container::create()
                     .background(id)
                     .border_radius(id)
-                    .border_thickness(id)
+                    .border_width(id)
                     .border_brush(id)
                     .padding(id)
                     .child(

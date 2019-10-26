@@ -21,7 +21,7 @@ tree.append_child(0, 1);
 
 use std::{cell::Cell, collections::BTreeMap};
 
-use dces::prelude::{Entity, EntityStore};
+use dces::{entity::EntityStore, prelude::Entity};
 
 pub mod prelude;
 
@@ -96,7 +96,7 @@ impl Tree {
 
     /// Returns true if the tree has no entities.
     pub fn is_empty(&self) -> bool {
-        self.len() == 0
+        self.children.is_empty()
     }
 }
 
@@ -184,6 +184,7 @@ impl<'a> Iterator for TreeIterator<'a> {
 
 #[cfg(test)]
 mod tests {
+    use dces::entity::EntityStore;
     use dces::prelude::*;
 
     use super::*;

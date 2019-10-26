@@ -315,7 +315,7 @@ where
 
     resizeable: bool,
 
-    bounds: Rect,
+    bounds: Rectangle,
 
     adapter: A,
 }
@@ -330,7 +330,7 @@ where
             adapter,
             title: String::default(),
             resizeable: false,
-            bounds: Rect::default(),
+            bounds: Rectangle::default(),
         }
     }
 
@@ -347,7 +347,7 @@ where
     }
 
     /// Sets the bounds.
-    pub fn bounds(mut self, bounds: impl Into<Rect>) -> Self {
+    pub fn bounds(mut self, bounds: impl Into<Rectangle>) -> Self {
         self.bounds = bounds.into();
         self
     }

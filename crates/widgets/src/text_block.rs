@@ -6,16 +6,19 @@ widget!(
     /// **CSS element:** `text-block`
     TextBlock {
         /// Sets or shares the text property.
-        text: Text,
+        text: String16,
+
+        /// Sets or shares the water_mark text property.
+        water_mark: String16,
 
         /// Sets or shares the foreground property.
-        foreground: Foreground,
+        foreground: Brush,
 
         /// Sets or share the font size property.
-        font_size: FontSize,
+        font_size: f64,
 
         /// Sets or shares the font property.
-        font: Font,
+        font: String,
 
         /// Sets or shares the css selector property.
         selector: Selector

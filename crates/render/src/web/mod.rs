@@ -5,7 +5,7 @@ use stdweb::{
 };
 
 // pub use crate::image::Image as InnerImage;
-use crate::{utils::*, FontConfig, RenderConfig, Pipeline, RenderTarget, TextMetrics};
+use crate::{utils::*, FontConfig, Pipeline, RenderConfig, RenderTarget, TextMetrics};
 
 pub use self::image::*;
 
@@ -375,7 +375,7 @@ impl RenderContext2D {
 
         // self.canvas_render_context_2_d.set_fill_style_color("#000000");
         // self.canvas_render_context_2_d.fill_rect(0.0, 0.0, 10.0, height as f64 / 8.0);
-        
+
         let image_data = self
             .canvas_render_context_2_d
             .get_image_data(0.0, 0.0, width as f64, height as f64)
@@ -420,7 +420,7 @@ impl RenderContext2D {
                 if(@{&g} != 0) {
                     console.log(@{&g});
                 }
-                
+
             );
 
             self.export_data[i] =
@@ -445,7 +445,9 @@ impl RenderContext2D {
                     .create_linear_gradient(start.x, start.y, end.x, end.y);
 
                 for stop in stops {
-                    web_gradient.add_color_stop(stop.position, stop.color.to_string().as_str()).unwrap();
+                    web_gradient
+                        .add_color_stop(stop.position, stop.color.to_string().as_str())
+                        .unwrap();
                 }
 
                 self.canvas_render_context_2_d

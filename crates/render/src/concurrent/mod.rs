@@ -51,7 +51,7 @@ enum RenderTask {
     Stroke(),
     BeginPath(),
     ClosePath(),
-    Rect {
+    Rectangle {
         x: f64,
         y: f64,
         width: f64,
@@ -271,7 +271,7 @@ impl RenderWorker {
                             RenderTask::ClosePath() => {
                                 render_context_2_d.close_path();
                             }
-                            RenderTask::Rect {
+                            RenderTask::Rectangle {
                                 x,
                                 y,
                                 width,
@@ -401,14 +401,12 @@ impl RenderContext2D {
 
     // Sends a render task to the render thread.
     fn send_tasks(&mut self) {
-        if self.tasks.is_empty() {
-            return;
+        if !self.tasks.is_empty() {
+            self.sender
+                .send(self.tasks.to_vec())
+                .expect("Could not send render task.");
+            self.tasks.clear();
         }
-
-        self.sender
-            .send(self.tasks.to_vec())
-            .expect("Could not send render task.");
-        self.tasks.clear();
     }
 
     /// Starts a new render pipeline.
@@ -514,7 +512,7 @@ impl RenderContext2D {
     }
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.tasks.push(RenderTask::Rect {
+        self.tasks.push(RenderTask::Rectangle {
             x,
             y,
             width,
