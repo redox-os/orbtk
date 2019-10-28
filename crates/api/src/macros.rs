@@ -363,7 +363,7 @@ macro_rules! widget {
                 }
 
                 for (key, property) in this.shared_attached_properties {
-                    context.register_property_shared_box(key.as_str(), entity, property);
+                    context.register_property_shared_box(key.as_str(), key.as_str(), entity, property);
                 }
 
                 // register properties
@@ -375,7 +375,7 @@ macro_rules! widget {
                                     context.register_property(stringify!($property), entity, value);
                                 },
                                 PropertySource::Source(source) => {
-                                    context.register_shared_property::<$property_type>(stringify!($property), entity, source);
+                                    context.register_shared_property::<$property_type>(stringify!($property), stringify!($property), entity, source);
                                 }
                             }
                         }

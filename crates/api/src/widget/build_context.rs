@@ -64,24 +64,26 @@ impl<'a> BuildContext<'a> {
     pub fn register_shared_property<P: Component>(
         &mut self,
         key: &str,
+        source_key: &str, 
         target: Entity,
         source: Entity,
     ) {
         self.ecm
             .component_store_mut()
-            .register_shared_component::<P>(key, target, source);
+            .register_shared_component::<P>(key, source_key, target, source);
     }
 
     /// Registers a shared component box.
     pub fn register_property_shared_box(
         &mut self,
         key: &str,
+        source_key: &str,
         widget: Entity,
         property: SharedComponentBox,
     ) {
         self.ecm
             .component_store_mut()
-            .register_shared_component_box(key, widget, property);
+            .register_shared_component_box(key, source_key, widget, property);
     }
 
     /// Registers a state with a widget.

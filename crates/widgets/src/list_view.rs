@@ -33,11 +33,13 @@ impl State for ListViewState {
                             let mouse_behavior = MouseBehavior::create().build(&mut build_context);
                             build_context.register_shared_property::<Selector>(
                                 "selector",
+                                "selector",
                                 mouse_behavior,
                                 item,
                             );
                             build_context.register_shared_property::<bool>(
                                 "pressed",
+                                 "pressed",
                                 mouse_behavior,
                                 item,
                             );
@@ -45,10 +47,11 @@ impl State for ListViewState {
 
                             build_context.register_shared_property::<Brush>(
                                 "foreground",
+                                "foreground",
                                 child,
                                 item,
                             );
-                            build_context.register_shared_property::<f64>("font_size", child, item);
+                            build_context.register_shared_property::<f64>("font_size", "font_size", child, item);
                             build_context.append_child(items_panel, item);
                             build_context.append_child(mouse_behavior, child);
 
