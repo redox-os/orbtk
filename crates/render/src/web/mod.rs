@@ -1,7 +1,7 @@
 use stdweb::{
     js,
     unstable::TryInto,
-    web::{document, html_element::CanvasElement, window, CanvasRenderingContext2d, FillRule},
+    web::{document, html_element::CanvasElement, CanvasRenderingContext2d, FillRule},
 };
 
 // pub use crate::image::Image as InnerImage;

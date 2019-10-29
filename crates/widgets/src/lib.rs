@@ -35,7 +35,6 @@ pub use self::window::*;
 pub mod behaviors;
 mod button;
 mod canvas;
-// mod canvas_widget;
 mod check_box;
 mod container;
 mod cursor;

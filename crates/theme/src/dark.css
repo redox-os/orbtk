@@ -53,7 +53,6 @@ switch-toggle:selected {
 }
 
 button, toggle-button {
-    opacity: 0.5;
     background: #647b91;
     border-radius: 2;
     font-family: "Roboto Medium";
@@ -139,6 +138,7 @@ items-widget {
 }
 
 list-view {
+    opacity: 0.3;
     background: transparent;
     border-color: #212121;
     border-width: 1;

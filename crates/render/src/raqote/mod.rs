@@ -470,7 +470,7 @@ fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
                 .iter()
                 .map(|stop| raqote::GradientStop {
                     position: stop.position as f32,
-                    color: raqote::Color::new(0x00, stop.color.r(), stop.color.g(), stop.color.b()),
+                    color: raqote::Color::new(stop.color.a(), stop.color.r(), stop.color.g(), stop.color.b()),
                 })
                 .collect();
 

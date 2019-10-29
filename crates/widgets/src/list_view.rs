@@ -16,7 +16,7 @@ pub struct ListViewState {
 impl State for ListViewState {
     fn update(&self, context: &mut Context<'_>) {
         let count = context.widget().clone_or_default::<usize>("count");
-        // self.selected_index.set(context.widget().clone_or_default::<Index>().0);
+        let entity = context.entity;
 
         if count != self.count.get() {
             if let Some(builder) = &*self.builder.borrow() {
@@ -48,6 +48,8 @@ impl State for ListViewState {
                                 child,
                                 item,
                             );
+                            build_context.register_shared_property::<f32>("opacity", item, entity);
+                            build_context.register_shared_property::<f32>("opacity", child, entity);
                             build_context.register_shared_property::<f64>("font_size", child, item);
                             build_context.append_child(items_panel, item);
                             build_context.append_child(mouse_behavior, child);
@@ -281,28 +283,28 @@ impl Template for ListView {
     fn template(self, id: Entity, context: &mut BuildContext) -> Self {
         let items_panel = Stack::create()
             .vertical_alignment("start")
-            .selector(SelectorValue::default().id("items_panel"))
+            .selector(Selector::default().id("items_panel"))
             .orientation(id)
             .build(context);
 
         let scroll_viewer = ScrollViewer::create()
-            .scroll_viewer_mode(("disabled", "Auto"))
+            .scroll_viewer_mode(("disabled", "auto"))
             .delta(id)
             .child(items_panel)
             .build(context);
 
         self.name("ListView")
-            .selector(SelectorValue::from("list-view").id("ListView"))
+            .selector(Selector::from("list-view").id("ListView"))
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
             .border_width(1.0)
             .border_brush(colors::BOMBAY_COLOR)
             .padding(2.0)
-            .selection_mode("Single")
+            .selection_mode("single")
             .selected_indices(HashSet::new())
             .selected_entities(HashSet::new())
             .delta(0.0)
-            .orientation("Vertical")
+            .orientation("vertical")
             .child(
                 Container::create()
                     .background(id)
@@ -310,12 +312,14 @@ impl Template for ListView {
                     .border_width(id)
                     .border_brush(id)
                     .padding(id)
+                    .opacity(id)
                     .child(scroll_viewer)
                     .child(
                         ScrollIndicator::create()
                             .padding(2.0)
                             .content_id(items_panel.0)
                             .scroll_offset(scroll_viewer)
+                            .opacity(id)
                             .build(context),
                     )
                     .build(context),

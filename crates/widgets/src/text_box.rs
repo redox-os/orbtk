@@ -291,14 +291,14 @@ impl Template for TextBox {
                                 Grid::create()
                                     .child(
                                         ScrollViewer::create()
-                                            .selector(SelectorValue::default().id("scroll_viewer"))
+                                            .selector(Selector::default().id("scroll_viewer"))
                                             .scroll_offset(id)
                                             .scroll_viewer_mode(("custom", "disabled"))
                                             .delta(id)
                                             .child(
                                                 TextBlock::create()
                                                     .selector(
-                                                        SelectorValue::default().id("text_block"),
+                                                        Selector::default().id("text_block"),
                                                     )
                                                     .vertical_alignment("center")
                                                     .foreground(id)
@@ -312,7 +312,7 @@ impl Template for TextBox {
                                     )
                                     .child(
                                         Cursor::create()
-                                            .selector(SelectorValue::from("cursor").id("cursor"))
+                                            .selector(Selector::from("cursor").id("cursor"))
                                             .margin(0.0)
                                             .horizontal_alignment("start")
                                             .text(id)

@@ -91,7 +91,7 @@ impl Template for ItemsWidget {
             .border_width(1.0)
             .border_brush(colors::BOMBAY_COLOR)
             .padding(2.0)
-            .orientation("Vertical")
+            .orientation("vertical")
             .child(
                 Container::create()
                     .background(id)
@@ -101,7 +101,7 @@ impl Template for ItemsWidget {
                     .padding(id)
                     .child(
                         Stack::create()
-                            .selector(SelectorValue::default().id("items_panel"))
+                            .selector(Selector::default().id("items_panel"))
                             .orientation(id)
                             .build(context),
                     )

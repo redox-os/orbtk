@@ -119,7 +119,7 @@ impl Template for Switch {
                                     .child(Container::create().size(24.0, 24.0).build(context))
                                     .border_radius(1.0)
                                     .selector(
-                                        SelectorValue::from("switch-toggle").id("switch_toggle"),
+                                        Selector::from("switch-toggle").id("switch_toggle"),
                                     )
                                     .vertical_alignment("center")
                                     .horizontal_alignment("start")

@@ -131,7 +131,7 @@ impl State for MainViewState {
 fn create_header(context: &mut BuildContext, text: &str) -> Entity {
     TextBlock::create()
         .text(text)
-        .selector(SelectorValue::new().with("text-block").class("h1"))
+        .selector(Selector::new().with("text-block").class("h1"))
         .build(context)
 }
 
@@ -188,7 +188,7 @@ impl Template for MainView {
                             .child(
                                 Button::create()
                                     .text("Primary")
-                                    .selector(SelectorValue::new().with("button").class("primary"))
+                                    .selector(Selector::new().with("button").class("primary"))
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .icon(material_font_icons::CHECK_FONT_ICON)
                                     .attach(Grid::column(0))
@@ -226,7 +226,7 @@ impl Template for MainView {
                             .child(create_header(context, "Text"))
                             .child(
                                 TextBlock::create()
-                                    .selector(SelectorValue::new().class("body"))
+                                    .selector(Selector::new().class("body"))
                                     .text(id)
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(2))
@@ -257,11 +257,11 @@ impl Template for MainView {
                         Grid::create()
                             .rows(
                                 Rows::create()
-                                    .row("Auto")
+                                    .row("auto")
                                     .row(192.0)
-                                    .row("Auto")
+                                    .row("auto")
                                     .row(192.0)
-                                    .row("Auto")
+                                    .row("auto")
                                     .build(),
                             )
                             .columns(
@@ -275,7 +275,7 @@ impl Template for MainView {
                             .child(
                                 TextBlock::create()
                                     .text("Items")
-                                    .selector(SelectorValue::new().with("text-block").class("h1"))
+                                    .selector(Selector::new().with("text-block").class("h1"))
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(0))

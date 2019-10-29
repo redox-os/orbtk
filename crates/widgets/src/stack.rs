@@ -15,7 +15,7 @@ widget!(
 
 impl Template for Stack {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        self.name("Stack").orientation("Vertical").selector("stack")
+        self.name("Stack").orientation("vertical").selector("stack")
     }
 
     fn layout(&self) -> Box<dyn Layout> {

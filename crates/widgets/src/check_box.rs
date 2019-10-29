@@ -97,6 +97,7 @@ impl Template for CheckBox {
                                             .border_width(id)
                                             .border_brush(id)
                                             .padding(id)
+                                            .opacity(id)
                                             .child(
                                                 FontIconBlock::create()
                                                     .vertical_alignment("center")
@@ -105,6 +106,7 @@ impl Template for CheckBox {
                                                     .icon_brush(id)
                                                     .icon_size(id)
                                                     .icon_font(id)
+                                                    .opacity(id)
                                                     .build(context),
                                             )
                                             .build(context),
@@ -117,6 +119,7 @@ impl Template for CheckBox {
                                             .text(id)
                                             .font_size(id)
                                             .font(id)
+                                            .opacity(id)
                                             .build(context),
                                     )
                                     .build(context),

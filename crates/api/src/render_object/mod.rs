@@ -54,7 +54,11 @@ pub trait RenderObject: Any {
         }
 
         shell.render_context_2_d().begin_path();
-        shell.render_context_2_d().set_alpha(*ecm.component_store().get::<f32>("opacity", entity).unwrap());
+        shell.render_context_2_d().set_alpha(
+            *ecm.component_store()
+                .get::<f32>("opacity", entity)
+                .unwrap_or(&1.0),
+        );
 
         // Could be unwrap because every widget has the clip property
         let clip = *ecm.component_store().get::<bool>("clip", entity).unwrap();

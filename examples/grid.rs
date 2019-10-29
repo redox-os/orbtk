@@ -18,7 +18,7 @@ impl Template for MainView {
                 .columns(
                     Columns::create()
                         .column("*")
-                        .column("Auto")
+                        .column("auto")
                         .column(50.0)
                         .build(),
                 )
