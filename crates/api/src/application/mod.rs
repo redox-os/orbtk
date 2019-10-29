@@ -85,15 +85,15 @@ impl Application {
         world
             .entity_component_manager()
             .component_store_mut()
-            .register_component("global", window, Global::default());
+            .register("global", window, Global::default());
         world
             .entity_component_manager()
             .component_store_mut()
-            .register_component("global", window, Global::default());
+            .register("global", window, Global::default());
         world
             .entity_component_manager()
             .component_store_mut()
-            .register_component(
+            .register(
                 "bounds",
                 window,
                 Rectangle::from((0.0, 0.0, constraint.width(), constraint.height())),

@@ -67,7 +67,9 @@ impl MainViewState {
             }
         }
 
-        context.widget().set("text", String16::from(result.to_string()));
+        context
+            .widget()
+            .set("text", String16::from(result.to_string()));
         self.left_side.set(Some(result));
         self.right_side.set(None);
     }

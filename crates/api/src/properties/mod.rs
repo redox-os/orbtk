@@ -39,6 +39,7 @@ where
 #[derive(PartialEq, Debug)]
 pub enum PropertySource<P: Component + Debug> {
     Source(Entity),
+    KeySource(String, Entity),
     Value(P),
 }
 

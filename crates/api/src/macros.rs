@@ -13,6 +13,12 @@ macro_rules! into_property_source {
             }
         }
 
+         impl IntoPropertySource<$type> for (String, Entity) {
+            fn into_source(self) -> PropertySource<$type> {
+                PropertySource::KeySource(self.0, self.1)
+            }
+        }
+
          $(
             $(
                 impl IntoPropertySource<$type> for $ex_type {
@@ -36,7 +42,7 @@ macro_rules! widget {
         #[derive(Default)]
         pub struct $widget {
             attached_properties: HashMap<String, ComponentBox>,
-            shared_attached_properties: HashMap<String, SharedComponentBox>,
+            shared_attached_properties: HashMap<(String, String), SharedComponentBox>,
             event_handlers: Vec<Rc<dyn EventHandler>>,
             bounds: Rectangle,
             position: Point,
@@ -71,9 +77,12 @@ macro_rules! widget {
                 match property.property_source {
                     PropertySource::Value(value) => {
                         self.attached_properties.insert(property.key, ComponentBox::new(value));
-                    },
+                    }
                     PropertySource::Source(source) => {
-                        self.shared_attached_properties.insert(property.key, SharedComponentBox::new(TypeId::of::<P>(), source));
+                        self.shared_attached_properties.insert((property.key.clone(), property.key), SharedComponentBox::new(TypeId::of::<P>(), source));
+                    }
+                    PropertySource::KeySource(source_key, source) => {
+                        self.shared_attached_properties.insert((property.key, source_key), SharedComponentBox::new(TypeId::of::<P>(), source));
                     }
                 }
                 self
@@ -86,7 +95,10 @@ macro_rules! widget {
                         self.attached_properties.insert(key.to_string(), ComponentBox::new(value));
                     },
                     PropertySource::Source(source) => {
-                        self.shared_attached_properties.insert(key.to_string(), SharedComponentBox::new(TypeId::of::<P>(), source));
+                        self.shared_attached_properties.insert((key.to_string(), key.to_string()), SharedComponentBox::new(TypeId::of::<P>(), source));
+                    }
+                    PropertySource::KeySource(source_key, source) => {
+                        self.shared_attached_properties.insert((key.to_string(), source_key), SharedComponentBox::new(TypeId::of::<P>(), source));
                     }
                 }
                 self
@@ -363,7 +375,7 @@ macro_rules! widget {
                 }
 
                 for (key, property) in this.shared_attached_properties {
-                    context.register_property_shared_box(key.as_str(), key.as_str(), entity, property);
+                    context.register_property_shared_box_by_source_key(key.0.as_str(), key.1.as_str(), entity, property);
                 }
 
                 // register properties
@@ -373,9 +385,12 @@ macro_rules! widget {
                             match $property {
                                 PropertySource::Value(value) => {
                                     context.register_property(stringify!($property), entity, value);
-                                },
+                                }
                                 PropertySource::Source(source) => {
-                                    context.register_shared_property::<$property_type>(stringify!($property), stringify!($property), entity, source);
+                                    context.register_shared_property::<$property_type>(stringify!($property), entity, source);
+                                }
+                                PropertySource::KeySource(source_key, source) => {
+
                                 }
                             }
                         }

@@ -50,31 +50,51 @@ impl<'a> BuildContext<'a> {
     pub fn register_property<P: Component>(&mut self, key: &str, widget: Entity, property: P) {
         self.ecm
             .component_store_mut()
-            .register_component(key, widget, property);
+            .register(key, widget, property);
     }
 
     /// Registers a property box as component.
     pub fn register_property_box(&mut self, key: &str, widget: Entity, property: ComponentBox) {
         self.ecm
             .component_store_mut()
-            .register_component_box(key, widget, property);
+            .register_box(key, widget, property);
     }
 
-    /// Registers a shared property.
+    /// Registers a shared property. Uses the key as source key
     pub fn register_shared_property<P: Component>(
         &mut self,
         key: &str,
-        source_key: &str, 
+        target: Entity,
+        source: Entity,
+    ) {
+        self.register_shared_property_by_source_key::<P>(key, key, target, source);
+    }
+
+    /// Registers a shared property.
+    pub fn register_shared_property_by_source_key<P: Component>(
+        &mut self,
+        key: &str,
+        source_key: &str,
         target: Entity,
         source: Entity,
     ) {
         self.ecm
             .component_store_mut()
-            .register_shared_component::<P>(key, source_key, target, source);
+            .register_shared_by_source_key::<P>(key, source_key, target, source);
+    }
+
+    /// Registers a shared component box. Uses the key as source key
+    pub fn register_property_shared_box(
+        &mut self,
+        key: &str,
+        widget: Entity,
+        property: SharedComponentBox,
+    ) {
+        self.register_property_shared_box_by_source_key(key, key, widget, property);
     }
 
     /// Registers a shared component box.
-    pub fn register_property_shared_box(
+    pub fn register_property_shared_box_by_source_key(
         &mut self,
         key: &str,
         source_key: &str,
@@ -83,7 +103,7 @@ impl<'a> BuildContext<'a> {
     ) {
         self.ecm
             .component_store_mut()
-            .register_shared_component_box(key, source_key, widget, property);
+            .register_shared_box_by_source_key(key, source_key, widget, property);
     }
 
     /// Registers a state with a widget.
