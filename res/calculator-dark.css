@@ -1,8 +1,8 @@
-container.header {
+.header {
     background: #444e55;
 }
 
-container.content {
+.content {
     background: #3b434a;
 }
 

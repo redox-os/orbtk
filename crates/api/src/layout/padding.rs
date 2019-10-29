@@ -93,6 +93,8 @@ impl Layout for PaddingLayout {
                     .get::<Thickness>("margin", child)
                     .unwrap();
 
+                    // todo fix stretch
+
                 desired_size.0 = desired_size.0.max(
                     child_desired_size.width()
                         + padding.left()
@@ -123,7 +125,6 @@ impl Layout for PaddingLayout {
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {

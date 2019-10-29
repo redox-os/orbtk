@@ -82,7 +82,7 @@ container {
     padding: 4;
 }
 
-text-block.h1 {
+.h1 {
     font-size: 24;
 }
 
@@ -161,4 +161,8 @@ list-view-item:selected, list-view-item:active {
 scroll-bar {
     background: #647b91;
     border-radius: 2;
+}
+
+blub {
+    background: green;
 }

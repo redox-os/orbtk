@@ -167,8 +167,30 @@ impl Layout for StackLayout {
 
             let mut child_desired_size = (0.0, 0.0);
             if let Some(child_layout) = layouts.borrow().get(&child) {
-                child_desired_size =
-                    child_layout.arrange(render_context_2_d, size, child, ecm, layouts, theme);
+                match orientation {
+                    Orientation::Horizontal => {
+                        // set width to 0.0 to shrink width of the child
+                        child_desired_size = child_layout.arrange(
+                            render_context_2_d,
+                            (0.0, size.1),
+                            child,
+                            ecm,
+                            layouts,
+                            theme,
+                        );
+                    }
+                    // set height to 0.0 to shrink height of the child
+                    Orientation::Vertical => {
+                        child_desired_size = child_layout.arrange(
+                            render_context_2_d,
+                            (size.0, 0.0),
+                            child,
+                            ecm,
+                            layouts,
+                            theme,
+                        );
+                    }
+                }
             }
 
             let child_margin = {
@@ -189,6 +211,7 @@ impl Layout for StackLayout {
                 .component_store()
                 .get("vertical_alignment", child)
                 .unwrap();
+
             if let Ok(child_bounds) = ecm
                 .component_store_mut()
                 .get_mut::<Rectangle>("bounds", child)
