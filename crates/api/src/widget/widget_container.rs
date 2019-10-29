@@ -273,6 +273,12 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
+        if self.has::<f32>("opacity") {
+            if let Some(opacity) = self.theme.float("opacity", &selector) {
+                self.set::<f32>("opacity", opacity);
+            }
+        }
+
         if self.has::<Thickness>("border_width") {
             if let Some(border_width) = self.theme.uint("border-width", &selector) {
                 self.set::<Thickness>("border_width", Thickness::from(border_width as f64));

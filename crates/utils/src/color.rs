@@ -95,7 +95,7 @@ impl From<&str> for Color {
 
 impl From<String> for Color {
     fn from(s: String) -> Color {
-        Color::from(&s[..])
+        Color::from(s.as_str())
     }
 }
 

@@ -291,6 +291,11 @@ impl RenderContext2D {
         self.canvas_render_context_2_d.set_line_width(line_width);
     }
 
+     /// Sets the alpha value,
+    pub fn set_alpha(&mut self, alpha: f32) {
+        self.canvas_render_context_2_d.set_global_alpha(alpha as f64);
+    }
+
     /// Specific the font family.
     pub fn set_font_family(&mut self, family: impl Into<String>) {
         self.font_config.family = family.into().replace(" Regular", "");
@@ -386,31 +391,26 @@ impl RenderContext2D {
         );
 
         for i in 0..(self.export_data.len() - 1) {
-            let mut r: u8 = 0;
-            let mut g: u8 = 0;
-            let mut b: u8 = 0;
-            let mut a: u8 = 0;
-
             let index = i as u32 * 4;
-            r = js!(
+            let r: u8 = js!(
                 return @{&image_data}.data[@{index}];
             )
             .try_into()
             .unwrap();
 
-            g = js!(
+            let g: u8 = js!(
                 return @{&image_data}.data[@{index} + 1];
             )
             .try_into()
             .unwrap();
 
-            b = js!(
+            let b: u8 = js!(
                 return @{&image_data}.data[@{index} + 2];
             )
             .try_into()
             .unwrap();
 
-            a = js!(
+            let a: u8 = js!(
                 return @{&image_data}.data[@{index} + 3];
             )
             .try_into()
@@ -453,7 +453,6 @@ impl RenderContext2D {
                 self.canvas_render_context_2_d
                     .set_fill_style_gradient(&web_gradient);
             }
-            _ => {}
         }
     }
 
@@ -477,7 +476,6 @@ impl RenderContext2D {
                 self.canvas_render_context_2_d
                     .set_stroke_style_gradient(&web_gradient);
             }
-            _ => {}
         }
     }
 }

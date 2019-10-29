@@ -224,8 +224,6 @@ impl Template for ListViewItem {
     }
 }
 
-// todo: selection mode.
-
 widget!(
     /// The `ListView` is an items drawer widget with selectable items.
     ///

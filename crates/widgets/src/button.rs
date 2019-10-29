@@ -85,6 +85,7 @@ impl Template for Button {
                             .border_width(id)
                             .border_brush(id)
                             .padding(id)
+                            .opacity(id)
                             .child(
                                 Stack::create()
                                     .orientation("horizontal")
@@ -97,6 +98,7 @@ impl Template for Button {
                                             .icon_brush(id)
                                             .icon_size(id)
                                             .icon_font(id)
+                                            .opacity(id)
                                             .build(context),
                                     )
                                     .child(
@@ -105,6 +107,7 @@ impl Template for Button {
                                             .text(id)
                                             .font_size(id)
                                             .font(id)
+                                            .opacity(id)
                                             .build(context),
                                     )
                                     .build(context),

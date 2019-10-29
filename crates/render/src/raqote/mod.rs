@@ -84,7 +84,7 @@ impl RenderContext2D {
             _ => Color::from("#000000"),
         };
 
-        if color.a() == 0 {
+        if color.a() == 0 || self.config.alpha == 0.0 {
             return;
         }
 
@@ -151,7 +151,10 @@ impl RenderContext2D {
         self.draw_target.fill(
             &self.path,
             &brush_to_source(&self.config.fill_style),
-            &raqote::DrawOptions::new(),
+            &raqote::DrawOptions {
+                alpha: self.config.alpha,
+                ..Default::default()
+            },
         );
     }
 
@@ -164,7 +167,10 @@ impl RenderContext2D {
                 width: self.config.line_width as f32,
                 ..Default::default()
             },
-            &raqote::DrawOptions::new(),
+             &raqote::DrawOptions {
+                alpha: self.config.alpha,
+                ..Default::default()
+            },
         );
     }
 
@@ -250,7 +256,10 @@ impl RenderContext2D {
                 width: render_target.width() as i32,
                 height: render_target.height() as i32,
             },
-            &raqote::DrawOptions::default(),
+            &raqote::DrawOptions {
+                alpha: self.config.alpha,
+                ..Default::default()
+            },
         );
     }
 
@@ -264,7 +273,10 @@ impl RenderContext2D {
                 width: image.width() as i32,
                 height: image.height() as i32,
             },
-            &raqote::DrawOptions::default(),
+            &raqote::DrawOptions {
+                alpha: self.config.alpha,
+                ..Default::default()
+            },
         );
     }
 
@@ -297,7 +309,10 @@ impl RenderContext2D {
                     width: clip_width as i32,
                     height: 1,
                 },
-                &raqote::DrawOptions::default(),
+                &raqote::DrawOptions {
+                    alpha: self.config.alpha,
+                    ..Default::default()
+                },
             );
             offset = next_offset;
             y += 1;
@@ -329,6 +344,11 @@ impl RenderContext2D {
     /// Sets the thickness of lines.
     pub fn set_line_width(&mut self, line_width: f64) {
         self.config.line_width = line_width;
+    }
+
+    /// Sets the alpha value,
+    pub fn set_alpha(&mut self, alpha: f32) {
+        self.config.alpha = alpha;
     }
 
     /// Specific the font family.
@@ -447,12 +467,7 @@ fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
                 .iter()
                 .map(|stop| raqote::GradientStop {
                     position: stop.position as f32,
-                    color: raqote::Color::new(
-                        stop.color.a(),
-                        stop.color.r(),
-                        stop.color.g(),
-                        stop.color.b(),
-                    ),
+                    color: raqote::Color::new(0x00, stop.color.r(), stop.color.g(), stop.color.b()),
                 })
                 .collect();
 

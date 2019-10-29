@@ -58,6 +58,7 @@ macro_rules! widget {
             margin: Thickness,
             enabled: bool,
             clip: bool,
+            opacity: f32,
             visibility: Visibility,
             _empty: Option<RefCell<i32>>,
              $(
@@ -142,6 +143,11 @@ macro_rules! widget {
             /// Sets or shares the clip property.
             pub fn clip(self, clip: impl IntoPropertySource<bool>) -> Self {
                 self.set_property("clip", clip)
+            }
+
+            // Sets or shares the opacity property.
+            pub fn opacity(self, opacity: impl IntoPropertySource<f32>) -> Self {
+                self.set_property("opacity", opacity)
             }
 
             /// Inserts a new width.
@@ -288,6 +294,7 @@ macro_rules! widget {
                 $widget {
                     event_handlers: vec![],
                     enabled: true,
+                    opacity: 1.,
                     clip: false,
                     $(
                         $(
@@ -345,6 +352,7 @@ macro_rules! widget {
                 context.register_property("margin", entity, this.margin);
                 context.register_property("enabled", entity, this.enabled);
                 context.register_property("clip", entity, this.clip);
+                context.register_property("opacity", entity, this.opacity);
 
                 let mut constraint = Constraint::default();
 

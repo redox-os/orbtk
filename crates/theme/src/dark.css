@@ -53,6 +53,7 @@ switch-toggle:selected {
 }
 
 button, toggle-button {
+    opacity: 0.5;
     background: #647b91;
     border-radius: 2;
     font-family: "Roboto Medium";

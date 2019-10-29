@@ -111,6 +111,9 @@ enum RenderTask {
     SetLineWidth {
         line_width: f64,
     },
+    SetAlpha {
+        alpha: f32,
+    },
     SetFontFamily {
         family: String,
     },
@@ -309,6 +312,9 @@ impl RenderWorker {
                             }
                             RenderTask::SetLineWidth { line_width } => {
                                 render_context_2_d.set_line_width(line_width);
+                            }
+                            RenderTask::SetAlpha { alpha } => {
+                                render_context_2_d.set_alpha(alpha);
                             }
                             RenderTask::Clip() => {
                                 render_context_2_d.clip();
@@ -626,6 +632,11 @@ impl RenderContext2D {
     /// Sets the thickness of lines.
     pub fn set_line_width(&mut self, line_width: f64) {
         self.tasks.push(RenderTask::SetLineWidth { line_width });
+    }
+
+    /// Sets the alpha value,
+    pub fn set_alpha(&mut self, alpha: f32) {
+        self.tasks.push(RenderTask::SetAlpha { alpha });
     }
 
     /// Specific the font family.
