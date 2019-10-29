@@ -42,6 +42,7 @@ impl Font {
         size: f64,
         data: &mut [u32],
         col: Color,
+        alpha: f32,
         width: f64,
         x: f64,
         y: f64,
@@ -51,6 +52,7 @@ impl Font {
             size,
             data,
             col,
+            alpha,
             width,
             x,
             y,
@@ -64,6 +66,7 @@ impl Font {
         size: f64,
         data: &mut [u32],
         col: Color,
+        alpha: f32,
         width: f64,
         x: f64,
         y: f64,
@@ -108,7 +111,7 @@ impl Font {
                         && y + off_y as f64 <= clip_rect.1 + clip_rect.3
                     {
                         // Alpha blending from orbclient
-                        let alpha = (v * 255.0) as u32;
+                        let alpha = (alpha * v * 255.0) as u32;
                         let new = (alpha << 24) | (col.data & 0x00FF_FFFF);
                         let old = &mut data
                             [((y as i32 + off_y) * width as i32 + x as i32 + off_x) as usize];
