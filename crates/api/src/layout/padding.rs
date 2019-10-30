@@ -29,7 +29,6 @@ impl Layout for PaddingLayout {
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> DirtySize {
@@ -92,8 +91,6 @@ impl Layout for PaddingLayout {
                     .component_store()
                     .get::<Thickness>("margin", child)
                     .unwrap();
-
-                    // todo fix stretch
 
                 desired_size.0 = desired_size.0.max(
                     child_desired_size.width()

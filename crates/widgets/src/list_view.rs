@@ -325,8 +325,4 @@ impl Template for ListView {
                     .build(context),
             )
     }
-
-    fn layout(&self) -> Box<dyn Layout> {
-        Box::new(StackLayout::new())
-    }
 }
