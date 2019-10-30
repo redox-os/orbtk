@@ -6,12 +6,15 @@ use crate::{prelude::*, tree::Tree};
 
 use super::State;
 
+pub type WidgetBuildContext =
+    RefCell<Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>;
+
 /// Used to create an entity for a widget with its properties as components.
 pub struct BuildContext<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
+    handlers: EventHandlerMap,
     states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
 }
 
@@ -21,7 +24,7 @@ impl<'a> BuildContext<'a> {
         ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
         render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
         layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-        handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
+        handlers: EventHandlerMap,
         states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     ) -> Self {
         BuildContext {

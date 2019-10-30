@@ -14,7 +14,7 @@ pub struct Context<'a> {
     pub theme: &'a ThemeValue,
     render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
+    handlers: EventHandlerMap,
     states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     new_states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
 }
@@ -36,7 +36,7 @@ impl<'a> Context<'a> {
         theme: &'a ThemeValue,
         render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
         layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-        handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
+        handlers: EventHandlerMap,
         states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     ) -> Self {
         Context {

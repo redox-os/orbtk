@@ -132,12 +132,12 @@ enum RenderTask {
         brush: Brush,
     },
     SetTransform {
-        a: f64,
-        b: f64,
-        c: f64,
-        d: f64,
-        e: f64,
-        f: f64,
+        h_scaling: f64,
+        h_skewing: f64,
+        v_skewing: f64,
+        v_scaling: f64,
+        h_moving: f64,
+        v_moving: f64,
     },
     Finish(),
     Terminate(),
@@ -228,8 +228,17 @@ impl RenderWorker {
                         } => {
                             render_context_2_d.draw_pipeline(x, y, width, height, pipeline.0);
                         }
-                        RenderTask::SetTransform { a, b, c, d, e, f } => {
-                            render_context_2_d.set_transform(a, b, c, d, e, f);
+                        RenderTask::SetTransform {
+                            h_scaling,
+                            h_skewing,
+                            v_skewing,
+                            v_scaling,
+                            h_moving,
+                            v_moving,
+                        } => {
+                            render_context_2_d.set_transform(
+                                h_scaling, h_skewing, v_skewing, v_scaling, h_moving, v_moving,
+                            );
                         }
                         RenderTask::Terminate() => {
                             return;
@@ -665,9 +674,23 @@ impl RenderContext2D {
     // Transformations
 
     /// Sets the tranformation.
-    pub fn set_transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
-        self.tasks
-            .push(RenderTask::SetTransform { a, b, c, d, e, f });
+    pub fn set_transform(
+        &mut self,
+        h_scaling: f64,
+        h_skewing: f64,
+        v_skewing: f64,
+        v_scaling: f64,
+        h_moving: f64,
+        v_moving: f64,
+    ) {
+        self.tasks.push(RenderTask::SetTransform {
+            h_scaling,
+            h_skewing,
+            v_skewing,
+            v_scaling,
+            h_moving,
+            v_moving,
+        });
     }
 
     // Canvas states

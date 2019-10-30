@@ -8,7 +8,7 @@ use crate::{prelude::*, utils::SelectionMode as SelMode};
 
 #[derive(Default)]
 pub struct ListViewState {
-    builder: RefCell<Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
+    builder: WidgetBuildContext,
     count: Cell<usize>,
     selected_entities: RefCell<HashSet<Entity>>,
 }

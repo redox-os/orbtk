@@ -11,7 +11,7 @@ use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree, utils::*}
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
 pub struct EventStateSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
+    pub handlers: EventHandlerMap,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
     pub mouse_down_nodes: RefCell<Vec<Entity>>,

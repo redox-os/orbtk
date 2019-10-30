@@ -14,7 +14,7 @@ pub struct PostLayoutStateSystem {
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub handlers: Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>,
+    pub handlers: EventHandlerMap,
     pub update: Rc<Cell<bool>>,
     pub running: Rc<Cell<bool>>,
 }

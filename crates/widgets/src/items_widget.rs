@@ -4,7 +4,7 @@ use crate::prelude::*;
 
 #[derive(Default)]
 pub struct ItemsWidgetState {
-    builder: RefCell<Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
+    builder: WidgetBuildContext,
     count: Cell<usize>,
 }
 

@@ -53,7 +53,7 @@ impl Color {
     }
 
     fn interp(start_color: u8, end_color: u8, scale: f64) -> u8 {
-        ((end_color as f64 - start_color as f64) * scale + start_color as f64) as u8
+        (end_color as f64 - start_color as f64).mul_add(scale, start_color as f64) as u8
     }
 }
 

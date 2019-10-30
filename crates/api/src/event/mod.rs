@@ -1,6 +1,8 @@
 //! This module contains all resources to call and handle events.
 
-use std::any::Any;
+use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc};
+
+use dces::entity::Entity;
 
 pub use self::event_handler::*;
 pub use self::event_queue::*;
@@ -35,3 +37,5 @@ pub trait Event: Any {
         EventStrategy::BottomUp
     }
 }
+
+pub type EventHandlerMap = Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>;

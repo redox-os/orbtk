@@ -297,9 +297,7 @@ impl Template for TextBox {
                                             .delta(id)
                                             .child(
                                                 TextBlock::create()
-                                                    .selector(
-                                                        Selector::default().id("text_block"),
-                                                    )
+                                                    .selector(Selector::default().id("text_block"))
                                                     .vertical_alignment("center")
                                                     .foreground(id)
                                                     .text(id)

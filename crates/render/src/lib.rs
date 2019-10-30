@@ -34,7 +34,7 @@ pub struct RenderConfig {
     pub stroke_style: utils::Brush,
     pub line_width: f64,
     pub font_config: FontConfig,
-    pub alpha: f32
+    pub alpha: f32,
 }
 
 impl Default for RenderConfig {
@@ -44,7 +44,7 @@ impl Default for RenderConfig {
             stroke_style: utils::Brush::default(),
             line_width: 1.,
             font_config: FontConfig::default(),
-            alpha: 1.
+            alpha: 1.,
         }
     }
 }

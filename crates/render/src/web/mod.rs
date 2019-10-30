@@ -291,9 +291,10 @@ impl RenderContext2D {
         self.canvas_render_context_2_d.set_line_width(line_width);
     }
 
-     /// Sets the alpha value,
+    /// Sets the alpha value,
     pub fn set_alpha(&mut self, alpha: f32) {
-        self.canvas_render_context_2_d.set_global_alpha(alpha as f64);
+        self.canvas_render_context_2_d
+            .set_global_alpha(alpha as f64);
     }
 
     /// Specific the font family.
@@ -325,9 +326,18 @@ impl RenderContext2D {
     // Transformations
 
     /// Sets the tranformation.
-    pub fn set_transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
-        self.canvas_render_context_2_d
-            .set_transform(a, b, c, d, e, f);
+    pub fn set_transform(
+        &mut self,
+        h_scaling: f64,
+        h_skewing: f64,
+        v_skewing: f64,
+        v_scaling: f64,
+        h_moving: f64,
+        v_moving: f64,
+    ) {
+        self.canvas_render_context_2_d.set_transform(
+            h_scaling, h_skewing, v_skewing, v_scaling, h_moving, v_moving,
+        );
     }
 
     // Canvas states

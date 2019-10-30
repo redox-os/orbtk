@@ -170,7 +170,7 @@ impl RenderContext2D {
                 width: self.config.line_width as f32,
                 ..Default::default()
             },
-             &raqote::DrawOptions {
+            &raqote::DrawOptions {
                 alpha: self.config.alpha,
                 ..Default::default()
             },
@@ -296,9 +296,9 @@ impl RenderContext2D {
     ) {
         let mut y = y as i32;
         let stride = image.width();
-        let mut offset = (clip_y * stride + clip_x) as usize;
+        let mut offset = clip_y.mul_add(stride, clip_x) as usize;
         let last_offset = cmp::min(
-            ((clip_y + clip_height) * stride + clip_x) as usize,
+            ((clip_y + clip_height).mul_add(stride, clip_x)) as usize,
             image.data().len(),
         );
         while offset < last_offset {
@@ -379,10 +379,23 @@ impl RenderContext2D {
     // Transformations
 
     /// Sets the tranformation.
-    pub fn set_transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
+    pub fn set_transform(
+        &mut self,
+        h_scaling: f64,
+        h_skewing: f64,
+        v_skewing: f64,
+        v_scaling: f64,
+        h_moving: f64,
+        v_moving: f64,
+    ) {
         self.draw_target
             .set_transform(&raqote::Transform::row_major(
-                a as f32, b as f32, c as f32, d as f32, e as f32, f as f32,
+                h_scaling as f32,
+                h_skewing as f32,
+                v_skewing as f32,
+                v_scaling as f32,
+                h_moving as f32,
+                v_moving as f32,
             ));
     }
 
@@ -470,7 +483,12 @@ fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
                 .iter()
                 .map(|stop| raqote::GradientStop {
                     position: stop.position as f32,
-                    color: raqote::Color::new(stop.color.a(), stop.color.r(), stop.color.g(), stop.color.b()),
+                    color: raqote::Color::new(
+                        stop.color.a(),
+                        stop.color.r(),
+                        stop.color.g(),
+                        stop.color.b(),
+                    ),
                 })
                 .collect();
 
