@@ -311,8 +311,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
 
                 {
                     let mut context = Context::new(
-                        current_node,
-                        ecm,
+                        (current_node, ecm),
                         &mut shell,
                         &theme,
                         self.render_objects.clone(),

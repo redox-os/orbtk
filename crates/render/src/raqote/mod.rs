@@ -20,8 +20,8 @@ pub struct RenderContext2D {
 
     // hack / work around for faster text clipping
     clip: bool,
-    last_rect: (f64, f64, f64, f64),
-    clip_rect: Option<(f64, f64, f64, f64)>,
+    last_rect: Rectangle,
+    clip_rect: Option<Rectangle>,
 }
 
 impl RenderContext2D {
@@ -37,7 +37,7 @@ impl RenderContext2D {
             saved_config: None,
             fonts: HashMap::new(),
             clip: false,
-            last_rect: (0.0, 0.0, width, height),
+            last_rect: Rectangle::new(0.0, 0.0, width, height),
             clip_rect: None,
         }
     }
@@ -95,37 +95,28 @@ impl RenderContext2D {
                 if let Some(rect) = self.clip_rect {
                     font.render_text_clipped(
                         text,
-                        self.config.font_config.font_size,
                         self.draw_target.get_data_mut(),
-                        color,
-                        self.config.alpha,
                         width,
-                        x,
-                        y,
+                        (self.config.font_config.font_size, color, self.config.alpha),
+                        (x, y),
                         rect,
                     );
                 } else {
                     font.render_text(
                         text,
-                        self.config.font_config.font_size,
                         self.draw_target.get_data_mut(),
-                        color,
-                        self.config.alpha,
                         width,
-                        x,
-                        y,
+                        (self.config.font_config.font_size, color, self.config.alpha),
+                        (x, y),
                     );
                 }
             } else {
                 font.render_text(
                     text,
-                    self.config.font_config.font_size,
                     self.draw_target.get_data_mut(),
-                    color,
-                    self.config.alpha,
                     width,
-                    x,
-                    y,
+                    (self.config.font_config.font_size, color, self.config.alpha),
+                    (x, y),
                 );
             }
         }
@@ -194,7 +185,7 @@ impl RenderContext2D {
 
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.last_rect = (x, y, width, height);
+        self.last_rect = Rectangle::new(x, y, width, height);
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.rect(x as f32, y as f32, width as f32, height as f32);
         self.path = path_builder.finish();
@@ -284,21 +275,12 @@ impl RenderContext2D {
     }
 
     /// Draws the given part of the image.
-    pub fn draw_image_with_clip(
-        &mut self,
-        image: &Image,
-        clip_x: f64,
-        clip_y: f64,
-        clip_width: f64,
-        clip_height: f64,
-        x: f64,
-        y: f64,
-    ) {
+    pub fn draw_image_with_clip(&mut self, image: &Image, clip: Rectangle, x: f64, y: f64) {
         let mut y = y as i32;
         let stride = image.width();
-        let mut offset = clip_y.mul_add(stride, clip_x) as usize;
+        let mut offset = clip.y.mul_add(stride, clip.x) as usize;
         let last_offset = cmp::min(
-            ((clip_y + clip_height).mul_add(stride, clip_x)) as usize,
+            ((clip.y + clip.height).mul_add(stride, clip.x)) as usize,
             image.data().len(),
         );
         while offset < last_offset {
@@ -309,7 +291,7 @@ impl RenderContext2D {
                 y as f32,
                 &raqote::Image {
                     data: &image.data()[offset..],
-                    width: clip_width as i32,
+                    width: clip.width as i32,
                     height: 1,
                 },
                 &raqote::DrawOptions {

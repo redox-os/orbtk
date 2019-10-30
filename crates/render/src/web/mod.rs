@@ -194,16 +194,7 @@ impl RenderContext2D {
     }
 
     /// Draws the given part of the image.
-    pub fn draw_image_with_clip(
-        &mut self,
-        image: &Image,
-        clip_x: f64,
-        clip_y: f64,
-        clip_width: f64,
-        clip_height: f64,
-        x: f64,
-        y: f64,
-    ) {
+    pub fn draw_image_with_clip(&mut self, image: &Image, clip: Rectangle, x: f64, y: f64) {
         js!(
             var img = document.image_store.image(@{&image.source});
 
@@ -211,7 +202,7 @@ impl RenderContext2D {
                 img = document.image_store.load_image(@{&image.source});
                 img.then(
                     function(i) {
-                         @{&self.canvas_render_context_2_d}.drawImage(img, @{&clip_x}, @{&clip_y}, @{&clip_width}, @{&clip_height}, @{&x}, @{&y}, @{&clip_width}, @{&clip_height});
+                         @{&self.canvas_render_context_2_d}.drawImage(img, @{&clip.x}, @{&clip.y}, @{&clip.width}, @{&clip.height}, @{&x}, @{&y}, @{&clip.width}, @{&clip.height});
                     }
                 )
             } else {

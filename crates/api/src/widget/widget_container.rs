@@ -285,35 +285,7 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
-        if self.has::<f64>("font_size") {
-            if let Some(size) = self.theme.uint("font-size", &selector) {
-                self.set::<f64>("font_size", f64::from(size));
-            }
-        }
-
-        if self.has::<String>("font_family") {
-            if let Some(font_family) = self.theme.string("font-family", &selector) {
-                self.set::<String>("font_family", font_family);
-            }
-        }
-
-        if self.has::<Brush>("icon_brush") {
-            if let Some(color) = self.theme.brush("icon-color", &selector) {
-                self.set::<Brush>("icon_brush", color);
-            }
-        }
-
-        if self.has::<f64>("icon_size") {
-            if let Some(size) = self.theme.uint("icon-size", &selector) {
-                self.set::<f64>("icon_size", f64::from(size));
-            }
-        }
-
-        if self.has::<String>("icon_family") {
-            if let Some(font_family) = self.theme.string("icon-family", &selector) {
-                self.set::<String>("icon_family", font_family);
-            }
-        }
+        self.update_font_properties_by_theme(&selector);
 
         if let Some(mut padding) = self.try_clone::<Thickness>("padding") {
             if let Some(pad) = self.theme.uint("padding", &selector) {
@@ -342,4 +314,36 @@ impl<'a> WidgetContainer<'a> {
 
         self.get_mut::<Selector>("selector").set_dirty(true);
     }
+
+     pub fn update_font_properties_by_theme(&mut self, selector: &Selector) {
+         if self.has::<f64>("font_size") {
+            if let Some(size) = self.theme.uint("font-size", selector) {
+                self.set::<f64>("font_size", f64::from(size));
+            }
+        }
+
+        if self.has::<String>("font_family") {
+            if let Some(font_family) = self.theme.string("font-family", selector) {
+                self.set::<String>("font_family", font_family);
+            }
+        }
+
+        if self.has::<Brush>("icon_brush") {
+            if let Some(color) = self.theme.brush("icon-color", selector) {
+                self.set::<Brush>("icon_brush", color);
+            }
+        }
+
+        if self.has::<f64>("icon_size") {
+            if let Some(size) = self.theme.uint("icon-size", selector) {
+                self.set::<f64>("icon_size", f64::from(size));
+            }
+        }
+
+        if self.has::<String>("icon_family") {
+            if let Some(font_family) = self.theme.string("icon-family", selector) {
+                self.set::<String>("icon_family", font_family);
+            }
+        }
+     }
 }

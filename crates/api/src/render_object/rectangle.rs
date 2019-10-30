@@ -12,15 +12,12 @@ impl RectangleRenderObject {
     fn render_bordered_rect_path(
         &self,
         render_context_2_d: &mut RenderContext2D,
-        x: f64,
-        y: f64,
-        width: f64,
-        height: f64,
+        rect: Rectangle,
         brush: utils::Brush,
         border_brush: utils::Brush,
         _border_thickness: Thickness,
     ) {
-        render_context_2_d.rect(x, y, width, height);
+        render_context_2_d.rect(rect.x, rect.y, rect.width, rect.height);
 
         if !brush.is_transparent() {
             render_context_2_d.set_fill_style(brush);
@@ -61,16 +58,20 @@ impl RectangleRenderObject {
     fn render_rounded_bordered_rect_path(
         &self,
         render_context_2_d: &mut RenderContext2D,
-        x: f64,
-        y: f64,
-        width: f64,
-        height: f64,
+        rect: Rectangle,
         radius: f64,
         brush: utils::Brush,
         border_brush: utils::Brush,
         _border_thickness: Thickness,
     ) {
-        self.render_rounded_rect_path(render_context_2_d, x, y, width, height, radius);
+        self.render_rounded_rect_path(
+            render_context_2_d,
+            rect.x,
+            rect.y,
+            rect.width,
+            rect.height,
+            radius,
+        );
 
         if !brush.is_transparent() {
             render_context_2_d.set_fill_style(brush);
@@ -130,10 +131,12 @@ impl RenderObject for RectangleRenderObject {
         if border_radius > 0. && has_thickness {
             self.render_rounded_bordered_rect_path(
                 context.render_context_2_d(),
-                global_position.x + bounds.x(),
-                global_position.y + bounds.y(),
-                bounds.width(),
-                bounds.height(),
+                Rectangle::new(
+                    global_position.x + bounds.x(),
+                    global_position.y + bounds.y(),
+                    bounds.width(),
+                    bounds.height(),
+                ),
                 border_radius,
                 background,
                 border_brush,
@@ -154,10 +157,12 @@ impl RenderObject for RectangleRenderObject {
         } else if has_thickness {
             self.render_bordered_rect_path(
                 context.render_context_2_d(),
-                global_position.x + bounds.x(),
-                global_position.y + bounds.y(),
-                bounds.width(),
-                bounds.height(),
+                Rectangle::new(
+                    global_position.x + bounds.x(),
+                    global_position.y + bounds.y(),
+                    bounds.width(),
+                    bounds.height(),
+                ),
                 background,
                 border_brush,
                 border_thickness,

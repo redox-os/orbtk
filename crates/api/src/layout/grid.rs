@@ -71,6 +71,174 @@ impl GridLayout {
 
         (y, height)
     }
+
+    fn calculate_column_width(
+        &self,
+        child: Entity,
+        column: Column,
+        grid_column: usize,
+        column_widths: &mut BTreeMap<usize, f64>,
+        margin: Thickness,
+    ) {
+        if column.width != ColumnWidth::Auto {
+            return;
+        }
+        let child_width = self.children_sizes.borrow().get(&child).unwrap().0;
+
+        if let Some(width) = column_widths.get(&grid_column) {
+            if *width < child_width + margin.left() + margin.right() {
+                column_widths.insert(grid_column, child_width + margin.left() + margin.right());
+            }
+        } else {
+            column_widths.insert(grid_column, child_width + margin.left() + margin.right());
+        }
+    }
+
+    fn calculate_row_height(
+        &self,
+        child: Entity,
+        row: Row,
+        grid_row: usize,
+        row_heights: &mut BTreeMap<usize, f64>,
+        margin: Thickness,
+    ) {
+        if row.height != RowHeight::Auto {
+            return;
+        }
+        let child_height = self.children_sizes.borrow().get(&child).unwrap().0;
+
+        if let Some(height) = row_heights.get(&grid_row) {
+            if *height < child_height + margin.top() + margin.bottom() {
+                row_heights.insert(grid_row, child_height + margin.top() + margin.bottom());
+            }
+        } else {
+            row_heights.insert(grid_row, child_height + margin.top() + margin.bottom());
+        }
+    }
+
+    fn calculate_columns(
+        &self,
+        size: (f64, f64),
+        columns_cache: &mut Vec<(f64, f64)>,
+        columns: &mut Columns,
+        column_widths: &BTreeMap<usize, f64>,
+    ) {
+        if !columns.is_empty() {
+            // sets auto columns width to the width of the largest child
+            for (grid_column, width) in column_widths {
+                if let Some(column) = columns.get_mut(*grid_column) {
+                    column.set_current_width(*width);
+                }
+            }
+
+            // sets the width of columns with fixed width
+            for column in columns.iter_mut() {
+                if let ColumnWidth::Width(width) = column.width {
+                    column.set_current_width(width);
+                }
+            }
+
+            // calculates the width of the stretch columns
+            let used_width: f64 = columns
+                .iter()
+                .filter(|column| column.width != ColumnWidth::Stretch)
+                .map(|column| column.current_width())
+                .sum();
+
+            let stretch_width = ((size.0 - used_width)
+                / columns
+                    .iter()
+                    .filter(|column| column.width == ColumnWidth::Stretch)
+                    .count() as f64)
+                .trunc();
+
+            columns
+                .iter_mut()
+                .filter(|column| column.width == ColumnWidth::Stretch)
+                .for_each(|column| column.set_current_width(stretch_width));
+
+            let mut column_sum = 0.0;
+
+            columns_cache.reserve(columns.len());
+            for col in columns.iter() {
+                columns_cache.push((column_sum, col.current_width()));
+                column_sum += col.current_width();
+            }
+
+            // fix rounding gab
+            if size.0 - column_sum > 0.0 {
+                if let Some(last_column) = columns
+                    .iter_mut()
+                    .rev()
+                    .find(|column| column.width == ColumnWidth::Stretch)
+                {
+                    last_column
+                        .set_current_width(last_column.current_width() + size.0 - column_sum);
+                }
+            }
+        }
+    }
+
+    fn calculate_rows(
+        &self,
+        size: (f64, f64),
+        rows_cache: &mut Vec<(f64, f64)>,
+        rows: &mut Rows,
+        row_heights: &BTreeMap<usize, f64>,
+    ) {
+        if !rows.is_empty() {
+            // sets auto rows height to the height of the largest child
+            for (grid_row, height) in row_heights {
+                if let Some(row) = rows.get_mut(*grid_row) {
+                    row.set_current_height(*height);
+                }
+            }
+
+            // sets the height of rows with fixed height
+            for row in rows.iter_mut() {
+                if let RowHeight::Height(height) = row.height {
+                    row.set_current_height(height);
+                }
+            }
+
+            // calculates the height of the stretch rows
+            let used_height: f64 = rows
+                .iter()
+                .filter(|row| row.height != RowHeight::Stretch)
+                .map(|row| row.current_height())
+                .sum();
+
+            let stretch_height = ((size.1 - used_height)
+                / rows
+                    .iter()
+                    .filter(|row| row.height == RowHeight::Stretch)
+                    .count() as f64)
+                .trunc();
+
+            rows.iter_mut()
+                .filter(|row| row.height == RowHeight::Stretch)
+                .for_each(|row| row.set_current_height(stretch_height));
+
+            let mut row_sum = 0.0;
+
+            rows_cache.reserve(rows.len());
+            for col in rows.iter() {
+                rows_cache.push((row_sum, col.current_height()));
+                row_sum += col.current_height();
+            }
+
+            // fix rounding gab
+            if size.1 - row_sum > 0.0 {
+                if let Some(last_row) = rows
+                    .iter_mut()
+                    .rev()
+                    .find(|row| row.height == RowHeight::Stretch)
+                {
+                    last_row.set_current_height(last_row.current_height() + size.1 - row_sum);
+                }
+            }
+        }
+    }
 }
 
 impl Layout for GridLayout {
@@ -200,23 +368,13 @@ impl Layout for GridLayout {
             if let Ok(grid_column) = ecm.component_store().get::<usize>("column", child) {
                 if let Ok(columns) = ecm.component_store().get::<Columns>("columns", entity) {
                     if let Some(column) = columns.get(*grid_column) {
-                        if column.width == ColumnWidth::Auto {
-                            let child_width = self.children_sizes.borrow().get(&child).unwrap().0;
-
-                            if let Some(width) = column_widths.get(grid_column) {
-                                if *width < child_width + margin.top() + margin.bottom() {
-                                    column_widths.insert(
-                                        *grid_column,
-                                        child_width + margin.top() + margin.bottom(),
-                                    );
-                                }
-                            } else {
-                                column_widths.insert(
-                                    *grid_column,
-                                    child_width + margin.top() + margin.bottom(),
-                                );
-                            }
-                        }
+                        self.calculate_column_width(
+                            child,
+                            *column,
+                            *grid_column,
+                            &mut column_widths,
+                            margin,
+                        );
                     }
                 }
             }
@@ -226,23 +384,7 @@ impl Layout for GridLayout {
 
                 if let Ok(rows) = ecm.component_store().get::<Rows>("rows", entity) {
                     if let Some(row) = rows.get(grid_row) {
-                        if row.height == RowHeight::Auto {
-                            let child_height = self.children_sizes.borrow().get(&child).unwrap().1;
-
-                            if let Some(height) = row_heights.get(&grid_row) {
-                                if *height < child_height + margin.top() + margin.bottom() {
-                                    row_heights.insert(
-                                        grid_row,
-                                        child_height + margin.top() + margin.bottom(),
-                                    );
-                                }
-                            } else {
-                                row_heights.insert(
-                                    grid_row,
-                                    child_height + margin.top() + margin.bottom(),
-                                );
-                            }
-                        }
+                        self.calculate_row_height(child, *row, grid_row, &mut row_heights, margin);
                     }
                 }
             }
@@ -252,114 +394,11 @@ impl Layout for GridLayout {
             .component_store_mut()
             .get_mut::<Columns>("columns", entity)
         {
-            if !columns.is_empty() {
-                // sets auto columns width to the width of the largest child
-                for (grid_column, width) in column_widths {
-                    if let Some(column) = columns.get_mut(grid_column) {
-                        column.set_current_width(width);
-                    }
-                }
-
-                // sets the width of columns with fixed width
-                for column in columns.iter_mut() {
-                    if let ColumnWidth::Width(width) = column.width {
-                        column.set_current_width(width);
-                    }
-                }
-
-                // calculates the width of the stretch columns
-                let used_width: f64 = columns
-                    .iter()
-                    .filter(|column| column.width != ColumnWidth::Stretch)
-                    .map(|column| column.current_width())
-                    .sum();
-
-                let stretch_width = ((size.0 - used_width)
-                    / columns
-                        .iter()
-                        .filter(|column| column.width == ColumnWidth::Stretch)
-                        .count() as f64)
-                    .trunc();
-
-                columns
-                    .iter_mut()
-                    .filter(|column| column.width == ColumnWidth::Stretch)
-                    .for_each(|column| column.set_current_width(stretch_width));
-
-                let mut column_sum = 0.0;
-
-                columns_cache.reserve(columns.len());
-                for col in columns.iter() {
-                    columns_cache.push((column_sum, col.current_width()));
-                    column_sum += col.current_width();
-                }
-
-                // fix rounding gab
-                if size.0 - column_sum > 0.0 {
-                    if let Some(last_column) = columns
-                        .iter_mut()
-                        .rev()
-                        .find(|column| column.width == ColumnWidth::Stretch)
-                    {
-                        last_column
-                            .set_current_width(last_column.current_width() + size.0 - column_sum);
-                    }
-                }
-            }
+            self.calculate_columns(size, &mut columns_cache, columns, &column_widths);
         }
 
         if let Ok(rows) = ecm.component_store_mut().get_mut::<Rows>("rows", entity) {
-            if !rows.is_empty() {
-                // sets auto rows height to the height of the largest child
-                for (grid_row, height) in row_heights {
-                    if let Some(row) = rows.get_mut(grid_row) {
-                        row.set_current_height(height);
-                    }
-                }
-
-                // sets the height of rows with fixed height
-                for row in rows.iter_mut() {
-                    if let RowHeight::Height(height) = row.height {
-                        row.set_current_height(height);
-                    }
-                }
-
-                // calculates the height of the stretch rows
-                let used_height: f64 = rows
-                    .iter()
-                    .filter(|row| row.height != RowHeight::Stretch)
-                    .map(|row| row.current_height())
-                    .sum();
-
-                let stretch_height = ((size.1 - used_height)
-                    / rows
-                        .iter()
-                        .filter(|row| row.height == RowHeight::Stretch)
-                        .count() as f64)
-                    .trunc();
-
-                rows.iter_mut()
-                    .filter(|row| row.height == RowHeight::Stretch)
-                    .for_each(|row| row.set_current_height(stretch_height));
-
-                let mut row_sum = 0.0;
-                rows_cache.reserve(rows.len());
-                for row in rows.iter() {
-                    rows_cache.push((row_sum, row.current_height()));
-                    row_sum += row.current_height();
-                }
-
-                // fix rounding gab
-                if size.1 - row_sum > 0.0 {
-                    if let Some(last_row) = rows
-                        .iter_mut()
-                        .rev()
-                        .find(|row| row.height == RowHeight::Stretch)
-                    {
-                        last_row.set_current_height(last_row.current_height() + size.1 - row_sum);
-                    }
-                }
-            }
+            self.calculate_rows(size, &mut rows_cache, rows, &row_heights);
         }
 
         if let Ok(bounds) = ecm

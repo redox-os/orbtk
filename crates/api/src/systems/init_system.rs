@@ -72,8 +72,7 @@ impl System<Tree, StringComponentStore> for InitSystem {
 
             {
                 let mut context = Context::new(
-                    current_node,
-                    ecm,
+                    (current_node, ecm),
                     window_shell,
                     &theme,
                     self.render_objects.clone(),

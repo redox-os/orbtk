@@ -1,6 +1,6 @@
 use rusttype;
 
-use crate::utils::Color;
+use crate::utils::{Color, Rectangle};
 
 #[derive(Debug, Clone)]
 pub struct Font {
@@ -39,40 +39,33 @@ impl Font {
     pub fn render_text(
         &self,
         text: &str,
-        size: f64,
         data: &mut [u32],
-        col: Color,
-        alpha: f32,
         width: f64,
-        x: f64,
-        y: f64,
+        // size, color, alpha
+        config: (f64, Color, f32),
+        position: (f64, f64),
     ) {
         self.render_text_clipped(
             text,
-            size,
             data,
-            col,
-            alpha,
             width,
-            x,
-            y,
-            (0.0, 0.0, width, std::f64::MAX),
+            config,
+            position,
+            Rectangle::new(0.0, 0.0, width, std::f64::MAX),
         );
     }
 
     pub fn render_text_clipped(
         &self,
         text: &str,
-        size: f64,
         data: &mut [u32],
-        col: Color,
-        alpha: f32,
         width: f64,
-        x: f64,
-        y: f64,
-        clip_rect: (f64, f64, f64, f64),
+        // size, color, alpha
+        config: (f64, Color, f32),
+        position: (f64, f64),
+        clip: Rectangle,
     ) {
-        let scale = rusttype::Scale::uniform(size as f32);
+        let scale = rusttype::Scale::uniform(config.0 as f32);
 
         // The origin of a line of text is at the baseline (roughly where non-descending letters sit).
         // We don't want to clip the text, so we shift it down with an offset when laying it out.
@@ -93,7 +86,7 @@ impl Font {
             .unwrap_or(0.0)
             .ceil() as i32;
 
-        let pixel_height = size.ceil() as i32;
+        let pixel_height = config.0.ceil() as i32;
 
         for g in glyphs.iter() {
             if let Some(bb) = g.pixel_bounding_box() {
@@ -105,16 +98,17 @@ impl Font {
                         && off_x < pixel_width
                         && off_y >= 0
                         && off_y < pixel_height
-                        && x + off_x as f64 >= clip_rect.0
-                        && x + off_x as f64 <= clip_rect.0 + clip_rect.2
-                        && y + off_y as f64 >= clip_rect.1
-                        && y + off_y as f64 <= clip_rect.1 + clip_rect.3
+                        && position.0 + off_x as f64 >= clip.x
+                        && position.0 + off_x as f64 <= clip.x + clip.width
+                        && position.1 + off_y as f64 >= clip.y
+                        && position.1 + off_y as f64 <= clip.y + clip.height
                     {
                         // Alpha blending from orbclient
-                        let alpha = (alpha * v * 255.0) as u32;
-                        let new = (alpha << 24) | (col.data & 0x00FF_FFFF);
-                        let old = &mut data
-                            [((y as i32 + off_y) * width as i32 + x as i32 + off_x) as usize];
+                        let alpha = (config.2 * v * 255.0) as u32;
+                        let new = (alpha << 24) | (config.1.data & 0x00FF_FFFF);
+                        let old = &mut data[((position.1 as i32 + off_y) * width as i32
+                            + position.0 as i32
+                            + off_x) as usize];
 
                         if alpha >= 255 {
                             *old = new;

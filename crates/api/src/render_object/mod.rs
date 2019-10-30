@@ -77,8 +77,7 @@ pub trait RenderObject: Any {
 
         {
             let mut context = Context::new(
-                entity,
-                ecm,
+                (entity, ecm),
                 shell,
                 &theme,
                 render_objects.clone(),

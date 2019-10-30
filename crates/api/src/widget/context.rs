@@ -30,8 +30,10 @@ impl<'a> Drop for Context<'a> {
 impl<'a> Context<'a> {
     /// Creates a new container.
     pub fn new(
-        entity: Entity,
-        ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
+        ecs: (
+            Entity,
+            &'a mut EntityComponentManager<Tree, StringComponentStore>,
+        ),
         window_shell: &'a mut WindowShell<WindowAdapter>,
         theme: &'a ThemeValue,
         render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
@@ -40,8 +42,8 @@ impl<'a> Context<'a> {
         states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     ) -> Self {
         Context {
-            entity,
-            ecm,
+            entity: ecs.0,
+            ecm: ecs.1,
             window_shell,
             theme,
             render_objects,

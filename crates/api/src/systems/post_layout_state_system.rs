@@ -35,8 +35,7 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
             .clone();
 
         let mut context = Context::new(
-            root,
-            ecm,
+            (root, ecm),
             window_shell,
             &theme,
             self.render_objects.clone(),

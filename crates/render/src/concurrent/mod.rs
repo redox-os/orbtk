@@ -93,10 +93,7 @@ enum RenderTask {
     },
     DrawImageWithClip {
         image: Image,
-        clip_x: f64,
-        clip_y: f64,
-        clip_width: f64,
-        clip_height: f64,
+        clip: Rectangle,
         x: f64,
         y: f64,
     },
@@ -200,24 +197,8 @@ impl RenderWorker {
                         RenderTask::DrawImage { image, x, y } => {
                             render_context_2_d.draw_image(&image, x, y);
                         }
-                        RenderTask::DrawImageWithClip {
-                            image,
-                            clip_x,
-                            clip_y,
-                            clip_width,
-                            clip_height,
-                            x,
-                            y,
-                        } => {
-                            render_context_2_d.draw_image_with_clip(
-                                &image,
-                                clip_x,
-                                clip_y,
-                                clip_width,
-                                clip_height,
-                                x,
-                                y,
-                            );
+                        RenderTask::DrawImageWithClip { image, clip, x, y } => {
+                            render_context_2_d.draw_image_with_clip(&image, clip, x, y);
                         }
                         RenderTask::DrawPipeline {
                             x,
@@ -589,23 +570,11 @@ impl RenderContext2D {
     }
 
     /// Draws the given part of the image.
-    pub fn draw_image_with_clip(
-        &mut self,
-        image: &mut Image,
-        clip_x: f64,
-        clip_y: f64,
-        clip_width: f64,
-        clip_height: f64,
-        x: f64,
-        y: f64,
-    ) {
+    pub fn draw_image_with_clip(&mut self, image: &mut Image, clip: Rectangle, x: f64, y: f64) {
         self.sender
             .send(vec![RenderTask::DrawImageWithClip {
                 image: image.clone(),
-                clip_x,
-                clip_y,
-                clip_width,
-                clip_height,
+                clip,
                 x,
                 y,
             }])
