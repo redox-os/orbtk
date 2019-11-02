@@ -315,8 +315,8 @@ impl<'a> WidgetContainer<'a> {
         self.get_mut::<Selector>("selector").set_dirty(true);
     }
 
-     pub fn update_font_properties_by_theme(&mut self, selector: &Selector) {
-         if self.has::<f64>("font_size") {
+    pub fn update_font_properties_by_theme(&mut self, selector: &Selector) {
+        if self.has::<f64>("font_size") {
             if let Some(size) = self.theme.uint("font-size", selector) {
                 self.set::<f64>("font_size", f64::from(size));
             }
@@ -345,5 +345,5 @@ impl<'a> WidgetContainer<'a> {
                 self.set::<String>("icon_family", font_family);
             }
         }
-     }
+    }
 }

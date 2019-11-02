@@ -148,8 +148,14 @@ impl Layout for FixedSizeLayout {
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
-        if !self.desired_size.borrow().dirty() {
-            return self.desired_size.borrow().size();
+        if *ecm
+            .component_store()
+            .get::<Visibility>("visibility", entity)
+            .unwrap()
+            == Visibility::Collapsed
+        {
+            self.desired_size.borrow_mut().set_size(0.0, 0.0);
+            return (0.0, 0.0);
         }
 
         if let Ok(bounds) = ecm

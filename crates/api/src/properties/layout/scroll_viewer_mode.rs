@@ -17,7 +17,7 @@ impl Default for ScrollMode {
     }
 }
 
-impl From<(&str)> for ScrollMode {
+impl From<&str> for ScrollMode {
     fn from(s: &str) -> ScrollMode {
         match s {
             "Custom" | "custom" => ScrollMode::Custom,
