@@ -13,9 +13,15 @@ macro_rules! into_property_source {
             }
         }
 
-         impl IntoPropertySource<$type> for (String, Entity) {
+        impl IntoPropertySource<$type> for (String, Entity) {
             fn into_source(self) -> PropertySource<$type> {
                 PropertySource::KeySource(self.0, self.1)
+            }
+        }
+
+        impl IntoPropertySource<$type> for (&str, Entity) {
+            fn into_source(self) -> PropertySource<$type> {
+                PropertySource::KeySource(self.0.to_string(), self.1)
             }
         }
 
