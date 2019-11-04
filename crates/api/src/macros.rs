@@ -404,7 +404,7 @@ macro_rules! widget {
                                     context.register_shared_property::<$property_type>(stringify!($property), entity, source);
                                 }
                                 PropertySource::KeySource(source_key, source) => {
-
+                                    context.register_shared_property_by_source_key::<$property_type>(stringify!($property), source_key.as_str(), entity, source);
                                 }
                             }
                         }
