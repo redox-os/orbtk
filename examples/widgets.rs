@@ -97,12 +97,10 @@ impl State for MainViewState {
                 }
                 Action::IncrementCounter => {
                     self.counter.set(self.counter.get() + 1);
-                    if let Some(button_count_text) =
-                        context.widget().try_get_mut::<String16>("text")
-                    {
-                        *button_count_text =
-                            String16::from(format!("Button count: {}", self.counter.get()));
-                    }
+                    context.widget().set(
+                        "result",
+                        String16::from(format!("Button count: {}", self.counter.get())),
+                    );
                 }
             }
 
@@ -138,7 +136,7 @@ fn create_header(context: &mut BuildContext, text: &str) -> Entity {
 widget!(
     MainView<MainViewState> {
         selected_indices: SelectedIndices,
-        text: String16
+        result: String16
     }
 );
 
@@ -153,7 +151,7 @@ impl Template for MainView {
         let selection_list_count = list_state.selection_list.borrow().len();
 
         self.name("MainView")
-            .text("Button count: 0")
+            .result("Button count: 0")
             .selected_indices(HashSet::new())
             .child(
                 Grid::create()
@@ -227,7 +225,7 @@ impl Template for MainView {
                             .child(
                                 TextBlock::create()
                                     .selector(Selector::new().class("body"))
-                                    .text(id)
+                                    .text(("result", id))
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(1))
