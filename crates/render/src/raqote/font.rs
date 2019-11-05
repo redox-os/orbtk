@@ -106,10 +106,14 @@ impl Font {
                         // Alpha blending from orbclient
                         let alpha = (config.2 * v * 255.0) as u32;
                         let new = (alpha << 24) | (config.1.data & 0x00FF_FFFF);
-                        let old = &mut data[((position.1 as i32 + off_y) * width as i32
-                            + position.0 as i32
-                            + off_x) as usize];
 
+                        let index = ((position.1 as i32 + off_y) * width as i32
+                            + position.0 as i32
+                            + off_x) as usize;
+                        if index >= data.len() {
+                            return;
+                        }
+                        let old = &mut data[index];
                         if alpha >= 255 {
                             *old = new;
                         } else if alpha > 0 {
