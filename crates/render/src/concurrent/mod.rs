@@ -3,7 +3,7 @@ use std::{
     thread,
 };
 
-use crate::{platform, utils::*, Pipeline, TextMetrics};
+use crate::{platform, utils::*, Pipeline, RenderTarget, TextMetrics};
 use platform::Image;
 
 #[derive(Clone)]
@@ -83,6 +83,11 @@ enum RenderTask {
         cp1y: f64,
         cp2x: f64,
         cp2y: f64,
+        x: f64,
+        y: f64,
+    },
+    DrawRenderTarget {
+        render_target: RenderTarget,
         x: f64,
         y: f64,
     },
@@ -193,6 +198,13 @@ impl RenderWorker {
                         RenderTask::RegisterFont { family, font_file } => {
                             render_context_2_d.register_font(family.as_str(), font_file);
                             continue;
+                        }
+                        RenderTask::DrawRenderTarget {
+                            render_target,
+                            x,
+                            y,
+                        } => {
+                            render_context_2_d.draw_render_target(&render_target, x, y);
                         }
                         RenderTask::DrawImage { image, x, y } => {
                             render_context_2_d.draw_image(&image, x, y);
@@ -557,6 +569,16 @@ impl RenderContext2D {
     }
 
     // Draw image
+
+    pub fn draw_render_target(&mut self, render_target: &RenderTarget, x: f64, y: f64) {
+        self.sender
+            .send(vec![RenderTask::DrawRenderTarget {
+                render_target: render_target.clone(),
+                x,
+                y,
+            }])
+            .expect("Could not send render target to render thread.");
+    }
 
     /// Draws the image.
     pub fn draw_image(&mut self, image: &mut Image, x: f64, y: f64) {
