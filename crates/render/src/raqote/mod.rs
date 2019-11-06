@@ -239,9 +239,8 @@ impl RenderContext2D {
         );
     }
 
-    // Draw image
-
-    fn draw_render_target(&mut self, render_target: &RenderTarget, x: f64, y: f64) {
+    /// Draws a render target.
+    pub fn draw_render_target(&mut self, render_target: &RenderTarget, x: f64, y: f64) {
         self.draw_target.draw_image_at(
             x as f32,
             y as f32,

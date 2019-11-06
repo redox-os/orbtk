@@ -175,6 +175,11 @@ impl RenderContext2D {
 
     // Draw image
 
+     /// Draws a render target.
+    pub fn draw_render_target(&mut self, render_target: &RenderTarget, x: f64, y: f64) {
+        // todo
+    }
+
     /// Draws the image.
     pub fn draw_image(&mut self, image: &Image, x: f64, y: f64) {
         js!(
