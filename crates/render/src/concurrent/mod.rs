@@ -160,6 +160,7 @@ fn is_single_tasks(task: &RenderTask) -> bool {
         RenderTask::Start() => true,
         RenderTask::Resize { .. } => true,
         RenderTask::RegisterFont { .. } => true,
+        RenderTask::DrawRenderTarget { .. } => true,
         RenderTask::DrawImage { .. } => true,
         RenderTask::DrawImageWithClip { .. } => true,
         RenderTask::DrawPipeline { .. } => true,
