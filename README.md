@@ -154,6 +154,11 @@ cargo doc --no-deps --open
 * [React](https://reactjs.org/)
 * [Yew](https://github.com/DenisKolodin/yew)
 
+## Showcases
+
+* [Space Editor](https://codeberg.org/pinhead-galaxy/space-editor): 2D Tile Map Editor compatible with OrbGame
+* [OrbCalculator](https://gitlab.redox-os.org/redox-os/orbcalculator): Calculator based on OrbTk
+
 ## License
 
 Licensed under MIT license ([LICENSE](LICENSE)).
