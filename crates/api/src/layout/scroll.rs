@@ -265,7 +265,11 @@ impl Layout for ScrollLayout {
                 if scroll_viewer_mode.horizontal == ScrollMode::Custom
                     || scroll_viewer_mode.horizontal == ScrollMode::Auto
                 {
-                    child_bounds.set_x(offset.0);
+                    if child_bounds.width() <= size.0 {
+                        child_bounds.set_x(0.0);
+                    } else {
+                        child_bounds.set_x(offset.0);
+                    }
                 } else {
                     child_bounds.set_x(child_horizontal_alignment.align_position(
                         size.0,
@@ -278,7 +282,12 @@ impl Layout for ScrollLayout {
                 if scroll_viewer_mode.vertical == ScrollMode::Custom
                     || scroll_viewer_mode.vertical == ScrollMode::Auto
                 {
-                    child_bounds.set_y(offset.1);
+                    if child_bounds.height() <= size.1 {
+                        child_bounds.set_y(0.0);
+                    } else {
+                        child_bounds.set_y(offset.1);
+                    }
+                    
                 } else {
                     child_bounds.set_y(child_vertical_alignment.align_position(
                         size.1,

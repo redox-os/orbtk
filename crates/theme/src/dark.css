@@ -71,9 +71,9 @@ button:active, button.primary:active, button.square:active, toggle-button:active
 }
 
 button:disabled, toggle-button:disabled {
-    background: #e5e5e5;
-    color: #333333;
-    icon-color: #333333;
+    background: #7a7e81;
+    color: #3b434a;
+    icon-color: #3b434a;
 }
 
 button.square {
