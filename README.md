@@ -100,19 +100,19 @@ You can start the widgets example by executing the following command:
 * Run as browser app:
 
 ```text
-cargo node run --browser --example widgets
+cargo node run --target browser --example widgets
 ```
 
 * Run as electron app:
 
 ```text
-cargo node run --electron --example widgets
+cargo node run --target electron --example widgets
 ```
 
 * Run as cordova app on android:
 
 ```text
-cargo node run --android --example widgets
+cargo node run --target android --example widgets
 ```
 
 ## Build and run documentation
