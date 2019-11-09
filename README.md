@@ -159,6 +159,10 @@ cargo doc --no-deps --open
 * [Space Editor](https://codeberg.org/pinhead-galaxy/space-editor): 2D Tile Map Editor compatible with OrbGame
 * [OrbCalculator](https://gitlab.redox-os.org/redox-os/orbcalculator): Calculator based on OrbTk
 
+## Contribution
+
+If you want to help bring OrbTk further or you have feedback check our issue board https://gitlab.redox-os.org/redox-os/orbtk/-/boards/120. You could also discuss with us about OrbTk on the Redox chat https://redox-os.org/community/ (join the orbital channel).
+
 ## License
 
 Licensed under MIT license ([LICENSE](LICENSE)).
