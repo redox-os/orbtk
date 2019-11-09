@@ -43,20 +43,6 @@ impl TextBoxState {
             .unwrap()
             .get::<TextSelection>("text_selection");
 
-        #[cfg(target_os = "macos")]
-        let control_key = ctx
-            .window()
-            .clone::<Global>("global")
-            .keyboard_state
-            .is_home_down();
-
-        #[cfg(not(target_os = "macos"))]
-        let control_key = ctx
-            .window()
-            .clone::<Global>("global")
-            .keyboard_state
-            .is_control_down();
-
         match key_event.key {
             Key::Left => {
                 if let Some(selection) = ctx
@@ -109,11 +95,7 @@ impl TextBoxState {
                 if key_event.text.is_empty() {
                     return;
                 }
-
-                if key_event.text.as_str() == "a" && control_key {
-                    println!("All");
-                }
-
+                
                 ctx.widget()
                     .get_mut::<String16>("text")
                     .insert_str(current_selection.start_index, key_event.text.as_str());
