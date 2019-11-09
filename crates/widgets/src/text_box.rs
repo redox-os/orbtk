@@ -105,7 +105,7 @@ impl TextBoxState {
                     .unwrap()
                     .try_get_mut::<TextSelection>("text_selection")
                 {
-                    selection.start_index = current_selection.start_index + key_event.text.len();
+                    selection.start_index = current_selection.start_index + key_event.text.encode_utf16().count();
                 }
             }
         }
