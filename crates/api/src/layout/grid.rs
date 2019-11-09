@@ -105,7 +105,8 @@ impl GridLayout {
         if row.height != RowHeight::Auto {
             return;
         }
-        let child_height = self.children_sizes.borrow().get(&child).unwrap().0;
+
+        let child_height = self.children_sizes.borrow().get(&child).unwrap().1;
 
         if let Some(height) = row_heights.get(&grid_row) {
             if *height < child_height + margin.top() + margin.bottom() {
