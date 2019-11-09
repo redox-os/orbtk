@@ -52,9 +52,15 @@ impl KeyboardState {
     pub fn is_alt_down(&self) -> bool {
         self.is_key_down(Key::Alt)
     }
+
     /// Returns whether or not any control key is down.
     pub fn is_ctrl_down(&self) -> bool {
         self.is_key_down(Key::Control)
+    }
+
+    /// Returns whether or not any home key is down.
+    pub fn is_home_down(&self) -> bool {
+        self.is_key_down(Key::Home)
     }
 }
 

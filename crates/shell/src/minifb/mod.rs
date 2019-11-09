@@ -24,7 +24,7 @@ fn key_event_helper<A>(key: &mut KeyHelper, adapter: &mut A, window: &minifb::Wi
 where
     A: WindowAdapter,
 {
-    if !key.0 && window.is_key_down(key.1) {
+    if !key.0 && window.is_key_pressed(key.1, minifb::KeyRepeat::Yes) {
         adapter.key_event(KeyEvent {
             key: key.2,
             state: ButtonState::Down,
@@ -37,7 +37,7 @@ where
     }
 }
 
-fn unicode_to_key_event(uni_char: u32) -> KeyEvent {
+fn unicode_to_key_event(uni_char: u32) -> Option<KeyEvent> {
     let mut text = String::new();
 
     let key = if let Some(character) = char::from_u32(uni_char) {
@@ -48,14 +48,14 @@ fn unicode_to_key_event(uni_char: u32) -> KeyEvent {
     };
 
     if key == Key::Up || key == Key::Down || key == Key::Left || key == Key::Right {
-        text = String::new()
+        return None;
     }
 
-    KeyEvent {
+    Some(KeyEvent {
         key,
         state: ButtonState::Down,
         text,
-    }
+    })
 }
 
 struct KeyInputCallBack {
@@ -64,9 +64,9 @@ struct KeyInputCallBack {
 
 impl minifb::InputCallback for KeyInputCallBack {
     fn add_char(&mut self, uni_char: u32) {
-        self.key_events
-            .borrow_mut()
-            .push(unicode_to_key_event(uni_char));
+        if let Some(key_event) = unicode_to_key_event(uni_char) {
+            self.key_events.borrow_mut().push(key_event);
+        }
     }
 }
 
@@ -87,6 +87,10 @@ where
     // todo: temp solution
     key_backspace: KeyHelper,
     key_delete: KeyHelper,
+    key_left: KeyHelper,
+    key_right: KeyHelper,
+    key_up: KeyHelper,
+    key_down: KeyHelper,
     key_enter: KeyHelper,
     key_control: KeyHelper,
     key_control_right: KeyHelper,
@@ -123,6 +127,10 @@ where
             button_down: (false, false, false),
             key_events,
             key_backspace: KeyHelper(false, minifb::Key::Backspace, Key::Backspace),
+            key_left: KeyHelper(false, minifb::Key::Left, Key::Left),
+            key_right: KeyHelper(false, minifb::Key::Right, Key::Right),
+            key_up: KeyHelper(false, minifb::Key::Up, Key::Up),
+            key_down: KeyHelper(false, minifb::Key::Down, Key::Down),
             key_delete: KeyHelper(false, minifb::Key::Delete, Key::Delete),
             key_enter: KeyHelper(false, minifb::Key::Enter, Key::Enter),
             key_control: KeyHelper(false, minifb::Key::LeftCtrl, Key::Control),
@@ -199,6 +207,10 @@ where
 
         key_event_helper(&mut self.key_backspace, &mut self.adapter, &self.window);
         key_event_helper(&mut self.key_delete, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_left, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_right, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_up, &mut self.adapter, &self.window);
+        key_event_helper(&mut self.key_down, &mut self.adapter, &self.window);
         key_event_helper(&mut self.key_enter, &mut self.adapter, &self.window);
         key_event_helper(&mut self.key_control, &mut self.adapter, &self.window);
         key_event_helper(&mut self.key_control_right, &mut self.adapter, &self.window);
