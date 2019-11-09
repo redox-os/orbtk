@@ -310,7 +310,7 @@ dependencies = [
 [[package]]
 name = "minifb"
 version = "0.13.0"
-source = "git+https://github.com/emoon/rust_minifb.git#bf4eb2d092af53e4a70e2d365f7632a868d6c587"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cast 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "cc 1.0.46 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -485,7 +485,7 @@ version = "0.1.0"
 dependencies = [
  "image 0.22.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "minifb 0.13.0 (git+https://github.com/emoon/rust_minifb.git)",
+ "minifb 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "minifb-fix 0.13.0 (git+https://github.com/FloVanGH/rust_minifb?branch=redox_unix)",
  "orbtk-render 0.1.0",
  "orbtk-utils 0.1.0",
@@ -1168,7 +1168,7 @@ dependencies = [
 "checksum matches 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)" = "7ffc5c5338469d4d3ea17d269fa8ea3512ad247247c30bd2df69e68309ed0a08"
 "checksum maybe-uninit 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "60302e4db3a61da70c0cb7991976248362f30319e88850c487b9b95bbf059e00"
 "checksum memoffset 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)" = "4a85c1a8c329f11437034d7313dca647c79096523533a1c79e86f1d0f657c7cc"
-"checksum minifb 0.13.0 (git+https://github.com/emoon/rust_minifb.git)" = "<none>"
+"checksum minifb 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)" = "55cbdf43445926b65e07992f06019321e7481df8fd656dcb6871d00cdbd9fc73"
 "checksum minifb-fix 0.13.0 (git+https://github.com/FloVanGH/rust_minifb?branch=redox_unix)" = "<none>"
 "checksum nodrop 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)" = "72ef4a56884ca558e5ddb05a1d1e7e1bfd9a68d9ed024c21704cc98872dae1bb"
 "checksum num 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)" = "4703ad64153382334aa8db57c637364c322d3372e097840c72000dabdcf6156e"
