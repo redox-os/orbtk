@@ -12,9 +12,9 @@
 //     }
 
 //     impl State for SenderState {
-//         fn update(&self, context: &mut Context<'_>) {
+//         fn update(&self, ctx: &mut Context<'_>) {
 //             if self.send_message.get() {
-//                 context.send_message("receiver_view", StringMessage::from("Hello from sender."));
+//                 ctx.send_message("receiver_view", StringMessage::from("Hello from sender."));
 //             }
 //         }
 //     }

@@ -12,7 +12,7 @@ fn get_theme() -> ThemeValue {
 widget!(MainView);
 
 impl Template for MainView {
-    fn template(self, _: Entity, context: &mut BuildContext) -> Self {
+    fn template(self, _: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MainView").child(
             Grid::create()
                 .columns(
@@ -34,9 +34,9 @@ impl Template for MainView {
                                 .selector("light-text")
                                 .horizontal_alignment("center")
                                 .vertical_alignment("center")
-                                .build(context),
+                                .build(ctx),
                         )
-                        .build(context),
+                        .build(ctx),
                 )
                 .child(
                     Grid::create()
@@ -50,9 +50,9 @@ impl Template for MainView {
                                 .selector("white")
                                 .horizontal_alignment("center")
                                 .vertical_alignment("center")
-                                .build(context),
+                                .build(ctx),
                         )
-                        .build(context),
+                        .build(ctx),
                 )
                 .child(
                     Grid::create()
@@ -64,9 +64,9 @@ impl Template for MainView {
                                 .selector("linkwater")
                                 .horizontal_alignment("center")
                                 .vertical_alignment("center")
-                                .build(context),
+                                .build(ctx),
                         )
-                        .build(context),
+                        .build(ctx),
                 )
                 .child(
                     Grid::create()
@@ -80,11 +80,11 @@ impl Template for MainView {
                                 .selector("goldendream")
                                 .horizontal_alignment("center")
                                 .vertical_alignment("center")
-                                .build(context),
+                                .build(ctx),
                         )
-                        .build(context),
+                        .build(ctx),
                 )
-                .build(context),
+                .build(ctx),
         )
     }
 }

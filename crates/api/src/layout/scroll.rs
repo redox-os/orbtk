@@ -287,7 +287,6 @@ impl Layout for ScrollLayout {
                     } else {
                         child_bounds.set_y(offset.1);
                     }
-                    
                 } else {
                     child_bounds.set_y(child_vertical_alignment.align_position(
                         size.1,

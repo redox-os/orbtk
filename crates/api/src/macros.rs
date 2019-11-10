@@ -336,29 +336,29 @@ macro_rules! widget {
                 }
             )*
 
-            fn build(self, context: &mut BuildContext) -> Entity {
-                let entity = context.create_entity();
+            fn build(self, ctx: &mut BuildContext) -> Entity {
+                let entity = ctx.create_entity();
 
-                let this = self.template(entity, context);
+                let this = self.template(entity, ctx);
 
-                context.register_render_object(entity, this.render_object());
-                context.register_layout(entity, this.layout());
+                ctx.register_render_object(entity, this.render_object());
+                ctx.register_layout(entity, this.layout());
 
                  // register state
                 if let Some(state) = &this.state() {
-                     context.register_state(entity, state.clone());
+                     ctx.register_state(entity, state.clone());
                  }
 
                 // register default set of properties
-                context.register_property("bounds", entity, this.bounds);
-                context.register_property("position", entity, this.position);
-                context.register_property("vertical_alignment", entity, this.vertical_alignment);
-                context.register_property("horizontal_alignment", entity, this.horizontal_alignment);
-                context.register_property("visibility", entity, this.visibility);
-                context.register_property("margin", entity, this.margin);
-                context.register_property("enabled", entity, this.enabled);
-                context.register_property("clip", entity, this.clip);
-                context.register_property("opacity", entity, this.opacity);
+                ctx.register_property("bounds", entity, this.bounds);
+                ctx.register_property("position", entity, this.position);
+                ctx.register_property("vertical_alignment", entity, this.vertical_alignment);
+                ctx.register_property("horizontal_alignment", entity, this.horizontal_alignment);
+                ctx.register_property("visibility", entity, this.visibility);
+                ctx.register_property("margin", entity, this.margin);
+                ctx.register_property("enabled", entity, this.enabled);
+                ctx.register_property("clip", entity, this.clip);
+                ctx.register_property("opacity", entity, this.opacity);
 
                 let mut constraint = Constraint::default();
 
@@ -380,16 +380,16 @@ macro_rules! widget {
                 if let Some(max_height) = this.max_height {
                     constraint.set_max_height(max_height);
                 }
-                context.register_property("constraint", entity, constraint);
+                ctx.register_property("constraint", entity, constraint);
 
 
                 // register attached properties
                 for (key, property) in this.attached_properties {
-                    context.register_property_box(key.as_str(), entity, property);
+                    ctx.register_property_box(key.as_str(), entity, property);
                 }
 
                 for (key, property) in this.shared_attached_properties {
-                    context.register_property_shared_box_by_source_key(key.0.as_str(), key.1.as_str(), entity, property);
+                    ctx.register_property_shared_box_by_source_key(key.0.as_str(), key.1.as_str(), entity, property);
                 }
 
                 // register properties
@@ -398,34 +398,34 @@ macro_rules! widget {
                         if let Some($property) = this.$property {
                             match $property {
                                 PropertySource::Value(value) => {
-                                    context.register_property(stringify!($property), entity, value);
+                                    ctx.register_property(stringify!($property), entity, value);
                                 }
                                 PropertySource::Source(source) => {
-                                    context.register_shared_property::<$property_type>(stringify!($property), entity, source);
+                                    ctx.register_shared_property::<$property_type>(stringify!($property), entity, source);
                                 }
                                 PropertySource::KeySource(source_key, source) => {
-                                    context.register_shared_property_by_source_key::<$property_type>(stringify!($property), source_key.as_str(), entity, source);
+                                    ctx.register_shared_property_by_source_key::<$property_type>(stringify!($property), source_key.as_str(), entity, source);
                                 }
                             }
                         }
                         else {
-                            context.register_property(stringify!($property), entity, $property_type::default());
+                            ctx.register_property(stringify!($property), entity, $property_type::default());
                         }
                     )*
                 )*
 
                 // register event handlers
                 for handler in this.event_handlers {
-                    context.register_handler(entity, handler);
+                    ctx.register_handler(entity, handler);
                 }
 
                 // register name
                 if let Some(name) = this.name {
-                    context.register_property("name", entity, name);
+                    ctx.register_property("name", entity, name);
                 }
 
                 for child in this.children {
-                    context.append_child(entity, child);
+                    ctx.append_child(entity, child);
                 }
 
                 entity

@@ -57,7 +57,7 @@ widget!(
 );
 
 impl Template for CheckBox {
-    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("CheckBox")
             .selector("check-box")
             .selected(false)
@@ -107,9 +107,9 @@ impl Template for CheckBox {
                                                     .icon_size(id)
                                                     .icon_font(id)
                                                     .opacity(id)
-                                                    .build(context),
+                                                    .build(ctx),
                                             )
-                                            .build(context),
+                                            .build(ctx),
                                     )
                                     .child(
                                         TextBlock::create()
@@ -120,13 +120,13 @@ impl Template for CheckBox {
                                             .font_size(id)
                                             .font(id)
                                             .opacity(id)
-                                            .build(context),
+                                            .build(ctx),
                                     )
-                                    .build(context),
+                                    .build(ctx),
                             )
-                            .build(context),
+                            .build(ctx),
                     )
-                    .build(context),
+                    .build(ctx),
             )
     }
 }

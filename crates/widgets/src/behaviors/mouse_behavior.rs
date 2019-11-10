@@ -23,47 +23,43 @@ impl MouseBehaviorState {
 }
 
 impl State for MouseBehaviorState {
-    fn update(&self, context: &mut Context<'_>) {
-        if !context.widget().get::<bool>("enabled") {
+    fn update(&self, ctx: &mut Context<'_>) {
+        if !ctx.widget().get::<bool>("enabled") {
             return;
         }
 
         if let Some(action) = self.action.get() {
             match action {
                 Action::Press(_) => {
-                    context.widget().set("pressed", true);
+                    ctx.widget().set("pressed", true);
                 }
                 Action::Release(p) => {
-                    context.widget().set("pressed", false);
+                    ctx.widget().set("pressed", false);
 
-                    if check_mouse_condition(p, &context.widget()) {
-                        let parent = context.entity_of_parent().unwrap();
-                        context.push_event_by_entity(ClickEvent { position: p }, parent)
+                    if check_mouse_condition(p, &ctx.widget()) {
+                        let parent = ctx.entity_of_parent().unwrap();
+                        ctx.push_event_by_entity(ClickEvent { position: p }, parent)
                     }
                 }
                 Action::Scroll(p) => {
-                    context.widget().set("position", p);
+                    ctx.widget().set("position", p);
                     self.has_delta.set(true);
                 }
             };
 
-            let element = context
-                .widget()
-                .clone::<Selector>("selector")
-                .element
-                .unwrap();
+            let element = ctx.widget().clone::<Selector>("selector").element.unwrap();
 
-            if let Some(parent) = context.parent_entity_by_element(&*element) {
-                context.get_widget(parent).update_theme_by_state(false);
+            if let Some(parent) = ctx.parent_entity_by_element(&*element) {
+                ctx.get_widget(parent).update_theme_by_state(false);
             }
 
             self.action.set(None);
         }
     }
 
-    fn update_post_layout(&self, context: &mut Context<'_>) {
+    fn update_post_layout(&self, ctx: &mut Context<'_>) {
         if self.has_delta.get() {
-            context.widget().set("delta", Point::new(0.0, 0.0));
+            ctx.widget().set("delta", Point::new(0.0, 0.0));
             self.has_delta.set(false);
         }
     }

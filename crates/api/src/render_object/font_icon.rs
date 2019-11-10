@@ -12,9 +12,9 @@ impl Into<Box<dyn RenderObject>> for FontIconRenderObject {
 }
 
 impl RenderObject for FontIconRenderObject {
-    fn render_self(&self, context: &mut Context<'_>, global_position: &Point) {
+    fn render_self(&self, ctx: &mut Context<'_>, global_position: &Point) {
         let (bounds, icon, icon_brush, icon_font, icon_size) = {
-            let widget = context.widget();
+            let widget = ctx.widget();
             (
                 *widget.get::<Rectangle>("bounds"),
                 widget.clone::<String>("icon"),
@@ -34,17 +34,17 @@ impl RenderObject for FontIconRenderObject {
         }
 
         if !icon.is_empty() {
-            context.render_context_2_d().begin_path();
-            context.render_context_2_d().set_font_family(icon_font);
-            context.render_context_2_d().set_font_size(icon_size);
-            context.render_context_2_d().set_fill_style(icon_brush);
+            ctx.render_context_2_d().begin_path();
+            ctx.render_context_2_d().set_font_family(icon_font);
+            ctx.render_context_2_d().set_font_size(icon_size);
+            ctx.render_context_2_d().set_fill_style(icon_brush);
 
-            context.render_context_2_d().fill_text(
+            ctx.render_context_2_d().fill_text(
                 &icon,
                 global_position.x + bounds.x,
                 global_position.y + bounds.y,
             );
-            context.render_context_2_d().close_path();
+            ctx.render_context_2_d().close_path();
         }
     }
 }

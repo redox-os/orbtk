@@ -58,7 +58,7 @@ widget!(
 );
 
 impl Template for ToggleButton {
-    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ToggleButton")
             .selector("toggle-button")
             .selected(false)
@@ -107,7 +107,7 @@ impl Template for ToggleButton {
                                                     .icon_brush(id)
                                                     .icon_size(id)
                                                     .icon_font(id)
-                                                    .build(context),
+                                                    .build(ctx),
                                             )
                                             .child(
                                                 TextBlock::create()
@@ -115,15 +115,15 @@ impl Template for ToggleButton {
                                                     .text(id)
                                                     .font_size(id)
                                                     .font(id)
-                                                    .build(context),
+                                                    .build(ctx),
                                             )
-                                            .build(context),
+                                            .build(ctx),
                                     )
-                                    .build(context),
+                                    .build(ctx),
                             )
-                            .build(context),
+                            .build(ctx),
                     )
-                    .build(context),
+                    .build(ctx),
             )
     }
 }

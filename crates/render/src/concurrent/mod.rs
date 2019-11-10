@@ -365,7 +365,7 @@ impl RenderWorker {
     }
 }
 
-/// The RenderContext2D provides a concurrent render context.
+/// The RenderContext2D provides a concurrent render ctx.
 pub struct RenderContext2D {
     output: Vec<u32>,
     worker: RenderWorker,
@@ -387,7 +387,7 @@ impl Drop for RenderContext2D {
 }
 
 impl RenderContext2D {
-    /// Creates a new render context 2d.
+    /// Creates a new render ctx 2d.
     pub fn new(width: f64, height: f64) -> Self {
         let (sender, receiver) = mpsc::channel();
 
@@ -431,7 +431,7 @@ impl RenderContext2D {
         self.send_tasks();
     }
 
-    /// Resizes the render context.
+    /// Resizes the render ctx.
     pub fn resize(&mut self, width: f64, height: f64) {
         self.sender
             .send(vec![RenderTask::Resize { width, height }])
@@ -461,7 +461,7 @@ impl RenderContext2D {
         });
     }
 
-    /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other context settings.
+    /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other ctx settings.
     pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
         self.tasks.push(RenderTask::StrokeRect {
             x,

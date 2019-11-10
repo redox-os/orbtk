@@ -7,7 +7,7 @@ pub struct Image {
 }
 
 impl Image {
-    /// Creates a new render context 2d.
+    /// Creates a new render ctx 2d.
     pub fn new(_: f64, _: f64) -> Self {
         Image {
             source: String::default(),

@@ -14,17 +14,17 @@ pub struct ListViewState {
 }
 
 impl State for ListViewState {
-    fn update(&self, context: &mut Context<'_>) {
-        let count = context.widget().clone_or_default::<usize>("count");
-        let entity = context.entity;
+    fn update(&self, ctx: &mut Context<'_>) {
+        let count = ctx.widget().clone_or_default::<usize>("count");
+        let entity = ctx.entity;
 
         if count != self.count.get() {
             if let Some(builder) = &*self.builder.borrow() {
-                if let Some(items_panel) = context.entity_of_child("items_panel") {
-                    context.clear_children_of(items_panel);
+                if let Some(items_panel) = ctx.entity_of_child("items_panel") {
+                    ctx.clear_children_of(items_panel);
 
                     for i in 0..count {
-                        let mut build_context = context.build_context();
+                        let mut build_context = ctx.build_context();
 
                         let item = {
                             let child = builder(&mut build_context, i);
@@ -56,7 +56,7 @@ impl State for ListViewState {
 
                             item
                         };
-                        context.get_widget(item).update_properties_by_theme();
+                        ctx.get_widget(item).update_properties_by_theme();
                     }
                 }
             }
@@ -65,21 +65,21 @@ impl State for ListViewState {
         }
     }
 
-    fn update_post_layout(&self, context: &mut Context<'_>) {
-        for index in context
+    fn update_post_layout(&self, ctx: &mut Context<'_>) {
+        for index in ctx
             .widget()
             .get::<SelectedEntities>("selected_entities")
             .0
             .clone()
             .symmetric_difference(&*self.selected_entities.borrow())
         {
-            let mut widget = context.get_widget(*index);
+            let mut widget = ctx.get_widget(*index);
             widget.set("selected", !widget.get::<bool>("selected"));
 
             widget.update_theme_by_state(false);
         }
 
-        *self.selected_entities.borrow_mut() = context
+        *self.selected_entities.borrow_mut() = ctx
             .widget()
             .get::<SelectedEntities>("selected_entities")
             .0
@@ -99,18 +99,18 @@ impl ListViewItemState {
 }
 
 impl State for ListViewItemState {
-    fn update(&self, context: &mut Context<'_>) {
-        if !context.widget().get::<bool>("enabled") || !self.request_selection_toggle.get() {
+    fn update(&self, ctx: &mut Context<'_>) {
+        if !ctx.widget().get::<bool>("enabled") || !self.request_selection_toggle.get() {
             return;
         }
         self.request_selection_toggle.set(false);
 
-        let selected = *context.widget().get::<bool>("selected");
+        let selected = *ctx.widget().get::<bool>("selected");
 
-        let entity = context.entity;
-        let index = context.index_as_child(entity).unwrap();
+        let entity = ctx.entity;
+        let index = ctx.index_as_child(entity).unwrap();
 
-        if let Some(parent) = &mut context.parent_by_id("ListView") {
+        if let Some(parent) = &mut ctx.try_parent_from_id("ListView") {
             let selection_mode = *parent.get::<SelectionMode>("selection_mode");
             // deselect item
             if selected {
@@ -281,18 +281,18 @@ impl ListView {
 }
 
 impl Template for ListView {
-    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let items_panel = Stack::create()
             .vertical_alignment("start")
             .selector(Selector::default().id("items_panel"))
             .orientation(id)
-            .build(context);
+            .build(ctx);
 
         let scroll_viewer = ScrollViewer::create()
             .scroll_viewer_mode(("disabled", "auto"))
             .delta(id)
             .child(items_panel)
-            .build(context);
+            .build(ctx);
 
         self.name("ListView")
             .selector(Selector::from("list-view").id("ListView"))
@@ -321,9 +321,9 @@ impl Template for ListView {
                             .content_id(items_panel.0)
                             .scroll_offset(scroll_viewer)
                             .opacity(id)
-                            .build(context),
+                            .build(ctx),
                     )
-                    .build(context),
+                    .build(ctx),
             )
     }
 }

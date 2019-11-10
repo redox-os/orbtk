@@ -82,7 +82,7 @@ where
         &mut self.adapter
     }
 
-    /// Gets the render context 2D.
+    /// Gets the render ctx 2D.
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
         &mut self.render_context_2_d
     }
@@ -165,15 +165,15 @@ where
             }
 
             let device_pixel_ratio = window().device_pixel_ratio();
-            let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
+            let ctx: CanvasRenderingContext2d = canvas.get_context().unwrap();
 
             let backing_store_ratio = js! {
-                var context = @{&context};
-                 return context.webkitBackingStorePixelRatio ||
-                     context.mozBackingStorePixelRatio ||
-                     context.msBackingStorePixelRatio ||
-                     context.oBackingStorePixelRatio ||
-                     context.backingStorePixelRatio || 1;
+                var ctx = @{&ctx};
+                 return ctx.webkitBackingStorePixelRatio ||
+                     ctx.mozBackingStorePixelRatio ||
+                     ctx.msBackingStorePixelRatio ||
+                     ctx.oBackingStorePixelRatio ||
+                     ctx.backingStorePixelRatio || 1;
             };
 
             let ratio: f64 = js! {
@@ -193,11 +193,10 @@ where
                     @{&canvas}.style.height = @{&old_height} + "px";
                 }
 
-                context.scale(ratio, ratio);
+                ctx.scale(ratio, ratio);
             }
 
-            self.render_context_2_d
-                .set_canvas_render_context_2d(context);
+            self.render_context_2_d.set_canvas_render_context_2d(ctx);
             self.adapter.resize(window_size.0, window_size.1);
             self.old_canvas = Some(self.canvas.clone());
             self.canvas = canvas;
@@ -399,17 +398,17 @@ where
         });
 
         document().body().unwrap().append_child(&canvas);
-        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
+        let ctx: CanvasRenderingContext2d = canvas.get_context().unwrap();
 
         let device_pixel_ratio = window().device_pixel_ratio();
 
         let backing_store_ratio = js! {
-            var context = @{&context};
-             return context.webkitBackingStorePixelRatio ||
-                 context.mozBackingStorePixelRatio ||
-                 context.msBackingStorePixelRatio ||
-                 context.oBackingStorePixelRatio ||
-                 context.backingStorePixelRatio || 1;
+            var ctx = @{&ctx};
+             return ctx.webkitBackingStorePixelRatio ||
+                 ctx.mozBackingStorePixelRatio ||
+                 ctx.msBackingStorePixelRatio ||
+                 ctx.oBackingStorePixelRatio ||
+                 ctx.backingStorePixelRatio || 1;
         };
 
         let ratio: f64 = js! {
@@ -429,7 +428,7 @@ where
                 @{&canvas}.style.height = @{&old_height} + "px";
             }
 
-            context.scale(ratio, ratio);
+            ctx.scale(ratio, ratio);
         }
 
         let render_context_2_d = RenderContext2D::from_context(canvas.get_context().unwrap());

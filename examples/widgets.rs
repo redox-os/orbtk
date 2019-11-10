@@ -52,52 +52,40 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&self, context: &mut Context<'_>) {
+    fn update(&self, ctx: &mut Context<'_>) {
         if let Some(action) = self.action.get() {
             match action {
                 Action::AddItem => {
                     let len = self.list.borrow().len();
                     if len < 5 {
                         self.list.borrow_mut().push(format!("Item {}", len + 1));
-                        context.child_by_id("items").unwrap().set("count", len + 1);
+                        ctx.child("items").set("count", len + 1);
 
                         if len == 0 {
-                            context
-                                .child_by_id("remove-item-button")
-                                .unwrap()
-                                .set("enabled", true);
+                            ctx.child("remove-item-button").set("enabled", true);
                         }
 
                         if len == 4 {
-                            context
-                                .child_by_id("add-item-button")
-                                .unwrap()
-                                .set("enabled", false);
+                            ctx.child("add-item-button").set("enabled", false);
                         }
                     }
                 }
                 Action::RemoveItem => {
                     let len = self.list.borrow().len();
                     self.list.borrow_mut().remove(len - 1);
-                    context.child_by_id("items").unwrap().set("count", len - 1);
+                    ctx.child("items").set("count", len - 1);
 
                     if len == 1 {
-                        context
-                            .child_by_id("remove-item-button")
-                            .unwrap()
-                            .set("enabled", false);
+                        ctx.child("remove-item-button").set("enabled", false);
                     }
 
                     if len < 6 {
-                        context
-                            .child_by_id("add-item-button")
-                            .unwrap()
-                            .set("enabled", true);
+                        ctx.child("add-item-button").set("enabled", true);
                     }
                 }
                 Action::IncrementCounter => {
                     self.counter.set(self.counter.get() + 1);
-                    context.widget().set(
+                    ctx.widget().set(
                         "result",
                         String16::from(format!("Button count: {}", self.counter.get())),
                     );
@@ -108,29 +96,23 @@ impl State for MainViewState {
         }
     }
 
-    fn update_post_layout(&self, context: &mut Context<'_>) {
+    fn update_post_layout(&self, ctx: &mut Context<'_>) {
         let mut selection_string = "Selected:".to_string();
 
-        for index in &context
-            .widget()
-            .get::<SelectedIndices>("selected_indices")
-            .0
-        {
+        for index in &ctx.widget().get::<SelectedIndices>("selected_indices").0 {
             selection_string = format!("{} {}", selection_string, index);
         }
 
-        context
-            .child_by_id("selection")
-            .unwrap()
+        ctx.child("selection")
             .set("text", String16::from(selection_string));
     }
 }
 
-fn create_header(context: &mut BuildContext, text: &str) -> Entity {
+fn create_header(ctx: &mut BuildContext, text: &str) -> Entity {
     TextBlock::create()
         .text(text)
         .selector(Selector::new().with("text-block").class("h1"))
-        .build(context)
+        .build(ctx)
 }
 
 widget!(
@@ -141,7 +123,7 @@ widget!(
 );
 
 impl Template for MainView {
-    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let state = self.clone_state();
         let add_item_state = self.clone_state();
         let remove_item_state = self.clone_state();
@@ -169,7 +151,7 @@ impl Template for MainView {
                         Stack::create()
                             .attach(Grid::column(0))
                             // Column 0
-                            .child(create_header(context, "Buttons"))
+                            .child(create_header(ctx, "Buttons"))
                             .child(
                                 Button::create()
                                     .text("Button")
@@ -181,7 +163,7 @@ impl Template for MainView {
                                         state.action(Action::IncrementCounter);
                                         true
                                     })
-                                    .build(context),
+                                    .build(ctx),
                             )
                             .child(
                                 Button::create()
@@ -191,7 +173,7 @@ impl Template for MainView {
                                     .icon(material_font_icons::CHECK_FONT_ICON)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(2))
-                                    .build(context),
+                                    .build(ctx),
                             )
                             .child(
                                 ToggleButton::create()
@@ -199,7 +181,7 @@ impl Template for MainView {
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(3))
-                                    .build(context),
+                                    .build(ctx),
                             )
                             .child(
                                 CheckBox::create()
@@ -207,21 +189,21 @@ impl Template for MainView {
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(4))
-                                    .build(context),
+                                    .build(ctx),
                             )
                             .child(
                                 Switch::create()
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(5))
-                                    .build(context),
+                                    .build(ctx),
                             )
-                            .build(context),
+                            .build(ctx),
                     )
                     .child(
                         Stack::create()
                             .attach(Grid::column(2))
-                            .child(create_header(context, "Text"))
+                            .child(create_header(ctx, "Text"))
                             .child(
                                 TextBlock::create()
                                     .selector(Selector::new().class("body"))
@@ -229,7 +211,7 @@ impl Template for MainView {
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(1))
-                                    .build(context),
+                                    .build(ctx),
                             )
                             .child(
                                 TextBox::create()
@@ -238,7 +220,7 @@ impl Template for MainView {
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
-                                    .build(context),
+                                    .build(ctx),
                             )
                             .child(
                                 TextBox::create()
@@ -247,9 +229,9 @@ impl Template for MainView {
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
-                                    .build(context),
+                                    .build(ctx),
                             )
-                            .build(context),
+                            .build(ctx),
                     )
                     .child(
                         Grid::create()
@@ -277,7 +259,7 @@ impl Template for MainView {
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(0))
-                                    .build(context),
+                                    .build(ctx),
                             )
                             .child(
                                 ItemsWidget::create()
@@ -294,7 +276,7 @@ impl Template for MainView {
                                             .build(bc)
                                     })
                                     .count(list_count)
-                                    .build(context),
+                                    .build(ctx),
                             )
                             .child(
                                 Button::create()
@@ -307,7 +289,7 @@ impl Template for MainView {
                                     .min_width(0.0)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(2))
-                                    .build(context),
+                                    .build(ctx),
                             )
                             .child(
                                 Button::create()
@@ -320,7 +302,7 @@ impl Template for MainView {
                                     .min_width(0.0)
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
-                                    .build(context),
+                                    .build(ctx),
                             )
                             .child(
                                 ListView::create()
@@ -340,7 +322,7 @@ impl Template for MainView {
                                             .build(bc)
                                     })
                                     .count(selection_list_count)
-                                    .build(context),
+                                    .build(ctx),
                             )
                             .child(
                                 // todo: wrong text width????
@@ -351,11 +333,11 @@ impl Template for MainView {
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(4))
                                     .text("Selected:")
-                                    .build(context),
+                                    .build(ctx),
                             )
-                            .build(context),
+                            .build(ctx),
                     )
-                    .build(context),
+                    .build(ctx),
             )
     }
 }

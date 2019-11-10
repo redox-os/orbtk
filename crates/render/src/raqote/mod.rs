@@ -10,7 +10,7 @@ pub use self::image::Image;
 mod font;
 mod image;
 
-/// The RenderContext2D trait, provides the rendering context. It is used for drawing shapes, text, images, and other objects.
+/// The RenderContext2D trait, provides the rendering ctx. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
     draw_target: raqote::DrawTarget,
     path: raqote::Path,
@@ -25,7 +25,7 @@ pub struct RenderContext2D {
 }
 
 impl RenderContext2D {
-    /// Creates a new render context 2d.
+    /// Creates a new render ctx 2d.
     pub fn new(width: f64, height: f64) -> Self {
         RenderContext2D {
             draw_target: raqote::DrawTarget::new(width as i32, height as i32),
@@ -65,7 +65,7 @@ impl RenderContext2D {
         self.fill();
     }
 
-    /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other context settings.
+    /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other ctx settings.
     pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
         self.rect(x, y, width, height);
         self.stroke();

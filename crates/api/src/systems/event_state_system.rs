@@ -310,7 +310,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                 let mut skip = false;
 
                 {
-                    let mut context = Context::new(
+                    let mut ctx = Context::new(
                         (current_node, ecm),
                         &mut shell,
                         &theme,
@@ -326,7 +326,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
 
                     if !skip {
                         if let Some(state) = self.states.borrow().get(&current_node) {
-                            state.update(&mut context);
+                            state.update(&mut ctx);
                         }
                     }
                 }

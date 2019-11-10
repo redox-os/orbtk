@@ -44,7 +44,7 @@ impl Application {
         let running = Rc::new(Cell::new(true));
 
         let window = {
-            let mut context = BuildContext::new(
+            let mut ctx = BuildContext::new(
                 world.entity_component_manager(),
                 render_objects.clone(),
                 layouts.clone(),
@@ -52,7 +52,7 @@ impl Application {
                 states.clone(),
             );
 
-            create_fn(&mut context)
+            create_fn(&mut ctx)
         };
 
         {

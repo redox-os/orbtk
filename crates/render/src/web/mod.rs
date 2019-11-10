@@ -11,7 +11,7 @@ pub use self::image::*;
 
 mod image;
 
-/// The RenderContext2D trait, provides the rendering context. It is used for drawing shapes, text, images, and other objects.
+/// The RenderContext2D trait, provides the rendering ctx. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
     canvas_render_context_2_d: CanvasRenderingContext2d,
     font_config: FontConfig,
@@ -21,7 +21,7 @@ pub struct RenderContext2D {
 }
 
 impl RenderContext2D {
-    /// Creates a new render context with the given width and height.
+    /// Creates a new render ctx with the given width and height.
     pub fn new(width: f64, height: f64) -> Self {
         let canvas: CanvasElement = document()
             .create_element("canvas")
@@ -32,20 +32,20 @@ impl RenderContext2D {
         canvas.set_width(width as u32);
         canvas.set_height(height as u32);
 
-        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
+        let ctx: CanvasRenderingContext2d = canvas.get_context().unwrap();
 
         let export_data = vec![0; (width * height) as usize];
-        context.set_text_baseline(stdweb::web::TextBaseline::Middle);
+        ctx.set_text_baseline(stdweb::web::TextBaseline::Middle);
         RenderContext2D {
             config: RenderConfig::default(),
             saved_config: None,
-            canvas_render_context_2_d: context,
+            canvas_render_context_2_d: ctx,
             font_config: FontConfig::default(),
             export_data,
         }
     }
 
-    /// Creates a new render context 2d.
+    /// Creates a new render ctx 2d.
     pub fn from_context(canvas_render_context_2_d: CanvasRenderingContext2d) -> Self {
         let export_data = vec![
             0;
@@ -72,7 +72,7 @@ impl RenderContext2D {
             .fill_rect(x, y, width, height);
     }
 
-    /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other context settings.
+    /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other ctx settings.
     pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
         self.stroke_style(&self.config.fill_style);
         self.canvas_render_context_2_d
@@ -175,7 +175,7 @@ impl RenderContext2D {
 
     // Draw image
 
-     /// Draws a render target.
+    /// Draws a render target.
     pub fn draw_render_target(&mut self, render_target: &RenderTarget, x: f64, y: f64) {
         // todo
     }
@@ -257,9 +257,8 @@ impl RenderContext2D {
         canvas.set_width(width as u32);
         canvas.set_height(height as u32);
 
-        let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
-        context
-            .put_image_data(image_data, 0.0, 0.0)
+        let ctx: CanvasRenderingContext2d = canvas.get_context().unwrap();
+        ctx.put_image_data(image_data, 0.0, 0.0)
             .expect("Could no draw pipeline.");
 
         // todo: use await after stdweb futures are stable

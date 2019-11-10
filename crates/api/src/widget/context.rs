@@ -54,17 +54,138 @@ impl<'a> Context<'a> {
         }
     }
 
+    // -- Widgets --
+
     /// Returns a specific widget.
     pub fn get_widget(&mut self, entity: Entity) -> WidgetContainer<'_> {
         WidgetContainer::new(entity, self.ecm, self.theme)
     }
 
-    /// Returns the widget of the current state context.
+    /// Returns the widget of the current state ctx.
     pub fn widget(&mut self) -> WidgetContainer<'_> {
         self.get_widget(self.entity)
     }
 
-    /// Returns the current build context.
+    /// Returns the window widget.
+    pub fn window(&mut self) -> WidgetContainer<'_> {
+        let root = self.ecm.entity_store().root;
+        self.get_widget(root)
+    }
+
+    /// Returns a child of the widget of the current state referenced by css `id`.
+    /// If the no id is defined its panics.
+    pub fn child<'b>(&mut self, id: impl Into<&'b str>) -> WidgetContainer<'_> {
+        self.entity_of_child(id)
+            .map(move |child| self.get_widget(child))
+            .unwrap()
+    }
+
+    /// Returns a child of the widget of the current state referenced by css `id`.
+    /// If the no id is defined None will returned.
+    pub fn try_child<'b>(&mut self, id: impl Into<&'b str>) -> Option<WidgetContainer<'_>> {
+        self.entity_of_child(id)
+            .map(move |child| self.get_widget(child))
+    }
+
+    /// Returns the parent of the current widget.
+    /// Panics if the parent does not exists.
+    pub fn parent(&mut self) -> WidgetContainer<'_> {
+        let entity = self.ecm.entity_store().parent[&self.entity].unwrap();
+        self.get_widget(entity)
+    }
+
+    // Returns the parent of the current widget.
+    /// If the current widget is the root None will be returned.
+    pub fn try_parent(&mut self) -> Option<WidgetContainer<'_>> {
+        if self.ecm.entity_store().parent[&self.entity] == None {
+            return None;
+        }
+
+        let entity = self.ecm.entity_store().parent[&self.entity].unwrap();
+
+        Some(self.get_widget(entity))
+    }
+
+    /// Returns a parent of the widget of the current state referenced by css `id`.
+    /// Panics if a parent with the given id could not be found
+    pub fn parent_from_id<'b>(&mut self, id: impl Into<&'b str>) -> WidgetContainer<'_> {
+        let mut current = self.entity;
+        let id = id.into();
+
+        while let Some(parent) = self.ecm.entity_store().parent[&current] {
+            if let Ok(selector) = self
+                .ecm
+                .component_store()
+                .get::<Selector>("selector", parent)
+            {
+                if let Some(parent_id) = &selector.id {
+                    if parent_id == id {
+                        return self.get_widget(parent);
+                    }
+                }
+            }
+
+            current = parent;
+        }
+
+        panic!(
+            "Parent with id: {}, of child with entity: {} could not be found",
+            id, self.entity.0
+        );
+    }
+
+    /// Returns a parent of the widget of the current state referenced by css `id`.
+    /// If the no id is defined None will returned.
+    pub fn try_parent_from_id<'b>(
+        &mut self,
+        id: impl Into<&'b str>,
+    ) -> Option<WidgetContainer<'_>> {
+        let mut current = self.entity;
+        let id = id.into();
+
+        while let Some(parent) = self.ecm.entity_store().parent[&current] {
+            if let Ok(selector) = self
+                .ecm
+                .component_store()
+                .get::<Selector>("selector", parent)
+            {
+                if let Some(parent_id) = &selector.id {
+                    if parent_id == id {
+                        return Some(self.get_widget(parent));
+                    }
+                }
+            }
+
+            current = parent;
+        }
+
+        None
+    }
+
+    /// Returns the child of the current widget.
+    /// Panics if a child on the given index could not be found.
+    pub fn child_from_index(&mut self, index: usize) -> WidgetContainer<'_> {
+        let entity = self.ecm.entity_store().children[&self.entity][index];
+        self.get_widget(entity)
+    }
+
+    /// Returns the child of the current widget.
+    /// If the index is out of the children index bounds or the widget has no children None will be returned.
+    pub fn try_child_from_index(&mut self, index: usize) -> Option<WidgetContainer<'_>> {
+        if index >= self.ecm.entity_store().children[&self.entity].len() {
+            return None;
+        }
+
+        let entity = self.ecm.entity_store().children[&self.entity][index];
+
+        Some(self.get_widget(entity))
+    }
+
+    // -- Widgets --
+
+    // -- Manipulation --
+
+    /// Returns the current build ctx.
     pub fn build_context(&mut self) -> BuildContext {
         BuildContext::new(
             self.ecm,
@@ -101,11 +222,7 @@ impl<'a> Context<'a> {
         }
     }
 
-    /// Returns the window widget.
-    pub fn window(&mut self) -> WidgetContainer<'_> {
-        let root = self.ecm.entity_store().root;
-        self.get_widget(root)
-    }
+    // -- Manipulation --
 
     /// Returns the entity id of an child by the given name.
     pub fn entity_of_child<'b>(&mut self, id: impl Into<&'b str>) -> Option<Entity> {
@@ -139,13 +256,6 @@ impl<'a> Context<'a> {
         None
     }
 
-    /// Returns a child of the widget of the current state referenced by css `id`.
-    /// If the no id is defined None will returned.
-    pub fn child_by_id<'b>(&mut self, id: impl Into<&'b str>) -> Option<WidgetContainer<'_>> {
-        self.entity_of_child(id)
-            .map(move |child| self.get_widget(child))
-    }
-
     /// Returns the entity of the parent referenced by css `element`.
     /// If the no id is defined None will returned.
     pub fn parent_entity_by_element<'b>(&mut self, element: impl Into<&'b str>) -> Option<Entity> {
@@ -176,64 +286,9 @@ impl<'a> Context<'a> {
         None
     }
 
-    /// Returns a parent of the widget of the current state referenced by css `id`.
-    /// If the no id is defined None will returned.
-    pub fn parent_by_id<'b>(&mut self, id: impl Into<&'b str>) -> Option<WidgetContainer<'_>> {
-        let mut current = self.entity;
-        let id = id.into();
-
-        while let Some(parent) = self.ecm.entity_store().parent[&current] {
-            if let Ok(selector) = self
-                .ecm
-                .component_store()
-                .get::<Selector>("selector", parent)
-            {
-                if let Some(parent_id) = &selector.id {
-                    if parent_id == id {
-                        return Some(self.get_widget(parent));
-                    }
-                }
-            }
-
-            current = parent;
-        }
-
-        None
-    }
-
-    /// Returns the child of the given widget.
-    /// If the index is out of the children index bounds or the widget has no children None will be returned.
-    pub fn child_of_parent(&mut self, parent: Entity, index: usize) -> Option<WidgetContainer<'_>> {
-        if index >= self.ecm.entity_store().children[&parent].len() {
-            return None;
-        }
-
-        let entity = self.ecm.entity_store().children[&parent][index];
-
-        Some(self.get_widget(entity))
-    }
-
-    /// Returns the child of the current widget.
-    /// If the index is out of the children index bounds or the widget has no children None will be returned.
-    pub fn widget_from_child_index(&mut self, index: usize) -> Option<WidgetContainer<'_>> {
-        self.child_of_parent(self.entity, index)
-    }
-
     /// Returns the entity of the parent.
     pub fn entity_of_parent(&mut self) -> Option<Entity> {
         self.ecm.entity_store().parent[&self.entity]
-    }
-
-    /// Returns the parent of the current widget.
-    /// If the current widget is the root None will be returned.
-    pub fn parent_widget(&mut self) -> Option<WidgetContainer<'_>> {
-        if self.ecm.entity_store().parent[&self.entity] == None {
-            return None;
-        }
-
-        let entity = self.ecm.entity_store().parent[&self.entity].unwrap();
-
-        Some(self.get_widget(entity))
     }
 
     /// Returns the child index of the current entity.
@@ -295,7 +350,7 @@ impl<'a> Context<'a> {
             .register_event(event, entity);
     }
 
-    /// Returns a mutable reference of the 2d render context.
+    /// Returns a mutable reference of the 2d render ctx.
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
         self.window_shell.render_context_2_d()
     }

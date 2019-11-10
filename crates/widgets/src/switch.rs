@@ -16,25 +16,21 @@ impl SwitchState {
 }
 
 impl State for SwitchState {
-    fn update(&self, context: &mut Context<'_>) {
-        if *context.widget().get::<bool>("selected") == self.selected.get() {
+    fn update(&self, ctx: &mut Context<'_>) {
+        if *ctx.widget().get::<bool>("selected") == self.selected.get() {
             return;
         }
 
-        context.widget().set("selected", self.selected.get());
+        ctx.widget().set("selected", self.selected.get());
 
-        let element = context
-            .widget()
-            .clone::<Selector>("selector")
-            .element
-            .unwrap();
+        let element = ctx.widget().clone::<Selector>("selector").element.unwrap();
 
-        if let Some(parent) = context.parent_entity_by_element(&*element) {
-            context.get_widget(parent).update_theme_by_state(false);
+        if let Some(parent) = ctx.parent_entity_by_element(&*element) {
+            ctx.get_widget(parent).update_theme_by_state(false);
         }
 
         {
-            let mut switch_toggle = context.child_by_id("switch_toggle").unwrap();
+            let mut switch_toggle = ctx.child("switch_toggle");
 
             if self.selected.get() {
                 switch_toggle.set("horizontal_alignment", Alignment::from("end"));
@@ -47,9 +43,9 @@ impl State for SwitchState {
             switch_toggle.update_theme_by_state(true);
         }
 
-        let entity = context.entity_of_child("switch_toggle").unwrap();
+        let entity = ctx.entity_of_child("switch_toggle").unwrap();
 
-        context.get_widget(entity).update_theme_by_state(false);
+        ctx.get_widget(entity).update_theme_by_state(false);
     }
 }
 
@@ -85,7 +81,7 @@ widget!(
 );
 
 impl Template for Switch {
-    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let state = self.clone_state();
         self.name("Switch")
             .selector("switch")
@@ -116,16 +112,16 @@ impl Template for Switch {
                             .padding(id)
                             .child(
                                 Grid::create()
-                                    .child(Container::create().size(24.0, 24.0).build(context))
+                                    .child(Container::create().size(24.0, 24.0).build(ctx))
                                     .border_radius(1.0)
                                     .selector(Selector::from("switch-toggle").id("switch_toggle"))
                                     .vertical_alignment("center")
                                     .horizontal_alignment("start")
-                                    .build(context),
+                                    .build(ctx),
                             )
-                            .build(context),
+                            .build(ctx),
                     )
-                    .build(context),
+                    .build(ctx),
             )
     }
 }

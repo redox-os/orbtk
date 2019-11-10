@@ -38,16 +38,12 @@ impl TextBoxState {
         }
 
         let text = ctx.widget().clone::<String16>("text");
-        let mut current_selection = *ctx
-            .child_by_id("cursor")
-            .unwrap()
-            .get::<TextSelection>("text_selection");
+        let mut current_selection = *ctx.child("cursor").get::<TextSelection>("text_selection");
 
         match key_event.key {
             Key::Left => {
                 if let Some(selection) = ctx
-                    .child_by_id("cursor")
-                    .unwrap()
+                    .child("cursor")
                     .try_get_mut::<TextSelection>("text_selection")
                 {
                     selection.start_index =
@@ -56,8 +52,7 @@ impl TextBoxState {
             }
             Key::Right => {
                 if let Some(selection) = ctx
-                    .child_by_id("cursor")
-                    .unwrap()
+                    .child("cursor")
                     .try_get_mut::<TextSelection>("text_selection")
                 {
                     selection.start_index = (current_selection.start_index + 1).min(text.len());
@@ -74,8 +69,7 @@ impl TextBoxState {
                     }
 
                     if let Some(selection) = ctx
-                        .child_by_id("cursor")
-                        .unwrap()
+                        .child("cursor")
                         .try_get_mut::<TextSelection>("text_selection")
                     {
                         selection.start_index = current_selection.start_index;
@@ -95,14 +89,12 @@ impl TextBoxState {
                 if key_event.text.is_empty() {
                     return;
                 }
-                
                 ctx.widget()
                     .get_mut::<String16>("text")
                     .insert_str(current_selection.start_index, key_event.text.as_str());
 
                 if let Some(selection) = ctx
-                    .child_by_id("cursor")
-                    .unwrap()
+                    .child("cursor")
                     .try_get_mut::<TextSelection>("text_selection")
                 {
                     selection.start_index =
@@ -131,9 +123,7 @@ impl TextBoxState {
 
         ctx.widget().set("focused", true);
         ctx.widget().update_theme_by_state(false);
-        ctx.child_by_id("cursor")
-            .unwrap()
-            .update_theme_by_state(false);
+        ctx.child("cursor").update_theme_by_state(false);
     }
 }
 
@@ -154,14 +144,15 @@ impl State for TextBoxState {
         ctx.widget().update_theme_by_state(false);
     }
 
-    fn update_post_layout(&self, context: &mut Context<'_>) {
+    fn update_post_layout(&self, ctx: &mut Context<'_>) {
         let mut cursor_x_delta = 0.0;
         let mut scroll_viewer_width = 0.0;
 
         {
-            let scroll_viewer = context.child_by_id("scroll_viewer");
-
-            if let Some(bounds) = scroll_viewer.unwrap().try_get_mut::<Rectangle>("bounds") {
+            if let Some(bounds) = ctx
+                .child("scroll_viewer")
+                .try_get_mut::<Rectangle>("bounds")
+            {
                 scroll_viewer_width = bounds.width();
             }
         }
@@ -171,7 +162,7 @@ impl State for TextBoxState {
         // Adjust offset of text and cursor if cursor position is out of bounds
 
         {
-            let mut cursor = context.child_by_id("cursor").unwrap();
+            let mut cursor = ctx.child("cursor");
 
             if let Some(margin) = cursor.try_get_mut::<Thickness>("margin") {
                 if margin.left() < 0.0 || margin.left() > scroll_viewer_width {
@@ -188,14 +179,12 @@ impl State for TextBoxState {
 
         if cursor_x_delta != 0.0 {
             {
-                let text_block = context.child_by_id("text_block");
-
-                if let Some(bounds) = text_block.unwrap().try_get_mut::<Rectangle>("bounds") {
+                if let Some(bounds) = ctx.child("text_block").try_get_mut::<Rectangle>("bounds") {
                     bounds.set_x(bounds.x() + cursor_x_delta);
                 }
             }
 
-            if let Some(scroll_offset) = context.widget().try_get_mut::<Point>("scroll_offset") {
+            if let Some(scroll_offset) = ctx.widget().try_get_mut::<Point>("scroll_offset") {
                 scroll_offset.x += cursor_x_delta;
             }
         }
@@ -255,7 +244,7 @@ widget!(
 );
 
 impl Template for TextBox {
-    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let state = self.clone_state();
         let mouse_state = self.clone_state();
 
@@ -305,9 +294,9 @@ impl Template for TextBox {
                                                     .water_mark(id)
                                                     .font(id)
                                                     .font_size(id)
-                                                    .build(context),
+                                                    .build(ctx),
                                             )
-                                            .build(context),
+                                            .build(ctx),
                                     )
                                     .child(
                                         Cursor::create()
@@ -320,13 +309,13 @@ impl Template for TextBox {
                                             .scroll_offset(id)
                                             .focused(id)
                                             .text_selection(id)
-                                            .build(context),
+                                            .build(ctx),
                                     )
-                                    .build(context),
+                                    .build(ctx),
                             )
-                            .build(context),
+                            .build(ctx),
                     )
-                    .build(context),
+                    .build(ctx),
             )
             .on_key_down(move |event: KeyEvent| -> bool {
                 state.action(TextBoxAction::Key(event));

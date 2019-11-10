@@ -27,7 +27,7 @@ pub use self::render_target::*;
 
 mod render_target;
 
-/// Defines the current configuration of the render context.
+/// Defines the current configuration of the render ctx.
 #[derive(Debug, Clone)]
 pub struct RenderConfig {
     pub fill_style: utils::Brush,
@@ -70,7 +70,7 @@ impl ToString for FontConfig {
 }
 
 pub trait RenderPipeline {
-    /// Draws the context of the pipeline.
+    /// Draws the ctx of the pipeline.
     fn draw(&self, image: &mut RenderTarget);
 }
 
@@ -85,7 +85,7 @@ pub trait Pipeline: RenderPipeline + Any + Send {
     /// Clones self as box.
     fn clone_box(&self) -> Box<dyn Pipeline>;
 
-    /// Draws the context of the pipeline.
+    /// Draws the ctx of the pipeline.
     fn draw_pipeline(&self, image: &mut RenderTarget) {
         self.draw(image);
     }

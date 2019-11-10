@@ -35,8 +35,8 @@ impl InitSystem {
     }
 
     // Read all initial data from css
-    fn read_init_from_theme(&self, context: &mut Context) {
-        context.widget().update_theme_by_state(true);
+    fn read_init_from_theme(&self, ctx: &mut Context) {
+        ctx.widget().update_theme_by_state(true);
     }
 }
 
@@ -71,7 +71,7 @@ impl System<Tree, StringComponentStore> for InitSystem {
             self.init_id(current_node, ecm.component_store_mut(), root);
 
             {
-                let mut context = Context::new(
+                let mut ctx = Context::new(
                     (current_node, ecm),
                     window_shell,
                     &theme,
@@ -82,10 +82,10 @@ impl System<Tree, StringComponentStore> for InitSystem {
                 );
 
                 if let Some(state) = self.states.borrow().get(&current_node) {
-                    state.init(&mut context);
+                    state.init(&mut ctx);
                 }
 
-                self.read_init_from_theme(&mut context);
+                self.read_init_from_theme(&mut ctx);
             }
 
             let mut it = ecm.entity_store().start_node(current_node).into_iter();

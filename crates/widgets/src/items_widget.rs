@@ -15,23 +15,23 @@ impl Into<Rc<dyn State>> for ItemsWidgetState {
 }
 
 impl State for ItemsWidgetState {
-    fn update(&self, context: &mut Context<'_>) {
-        let count = context.widget().clone_or_default::<usize>("count");
+    fn update(&self, ctx: &mut Context<'_>) {
+        let count = ctx.widget().clone_or_default::<usize>("count");
 
         if count != self.count.get() {
             if let Some(builder) = &*self.builder.borrow() {
-                if let Some(items_panel) = context.entity_of_child("items_panel") {
-                    context.clear_children_of(items_panel);
+                if let Some(items_panel) = ctx.entity_of_child("items_panel") {
+                    ctx.clear_children_of(items_panel);
 
                     for i in 0..count {
                         let child = {
-                            let mut build_context = context.build_context();
+                            let mut build_context = ctx.build_context();
                             let child = builder(&mut build_context, i);
                             build_context.append_child(items_panel, child);
                             child
                         };
 
-                        context.get_widget(child).update_properties_by_theme();
+                        ctx.get_widget(child).update_properties_by_theme();
                     }
                 }
             }
@@ -83,7 +83,7 @@ impl ItemsWidget {
 }
 
 impl Template for ItemsWidget {
-    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ItemsWidget")
             .selector("items-widget")
             .background(colors::LYNCH_COLOR)
@@ -103,9 +103,9 @@ impl Template for ItemsWidget {
                         Stack::create()
                             .selector(Selector::default().id("items_panel"))
                             .orientation(id)
-                            .build(context),
+                            .build(ctx),
                     )
-                    .build(context),
+                    .build(ctx),
             )
     }
 }

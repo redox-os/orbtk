@@ -43,7 +43,7 @@ impl MainViewState {
         self.action.set(action.into());
     }
 
-    fn calculate(&self, context: &mut Context) {
+    fn calculate(&self, ctx: &mut Context) {
         let mut result = 0.0;
         if let Some(operator) = self.operator.get() {
             if let Some(left_side) = self.left_side.get() {
@@ -67,25 +67,19 @@ impl MainViewState {
             }
         }
 
-        context
-            .widget()
-            .set("text", String16::from(result.to_string()));
+        ctx.widget().set("text", String16::from(result.to_string()));
         self.left_side.set(Some(result));
         self.right_side.set(None);
     }
 }
 
 impl State for MainViewState {
-    fn update(&self, context: &mut Context) {
+    fn update(&self, ctx: &mut Context) {
         if let Some(action) = self.action.get() {
             match action {
                 Action::Digit(digit) => {
                     self.input.borrow_mut().push(digit);
-                    context
-                        .child_by_id("input")
-                        .unwrap()
-                        .get_mut::<String16>("text")
-                        .push(digit);
+                    ctx.child("input").get_mut::<String16>("text").push(digit);
                 }
                 Action::Operator(operator) => match operator {
                     'C' => {
@@ -93,26 +87,18 @@ impl State for MainViewState {
                         self.left_side.set(None);
                         self.operator.set(None);
                         self.right_side.set(None);
-                        context.widget().get_mut::<String16>("text").clear();
-                        context
-                            .child_by_id("input")
-                            .unwrap()
-                            .get_mut::<String16>("text")
-                            .clear()
+                        ctx.widget().get_mut::<String16>("text").clear();
+                        ctx.child("input").get_mut::<String16>("text").clear()
                     }
                     '=' => {
                         self.right_side
                             .set(Some(self.input.borrow().parse().unwrap_or(0.0)));
-                        self.calculate(context);
+                        self.calculate(ctx);
                         self.input.borrow_mut().clear();
                         self.left_side.set(None);
                         self.operator.set(None);
                         self.right_side.set(None);
-                        context
-                            .child_by_id("input")
-                            .unwrap()
-                            .get_mut::<String16>("text")
-                            .clear()
+                        ctx.child("input").get_mut::<String16>("text").clear()
                     }
                     _ => {
                         if self.input.borrow().is_empty() {
@@ -124,12 +110,10 @@ impl State for MainViewState {
                         } else {
                             self.right_side
                                 .set(Some(self.input.borrow().parse().unwrap_or(0.0)));
-                            self.calculate(context);
+                            self.calculate(ctx);
                         }
 
-                        context
-                            .child_by_id("input")
-                            .unwrap()
+                        ctx.child("input")
                             .get_mut::<String16>("text")
                             .push(operator);
                         self.input.borrow_mut().clear();
@@ -154,7 +138,7 @@ fn get_button_selector(primary: bool) -> Selector {
 }
 
 fn generate_digit_button(
-    context: &mut BuildContext,
+    ctx: &mut BuildContext,
     state: &Rc<MainViewState>,
     sight: char,
     primary: bool,
@@ -175,11 +159,11 @@ fn generate_digit_button(
         .attach(Grid::column(column))
         .attach(Grid::row(row))
         .attach(Grid::column_span(column_span))
-        .build(context)
+        .build(ctx)
 }
 
 fn generate_operation_button(
-    context: &mut BuildContext,
+    ctx: &mut BuildContext,
     state: &Rc<MainViewState>,
     sight: char,
     primary: bool,
@@ -199,7 +183,7 @@ fn generate_operation_button(
         .attach(Grid::column(column))
         .attach(Grid::column_span(column_span))
         .attach(Grid::row(row))
-        .build(context)
+        .build(ctx)
 }
 
 widget!(MainView<MainViewState> {
@@ -207,7 +191,7 @@ widget!(MainView<MainViewState> {
 });
 
 impl Template for MainView {
-    fn template(self, id: Entity, context: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let state = self.clone_state();
 
         self.name("MainView")
@@ -236,9 +220,9 @@ impl Template for MainView {
                                                         Selector::from("text-block").id("input"),
                                                     )
                                                     .vertical_alignment("start")
-                                                    .build(context),
+                                                    .build(ctx),
                                             )
-                                            .build(context),
+                                            .build(ctx),
                                     )
                                     .child(
                                         TextBlock::create()
@@ -246,11 +230,11 @@ impl Template for MainView {
                                             .text(id)
                                             .vertical_alignment("end")
                                             .horizontal_alignment("end")
-                                            .build(context),
+                                            .build(ctx),
                                     )
-                                    .build(context),
+                                    .build(ctx),
                             )
-                            .build(context),
+                            .build(ctx),
                     )
                     .child(
                         Container::create()
@@ -285,65 +269,43 @@ impl Template for MainView {
                                     )
                                     // row 0
                                     .child(generate_operation_button(
-                                        context, &state, 'C', false, 0, 5, 0,
+                                        ctx, &state, 'C', false, 0, 5, 0,
                                     ))
                                     .child(generate_operation_button(
-                                        context, &state, '/', true, 6, 3, 0,
+                                        ctx, &state, '/', true, 6, 3, 0,
                                     ))
                                     // row 2
-                                    .child(generate_digit_button(
-                                        context, &state, '7', false, 0, 1, 2,
-                                    ))
-                                    .child(generate_digit_button(
-                                        context, &state, '8', false, 2, 1, 2,
-                                    ))
-                                    .child(generate_digit_button(
-                                        context, &state, '9', false, 4, 1, 2,
-                                    ))
+                                    .child(generate_digit_button(ctx, &state, '7', false, 0, 1, 2))
+                                    .child(generate_digit_button(ctx, &state, '8', false, 2, 1, 2))
+                                    .child(generate_digit_button(ctx, &state, '9', false, 4, 1, 2))
                                     .child(generate_operation_button(
-                                        context, &state, '*', true, 6, 1, 2,
+                                        ctx, &state, '*', true, 6, 1, 2,
                                     ))
                                     // row 4
-                                    .child(generate_digit_button(
-                                        context, &state, '4', false, 0, 1, 4,
-                                    ))
-                                    .child(generate_digit_button(
-                                        context, &state, '5', false, 2, 1, 4,
-                                    ))
-                                    .child(generate_digit_button(
-                                        context, &state, '6', false, 4, 1, 4,
-                                    ))
+                                    .child(generate_digit_button(ctx, &state, '4', false, 0, 1, 4))
+                                    .child(generate_digit_button(ctx, &state, '5', false, 2, 1, 4))
+                                    .child(generate_digit_button(ctx, &state, '6', false, 4, 1, 4))
                                     .child(generate_operation_button(
-                                        context, &state, '-', true, 6, 1, 4,
+                                        ctx, &state, '-', true, 6, 1, 4,
                                     ))
                                     // row 6
-                                    .child(generate_digit_button(
-                                        context, &state, '1', false, 0, 1, 6,
-                                    ))
-                                    .child(generate_digit_button(
-                                        context, &state, '2', false, 2, 1, 6,
-                                    ))
-                                    .child(generate_digit_button(
-                                        context, &state, '3', false, 4, 1, 6,
-                                    ))
+                                    .child(generate_digit_button(ctx, &state, '1', false, 0, 1, 6))
+                                    .child(generate_digit_button(ctx, &state, '2', false, 2, 1, 6))
+                                    .child(generate_digit_button(ctx, &state, '3', false, 4, 1, 6))
                                     .child(generate_operation_button(
-                                        context, &state, '+', true, 6, 1, 6,
+                                        ctx, &state, '+', true, 6, 1, 6,
                                     ))
                                     // row 8
-                                    .child(generate_digit_button(
-                                        context, &state, '0', false, 0, 3, 8,
-                                    ))
-                                    .child(generate_digit_button(
-                                        context, &state, '.', false, 4, 1, 8,
-                                    ))
+                                    .child(generate_digit_button(ctx, &state, '0', false, 0, 3, 8))
+                                    .child(generate_digit_button(ctx, &state, '.', false, 4, 1, 8))
                                     .child(generate_operation_button(
-                                        context, &state, '=', true, 6, 1, 8,
+                                        ctx, &state, '=', true, 6, 1, 8,
                                     ))
-                                    .build(context),
+                                    .build(ctx),
                             )
-                            .build(context),
+                            .build(ctx),
                     )
-                    .build(context),
+                    .build(ctx),
             )
     }
 }

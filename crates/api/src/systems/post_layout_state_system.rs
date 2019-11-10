@@ -34,7 +34,7 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
             .unwrap()
             .clone();
 
-        let mut context = Context::new(
+        let mut ctx = Context::new(
             (root, ecm),
             window_shell,
             &theme,
@@ -45,17 +45,17 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
         );
 
         for (node, state) in &*self.states.borrow() {
-            context.entity = *node;
+            ctx.entity = *node;
 
-            state.update_post_layout(&mut context);
+            state.update_post_layout(&mut ctx);
 
             // Handle messages.
             {
                 // todo fix messages.
-                // for (entity, messages) in context.messages().iter() {
+                // for (entity, messages) in ctx.messages().iter() {
                 //     if let Some(state) = self.states.borrow().get(&entity) {
-                //         context.entity = *entity;
-                //         state.receive_messages(&mut context, &messages);
+                //         ctx.entity = *entity;
+                //         state.receive_messages(&mut ctx, &messages);
                 //     }
                 // }
             }

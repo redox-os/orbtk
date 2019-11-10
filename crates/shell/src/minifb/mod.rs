@@ -149,7 +149,7 @@ where
         &mut self.adapter
     }
 
-    /// Gets the render context 2D.
+    /// Gets the render ctx 2D.
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
         &mut self.render_context_2_d
     }

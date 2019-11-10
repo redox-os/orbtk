@@ -92,9 +92,9 @@ impl Into<Box<dyn RenderObject>> for RectangleRenderObject {
 }
 
 impl RenderObject for RectangleRenderObject {
-    fn render_self(&self, context: &mut Context<'_>, global_position: &Point) {
+    fn render_self(&self, ctx: &mut Context<'_>, global_position: &Point) {
         let (bounds, background, border_radius, border_thickness, border_brush) = {
-            let widget = context.widget();
+            let widget = ctx.widget();
             (
                 widget.clone::<Rectangle>("bounds"),
                 widget.get::<Brush>("background").clone(),
@@ -104,7 +104,7 @@ impl RenderObject for RectangleRenderObject {
             )
         };
 
-        // if context.entity.0 == 63 {
+        // if ctx.entity.0 == 63 {
         //     println!("Yub");
         // }
 
@@ -126,11 +126,11 @@ impl RenderObject for RectangleRenderObject {
             || border_thickness.right > 0.0
             || border_thickness.bottom > 0.0;
 
-        context.render_context_2_d().begin_path();
+        ctx.render_context_2_d().begin_path();
 
         if border_radius > 0. && has_thickness {
             self.render_rounded_bordered_rect_path(
-                context.render_context_2_d(),
+                ctx.render_context_2_d(),
                 Rectangle::new(
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
@@ -144,7 +144,7 @@ impl RenderObject for RectangleRenderObject {
             );
         } else if border_radius > 0. {
             self.render_rounded_rect_path(
-                context.render_context_2_d(),
+                ctx.render_context_2_d(),
                 global_position.x + bounds.x(),
                 global_position.y + bounds.y(),
                 bounds.width(),
@@ -152,11 +152,11 @@ impl RenderObject for RectangleRenderObject {
                 border_radius,
             );
 
-            context.render_context_2_d().set_fill_style(background);
-            context.render_context_2_d().fill();
+            ctx.render_context_2_d().set_fill_style(background);
+            ctx.render_context_2_d().fill();
         } else if has_thickness {
             self.render_bordered_rect_path(
-                context.render_context_2_d(),
+                ctx.render_context_2_d(),
                 Rectangle::new(
                     global_position.x + bounds.x(),
                     global_position.y + bounds.y(),
@@ -168,20 +168,20 @@ impl RenderObject for RectangleRenderObject {
                 border_thickness,
             );
         } else {
-            context.render_context_2_d().rect(
+            ctx.render_context_2_d().rect(
                 global_position.x + bounds.x(),
                 global_position.y + bounds.y(),
                 bounds.width(),
                 bounds.height(),
             );
-            context.render_context_2_d().set_fill_style(background);
-            context.render_context_2_d().fill();
+            ctx.render_context_2_d().set_fill_style(background);
+            ctx.render_context_2_d().fill();
         }
 
         // println!(
         //     "Rectangle render mils: {}, id: {}",
         //     now.elapsed().as_millis(),
-        //     context.entity.0
+        //     ctx.entity.0
         // );
     }
 }

@@ -18,7 +18,7 @@ impl State for ScrollIndicatorState {
         let vertical_p = bounds.height / content_bounds.height;
 
         // calculate vertical scroll bar height and position.
-        if let Some(mut vertical_scroll_bar) = ctx.child_by_id("vertical-scroll-bar") {
+        if let Some(mut vertical_scroll_bar) = ctx.try_child("vertical-scroll-bar") {
             if vertical_p < 1.0 {
                 vertical_scroll_bar.set("visibility", Visibility::from("visible"));
                 let scroll_bar_margin_bottom =
@@ -40,7 +40,7 @@ impl State for ScrollIndicatorState {
         }
 
         // calculate horizontal scroll bar width and position.
-        if let Some(mut horizontal_scroll_bar) = ctx.child_by_id("horizontal-scroll-bar") {
+        if let Some(mut horizontal_scroll_bar) = ctx.try_child("horizontal-scroll-bar") {
             if horizontal_p < 1.0 {
                 horizontal_scroll_bar.set("visibility", Visibility::from("visible"));
                 let scroll_bar_margin_right =

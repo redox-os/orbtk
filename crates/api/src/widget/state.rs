@@ -7,12 +7,12 @@ pub trait State {
     /// Init is used for initial setup.
     fn init(&self, _context: &mut Context<'_>) {}
 
-    /// Updates the state for the given `context`.
+    /// Updates the state for the given `ctx`.
     ///
     /// This update method is called before layout is calculated.
     fn update(&self, _context: &mut Context<'_>) {}
 
-    /// Updates the state for the given `context`.
+    /// Updates the state for the given `ctx`.
     ///
     /// This update method is called after layout is calculated and before rendering.
     fn update_post_layout(&self, _context: &mut Context<'_>) {}

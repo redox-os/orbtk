@@ -76,7 +76,7 @@ pub trait RenderObject: Any {
         }
 
         {
-            let mut context = Context::new(
+            let mut ctx = Context::new(
                 (entity, ecm),
                 shell,
                 &theme,
@@ -86,7 +86,7 @@ pub trait RenderObject: Any {
                 states.clone(),
             );
 
-            self.render_self(&mut context, &global_position);
+            self.render_self(&mut ctx, &global_position);
         }
 
         let mut global_pos = (0.0, 0.0);

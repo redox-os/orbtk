@@ -13,9 +13,9 @@ impl Into<Box<dyn RenderObject>> for TextRenderObject {
 }
 
 impl RenderObject for TextRenderObject {
-    fn render_self(&self, context: &mut Context<'_>, global_position: &Point) {
+    fn render_self(&self, ctx: &mut Context<'_>, global_position: &Point) {
         let (bounds, text, foreground, font, font_size) = {
-            let widget = context.widget();
+            let widget = ctx.widget();
             let text = widget.clone::<String16>("text");
 
             let txt = {
@@ -44,17 +44,17 @@ impl RenderObject for TextRenderObject {
         }
 
         if !text.is_empty() {
-            context.render_context_2_d().begin_path();
-            context.render_context_2_d().set_font_family(font);
-            context.render_context_2_d().set_font_size(font_size);
-            context.render_context_2_d().set_fill_style(foreground);
+            ctx.render_context_2_d().begin_path();
+            ctx.render_context_2_d().set_font_family(font);
+            ctx.render_context_2_d().set_font_size(font_size);
+            ctx.render_context_2_d().set_fill_style(foreground);
 
-            context.render_context_2_d().fill_text(
+            ctx.render_context_2_d().fill_text(
                 &text,
                 global_position.x + bounds.x,
                 global_position.y + bounds.y,
             );
-            context.render_context_2_d().close_path();
+            ctx.render_context_2_d().close_path();
         }
     }
 }

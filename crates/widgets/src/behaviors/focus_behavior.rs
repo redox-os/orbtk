@@ -15,28 +15,24 @@ impl FocusBehaviorState {
 }
 
 impl State for FocusBehaviorState {
-    fn update(&self, context: &mut Context<'_>) {
-        if !self.request_focus.get() || !context.widget().get::<bool>("enabled") {
+    fn update(&self, ctx: &mut Context<'_>) {
+        if !self.request_focus.get() || !ctx.widget().get::<bool>("enabled") {
             return;
         }
 
-        if let Some(old_focused_element) = context.window().get::<Global>("global").focused_widget {
-            let mut old_focused_element = context.get_widget(old_focused_element);
+        if let Some(old_focused_element) = ctx.window().get::<Global>("global").focused_widget {
+            let mut old_focused_element = ctx.get_widget(old_focused_element);
             old_focused_element.set("focused", false);
             old_focused_element.update_theme_by_state(false);
         }
 
-        context.widget().set("focused", true);
+        ctx.widget().set("focused", true);
 
-        let element = context
-            .widget()
-            .clone::<Selector>("selector")
-            .element
-            .unwrap();
+        let element = ctx.widget().clone::<Selector>("selector").element.unwrap();
 
-        if let Some(parent) = context.parent_entity_by_element(&*element) {
-            context.get_widget(parent).update_theme_by_state(false);
-            context.window().get_mut::<Global>("global").focused_widget = Some(parent);
+        if let Some(parent) = ctx.parent_entity_by_element(&*element) {
+            ctx.get_widget(parent).update_theme_by_state(false);
+            ctx.window().get_mut::<Global>("global").focused_widget = Some(parent);
         }
 
         self.request_focus.set(false);

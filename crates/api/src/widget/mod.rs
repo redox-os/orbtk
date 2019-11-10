@@ -52,7 +52,7 @@ pub trait Widget: Template {
     fn create() -> Self;
 
     /// Builds the widget and returns the template of the widget.
-    fn build(self, context: &mut BuildContext) -> Entity;
+    fn build(self, ctx: &mut BuildContext) -> Entity;
 
     /// Inerts a new event handler.
     fn insert_handler(self, handler: impl Into<Rc<dyn EventHandler>>) -> Self;

@@ -175,6 +175,15 @@ impl<'a> WidgetContainer<'a> {
             .get_mut::<P>(key, self.current_node)
             .ok()
     }
+    
+    /// Checks if the given value is equal to the given property.
+    pub fn eq<P: Component + PartialEq>(&self, key: &str, other: &P) -> bool {
+        if let Some(value) = self.try_get::<P>(key) {
+            return value.eq(other);
+        }
+
+        false
+    }
 
     /// Updates the theme by the inner state e.g. `selected` or `pressed`.
     pub fn update_theme_by_state(&mut self, force: bool) {
