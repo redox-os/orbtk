@@ -199,6 +199,7 @@ impl Template for ListViewItem {
         let state = self.clone_state();
 
         self.name("ListViewItem")
+            .min_width(64.0)
             .height(24.0)
             .selected(false)
             .pressed(false)

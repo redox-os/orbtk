@@ -22,6 +22,25 @@
       "problemMatcher": []
     },
     {
+      "label": "build release",
+      "command": "cargo",
+      "type": "shell",
+      "args": [
+        "build",
+        "--examples=minimal"
+        "--release"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "build preview",
       "command": "cargo",
       "type": "shell",
