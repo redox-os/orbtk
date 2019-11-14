@@ -39,13 +39,14 @@ where
 
 fn unicode_to_key_event(uni_char: u32) -> Option<KeyEvent> {
     let mut text = String::new();
+    let mut key = Key::Unknown;
 
-    let key = if let Some(character) = char::from_u32(uni_char) {
-        text = character.to_string();
-        Key::from(character)
-    } else {
-        Key::Unknown
-    };
+    if let Some(ch) = char::from_u32(uni_char) {
+        if !ch.is_control() {
+            text = ch.to_string();
+            key = Key::from(ch);
+        }
+    }
 
     if key == Key::Up || key == Key::Down || key == Key::Left || key == Key::Right {
         return None;
