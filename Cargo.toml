@@ -45,13 +45,13 @@ debug = ["orbtk-api/debug"]
  
 [workspace]
 members = [
-    "crates/api",
-    "crates/css-engine",
+    "crates/utils",
+    "crates/tree",
     "crates/proc-macros",
+    "crates/api",
+    "crates/css-engine", 
     "crates/render",
     "crates/shell",
     "crates/theme",
-    "crates/utils",
-    "crates/tree",
     "crates/widgets",
 ]
