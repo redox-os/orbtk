@@ -16,7 +16,9 @@ pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>
 }
 
 pub struct MouseMoveEvent {
-    pub position: Point,
+    pub x: f64,
+
+    pub y: f64,
 }
 
 impl Event for MouseMoveEvent {}
@@ -125,6 +127,30 @@ impl EventHandler for MouseUpEventHandler {
     }
 }
 
+/// Used to handle mouse down events. Could be attached to a widget.
+pub struct MouseMoveEventHandler {
+    handler: Rc<MouseHandlerFunction>,
+}
+
+impl Into<Rc<dyn EventHandler>> for MouseMoveEventHandler {
+    fn into(self) -> Rc<dyn EventHandler> {
+        Rc::new(self)
+    }
+}
+
+impl EventHandler for MouseMoveEventHandler {
+    fn handle_event(&self, event: &EventBox) -> bool {
+        event
+            .downcast_ref::<MouseMoveEvent>()
+            .ok()
+            .map_or(false, |event| (self.handler)(Point::new(event.x, event.y)))
+    }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<MouseMoveEvent>()
+    }
+}
+
 pub struct ScrollEventHandler {
     handler: Rc<MouseHandlerFunction>,
 }
@@ -168,6 +194,13 @@ pub trait MouseHandler: Sized + Widget {
     /// Insert a mouse up handler.
     fn on_mouse_up<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
         self.insert_handler(MouseUpEventHandler {
+            handler: Rc::new(handler),
+        })
+    }
+
+    /// Insert a mouse move handler.
+    fn on_mouse_move<H: Fn(Point) -> bool + 'static>(self, handler: H) -> Self {
+        self.insert_handler(MouseMoveEventHandler {
             handler: Rc::new(handler),
         })
     }
