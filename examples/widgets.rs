@@ -159,6 +159,10 @@ impl Template for MainView {
                                     .icon(material_font_icons::CHECK_FONT_ICON)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(1))
+                                    .on_mouse_move(move |_| {
+                                        println!("ABc");
+                                        true
+                                    })
                                     .on_click(move |_| {
                                         state.action(Action::IncrementCounter);
                                         true
