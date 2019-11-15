@@ -25,14 +25,14 @@ path = "src/lib.rs"
 opt-level = 1
 
 [dependencies]
+orbtk-utils = "0.3.0-alpha1"
+orbtk-tree = "0.3.0-alpha1"
+orbtk-proc-macros = "0.3.0-alpha1"
 orbtk-api = "0.3.0-alpha1"
 orbtk-css-engine = "0.3.0-alpha1"
-orbtk-proc-macros = "0.3.0-alpha1"
 orbtk-render = "0.3.0-alpha1"
 orbtk-shell = "0.3.0-alpha1"
 orbtk-theme = "0.3.0-alpha1"
-orbtk-utils = "0.3.0-alpha1"
-orbtk-tree = "0.3.0-alpha1"
 orbtk-widgets = "0.3.0-alpha1"
 dces = "0.2"
 
