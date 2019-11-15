@@ -5,7 +5,7 @@
 [![crates.io](https://img.shields.io/badge/crates.io-v0.3.1alpha1-orange.svg)](https://crates.io/crates/orbtk)
 [![docs.rs](https://docs.rs/orbtk/badge.svg)](https://docs.rs/orbtk)
 
-> OrbTk 0.3.1 is under heavy development and is not compatible with earlier releases.
+> OrbTk 0.3.* is under heavy development and is not compatible with earlier releases.
 
 The Orbital Widget Toolkit is a multi platform (G)UI toolkit for building scalable user interfaces with the programming language Rust. It's based
 on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity_system) and provides a functional-reactive like API.
