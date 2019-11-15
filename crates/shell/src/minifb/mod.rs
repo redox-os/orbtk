@@ -41,10 +41,10 @@ fn unicode_to_key_event(uni_char: u32) -> Option<KeyEvent> {
     let mut text = String::new();
     let mut key = Key::Unknown;
 
-    if let Some(ch) = char::from_u32(uni_char) {
-        if !ch.is_control() {
-            text = ch.to_string();
-            key = Key::from(ch);
+    if let Some(character) = char::from_u32(uni_char) {
+        if !character.is_control() {
+            text = character.to_string();
+            key = Key::from(character);
         }
     }
 
