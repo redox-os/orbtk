@@ -1,6 +1,6 @@
 [package]
 name = "orbtk"
-version = "0.3.0"
+version = "0.3.0-alpha-1"
 authors = [
     "Florian Blasius <flovanpt@posteo.de>",
     "Jeremy Soller <jackpot51@gmail.com>"
