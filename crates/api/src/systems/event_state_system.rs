@@ -189,6 +189,32 @@ impl EventStateSystem {
                 unknown_event = false;
             }
 
+             // mouse down handling
+             if let Ok(event) = event.downcast_ref::<MouseMoveEvent>() {
+                if check_mouse_condition(
+                    Point::new(event.x, event.y),
+                    &WidgetContainer::new(current_node, ecm, &theme),
+                ) {
+                    let mut add = true;
+                    if let Some(op) = clipped_parent.get(0) {
+                        // todo: improve check path if exists
+                        if !check_mouse_condition(
+                            Point::new(event.x, event.y),
+                            &WidgetContainer::new(*op, ecm, &theme),
+                        ) {
+                            add = false;
+                        }
+                    }
+
+                    if add {
+                        matching_nodes.push(current_node);
+                        self.mouse_down_nodes.borrow_mut().push(current_node);
+                    }
+                }
+
+                unknown_event = false;
+            }
+
             // mouse up handling
             if event.downcast_ref::<MouseUpEvent>().is_ok() {
                 if self.mouse_down_nodes.borrow().contains(&current_node) {
