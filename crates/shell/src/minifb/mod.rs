@@ -157,9 +157,9 @@ where
     fn drain_events(&mut self) {
         // mouse move
         if let Some(pos) = self.window.get_mouse_pos(minifb::MouseMode::Discard) {
-            if pos != self.mouse_pos {
+            if (pos.0.floor(), pos.1.floor()) != self.mouse_pos {
                 self.adapter.mouse(pos.0 as f64, pos.1 as f64);
-                self.mouse_pos = pos;
+                self.mouse_pos = (pos.0.floor(), pos.1.floor());
             }
         }
 
