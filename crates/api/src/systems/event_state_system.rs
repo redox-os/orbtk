@@ -226,7 +226,7 @@ impl EventStateSystem {
 
             // mouse up handling
             if event.downcast_ref::<MouseUpEvent>().is_ok() {
-                if self.mouse_down_nodes.borrow().contains(&current_node) && has_handler {
+                if self.mouse_down_nodes.borrow().contains(&current_node) {
                     matching_nodes.push(current_node);
                     let index = self
                         .mouse_down_nodes
