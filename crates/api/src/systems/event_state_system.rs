@@ -162,7 +162,7 @@ impl EventStateSystem {
                         }
                     }
 
-                    if add && has_handler {
+                    if add {
                         matching_nodes.push(current_node);
                         self.mouse_down_nodes.borrow_mut().push(current_node);
                     }
