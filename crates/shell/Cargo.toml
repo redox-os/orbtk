@@ -20,8 +20,8 @@ image = "0.22.3"
 minifb = "0.13"
 # minifb = { git = "https://github.com/emoon/rust_minifb.git" }
 
-[target.'cfg(target_os = "redox")'.dependencies]
-minifb-fix = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix" }
+# [target.'cfg(target_os = "redox")'.dependencies]
+# minifb-fix = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix" }
 
 [dependencies]
 orbtk-render = "0.3.0-alpha1"
