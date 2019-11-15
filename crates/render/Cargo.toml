@@ -1,6 +1,6 @@
 [package]
 name = "orbtk-render"
-version = "0.1.0"
+version = "0.3.0-alpha1"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "2D Render library use by OrbTk."
 repository = "https://gitlab.redox-os.org/redox-os/orbtk"
@@ -18,4 +18,4 @@ rusttype = "0.8.1"
 image = "0.22.3"
 
 [dependencies]
-orbtk-utils = { version = "0.1.0", path = "../utils" }
+orbtk-utils  = "0.3.0-alpha1"
