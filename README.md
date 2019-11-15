@@ -2,10 +2,10 @@
 
 [![Build status](https://gitlab.redox-os.org/redox-os/orbtk/badges/master/build.svg)](https://gitlab.redox-os.org/redox-os/orbtk/pipelines)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![crates.io](https://img.shields.io/badge/crates.io-v0.2.27-orange.svg)](https://crates.io/crates/orbtk)
+[![crates.io](https://img.shields.io/badge/crates.io-v0.3.1alpha1-orange.svg)](https://crates.io/crates/orbtk)
 [![docs.rs](https://docs.rs/orbtk/badge.svg)](https://docs.rs/orbtk)
 
-> OrbTk 0.3.0 is under heavy development and is not compatible with earlier releases.
+> OrbTk 0.3.* is under heavy development and is not compatible with earlier releases.
 
 The Orbital Widget Toolkit is a multi platform (G)UI toolkit for building scalable user interfaces with the programming language Rust. It's based
 on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity_system) and provides a functional-reactive like API.
@@ -42,14 +42,14 @@ To include OrbTk in your project, just add the dependency
 line to your `Cargo.toml` file:
 
 ```text
-orbtk = "0.2.27"
+orbtk = "0.3.1-alpha1"
 ```
 
-To use OrbTk 0.3, just add the dependency
+To use the latest development version of OrbTk, just add the dependency
 line to your `Cargo.toml` file:
 
 ```text
-orbtk = { git = "https://gitlab.redox-os.org/redox-os/orbtk.git" }
+orbtk = { git = "https://gitlab.redox-os.org/redox-os/orbtk.git", branch = "develop" }
 ```
 
 ## Minimal Example

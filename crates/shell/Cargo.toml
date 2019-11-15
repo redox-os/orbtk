@@ -1,6 +1,6 @@
 [package]
 name = "orbtk-shell"
-version = "0.1.0"
+version = "0.3.0-alpha1"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Window shell crate used by OrbTk."
 repository = "https://gitlab.redox-os.org/redox-os/orbtk"
@@ -20,10 +20,10 @@ image = "0.22.3"
 minifb = "0.13"
 # minifb = { git = "https://github.com/emoon/rust_minifb.git" }
 
-[target.'cfg(target_os = "redox")'.dependencies]
-minifb-fix = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix" }
+# [target.'cfg(target_os = "redox")'.dependencies]
+# minifb-fix = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix" }
 
 [dependencies]
-orbtk-render = { version = "0.1.0", path = "../render" }
-orbtk-utils = { version = "0.1.0", path = "../utils" }
+orbtk-render = "0.3.0-alpha1"
+orbtk-utils = "0.3.0-alpha1"
 lazy_static = "1.4.0"

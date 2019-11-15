@@ -10,6 +10,16 @@ before_script:
   - apt-get update -qq
   - apt-get install -qq build-essential curl git
 
+build:redox:
+  image: "redoxos/redoxer"
+  stage: build
+  script:
+    - redoxer build --verbose
+  cache:
+    paths:
+      - cargo/
+      - target/
+
 build:linux:
   stage: build
   script:
@@ -25,16 +35,6 @@ build:web:
     - cargo install --force cargo-web
   script:
     - cargo web build
-  cache:
-    paths:
-      - cargo/
-      - target/
-
-build:redox:
-  image: "redoxos/redoxer"
-  stage: build
-  script:
-    - redoxer build --verbose
   cache:
     paths:
       - cargo/
