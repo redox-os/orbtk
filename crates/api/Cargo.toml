@@ -11,11 +11,11 @@ edition = "2018"
 
 [dependencies]
 dces = "0.2"
+orbtk-utils = "0.3.0-alpha1"
+orbtk-tree = "0.3.0-alpha1"
 orbtk-css-engine = "0.3.0-alpha1"
 orbtk-render = "0.3.0-alpha1"
 orbtk-shell = "0.3.0-alpha1"
-orbtk-utils = "0.3.0-alpha1"
-orbtk-tree = "0.3.0-alpha1"
 orbtk-theme = "0.3.0-alpha1"
 
 [features]
