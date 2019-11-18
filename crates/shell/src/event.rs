@@ -288,6 +288,7 @@ impl From<char> for Key {
             '\u{f701}' => Key::Down,
             '\u{f702}' => Key::Left,
             '\u{f703}' => Key::Right,
+            '\u{8}' => Key::Backspace,
             _ => Key::Unknown,
         }
     }
