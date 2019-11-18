@@ -40,8 +40,6 @@ impl TextBoxState {
         let text = ctx.widget().clone::<String16>("text");
         let mut current_selection = *ctx.child("cursor").get::<TextSelection>("text_selection");
 
-        dbg!(&key_event);
-
         match key_event.key {
             Key::Left => {
                 if let Some(selection) = ctx
