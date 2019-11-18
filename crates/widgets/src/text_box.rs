@@ -16,6 +16,7 @@ enum TextBoxAction {
 pub struct TextBoxState {
     action: RefCell<Option<TextBoxAction>>,
     cursor_x: Cell<f64>,
+    len: Cell<usize>
 }
 
 impl Default for TextBoxState {
@@ -23,6 +24,7 @@ impl Default for TextBoxState {
         TextBoxState {
             action: RefCell::new(None),
             cursor_x: Cell::new(0.0),
+            len: Cell::new(0)
         }
     }
 }
@@ -125,10 +127,25 @@ impl TextBoxState {
         ctx.widget().update_theme_by_state(false);
         ctx.child("cursor").update_theme_by_state(false);
     }
+
+    // Reset selection and offset if text is changed from outside
+    fn reset(&self, ctx: &mut Context<'_>) {
+        ctx.widget().set("text_selection", TextSelection::default());
+        ctx.widget().set("scroll_offset", Point::default());
+    }
 }
 
 impl State for TextBoxState {
+    fn init(&self, ctx: &mut Context<'_>) {
+        self.len.set(ctx.widget().get::<String16>("text").len());
+    }
+
     fn update(&self, ctx: &mut Context<'_>) {
+        // check if text len is changed from outside
+        if self.len.get() != ctx.widget().get::<String16>("text").len() {
+            self.reset(ctx);
+        }
+
         if let Some(action) = self.action.borrow().clone() {
             match action {
                 TextBoxAction::Key(event) => {
@@ -142,6 +159,7 @@ impl State for TextBoxState {
 
         *self.action.borrow_mut() = None;
         ctx.widget().update_theme_by_state(false);
+        self.len.set(ctx.widget().get::<String16>("text").len());
     }
 
     fn update_post_layout(&self, ctx: &mut Context<'_>) {

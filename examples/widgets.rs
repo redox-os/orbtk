@@ -10,6 +10,7 @@ enum Action {
     AddItem,
     RemoveItem,
     IncrementCounter,
+    ClearText,
 }
 
 pub struct MainViewState {
@@ -90,6 +91,10 @@ impl State for MainViewState {
                         String16::from(format!("Button count: {}", self.counter.get())),
                     );
                 }
+                Action::ClearText => {
+                    ctx.widget().set("text_one", String16::from(""));
+                    ctx.widget().set("text_two", String16::from(""));
+                }
             }
 
             self.action.set(None);
@@ -118,6 +123,8 @@ fn create_header(ctx: &mut BuildContext, text: &str) -> Entity {
 widget!(
     MainView<MainViewState> {
         selected_indices: SelectedIndices,
+        text_one: String16,
+        text_two: String16,
         result: String16
     }
 );
@@ -125,6 +132,7 @@ widget!(
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let state = self.clone_state();
+        let clear_text_state = self.clone_state();
         let add_item_state = self.clone_state();
         let remove_item_state = self.clone_state();
         let list_state = self.clone_state();
@@ -220,7 +228,7 @@ impl Template for MainView {
                             .child(
                                 TextBox::create()
                                     .water_mark("TextBox...")
-                                    .text("")
+                                    .text(("text_one", id))
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
@@ -229,10 +237,20 @@ impl Template for MainView {
                             .child(
                                 TextBox::create()
                                     .water_mark("TextBox...")
-                                    .text("")
+                                    .text(("text_two", id))
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
+                                    .build(ctx),
+                            )
+                            .child(
+                                Button::create()
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .text("clear text")
+                                    .on_click(move |_| {
+                                        clear_text_state.action(Action::ClearText);
+                                        true
+                                    })
                                     .build(ctx),
                             )
                             .build(ctx),
