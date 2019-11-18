@@ -232,7 +232,7 @@ widget!(
         /// Sets or shares the text offset property.
         scroll_offset: Point,
 
-        /// Sets or shares the (wheel, scroll) delta property. 
+        /// Sets or shares the (wheel, scroll) delta property.
         delta: Point,
 
          /// Sets or shares the focused property.
@@ -242,6 +242,13 @@ widget!(
         selector: Selector
     }
 );
+
+impl TextBox {
+    /// The activate signal is emitted when the user hits the Enter key.
+    pub fn on_activate<H: Fn() -> bool + 'static>(self, handler: H) -> Self {
+        self.on_key_down_key(Key::Enter, handler)
+    }
+}
 
 impl Template for TextBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
