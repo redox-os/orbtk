@@ -203,9 +203,19 @@ impl<'a> Context<'a> {
         build_context.append_child(parent, child);
     }
 
+    /// Appends a child widget by entity to the given parent.
+    pub fn append_child_entity_to(&mut self, child: Entity, parent: Entity) {
+        self.build_context().append_child(parent, child);
+    }
+
     /// Appends a child to the current widget.
     pub fn append_child<W: Widget>(&mut self, child: W) {
         self.append_child_to(child, self.entity);
+    }
+
+    /// Appends a child widget by entity to the current widget.
+    pub fn append_child_entity(&mut self, child: Entity) {
+        self.append_child_entity_to(self.entity, child);
     }
 
     /// Clears all children of the current widget.
