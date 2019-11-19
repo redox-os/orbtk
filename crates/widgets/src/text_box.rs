@@ -79,7 +79,7 @@ impl TextBoxState {
                 }
             }
             Key::Delete => {
-                if !text.is_empty() && text.len() < current_selection.start_index {
+                if !text.is_empty() && text.len() > current_selection.start_index {
                     for _ in 0..=current_selection.length {
                         ctx.widget()
                             .get_mut::<String16>("text")
