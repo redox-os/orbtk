@@ -47,7 +47,8 @@ fn unicode_to_key_event(uni_char: u32) -> Option<KeyEvent> {
         Key::Unknown
     };
 
-    if key == Key::Up || key == Key::Down || key == Key::Left || key == Key::Right {
+
+    if key == Key::Up || key == Key::Down || key == Key::Left || key == Key::Right || key == Key::Backspace {
         return None;
     }
 
