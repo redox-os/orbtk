@@ -1,8 +1,8 @@
 <img alt="OrbTk" width="380" src="https://gitlab.redox-os.org/redox-os/assets/raw/master/logos/orbtk/logo_dark.png">
 
-[![Build status](https://gitlab.redox-os.org/redox-os/orbtk/badges/master/build.svg)](https://gitlab.redox-os.org/redox-os/orbtk/pipelines)
+[![Build status](https://gitlab.redox-os.org/redox-os/orbtk/badges/develop/build.svg)](https://gitlab.redox-os.org/redox-os/orbtk/pipelines)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![crates.io](https://img.shields.io/badge/crates.io-v0.3.1alpha1-orange.svg)](https://crates.io/crates/orbtk)
+[![crates.io](https://img.shields.io/badge/crates.io-v0.3.1alpha1-orange.svg)](https://crates.io/crates/orbtk/0.3.1-alpha1)
 [![docs.rs](https://docs.rs/orbtk/badge.svg)](https://docs.rs/orbtk)
 
 > OrbTk 0.3.* is under heavy development and is not compatible with earlier releases.

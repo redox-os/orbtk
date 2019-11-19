@@ -37,7 +37,8 @@ impl shell::WindowAdapter for WindowAdapter {
         self.mouse_position = Point::new(x, y);
         self.event_queue.register_event(
             MouseMoveEvent {
-                position: self.mouse_position,
+                x: self.mouse_position.x,
+                y: self.mouse_position.y,
             },
             self.root,
         )

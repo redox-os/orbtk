@@ -39,13 +39,14 @@ where
 
 fn unicode_to_key_event(uni_char: u32) -> Option<KeyEvent> {
     let mut text = String::new();
+    let mut key = Key::Unknown;
 
-    let key = if let Some(character) = char::from_u32(uni_char) {
-        text = character.to_string();
-        Key::from(character)
-    } else {
-        Key::Unknown
-    };
+    if let Some(character) = char::from_u32(uni_char) {
+        if !character.is_control() {
+            text = character.to_string();
+            key = Key::from(character);
+        }
+    }
 
     if key == Key::Up || key == Key::Down || key == Key::Left || key == Key::Right || Key::Backspace {
         return None;
@@ -157,9 +158,9 @@ where
     fn drain_events(&mut self) {
         // mouse move
         if let Some(pos) = self.window.get_mouse_pos(minifb::MouseMode::Discard) {
-            if pos != self.mouse_pos {
+            if (pos.0.floor(), pos.1.floor()) != self.mouse_pos {
                 self.adapter.mouse(pos.0 as f64, pos.1 as f64);
-                self.mouse_pos = pos;
+                self.mouse_pos = (pos.0.floor(), pos.1.floor());
             }
         }
 

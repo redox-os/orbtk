@@ -1,6 +1,6 @@
 [package]
 name = "orbtk-proc-macros"
-version = "0.3.0-alpha1"
+version = "0.3.1-alpha2"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Procedural macros used by OrbTk."
 repository = "https://gitlab.redox-os.org/redox-os/orbtk"

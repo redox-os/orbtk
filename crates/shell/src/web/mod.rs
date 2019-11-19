@@ -111,6 +111,19 @@ where
             });
         }
 
+        while let Some(event) = self.mouse_move_events.borrow_mut().pop() {
+            self.adapter.mouse(event.client_x() as f64, event.client_y() as f64);
+        }
+
+        while let Some(event) = self.mouse_up_events.borrow_mut().pop() {
+            self.adapter.mouse_event(MouseEvent {
+                x: event.client_x() as f64,
+                y: event.client_y() as f64,
+                button: get_mouse_button(event.button()),
+                state: ButtonState::Up,
+            });
+        }
+
         while let Some(event) = self.scroll_events.borrow_mut().pop() {
             self.adapter.scroll(event.delta_x(), event.delta_y());
         }

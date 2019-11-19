@@ -86,6 +86,13 @@ impl EventStateSystem {
         let mut clipped_parent = vec![];
 
         loop {
+            let mut has_handler = false;
+            if let Some(handlers) = self.handlers.borrow().get(&current_node) {
+                if handlers.iter().any(|handler| handler.handles_event(event)) {
+                    has_handler = true;
+                }
+            }
+
             if let Some(cp) = clipped_parent.last() {
                 if ecm.entity_store().parent[&current_node] == Some(*cp) {
                     clipped_parent.push(current_node);
@@ -102,7 +109,7 @@ impl EventStateSystem {
                     .unwrap()
                     .focused_widget
                 {
-                    if current_node == focused {
+                    if current_node == focused && has_handler {
                         matching_nodes.push(current_node);
                     }
                 }
@@ -118,7 +125,7 @@ impl EventStateSystem {
                     .unwrap()
                     .focused_widget
                 {
-                    if current_node == focused {
+                    if current_node == focused && has_handler {
                         matching_nodes.push(current_node);
                     }
                 }
@@ -131,7 +138,8 @@ impl EventStateSystem {
                 if check_mouse_condition(
                     mouse_position,
                     &WidgetContainer::new(current_node, ecm, &theme),
-                ) {
+                ) && has_handler
+                {
                     matching_nodes.push(current_node);
                 }
 
@@ -154,9 +162,8 @@ impl EventStateSystem {
                         }
                     }
 
-                    if add {
+                    if add && has_handler {
                         matching_nodes.push(current_node);
-                        self.mouse_down_nodes.borrow_mut().push(current_node);
                     }
                 }
 
@@ -175,7 +182,8 @@ impl EventStateSystem {
                         if !check_mouse_condition(
                             Point::new(event.x, event.y),
                             &WidgetContainer::new(*op, ecm, &theme),
-                        ) {
+                        ) && has_handler
+                        {
                             add = false;
                         }
                     }
@@ -183,6 +191,31 @@ impl EventStateSystem {
                     if add {
                         matching_nodes.push(current_node);
                         self.mouse_down_nodes.borrow_mut().push(current_node);
+                    }
+                }
+
+                unknown_event = false;
+            }
+
+            // mouse move handling
+            if let Ok(event) = event.downcast_ref::<MouseMoveEvent>() {
+                if check_mouse_condition(
+                    Point::new(event.x, event.y),
+                    &WidgetContainer::new(current_node, ecm, &theme),
+                ) {
+                    let mut add = true;
+                    if let Some(op) = clipped_parent.get(0) {
+                        // todo: improve check path if exists
+                        if !check_mouse_condition(
+                            Point::new(event.x, event.y),
+                            &WidgetContainer::new(*op, ecm, &theme),
+                        ) {
+                            add = false;
+                        }
+                    }
+
+                    if add && has_handler {
+                        matching_nodes.push(current_node);
                     }
                 }
 
@@ -208,10 +241,8 @@ impl EventStateSystem {
             if unknown_event
                 && *WidgetContainer::new(current_node, ecm, &theme).get::<bool>("enabled")
             {
-                if let Some(handlers) = self.handlers.borrow().get(&current_node) {
-                    if handlers.iter().any(|handler| handler.handles_event(&event)) {
-                        matching_nodes.push(current_node);
-                    }
+                if has_handler {
+                    matching_nodes.push(current_node);
                 }
             }
 
