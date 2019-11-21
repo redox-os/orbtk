@@ -91,6 +91,7 @@ impl TextBoxState {
                     ctx.push_event(ChangedEvent(ctx.entity));
                 }
             }
+            Key::Enter => ctx.push_event(ActivateEvent(ctx.entity)),
             _ => {
                 if key_event.text.is_empty() {
                     return;
@@ -220,7 +221,7 @@ widget!(
     /// The `TextBox` widget represents a single line text input widget.
     ///
     /// * CSS element: `text-box`
-    TextBox<TextBoxState>: KeyDownHandler, ChangedHandler {
+    TextBox<TextBoxState>: ActivateHandler, ChangedHandler, KeyDownHandler {
         /// Sets or shares the text property.
         text: String16,
 
@@ -267,13 +268,6 @@ widget!(
         selector: Selector
     }
 );
-
-impl TextBox {
-    /// The activate signal is emitted when the user hits the Enter key.
-    pub fn on_activate<H: Fn() -> bool + 'static>(self, handler: H) -> Self {
-        self.on_key_down_key(Key::Enter, handler)
-    }
-}
 
 impl Template for TextBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {

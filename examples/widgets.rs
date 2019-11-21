@@ -8,9 +8,11 @@ use orbtk::prelude::*;
 #[derive(Debug, Copy, Clone)]
 enum Action {
     AddItem,
-    RemoveItem,
-    IncrementCounter,
     ClearText,
+    EntryActivated(Entity),
+    EntryChanged(Entity),
+    IncrementCounter,
+    RemoveItem,
 }
 
 pub struct MainViewState {
@@ -95,6 +97,17 @@ impl State for MainViewState {
                     ctx.widget().set("text_one", String16::from(""));
                     ctx.widget().set("text_two", String16::from(""));
                 }
+                Action::EntryActivated(entity) => {
+                    let mut widget = ctx.get_widget(entity);
+                    let text = widget.get_mut::<String16>("text");
+                    println!("submitting {}", text);
+                    text.clear();
+                }
+                Action::EntryChanged(entity) => {
+                    let widget = ctx.get_widget(entity);
+                    let text = widget.get::<String16>("text");
+                    println!("entry changed: {}", text);
+                }
             }
 
             self.action.set(None);
@@ -132,11 +145,17 @@ widget!(
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let state = self.clone_state();
-        let clear_text_state = self.clone_state();
-        let add_item_state = self.clone_state();
-        let remove_item_state = self.clone_state();
-        let list_state = self.clone_state();
-        let list_view_state = self.clone_state();
+
+        let add_item_state = state.clone();
+        let clear_text_state = state.clone();
+        let entry_activated1 = state.clone();
+        let entry_activated2 = state.clone();
+        let entry_changed1 = state.clone();
+        let entry_changed2 = state.clone();
+        let list_state = state.clone();
+        let list_view_state = state.clone();
+        let remove_item_state = state.clone();
+
         let list_count = list_state.list.borrow().len();
         let selection_list_count = list_state.selection_list.borrow().len();
 
@@ -232,6 +251,12 @@ impl Template for MainView {
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
+                                    .on_activate(move |entity| {
+                                        entry_activated1.action(Action::EntryActivated(entity));
+                                    })
+                                    .on_changed(move |entity| {
+                                        entry_changed1.action(Action::EntryChanged(entity));
+                                    })
                                     .build(ctx),
                             )
                             .child(
@@ -241,6 +266,12 @@ impl Template for MainView {
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
+                                    .on_activate(move |entity| {
+                                        entry_activated2.action(Action::EntryActivated(entity));
+                                    })
+                                    .on_changed(move |entity| {
+                                        entry_changed2.action(Action::EntryChanged(entity));
+                                    })
                                     .build(ctx),
                             )
                             .child(
