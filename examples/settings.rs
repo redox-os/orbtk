@@ -1,61 +1,132 @@
 use std::cell::Cell;
 
-use serde_derive::Serialize;
+use serde_derive::{Deserialize, Serialize};
 
 use orbtk::prelude::*;
 
-#[derive(Default, Serialize)]
-pub struct MainViewSettings {
-    pub label: String
+#[derive(Copy, Clone, PartialEq)]
+enum Action {
+    Load,
+    Save,
+    Clear,
+}
+
+#[derive(Default, Clone, Serialize, Deserialize)]
+pub struct Global {
+    pub label: String,
 }
 
 #[derive(Default)]
 pub struct MainViewState {
-    clear: Cell<bool>,
+    action: Cell<Option<Action>>,
 }
 
 impl MainViewState {
-    fn clear(&self) {
-        self.clear.set(true);
+    fn action(&self, action: Action) {
+        self.action.set(Some(action));
     }
 }
 
 impl State for MainViewState {
     fn update(&self, registry: &mut Registry, ctx: &mut Context<'_>) {
-        if self.clear.get() {
-            let mut global = MainViewSettings::default();
-            global.label = "test".to_string();
-            registry.get_mut::<Settings>("settings").save("global", &global);
-            ctx.widget().set("text", String16::from(""));
-            self.clear.set(false);
+        if let Some(action) = self.action.get() {
+            match action {
+                Action::Load => {
+                    // load label from settings file.
+                    if let Ok(global) = registry
+                        .get::<Settings>("settings")
+                        .load::<Global>("global")
+                    {
+                        ctx.widget().set("text", String16::from(global.label));
+                    }
+
+                    ctx.widget().set("info_text", String16::from("Label loaded from settings file."));
+                }
+                Action::Save => {
+                    // save label to settings file.
+                    registry.get_mut::<Settings>("settings").save(
+                        "global",
+                        &Global {
+                            label: ctx.widget().get::<String16>("text").to_string(),
+                        },
+                    );
+                    ctx.widget().set("info_text", String16::from("Label saved to settings file."));
+                }
+                Action::Clear => {
+                    ctx.widget().set("text", String16::default());
+                    ctx.widget().set("info_text", String16::from(""));
+                }
+            }
+
+            self.action.set(None);
         }
     }
 }
 
 widget!(MainView<MainViewState> {
-    text: String16
+    text: String16,
+    info_text: String16
 });
 
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let state = self.clone_state();
+        let load_state = self.clone_state();
+        let save_state = self.clone_state();
+        let clear_state = self.clone_state();
+
         self.name("MainView").child(
-            Stack::create()
-                .orientation("horizontal")
-                // By injecting the id of the parent the text property
-                // is shared between the MainView and the TextBox. This
-                // means both references the same String16 object.
-                .child(TextBox::create().height(32.0).text(id).build(ctx))
+            Grid::create()
+                .rows(Rows::create().row(32.0).row(4.0).row("auto").build())
+                .columns(
+                    Columns::create()
+                        .column(160.0)
+                        .column(4.0)
+                        .column("Auto")
+                        .column(4.0)
+                        .column("Auto")
+                        .column(4.0)
+                        .column("Auto")
+                        .build(),
+                )
+                .child(TextBox::create().text(id).build(ctx))
                 .child(
                     Button::create()
-                        .margin((8.0, 0.0, 0.0, 0.0))
-                        // mouse click event handler
+                        .attach(Grid::row(0))
+                        .attach(Grid::column(2))
                         .on_click(move |_| {
-                            // Calls clear of the state of MainView
-                            state.clear();
+                            load_state.action(Action::Load);
+                            true
+                        })
+                        .text("Load")
+                        .build(ctx),
+                )
+                .child(
+                    Button::create()
+                        .attach(Grid::row(0))
+                        .attach(Grid::column(4))
+                        .on_click(move |_| {
+                            save_state.action(Action::Save);
+                            true
+                        })
+                        .text("Save")
+                        .build(ctx),
+                )
+                .child(
+                    Button::create()
+                        .attach(Grid::row(0))
+                        .attach(Grid::column(6))
+                        .on_click(move |_| {
+                            clear_state.action(Action::Clear);
                             true
                         })
                         .text("Clear")
+                        .build(ctx),
+                )
+                .child(
+                    TextBlock::create()
+                        .attach(Grid::row(2))
+                        .attach(Grid::column(0))
+                        .text(("info_text", id))
                         .build(ctx),
                 )
                 .build(ctx),
