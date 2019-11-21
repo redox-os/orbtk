@@ -1,8 +1,4 @@
-use std::{
-    cell::{Cell, RefCell},
-    collections::BTreeMap,
-    rc::Rc,
-};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -12,13 +8,11 @@ use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree, utils::*}
 pub struct LayoutSystem {
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub update: Rc<Cell<bool>>,
-    pub running: Rc<Cell<bool>>,
 }
 
 impl System<Tree, StringComponentStore> for LayoutSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
-        if !self.update.get() || !self.running.get() {
+        if !self.shell.borrow().update() || !self.shell.borrow().running() {
             return;
         }
 

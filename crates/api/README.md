@@ -8,6 +8,9 @@ Provides base traits and structs for application, widgets and properties. It's p
 ## Dependencies
 
 * [dces](https://gitlab.redox-os.org/redox-os/dces-rust) (MIT): Entity Component System
+* ron
+* serde
+* dirs
 
 ## License
 

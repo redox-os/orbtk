@@ -1,6 +1,9 @@
 use std::rc::Rc;
 
-use crate::{prelude::*, shell::{Key, KeyEvent}};
+use crate::{
+    prelude::*,
+    shell::{Key, KeyEvent},
+};
 
 use super::{Event, EventBox, EventHandler};
 
@@ -52,12 +55,14 @@ pub trait KeyDownHandler: Sized + Widget {
 
     // Handles events triggered by a specific key.
     fn on_key_down_key<H: Fn() -> bool + 'static>(self, key: Key, handler: H) -> Self {
-        self.on_key_down(move |event| {
-            if event.key == key {
-                handler()
-            } else {
-                false
-            }
-        })
+        self.on_key_down(
+            move |event| {
+                if event.key == key {
+                    handler()
+                } else {
+                    false
+                }
+            },
+        )
     }
 }

@@ -107,6 +107,17 @@
     {
       "type": "lldb",
       "request": "launch",
+      "name": "Settings",
+      "program": "${workspaceFolder}/target/debug/examples/settings",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
       "name": "Grid",
       "program": "${workspaceFolder}/target/debug/examples/grid",
       "cwd": "${workspaceFolder}",

@@ -55,7 +55,7 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&self, ctx: &mut Context<'_>) {
+    fn update(&self, registry: &mut Registry, ctx: &mut Context<'_>) {
         if let Some(action) = self.action.get() {
             match action {
                 Action::AddItem => {
@@ -114,7 +114,7 @@ impl State for MainViewState {
         }
     }
 
-    fn update_post_layout(&self, ctx: &mut Context<'_>) {
+    fn update_post_layout(&self, _: &mut Registry, ctx: &mut Context<'_>) {
         let mut selection_string = "Selected:".to_string();
 
         for index in &ctx.widget().get::<SelectedIndices>("selected_indices").0 {
