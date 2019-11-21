@@ -76,6 +76,8 @@ impl TextBoxState {
                     {
                         selection.start_index = current_selection.start_index;
                     }
+
+                    ctx.push_event(ChangedEvent(ctx.entity));
                 }
             }
             Key::Delete => {
@@ -85,6 +87,8 @@ impl TextBoxState {
                             .get_mut::<String16>("text")
                             .remove(current_selection.start_index);
                     }
+
+                    ctx.push_event(ChangedEvent(ctx.entity));
                 }
             }
             _ => {
@@ -102,6 +106,8 @@ impl TextBoxState {
                     selection.start_index =
                         current_selection.start_index + key_event.text.encode_utf16().count();
                 }
+
+                ctx.push_event(ChangedEvent(ctx.entity));
             }
         }
     }
@@ -132,6 +138,7 @@ impl TextBoxState {
     fn reset(&self, ctx: &mut Context<'_>) {
         ctx.widget().set("text_selection", TextSelection::default());
         ctx.widget().set("scroll_offset", Point::default());
+        ctx.push_event(ChangedEvent(ctx.entity));
     }
 }
 
@@ -213,7 +220,7 @@ widget!(
     /// The `TextBox` widget represents a single line text input widget.
     ///
     /// * CSS element: `text-box`
-    TextBox<TextBoxState>: KeyDownHandler {
+    TextBox<TextBoxState>: KeyDownHandler, ChangedHandler {
         /// Sets or shares the text property.
         text: String16,
 
