@@ -2,22 +2,22 @@ use std::{any::Any, collections::HashMap};
 
 use dces::prelude::Component;
 
-/// The struct `Services` represents a global service registry. It is used to register and call
-/// global services like settings service oder a database service.
+/// The struct `Registry` represents a global service registry. It is used to register and call
+/// global Registry like settings service oder a database service.
 #[derive(Default)]
-pub struct Services {
-    services: HashMap<String, Box<dyn Any>>,
+pub struct Registry {
+    registry: HashMap<String, Box<dyn Any>>,
 }
 
-impl Services {
-    /// Creates a service registry with an empty services map.
+impl Registry {
+    /// Creates a service registry with an empty Registry map.
     pub fn new() -> Self {
-        Services::default()
+        Registry::default()
     }
 
-    /// Register a new services with the given key.
+    /// Register a new Registry with the given key.
     pub fn register<C: Component>(&mut self, key: impl Into<String>, service: C) {
-        self.services.insert(key.into(), Box::new(service));
+        self.registry.insert(key.into(), Box::new(service));
     }
 
     /// Gets a service.
@@ -26,11 +26,12 @@ impl Services {
     ///
     /// Panics if the there is no service for the given key or the given service type is wrong.
     pub fn get<C: Component>(&self, key: impl Into<String>) -> &C {
-        self.services
-            .get(&key.into())
-            .unwrap()
+        let key = key.into();
+        self.registry
+            .get(&key)
+            .expect(format!("Registry.get(): could not found key: {}", key).as_str())
             .downcast_ref()
-            .unwrap()
+            .expect(format!("Registry.get(): wrong type for key: {}", key).as_str())
     }
 
     /// Gets a service.
@@ -39,7 +40,7 @@ impl Services {
     ///
     /// Panics if the there is no service for the given key or the given service type is wrong.
     // pub fn try_get<C: Component>(&self, key: impl Into<String>) -> Option<&C> {
-    //     self.services
+    //     self.Registry
     //         .get(&key.into())
     //         .ok_or_else(|| None)
     //         .map(|c| c.downcast_ref())
@@ -51,10 +52,11 @@ impl Services {
     ///
     /// Panics if the there is no service for the given key or the given service type is wrong.
     pub fn get_mut<C: Component>(&mut self, key: impl Into<String>) -> &C {
-        self.services
-            .get_mut(&key.into())
-            .unwrap()
+        let key = key.into();
+        self.registry
+            .get_mut(&key)
+            .expect(format!("Registry.get(): could not found key: {}", key).as_str())
             .downcast_ref()
-            .unwrap()
+            .expect(format!("Registry.get(): wrong type for key: {}", key).as_str())
     }
 }
