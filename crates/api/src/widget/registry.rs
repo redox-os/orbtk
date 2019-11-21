@@ -38,10 +38,9 @@ impl Registry {
     /// # Panics
     ///
     /// Panics if the there is no service for the given key or the given service type is wrong.
-    pub fn get_mut<C: Component>(&mut self, key: impl Into<String>) -> &mut C {
-        let key = key.into();
+    pub fn get_mut<C: Component>(&mut self, key: &str) -> &mut C {
         self.registry
-            .get_mut(&key)
+            .get_mut(&key.to_string())
             .unwrap_or_else(|| panic!("Registry.get(): key: {} could not be found.", key))
             .downcast_mut()
             .unwrap_or_else(|| panic!("Registry.get(): wrong type for key: {}", key))

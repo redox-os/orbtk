@@ -23,7 +23,7 @@ impl MouseBehaviorState {
 }
 
 impl State for MouseBehaviorState {
-    fn update(&self, ctx: &mut Context<'_>) {
+    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
         if !ctx.widget().get::<bool>("enabled") {
             return;
         }
@@ -57,7 +57,7 @@ impl State for MouseBehaviorState {
         }
     }
 
-    fn update_post_layout(&self, ctx: &mut Context<'_>) {
+    fn update_post_layout(&self, _: &mut Registry, ctx: &mut Context<'_>) {
         if self.has_delta.get() {
             ctx.widget().set("delta", Point::new(0.0, 0.0));
             self.has_delta.set(false);

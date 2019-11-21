@@ -15,7 +15,7 @@ impl Into<Rc<dyn State>> for ItemsWidgetState {
 }
 
 impl State for ItemsWidgetState {
-    fn update(&self, ctx: &mut Context<'_>) {
+    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
         let count = ctx.widget().clone_or_default::<usize>("count");
 
         if count != self.count.get() {

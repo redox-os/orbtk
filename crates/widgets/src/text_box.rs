@@ -16,7 +16,7 @@ enum TextBoxAction {
 pub struct TextBoxState {
     action: RefCell<Option<TextBoxAction>>,
     cursor_x: Cell<f64>,
-    len: Cell<usize>
+    len: Cell<usize>,
 }
 
 impl Default for TextBoxState {
@@ -24,7 +24,7 @@ impl Default for TextBoxState {
         TextBoxState {
             action: RefCell::new(None),
             cursor_x: Cell::new(0.0),
-            len: Cell::new(0)
+            len: Cell::new(0),
         }
     }
 }
@@ -136,11 +136,11 @@ impl TextBoxState {
 }
 
 impl State for TextBoxState {
-    fn init(&self, ctx: &mut Context<'_>) {
+    fn init(&self, _: &mut Registry, ctx: &mut Context<'_>) {
         self.len.set(ctx.widget().get::<String16>("text").len());
     }
 
-    fn update(&self, ctx: &mut Context<'_>) {
+    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
         // check if text len is changed from outside
         if self.len.get() != ctx.widget().get::<String16>("text").len() {
             self.reset(ctx);
@@ -162,7 +162,7 @@ impl State for TextBoxState {
         self.len.set(ctx.widget().get::<String16>("text").len());
     }
 
-    fn update_post_layout(&self, ctx: &mut Context<'_>) {
+    fn update_post_layout(&self, _: &mut Registry, ctx: &mut Context<'_>) {
         let mut cursor_x_delta = 0.0;
         let mut scroll_viewer_width = 0.0;
 
