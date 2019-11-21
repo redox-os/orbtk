@@ -11,6 +11,7 @@ pub struct InitSystem {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: EventHandlerMap,
+    pub registry: Rc<RefCell<Registry>>,
 }
 
 impl InitSystem {
@@ -82,7 +83,7 @@ impl System<Tree, StringComponentStore> for InitSystem {
                 );
 
                 if let Some(state) = self.states.borrow().get(&current_node) {
-                    state.init(&mut ctx);
+                    state.init(&mut *self.registry.borrow_mut(), &mut ctx);
                 }
 
                 self.read_init_from_theme(&mut ctx);

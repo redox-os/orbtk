@@ -218,13 +218,13 @@ impl<'a> Context<'a> {
         self.append_child_entity_to(self.entity, child);
     }
 
-    /// Removes a child from the current widget. If the given entity is not a child 
+    /// Removes a child from the current widget. If the given entity is not a child
     /// of the given parent nothing will happen.
     pub fn remove_child(&mut self, child: Entity) {
         self.remove_child_from(child, self.entity);
     }
 
-    /// Removes a child from the given parent. If the given entity is not a child 
+    /// Removes a child from the given parent. If the given entity is not a child
     /// of the given parent nothing will happen.
     pub fn remove_child_from(&mut self, child: Entity, parent: Entity) {
         if self.ecm.entity_store().children[&parent].contains(&child) {

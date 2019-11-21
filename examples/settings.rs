@@ -1,6 +1,13 @@
 use std::cell::Cell;
 
+use serde_derive::Serialize;
+
 use orbtk::prelude::*;
+
+#[derive(Default, Serialize)]
+pub struct MainViewSettings {
+    pub label: String
+}
 
 #[derive(Default)]
 pub struct MainViewState {
@@ -8,17 +15,17 @@ pub struct MainViewState {
 }
 
 impl MainViewState {
-    // Sets an action the state
     fn clear(&self) {
         self.clear.set(true);
     }
 }
 
 impl State for MainViewState {
-    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&self, registry: &mut Registry, ctx: &mut Context<'_>) {
         if self.clear.get() {
-            // Clears the text property of MainView and because
-            // of the sharing also the text of the TextBox.
+            let mut global = MainViewSettings::default();
+            global.label = "test".to_string();
+            registry.get_mut::<Settings>("settings").save("global", &global);
             ctx.widget().set("text", String16::from(""));
             self.clear.set(false);
         }
@@ -38,7 +45,7 @@ impl Template for MainView {
                 // By injecting the id of the parent the text property
                 // is shared between the MainView and the TextBox. This
                 // means both references the same String16 object.
-                .child(TextBox::create().text(id).build(ctx))
+                .child(TextBox::create().height(32.0).text(id).build(ctx))
                 .child(
                     Button::create()
                         .margin((8.0, 0.0, 0.0, 0.0))
@@ -57,10 +64,10 @@ impl Template for MainView {
 }
 
 fn main() {
-    Application::new()
+    Application::from_name("orbtk-settings")
         .window(|ctx| {
             Window::create()
-                .title("OrbTk - minimal example")
+                .title("OrbTk - settings example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
                 .child(MainView::create().margin(4.0).build(ctx))

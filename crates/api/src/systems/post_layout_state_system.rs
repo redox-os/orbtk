@@ -1,8 +1,4 @@
-use std::{
-    cell::{Cell, RefCell},
-    collections::BTreeMap,
-    rc::Rc,
-};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -15,13 +11,12 @@ pub struct PostLayoutStateSystem {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: EventHandlerMap,
-    pub update: Rc<Cell<bool>>,
-    pub running: Rc<Cell<bool>>,
+    pub registry: Rc<RefCell<Registry>>,
 }
 
 impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
-        if !self.update.get() || !self.running.get() {
+        if !self.shell.borrow().update() || !self.shell.borrow().running() {
             return;
         }
 
@@ -47,7 +42,7 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
         for (node, state) in &*self.states.borrow() {
             ctx.entity = *node;
 
-            state.update_post_layout(&mut ctx);
+            state.update_post_layout(&mut *self.registry.borrow_mut(), &mut ctx);
 
             // Handle messages.
             {
