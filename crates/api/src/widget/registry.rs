@@ -2,8 +2,8 @@ use std::{any::Any, collections::HashMap};
 
 use dces::prelude::Component;
 
-/// The struct `Registry` represents a global service registry. It is used to register and call
-/// global Registry like settings service oder a database service.
+/// The struct `Registry` represents a global registry. It is used to register and call
+/// global elements like services.
 #[derive(Default)]
 pub struct Registry {
     registry: HashMap<String, Box<dyn Any>>,
@@ -20,43 +20,119 @@ impl Registry {
         self.registry.insert(key.into(), Box::new(service));
     }
 
-    /// Gets a service.
+    /// Gets an element from the registry.
     ///
     /// # Panics
     ///
-    /// Panics if the there is no service for the given key or the given service type is wrong.
-    pub fn get<C: Component>(&self, key: impl Into<String>) -> &C {
-        let key = key.into();
+    /// Panics if the there is no element for the given key or the given service type is wrong.
+    pub fn get<C: Component>(&self, key: &str) -> &C {
         self.registry
-            .get(&key)
-            .expect(format!("Registry.get(): could not found key: {}", key).as_str())
+            .get(&key.to_string())
+            .unwrap_or_else(|| panic!("Registry.get(): key: {} could not be found.", key))
             .downcast_ref()
-            .expect(format!("Registry.get(): wrong type for key: {}", key).as_str())
+            .unwrap_or_else(|| panic!("Registry.get(): wrong type for key: {}", key))
     }
 
-    /// Gets a service.
+    /// Gets a mutable reference of the requested element.
     ///
     /// # Panics
     ///
     /// Panics if the there is no service for the given key or the given service type is wrong.
-    // pub fn try_get<C: Component>(&self, key: impl Into<String>) -> Option<&C> {
-    //     self.Registry
-    //         .get(&key.into())
-    //         .ok_or_else(|| None)
-    //         .map(|c| c.downcast_ref())
-    // }
-
-    /// Gets a mutable reference of the requested service.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the there is no service for the given key or the given service type is wrong.
-    pub fn get_mut<C: Component>(&mut self, key: impl Into<String>) -> &C {
+    pub fn get_mut<C: Component>(&mut self, key: impl Into<String>) -> &mut C {
         let key = key.into();
         self.registry
             .get_mut(&key)
-            .expect(format!("Registry.get(): could not found key: {}", key).as_str())
-            .downcast_ref()
-            .expect(format!("Registry.get(): wrong type for key: {}", key).as_str())
+            .unwrap_or_else(|| panic!("Registry.get(): key: {} could not be found.", key))
+            .downcast_mut()
+            .unwrap_or_else(|| panic!("Registry.get(): wrong type for key: {}", key))
+    }
+
+    /// Try to get an element from the registry.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the there is no service for the given key or the given service type is wrong.
+    pub fn try_get<C: Component>(&self, key: &str) -> Option<&C> {
+        if let Some(e) = self.registry.get(&key.to_string()) {
+            if let Some(r) = e.downcast_ref() {
+                return Some(r);
+            }
+        }
+
+        None
+    }
+
+    /// Try to get an element from the registry.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the there is no service for the given key or the given service type is wrong.
+    pub fn try_get_mut<C: Component>(&mut self, key: &str) -> Option<&mut C> {
+        if let Some(e) = self.registry.get_mut(&key.to_string()) {
+            if let Some(r) = e.downcast_mut() {
+                return Some(r);
+            }
+        }
+
+        None
+    }
+
+    /// Returns the number of elements in the registry.
+    pub fn len(&self) -> usize {
+        self.registry.len()
+    }
+
+    /// Returns true if the registry contains no elements.
+    pub fn is_empty(&self) -> bool {
+        self.registry.is_empty()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct ServiceOne;
+    struct ServiceTwo;
+
+    #[test]
+    fn register() {
+        let mut registry = Registry::new();
+        registry.register("one", ServiceOne);
+        registry.register("two", ServiceTwo);
+
+        assert!(registry.try_get::<ServiceOne>("one").is_some());
+        assert!(registry.try_get::<ServiceTwo>("two").is_some());
+    }
+
+    #[test]
+    fn try_get_mut() {
+        let mut registry = Registry::new();
+        registry.register("one", ServiceOne);
+        registry.register("two", ServiceTwo);
+
+        assert!(registry.try_get_mut::<ServiceOne>("one").is_some());
+        assert!(registry.try_get_mut::<ServiceTwo>("two").is_some());
+    }
+
+    #[test]
+    fn len() {
+        let mut registry = Registry::new();
+        assert_eq!(registry.len(), 0);
+
+        registry.register("one", ServiceOne);
+        assert_eq!(registry.len(), 1);
+
+        registry.register("two", ServiceTwo);
+        assert_eq!(registry.len(), 2);
+    }
+
+    #[test]
+    fn is_empty() {
+        let mut registry = Registry::new();
+        assert!(registry.is_empty());
+
+        registry.register("one", ServiceOne);
+        assert!(!registry.is_empty());
     }
 }
