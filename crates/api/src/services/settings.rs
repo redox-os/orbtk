@@ -1,7 +1,6 @@
 use std::{
     fs::{create_dir_all, File},
-    io::{Read, Write},
-    path::Path,
+    io::Write,
 };
 
 use dirs;
@@ -81,18 +80,19 @@ impl Settings {
             config_path.push(self.app_name.as_str());
             config_path.push(format!("{}.ron", key));
 
-            // if let Ok(d) = from_reader(file) {
-            //     return Ok(d)
-            // }
+            let file = File::open(&config_path).unwrap_or_else(|_| {
+                panic!(
+                    "Settings.load: Could not open config file {:?}",
+                    config_path
+                )
+            });
 
-            // file.read_to_string(&mut content).unwrap_or_else(|_| {
-            //     panic!(
-            //         "Settings.load: Could not read from config file {:?}",
-            //         config_path
-            //     )
-            // });
-
-           
+            return Ok(from_reader(file).unwrap_or_else(|_| {
+                panic!(
+                    "Settings.load: Could not read from config file {:?}",
+                    config_path
+                )
+            }));
         }
 
         Err(format!(

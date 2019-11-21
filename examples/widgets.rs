@@ -53,7 +53,7 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&self, registry: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
         if let Some(action) = self.action.get() {
             match action {
                 Action::AddItem => {
