@@ -4,6 +4,7 @@ use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::entity::Entity;
 
+pub use self::editable::*;
 pub use self::event_handler::*;
 pub use self::event_queue::*;
 pub use self::key::*;
@@ -11,6 +12,7 @@ pub use self::mouse::*;
 pub use self::system::*;
 pub use self::window::*;
 
+mod editable;
 mod event_handler;
 mod event_queue;
 mod key;
