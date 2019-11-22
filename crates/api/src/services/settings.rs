@@ -40,38 +40,42 @@ impl Settings {
     }
 
     /// Serialize the given data object and user's config dir.
-    pub fn save<S: Serialize>(&self, key: &str, data: &S) {
+    pub fn save<S: Serialize>(&self, key: &str, data: &S) -> Result<(), String> {
         let content = to_string_pretty(data, PrettyConfig::default());
 
         if let Some(config_path) = &mut dirs::config_dir() {
             config_path.push(self.app_name.as_str());
 
             if !config_path.exists() {
-                create_dir_all(&config_path).unwrap_or_else(|_| {
-                    panic!(
+                let result = create_dir_all(&config_path);
+
+                if result.is_err() {
+                    return Err(format!(
                         "Settings.save: Could not create settings dir {:?}",
                         config_path
-                    )
-                });
+                    ));
+                }
             }
 
             config_path.push(format!("{}.ron", key));
 
-            let mut file = File::create(&config_path).unwrap_or_else(|_| {
-                panic!(
-                    "Settings.save: Could not create config file {:?}",
-                    config_path
-                )
-            });
-
-            file.write_all(content.unwrap().as_bytes())
-                .unwrap_or_else(|_| {
-                    panic!(
+            if let Ok(file) = &mut File::create(&config_path) {
+                let result = file.write_all(content.unwrap().as_bytes());
+                if result.is_err() {
+                    return Err(format!(
                         "Settings.save: Could not write to config file {:?}",
                         config_path
-                    )
-                });
+                    ));
+                }
+            } else {
+                return Err(format!(
+                    "Settings.save: Could not create config file {:?}",
+                    config_path
+                ));
+            }
         }
+
+        Ok(())
     }
 
     /// Loads and deserialize data from user's config dir.
@@ -80,19 +84,21 @@ impl Settings {
             config_path.push(self.app_name.as_str());
             config_path.push(format!("{}.ron", key));
 
-            let file = File::open(&config_path).unwrap_or_else(|_| {
-                panic!(
+            if let Ok(file) = &mut File::open(&config_path) {
+               if let Ok(data) = from_reader(file) {
+                   return Ok(data);
+               } else {
+                return Err(format!(
+                    "Settings.load: Could not read data from config file {:?}",
+                    config_path
+                ));
+               }
+            } else {
+                return Err(format!(
                     "Settings.load: Could not open config file {:?}",
                     config_path
-                )
-            });
-
-            return Ok(from_reader(file).unwrap_or_else(|_| {
-                panic!(
-                    "Settings.load: Could not read from config file {:?}",
-                    config_path
-                )
-            }));
+                ));
+            }
         }
 
         Err(format!(
