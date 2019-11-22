@@ -15,7 +15,7 @@ use ron::{
 /// data in the `ron` file format. Settings are stored in the user settings directory (depending on the operation system)
 /// under the a folder with the given application name.
 pub struct Settings {
-    app_name: String,
+    app_name: Box<str>,
 }
 
 impl Default for Settings {
@@ -28,15 +28,15 @@ impl Default for Settings {
 
 impl Settings {
     /// Creates a new `Settings` service with the given app name.
-    pub fn new(app_name: impl Into<String>) -> Self {
+    pub fn new(app_name: impl Into<Box<str>>) -> Self {
         Settings {
             app_name: app_name.into(),
         }
     }
 
     /// Gets the app name of the setting service.
-    pub fn app_name(&self) -> &String {
-        &self.app_name
+    pub fn app_name(&self) -> &str {
+        &*self.app_name
     }
 
     /// Serialize the given data object and user's config dir.
@@ -44,7 +44,7 @@ impl Settings {
         let content = to_string_pretty(data, PrettyConfig::default());
 
         if let Some(config_path) = &mut dirs::config_dir() {
-            config_path.push(self.app_name.as_str());
+            config_path.push(&*self.app_name);
 
             if !config_path.exists() {
                 let result = create_dir_all(&config_path);
@@ -81,7 +81,7 @@ impl Settings {
     /// Loads and deserialize data from user's config dir.
     pub fn load<D: DeserializeOwned>(&self, key: &str) -> Result<D, String> {
         if let Some(config_path) = &mut dirs::config_dir() {
-            config_path.push(self.app_name.as_str());
+            config_path.push(&*self.app_name);
             config_path.push(format!("{}.ron", key));
 
             if let Ok(file) = &mut File::open(&config_path) {
