@@ -49,7 +49,7 @@ impl State for MainViewState {
                         &Global {
                             label: ctx.widget().get::<String16>("text").to_string(),
                         },
-                    );
+                    ).unwrap();
                     ctx.widget().set("info_text", String16::from("Label saved to settings file."));
                 }
                 Action::Clear => {
