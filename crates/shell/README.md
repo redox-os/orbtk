@@ -2,7 +2,7 @@
 
 Cross platform window shell library. It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 
-[![Build status](https://gitlab.redox-os.org/redox-os/orbtk/badges/master/build.svg)](https://gitlab.redox-os.org/redox-os/orbtk/pipelines)
+[![Build status](https://gitlab.redox-os.org/redox-os/orbtk/badges/develop/build.svg)](https://gitlab.redox-os.org/redox-os/orbtk/pipelines)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](../../LICENSE)
 
 ## Platforms
