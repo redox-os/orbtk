@@ -15,13 +15,13 @@ impl ScrollViewerState {
 }
 
 impl State for ScrollViewerState {
-    fn update(&self, ctx: &mut Context<'_>) {
+    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
         if let Some(delta) = self.delta.get() {
             ctx.widget().set("delta", delta);
         }
     }
 
-    fn update_post_layout(&self, ctx: &mut Context<'_>) {
+    fn update_post_layout(&self, _: &mut Registry, ctx: &mut Context<'_>) {
         if self.delta.get().is_some() {
             ctx.widget().set("delta", Point::new(0.0, 0.0));
             self.delta.set(None);

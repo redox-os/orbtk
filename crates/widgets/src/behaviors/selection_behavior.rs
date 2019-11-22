@@ -15,7 +15,7 @@ impl SelectionBehaviorState {
 }
 
 impl State for SelectionBehaviorState {
-    fn update(&self, ctx: &mut Context<'_>) {
+    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
         if !ctx.widget().get::<bool>("enabled")
             || *ctx.widget().get::<bool>("selected") == self.selected.get()
         {

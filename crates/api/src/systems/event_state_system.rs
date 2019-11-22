@@ -1,8 +1,4 @@
-use std::{
-    cell::{Cell, RefCell},
-    collections::BTreeMap,
-    rc::Rc,
-};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -12,12 +8,11 @@ use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree, utils::*}
 pub struct EventStateSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub handlers: EventHandlerMap,
-    pub update: Rc<Cell<bool>>,
-    pub running: Rc<Cell<bool>>,
     pub mouse_down_nodes: RefCell<Vec<Entity>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+    pub registry: Rc<RefCell<Registry>>,
 }
 
 impl EventStateSystem {
@@ -33,8 +28,9 @@ impl EventStateSystem {
         mouse_position: Point,
         event: &EventBox,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-    ) {
+    ) -> bool {
         let mut matching_nodes = vec![];
+        let mut update = false;
 
         let mut current_node = event.source;
         let root = ecm.entity_store().root;
@@ -64,7 +60,7 @@ impl EventStateSystem {
                 constraint.set_height(*height);
             }
 
-            self.update.set(true);
+            update = true;
         }
 
         // global key handling
@@ -286,19 +282,22 @@ impl EventStateSystem {
             if let Some(handlers) = self.handlers.borrow().get(node) {
                 handled = handlers.iter().any(|handler| handler.handle_event(event));
 
-                self.update.set(true);
+                update = true;
             }
 
             if handled {
                 break;
             }
         }
+
+        update
     }
 }
 
 impl System<Tree, StringComponentStore> for EventStateSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         let mut shell = self.shell.borrow_mut();
+        let mut update = shell.update();
 
         loop {
             {
@@ -308,7 +307,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                     if let Ok(event) = event.downcast_ref::<SystemEvent>() {
                         match event {
                             SystemEvent::Quit => {
-                                self.running.set(false);
+                                shell.set_running(false);
                                 return;
                             }
                         }
@@ -319,12 +318,16 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                             self.process_top_down_event(&event, ecm);
                         }
                         EventStrategy::BottomUp => {
-                            self.process_bottom_up_event(mouse_position, &event, ecm);
+                            let should_update =
+                                self.process_bottom_up_event(mouse_position, &event, ecm);
+                            update = update || should_update;
                         }
                         _ => {}
                     }
                 }
             }
+
+            shell.set_update(update);
 
             // handle states
 
@@ -357,7 +360,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
 
                     if !skip {
                         if let Some(state) = self.states.borrow().get(&current_node) {
-                            state.update(&mut ctx);
+                            state.update(&mut *self.registry.borrow_mut(), &mut ctx);
                         }
                     }
                 }

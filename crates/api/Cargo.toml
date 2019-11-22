@@ -10,6 +10,10 @@ keywords = ["ui", "api"]
 edition = "2018"
 
 [dependencies]
+serde = "1.0.102"
+serde_derive = "1.0.102"
+ron = "0.5.1"
+dirs = "2.0.2"
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }
 orbtk-utils = { path = "../utils", version = "0.3.1-alpha2" }
 orbtk-tree = { path = "../tree", version = "0.3.1-alpha2" }

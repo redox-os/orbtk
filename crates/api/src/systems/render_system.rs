@@ -1,8 +1,4 @@
-use std::{
-    cell::{Cell, RefCell},
-    collections::BTreeMap,
-    rc::Rc,
-};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -17,8 +13,6 @@ use crate::{
 pub struct RenderSystem {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub update: Rc<Cell<bool>>,
-    pub running: Rc<Cell<bool>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: EventHandlerMap,
@@ -26,7 +20,10 @@ pub struct RenderSystem {
 
 impl System<Tree, StringComponentStore> for RenderSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
-        if !self.update.get() || ecm.entity_store().parent.is_empty() || !self.running.get() {
+        if !self.shell.borrow().update()
+            || !self.shell.borrow().running()
+            || ecm.entity_store().parent.is_empty()
+        {
             return;
         }
 

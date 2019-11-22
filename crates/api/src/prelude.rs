@@ -9,6 +9,7 @@ pub use crate::{
     macros::*,
     properties::*,
     render_object::*,
+    services::*,
     systems::*,
     tree::Tree,
     widget,
