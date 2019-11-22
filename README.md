@@ -115,13 +115,19 @@ cargo node run --target electron --example widgets
 cargo node run --target android --example widgets
 ```
 
-## Build and run documentation
+## Documentation
+
+### Build and open documentation
 
 You can build and run the latest documentation by executing the following command:
 
 ```text
 cargo doc --no-deps --open
 ```
+
+### OrbTk Manual
+
+To build and run the latest version of the OrbTk manual check: [Manual](https://gitlab.redox-os.org/redox-os/orbtk/tree/develop/manual)
 
 ## Planned features
 
