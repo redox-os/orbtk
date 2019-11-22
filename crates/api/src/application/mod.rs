@@ -21,7 +21,7 @@ mod window;
 #[derive(Default)]
 pub struct Application {
     runners: Vec<ShellRunner<WindowAdapter>>,
-    name: String
+    name: Box<str>
 }
 
 impl Application {
@@ -31,7 +31,7 @@ impl Application {
     }
 
     /// Create a new application with the given name.
-    pub fn from_name(name: impl Into<String>) -> Self {
+    pub fn from_name(name: impl Into<Box<str>>) -> Self {
         Application {
             name: name.into(),
             ..Default::default()
@@ -52,7 +52,7 @@ impl Application {
         if self.name.is_empty() {
             registry.borrow_mut().register("settings", Settings::default());
         } else {
-            registry.borrow_mut().register("settings", Settings::new(self.name.as_str()));       
+            registry.borrow_mut().register("settings", Settings::new(&*self.name));       
         };
 
         let window = {
