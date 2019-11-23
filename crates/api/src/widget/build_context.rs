@@ -10,6 +10,7 @@ pub type WidgetBuildContext =
     RefCell<Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>;
 
 /// Used to create an entity for a widget with its properties as components.
+#[derive(Constructor)]
 pub struct BuildContext<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     render_objects: &'a mut BTreeMap<Entity, Box<dyn RenderObject>>,
@@ -19,23 +20,6 @@ pub struct BuildContext<'a> {
 }
 
 impl<'a> BuildContext<'a> {
-    /// Creates a new `BuildContext`.
-    pub fn new(
-        ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
-        render_objects: &'a mut BTreeMap<Entity, Box<dyn RenderObject>>,
-        layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
-        handlers: &'a mut EventHandlerMap,
-        states: &'a mut BTreeMap<Entity, Rc<dyn State>>,
-    ) -> Self {
-        BuildContext {
-            ecm,
-            render_objects,
-            layouts,
-            handlers,
-            states,
-        }
-    }
-
     /// Creates a new entity.
     pub fn create_entity(&mut self) -> Entity {
         self.ecm.create_entity().build()
