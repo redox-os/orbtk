@@ -29,14 +29,18 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
             .unwrap()
             .clone();
 
+        let render_objects = &self.render_objects;
+        let layouts = &mut self.layouts.borrow_mut();
+        let handlers = &mut self.handlers.borrow_mut();
+
         let mut ctx = Context::new(
             (root, ecm),
             window_shell,
             &theme,
-            self.render_objects.clone(),
-            self.layouts.clone(),
-            self.handlers.clone(),
-            self.states.clone(),
+            render_objects,
+            layouts,
+            handlers,
+            &self.states,
         );
 
         for (node, state) in &*self.states.borrow() {

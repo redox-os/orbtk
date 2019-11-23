@@ -72,14 +72,18 @@ impl System<Tree, StringComponentStore> for InitSystem {
             self.init_id(current_node, ecm.component_store_mut(), root);
 
             {
+                let render_objects = &self.render_objects;
+                let layouts = &mut self.layouts.borrow_mut();
+                let handlers = &mut self.handlers.borrow_mut();
+
                 let mut ctx = Context::new(
                     (current_node, ecm),
                     window_shell,
                     &theme,
-                    self.render_objects.clone(),
-                    self.layouts.clone(),
-                    self.handlers.clone(),
-                    self.states.clone(),
+                    render_objects,
+                    layouts,
+                    handlers,
+                    &self.states,
                 );
 
                 if let Some(state) = self.states.borrow().get(&current_node) {

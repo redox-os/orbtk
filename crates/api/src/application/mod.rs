@@ -57,7 +57,7 @@ impl Application {
 
         let window = create_fn(&mut BuildContext::new(
             world.entity_component_manager(),
-            &mut render_objects.borrow_mut(),
+            &render_objects,
             &mut layouts.borrow_mut(),
             &mut handlers.borrow_mut(),
             &mut states.borrow_mut(),

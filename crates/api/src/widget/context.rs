@@ -12,18 +12,16 @@ pub struct Context<'a> {
     window_shell: &'a mut WindowShell<WindowAdapter>,
     pub entity: Entity,
     pub theme: &'a ThemeValue,
-    render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    handlers: Rc<RefCell<EventHandlerMap>>,
-    states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
-    new_states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
+    layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
+    handlers: &'a mut EventHandlerMap,
+    states: &'a RefCell<BTreeMap<Entity, Rc<dyn State>>>,
+    new_states: BTreeMap<Entity, Rc<dyn State>>,
 }
 
 impl<'a> Drop for Context<'a> {
     fn drop(&mut self) {
-        self.states
-            .borrow_mut()
-            .append(&mut self.new_states.borrow_mut());
+        self.states.borrow_mut().append(&mut self.new_states);
     }
 }
 
@@ -36,10 +34,10 @@ impl<'a> Context<'a> {
         ),
         window_shell: &'a mut WindowShell<WindowAdapter>,
         theme: &'a ThemeValue,
-        render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-        layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-        handlers: Rc<RefCell<EventHandlerMap>>,
-        states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+        render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
+        layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
+        handlers: &'a mut EventHandlerMap,
+        states: &'a RefCell<BTreeMap<Entity, Rc<dyn State>>>,
     ) -> Self {
         Context {
             entity: ecs.0,
@@ -50,7 +48,7 @@ impl<'a> Context<'a> {
             layouts,
             handlers,
             states,
-            new_states: Rc::new(RefCell::new(BTreeMap::new())),
+            new_states: BTreeMap::new(),
         }
     }
 
@@ -189,10 +187,10 @@ impl<'a> Context<'a> {
     pub fn build_context<T, F: FnOnce(&mut BuildContext) -> T>(&mut self, func: F) -> T {
         func(&mut BuildContext::new(
             self.ecm,
-            &mut self.render_objects.borrow_mut(),
-            &mut self.layouts.borrow_mut(),
-            &mut self.handlers.borrow_mut(),
-            &mut self.new_states.borrow_mut(),
+            &self.render_objects,
+            self.layouts,
+            self.handlers,
+            &mut self.new_states,
         ))
     }
 

@@ -344,24 +344,31 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                 let mut skip = false;
 
                 {
-                    let mut ctx = Context::new(
-                        (current_node, ecm),
-                        &mut shell,
-                        &theme,
-                        self.render_objects.clone(),
-                        self.layouts.clone(),
-                        self.handlers.clone(),
-                        self.states.clone(),
-                    );
-
                     if !self.states.borrow().contains_key(&current_node) {
                         skip = true;
                     }
 
                     if !skip {
+                        let render_objects = &self.render_objects;
+                        let layouts = &mut self.layouts.borrow_mut();
+                        let handlers = &mut self.handlers.borrow_mut();
+                        let registry = &mut self.registry.borrow_mut();
+
+                        let mut ctx = Context::new(
+                            (current_node, ecm),
+                            &mut shell,
+                            &theme,
+                            render_objects,
+                            layouts,
+                            handlers,
+                            &self.states,
+                        );
+
                         if let Some(state) = self.states.borrow().get(&current_node) {
-                            state.update(&mut *self.registry.borrow_mut(), &mut ctx);
+                            state.update(registry, &mut ctx);
                         }
+
+                        drop(ctx)
                     }
                 }
                 let mut it = ecm.entity_store().start_node(current_node).into_iter();
