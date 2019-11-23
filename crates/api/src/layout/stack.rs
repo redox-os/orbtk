@@ -59,14 +59,17 @@ impl Layout for StackLayout {
 
         let orientation: Orientation = *ecm.component_store().get("orientation", entity).unwrap();
         let mut desired_size: (f64, f64) = (0.0, 0.0);
+        let nchildren = ecm.entity_store().children[&entity].len();
+        let spacing = spacing(ecm, entity);
 
-        for index in 0..ecm.entity_store().children[&entity].len() {
+        for index in 0..nchildren {
             let child = ecm.entity_store().children[&entity][index];
 
             if let Some(child_layout) = layouts.get(&child) {
                 let child_desired_size =
                     child_layout.measure(render_context_2_d, child, ecm, layouts, theme);
-                let child_margin = {
+
+                let mut child_margin = {
                     if child_desired_size.width() > 0.0 && child_desired_size.height() > 0.0 {
                         *ecm.component_store()
                             .get::<Thickness>("margin", child)
@@ -75,6 +78,10 @@ impl Layout for StackLayout {
                         Thickness::default()
                     }
                 };
+
+                if spacing != 0.0 && nchildren > 1 {
+                    apply_spacing(&mut child_margin, spacing, orientation, index, nchildren);
+                }
 
                 match orientation {
                     Orientation::Horizontal => {
@@ -170,8 +177,10 @@ impl Layout for StackLayout {
         }
 
         let available_size = size;
+        let nchildren = ecm.entity_store().children[&entity].len();
+        let spacing = spacing(ecm, entity);
 
-        for index in 0..ecm.entity_store().children[&entity].len() {
+        for index in 0..nchildren {
             let child = ecm.entity_store().children[&entity][index];
 
             let mut child_desired_size = (0.0, 0.0);
@@ -202,7 +211,7 @@ impl Layout for StackLayout {
                 }
             }
 
-            let child_margin = {
+            let mut child_margin = {
                 if child_desired_size.0 > 0.0 && child_desired_size.1 > 0.0 {
                     *ecm.component_store()
                         .get::<Thickness>("margin", child)
@@ -211,6 +220,10 @@ impl Layout for StackLayout {
                     Thickness::default()
                 }
             };
+
+            if spacing != 0.0 && nchildren > 1 {
+                apply_spacing(&mut child_margin, spacing, orientation, index, nchildren);
+            }
 
             let child_horizontal_alignment: Alignment = *ecm
                 .component_store()
@@ -277,4 +290,29 @@ impl Into<Box<dyn Layout>> for StackLayout {
     fn into(self) -> Box<dyn Layout> {
         Box::new(self)
     }
+}
+
+/// Applies spacing to widgets in a stack, depending upon their position, and the orientation.
+fn apply_spacing(margins: &mut Thickness, spacing: f64, orientation: Orientation, index: usize, nchildren: usize) {
+    let start =  if index == 0 { 0.0 } else { spacing / 2.0 };
+    let end = if index == nchildren - 1 { 0.0 } else { spacing / 2.0 };
+
+    match orientation {
+        Orientation::Vertical => {
+            margins.top += start;
+            margins.bottom += end;
+        }
+        Orientation::Horizontal => {
+            margins.left += start;
+            margins.right += end;
+        }
+    }
+}
+
+/// Fetch the spacing property, which is guaranteed to exist on a stack.
+fn spacing(ecm: &mut EntityComponentManager<Tree, StringComponentStore>, entity: Entity) -> f64 {
+    ecm.component_store()
+        .get::<f64>("spacing", entity)
+        .expect("stack layout missing spacing property")
+        .clone()
 }
