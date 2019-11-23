@@ -16,7 +16,7 @@ pub struct Context<'a> {
     layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
     handlers: &'a mut EventHandlerMap,
     states: &'a RefCell<BTreeMap<Entity, Rc<dyn State>>>,
-    new_states: BTreeMap<Entity, Rc<dyn State>>,
+    new_states: &'a mut BTreeMap<Entity, Rc<dyn State>>,
 }
 
 impl<'a> Drop for Context<'a> {
@@ -38,6 +38,7 @@ impl<'a> Context<'a> {
         layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
         handlers: &'a mut EventHandlerMap,
         states: &'a RefCell<BTreeMap<Entity, Rc<dyn State>>>,
+        new_states: &'a mut BTreeMap<Entity, Rc<dyn State>>,
     ) -> Self {
         Context {
             entity: ecs.0,
@@ -48,7 +49,7 @@ impl<'a> Context<'a> {
             layouts,
             handlers,
             states,
-            new_states: BTreeMap::new(),
+            new_states,
         }
     }
 
@@ -184,28 +185,27 @@ impl<'a> Context<'a> {
     // -- Manipulation --
 
     /// Returns the current build ctx.
-    pub fn build_context<T, F: FnOnce(&mut BuildContext) -> T>(&mut self, func: F) -> T {
-        func(&mut BuildContext::new(
+    pub fn build_context(&mut self) -> BuildContext {
+        BuildContext::new(
             self.ecm,
-            &self.render_objects,
+            self.render_objects,
             self.layouts,
             self.handlers,
-            &mut self.new_states,
-        ))
+            self.new_states,
+        )
     }
 
     /// Appends a child widget to the given parent.
     pub fn append_child_to<W: Widget>(&mut self, child: W, parent: Entity) {
-        self.build_context(move |build_context| {
-            let child = child.build(build_context);
-            build_context.append_child(parent, child);
-        })
+        let bctx = &mut self.build_context();
+        let child = child.build(bctx);
+        bctx.append_child(parent, child)
 
     }
 
     /// Appends a child widget by entity to the given parent.
     pub fn append_child_entity_to(&mut self, child: Entity, parent: Entity) {
-        self.build_context(|bctx| bctx.append_child(parent, child));
+        self.build_context().append_child(parent, child)
     }
 
     /// Appends a child to the current widget.

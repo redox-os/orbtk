@@ -353,6 +353,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                         let layouts = &mut self.layouts.borrow_mut();
                         let handlers = &mut self.handlers.borrow_mut();
                         let registry = &mut self.registry.borrow_mut();
+                        let new_states = &mut BTreeMap::new();
 
                         let mut ctx = Context::new(
                             (current_node, ecm),
@@ -362,6 +363,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                             layouts,
                             handlers,
                             &self.states,
+                            new_states,
                         );
 
                         if let Some(state) = self.states.borrow().get(&current_node) {

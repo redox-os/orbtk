@@ -75,6 +75,7 @@ impl System<Tree, StringComponentStore> for InitSystem {
                 let render_objects = &self.render_objects;
                 let layouts = &mut self.layouts.borrow_mut();
                 let handlers = &mut self.handlers.borrow_mut();
+                let new_states = &mut BTreeMap::new();
 
                 let mut ctx = Context::new(
                     (current_node, ecm),
@@ -84,6 +85,7 @@ impl System<Tree, StringComponentStore> for InitSystem {
                     layouts,
                     handlers,
                     &self.states,
+                    new_states,
                 );
 
                 if let Some(state) = self.states.borrow().get(&current_node) {

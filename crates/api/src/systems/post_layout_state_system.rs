@@ -32,6 +32,7 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
         let render_objects = &self.render_objects;
         let layouts = &mut self.layouts.borrow_mut();
         let handlers = &mut self.handlers.borrow_mut();
+        let new_states = &mut BTreeMap::new();
 
         let mut ctx = Context::new(
             (root, ecm),
@@ -41,6 +42,7 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
             layouts,
             handlers,
             &self.states,
+            new_states
         );
 
         for (node, state) in &*self.states.borrow() {

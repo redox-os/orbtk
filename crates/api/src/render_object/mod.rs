@@ -83,6 +83,7 @@ pub trait RenderObject: Any {
             &mut layouts.borrow_mut(),
             &mut handlers.borrow_mut(),
             &states,
+            &mut BTreeMap::new(),
         ), &global_position);
 
         let mut global_pos = (0.0, 0.0);
