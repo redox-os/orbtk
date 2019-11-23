@@ -316,3 +316,40 @@ fn spacing(ecm: &mut EntityComponentManager<Tree, StringComponentStore>, entity:
         .expect("stack layout missing spacing property")
         .clone()
 }
+
+#[cfg(test)]
+mod tests {
+    use orbtk_utils::{Thickness, Orientation};
+    use std::iter;
+
+    use super::apply_spacing;
+
+    const NUM_WIDGETS: usize = 5;
+
+    #[test]
+    fn spacing_vertical() {
+        let expected = iter::once(Thickness { left: 0.0, right: 0.0, top: 0.0, bottom: 2.0 })
+            .chain(iter::repeat(Thickness { left: 0.0, right: 0.0, top: 2.0, bottom: 2.0 }).take(3))
+            .chain(iter::once(Thickness { left: 0.0, right: 0.0, top: 2.0, bottom: 0.0 }));
+
+        spacing(Orientation::Vertical, 4.0, expected);
+    }
+
+    #[test]
+    fn spacing_horizontal() {
+        let expected = iter::once(Thickness { left: 0.0, right: 4.0, top: 0.0, bottom: 0.0 })
+            .chain(iter::repeat(Thickness { left: 4.0, right: 4.0, top: 0.0, bottom: 0.0 }).take(3))
+            .chain(iter::once(Thickness { left: 4.0, right: 0.0, top: 0.0, bottom: 0.0 }));
+
+        spacing(Orientation::Horizontal, 8.0, expected);
+    }
+
+    fn spacing(orientation: Orientation, spacing: f64, expected: impl Iterator<Item = Thickness>) {
+        let inputs = (0..NUM_WIDGETS).map(|id| (id, Thickness::default()));
+
+        for ((index, mut input), expected) in inputs.zip(expected) {
+            apply_spacing(&mut input, spacing, orientation, index, NUM_WIDGETS);
+            assert_eq!(input, expected);
+        }
+    }
+}
