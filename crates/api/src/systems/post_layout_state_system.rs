@@ -10,7 +10,7 @@ pub struct PostLayoutStateSystem {
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub handlers: EventHandlerMap,
+    pub handlers: Rc<RefCell<EventHandlerMap>>,
     pub registry: Rc<RefCell<Registry>>,
 }
 
@@ -29,14 +29,20 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
             .unwrap()
             .clone();
 
+        let render_objects = &self.render_objects;
+        let layouts = &mut self.layouts.borrow_mut();
+        let handlers = &mut self.handlers.borrow_mut();
+        let new_states = &mut BTreeMap::new();
+
         let mut ctx = Context::new(
             (root, ecm),
             window_shell,
             &theme,
-            self.render_objects.clone(),
-            self.layouts.clone(),
-            self.handlers.clone(),
-            self.states.clone(),
+            render_objects,
+            layouts,
+            handlers,
+            &self.states,
+            new_states
         );
 
         for (node, state) in &*self.states.borrow() {

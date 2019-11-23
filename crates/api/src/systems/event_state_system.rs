@@ -7,7 +7,7 @@ use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree, utils::*}
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
 pub struct EventStateSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub handlers: EventHandlerMap,
+    pub handlers: Rc<RefCell<EventHandlerMap>>,
     pub mouse_down_nodes: RefCell<Vec<Entity>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
@@ -344,24 +344,33 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                 let mut skip = false;
 
                 {
-                    let mut ctx = Context::new(
-                        (current_node, ecm),
-                        &mut shell,
-                        &theme,
-                        self.render_objects.clone(),
-                        self.layouts.clone(),
-                        self.handlers.clone(),
-                        self.states.clone(),
-                    );
-
                     if !self.states.borrow().contains_key(&current_node) {
                         skip = true;
                     }
 
                     if !skip {
+                        let render_objects = &self.render_objects;
+                        let layouts = &mut self.layouts.borrow_mut();
+                        let handlers = &mut self.handlers.borrow_mut();
+                        let registry = &mut self.registry.borrow_mut();
+                        let new_states = &mut BTreeMap::new();
+
+                        let mut ctx = Context::new(
+                            (current_node, ecm),
+                            &mut shell,
+                            &theme,
+                            render_objects,
+                            layouts,
+                            handlers,
+                            &self.states,
+                            new_states,
+                        );
+
                         if let Some(state) = self.states.borrow().get(&current_node) {
-                            state.update(&mut *self.registry.borrow_mut(), &mut ctx);
+                            state.update(registry, &mut ctx);
                         }
+
+                        drop(ctx)
                     }
                 }
                 let mut it = ecm.entity_store().start_node(current_node).into_iter();

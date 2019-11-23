@@ -55,17 +55,13 @@ impl Application {
             registry.borrow_mut().register("settings", Settings::new(&*self.name));       
         };
 
-        let window = {
-            let mut ctx = BuildContext::new(
-                world.entity_component_manager(),
-                render_objects.clone(),
-                layouts.clone(),
-                handlers.clone(),
-                states.clone(),
-            );
-
-            create_fn(&mut ctx)
-        };
+        let window = create_fn(&mut BuildContext::new(
+            world.entity_component_manager(),
+            &render_objects,
+            &mut layouts.borrow_mut(),
+            &mut handlers.borrow_mut(),
+            &mut states.borrow_mut(),
+        ));
 
         {
             let tree: &mut Tree = world.entity_component_manager().entity_store_mut();

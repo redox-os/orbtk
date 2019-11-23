@@ -21,6 +21,7 @@ orbtk-css-engine = { path = "../css-engine", version = "0.3.1-alpha2" }
 orbtk-render = { path = "../render", version = "0.3.1-alpha2" }
 orbtk-shell = { path = "../shell", version = "0.3.1-alpha2" }
 orbtk-theme = { path = "../theme", version = "0.3.1-alpha2" }
+derive_more = "0.99.2"
 
 [features]
 debug = []

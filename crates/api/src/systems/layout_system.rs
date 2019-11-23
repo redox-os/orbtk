@@ -38,7 +38,7 @@ impl System<Tree, StringComponentStore> for LayoutSystem {
             self.shell.borrow_mut().render_context_2_d(),
             root,
             ecm,
-            &self.layouts,
+            &self.layouts.borrow(),
             &theme,
         );
 
@@ -47,7 +47,7 @@ impl System<Tree, StringComponentStore> for LayoutSystem {
             window_size,
             root,
             ecm,
-            &self.layouts,
+            &self.layouts.borrow(),
             &theme,
         );
 
