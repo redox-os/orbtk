@@ -14,7 +14,7 @@ pub struct Context<'a> {
     pub theme: &'a ThemeValue,
     render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    handlers: EventHandlerMap,
+    handlers: Rc<RefCell<EventHandlerMap>>,
     states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     new_states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
 }
@@ -38,7 +38,7 @@ impl<'a> Context<'a> {
         theme: &'a ThemeValue,
         render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
         layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-        handlers: EventHandlerMap,
+        handlers: Rc<RefCell<EventHandlerMap>>,
         states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     ) -> Self {
         Context {
@@ -186,26 +186,28 @@ impl<'a> Context<'a> {
     // -- Manipulation --
 
     /// Returns the current build ctx.
-    pub fn build_context(&mut self) -> BuildContext {
-        BuildContext::new(
+    pub fn build_context<T, F: FnOnce(&mut BuildContext) -> T>(&mut self, func: F) -> T {
+        func(&mut BuildContext::new(
             self.ecm,
-            self.render_objects.clone(),
-            self.layouts.clone(),
-            self.handlers.clone(),
-            self.new_states.clone(),
-        )
+            &mut self.render_objects.borrow_mut(),
+            &mut self.layouts.borrow_mut(),
+            &mut self.handlers.borrow_mut(),
+            &mut self.new_states.borrow_mut(),
+        ))
     }
 
     /// Appends a child widget to the given parent.
     pub fn append_child_to<W: Widget>(&mut self, child: W, parent: Entity) {
-        let mut build_context = self.build_context();
-        let child = child.build(&mut build_context);
-        build_context.append_child(parent, child);
+        self.build_context(move |build_context| {
+            let child = child.build(build_context);
+            build_context.append_child(parent, child);
+        })
+
     }
 
     /// Appends a child widget by entity to the given parent.
     pub fn append_child_entity_to(&mut self, child: Entity, parent: Entity) {
-        self.build_context().append_child(parent, child);
+        self.build_context(|bctx| bctx.append_child(parent, child));
     }
 
     /// Appends a child to the current widget.

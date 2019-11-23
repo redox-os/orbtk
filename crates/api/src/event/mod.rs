@@ -1,6 +1,6 @@
 //! This module contains all resources to call and handle events.
 
-use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{any::Any, collections::BTreeMap, rc::Rc};
 
 use dces::entity::Entity;
 
@@ -40,7 +40,7 @@ pub trait Event: Any {
     }
 }
 
-pub type EventHandlerMap = Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>;
+pub type EventHandlerMap = BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>;
 
 pub type TriggerHandler = dyn Fn(Entity) + 'static;
 

@@ -12,20 +12,20 @@ pub type WidgetBuildContext =
 /// Used to create an entity for a widget with its properties as components.
 pub struct BuildContext<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
-    render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    handlers: EventHandlerMap,
-    states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    render_objects: &'a mut BTreeMap<Entity, Box<dyn RenderObject>>,
+    layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
+    handlers: &'a mut EventHandlerMap,
+    states: &'a mut BTreeMap<Entity, Rc<dyn State>>,
 }
 
 impl<'a> BuildContext<'a> {
     /// Creates a new `BuildContext`.
     pub fn new(
         ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
-        render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-        layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-        handlers: EventHandlerMap,
-        states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+        render_objects: &'a mut BTreeMap<Entity, Box<dyn RenderObject>>,
+        layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
+        handlers: &'a mut EventHandlerMap,
+        states: &'a mut BTreeMap<Entity, Rc<dyn State>>,
     ) -> Self {
         BuildContext {
             ecm,
@@ -111,31 +111,28 @@ impl<'a> BuildContext<'a> {
 
     /// Registers a state with a widget.
     pub fn register_state(&mut self, widget: Entity, state: Rc<dyn State>) {
-        self.states.borrow_mut().insert(widget, state);
+        self.states.insert(widget, state);
     }
 
     /// Registers a render object with a widget.
-    pub fn register_render_object(&self, widget: Entity, render_object: Box<dyn RenderObject>) {
-        self.render_objects
-            .borrow_mut()
-            .insert(widget, render_object);
+    pub fn register_render_object(&mut self, widget: Entity, render_object: Box<dyn RenderObject>) {
+        self.render_objects.insert(widget, render_object);
     }
 
     /// Registers a event handler with a widget.
-    pub fn register_handler(&self, widget: Entity, handler: Rc<dyn EventHandler>) {
-        if !self.handlers.borrow().contains_key(&widget) {
-            self.handlers.borrow_mut().insert(widget, vec![]);
+    pub fn register_handler(&mut self, widget: Entity, handler: Rc<dyn EventHandler>) {
+        if !self.handlers.contains_key(&widget) {
+            self.handlers.insert(widget, vec![]);
         }
 
         self.handlers
-            .borrow_mut()
             .get_mut(&widget)
             .unwrap()
             .push(handler);
     }
 
     /// Registers a layout object with a widget.
-    pub fn register_layout(&self, widget: Entity, layout: Box<dyn Layout>) {
-        self.layouts.borrow_mut().insert(widget, layout);
+    pub fn register_layout(&mut self, widget: Entity, layout: Box<dyn Layout>) {
+        self.layouts.insert(widget, layout);
     }
 }

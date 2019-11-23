@@ -10,7 +10,7 @@ pub struct PostLayoutStateSystem {
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub handlers: EventHandlerMap,
+    pub handlers: Rc<RefCell<EventHandlerMap>>,
     pub registry: Rc<RefCell<Registry>>,
 }
 

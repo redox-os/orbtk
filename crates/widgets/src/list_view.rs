@@ -24,9 +24,7 @@ impl State for ListViewState {
                     ctx.clear_children_of(items_panel);
 
                     for i in 0..count {
-                        let mut build_context = ctx.build_context();
-
-                        let item = {
+                        let item = ctx.build_context(|mut build_context| {
                             let child = builder(&mut build_context, i);
                             let item = ListViewItem::create().build(&mut build_context);
 
@@ -55,7 +53,7 @@ impl State for ListViewState {
                             build_context.append_child(mouse_behavior, child);
 
                             item
-                        };
+                        });
                         ctx.get_widget(item).update_properties_by_theme();
                     }
                 }
@@ -186,10 +184,10 @@ widget!(
         /// Sets or shares the css selector property.
         selector: Selector,
 
-        /// Sets or shares the pressed property. 
+        /// Sets or shares the pressed property.
         pressed: bool,
 
-        /// Sets or shares the selected property. 
+        /// Sets or shares the selected property.
         selected: bool
     }
 );
@@ -265,7 +263,7 @@ widget!(
         /// Sets or shares the list of selected indices.
         selected_entities: SelectedEntities,
 
-        /// Sets or shares the (wheel, scroll) delta property. 
+        /// Sets or shares the (wheel, scroll) delta property.
         delta: Point
     }
 );
