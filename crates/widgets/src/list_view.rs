@@ -24,13 +24,12 @@ impl State for ListViewState {
                     ctx.clear_children_of(items_panel);
 
                     for i in 0..count {
-                        let mut build_context = ctx.build_context();
-
                         let item = {
-                            let child = builder(&mut build_context, i);
-                            let item = ListViewItem::create().build(&mut build_context);
+                            let build_context = &mut ctx.build_context();
+                            let child = builder(build_context, i);
+                            let item = ListViewItem::create().build(build_context);
 
-                            let mouse_behavior = MouseBehavior::create().build(&mut build_context);
+                            let mouse_behavior = MouseBehavior::create().build(build_context);
                             build_context.register_shared_property::<Selector>(
                                 "selector",
                                 mouse_behavior,
@@ -186,10 +185,10 @@ widget!(
         /// Sets or shares the css selector property.
         selector: Selector,
 
-        /// Sets or shares the pressed property. 
+        /// Sets or shares the pressed property.
         pressed: bool,
 
-        /// Sets or shares the selected property. 
+        /// Sets or shares the selected property.
         selected: bool
     }
 );
@@ -265,7 +264,7 @@ widget!(
         /// Sets or shares the list of selected indices.
         selected_entities: SelectedEntities,
 
-        /// Sets or shares the (wheel, scroll) delta property. 
+        /// Sets or shares the (wheel, scroll) delta property.
         delta: Point
     }
 );

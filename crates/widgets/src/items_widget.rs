@@ -24,10 +24,11 @@ impl State for ItemsWidgetState {
                     ctx.clear_children_of(items_panel);
 
                     for i in 0..count {
+                        let bctx = &mut ctx.build_context();
+
                         let child = {
-                            let mut build_context = ctx.build_context();
-                            let child = builder(&mut build_context, i);
-                            build_context.append_child(items_panel, child);
+                            let child = builder(bctx, i);
+                            bctx.append_child(items_panel, child);
                             child
                         };
 

@@ -9,7 +9,7 @@ use crate::{prelude::*, shell, tree::Tree, utils::Point};
 pub struct WindowAdapter {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub handlers: EventHandlerMap,
+    pub handlers: Rc<RefCell<EventHandlerMap>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
     pub event_queue: EventQueue,
     pub messages: BTreeMap<Entity, Vec<MessageBox>>,
