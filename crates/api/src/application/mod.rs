@@ -1,10 +1,6 @@
 //! This module contains the base elements of an OrbTk application (Application, WindowBuilder and Window).
 
-use std::{
-    cell::{Cell, RefCell},
-    collections::BTreeMap,
-    rc::Rc,
-};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, World};
 
@@ -25,6 +21,7 @@ mod window;
 #[derive(Default)]
 pub struct Application {
     runners: Vec<ShellRunner<WindowAdapter>>,
+    name: Box<str>
 }
 
 impl Application {
@@ -33,6 +30,15 @@ impl Application {
         Self::default()
     }
 
+    /// Create a new application with the given name.
+    pub fn from_name(name: impl Into<Box<str>>) -> Self {
+        Application {
+            name: name.into(),
+            ..Default::default()
+        }
+    }
+
+    /// Creates a new window and add it to the application.
     pub fn window<F: Fn(&mut BuildContext) -> Entity + 'static>(mut self, create_fn: F) -> Self {
         let mut world = World::from_stores(Tree::default(), StringComponentStore::default());
 
@@ -40,8 +46,14 @@ impl Application {
         let layouts = Rc::new(RefCell::new(BTreeMap::new()));
         let handlers = Rc::new(RefCell::new(BTreeMap::new()));
         let states = Rc::new(RefCell::new(BTreeMap::new()));
-        let update = Rc::new(Cell::new(true));
-        let running = Rc::new(Cell::new(true));
+        let registry = Rc::new(RefCell::new(Registry::new()));
+
+        // register settings service.
+        if self.name.is_empty() {
+            registry.borrow_mut().register("settings", Settings::default());
+        } else {
+            registry.borrow_mut().register("settings", Settings::new(&*self.name));       
+        };
 
         let window = {
             let mut ctx = BuildContext::new(
@@ -146,18 +158,18 @@ impl Application {
             render_objects: render_objects.clone(),
             handlers: handlers.clone(),
             states: states.clone(),
+            registry: registry.clone(),
         });
 
         world
             .create_system(EventStateSystem {
                 shell: window_shell.clone(),
                 handlers: handlers.clone(),
-                update: update.clone(),
-                running: running.clone(),
                 mouse_down_nodes: RefCell::new(vec![]),
                 render_objects: render_objects.clone(),
                 states: states.clone(),
                 layouts: layouts.clone(),
+                registry: registry.clone(),
             })
             .with_priority(0)
             .build();
@@ -166,8 +178,6 @@ impl Application {
             .create_system(LayoutSystem {
                 shell: window_shell.clone(),
                 layouts: layouts.clone(),
-                update: update.clone(),
-                running: running.clone(),
             })
             .with_priority(1)
             .build();
@@ -179,8 +189,7 @@ impl Application {
                 render_objects: render_objects.clone(),
                 handlers: handlers.clone(),
                 states: states.clone(),
-                update: update.clone(),
-                running: running.clone(),
+                registry: registry.clone(),
             })
             .with_priority(2)
             .build();
@@ -192,8 +201,6 @@ impl Application {
                 render_objects: render_objects.clone(),
                 handlers: handlers.clone(),
                 states: states.clone(),
-                update: update.clone(),
-                running: running.clone(),
             })
             .with_priority(3)
             .build();
@@ -201,8 +208,6 @@ impl Application {
         self.runners.push(ShellRunner {
             updater: Box::new(WorldWrapper { world }),
             window_shell,
-            update,
-            running,
         });
 
         self
