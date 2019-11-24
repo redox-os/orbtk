@@ -145,17 +145,9 @@ impl Layout for StackLayout {
 
             let mut child_desired_size = (0.0, 0.0);
             if let Some(child_layout) = layouts.get(&child) {
-                let dimensions = match orientation {
-                    // set width to 0.0 to shrink width of the child
-                    Orientation::Horizontal => (0.0, size.1),
-
-                    // set height to 0.0 to shrink height of the child
-                    Orientation::Vertical => (size.0, 0.0)
-                };
-
                 child_desired_size = child_layout.arrange(
                     render_context_2_d,
-                    dimensions,
+                    size,
                     child,
                     ecm,
                     layouts,
