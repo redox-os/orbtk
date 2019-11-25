@@ -265,37 +265,37 @@ impl Template for MainView {
                                     )
                                     // row 0
                                     .child(generate_operation_button(
-                                        ctx, &state, 'C', false, 0, 5, 0,
+                                        ctx, id, 'C', false, 0, 5, 0,
                                     ))
                                     .child(generate_operation_button(
-                                        ctx, &state, '/', true, 6, 3, 0,
+                                        ctx, id, '/', true, 6, 3, 0,
                                     ))
                                     // row 2
-                                    .child(generate_digit_button(ctx, &state, '7', false, 0, 1, 2))
-                                    .child(generate_digit_button(ctx, &state, '8', false, 2, 1, 2))
-                                    .child(generate_digit_button(ctx, &state, '9', false, 4, 1, 2))
+                                    .child(generate_digit_button(ctx, id, '7', false, 0, 1, 2))
+                                    .child(generate_digit_button(ctx, id, '8', false, 2, 1, 2))
+                                    .child(generate_digit_button(ctx, id, '9', false, 4, 1, 2))
                                     .child(generate_operation_button(
-                                        ctx, &state, '*', true, 6, 1, 2,
+                                        ctx, id, '*', true, 6, 1, 2,
                                     ))
                                     // row 4
-                                    .child(generate_digit_button(ctx, &state, '4', false, 0, 1, 4))
-                                    .child(generate_digit_button(ctx, &state, '5', false, 2, 1, 4))
-                                    .child(generate_digit_button(ctx, &state, '6', false, 4, 1, 4))
+                                    .child(generate_digit_button(ctx, id, '4', false, 0, 1, 4))
+                                    .child(generate_digit_button(ctx, id, '5', false, 2, 1, 4))
+                                    .child(generate_digit_button(ctx, id, '6', false, 4, 1, 4))
                                     .child(generate_operation_button(
-                                        ctx, &state, '-', true, 6, 1, 4,
+                                        ctx, id, '-', true, 6, 1, 4,
                                     ))
                                     // row 6
-                                    .child(generate_digit_button(ctx, &state, '1', false, 0, 1, 6))
-                                    .child(generate_digit_button(ctx, &state, '2', false, 2, 1, 6))
-                                    .child(generate_digit_button(ctx, &state, '3', false, 4, 1, 6))
+                                    .child(generate_digit_button(ctx, id, '1', false, 0, 1, 6))
+                                    .child(generate_digit_button(ctx, id, '2', false, 2, 1, 6))
+                                    .child(generate_digit_button(ctx, id, '3', false, 4, 1, 6))
                                     .child(generate_operation_button(
-                                        ctx, &state, '+', true, 6, 1, 6,
+                                        ctx, id, '+', true, 6, 1, 6,
                                     ))
                                     // row 8
-                                    .child(generate_digit_button(ctx, &state, '0', false, 0, 3, 8))
-                                    .child(generate_digit_button(ctx, &state, '.', false, 4, 1, 8))
+                                    .child(generate_digit_button(ctx, id, '0', false, 0, 3, 8))
+                                    .child(generate_digit_button(ctx, id, '.', false, 4, 1, 8))
                                     .child(generate_operation_button(
-                                        ctx, &state, '=', true, 6, 1, 8,
+                                        ctx, id, '=', true, 6, 1, 8,
                                     ))
                                     .build(ctx),
                             )

@@ -170,7 +170,7 @@ impl render::RenderPipeline for Graphic2DPipeline {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct MainViewState {
     cube_spin: Cell<f32>,
 }
@@ -203,7 +203,6 @@ widget!(
 
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let state = self.clone_state();
         self.name("MainView")
             .render_pipeline(RenderPipeline(Box::new(CubePipeline::default())))
             .child(
@@ -236,8 +235,8 @@ impl Template for MainView {
                             .vertical_alignment("end")
                             .attach(Grid::row(1))
                             .margin(4.0)
-                            .on_click(move |_| {
-                                state.spin();
+                            .on_click(move |states, _| {
+                                states.get::<MainViewState>(id).spin();
                                 true
                             })
                             .build(ctx),

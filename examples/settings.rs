@@ -16,7 +16,7 @@ pub struct Global {
     pub label: String,
 }
 
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct MainViewState {
     action: Cell<Option<Action>>,
 }
@@ -70,10 +70,6 @@ widget!(MainView<MainViewState> {
 
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let load_state = self.clone_state();
-        let save_state = self.clone_state();
-        let clear_state = self.clone_state();
-
         self.name("MainView").child(
             Grid::create()
                 .rows(Rows::create().row(32.0).row(4.0).row("auto").build())
@@ -93,8 +89,8 @@ impl Template for MainView {
                     Button::create()
                         .attach(Grid::row(0))
                         .attach(Grid::column(2))
-                        .on_click(move |_| {
-                            load_state.action(Action::Load);
+                        .on_click(move |states, _| {
+                            state(id, states).action(Action::Load);
                             true
                         })
                         .text("Load")
@@ -104,8 +100,8 @@ impl Template for MainView {
                     Button::create()
                         .attach(Grid::row(0))
                         .attach(Grid::column(4))
-                        .on_click(move |_| {
-                            save_state.action(Action::Save);
+                        .on_click(move |states, _| {
+                            state(id, states).action(Action::Save);
                             true
                         })
                         .text("Save")
@@ -115,8 +111,8 @@ impl Template for MainView {
                     Button::create()
                         .attach(Grid::row(0))
                         .attach(Grid::column(6))
-                        .on_click(move |_| {
-                            clear_state.action(Action::Clear);
+                        .on_click(move |states, _| {
+                            state(id, states).action(Action::Clear);
                             true
                         })
                         .text("Clear")
@@ -145,4 +141,9 @@ fn main() {
                 .build(ctx)
         })
         .run();
+}
+
+// helper to request MainViewState
+fn state<'a>(id: Entity, states: &'a mut StatesContext) -> &'a mut MainViewState {
+    states.get_mut(id)
 }

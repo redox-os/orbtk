@@ -2,7 +2,7 @@ use std::cell::Cell;
 
 use orbtk::prelude::*;
 
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct MainViewState {
     clear: Cell<bool>,
 }
@@ -31,21 +31,20 @@ widget!(MainView<MainViewState> {
 
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let state = self.clone_state();
         self.name("MainView").child(
             Stack::create()
                 .orientation("horizontal")
                 // By injecting the id of the parent the text property
                 // is shared between the MainView and the TextBox. This
                 // means both references the same String16 object.
-                .child(TextBox::create().text(id).build(ctx))
+                .child(TextBox::create().height(32.0).text(id).build(ctx))
                 .child(
                     Button::create()
                         .margin((8.0, 0.0, 0.0, 0.0))
                         // mouse click event handler
-                        .on_click(move |_| {
+                        .on_click(move |states, _| {
                             // Calls clear of the state of MainView
-                            state.clear();
+                            states.get::<MainViewState>(id).clear();
                             true
                         })
                         .text("Clear")
