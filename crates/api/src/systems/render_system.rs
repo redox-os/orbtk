@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc, any::Any};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -13,7 +13,7 @@ use crate::{
 pub struct RenderSystem {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: Rc<RefCell<EventHandlerMap>>,
 }

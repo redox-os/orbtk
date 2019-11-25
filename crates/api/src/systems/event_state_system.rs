@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, any::Any, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -9,7 +9,7 @@ pub struct EventStateSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub handlers: Rc<RefCell<EventHandlerMap>>,
     pub mouse_down_nodes: RefCell<Vec<Entity>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub registry: Rc<RefCell<Registry>>,
@@ -280,7 +280,7 @@ impl EventStateSystem {
             }
 
             if let Some(handlers) = self.handlers.borrow().get(node) {
-                handled = handlers.iter().any(|handler| handler.handle_event(event));
+                handled = handlers.iter().any(|handler| handler.handle_event(&mut StatesContext::new(&mut *self.states.borrow_mut()), event));
 
                 update = true;
             }

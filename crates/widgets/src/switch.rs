@@ -4,7 +4,7 @@ use super::behaviors::MouseBehavior;
 use crate::prelude::*;
 
 /// State to handle the position of switch toggle.
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct SwitchState {
     selected: Cell<bool>,
 }
@@ -82,7 +82,6 @@ widget!(
 
 impl Template for Switch {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let state = self.clone_state();
         self.name("Switch")
             .selector("switch")
             .pressed(false)
@@ -99,8 +98,8 @@ impl Template for Switch {
                     .pressed(id)
                     .enabled(id)
                     .selector(id)
-                    .on_click(move |_| {
-                        state.toggle_selection();
+                    .on_click(move |states, _| {
+                        states.get::<SwitchState>(id).toggle_selection();
                         false
                     })
                     .child(

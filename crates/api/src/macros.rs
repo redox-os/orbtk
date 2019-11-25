@@ -74,7 +74,7 @@ macro_rules! widget {
              )*
             children: Vec<Entity>,
             $(
-                state: RefCell<Option<Rc<$state>>>
+                state: RefCell<Option<Box<$state>>>
             )*
         }
 
@@ -250,20 +250,6 @@ macro_rules! widget {
             }
 
             $(
-                /// Returns the cloned state of the widget.
-                pub fn clone_state(&self) -> Rc<$state> {
-                    if let Some(state) = &*self.state.borrow() {
-                        return state.clone();
-                    }
-
-                    let state = Rc::new($state::default());
-                    *self.state.borrow_mut() = Some(state.clone());
-
-                    state
-                }
-            )*
-
-            $(
                 $(
                     $(#[$prop_doc])*
                     pub fn $property<P: IntoPropertySource<$property_type>>(mut self, $property: P) -> Self {
@@ -322,19 +308,19 @@ macro_rules! widget {
                 self
             }
 
-            $(
-                fn state(&self) -> Option<Rc<State>> {
-                    if self.state.borrow().is_none() {
-                        *self.state.borrow_mut() = Some(Rc::new($state::default()));
-                    }
+            // $(
+            //     fn state(&self) -> Option<Box<State>> {
+            //         if self.state.borrow().is_none() {
+            //             *self.state.borrow_mut() = Some(Box::new($state::default()));
+            //         }
 
-                    if let Some(state) = &*self.state.borrow() {
-                        return Some(state.clone())
-                    }
+            //         if let Some(state) = &*self.state.borrow() {
+            //             return Some(state.clone())
+            //         }
 
-                    None
-                }
-            )*
+            //         None
+            //     }
+            // )*
 
             fn build(self, ctx: &mut BuildContext) -> Entity {
                 let entity = ctx.create_entity();
@@ -345,9 +331,14 @@ macro_rules! widget {
                 ctx.register_layout(entity, this.layout());
 
                  // register state
-                if let Some(state) = &this.state() {
-                     ctx.register_state(entity, state.clone());
-                 }
+                // if let Some(state) = &this.state() {
+                //      ctx.register_state(entity, state);
+                //  }
+
+                $(
+                    ctx.register_state(entity, Box::new($state::default()));
+                )*
+
 
                 // register default set of properties
                 ctx.register_property("bounds", entity, this.bounds);

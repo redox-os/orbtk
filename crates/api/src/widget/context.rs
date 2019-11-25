@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, collections::BTreeMap, any::Any};
 
 use dces::prelude::{Entity, EntityComponentManager};
 
@@ -15,8 +15,8 @@ pub struct Context<'a> {
     render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
     layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
     handlers: &'a mut EventHandlerMap,
-    states: &'a RefCell<BTreeMap<Entity, Rc<dyn State>>>,
-    new_states: &'a mut BTreeMap<Entity, Rc<dyn State>>,
+    states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
+    new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
 }
 
 impl<'a> Drop for Context<'a> {
@@ -37,8 +37,8 @@ impl<'a> Context<'a> {
         render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
         layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
         handlers: &'a mut EventHandlerMap,
-        states: &'a RefCell<BTreeMap<Entity, Rc<dyn State>>>,
-        new_states: &'a mut BTreeMap<Entity, Rc<dyn State>>,
+        states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
+        new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
     ) -> Self {
         Context {
             entity: ecs.0,

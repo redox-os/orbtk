@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 // Default state of the `Cursor` widget.
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct CursorState;
 
 impl State for CursorState {

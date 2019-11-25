@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc, any::Any};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -7,7 +7,7 @@ use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree};
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 pub struct PostLayoutStateSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: Rc<RefCell<EventHandlerMap>>,

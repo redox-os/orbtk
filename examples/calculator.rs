@@ -29,7 +29,7 @@ enum Action {
     Operator(char),
 }
 
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct MainViewState {
     input: RefCell<String>,
     operator: Cell<Option<char>>,
@@ -139,21 +139,20 @@ fn get_button_selector(primary: bool) -> Selector {
 
 fn generate_digit_button(
     ctx: &mut BuildContext,
-    state: &Rc<MainViewState>,
+    id: Entity,
     sight: char,
     primary: bool,
     column: usize,
     column_span: usize,
     row: usize,
 ) -> Entity {
-    let state = state.clone();
 
     Button::create()
         .min_size(48.0, 48.0)
         .text(sight.to_string())
         .selector(get_button_selector(primary))
-        .on_click(move |_| -> bool {
-            state.action(Action::Digit(sight));
+        .on_click(move |states, _| -> bool {
+            states.get::<MainViewState>(id).action(Action::Digit(sight));
             true
         })
         .attach(Grid::column(column))
@@ -164,20 +163,19 @@ fn generate_digit_button(
 
 fn generate_operation_button(
     ctx: &mut BuildContext,
-    state: &Rc<MainViewState>,
+    id: Entity,
     sight: char,
     primary: bool,
     column: usize,
     column_span: usize,
     row: usize,
 ) -> Entity {
-    let state = state.clone();
     Button::create()
         .min_size(48.0, 48.0)
         .text(sight.to_string())
         .selector(get_button_selector(primary).class("square"))
-        .on_click(move |_| -> bool {
-            state.action(Action::Operator(sight));
+        .on_click(move |states, _| -> bool {
+            states.get::<MainViewState>(id).action(Action::Operator(sight));
             true
         })
         .attach(Grid::column(column))
@@ -191,9 +189,7 @@ widget!(MainView<MainViewState> {
 });
 
 impl Template for MainView {
-    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let state = self.clone_state();
-
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self { 
         self.name("MainView")
             .width(212.0)
             .height(336.0)

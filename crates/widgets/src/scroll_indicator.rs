@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 /// The `ScrollIndicatorState` handles the `ScrollIndicator` widget.
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct ScrollIndicatorState;
 
 impl State for ScrollIndicatorState {

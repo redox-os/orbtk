@@ -6,7 +6,7 @@ use std::{
 use super::behaviors::MouseBehavior;
 use crate::{prelude::*, utils::SelectionMode as SelMode};
 
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct ListViewState {
     builder: WidgetBuildContext,
     count: Cell<usize>,
@@ -86,7 +86,7 @@ impl State for ListViewState {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct ListViewItemState {
     request_selection_toggle: Cell<bool>,
 }
@@ -194,9 +194,7 @@ widget!(
 );
 
 impl Template for ListViewItem {
-    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        let state = self.clone_state();
-
+    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("ListViewItem")
             .min_width(64.0)
             .height(24.0)
@@ -211,8 +209,8 @@ impl Template for ListViewItem {
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(32.0)
             .font("Roboto Regular")
-            .on_click(move |_| {
-                state.toggle_selection();
+            .on_click(move |states, _| {
+                states.get::<ListViewItemState>(id).toggle_selection();
                 false
             })
     }
@@ -274,7 +272,7 @@ impl ListView {
         self,
         builder: F,
     ) -> Self {
-        *self.clone_state().builder.borrow_mut() = Some(Box::new(builder));
+        // *self.clone_state().builder.borrow_mut() = Some(Box::new(builder));
         self
     }
 }

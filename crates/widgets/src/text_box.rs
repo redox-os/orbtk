@@ -13,6 +13,7 @@ enum TextBoxAction {
 }
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
+#[derive(AsAny)]
 pub struct TextBoxState {
     action: RefCell<Option<TextBoxAction>>,
     cursor_x: Cell<f64>,
@@ -271,9 +272,6 @@ widget!(
 
 impl Template for TextBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let state = self.clone_state();
-        let mouse_state = self.clone_state();
-
         self.name("TextBox")
             .selector("text-box")
             .text("")
@@ -292,8 +290,8 @@ impl Template for TextBox {
             .delta(0.0)
             .child(
                 MouseBehavior::create()
-                    .on_mouse_down(move |p| {
-                        mouse_state.action(TextBoxAction::Mouse(p));
+                    .on_mouse_down(move |states, p| {
+                        states.get::<TextBoxState>(id).action(TextBoxAction::Mouse(p));
                         true
                     })
                     .child(
@@ -343,8 +341,8 @@ impl Template for TextBox {
                     )
                     .build(ctx),
             )
-            .on_key_down(move |event: KeyEvent| -> bool {
-                state.action(TextBoxAction::Key(event));
+            .on_key_down(move |states, event| -> bool {
+                states.get::<TextBoxState>(id).action(TextBoxAction::Key(event));
                 false
             })
     }

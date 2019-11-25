@@ -10,7 +10,7 @@ enum Action {
 }
 
 /// The `MouseBehaviorState` handles the `MouseBehavior` widget.
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct MouseBehaviorState {
     action: Cell<Option<Action>>,
     has_delta: Cell<bool>,
@@ -82,25 +82,27 @@ widget!(
 );
 
 impl Template for MouseBehavior {
-    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        let md_state = self.clone_state();
-        let mu_state = self.clone_state();
-        let wh_state = self.clone_state();
-
+    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("MouseBehavior")
             .selector("")
             .delta(0.0)
             .pressed(false)
-            .on_mouse_down(move |p| {
-                md_state.action(Action::Press(p));
+            .on_mouse_down(move |states, p| {
+                states
+                    .get::<MouseBehaviorState>(id)
+                    .action(Action::Press(p));
                 false
             })
-            .on_mouse_up(move |p| {
-                mu_state.action(Action::Release(p));
+            .on_mouse_up(move |states, p| {
+                states
+                    .get::<MouseBehaviorState>(id)
+                    .action(Action::Release(p));
                 false
             })
-            .on_scroll(move |p| {
-                wh_state.action(Action::Scroll(p));
+            .on_scroll(move |states, p| {
+                states
+                    .get::<MouseBehaviorState>(id)
+                    .action(Action::Scroll(p));
                 false
             })
     }

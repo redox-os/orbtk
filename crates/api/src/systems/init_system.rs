@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc, any::Any};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -7,7 +7,7 @@ use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree};
 /// This system is used to initializes the widgets.
 pub struct InitSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: Rc<RefCell<EventHandlerMap>>,

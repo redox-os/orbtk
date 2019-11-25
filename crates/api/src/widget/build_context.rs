@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, collections::BTreeMap, any::Any, rc::Rc};
 
 use dces::prelude::{Component, ComponentBox, Entity, EntityComponentManager, SharedComponentBox};
 
@@ -16,7 +16,7 @@ pub struct BuildContext<'a> {
     render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
     layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
     handlers: &'a mut EventHandlerMap,
-    states: &'a mut BTreeMap<Entity, Rc<dyn State>>,
+    states: &'a mut BTreeMap<Entity, Box<dyn State>>,
 }
 
 impl<'a> BuildContext<'a> {
@@ -94,7 +94,7 @@ impl<'a> BuildContext<'a> {
     }
 
     /// Registers a state with a widget.
-    pub fn register_state(&mut self, widget: Entity, state: Rc<dyn State>) {
+    pub fn register_state(&mut self, widget: Entity, state: Box<dyn State>) {
         self.states.insert(widget, state);
     }
 

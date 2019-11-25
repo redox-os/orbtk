@@ -2,16 +2,10 @@ use std::cell::Cell;
 
 use crate::prelude::*;
 
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct ItemsWidgetState {
     builder: WidgetBuildContext,
     count: Cell<usize>,
-}
-
-impl Into<Rc<dyn State>> for ItemsWidgetState {
-    fn into(self) -> Rc<dyn State> {
-        Rc::new(self)
-    }
 }
 
 impl State for ItemsWidgetState {
@@ -78,7 +72,8 @@ impl ItemsWidget {
         self,
         builder: F,
     ) -> Self {
-        *self.clone_state().builder.borrow_mut() = Some(Box::new(builder));
+        // todo fix
+        // *self.clone_state().builder.borrow_mut() = Some(Box::new(builder));
         self
     }
 }

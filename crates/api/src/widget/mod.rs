@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::{any::Any, rc::Rc};
 
 use dces::prelude::Entity;
 
@@ -9,6 +9,7 @@ pub use self::context::*;
 pub use self::message::*;
 pub use self::registry::*;
 pub use self::state::*;
+pub use self::states_context::*;
 pub use self::template::*;
 pub use self::widget_container::*;
 
@@ -17,6 +18,7 @@ mod context;
 mod message;
 mod registry;
 mod state;
+mod states_context;
 mod template;
 mod widget_container;
 
@@ -60,7 +62,7 @@ pub trait Widget: Template {
     fn insert_handler(self, handler: impl Into<Rc<dyn EventHandler>>) -> Self;
 
     /// Returns the state of the widget.
-    fn state(&self) -> Option<Rc<dyn State>> {
+    fn state(&self) -> Option<Box<dyn Any>> {
         None
     }
 
