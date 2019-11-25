@@ -1,5 +1,4 @@
 use std::{
-    cell::{Cell, RefCell},
     collections::HashSet,
 };
 
@@ -17,22 +16,22 @@ enum Action {
 
 #[derive(AsAny)]
 pub struct MainViewState {
-    counter: Cell<i32>,
-    list: RefCell<Vec<String>>,
-    selection_list: RefCell<Vec<String>>,
-    action: Cell<Option<Action>>,
+    counter: i32,
+    list: Vec<String>,
+    selection_list: Vec<String>,
+    action: Option<Action>,
 }
 
 impl Default for MainViewState {
     fn default() -> Self {
         MainViewState {
-            counter: Cell::new(0),
-            list: RefCell::new(vec![
+            counter: 0,
+            list: vec![
                 "Item 1".to_string(),
                 "Item 2".to_string(),
                 "Item 3".to_string(),
-            ]),
-            selection_list: RefCell::new(vec![
+            ],
+            selection_list: vec![
                 "Item 1".to_string(),
                 "Item 2".to_string(),
                 "Item 3".to_string(),
@@ -43,26 +42,26 @@ impl Default for MainViewState {
                 "Item 8".to_string(),
                 "Item 9".to_string(),
                 "Item 10".to_string(),
-            ]),
-            action: Cell::new(None),
+            ],
+            action: None,
         }
     }
 }
 
 impl MainViewState {
-    fn action(&self, action: impl Into<Option<Action>>) {
-        self.action.set(action.into());
+    fn action(&mut self, action: impl Into<Option<Action>>) {
+        self.action = action.into();
     }
 }
 
 impl State for MainViewState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        if let Some(action) = self.action.get() {
+        if let Some(action) = self.action {
             match action {
                 Action::AddItem => {
-                    let len = self.list.borrow().len();
+                    let len = self.list.len();
                     if len < 5 {
-                        self.list.borrow_mut().push(format!("Item {}", len + 1));
+                        self.list.push(format!("Item {}", len + 1));
                         ctx.child("items").set("count", len + 1);
 
                         if len == 0 {
@@ -75,8 +74,8 @@ impl State for MainViewState {
                     }
                 }
                 Action::RemoveItem => {
-                    let len = self.list.borrow().len();
-                    self.list.borrow_mut().remove(len - 1);
+                    let len = self.list.len();
+                    self.list.remove(len - 1);
                     ctx.child("items").set("count", len - 1);
 
                     if len == 1 {
@@ -88,10 +87,10 @@ impl State for MainViewState {
                     }
                 }
                 Action::IncrementCounter => {
-                    self.counter.set(self.counter.get() + 1);
+                    self.counter += 1;
                     ctx.widget().set(
                         "result",
-                        String16::from(format!("Button count: {}", self.counter.get())),
+                        String16::from(format!("Button count: {}", self.counter)),
                     );
                 }
                 Action::ClearText => {
@@ -111,7 +110,7 @@ impl State for MainViewState {
                 }
             }
 
-            self.action.set(None);
+            self.action = None;
         }
     }
 

@@ -172,12 +172,12 @@ impl render::RenderPipeline for Graphic2DPipeline {
 
 #[derive(Default, AsAny)]
 pub struct MainViewState {
-    cube_spin: Cell<f32>,
+    cube_spin: f32,
 }
 
 impl MainViewState {
-    fn spin(&self) {
-        self.cube_spin.set(self.cube_spin.get() + 32.0);
+    fn spin(&mut self) {
+        self.cube_spin += 32.0;
     }
 }
 
@@ -190,7 +190,7 @@ impl State for MainViewState {
             .as_any()
             .downcast_ref::<CubePipeline>()
         {
-            cube.spin.set(self.cube_spin.get());
+            cube.spin.set(self.cube_spin);
         }
     }
 }
@@ -236,7 +236,7 @@ impl Template for MainView {
                             .attach(Grid::row(1))
                             .margin(4.0)
                             .on_click(move |states, _| {
-                                states.get::<MainViewState>(id).spin();
+                                states.get_mut::<MainViewState>(id).spin();
                                 true
                             })
                             .build(ctx),

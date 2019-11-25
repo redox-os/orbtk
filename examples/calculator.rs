@@ -1,8 +1,6 @@
 use orbtk::prelude::*;
 use orbtk::theme::DEFAULT_THEME_CSS;
 
-use std::cell::Cell;
-
 static DARK_EXT: &'static str = include_str!("../res/calculator-dark.css");
 
 #[cfg(feature = "light-theme")]
@@ -31,23 +29,23 @@ enum Action {
 
 #[derive(Default, AsAny)]
 pub struct MainViewState {
-    input: RefCell<String>,
-    operator: Cell<Option<char>>,
-    left_side: Cell<Option<f64>>,
-    right_side: Cell<Option<f64>>,
-    action: Cell<Option<Action>>,
+    input: String,
+    operator: Option<char>,
+    left_side: Option<f64>,
+    right_side: Option<f64>,
+    action: Option<Action>,
 }
 
 impl MainViewState {
-    fn action(&self, action: impl Into<Option<Action>>) {
-        self.action.set(action.into());
+    fn action(&mut self, action: impl Into<Option<Action>>) {
+        self.action = action.into();
     }
 
-    fn calculate(&self, ctx: &mut Context) {
+    fn calculate(&mut self, ctx: &mut Context) {
         let mut result = 0.0;
-        if let Some(operator) = self.operator.get() {
-            if let Some(left_side) = self.left_side.get() {
-                if let Some(right_side) = self.right_side.get() {
+        if let Some(operator) = self.operator {
+            if let Some(left_side) = self.left_side {
+                if let Some(right_side) = self.right_side {
                     match operator {
                         '+' => {
                             result = left_side + right_side;
@@ -68,61 +66,58 @@ impl MainViewState {
         }
 
         ctx.widget().set("text", String16::from(result.to_string()));
-        self.left_side.set(Some(result));
-        self.right_side.set(None);
+        self.left_side = Some(result);
+        self.right_side = None;
     }
 }
 
 impl State for MainViewState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        if let Some(action) = self.action.get() {
+        if let Some(action) = self.action {
             match action {
                 Action::Digit(digit) => {
-                    self.input.borrow_mut().push(digit);
+                    self.input.push(digit);
                     ctx.child("input").get_mut::<String16>("text").push(digit);
                 }
                 Action::Operator(operator) => match operator {
                     'C' => {
-                        self.input.borrow_mut().clear();
-                        self.left_side.set(None);
-                        self.operator.set(None);
-                        self.right_side.set(None);
+                        self.input.clear();
+                        self.left_side = None;
+                        self.operator = None;
+                        self.right_side = None;
                         ctx.widget().get_mut::<String16>("text").clear();
                         ctx.child("input").get_mut::<String16>("text").clear()
                     }
                     '=' => {
-                        self.right_side
-                            .set(Some(self.input.borrow().parse().unwrap_or(0.0)));
+                        self.right_side = Some(self.input.parse().unwrap_or(0.0));
                         self.calculate(ctx);
-                        self.input.borrow_mut().clear();
-                        self.left_side.set(None);
-                        self.operator.set(None);
-                        self.right_side.set(None);
+                        self.input.clear();
+                        self.left_side = None;
+                        self.operator = None;
+                        self.right_side = None;
                         ctx.child("input").get_mut::<String16>("text").clear()
                     }
                     _ => {
-                        if self.input.borrow().is_empty() {
+                        if self.input.is_empty() {
                             return;
                         }
-                        if self.left_side.get().is_none() {
-                            self.left_side
-                                .set(Some(self.input.borrow().parse().unwrap_or(0.0)));
+                        if self.left_side.is_none() {
+                            self.left_side = Some(self.input.parse().unwrap_or(0.0));
                         } else {
-                            self.right_side
-                                .set(Some(self.input.borrow().parse().unwrap_or(0.0)));
+                            self.right_side = Some(self.input.parse().unwrap_or(0.0));
                             self.calculate(ctx);
                         }
 
                         ctx.child("input")
                             .get_mut::<String16>("text")
                             .push(operator);
-                        self.input.borrow_mut().clear();
-                        self.operator.set(Some(operator));
+                        self.input.clear();
+                        self.operator = Some(operator);
                     }
                 },
             }
 
-            self.action.set(None);
+            self.action = None;
         }
     }
 }
@@ -152,7 +147,7 @@ fn generate_digit_button(
         .text(sight.to_string())
         .selector(get_button_selector(primary))
         .on_click(move |states, _| -> bool {
-            states.get::<MainViewState>(id).action(Action::Digit(sight));
+            state(id, states).action(Action::Digit(sight));
             true
         })
         .attach(Grid::column(column))
@@ -175,7 +170,7 @@ fn generate_operation_button(
         .text(sight.to_string())
         .selector(get_button_selector(primary).class("square"))
         .on_click(move |states, _| -> bool {
-            states.get::<MainViewState>(id).action(Action::Operator(sight));
+            state(id, states).action(Action::Operator(sight));
             true
         })
         .attach(Grid::column(column))
@@ -318,4 +313,9 @@ fn main() {
                 .build(ctx)
         })
         .run();
+}
+
+// helper to request MainViewState
+fn state<'a>(id: Entity, states: &'a mut StatesContext) -> &'a mut MainViewState {
+    states.get_mut(id)
 }

@@ -1,26 +1,24 @@
-use std::cell::Cell;
-
 use orbtk::prelude::*;
 
 #[derive(Default, AsAny)]
 pub struct MainViewState {
-    clear: Cell<bool>,
+    clear: bool,
 }
 
 impl MainViewState {
     // Sets an action the state
-    fn clear(&self) {
-        self.clear.set(true);
+    fn clear(&mut self) {
+        self.clear = true;
     }
 }
 
 impl State for MainViewState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        if self.clear.get() {
+        if self.clear {
             // Clears the text property of MainView and because
             // of the sharing also the text of the TextBox.
             ctx.widget().set("text", String16::from(""));
-            self.clear.set(false);
+            self.clear = false;
         }
     }
 }
@@ -44,7 +42,7 @@ impl Template for MainView {
                         // mouse click event handler
                         .on_click(move |states, _| {
                             // Calls clear of the state of MainView
-                            states.get::<MainViewState>(id).clear();
+                            states.get_mut::<MainViewState>(id).clear();
                             true
                         })
                         .text("Clear")
