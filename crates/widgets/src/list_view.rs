@@ -9,7 +9,7 @@ use crate::{prelude::*, utils::SelectionMode as SelMode};
 #[derive(Default, AsAny)]
 pub struct ListViewState {
     builder: WidgetBuildContext,
-    count: Cell<usize>,
+    count: usize,
     selected_entities: RefCell<HashSet<Entity>>,
 }
 
@@ -18,8 +18,8 @@ impl State for ListViewState {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
 
-        if count != self.count.get() {
-            if let Some(builder) = &*self.builder.borrow() {
+        if count != self.count {
+            if let Some(builder) = &self.builder {
                 if let Some(items_panel) = ctx.entity_of_child("items_panel") {
                     ctx.clear_children_of(items_panel);
 
@@ -60,7 +60,7 @@ impl State for ListViewState {
                 }
             }
 
-            self.count.set(count);
+            self.count = count;
         }
     }
 
@@ -269,10 +269,10 @@ widget!(
 
 impl ListView {
     pub fn items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(
-        self,
+        mut self,
         builder: F,
     ) -> Self {
-        // *self.clone_state().builder.borrow_mut() = Some(Box::new(builder));
+        self.state_mut().builder = Some(Box::new(builder));
         self
     }
 }

@@ -75,16 +75,19 @@ pub trait RenderObject: Any {
             }
         }
 
-        self.render_self(&mut Context::new(
-            (entity, ecm),
-            shell,
-            &theme,
-            render_objects,
-            &mut layouts.borrow_mut(),
-            &mut handlers.borrow_mut(),
-            &states,
-            &mut BTreeMap::new(),
-        ), &global_position);
+        self.render_self(
+            &mut Context::new(
+                (entity, ecm),
+                shell,
+                &theme,
+                render_objects,
+                &mut layouts.borrow_mut(),
+                &mut handlers.borrow_mut(),
+                &states,
+                &mut BTreeMap::new(),
+            ),
+            &global_position,
+        );
 
         let mut global_pos = (0.0, 0.0);
 

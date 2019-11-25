@@ -91,11 +91,13 @@ impl Into<Rc<dyn EventHandler>> for MouseDownEventHandler {
 }
 
 impl EventHandler for MouseDownEventHandler {
-    fn handle_event(&self,  state_context: &mut StatesContext, event: &EventBox) -> bool {
+    fn handle_event(&self, state_context: &mut StatesContext, event: &EventBox) -> bool {
         event
             .downcast_ref::<MouseDownEvent>()
             .ok()
-            .map_or(false, |event| (self.handler)(state_context, Point::new(event.x, event.y)))
+            .map_or(false, |event| {
+                (self.handler)(state_context, Point::new(event.x, event.y))
+            })
     }
 
     fn handles_event(&self, event: &EventBox) -> bool {
@@ -115,11 +117,13 @@ impl Into<Rc<dyn EventHandler>> for MouseUpEventHandler {
 }
 
 impl EventHandler for MouseUpEventHandler {
-    fn handle_event(&self,  state_context: &mut StatesContext, event: &EventBox) -> bool {
+    fn handle_event(&self, state_context: &mut StatesContext, event: &EventBox) -> bool {
         event
             .downcast_ref::<MouseUpEvent>()
             .ok()
-            .map_or(false, |event| (self.handler)(state_context, Point::new(event.x, event.y)))
+            .map_or(false, |event| {
+                (self.handler)(state_context, Point::new(event.x, event.y))
+            })
     }
 
     fn handles_event(&self, event: &EventBox) -> bool {
@@ -139,11 +143,13 @@ impl Into<Rc<dyn EventHandler>> for MouseMoveEventHandler {
 }
 
 impl EventHandler for MouseMoveEventHandler {
-    fn handle_event(&self,  state_context: &mut StatesContext, event: &EventBox) -> bool {
+    fn handle_event(&self, state_context: &mut StatesContext, event: &EventBox) -> bool {
         event
             .downcast_ref::<MouseMoveEvent>()
             .ok()
-            .map_or(false, |event| (self.handler)(state_context, Point::new(event.x, event.y)))
+            .map_or(false, |event| {
+                (self.handler)(state_context, Point::new(event.x, event.y))
+            })
     }
 
     fn handles_event(&self, event: &EventBox) -> bool {

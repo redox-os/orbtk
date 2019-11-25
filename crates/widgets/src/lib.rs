@@ -7,11 +7,11 @@ pub mod prelude;
 pub use dces::prelude as ecs;
 
 pub use orbtk_api::prelude as api;
+pub use orbtk_proc_macros as proc_macros;
 pub use orbtk_render::prelude as render;
 pub use orbtk_shell::prelude as shell;
 pub use orbtk_theme::prelude as theme;
 pub use orbtk_utils::prelude as utils;
-pub use orbtk_proc_macros as proc_macros;
 
 pub use self::button::*;
 pub use self::canvas::*;

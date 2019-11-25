@@ -1,19 +1,17 @@
-use std::cell::Cell;
-
 use crate::prelude::*;
 
 #[derive(Default, AsAny)]
 pub struct ItemsWidgetState {
     builder: WidgetBuildContext,
-    count: Cell<usize>,
+    count: usize,
 }
 
 impl State for ItemsWidgetState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let count = ctx.widget().clone_or_default::<usize>("count");
 
-        if count != self.count.get() {
-            if let Some(builder) = &*self.builder.borrow() {
+        if count != self.count {
+            if let Some(builder) = &self.builder {
                 if let Some(items_panel) = ctx.entity_of_child("items_panel") {
                     ctx.clear_children_of(items_panel);
 
@@ -31,7 +29,7 @@ impl State for ItemsWidgetState {
                 }
             }
 
-            self.count.set(count);
+            self.count = count;
         }
     }
 }
@@ -69,11 +67,10 @@ widget!(
 
 impl ItemsWidget {
     pub fn items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(
-        self,
+        mut self,
         builder: F,
     ) -> Self {
-        // todo fix
-        // *self.clone_state().builder.borrow_mut() = Some(Box::new(builder));
+        self.state_mut().builder = Some(Box::new(builder));
         self
     }
 }

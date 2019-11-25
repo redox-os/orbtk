@@ -141,7 +141,6 @@ fn generate_digit_button(
     column_span: usize,
     row: usize,
 ) -> Entity {
-
     Button::create()
         .min_size(48.0, 48.0)
         .text(sight.to_string())
@@ -184,7 +183,7 @@ widget!(MainView<MainViewState> {
 });
 
 impl Template for MainView {
-    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self { 
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MainView")
             .width(212.0)
             .height(336.0)
@@ -259,39 +258,27 @@ impl Template for MainView {
                                             .build(),
                                     )
                                     // row 0
-                                    .child(generate_operation_button(
-                                        ctx, id, 'C', false, 0, 5, 0,
-                                    ))
-                                    .child(generate_operation_button(
-                                        ctx, id, '/', true, 6, 3, 0,
-                                    ))
+                                    .child(generate_operation_button(ctx, id, 'C', false, 0, 5, 0))
+                                    .child(generate_operation_button(ctx, id, '/', true, 6, 3, 0))
                                     // row 2
                                     .child(generate_digit_button(ctx, id, '7', false, 0, 1, 2))
                                     .child(generate_digit_button(ctx, id, '8', false, 2, 1, 2))
                                     .child(generate_digit_button(ctx, id, '9', false, 4, 1, 2))
-                                    .child(generate_operation_button(
-                                        ctx, id, '*', true, 6, 1, 2,
-                                    ))
+                                    .child(generate_operation_button(ctx, id, '*', true, 6, 1, 2))
                                     // row 4
                                     .child(generate_digit_button(ctx, id, '4', false, 0, 1, 4))
                                     .child(generate_digit_button(ctx, id, '5', false, 2, 1, 4))
                                     .child(generate_digit_button(ctx, id, '6', false, 4, 1, 4))
-                                    .child(generate_operation_button(
-                                        ctx, id, '-', true, 6, 1, 4,
-                                    ))
+                                    .child(generate_operation_button(ctx, id, '-', true, 6, 1, 4))
                                     // row 6
                                     .child(generate_digit_button(ctx, id, '1', false, 0, 1, 6))
                                     .child(generate_digit_button(ctx, id, '2', false, 2, 1, 6))
                                     .child(generate_digit_button(ctx, id, '3', false, 4, 1, 6))
-                                    .child(generate_operation_button(
-                                        ctx, id, '+', true, 6, 1, 6,
-                                    ))
+                                    .child(generate_operation_button(ctx, id, '+', true, 6, 1, 6))
                                     // row 8
                                     .child(generate_digit_button(ctx, id, '0', false, 0, 3, 8))
                                     .child(generate_digit_button(ctx, id, '.', false, 4, 1, 8))
-                                    .child(generate_operation_button(
-                                        ctx, id, '=', true, 6, 1, 8,
-                                    ))
+                                    .child(generate_operation_button(ctx, id, '=', true, 6, 1, 8))
                                     .build(ctx),
                             )
                             .build(ctx),

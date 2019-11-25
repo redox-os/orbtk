@@ -291,7 +291,9 @@ impl Template for TextBox {
             .child(
                 MouseBehavior::create()
                     .on_mouse_down(move |states, p| {
-                        states.get::<TextBoxState>(id).action(TextBoxAction::Mouse(p));
+                        states
+                            .get::<TextBoxState>(id)
+                            .action(TextBoxAction::Mouse(p));
                         true
                     })
                     .child(
@@ -342,7 +344,9 @@ impl Template for TextBox {
                     .build(ctx),
             )
             .on_key_down(move |states, event| -> bool {
-                states.get::<TextBoxState>(id).action(TextBoxAction::Key(event));
+                states
+                    .get::<TextBoxState>(id)
+                    .action(TextBoxAction::Key(event));
                 false
             })
     }

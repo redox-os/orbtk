@@ -1,7 +1,7 @@
-use std::any::Any;
 use super::{Context, MessageBox, Registry};
+use std::any::Any;
 
-pub trait AsAny : Any {
+pub trait AsAny: Any {
     fn as_any(&self) -> &dyn Any;
 
     fn as_any_mut(&mut self) -> &mut dyn Any;
@@ -11,7 +11,6 @@ pub trait AsAny : Any {
 ///
 /// A state is used to operate on the properties (components) of the widget, its parent or children.
 pub trait State: AsAny {
-    
     /// Init is used for initial setup.
     fn init(&mut self, _: &mut Registry, _: &mut Context<'_>) {}
 
@@ -26,5 +25,11 @@ pub trait State: AsAny {
     fn update_post_layout(&mut self, _: &mut Registry, _: &mut Context<'_>) {}
 
     /// Receives all messages from the message channel. This message is only called if the state has messages.
-    fn receive_messages(&mut self, _: &mut Registry, _: &mut Context<'_>, _messages: &[MessageBox]) {}
+    fn receive_messages(
+        &mut self,
+        _: &mut Registry,
+        _: &mut Context<'_>,
+        _messages: &[MessageBox],
+    ) {
+    }
 }

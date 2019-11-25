@@ -38,17 +38,24 @@ impl State for MainViewState {
                         ctx.widget().set("text", String16::from(global.label));
                     }
 
-                    ctx.widget().set("info_text", String16::from("Label loaded from settings file."));
+                    ctx.widget().set(
+                        "info_text",
+                        String16::from("Label loaded from settings file."),
+                    );
                 }
                 Action::Save => {
                     // save label to settings file.
-                    registry.get_mut::<Settings>("settings").save(
-                        "global",
-                        &Global {
-                            label: ctx.widget().get::<String16>("text").to_string(),
-                        },
-                    ).unwrap();
-                    ctx.widget().set("info_text", String16::from("Label saved to settings file."));
+                    registry
+                        .get_mut::<Settings>("settings")
+                        .save(
+                            "global",
+                            &Global {
+                                label: ctx.widget().get::<String16>("text").to_string(),
+                            },
+                        )
+                        .unwrap();
+                    ctx.widget()
+                        .set("info_text", String16::from("Label saved to settings file."));
                 }
                 Action::Clear => {
                     ctx.widget().set("text", String16::default());

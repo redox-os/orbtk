@@ -42,7 +42,7 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
             layouts,
             handlers,
             &self.states,
-            new_states
+            new_states,
         );
 
         for (node, state) in &mut *self.states.borrow_mut() {

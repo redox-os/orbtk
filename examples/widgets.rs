@@ -1,6 +1,4 @@
-use std::{
-    collections::HashSet,
-};
+use std::collections::HashSet;
 
 use orbtk::prelude::*;
 
@@ -16,35 +14,12 @@ enum Action {
 
 #[derive(AsAny)]
 pub struct MainViewState {
-    counter: i32,
-    list: Vec<String>,
-    selection_list: Vec<String>,
     action: Option<Action>,
 }
 
 impl Default for MainViewState {
     fn default() -> Self {
-        MainViewState {
-            counter: 0,
-            list: vec![
-                "Item 1".to_string(),
-                "Item 2".to_string(),
-                "Item 3".to_string(),
-            ],
-            selection_list: vec![
-                "Item 1".to_string(),
-                "Item 2".to_string(),
-                "Item 3".to_string(),
-                "Item 4".to_string(),
-                "Item 5".to_string(),
-                "Item 6".to_string(),
-                "Item 7".to_string(),
-                "Item 8".to_string(),
-                "Item 9".to_string(),
-                "Item 10".to_string(),
-            ],
-            action: None,
-        }
+        MainViewState { action: None }
     }
 }
 
@@ -59,14 +34,13 @@ impl State for MainViewState {
         if let Some(action) = self.action {
             match action {
                 Action::AddItem => {
-                    let len = self.list.len();
+                    let len = ctx.widget().get::<List>("list").len();
                     if len < 5 {
-                        self.list.push(format!("Item {}", len + 1));
+                        ctx.widget()
+                            .get_mut::<List>("list")
+                            .push(format!("Item {}", len + 1));
                         ctx.child("items").set("count", len + 1);
-
-                        if len == 0 {
-                            ctx.child("remove-item-button").set("enabled", true);
-                        }
+                        ctx.child("remove-item-button").set("enabled", true);
 
                         if len == 4 {
                             ctx.child("add-item-button").set("enabled", false);
@@ -74,23 +48,25 @@ impl State for MainViewState {
                     }
                 }
                 Action::RemoveItem => {
-                    let len = self.list.len();
-                    self.list.remove(len - 1);
-                    ctx.child("items").set("count", len - 1);
-
-                    if len == 1 {
-                        ctx.child("remove-item-button").set("enabled", false);
-                    }
-
-                    if len < 6 {
+                    let len = ctx.widget().get::<List>("list").len();
+                    if len > 0 {
+                        ctx.widget().get_mut::<List>("list").remove(len - 1);
+                        ctx.child("items").set("count", len - 1);
                         ctx.child("add-item-button").set("enabled", true);
+
+                        if len == 1 {
+                            ctx.child("remove-item-button").set("enabled", false);
+                        }
                     }
                 }
                 Action::IncrementCounter => {
-                    self.counter += 1;
+                    *ctx.widget().get_mut::<usize>("counter") += 1;
+
+                    let counter = *ctx.widget().get::<usize>("counter");
+
                     ctx.widget().set(
                         "result",
-                        String16::from(format!("Button count: {}", self.counter)),
+                        String16::from(format!("Button count: {}", counter)),
                     );
                 }
                 Action::ClearText => {
@@ -133,9 +109,16 @@ fn create_header(ctx: &mut BuildContext, text: &str) -> Entity {
         .build(ctx)
 }
 
+type List = Vec<String>;
+
 widget!(
     MainView<MainViewState> {
         selected_indices: SelectedIndices,
+        counter: usize,
+        list_count: usize,
+        list: List,
+        selection_list: List,
+        selection_list_count: usize,
         text_one: String16,
         text_two: String16,
         result: String16
@@ -144,12 +127,29 @@ widget!(
 
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        // let list_count = list_state.list.borrow().len();
-        // let selection_list_count = list_state.selection_list.borrow().len();
-
         self.name("MainView")
             .result("Button count: 0")
+            .counter(0)
             .selected_indices(HashSet::new())
+            .list(vec![
+                "Item 1".to_string(),
+                "Item 2".to_string(),
+                "Item 3".to_string(),
+            ])
+            .list_count(3)
+            .selection_list(vec![
+                "Item 1".to_string(),
+                "Item 2".to_string(),
+                "Item 3".to_string(),
+                "Item 4".to_string(),
+                "Item 5".to_string(),
+                "Item 6".to_string(),
+                "Item 7".to_string(),
+                "Item 8".to_string(),
+                "Item 9".to_string(),
+                "Item 10".to_string(),
+            ])
+            .selection_list_count(10)
             .child(
                 Grid::create()
                     .margin(8.0)
@@ -310,13 +310,17 @@ impl Template for MainView {
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(1))
                                     .margin((0.0, 8.0, 0.0, 8.0))
-                                    // .items_builder(move |bc, index| {
-                                    //     Button::create()
-                                    //         .margin((0.0, 0.0, 0.0, 2.0))
-                                    //         .text(list_state.list.borrow()[index].as_str())
-                                    //         .build(bc)
-                                    // })
-                                    // .count(list_count)
+                                    .items_builder(move |bc, index| {
+                                        let text = bc.get_widget(id).get::<Vec<String>>("list")
+                                            [index]
+                                            .clone();
+
+                                        Button::create()
+                                            .margin((0.0, 0.0, 0.0, 2.0))
+                                            .text(text)
+                                            .build(bc)
+                                    })
+                                    .count(("list_count", id))
                                     .build(ctx),
                             )
                             .child(
@@ -352,17 +356,18 @@ impl Template for MainView {
                                     .attach(Grid::row(3))
                                     .selected_indices(id)
                                     .margin((0.0, 16.0, 0.0, 8.0))
-                                    // .items_builder(move |bc, index| {
-                                    //     TextBlock::create()
-                                    //         .margin((0.0, 0.0, 0.0, 2.0))
-                                    //         .vertical_alignment("center")
-                                    //         .text(
-                                    //             list_view_state.selection_list.borrow()[index]
-                                    //                 .as_str(),
-                                    //         )
-                                    //         .build(bc)
-                                    // })
-                                    // .count(selection_list_count)
+                                    .items_builder(move |bc, index| {
+                                        let text = bc
+                                            .get_widget(id)
+                                            .get::<Vec<String>>("selection_list")[index]
+                                            .clone();
+                                        TextBlock::create()
+                                            .margin((0.0, 0.0, 0.0, 2.0))
+                                            .vertical_alignment("center")
+                                            .text(text)
+                                            .build(bc)
+                                    })
+                                    .count(("selection_list_count", id))
                                     .build(ctx),
                             )
                             .child(

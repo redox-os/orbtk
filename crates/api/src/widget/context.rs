@@ -192,6 +192,7 @@ impl<'a> Context<'a> {
             self.layouts,
             self.handlers,
             self.new_states,
+            self.theme,
         )
     }
 
@@ -200,7 +201,6 @@ impl<'a> Context<'a> {
         let bctx = &mut self.build_context();
         let child = child.build(bctx);
         bctx.append_child(parent, child)
-
     }
 
     /// Appends a child widget by entity to the given parent.

@@ -1,4 +1,4 @@
-use std::{any::Any, rc::Rc};
+use std::rc::Rc;
 
 use dces::prelude::Entity;
 
@@ -60,11 +60,6 @@ pub trait Widget: Template {
 
     /// Inerts a new event handler.
     fn insert_handler(self, handler: impl Into<Rc<dyn EventHandler>>) -> Self;
-
-    /// Returns the state of the widget.
-    fn state(&self) -> Option<Box<dyn Any>> {
-        None
-    }
 
     /// Appends a child ot the widget.
     fn child(self, child: Entity) -> Self;

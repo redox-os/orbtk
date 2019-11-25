@@ -48,7 +48,7 @@ pub type TriggerHandler = dyn Fn(&mut StatesContext, Entity) + 'static;
 
 #[macro_export]
 macro_rules! trigger_event {
-    ($event:ident, $event_handler:ident, $trait:ident, $method:tt) => (
+    ($event:ident, $event_handler:ident, $trait:ident, $method:tt) => {
         pub struct $event(pub Entity);
 
         impl Event for $event {}
@@ -80,5 +80,5 @@ macro_rules! trigger_event {
                 self.insert_handler($event_handler(Rc::new(handler)))
             }
         }
-    )
+    };
 }

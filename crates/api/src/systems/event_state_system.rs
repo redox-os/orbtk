@@ -280,7 +280,12 @@ impl EventStateSystem {
             }
 
             if let Some(handlers) = self.handlers.borrow().get(node) {
-                handled = handlers.iter().any(|handler| handler.handle_event(&mut StatesContext::new(&mut *self.states.borrow_mut()), event));
+                handled = handlers.iter().any(|handler| {
+                    handler.handle_event(
+                        &mut StatesContext::new(&mut *self.states.borrow_mut()),
+                        event,
+                    )
+                });
 
                 update = true;
             }

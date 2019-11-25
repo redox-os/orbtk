@@ -74,7 +74,7 @@ macro_rules! widget {
              )*
             children: Vec<Entity>,
             $(
-                state: RefCell<Option<Box<$state>>>
+                state: Box<$state>
             )*
         }
 
@@ -250,6 +250,13 @@ macro_rules! widget {
             }
 
             $(
+                /// Gets a mutable reference of the state.
+                fn state_mut(&mut self) -> &mut Box<$state> {
+                    &mut self.state
+                }
+            )*
+
+            $(
                 $(
                     $(#[$prop_doc])*
                     pub fn $property<P: IntoPropertySource<$property_type>>(mut self, $property: P) -> Self {
@@ -308,20 +315,6 @@ macro_rules! widget {
                 self
             }
 
-            // $(
-            //     fn state(&self) -> Option<Box<State>> {
-            //         if self.state.borrow().is_none() {
-            //             *self.state.borrow_mut() = Some(Box::new($state::default()));
-            //         }
-
-            //         if let Some(state) = &*self.state.borrow() {
-            //             return Some(state.clone())
-            //         }
-
-            //         None
-            //     }
-            // )*
-
             fn build(self, ctx: &mut BuildContext) -> Entity {
                 let entity = ctx.create_entity();
 
@@ -330,15 +323,11 @@ macro_rules! widget {
                 ctx.register_render_object(entity, this.render_object());
                 ctx.register_layout(entity, this.layout());
 
-                 // register state
-                // if let Some(state) = &this.state() {
-                //      ctx.register_state(entity, state);
-                //  }
-
                 $(
-                    ctx.register_state(entity, Box::new($state::default()));
+                    // workaround
+                    let _ = TypeId::of::<$state>();
+                    ctx.register_state(entity, this.state);
                 )*
-
 
                 // register default set of properties
                 ctx.register_property("bounds", entity, this.bounds);

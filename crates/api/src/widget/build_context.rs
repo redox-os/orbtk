@@ -7,7 +7,7 @@ use crate::{prelude::*, tree::Tree};
 use super::State;
 
 pub type WidgetBuildContext =
-    RefCell<Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>;
+    Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>;
 
 /// Used to create an entity for a widget with its properties as components.
 #[derive(Constructor)]
@@ -17,9 +17,15 @@ pub struct BuildContext<'a> {
     layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
     handlers: &'a mut EventHandlerMap,
     states: &'a mut BTreeMap<Entity, Box<dyn State>>,
+    theme: &'a ThemeValue,
 }
 
 impl<'a> BuildContext<'a> {
+    /// Returns a specific widget.
+    pub fn get_widget(&mut self, entity: Entity) -> WidgetContainer<'_> {
+        WidgetContainer::new(entity, self.ecm, self.theme)
+    }
+
     /// Creates a new entity.
     pub fn create_entity(&mut self) -> Entity {
         self.ecm.create_entity().build()
@@ -111,10 +117,7 @@ impl<'a> BuildContext<'a> {
             self.handlers.insert(widget, vec![]);
         }
 
-        self.handlers
-            .get_mut(&widget)
-            .unwrap()
-            .push(handler);
+        self.handlers.get_mut(&widget).unwrap().push(handler);
     }
 
     /// Registers a layout object with a widget.

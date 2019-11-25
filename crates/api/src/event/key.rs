@@ -37,7 +37,9 @@ impl EventHandler for KeyDownEventHandler {
         event
             .downcast_ref::<KeyDownEvent>()
             .ok()
-            .map_or(false, |event| (self.handler)(state_context, event.event.clone()))
+            .map_or(false, |event| {
+                (self.handler)(state_context, event.event.clone())
+            })
     }
 
     fn handles_event(&self, event: &EventBox) -> bool {
@@ -47,7 +49,10 @@ impl EventHandler for KeyDownEventHandler {
 
 pub trait KeyDownHandler: Sized + Widget {
     /// Inserts a handler.
-    fn on_key_down<H: Fn(&mut StatesContext, KeyEvent) -> bool + 'static>(self, handler: H) -> Self {
+    fn on_key_down<H: Fn(&mut StatesContext, KeyEvent) -> bool + 'static>(
+        self,
+        handler: H,
+    ) -> Self {
         self.insert_handler(KeyDownEventHandler {
             handler: Rc::new(handler),
         })
