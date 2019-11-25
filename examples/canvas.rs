@@ -170,19 +170,19 @@ impl render::RenderPipeline for Graphic2DPipeline {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct MainViewState {
-    cube_spin: Cell<f32>,
+    cube_spin: f32,
 }
 
 impl MainViewState {
-    fn spin(&self) {
-        self.cube_spin.set(self.cube_spin.get() + 32.0);
+    fn spin(&mut self) {
+        self.cube_spin += 32.0;
     }
 }
 
 impl State for MainViewState {
-    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         if let Some(cube) = ctx
             .widget()
             .get_mut::<RenderPipeline>("render_pipeline")
@@ -190,7 +190,7 @@ impl State for MainViewState {
             .as_any()
             .downcast_ref::<CubePipeline>()
         {
-            cube.spin.set(self.cube_spin.get());
+            cube.spin.set(self.cube_spin);
         }
     }
 }
@@ -203,7 +203,6 @@ widget!(
 
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let state = self.clone_state();
         self.name("MainView")
             .render_pipeline(RenderPipeline(Box::new(CubePipeline::default())))
             .child(
@@ -236,8 +235,8 @@ impl Template for MainView {
                             .vertical_alignment("end")
                             .attach(Grid::row(1))
                             .margin(4.0)
-                            .on_click(move |_| {
-                                state.spin();
+                            .on_click(move |states, _| {
+                                states.get_mut::<MainViewState>(id).spin();
                                 true
                             })
                             .build(ctx),

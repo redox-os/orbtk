@@ -13,8 +13,8 @@ edition = "2018"
 stdweb = "0.4.20"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-raqote = { version = "0.7.5", default-features = false}
-rusttype = "0.8.1"
+raqote = { version = "0.7.6", default-features = false}
+rusttype = "0.8.2"
 image = "0.22.3"
 
 [dependencies]

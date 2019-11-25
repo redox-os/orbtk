@@ -324,7 +324,7 @@ where
 
             self.updater.update();
 
-            if self.window_shell.borrow().update() {
+            if self.window_shell.borrow_mut().update() {
                 self.window_shell.borrow_mut().set_update(false);
             }
 

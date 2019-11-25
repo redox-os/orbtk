@@ -6,20 +6,20 @@ use std::{
 use super::behaviors::MouseBehavior;
 use crate::{prelude::*, utils::SelectionMode as SelMode};
 
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct ListViewState {
     builder: WidgetBuildContext,
-    count: Cell<usize>,
+    count: usize,
     selected_entities: RefCell<HashSet<Entity>>,
 }
 
 impl State for ListViewState {
-    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
 
-        if count != self.count.get() {
-            if let Some(builder) = &*self.builder.borrow() {
+        if count != self.count {
+            if let Some(builder) = &self.builder {
                 if let Some(items_panel) = ctx.entity_of_child("items_panel") {
                     ctx.clear_children_of(items_panel);
 
@@ -60,11 +60,11 @@ impl State for ListViewState {
                 }
             }
 
-            self.count.set(count);
+            self.count = count;
         }
     }
 
-    fn update_post_layout(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         for index in ctx
             .widget()
             .get::<SelectedEntities>("selected_entities")
@@ -86,7 +86,7 @@ impl State for ListViewState {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct ListViewItemState {
     request_selection_toggle: Cell<bool>,
 }
@@ -98,7 +98,7 @@ impl ListViewItemState {
 }
 
 impl State for ListViewItemState {
-    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         if !ctx.widget().get::<bool>("enabled") || !self.request_selection_toggle.get() {
             return;
         }
@@ -194,9 +194,7 @@ widget!(
 );
 
 impl Template for ListViewItem {
-    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        let state = self.clone_state();
-
+    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("ListViewItem")
             .min_width(64.0)
             .height(24.0)
@@ -211,8 +209,8 @@ impl Template for ListViewItem {
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(32.0)
             .font("Roboto Regular")
-            .on_click(move |_| {
-                state.toggle_selection();
+            .on_click(move |states, _| {
+                states.get::<ListViewItemState>(id).toggle_selection();
                 false
             })
     }
@@ -271,10 +269,10 @@ widget!(
 
 impl ListView {
     pub fn items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(
-        self,
+        mut self,
         builder: F,
     ) -> Self {
-        *self.clone_state().builder.borrow_mut() = Some(Box::new(builder));
+        self.state_mut().builder = Some(Box::new(builder));
         self
     }
 }

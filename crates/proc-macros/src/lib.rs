@@ -26,3 +26,24 @@ pub fn derive_pipeline(input: TokenStream) -> TokenStream {
 
     TokenStream::from(gen)
 }
+
+#[proc_macro_derive(AsAny)]
+pub fn derive_as_any(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+
+    let ident = &input.ident;
+
+    let gen = quote! {
+        impl AsAny for #ident {
+            fn as_any(&self) -> &dyn Any {
+                self
+            }
+
+            fn as_any_mut(&mut self) -> &mut dyn Any {
+                self
+            }
+        }
+    };
+
+    TokenStream::from(gen)
+}

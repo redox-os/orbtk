@@ -3,7 +3,7 @@ use std::cell::Cell;
 use crate::prelude::*;
 
 /// The `SelectionBehaviorState` handles the `SelectionBehavior` widget.
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct SelectionBehaviorState {
     selected: Cell<bool>,
 }
@@ -15,7 +15,7 @@ impl SelectionBehaviorState {
 }
 
 impl State for SelectionBehaviorState {
-    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         if !ctx.widget().get::<bool>("enabled")
             || *ctx.widget().get::<bool>("selected") == self.selected.get()
         {
@@ -46,14 +46,12 @@ widget!(
 );
 
 impl Template for SelectionBehavior {
-    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        let state = self.clone_state();
-
+    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("SelectionBehavior")
             .selector("")
             .selected(true)
-            .on_click(move |_| {
-                state.toggle_selection();
+            .on_click(move |states, _| {
+                states.get::<SelectionBehaviorState>(id).toggle_selection();
                 false
             })
     }

@@ -85,14 +85,14 @@ impl Settings {
             config_path.push(format!("{}.ron", key));
 
             if let Ok(file) = &mut File::open(&config_path) {
-               if let Ok(data) = from_reader(file) {
-                   return Ok(data);
-               } else {
-                return Err(format!(
-                    "Settings.load: Could not read data from config file {:?}",
-                    config_path
-                ));
-               }
+                if let Ok(data) = from_reader(file) {
+                    return Ok(data);
+                } else {
+                    return Err(format!(
+                        "Settings.load: Could not read data from config file {:?}",
+                        config_path
+                    ));
+                }
             } else {
                 return Err(format!(
                     "Settings.load: Could not open config file {:?}",

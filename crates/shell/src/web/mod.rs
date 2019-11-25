@@ -1,9 +1,6 @@
 //! This module contains a platform specific implementation of the window shell.
 
-use std::{
-    cell::RefCell,
-    rc::Rc,
-};
+use std::{cell::RefCell, rc::Rc};
 
 use stdweb::{
     js,
@@ -486,7 +483,7 @@ where
             canvas,
             old_canvas: None,
             update: true,
-            running: true
+            running: true,
         }
     }
 }
