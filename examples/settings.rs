@@ -1,5 +1,3 @@
-use std::cell::Cell;
-
 use serde_derive::{Deserialize, Serialize};
 
 use orbtk::prelude::*;
@@ -18,18 +16,18 @@ pub struct Global {
 
 #[derive(Default, AsAny)]
 pub struct MainViewState {
-    action: Cell<Option<Action>>,
+    action: Option<Action>,
 }
 
 impl MainViewState {
-    fn action(&self, action: Action) {
-        self.action.set(Some(action));
+    fn action(&mut self, action: Action) {
+        self.action = Some(action);
     }
 }
 
 impl State for MainViewState {
-    fn update(&self, registry: &mut Registry, ctx: &mut Context<'_>) {
-        if let Some(action) = self.action.get() {
+    fn update(&mut self, registry: &mut Registry, ctx: &mut Context<'_>) {
+        if let Some(action) = self.action {
             match action {
                 Action::Load => {
                     // load label from settings file.
@@ -58,7 +56,7 @@ impl State for MainViewState {
                 }
             }
 
-            self.action.set(None);
+            self.action = None;
         }
     }
 }

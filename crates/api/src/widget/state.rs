@@ -13,20 +13,18 @@ pub trait AsAny : Any {
 pub trait State: AsAny {
     
     /// Init is used for initial setup.
-    fn init(&self, _: &mut Registry, _: &mut Context<'_>) {}
+    fn init(&mut self, _: &mut Registry, _: &mut Context<'_>) {}
 
     /// Updates the state for the given `ctx`.
     ///
     /// This update method is called before layout is calculated.
-    fn update(&self, _: &mut Registry, _: &mut Context<'_>) {}
+    fn update(&mut self, _: &mut Registry, _: &mut Context<'_>) {}
 
     /// Updates the state for the given `ctx`.
     ///
     /// This update method is called after layout is calculated and before rendering.
-    fn update_post_layout(&self, _: &mut Registry, _: &mut Context<'_>) {}
+    fn update_post_layout(&mut self, _: &mut Registry, _: &mut Context<'_>) {}
 
     /// Receives all messages from the message channel. This message is only called if the state has messages.
-    fn receive_messages(&self, _: &mut Registry, _: &mut Context<'_>, _messages: &[MessageBox]) {}
-
-  
+    fn receive_messages(&mut self, _: &mut Registry, _: &mut Context<'_>, _messages: &[MessageBox]) {}
 }

@@ -45,7 +45,7 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
             new_states
         );
 
-        for (node, state) in &*self.states.borrow() {
+        for (node, state) in &mut *self.states.borrow_mut() {
             ctx.entity = *node;
 
             state.update_post_layout(&mut *self.registry.borrow_mut(), &mut ctx);

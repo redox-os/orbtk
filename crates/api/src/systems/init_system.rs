@@ -88,7 +88,7 @@ impl System<Tree, StringComponentStore> for InitSystem {
                     new_states,
                 );
 
-                if let Some(state) = self.states.borrow().get(&current_node) {
+                if let Some(state) = self.states.borrow_mut().get_mut(&current_node) {
                     state.init(&mut *self.registry.borrow_mut(), &mut ctx);
                 }
 

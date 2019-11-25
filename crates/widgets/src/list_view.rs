@@ -14,7 +14,7 @@ pub struct ListViewState {
 }
 
 impl State for ListViewState {
-    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
 
@@ -64,7 +64,7 @@ impl State for ListViewState {
         }
     }
 
-    fn update_post_layout(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         for index in ctx
             .widget()
             .get::<SelectedEntities>("selected_entities")
@@ -98,7 +98,7 @@ impl ListViewItemState {
 }
 
 impl State for ListViewItemState {
-    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         if !ctx.widget().get::<bool>("enabled") || !self.request_selection_toggle.get() {
             return;
         }

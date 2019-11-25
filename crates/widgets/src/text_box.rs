@@ -145,11 +145,11 @@ impl TextBoxState {
 }
 
 impl State for TextBoxState {
-    fn init(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         self.len.set(ctx.widget().get::<String16>("text").len());
     }
 
-    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         // check if text len is changed from outside
         if self.len.get() != ctx.widget().get::<String16>("text").len() {
             self.reset(ctx);
@@ -171,7 +171,7 @@ impl State for TextBoxState {
         self.len.set(ctx.widget().get::<String16>("text").len());
     }
 
-    fn update_post_layout(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let mut cursor_x_delta = 0.0;
         let mut scroll_viewer_width = 0.0;
 

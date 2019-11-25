@@ -74,7 +74,7 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&self, _: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if let Some(action) = self.action.get() {
             match action {
                 Action::Digit(digit) => {

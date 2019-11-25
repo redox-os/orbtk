@@ -366,7 +366,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                             new_states,
                         );
 
-                        if let Some(state) = self.states.borrow().get(&current_node) {
+                        if let Some(state) = self.states.borrow_mut().get_mut(&current_node) {
                             state.update(registry, &mut ctx);
                         }
 
