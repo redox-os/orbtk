@@ -7,7 +7,7 @@ use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree};
 /// This system is used to initializes the widgets.
 pub struct InitSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: Rc<RefCell<EventHandlerMap>>,
@@ -88,7 +88,7 @@ impl System<Tree, StringComponentStore> for InitSystem {
                     new_states,
                 );
 
-                if let Some(state) = self.states.borrow().get(&current_node) {
+                if let Some(state) = self.states.borrow_mut().get_mut(&current_node) {
                     state.init(&mut *self.registry.borrow_mut(), &mut ctx);
                 }
 

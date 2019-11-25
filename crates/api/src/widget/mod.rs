@@ -9,6 +9,7 @@ pub use self::context::*;
 pub use self::message::*;
 pub use self::registry::*;
 pub use self::state::*;
+pub use self::states_context::*;
 pub use self::template::*;
 pub use self::widget_container::*;
 
@@ -17,6 +18,7 @@ mod context;
 mod message;
 mod registry;
 mod state;
+mod states_context;
 mod template;
 mod widget_container;
 
@@ -58,11 +60,6 @@ pub trait Widget: Template {
 
     /// Inerts a new event handler.
     fn insert_handler(self, handler: impl Into<Rc<dyn EventHandler>>) -> Self;
-
-    /// Returns the state of the widget.
-    fn state(&self) -> Option<Rc<dyn State>> {
-        None
-    }
 
     /// Appends a child ot the widget.
     fn child(self, child: Entity) -> Self;

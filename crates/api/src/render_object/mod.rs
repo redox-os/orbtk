@@ -29,7 +29,7 @@ pub trait RenderObject: Any {
         render_objects: &RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         handlers: &Rc<RefCell<EventHandlerMap>>,
-        states: &Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+        states: &Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
         theme: &ThemeValue,
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,
@@ -75,16 +75,19 @@ pub trait RenderObject: Any {
             }
         }
 
-        self.render_self(&mut Context::new(
-            (entity, ecm),
-            shell,
-            &theme,
-            render_objects,
-            &mut layouts.borrow_mut(),
-            &mut handlers.borrow_mut(),
-            &states,
-            &mut BTreeMap::new(),
-        ), &global_position);
+        self.render_self(
+            &mut Context::new(
+                (entity, ecm),
+                shell,
+                &theme,
+                render_objects,
+                &mut layouts.borrow_mut(),
+                &mut handlers.borrow_mut(),
+                &states,
+                &mut BTreeMap::new(),
+            ),
+            &global_position,
+        );
 
         let mut global_pos = (0.0, 0.0);
 
@@ -151,7 +154,7 @@ pub trait RenderObject: Any {
         render_objects: &RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
         layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
         handlers: &Rc<RefCell<EventHandlerMap>>,
-        states: &Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+        states: &Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
         theme: &ThemeValue,
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,

@@ -74,7 +74,7 @@ macro_rules! widget {
              )*
             children: Vec<Entity>,
             $(
-                state: RefCell<Option<Rc<$state>>>
+                state: Box<$state>
             )*
         }
 
@@ -250,16 +250,9 @@ macro_rules! widget {
             }
 
             $(
-                /// Returns the cloned state of the widget.
-                pub fn clone_state(&self) -> Rc<$state> {
-                    if let Some(state) = &*self.state.borrow() {
-                        return state.clone();
-                    }
-
-                    let state = Rc::new($state::default());
-                    *self.state.borrow_mut() = Some(state.clone());
-
-                    state
+                /// Gets a mutable reference of the state.
+                fn state_mut(&mut self) -> &mut Box<$state> {
+                    &mut self.state
                 }
             )*
 
@@ -322,20 +315,6 @@ macro_rules! widget {
                 self
             }
 
-            $(
-                fn state(&self) -> Option<Rc<State>> {
-                    if self.state.borrow().is_none() {
-                        *self.state.borrow_mut() = Some(Rc::new($state::default()));
-                    }
-
-                    if let Some(state) = &*self.state.borrow() {
-                        return Some(state.clone())
-                    }
-
-                    None
-                }
-            )*
-
             fn build(self, ctx: &mut BuildContext) -> Entity {
                 let entity = ctx.create_entity();
 
@@ -344,10 +323,11 @@ macro_rules! widget {
                 ctx.register_render_object(entity, this.render_object());
                 ctx.register_layout(entity, this.layout());
 
-                 // register state
-                if let Some(state) = &this.state() {
-                     ctx.register_state(entity, state.clone());
-                 }
+                $(
+                    // workaround
+                    let _ = TypeId::of::<$state>();
+                    ctx.register_state(entity, this.state);
+                )*
 
                 // register default set of properties
                 ctx.register_property("bounds", entity, this.bounds);

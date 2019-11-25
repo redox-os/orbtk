@@ -21,7 +21,7 @@ mod window;
 #[derive(Default)]
 pub struct Application {
     runners: Vec<ShellRunner<WindowAdapter>>,
-    name: Box<str>
+    name: Box<str>,
 }
 
 impl Application {
@@ -50,9 +50,13 @@ impl Application {
 
         // register settings service.
         if self.name.is_empty() {
-            registry.borrow_mut().register("settings", Settings::default());
+            registry
+                .borrow_mut()
+                .register("settings", Settings::default());
         } else {
-            registry.borrow_mut().register("settings", Settings::new(&*self.name));       
+            registry
+                .borrow_mut()
+                .register("settings", Settings::new(&*self.name));
         };
 
         let window = create_fn(&mut BuildContext::new(
@@ -61,6 +65,7 @@ impl Application {
             &mut layouts.borrow_mut(),
             &mut handlers.borrow_mut(),
             &mut states.borrow_mut(),
+            &mut crate::theme::default_theme(),
         ));
 
         {

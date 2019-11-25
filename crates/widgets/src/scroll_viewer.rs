@@ -3,7 +3,7 @@ use std::cell::Cell;
 use crate::prelude::*;
 
 /// The `ScrollViewerState` handles the `ScrollViewer` widget.
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct ScrollViewerState {
     delta: Cell<Option<Point>>,
 }
@@ -15,13 +15,13 @@ impl ScrollViewerState {
 }
 
 impl State for ScrollViewerState {
-    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         if let Some(delta) = self.delta.get() {
             ctx.widget().set("delta", delta);
         }
     }
 
-    fn update_post_layout(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         if self.delta.get().is_some() {
             ctx.widget().set("delta", Point::new(0.0, 0.0));
             self.delta.set(None);
@@ -49,17 +49,15 @@ widget!(
 );
 
 impl Template for ScrollViewer {
-    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        let state = self.clone_state();
-
+    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("ScrollViewer")
             .selector("scroll-viewer")
             .scroll_offset(0.0)
             .delta(0.0)
             .clip(true)
             .scroll_viewer_mode(ScrollViewerMode::default())
-            .on_scroll(move |p| {
-                state.scroll(p);
+            .on_scroll(move |states, p| {
+                states.get::<ScrollViewerState>(id).scroll(p);
                 false
             })
     }
