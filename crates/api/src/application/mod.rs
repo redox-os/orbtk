@@ -153,6 +153,15 @@ impl Application {
                 crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
             );
 
+            #[cfg(not(target_arch = "wasm32"))]
+            window_shell
+                .borrow_mut()
+                .render_context_2_d()
+                .register_font(
+                    "OpenMoji",
+                    crate::theme::fonts::OPEN_MOJI_COLOR_FONT,
+                );
+
         world.register_init_system(InitSystem {
             shell: window_shell.clone(),
             layouts: layouts.clone(),

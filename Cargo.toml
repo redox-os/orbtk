@@ -34,13 +34,13 @@ orbtk-theme = { version = "0.3.1-alpha2", path="crates/theme" }
 orbtk-utils = { version = "0.3.1-alpha2", path = "crates/utils" }
 orbtk-tree = { version = "0.3.1-alpha2", path="crates/tree" }
 orbtk-widgets = { version = "0.3.1-alpha2", path="crates/widgets" }
-dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git" }
+dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git", branch = "develop" }
 
 [dev-dependencies]
 euc = "0.4.2"
-vek = "0.9.10"
-serde = "1.0.102"
-serde_derive = "1.0.102"
+vek = "0.9.11"
+serde = "1.0.103"
+serde_derive = "1.0.103"
 
 [features]
 debug = ["orbtk-api/debug"]
