@@ -167,3 +167,17 @@ scroll-bar {
 blub {
     background: green;
 }
+
+slider {
+    border-radius: 4;
+    background: black;
+}
+
+thumb {
+    border-radius: 16.0;
+    background: #647b91;
+}
+
+thumb:active {
+    background: #f8de4c;
+}
