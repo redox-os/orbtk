@@ -2,7 +2,7 @@
 
 Cross platform 2D/3D render library. It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 
-[![Build status](https://gitlab.redox-os.org/redox-os/orbtk/badges/develop/build.svg)](https://gitlab.redox-os.org/redox-os/orbtk/pipelines)
+[![Build and test](https://github.com/redox-os/orbtk/workflows/Build%20and%20test/badge.svg)](https://github.com/redox-os/orbtk/actions)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](../../LICENSE)
 
 ## Platforms

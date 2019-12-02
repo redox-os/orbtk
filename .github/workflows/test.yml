@@ -1,4 +1,4 @@
-name: build
+name: test
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
       - develop
 
 jobs:
-  build: 
-    name: Build on ${{ matrix.os }}
+  test: 
+    name: Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix: 
@@ -16,13 +16,13 @@ jobs:
       
     steps:
       - uses: actions/checkout@v1
-      - name: Build
-        run: cargo build --verbose
-      - name: Build example
+     - name: Test
+        run: cargo test --all --verbose
+     - name: Test example
         run: cargo build --example widgets --verbose
       
   build_redox:
-    name: Build on Redox OS
+    name: Test on Redox OS
     runs-on: [ubuntu-latest]
     
     steps:
@@ -37,29 +37,16 @@ jobs:
         run: cargo +nightly install redoxer
       - name: Install redoxer toolchain
         run: redoxer install
-      - name: Build
-        run: redoxer build
+     - name: Test
+        run: redoxer test --all
            
   build_macos:
-    name: Build on macOS-latest
+    name: Test on macOS-latest
     runs-on: macOS-latest
 
     steps:
       - uses: actions/checkout@v1
       - name: Install rust
         run: brew install rust
-      - name: Build
-        run: cargo build --verbose
-      - name: Build example
-        run: cargo build --example widgets --verbose
-
-  build_web:
-    name: Build on web
-    runs-on: [ubuntu-latest]
-
-     steps:
-        - uses: actions/checkout@v1
-        - name: Install cargo-web
-          run: cargo install --force cargo-web
-        - name: Build
-          run: cargo web build
+     - name: Test
+        run: cargo test --all --verbose
