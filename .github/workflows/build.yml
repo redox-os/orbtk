@@ -24,7 +24,7 @@ jobs:
     runs-on: [ubuntu-latest]
     
     steps:
-      - uses: actions-rs/components-nightly@v1
+      - uses: actions/checkout@v1
       - name: Set nightly default
         run:  rustup default nightly
       - name: Install redoxer

@@ -138,15 +138,15 @@ cargo doc --no-deps --open
 
 ## Sub Crates
 
-* [api](https://gitlab.redox-os.org/redox-os/orbtk/tree/develop/crates/api): base api elements of OrbTk e.g. widget and application parts
-* [css-engine](https://gitlab.redox-os.org/redox-os/orbtk/tree/develop/crates/css-engine): parse and read values from a css file
-* [proc-macros](https://gitlab.redox-os.org/redox-os/orbtk/tree/develop/crates/proc-macros): procedural helper macros
-* [render](https://gitlab.redox-os.org/redox-os/orbtk/tree/develop/crates/render): cross platform 2D/3D render library
-* [shell](https://gitlab.redox-os.org/redox-os/orbtk/tree/develop/crates/api): cross platform window and event handling
-* [theme](https://gitlab.redox-os.org/redox-os/orbtk/tree/develop/crates/theme): OrbTks default theme (light and dark)
-* [tree](https://gitlab.redox-os.org/redox-os/orbtk/tree/develop/crates/tree): tree structure based on DCES
-* [utils](https://gitlab.redox-os.org/redox-os/orbtk/tree/develop/crates/utils): helper structs and traits
-* [widgets](https://gitlab.redox-os.org/redox-os/orbtk/tree/develop/crates/widgets): base widget library
+* [api](https://github.com/redox-os/orbtk/tree/develop/crates/api): base api elements of OrbTk e.g. widget and application parts
+* [css-engine](https://github.com/redox-os/orbtk/tree/develop/crates/css-engine): parse and read values from a css file
+* [proc-macros](https://github.com/redox-os/orbtk/tree/develop/crates/proc-macros): procedural helper macros
+* [render](https://github.com/redox-os/orbtk/tree/develop/crates/render): cross platform 2D/3D render library
+* [shell](https://github.com/redox-os/orbtk/tree/develop/crates/api): cross platform window and event handling
+* [theme](https://github.com/redox-os/orbtk/tree/develop/crates/theme): OrbTks default theme (light and dark)
+* [tree](https://github.com/redox-os/orbtk/tree/develop/crates/tree): tree structure based on DCES
+* [utils](https://github.com/redox-os/orbtk/tree/develop/crates/utils): helper structs and traits
+* [widgets](https://github.com/redox-os/orbtk/tree/develop/crates/widgets): base widget library
 
 ## Inspirations
 
@@ -161,7 +161,7 @@ cargo doc --no-deps --open
 
 ## Contribution
 
-If you want to help bring OrbTk further or you have feedback check our issue board https://gitlab.redox-os.org/redox-os/orbtk/-/boards/120. You could also discuss with us about OrbTk on the Redox chat https://redox-os.org/community/ (join the orbital channel).
+If you want to help bring OrbTk further or you have feedback check our issues https://github.com/redox-os/orbtk/issues. You could also discuss with us about OrbTk on the Redox chat https://redox-os.org/community/ (join the orbital channel).
 
 ## License
 
