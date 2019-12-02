@@ -16,9 +16,9 @@ jobs:
       
     steps:
       - uses: actions/checkout@v1
-     - name: Test
+      - name: Test
         run: cargo test --all --verbose
-     - name: Test example
+      - name: Test example
         run: cargo build --example widgets --verbose
       
   build_redox:
@@ -37,7 +37,7 @@ jobs:
         run: cargo +nightly install redoxer
       - name: Install redoxer toolchain
         run: redoxer install
-     - name: Test
+      - name: Test
         run: redoxer test --all
            
   build_macos:
