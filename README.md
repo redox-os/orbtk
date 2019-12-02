@@ -49,7 +49,7 @@ To use the latest development version of OrbTk, just add the dependency
 line to your `Cargo.toml` file:
 
 ```text
-orbtk = { git = "https://gitlab.redox-os.org/redox-os/orbtk.git", branch = "develop" }
+orbtk = { git = "https://github.com/redox-os/orbtk.git", branch = "develop" }
 ```
 
 ## Minimal Example
