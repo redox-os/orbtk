@@ -85,8 +85,8 @@ impl Template for ScrollIndicator {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ScrollIndicator")
             .selector("scroll-indicator")
-            .vertical_alignment("Stretch")
-            .horizontal_alignment("Stretch")
+            .vertical_alignment("stretch")
+            .horizontal_alignment("stretch")
             .padding(0.0)
             .child(
                 Grid::create()
