@@ -1,5 +1,8 @@
 use crate::prelude::*;
 
+static THUMB: &'static str = "thumb";
+static TRACK: &'static str = "track";
+
 #[derive(Copy, Clone)]
 enum SliderAction {
     Move { mouse_x: f64 },
@@ -9,7 +12,9 @@ enum SliderAction {
 #[derive(Default, AsAny)]
 pub struct SliderState {
     action: Option<SliderAction>,
-    value: f64
+    value: f64,
+    thumb: Entity,
+    track: Entity,
 }
 
 impl SliderState {
@@ -17,14 +22,17 @@ impl SliderState {
         self.action = Some(action);
     }
 
-    fn adjust(&mut self, ctx: &mut Context) {
-        
-    }
+    fn adjust(&mut self, ctx: &mut Context) {}
 }
 
 impl State for SliderState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-
+        self.thumb = ctx
+            .entity_of_child(THUMB)
+            .expect("SliderState.init: Thumb child could not be found.");
+        self.track = ctx
+            .entity_of_child(TRACK)
+            .expect("SliderState.init: Track child could not be found.");
     }
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
@@ -32,14 +40,20 @@ impl State for SliderState {
             match action {
                 SliderAction::Move { mouse_x } => {
                     if *ctx.child("thumb").get::<bool>("pressed") {
-                        let thumb_width = ctx.child("thumb").get::<Rectangle>("bounds").width();
-                        let track_width = ctx.child("track").get::<Rectangle>("bounds").width();
+                        let thumb_width = ctx
+                            .get_widget(self.thumb)
+                            .get::<Rectangle>("bounds")
+                            .width();
+                        let track_width = ctx
+                            .get_widget(self.track)
+                            .get::<Rectangle>("bounds")
+                            .width();
                         let slider_x = ctx.widget().get::<Point>("position").x;
 
                         let thumb_x =
                             calculate_thumb_x(mouse_x, thumb_width, slider_x, track_width);
 
-                        ctx.child("thumb")
+                        ctx.get_widget(self.thumb)
                             .get_mut::<Thickness>("margin")
                             .set_left(thumb_x);
 
@@ -103,7 +117,7 @@ impl Template for Slider {
             .border_radius(4.0)
             .child(
                 Grid::create()
-                    .selector(Selector::default().id("track"))
+                    .selector(Selector::default().id(TRACK))
                     .margin((8.0, 0.0, 8.0, 0.0))
                     .child(
                         Container::create()
@@ -117,8 +131,7 @@ impl Template for Slider {
                     .child(
                         // todo: selector default crashes
                         Button::create()
-                            .background("green")
-                            .selector(Selector::from("thumb").id("thumb"))
+                            .selector(Selector::from("thumb").id(THUMB))
                             .vertical_alignment("center")
                             .horizontal_alignment("start")
                             .max_width(28.0)
