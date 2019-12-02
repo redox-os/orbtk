@@ -48,5 +48,5 @@ jobs:
       - uses: actions/checkout@v1
       - name: Install rust
         run: brew install rust
-     - name: Test
+      - name: Test
         run: cargo test --all --verbose
