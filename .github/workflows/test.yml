@@ -23,7 +23,7 @@ jobs:
       
   build_redox:
     name: Test on Redox OS
-    runs-on: [ubuntu-latest]
+    runs-on: ubuntu-latest
     
     steps:
       - uses: actions/checkout@v1
