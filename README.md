@@ -1,6 +1,6 @@
 <img alt="OrbTk" width="380" src="https://gitlab.redox-os.org/redox-os/assets/raw/master/logos/orbtk/logo_dark.png">
 
-[![Build and test](https://github.com/redox-os/orbtk/workflows/Build%20and%20test/badge.svg)](https://github.com/redox-os/orbtk/actions)
+[![Build and test](https://github.com/redox-os/orbtk/workflows/build/badge.svg)](https://github.com/redox-os/orbtk/actions)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![crates.io](https://img.shields.io/badge/crates.io-v0.3.1alpha1-orange.svg)](https://crates.io/crates/orbtk/0.3.1-alpha1)
 [![docs.rs](https://docs.rs/orbtk/badge.svg)](https://docs.rs/orbtk)

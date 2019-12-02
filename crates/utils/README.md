@@ -2,7 +2,7 @@
 
 Base structs like point, brush, border, ... . It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 
-[![Build and test](https://github.com/redox-os/orbtk/workflows/Build%20and%20test/badge.svg)](https://github.com/redox-os/orbtk/actions)
+[![Build and test](https://github.com/redox-os/orbtk/workflows/build/badge.svg)](https://github.com/redox-os/orbtk/actions)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](../../LICENSE)
 
 
