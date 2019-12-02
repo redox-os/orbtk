@@ -22,7 +22,7 @@ jobs:
     runs-on: [ubuntu-latest]
     
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions-rs/components-nightly@v1
       - name: Install redoxer
         run: cargo install redoxer
       - name: Install redoxer toolchain
