@@ -29,8 +29,8 @@ jobs:
         run:  rustup default nightly
       - name: Update
         run: sudo apt update
-      - name: Install pkg-config
-        run: sudo apt install pkg-config
+      - name: Install fuse
+        run: sudo apt install fuse
       - name: Install redoxer
         run: cargo +nightly install redoxer
       - name: Install redoxer toolchain
