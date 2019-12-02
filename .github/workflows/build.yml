@@ -30,7 +30,7 @@ jobs:
       - name: Update
         run: sudo apt update
       - name: Install fuse
-        run: sudo apt install fuse
+        run: sudo apt install libfuse-dev
       - name: Install redoxer
         run: cargo +nightly install redoxer
       - name: Install redoxer toolchain
