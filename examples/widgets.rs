@@ -86,7 +86,6 @@ impl State for MainViewState {
                     println!("entry changed: {}", text);
                 }
                 Action::ValueChanged(entity) => {
-                    let blub = ctx.get_widget(entity).get::<f64>("value");
                     let value = ((*ctx.get_widget(entity).get::<f64>("value")).floor() as i32).to_string();
                     ctx.child("value_text").set("text", String16::from(value));
                 }
@@ -180,10 +179,6 @@ impl Template for MainView {
                                     .icon(material_font_icons::CHECK_FONT_ICON)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(1))
-                                    .on_mouse_move(move |states, _| {
-                                        println!("ABc");
-                                        true
-                                    })
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::IncrementCounter);
                                         true

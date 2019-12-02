@@ -2,47 +2,54 @@ use crate::prelude::*;
 
 #[derive(Copy, Clone)]
 enum SliderAction {
-    Move { x: f64, y: f64 },
+    Move { mouse_x: f64 },
 }
 
 /// The `SliderState` is used to manipulate the position of the thumb of the slider widget.
 #[derive(Default, AsAny)]
 pub struct SliderState {
     action: Option<SliderAction>,
+    value: f64
 }
 
 impl SliderState {
     fn action(&mut self, action: SliderAction) {
         self.action = Some(action);
     }
+
+    fn adjust(&mut self, ctx: &mut Context) {
+        
+    }
 }
 
 impl State for SliderState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+
+    }
+
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         if let Some(action) = self.action {
             match action {
-                SliderAction::Move { x, y } => {
+                SliderAction::Move { mouse_x } => {
                     if *ctx.child("thumb").get::<bool>("pressed") {
-                        let width = ctx.widget().get::<Rectangle>("bounds").width();
-                        let x = x - ctx.widget().get::<Point>("position").x;
-                        let thumb_width = ctx.child("thumb").get::<Rectangle>("bounds").width() / 2.0;
-                        
-                        let pixel_range = width - thumb_width;
-                        let x = (x - thumb_width).max(0.0).min(pixel_range);
+                        let thumb_width = ctx.child("thumb").get::<Rectangle>("bounds").width();
+                        let track_width = ctx.child("track").get::<Rectangle>("bounds").width();
+                        let slider_x = ctx.widget().get::<Point>("position").x;
 
-                        let p_x = x / pixel_range;
+                        let thumb_x =
+                            calculate_thumb_x(mouse_x, thumb_width, slider_x, track_width);
 
-                        let min: f64 = *ctx.widget().get("minimum");
-                        let max: f64 = *ctx.widget().get("maximum");
+                        ctx.child("thumb")
+                            .get_mut::<Thickness>("margin")
+                            .set_left(thumb_x);
 
-                        let range = max + 1.0 - min;
-                        let val = range * p_x;
+                        let minimum = *ctx.widget().get("minimum");
+                        let maximum = *ctx.widget().get("maximum");
 
-                        ctx.widget().set("value", val);
-
-
-         
-                        ctx.child("thumb").get_mut::<Thickness>("margin").set_left(x);
+                        ctx.widget().set(
+                            "value",
+                            calculate_value(thumb_x, minimum, maximum, thumb_width, track_width),
+                        );
 
                         ctx.push_event(ChangedEvent(ctx.entity));
                     }
@@ -96,10 +103,11 @@ impl Template for Slider {
             .border_radius(4.0)
             .child(
                 Grid::create()
+                    .selector(Selector::default().id("track"))
+                    .margin((8.0, 0.0, 8.0, 0.0))
                     .child(
                         Container::create()
                             // todo fix border radius from css
-                            .margin((8.0, 0.0, 8.0, 0.0))
                             .border_radius(id)
                             .background(id)
                             .vertical_alignment("center")
@@ -123,8 +131,82 @@ impl Template for Slider {
             .on_mouse_move(move |states, p| {
                 states
                     .get_mut::<SliderState>(id)
-                    .action(SliderAction::Move { x: p.x, y: p.y });
+                    .action(SliderAction::Move { mouse_x: p.x });
                 true
             })
+    }
+}
+
+// --- Helpers --
+
+fn adjust_value(value: f64, minimum: f64, maximum: f64) -> f64 {
+    if value < minimum {
+        return minimum;
+    }
+
+    if value > maximum {
+        return maximum;
+    }
+
+    value
+}
+
+fn adjust_minimum(minimum: f64, maximum: f64) -> f64 {
+    if minimum > maximum {
+        return maximum;
+    }
+
+    minimum
+}
+
+fn adjust_maximum(minimum: f64, maximum: f64) -> f64 {
+    if maximum < minimum {
+        return minimum;
+    }
+
+    maximum
+}
+
+fn calculate_thumb_x(mouse_x: f64, thumb_width: f64, slider_x: f64, track_width: f64) -> f64 {
+    (mouse_x - slider_x - thumb_width)
+        .max(0.0)
+        .min(track_width - thumb_width)
+        .round()
+}
+
+fn calculate_value(
+    thumb_x: f64,
+    minimum: f64,
+    maximum: f64,
+    thumb_width: f64,
+    track_width: f64,
+) -> f64 {
+    (thumb_x / (track_width - thumb_width) * (maximum - minimum)).round()
+}
+
+// --- Helpers --
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_calculate_thumb_x() {
+        assert_eq!(0.0, calculate_thumb_x(-1000.0, 32.0, 0.0, 100.0));
+        assert_eq!(0.0, calculate_thumb_x(0.0, 32.0, 0.0, 100.0));
+        assert_eq!(18.0, calculate_thumb_x(50.0, 32.0, 0.0, 100.0));
+        assert_eq!(36.0, calculate_thumb_x(68.0, 32.0, 0.0, 100.0));
+        assert_eq!(68.0, calculate_thumb_x(100.0, 32.0, 0.0, 100.0));
+        assert_eq!(68.0, calculate_thumb_x(1000.0, 32.0, 0.0, 100.0));
+    }
+
+    #[test]
+    fn test_calculate_value() {
+        assert_eq!(0.0, calculate_value(0.0, 0.0, 100.0, 32.0, 100.0));
+        assert_eq!(50.0, calculate_value(34.0, 0.0, 100.0, 32.0, 100.0));
+        assert_eq!(100.0, calculate_value(68.0, 0.0, 100.0, 32.0, 100.0));
+        assert_eq!(0.0, calculate_value(0.0, -50.0, 50.0, 32.0, 100.0));
+        assert_eq!(50.0, calculate_value(34.0, -50.0, 50.0, 32.0, 100.0));
+        assert_eq!(100.0, calculate_value(68.0, -50.0, 50.0, 32.0, 100.0));
     }
 }
