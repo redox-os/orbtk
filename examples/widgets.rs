@@ -8,6 +8,7 @@ enum Action {
     ClearText,
     EntryActivated(Entity),
     EntryChanged(Entity),
+    ValueChanged(Entity),
     IncrementCounter,
     RemoveItem,
 }
@@ -83,6 +84,10 @@ impl State for MainViewState {
                     let widget = ctx.get_widget(entity);
                     let text = widget.get::<String16>("text");
                     println!("entry changed: {}", text);
+                }
+                Action::ValueChanged(entity) => {
+                    let value = ((*ctx.get_widget(entity).get::<f64>("value")).floor() as i32).to_string();
+                    ctx.child("value_text").set("text", String16::from(value));
                 }
             }
 
@@ -174,10 +179,6 @@ impl Template for MainView {
                                     .icon(material_font_icons::CHECK_FONT_ICON)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(1))
-                                    .on_mouse_move(move |states, _| {
-                                        println!("ABc");
-                                        true
-                                    })
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::IncrementCounter);
                                         true
@@ -215,6 +216,21 @@ impl Template for MainView {
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(5))
+                                    .build(ctx),
+                            )
+                            .child(
+                                TextBlock::create()
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .selector(Selector::from("h1").id("value_text"))
+                                    .text("0")
+                                    .horizontal_alignment("center")
+                                    .build(ctx),
+                            )
+                            .child(
+                                Slider::create()
+                                    .on_changed(move |states, entity| {
+                                        state(id, states).action(Action::ValueChanged(entity));
+                                    })
                                     .build(ctx),
                             )
                             .build(ctx),
