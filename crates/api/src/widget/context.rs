@@ -374,6 +374,14 @@ impl<'a> Context<'a> {
             .register_event(event, entity);
     }
 
+     /// Pushes an event to the event queue.
+    pub fn push_event_strategy_by_entity<E: Event>(&mut self, event: E, entity: Entity, strategy: EventStrategy) {
+        self.window_shell
+            .adapter()
+            .event_queue
+            .register_event_with_strategy(event, strategy, entity);
+    }
+
     /// Returns a mutable reference of the 2d render ctx.
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
         self.window_shell.render_context_2_d()

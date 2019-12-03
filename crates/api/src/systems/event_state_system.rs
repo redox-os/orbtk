@@ -16,11 +16,30 @@ pub struct EventStateSystem {
 }
 
 impl EventStateSystem {
-    fn process_top_down_event(
+    // fn process_top_down_event(
+    //     &self,
+    //     _event: &EventBox,
+    //     _ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+    // ) {
+    // }
+
+    fn process_direct(
         &self,
-        _event: &EventBox,
-        _ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-    ) {
+        event: &EventBox
+    ) -> bool {
+        if event.strategy == EventStrategy::Direct {
+            if let Some(handlers) = self.handlers.borrow().get(&event.source) {
+                handlers.iter().any(|handler| {
+                    handler.handle_event(
+                        &mut StatesContext::new(&mut *self.states.borrow_mut()),
+                        &event,
+                    )
+                });
+                return true;
+            }
+        }
+
+        false
     }
 
     fn process_bottom_up_event(
@@ -319,15 +338,19 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                     }
 
                     match event.strategy {
-                        EventStrategy::TopDown => {
-                            self.process_top_down_event(&event, ecm);
+                        EventStrategy::Direct => {
+                            if event.strategy == EventStrategy::Direct {
+                                update = self.process_direct(&event) || update;
+                            }
                         }
+                        // EventStrategy::TopDown => {
+                        //     self.process_top_down_event(&event, ecm);
+                        // }
                         EventStrategy::BottomUp => {
                             let should_update =
                                 self.process_bottom_up_event(mouse_position, &event, ecm);
                             update = update || should_update;
                         }
-                        _ => {}
                     }
                 }
             }

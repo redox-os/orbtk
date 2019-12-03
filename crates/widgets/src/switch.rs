@@ -1,27 +1,25 @@
-use std::cell::Cell;
-
 use super::behaviors::MouseBehavior;
 use crate::prelude::*;
 
 /// State to handle the position of switch toggle.
 #[derive(Default, AsAny)]
 pub struct SwitchState {
-    selected: Cell<bool>,
+    selected: bool,
 }
 
 impl SwitchState {
-    fn toggle_selection(&self) {
-        self.selected.set(!self.selected.get());
+    fn toggle_selection(&mut self) {
+        self.selected = !self.selected;
     }
 }
 
 impl State for SwitchState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        if *ctx.widget().get::<bool>("selected") == self.selected.get() {
+        if *ctx.widget().get::<bool>("selected") == self.selected {
             return;
         }
 
-        ctx.widget().set("selected", self.selected.get());
+        ctx.widget().set("selected", self.selected);
 
         let element = ctx.widget().clone::<Selector>("selector").element.unwrap();
 
@@ -32,7 +30,7 @@ impl State for SwitchState {
         {
             let mut switch_toggle = ctx.child("switch_toggle");
 
-            if self.selected.get() {
+            if self.selected {
                 switch_toggle.set("horizontal_alignment", Alignment::from("end"));
                 add_selector_to_widget("selected", &mut switch_toggle);
             } else {
@@ -43,6 +41,7 @@ impl State for SwitchState {
             switch_toggle.update_theme_by_state(true);
         }
 
+        ctx.push_event_strategy_by_entity(ChangedEvent(ctx.entity), ctx.entity, EventStrategy::Direct);
         let entity = ctx.entity_of_child("switch_toggle").unwrap();
 
         ctx.get_widget(entity).update_theme_by_state(false);
@@ -99,7 +98,7 @@ impl Template for Switch {
                     .enabled(id)
                     .selector(id)
                     .on_click(move |states, _| {
-                        states.get::<SwitchState>(id).toggle_selection();
+                        states.get_mut::<SwitchState>(id).toggle_selection();
                         false
                     })
                     .child(
