@@ -175,6 +175,7 @@ slider {
 
 thumb {
     border-radius: 16;
+    border-color: black;
     background: #647b91;
 }
 

@@ -85,11 +85,11 @@ impl Template for Switch {
             .selector("switch")
             .pressed(false)
             .selected(false)
-            .width(56.0)
+            .width(48.0)
             .height(32.0)
             .border_brush(colors::BOMBAY_COLOR)
             .background(colors::SLATE_GRAY_COLOR)
-            .border_radius(2.0)
+            .border_radius(8.0)
             .border_width(1.0)
             .padding(4.0)
             .child(
@@ -111,7 +111,7 @@ impl Template for Switch {
                             .child(
                                 Grid::create()
                                     .child(Container::create().size(24.0, 24.0).build(ctx))
-                                    .border_radius(1.0)
+                                    .border_radius(8.0)
                                     .selector(Selector::from("switch-toggle").id("switch_toggle"))
                                     .vertical_alignment("center")
                                     .horizontal_alignment("start")
