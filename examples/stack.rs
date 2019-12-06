@@ -7,30 +7,58 @@ impl Template for MainView {
         self.name("MainView").child(
             Stack::create()
                 .child(
-                    Button::create()
-                        .text("left")
-                        .horizontal_alignment("start")
+                    TextBlock::create()
+                        .margin((0.0, 0.0, 0.0, 8.0))
+                        .text("Stack vertical")
+                        .selector("h1")
                         .build(ctx),
                 )
                 .child(
-                    Button::create()
-                        .margin((0.0, 8.0, 0.0, 0.0))
-                        .text("center")
-                        .horizontal_alignment("center")
+                    Stack::create()
+                        .spacing(4.0)
+                        .child(
+                            Button::create()
+                                .text("left")
+                                .horizontal_alignment("start")
+                                .build(ctx),
+                        )
+                        .child(
+                            Button::create()
+                                .text("center")
+                                .horizontal_alignment("center")
+                                .build(ctx),
+                        )
+                        .child(
+                            Button::create()
+                                .text("stretch")
+                                .horizontal_alignment("stretch")
+                                .build(ctx),
+                        )
+                        .child(
+                            Button::create()
+                                .text("right")
+                                .horizontal_alignment("end")
+                                .build(ctx),
+                        )
                         .build(ctx),
                 )
                 .child(
-                    Button::create()
-                        .margin((0.0, 8.0, 0.0, 0.0))
-                        .text("stretch")
-                        .horizontal_alignment("stretch")
+                    TextBlock::create()
+                        .margin((0.0, 0.0, 0.0, 8.0))
+                        .text("Stack horizontal")
+                        .selector("h1")
                         .build(ctx),
                 )
                 .child(
-                    Button::create()
-                        .margin((0.0, 8.0, 0.0, 0.0))
-                        .text("right")
-                        .horizontal_alignment("end")
+                    Stack::create()
+                        .orientation("horitzontal")
+                        .spacing(4.0)
+                        .child(
+                            Button::create()
+                                .text("top")
+                                .vertical_alignment("start")
+                                .build(ctx),
+                        )
                         .build(ctx),
                 )
                 .build(ctx),
