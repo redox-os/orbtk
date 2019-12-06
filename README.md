@@ -146,7 +146,7 @@ cargo doc --no-deps --open
 
 ### OrbTk Manual
 
-To build and run the latest version of the OrbTk manual check: [Manual](https://gitlab.redox-os.org/redox-os/orbtk/tree/develop/manual)
+To build and run the latest version of the OrbTk manual check: [Manual](https://github.com/redox-os/orbtk/tree/develop/manual)
 
 ## Sub Crates
 
