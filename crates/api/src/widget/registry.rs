@@ -84,6 +84,13 @@ mod tests {
     use super::*;
 
     struct ServiceOne;
+    struct ServiceTwo;
+
+    #[test]
+    fn register() {
+        let mut registry = Registry::new();
+        registry.register("one", ServiceOne);
+        registry.register("two", ServiceTwo);
 
         assert!(registry.try_get::<ServiceOne>("one").is_some());
         assert!(registry.try_get::<ServiceTwo>("two").is_some());
