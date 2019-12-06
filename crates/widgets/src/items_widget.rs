@@ -1,33 +1,26 @@
-use std::cell::Cell;
-
 use crate::prelude::*;
 
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct ItemsWidgetState {
     builder: WidgetBuildContext,
-    count: Cell<usize>,
-}
-
-impl Into<Rc<dyn State>> for ItemsWidgetState {
-    fn into(self) -> Rc<dyn State> {
-        Rc::new(self)
-    }
+    count: usize,
 }
 
 impl State for ItemsWidgetState {
-    fn update(&self, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let count = ctx.widget().clone_or_default::<usize>("count");
 
-        if count != self.count.get() {
-            if let Some(builder) = &*self.builder.borrow() {
+        if count != self.count {
+            if let Some(builder) = &self.builder {
                 if let Some(items_panel) = ctx.entity_of_child("items_panel") {
                     ctx.clear_children_of(items_panel);
 
                     for i in 0..count {
+                        let bctx = &mut ctx.build_context();
+
                         let child = {
-                            let mut build_context = ctx.build_context();
-                            let child = builder(&mut build_context, i);
-                            build_context.append_child(items_panel, child);
+                            let child = builder(bctx, i);
+                            bctx.append_child(items_panel, child);
                             child
                         };
 
@@ -36,7 +29,7 @@ impl State for ItemsWidgetState {
                 }
             }
 
-            self.count.set(count);
+            self.count = count;
         }
     }
 }
@@ -74,10 +67,10 @@ widget!(
 
 impl ItemsWidget {
     pub fn items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(
-        self,
+        mut self,
         builder: F,
     ) -> Self {
-        *self.clone_state().builder.borrow_mut() = Some(Box::new(builder));
+        self.state_mut().builder = Some(Box::new(builder));
         self
     }
 }

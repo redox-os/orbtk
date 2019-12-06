@@ -3,7 +3,7 @@ use std::cell::Cell;
 use crate::prelude::*;
 
 /// The `FocusBehaviorState` handles the `FocusBehavior` widget.
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct FocusBehaviorState {
     request_focus: Cell<bool>,
 }
@@ -15,7 +15,7 @@ impl FocusBehaviorState {
 }
 
 impl State for FocusBehaviorState {
-    fn update(&self, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         if !self.request_focus.get() || !ctx.widget().get::<bool>("enabled") {
             return;
         }
@@ -53,14 +53,12 @@ widget!(
 );
 
 impl Template for FocusBehavior {
-    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        let state = self.clone_state();
-
+    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("FocusBehavior")
             .selector("")
             .focused(true)
-            .on_mouse_down(move |_| {
-                state.request_focus();
+            .on_mouse_down(move |states, _| {
+                states.get::<FocusBehaviorState>(id).request_focus();
                 false
             })
     }

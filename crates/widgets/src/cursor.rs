@@ -1,11 +1,11 @@
 use crate::prelude::*;
 
 // Default state of the `Cursor` widget.
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct CursorState;
 
 impl State for CursorState {
-    fn update_post_layout(&self, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let mut widget = ctx.widget();
 
         let selection_length = widget.get::<TextSelection>("text_selection").length;

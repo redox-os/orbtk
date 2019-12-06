@@ -9,7 +9,10 @@ widget!(
         orientation: Orientation,
 
         /// Sets or shares the css selector property.
-        selector: Selector
+        selector: Selector,
+
+        /// Margin between widgets in the stack.
+        spacing: f64
     }
 );
 

@@ -1,7 +1,6 @@
 use std::{
     cell::{Cell, RefCell},
     collections::BTreeMap,
-    rc::Rc,
 };
 
 use dces::prelude::Entity;
@@ -35,7 +34,7 @@ impl Layout for TextSelectionLayout {
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-        layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+        layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> DirtySize {
         if *ecm
@@ -67,7 +66,7 @@ impl Layout for TextSelectionLayout {
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
 
-            if let Some(child_layout) = layouts.borrow().get(&child) {
+            if let Some(child_layout) = layouts.get(&child) {
                 let dirty = child_layout
                     .measure(render_context_2_d, child, ecm, layouts, theme)
                     .dirty()
@@ -89,7 +88,7 @@ impl Layout for TextSelectionLayout {
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
 
-            if let Some(child_layout) = layouts.borrow().get(&child) {
+            if let Some(child_layout) = layouts.get(&child) {
                 let dirty = child_layout
                     .measure(render_context_2_d, child, ecm, layouts, theme)
                     .dirty()
@@ -107,7 +106,7 @@ impl Layout for TextSelectionLayout {
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-        layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+        layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
         if *ecm
@@ -173,7 +172,7 @@ impl Layout for TextSelectionLayout {
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
 
-            if let Some(child_layout) = layouts.borrow().get(&child) {
+            if let Some(child_layout) = layouts.get(&child) {
                 child_layout.arrange(render_context_2_d, size, child, ecm, layouts, theme);
             }
         }

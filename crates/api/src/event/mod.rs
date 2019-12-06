@@ -1,8 +1,10 @@
 //! This module contains all resources to call and handle events.
 
-use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{any::Any, collections::BTreeMap, rc::Rc};
 
 use dces::entity::Entity;
+
+pub use crate::widget::StatesContext;
 
 pub use self::editable::*;
 pub use self::event_handler::*;
@@ -23,8 +25,8 @@ mod window;
 /// Defines the strategy a event moves through the tree.
 #[derive(Debug, Clone, PartialEq)]
 pub enum EventStrategy {
-    /// From root to leaf.
-    TopDown,
+    // /// From root to leaf.
+    // TopDown,
 
     /// From leaf to root.
     BottomUp,
@@ -40,13 +42,13 @@ pub trait Event: Any {
     }
 }
 
-pub type EventHandlerMap = Rc<RefCell<BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>>>;
+pub type EventHandlerMap = BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>;
 
-pub type TriggerHandler = dyn Fn(Entity) + 'static;
+pub type TriggerHandler = dyn Fn(&mut StatesContext, Entity) + 'static;
 
 #[macro_export]
 macro_rules! trigger_event {
-    ($event:ident, $event_handler:ident, $trait:ident, $method:tt) => (
+    ($event:ident, $event_handler:ident, $trait:ident, $method:tt) => {
         pub struct $event(pub Entity);
 
         impl Event for $event {}
@@ -54,9 +56,9 @@ macro_rules! trigger_event {
         pub struct $event_handler(Rc<TriggerHandler>);
 
         impl EventHandler for $event_handler {
-            fn handle_event(&self, event: &EventBox) -> bool {
+            fn handle_event(&self, states: &mut StatesContext, event: &EventBox) -> bool {
                 if let Ok(event) = event.downcast_ref::<$event>() {
-                    (self.0)(event.0);
+                    (self.0)(states, event.0);
                 }
 
                 false
@@ -74,9 +76,9 @@ macro_rules! trigger_event {
         }
 
         pub trait $trait: Sized + Widget {
-            fn $method<H: Fn(Entity) + 'static>(self, handler: H) -> Self {
+            fn $method<H: Fn(&mut StatesContext, Entity) + 'static>(self, handler: H) -> Self {
                 self.insert_handler($event_handler(Rc::new(handler)))
             }
         }
-    )
+    };
 }

@@ -1,7 +1,6 @@
 use std::{
     cell::{Cell, RefCell},
     collections::BTreeMap,
-    rc::Rc,
 };
 
 use dces::prelude::Entity;
@@ -248,7 +247,7 @@ impl Layout for GridLayout {
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-        layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+        layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> DirtySize {
         if *ecm
@@ -281,7 +280,7 @@ impl Layout for GridLayout {
 
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
-            if let Some(child_layout) = layouts.borrow().get(&child) {
+            if let Some(child_layout) = layouts.get(&child) {
                 let child_desired_size =
                     child_layout.measure(render_context_2_d, child, ecm, layouts, theme);
 
@@ -318,7 +317,7 @@ impl Layout for GridLayout {
         parent_size: (f64, f64),
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-        layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+        layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
         if *ecm
@@ -492,7 +491,7 @@ impl Layout for GridLayout {
             }
 
             let mut child_desired_size = (0.0, 0.0);
-            if let Some(child_layout) = layouts.borrow().get(&child) {
+            if let Some(child_layout) = layouts.get(&child) {
                 child_desired_size = child_layout.arrange(
                     render_context_2_d,
                     available_size,

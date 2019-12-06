@@ -1,9 +1,6 @@
 //! This module contains a platform specific implementation of the window shell.
 
-use std::{
-    cell::{Cell, RefCell},
-    rc::Rc,
-};
+use std::{cell::RefCell, rc::Rc};
 
 use stdweb::{
     js,
@@ -71,12 +68,33 @@ where
     pub old_canvas: Option<CanvasElement>,
     pub flip: bool,
     adapter: A,
+    update: bool,
+    running: bool,
 }
 
 impl<A> WindowShell<A>
 where
     A: WindowAdapter,
 {
+    /// Gets if the shell is running.
+    pub fn running(&self) -> bool {
+        self.running
+    }
+
+    /// Sets running.
+    pub fn set_running(&mut self, running: bool) {
+        self.running = running;
+    }
+
+    /// Get if the shell should be updated.
+    pub fn update(&self) -> bool {
+        self.update
+    }
+
+    /// Sets update.
+    pub fn set_update(&mut self, update: bool) {
+        self.update = update;
+    }
     /// Gets the shell adapter.
     pub fn adapter(&mut self) -> &mut A {
         &mut self.adapter
@@ -112,7 +130,8 @@ where
         }
 
         while let Some(event) = self.mouse_move_events.borrow_mut().pop() {
-            self.adapter.mouse(event.client_x() as f64, event.client_y() as f64);
+            self.adapter
+                .mouse(event.client_x() as f64, event.client_y() as f64);
         }
 
         while let Some(event) = self.mouse_up_events.borrow_mut().pop() {
@@ -239,8 +258,6 @@ where
     A: WindowAdapter + 'static,
 {
     pub window_shell: Rc<RefCell<WindowShell<A>>>,
-    pub update: Rc<Cell<bool>>,
-    pub running: Rc<Cell<bool>>,
     pub updater: Box<dyn Updater>,
 }
 
@@ -251,7 +268,7 @@ where
     pub fn run(mut self) {
         window().request_animation_frame(move |_| {
             self.updater.update();
-            self.update.set(false);
+            self.window_shell.borrow_mut().set_update(false);
             self.window_shell.borrow_mut().drain_events();
             self.run();
         });
@@ -465,6 +482,8 @@ where
             flip: false,
             canvas,
             old_canvas: None,
+            update: true,
+            running: true,
         }
     }
 }

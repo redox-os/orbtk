@@ -7,10 +7,11 @@ use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree};
 /// This system is used to initializes the widgets.
 pub struct InitSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub handlers: EventHandlerMap,
+    pub handlers: Rc<RefCell<EventHandlerMap>>,
+    pub registry: Rc<RefCell<Registry>>,
 }
 
 impl InitSystem {
@@ -71,18 +72,24 @@ impl System<Tree, StringComponentStore> for InitSystem {
             self.init_id(current_node, ecm.component_store_mut(), root);
 
             {
+                let render_objects = &self.render_objects;
+                let layouts = &mut self.layouts.borrow_mut();
+                let handlers = &mut self.handlers.borrow_mut();
+                let new_states = &mut BTreeMap::new();
+
                 let mut ctx = Context::new(
                     (current_node, ecm),
                     window_shell,
                     &theme,
-                    self.render_objects.clone(),
-                    self.layouts.clone(),
-                    self.handlers.clone(),
-                    self.states.clone(),
+                    render_objects,
+                    layouts,
+                    handlers,
+                    &self.states,
+                    new_states,
                 );
 
-                if let Some(state) = self.states.borrow().get(&current_node) {
-                    state.init(&mut ctx);
+                if let Some(state) = self.states.borrow_mut().get_mut(&current_node) {
+                    state.init(&mut *self.registry.borrow_mut(), &mut ctx);
                 }
 
                 self.read_init_from_theme(&mut ctx);

@@ -1,3 +1,5 @@
+use std::f64::consts::PI;
+
 use crate::{
     prelude::*,
     render::RenderContext2D,
@@ -15,7 +17,7 @@ impl RectangleRenderObject {
         rect: Rectangle,
         brush: utils::Brush,
         border_brush: utils::Brush,
-        _border_thickness: Thickness,
+        border_thickness: Thickness,
     ) {
         render_context_2_d.rect(rect.x, rect.y, rect.width, rect.height);
 
@@ -25,6 +27,7 @@ impl RectangleRenderObject {
         }
 
         if !border_brush.is_transparent() {
+            render_context_2_d.set_line_width(border_thickness.left());
             render_context_2_d.set_stroke_style(border_brush);
             render_context_2_d.stroke();
         }
@@ -52,6 +55,46 @@ impl RectangleRenderObject {
         render_context_2_d.line_to(x, y + radius);
         render_context_2_d.quadratic_curve_to(x, y, x + radius, y);
         render_context_2_d.close_path();
+    }
+
+    fn render_circle(
+        &self,
+        render_context_2_d: &mut RenderContext2D,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+        radius: f64,
+    ) {
+        render_context_2_d.move_to(x, y);
+        render_context_2_d.arc(x + width / 2.0, y + height / 2.0, radius, 0.0, 2. * PI);
+        render_context_2_d.close_path();
+    }
+
+    fn render_bordered_circle(
+        &self,
+        render_context_2_d: &mut RenderContext2D,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+        radius: f64,
+        brush: utils::Brush,
+        border_brush: utils::Brush,
+        border_thickness: Thickness,
+    ) {
+        self.render_circle(render_context_2_d, x, y, width, height, radius);
+
+        if !brush.is_transparent() {
+            render_context_2_d.set_fill_style(brush);
+            render_context_2_d.fill();
+        }
+
+        if !border_brush.is_transparent() {
+            render_context_2_d.set_line_width(border_thickness.left());
+            render_context_2_d.set_stroke_style(border_brush);
+            render_context_2_d.stroke();
+        }
     }
 
     // Renders rectangle with border and radius.
@@ -104,10 +147,6 @@ impl RenderObject for RectangleRenderObject {
             )
         };
 
-        // if ctx.entity.0 == 63 {
-        //     println!("Yub");
-        // }
-
         if (bounds.width() == 0.0
             || bounds.height() == 0.0
             || (background.is_transparent() && border_brush.is_transparent()))
@@ -119,8 +158,6 @@ impl RenderObject for RectangleRenderObject {
             return;
         }
 
-        // let now = Instant::now();
-
         let has_thickness = border_thickness.left > 0.0
             || border_thickness.top > 0.0
             || border_thickness.right > 0.0
@@ -128,7 +165,33 @@ impl RenderObject for RectangleRenderObject {
 
         ctx.render_context_2_d().begin_path();
 
-        if border_radius > 0. && has_thickness {
+        if bounds.width() == bounds.height() && border_radius >= bounds.width() / 2.0 {
+            if !has_thickness {
+                self.render_circle(
+                    ctx.render_context_2_d(),
+                    global_position.x + bounds.x(),
+                    global_position.y + bounds.y(),
+                    bounds.width(),
+                    bounds.height(),
+                    border_radius,
+                );
+                ctx.render_context_2_d().set_fill_style(background);
+                ctx.render_context_2_d().fill();
+            } else {
+                self.render_bordered_circle(
+                    ctx.render_context_2_d(),
+                    global_position.x + bounds.x(),
+                    global_position.y + bounds.y(),
+                    bounds.width(),
+                    bounds.height(),
+                    border_radius,
+                    background,
+                    border_brush,
+                    border_thickness,
+                );
+            }
+            return;
+        } else if border_radius > 0. && has_thickness {
             self.render_rounded_bordered_rect_path(
                 ctx.render_context_2_d(),
                 Rectangle::new(
@@ -177,11 +240,5 @@ impl RenderObject for RectangleRenderObject {
             ctx.render_context_2_d().set_fill_style(background);
             ctx.render_context_2_d().fill();
         }
-
-        // println!(
-        //     "Rectangle render mils: {}, id: {}",
-        //     now.elapsed().as_millis(),
-        //     ctx.entity.0
-        // );
     }
 }

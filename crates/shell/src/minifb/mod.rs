@@ -1,12 +1,6 @@
 //! This module contains a platform specific implementation of the window shell.
 
-use std::{
-    cell::{Cell, RefCell},
-    char,
-    collections::HashMap,
-    rc::Rc,
-    sync::Mutex,
-};
+use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::Mutex};
 
 #[cfg(not(target_os = "redox"))]
 use minifb;
@@ -47,8 +41,12 @@ fn unicode_to_key_event(uni_char: u32) -> Option<KeyEvent> {
         Key::Unknown
     };
 
-
-    if key == Key::Up || key == Key::Down || key == Key::Left || key == Key::Right || key == Key::Backspace {
+    if key == Key::Up
+        || key == Key::Down
+        || key == Key::Left
+        || key == Key::Right
+        || key == Key::Backspace
+    {
         return None;
     }
 
@@ -101,6 +99,8 @@ where
     key_alt_r: KeyHelper,
     key_escape: KeyHelper,
     key_home: KeyHelper,
+    update: bool,
+    running: bool,
 }
 
 impl<A> WindowShell<A>
@@ -142,7 +142,29 @@ where
             key_alt_r: KeyHelper(false, minifb::Key::RightAlt, Key::Alt),
             key_escape: KeyHelper(false, minifb::Key::Escape, Key::Escape),
             key_home: KeyHelper(false, minifb::Key::Home, Key::Home),
+            running: true,
+            update: true,
         }
+    }
+
+    /// Gets if the shell is running.
+    pub fn running(&self) -> bool {
+        self.running
+    }
+
+    /// Sets running.
+    pub fn set_running(&mut self, running: bool) {
+        self.running = running;
+    }
+
+    /// Get if the shell should be updated.
+    pub fn update(&self) -> bool {
+        self.update
+    }
+
+    /// Sets update.
+    pub fn set_update(&mut self, update: bool) {
+        self.update = update;
     }
 
     /// Gets the shell adapter.
@@ -249,7 +271,7 @@ where
 
     pub fn flip(&mut self) -> bool {
         if let Some(data) = self.render_context_2_d.data() {
-            self.window.update_with_buffer(data).unwrap();
+            let _ = self.window.update_with_buffer_size(data, self.window_size.0, self.window_size.1);
             CONSOLE.time_end("render");
             return true;
         }
@@ -271,8 +293,6 @@ where
     A: WindowAdapter,
 {
     pub window_shell: Rc<RefCell<WindowShell<A>>>,
-    pub update: Rc<Cell<bool>>,
-    pub running: Rc<Cell<bool>>,
     pub updater: Box<dyn Updater>,
 }
 
@@ -288,7 +308,8 @@ where
         let mut _current_fps = None;
 
         loop {
-            if !self.running.get() || !self.window_shell.borrow().window.is_open() {
+            if !self.window_shell.borrow().running() || !self.window_shell.borrow().window.is_open()
+            {
                 break;
             }
 
@@ -303,8 +324,8 @@ where
 
             self.updater.update();
 
-            if self.update.get() {
-                self.update.set(false);
+            if self.window_shell.borrow_mut().update() {
+                self.window_shell.borrow_mut().set_update(false);
             }
 
             if !self.window_shell.borrow_mut().flip() {
@@ -415,8 +436,8 @@ impl Console {
     }
 
     pub fn time_end(&self, name: impl Into<String>) {
-        if let Some((k, v)) = self.instants.lock().unwrap().remove_entry(&name.into()) {
-            println!("{} {}ms - timer ended", k, v.elapsed().as_millis());
+        if let Some((_k, _v)) = self.instants.lock().unwrap().remove_entry(&name.into()) {
+            // println!("{} {}ms - timer ended", k, v.elapsed().as_millis());
         }
     }
 

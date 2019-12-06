@@ -1,7 +1,4 @@
-use std::{
-    cell::{Cell, RefCell},
-    collections::HashSet,
-};
+use std::collections::HashSet;
 
 use orbtk::prelude::*;
 
@@ -11,62 +8,40 @@ enum Action {
     ClearText,
     EntryActivated(Entity),
     EntryChanged(Entity),
+    ValueChanged(Entity),
     IncrementCounter,
     RemoveItem,
 }
 
+#[derive(AsAny)]
 pub struct MainViewState {
-    counter: Cell<i32>,
-    list: RefCell<Vec<String>>,
-    selection_list: RefCell<Vec<String>>,
-    action: Cell<Option<Action>>,
+    action: Option<Action>,
 }
 
 impl Default for MainViewState {
     fn default() -> Self {
-        MainViewState {
-            counter: Cell::new(0),
-            list: RefCell::new(vec![
-                "Item 1".to_string(),
-                "Item 2".to_string(),
-                "Item 3".to_string(),
-            ]),
-            selection_list: RefCell::new(vec![
-                "Item 1".to_string(),
-                "Item 2".to_string(),
-                "Item 3".to_string(),
-                "Item 4".to_string(),
-                "Item 5".to_string(),
-                "Item 6".to_string(),
-                "Item 7".to_string(),
-                "Item 8".to_string(),
-                "Item 9".to_string(),
-                "Item 10".to_string(),
-            ]),
-            action: Cell::new(None),
-        }
+        MainViewState { action: None }
     }
 }
 
 impl MainViewState {
-    fn action(&self, action: impl Into<Option<Action>>) {
-        self.action.set(action.into());
+    fn action(&mut self, action: impl Into<Option<Action>>) {
+        self.action = action.into();
     }
 }
 
 impl State for MainViewState {
-    fn update(&self, ctx: &mut Context<'_>) {
-        if let Some(action) = self.action.get() {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+        if let Some(action) = self.action {
             match action {
                 Action::AddItem => {
-                    let len = self.list.borrow().len();
+                    let len = ctx.widget().get::<List>("list").len();
                     if len < 5 {
-                        self.list.borrow_mut().push(format!("Item {}", len + 1));
+                        ctx.widget()
+                            .get_mut::<List>("list")
+                            .push(format!("Item {}", len + 1));
                         ctx.child("items").set("count", len + 1);
-
-                        if len == 0 {
-                            ctx.child("remove-item-button").set("enabled", true);
-                        }
+                        ctx.child("remove-item-button").set("enabled", true);
 
                         if len == 4 {
                             ctx.child("add-item-button").set("enabled", false);
@@ -74,23 +49,25 @@ impl State for MainViewState {
                     }
                 }
                 Action::RemoveItem => {
-                    let len = self.list.borrow().len();
-                    self.list.borrow_mut().remove(len - 1);
-                    ctx.child("items").set("count", len - 1);
-
-                    if len == 1 {
-                        ctx.child("remove-item-button").set("enabled", false);
-                    }
-
-                    if len < 6 {
+                    let len = ctx.widget().get::<List>("list").len();
+                    if len > 0 {
+                        ctx.widget().get_mut::<List>("list").remove(len - 1);
+                        ctx.child("items").set("count", len - 1);
                         ctx.child("add-item-button").set("enabled", true);
+
+                        if len == 1 {
+                            ctx.child("remove-item-button").set("enabled", false);
+                        }
                     }
                 }
                 Action::IncrementCounter => {
-                    self.counter.set(self.counter.get() + 1);
+                    *ctx.widget().get_mut::<usize>("counter") += 1;
+
+                    let counter = *ctx.widget().get::<usize>("counter");
+
                     ctx.widget().set(
                         "result",
-                        String16::from(format!("Button count: {}", self.counter.get())),
+                        String16::from(format!("Button count: {}", counter)),
                     );
                 }
                 Action::ClearText => {
@@ -108,13 +85,17 @@ impl State for MainViewState {
                     let text = widget.get::<String16>("text");
                     println!("entry changed: {}", text);
                 }
+                Action::ValueChanged(entity) => {
+                    let value = ((*ctx.get_widget(entity).get::<f64>("value")).floor() as i32).to_string();
+                    ctx.child("value_text").set("text", String16::from(value));
+                }
             }
 
-            self.action.set(None);
+            self.action = None;
         }
     }
 
-    fn update_post_layout(&self, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let mut selection_string = "Selected:".to_string();
 
         for index in &ctx.widget().get::<SelectedIndices>("selected_indices").0 {
@@ -133,9 +114,16 @@ fn create_header(ctx: &mut BuildContext, text: &str) -> Entity {
         .build(ctx)
 }
 
+type List = Vec<String>;
+
 widget!(
     MainView<MainViewState> {
         selected_indices: SelectedIndices,
+        counter: usize,
+        list_count: usize,
+        list: List,
+        selection_list: List,
+        selection_list_count: usize,
         text_one: String16,
         text_two: String16,
         result: String16
@@ -144,24 +132,29 @@ widget!(
 
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let state = self.clone_state();
-
-        let add_item_state = state.clone();
-        let clear_text_state = state.clone();
-        let entry_activated1 = state.clone();
-        let entry_activated2 = state.clone();
-        let entry_changed1 = state.clone();
-        let entry_changed2 = state.clone();
-        let list_state = state.clone();
-        let list_view_state = state.clone();
-        let remove_item_state = state.clone();
-
-        let list_count = list_state.list.borrow().len();
-        let selection_list_count = list_state.selection_list.borrow().len();
-
         self.name("MainView")
             .result("Button count: 0")
+            .counter(0)
             .selected_indices(HashSet::new())
+            .list(vec![
+                "Item 1".to_string(),
+                "Item 2".to_string(),
+                "Item 3".to_string(),
+            ])
+            .list_count(3)
+            .selection_list(vec![
+                "Item 1".to_string(),
+                "Item 2".to_string(),
+                "Item 3".to_string(),
+                "Item 4".to_string(),
+                "Item 5".to_string(),
+                "Item 6".to_string(),
+                "Item 7".to_string(),
+                "Item 8".to_string(),
+                "Item 9".to_string(),
+                "Item 10".to_string(),
+            ])
+            .selection_list_count(10)
             .child(
                 Grid::create()
                     .margin(8.0)
@@ -186,12 +179,8 @@ impl Template for MainView {
                                     .icon(material_font_icons::CHECK_FONT_ICON)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(1))
-                                    .on_mouse_move(move |_| {
-                                        println!("ABc");
-                                        true
-                                    })
-                                    .on_click(move |_| {
-                                        state.action(Action::IncrementCounter);
+                                    .on_click(move |states, _| {
+                                        state(id, states).action(Action::IncrementCounter);
                                         true
                                     })
                                     .build(ctx),
@@ -229,6 +218,21 @@ impl Template for MainView {
                                     .attach(Grid::row(5))
                                     .build(ctx),
                             )
+                            .child(
+                                TextBlock::create()
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .selector(Selector::from("h1").id("value_text"))
+                                    .text("0")
+                                    .horizontal_alignment("center")
+                                    .build(ctx),
+                            )
+                            .child(
+                                Slider::create()
+                                    .on_changed(move |states, entity| {
+                                        state(id, states).action(Action::ValueChanged(entity));
+                                    })
+                                    .build(ctx),
+                            )
                             .build(ctx),
                     )
                     .child(
@@ -251,11 +255,11 @@ impl Template for MainView {
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
-                                    .on_activate(move |entity| {
-                                        entry_activated1.action(Action::EntryActivated(entity));
+                                    .on_activate(move |states, entity| {
+                                        state(id, states).action(Action::EntryActivated(entity));
                                     })
-                                    .on_changed(move |entity| {
-                                        entry_changed1.action(Action::EntryChanged(entity));
+                                    .on_changed(move |states, entity| {
+                                        state(id, states).action(Action::EntryChanged(entity));
                                     })
                                     .build(ctx),
                             )
@@ -266,11 +270,11 @@ impl Template for MainView {
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
-                                    .on_activate(move |entity| {
-                                        entry_activated2.action(Action::EntryActivated(entity));
+                                    .on_activate(move |states, entity| {
+                                        state(id, states).action(Action::EntryActivated(entity));
                                     })
-                                    .on_changed(move |entity| {
-                                        entry_changed2.action(Action::EntryChanged(entity));
+                                    .on_changed(move |states, entity| {
+                                        state(id, states).action(Action::EntryChanged(entity));
                                     })
                                     .build(ctx),
                             )
@@ -278,8 +282,8 @@ impl Template for MainView {
                                 Button::create()
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .text("clear text")
-                                    .on_click(move |_| {
-                                        clear_text_state.action(Action::ClearText);
+                                    .on_click(move |states, _| {
+                                        state(id, states).action(Action::ClearText);
                                         true
                                     })
                                     .build(ctx),
@@ -323,20 +327,24 @@ impl Template for MainView {
                                     .attach(Grid::row(1))
                                     .margin((0.0, 8.0, 0.0, 8.0))
                                     .items_builder(move |bc, index| {
+                                        let text = bc.get_widget(id).get::<Vec<String>>("list")
+                                            [index]
+                                            .clone();
+
                                         Button::create()
                                             .margin((0.0, 0.0, 0.0, 2.0))
-                                            .text(list_state.list.borrow()[index].as_str())
+                                            .text(text)
                                             .build(bc)
                                     })
-                                    .count(list_count)
+                                    .count(("list_count", id))
                                     .build(ctx),
                             )
                             .child(
                                 Button::create()
                                     .selector(Selector::from("button").id("remove-item-button"))
                                     .icon(material_font_icons::MINUS_FONT_ICON)
-                                    .on_click(move |_| {
-                                        remove_item_state.action(Action::RemoveItem);
+                                    .on_click(move |states, _| {
+                                        state(id, states).action(Action::RemoveItem);
                                         true
                                     })
                                     .min_width(0.0)
@@ -348,8 +356,8 @@ impl Template for MainView {
                                 Button::create()
                                     .selector(Selector::from("button").id("add-item-button"))
                                     .icon(material_font_icons::ADD_FONT_ICON)
-                                    .on_click(move |_| {
-                                        add_item_state.action(Action::AddItem);
+                                    .on_click(move |states, _| {
+                                        state(id, states).action(Action::AddItem);
                                         true
                                     })
                                     .min_width(0.0)
@@ -365,16 +373,17 @@ impl Template for MainView {
                                     .selected_indices(id)
                                     .margin((0.0, 16.0, 0.0, 8.0))
                                     .items_builder(move |bc, index| {
+                                        let text = bc
+                                            .get_widget(id)
+                                            .get::<Vec<String>>("selection_list")[index]
+                                            .clone();
                                         TextBlock::create()
                                             .margin((0.0, 0.0, 0.0, 2.0))
                                             .vertical_alignment("center")
-                                            .text(
-                                                list_view_state.selection_list.borrow()[index]
-                                                    .as_str(),
-                                            )
+                                            .text(text)
                                             .build(bc)
                                     })
-                                    .count(selection_list_count)
+                                    .count(("selection_list_count", id))
                                     .build(ctx),
                             )
                             .child(
@@ -410,4 +419,9 @@ fn main() {
                 .build(ctx)
         })
         .run();
+}
+
+// helper to request MainViewState
+fn state<'a>(id: Entity, states: &'a mut StatesContext) -> &'a mut MainViewState {
+    states.get_mut(id)
 }

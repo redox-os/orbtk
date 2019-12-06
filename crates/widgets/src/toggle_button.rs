@@ -6,7 +6,7 @@ widget!(
     /// It's used to perform an action.
     /// 
     /// **CSS element:** `toggle-button`
-    ToggleButton: MouseHandler {
+    ToggleButton: MouseHandler, ChangedHandler {
         /// Sets or shares the background property.
         background: Brush,
 
@@ -88,6 +88,7 @@ impl Template for ToggleButton {
                             .selected(id)
                             .enabled(id)
                             .selector(id)
+                            .parent(id.0)
                             .child(
                                 Container::create()
                                     .background(id)

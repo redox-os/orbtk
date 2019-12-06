@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, collections::BTreeMap};
 
 use dces::prelude::{Entity, EntityComponentManager};
 
@@ -12,18 +12,16 @@ pub struct Context<'a> {
     window_shell: &'a mut WindowShell<WindowAdapter>,
     pub entity: Entity,
     pub theme: &'a ThemeValue,
-    render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    handlers: EventHandlerMap,
-    states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
-    new_states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
+    layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
+    handlers: &'a mut EventHandlerMap,
+    states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
+    new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
 }
 
 impl<'a> Drop for Context<'a> {
     fn drop(&mut self) {
-        self.states
-            .borrow_mut()
-            .append(&mut self.new_states.borrow_mut());
+        self.states.borrow_mut().append(&mut self.new_states);
     }
 }
 
@@ -36,10 +34,11 @@ impl<'a> Context<'a> {
         ),
         window_shell: &'a mut WindowShell<WindowAdapter>,
         theme: &'a ThemeValue,
-        render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-        layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-        handlers: EventHandlerMap,
-        states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+        render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
+        layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
+        handlers: &'a mut EventHandlerMap,
+        states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
+        new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
     ) -> Self {
         Context {
             entity: ecs.0,
@@ -50,7 +49,7 @@ impl<'a> Context<'a> {
             layouts,
             handlers,
             states,
-            new_states: Rc::new(RefCell::new(BTreeMap::new())),
+            new_states,
         }
     }
 
@@ -189,23 +188,24 @@ impl<'a> Context<'a> {
     pub fn build_context(&mut self) -> BuildContext {
         BuildContext::new(
             self.ecm,
-            self.render_objects.clone(),
-            self.layouts.clone(),
-            self.handlers.clone(),
-            self.new_states.clone(),
+            self.render_objects,
+            self.layouts,
+            self.handlers,
+            self.new_states,
+            self.theme,
         )
     }
 
     /// Appends a child widget to the given parent.
     pub fn append_child_to<W: Widget>(&mut self, child: W, parent: Entity) {
-        let mut build_context = self.build_context();
-        let child = child.build(&mut build_context);
-        build_context.append_child(parent, child);
+        let bctx = &mut self.build_context();
+        let child = child.build(bctx);
+        bctx.append_child(parent, child)
     }
 
     /// Appends a child widget by entity to the given parent.
     pub fn append_child_entity_to(&mut self, child: Entity, parent: Entity) {
-        self.build_context().append_child(parent, child);
+        self.build_context().append_child(parent, child)
     }
 
     /// Appends a child to the current widget.
@@ -218,13 +218,13 @@ impl<'a> Context<'a> {
         self.append_child_entity_to(self.entity, child);
     }
 
-    /// Removes a child from the current widget. If the given entity is not a child 
+    /// Removes a child from the current widget. If the given entity is not a child
     /// of the given parent nothing will happen.
     pub fn remove_child(&mut self, child: Entity) {
         self.remove_child_from(child, self.entity);
     }
 
-    /// Removes a child from the given parent. If the given entity is not a child 
+    /// Removes a child from the given parent. If the given entity is not a child
     /// of the given parent nothing will happen.
     pub fn remove_child_from(&mut self, child: Entity, parent: Entity) {
         if self.ecm.entity_store().children[&parent].contains(&child) {
@@ -372,6 +372,14 @@ impl<'a> Context<'a> {
             .adapter()
             .event_queue
             .register_event(event, entity);
+    }
+
+     /// Pushes an event to the event queue.
+    pub fn push_event_strategy_by_entity<E: Event>(&mut self, event: E, entity: Entity, strategy: EventStrategy) {
+        self.window_shell
+            .adapter()
+            .event_queue
+            .register_event_with_strategy(event, strategy, entity);
     }
 
     /// Returns a mutable reference of the 2d render ctx.

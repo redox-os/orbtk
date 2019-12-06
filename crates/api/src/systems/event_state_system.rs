@@ -1,8 +1,4 @@
-use std::{
-    cell::{Cell, RefCell},
-    collections::BTreeMap,
-    rc::Rc,
-};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -11,21 +7,39 @@ use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree, utils::*}
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
 pub struct EventStateSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub handlers: EventHandlerMap,
-    pub update: Rc<Cell<bool>>,
-    pub running: Rc<Cell<bool>>,
+    pub handlers: Rc<RefCell<EventHandlerMap>>,
     pub mouse_down_nodes: RefCell<Vec<Entity>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+    pub registry: Rc<RefCell<Registry>>,
 }
 
 impl EventStateSystem {
-    fn process_top_down_event(
+    // fn process_top_down_event(
+    //     &self,
+    //     _event: &EventBox,
+    //     _ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+    // ) {
+    // }
+
+    fn process_direct(
         &self,
-        _event: &EventBox,
-        _ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-    ) {
+        event: &EventBox
+    ) -> bool {
+        if event.strategy == EventStrategy::Direct {
+            if let Some(handlers) = self.handlers.borrow().get(&event.source) {
+                handlers.iter().any(|handler| {
+                    handler.handle_event(
+                        &mut StatesContext::new(&mut *self.states.borrow_mut()),
+                        &event,
+                    )
+                });
+                return true;
+            }
+        }
+
+        false
     }
 
     fn process_bottom_up_event(
@@ -33,8 +47,9 @@ impl EventStateSystem {
         mouse_position: Point,
         event: &EventBox,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-    ) {
+    ) -> bool {
         let mut matching_nodes = vec![];
+        let mut update = false;
 
         let mut current_node = event.source;
         let root = ecm.entity_store().root;
@@ -64,7 +79,7 @@ impl EventStateSystem {
                 constraint.set_height(*height);
             }
 
-            self.update.set(true);
+            update = true;
         }
 
         // global key handling
@@ -284,21 +299,29 @@ impl EventStateSystem {
             }
 
             if let Some(handlers) = self.handlers.borrow().get(node) {
-                handled = handlers.iter().any(|handler| handler.handle_event(event));
+                handled = handlers.iter().any(|handler| {
+                    handler.handle_event(
+                        &mut StatesContext::new(&mut *self.states.borrow_mut()),
+                        event,
+                    )
+                });
 
-                self.update.set(true);
+                update = true;
             }
 
             if handled {
                 break;
             }
         }
+
+        update
     }
 }
 
 impl System<Tree, StringComponentStore> for EventStateSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         let mut shell = self.shell.borrow_mut();
+        let mut update = shell.update();
 
         loop {
             {
@@ -308,23 +331,31 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                     if let Ok(event) = event.downcast_ref::<SystemEvent>() {
                         match event {
                             SystemEvent::Quit => {
-                                self.running.set(false);
+                                shell.set_running(false);
                                 return;
                             }
                         }
                     }
 
                     match event.strategy {
-                        EventStrategy::TopDown => {
-                            self.process_top_down_event(&event, ecm);
+                        EventStrategy::Direct => {
+                            if event.strategy == EventStrategy::Direct {
+                                update = self.process_direct(&event) || update;
+                            }
                         }
+                        // EventStrategy::TopDown => {
+                        //     self.process_top_down_event(&event, ecm);
+                        // }
                         EventStrategy::BottomUp => {
-                            self.process_bottom_up_event(mouse_position, &event, ecm);
+                            let should_update =
+                                self.process_bottom_up_event(mouse_position, &event, ecm);
+                            update = update || should_update;
                         }
-                        _ => {}
                     }
                 }
             }
+
+            shell.set_update(update);
 
             // handle states
 
@@ -341,24 +372,33 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                 let mut skip = false;
 
                 {
-                    let mut ctx = Context::new(
-                        (current_node, ecm),
-                        &mut shell,
-                        &theme,
-                        self.render_objects.clone(),
-                        self.layouts.clone(),
-                        self.handlers.clone(),
-                        self.states.clone(),
-                    );
-
                     if !self.states.borrow().contains_key(&current_node) {
                         skip = true;
                     }
 
                     if !skip {
-                        if let Some(state) = self.states.borrow().get(&current_node) {
-                            state.update(&mut ctx);
+                        let render_objects = &self.render_objects;
+                        let layouts = &mut self.layouts.borrow_mut();
+                        let handlers = &mut self.handlers.borrow_mut();
+                        let registry = &mut self.registry.borrow_mut();
+                        let new_states = &mut BTreeMap::new();
+
+                        let mut ctx = Context::new(
+                            (current_node, ecm),
+                            &mut shell,
+                            &theme,
+                            render_objects,
+                            layouts,
+                            handlers,
+                            &self.states,
+                            new_states,
+                        );
+
+                        if let Some(state) = self.states.borrow_mut().get_mut(&current_node) {
+                            state.update(registry, &mut ctx);
                         }
+
+                        drop(ctx)
                     }
                 }
                 let mut it = ecm.entity_store().start_node(current_node).into_iter();

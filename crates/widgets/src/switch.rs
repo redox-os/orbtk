@@ -1,27 +1,25 @@
-use std::cell::Cell;
-
 use super::behaviors::MouseBehavior;
 use crate::prelude::*;
 
 /// State to handle the position of switch toggle.
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct SwitchState {
-    selected: Cell<bool>,
+    selected: bool,
 }
 
 impl SwitchState {
-    fn toggle_selection(&self) {
-        self.selected.set(!self.selected.get());
+    fn toggle_selection(&mut self) {
+        self.selected = !self.selected;
     }
 }
 
 impl State for SwitchState {
-    fn update(&self, ctx: &mut Context<'_>) {
-        if *ctx.widget().get::<bool>("selected") == self.selected.get() {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+        if *ctx.widget().get::<bool>("selected") == self.selected {
             return;
         }
 
-        ctx.widget().set("selected", self.selected.get());
+        ctx.widget().set("selected", self.selected);
 
         let element = ctx.widget().clone::<Selector>("selector").element.unwrap();
 
@@ -32,7 +30,7 @@ impl State for SwitchState {
         {
             let mut switch_toggle = ctx.child("switch_toggle");
 
-            if self.selected.get() {
+            if self.selected {
                 switch_toggle.set("horizontal_alignment", Alignment::from("end"));
                 add_selector_to_widget("selected", &mut switch_toggle);
             } else {
@@ -43,6 +41,7 @@ impl State for SwitchState {
             switch_toggle.update_theme_by_state(true);
         }
 
+        ctx.push_event_strategy_by_entity(ChangedEvent(ctx.entity), ctx.entity, EventStrategy::Direct);
         let entity = ctx.entity_of_child("switch_toggle").unwrap();
 
         ctx.get_widget(entity).update_theme_by_state(false);
@@ -82,16 +81,15 @@ widget!(
 
 impl Template for Switch {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let state = self.clone_state();
         self.name("Switch")
             .selector("switch")
             .pressed(false)
             .selected(false)
-            .width(56.0)
+            .width(48.0)
             .height(32.0)
             .border_brush(colors::BOMBAY_COLOR)
             .background(colors::SLATE_GRAY_COLOR)
-            .border_radius(2.0)
+            .border_radius(8.0)
             .border_width(1.0)
             .padding(4.0)
             .child(
@@ -99,8 +97,8 @@ impl Template for Switch {
                     .pressed(id)
                     .enabled(id)
                     .selector(id)
-                    .on_click(move |_| {
-                        state.toggle_selection();
+                    .on_click(move |states, _| {
+                        states.get_mut::<SwitchState>(id).toggle_selection();
                         false
                     })
                     .child(
@@ -113,7 +111,7 @@ impl Template for Switch {
                             .child(
                                 Grid::create()
                                     .child(Container::create().size(24.0, 24.0).build(ctx))
-                                    .border_radius(1.0)
+                                    .border_radius(8.0)
                                     .selector(Selector::from("switch-toggle").id("switch_toggle"))
                                     .vertical_alignment("center")
                                     .horizontal_alignment("start")

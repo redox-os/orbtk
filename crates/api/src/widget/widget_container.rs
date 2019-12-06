@@ -175,7 +175,7 @@ impl<'a> WidgetContainer<'a> {
             .get_mut::<P>(key, self.current_node)
             .ok()
     }
-    
+
     /// Checks if the given value is equal to the given property.
     pub fn eq<P: Component + PartialEq>(&self, key: &str, other: &P) -> bool {
         if let Some(value) = self.try_get::<P>(key) {
