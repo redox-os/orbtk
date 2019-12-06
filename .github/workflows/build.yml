@@ -1,0 +1,65 @@
+name: build
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  build: 
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix: 
+        os: [ubuntu-latest, windows-latest]
+      
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build
+        run: cargo build --verbose
+      - name: Build example
+        run: cargo build --example widgets --verbose
+      
+  build_redox:
+    name: Build on Redox OS
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set nightly default
+        run:  rustup default nightly
+      - name: Update
+        run: sudo apt update
+      - name: Install fuse
+        run: sudo apt install libfuse-dev
+      - name: Install redoxer
+        run: cargo +nightly install redoxer
+      - name: Install redoxer toolchain
+        run: redoxer install
+      - name: Build
+        run: redoxer build
+           
+  build_macos:
+    name: Build on macOS-latest
+    runs-on: macOS-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install rust
+        run: brew install rust
+      - name: Build
+        run: cargo build --verbose
+      - name: Build example
+        run: cargo build --example widgets --verbose
+
+  build_web:
+    name: Build on web
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install cargo-web
+        run: cargo install --force cargo-web
+      - name: Build
+        run: cargo web build

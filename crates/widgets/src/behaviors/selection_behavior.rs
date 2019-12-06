@@ -1,28 +1,29 @@
-use std::cell::Cell;
-
 use crate::prelude::*;
 
 /// The `SelectionBehaviorState` handles the `SelectionBehavior` widget.
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct SelectionBehaviorState {
-    selected: Cell<bool>,
+    selected: bool,
 }
 
 impl SelectionBehaviorState {
-    fn toggle_selection(&self) {
-        self.selected.set(!self.selected.get());
+    fn toggle_selection(&mut self) {
+        self.selected = !self.selected;
     }
 }
 
 impl State for SelectionBehaviorState {
-    fn update(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         if !ctx.widget().get::<bool>("enabled")
-            || *ctx.widget().get::<bool>("selected") == self.selected.get()
+            || *ctx.widget().get::<bool>("selected") == self.selected
         {
             return;
         }
 
-        ctx.widget().set("selected", self.selected.get());
+        ctx.widget().set("selected", self.selected);
+
+        let parent: Entity = ctx.widget().clone::<u32>("parent").into();
+        ctx.push_event_strategy_by_entity(ChangedEvent(parent), parent, EventStrategy::Direct);
 
         let element = ctx.widget().clone::<Selector>("selector").element.unwrap();
 
@@ -41,19 +42,21 @@ widget!(
         selector: Selector,
 
         /// Sets or shares the selected property. 
-        selected: bool
+        selected: bool,
+
+        /// Sets the parent id.
+        parent: u32
     }
 );
 
 impl Template for SelectionBehavior {
-    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        let state = self.clone_state();
-
+    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("SelectionBehavior")
+            .parent(id.0)
             .selector("")
             .selected(true)
-            .on_click(move |_| {
-                state.toggle_selection();
+            .on_click(move |states, _| {
+                states.get_mut::<SelectionBehaviorState>(id).toggle_selection();
                 false
             })
     }

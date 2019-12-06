@@ -2,7 +2,7 @@
 
 Base resources and css styles of OrbTks default theme (dark and light). It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 
-[![Build status](https://gitlab.redox-os.org/redox-os/orbtk/badges/develop/build.svg)](https://gitlab.redox-os.org/redox-os/orbtk/pipelines)
+[![Build and test](https://github.com/redox-os/orbtk/workflows/build/badge.svg)](https://github.com/redox-os/orbtk/actions)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](../../LICENSE)
 
 ## Dependencies
@@ -13,6 +13,7 @@ Base resources and css styles of OrbTks default theme (dark and light). It's par
 
 * [Material Icons](https://github.com/google/material-design-icons) (Apache 2.0): Default icon font
 * [Roboto](https://github.com/google/roboto) (Apache 2.0): Default font
+* [OpenMoji](https://openmoji.org/) (LGPL-3.0, CC BY-SA 4.0): Default emoji font file
 
 ## License
 

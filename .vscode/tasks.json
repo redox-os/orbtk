@@ -27,7 +27,7 @@
       "type": "shell",
       "args": [
         "build",
-        "--examples=minimal"
+        "--examples=minimal",
         "--release"
       ],
       "presentation": {

@@ -5,7 +5,7 @@ widget!(
     /// The `CheckBox` widget can be switch its selected state. It contains a selection box and a text.
     /// 
     /// **CSS element:** `check-box`
-    CheckBox: MouseHandler {
+    CheckBox: MouseHandler, ChangedHandler {
         /// Sets or shares the background property.
         background: Brush,
 
@@ -86,6 +86,7 @@ impl Template for CheckBox {
                             .selected(id)
                             .enabled(id)
                             .selector(id)
+                            .parent(id.0)
                             .child(
                                 Stack::create()
                                     .orientation("horizontal")

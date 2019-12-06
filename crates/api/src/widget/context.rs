@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, collections::BTreeMap};
 
 use dces::prelude::{Entity, EntityComponentManager};
 
@@ -15,8 +15,8 @@ pub struct Context<'a> {
     render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
     layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
     handlers: &'a mut EventHandlerMap,
-    states: &'a RefCell<BTreeMap<Entity, Rc<dyn State>>>,
-    new_states: &'a mut BTreeMap<Entity, Rc<dyn State>>,
+    states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
+    new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
 }
 
 impl<'a> Drop for Context<'a> {
@@ -37,8 +37,8 @@ impl<'a> Context<'a> {
         render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
         layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
         handlers: &'a mut EventHandlerMap,
-        states: &'a RefCell<BTreeMap<Entity, Rc<dyn State>>>,
-        new_states: &'a mut BTreeMap<Entity, Rc<dyn State>>,
+        states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
+        new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
     ) -> Self {
         Context {
             entity: ecs.0,
@@ -192,6 +192,7 @@ impl<'a> Context<'a> {
             self.layouts,
             self.handlers,
             self.new_states,
+            self.theme,
         )
     }
 
@@ -200,7 +201,6 @@ impl<'a> Context<'a> {
         let bctx = &mut self.build_context();
         let child = child.build(bctx);
         bctx.append_child(parent, child)
-
     }
 
     /// Appends a child widget by entity to the given parent.
@@ -372,6 +372,14 @@ impl<'a> Context<'a> {
             .adapter()
             .event_queue
             .register_event(event, entity);
+    }
+
+     /// Pushes an event to the event queue.
+    pub fn push_event_strategy_by_entity<E: Event>(&mut self, event: E, entity: Entity, strategy: EventStrategy) {
+        self.window_shell
+            .adapter()
+            .event_queue
+            .register_event_with_strategy(event, strategy, entity);
     }
 
     /// Returns a mutable reference of the 2d render ctx.

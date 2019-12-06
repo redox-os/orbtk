@@ -1,5 +1,3 @@
-use std::cell::Cell;
-
 use serde_derive::{Deserialize, Serialize};
 
 use orbtk::prelude::*;
@@ -16,20 +14,20 @@ pub struct Global {
     pub label: String,
 }
 
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct MainViewState {
-    action: Cell<Option<Action>>,
+    action: Option<Action>,
 }
 
 impl MainViewState {
-    fn action(&self, action: Action) {
-        self.action.set(Some(action));
+    fn action(&mut self, action: Action) {
+        self.action = Some(action);
     }
 }
 
 impl State for MainViewState {
-    fn update(&self, registry: &mut Registry, ctx: &mut Context<'_>) {
-        if let Some(action) = self.action.get() {
+    fn update(&mut self, registry: &mut Registry, ctx: &mut Context<'_>) {
+        if let Some(action) = self.action {
             match action {
                 Action::Load => {
                     // load label from settings file.
@@ -40,17 +38,24 @@ impl State for MainViewState {
                         ctx.widget().set("text", String16::from(global.label));
                     }
 
-                    ctx.widget().set("info_text", String16::from("Label loaded from settings file."));
+                    ctx.widget().set(
+                        "info_text",
+                        String16::from("Label loaded from settings file."),
+                    );
                 }
                 Action::Save => {
                     // save label to settings file.
-                    registry.get_mut::<Settings>("settings").save(
-                        "global",
-                        &Global {
-                            label: ctx.widget().get::<String16>("text").to_string(),
-                        },
-                    ).unwrap();
-                    ctx.widget().set("info_text", String16::from("Label saved to settings file."));
+                    registry
+                        .get_mut::<Settings>("settings")
+                        .save(
+                            "global",
+                            &Global {
+                                label: ctx.widget().get::<String16>("text").to_string(),
+                            },
+                        )
+                        .unwrap();
+                    ctx.widget()
+                        .set("info_text", String16::from("Label saved to settings file."));
                 }
                 Action::Clear => {
                     ctx.widget().set("text", String16::default());
@@ -58,7 +63,7 @@ impl State for MainViewState {
                 }
             }
 
-            self.action.set(None);
+            self.action = None;
         }
     }
 }
@@ -70,10 +75,6 @@ widget!(MainView<MainViewState> {
 
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let load_state = self.clone_state();
-        let save_state = self.clone_state();
-        let clear_state = self.clone_state();
-
         self.name("MainView").child(
             Grid::create()
                 .rows(Rows::create().row(32.0).row(4.0).row("auto").build())
@@ -93,8 +94,8 @@ impl Template for MainView {
                     Button::create()
                         .attach(Grid::row(0))
                         .attach(Grid::column(2))
-                        .on_click(move |_| {
-                            load_state.action(Action::Load);
+                        .on_click(move |states, _| {
+                            state(id, states).action(Action::Load);
                             true
                         })
                         .text("Load")
@@ -104,8 +105,8 @@ impl Template for MainView {
                     Button::create()
                         .attach(Grid::row(0))
                         .attach(Grid::column(4))
-                        .on_click(move |_| {
-                            save_state.action(Action::Save);
+                        .on_click(move |states, _| {
+                            state(id, states).action(Action::Save);
                             true
                         })
                         .text("Save")
@@ -115,8 +116,8 @@ impl Template for MainView {
                     Button::create()
                         .attach(Grid::row(0))
                         .attach(Grid::column(6))
-                        .on_click(move |_| {
-                            clear_state.action(Action::Clear);
+                        .on_click(move |states, _| {
+                            state(id, states).action(Action::Clear);
                             true
                         })
                         .text("Clear")
@@ -145,4 +146,9 @@ fn main() {
                 .build(ctx)
         })
         .run();
+}
+
+// helper to request MainViewState
+fn state<'a>(id: Entity, states: &'a mut StatesContext) -> &'a mut MainViewState {
+    states.get_mut(id)
 }

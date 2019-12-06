@@ -21,7 +21,7 @@ mod window;
 #[derive(Default)]
 pub struct Application {
     runners: Vec<ShellRunner<WindowAdapter>>,
-    name: Box<str>
+    name: Box<str>,
 }
 
 impl Application {
@@ -50,9 +50,13 @@ impl Application {
 
         // register settings service.
         if self.name.is_empty() {
-            registry.borrow_mut().register("settings", Settings::default());
+            registry
+                .borrow_mut()
+                .register("settings", Settings::default());
         } else {
-            registry.borrow_mut().register("settings", Settings::new(&*self.name));       
+            registry
+                .borrow_mut()
+                .register("settings", Settings::new(&*self.name));
         };
 
         let window = create_fn(&mut BuildContext::new(
@@ -61,6 +65,7 @@ impl Application {
             &mut layouts.borrow_mut(),
             &mut handlers.borrow_mut(),
             &mut states.borrow_mut(),
+            &mut crate::theme::default_theme(),
         ));
 
         {
@@ -147,6 +152,15 @@ impl Application {
                 "Material Icons",
                 crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
             );
+
+            #[cfg(not(target_arch = "wasm32"))]
+            window_shell
+                .borrow_mut()
+                .render_context_2_d()
+                .register_font(
+                    "OpenMoji",
+                    crate::theme::fonts::OPEN_MOJI_COLOR_FONT,
+                );
 
         world.register_init_system(InitSystem {
             shell: window_shell.clone(),

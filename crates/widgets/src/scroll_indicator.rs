@@ -1,11 +1,11 @@
 use crate::prelude::*;
 
 /// The `ScrollIndicatorState` handles the `ScrollIndicator` widget.
-#[derive(Default)]
+#[derive(Default, AsAny)]
 pub struct ScrollIndicatorState;
 
 impl State for ScrollIndicatorState {
-    fn update_post_layout(&self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let padding = *ctx.widget().get::<Thickness>("padding");
         let scroll_offset = *ctx.widget().get::<Point>("scroll_offset");
         let content_id = *ctx.widget().get::<u32>("content_id");
@@ -85,8 +85,8 @@ impl Template for ScrollIndicator {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ScrollIndicator")
             .selector("scroll-indicator")
-            .vertical_alignment("Stretch")
-            .horizontal_alignment("Stretch")
+            .vertical_alignment("stretch")
+            .horizontal_alignment("stretch")
             .padding(0.0)
             .child(
                 Grid::create()

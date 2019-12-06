@@ -246,9 +246,19 @@ fn apply_arrangement(
 }
 
 /// Applies spacing to widgets in a stack, depending upon their position, and the orientation.
-fn apply_spacing(margins: &mut Thickness, spacing: f64, orientation: Orientation, index: usize, nchildren: usize) {
-    let start =  if index == 0 { 0.0 } else { spacing / 2.0 };
-    let end = if index == nchildren - 1 { 0.0 } else { spacing / 2.0 };
+fn apply_spacing(
+    margins: &mut Thickness,
+    spacing: f64,
+    orientation: Orientation,
+    index: usize,
+    nchildren: usize,
+) {
+    let start = if index == 0 { 0.0 } else { spacing / 2.0 };
+    let end = if index == nchildren - 1 {
+        0.0
+    } else {
+        spacing / 2.0
+    };
 
     match orientation {
         Orientation::Vertical => {

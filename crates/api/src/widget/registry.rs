@@ -47,10 +47,6 @@ impl Registry {
     }
 
     /// Try to get an element from the registry.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the there is no service for the given key or the given service type is wrong.
     pub fn try_get<C: Component>(&self, key: &str) -> Option<&C> {
         if let Some(e) = self.registry.get(&key.to_string()) {
             if let Some(r) = e.downcast_ref() {
@@ -62,10 +58,6 @@ impl Registry {
     }
 
     /// Try to get an element from the registry.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the there is no service for the given key or the given service type is wrong.
     pub fn try_get_mut<C: Component>(&mut self, key: &str) -> Option<&mut C> {
         if let Some(e) = self.registry.get_mut(&key.to_string()) {
             if let Some(r) = e.downcast_mut() {
@@ -92,14 +84,6 @@ mod tests {
     use super::*;
 
     struct ServiceOne;
-
-    struct ServiceTwo;
-
-    #[test]
-    fn register() {
-        let mut registry = Registry::new();
-        registry.register("one", ServiceOne);
-        registry.register("two", ServiceTwo);
 
         assert!(registry.try_get::<ServiceOne>("one").is_some());
         assert!(registry.try_get::<ServiceTwo>("two").is_some());

@@ -9,18 +9,37 @@ pub struct EventStateSystem {
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
     pub handlers: Rc<RefCell<EventHandlerMap>>,
     pub mouse_down_nodes: RefCell<Vec<Entity>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Rc<dyn State>>>>,
+    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub registry: Rc<RefCell<Registry>>,
 }
 
 impl EventStateSystem {
-    fn process_top_down_event(
+    // fn process_top_down_event(
+    //     &self,
+    //     _event: &EventBox,
+    //     _ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+    // ) {
+    // }
+
+    fn process_direct(
         &self,
-        _event: &EventBox,
-        _ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-    ) {
+        event: &EventBox
+    ) -> bool {
+        if event.strategy == EventStrategy::Direct {
+            if let Some(handlers) = self.handlers.borrow().get(&event.source) {
+                handlers.iter().any(|handler| {
+                    handler.handle_event(
+                        &mut StatesContext::new(&mut *self.states.borrow_mut()),
+                        &event,
+                    )
+                });
+                return true;
+            }
+        }
+
+        false
     }
 
     fn process_bottom_up_event(
@@ -280,7 +299,12 @@ impl EventStateSystem {
             }
 
             if let Some(handlers) = self.handlers.borrow().get(node) {
-                handled = handlers.iter().any(|handler| handler.handle_event(event));
+                handled = handlers.iter().any(|handler| {
+                    handler.handle_event(
+                        &mut StatesContext::new(&mut *self.states.borrow_mut()),
+                        event,
+                    )
+                });
 
                 update = true;
             }
@@ -314,15 +338,19 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                     }
 
                     match event.strategy {
-                        EventStrategy::TopDown => {
-                            self.process_top_down_event(&event, ecm);
+                        EventStrategy::Direct => {
+                            if event.strategy == EventStrategy::Direct {
+                                update = self.process_direct(&event) || update;
+                            }
                         }
+                        // EventStrategy::TopDown => {
+                        //     self.process_top_down_event(&event, ecm);
+                        // }
                         EventStrategy::BottomUp => {
                             let should_update =
                                 self.process_bottom_up_event(mouse_position, &event, ecm);
                             update = update || should_update;
                         }
-                        _ => {}
                     }
                 }
             }
@@ -366,7 +394,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                             new_states,
                         );
 
-                        if let Some(state) = self.states.borrow().get(&current_node) {
+                        if let Some(state) = self.states.borrow_mut().get_mut(&current_node) {
                             state.update(registry, &mut ctx);
                         }
 

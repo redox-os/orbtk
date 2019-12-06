@@ -271,7 +271,7 @@ where
 
     pub fn flip(&mut self) -> bool {
         if let Some(data) = self.render_context_2_d.data() {
-            self.window.update_with_buffer(data).unwrap();
+            let _ = self.window.update_with_buffer_size(data, self.window_size.0, self.window_size.1);
             CONSOLE.time_end("render");
             return true;
         }
@@ -324,7 +324,7 @@ where
 
             self.updater.update();
 
-            if self.window_shell.borrow().update() {
+            if self.window_shell.borrow_mut().update() {
                 self.window_shell.borrow_mut().set_update(false);
             }
 
@@ -436,8 +436,8 @@ impl Console {
     }
 
     pub fn time_end(&self, name: impl Into<String>) {
-        if let Some((k, v)) = self.instants.lock().unwrap().remove_entry(&name.into()) {
-            println!("{} {}ms - timer ended", k, v.elapsed().as_millis());
+        if let Some((_k, _v)) = self.instants.lock().unwrap().remove_entry(&name.into()) {
+            // println!("{} {}ms - timer ended", k, v.elapsed().as_millis());
         }
     }
 
