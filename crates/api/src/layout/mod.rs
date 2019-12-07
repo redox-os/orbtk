@@ -1,6 +1,6 @@
 use std::{any::Any, collections::BTreeMap};
 
-use dces::prelude::{Entity, EntityComponentManager};
+use dces::prelude::{Entity, Component, EntityComponentManager};
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::*};
 
@@ -40,4 +40,36 @@ pub trait Layout: Any {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> (f64, f64);
+}
+
+fn component<C: Component + Clone>(
+    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+    entity: Entity,
+    component: &str,
+) -> C {
+    ecm.component_store()
+        .get::<C>(component, entity)
+        .unwrap()
+        .clone()
+}
+
+fn component_or_default<C: Component + Clone + Default>(
+    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+    entity: Entity,
+    component: &str,
+) -> C {
+    ecm.component_store()
+        .get::<C>(component, entity)
+        .map(Clone::clone)
+        .unwrap_or_default()
+}
+
+fn component_try_mut<'a, C: Component>(
+    ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
+    entity: Entity,
+    component: &str,
+) -> Option<&'a mut C> {
+    ecm.component_store_mut()
+        .get_mut::<C>(component, entity)
+        .ok()
 }

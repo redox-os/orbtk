@@ -3,11 +3,11 @@ use std::{
     collections::BTreeMap,
 };
 
-use dces::prelude::{Entity, Component};
+use dces::prelude::Entity;
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
-use super::Layout;
+use super::{Layout, component, component_or_default, component_try_mut, };
 
 /// Stacks visual the children widgets vertical or horizontal.
 #[derive(Default)]
@@ -131,11 +131,6 @@ impl Layout for StackLayout {
             ),
         ));
 
-        if let Some(bounds) = component_try_mut::<Rectangle>(ecm, entity, "bounds") {
-            bounds.set_width(size.0);
-            bounds.set_height(size.1);
-        }
-
         let available_size = size;
         let nchildren = ecm.entity_store().children[&entity].len();
         let spacing: f64 = component_or_default(ecm, entity, "spacing");
@@ -172,6 +167,7 @@ impl Layout for StackLayout {
 
             if let Some(child_bounds) = component_try_mut::<Rectangle>(ecm, child, "bounds") {
                 apply_arrangement(
+                    child_desired_size,
                     child_bounds,
                     &mut size_counter,
                     child_margin,
@@ -194,6 +190,7 @@ impl From<StackLayout> for Box<dyn Layout> {
 }
 
 fn apply_arrangement(
+    desired_size: (f64, f64),
     bounds: &mut Rectangle,
     size_counter: &mut f64,
     margin: Thickness,
@@ -219,6 +216,8 @@ fn apply_arrangement(
                 margin.bottom(),
             );
 
+            bounds.set_size(desired_size.0, desired_size.1);
+
             size = bounds.width() + margin.left() + margin.right();
         }
         _ => {
@@ -235,6 +234,8 @@ fn apply_arrangement(
                 margin.top(),
                 margin.bottom(),
             );
+
+            bounds.set_size(desired_size.0, desired_size.1);
 
             size = bounds.height() + margin.top() + margin.bottom();
         }
@@ -291,33 +292,6 @@ fn accumulate_desired_size(
             desired_size.1 += height;
         }
     }
-}
-
-fn component<C: Component + Clone>(
-    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-    entity: Entity,
-    component: &str
-) -> C {
-    ecm.component_store().get::<C>(component, entity).unwrap().clone()
-}
-
-fn component_or_default<C: Component + Clone + Default>(
-    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-    entity: Entity,
-    component: &str
-) -> C {
-    ecm.component_store()
-        .get::<C>(component, entity)
-        .map(Clone::clone)
-        .unwrap_or_default()
-}
-
-fn component_try_mut<'a, C: Component>(
-    ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
-    entity: Entity,
-    component: &str
-) -> Option<&'a mut C> {
-    ecm.component_store_mut().get_mut::<C>(component, entity).ok()
 }
 
 #[cfg(test)]
