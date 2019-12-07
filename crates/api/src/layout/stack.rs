@@ -7,7 +7,7 @@ use dces::prelude::Entity;
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
-use super::{Layout, component, component_or_default, component_try_mut, };
+use super::{component, component_or_default, component_try_mut, Layout};
 
 /// Stacks visual the children widgets vertical or horizontal.
 #[derive(Default)]
@@ -75,7 +75,12 @@ impl Layout for StackLayout {
                     apply_spacing(&mut child_margin, spacing, orientation, index, nchildren);
                 }
 
-                accumulate_desired_size(&mut desired_size, child_desired_size, child_margin, orientation);
+                accumulate_desired_size(
+                    &mut desired_size,
+                    child_desired_size,
+                    child_margin,
+                    orientation,
+                );
 
                 if child_desired_size.dirty() || self.desired_size.borrow().dirty() {
                     dirty = true;
@@ -116,7 +121,7 @@ impl Layout for StackLayout {
 
         let mut size_counter = 0.0;
 
-        let size = constraint.perform((
+        let mut size = constraint.perform((
             halign.align_measure(
                 parent_size.0,
                 self.desired_size.borrow().width(),
@@ -131,7 +136,7 @@ impl Layout for StackLayout {
             ),
         ));
 
-        let available_size = size;
+        let mut available_size = size;
         let nchildren = ecm.entity_store().children[&entity].len();
         let spacing: f64 = component_or_default(ecm, entity, "spacing");
 
@@ -140,14 +145,8 @@ impl Layout for StackLayout {
 
             let mut child_desired_size = (0.0, 0.0);
             if let Some(child_layout) = layouts.get(&child) {
-                child_desired_size = child_layout.arrange(
-                    render_context_2_d,
-                    size,
-                    child,
-                    ecm,
-                    layouts,
-                    theme,
-                );
+                child_desired_size =
+                    child_layout.arrange(render_context_2_d, size, child, ecm, layouts, theme);
             }
 
             let mut child_margin = {
@@ -173,12 +172,21 @@ impl Layout for StackLayout {
                     child_margin,
                     (child_halign, child_valign),
                     orientation,
-                    available_size
+                    available_size,
                 );
+
+                match orientation {
+                    Orientation::Vertical => available_size.1 -= size_counter,
+                    _ => available_size.0 -= size_counter,
+                }
             }
         }
 
         self.set_dirty(false);
+        match orientation {
+            Orientation::Vertical => size.1 = size_counter,
+            _ => size.0 = size_counter,
+        }
         size
     }
 }
@@ -196,51 +204,65 @@ fn apply_arrangement(
     margin: Thickness,
     alignment: (Alignment, Alignment),
     orientation: Orientation,
-    available_size: (f64, f64)
+    available_size: (f64, f64),
 ) {
     let (xpos, ypos, size);
+    let mut bounds_size = desired_size;
 
     match orientation {
         Orientation::Horizontal => {
-            xpos = *size_counter + alignment.0.align_position(
+            bounds_size.0 = Alignment::Start.align_measure(
                 available_size.0,
-                bounds.width(),
+                desired_size.0,
                 margin.left(),
                 margin.right(),
             );
+
+            xpos = *size_counter
+                + alignment.0.align_position(
+                    available_size.0,
+                    bounds_size.0,
+                    margin.left(),
+                    margin.right(),
+                );
 
             ypos = alignment.1.align_position(
                 available_size.1,
-                bounds.height(),
+                bounds_size.1,
                 margin.top(),
                 margin.bottom(),
             );
 
-            bounds.set_size(desired_size.0, desired_size.1);
-
-            size = bounds.width() + margin.left() + margin.right();
+            size = bounds_size.0 + margin.left() + margin.right();
         }
         _ => {
+            bounds_size.1 = Alignment::Start.align_measure(
+                available_size.1,
+                desired_size.1,
+                margin.top(),
+                margin.bottom(),
+            );
+
             xpos = alignment.0.align_position(
                 available_size.0,
-                bounds.width(),
+                bounds_size.0,
                 margin.left(),
                 margin.right(),
             );
 
-            ypos = *size_counter + alignment.1.align_position(
-                available_size.1,
-                bounds.height(),
-                margin.top(),
-                margin.bottom(),
-            );
+            ypos = *size_counter
+                + alignment.1.align_position(
+                    available_size.1,
+                    bounds_size.1,
+                    margin.top(),
+                    margin.bottom(),
+                );
 
-            bounds.set_size(desired_size.0, desired_size.1);
-
-            size = bounds.height() + margin.top() + margin.bottom();
+            size = bounds_size.1 + margin.top() + margin.bottom();
         }
     };
 
+    bounds.set_size(bounds_size.0, bounds_size.1);
     bounds.set_x(xpos);
     bounds.set_y(ypos);
     *size_counter += size;
@@ -277,7 +299,7 @@ fn accumulate_desired_size(
     desired_size: &mut (f64, f64),
     desired: DirtySize,
     margin: Thickness,
-    orientation: Orientation
+    orientation: Orientation,
 ) {
     let width = desired.width() + margin.left() + margin.right();
     let height = desired.height() + margin.top() + margin.bottom();
@@ -296,7 +318,7 @@ fn accumulate_desired_size(
 
 #[cfg(test)]
 mod tests {
-    use orbtk_utils::{Thickness, Orientation};
+    use orbtk_utils::{Orientation, Thickness};
     use std::iter;
 
     use super::apply_spacing;
@@ -305,18 +327,54 @@ mod tests {
 
     #[test]
     fn spacing_vertical() {
-        let expected = iter::once(Thickness { left: 0.0, right: 0.0, top: 0.0, bottom: 2.0 })
-            .chain(iter::repeat(Thickness { left: 0.0, right: 0.0, top: 2.0, bottom: 2.0 }).take(3))
-            .chain(iter::once(Thickness { left: 0.0, right: 0.0, top: 2.0, bottom: 0.0 }));
+        let expected = iter::once(Thickness {
+            left: 0.0,
+            right: 0.0,
+            top: 0.0,
+            bottom: 2.0,
+        })
+        .chain(
+            iter::repeat(Thickness {
+                left: 0.0,
+                right: 0.0,
+                top: 2.0,
+                bottom: 2.0,
+            })
+            .take(3),
+        )
+        .chain(iter::once(Thickness {
+            left: 0.0,
+            right: 0.0,
+            top: 2.0,
+            bottom: 0.0,
+        }));
 
         spacing(Orientation::Vertical, 4.0, expected);
     }
 
     #[test]
     fn spacing_horizontal() {
-        let expected = iter::once(Thickness { left: 0.0, right: 4.0, top: 0.0, bottom: 0.0 })
-            .chain(iter::repeat(Thickness { left: 4.0, right: 4.0, top: 0.0, bottom: 0.0 }).take(3))
-            .chain(iter::once(Thickness { left: 4.0, right: 0.0, top: 0.0, bottom: 0.0 }));
+        let expected = iter::once(Thickness {
+            left: 0.0,
+            right: 4.0,
+            top: 0.0,
+            bottom: 0.0,
+        })
+        .chain(
+            iter::repeat(Thickness {
+                left: 4.0,
+                right: 4.0,
+                top: 0.0,
+                bottom: 0.0,
+            })
+            .take(3),
+        )
+        .chain(iter::once(Thickness {
+            left: 4.0,
+            right: 0.0,
+            top: 0.0,
+            bottom: 0.0,
+        }));
 
         spacing(Orientation::Horizontal, 8.0, expected);
     }

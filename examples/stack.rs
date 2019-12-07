@@ -59,6 +59,24 @@ impl Template for MainView {
                                 .vertical_alignment("start")
                                 .build(ctx),
                         )
+                        .child(
+                            Button::create()
+                                .text("center")
+                                .vertical_alignment("center")
+                                .build(ctx),
+                        )
+                        .child(
+                            Button::create()
+                                .text("stretch")
+                                .vertical_alignment("stretch")
+                                .build(ctx),
+                        )
+                        .child(
+                            Button::create()
+                                .text("bottom")
+                                .vertical_alignment("end")
+                                .build(ctx),
+                        )
                         .build(ctx),
                 )
                 .build(ctx),
@@ -76,6 +94,7 @@ fn main() {
                 .title("OrbTk - stack example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
+                .resizeable(true)
                 .child(MainView::create().margin(4.0).build(ctx))
                 .build(ctx)
         })
