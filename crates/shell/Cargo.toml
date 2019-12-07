@@ -17,8 +17,8 @@ spin_sleep = "0.3.7"
 image = "0.22.3"
 
 [target.'cfg(all(not(target_arch = "wasm32"), not(target_os = "redox")))'.dependencies]
-minifb = "0.14"
-# minifb = { git = "https://github.com/emoon/rust_minifb.git" }
+# minifb = "0.14"
+minifb = { git = "https://github.com/emoon/rust_minifb.git" }
 
 [target.'cfg(target_os = "redox")'.dependencies]
 minifb-fix = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix" }
