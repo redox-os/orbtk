@@ -7,7 +7,7 @@ use dces::prelude::Entity;
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
-use super::{Layout, component, component_or_default, component_try_mut};
+use super::{component, Layout};
 
 /// The text selection layout is used to measure and arrange a text selection cursor.
 #[derive(Default)]
@@ -37,7 +37,7 @@ impl Layout for TextSelectionLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
+        if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return *self.desired_size.borrow();
         }
@@ -101,7 +101,7 @@ impl Layout for TextSelectionLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
-         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
+        if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return (0.0, 0.0);
         }
@@ -113,7 +113,7 @@ impl Layout for TextSelectionLayout {
         let mut pos = 0.0;
         let mut size = self.desired_size.borrow().size();
 
-        let vertical_alignment: Alignment =  component(ecm, entity, "vertical_alignment");
+        let vertical_alignment: Alignment = component(ecm, entity, "vertical_alignment");
         let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
 
         {

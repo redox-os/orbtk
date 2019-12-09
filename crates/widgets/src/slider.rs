@@ -325,8 +325,17 @@ mod tests {
 
     #[test]
     fn test_calculate_thumb_x_from_value() {
-        assert_eq!(0.0, calculate_thumb_x_from_value(0.0, 0.0, 100.0, 100.0, 32.0));
-        assert_eq!(34.0, calculate_thumb_x_from_value(50.0, 0.0, 100.0, 100.0, 32.0));
-        assert_eq!(68.0, calculate_thumb_x_from_value(100.0, 0.0, 100.0, 100.0, 32.0));
+        assert_eq!(
+            0.0,
+            calculate_thumb_x_from_value(0.0, 0.0, 100.0, 100.0, 32.0)
+        );
+        assert_eq!(
+            34.0,
+            calculate_thumb_x_from_value(50.0, 0.0, 100.0, 100.0, 32.0)
+        );
+        assert_eq!(
+            68.0,
+            calculate_thumb_x_from_value(100.0, 0.0, 100.0, 100.0, 32.0)
+        );
     }
 }

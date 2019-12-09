@@ -41,7 +41,11 @@ impl State for SwitchState {
             switch_toggle.update_theme_by_state(true);
         }
 
-        ctx.push_event_strategy_by_entity(ChangedEvent(ctx.entity), ctx.entity, EventStrategy::Direct);
+        ctx.push_event_strategy_by_entity(
+            ChangedEvent(ctx.entity),
+            ctx.entity,
+            EventStrategy::Direct,
+        );
         let entity = ctx.entity_of_child("switch_toggle").unwrap();
 
         ctx.get_widget(entity).update_theme_by_state(false);

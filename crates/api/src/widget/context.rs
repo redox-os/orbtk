@@ -374,8 +374,13 @@ impl<'a> Context<'a> {
             .register_event(event, entity);
     }
 
-     /// Pushes an event to the event queue.
-    pub fn push_event_strategy_by_entity<E: Event>(&mut self, event: E, entity: Entity, strategy: EventStrategy) {
+    /// Pushes an event to the event queue.
+    pub fn push_event_strategy_by_entity<E: Event>(
+        &mut self,
+        event: E,
+        entity: Entity,
+        strategy: EventStrategy,
+    ) {
         self.window_shell
             .adapter()
             .event_queue

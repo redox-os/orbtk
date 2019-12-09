@@ -2,11 +2,12 @@ use super::behaviors::{MouseBehavior, SelectionBehavior};
 use crate::prelude::*;
 
 widget!(
-    /// The `ToggleButton` widget can be clicked by user and could switch between selected / not selected. 
+    /// The `ToggleButton` widget can be clicked by user and could switch between selected / not selected.
     /// It's used to perform an action.
-    /// 
+    ///
     /// **CSS element:** `toggle-button`
-    ToggleButton: MouseHandler, ChangedHandler {
+    ToggleButton: MouseHandler,
+    ChangedHandler {
         /// Sets or shares the background property.
         background: Brush,
 
@@ -46,13 +47,13 @@ widget!(
         /// Sets or shares the icon font property.
         icon_font: String,
 
-        /// Sets or shares the css selector property. 
+        /// Sets or shares the css selector property.
         selector: Selector,
 
-        /// Sets or shares the pressed property. 
+        /// Sets or shares the pressed property.
         pressed: bool,
 
-        /// Sets or shares the selected property. 
+        /// Sets or shares the selected property.
         selected: bool
     }
 );

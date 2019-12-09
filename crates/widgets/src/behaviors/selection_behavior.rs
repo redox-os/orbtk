@@ -56,7 +56,9 @@ impl Template for SelectionBehavior {
             .selector("")
             .selected(true)
             .on_click(move |states, _| {
-                states.get_mut::<SelectionBehaviorState>(id).toggle_selection();
+                states
+                    .get_mut::<SelectionBehaviorState>(id)
+                    .toggle_selection();
                 false
             })
     }

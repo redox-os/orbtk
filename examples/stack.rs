@@ -53,6 +53,7 @@ impl Template for MainView {
                     Stack::create()
                         .orientation("horizontal")
                         .spacing(4.0)
+                        .height(100.0)
                         .child(
                             Button::create()
                                 .text("top")
@@ -67,6 +68,7 @@ impl Template for MainView {
                         )
                         .child(
                             Button::create()
+                                .height(0.0)
                                 .text("stretch")
                                 .vertical_alignment("stretch")
                                 .build(ctx),
