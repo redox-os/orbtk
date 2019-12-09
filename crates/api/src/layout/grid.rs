@@ -7,7 +7,7 @@ use dces::prelude::Entity;
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
-use super::{component, component_try_mut, Layout};
+use super::{Layout, component, component_or_default, component_try_mut};
 
 /// Orders its children in a grid layout with columns and rows. If now columns and rows are defined
 /// the gird layout could also be used as alignment layout.
@@ -250,7 +250,7 @@ impl Layout for GridLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
+         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return *self.desired_size.borrow();
         }
@@ -290,7 +290,10 @@ impl Layout for GridLayout {
             .borrow_mut()
             .set_size(desired_size.0, desired_size.1);
 
-        let size = component::<Constraint>(ecm, entity, "constraint")
+        let size = ecm
+            .component_store()
+            .get::<Constraint>("constraint", entity)
+            .unwrap()
             .perform(self.desired_size.borrow().size());
         self.desired_size.borrow_mut().set_size(size.0, size.1);
 
@@ -306,7 +309,7 @@ impl Layout for GridLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
-        if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
+         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return (0.0, 0.0);
         }
@@ -316,8 +319,8 @@ impl Layout for GridLayout {
         }
 
         let horizontal_alignment: Alignment = component(ecm, entity, "horizontal_alignment");
-        let vertical_alignment: Alignment = component(ecm, entity, "vertical_alignment");
-        let margin: Thickness = component(ecm, entity, "margin");
+        let vertical_alignment: Alignment =  component(ecm, entity, "vertical_alignment");
+        let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
         let constraint: Constraint = component(ecm, entity, "constraint");
 
         let size = constraint.perform((
@@ -364,7 +367,7 @@ impl Layout for GridLayout {
             if let Ok(grid_row) = ecm.component_store().get::<usize>("row", child) {
                 let grid_row = *grid_row;
 
-                if let Some(rows) = component_try_mut::<Rows>(ecm, entity, "rows") {
+                if let Ok(rows) = ecm.component_store().get::<Rows>("rows", entity) {
                     if let Some(row) = rows.get(grid_row) {
                         self.calculate_row_height(child, *row, grid_row, &mut row_heights, margin);
                     }
@@ -372,26 +375,41 @@ impl Layout for GridLayout {
             }
         }
 
-        if let Some(columns) = component_try_mut::<Columns>(ecm, entity, "columns")
+        if let Ok(columns) = ecm
+            .component_store_mut()
+            .get_mut::<Columns>("columns", entity)
         {
             self.calculate_columns(size, &mut columns_cache, columns, &column_widths);
         }
 
-        if let Some(rows) = component_try_mut::<Rows>(ecm, entity, "rows"){
+        if let Ok(rows) = ecm.component_store_mut().get_mut::<Rows>("rows", entity) {
             self.calculate_rows(size, &mut rows_cache, rows, &row_heights);
+        }
+
+        if let Ok(bounds) = ecm
+            .component_store_mut()
+            .get_mut::<Rectangle>("bounds", entity)
+        {
+            bounds.set_width(size.0);
+            bounds.set_height(size.1);
         }
 
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
 
-            let child_horizontal_alignment: Alignment =
-                component(ecm, child, "horizontal_alignment");
-            let child_vertical_alignment: Alignment = component(ecm, child, "vertical_alignment");
+            let child_horizontal_alignment: Alignment = *ecm
+                .component_store()
+                .get("horizontal_alignment", child)
+                .unwrap();
+            let child_vertical_alignment: Alignment = *ecm
+                .component_store()
+                .get("vertical_alignment", child)
+                .unwrap();
             let mut cell_position = (0.0, 0.0);
             let mut available_size = size;
 
             let has_columns =
-                if let Some(columns) = component_try_mut::<Columns>(ecm, entity, "columns") {
+                if let Ok(columns) = ecm.component_store().get::<Columns>("columns", entity) {
                     !columns.is_empty()
                 } else {
                     false
@@ -419,7 +437,7 @@ impl Layout for GridLayout {
                 available_size.0 = size.0;
             }
 
-            let has_rows = if let Some(rows) = component_try_mut::<Rows>(ecm, entity, "rows") {
+            let has_rows = if let Ok(rows) = ecm.component_store().get::<Rows>("rows", entity) {
                 !rows.is_empty()
             } else {
                 false
@@ -459,16 +477,20 @@ impl Layout for GridLayout {
                 );
             }
 
-            let child_margin: Thickness = {
+            let child_margin = {
                 if child_desired_size.0 > 0.0 && child_desired_size.1 > 0.0 {
-                    component(ecm, child, "margin")
+                    *ecm.component_store()
+                        .get::<Thickness>("margin", child)
+                        .unwrap()
                 } else {
                     Thickness::default()
                 }
             };
 
-            if let Some(child_bounds) = component_try_mut::<Rectangle>(ecm, child, "bounds") {
-                child_bounds.set_size(child_desired_size.0, child_desired_size.1);
+            if let Ok(child_bounds) = ecm
+                .component_store_mut()
+                .get_mut::<Rectangle>("bounds", child)
+            {
                 child_bounds.set_x(
                     cell_position.0
                         + child_horizontal_alignment.align_position(
@@ -488,6 +510,14 @@ impl Layout for GridLayout {
                         ),
                 );
             }
+        }
+
+        if let Ok(bounds) = ecm
+            .component_store_mut()
+            .get_mut::<Rectangle>("bounds", entity)
+        {
+            bounds.set_width(size.0);
+            bounds.set_height(size.1);
         }
 
         self.desired_size.borrow_mut().set_dirty(false);

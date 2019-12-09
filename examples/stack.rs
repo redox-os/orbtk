@@ -51,7 +51,7 @@ impl Template for MainView {
                 )
                 .child(
                     Stack::create()
-                        .orientation("horitzontal")
+                        .orientation("horizontal")
                         .spacing(4.0)
                         .child(
                             Button::create()

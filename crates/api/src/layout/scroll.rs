@@ -8,7 +8,7 @@ use dces::prelude::Entity;
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
-use super::{component, component_try_mut, Layout};
+use super::{Layout, component, component_or_default, component_try_mut};
 
 /// IMPORTANT: The scroll layout will only work for the text box now. A update will follow!!!!
 #[derive(Default)]
@@ -34,13 +34,13 @@ impl Layout for ScrollLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
+         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return *self.desired_size.borrow();
         }
 
         let horizontal_alignment: Alignment = component(ecm, entity, "horizontal_alignment");
-        let vertical_alignment: Alignment = component(ecm, entity, "vertical_alignment");
+        let vertical_alignment: Alignment =  component(ecm, entity, "vertical_alignment");
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -73,7 +73,7 @@ impl Layout for ScrollLayout {
             }
         }
 
-        let off: Point = component(ecm, entity, "scroll_offset");
+        let off: Point = *ecm.component_store().get("scroll_offset", entity).unwrap();
 
         if (self.old_offset.get().0 - off.x).abs() > std::f64::EPSILON
             || (self.old_offset.get().1 - off.y).abs() > std::f64::EPSILON
@@ -94,7 +94,7 @@ impl Layout for ScrollLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
-        if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
+         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return (0.0, 0.0);
         }
@@ -104,8 +104,8 @@ impl Layout for ScrollLayout {
         }
 
         let horizontal_alignment: Alignment = component(ecm, entity, "horizontal_alignment");
-        let vertical_alignment: Alignment = component(ecm, entity, "vertical_alignment");
-        let margin: Thickness = component(ecm, entity, "margin");
+        let vertical_alignment: Alignment =  component(ecm, entity, "vertical_alignment");
+        let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
         // let _padding = Thickness::get("padding", entity, ecm.component_store());
         let constraint: Constraint = component(ecm, entity, "constraint");
 
@@ -124,7 +124,18 @@ impl Layout for ScrollLayout {
             ),
         ));
 
-        let scroll_viewer_mode: ScrollViewerMode = component(ecm, entity, "scroll_viewer_mode");
+        if let Ok(bounds) = ecm
+            .component_store_mut()
+            .get_mut::<Rectangle>("bounds", entity)
+        {
+            bounds.set_width(size.0);
+            bounds.set_height(size.1);
+        }
+
+        let scroll_viewer_mode = *ecm
+            .component_store()
+            .get::<ScrollViewerMode>("scroll_viewer_mode", entity)
+            .unwrap();
 
         let available_size = {
             let width = if scroll_viewer_mode.horizontal == ScrollMode::Custom
@@ -146,8 +157,8 @@ impl Layout for ScrollLayout {
             (width, height)
         };
 
-        let off: Point = component(ecm, entity, "scroll_offset");
-        let delta: Point = component(ecm, entity, "delta");
+        let off: Point = *ecm.component_store().get("scroll_offset", entity).unwrap();
+        let delta: Point = *ecm.component_store().get("delta", entity).unwrap();
         let mut offset = (off.x, off.y);
 
         let old_child_size = self.old_child_size.get();
@@ -155,11 +166,17 @@ impl Layout for ScrollLayout {
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
 
+            // let child_margin = get_margin(*child, store);
             let mut child_size = old_child_size;
-            let child_horizontal_alignment: Alignment =
-                component(ecm, child, "horizontal_alignment");
-            let child_vertical_alignment: Alignment = component(ecm, child, "vertical_alignment");
-            let child_margin: Thickness = component(ecm, child, "margin");
+            let child_vertical_alignment: Alignment = *ecm
+                .component_store()
+                .get("vertical_alignment", child)
+                .unwrap();
+            let child_horizontal_alignment: Alignment = *ecm
+                .component_store()
+                .get("horizontal_alignment", child)
+                .unwrap();
+            let child_margin: Thickness = *ecm.component_store().get("margin", child).unwrap();
 
             if let Some(child_layout) = layouts.get(&child) {
                 child_size = child_layout.arrange(
@@ -210,9 +227,10 @@ impl Layout for ScrollLayout {
                 _ => {}
             }
 
-            if let Some(child_bounds) = component_try_mut::<Rectangle>(ecm, child, "bounds")
+            if let Ok(child_bounds) = ecm
+                .component_store_mut()
+                .get_mut::<Rectangle>("bounds", child)
             {
-                child_bounds.set_size(child_size.0, child_size.1);
                 // todo: add check
                 if scroll_viewer_mode.horizontal == ScrollMode::Custom
                     || scroll_viewer_mode.horizontal == ScrollMode::Auto
