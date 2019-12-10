@@ -111,6 +111,11 @@ macro_rules! widget {
                 self
             }
 
+            /// Sets or shares the position of the widget on the z index.
+            pub fn z(self, z: impl IntoPropertySource<i32>) -> Self {
+                self.set_property("z", z)
+            }
+
             /// Sets or shares the constraint property.
             pub fn position(self, position: impl IntoPropertySource<Point>) -> Self {
                 self.set_property("position", position)
