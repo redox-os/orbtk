@@ -129,6 +129,17 @@
     {
       "type": "lldb",
       "request": "launch",
+      "name": "Stack",
+      "program": "${workspaceFolder}/target/debug/examples/stack",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
       "name": "Minimal",
       "program": "${workspaceFolder}/target/debug/examples/minimal",
       "cwd": "${workspaceFolder}",

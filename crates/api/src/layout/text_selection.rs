@@ -7,7 +7,7 @@ use dces::prelude::Entity;
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
-use super::Layout;
+use super::{component, Layout};
 
 /// The text selection layout is used to measure and arrange a text selection cursor.
 #[derive(Default)]
@@ -37,20 +37,12 @@ impl Layout for TextSelectionLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if *ecm
-            .component_store()
-            .get::<Visibility>("visibility", entity)
-            .unwrap()
-            == Visibility::Collapsed
-        {
+        if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return *self.desired_size.borrow();
         }
 
-        let constraint = *ecm
-            .component_store()
-            .get::<Constraint>("constraint", entity)
-            .unwrap();
+        let constraint: Constraint = component(ecm, entity, "constraint");
 
         if let Ok(selection) = ecm
             .component_store()
@@ -109,12 +101,7 @@ impl Layout for TextSelectionLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
-        if *ecm
-            .component_store()
-            .get::<Visibility>("visibility", entity)
-            .unwrap()
-            == Visibility::Collapsed
-        {
+        if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return (0.0, 0.0);
         }
@@ -126,10 +113,7 @@ impl Layout for TextSelectionLayout {
         let mut pos = 0.0;
         let mut size = self.desired_size.borrow().size();
 
-        let vertical_alignment: Alignment = *ecm
-            .component_store()
-            .get("vertical_alignment", entity)
-            .unwrap();
+        let vertical_alignment: Alignment = component(ecm, entity, "vertical_alignment");
         let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
 
         {

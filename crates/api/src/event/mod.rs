@@ -27,7 +27,6 @@ mod window;
 pub enum EventStrategy {
     // /// From root to leaf.
     // TopDown,
-
     /// From leaf to root.
     BottomUp,
 

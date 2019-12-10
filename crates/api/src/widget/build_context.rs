@@ -6,8 +6,7 @@ use crate::{prelude::*, tree::Tree};
 
 use super::State;
 
-pub type WidgetBuildContext =
-    Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>;
+pub type WidgetBuildContext = Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>;
 
 /// Used to create an entity for a widget with its properties as components.
 #[derive(Constructor)]

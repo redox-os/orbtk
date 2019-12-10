@@ -23,10 +23,7 @@ impl EventStateSystem {
     // ) {
     // }
 
-    fn process_direct(
-        &self,
-        event: &EventBox
-    ) -> bool {
+    fn process_direct(&self, event: &EventBox) -> bool {
         if event.strategy == EventStrategy::Direct {
             if let Some(handlers) = self.handlers.borrow().get(&event.source) {
                 handlers.iter().any(|handler| {

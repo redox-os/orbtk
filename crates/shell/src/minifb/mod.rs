@@ -271,7 +271,9 @@ where
 
     pub fn flip(&mut self) -> bool {
         if let Some(data) = self.render_context_2_d.data() {
-            let _ = self.window.update_with_buffer_size(data, self.window_size.0, self.window_size.1);
+            let _ =
+                self.window
+                    .update_with_buffer_size(data, self.window_size.0, self.window_size.1);
             CONSOLE.time_end("render");
             return true;
         }

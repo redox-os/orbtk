@@ -7,7 +7,7 @@ use dces::prelude::Entity;
 
 use crate::{prelude::*, render::Image, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
-use super::Layout;
+use super::{component, component_try_mut, Layout};
 
 /// Fixed size layout is defined by fixed bounds like the size of an image or the size of a text.
 #[derive(Default)]
@@ -31,12 +31,7 @@ impl Layout for FixedSizeLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        if *ecm
-            .component_store()
-            .get::<Visibility>("visibility", entity)
-            .unwrap()
-            == Visibility::Collapsed
-        {
+        if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return *self.desired_size.borrow();
         }
@@ -99,19 +94,14 @@ impl Layout for FixedSizeLayout {
             });
 
         if let Some(size) = size {
-            if let Ok(constraint) = ecm
-                .component_store_mut()
-                .get_mut::<Constraint>("constraint", entity)
+            if let Some(constraint) = component_try_mut::<Constraint>(ecm, entity, "constraint")
             {
                 constraint.set_width(size.0 as f64);
                 constraint.set_height(size.1 as f64);
             }
         }
 
-        let constraint = *ecm
-            .component_store()
-            .get::<Constraint>("constraint", entity)
-            .unwrap();
+        let constraint: Constraint = component(ecm, entity, "constraint");
 
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());
@@ -147,20 +137,12 @@ impl Layout for FixedSizeLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> (f64, f64) {
-        if *ecm
-            .component_store()
-            .get::<Visibility>("visibility", entity)
-            .unwrap()
-            == Visibility::Collapsed
-        {
+        if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return (0.0, 0.0);
         }
 
-        if let Ok(bounds) = ecm
-            .component_store_mut()
-            .get_mut::<Rectangle>("bounds", entity)
-        {
+        if let Some(bounds) = component_try_mut::<Rectangle>(ecm, entity, "bounds") {
             bounds.set_width(self.desired_size.borrow().width());
             bounds.set_height(self.desired_size.borrow().height());
         }
