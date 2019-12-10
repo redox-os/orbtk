@@ -65,7 +65,8 @@ impl MainViewState {
             }
         }
 
-        ctx.widget().set("text", String16::from(result.to_string()));
+        ctx.widget()
+            .set("text", String16::from(format!("{:.9}", result)));
         self.left_side = Some(result);
         self.right_side = None;
     }
