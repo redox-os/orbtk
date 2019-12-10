@@ -285,7 +285,8 @@ impl Template for TextBox {
             .border_brush("transparent")
             .border_width(0.0)
             .border_radius(2.0)
-            .min_size(128.0, 32.0)
+            .min_width(128.0)
+            .height(32.0)
             .focused(false)
             .delta(0.0)
             .child(
