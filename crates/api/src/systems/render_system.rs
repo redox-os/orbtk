@@ -7,7 +7,7 @@ use crate::{
     prelude::*,
     shell::{WindowShell, CONSOLE},
     tree::Tree,
-    utils::Brush,
+    // utils::Brush,
 };
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
@@ -38,11 +38,11 @@ impl System<Tree, StringComponentStore> for RenderSystem {
         let root = ecm.entity_store().root;
 
         // sets the window background of the real window.
-        if let Ok(background) = ecm.component_store().get::<Brush>("background", root) {
-            if let Brush::SolidColor(color) = background {
-                shell.set_background_color(color.r(), color.g(), color.b());
-            }
-        };
+        // if let Ok(background) = ecm.component_store().get::<Brush>("background", root) {
+        //     if let Brush::SolidColor(color) = background {
+        //         shell.set_background_color(color.r(), color.g(), color.b());
+        //     }
+        // };
 
         let theme = ecm
             .component_store()

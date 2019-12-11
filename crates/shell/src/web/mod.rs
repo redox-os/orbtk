@@ -97,9 +97,9 @@ where
     }
 
      /// Sets the background color of the window.
-    pub fn set_background_color(&mut self, _red: u8, _green: u8, _blue: u8) {
-        // todo.
-    }
+    // pub fn set_background_color(&mut self, _red: u8, _green: u8, _blue: u8) {
+    //     // todo.
+    // }
 
     /// Gets the shell adapter.
     pub fn adapter(&mut self) -> &mut A {
