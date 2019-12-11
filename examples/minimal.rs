@@ -10,6 +10,13 @@ fn main() {
                 .title("OrbTk - minimal example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
+                .child(
+                    Container::create()
+                        .z(100)
+                        .margin(4.0)
+                        .background("#000000")
+                        .build(ctx),
+                )
                 .child(TextBlock::create().text("OrbTk").margin(4.0).build(ctx))
                 .build(ctx)
         })
