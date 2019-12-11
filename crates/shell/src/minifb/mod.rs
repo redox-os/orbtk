@@ -152,6 +152,11 @@ where
         self.running
     }
 
+    /// Sets the background color of the window.
+    pub fn set_background_color(&mut self, red: u8, green: u8, blue: u8) {
+        self.window.set_background_color(red as usize, green as usize, blue as usize);
+    }
+
     /// Sets running.
     pub fn set_running(&mut self, running: bool) {
         self.running = running;
@@ -271,9 +276,9 @@ where
 
     pub fn flip(&mut self) -> bool {
         if let Some(data) = self.render_context_2_d.data() {
-            let _ =
-                self.window
-                    .update_with_buffer_size(data, self.window_size.0, self.window_size.1);
+            let _ = self
+                .window
+                .update_with_buffer(data, self.window_size.0, self.window_size.1);
             CONSOLE.time_end("render");
             return true;
         }
@@ -392,6 +397,7 @@ where
     pub fn build(self) -> WindowShell<A> {
         let window_options = minifb::WindowOptions {
             resize: self.resizeable,
+            scale_mode: minifb::ScaleMode::UpperLeft,
             ..Default::default()
         };
 

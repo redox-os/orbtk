@@ -95,6 +95,12 @@ where
     pub fn set_update(&mut self, update: bool) {
         self.update = update;
     }
+
+     /// Sets the background color of the window.
+    pub fn set_background_color(&mut self, _red: u8, _green: u8, _blue: u8) {
+        // todo.
+    }
+
     /// Gets the shell adapter.
     pub fn adapter(&mut self) -> &mut A {
         &mut self.adapter
