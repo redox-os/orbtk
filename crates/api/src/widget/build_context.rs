@@ -32,6 +32,7 @@ impl<'a> BuildContext<'a> {
 
     /// Appends a child to a parent.
     pub fn append_child(&mut self, parent: Entity, child: Entity) {
+        self.get_widget(child).update_theme_by_state(true);
         self.ecm
             .entity_store_mut()
             .append_child(parent, child)

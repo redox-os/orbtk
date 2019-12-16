@@ -18,13 +18,8 @@ impl State for ItemsWidgetState {
                     for i in 0..count {
                         let bctx = &mut ctx.build_context();
 
-                        let child = {
-                            let child = builder(bctx, i);
-                            bctx.append_child(items_panel, child);
-                            child
-                        };
-
-                        ctx.get_widget(child).update_properties_by_theme();
+                        let child = builder(bctx, i);
+                        bctx.append_child(items_panel, child);
                     }
                 }
             }
