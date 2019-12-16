@@ -373,6 +373,8 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                         skip = true;
                     }
 
+                    let mut keys = vec![];
+
                     if !skip {
                         let render_objects = &self.render_objects;
                         let layouts = &mut self.layouts.borrow_mut();
@@ -395,7 +397,28 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                             state.update(registry, &mut ctx);
                         }
 
-                        drop(ctx)
+                        keys.append(&mut ctx.new_states_keys());
+
+                        drop(ctx);
+
+                        for key in keys {
+                            let new_states = &mut BTreeMap::new();
+                            let mut ctx = Context::new(
+                                (key, ecm),
+                                &mut shell,
+                                &theme,
+                                render_objects,
+                                layouts,
+                                handlers,
+                                &self.states,
+                                new_states,
+                            );
+                            if let Some(state) = self.states.borrow_mut().get_mut(&key) {
+                                state.init(registry, &mut ctx);
+                            }
+
+                            drop(ctx);
+                        }
                     }
                 }
                 let mut it = ecm.entity_store().start_node(current_node).into_iter();

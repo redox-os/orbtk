@@ -8,9 +8,10 @@ pub struct ItemsWidgetState {
 
 impl State for ItemsWidgetState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        let count = ctx.widget().clone_or_default::<usize>("count");
+        let count: usize = ctx.widget().clone_or_default("count");
+        let request_update: bool = *ctx.widget().get("request_update");
 
-        if count != self.count {
+        if count != self.count || request_update {
             if let Some(builder) = &self.builder {
                 if let Some(items_panel) = ctx.entity_of_child("items_panel") {
                     ctx.clear_children_of(items_panel);
@@ -25,6 +26,7 @@ impl State for ItemsWidgetState {
             }
 
             self.count = count;
+            ctx.widget().set("request_update", false);
         }
     }
 }
@@ -54,6 +56,9 @@ widget!(
 
         /// Sets or shared the count.
         count: usize,
+
+        /// Sets or shares a value to request an update.
+        request_update: bool,
 
         /// Sets or shares the css selector property.
         selector: Selector

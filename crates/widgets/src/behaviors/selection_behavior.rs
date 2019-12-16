@@ -13,6 +13,10 @@ impl SelectionBehaviorState {
 }
 
 impl State for SelectionBehaviorState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+        self.selected = *ctx.widget().get("selected");
+    }
+    
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         if !ctx.widget().get::<bool>("enabled")
             || *ctx.widget().get::<bool>("selected") == self.selected

@@ -391,4 +391,9 @@ impl<'a> Context<'a> {
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
         self.window_shell.render_context_2_d()
     }
+
+    /// Returns a keys collection of new added states.
+    pub fn new_states_keys(&self) -> Vec<Entity> {
+        self.new_states.keys().cloned().collect()
+    }
 }
