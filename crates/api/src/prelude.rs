@@ -13,5 +13,6 @@ pub use crate::{
     systems::*,
     tree::Tree,
     widget,
+    trigger_event,
     widget::*,
 };

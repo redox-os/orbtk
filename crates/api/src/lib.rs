@@ -15,6 +15,7 @@ pub use orbtk_tree::prelude as tree;
 pub use orbtk_utils::prelude as utils;
 
 pub mod application;
+#[macro_use]
 pub mod event;
 pub mod layout;
 pub mod prelude;

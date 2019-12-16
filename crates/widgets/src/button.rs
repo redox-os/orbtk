@@ -89,10 +89,10 @@ impl Template for Button {
                             .child(
                                 Stack::create()
                                     .orientation("horizontal")
+                                    .spacing(2.0)
                                     .horizontal_alignment("center")
                                     .child(
                                         FontIconBlock::create()
-                                            .margin((0.0, 0.0, 2.0, 0.0))
                                             .vertical_alignment("center")
                                             .icon(id)
                                             .icon_brush(id)

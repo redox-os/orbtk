@@ -154,7 +154,8 @@ where
 
     /// Sets the background color of the window.
     pub fn set_background_color(&mut self, red: u8, green: u8, blue: u8) {
-        self.window.set_background_color(red as usize, green as usize, blue as usize);
+        self.window
+            .set_background_color(red as usize, green as usize, blue as usize);
     }
 
     /// Sets running.

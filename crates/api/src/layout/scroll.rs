@@ -157,7 +157,9 @@ impl Layout for ScrollLayout {
 
         let old_child_size = self.old_child_size.get();
 
-        for index in 0..ecm.entity_store().children[&entity].len() {
+        let nchildren = ecm.entity_store().children[&entity].len();
+
+        for index in 0..nchildren {
             let child = ecm.entity_store().children[&entity][index];
 
             // let child_margin = get_margin(*child, store);

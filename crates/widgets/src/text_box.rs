@@ -78,7 +78,11 @@ impl TextBoxState {
                         selection.start_index = current_selection.start_index;
                     }
 
-                    ctx.push_event(ChangedEvent(ctx.entity));
+                    ctx.push_event_strategy_by_entity(
+                        ChangedEvent(ctx.entity),
+                        ctx.entity,
+                        EventStrategy::Direct,
+                    );
                 }
             }
             Key::Delete => {
@@ -89,10 +93,18 @@ impl TextBoxState {
                             .remove(current_selection.start_index);
                     }
 
-                    ctx.push_event(ChangedEvent(ctx.entity));
+                    ctx.push_event_strategy_by_entity(
+                        ChangedEvent(ctx.entity),
+                        ctx.entity,
+                        EventStrategy::Direct,
+                    );
                 }
             }
-            Key::Enter => ctx.push_event(ActivateEvent(ctx.entity)),
+            Key::Enter => ctx.push_event_strategy_by_entity(
+                ActivateEvent(ctx.entity),
+                ctx.entity,
+                EventStrategy::Direct,
+            ),
             _ => {
                 if key_event.text.is_empty() {
                     return;
@@ -109,7 +121,11 @@ impl TextBoxState {
                         current_selection.start_index + key_event.text.encode_utf16().count();
                 }
 
-                ctx.push_event(ChangedEvent(ctx.entity));
+                ctx.push_event_strategy_by_entity(
+                    ChangedEvent(ctx.entity),
+                    ctx.entity,
+                    EventStrategy::Direct,
+                );
             }
         }
     }
@@ -140,7 +156,11 @@ impl TextBoxState {
     fn reset(&self, ctx: &mut Context<'_>) {
         ctx.widget().set("text_selection", TextSelection::default());
         ctx.widget().set("scroll_offset", Point::default());
-        ctx.push_event(ChangedEvent(ctx.entity));
+        ctx.push_event_strategy_by_entity(
+            ChangedEvent(ctx.entity),
+            ctx.entity,
+            EventStrategy::Direct,
+        );
     }
 }
 
@@ -151,7 +171,8 @@ impl State for TextBoxState {
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         // check if text len is changed from outside
-        if self.len.get() != ctx.widget().get::<String16>("text").len() {
+        let len = ctx.widget().get::<String16>("text").len();
+        if self.len.get() != len && self.len.get() > len {
             self.reset(ctx);
         }
 

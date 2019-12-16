@@ -94,8 +94,7 @@ impl Layout for FixedSizeLayout {
             });
 
         if let Some(size) = size {
-            if let Some(constraint) = component_try_mut::<Constraint>(ecm, entity, "constraint")
-            {
+            if let Some(constraint) = component_try_mut::<Constraint>(ecm, entity, "constraint") {
                 constraint.set_width(size.0 as f64);
                 constraint.set_height(size.1 as f64);
             }
