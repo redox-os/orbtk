@@ -125,7 +125,7 @@ impl RenderContext2D {
 
     /// Strokes {outlines} the current or given path with the current stroke style.
     pub fn stroke(&mut self) {
-        self.stroke_style(&self.config.fill_style);
+        self.stroke_style(&self.config.stroke_style);
         self.canvas_render_context_2_d.stroke();
     }
 
@@ -283,6 +283,7 @@ impl RenderContext2D {
 
     /// Sets the thickness of lines.
     pub fn set_line_width(&mut self, line_width: f64) {
+        self.config.line_width = line_width;
         self.canvas_render_context_2_d.set_line_width(line_width);
     }
 

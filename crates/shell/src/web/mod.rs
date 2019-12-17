@@ -340,6 +340,7 @@ where
 
     /// Builds the window shell.
     pub fn build(mut self) -> WindowShell<A> {
+        // console_error_panic_hook::set_once();
         let canvas: CanvasElement = document()
             .create_element("canvas")
             .unwrap()

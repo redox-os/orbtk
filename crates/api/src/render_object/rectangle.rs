@@ -105,7 +105,7 @@ impl RectangleRenderObject {
         radius: f64,
         brush: utils::Brush,
         border_brush: utils::Brush,
-        _border_thickness: Thickness,
+        border_thickness: Thickness,
     ) {
         self.render_rounded_rect_path(
             render_context_2_d,
@@ -122,6 +122,7 @@ impl RectangleRenderObject {
         }
 
         if !border_brush.is_transparent() {
+            render_context_2_d.set_line_width(border_thickness.left());
             render_context_2_d.set_stroke_style(border_brush);
             render_context_2_d.stroke();
         }
