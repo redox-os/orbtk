@@ -294,6 +294,7 @@ impl RenderContext2D {
 
     /// Specific the font family.
     pub fn set_font_family(&mut self, family: impl Into<String>) {
+        self.font_config.family = family.into();
         self.canvas_render_context_2_d
             .set_font(&self.font_config.to_string());
     }
