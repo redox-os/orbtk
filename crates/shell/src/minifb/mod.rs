@@ -2,11 +2,7 @@
 
 use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::Mutex};
 
-#[cfg(not(target_os = "redox"))]
 use minifb;
-
-#[cfg(target_os = "redox")]
-use minifb_fix as minifb;
 
 use spin_sleep::LoopHelper;
 
