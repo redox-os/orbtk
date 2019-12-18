@@ -421,7 +421,7 @@ dependencies = [
 [[package]]
 name = "minifb"
 version = "0.15.0"
-source = "git+https://github.com/FloVanGH/rust_minifb?branch=redox_unix#1970521e5eaa07ea7c847a5b4436c8c6ed3d6c58"
+source = "git+https://github.com/FloVanGH/rust_minifb?branch=redox_unix#97c344a7f240405bf306a9596d11847bee67809b"
 dependencies = [
  "cast 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "cc 1.0.48 (registry+https://github.com/rust-lang/crates.io-index)",
