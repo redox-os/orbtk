@@ -100,11 +100,18 @@ impl TextBoxState {
                     );
                 }
             }
-            Key::Enter => ctx.push_event_strategy_by_entity(
+            Key::Enter => {
+                if *ctx.widget().get::<bool>("lost_focus_on_activation") {
+                    ctx.window().get_mut::<Global>("global").focused_widget = None;            
+                    ctx.widget().set("focused", false);
+                    ctx.widget().update_theme_by_state(false);
+                }
+                
+                ctx.push_event_strategy_by_entity(
                 ActivateEvent(ctx.entity),
                 ctx.entity,
                 EventStrategy::Direct,
-            ),
+            )},
             _ => {
                 if key_event.text.is_empty() {
                     return;
@@ -283,8 +290,11 @@ widget!(
         /// Sets or shares the (wheel, scroll) delta property.
         delta: Point,
 
-         /// Sets or shares the focused property.
+        /// Sets or shares the focused property.
         focused: bool,
+
+        /// Sets or shares ta value that describes if the TextBox should lost focus on activation (enter).
+        lost_focus_on_activation: bool,
 
         /// Sets or shares the css selector property.
         selector: Selector
@@ -310,6 +320,7 @@ impl Template for TextBox {
             .height(32.0)
             .focused(false)
             .delta(0.0)
+            .lost_focus_on_activation(true)
             .child(
                 MouseBehavior::create()
                     .on_mouse_down(move |states, p| {
