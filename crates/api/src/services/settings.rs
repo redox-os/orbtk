@@ -1,18 +1,24 @@
+#[cfg(not(target_arch = "wasm32"))]
 use std::{
     fs::{create_dir_all, File},
     io::Write,
 };
 
 #[cfg(target_arch = "wasm32")]
-use stdweb::web::{window, Storage};
+use stdweb::web::window;
 
+#[cfg(target_arch = "wasm32")]
+use ron::de::from_str;
+
+#[cfg(not(target_arch = "wasm32"))]
 use dirs;
-use serde::{de::DeserializeOwned, Serialize};
 
-use ron::{
-    de::{from_reader, from_str},
-    ser::{to_string_pretty, PrettyConfig},
-};
+#[cfg(not(target_arch = "wasm32"))]
+use ron::de::from_reader;
+
+use ron::ser::{to_string_pretty, PrettyConfig};
+
+use serde::{de::DeserializeOwned, Serialize};
 
 /// `Settings` represents a global settings service that could be use to serialize and deserialize
 /// data in the `ron` file format. Settings are stored in the user settings directory (depending on the operation system)
