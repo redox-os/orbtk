@@ -3,11 +3,14 @@ use std::{
     io::Write,
 };
 
+#[cfg(target_arch = "wasm32")]
+use stdweb::web::{window, Storage};
+
 use dirs;
 use serde::{de::DeserializeOwned, Serialize};
 
 use ron::{
-    de::from_reader,
+    de::{from_reader, from_str},
     ser::{to_string_pretty, PrettyConfig},
 };
 
@@ -39,7 +42,8 @@ impl Settings {
         &*self.app_name
     }
 
-    /// Serialize the given data object and user's config dir.
+    #[cfg(not(target_arch = "wasm32"))]
+    /// Serialize the given data object from user's config dir.
     pub fn save<S: Serialize>(&self, key: &str, data: &S) -> Result<(), String> {
         let content = to_string_pretty(data, PrettyConfig::default());
 
@@ -78,6 +82,7 @@ impl Settings {
         Ok(())
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
     /// Loads and deserialize data from user's config dir.
     pub fn load<D: DeserializeOwned>(&self, key: &str) -> Result<D, String> {
         if let Some(config_path) = &mut dirs::config_dir() {
@@ -103,6 +108,44 @@ impl Settings {
 
         Err(format!(
             "Settings.load: Could not load settings with key: {}",
+            key
+        ))
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    /// Serialize the given data object from the browser storage.
+    pub fn save<S: Serialize>(&self, key: &str, data: &S) -> Result<(), String> {
+        let content = to_string_pretty(data, PrettyConfig::default());
+        if window()
+            .local_storage()
+            .insert(key, content.unwrap().as_str())
+            .is_ok()
+        {
+            return Ok(());
+        }
+
+        Err(format!(
+            "Settings.save: Could not write settings with key {} to local browser storage.",
+            key
+        ))
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    /// Loads and deserialize data from the browser storage.
+    pub fn load<D: DeserializeOwned>(&self, key: &str) -> Result<D, String> {
+        if let Some(data) = window().local_storage().get(key) {
+            if let Ok(data) = from_str(data.as_str()) {
+                return Ok(data);
+            } else {
+                return Err(format!(
+                    "Settings.load: Could not read data from local browser storage with key: {}",
+                    key
+                ));
+            }
+        }
+
+        Err(format!(
+            "Settings.load: Could not read data from local browser storage with key: {}",
             key
         ))
     }

@@ -102,16 +102,17 @@ impl TextBoxState {
             }
             Key::Enter => {
                 if *ctx.widget().get::<bool>("lost_focus_on_activation") {
-                    ctx.window().get_mut::<Global>("global").focused_widget = None;            
+                    ctx.window().get_mut::<Global>("global").focused_widget = None;
                     ctx.widget().set("focused", false);
                     ctx.widget().update_theme_by_state(false);
                 }
-                
+
                 ctx.push_event_strategy_by_entity(
-                ActivateEvent(ctx.entity),
-                ctx.entity,
-                EventStrategy::Direct,
-            )},
+                    ActivateEvent(ctx.entity),
+                    ctx.entity,
+                    EventStrategy::Direct,
+                )
+            }
             _ => {
                 if key_event.text.is_empty() {
                     return;

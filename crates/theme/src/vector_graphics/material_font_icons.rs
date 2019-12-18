@@ -7,3 +7,4 @@ pub const LOAD_FONT_ICON: &str = "";
 pub const SAVE_FONT_ICON: &str = "";
 pub const KEYBOARD_ARROW_LEFT_FONT_ICON: &str = "";
 pub const KEYBOARD_ARROW_RIGHT_FONT_ICON: &str = "";
+pub const REMOVE_ICON: &str = "";

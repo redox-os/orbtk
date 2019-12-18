@@ -97,6 +97,7 @@ where
     key_home: KeyHelper,
     update: bool,
     running: bool,
+    active: bool,
 }
 
 impl<A> WindowShell<A>
@@ -140,6 +141,7 @@ where
             key_home: KeyHelper(false, minifb::Key::Home, Key::Home),
             running: true,
             update: true,
+            active: false,
         }
     }
 
@@ -192,6 +194,11 @@ where
         let left_button_down = self.window.get_mouse_down(minifb::MouseButton::Left);
         let middle_button_down = self.window.get_mouse_down(minifb::MouseButton::Middle);
         let right_button_down = self.window.get_mouse_down(minifb::MouseButton::Right);
+
+        if self.active != self.window.is_active() {
+            self.adapter.active(self.window.is_active());
+            self.active = self.window.is_active();
+        }
 
         if left_button_down != self.button_down.0 {
             if left_button_down {

@@ -33,6 +33,9 @@ pub trait WindowAdapter {
 
     /// Gets the current mouse position.
     fn mouse_position(&self) -> Point;
+
+    /// Is called if active state of the window is changed.
+    fn active(&mut self, active: bool);
 }
 
 /// Used to define an additional updater for the window shell.

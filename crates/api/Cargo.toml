@@ -10,8 +10,8 @@ keywords = ["ui", "api"]
 edition = "2018"
 
 [dependencies]
-serde = "1.0.102"
-serde_derive = "1.0.102"
+serde = "1.0.104"
+serde_derive = "1.0.104"
 ron = "0.5.1"
 dirs = "2.0.2"
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git", branch = "develop" }
@@ -22,6 +22,9 @@ orbtk-render = { path = "../render", version = "0.3.1-alpha2" }
 orbtk-shell = { path = "../shell", version = "0.3.1-alpha2" }
 orbtk-theme = { path = "../theme", version = "0.3.1-alpha2" }
 derive_more = "0.99.2"
+
+[target.wasm32-unknown-unknown.dependencies]
+stdweb = "0.4.20"
 
 [features]
 debug = []

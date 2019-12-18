@@ -57,28 +57,6 @@ impl EventStateSystem {
             .unwrap()
             .clone();
 
-        // resize
-        if let Ok(WindowEvent::Resize { width, height }) = event.downcast_ref::<WindowEvent>() {
-            // update window size
-            if let Ok(bounds) = ecm
-                .component_store_mut()
-                .get_mut::<Rectangle>("bounds", root)
-            {
-                bounds.set_width(*width);
-                bounds.set_height(*height);
-            }
-
-            if let Ok(constraint) = ecm
-                .component_store_mut()
-                .get_mut::<Constraint>("constraint", root)
-            {
-                constraint.set_width(*width);
-                constraint.set_height(*height);
-            }
-
-            update = true;
-        }
-
         // global key handling
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
             if let Ok(global) = ecm.component_store_mut().get_mut::<Global>("global", root) {

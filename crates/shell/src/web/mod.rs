@@ -104,12 +104,8 @@ where
 
         self.render_context_2_d()
             .set_fill_style(Brush::SolidColor(Color::rgb(red, green, blue)));
-        self.render_context_2_d().fill_rect(
-            0.0,
-            0.0,
-            width.into(),
-            height.into(),
-        );
+        self.render_context_2_d()
+            .fill_rect(0.0, 0.0, width.into(), height.into());
     }
 
     /// Gets the shell adapter.
@@ -163,23 +159,25 @@ where
         while let Some(event) = self.scroll_events.borrow_mut().pop() {
             self.adapter.scroll(event.delta_x(), event.delta_y());
         }
-        // while let Some(event) = self.touch_start_events.borrow_mut().pop() {
-        //     self.adapter.mouse_event(MouseEvent {
-        //         x: event.touches()[0].client_x() as f64,
-        //         y: event.touches()[0].client_y() as f64,
-        //         button: MouseButton::Left,
-        //         state: ButtonState::Down,
-        //     });
-        // }
 
-        //   while let Some(event) = self.touch_end_events.borrow_mut().pop() {
-        //     self.adapter.mouse_event(MouseEvent {
-        //         x: event.touches()[0].client_x() as f64,
-        //         y: event.touches()[0].client_y() as f64,
-        //         button: MouseButton::Left,
-        //         state: ButtonState::Up,
-        //     });
-        // }
+        // todo tmp solution to map touch events to mouse vent
+        while let Some(event) = self.touch_start_events.borrow_mut().pop() {
+            self.adapter.mouse_event(MouseEvent {
+                x: event.target_touches()[0].client_x() as f64,
+                y: event.target_touches()[0].client_y() as f64,
+                button: MouseButton::Left,
+                state: ButtonState::Down,
+            });
+        }
+
+        while let Some(event) = self.touch_end_events.borrow_mut().pop() {
+            self.adapter.mouse_event(MouseEvent {
+                x: event.target_touches()[0].client_x() as f64,
+                y: event.target_touches()[0].client_y() as f64,
+                button: MouseButton::Left,
+                state: ButtonState::Up,
+            });
+        }
 
         while let Some(event) = self.key_down_events.borrow_mut().pop() {
             let key = get_key(event.code().as_str(), event.key());
@@ -397,7 +395,8 @@ where
             .body()
             .unwrap()
             .add_event_listener(move |e: event::TouchStart| {
-                touch_start_c.borrow_mut().push(e);
+                e.prevent_default();
+                // touch_start_c.borrow_mut().push(e);
             });
 
         let touch_end_c = touch_end.clone();
@@ -405,7 +404,8 @@ where
             .body()
             .unwrap()
             .add_event_listener(move |e: event::TouchEnd| {
-                touch_end_c.borrow_mut().push(e);
+                e.prevent_default();
+                // touch_end_c.borrow_mut().push(e);
             });
 
         let mouse_move_c = mouse_move.clone();

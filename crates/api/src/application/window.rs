@@ -29,8 +29,11 @@ impl shell::Updater for WorldWrapper {
 
 impl shell::WindowAdapter for WindowAdapter {
     fn resize(&mut self, width: f64, height: f64) {
-        self.event_queue
-            .register_event(WindowEvent::Resize { width, height }, self.root);
+        self.event_queue.register_event_with_strategy(
+            WindowEvent::Resize { width, height },
+            EventStrategy::Direct,
+            self.root,
+        );
     }
 
     fn mouse(&mut self, x: f64, y: f64) {
@@ -92,6 +95,14 @@ impl shell::WindowAdapter for WindowAdapter {
     fn quite_event(&mut self) {
         self.event_queue
             .register_event(SystemEvent::Quit, self.root);
+    }
+
+    fn active(&mut self, active: bool) {
+        self.event_queue.register_event_with_strategy(
+            WindowEvent::ActiveChanged(active),
+            EventStrategy::Direct,
+            self.root,
+        );
     }
 }
 
