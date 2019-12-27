@@ -1,10 +1,10 @@
 //! This module contains a platform specific implementation of the window shell.
 
-use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::Mutex};
+use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::Mutex, time::Duration};
 
 use minifb;
 
-use spin_sleep::LoopHelper;
+// use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 
 use crate::{prelude::*, render::*, utils::*};
 
@@ -144,6 +144,10 @@ where
             active: false,
         }
     }
+
+    // pub fn raw_window_handle(&self) -> RawWindowHandle {
+    //     self.window.raw_window_handle()
+    // } 
 
     /// Gets if the shell is running.
     pub fn running(&self) -> bool {
@@ -312,23 +316,10 @@ where
     A: WindowAdapter,
 {
     pub fn run(&mut self) {
-        let mut loop_helper = LoopHelper::builder()
-            .report_interval_s(0.5)
-            .build_with_target_rate(60.0);
-
-        let mut _current_fps = None;
-
         loop {
             if !self.window_shell.borrow().running() || !self.window_shell.borrow().window.is_open()
             {
                 break;
-            }
-
-            let _delta = loop_helper.loop_start();
-
-            if let Some(fps) = loop_helper.report_rate() {
-                _current_fps = Some(fps);
-                // println!("fps: {}", fps);
             }
 
             // CONSOLE.time("complete run");
@@ -345,7 +336,6 @@ where
 
             self.window_shell.borrow_mut().drain_events();
 
-            loop_helper.loop_sleep();
             // CONSOLE.time_end("complete run");
         }
     }
@@ -414,6 +404,9 @@ where
         .unwrap_or_else(|e| {
             panic!("{}", e);
         });
+
+         // Limit to max ~60 fps update rate
+        window.limit_update_rate(Some(Duration::from_micros(16600)));
 
         let key_events = Rc::new(RefCell::new(vec![]));
 
