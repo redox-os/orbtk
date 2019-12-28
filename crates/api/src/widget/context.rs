@@ -1,5 +1,8 @@
 use std::{cell::RefCell, collections::BTreeMap};
 
+#[cfg(not(target_arch = "wasm32"))]
+use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
+
 use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{css_engine::*, prelude::*, render::*, shell::WindowShell, tree::Tree};
@@ -22,6 +25,13 @@ pub struct Context<'a> {
 impl<'a> Drop for Context<'a> {
     fn drop(&mut self) {
         self.states.borrow_mut().append(&mut self.new_states);
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+unsafe impl<'a> HasRawWindowHandle for Context<'a> {
+    fn raw_window_handle(&self) -> RawWindowHandle {
+        self.window_shell.raw_window_handle()
     }
 }
 

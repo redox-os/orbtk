@@ -4,7 +4,7 @@ use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::Mutex, time::
 
 use minifb;
 
-// use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
+use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 
 use crate::{prelude::*, render::*, utils::*};
 
@@ -100,6 +100,12 @@ where
     active: bool,
 }
 
+unsafe impl<A> HasRawWindowHandle for WindowShell<A> where A: WindowAdapter {
+    fn raw_window_handle(&self) -> RawWindowHandle {
+        self.window.raw_window_handle()
+    }
+}
+
 impl<A> WindowShell<A>
 where
     A: WindowAdapter,
@@ -144,10 +150,6 @@ where
             active: false,
         }
     }
-
-    // pub fn raw_window_handle(&self) -> RawWindowHandle {
-    //     self.window.raw_window_handle()
-    // } 
 
     /// Gets if the shell is running.
     pub fn running(&self) -> bool {
