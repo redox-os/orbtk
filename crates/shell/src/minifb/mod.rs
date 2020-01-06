@@ -100,6 +100,7 @@ where
     active: bool,
 }
 
+#[cfg(not(target_os = "redox"))]
 unsafe impl<A> HasRawWindowHandle for WindowShell<A> where A: WindowAdapter {
     fn raw_window_handle(&self) -> RawWindowHandle {
         self.window.raw_window_handle()
