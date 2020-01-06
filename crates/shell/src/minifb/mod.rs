@@ -4,6 +4,7 @@ use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::Mutex, time::
 
 use minifb;
 
+#[cfg(not(target_os = "redox"))]
 use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 
 use crate::{prelude::*, render::*, utils::*};

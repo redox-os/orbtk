@@ -151,6 +151,17 @@
     {
       "type": "lldb",
       "request": "launch",
+      "name": "wgpu-rs",
+      "program": "${workspaceFolder}/target/debug/examples/wgpu-rs",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
       "name": "Test",
       "cargo": {
         "args": [
