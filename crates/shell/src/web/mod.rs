@@ -9,6 +9,8 @@ use stdweb::{
     web::{document, event, html_element::CanvasElement, window, CanvasRenderingContext2d},
 };
 
+use raw_window_handle::{HasRawWindowHandle, RawWindowHandle, web::WebHandle};
+
 use lazy_static;
 
 use crate::{prelude::*, render::*, utils::*};
@@ -71,6 +73,20 @@ where
     adapter: A,
     update: bool,
     running: bool,
+}
+
+unsafe impl<A> HasRawWindowHandle for WindowShell<A>
+where
+    A: WindowAdapter,
+{
+    fn raw_window_handle(&self) -> RawWindowHandle {
+        let handle = WebHandle {
+            id: 0,
+            ..WebHandle::empty()
+        };
+
+        RawWindowHandle::Web(handle)
+    }
 }
 
 impl<A> WindowShell<A>

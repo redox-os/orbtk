@@ -1,6 +1,6 @@
 use std::{cell::RefCell, collections::BTreeMap};
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_os = "redox"))]
 use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 
 use dces::prelude::{Entity, EntityComponentManager};

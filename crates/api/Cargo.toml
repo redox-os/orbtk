@@ -23,7 +23,7 @@ orbtk-shell = { path = "../shell", version = "0.3.1-alpha2" }
 orbtk-theme = { path = "../theme", version = "0.3.1-alpha2" }
 derive_more = "0.99.2"
 
-[target.'cfg(all(not(target_arch = "wasm32")))'.dependencies]
+[target.'cfg(all(not(target_os = "redox")))'.dependencies]
 raw-window-handle = "0.3.3"
 
 [target.wasm32-unknown-unknown.dependencies]
