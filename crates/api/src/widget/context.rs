@@ -28,7 +28,7 @@ impl<'a> Drop for Context<'a> {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_os = "redox"))]
 unsafe impl<'a> HasRawWindowHandle for Context<'a> {
     fn raw_window_handle(&self) -> RawWindowHandle {
         self.window_shell.raw_window_handle()
