@@ -1,6 +1,10 @@
 //! This module contains a platform specific implementation of the window shell.
 
-use std::{cell::RefCell, rc::Rc};
+use std::{
+    cell::RefCell,
+    rc::Rc,
+    sync::mpsc::{channel, Receiver, Sender},
+};
 
 use stdweb::{
     js,
@@ -9,11 +13,11 @@ use stdweb::{
     web::{document, event, html_element::CanvasElement, window, CanvasRenderingContext2d},
 };
 
-use raw_window_handle::{HasRawWindowHandle, RawWindowHandle, web::WebHandle};
+use raw_window_handle::{web::WebHandle, HasRawWindowHandle, RawWindowHandle};
 
 use lazy_static;
 
-use crate::{prelude::*, render::*, utils::*};
+use crate::{prelude::*, render::*, utils::*, ShellRequest};
 
 pub fn initialize() {
     stdweb::initialize();
@@ -73,6 +77,8 @@ where
     adapter: A,
     update: bool,
     running: bool,
+    request_receiver: Receiver<ShellRequest>,
+    request_sender: Sender<ShellRequest>,
 }
 
 unsafe impl<A> HasRawWindowHandle for WindowShell<A>
@@ -96,6 +102,11 @@ where
     /// Gets if the shell is running.
     pub fn running(&self) -> bool {
         self.running
+    }
+
+    /// Gets a a new sender to send request to the window shell.
+    pub fn request_sender(&self) -> Sender<ShellRequest> {
+        self.request_sender.clone()
     }
 
     /// Sets running.
@@ -265,6 +276,23 @@ where
             self.canvas = canvas;
             self.flip = true;
         }
+
+        // receive request
+        let mut update = self.update();
+
+        for request in self.request_receiver.try_iter() {
+            if update {
+                break;
+            }
+
+            match request {
+                ShellRequest::Update => {
+                    update = true;
+                }
+            }
+        }
+
+        self.set_update(update);
     }
 
     pub fn flip(&mut self) {
@@ -501,6 +529,8 @@ where
 
         stdweb::event_loop();
 
+        let (request_sender, request_receiver) = channel();
+
         WindowShell {
             render_context_2_d,
             adapter: self.adapter,
@@ -518,6 +548,8 @@ where
             old_canvas: None,
             update: true,
             running: true,
+            request_receiver,
+            request_sender,
         }
     }
 }

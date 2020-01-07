@@ -1,11 +1,17 @@
-use std::{cell::RefCell, collections::BTreeMap};
+use std::{cell::RefCell, collections::BTreeMap, sync::mpsc::Sender};
 
 #[cfg(not(target_os = "redox"))]
 use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 
 use dces::prelude::{Entity, EntityComponentManager};
 
-use crate::{css_engine::*, prelude::*, render::*, shell::WindowShell, tree::Tree};
+use crate::{
+    css_engine::*,
+    prelude::*,
+    render::*,
+    shell::{ShellRequest, WindowShell},
+    tree::Tree,
+};
 
 use super::{MessageBox, WidgetContainer};
 
@@ -400,6 +406,11 @@ impl<'a> Context<'a> {
     /// Returns a mutable reference of the 2d render ctx.
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
         self.window_shell.render_context_2_d()
+    }
+
+    /// Gets a a new sender to send request to the window shell.
+    pub fn request_sender(&self) -> Sender<ShellRequest> {
+        self.window_shell.request_sender()
     }
 
     /// Returns a keys collection of new added states.

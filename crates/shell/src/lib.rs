@@ -42,3 +42,8 @@ pub mod platform;
 pub mod platform;
 
 pub use orbtk_render::prelude as render;
+
+#[derive(Copy, Clone, Debug)]
+pub enum ShellRequest {
+    Update,
+}

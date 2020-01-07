@@ -1,6 +1,14 @@
 //! This module contains a platform specific implementation of the window shell.
 
-use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::Mutex, time::Duration};
+use std::{
+    cell::RefCell,
+    char,
+    collections::HashMap,
+    rc::Rc,
+    sync::mpsc::{channel, Receiver, Sender},
+    sync::Mutex,
+    time::Duration,
+};
 
 use minifb;
 
@@ -99,10 +107,15 @@ where
     update: bool,
     running: bool,
     active: bool,
+    request_receiver: Receiver<ShellRequest>,
+    request_sender: Sender<ShellRequest>,
 }
 
 #[cfg(not(target_os = "redox"))]
-unsafe impl<A> HasRawWindowHandle for WindowShell<A> where A: WindowAdapter {
+unsafe impl<A> HasRawWindowHandle for WindowShell<A>
+where
+    A: WindowAdapter,
+{
     fn raw_window_handle(&self) -> RawWindowHandle {
         self.window.raw_window_handle()
     }
@@ -120,6 +133,7 @@ where
     ) -> WindowShell<A> {
         let size = window.get_size();
         let render_context_2_d = RenderContext2D::new(size.0 as f64, size.1 as f64);
+        let (request_sender, request_receiver) = channel();
 
         WindowShell {
             window,
@@ -150,12 +164,19 @@ where
             running: true,
             update: true,
             active: false,
+            request_receiver,
+            request_sender,
         }
     }
 
     /// Gets if the shell is running.
     pub fn running(&self) -> bool {
         self.running
+    }
+
+    /// Gets a a new sender to send request to the window shell.
+    pub fn request_sender(&self) -> Sender<ShellRequest> {
+        self.request_sender.clone()
     }
 
     /// Sets the background color of the window.
@@ -269,6 +290,23 @@ where
             self.adapter
                 .resize(self.window_size.0 as f64, self.window_size.1 as f64);
         }
+
+        // receive request
+        let mut update = self.update();
+
+        for request in self.request_receiver.try_iter() {
+            if update {
+                break;
+            }
+
+            match request {
+                ShellRequest::Update => {
+                    update = true;
+                }
+            }
+        }
+
+        self.set_update(update);
     }
 
     fn push_mouse_event(&mut self, pressed: bool, button: MouseButton) {
@@ -409,7 +447,7 @@ where
             panic!("{}", e);
         });
 
-         // Limit to max ~60 fps update rate
+        // Limit to max ~60 fps update rate
         window.limit_update_rate(Some(Duration::from_micros(16600)));
 
         let key_events = Rc::new(RefCell::new(vec![]));
