@@ -39,6 +39,7 @@ pub enum NotFound {
 #[derive(Clone, Default, Debug)]
 pub struct Tree {
     pub root: Entity,
+    pub overlay: Option<Entity>,
     pub children: BTreeMap<Entity, Vec<Entity>>,
     pub parent: BTreeMap<Entity, Option<Entity>>,
     iterator_start_node: Cell<Option<Entity>>,
@@ -66,7 +67,17 @@ impl Tree {
     /// Sets the root.
     pub fn set_root(&mut self, root: impl Into<Entity>) {
         self.root = root.into();
-        // self.iterator_start_node.set(self.root);
+    }
+
+    pub fn set_root_with_overlay(&mut self, root: impl Into<Entity>, overlay: impl Into<Entity>) {
+        self.root = root.into();
+        let overlay = overlay.into();
+
+        if let Some(p) = self.children.get_mut(&self.root) {
+            p.push(overlay);
+        }
+
+        self.overlay = Some(overlay);
     }
 
     /// Appends a `child` entity to the given `parent` entity.
@@ -78,13 +89,23 @@ impl Tree {
     ) -> Result<Entity, NotFound> {
         let parent = parent.into();
         let child = child.into();
-        if let Some(p) = self.children.get_mut(&parent) {
-            p.push(child);
-        } else {
-            return Err(NotFound::Parent(parent));
-        }
 
-        self.parent.insert(child, Some(parent));
+        if parent == self.root && self.overlay.is_some() {
+            // insert child to root before overlay
+            let len = self.children.len();
+            if let Some(p) = self.children.get_mut(&parent) {
+                p.insert(len - 2, child);
+            } else {
+                return Err(NotFound::Parent(parent));
+            }
+        } else {
+            if let Some(p) = self.children.get_mut(&parent) {
+                p.push(child);
+            } else {
+                return Err(NotFound::Parent(parent));
+            }
+            self.parent.insert(child, Some(parent));
+        }
 
         Ok(child)
     }

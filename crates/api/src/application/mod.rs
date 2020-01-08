@@ -69,8 +69,19 @@ impl Application {
         ));
 
         {
+            let overlay = if let Ok(overlay) = world.entity_component_manager().component_store().get::<u32>("overlay", window) {
+                Some(*overlay)
+            } else {
+                None
+            };
+
             let tree: &mut Tree = world.entity_component_manager().entity_store_mut();
-            tree.set_root(window);
+
+            if let Some(overlay) = overlay {
+                tree.set_root_with_overlay(window, overlay);
+            } else {
+                tree.set_root(window);
+            }        
         }
 
         let title = world
