@@ -24,7 +24,7 @@ struct Entry {
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
     margin: Cell<Thickness>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     pub selector: CloneCell<Selector>,
     pub text: CloneCell<String>,
     pub text_offset: Cell<Point>,
@@ -93,7 +93,7 @@ impl Widget for Entry {
         &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut dyn Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect.get();
         let offset = self.text_offset.get();
         let mut selector = self.selector.get();
@@ -172,14 +172,14 @@ impl Widget for Entry {
         "ComboBoxEntry"
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 }
 
 pub struct ComboBox {
     pub rect: Cell<Rect>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     local_position: Cell<Point>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
@@ -315,7 +315,7 @@ impl Widget for ComboBox {
         &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut dyn Renderer, focused: bool, theme: &Theme) {
         let rect = self.rect.get();
         let activated = self.activated.get();
         let offset = self.offset.get();
@@ -492,7 +492,7 @@ impl Widget for ComboBox {
         focused
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 

@@ -1,6 +1,5 @@
 #![crate_name="orbtk"]
 #![crate_type="lib"]
-#![deny(warnings)]
 
 extern crate orbclient;
 extern crate orbimage;

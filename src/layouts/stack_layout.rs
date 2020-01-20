@@ -22,7 +22,7 @@ pub struct StackLayout {
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
     margin: Cell<Thickness>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     orientation: Cell<Orientation>,
     spacing: Cell<u32>,
 }
@@ -81,7 +81,7 @@ impl Widget for StackLayout {
         &self.margin
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 

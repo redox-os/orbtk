@@ -21,11 +21,11 @@ pub struct Button {
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
     margin: Cell<Thickness>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     pub selector: CloneCell<Selector>,
     pub text: CloneCell<String>,
     pub text_offset: Cell<Point>,
-    click_callback: RefCell<Option<Arc<Fn(&Button, Point)>>>,
+    click_callback: RefCell<Option<Arc<dyn Fn(&Button, Point)>>>,
     hover: Cell<bool>,
     pressed: Cell<bool>,
 }
@@ -191,7 +191,7 @@ impl Widget for Button {
         focused
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 }

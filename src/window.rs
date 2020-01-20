@@ -71,10 +71,10 @@ impl<'a> Drop for WindowRenderer<'a> {
 pub struct Window {
     inner: RefCell<InnerWindow>,
     font: Option<orbfont::Font>,
-    pub widgets: RefCell<Vec<Arc<Widget>>>,
+    pub widgets: RefCell<Vec<Arc<dyn Widget>>>,
     pub running: Cell<bool>,
     pub theme: Theme,
-    resize_callback: RefCell<Option<Arc<Fn(&Window, u32, u32)>>>,
+    resize_callback: RefCell<Option<Arc<dyn Fn(&Window, u32, u32)>>>,
     mouse_point: Point,
     mouse_left: bool,
     mouse_middle: bool,
@@ -198,7 +198,7 @@ impl Window {
         }
     }
 
-    fn draw_widget(&self, renderer: &mut Renderer, focused: bool, widget: &Arc<Widget>) {
+    fn draw_widget(&self, renderer: &mut dyn Renderer, focused: bool, widget: &Arc<dyn Widget>) {
         widget.update();
         widget.draw(renderer, focused, &self.theme);
 

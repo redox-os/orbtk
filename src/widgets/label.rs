@@ -19,13 +19,13 @@ pub struct Label {
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
     margin: Cell<Thickness>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     pub selector: CloneCell<Selector>,
     pub border: Cell<bool>,
     pub border_radius: Cell<u32>,
     pub text: CloneCell<String>,
     pub text_offset: Cell<Point>,
-    click_callback: RefCell<Option<Arc<Fn(&Label, Point)>>>,
+    click_callback: RefCell<Option<Arc<dyn Fn(&Label, Point)>>>,
     pressed: Cell<bool>,
 }
 
@@ -167,7 +167,7 @@ impl Widget for Label {
         focused
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 }

@@ -68,7 +68,7 @@ pub trait Widget: Any {
     fn margin(&self) -> &Cell<Thickness>;
 
     /// Used to draw the widget by render code.
-    fn draw(&self, _renderer: &mut Renderer, _focused: bool, _theme: &Theme) {}
+    fn draw(&self, _renderer: &mut dyn Renderer, _focused: bool, _theme: &Theme) {}
 
     /// Handle the incoming events by tunneling from parent to child.
     /// Must have overwritten to create a custom tunneling event handling.
@@ -86,10 +86,10 @@ pub trait Widget: Any {
     fn name(&self) -> &str;
 
     /// Borrow the children of the widget.
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>>;
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>>;
 
     /// Add a child to the widget.
-    fn add(&self, widget: Arc<Widget>) {
+    fn add(&self, widget: Arc<dyn Widget>) {
         (*self.children().borrow_mut()).push(widget);
         self.arrange();
     }

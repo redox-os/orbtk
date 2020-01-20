@@ -34,7 +34,7 @@ fn prev_i(text: &str, text_i: usize) -> usize {
 
 pub struct TextBox {
     pub rect: Cell<Rect>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     local_position: Cell<Point>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
@@ -46,8 +46,8 @@ pub struct TextBox {
     pub scroll_offset: Cell<(i32, i32)>,
     pub mask_char: Cell<Option<char>>,
     pub grab_focus: Cell<bool>,
-    pub click_callback: RefCell<Option<Arc<Fn(&TextBox, Point)>>>,
-    pub enter_callback: RefCell<Option<Arc<Fn(&TextBox)>>>,
+    pub click_callback: RefCell<Option<Arc<dyn Fn(&TextBox, Point)>>>,
+    pub enter_callback: RefCell<Option<Arc<dyn Fn(&TextBox)>>>,
     /// If event_filter is defined, all of the events will go trough it
     /// Instead of the default behavior. This allows defining fields that
     /// ex. will only accept numbers and ignore all else, or add some
@@ -57,7 +57,7 @@ pub struct TextBox {
     /// or should return the event it received if it wants the default
     /// handler deal with it.
     pub event_filter:
-        RefCell<Option<Arc<Fn(&TextBox, Event, &mut bool, &mut bool) -> Option<Event>>>>,
+        RefCell<Option<Arc<dyn Fn(&TextBox, Event, &mut bool, &mut bool) -> Option<Event>>>>,
     pressed: Cell<bool>,
 }
 
@@ -186,7 +186,7 @@ impl Widget for TextBox {
         &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut dyn Renderer, focused: bool, theme: &Theme) {
         let rect = self.rect.get();
 
         let mut selector = self.selector.get();
@@ -591,7 +591,7 @@ impl Widget for TextBox {
         focused
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 }

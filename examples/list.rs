@@ -14,7 +14,7 @@ fn main() {
         button.text(format!("{}", i)).position(10, 10).size(50, 30);
 
         let entry = Entry::new(60);
-        let list_clone = list.clone();
+        let _list_clone = list.clone();
         entry.on_click(move |_, _| { println!("{}", i); });
         entry.add(&button);
         list.push(&entry);  

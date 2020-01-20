@@ -3,7 +3,7 @@ use std::sync::Arc;
 use widgets::Widget;
 
 pub struct FocusManager {
-    focused_widget: RefCell<Option<Arc<Widget>>>
+    focused_widget: RefCell<Option<Arc<dyn Widget>>>
 }
 
 impl FocusManager {
@@ -13,11 +13,11 @@ impl FocusManager {
         }
     }
 
-    pub fn request_focus(&self, widget: &Arc<Widget>) {
+    pub fn request_focus(&self, widget: &Arc<dyn Widget>) {
         (*self.focused_widget.borrow_mut()) = Some(widget.clone());
     }
 
-    pub fn focused(&self, widget: &Arc<Widget>) -> bool {
+    pub fn focused(&self, widget: &Arc<dyn Widget>) -> bool {
         if let Some(ref focused_widget) = *self.focused_widget.borrow_mut() {
             if Arc::ptr_eq(&widget, &focused_widget) {
                 return true
@@ -27,7 +27,7 @@ impl FocusManager {
         false
     }
 
-    pub fn focused_widget(&self) -> &RefCell<Option<Arc<Widget>>> {
+    pub fn focused_widget(&self) -> &RefCell<Option<Arc<dyn Widget>>> {
         &self.focused_widget
     }
 }

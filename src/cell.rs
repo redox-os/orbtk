@@ -7,7 +7,7 @@ pub trait CheckSet<T> {
 
 pub struct CloneCell<T: Clone + 'static> {
     inner: Arc<RefCell<T>>,
-    change_callbacks: Arc<RefCell<Vec<Arc<Fn(T)>>>>,
+    change_callbacks: Arc<RefCell<Vec<Arc<dyn Fn(T)>>>>,
 }
 
 impl<T: Clone> CloneCell<T> {

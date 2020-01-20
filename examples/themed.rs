@@ -1,5 +1,5 @@
 extern crate orbtk;
-use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, Window, WindowBuilder};
+use orbtk::{Action, Button, Grid, Image, Label, Menu, Point, ProgressBar, Rect, Separator, TextBox, WindowBuilder};
 use orbtk::theme::Theme;
 use orbtk::traits::{Click, Enter, Place, Text, Style};
 

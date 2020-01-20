@@ -22,8 +22,8 @@ pub struct Entry {
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
     margin: Cell<Thickness>,
-    children: RefCell<Vec<Arc<Widget>>>,
-    click_callback: RefCell<Option<Arc<Fn(&Entry, Point)>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
+    click_callback: RefCell<Option<Arc<dyn Fn(&Entry, Point)>>>,
     highlighted: Cell<bool>,
     selector: CloneCell<Selector>,
 }
@@ -83,7 +83,7 @@ impl Widget for Entry {
         &self.local_position
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 
@@ -117,7 +117,7 @@ pub struct List {
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
     margin: Cell<Thickness>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     pub selector: CloneCell<Selector>,
     v_scroll: Cell<i32>,
     current_height: Cell<u32>,
@@ -365,7 +365,7 @@ impl Widget for List {
         focused
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 

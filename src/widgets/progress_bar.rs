@@ -15,7 +15,7 @@ use widgets::{Widget, VerticalPlacement, HorizontalPlacement};
 
 pub struct ProgressBar {
     pub rect: Cell<Rect>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     local_position: Cell<Point>,
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
@@ -24,7 +24,7 @@ pub struct ProgressBar {
     pub value: Cell<i32>,
     pub minimum: i32,
     pub maximum: i32,
-    click_callback: RefCell<Option<Arc<Fn(&ProgressBar, Point)>>>,
+    click_callback: RefCell<Option<Arc<dyn Fn(&ProgressBar, Point)>>>,
     pressed: Cell<bool>,
 }
 
@@ -98,7 +98,7 @@ impl Widget for ProgressBar {
         &self.local_position
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut dyn Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect.get();
         let progress_rect = Rect{
                                 width: (rect.width as i32 *
@@ -159,7 +159,7 @@ impl Widget for ProgressBar {
         focused
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 }

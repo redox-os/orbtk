@@ -3,7 +3,7 @@ use orbclient::Renderer;
 use theme::{Theme, Selector};
 use rect::Rect;
 
-pub fn draw_box(renderer: &mut Renderer, rect: Rect, theme: &Theme, selector: &Selector) {
+pub fn draw_box(renderer: &mut dyn Renderer, rect: Rect, theme: &Theme, selector: &Selector) {
     let b_r = theme.uint("border-radius", selector);
 
     let fill = theme.color("background", selector);

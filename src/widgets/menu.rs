@@ -19,12 +19,12 @@ pub struct Menu {
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
     margin: Cell<Thickness>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     selector: CloneCell<Selector>,
     text: CloneCell<String>,
     text_offset: Cell<Point>,
-    entries: RefCell<Vec<Arc<Entry>>>,
-    click_callback: RefCell<Option<Arc<Fn(&Menu, Point)>>>,
+    entries: RefCell<Vec<Arc<dyn Entry>>>,
+    click_callback: RefCell<Option<Arc<dyn Fn(&Menu, Point)>>>,
     pressed: Cell<bool>,
     activated: Cell<bool>,
 }
@@ -35,7 +35,7 @@ pub struct Separator {
     horizontal_placement: Cell<HorizontalPlacement>,
     margin: Cell<Thickness>,
     local_position: Cell<Point>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     selector: CloneCell<Selector>,
 }
 
@@ -145,7 +145,7 @@ impl Widget for Menu {
         &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut dyn Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect.get();
 
         if self.activated.get() {
@@ -255,7 +255,7 @@ impl Widget for Menu {
         focused
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 }
@@ -266,11 +266,11 @@ pub struct Action {
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
     margin: Cell<Thickness>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     selector: CloneCell<Selector>,
     text: CloneCell<String>,
     text_offset: Cell<Point>,
-    click_callback: RefCell<Option<Arc<Fn(&Action, Point)>>>,
+    click_callback: RefCell<Option<Arc<dyn Fn(&Action, Point)>>>,
     pressed: Cell<bool>,
     hover: Cell<bool>,
 }
@@ -350,7 +350,7 @@ impl Widget for Action {
         &self.local_position
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut dyn Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect.get();
 
         let pseudo_class = if self.hover.get() { "active" } else { "inactive" };
@@ -420,7 +420,7 @@ impl Widget for Action {
         false
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 }
@@ -476,7 +476,7 @@ impl Widget for Separator {
         &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut dyn Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect.get();
         let selector = &self.selector.get();
         draw_box(renderer, rect, theme, selector);
@@ -500,7 +500,7 @@ impl Widget for Separator {
         ignore_event
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 }

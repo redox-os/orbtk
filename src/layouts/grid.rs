@@ -18,13 +18,13 @@ pub struct Grid {
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
     margin: Cell<Thickness>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     space_x: Cell<i32>,
     space_y: Cell<i32>,
     columns: Cell<usize>,
     row_count: Cell<usize>,
     column_count: Cell<usize>,
-    entries: RefCell<BTreeMap<(usize, usize), Arc<Widget>>>,
+    entries: RefCell<BTreeMap<(usize, usize), Arc<dyn Widget>>>,
     focused: Cell<Option<(usize, usize)>>
 }
 
@@ -176,8 +176,8 @@ impl Widget for Grid {
         &self.margin
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
-        fn draw_widget(widget: &Arc<Widget>, renderer: &mut Renderer, focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut dyn Renderer, _focused: bool, theme: &Theme) {
+        fn draw_widget(widget: &Arc<dyn Widget>, renderer: &mut dyn Renderer, focused: bool, theme: &Theme) {
             widget.update();
             widget.draw(renderer, focused, theme);
 
@@ -211,7 +211,7 @@ impl Widget for Grid {
         focused
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 }

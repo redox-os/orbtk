@@ -17,7 +17,7 @@ pub struct TextWidget {
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
     margin: Cell<Thickness>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     pub selector: CloneCell<Selector>,
     pub text: CloneCell<String>,
 }
@@ -93,7 +93,7 @@ impl Widget for TextWidget {
         &self.local_position
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, theme: &Theme) {
+    fn draw(&self, renderer: &mut dyn Renderer, _focused: bool, theme: &Theme) {
         let rect = self.rect().get();
         let mut current_rect = self.rect().get();
         let x = rect.x;
@@ -124,7 +124,7 @@ impl Widget for TextWidget {
         _focused
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 }

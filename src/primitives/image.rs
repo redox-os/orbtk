@@ -18,9 +18,9 @@ pub struct Image {
     vertical_placement: Cell<VerticalPlacement>,
     horizontal_placement: Cell<HorizontalPlacement>,
     margin: Cell<Thickness>,
-    children: RefCell<Vec<Arc<Widget>>>,
+    children: RefCell<Vec<Arc<dyn Widget>>>,
     pub image: RefCell<orbimage::Image>,
-    click_callback: RefCell<Option<Arc<Fn(&Image, Point)>>>,
+    click_callback: RefCell<Option<Arc<dyn Fn(&Image, Point)>>>,
 }
 
 impl Image {
@@ -90,7 +90,7 @@ impl Widget for Image {
         &self.local_position
     }
 
-    fn draw(&self, renderer: &mut Renderer, _focused: bool, _theme: &Theme) {
+    fn draw(&self, renderer: &mut dyn Renderer, _focused: bool, _theme: &Theme) {
         let rect = self.rect.get();
         let image = self.image.borrow();
         renderer.image(rect.x, rect.y, image.width(), image.height(), image.data());
@@ -115,7 +115,7 @@ impl Widget for Image {
         focused
     }
 
-    fn children(&self) -> &RefCell<Vec<Arc<Widget>>> {
+    fn children(&self) -> &RefCell<Vec<Arc<dyn Widget>>> {
         &self.children
     }
 }
