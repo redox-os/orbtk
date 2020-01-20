@@ -335,7 +335,7 @@ impl Widget for ComboBox {
 
             // draw entries
             for entry in self.entries.borrow().iter() {
-                let mut point = Point::new(entry.rect.get().x, entry.rect.get().y);
+                let point = Point::new(entry.rect.get().x, entry.rect.get().y);
 
                 if point.y >= rect.y
                     && point.y + rect.height as i32 <= flyout_rect.y + flyout_rect.height as i32
