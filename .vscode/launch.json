@@ -151,8 +151,8 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "wgpu-rs",
-      "program": "${workspaceFolder}/target/debug/examples/wgpu-rs",
+      "name": "Overlay",
+      "program": "${workspaceFolder}/target/debug/examples/overlay",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
       "sourceLanguages": [

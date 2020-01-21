@@ -83,7 +83,7 @@ impl<'a> Context<'a> {
 
     /// Returns the window widget.
     pub fn window(&mut self) -> WidgetContainer<'_> {
-        let root = self.ecm.entity_store().root;
+        let root = self.ecm.entity_store().root();
         self.get_widget(root)
     }
 

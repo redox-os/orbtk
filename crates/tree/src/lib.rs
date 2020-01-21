@@ -38,7 +38,7 @@ pub enum NotFound {
 /// Base data structure to manage the entity entities of a window in a tree based structure.
 #[derive(Clone, Default, Debug)]
 pub struct Tree {
-    pub root: Entity,
+    pub root: Option<Entity>,
     pub overlay: Option<Entity>,
     pub children: BTreeMap<Entity, Vec<Entity>>,
     pub parent: BTreeMap<Entity, Option<Entity>>,
@@ -49,6 +49,19 @@ impl Tree {
     /// Creates a new tree with default values.
     pub fn new() -> Self {
         Tree::default()
+    }
+
+    /// Returns the root of the tree.
+    pub fn root(&self) -> Entity {
+        if let Some(root) = self.root {
+            return root;
+        }
+
+        if let Some(root) = self.parent.keys().next() {
+            return *root;
+        }
+
+        0.into()
     }
 
     // /// Configure the tree iterator with a start node.
@@ -66,18 +79,25 @@ impl Tree {
 
     /// Sets the root.
     pub fn set_root(&mut self, root: impl Into<Entity>) {
-        self.root = root.into();
+        let root = root.into();
+        self.root = Some(root);
+
+        if let Some(overlay) = self.overlay {
+            if let Some(p) = self.children.get_mut(&root) {
+                p.push(overlay);
+            }
+        }
     }
 
-    pub fn set_root_with_overlay(&mut self, root: impl Into<Entity>, overlay: impl Into<Entity>) {
-        self.root = root.into();
+    pub fn set_overlay(&mut self, overlay: impl Into<Entity>) {
         let overlay = overlay.into();
-
-        if let Some(p) = self.children.get_mut(&self.root) {
-            p.push(overlay);
-        }
-
         self.overlay = Some(overlay);
+
+        if let Some(root) = self.root {
+            if let Some(p) = self.children.get_mut(&root) {
+                p.push(overlay);
+            }
+        }
     }
 
     /// Appends a `child` entity to the given `parent` entity.
@@ -90,7 +110,7 @@ impl Tree {
         let parent = parent.into();
         let child = child.into();
 
-        if parent == self.root && self.overlay.is_some() {
+        if self.root.is_some() && parent == self.root.unwrap() && self.overlay.is_some() {
             // insert child to root before overlay
             let len = self.children.len();
             if let Some(p) = self.children.get_mut(&parent) {
@@ -150,7 +170,11 @@ impl<'a> IntoIterator for &'a Tree {
             if let Some(start_node) = self.iterator_start_node.get() {
                 start_node
             } else {
-                self.root
+                if let Some(root) = self.root {
+                    root
+                } else {
+                    0.into()
+                }
             }
         };
 

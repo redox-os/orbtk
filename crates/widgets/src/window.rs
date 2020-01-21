@@ -73,9 +73,6 @@ widget!(
         /// Sets or shares a value that describes if the current window is active.
         active: bool,
 
-        /// Sets or shares the id of the overlay widget.
-        overlay: u32,
-
         /// Sets or shares the theme property.
         theme: Theme
     }
@@ -93,7 +90,7 @@ impl Window {
 }
 
 impl Template for Window {
-    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {   
+    fn template(self, id: Entity, _: &mut BuildContext) -> Self {   
         self.name("Window")
             .background(colors::BRIGHT_GRAY_COLOR)
             .size(100.0, 100.0)
@@ -101,7 +98,6 @@ impl Template for Window {
             .title("Window")
             .theme(default_theme())
             .resizeable(false)
-            .overlay(Overlay::create().build(ctx).0)
             .on_window_event(move |ctx, event| {
                 ctx.get_mut::<WindowState>(id).push_event(event);
                 true

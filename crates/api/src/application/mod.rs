@@ -12,9 +12,11 @@ use crate::{
 };
 
 pub use self::global::*;
+pub use self::overlay::*;
 pub use self::window::*;
 
 mod global;
+mod overlay;
 mod window;
 
 /// The `Application` represents the entry point of an OrbTk based application.
@@ -59,30 +61,37 @@ impl Application {
                 .register("settings", Settings::new(&*self.name));
         };
 
-        let window = create_fn(&mut BuildContext::new(
-            world.entity_component_manager(),
-            &render_objects,
-            &mut layouts.borrow_mut(),
-            &mut handlers.borrow_mut(),
-            &mut states.borrow_mut(),
-            &mut crate::theme::default_theme(),
-        ));
+        let window = {
+            let overlay = Overlay::create().build(&mut BuildContext::new(
+                world.entity_component_manager(),
+                &render_objects,
+                &mut layouts.borrow_mut(),
+                &mut handlers.borrow_mut(),
+                &mut states.borrow_mut(),
+                &mut crate::theme::default_theme(),
+            ));
+            
+            {
+                let tree: &mut Tree = world.entity_component_manager().entity_store_mut();
+                tree.set_overlay(overlay);
+            }
 
-        {
-            let overlay = if let Ok(overlay) = world.entity_component_manager().component_store().get::<u32>("overlay", window) {
-                Some(*overlay)
-            } else {
-                None
-            };
+            let window = create_fn(&mut BuildContext::new(
+                world.entity_component_manager(),
+                &render_objects,
+                &mut layouts.borrow_mut(),
+                &mut handlers.borrow_mut(),
+                &mut states.borrow_mut(),
+                &mut crate::theme::default_theme(),
+            ));
 
-            let tree: &mut Tree = world.entity_component_manager().entity_store_mut();
-
-            if let Some(overlay) = overlay {
-                tree.set_root_with_overlay(window, overlay);
-            } else {
+            {
+                let tree: &mut Tree = world.entity_component_manager().entity_store_mut();
                 tree.set_root(window);
-            }        
-        }
+            }
+
+            window
+        };
 
         let title = world
             .entity_component_manager()

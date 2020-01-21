@@ -35,7 +35,7 @@ impl System<Tree, StringComponentStore> for RenderSystem {
         #[cfg(not(feature = "debug"))]
         let debug = false;
 
-        let root = ecm.entity_store().root;
+        let root = ecm.entity_store().root();
 
         // sets the window background of the real window.
         if let Ok(background) = ecm.component_store().get::<Brush>("background", root) {

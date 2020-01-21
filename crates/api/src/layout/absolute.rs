@@ -30,7 +30,7 @@ impl Layout for AbsoluteLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &ThemeValue,
     ) -> DirtySize {
-        let window = ecm.entity_store().root;
+        let window = ecm.entity_store().root();
 
         if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", window) {
             self.desired_size.borrow_mut().set_size(bounds.width(), bounds.height());
