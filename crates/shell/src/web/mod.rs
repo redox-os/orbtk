@@ -328,6 +328,7 @@ where
         window().request_animation_frame(move |_| {
             self.updater.update();
             self.window_shell.borrow_mut().set_update(false);
+            self.window_shell.borrow_mut().flip();
             self.window_shell.borrow_mut().drain_events();
             self.run();
         });
