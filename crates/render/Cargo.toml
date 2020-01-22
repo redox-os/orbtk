@@ -13,9 +13,9 @@ edition = "2018"
 stdweb = "0.4.20"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-raqote = { version = "0.7.7", default-features = false }
+raqote = { version = "0.7.8", default-features = false }
 rusttype = "0.8.2"
-image = "0.22.3"
+image = "0.22.4"
 
 [dependencies]
 orbtk-utils = { path = "../utils", version = "0.3.1-alpha2" }
