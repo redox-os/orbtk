@@ -8,6 +8,7 @@
 * clear: interaction between widgets
 * image: image widget
 * minimal: minimal example
+* overlay: draw widgets on the top
 * settings: use registry and settings service (load / save)
 * widgets: widget overview
 

@@ -20,7 +20,7 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
             return;
         }
 
-        let root = ecm.entity_store().root;
+        let root = ecm.entity_store().root();
 
         let window_shell = &mut self.shell.borrow_mut();
         let theme = ecm

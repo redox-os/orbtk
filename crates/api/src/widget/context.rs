@@ -83,7 +83,7 @@ impl<'a> Context<'a> {
 
     /// Returns the window widget.
     pub fn window(&mut self) -> WidgetContainer<'_> {
-        let root = self.ecm.entity_store().root;
+        let root = self.ecm.entity_store().root();
         self.get_widget(root)
     }
 
@@ -216,12 +216,36 @@ impl<'a> Context<'a> {
     pub fn append_child_to<W: Widget>(&mut self, child: W, parent: Entity) {
         let bctx = &mut self.build_context();
         let child = child.build(bctx);
-        bctx.append_child(parent, child)
+        bctx.append_child(parent, child);
+    }
+
+    /// Appends a child widget to to overlay (on the top of the main tree). If the overlay does not exists an error
+    /// will be returned.
+    pub fn append_child_to_overlay<W: Widget>(&mut self, child: W) -> Result<(), String> {
+        if let Some(overlay) = self.ecm.entity_store().overlay {
+            let bctx = &mut self.build_context();
+            let child = child.build(bctx);
+            bctx.append_child(overlay, child);
+            return Ok(());
+        }
+
+        Err("Context.append_child_to_overlay: Could not find overlay.".to_string())
     }
 
     /// Appends a child widget by entity to the given parent.
     pub fn append_child_entity_to(&mut self, child: Entity, parent: Entity) {
         self.build_context().append_child(parent, child)
+    }
+
+    /// Appends a child entity to to overlay (on the top of the main tree). If the overlay does not exists an error
+    /// will be returned.
+    pub fn append_child_entity_to_overlay(&mut self, child: Entity) -> Result<(), String> {
+        if let Some(overlay) = self.ecm.entity_store().overlay {
+            self.append_child_entity_to(overlay.into(), child);
+            return Ok(());
+        }
+
+        Err("Context.append_child_entity_to_overlay: Could not find overlay.".to_string())
     }
 
     /// Appends a child to the current widget.
@@ -238,6 +262,17 @@ impl<'a> Context<'a> {
     /// of the given parent nothing will happen.
     pub fn remove_child(&mut self, child: Entity) {
         self.remove_child_from(child, self.entity);
+    }
+
+    /// Removes a child from the overlay. If the given entity is not a child
+    /// of the given parent nothing will happen.
+    pub fn remove_child_from_overlay(&mut self, child: Entity) -> Result<(), String> {
+        if let Some(overlay) = self.ecm.entity_store().overlay {
+            self.remove_child_from(child, overlay.into());
+            return Ok(());
+        }
+
+        Err("Context.remove_child_from_overlay: Could not find overlay.".to_string())
     }
 
     /// Removes a child from the given parent. If the given entity is not a child

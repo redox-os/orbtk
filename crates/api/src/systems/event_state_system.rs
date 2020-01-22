@@ -49,7 +49,7 @@ impl EventStateSystem {
         let mut update = false;
 
         let mut current_node = event.source;
-        let root = ecm.entity_store().root;
+        let root = ecm.entity_store().root();
 
         let theme = ecm
             .component_store()
@@ -334,7 +334,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
 
             // handle states
 
-            let root = ecm.entity_store().root;
+            let root = ecm.entity_store().root();
 
             let theme = ecm
                 .component_store()

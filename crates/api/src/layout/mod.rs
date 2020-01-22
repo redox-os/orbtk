@@ -4,6 +4,7 @@ use dces::prelude::{Component, Entity, EntityComponentManager};
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::*};
 
+pub use self::absolute::*;
 pub use self::fixed_size::*;
 pub use self::grid::*;
 pub use self::padding::*;
@@ -11,6 +12,7 @@ pub use self::scroll::*;
 pub use self::stack::*;
 pub use self::text_selection::*;
 
+mod absolute;
 mod fixed_size;
 mod grid;
 mod padding;

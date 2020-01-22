@@ -12,7 +12,7 @@
 /target/
 /crates/*/target/
 
-.idea
+.idea/
 *.iml
 #.vscode
 
