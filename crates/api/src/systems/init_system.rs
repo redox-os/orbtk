@@ -43,7 +43,7 @@ impl InitSystem {
 
 impl System<Tree, StringComponentStore> for InitSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
-        let root = ecm.entity_store().root;
+        let root = ecm.entity_store().root();
 
         #[cfg(feature = "debug")]
         let debug = true;
