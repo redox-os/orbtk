@@ -234,6 +234,23 @@ impl Template for MainView {
                                     })
                                     .build(ctx),
                             )
+                            .child(
+                                ComboBox::from_items_builder(move |bc, index| {
+                                    let text = bc
+                                        .get_widget(id)
+                                        .get::<Vec<String>>("selection_list")[index]
+                                        .clone();
+                                    TextBlock::create()
+                                        .margin((0.0, 0.0, 0.0, 2.0))
+                                        .vertical_alignment("center")
+                                        .text(text)
+                                        .build(bc)
+                                })
+                                .margin((0.0, 8.0, 0.0, 0.0))
+                                .selected_indices(id)
+                                .count(("selection_list_count", id))
+                                .build(ctx),
+                            )
                             .build(ctx),
                     )
                     .child(
