@@ -84,6 +84,19 @@ container {
     padding: 4;
 }
 
+combo_box {
+    color: #dfebf5;
+    background: #3b434a;
+    border-color: #647b91;
+    border-width: 1;
+    border-radius: 2;
+    padding: 6;
+}
+
+combo_box:selected {
+    border-color: #f8de4c;
+}
+
 .h1 {
     font-size: 24;
 }
@@ -95,6 +108,13 @@ text-box {
     border-width: 1;
     border-radius: 2;
     padding: 6;
+}
+
+popup {
+    background: #3b434a;
+    border-color: #647b91;
+    border-width: 1;
+    border-radius: 2;
 }
 
 menu {

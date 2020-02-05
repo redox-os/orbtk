@@ -250,6 +250,11 @@ macro_rules! widget {
             }
 
             $(
+                /// Gets a reference of the state.
+                fn state(&self) -> &Box<$state> {
+                    &self.state
+                }
+
                 /// Gets a mutable reference of the state.
                 fn state_mut(&mut self) -> &mut Box<$state> {
                     &mut self.state

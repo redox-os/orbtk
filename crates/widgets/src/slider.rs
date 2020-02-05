@@ -263,7 +263,7 @@ fn calculate_value(
     thumb_width: f64,
     track_width: f64,
 ) -> f64 {
-    (thumb_x / (track_width - thumb_width) * (maximum - minimum))
+    thumb_x / (track_width - thumb_width) * (maximum - minimum)
 }
 
 fn calculate_thumb_x_from_value(
