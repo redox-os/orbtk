@@ -24,10 +24,10 @@ impl State for PopupState {
            
             let target_position: Point = ctx.get_widget(target.into()).clone("position");
             let target_bounds: Rectangle = ctx.get_widget(target.into()).clone("bounds");
-            CONSOLE.log(format!("{:?}", target_position));
+            CONSOLE.log(format!("{:?}", target_bounds));
             
             ctx.widget().get_mut::<Rectangle>("bounds").set_x(target_position.x + target_bounds.x());
-            ctx.widget().get_mut::<Rectangle>("bounds").set_y(target_position.y + target_bounds.y() + target_bounds.height());
+            ctx.widget().get_mut::<Rectangle>("bounds").set_y(1.0 + target_position.y + target_bounds.y() + target_bounds.height());
         }
     }
 }
@@ -65,8 +65,6 @@ impl Template for Popup {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Popup")
             .selector("popup")
-            .width(200.0)
-            .height(200.0)
             .open(false)
             .padding(0.0)
             .background("transparent")
@@ -81,6 +79,6 @@ impl Template for Popup {
     }
 
     fn layout(&self) -> Box<dyn Layout> {
-        Box::new(PaddingLayout::new())
+        Box::new(PopupLayout::new())
     }
 }

@@ -104,6 +104,7 @@ impl Template for ComboBox {
         let list_view = list_view.build(ctx);
 
         let popup = Popup::create()
+            .height(200.0)
             .open(("selected", id))
             .child(list_view)
             .target(container.0)
