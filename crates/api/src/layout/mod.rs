@@ -8,6 +8,7 @@ pub use self::absolute::*;
 pub use self::fixed_size::*;
 pub use self::grid::*;
 pub use self::padding::*;
+pub use self::popup::*;
 pub use self::scroll::*;
 pub use self::stack::*;
 pub use self::text_selection::*;
@@ -16,6 +17,7 @@ mod absolute;
 mod fixed_size;
 mod grid;
 mod padding;
+mod popup;
 mod scroll;
 mod stack;
 mod text_selection;
@@ -53,6 +55,18 @@ fn component<C: Component + Clone>(
         .get::<C>(component, entity)
         .unwrap()
         .clone()
+}
+
+fn try_component<C: Component + Clone>(
+    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+    entity: Entity,
+    component: &str,
+) -> Option<C> {
+    if let Ok(c) = ecm.component_store().get::<C>(component, entity) {
+        return Some(c.clone());
+    }
+
+    None
 }
 
 fn component_or_default<C: Component + Clone + Default>(
