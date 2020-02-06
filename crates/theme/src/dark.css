@@ -102,7 +102,7 @@ combo_box:selected {
 }
 
 text-box {
-    color: #dfebf5;
+    color: #ccdeed;
     background: #3b434a;
     border-color: #647b91;
     border-width: 1;
@@ -111,7 +111,7 @@ text-box {
 }
 
 popup {
-    background: #3b434a;
+    background: #444e55;
     border-color: #647b91;
     border-width: 1;
     border-radius: 2;

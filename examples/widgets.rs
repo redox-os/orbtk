@@ -122,8 +122,10 @@ widget!(
         selected_indices: SelectedIndices,
         counter: usize,
         list_count: usize,
+        combo_box_list_count: usize,
         list: List,
         selection_list: List,
+        combo_box_list: List,
         selection_list_count: usize,
         text_one: String16,
         text_two: String16,
@@ -155,7 +157,20 @@ impl Template for MainView {
                 "Item 9".to_string(),
                 "Item 10".to_string(),
             ])
+            .combo_box_list(vec![
+                "CB 1".to_string(),
+                "CB 2".to_string(),
+                "CB 3".to_string(),
+                "CB 4".to_string(),
+                "CB 5".to_string(),
+                "CB 6".to_string(),
+                "CB 7".to_string(),
+                "CB 8".to_string(),
+                "CB 9".to_string(),
+                "CB 10".to_string(),
+            ])
             .selection_list_count(10)
+            .combo_box_list_count(10)
             .child(
                 Grid::create()
                     .margin(8.0)
@@ -325,7 +340,7 @@ impl Template for MainView {
                                 ComboBox::from_items_builder(move |bc, index| {
                                     let text = bc
                                         .get_widget(id)
-                                        .get::<Vec<String>>("selection_list")[index]
+                                        .get::<Vec<String>>("combo_box_list")[index]
                                         .clone();
                                     TextBlock::create()
                                         .margin((0.0, 0.0, 0.0, 2.0))
@@ -337,8 +352,7 @@ impl Template for MainView {
                                 .attach(Grid::column_span(3))
                                 .attach(Grid::row(1))
                                 .margin((0.0, 8.0, 0.0, 0.0))
-                                .selected_indices(id)
-                                .count(("selection_list_count", id))
+                                .count(("combo_box_list_count", id))
                                 .build(ctx),
                             )
                             .child(

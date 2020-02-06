@@ -9,6 +9,7 @@ use super::behaviors::{MouseBehavior, SelectionBehavior};
 #[derive(Default, AsAny)]
 pub struct ComboBoxState {
     builder: RefCell<Vec<WidgetBuildContext>>,
+    selected_item_builder: WidgetBuildContext,
 }
 
 impl State for ComboBoxState {
@@ -47,11 +48,11 @@ widget!(
         /// Sets or shares the css selector property.
         selector: Selector,
 
-        /// Sets or shares the selected indices.
-        selected_indices: SelectedIndices,
+        /// Sets or shares the selected index.
+        selected_index: u32,
 
-        /// Sets or shares the list of selected indices.
-        selected_entities: SelectedEntities,
+        /// Sets or shares selected entity.
+        selected_entity: u32,
 
         /// Sets or shares the padding property.
         padding: Thickness,
@@ -76,6 +77,11 @@ impl ComboBox {
             .push(Some(Box::new(builder)));
         combo_box
     }
+
+    pub fn selected_item_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(mut self, builder: F) -> Self {
+        self.state_mut().selected_item_builder = Some(Box::new(builder));
+        self
+    }
 }
 
 impl Template for ComboBox {
@@ -88,11 +94,7 @@ impl Template for ComboBox {
             .padding(id)
             .build(ctx);
 
-        let mut list_view = ListView::create()
-            .count(id)
-            .selection_mode(SelMode::Single)
-            .selected_indices(id)
-            .selected_entities(id);
+        let mut list_view = ListView::create().count(id).selection_mode(SelMode::Single);
 
         // Workaround to move builder out of state
         if let Some(builder) = self.state().builder.borrow_mut().pop() {
