@@ -66,6 +66,7 @@ widget!(
 );
 
 impl ComboBox {
+    /// Creates a ComboBox and add the builder for the list items inside of the ComboBox.
     pub fn from_items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(
         builder: F,
     ) -> Self {
@@ -78,6 +79,7 @@ impl ComboBox {
         combo_box
     }
 
+    /// Define the builder function for the selected item inside of the header of the ComboBox.
     pub fn selected_item_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(mut self, builder: F) -> Self {
         self.state_mut().selected_item_builder = Some(Box::new(builder));
         self
