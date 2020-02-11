@@ -62,7 +62,7 @@ widget!(
 );
 
 impl Template for Popup {
-    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Popup")
             .selector("popup")
             .open(false)

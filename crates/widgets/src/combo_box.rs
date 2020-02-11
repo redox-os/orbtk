@@ -1,19 +1,54 @@
 use std::cell::RefCell;
 
-use crate::shell::CONSOLE;
 use crate::{prelude::*, utils::SelectionMode as SelMode};
 
 use super::behaviors::{MouseBehavior, SelectionBehavior};
+
+static CONTAINER: &'static str = "container";
+
+type SelectedEntity = Option<u32>;
 
 /// The `ComboBoxState` is used to manipulate the position of the thumb of the slider widget.
 #[derive(Default, AsAny)]
 pub struct ComboBoxState {
     builder: RefCell<Vec<WidgetBuildContext>>,
     selected_item_builder: WidgetBuildContext,
+    list_view: Entity,
+    container: Entity,
 }
 
 impl State for ComboBoxState {
-    // fn init(&mut self, _: Registry)
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.container = ctx
+            .entity_of_child(CONTAINER)
+            .expect("ComboBoxState.init: Container child could not be found.");
+    }
+
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+        let selected_index = {
+            let selected_indices = ctx
+                .get_widget(self.list_view)
+                .clone::<SelectedIndices>("selected_indices");
+            if selected_indices.0.len() > 0 {
+                *selected_indices.0.iter().next().unwrap() as i32
+            } else {
+                -1
+            }
+        };
+
+        ctx.widget().set("selected_index", selected_index);
+        ctx.clear_children_of(self.container);
+
+        if selected_index >= 0 {
+            if let Some(builder) = &self.selected_item_builder {
+
+                let selected_item = builder(&mut ctx.build_context(), selected_index as usize);
+                ctx.build_context()
+                    .append_child(self.container, selected_item);
+                ctx.get_widget(selected_item).update_properties_by_theme();
+            }
+        }
+    }
 }
 
 widget!(
@@ -48,11 +83,11 @@ widget!(
         /// Sets or shares the css selector property.
         selector: Selector,
 
-        /// Sets or shares the selected index.
-        selected_index: u32,
+        /// Sets or shares the selected index. If the value is -1 no item is selected.
+        selected_index: i32,
 
-        /// Sets or shares selected entity.
-        selected_entity: u32,
+        /// Sets or shares selected entity. It is `None` if no item is selected.
+        selected_entity: SelectedEntity,
 
         /// Sets or shares the padding property.
         padding: Thickness,
@@ -67,7 +102,7 @@ widget!(
 
 impl ComboBox {
     /// Creates a ComboBox and add the builder for the list items inside of the ComboBox.
-    pub fn from_items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(
+    pub fn from_items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static + Clone>(
         builder: F,
     ) -> Self {
         let mut combo_box = ComboBox::create();
@@ -75,13 +110,21 @@ impl ComboBox {
             .state_mut()
             .builder
             .borrow_mut()
-            .push(Some(Box::new(builder)));
-        combo_box
+            .push(Some(Box::new(builder.clone())));
+        combo_box.selected_item_builder(builder)
     }
 
     /// Define the builder function for the selected item inside of the header of the ComboBox.
-    pub fn selected_item_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(mut self, builder: F) -> Self {
+    pub fn selected_item_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(
+        mut self,
+        builder: F,
+    ) -> Self {
         self.state_mut().selected_item_builder = Some(Box::new(builder));
+        self
+    }
+
+    fn set_list_view(mut self, list_view: Entity) -> Self {
+        self.state_mut().list_view = list_view;
         self
     }
 }
@@ -89,6 +132,7 @@ impl ComboBox {
 impl Template for ComboBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let container = Container::create()
+            .selector(Selector::default().id(CONTAINER))
             .background(id)
             .border_radius(id)
             .border_width(id)
@@ -96,7 +140,9 @@ impl Template for ComboBox {
             .padding(id)
             .build(ctx);
 
-        let mut list_view = ListView::create().count(id).selection_mode(SelMode::Single);
+        let mut list_view = ListView::create()
+            .count(id)
+            .selection_mode(SelMode::Single);
 
         // Workaround to move builder out of state
         if let Some(builder) = self.state().builder.borrow_mut().pop() {
@@ -107,6 +153,9 @@ impl Template for ComboBox {
 
         let list_view = list_view.build(ctx);
 
+        // Workaround to the list view child inside of the popup.
+        let this = self.set_list_view(list_view);
+
         let popup = Popup::create()
             .height(200.0)
             .open(("selected", id))
@@ -114,16 +163,14 @@ impl Template for ComboBox {
             .target(container.0)
             .build(ctx);
 
-        let result = ctx.append_child_to_overlay(popup);
+        let _ = ctx.append_child_to_overlay(popup);
 
-        if let Err(e) = result {
-            CONSOLE.log(format!("{:?}", e));
-        }
-        self.name("ComboBox")
+        this.name("ComboBox")
             .selector("combo_box")
             .height(32.0)
             .min_width(80.0)
             .selected(false)
+            .selected_index(-1)
             .child(
                 MouseBehavior::create()
                     .pressed(id)

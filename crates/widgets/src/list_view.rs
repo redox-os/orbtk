@@ -6,57 +6,61 @@ use std::{
 use super::behaviors::MouseBehavior;
 use crate::{prelude::*, utils::SelectionMode as SelMode};
 
+static ITEMS_PANEL: &'static str = "items_panel";
+pub static LIST_VIEW: &'static str = "list_view";
+
 #[derive(Default, AsAny)]
 pub struct ListViewState {
     builder: WidgetBuildContext,
     count: usize,
     selected_entities: RefCell<HashSet<Entity>>,
+    items_panel: Entity,
 }
 
 impl State for ListViewState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.items_panel = ctx
+            .entity_of_child(ITEMS_PANEL)
+            .expect("ListViewState.init: ItemsPanel child could not be found.");
+    }
+
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
 
         if count != self.count {
             if let Some(builder) = &self.builder {
-                if let Some(items_panel) = ctx.entity_of_child("items_panel") {
-                    ctx.clear_children_of(items_panel);
+                ctx.clear_children_of(self.items_panel);
 
-                    for i in 0..count {
-                        let item = {
-                            let build_context = &mut ctx.build_context();
-                            let child = builder(build_context, i);
-                            let item = ListViewItem::create().build(build_context);
+                for i in 0..count {
+                    let item = {
+                        let build_context = &mut ctx.build_context();
+                        let child = builder(build_context, i);
+                        let item = ListViewItem::create().build(build_context);
 
-                            let mouse_behavior = MouseBehavior::create().build(build_context);
-                            build_context.register_shared_property::<Selector>(
-                                "selector",
-                                mouse_behavior,
-                                item,
-                            );
-                            build_context.register_shared_property::<bool>(
-                                "pressed",
-                                mouse_behavior,
-                                item,
-                            );
-                            build_context.append_child(item, mouse_behavior);
+                        let mouse_behavior = MouseBehavior::create().build(build_context);
+                        build_context.register_shared_property::<Selector>(
+                            "selector",
+                            mouse_behavior,
+                            item,
+                        );
+                        build_context.register_shared_property::<bool>(
+                            "pressed",
+                            mouse_behavior,
+                            item,
+                        );
+                        build_context.append_child(item, mouse_behavior);
 
-                            build_context.register_shared_property::<Brush>(
-                                "foreground",
-                                child,
-                                item,
-                            );
-                            build_context.register_shared_property::<f32>("opacity", item, entity);
-                            build_context.register_shared_property::<f32>("opacity", child, entity);
-                            build_context.register_shared_property::<f64>("font_size", child, item);
-                            build_context.append_child(items_panel, item);
-                            build_context.append_child(mouse_behavior, child);
+                        build_context.register_shared_property::<Brush>("foreground", child, item);
+                        build_context.register_shared_property::<f32>("opacity", item, entity);
+                        build_context.register_shared_property::<f32>("opacity", child, entity);
+                        build_context.register_shared_property::<f64>("font_size", child, item);
+                        build_context.append_child(self.items_panel, item);
+                        build_context.append_child(mouse_behavior, child);
 
-                            item
-                        };
-                        ctx.get_widget(item).update_properties_by_theme();
-                    }
+                        item
+                    };
+                    ctx.get_widget(item).update_properties_by_theme();
                 }
             }
 
@@ -109,7 +113,7 @@ impl State for ListViewItemState {
         let entity = ctx.entity;
         let index = ctx.index_as_child(entity).unwrap();
 
-        if let Some(parent) = &mut ctx.try_parent_from_id("ListView") {
+        if let Some(parent) = &mut ctx.try_parent_from_id(LIST_VIEW) {
             let selection_mode = *parent.get::<SelectionMode>("selection_mode");
             // deselect item
             if selected {
@@ -281,7 +285,7 @@ impl Template for ListView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let items_panel = Stack::create()
             .vertical_alignment("start")
-            .selector(Selector::default().id("items_panel"))
+            .selector(Selector::default().id(ITEMS_PANEL))
             .orientation(id)
             .build(ctx);
 
@@ -292,7 +296,7 @@ impl Template for ListView {
             .build(ctx);
 
         self.name("ListView")
-            .selector(Selector::from("list-view").id("ListView"))
+            .selector(Selector::from("list-view").id(LIST_VIEW))
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
             .border_width(1.0)
