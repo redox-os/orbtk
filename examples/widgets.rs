@@ -337,23 +337,24 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                ComboBox::from_items_builder(move |bc, index| {
-                                    let text = bc
-                                        .get_widget(id)
-                                        .get::<Vec<String>>("combo_box_list")[index]
-                                        .clone();
-                                    TextBlock::create()
-                                        .margin((0.0, 0.0, 0.0, 2.0))
-                                        .vertical_alignment("center")
-                                        .text(text)
-                                        .build(bc)
-                                })
-                                .attach(Grid::column(0))
-                                .attach(Grid::column_span(3))
-                                .attach(Grid::row(1))
-                                .margin((0.0, 8.0, 0.0, 0.0))
-                                .count(("combo_box_list_count", id))
-                                .build(ctx),
+                                ComboBox::create()
+                                    .items_builder(move |bc, index| {
+                                        let text = bc
+                                            .get_widget(id)
+                                            .get::<Vec<String>>("combo_box_list")[index]
+                                            .clone();
+                                        TextBlock::create()
+                                            .margin((0.0, 0.0, 0.0, 2.0))
+                                            .vertical_alignment("center")
+                                            .text(text)
+                                            .build(bc)
+                                    })
+                                    .attach(Grid::column(0))
+                                    .attach(Grid::column_span(3))
+                                    .attach(Grid::row(1))
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .count(("combo_box_list_count", id))
+                                    .build(ctx),
                             )
                             .child(
                                 ItemsWidget::create()

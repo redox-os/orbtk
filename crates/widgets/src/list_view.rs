@@ -272,6 +272,7 @@ widget!(
 );
 
 impl ListView {
+     /// Define the template build function for the content of the LisetViewItems.
     pub fn items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(
         mut self,
         builder: F,
