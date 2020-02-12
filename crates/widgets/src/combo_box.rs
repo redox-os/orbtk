@@ -13,6 +13,8 @@ static ITEMS_PANEL: &'static str = "items_panel";
 #[derive(Default, AsAny)]
 pub struct ComboBoxItemState {
     request_selection_toggle: Cell<bool>,
+    selected_container: Entity,
+    combo_box: Entity,
 }
 
 impl ComboBoxItemState {
@@ -117,6 +119,18 @@ widget!(
     }
 );
 
+impl ComboBoxItem {
+    fn selected_container(mut self, selected_container: impl Into<Entity>) -> Self {
+        self.state_mut().selected_container = selected_container.into();
+        self
+    }
+
+    fn combo_box(mut self, combo_box: impl Into<Entity>) -> Self {
+        self.state_mut().combo_box = combo_box.into();
+        self
+    }
+}
+
 impl Template for ComboBoxItem {
     fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("ComboBoxItem")
@@ -154,6 +168,7 @@ pub struct ComboBoxState {
     builder: WidgetBuildContext,
     count: usize,
     items_panel: Entity,
+    selected_container: Entity,
 }
 
 impl State for ComboBoxState {
@@ -169,7 +184,10 @@ impl State for ComboBoxState {
                     let item = {
                         let build_context = &mut ctx.build_context();
                         let child = builder(build_context, i);
-                        let item = ListViewItem::create().build(build_context);
+                        let item = ComboBoxItem::create()
+                            .combo_box(entity)
+                            .selected_container(self.selected_container)
+                            .build(build_context);
 
                         let mouse_behavior = MouseBehavior::create().build(build_context);
                         build_context.register_shared_property::<Selector>(
@@ -292,6 +310,7 @@ impl Template for ComboBox {
             .border_brush(id)
             .padding(id)
             .build(ctx);
+        self.state_mut().selected_container = container;
 
         let items_panel = Stack::create()
             .vertical_alignment("start")
