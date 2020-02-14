@@ -10,11 +10,14 @@ use super::behaviors::{MouseBehavior, SelectionBehavior};
 static CONTAINER: &'static str = "container";
 static ITEMS_PANEL: &'static str = "items_panel";
 
+type SelectedItem = Option<Entity>;
+
 #[derive(Default, AsAny)]
 pub struct ComboBoxItemState {
     request_selection_toggle: Cell<bool>,
     selected_container: Entity,
     combo_box: Entity,
+    builder: WidgetBuildContext,
 }
 
 impl ComboBoxItemState {
@@ -30,55 +33,72 @@ impl State for ComboBoxItemState {
         }
         self.request_selection_toggle.set(false);
 
-        let selected = *ctx.widget().get::<bool>("selected");
+        // let selected = *ctx.widget().get::<bool>("selected");
 
         let entity = ctx.entity;
-        let index = ctx.index_as_child(entity).unwrap();
+        let index: u32 = *ctx.widget().get("index");
 
-        if let Some(parent) = &mut ctx.try_parent_from_id(LIST_VIEW) {
-            // let selection_mode = *parent.get::<SelectionMode>("selection_mode");
-            // deselect item
-            if selected {
-                // parent
-                //     .get_mut::<SelectedEntities>("selected_entities")
-                //     .0
-                //     .remove(&entity);
-                // parent
-                //     .get_mut::<SelectedIndices>("selected_indices")
-                //     .0
-                //     .remove(&index);
-                return;
-            }
-
-            // if parent
-            //     .get::<SelectedEntities>("selected_entities")
-            //     .0
-            //     .contains(&entity)
-            //     || selection_mode == SelMode::None
-            // {
-            //     return;
-            // }
-
-            // if selection_mode == SelMode::Single {
-            //     parent
-            //         .get_mut::<SelectedEntities>("selected_entities")
-            //         .0
-            //         .clear();
-            //     parent
-            //         .get_mut::<SelectedIndices>("selected_indices")
-            //         .0
-            //         .clear();
-            // }
-
-            // parent
-            //     .get_mut::<SelectedEntities>("selected_entities")
-            //     .0
-            //     .insert(entity);
-            // parent
-            //     .get_mut::<SelectedIndices>("selected_indices")
-            //     .0
-            //     .insert(index);
+        // unselect previous selected item.
+        if let Some(item) = ctx
+            .get_widget(self.combo_box)
+            .clone::<SelectedItem>("selected_item")
+        {
+            ctx.get_widget(item).set("selected", false);
+            ctx.get_widget(item).update_theme_by_state(false);
         }
+
+        ctx.widget().set("selected", true);
+        ctx.widget().update_theme_by_state(false);
+        ctx.get_widget(self.combo_box)
+            .set("selected_index", index as i32);
+        ctx.get_widget(self.combo_box)
+            .set("selected_item", Some(entity));
+        // let index = ctx.index_as_child(entity).unwrap();
+
+        // if let Some(parent) = &mut ctx.get_widget(self.combo_box) {
+        //     // let selection_mode = *parent.get::<SelectionMode>("selection_mode");
+        //     // deselect item
+        //     if selected {
+        //         // parent
+        //         //     .get_mut::<SelectedEntities>("selected_entities")
+        //         //     .0
+        //         //     .remove(&entity);
+        //         // parent
+        //         //     .get_mut::<SelectedIndices>("selected_indices")
+        //         //     .0
+        //         //     .remove(&index);
+        //         return;
+        //     }
+
+        //     // if parent
+        //     //     .get::<SelectedEntities>("selected_entities")
+        //     //     .0
+        //     //     .contains(&entity)
+        //     //     || selection_mode == SelMode::None
+        //     // {
+        //     //     return;
+        //     // }
+
+        //     // if selection_mode == SelMode::Single {
+        //     //     parent
+        //     //         .get_mut::<SelectedEntities>("selected_entities")
+        //     //         .0
+        //     //         .clear();
+        //     //     parent
+        //     //         .get_mut::<SelectedIndices>("selected_indices")
+        //     //         .0
+        //     //         .clear();
+        //     // }
+
+        //     // parent
+        //     //     .get_mut::<SelectedEntities>("selected_entities")
+        //     //     .0
+        //     //     .insert(entity);
+        //     // parent
+        //     //     .get_mut::<SelectedIndices>("selected_indices")
+        //     //     .0
+        //     //     .insert(index);
+        // }
     }
 }
 
@@ -115,7 +135,10 @@ widget!(
         pressed: bool,
 
         /// Sets or shares the selected property.
-        selected: bool
+        selected: bool,
+
+        /// Sets or shares the index inside of the combobox item collection.
+        index: u32
     }
 );
 
@@ -127,6 +150,15 @@ impl ComboBoxItem {
 
     fn combo_box(mut self, combo_box: impl Into<Entity>) -> Self {
         self.state_mut().combo_box = combo_box.into();
+        self
+    }
+
+    // Define the template build function for the selected content of the ComboBoxItems.
+    fn items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static + Clone>(
+        mut self,
+        builder: F,
+    ) -> Self {
+        self.state_mut().builder = Some(Box::new(builder));
         self
     }
 }
@@ -185,9 +217,15 @@ impl State for ComboBoxState {
                         let build_context = &mut ctx.build_context();
                         let child = builder(build_context, i);
                         let item = ComboBoxItem::create()
+                            .index(i as u32)
                             .combo_box(entity)
-                            .selected_container(self.selected_container)
-                            .build(build_context);
+                            .selected_container(self.selected_container);
+
+                        // if let Some(builder) = self.builder {
+                        //     item.items_builder((*builder).clone());
+                        // }
+                        
+                        let item = item.build(build_context);
 
                         let mouse_behavior = MouseBehavior::create().build(build_context);
                         build_context.register_shared_property::<Selector>(
@@ -278,6 +316,9 @@ widget!(
         /// Sets or shares the selected index. If the value is -1 no item is selected.
         selected_index: i32,
 
+        /// The entity of the selected item.
+        selected_item: SelectedItem,
+
         /// Sets or shares the padding property.
         padding: Thickness,
 
@@ -291,7 +332,7 @@ widget!(
 
 impl ComboBox {
     /// Define the template build function for the content of the ComboBoxItems.
-    pub fn items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(
+    pub fn items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static + Clone>(
         mut self,
         builder: F,
     ) -> Self {
