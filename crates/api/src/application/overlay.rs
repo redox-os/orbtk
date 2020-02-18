@@ -14,7 +14,7 @@ use crate::{
     properties::*,
     utils::*,
     widget,
-    widget::* ,
+    widget::*,
 };
 
 widget!(

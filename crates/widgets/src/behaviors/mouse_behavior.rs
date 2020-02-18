@@ -67,16 +67,16 @@ impl State for MouseBehaviorState {
 
 widget!(
     /// The `MouseBehavior` widget is used to handle internal the pressed behavior of a widget.
-    /// 
+    ///
     /// **CSS element:** `check-box`
     MouseBehavior<MouseBehaviorState>: MouseHandler {
-        /// Sets or shares the css selector property. 
+        /// Sets or shares the css selector property.
         selector: Selector,
 
-        /// Sets or shares the pressed property. 
+        /// Sets or shares the pressed property.
         pressed: bool,
 
-        /// Sets or shares the (wheel, scroll) delta property. 
+        /// Sets or shares the (wheel, scroll) delta property.
         delta: Point
     }
 );

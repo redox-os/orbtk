@@ -3,7 +3,7 @@ use crate::prelude::*;
 
 widget!(
     /// The `Button` widget can be clicked by user. It's used to perform an action.
-    /// 
+    ///
     /// **CSS element:** `button`
     Button: MouseHandler {
         /// Sets or shares the background property.
@@ -45,10 +45,10 @@ widget!(
         /// Sets or shares the icon font property.
         icon_font: String,
 
-        /// Sets or shares the css selector property. 
+        /// Sets or shares the css selector property.
         selector: Selector,
 
-        /// Sets or shares the pressed property. 
+        /// Sets or shares the pressed property.
         pressed: bool
     }
 );
