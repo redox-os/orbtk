@@ -97,6 +97,19 @@ combo_box:selected {
     border-color: #f8de4c;
 }
 
+combo_box_item {
+    font-size: 12;
+    color: #ccdeed;
+    background: transparent;
+    padding-left: 8;
+    padding-right: 8;
+}
+
+combo_box_item:selected, combo_box_item:active {
+    color: #3b434a;
+    background: #e1bc21;
+}
+
 .h1 {
     font-size: 24;
 }

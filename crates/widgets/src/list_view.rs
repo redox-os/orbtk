@@ -9,6 +9,7 @@ use crate::{prelude::*, utils::SelectionMode as SelMode};
 static ITEMS_PANEL: &'static str = "items_panel";
 pub static LIST_VIEW: &'static str = "list_view";
 
+/// The `ListViewState` generates the list box items and handles the selected indices.
 #[derive(Default, AsAny)]
 pub struct ListViewState {
     builder: WidgetBuildContext,
@@ -90,6 +91,7 @@ impl State for ListViewState {
     }
 }
 
+/// The `ListViewItemState` handles the interaction an selection of a `ListViewItem`.
 #[derive(Default, AsAny)]
 pub struct ListViewItemState {
     request_selection_toggle: Cell<bool>,
@@ -161,6 +163,9 @@ impl State for ListViewItemState {
 }
 
 widget!(
+    /// The `ListViewItem` describes an item inside of a `ListView`.
+    ///
+    /// **CSS element:** `list-view``
     ListViewItem<ListViewItemState>: MouseHandler {
         /// Sets or shares the background property.
         background: Brush,

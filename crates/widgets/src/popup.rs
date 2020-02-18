@@ -48,7 +48,7 @@ widget!(
         border_width: Thickness,
 
         /// Sets or shares the border brush property.
-         border_brush: Brush,
+        border_brush: Brush,
 
         /// Sets or shares the padding property.
         padding: Thickness,

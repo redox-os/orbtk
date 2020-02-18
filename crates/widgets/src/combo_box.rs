@@ -12,6 +12,7 @@ static ITEMS_PANEL: &'static str = "items_panel";
 
 type SelectedItem = Option<Entity>;
 
+/// The `ComboBoxItemState` handles the interaction an selection of a `ComboBoxItem`.
 #[derive(Default, AsAny)]
 pub struct ComboBoxItemState {
     request_selection_toggle: Cell<bool>,
@@ -30,10 +31,12 @@ impl ComboBoxItemState {
 
 impl State for ComboBoxItemState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        let selected_index = ctx.get_widget(self.combo_box).clone_or_default::<i32>("selected_index");
+        let selected_index = ctx
+            .get_widget(self.combo_box)
+            .clone_or_default::<i32>("selected_index");
+        let selected: bool = *ctx.widget().get("selected");
 
-        if selected_index >= 0 && (selected_index as usize) == self.index
-        {
+        if selected_index >= 0 && (selected_index as usize) == self.index && !selected {
             self.request_selection_toggle.set(true);
         }
 
@@ -73,6 +76,9 @@ impl State for ComboBoxItemState {
 }
 
 widget!(
+    /// The `ComboBoxItem` describes an item inside of a `ComboBox`.
+    ///
+    /// **CSS element:** `combo_box_item``
     ComboBoxItem<ComboBoxItemState>: MouseHandler {
         /// Sets or shares the background property.
         background: Brush,
@@ -141,7 +147,7 @@ impl Template for ComboBoxItem {
             .height(24.0)
             .selected(false)
             .pressed(false)
-            .selector("list-view-item")
+            .selector("combo_box_item")
             .padding(0.0)
             .background("transparent")
             .border_radius(0.0)
@@ -175,19 +181,11 @@ pub struct ComboBoxState {
 }
 
 impl State for ComboBoxState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        // if nothing is selected the first item will be selected
-        if ctx.widget().clone_or_default::<usize>("count") > 0
-            && *ctx.widget().get::<i32>("selected_index") < 0
-        {
-            ctx.widget().set("selected_index", 0);
-        }
-    }
-
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
 
+        // build the combobox items
         if count != self.count {
             if let Some(builder) = &self.builder {
                 ctx.clear_children_of(self.items_panel);
@@ -242,7 +240,7 @@ impl State for ComboBoxState {
 widget!(
     /// The `ComboBox` represents an selection widget with a drop-down list.
     ///
-    /// **CSS element:** `ComboBox`
+    /// **CSS element:** `combo_box`
     ComboBox<ComboBoxState>: MouseHandler, ChangedHandler {
         /// Sets or shares the background property.
         background: Brush,

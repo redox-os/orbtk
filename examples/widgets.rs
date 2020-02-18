@@ -349,6 +349,7 @@ impl Template for MainView {
                                             .text(text)
                                             .build(bc)
                                     })
+                                    .selected_index(0)
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(1))
