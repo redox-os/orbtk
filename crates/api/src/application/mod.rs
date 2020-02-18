@@ -70,7 +70,7 @@ impl Application {
                 &mut states.borrow_mut(),
                 &mut crate::theme::default_theme(),
             ));
-            
+
             {
                 let tree: &mut Tree = world.entity_component_manager().entity_store_mut();
                 tree.set_overlay(overlay);

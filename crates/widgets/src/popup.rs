@@ -19,15 +19,18 @@ impl State for PopupState {
         if *ctx.widget().get::<Visibility>("visibility") != Visibility::Visible {
             return;
         }
-        
+
         if let Some(target) = ctx.widget().try_clone::<u32>("target") {
-           
             let target_position: Point = ctx.get_widget(target.into()).clone("position");
             let target_bounds: Rectangle = ctx.get_widget(target.into()).clone("bounds");
             CONSOLE.log(format!("{:?}", target_bounds));
-            
-            ctx.widget().get_mut::<Rectangle>("bounds").set_x(target_position.x + target_bounds.x());
-            ctx.widget().get_mut::<Rectangle>("bounds").set_y(1.0 + target_position.y + target_bounds.y() + target_bounds.height());
+
+            ctx.widget()
+                .get_mut::<Rectangle>("bounds")
+                .set_x(target_position.x + target_bounds.x());
+            ctx.widget()
+                .get_mut::<Rectangle>("bounds")
+                .set_y(1.0 + target_position.y + target_bounds.y() + target_bounds.height());
         }
     }
 }
@@ -40,10 +43,10 @@ widget!(
 
         /// Sets or shares the border radius property.
         border_radius: f64,
- 
+
         /// Sets or shares the border thickness property.
         border_width: Thickness,
- 
+
         /// Sets or shares the border brush property.
          border_brush: Brush,
 

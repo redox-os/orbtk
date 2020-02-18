@@ -90,7 +90,7 @@ impl Window {
 }
 
 impl Template for Window {
-    fn template(self, id: Entity, _: &mut BuildContext) -> Self {   
+    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("Window")
             .background(colors::BRIGHT_GRAY_COLOR)
             .size(100.0, 100.0)
@@ -101,7 +101,7 @@ impl Template for Window {
             .on_window_event(move |ctx, event| {
                 ctx.get_mut::<WindowState>(id).push_event(event);
                 true
-            })     
+            })
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

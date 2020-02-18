@@ -1,10 +1,9 @@
 use std::{
-    sync::Arc,
     cell::{Cell, RefCell},
-    collections::HashSet,
+    sync::Arc,
 };
 
-use crate::{prelude::*, utils::SelectionMode as SelMode};
+use crate::prelude::*;
 
 use super::behaviors::{MouseBehavior, SelectionBehavior};
 
@@ -12,7 +11,6 @@ static CONTAINER: &'static str = "container";
 static ITEMS_PANEL: &'static str = "items_panel";
 
 type SelectedItem = Option<Entity>;
-
 
 #[derive(Default, AsAny)]
 pub struct ComboBoxItemState {
@@ -32,12 +30,17 @@ impl ComboBoxItemState {
 
 impl State for ComboBoxItemState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+        let selected_index = ctx.get_widget(self.combo_box).clone_or_default::<i32>("selected_index");
+
+        if selected_index >= 0 && (selected_index as usize) == self.index
+        {
+            self.request_selection_toggle.set(true);
+        }
+
         if !ctx.widget().get::<bool>("enabled") || !self.request_selection_toggle.get() {
             return;
         }
         self.request_selection_toggle.set(false);
-
-        // let selected = *ctx.widget().get::<bool>("selected");
 
         let entity = ctx.entity;
 
@@ -66,56 +69,6 @@ impl State for ComboBoxItemState {
             let selected_content = builder.borrow()(build_context, index);
             build_context.append_child(selected_container, selected_content);
         }
-
-      
-
-        // ctx.get_widget(&self.selected_container.into())
-        // let index = ctx.index_as_child(entity).unwrap();
-
-        // if let Some(parent) = &mut ctx.get_widget(self.combo_box) {
-        //     // let selection_mode = *parent.get::<SelectionMode>("selection_mode");
-        //     // deselect item
-        //     if selected {
-        //         // parent
-        //         //     .get_mut::<SelectedEntities>("selected_entities")
-        //         //     .0
-        //         //     .remove(&entity);
-        //         // parent
-        //         //     .get_mut::<SelectedIndices>("selected_indices")
-        //         //     .0
-        //         //     .remove(&index);
-        //         return;
-        //     }
-
-        //     // if parent
-        //     //     .get::<SelectedEntities>("selected_entities")
-        //     //     .0
-        //     //     .contains(&entity)
-        //     //     || selection_mode == SelMode::None
-        //     // {
-        //     //     return;
-        //     // }
-
-        //     // if selection_mode == SelMode::Single {
-        //     //     parent
-        //     //         .get_mut::<SelectedEntities>("selected_entities")
-        //     //         .0
-        //     //         .clear();
-        //     //     parent
-        //     //         .get_mut::<SelectedIndices>("selected_indices")
-        //     //         .0
-        //     //         .clear();
-        //     // }
-
-        //     // parent
-        //     //     .get_mut::<SelectedEntities>("selected_entities")
-        //     //     .0
-        //     //     .insert(entity);
-        //     // parent
-        //     //     .get_mut::<SelectedIndices>("selected_indices")
-        //     //     .0
-        //     //     .insert(index);
-        // }
     }
 }
 
@@ -222,6 +175,15 @@ pub struct ComboBoxState {
 }
 
 impl State for ComboBoxState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+        // if nothing is selected the first item will be selected
+        if ctx.widget().clone_or_default::<usize>("count") > 0
+            && *ctx.widget().get::<i32>("selected_index") < 0
+        {
+            ctx.widget().set("selected_index", 0);
+        }
+    }
+
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
@@ -240,9 +202,8 @@ impl State for ComboBoxState {
                             .selected_container(self.selected_container);
 
                         if let Some(builder) = &self.builder {
-                           item.items_builder(builder);
+                            item.items_builder(builder);
                         }
-                        
                         let item = item.build(build_context);
 
                         let mouse_behavior = MouseBehavior::create().build(build_context);
@@ -273,27 +234,6 @@ impl State for ComboBoxState {
 
             self.count = count;
         }
-    }
-
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        // for index in ctx
-        //     .widget()
-        //     .get::<SelectedEntities>("selected_entities")
-        //     .0
-        //     .clone()
-        //     .symmetric_difference(&*self.selected_entities.borrow())
-        // {
-        //     let mut widget = ctx.get_widget(*index);
-        //     widget.set("selected", !widget.get::<bool>("selected"));
-
-        //     widget.update_theme_by_state(false);
-        // }
-
-        // *self.selected_entities.borrow_mut() = ctx
-        //     .widget()
-        //     .get::<SelectedEntities>("selected_entities")
-        //     .0
-        //     .clone();
     }
 }
 

@@ -38,7 +38,9 @@ impl Layout for PopupLayout {
 
         if let Some(target) = try_component::<u32>(ecm, entity, "target") {
             let target_bounds = component::<Rectangle>(ecm, target.into(), "bounds");
-            component_try_mut::<Constraint>(ecm, entity, "constraint").unwrap().set_width(target_bounds.width());
+            component_try_mut::<Constraint>(ecm, entity, "constraint")
+                .unwrap()
+                .set_width(target_bounds.width());
         }
 
         let horizontal_alignment: Alignment = component(ecm, entity, "horizontal_alignment");

@@ -39,13 +39,13 @@ impl State for SelectionBehaviorState {
 
 widget!(
     /// The `SelectionBehavior` widget is used to handle internal the pressed behavior of a widget.
-    /// 
+    ///
     /// **CSS element:** `check-box`
     SelectionBehavior<SelectionBehaviorState>: MouseHandler {
-        /// Sets or shares the css selector property. 
+        /// Sets or shares the css selector property.
         selector: Selector,
 
-        /// Sets or shares the selected property. 
+        /// Sets or shares the selected property.
         selected: bool,
 
         /// Sets the parent id.
