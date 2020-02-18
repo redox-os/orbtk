@@ -1,4 +1,5 @@
 use std::{
+    sync::Arc,
     cell::{Cell, RefCell},
     collections::HashSet,
 };
@@ -12,12 +13,15 @@ static ITEMS_PANEL: &'static str = "items_panel";
 
 type SelectedItem = Option<Entity>;
 
+
 #[derive(Default, AsAny)]
 pub struct ComboBoxItemState {
     request_selection_toggle: Cell<bool>,
+    index: usize,
     selected_container: Entity,
     combo_box: Entity,
-    builder: WidgetBuildContext,
+    // ugly work around for item builder context clone, todo make it better 😉
+    builder: Option<Arc<RefCell<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
 }
 
 impl ComboBoxItemState {
@@ -36,7 +40,6 @@ impl State for ComboBoxItemState {
         // let selected = *ctx.widget().get::<bool>("selected");
 
         let entity = ctx.entity;
-        let index: u32 = *ctx.widget().get("index");
 
         // unselect previous selected item.
         if let Some(item) = ctx
@@ -50,9 +53,23 @@ impl State for ComboBoxItemState {
         ctx.widget().set("selected", true);
         ctx.widget().update_theme_by_state(false);
         ctx.get_widget(self.combo_box)
-            .set("selected_index", index as i32);
+            .set("selected_index", self.index as i32);
         ctx.get_widget(self.combo_box)
             .set("selected_item", Some(entity));
+
+        // Add selected content to combobox
+        let index = self.index;
+        let selected_container = self.selected_container;
+        if let Some(builder) = &self.builder {
+            ctx.clear_children_of(selected_container);
+            let build_context = &mut ctx.build_context();
+            let selected_content = builder.borrow()(build_context, index);
+            build_context.append_child(selected_container, selected_content);
+        }
+
+      
+
+        // ctx.get_widget(&self.selected_container.into())
         // let index = ctx.index_as_child(entity).unwrap();
 
         // if let Some(parent) = &mut ctx.get_widget(self.combo_box) {
@@ -135,10 +152,7 @@ widget!(
         pressed: bool,
 
         /// Sets or shares the selected property.
-        selected: bool,
-
-        /// Sets or shares the index inside of the combobox item collection.
-        index: u32
+        selected: bool
     }
 );
 
@@ -148,18 +162,22 @@ impl ComboBoxItem {
         self
     }
 
+    fn index(mut self, index: usize) -> Self {
+        self.state_mut().index = index;
+        self
+    }
+
     fn combo_box(mut self, combo_box: impl Into<Entity>) -> Self {
         self.state_mut().combo_box = combo_box.into();
         self
     }
 
     // Define the template build function for the selected content of the ComboBoxItems.
-    fn items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static + Clone>(
-        mut self,
-        builder: F,
-    ) -> Self {
-        self.state_mut().builder = Some(Box::new(builder));
-        self
+    fn items_builder(
+        &mut self,
+        builder: &Arc<RefCell<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>,
+    ) {
+        self.state_mut().builder = Some(builder.clone());
     }
 }
 
@@ -197,7 +215,7 @@ impl Template for ComboBoxItem {
 /// The `ComboBoxState` is used to manipulate the position of the thumb of the slider widget.
 #[derive(Default, AsAny)]
 pub struct ComboBoxState {
-    builder: WidgetBuildContext,
+    builder: Option<Arc<RefCell<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
     count: usize,
     items_panel: Entity,
     selected_container: Entity,
@@ -215,15 +233,15 @@ impl State for ComboBoxState {
                 for i in 0..count {
                     let item = {
                         let build_context = &mut ctx.build_context();
-                        let child = builder(build_context, i);
-                        let item = ComboBoxItem::create()
-                            .index(i as u32)
+                        let child = builder.borrow()(build_context, i);
+                        let mut item = ComboBoxItem::create()
+                            .index(i)
                             .combo_box(entity)
                             .selected_container(self.selected_container);
 
-                        // if let Some(builder) = self.builder {
-                        //     item.items_builder((*builder).clone());
-                        // }
+                        if let Some(builder) = &self.builder {
+                           item.items_builder(builder);
+                        }
                         
                         let item = item.build(build_context);
 
@@ -336,7 +354,7 @@ impl ComboBox {
         mut self,
         builder: F,
     ) -> Self {
-        self.state_mut().builder = Some(Box::new(builder));
+        self.state_mut().builder = Some(Arc::new(RefCell::new(builder)));
         self
     }
 }
