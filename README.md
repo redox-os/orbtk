@@ -64,6 +64,7 @@ line to your `Cargo.toml` file:
 ```text
 orbtk = { git = "https://github.com/redox-os/orbtk.git", branch = "develop" }
 ```
+You could also check out the OrbTk template project to start a new project: https://github.com/redox-os/orbtk-template.
 
 ## Minimal Example
 
