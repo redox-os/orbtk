@@ -164,7 +164,8 @@ cargo doc --no-deps --open
 
 ## Showcases
 
-* [Space Editor](https://codeberg.org/pinhead-galaxy/space-editor): 2D Tile Map Editor compatible with OrbGame
+* [Space Editor](https://codeberg.org/flovanco/space-editor): 2D Tile Map Editor compatible with OrbGame
+* [doit](https://codeberg.org/flovanco/doit): Task app
 * [OrbCalculator](https://gitlab.redox-os.org/redox-os/orbcalculator): Calculator based on OrbTk
 
 ## Contribution
