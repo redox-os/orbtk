@@ -58,14 +58,24 @@ impl shell::WindowAdapter for WindowAdapter {
 
     fn mouse_event(&mut self, event: shell::MouseEvent) {
         match event.state {
-            shell::ButtonState::Up => self.event_queue.register_event(
-                MouseUpEvent {
-                    x: event.x,
-                    y: event.y,
-                    button: event.button,
-                },
-                self.root,
-            ),
+            shell::ButtonState::Up => {
+                self.event_queue.register_event(
+                    MouseUpEvent {
+                        x: event.x,
+                        y: event.y,
+                        button: event.button,
+                    },
+                    self.root,
+                );
+                self.event_queue.register_event(
+                    GlobalMouseUpEvent {
+                        x: event.x,
+                        y: event.y,
+                        button: event.button,
+                    },
+                    self.root,
+                );
+            }
             shell::ButtonState::Down => self.event_queue.register_event(
                 MouseDownEvent {
                     x: event.x,

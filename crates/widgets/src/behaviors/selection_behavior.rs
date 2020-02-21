@@ -3,28 +3,25 @@ use crate::prelude::*;
 /// The `SelectionBehaviorState` handles the `SelectionBehavior` widget.
 #[derive(Default, AsAny)]
 pub struct SelectionBehaviorState {
-    selected: bool,
+    toggle_selection: bool,
 }
 
 impl SelectionBehaviorState {
     fn toggle_selection(&mut self) {
-        self.selected = !self.selected;
+        self.toggle_selection = true;
     }
 }
 
 impl State for SelectionBehaviorState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        self.selected = *ctx.widget().get("selected");
-    }
-
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        if !ctx.widget().get::<bool>("enabled")
-            || *ctx.widget().get::<bool>("selected") == self.selected
-        {
+        if !ctx.widget().get::<bool>("enabled") || !self.toggle_selection {
             return;
         }
 
-        ctx.widget().set("selected", self.selected);
+        self.toggle_selection = false;
+
+        let selected = *ctx.widget().get::<bool>("selected");
+        ctx.widget().set("selected", !selected);
 
         let parent: Entity = ctx.widget().clone::<u32>("parent").into();
         ctx.push_event_strategy_by_entity(ChangedEvent(parent), parent, EventStrategy::Direct);

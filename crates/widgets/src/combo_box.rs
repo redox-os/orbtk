@@ -12,6 +12,11 @@ static ITEMS_PANEL: &'static str = "items_panel";
 
 type SelectedItem = Option<Entity>;
 
+#[derive(Debug, Copy, Clone)]
+enum Action {
+    CheckMouseUpOutside { x: f64, y: f64 },
+}
+
 /// The `ComboBoxItemState` handles the interaction an selection of a `ComboBoxItem`.
 #[derive(Default, AsAny)]
 pub struct ComboBoxItemState {
@@ -174,10 +179,49 @@ impl Template for ComboBoxItem {
 /// The `ComboBoxState` is used to manipulate the position of the thumb of the slider widget.
 #[derive(Default, AsAny)]
 pub struct ComboBoxState {
+    popup: Entity,
+    action: Option<Action>,
     builder: Option<Arc<RefCell<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
     count: usize,
     items_panel: Entity,
     selected_container: Entity,
+}
+
+impl ComboBoxState {
+    fn action(&mut self, action: impl Into<Option<Action>>) {
+        self.action = action.into();
+    }
+
+    // closes the popup on mouse up outside of the combobox and popup.
+    fn close_popup(&mut self, ctx: &mut Context, x: f64, y: f64) {
+        let combo_box_position = ctx.widget().clone::<Point>("position");
+        let combo_box_bounds = ctx.widget().clone::<Rectangle>("bounds");
+
+        let combo_box_global_bounds = Rectangle::new(
+            combo_box_position.x,
+            combo_box_position.y,
+            combo_box_bounds.width,
+            combo_box_bounds.height,
+        );
+
+        let popup_position = ctx.get_widget(self.popup).clone::<Point>("position");
+        let popup_bounds = ctx.get_widget(self.popup).clone::<Rectangle>("bounds");
+
+        let popup_global_bounds = Rectangle::new(
+            popup_position.x,
+            popup_position.y,
+            popup_bounds.width,
+            popup_bounds.height,
+        );
+
+        if !combo_box_global_bounds.contains((x, y)) && !popup_global_bounds.contains((x, y)) {
+            ctx.widget().set("selected", false);
+            ctx.get_widget(self.popup)
+                .set("visibility", Visibility::Collapsed);
+            ctx.get_widget(self.popup).update_theme_by_state(false);
+            ctx.widget().update_theme_by_state(false);
+        }
+    }
 }
 
 impl State for ComboBoxState {
@@ -231,6 +275,20 @@ impl State for ComboBoxState {
             }
 
             self.count = count;
+        }
+    }
+
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+        if self.action.is_none() || !(*ctx.widget().get::<bool>("selected")) {
+            return;
+        }
+
+        if let Some(action) = self.action {
+            match action {
+                Action::CheckMouseUpOutside { x, y } => {
+                    self.close_popup(ctx, x, y);
+                }
+            }
         }
     }
 }
@@ -335,6 +393,7 @@ impl Template for ComboBox {
             )
             .target(container.0)
             .build(ctx);
+        self.state_mut().popup = popup;
 
         let _ = ctx.append_child_to_overlay(popup);
 
@@ -360,5 +419,10 @@ impl Template for ComboBox {
                     )
                     .build(ctx),
             )
+            .on_global_mouse_up(move |states, e| {
+                states
+                    .get_mut::<ComboBoxState>(id)
+                    .action(Action::CheckMouseUpOutside { x: e.x, y: e.y })
+            })
     }
 }

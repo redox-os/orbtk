@@ -8,6 +8,7 @@ extern crate derive_more;
 pub use dces::prelude::*;
 
 pub use orbtk_css_engine::prelude as css_engine;
+pub use orbtk_proc_macros as proc_macros;
 pub use orbtk_render::prelude as render;
 pub use orbtk_shell::prelude as shell;
 pub use orbtk_theme::prelude as theme;

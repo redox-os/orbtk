@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::{prelude::*, shell::MouseButton, utils::*};
+use crate::{prelude::*, proc_macros::Event, shell::MouseButton, utils::*};
 
 /// Checks if the given point is inside of a widget.
 pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>) -> bool {
@@ -15,20 +15,18 @@ pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>
     rect.contains((mouse_position.x, mouse_position.y))
 }
 
+#[derive(Event)]
 pub struct MouseMoveEvent {
     pub x: f64,
-
     pub y: f64,
 }
 
-impl Event for MouseMoveEvent {}
-
+#[derive(Event)]
 pub struct ScrollEvent {
     pub delta: Point,
 }
 
-impl Event for ScrollEvent {}
-
+#[derive(Event)]
 pub struct MouseUpEvent {
     pub button: MouseButton,
     pub x: f64,
@@ -36,14 +34,12 @@ pub struct MouseUpEvent {
     pub y: f64,
 }
 
-impl Event for MouseUpEvent {}
-
+#[derive(Event)]
 pub struct ClickEvent {
     pub position: Point,
 }
 
-impl Event for ClickEvent {}
-
+#[derive(Event)]
 pub struct MouseDownEvent {
     pub button: MouseButton,
     pub x: f64,
@@ -51,9 +47,17 @@ pub struct MouseDownEvent {
     pub y: f64,
 }
 
-impl Event for MouseDownEvent {}
+#[derive(Event)]
+pub struct GlobalMouseUpEvent {
+    pub button: MouseButton,
+    pub x: f64,
+
+    pub y: f64,
+}
 
 pub type MouseHandlerFunction = dyn Fn(&mut StatesContext, Point) -> bool + 'static;
+
+pub type GlobalMouseHandlerFunction = dyn Fn(&mut StatesContext, Point) + 'static;
 
 /// Used to handle click events. Could be attached to a widget.
 pub struct ClickEventHandler {
@@ -102,6 +106,33 @@ impl EventHandler for MouseDownEventHandler {
 
     fn handles_event(&self, event: &EventBox) -> bool {
         event.is_type::<MouseDownEvent>()
+    }
+}
+
+/// Defines an event handler for a global mouse up event. Global mouse up events could not be handled.
+pub struct GlobalMouseUpEventHandler {
+    handler: Rc<GlobalMouseHandlerFunction>,
+}
+
+impl Into<Rc<dyn EventHandler>> for GlobalMouseUpEventHandler {
+    fn into(self) -> Rc<dyn EventHandler> {
+        Rc::new(self)
+    }
+}
+
+impl EventHandler for GlobalMouseUpEventHandler {
+    fn handle_event(&self, state_context: &mut StatesContext, event: &EventBox) -> bool {
+        event
+            .downcast_ref::<GlobalMouseUpEvent>()
+            .ok()
+            .map_or(false, |event| {
+                (self.handler)(state_context, Point::new(event.x, event.y));
+                false
+            })
+    }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<GlobalMouseUpEvent>()
     }
 }
 
@@ -200,6 +231,13 @@ pub trait MouseHandler: Sized + Widget {
     /// Insert a mouse up handler.
     fn on_mouse_up<H: Fn(&mut StatesContext, Point) -> bool + 'static>(self, handler: H) -> Self {
         self.insert_handler(MouseUpEventHandler {
+            handler: Rc::new(handler),
+        })
+    }
+
+    /// Insert a mouse handler for global up event.s
+    fn on_global_mouse_up<H: Fn(&mut StatesContext, Point) + 'static>(self, handler: H) -> Self {
+        self.insert_handler(GlobalMouseUpEventHandler {
             handler: Rc::new(handler),
         })
     }
