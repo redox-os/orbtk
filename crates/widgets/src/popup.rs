@@ -12,6 +12,10 @@ impl State for PopupState {
             ctx.widget().set("visibility", Visibility::Visible);
         } else {
             ctx.widget().set("visibility", Visibility::Collapsed);
+            {
+                ctx.widget().get_mut::<Rectangle>("bounds").set_width(0.0);
+                ctx.widget().get_mut::<Rectangle>("bounds").set_height(0.0);
+            }
         }
     }
 

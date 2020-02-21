@@ -7,6 +7,7 @@ pub use crate::{
     into_property_source,
     layout::*,
     macros::*,
+    proc_macros::*,
     properties::*,
     render_object::*,
     services::*,
