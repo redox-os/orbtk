@@ -828,7 +828,7 @@ dependencies = [
 
 [[package]]
 name = "orbtk"
-version = "0.3.1-alpha1"
+version = "0.3.1-alpha2"
 dependencies = [
  "dces 0.2.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=develop)",
  "euc 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
