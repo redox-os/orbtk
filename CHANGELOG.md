@@ -10,9 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * ComboBox / ComboboxItem widget
 * Slider widget
+* Popup widget
+* Overlay layer
 * Service registry for states
 * Settings service (serialize / deserialize data)
 * Direct access of states in callbacks
+* Impl RawWindowHandle for Context
+* Sent requests to window shell
+* Layout fixes and stack layout example
+* Many web fixes
 
 ### 0.3.1-alpha1
 
