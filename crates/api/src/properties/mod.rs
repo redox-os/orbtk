@@ -110,7 +110,7 @@ into_property_source!(css_engine::Selector: &str, String);
 into_property_source!(css_engine::Theme);
 
 // Implementation of render property types
-into_property_source!(render::Image: &str);
+into_property_source!(render::Image: &str, String, (u32, u32, Vec<u32>));
 
 // Implementation of custom property types
 into_property_source!(Columns);
