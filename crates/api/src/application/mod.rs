@@ -182,6 +182,15 @@ impl Application {
             registry: registry.clone(),
         });
 
+        world.register_cleanup_system(CleanupSystem {
+            shell: window_shell.clone(),
+            layouts: layouts.clone(),
+            render_objects: render_objects.clone(),
+            handlers: handlers.clone(),
+            states: states.clone(),
+            registry: registry.clone(),
+        });
+
         world
             .create_system(EventStateSystem {
                 shell: window_shell.clone(),

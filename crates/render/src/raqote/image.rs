@@ -80,7 +80,7 @@ impl Image {
 
     pub fn data_mut(&mut self) -> &mut [u32] {
         &mut self.render_target.data
-    }   
+    }
 }
 
 impl From<(u32, u32, Vec<u32>)> for Image {

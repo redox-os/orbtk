@@ -6,7 +6,7 @@ widget!(
     /// **CSS element:** `image-widget`
     ImageWidget {
         /// Sets or shares the image property.
-        /// 
+        ///
         /// Set image property:
         /// * &str: `Image::create().image("path/to/image.png").build(xt)`
         /// * String: `Image::create().image(String::from()).build(xt)`
