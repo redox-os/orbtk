@@ -7,17 +7,15 @@ use crate::{
 
 use super::{Event, EventBox, EventHandler};
 
+#[derive(Event)]
 pub struct KeyDownEvent {
     pub event: KeyEvent,
 }
 
-impl Event for KeyDownEvent {}
-
+#[derive(Event)]
 pub struct KeyUpEvent {
     pub event: KeyEvent,
 }
-
-impl Event for KeyUpEvent {}
 
 pub type KeyHandler = dyn Fn(&mut StatesContext, KeyEvent) -> bool + 'static;
 

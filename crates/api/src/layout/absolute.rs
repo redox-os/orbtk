@@ -1,7 +1,4 @@
-use std::{
-    cell::RefCell,
-    collections::BTreeMap,
-};
+use std::{cell::RefCell, collections::BTreeMap};
 
 use dces::prelude::Entity;
 
@@ -33,8 +30,10 @@ impl Layout for AbsoluteLayout {
         let window = ecm.entity_store().root();
 
         if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", window) {
-            self.desired_size.borrow_mut().set_size(bounds.width(), bounds.height());
-        } 
+            self.desired_size
+                .borrow_mut()
+                .set_size(bounds.width(), bounds.height());
+        }
 
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];

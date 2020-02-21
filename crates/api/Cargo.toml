@@ -21,7 +21,8 @@ orbtk-css-engine = { path = "../css-engine", version = "0.3.1-alpha2" }
 orbtk-render = { path = "../render", version = "0.3.1-alpha2" }
 orbtk-shell = { path = "../shell", version = "0.3.1-alpha2" }
 orbtk-theme = { path = "../theme", version = "0.3.1-alpha2" }
-derive_more = "0.99.2"
+orbtk-proc-macros = { path = "../proc-macros", version = "0.3.1-alpha2" }
+derive_more = "0.99.3"
 
 [target.'cfg(all(not(target_os = "redox")))'.dependencies]
 raw-window-handle = "0.3.3"

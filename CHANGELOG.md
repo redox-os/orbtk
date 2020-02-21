@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.3.1 (OrbTk next) wip
 
+### 0.3.1-alpha2
+
+* ComboBox / ComboboxItem widget
+* Slider widget
+* Service registry for states
+* Settings service (serialize / deserialize data)
+* Direct access of states in callbacks
+
+### 0.3.1-alpha1
+
 * api crate: base api elements of OrbTk e.g. widget and application parts
 * css-engine crate: parse and read values from a css file
 * proc-macros crate: procedural helper macros

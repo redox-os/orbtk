@@ -2,14 +2,12 @@ use std::rc::Rc;
 
 use crate::prelude::*;
 
-#[derive(Clone)]
+#[derive(Clone, Event)]
 pub enum WindowEvent {
     Resize { width: f64, height: f64 },
     ActiveChanged(bool),
     None,
 }
-
-impl Event for WindowEvent {}
 
 pub type WindowHandlerFn = dyn Fn(&mut StatesContext, WindowEvent) -> bool + 'static;
 

@@ -47,3 +47,16 @@ pub fn derive_as_any(input: TokenStream) -> TokenStream {
 
     TokenStream::from(gen)
 }
+
+#[proc_macro_derive(Event)]
+pub fn derive_event(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+
+    let ident = &input.ident;
+
+    let gen = quote! {
+        impl Event for #ident {}
+    };
+
+    TokenStream::from(gen)
+}

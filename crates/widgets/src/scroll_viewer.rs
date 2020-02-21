@@ -43,7 +43,7 @@ widget!(
         /// Sets or shares the css selector property.
         selector: Selector,
 
-        /// Sets or shares the (wheel, scroll) delta property. 
+        /// Sets or shares the (wheel, scroll) delta property.
         delta: Point
     }
 );

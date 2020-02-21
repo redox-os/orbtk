@@ -122,8 +122,10 @@ widget!(
         selected_indices: SelectedIndices,
         counter: usize,
         list_count: usize,
+        combo_box_list_count: usize,
         list: List,
         selection_list: List,
+        combo_box_list: List,
         selection_list_count: usize,
         text_one: String16,
         text_two: String16,
@@ -155,7 +157,20 @@ impl Template for MainView {
                 "Item 9".to_string(),
                 "Item 10".to_string(),
             ])
+            .combo_box_list(vec![
+                "CB 1".to_string(),
+                "CB 2".to_string(),
+                "CB 3".to_string(),
+                "CB 4".to_string(),
+                "CB 5".to_string(),
+                "CB 6".to_string(),
+                "CB 7".to_string(),
+                "CB 8".to_string(),
+                "CB 9".to_string(),
+                "CB 10".to_string(),
+            ])
             .selection_list_count(10)
+            .combo_box_list_count(10)
             .child(
                 Grid::create()
                     .margin(8.0)
@@ -296,6 +311,8 @@ impl Template for MainView {
                             .rows(
                                 Rows::create()
                                     .row("auto")
+                                    .row(32.0)
+                                    .row(16.0)
                                     .row(192.0)
                                     .row("auto")
                                     .row(192.0)
@@ -320,13 +337,34 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
+                                ComboBox::create()
+                                    .items_builder(move |bc, index| {
+                                        let text = bc
+                                            .get_widget(id)
+                                            .get::<Vec<String>>("combo_box_list")[index]
+                                            .clone();
+                                        TextBlock::create()
+                                            .margin((0.0, 0.0, 0.0, 2.0))
+                                            .vertical_alignment("center")
+                                            .text(text)
+                                            .build(bc)
+                                    })
+                                    .selected_index(0)
+                                    .attach(Grid::column(0))
+                                    .attach(Grid::column_span(3))
+                                    .attach(Grid::row(1))
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .count(("combo_box_list_count", id))
+                                    .build(ctx),
+                            )
+                            .child(
                                 ItemsWidget::create()
                                     .selector(Selector::from("items-widget").id("items"))
                                     .padding((4.0, 4.0, 4.0, 2.0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
-                                    .attach(Grid::row(1))
-                                    .margin((0.0, 8.0, 0.0, 8.0))
+                                    .attach(Grid::row(3))
+                                    .margin((0.0, 0.0, 0.0, 8.0))
                                     .items_builder(move |bc, index| {
                                         let text = bc.get_widget(id).get::<Vec<String>>("list")
                                             [index]
@@ -350,7 +388,7 @@ impl Template for MainView {
                                     })
                                     .min_width(0.0)
                                     .attach(Grid::column(0))
-                                    .attach(Grid::row(2))
+                                    .attach(Grid::row(4))
                                     .build(ctx),
                             )
                             .child(
@@ -363,14 +401,14 @@ impl Template for MainView {
                                     })
                                     .min_width(0.0)
                                     .attach(Grid::column(2))
-                                    .attach(Grid::row(2))
+                                    .attach(Grid::row(4))
                                     .build(ctx),
                             )
                             .child(
                                 ListView::create()
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
-                                    .attach(Grid::row(3))
+                                    .attach(Grid::row(5))
                                     .selected_indices(id)
                                     .margin((0.0, 16.0, 0.0, 8.0))
                                     .items_builder(move |bc, index| {
@@ -394,7 +432,7 @@ impl Template for MainView {
                                     .max_width(120.0)
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
-                                    .attach(Grid::row(4))
+                                    .attach(Grid::row(6))
                                     .text("Selected:")
                                     .build(ctx),
                             )
