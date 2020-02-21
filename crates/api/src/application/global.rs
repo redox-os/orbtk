@@ -79,7 +79,7 @@ mod tests {
         assert_eq!(state.is_key_down(Key::ShiftL), true);
         state.set_key_state(Key::ShiftL, false);
         assert_eq!(state.is_key_down(Key::ShiftL), false);
-        // Set quite a few in a row
+        // Set quit a few in a row
         state.set_key_state(Key::ShiftL, true);
         state.set_key_state(Key::ShiftR, true);
         state.set_key_state(Key::Space, true);

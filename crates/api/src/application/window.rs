@@ -102,7 +102,7 @@ impl shell::WindowAdapter for WindowAdapter {
         }
     }
 
-    fn quite_event(&mut self) {
+    fn quit_event(&mut self) {
         self.event_queue
             .register_event(SystemEvent::Quit, self.root);
     }

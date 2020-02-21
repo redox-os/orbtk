@@ -28,8 +28,8 @@ pub trait WindowAdapter {
     /// Is called after the state of a keyboard key is changed.
     fn key_event(&mut self, _event: KeyEvent) {}
 
-    /// Is called after the quite event of the window is called.
-    fn quite_event(&mut self) {}
+    /// Is called after the quit event of the window is called.
+    fn quit_event(&mut self) {}
 
     /// Gets the current mouse position.
     fn mouse_position(&self) -> Point;
