@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Sent requests to window shell
 * Layout fixes and stack layout example
 * Many web fixes
+* State cleanup method
 
 ### 0.3.1-alpha1
 
