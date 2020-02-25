@@ -277,7 +277,7 @@ impl<'a> WidgetContainer<'a> {
         }
 
         if self.has::<f64>("border_radius") {
-            if let Some(radius) = self.theme.float("border-radius", &selector) {
+            if let Some(radius) = self.theme.uint("border-radius", &selector) {
                 self.set::<f64>("border_radius", f64::from(radius));
             }
         }
@@ -319,7 +319,33 @@ impl<'a> WidgetContainer<'a> {
             self.set::<Thickness>("padding", padding);
         }
 
-        // todo padding, icon_margin
+        if let Some(mut constraint) = self.try_clone::<Constraint>("constraint") {
+            if let Some(width) = self.theme.uint("width", &selector) {
+                constraint.set_width(width as f64);
+            }
+
+            if let Some(height) = self.theme.uint("height", &selector) {
+                constraint.set_height(height as f64);
+            }
+
+            if let Some(min_width) = self.theme.uint("min-width", &selector) {
+                constraint.set_min_width(min_width as f64);
+            }
+
+            if let Some(min_height) = self.theme.uint("min-height", &selector) {
+                constraint.set_min_height(min_height as f64);
+            }
+
+            if let Some(max_width) = self.theme.uint("max-width", &selector) {
+                constraint.set_max_width(max_width as f64);
+            }
+
+            if let Some(max_height) = self.theme.uint("max-height", &selector) {
+                constraint.set_max_height(max_height as f64);
+            }
+
+            self.set::<Constraint>("constraint", constraint);
+        }
 
         self.get_mut::<Selector>("selector").set_dirty(true);
     }

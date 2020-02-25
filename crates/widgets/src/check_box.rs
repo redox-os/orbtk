@@ -91,6 +91,7 @@ impl Template for CheckBox {
                             .child(
                                 Stack::create()
                                     .orientation("horizontal")
+                                    .spacing(8.0)
                                     .child(
                                         Container::create()
                                             .size(24.0, 24.0)
@@ -116,7 +117,6 @@ impl Template for CheckBox {
                                     .child(
                                         TextBlock::create()
                                             .vertical_alignment("center")
-                                            .margin((8.0, 0.0, 0.0, 0.0))
                                             .foreground(id)
                                             .text(id)
                                             .font_size(id)

@@ -185,8 +185,8 @@ impl Template for Slider {
             .minimum(0.0)
             .maximum(100.0)
             .value(0.0)
-            .height(32.0)
-            .border_radius(4.0)
+            .height(24.0)
+            .border_radius(2.0)
             .child(
                 Grid::create()
                     .selector(Selector::default().id(TRACK))
@@ -196,7 +196,7 @@ impl Template for Slider {
                             .border_radius(id)
                             .background(id)
                             .vertical_alignment("center")
-                            .height(8.0)
+                            .height(2.0)
                             .build(ctx),
                     )
                     .child(
@@ -204,9 +204,9 @@ impl Template for Slider {
                             .selector(Selector::from("thumb").id(THUMB))
                             .vertical_alignment("center")
                             .horizontal_alignment("start")
-                            .max_width(28.0)
-                            .max_height(28.0)
-                            .border_radius(16.0)
+                            .max_width(24.0)
+                            .max_height(24.0)
+                            .border_radius(12.0)
                             .build(ctx),
                     )
                     .build(ctx),
