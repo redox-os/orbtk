@@ -295,17 +295,14 @@ widget!(
         focused: bool,
 
         /// Sets or shares ta value that describes if the TextBox should lost focus on activation (enter).
-        lost_focus_on_activation: bool,
-
-        /// Sets or shares the css selector property.
-        selector: Selector
+        lost_focus_on_activation: bool
     }
 );
 
 impl Template for TextBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("TextBox")
-            .selector("text-box")
+            .element("text-box")
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
@@ -341,13 +338,13 @@ impl Template for TextBox {
                                 Grid::create()
                                     .child(
                                         ScrollViewer::create()
-                                            .selector(Selector::default().id("scroll_viewer"))
+                                            .id("scroll_viewer")
                                             .scroll_offset(id)
                                             .scroll_viewer_mode(("custom", "disabled"))
                                             .delta(id)
                                             .child(
                                                 TextBlock::create()
-                                                    .selector(Selector::default().id("text_block"))
+                                                    .id("text_block")
                                                     .vertical_alignment("center")
                                                     .foreground(id)
                                                     .text(id)
@@ -360,7 +357,8 @@ impl Template for TextBox {
                                     )
                                     .child(
                                         Cursor::create()
-                                            .selector(Selector::from("cursor").id("cursor"))
+                                            .element("cursor")
+                                            .id("cursor")
                                             .margin(0.0)
                                             .horizontal_alignment("start")
                                             .text(id)

@@ -11,16 +11,13 @@ widget!(
         /// * &str: `Image::create().image("path/to/image.png").build(xt)`
         /// * String: `Image::create().image(String::from()).build(xt)`
         /// * (width: u32, height: u32, data: Vec<u32>): `Image::create().image((width, height, vec![0; width * height]));`
-        image: Image,
-
-        /// Sets or shares the css selector property.
-        selector: Selector
+        image: Image
     }
 );
 
 impl Template for ImageWidget {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        self.name("ImageWidget").selector("image-widget").image("")
+        self.name("ImageWidget").element("image-widget").image("")
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

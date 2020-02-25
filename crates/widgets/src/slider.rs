@@ -171,17 +171,14 @@ widget!(
         border_width: Thickness,
 
         /// Sets or shares the border brush property.
-        border_brush: Brush,
-
-        /// Sets or shares the css selector property.
-        selector: Selector
+        border_brush: Brush
     }
 );
 
 impl Template for Slider {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Slider")
-            .selector("slider")
+            .element("slider")
             .minimum(0.0)
             .maximum(100.0)
             .value(0.0)
@@ -189,7 +186,7 @@ impl Template for Slider {
             .border_radius(2.0)
             .child(
                 Grid::create()
-                    .selector(Selector::default().id(TRACK))
+                    .id(TRACK)
                     .margin((8.0, 0.0, 8.0, 0.0))
                     .child(
                         Container::create()
@@ -201,7 +198,8 @@ impl Template for Slider {
                     )
                     .child(
                         Button::create()
-                            .selector(Selector::from("thumb").id(THUMB))
+                            .element("thumb")
+                            .id(THUMB)
                             .vertical_alignment("center")
                             .horizontal_alignment("start")
                             .max_width(24.0)

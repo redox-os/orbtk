@@ -28,12 +28,10 @@ impl State for FocusBehaviorState {
 
         ctx.widget().set("focused", true);
 
-        let element = ctx.widget().clone::<Selector>("selector").element.unwrap();
+        let target: Entity = (*ctx.widget().get::<u32>("target")).into();
 
-        if let Some(parent) = ctx.parent_entity_by_element(&*element) {
-            ctx.get_widget(parent).update_theme_by_state(false);
-            ctx.window().get_mut::<Global>("global").focused_widget = Some(parent);
-        }
+        ctx.get_widget(target).update_theme_by_state(false);
+        ctx.window().get_mut::<Global>("global").focused_widget = Some(target);
 
         self.request_focus.set(false);
     }
@@ -44,8 +42,8 @@ widget!(
     ///
     /// **CSS element:** `check-box`
     FocusBehavior<FocusBehaviorState>: MouseHandler {
-        /// Sets or shares the css selector property.
-        selector: Selector,
+        /// Sets or shares the target of the behavior.
+        target: u32,
 
         /// Sets or shares the focused property.
         focused: bool
@@ -55,7 +53,6 @@ widget!(
 impl Template for FocusBehavior {
     fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("FocusBehavior")
-            .selector("")
             .focused(true)
             .on_mouse_down(move |states, _| {
                 states.get::<FocusBehaviorState>(id).request_focus();

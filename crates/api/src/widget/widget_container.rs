@@ -190,6 +190,8 @@ impl<'a> WidgetContainer<'a> {
         if let Some(selector) = self.try_clone::<Selector>("selector") {
             let mut update = false;
 
+            // println!("{:?}", selector);
+
             if let Some(focus) = self.try_clone::<bool>("focused") {
                 if focus && !selector.pseudo_classes.contains("focus") {
                     add_selector_to_widget("focus", self);
@@ -345,6 +347,12 @@ impl<'a> WidgetContainer<'a> {
             }
 
             self.set::<Constraint>("constraint", constraint);
+        }
+
+        if self.has::<f64>("spacing") {
+            if let Some(spacing) = self.theme.uint("spacing", &selector) {
+                self.set::<f64>("spacing", spacing.into());
+            }
         }
 
         self.get_mut::<Selector>("selector").set_dirty(true);

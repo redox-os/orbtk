@@ -67,8 +67,6 @@ widget!(
     ///
     /// **CSS element:** `scroll-indicator`
     ScrollIndicator<ScrollIndicatorState> {
-        /// Sets or shares the css selector property.
-        selector: Selector,
 
         /// Sets or shares the scroll offset property.
         scroll_offset: Point,
@@ -84,7 +82,7 @@ widget!(
 impl Template for ScrollIndicator {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ScrollIndicator")
-            .selector("scroll-indicator")
+            .element("scroll-indicator")
             .vertical_alignment("stretch")
             .horizontal_alignment("stretch")
             .padding(0.0)
@@ -92,7 +90,8 @@ impl Template for ScrollIndicator {
                 Grid::create()
                     .child(
                         ScrollBar::create()
-                            .selector(Selector::from("scroll-bar").id("vertical-scroll-bar"))
+                            .element("scroll-bar")
+                            .id("vertical-scroll-bar")
                             .min_height(8.0)
                             .margin((0.0, 0.0, 0.0, 6.0))
                             .horizontal_alignment("end")
@@ -101,7 +100,8 @@ impl Template for ScrollIndicator {
                     )
                     .child(
                         ScrollBar::create()
-                            .selector(Selector::from("scroll-bar").id("horizontal-scroll-bar"))
+                            .element("scroll-bar")
+                            .id("horizontal-scroll-bar")
                             .min_width(8.0)
                             .margin((0.0, 0.0, 6.0, 0.0))
                             .height(4.0)

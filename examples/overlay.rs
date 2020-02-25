@@ -25,7 +25,7 @@ impl Template for MainView {
                 .child(
                     TextBlock::create()
                         .text("MainView")
-                        .selector("h1")
+                        .element("h1")
                         .vertical_alignment("center")
                         .horizontal_alignment("center")
                         .build(ctx),

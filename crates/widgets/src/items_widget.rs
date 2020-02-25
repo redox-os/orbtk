@@ -58,10 +58,7 @@ widget!(
         count: usize,
 
         /// Sets or shares a value to request an update.
-        request_update: bool,
-
-        /// Sets or shares the css selector property.
-        selector: Selector
+        request_update: bool
     }
 );
 
@@ -78,7 +75,7 @@ impl ItemsWidget {
 impl Template for ItemsWidget {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ItemsWidget")
-            .selector("items-widget")
+            .element("items-widget")
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
             .border_width(1.0)
@@ -94,7 +91,7 @@ impl Template for ItemsWidget {
                     .padding(id)
                     .child(
                         Stack::create()
-                            .selector(Selector::default().id("items_panel"))
+                            .id("items_panel")
                             .orientation(id)
                             .build(ctx),
                     )

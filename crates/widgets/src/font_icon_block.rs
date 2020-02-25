@@ -15,17 +15,14 @@ widget!(
         icon_size: f64,
 
         /// Sets or shares the icon font property.
-        icon_font: String,
-
-        /// Sets or shares the css selector property.
-        selector: Selector
+        icon_font: String
     }
 );
 
 impl Template for FontIconBlock {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("FontIconBlock")
-            .selector("font-icon-block")
+            .element("font-icon-block")
             .icon("")
             .icon_brush(colors::LINK_WATER_COLOR)
             .icon_size(fonts::ICON_FONT_SIZE_12)

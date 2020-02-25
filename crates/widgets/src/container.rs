@@ -16,10 +16,7 @@ widget!(
         border_brush: Brush,
 
         /// Sets or shares the padding property.
-        padding: Thickness,
-
-        /// Sets or shares the css selector property.
-        selector: Selector
+        padding: Thickness
     }
 );
 

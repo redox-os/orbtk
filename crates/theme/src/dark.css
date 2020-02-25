@@ -38,18 +38,24 @@ grid {
 }
 
 switch {
-    border-radius: 2;
-    border-width: 1;
-    border-color: #adb3b8;
+    width: 36;
+    height: 32;
+}
+
+switch_track {
+    height: 14;
+    border-radius: 7;
     background: #6C7A90;
 }
 
-switch-toggle {
-    border-radius: 8;
+switch_toggle {
+    width: 20;
+    height: 20;
+    border-radius: 10;
     background: white;
 }
 
-switch-toggle:selected {
+switch_toggle:selected {
     background: #F8DE4C;
 }
 
@@ -58,6 +64,10 @@ button, toggle-button {
     background: #647b91;
     border-radius: 4;
     font-family: "Roboto Medium";
+}
+
+.single_content {
+    spacing: 0;
 }
 
 button.primary {
@@ -91,7 +101,7 @@ combo_box {
     background: #3b434a;
     border-color: #647b91;
     border-width: 1;
-    border-radius: 2;
+    border-radius: 3;
     padding: 6;
 }
 
@@ -121,7 +131,7 @@ text-box {
     background: #3b434a;
     border-color: #647b91;
     border-width: 1;
-    border-radius: 2;
+    border-radius: 3;
     padding: 6;
 }
 
@@ -164,7 +174,6 @@ debug-border {
     border-color: blue;
     background: transparent;
 }
-
 
 items-widget {
     background: transparent;

@@ -9,10 +9,7 @@ widget!(
         background: Brush,
 
         /// Sets or shares the border radius property.
-        border_radius: f64,
-
-        /// Sets or shares the css selector property.
-        selector: Selector
+        border_radius: f64
     }
 );
 
@@ -22,7 +19,7 @@ impl Template for ScrollBar {
             .width(4.0)
             .border_radius(2.0)
             .background("#647b91")
-            .selector("scroll-bar")
+            .element("scroll-bar")
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

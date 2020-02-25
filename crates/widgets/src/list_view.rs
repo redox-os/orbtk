@@ -191,9 +191,6 @@ widget!(
         /// Sets or shares the padding property.
         padding: Thickness,
 
-        /// Sets or shares the css selector property.
-        selector: Selector,
-
         /// Sets or shares the pressed property.
         pressed: bool,
 
@@ -209,7 +206,7 @@ impl Template for ListViewItem {
             .height(24.0)
             .selected(false)
             .pressed(false)
-            .selector("list-view-item")
+            .element("list-view-item")
             .padding(0.0)
             .background("transparent")
             .border_radius(0.0)
@@ -259,9 +256,6 @@ widget!(
         /// Sets or shared the count.
         count: usize,
 
-        /// Sets or shares the css selector property.
-        selector: Selector,
-
         /// Sets or shares the selection mode property.
         selection_mode: SelectionMode,
 
@@ -291,7 +285,7 @@ impl Template for ListView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let items_panel = Stack::create()
             .vertical_alignment("start")
-            .selector(Selector::default().id(ITEMS_PANEL))
+            .id(ITEMS_PANEL)
             .orientation(id)
             .build(ctx);
 
@@ -302,7 +296,8 @@ impl Template for ListView {
             .build(ctx);
 
         self.name("ListView")
-            .selector(Selector::from("list-view").id(LIST_VIEW))
+            .element("list-view")
+            .id(LIST_VIEW)
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
             .border_width(1.0)

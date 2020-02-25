@@ -23,14 +23,9 @@ impl State for SelectionBehaviorState {
         let selected = *ctx.widget().get::<bool>("selected");
         ctx.widget().set("selected", !selected);
 
-        let parent: Entity = ctx.widget().clone::<u32>("parent").into();
-        ctx.push_event_strategy_by_entity(ChangedEvent(parent), parent, EventStrategy::Direct);
-
-        let element = ctx.widget().clone::<Selector>("selector").element.unwrap();
-
-        if let Some(parent) = ctx.parent_entity_by_element(&*element) {
-            ctx.get_widget(parent).update_theme_by_state(false);
-        }
+        let target: Entity = (*ctx.widget().get::<u32>("target")).into();
+        ctx.push_event_strategy_by_entity(ChangedEvent(target), target, EventStrategy::Direct);
+        ctx.get_widget(target).update_theme_by_state(false);
     }
 }
 
@@ -39,8 +34,8 @@ widget!(
     ///
     /// **CSS element:** `check-box`
     SelectionBehavior<SelectionBehaviorState>: MouseHandler {
-        /// Sets or shares the css selector property.
-        selector: Selector,
+        /// Sets or shares the target of the behavior.
+        target: u32,
 
         /// Sets or shares the selected property.
         selected: bool,
@@ -53,8 +48,6 @@ widget!(
 impl Template for SelectionBehavior {
     fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("SelectionBehavior")
-            .parent(id.0)
-            .selector("")
             .selected(true)
             .on_click(move |states, _| {
                 states

@@ -10,7 +10,7 @@ impl Template for MainView {
                     TextBlock::create()
                         .margin((0.0, 0.0, 0.0, 8.0))
                         .text("Stack vertical")
-                        .selector("h1")
+                        .element("h1")
                         .build(ctx),
                 )
                 .child(
@@ -46,7 +46,7 @@ impl Template for MainView {
                     TextBlock::create()
                         .margin((0.0, 0.0, 0.0, 8.0))
                         .text("Stack horizontal")
-                        .selector("h1")
+                        .element("h1")
                         .build(ctx),
                 )
                 .child(

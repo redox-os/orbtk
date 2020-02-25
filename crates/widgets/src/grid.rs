@@ -15,10 +15,7 @@ widget!(
         rows: Rows,
 
         /// Sets or shares the border radius property.
-        border_radius: f64,
-
-        /// Sets or shares the css selector property.
-        selector: Selector
+        border_radius: f64
 
         attached_properties: {
             /// Attach a colum position to a widget.
@@ -39,7 +36,7 @@ widget!(
 impl Template for Grid {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Grid")
-            .selector("grid")
+            .element("grid")
             .border_radius(0.0)
             .background("transparent")
             .rows(Rows::default())

@@ -1,7 +1,7 @@
 pub use std::{
     any::{Any, TypeId},
     cell::RefCell,
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     fmt::Debug,
     rc::Rc,
 };
@@ -9,6 +9,7 @@ pub use std::{
 use dces::prelude::*;
 
 use crate::{
+    css_engine::Selector,
     event::*,
     layout::{AbsoluteLayout, Layout},
     properties::*,

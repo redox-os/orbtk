@@ -18,10 +18,7 @@ widget!(
         font_size: f64,
 
         /// Sets or shares the font property.
-        font: String,
-
-        /// Sets or shares the css selector property.
-        selector: Selector
+        font: String
     }
 );
 

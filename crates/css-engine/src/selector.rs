@@ -178,3 +178,14 @@ impl From<&str> for Selector {
         Selector::new().with(s.to_string())
     }
 }
+
+impl From<&Selector> for Selector {
+    fn from(s: &Selector) -> Selector {
+        let mut selector = Selector::default();
+        selector.element = s.element.clone();
+        selector.id = s.id.clone();
+        selector.classes = s.classes.clone();
+        selector.pseudo_classes = s.pseudo_classes.clone();
+        selector
+    }
+}

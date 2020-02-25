@@ -45,18 +45,18 @@ widget!(
         /// Sets or shares the icon font property.
         icon_font: String,
 
-        /// Sets or shares the css selector property.
-        selector: Selector,
-
         /// Sets or shares the pressed property.
-        pressed: bool
+        pressed: bool,
+
+        /// Sets or shares the spacing between icon and text.
+        spacing: f64
     }
 );
 
 impl Template for Button {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Button")
-            .selector("button")
+            .element("button")
             .height(36.0)
             .min_width(64.0)
             .background(colors::LYNCH_COLOR)
@@ -73,11 +73,12 @@ impl Template for Button {
             .icon_size(fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
+            .spacing(8.0)
             .child(
                 MouseBehavior::create()
                     .pressed(id)
                     .enabled(id)
-                    .selector(id)
+                    .target(id.0)
                     .child(
                         Container::create()
                             .background(id)
@@ -89,7 +90,7 @@ impl Template for Button {
                             .child(
                                 Stack::create()
                                     .orientation("horizontal")
-                                    .spacing(8.0)
+                                    .spacing(id)
                                     .horizontal_alignment("center")
                                     .child(
                                         FontIconBlock::create()
