@@ -89,12 +89,7 @@ impl Template for ItemsWidget {
                     .border_width(id)
                     .border_brush(id)
                     .padding(id)
-                    .child(
-                        Stack::create()
-                            .id("items_panel")
-                            .orientation(id)
-                            .build(ctx),
-                    )
+                    .child(Stack::create().id("items_panel").orientation(id).build(ctx))
                     .build(ctx),
             )
     }

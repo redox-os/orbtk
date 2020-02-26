@@ -65,8 +65,14 @@ impl MainViewState {
             }
         }
 
-        ctx.widget()
-            .set("text", String16::from(format!("{:.9}", result)));
+        if result % 1.0 == 0.0 {
+            ctx.widget()
+                .set("text", String16::from(format!("{}", result)));
+        } else {
+            ctx.widget()
+                .set("text", String16::from(format!("{:.8}", result)));
+        }
+
         self.left_side = Some(result);
         self.right_side = None;
     }
@@ -133,6 +139,7 @@ fn generate_digit_button(
     row: usize,
 ) -> Entity {
     let mut button = Button::create()
+        .class("single_content")
         .min_size(48.0, 48.0)
         .text(sight.to_string())
         .on_click(move |states, _| -> bool {
@@ -160,6 +167,7 @@ fn generate_operation_button(
     row: usize,
 ) -> Entity {
     let mut button = Button::create()
+        .class("single_content")
         .min_size(48.0, 48.0)
         .text(sight.to_string())
         .class("square")

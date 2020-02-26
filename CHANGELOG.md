@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Layout fixes and stack layout example
 * Many web fixes
 * State cleanup method
+* Refactor setting of styling selectors
 
 ### 0.3.1-alpha1
 

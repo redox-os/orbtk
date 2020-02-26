@@ -77,7 +77,7 @@ impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MainView").child(
             Grid::create()
-                .rows(Rows::create().row(32.0).row(4.0).row("auto").build())
+                .rows(Rows::create().row(36.0).row(4.0).row("auto").build())
                 .columns(
                     Columns::create()
                         .column(160.0)
@@ -89,9 +89,15 @@ impl Template for MainView {
                         .column("Auto")
                         .build(),
                 )
-                .child(TextBox::create().text(id).build(ctx))
+                .child(
+                    TextBox::create()
+                        .vertical_alignment("center")
+                        .text(id)
+                        .build(ctx),
+                )
                 .child(
                     Button::create()
+                        .class("single_content")
                         .attach(Grid::row(0))
                         .attach(Grid::column(2))
                         .on_click(move |states, _| {
@@ -103,6 +109,7 @@ impl Template for MainView {
                 )
                 .child(
                     Button::create()
+                        .class("single_content")
                         .attach(Grid::row(0))
                         .attach(Grid::column(4))
                         .on_click(move |states, _| {
@@ -114,6 +121,7 @@ impl Template for MainView {
                 )
                 .child(
                     Button::create()
+                        .class("single_content")
                         .attach(Grid::row(0))
                         .attach(Grid::column(6))
                         .on_click(move |states, _| {

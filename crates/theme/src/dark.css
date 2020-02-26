@@ -127,6 +127,7 @@ combo_box_item:selected, combo_box_item:active {
 }
 
 text-box {
+    height: 32;
     color: #ccdeed;
     background: #3b434a;
     border-color: #647b91;

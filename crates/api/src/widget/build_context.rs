@@ -16,8 +16,7 @@ pub type WidgetBuildContext = Option<Box<dyn Fn(&mut BuildContext, usize) -> Ent
 
 /// Used to create an entity for a widget with its properties as components.
 #[derive(Constructor)]
-pub struct 
-BuildContext<'a> {
+pub struct BuildContext<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
     layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
@@ -43,7 +42,7 @@ impl<'a> BuildContext<'a> {
     }
 
     /// Appends a child to a parent.
-    pub fn append_child(&mut self, parent: Entity, child: Entity) {   
+    pub fn append_child(&mut self, parent: Entity, child: Entity) {
         self.ecm
             .entity_store_mut()
             .append_child(parent, child)
