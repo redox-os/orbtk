@@ -4,7 +4,7 @@ use crate::prelude::*;
 #[derive(Default, AsAny)]
 pub struct SelectionBehaviorState {
     toggle_selection: bool,
-    selected: bool
+    selected: bool,
 }
 
 impl SelectionBehaviorState {

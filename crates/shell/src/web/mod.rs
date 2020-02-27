@@ -354,6 +354,8 @@ where
 {
     title: String,
 
+    borderless: bool,
+
     resizeable: bool,
 
     bounds: Rectangle,
@@ -370,6 +372,7 @@ where
         WindowBuilder {
             adapter,
             title: String::default(),
+            borderless: false,
             resizeable: false,
             bounds: Rectangle::default(),
         }
@@ -378,6 +381,12 @@ where
     /// Sets the title.
     pub fn title(mut self, title: impl Into<String>) -> Self {
         self.title = title.into();
+        self
+    }
+
+    /// Sets borderless.
+    pub fn borderless(mut self, borderless: bool) -> Self {
+        self.borderless = borderless;
         self
     }
 

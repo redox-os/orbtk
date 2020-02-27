@@ -392,6 +392,8 @@ where
 
     resizeable: bool,
 
+    borderless: bool,
+
     bounds: Rectangle,
 
     adapter: A,
@@ -406,6 +408,7 @@ where
         WindowBuilder {
             adapter,
             title: String::default(),
+            borderless: false,
             resizeable: false,
             bounds: Rectangle::default(),
         }
@@ -414,6 +417,12 @@ where
     /// Sets the title.
     pub fn title(mut self, title: impl Into<String>) -> Self {
         self.title = title.into();
+        self
+    }
+
+    /// Sets borderless.
+    pub fn borderless(mut self, borderless: bool) -> Self {
+        self.borderless = borderless;
         self
     }
 
@@ -433,6 +442,7 @@ where
     pub fn build(self) -> WindowShell<A> {
         let window_options = minifb::WindowOptions {
             resize: self.resizeable,
+            borderless: self.borderless,
             scale_mode: minifb::ScaleMode::UpperLeft,
             ..Default::default()
         };

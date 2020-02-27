@@ -99,6 +99,11 @@ impl Application {
             .get::<String>("title", window)
             .unwrap()
             .clone();
+        let borderless = *world
+            .entity_component_manager()
+            .component_store()
+            .get::<bool>("borderless", window)
+            .unwrap();
         let resizeable = *world
             .entity_component_manager()
             .component_store()
@@ -148,6 +153,7 @@ impl Application {
                 constraint.width(),
                 constraint.height(),
             )))
+            .borderless(borderless)
             .resizeable(resizeable)
             .build(),
         ));

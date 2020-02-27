@@ -67,6 +67,9 @@ widget!(
         /// Sets or shares the resizeable property.
         resizeable: bool,
 
+        /// Sets or shares the flag if the window is borderless.
+        borderless: bool,
+
         /// Sets or shares a value that describes if the current window is active.
         active: bool,
 
