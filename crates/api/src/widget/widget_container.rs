@@ -29,6 +29,11 @@ impl<'a> WidgetContainer<'a> {
         }
     }
 
+    /// Gets the entity of the widget.
+    pub fn entity(&self) -> Entity {
+        self.current_node
+    }
+
     /// Gets the property.
     ///
     /// # Panics

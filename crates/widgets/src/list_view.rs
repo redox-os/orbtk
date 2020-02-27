@@ -115,6 +115,8 @@ impl State for ListViewItemState {
         let entity = ctx.entity;
         let index = ctx.index_as_child(entity).unwrap();
 
+        let mut parent_entity = None;
+
         if let Some(parent) = &mut ctx.try_parent_from_id(LIST_VIEW) {
             let selection_mode = *parent.get::<SelectionMode>("selection_mode");
             // deselect item
@@ -158,6 +160,16 @@ impl State for ListViewItemState {
                 .get_mut::<SelectedIndices>("selected_indices")
                 .0
                 .insert(index);
+
+            parent_entity = Some(parent.entity());
+        }
+        
+        if let Some(parent) = parent_entity {
+            ctx.push_event_strategy_by_entity(
+                ChangedEvent(parent),
+                parent,
+                EventStrategy::Direct,
+            );
         }
     }
 }
@@ -195,7 +207,10 @@ widget!(
         pressed: bool,
 
         /// Sets or shares the selected property.
-        selected: bool
+        selected: bool,
+
+        /// Sets or shares the parent id.
+        parent: u32
     }
 );
 
@@ -234,7 +249,7 @@ widget!(
     /// The `ListView` is an items drawer widget with selectable items.
     ///
     /// **CSS element:** `items-widget`
-    ListView<ListViewState> {
+    ListView<ListViewState> : ChangedHandler {
         /// Sets or shares the background property.
         background: Brush,
 
