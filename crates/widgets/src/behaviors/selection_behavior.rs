@@ -4,6 +4,7 @@ use crate::prelude::*;
 #[derive(Default, AsAny)]
 pub struct SelectionBehaviorState {
     toggle_selection: bool,
+    selected: bool
 }
 
 impl SelectionBehaviorState {
@@ -13,15 +14,23 @@ impl SelectionBehaviorState {
 }
 
 impl State for SelectionBehaviorState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+        self.selected = *ctx.widget().get::<bool>("selected");
+    }
+
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        if !ctx.widget().get::<bool>("enabled") || !self.toggle_selection {
+        let selected = *ctx.widget().get::<bool>("selected");
+
+        if self.selected == selected && !self.toggle_selection {
             return;
         }
 
-        self.toggle_selection = false;
+        if *ctx.widget().get::<bool>("enabled") && self.toggle_selection {
+            ctx.widget().set("selected", !selected);
+        }
 
-        let selected = *ctx.widget().get::<bool>("selected");
-        ctx.widget().set("selected", !selected);
+        self.toggle_selection = false;
+        self.selected = *ctx.widget().get::<bool>("selected");
 
         let target: Entity = (*ctx.widget().get::<u32>("target")).into();
         ctx.push_event_strategy_by_entity(ChangedEvent(target), target, EventStrategy::Direct);
