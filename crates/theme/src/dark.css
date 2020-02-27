@@ -3,7 +3,7 @@
     /* background: #F5F6F7; */
     background: #3b434a;
     font-size: 16;
-    font-family: "Roboto Regular";
+    font-family: "Roboto Medium";
     icon-size: 16;
     icon-family: "Material Icons";
 }
@@ -15,10 +15,11 @@ window {
 .body {
     color: #dfebf5;
     font-size: 16;
-    font-family: "Roboto Regular";
+    font-family: "Roboto Medium";
 }
 
 check-box {
+    icon-size: 18;
     background: transparent;
     border-radius: 2;
     border-width: 1;
@@ -27,9 +28,9 @@ check-box {
 }
 
 check-box:selected {
-    background: #6C7A90;
-    border-color: #adb3b8;
-    icon-color: white;
+    background: #efd035;
+    border-color: #efd035;
+    icon-color: #3b434a;
 }
 
 grid {
@@ -37,25 +38,36 @@ grid {
 }
 
 switch {
-    border-radius: 2;
-    border-width: 1;
-    border-color: #adb3b8;
+    width: 36;
+    height: 32;
+}
+
+switch_track {
+    height: 14;
+    border-radius: 7;
     background: #6C7A90;
 }
 
-switch-toggle {
-    border-radius: 8;
+switch_toggle {
+    width: 20;
+    height: 20;
+    border-radius: 10;
     background: white;
 }
 
-switch-toggle:selected {
+switch_toggle:selected {
     background: #F8DE4C;
 }
 
 button, toggle-button {
+    height: 36;
     background: #647b91;
-    border-radius: 2;
+    border-radius: 4;
     font-family: "Roboto Medium";
+}
+
+.single_content {
+    spacing: 0;
 }
 
 button.primary {
@@ -89,7 +101,7 @@ combo_box {
     background: #3b434a;
     border-color: #647b91;
     border-width: 1;
-    border-radius: 2;
+    border-radius: 3;
     padding: 6;
 }
 
@@ -115,11 +127,12 @@ combo_box_item:selected, combo_box_item:active {
 }
 
 text-box {
+    height: 32;
     color: #ccdeed;
     background: #3b434a;
     border-color: #647b91;
     border-width: 1;
-    border-radius: 2;
+    border-radius: 3;
     padding: 6;
 }
 
@@ -163,7 +176,6 @@ debug-border {
     background: transparent;
 }
 
-
 items-widget {
     background: transparent;
     border-color: #647b91;
@@ -202,16 +214,18 @@ blub {
 }
 
 slider {
-    border-radius: 4;
-    background: black;
+    height: 24;
+    border-radius: 2;
+    background: #212121;
 }
 
 thumb {
-    border-radius: 16;
-    border-color: black;
+    max-width: 24;
+    max-height: 24;
+    border-radius: 12;
     background: #647b91;
 }
 
 thumb:active {
-    background: #f8de4c;
+    background: #e1bc21;
 }

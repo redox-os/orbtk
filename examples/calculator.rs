@@ -65,8 +65,14 @@ impl MainViewState {
             }
         }
 
-        ctx.widget()
-            .set("text", String16::from(format!("{:.9}", result)));
+        if result % 1.0 == 0.0 {
+            ctx.widget()
+                .set("text", String16::from(format!("{}", result)));
+        } else {
+            ctx.widget()
+                .set("text", String16::from(format!("{:.8}", result)));
+        }
+
         self.left_side = Some(result);
         self.right_side = None;
     }
@@ -123,16 +129,6 @@ impl State for MainViewState {
     }
 }
 
-fn get_button_selector(primary: bool) -> Selector {
-    let selector = Selector::from("button");
-
-    if primary {
-        selector.class("primary")
-    } else {
-        selector
-    }
-}
-
 fn generate_digit_button(
     ctx: &mut BuildContext,
     id: Entity,
@@ -142,18 +138,23 @@ fn generate_digit_button(
     column_span: usize,
     row: usize,
 ) -> Entity {
-    Button::create()
+    let mut button = Button::create()
+        .class("single_content")
         .min_size(48.0, 48.0)
         .text(sight.to_string())
-        .selector(get_button_selector(primary))
         .on_click(move |states, _| -> bool {
             state(id, states).action(Action::Digit(sight));
             true
         })
         .attach(Grid::column(column))
         .attach(Grid::row(row))
-        .attach(Grid::column_span(column_span))
-        .build(ctx)
+        .attach(Grid::column_span(column_span));
+
+    if primary {
+        button = button.class("primary");
+    }
+
+    button.build(ctx)
 }
 
 fn generate_operation_button(
@@ -165,18 +166,24 @@ fn generate_operation_button(
     column_span: usize,
     row: usize,
 ) -> Entity {
-    Button::create()
+    let mut button = Button::create()
+        .class("single_content")
         .min_size(48.0, 48.0)
         .text(sight.to_string())
-        .selector(get_button_selector(primary).class("square"))
+        .class("square")
         .on_click(move |states, _| -> bool {
             state(id, states).action(Action::Operator(sight));
             true
         })
         .attach(Grid::column(column))
         .attach(Grid::column_span(column_span))
-        .attach(Grid::row(row))
-        .build(ctx)
+        .attach(Grid::row(row));
+
+    if primary {
+        button = button.class("primary");
+    }
+
+    button.build(ctx)
 }
 
 widget!(MainView<MainViewState> {
@@ -195,7 +202,8 @@ impl Template for MainView {
                     .child(
                         Container::create()
                             .padding(8.0)
-                            .selector(Selector::from("container").class("header"))
+                            .element("container")
+                            .class("header")
                             .attach(Grid::row(0))
                             .child(
                                 Grid::create()
@@ -207,9 +215,8 @@ impl Template for MainView {
                                                     .width(0.0)
                                                     .height(14.0)
                                                     .text("")
-                                                    .selector(
-                                                        Selector::from("text-block").id("input"),
-                                                    )
+                                                    .element("text-block")
+                                                    .id("input")
                                                     .vertical_alignment("start")
                                                     .build(ctx),
                                             )
@@ -217,7 +224,7 @@ impl Template for MainView {
                                     )
                                     .child(
                                         TextBlock::create()
-                                            .selector(Selector::from("text-block"))
+                                            .element("text-block")
                                             .text(id)
                                             .vertical_alignment("end")
                                             .horizontal_alignment("end")
@@ -229,7 +236,8 @@ impl Template for MainView {
                     )
                     .child(
                         Container::create()
-                            .selector(Selector::from("container").class("content"))
+                            .element("container")
+                            .class("content")
                             .padding(8.0)
                             .attach(Grid::row(1))
                             .child(

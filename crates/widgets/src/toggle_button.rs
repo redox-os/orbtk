@@ -47,9 +47,6 @@ widget!(
         /// Sets or shares the icon font property.
         icon_font: String,
 
-        /// Sets or shares the css selector property.
-        selector: Selector,
-
         /// Sets or shares the pressed property.
         pressed: bool,
 
@@ -61,15 +58,15 @@ widget!(
 impl Template for ToggleButton {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ToggleButton")
-            .selector("toggle-button")
+            .element("toggle-button")
             .selected(false)
-            .height(32.0)
-            .min_width(80.0)
+            .height(36.0)
+            .min_width(64.0)
             .background(colors::LYNCH_COLOR)
-            .border_radius(2.0)
+            .border_radius(4.0)
             .border_width(0.0)
             .border_brush("transparent")
-            .padding((8.0, 0.0, 8.0, 0.0))
+            .padding((16.0, 0.0, 16.0, 0.0))
             .foreground(colors::LINK_WATER_COLOR)
             .text("")
             .font_size(fonts::FONT_SIZE_12)
@@ -83,13 +80,12 @@ impl Template for ToggleButton {
                 MouseBehavior::create()
                     .pressed(id)
                     .enabled(id)
-                    .selector(id)
+                    .target(id.0)
                     .child(
                         SelectionBehavior::create()
                             .selected(id)
                             .enabled(id)
-                            .selector(id)
-                            .parent(id.0)
+                            .target(id.0)
                             .child(
                                 Container::create()
                                     .background(id)

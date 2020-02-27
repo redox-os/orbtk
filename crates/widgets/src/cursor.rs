@@ -48,10 +48,7 @@ widget!(
         scroll_offset: Point,
 
         /// Sets or shares the focused property.
-        focused: bool,
-
-        /// Sets or shares the css selector property.
-        selector: Selector
+        focused: bool
     }
 );
 
@@ -59,7 +56,7 @@ impl Template for Cursor {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Cursor")
             .width(1.0)
-            .selector("cursor")
+            .element("cursor")
             .text("")
             .scroll_offset(0.0)
             .background("transparent")

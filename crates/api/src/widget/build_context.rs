@@ -36,9 +36,13 @@ impl<'a> BuildContext<'a> {
         self.ecm.create_entity().build()
     }
 
+    /// Update theme by state.
+    pub fn update_theme_by_state(&mut self, entity: Entity) {
+        self.get_widget(entity).update_theme_by_state(true);
+    }
+
     /// Appends a child to a parent.
     pub fn append_child(&mut self, parent: Entity, child: Entity) {
-        self.get_widget(child).update_theme_by_state(true);
         self.ecm
             .entity_store_mut()
             .append_child(parent, child)

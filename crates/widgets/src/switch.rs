@@ -1,10 +1,14 @@
 use super::behaviors::MouseBehavior;
 use crate::prelude::*;
 
+static SWITCH_TRACK: &'static str = "switch_track";
+static SWITCH_TOGGLE: &'static str = "switch_toggle";
+
 /// State to handle the position of switch toggle.
 #[derive(Default, AsAny)]
 pub struct SwitchState {
     selected: bool,
+    switch_toggle: Entity,
 }
 
 impl SwitchState {
@@ -14,6 +18,12 @@ impl SwitchState {
 }
 
 impl State for SwitchState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.switch_toggle = ctx
+            .entity_of_child(SWITCH_TOGGLE)
+            .expect("SwitchState.init: Switch toggle child could not be found.");
+    }
+
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         if *ctx.widget().get::<bool>("selected") == self.selected {
             return;
@@ -28,7 +38,7 @@ impl State for SwitchState {
         }
 
         {
-            let mut switch_toggle = ctx.child("switch_toggle");
+            let mut switch_toggle = ctx.get_widget(self.switch_toggle);
 
             if self.selected {
                 switch_toggle.set("horizontal_alignment", Alignment::from("end"));
@@ -46,9 +56,9 @@ impl State for SwitchState {
             ctx.entity,
             EventStrategy::Direct,
         );
-        let entity = ctx.entity_of_child("switch_toggle").unwrap();
 
-        ctx.get_widget(entity).update_theme_by_state(false);
+        ctx.get_widget(self.switch_toggle)
+            .update_theme_by_state(false);
     }
 }
 
@@ -72,9 +82,6 @@ widget!(
         /// Sets or shares the padding property.
         padding: Thickness,
 
-        /// Sets or shares the css selector property.
-        selector: Selector,
-
         /// Sets or shares the pressed property.
         pressed: bool,
 
@@ -86,13 +93,11 @@ widget!(
 impl Template for Switch {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Switch")
-            .selector("switch")
+            .element("switch")
             .pressed(false)
             .selected(false)
-            .width(48.0)
-            .height(32.0)
-            .border_brush(colors::BOMBAY_COLOR)
-            .background(colors::SLATE_GRAY_COLOR)
+            .width(36.0)
+            .height(30.0)
             .border_radius(8.0)
             .border_width(1.0)
             .padding(4.0)
@@ -100,25 +105,28 @@ impl Template for Switch {
                 MouseBehavior::create()
                     .pressed(id)
                     .enabled(id)
-                    .selector(id)
+                    .target(id.0)
                     .on_click(move |states, _| {
                         states.get_mut::<SwitchState>(id).toggle_selection();
                         false
                     })
                     .child(
-                        Container::create()
-                            .background(id)
-                            .border_radius(id)
-                            .border_width(id)
-                            .border_brush(id)
-                            .padding(id)
+                        Grid::create()
                             .child(
-                                Grid::create()
-                                    .child(Container::create().size(24.0, 24.0).build(ctx))
-                                    .border_radius(8.0)
-                                    .selector(Selector::from("switch-toggle").id("switch_toggle"))
+                                Container::create()
+                                    .element(SWITCH_TRACK)
+                                    .vertical_alignment("center")
+                                    .build(ctx),
+                            )
+                            .child(
+                                Container::create()
+                                    .element(SWITCH_TOGGLE)
+                                    .id(SWITCH_TOGGLE)
                                     .vertical_alignment("center")
                                     .horizontal_alignment("start")
+                                    .width(20.0)
+                                    .height(20.0)
+                                    .border_radius(10.0)
                                     .build(ctx),
                             )
                             .build(ctx),

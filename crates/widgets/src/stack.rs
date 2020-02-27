@@ -8,9 +8,6 @@ widget!(
         /// Sets or shares the orientation property.
         orientation: Orientation,
 
-        /// Sets or shares the css selector property.
-        selector: Selector,
-
         /// Margin between widgets in the stack.
         spacing: f64
     }
@@ -18,7 +15,7 @@ widget!(
 
 impl Template for Stack {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        self.name("Stack").orientation("vertical").selector("stack")
+        self.name("Stack").orientation("vertical").element("stack")
     }
 
     fn layout(&self) -> Box<dyn Layout> {

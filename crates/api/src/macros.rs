@@ -59,6 +59,9 @@ macro_rules! widget {
             width: Option<f64>,
             height: Option<f64>,
             name: Option<String>,
+            element: Option<String>,
+            id: Option<String>,
+            classes: HashSet<String>,
             horizontal_alignment: Alignment,
             vertical_alignment: Alignment,
             margin: Thickness,
@@ -108,6 +111,31 @@ macro_rules! widget {
                         self.shared_attached_properties.insert((key.to_string(), source_key), SharedComponentBox::new(TypeId::of::<P>(), source));
                     }
                 }
+                self
+            }
+
+            /// Sets the id selector.
+            pub fn id(mut self, id: impl Into<String>) -> Self {
+                if !self.id.is_none() {
+                    return self;
+                }
+                self.id = Some(id.into());
+                self
+            }
+
+            /// Sets the element selector.
+            pub fn element(mut self, element: impl Into<String>) -> Self {
+                if !self.element.is_none() {
+                    return self;
+                }
+
+                self.element = Some(element.into());
+                self
+            }
+
+            /// Inserts class selector.
+            pub fn class(mut self, class: impl Into<String>) -> Self {
+                self.classes.insert(class.into());
                 self
             }
 
@@ -345,6 +373,23 @@ macro_rules! widget {
                 ctx.register_property("clip", entity, this.clip);
                 ctx.register_property("opacity", entity, this.opacity);
 
+                if this.element.is_some() || this.id.is_some() || this.classes.len() > 0 {
+                    let mut selector = Selector::new();
+                    //selector.set_dirty(true);
+                    if let Some(element) = this.element {
+                        selector = selector.with(element);
+                    }
+                    if let Some(id) = this.id {
+                        selector = selector.id(id);
+                    }
+                    let mut classes = this.classes;
+                    for class in classes.drain() {
+                        selector = selector.class(class);
+                    }
+                    ctx.register_property("selector", entity, selector);
+                }
+
+
                 let mut constraint = Constraint::default();
 
                 if let Some(width) = this.width {
@@ -398,6 +443,8 @@ macro_rules! widget {
                         }
                     )*
                 )*
+
+                ctx.update_theme_by_state(entity);
 
                 // register event handlers
                 for handler in this.event_handlers {

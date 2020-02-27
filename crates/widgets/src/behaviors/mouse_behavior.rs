@@ -47,11 +47,8 @@ impl State for MouseBehaviorState {
                 }
             };
 
-            let element = ctx.widget().clone::<Selector>("selector").element.unwrap();
-
-            if let Some(parent) = ctx.parent_entity_by_element(&*element) {
-                ctx.get_widget(parent).update_theme_by_state(false);
-            }
+            let target: Entity = (*ctx.widget().get::<u32>("target")).into();
+            ctx.get_widget(target).update_theme_by_state(false);
 
             self.action.set(None);
         }
@@ -70,8 +67,8 @@ widget!(
     ///
     /// **CSS element:** `check-box`
     MouseBehavior<MouseBehaviorState>: MouseHandler {
-        /// Sets or shares the css selector property.
-        selector: Selector,
+        /// Sets or shares the target of the behavior.
+        target: u32,
 
         /// Sets or shares the pressed property.
         pressed: bool,
@@ -84,7 +81,6 @@ widget!(
 impl Template for MouseBehavior {
     fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("MouseBehavior")
-            .selector("")
             .delta(0.0)
             .pressed(false)
             .on_mouse_down(move |states, p| {

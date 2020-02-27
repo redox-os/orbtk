@@ -64,9 +64,6 @@ widget!(
         /// Sets or shares the title property.
         title: String,
 
-        /// Sets or shares the css selector property.
-        selector: Selector,
-
         /// Sets or shares the resizeable property.
         resizeable: bool,
 
@@ -94,7 +91,7 @@ impl Template for Window {
         self.name("Window")
             .background(colors::BRIGHT_GRAY_COLOR)
             .size(100.0, 100.0)
-            .selector("window")
+            .element("window")
             .title("Window")
             .theme(default_theme())
             .resizeable(false)

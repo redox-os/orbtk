@@ -46,9 +46,6 @@ widget!(
         /// Sets or shares the icon font property.
         icon_font: String,
 
-        /// Sets or shares the css selector property.
-        selector: Selector,
-
         /// Sets or shares the pressed property.
         pressed: bool,
 
@@ -60,7 +57,7 @@ widget!(
 impl Template for CheckBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("CheckBox")
-            .selector("check-box")
+            .element("check-box")
             .selected(false)
             .height(24.0)
             .background(colors::LYNCH_COLOR)
@@ -81,16 +78,16 @@ impl Template for CheckBox {
                 MouseBehavior::create()
                     .pressed(id)
                     .enabled(id)
-                    .selector(id)
+                    .target(id.0)
                     .child(
                         SelectionBehavior::create()
                             .selected(id)
                             .enabled(id)
-                            .selector(id)
-                            .parent(id.0)
+                            .target(id.0)
                             .child(
                                 Stack::create()
                                     .orientation("horizontal")
+                                    .spacing(8.0)
                                     .child(
                                         Container::create()
                                             .size(24.0, 24.0)
@@ -116,7 +113,6 @@ impl Template for CheckBox {
                                     .child(
                                         TextBlock::create()
                                             .vertical_alignment("center")
-                                            .margin((8.0, 0.0, 0.0, 0.0))
                                             .foreground(id)
                                             .text(id)
                                             .font_size(id)

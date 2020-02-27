@@ -109,9 +109,6 @@ widget!(
         /// Sets or shares the padding property.
         padding: Thickness,
 
-        /// Sets or shares the css selector property.
-        selector: Selector,
-
         /// Sets or shares the pressed property.
         pressed: bool,
 
@@ -152,7 +149,7 @@ impl Template for ComboBoxItem {
             .height(24.0)
             .selected(false)
             .pressed(false)
-            .selector("combo_box_item")
+            .element("combo_box_item")
             .padding(0.0)
             .background("transparent")
             .border_radius(0.0)
@@ -324,9 +321,6 @@ widget!(
         /// Sets or shared the count.
         count: usize,
 
-        /// Sets or shares the css selector property.
-        selector: Selector,
-
         /// Sets or shares the selected index. If the value is -1 no item is selected.
         selected_index: i32,
 
@@ -358,7 +352,7 @@ impl ComboBox {
 impl Template for ComboBox {
     fn template(mut self, id: Entity, ctx: &mut BuildContext) -> Self {
         let container = Container::create()
-            .selector(Selector::default().id(CONTAINER))
+            .id(CONTAINER)
             .background(id)
             .border_radius(id)
             .border_width(id)
@@ -369,7 +363,7 @@ impl Template for ComboBox {
 
         let items_panel = Stack::create()
             .vertical_alignment("start")
-            .selector(Selector::default().id(ITEMS_PANEL))
+            .id(ITEMS_PANEL)
             .orientation("vertical")
             .build(ctx);
 
@@ -398,7 +392,7 @@ impl Template for ComboBox {
         let _ = ctx.append_child_to_overlay(popup);
 
         self.name("ComboBox")
-            .selector("combo_box")
+            .element("combo_box")
             .height(32.0)
             .min_width(80.0)
             .selected(false)
@@ -407,13 +401,12 @@ impl Template for ComboBox {
                 MouseBehavior::create()
                     .pressed(id)
                     .enabled(id)
-                    .selector(id)
+                    .target(id.0)
                     .child(
                         SelectionBehavior::create()
                             .selected(id)
                             .enabled(id)
-                            .selector(id)
-                            .parent(id.0)
+                            .target(id.0)
                             .child(container)
                             .build(ctx),
                     )

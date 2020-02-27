@@ -25,13 +25,13 @@ impl Template for MainView {
                 .rows(Rows::create().row("*").row("*").build())
                 .child(
                     Grid::create()
-                        .selector("lynch")
+                        .element("lynch")
                         .margin((10.0, 0.0, 0.0, 4.0))
                         .attach(Grid::column(0))
                         .child(
                             TextBlock::create()
                                 .text("(0,0)")
-                                .selector("light-text")
+                                .element("light-text")
                                 .horizontal_alignment("center")
                                 .vertical_alignment("center")
                                 .build(ctx),
@@ -40,14 +40,14 @@ impl Template for MainView {
                 )
                 .child(
                     Grid::create()
-                        .selector("bluebayoux")
+                        .element("bluebayoux")
                         .margin(10.0)
                         .constraint(Constraint::create().width(150.0).build())
                         .attach(Grid::column(1))
                         .child(
                             TextBlock::create()
                                 .text("(1,0)")
-                                .selector("white")
+                                .element("white")
                                 .horizontal_alignment("center")
                                 .vertical_alignment("center")
                                 .build(ctx),
@@ -56,12 +56,12 @@ impl Template for MainView {
                 )
                 .child(
                     Grid::create()
-                        .selector("linkwater")
+                        .element("linkwater")
                         .attach(Grid::column(2))
                         .child(
                             TextBlock::create()
                                 .text("(2,0)")
-                                .selector("linkwater")
+                                .element("linkwater")
                                 .horizontal_alignment("center")
                                 .vertical_alignment("center")
                                 .build(ctx),
@@ -70,14 +70,14 @@ impl Template for MainView {
                 )
                 .child(
                     Grid::create()
-                        .selector("goldendream")
+                        .element("goldendream")
                         .attach(Grid::column(0))
                         .attach(Grid::row(1))
                         .attach(Grid::column_span(3))
                         .child(
                             TextBlock::create()
                                 .text("(0,1) - ColumnSpan 3")
-                                .selector("goldendream")
+                                .element("goldendream")
                                 .horizontal_alignment("center")
                                 .vertical_alignment("center")
                                 .build(ctx),

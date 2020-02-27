@@ -57,9 +57,6 @@ widget!(
         /// Sets or shares the padding property.
         padding: Thickness,
 
-        /// Sets or shares the css selector property.
-        selector: Selector,
-
         /// Sets or shares the target id to place the popup.
         target: u32,
 
@@ -71,7 +68,7 @@ widget!(
 impl Template for Popup {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Popup")
-            .selector("popup")
+            .element("popup")
             .open(false)
             .padding(0.0)
             .background("transparent")
