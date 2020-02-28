@@ -273,6 +273,13 @@ impl EventStateSystem {
                 }
             }
 
+            if let Ok(visibility) = ecm.component_store().get::<Visibility>("visibility", *node) {
+                if *visibility != Visibility::Visible {
+                    disabled_parent = Some(*node);
+                    continue;
+                }
+            }
+
             if let Some(handlers) = self.handlers.borrow().get(node) {
                 handled = handlers.iter().any(|handler| {
                     handler.handle_event(
