@@ -4,6 +4,12 @@ use crate::{prelude::*, proc_macros::Event, shell::MouseButton, utils::*};
 
 /// Checks if the given point is inside of a widget.
 pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>) -> bool {
+    let enabled = widget.get::<bool>("enabled");
+
+    if !enabled {
+        return false;
+    }
+
     let bounds = widget.get::<Rectangle>("bounds");
     let position = widget.get::<Point>("position");
 
