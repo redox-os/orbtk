@@ -51,7 +51,10 @@ widget!(
         pressed: bool,
 
         /// Sets or shares the selected property.
-        selected: bool
+        selected: bool,
+
+            /// Sets or shares the spacing between icon and text.
+            spacing: f64
     }
 );
 
@@ -76,6 +79,7 @@ impl Template for ToggleButton {
             .icon_size(fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
+            .spacing(8.0)
             .child(
                 MouseBehavior::create()
                     .pressed(id)
@@ -96,11 +100,12 @@ impl Template for ToggleButton {
                                     .child(
                                         Stack::create()
                                             .orientation("horizontal")
+                                            .spacing(id)
                                             .vertical_alignment("center")
                                             .horizontal_alignment("center")
                                             .child(
                                                 FontIconBlock::create()
-                                                    .margin((0.0, 0.0, 2.0, 0.0))
+                                                .vertical_alignment("center")
                                                     .icon(id)
                                                     .icon_brush(id)
                                                     .icon_size(id)
@@ -109,6 +114,7 @@ impl Template for ToggleButton {
                                             )
                                             .child(
                                                 TextBlock::create()
+                                                .vertical_alignment("center")
                                                     .foreground(id)
                                                     .text(id)
                                                     .font_size(id)
