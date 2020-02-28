@@ -163,13 +163,9 @@ impl State for ListViewItemState {
 
             parent_entity = Some(parent.entity());
         }
-        
+
         if let Some(parent) = parent_entity {
-            ctx.push_event_strategy_by_entity(
-                ChangedEvent(parent),
-                parent,
-                EventStrategy::Direct,
-            );
+            ctx.push_event_strategy_by_entity(ChangedEvent(parent), parent, EventStrategy::Direct);
         }
     }
 }
@@ -215,7 +211,7 @@ widget!(
 );
 
 impl Template for ListViewItem {
-    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ListViewItem")
             .min_width(64.0)
             .height(24.0)
@@ -234,6 +230,13 @@ impl Template for ListViewItem {
                 states.get::<ListViewItemState>(id).toggle_selection();
                 false
             })
+            .child(
+                MouseBehavior::create()
+                    .pressed(id)
+                    .enabled(id)
+                    .target(id.0)
+                    .build(ctx),
+            )
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
