@@ -26,6 +26,7 @@ pub struct Context<'a> {
     handlers: &'a mut EventHandlerMap,
     states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
     new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
+    remove_widget_list: Vec<Entity>
 }
 
 impl<'a> Drop for Context<'a> {
@@ -66,6 +67,7 @@ impl<'a> Context<'a> {
             handlers,
             states,
             new_states,
+            remove_widget_list: vec![]
         }
     }
 
@@ -279,8 +281,13 @@ impl<'a> Context<'a> {
     /// of the given parent nothing will happen.
     pub fn remove_child_from(&mut self, child: Entity, parent: Entity) {
         if self.ecm.entity_store().children[&parent].contains(&child) {
-            self.ecm.remove_entity(child);
+            self.remove_widget_list.push(child);
         }
+    }
+
+    /// Returns a mutable reference of the children that should be removed.
+    pub fn remove_widget_list(&mut self) -> &mut Vec<Entity> {
+        &mut self.remove_widget_list
     }
 
     /// Clears all children of the current widget.

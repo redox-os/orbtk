@@ -16,11 +16,11 @@ impl State for CursorState {
             remove_selector_from_widget("expanded", &mut widget)
         }
 
-        if *widget.get::<bool>("focused") {
-            widget.set("visibility", Visibility::from("visible"));
-        } else {
-            widget.set("visibility", Visibility::from("collapsed"));
-        }
+        // if *widget.get::<bool>("focused") {
+        //     widget.set("visibility", Visibility::from("visible"));
+        // } else {
+        //     widget.set("visibility", Visibility::from("collapsed"));
+        // }
     }
 }
 

@@ -190,12 +190,15 @@ impl<'a> WidgetContainer<'a> {
         false
     }
 
-    /// Updates the theme by the inner state e.g. `selected` or `pressed`.
-    pub fn update_theme_by_state(&mut self, force: bool) {
+    fn update_internal_theme_by_state(&mut self, force: bool, entity: &Entity) {
+        for child in &(self.ecm.entity_store().children.clone())[&entity] {
+            self.update_internal_theme_by_state(force, child);
+        }
+
+        self.current_node = *entity;
+
         if let Some(selector) = self.try_clone::<Selector>("selector") {
             let mut update = false;
-
-            // println!("{:?}", selector);
 
             if let Some(focus) = self.try_clone::<bool>("focused") {
                 if focus && !selector.pseudo_classes.contains("focus") {
@@ -251,6 +254,11 @@ impl<'a> WidgetContainer<'a> {
                 self.update_properties_by_theme();
             }
         }
+    }
+
+    /// Updates the theme by the inner state e.g. `selected` or `pressed`.
+    pub fn update_theme_by_state(&mut self, force: bool) {
+        self.update_internal_theme_by_state(force, &(self.current_node.clone()));
     }
 
     /// Update all properties for the theme.

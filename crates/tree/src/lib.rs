@@ -200,12 +200,15 @@ impl<'a> Iterator for TreeIterator<'a> {
 
     fn next(&mut self) -> Option<Entity> {
         if let Some(node) = self.current_node {
-            if self.tree.children.contains_key(&node) && !self.tree.children[&node].is_empty() {
+            if !self.tree.children.contains_key(&node) {
+                panic!("TreeIterator.next: Tree does not contains node {}", node.0);
+            }
+            if !self.tree.children[&node].is_empty() {
                 self.current_node = Some(self.tree.children[&node][0]);
                 return self.current_node;
             } else {
-                if !self.tree.parent.contains_key(&node) {
-                    return None;
+                if !self.tree.children.contains_key(&node) {
+                    panic!("TreeIterator.next: Tree does not contains node {}", node.0);
                 }
                 let mut tree_node = node;
                 while let Some(parent) = self.tree.parent[&tree_node] {

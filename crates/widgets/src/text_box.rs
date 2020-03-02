@@ -157,7 +157,6 @@ impl TextBoxState {
 
         ctx.widget().set("focused", true);
         ctx.widget().update_theme_by_state(false);
-        ctx.child("cursor").update_theme_by_state(false);
     }
 
     // Reset selection and offset if text is changed from outside
@@ -321,6 +320,8 @@ impl Template for TextBox {
             .lost_focus_on_activation(true)
             .child(
                 MouseBehavior::create()
+                    .visibility(id)
+                    .enabled(id)
                     .on_mouse_down(move |states, p| {
                         states
                             .get::<TextBoxState>(id)
