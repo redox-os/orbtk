@@ -204,6 +204,9 @@ impl<'a> Iterator for TreeIterator<'a> {
                 self.current_node = Some(self.tree.children[&node][0]);
                 return self.current_node;
             } else {
+                if !self.tree.parent.contains_key(&node) {
+                    return None;
+                }
                 let mut tree_node = node;
                 while let Some(parent) = self.tree.parent[&tree_node] {
                     let siblings = &self.tree.children[&parent];
