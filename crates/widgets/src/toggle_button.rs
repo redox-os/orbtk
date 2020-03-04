@@ -53,8 +53,8 @@ widget!(
         /// Sets or shares the selected property.
         selected: bool,
 
-            /// Sets or shares the spacing between icon and text.
-            spacing: f64
+        /// Sets or shares the spacing between icon and text.
+        spacing: f64
     }
 );
 
@@ -105,7 +105,7 @@ impl Template for ToggleButton {
                                             .horizontal_alignment("center")
                                             .child(
                                                 FontIconBlock::create()
-                                                .vertical_alignment("center")
+                                                    .vertical_alignment("center")
                                                     .icon(id)
                                                     .icon_brush(id)
                                                     .icon_size(id)
@@ -114,7 +114,7 @@ impl Template for ToggleButton {
                                             )
                                             .child(
                                                 TextBlock::create()
-                                                .vertical_alignment("center")
+                                                    .vertical_alignment("center")
                                                     .foreground(id)
                                                     .text(id)
                                                     .font_size(id)

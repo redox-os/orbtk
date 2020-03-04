@@ -351,6 +351,8 @@ impl ComboBox {
 
 impl Template for ComboBox {
     fn template(mut self, id: Entity, ctx: &mut BuildContext) -> Self {
+        let selected_container = Container::create().attach(Grid::column(0)).build(ctx);
+
         let container = Container::create()
             .id(CONTAINER)
             .background(id)
@@ -358,8 +360,27 @@ impl Template for ComboBox {
             .border_width(id)
             .border_brush(id)
             .padding(id)
+            .child(
+                Grid::create()
+                    .columns(
+                        Columns::create()
+                            .column("*")
+                            .column(4.0)
+                            .column(14.0)
+                            .build(),
+                    )
+                    .child(selected_container)
+                    .child(
+                        FontIconBlock::create()
+                            .attach(Grid::column(2))
+                            .vertical_alignment("center")
+                            .icon(material_font_icons::ARROW_DOWN_ICON)
+                            .build(ctx),
+                    )
+                    .build(ctx),
+            )
             .build(ctx);
-        self.state_mut().selected_container = container;
+        self.state_mut().selected_container = selected_container;
 
         let items_panel = Stack::create()
             .vertical_alignment("start")

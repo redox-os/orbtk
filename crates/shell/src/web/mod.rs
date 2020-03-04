@@ -1,7 +1,7 @@
 //! This module contains a platform specific implementation of the window shell.
 
 use std::{
-    cell::RefCell,
+    cell::{Cell, RefCell},
     rc::Rc,
     sync::mpsc::{channel, Receiver, Sender},
 };
@@ -78,6 +78,7 @@ where
     pub mouse_up_events: Rc<RefCell<Vec<event::MouseUpEvent>>>,
     pub touch_start_events: Rc<RefCell<Vec<event::TouchStart>>>,
     pub touch_end_events: Rc<RefCell<Vec<event::TouchEnd>>>,
+    pub touch_move_events: Rc<RefCell<Vec<event::TouchMove>>>,
     pub mouse_down_events: Rc<RefCell<Vec<event::MouseDownEvent>>>,
     pub scroll_events: Rc<RefCell<Vec<event::MouseWheelEvent>>>,
     pub key_up_events: Rc<RefCell<Vec<event::KeyUpEvent>>>,
@@ -86,6 +87,7 @@ where
     canvas: CanvasElement,
     pub old_canvas: Option<CanvasElement>,
     pub flip: bool,
+    mouse_blocked: Rc<Cell<bool>>,
     adapter: A,
     update: bool,
     running: bool,
@@ -181,20 +183,6 @@ where
             });
         }
 
-        while let Some(event) = self.mouse_move_events.borrow_mut().pop() {
-            self.adapter
-                .mouse(event.client_x() as f64, event.client_y() as f64);
-        }
-
-        while let Some(event) = self.mouse_up_events.borrow_mut().pop() {
-            self.adapter.mouse_event(MouseEvent {
-                x: event.client_x() as f64,
-                y: event.client_y() as f64,
-                button: get_mouse_button(event.button()),
-                state: ButtonState::Up,
-            });
-        }
-
         while let Some(event) = self.scroll_events.borrow_mut().pop() {
             self.adapter.scroll(event.delta_x(), event.delta_y());
         }
@@ -202,20 +190,29 @@ where
         // todo tmp solution to map touch events to mouse vent
         while let Some(event) = self.touch_start_events.borrow_mut().pop() {
             self.adapter.mouse_event(MouseEvent {
-                x: event.target_touches()[0].client_x() as f64,
-                y: event.target_touches()[0].client_y() as f64,
+                x: event.changed_touches()[0].client_x() as f64,
+                y: event.changed_touches()[0].client_y() as f64,
                 button: MouseButton::Left,
                 state: ButtonState::Down,
             });
         }
 
-        while let Some(event) = self.touch_end_events.borrow_mut().pop() {
+        while let Some(event) = self.touch_end_events.borrow_mut().pop() {           
             self.adapter.mouse_event(MouseEvent {
-                x: event.target_touches()[0].client_x() as f64,
-                y: event.target_touches()[0].client_y() as f64,
+                x: event.changed_touches()[0].client_x() as f64,
+                y: event.changed_touches()[0].client_y() as f64,
                 button: MouseButton::Left,
                 state: ButtonState::Up,
             });
+
+            self.mouse_blocked.set(false);
+        }
+
+        while let Some(event) = self.touch_move_events.borrow_mut().pop() {
+            self.adapter.mouse(
+                event.changed_touches()[0].client_x() as f64,
+                event.changed_touches()[0].client_y() as f64,
+            );
         }
 
         while let Some(event) = self.key_down_events.borrow_mut().pop() {
@@ -434,35 +431,44 @@ where
         let mouse_up = Rc::new(RefCell::new(vec![]));
         let touch_start = Rc::new(RefCell::new(vec![]));
         let touch_end = Rc::new(RefCell::new(vec![]));
+        let touch_move = Rc::new(RefCell::new(vec![]));
         let mouse_down = Rc::new(RefCell::new(vec![]));
         let scroll = Rc::new(RefCell::new(vec![]));
         let key_down = Rc::new(RefCell::new(vec![]));
         let key_up = Rc::new(RefCell::new(vec![]));
         let resize = Rc::new(RefCell::new(vec![]));
+        let mouse_blocked = Rc::new(Cell::new(false));
 
         let mouse_down_c = mouse_down.clone();
+        let mouse_blocked_c = mouse_blocked.clone();
         document()
             .body()
             .unwrap()
             .add_event_listener(move |e: event::MouseDownEvent| {
-                mouse_down_c.borrow_mut().push(e);
+                if !mouse_blocked_c.get() {
+                    mouse_down_c.borrow_mut().push(e);
+                }
             });
 
+        let mouse_blocked_c = mouse_blocked.clone();
         let mouse_up_c = mouse_up.clone();
         document()
             .body()
             .unwrap()
             .add_event_listener(move |e: event::MouseUpEvent| {
-                mouse_up_c.borrow_mut().push(e);
+                if !mouse_blocked_c.get() {
+                    mouse_up_c.borrow_mut().push(e);
+                }
             });
 
         let touch_start_c = touch_start.clone();
+        let mouse_blocked_c = mouse_blocked.clone();
         document()
             .body()
             .unwrap()
             .add_event_listener(move |e: event::TouchStart| {
-                e.prevent_default();
-                // touch_start_c.borrow_mut().push(e);
+                mouse_blocked_c.set(true);
+                touch_start_c.borrow_mut().push(e);
             });
 
         let touch_end_c = touch_end.clone();
@@ -470,8 +476,15 @@ where
             .body()
             .unwrap()
             .add_event_listener(move |e: event::TouchEnd| {
-                e.prevent_default();
-                // touch_end_c.borrow_mut().push(e);
+                touch_end_c.borrow_mut().push(e);
+            });
+
+        let touch_move_c = touch_move.clone();
+        document()
+            .body()
+            .unwrap()
+            .add_event_listener(move |e: event::TouchMove| {
+                touch_move_c.borrow_mut().push(e);
             });
 
         let mouse_move_c = mouse_move.clone();
@@ -560,6 +573,7 @@ where
             mouse_up_events: mouse_up,
             touch_start_events: touch_start,
             touch_end_events: touch_end,
+            touch_move_events: touch_move,
             mouse_down_events: mouse_down,
             scroll_events: scroll,
             key_down_events: key_down,
@@ -572,6 +586,7 @@ where
             running: true,
             request_receiver,
             request_sender,
+            mouse_blocked
         }
     }
 }
@@ -584,15 +599,15 @@ pub struct Console;
 
 impl Console {
     pub fn time(&self, name: impl Into<String>) {
-        js! {
-            console.time(@{&name.into()})
-        }
+        // js! {
+        //     console.time(@{&name.into()})
+        // }
     }
 
     pub fn time_end(&self, name: impl Into<String>) {
-        js! {
-            console.timeEnd(@{&name.into()})
-        }
+        // js! {
+        //     console.timeEnd(@{&name.into()})
+        // }
     }
 
     pub fn log(&self, message: impl Into<String>) {

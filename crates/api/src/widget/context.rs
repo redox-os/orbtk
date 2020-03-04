@@ -26,7 +26,7 @@ pub struct Context<'a> {
     handlers: &'a mut EventHandlerMap,
     states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
     new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
-    remove_widget_list: Vec<Entity>
+    remove_widget_list: Vec<Entity>,
 }
 
 impl<'a> Drop for Context<'a> {
@@ -67,7 +67,7 @@ impl<'a> Context<'a> {
             handlers,
             states,
             new_states,
-            remove_widget_list: vec![]
+            remove_widget_list: vec![],
         }
     }
 
