@@ -170,7 +170,7 @@ cargo doc --no-deps --open
 
 ## Contribution
 
-If you want to help bring OrbTk further or you have feedback check our issues https://github.com/redox-os/orbtk/issues. You could also discuss with us about OrbTk on the Redox chat https://redox-os.org/community/ (join the orbital channel).
+If you want to help bring OrbTk further or you have feedback check our issues https://github.com/redox-os/orbtk/issues. You could also discuss with us about OrbTk on the Redox chat https://redox-os.org/community/ (join the OrbTk channel).
 
 ## License
 
