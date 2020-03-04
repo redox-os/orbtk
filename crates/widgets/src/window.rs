@@ -29,8 +29,10 @@ impl WindowState {
             // remove focus if the window is not active
             if let Some(focused_widget) = ctx.window().get::<Global>("global").focused_widget {
                 ctx.window().get_mut::<Global>("global").focused_widget = None;
-                ctx.get_widget(focused_widget).set("focus", false);
-                ctx.get_widget(focused_widget).update_theme_by_state(false);
+                if ctx.get_widget(focused_widget).has::<bool>("focused") {
+                    ctx.get_widget(focused_widget).set("focused", false);
+                    ctx.get_widget(focused_widget).update_theme_by_state(false);
+                }
             }
         }
     }
