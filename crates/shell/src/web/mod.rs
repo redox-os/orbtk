@@ -205,7 +205,7 @@ where
                 state: ButtonState::Up,
             });
 
-            self.mouse_blocked.set(false);
+            // self.mouse_blocked.set(false);
         }
 
         while let Some(event) = self.touch_move_events.borrow_mut().pop() {
