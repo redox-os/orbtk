@@ -88,7 +88,7 @@ container {
     font-size: 24;
 }
 
-text-box {
+text_box {
     color: #dfebf5;
     background: #3b434a;
     border-color: #647b91;
@@ -108,11 +108,11 @@ menuitem {
     font-size: 12;
 }
 
-text-box:empty {
+text_box:empty {
     color: #9E9E9E
 }
 
-text-box:focus {
+text_box:focus {
     border-color: #f8de4c;
 }
 

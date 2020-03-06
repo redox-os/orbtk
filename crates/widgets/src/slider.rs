@@ -1,7 +1,13 @@
 use crate::prelude::*;
 
-static THUMB: &'static str = "thumb";
-static TRACK: &'static str = "track";
+// --- KEYS --
+
+pub static ELEMENT_SLIDER: &'static str = "slider";
+
+static ID_THUMB: &'static str = "id_thumb";
+static ID_TRACK: &'static str = "id_track";
+
+// --- KEYS --
 
 #[derive(Copy, Clone)]
 enum SliderAction {
@@ -94,10 +100,10 @@ impl SliderState {
 impl State for SliderState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.thumb = ctx
-            .entity_of_child(THUMB)
+            .entity_of_child(ID_THUMB)
             .expect("SliderState.init: Thumb child could not be found.");
         self.track = ctx
-            .entity_of_child(TRACK)
+            .entity_of_child(ID_TRACK)
             .expect("SliderState.init: Track child could not be found.");
     }
 
@@ -178,7 +184,7 @@ widget!(
 impl Template for Slider {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Slider")
-            .element("slider")
+            .element(ELEMENT_SLIDER)
             .minimum(0.0)
             .maximum(100.0)
             .value(0.0)
@@ -186,7 +192,7 @@ impl Template for Slider {
             .border_radius(2.0)
             .child(
                 Grid::create()
-                    .id(TRACK)
+                    .id(ID_TRACK)
                     .margin((8.0, 0.0, 8.0, 0.0))
                     .child(
                         Container::create()
@@ -199,7 +205,7 @@ impl Template for Slider {
                     .child(
                         Button::create()
                             .element("thumb")
-                            .id(THUMB)
+                            .id(ID_THUMB)
                             .vertical_alignment("center")
                             .horizontal_alignment("start")
                             .max_width(24.0)

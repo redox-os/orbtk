@@ -6,6 +6,16 @@ use crate::{
     shell::{Key, KeyEvent},
 };
 
+// --- KEYS --
+
+pub static ELEMENT_TEXT_BOX: &'static str = "text_box";
+
+static ID_CURSOR: &'static str = "id_cursor";
+static ID_SCROLL_VIEWER: &'static str = "id_scroll_viewer";
+static ID_TEXT_BLOCK: &'static str = "id_text_block";
+
+// --- KEYS --
+
 #[derive(Clone)]
 enum TextBoxAction {
     Key(KeyEvent),
@@ -13,21 +23,14 @@ enum TextBoxAction {
 }
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
-#[derive(AsAny)]
+#[derive(Default, AsAny)]
 pub struct TextBoxState {
     action: RefCell<Option<TextBoxAction>>,
     cursor_x: Cell<f64>,
     len: Cell<usize>,
-}
-
-impl Default for TextBoxState {
-    fn default() -> Self {
-        TextBoxState {
-            action: RefCell::new(None),
-            cursor_x: Cell::new(0.0),
-            len: Cell::new(0),
-        }
-    }
+    cursor: Entity,
+    scroll_viewer: Entity,
+    text_block: Entity,
 }
 
 impl TextBoxState {
@@ -40,100 +43,24 @@ impl TextBoxState {
             return;
         }
 
-        let text = ctx.widget().clone::<String16>("text");
-        let mut current_selection = *ctx.child("cursor").get::<TextSelection>("text_selection");
-
         match key_event.key {
             Key::Left => {
-                if let Some(selection) = ctx
-                    .child("cursor")
-                    .try_get_mut::<TextSelection>("text_selection")
-                {
-                    selection.start_index =
-                        (current_selection.start_index as i32 - 1).max(0) as usize;
-                }
+                self.move_cursor_left(ctx);
             }
             Key::Right => {
-                if let Some(selection) = ctx
-                    .child("cursor")
-                    .try_get_mut::<TextSelection>("text_selection")
-                {
-                    selection.start_index = (current_selection.start_index + 1).min(text.len());
-                }
+                self.move_cursor_right(ctx);
             }
             Key::Backspace => {
-                if !text.is_empty() && current_selection.start_index > 0 {
-                    for _ in 0..=current_selection.length {
-                        ctx.widget()
-                            .get_mut::<String16>("text")
-                            .remove(current_selection.start_index - 1);
-                        current_selection.start_index =
-                            (current_selection.start_index as i32 - 1).max(0) as usize;
-                    }
-
-                    if let Some(selection) = ctx
-                        .child("cursor")
-                        .try_get_mut::<TextSelection>("text_selection")
-                    {
-                        selection.start_index = current_selection.start_index;
-                    }
-
-                    ctx.push_event_strategy_by_entity(
-                        ChangedEvent(ctx.entity),
-                        ctx.entity,
-                        EventStrategy::Direct,
-                    );
-                }
+                self.back_space(ctx);
             }
             Key::Delete => {
-                if !text.is_empty() && text.len() > current_selection.start_index {
-                    for _ in 0..=current_selection.length {
-                        ctx.widget()
-                            .get_mut::<String16>("text")
-                            .remove(current_selection.start_index);
-                    }
-
-                    ctx.push_event_strategy_by_entity(
-                        ChangedEvent(ctx.entity),
-                        ctx.entity,
-                        EventStrategy::Direct,
-                    );
-                }
+                self.delete(ctx);
             }
             Key::Enter => {
-                if *ctx.widget().get::<bool>("lost_focus_on_activation") {
-                    ctx.window().get_mut::<Global>("global").focused_widget = None;
-                    ctx.widget().set("focused", false);
-                    ctx.widget().update_theme_by_state(false);
-                }
-
-                ctx.push_event_strategy_by_entity(
-                    ActivateEvent(ctx.entity),
-                    ctx.entity,
-                    EventStrategy::Direct,
-                )
+                self.activate(ctx);
             }
             _ => {
-                if key_event.text.is_empty() {
-                    return;
-                }
-                ctx.widget()
-                    .get_mut::<String16>("text")
-                    .insert_str(current_selection.start_index, key_event.text.as_str());
-
-                if let Some(selection) = ctx
-                    .child("cursor")
-                    .try_get_mut::<TextSelection>("text_selection")
-                {
-                    selection.start_index =
-                        current_selection.start_index + key_event.text.encode_utf16().count();
-                }
-
-                ctx.push_event_strategy_by_entity(
-                    ChangedEvent(ctx.entity),
-                    ctx.entity,
-                    EventStrategy::Direct,
-                );
+               self.insert_char(key_event, ctx);
             }
         }
     }
@@ -169,19 +96,192 @@ impl TextBoxState {
             EventStrategy::Direct,
         );
     }
-}
 
-impl State for TextBoxState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        self.len.set(ctx.widget().get::<String16>("text").len());
-    }
-
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        // check if text len is changed from outside
+    fn check_outside_update(&self, ctx: &mut Context<'_>) {
         let len = ctx.widget().get::<String16>("text").len();
         if self.len.get() != len && self.len.get() > len {
             self.reset(ctx);
         }
+    }
+
+    // Adjust offset of text and cursor if cursor position is out of bounds
+    fn adjust_cursor(&self, ctx: &mut Context) {
+        let mut cursor_x_delta = 0.0;
+        let mut scroll_viewer_width = 0.0;
+
+        {
+            if let Some(bounds) = ctx
+                .get_widget(self.scroll_viewer)
+                .try_get_mut::<Rectangle>("bounds")
+            {
+                scroll_viewer_width = bounds.width();
+            }
+        }
+
+        {
+            let mut cursor = ctx.get_widget(self.cursor);
+
+            if let Some(margin) = cursor.try_get_mut::<Thickness>("margin") {
+                if margin.left() < 0.0 || margin.left() > scroll_viewer_width {
+                    cursor_x_delta = self.cursor_x.get() - margin.left();
+                    margin.set_left(self.cursor_x.get());
+                }
+                self.cursor_x.set(margin.left());
+            }
+
+            if let Some(bounds) = cursor.try_get_mut::<Rectangle>("bounds") {
+                bounds.set_x(self.cursor_x.get());
+            }
+        }
+
+        if cursor_x_delta != 0.0 {
+            {
+                if let Some(bounds) = ctx
+                    .get_widget(self.text_block)
+                    .try_get_mut::<Rectangle>("bounds")
+                {
+                    bounds.set_x(bounds.x() + cursor_x_delta);
+                }
+            }
+
+            if let Some(scroll_offset) = ctx.widget().try_get_mut::<Point>("scroll_offset") {
+                scroll_offset.x += cursor_x_delta;
+            }
+        }
+    }
+
+    fn move_cursor_left(&self, ctx: &mut Context) {
+        if let Some(selection) = ctx
+            .get_widget(self.cursor)
+            .try_get_mut::<TextSelection>("text_selection")
+        {
+            selection.start_index = (selection.start_index as i32 - 1).max(0) as usize;
+        }
+    }
+
+    fn move_cursor_right(&self, ctx: &mut Context) {
+        let text_len = ctx.widget().get::<String16>("text").len();
+        if let Some(selection) = ctx
+            .get_widget(self.cursor)
+            .try_get_mut::<TextSelection>("text_selection")
+        {
+            selection.start_index = (selection.start_index + 1).min(text_len);
+        }
+    }
+
+    fn back_space(&self, ctx: &mut Context) {
+        let mut current_selection = *ctx
+            .get_widget(self.cursor)
+            .get::<TextSelection>("text_selection");
+
+        if !ctx
+            .get_widget(self.cursor)
+            .get::<String16>("text")
+            .is_empty()
+            && current_selection.start_index > 0
+        {
+            for _ in 0..=current_selection.length {
+                ctx.widget()
+                    .get_mut::<String16>("text")
+                    .remove(current_selection.start_index - 1);
+                current_selection.start_index =
+                    (current_selection.start_index as i32 - 1).max(0) as usize;
+            }
+
+            if let Some(selection) = ctx
+                .get_widget(self.cursor)
+                .try_get_mut::<TextSelection>("text_selection")
+            {
+                selection.start_index = current_selection.start_index;
+            }
+
+            ctx.push_event_strategy_by_entity(
+                ChangedEvent(ctx.entity),
+                ctx.entity,
+                EventStrategy::Direct,
+            );
+        }
+    }
+
+    fn delete(&self, ctx: &mut Context) {
+        let current_selection = *ctx
+            .get_widget(self.cursor)
+            .get::<TextSelection>("text_selection");
+        let text: String16 = ctx.widget().clone("text");
+
+        if !text.is_empty() && text.len() > current_selection.start_index {
+            for _ in 0..=current_selection.length {
+                ctx.widget()
+                    .get_mut::<String16>("text")
+                    .remove(current_selection.start_index);
+            }
+
+            ctx.push_event_strategy_by_entity(
+                ChangedEvent(ctx.entity),
+                ctx.entity,
+                EventStrategy::Direct,
+            );
+        }
+    }
+
+    fn activate(&self, ctx: &mut Context) {
+        if *ctx.widget().get::<bool>("lost_focus_on_activation") {
+            ctx.window().get_mut::<Global>("global").focused_widget = None;
+            ctx.widget().set("focused", false);
+            ctx.widget().update_theme_by_state(false);
+        }
+
+        ctx.push_event_strategy_by_entity(
+            ActivateEvent(ctx.entity),
+            ctx.entity,
+            EventStrategy::Direct,
+        )
+    }
+
+    fn insert_char(&self, key_event: KeyEvent, ctx: &mut Context) {
+        if key_event.text.is_empty() {
+            return;
+        }
+
+        let current_selection = *ctx
+            .get_widget(self.cursor)
+            .get::<TextSelection>("text_selection");
+        ctx.widget()
+            .get_mut::<String16>("text")
+            .insert_str(current_selection.start_index, key_event.text.as_str());
+
+        if let Some(selection) = ctx
+            .get_widget(self.cursor)
+            .try_get_mut::<TextSelection>("text_selection")
+        {
+            selection.start_index =
+                current_selection.start_index + key_event.text.encode_utf16().count();
+        }
+
+        ctx.push_event_strategy_by_entity(
+            ChangedEvent(ctx.entity),
+            ctx.entity,
+            EventStrategy::Direct,
+        );
+    }
+}
+
+impl State for TextBoxState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+        self.cursor = ctx
+            .entity_of_child(ID_CURSOR)
+            .expect("TextBoxState.init: cursor child could not be found.");
+        self.scroll_viewer = ctx
+            .entity_of_child(ID_SCROLL_VIEWER)
+            .expect("TextBoxState.init: scroll_viewer child could not be found.");
+        self.text_block = ctx
+            .entity_of_child(ID_TEXT_BLOCK)
+            .expect("TextBoxState.init: text_block child could not be found.");
+        self.len.set(ctx.widget().get::<String16>("text").len());
+    }
+
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+        self.check_outside_update(ctx);
 
         if let Some(action) = self.action.borrow().clone() {
             match action {
@@ -200,56 +300,14 @@ impl State for TextBoxState {
     }
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        let mut cursor_x_delta = 0.0;
-        let mut scroll_viewer_width = 0.0;
-
-        {
-            if let Some(bounds) = ctx
-                .child("scroll_viewer")
-                .try_get_mut::<Rectangle>("bounds")
-            {
-                scroll_viewer_width = bounds.width();
-            }
-        }
-
-        // maybe not use scroll viewer here
-
-        // Adjust offset of text and cursor if cursor position is out of bounds
-
-        {
-            let mut cursor = ctx.child("cursor");
-
-            if let Some(margin) = cursor.try_get_mut::<Thickness>("margin") {
-                if margin.left() < 0.0 || margin.left() > scroll_viewer_width {
-                    cursor_x_delta = self.cursor_x.get() - margin.left();
-                    margin.set_left(self.cursor_x.get());
-                }
-                self.cursor_x.set(margin.left());
-            }
-
-            if let Some(bounds) = cursor.try_get_mut::<Rectangle>("bounds") {
-                bounds.set_x(self.cursor_x.get());
-            }
-        }
-
-        if cursor_x_delta != 0.0 {
-            {
-                if let Some(bounds) = ctx.child("text_block").try_get_mut::<Rectangle>("bounds") {
-                    bounds.set_x(bounds.x() + cursor_x_delta);
-                }
-            }
-
-            if let Some(scroll_offset) = ctx.widget().try_get_mut::<Point>("scroll_offset") {
-                scroll_offset.x += cursor_x_delta;
-            }
-        }
+        self.adjust_cursor(ctx);
     }
 }
 
 widget!(
     /// The `TextBox` widget represents a single line text input widget.
     ///
-    /// * CSS element: `text-box`
+    /// * CSS element: `text_box`
     TextBox<TextBoxState>: ActivateHandler, ChangedHandler, KeyDownHandler {
         /// Sets or shares the text property.
         text: String16,
@@ -301,7 +359,7 @@ widget!(
 impl Template for TextBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("TextBox")
-            .element("text-box")
+            .element(ELEMENT_TEXT_BOX)
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
@@ -339,13 +397,13 @@ impl Template for TextBox {
                                 Grid::create()
                                     .child(
                                         ScrollViewer::create()
-                                            .id("scroll_viewer")
+                                            .id(ID_SCROLL_VIEWER)
                                             .scroll_offset(id)
                                             .scroll_viewer_mode(("custom", "disabled"))
                                             .delta(id)
                                             .child(
                                                 TextBlock::create()
-                                                    .id("text_block")
+                                                    .id(ID_TEXT_BLOCK)
                                                     .vertical_alignment("center")
                                                     .foreground(id)
                                                     .text(id)
@@ -358,8 +416,7 @@ impl Template for TextBox {
                                     )
                                     .child(
                                         Cursor::create()
-                                            .element("cursor")
-                                            .id("cursor")
+                                            .id(ID_CURSOR)
                                             .margin(0.0)
                                             .horizontal_alignment("start")
                                             .text(id)
