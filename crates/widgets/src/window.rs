@@ -44,11 +44,39 @@ impl WindowState {
     }
 
     fn request_focus(&self, entity: Entity, ctx: &mut Context) {
+        let focused_widget = ctx.widget().get::<Global>("global").focused_widget;
 
+        if (focused_widget.is_some() && focused_widget.unwrap() == entity)
+            || !ctx.get_widget(entity).get::<bool>("enabled")
+        {
+            return;
+        }
+
+        if let Some(old_focused_element) = ctx.window().get::<Global>("global").focused_widget {
+            let mut old_focused_element = ctx.get_widget(old_focused_element);
+            old_focused_element.set("focused", false);
+            old_focused_element.update_theme_by_state(false);
+        }
+
+        ctx.widget().get_mut::<Global>("global").focused_widget = Some(entity);
+
+        if ctx.get_widget(entity).has::<bool>("focused") {
+            ctx.get_widget(entity).set("focused", true);
+            ctx.get_widget(entity).update_theme_by_state(false);
+        }
     }
 
     fn remove_focus(&self, entity: Entity, ctx: &mut Context) {
+        if let Some(old_focused_element) = ctx.window().get::<Global>("global").focused_widget {
+            if old_focused_element != entity {
+                return;
+            }
+            let mut old_focused_element = ctx.get_widget(old_focused_element);
+            old_focused_element.set("focused", false);
+            old_focused_element.update_theme_by_state(false);
+        }
 
+        ctx.widget().get_mut::<Global>("global").focused_widget = None;
     }
 }
 
@@ -62,17 +90,17 @@ impl State for WindowState {
                     }
                     WindowEvent::ActiveChanged(active) => {
                         self.active_changed(active, ctx);
-                    },
+                    }
                     _ => {}
                 },
                 Action::FocusEvent(focus_event) => match focus_event {
                     FocusEvent::RequestFocus(entity) => {
                         self.request_focus(entity, ctx);
-                    },
+                    }
                     FocusEvent::RemoveFocus(entity) => {
                         self.remove_focus(entity, ctx);
                     }
-                }
+                },
             }
         }
     }

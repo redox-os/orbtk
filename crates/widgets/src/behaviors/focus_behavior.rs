@@ -20,18 +20,11 @@ impl State for FocusBehaviorState {
             return;
         }
 
-        if let Some(old_focused_element) = ctx.window().get::<Global>("global").focused_widget {
-            let mut old_focused_element = ctx.get_widget(old_focused_element);
-            old_focused_element.set("focused", false);
-            old_focused_element.update_theme_by_state(false);
-        }
+        let target: Entity =  (*ctx.widget().get::<u32>("target")).into();
 
-        ctx.widget().set("focused", true);
-
-        let target: Entity = (*ctx.widget().get::<u32>("target")).into();
-
-        ctx.get_widget(target).update_theme_by_state(false);
-        ctx.window().get_mut::<Global>("global").focused_widget = Some(target);
+        ctx.push_event_by_window(FocusEvent::RequestFocus(
+            target
+        ));
 
         self.request_focus.set(false);
     }

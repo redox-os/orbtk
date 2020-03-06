@@ -87,7 +87,6 @@ where
     canvas: CanvasElement,
     pub old_canvas: Option<CanvasElement>,
     pub flip: bool,
-    mouse_blocked: Rc<Cell<bool>>,
     adapter: A,
     update: bool,
     running: bool,
@@ -586,7 +585,6 @@ where
             running: true,
             request_receiver,
             request_sender,
-            mouse_blocked
         }
     }
 }

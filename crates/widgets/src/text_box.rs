@@ -60,30 +60,13 @@ impl TextBoxState {
                 self.activate(ctx);
             }
             _ => {
-               self.insert_char(key_event, ctx);
+                self.insert_char(key_event, ctx);
             }
         }
     }
 
     fn request_focus(&self, ctx: &mut Context<'_>) {
-        let focused_widget = ctx.window().get::<Global>("global").focused_widget;
-
-        if (focused_widget.is_some() && focused_widget.unwrap() == ctx.entity)
-            || !ctx.widget().get::<bool>("enabled")
-        {
-            return;
-        }
-
-        if let Some(old_focused_element) = ctx.window().get::<Global>("global").focused_widget {
-            let mut old_focused_element = ctx.get_widget(old_focused_element);
-            old_focused_element.set("focused", false);
-            old_focused_element.update_theme_by_state(false);
-        }
-
-        ctx.window().get_mut::<Global>("global").focused_widget = Some(ctx.entity);
-
-        ctx.widget().set("focused", true);
-        ctx.widget().update_theme_by_state(false);
+        ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
     }
 
     // Reset selection and offset if text is changed from outside
@@ -226,9 +209,7 @@ impl TextBoxState {
 
     fn activate(&self, ctx: &mut Context) {
         if *ctx.widget().get::<bool>("lost_focus_on_activation") {
-            ctx.window().get_mut::<Global>("global").focused_widget = None;
-            ctx.widget().set("focused", false);
-            ctx.widget().update_theme_by_state(false);
+            ctx.push_event_by_window(FocusEvent::RemoveFocus(ctx.entity));
         }
 
         ctx.push_event_strategy_by_entity(
