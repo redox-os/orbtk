@@ -60,3 +60,20 @@ pub fn derive_event(input: TokenStream) -> TokenStream {
 
     TokenStream::from(gen)
 }
+
+#[proc_macro_derive(IntoHandler)]
+pub fn derive_into_handler(input: TokenStream) -> TokenStream { 
+    let input = parse_macro_input!(input as DeriveInput);
+
+    let ident = &input.ident;
+
+    let gen = quote! {
+        impl Into<Rc<dyn EventHandler>> for #ident {
+            fn into(self) -> Rc<dyn EventHandler> {
+                Rc::new(self)
+            }
+        }
+    };
+
+    TokenStream::from(gen)
+}

@@ -2,15 +2,21 @@ use std::{collections::VecDeque, rc::Rc};
 
 use crate::prelude::*;
 
+#[derive(Clone)]
+pub enum Action {
+    WindowEvent(WindowEvent),
+    FocusEvent(FocusEvent),
+}
+
 // The `WindowState` handles the window events.
 #[derive(Default, AsAny)]
 struct WindowState {
-    events: VecDeque<WindowEvent>,
+    actions: VecDeque<Action>,
 }
 
 impl WindowState {
-    fn push_event(&mut self, event: WindowEvent) {
-        self.events.push_front(event);
+    fn push_action(&mut self, action: Action) {
+        self.actions.push_front(action);
     }
 
     fn resize(&self, width: f64, height: f64, ctx: &mut Context) {
@@ -36,19 +42,37 @@ impl WindowState {
             }
         }
     }
+
+    fn request_focus(&self, entity: Entity, ctx: &mut Context) {
+
+    }
+
+    fn remove_focus(&self, entity: Entity, ctx: &mut Context) {
+
+    }
 }
 
 impl State for WindowState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        if let Some(event) = self.events.pop_front() {
-            match event {
-                WindowEvent::Resize { width, height } => {
-                    self.resize(width, height, ctx);
+        if let Some(action) = self.actions.pop_front() {
+            match action {
+                Action::WindowEvent(window_event) => match window_event {
+                    WindowEvent::Resize { width, height } => {
+                        self.resize(width, height, ctx);
+                    }
+                    WindowEvent::ActiveChanged(active) => {
+                        self.active_changed(active, ctx);
+                    },
+                    _ => {}
+                },
+                Action::FocusEvent(focus_event) => match focus_event {
+                    FocusEvent::RequestFocus(entity) => {
+                        self.request_focus(entity, ctx);
+                    },
+                    FocusEvent::RemoveFocus(entity) => {
+                        self.remove_focus(entity, ctx);
+                    }
                 }
-                WindowEvent::ActiveChanged(active) => {
-                    self.active_changed(active, ctx);
-                }
-                _ => {}
             }
         }
     }
@@ -89,6 +113,15 @@ impl Window {
             handler: Rc::new(handler),
         })
     }
+
+    fn on_focus_event<H: Fn(&mut StatesContext, FocusEvent) -> bool + 'static>(
+        self,
+        handler: H,
+    ) -> Self {
+        self.insert_handler(FocusEventHandler {
+            handler: Rc::new(handler),
+        })
+    }
 }
 
 impl Template for Window {
@@ -101,7 +134,13 @@ impl Template for Window {
             .theme(default_theme())
             .resizeable(false)
             .on_window_event(move |ctx, event| {
-                ctx.get_mut::<WindowState>(id).push_event(event);
+                ctx.get_mut::<WindowState>(id)
+                    .push_action(Action::WindowEvent(event));
+                true
+            })
+            .on_focus_event(move |ctx, event| {
+                ctx.get_mut::<WindowState>(id)
+                    .push_action(Action::FocusEvent(event));
                 true
             })
     }

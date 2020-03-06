@@ -16,3 +16,5 @@ pub use crate::{
     trigger_event, widget,
     widget::*,
 };
+
+pub use std::rc::Rc;

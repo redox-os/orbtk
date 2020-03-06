@@ -598,13 +598,13 @@ lazy_static! {
 pub struct Console;
 
 impl Console {
-    pub fn time(&self, name: impl Into<String>) {
+    pub fn time(&self, _name: impl Into<String>) {
         // js! {
         //     console.time(@{&name.into()})
         // }
     }
 
-    pub fn time_end(&self, name: impl Into<String>) {
+    pub fn time_end(&self, _name: impl Into<String>) {
         // js! {
         //     console.timeEnd(@{&name.into()})
         // }
