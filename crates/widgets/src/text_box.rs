@@ -60,16 +60,29 @@ impl TextBoxState {
                 self.activate(ctx);
             }
             Key::A(..) => {
-                if ctx
-                    .window()
-                    .get::<Global>("global")
-                    .keyboard_state
-                    .is_ctrl_down()
-                {
-                    self.select_all(ctx);
-                } else {
-                    self.insert_char(key_event, ctx);
-                }
+                // if cfg!(mac_os) {
+                //     if ctx
+                //         .window()
+                //         .get::<Global>("global")
+                //         .keyboard_state
+                //         .is_home_down()
+                //     {
+                //         self.select_all(ctx);
+                //     } else {
+                //         self.insert_char(key_event, ctx);
+                //     }
+                // } else {
+                    if ctx
+                        .window()
+                        .get::<Global>("global")
+                        .keyboard_state
+                        .is_ctrl_down()
+                    {
+                        self.select_all(ctx);
+                    } else {
+                        self.insert_char(key_event, ctx);
+                    }
+                // }
             }
             _ => {
                 self.insert_char(key_event, ctx);
@@ -214,8 +227,6 @@ impl TextBoxState {
                 selection.start_index = current_selection.start_index;
                 selection.length = current_selection.length;
             }
-
-            ctx.get_widget(self.cursor).set("expanded", false);
 
             ctx.push_event_strategy_by_entity(
                 ChangedEvent(ctx.entity),

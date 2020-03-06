@@ -115,6 +115,7 @@ impl Layout for TextSelectionLayout {
 
         let vertical_alignment: Alignment = component(ecm, entity, "vertical_alignment");
         let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
+        let width =  component::<Constraint>(ecm, entity, "constraint").width();
 
         {
             let mut widget = WidgetContainer::new(entity, ecm, &theme);
@@ -146,6 +147,8 @@ impl Layout for TextSelectionLayout {
                                 .measure(text_part.as_str(), *font_size, font.as_str())
                                 .width;
                         }
+                    } else {
+                        size.0 = width;
                     }
                 }
             }

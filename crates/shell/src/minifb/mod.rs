@@ -23,22 +23,30 @@ fn key_event_helper<A>(key: &mut KeyHelper, adapter: &mut A, window: &minifb::Wi
 where
     A: WindowAdapter,
 {
-    if !key.0 && window.is_key_pressed(key.1, minifb::KeyRepeat::Yes) {
-        adapter.key_event(KeyEvent {
-            key: key.2,
-            state: ButtonState::Down,
-            text: String::new(),
-        });
-
-        key.0 = true;
-    } else {
-        key.0 = false;
-    }
+    // if window.is_key_pressed(key.1, minifb::KeyRepeat::No) {
+    //     println!("Down {:?}, {:?}", key.1, key.2);
+    //     adapter.key_event(KeyEvent {
+    //         key: key.2,
+    //         state: ButtonState::Down,
+    //         text: String::new(),
+    //     });
+    // } 
+    
+    // if window.is_key_released(key.1) {
+    //     println!("Up {:?}, {:?}", key.1, key.2);
+    //     adapter.key_event(KeyEvent {
+    //         key: key.2,
+    //         state: ButtonState::Up,
+    //         text: String::new(),
+    //     });
+    // }
 }
 
 fn unicode_to_key_event(uni_char: u32) -> Option<KeyEvent> {
     let mut text = String::new();
 
+    println!("char {}", text);
+  
     let key = if let Some(character) = char::from_u32(uni_char) {
         text = character.to_string();
         Key::from(character)
@@ -51,9 +59,16 @@ fn unicode_to_key_event(uni_char: u32) -> Option<KeyEvent> {
         || key == Key::Left
         || key == Key::Right
         || key == Key::Backspace
+        || key == Key::Control
+        || key == Key::Home
+        || key == Key::Escape
+        || key == Key::Delete
+        || key == Key::Unknown
     {
         return None;
     }
+
+   
 
     Some(KeyEvent {
         key,

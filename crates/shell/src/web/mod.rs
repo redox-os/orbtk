@@ -225,6 +225,16 @@ where
             });
         }
 
+        while let Some(event) = self.key_up_events.borrow_mut().pop() {
+            let key = get_key(event.code().as_str(), event.key());
+
+            self.adapter.key_event(KeyEvent {
+                key: key.0,
+                state: ButtonState::Up,
+                text: key.1,
+            });
+        }
+
         while let Some(_) = self.resize_events.borrow_mut().pop() {
             let window_size = (
                 window().inner_width() as f64,
