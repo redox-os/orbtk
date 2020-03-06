@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Many web fixes
 * State cleanup method
 * Refactor setting of styling selectors
+* TextBox select all
 
 ### 0.3.1-alpha1
 

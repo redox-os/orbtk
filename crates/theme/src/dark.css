@@ -163,6 +163,7 @@ text_box:focus {
 }
 
 cursor {
+    opacity: 1.0;
     background: transparent;
 }
 

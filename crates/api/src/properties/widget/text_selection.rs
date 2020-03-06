@@ -15,7 +15,7 @@ impl From<(usize, usize)> for TextSelection {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests { 
     use super::*;
 
     #[test]

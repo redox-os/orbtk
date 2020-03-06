@@ -6,21 +6,15 @@ pub struct CursorState;
 
 impl State for CursorState {
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        let mut widget = ctx.widget();
-
-        let selection_length = widget.get::<TextSelection>("text_selection").length;
+        let selection_length = ctx.widget().get::<TextSelection>("text_selection").length;
 
         if selection_length > 0 {
-            add_selector_to_widget("expanded", &mut widget);
+            ctx.widget().set("expanded", true);
+            ctx.widget().update_theme_by_state(false);
         } else {
-            remove_selector_from_widget("expanded", &mut widget)
+            ctx.widget().set("expanded", false);
+            ctx.widget().update_theme_by_state(false);
         }
-
-        // if *widget.get::<bool>("focused") {
-        //     widget.set("visibility", Visibility::from("visible"));
-        // } else {
-        //     widget.set("visibility", Visibility::from("collapsed"));
-        // }
     }
 }
 
@@ -48,7 +42,10 @@ widget!(
         scroll_offset: Point,
 
         /// Sets or shares the focused property.
-        focused: bool
+        focused: bool,
+
+        /// Sets or shares the expanded property.
+        expanded: bool
     }
 );
 

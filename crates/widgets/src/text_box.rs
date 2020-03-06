@@ -3,7 +3,7 @@ use std::cell::Cell;
 use super::behaviors::MouseBehavior;
 use crate::{
     prelude::*,
-    shell::{Key, KeyEvent},
+    shell::{Key, KeyEvent, CONSOLE},
 };
 
 // --- KEYS --
@@ -58,6 +58,18 @@ impl TextBoxState {
             }
             Key::Enter => {
                 self.activate(ctx);
+            }
+            Key::A(..) => {
+                if ctx
+                    .window()
+                    .get::<Global>("global")
+                    .keyboard_state
+                    .is_ctrl_down()
+                {
+                    self.select_all(ctx);
+                } else {
+                    self.insert_char(key_event, ctx);
+                }
             }
             _ => {
                 self.insert_char(key_event, ctx);
@@ -133,12 +145,23 @@ impl TextBoxState {
         }
     }
 
+    fn select_all(&self, ctx: &mut Context) {
+        let len = ctx.widget().get::<String16>("text").len();
+        ctx.widget()
+            .get_mut::<TextSelection>("text_selection")
+            .start_index = 0;
+        ctx.widget()
+            .get_mut::<TextSelection>("text_selection")
+            .length = len;
+    }
+
     fn move_cursor_left(&self, ctx: &mut Context) {
         if let Some(selection) = ctx
             .get_widget(self.cursor)
             .try_get_mut::<TextSelection>("text_selection")
         {
             selection.start_index = (selection.start_index as i32 - 1).max(0) as usize;
+            selection.length = 0;
         }
     }
 
@@ -149,6 +172,7 @@ impl TextBoxState {
             .try_get_mut::<TextSelection>("text_selection")
         {
             selection.start_index = (selection.start_index + 1).min(text_len);
+            selection.length = 0;
         }
     }
 
@@ -162,13 +186,25 @@ impl TextBoxState {
             .get::<String16>("text")
             .is_empty()
             && current_selection.start_index > 0
+            || current_selection.length > 0
         {
-            for _ in 0..=current_selection.length {
+            let len = current_selection.length;
+            if current_selection.length == 0 {
                 ctx.widget()
                     .get_mut::<String16>("text")
                     .remove(current_selection.start_index - 1);
                 current_selection.start_index =
                     (current_selection.start_index as i32 - 1).max(0) as usize;
+            } else {
+                for _ in 0..len {
+                    ctx.widget()
+                        .get_mut::<String16>("text")
+                        .remove(current_selection.start_index + current_selection.length - 1);
+                    current_selection.start_index =
+                        (current_selection.start_index as i32 - 1).max(0) as usize;
+                    current_selection.length =
+                        (current_selection.length as i32 - 1).max(0) as usize;
+                }
             }
 
             if let Some(selection) = ctx
@@ -176,7 +212,10 @@ impl TextBoxState {
                 .try_get_mut::<TextSelection>("text_selection")
             {
                 selection.start_index = current_selection.start_index;
+                selection.length = current_selection.length;
             }
+
+            ctx.get_widget(self.cursor).set("expanded", false);
 
             ctx.push_event_strategy_by_entity(
                 ChangedEvent(ctx.entity),

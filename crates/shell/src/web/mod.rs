@@ -49,7 +49,7 @@ fn get_key(code: &str, key: String) -> (Key, String) {
     let code = match code {
         "Backspace" => Key::Backspace,
         "Delete" => Key::Delete,
-        "ControlLeft" => Key::Control,
+        "ControlLeft" | "ControlRight" => Key::Control,
         "ShiftLeft" => Key::ShiftL,
         "ShiftRight" => Key::ShiftR,
         "AltLeft" => Key::Alt,
@@ -59,6 +59,7 @@ fn get_key(code: &str, key: String) -> (Key, String) {
         "ArrowDown" => Key::Down,
         "Escape" => Key::Escape,
         "Enter" => Key::Enter,
+        "OSLeft" | "OSRight" => Key::Home,
         _ => {
             text = key.clone();
             Key::from(key.chars().next().unwrap())

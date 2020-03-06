@@ -2,6 +2,12 @@ use std::{collections::VecDeque, rc::Rc};
 
 use crate::prelude::*;
 
+// --- KEYS --
+
+pub static ELEMENT_WINDOW: &'static str = "window";
+
+// --- KEYS --
+
 #[derive(Clone)]
 pub enum Action {
     WindowEvent(WindowEvent),
@@ -157,7 +163,7 @@ impl Template for Window {
         self.name("Window")
             .background(colors::BRIGHT_GRAY_COLOR)
             .size(100.0, 100.0)
-            .element("window")
+            .element(ELEMENT_WINDOW)
             .title("Window")
             .theme(default_theme())
             .resizeable(false)

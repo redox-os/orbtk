@@ -136,6 +136,17 @@ impl Layout for TextSelectionLayout {
                             .measure(text_part.as_str(), *font_size, font.as_str())
                             .width;
                     }
+
+                    if selection.length > 0 {
+                        if let Some(text_part) = text.get_string(
+                            selection.start_index,
+                            selection.start_index + selection.length,
+                        ) {
+                            size.0 = render_context_2_d
+                                .measure(text_part.as_str(), *font_size, font.as_str())
+                                .width;
+                        }
+                    }
                 }
             }
 
