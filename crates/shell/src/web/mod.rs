@@ -197,7 +197,7 @@ where
             });
         }
 
-        while let Some(event) = self.touch_end_events.borrow_mut().pop() {           
+        while let Some(event) = self.touch_end_events.borrow_mut().pop() {
             self.adapter.mouse_event(MouseEvent {
                 x: event.changed_touches()[0].client_x() as f64,
                 y: event.changed_touches()[0].client_y() as f64,

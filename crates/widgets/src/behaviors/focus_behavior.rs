@@ -20,11 +20,9 @@ impl State for FocusBehaviorState {
             return;
         }
 
-        let target: Entity =  (*ctx.widget().get::<u32>("target")).into();
+        let target: Entity = (*ctx.widget().get::<u32>("target")).into();
 
-        ctx.push_event_by_window(FocusEvent::RequestFocus(
-            target
-        ));
+        ctx.push_event_by_window(FocusEvent::RequestFocus(target));
 
         self.request_focus.set(false);
     }

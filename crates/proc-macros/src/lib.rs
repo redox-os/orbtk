@@ -62,7 +62,7 @@ pub fn derive_event(input: TokenStream) -> TokenStream {
 }
 
 #[proc_macro_derive(IntoHandler)]
-pub fn derive_into_handler(input: TokenStream) -> TokenStream { 
+pub fn derive_into_handler(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
 
     let ident = &input.ident;

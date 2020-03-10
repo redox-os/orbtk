@@ -1,8 +1,8 @@
 use std::rc::Rc;
 
 use crate::{
-    proc_macros::IntoHandler,
     prelude::*,
+    proc_macros::IntoHandler,
     shell::{Key, KeyEvent},
 };
 
