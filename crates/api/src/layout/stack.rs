@@ -311,10 +311,10 @@ fn accumulate_desired_size(
     match orientation {
         Orientation::Horizontal => {
             desired_size.0 += width;
-            desired_size.1 = height;
+            desired_size.1 = desired_size.1.max(height);
         }
         Orientation::Vertical => {
-            desired_size.0 = width;
+            desired_size.0 = desired_size.0.max(width);
             desired_size.1 += height;
         }
     }
