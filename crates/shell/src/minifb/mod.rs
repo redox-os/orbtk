@@ -443,6 +443,7 @@ where
         let window_options = minifb::WindowOptions {
             resize: self.resizeable,
             borderless: self.borderless,
+            title: !self.borderless,
             scale_mode: minifb::ScaleMode::UpperLeft,
             ..Default::default()
         };
