@@ -1,18 +1,19 @@
-use std::cell::Cell;
-
 use super::behaviors::MouseBehavior;
 use crate::{
     prelude::*,
-    shell::{Key, KeyEvent, CONSOLE},
+    shell::{Key, KeyEvent},
 };
+
+use crate::shell::CONSOLE;
 
 // --- KEYS --
 
 pub static ELEMENT_TEXT_BOX: &'static str = "text_box";
 
 static ID_CURSOR: &'static str = "id_cursor";
-static ID_SCROLL_VIEWER: &'static str = "id_scroll_viewer";
+// static ID_SCROLL_VIEWER: &'static str = "id_scroll_viewer";
 static ID_TEXT_BLOCK: &'static str = "id_text_block";
+static ID_TEXT_BLOCK_ROOT: &'static str = "id_text_block_root";
 
 // --- KEYS --
 
@@ -25,17 +26,18 @@ enum TextBoxAction {
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
 #[derive(Default, AsAny)]
 pub struct TextBoxState {
-    action: RefCell<Option<TextBoxAction>>,
-    cursor_x: Cell<f64>,
-    len: Cell<usize>,
+    action: Option<TextBoxAction>,
+    cursor_x: f64,
+    len: usize,
     cursor: Entity,
-    scroll_viewer: Entity,
+    text_block_root: Entity,
+    // scroll_viewer: Entity,
     text_block: Entity,
 }
 
 impl TextBoxState {
-    fn action(&self, action: TextBoxAction) {
-        *self.action.borrow_mut() = Some(action);
+    fn action(&mut self, action: TextBoxAction) {
+        self.action = Some(action);
     }
 
     fn handle_key_event(&self, key_event: KeyEvent, ctx: &mut Context<'_>) {
@@ -94,12 +96,6 @@ impl TextBoxState {
         ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
     }
 
-    // clears the text
-    fn clear(&self, ctx: &mut Context<'_>) {
-        ctx.widget().set("text", String16::default());
-        self.reset(ctx);
-    }
-
     // Reset selection and offset if text is changed from outside
     fn reset(&self, ctx: &mut Context<'_>) {
         ctx.widget().set("text_selection", TextSelection::default());
@@ -113,55 +109,107 @@ impl TextBoxState {
 
     fn check_outside_update(&self, ctx: &mut Context<'_>) {
         let len = ctx.widget().get::<String16>("text").len();
-        if self.len.get() != len && self.len.get() > len {
+        if self.len != len && self.len > len {
             self.reset(ctx);
         }
     }
 
     // Adjust offset of text and cursor if cursor position is out of bounds
-    fn adjust_cursor(&self, ctx: &mut Context) {
-        let mut cursor_x_delta = 0.0;
-        let mut scroll_viewer_width = 0.0;
+    fn adjust_cursor(&mut self, ctx: &mut Context) {
+        let cursor_x = ctx
+            .get_widget(self.cursor)
+            .get::<Thickness>("margin")
+            .left();
+        let view_port_width = ctx
+            .get_widget(self.text_block_root)
+            .get::<Rectangle>("bounds")
+            .width();
 
+        CONSOLE.log(format!("cursor {}", cursor_x));
+
+        if cursor_x >= 0.0 && cursor_x < view_port_width {
+            return;
+        }
+
+        let delta = if cursor_x < 0.0 {
+            cursor_x
+        } else {
+            cursor_x - view_port_width
+        };
+
+        if let Some(bounds) = ctx
+            .get_widget(self.text_block)
+            .try_get_mut::<Rectangle>("bounds")
         {
-            if let Some(bounds) = ctx
-                .get_widget(self.scroll_viewer)
-                .try_get_mut::<Rectangle>("bounds")
-            {
-                scroll_viewer_width = bounds.width();
-            }
+            bounds.set_x(bounds.x() - delta);
         }
 
+        if let Some(bounds) = ctx
+            .get_widget(self.cursor)
+            .try_get_mut::<Rectangle>("bounds")
         {
-            let mut cursor = ctx.get_widget(self.cursor);
-
-            if let Some(margin) = cursor.try_get_mut::<Thickness>("margin") {
-                if margin.left() < 0.0 || margin.left() > scroll_viewer_width {
-                    cursor_x_delta = self.cursor_x.get() - margin.left();
-                    margin.set_left(self.cursor_x.get());
-                }
-                self.cursor_x.set(margin.left());
-            }
-
-            if let Some(bounds) = cursor.try_get_mut::<Rectangle>("bounds") {
-                bounds.set_x(self.cursor_x.get());
-            }
+            bounds.set_x(bounds.x() - delta);
         }
 
-        if cursor_x_delta != 0.0 {
-            {
-                if let Some(bounds) = ctx
-                    .get_widget(self.text_block)
-                    .try_get_mut::<Rectangle>("bounds")
-                {
-                    bounds.set_x(bounds.x() + cursor_x_delta);
-                }
-            }
-
-            if let Some(scroll_offset) = ctx.widget().try_get_mut::<Point>("scroll_offset") {
-                scroll_offset.x += cursor_x_delta;
-            }
+        if let Some(margin) = ctx
+            .get_widget(self.cursor)
+            .try_get_mut::<Thickness>("margin")
+        {
+            margin.set_left(margin.left() - delta);
         }
+
+        CONSOLE.log(format!("delta {}", delta));
+
+        // ctx.widget().get_mut::<Point>("scroll_offset").x -= delta;
+        // ctx.get_widget(self.cursor).get_mut::<Thickness>("margin").set_left(cursor_x - delta);
+
+        // if let Some(bounds) = ctx.get_widget(self.text_block).try_get_mut::<Rectangle>("bounds") {
+        //     bounds.set_x(bounds.x() - delta);
+        // }
+
+        // let mut cursor_x_delta = 0.0;
+        // let mut scroll_viewer_width = 0.0;
+
+        // {
+        //     if let Some(bounds) = ctx
+        //         .get_widget(self.scroll_viewer)
+        //         .try_get_mut::<Rectangle>("bounds")
+        //     {
+        //         scroll_viewer_width = bounds.width();
+        //     }
+        // }
+
+        // {
+        //     let mut cursor = ctx.get_widget(self.cursor);
+
+        //     if let Some(margin) = cursor.try_get_mut::<Thickness>("margin") {
+        //         CONSOLE.log(format!("ml: {}", margin.left()));
+        //         if margin.left() < 0.0 || margin.left() > scroll_viewer_width {
+        //             cursor_x_delta = self.cursor_x - margin.left();
+        //             margin.set_left(self.cursor_x);
+        //         }
+        //         self.cursor_x = margin.left();
+        //     }
+
+        //     if let Some(bounds) = cursor.try_get_mut::<Rectangle>("bounds") {
+        //         bounds.set_x(self.cursor_x);
+        //     }
+        // }
+
+        // if cursor_x_delta != 0.0 {
+        //     {
+        //         if let Some(bounds) = ctx
+        //             .get_widget(self.text_block)
+        //             .try_get_mut::<Rectangle>("bounds")
+        //         {
+        //             bounds.set_x(bounds.x() + cursor_x_delta);
+        //         }
+        //     }
+
+        //     if let Some(scroll_offset) = ctx.widget().try_get_mut::<Point>("scroll_offset") {
+        //         scroll_offset.x += cursor_x_delta;
+        //     }
+        // }
     }
 
     fn select_all(&self, ctx: &mut Context) {
@@ -315,19 +363,22 @@ impl State for TextBoxState {
         self.cursor = ctx
             .entity_of_child(ID_CURSOR)
             .expect("TextBoxState.init: cursor child could not be found.");
-        self.scroll_viewer = ctx
-            .entity_of_child(ID_SCROLL_VIEWER)
-            .expect("TextBoxState.init: scroll_viewer child could not be found.");
+        self.text_block_root = ctx
+            .entity_of_child(ID_TEXT_BLOCK_ROOT)
+            .expect("TextBoxState.init: text block root could not be found.");
+        // self.scroll_viewer = ctx
+        //     .entity_of_child(ID_SCROLL_VIEWER)
+        //     .expect("TextBoxState.init: scroll_viewer child could not be found.");
         self.text_block = ctx
             .entity_of_child(ID_TEXT_BLOCK)
             .expect("TextBoxState.init: text_block child could not be found.");
-        self.len.set(ctx.widget().get::<String16>("text").len());
+        self.len = ctx.widget().get::<String16>("text").len();
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         self.check_outside_update(ctx);
 
-        if let Some(action) = self.action.borrow().clone() {
+        if let Some(action) = self.action.clone() {
             match action {
                 TextBoxAction::Key(event) => {
                     self.handle_key_event(event, ctx);
@@ -338,9 +389,9 @@ impl State for TextBoxState {
             }
         }
 
-        *self.action.borrow_mut() = None;
+        self.action = None;
         ctx.widget().update_theme_by_state(false);
-        self.len.set(ctx.widget().get::<String16>("text").len());
+        self.len = ctx.widget().get::<String16>("text").len();
     }
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
@@ -386,11 +437,11 @@ widget!(
         /// Sets or shares the padding property.
         padding: Thickness,
 
-        /// Sets or shares the text offset property.
-        scroll_offset: Point,
+        // /// Sets or shares the text offset property.
+        // scroll_offset: Point,
 
-        /// Sets or shares the (wheel, scroll) delta property.
-        delta: Point,
+        // /// Sets or shares the (wheel, scroll) delta property.
+        // delta: Point,
 
         /// Sets or shares the focused property.
         focused: bool,
@@ -409,7 +460,7 @@ impl Template for TextBox {
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto Regular")
             .text_selection(TextSelection::default())
-            .scroll_offset(0.0)
+            // .scroll_offset(0.0)
             .padding(4.0)
             .background(colors::LYNCH_COLOR)
             .border_brush("transparent")
@@ -418,7 +469,7 @@ impl Template for TextBox {
             .min_width(128.0)
             .height(32.0)
             .focused(false)
-            .delta(0.0)
+            // .delta(0.0)
             .lost_focus_on_activation(true)
             .child(
                 MouseBehavior::create()
@@ -426,7 +477,7 @@ impl Template for TextBox {
                     .enabled(id)
                     .on_mouse_down(move |states, p| {
                         states
-                            .get::<TextBoxState>(id)
+                            .get_mut::<TextBoxState>(id)
                             .action(TextBoxAction::Mouse(p));
                         true
                     })
@@ -439,24 +490,26 @@ impl Template for TextBox {
                             .padding(id)
                             .child(
                                 Grid::create()
+                                    .id(ID_TEXT_BLOCK_ROOT)
+                                    .clip(true)
                                     .child(
-                                        ScrollViewer::create()
-                                            .id(ID_SCROLL_VIEWER)
-                                            .scroll_offset(id)
-                                            .scroll_viewer_mode(("custom", "disabled"))
-                                            .delta(id)
-                                            .child(
-                                                TextBlock::create()
-                                                    .id(ID_TEXT_BLOCK)
-                                                    .vertical_alignment("center")
-                                                    .foreground(id)
-                                                    .text(id)
-                                                    .water_mark(id)
-                                                    .font(id)
-                                                    .font_size(id)
-                                                    .build(ctx),
-                                            )
+                                        //     ScrollViewer::create()
+                                        //         .id(ID_SCROLL_VIEWER)
+                                        //         .scroll_offset(id)
+                                        //         .scroll_viewer_mode(("custom", "disabled"))
+                                        //         .delta(id)
+                                        //         .child(
+                                        TextBlock::create()
+                                            .id(ID_TEXT_BLOCK)
+                                            .vertical_alignment("center")
+                                            .foreground(id)
+                                            .text(id)
+                                            .water_mark(id)
+                                            .font(id)
+                                            .font_size(id)
                                             .build(ctx),
+                                        // )
+                                        // .build(ctx),
                                     )
                                     .child(
                                         Cursor::create()
@@ -466,7 +519,7 @@ impl Template for TextBox {
                                             .text(id)
                                             .font(id)
                                             .font_size(id)
-                                            .scroll_offset(id)
+                                            // .scroll_offset(id)
                                             .focused(id)
                                             .text_selection(id)
                                             .build(ctx),
@@ -479,7 +532,7 @@ impl Template for TextBox {
             )
             .on_key_down(move |states, event| -> bool {
                 states
-                    .get::<TextBoxState>(id)
+                    .get_mut::<TextBoxState>(id)
                     .action(TextBoxAction::Key(event));
                 false
             })

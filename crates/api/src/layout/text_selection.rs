@@ -153,9 +153,9 @@ impl Layout for TextSelectionLayout {
                 }
             }
 
-            pos += widget
-                .try_get::<Point>("scroll_offset")
-                .map_or(0.0, |off| off.x);
+            // pos += widget
+            //     .try_get::<Point>("scroll_offset")
+            //     .map_or(0.0, |off| off.x);
 
             if let Some(margin) = widget.try_get_mut::<Thickness>("margin") {
                 margin.set_left(pos);

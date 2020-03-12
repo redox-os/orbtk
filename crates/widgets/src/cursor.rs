@@ -38,8 +38,8 @@ widget!(
         /// Sets or shares the font property.
         font: String,
 
-        /// Sets or shares the text offset property.
-        scroll_offset: Point,
+        // /// Sets or shares the text offset property.
+        // scroll_offset: Point,
 
         /// Sets or shares the focused property.
         focused: bool,
@@ -55,7 +55,7 @@ impl Template for Cursor {
             .width(1.0)
             .element("cursor")
             .text("")
-            .scroll_offset(0.0)
+            // .scroll_offset(0.0)
             .background("transparent")
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto Regular")
