@@ -97,18 +97,18 @@ impl EventQueue {
 
 impl<'a> IntoIterator for &'a mut EventQueue {
     type Item = EventBox;
-    type IntoIter = EventQeueIterator<'a>;
+    type IntoIter = EventQueueIterator<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
-        EventQeueIterator { event_queue: self }
+        EventQueueIterator { event_queue: self }
     }
 }
 
-pub struct EventQeueIterator<'a> {
+pub struct EventQueueIterator<'a> {
     event_queue: &'a mut EventQueue,
 }
 
-impl<'a> Iterator for EventQeueIterator<'a> {
+impl<'a> Iterator for EventQueueIterator<'a> {
     type Item = EventBox;
 
     fn next(&mut self) -> Option<EventBox> {
