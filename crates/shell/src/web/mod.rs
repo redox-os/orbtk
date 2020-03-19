@@ -53,6 +53,7 @@ fn get_key(code: &str, key: String) -> (Key, String) {
         "ShiftLeft" => Key::ShiftL,
         "ShiftRight" => Key::ShiftR,
         "AltLeft" => Key::Alt,
+        "AltRight" => Key::Alt,
         "ArrowUp" => Key::Up,
         "ArrowLeft" => Key::Left,
         "ArrowRight" => Key::Right,

@@ -62,6 +62,7 @@ fn unicode_to_key_event(uni_char: u32) -> Option<KeyEvent> {
         text = character.to_string();
         Key::from(character)
     } else {
+        
         Key::Unknown
     };
 

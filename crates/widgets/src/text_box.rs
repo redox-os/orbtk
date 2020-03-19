@@ -27,12 +27,11 @@ enum TextBoxAction {
 #[derive(Default, AsAny)]
 pub struct TextBoxState {
     action: Option<TextBoxAction>,
-    cursor_x: f64,
     len: usize,
     cursor: Entity,
     text_block_root: Entity,
-    // scroll_viewer: Entity,
     text_block: Entity,
+    cursor_dirty: bool,
 }
 
 impl TextBoxState {
@@ -40,7 +39,7 @@ impl TextBoxState {
         self.action = Some(action);
     }
 
-    fn handle_key_event(&self, key_event: KeyEvent, ctx: &mut Context<'_>) {
+    fn handle_key_event(&mut self, key_event: KeyEvent, ctx: &mut Context<'_>) {
         if !ctx.widget().get::<bool>("focused") {
             return;
         }
@@ -125,8 +124,6 @@ impl TextBoxState {
             .get::<Rectangle>("bounds")
             .width();
 
-        CONSOLE.log(format!("cursor {}", cursor_x));
-
         if cursor_x >= 0.0 && cursor_x < view_port_width {
             return;
         }
@@ -144,72 +141,26 @@ impl TextBoxState {
             bounds.set_x(bounds.x() - delta);
         }
 
+        let mut cursor_width = 0.0;
+
         if let Some(bounds) = ctx
             .get_widget(self.cursor)
             .try_get_mut::<Rectangle>("bounds")
         {
-            bounds.set_x(bounds.x() - delta);
+            cursor_width = bounds.width();
+            bounds.set_x(bounds.x() - delta - cursor_width);
         }
 
         if let Some(margin) = ctx
             .get_widget(self.cursor)
             .try_get_mut::<Thickness>("margin")
         {
-            margin.set_left(margin.left() - delta);
+            margin.set_left(margin.left() - delta - cursor_width);
         }
 
         CONSOLE.log(format!("delta {}", delta));
 
-        // ctx.widget().get_mut::<Point>("scroll_offset").x -= delta;
-        // ctx.get_widget(self.cursor).get_mut::<Thickness>("margin").set_left(cursor_x - delta);
-
-        // if let Some(bounds) = ctx.get_widget(self.text_block).try_get_mut::<Rectangle>("bounds") {
-        //     bounds.set_x(bounds.x() - delta);
-        // }
-
-        // let mut cursor_x_delta = 0.0;
-        // let mut scroll_viewer_width = 0.0;
-
-        // {
-        //     if let Some(bounds) = ctx
-        //         .get_widget(self.scroll_viewer)
-        //         .try_get_mut::<Rectangle>("bounds")
-        //     {
-        //         scroll_viewer_width = bounds.width();
-        //     }
-        // }
-
-        // {
-        //     let mut cursor = ctx.get_widget(self.cursor);
-
-        //     if let Some(margin) = cursor.try_get_mut::<Thickness>("margin") {
-        //         CONSOLE.log(format!("ml: {}", margin.left()));
-        //         if margin.left() < 0.0 || margin.left() > scroll_viewer_width {
-        //             cursor_x_delta = self.cursor_x - margin.left();
-        //             margin.set_left(self.cursor_x);
-        //         }
-        //         self.cursor_x = margin.left();
-        //     }
-
-        //     if let Some(bounds) = cursor.try_get_mut::<Rectangle>("bounds") {
-        //         bounds.set_x(self.cursor_x);
-        //     }
-        // }
-
-        // if cursor_x_delta != 0.0 {
-        //     {
-        //         if let Some(bounds) = ctx
-        //             .get_widget(self.text_block)
-        //             .try_get_mut::<Rectangle>("bounds")
-        //         {
-        //             bounds.set_x(bounds.x() + cursor_x_delta);
-        //         }
-        //     }
-
-        //     if let Some(scroll_offset) = ctx.widget().try_get_mut::<Point>("scroll_offset") {
-        //         scroll_offset.x += cursor_x_delta;
-        //     }
-        // }
+        self.cursor_dirty = false;
     }
 
     fn select_all(&self, ctx: &mut Context) {
@@ -222,7 +173,7 @@ impl TextBoxState {
             .length = len;
     }
 
-    fn move_cursor_left(&self, ctx: &mut Context) {
+    fn move_cursor_left(&mut self, ctx: &mut Context) {
         if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
             self.reset(ctx);
         }
@@ -234,37 +185,44 @@ impl TextBoxState {
             selection.start_index = (selection.start_index as i32 - 1).max(0) as usize;
             selection.length = 0;
         }
+
+        self.cursor_dirty = true;
     }
 
-    fn move_cursor_right(&self, ctx: &mut Context) {
+    fn move_cursor_right(&mut self, ctx: &mut Context) {
         let text_len = ctx.widget().get::<String16>("text").len();
 
         if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
+            self.reset(ctx);
+
             if let Some(selection) = ctx
                 .get_widget(self.cursor)
                 .try_get_mut::<TextSelection>("text_selection")
             {
                 selection.start_index = text_len;
-                selection.length = 0;
             }
 
+            self.cursor_dirty = true;
             return;
         }
+
         if let Some(selection) = ctx
             .get_widget(self.cursor)
             .try_get_mut::<TextSelection>("text_selection")
         {
+            CONSOLE.log(format!("tl: {}, ind: {}", text_len, selection.start_index));
             selection.start_index = (selection.start_index + 1).min(text_len);
             selection.length = 0;
         }
+
+        self.cursor_dirty = true;
     }
 
-    fn clear_selection(&self, ctx: &mut Context) {
+    fn clear_selection(&mut self, ctx: &mut Context) {
         let selection = ctx.widget().clone::<TextSelection>("text_selection");
 
         if let Some(text) = ctx.widget().try_get_mut::<String16>("text") {
             for i in (selection.start_index..(selection.start_index + selection.length)).rev() {
-                println!("{}", i);
                 text.remove(i);
             }
         }
@@ -272,11 +230,16 @@ impl TextBoxState {
         ctx.widget()
             .get_mut::<TextSelection>("text_selection")
             .length = 0;
+
+        self.cursor_dirty = true;
     }
 
-    fn back_space(&self, ctx: &mut Context) {
+    fn back_space(&mut self, ctx: &mut Context) {
+        let mut changed = false;
+
         if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
             self.clear_selection(ctx);
+            changed = true;
         } else {
             let index = ctx
                 .widget()
@@ -287,24 +250,50 @@ impl TextBoxState {
                 ctx.widget()
                     .get_mut::<TextSelection>("text_selection")
                     .start_index = index - 1;
+
+                changed = true;
             }
         }
 
-        ctx.push_event_strategy_by_entity(
-            ChangedEvent(ctx.entity),
-            ctx.entity,
-            EventStrategy::Direct,
-        );
+        if changed {
+            ctx.push_event_strategy_by_entity(
+                ChangedEvent(ctx.entity),
+                ctx.entity,
+                EventStrategy::Direct,
+            );
+            self.cursor_dirty = true;
+        }
     }
 
-    fn delete(&self, ctx: &mut Context) {
-        self.clear_selection(ctx);
+    fn delete(&mut self, ctx: &mut Context) {
+        let mut changed = false;
 
-        ctx.push_event_strategy_by_entity(
-            ChangedEvent(ctx.entity),
-            ctx.entity,
-            EventStrategy::Direct,
-        );
+        if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
+            self.clear_selection(ctx);
+            self.cursor_dirty = true;
+        } else {
+            let index = ctx
+                .widget()
+                .clone::<TextSelection>("text_selection")
+                .start_index;
+            if index < ctx.widget().get::<String16>("text").len() {
+                ctx.widget().get_mut::<String16>("text").remove(index);
+                changed = true;
+
+                ctx.widget()
+                    .get_mut::<TextSelection>("text_selection")
+                    .start_index = index;
+            }
+        }
+
+        if changed {
+            ctx.push_event_strategy_by_entity(
+                ChangedEvent(ctx.entity),
+                ctx.entity,
+                EventStrategy::Direct,
+            );
+            self.cursor_dirty = true;
+        }
     }
 
     fn activate(&self, ctx: &mut Context) {
@@ -319,7 +308,7 @@ impl TextBoxState {
         )
     }
 
-    fn insert_char(&self, key_event: KeyEvent, ctx: &mut Context) {
+    fn insert_char(&mut self, key_event: KeyEvent, ctx: &mut Context) {
         if key_event.text.is_empty() {
             return;
         }
@@ -355,6 +344,8 @@ impl TextBoxState {
             ctx.entity,
             EventStrategy::Direct,
         );
+
+        self.cursor_dirty = true;
     }
 }
 
@@ -366,9 +357,6 @@ impl State for TextBoxState {
         self.text_block_root = ctx
             .entity_of_child(ID_TEXT_BLOCK_ROOT)
             .expect("TextBoxState.init: text block root could not be found.");
-        // self.scroll_viewer = ctx
-        //     .entity_of_child(ID_SCROLL_VIEWER)
-        //     .expect("TextBoxState.init: scroll_viewer child could not be found.");
         self.text_block = ctx
             .entity_of_child(ID_TEXT_BLOCK)
             .expect("TextBoxState.init: text_block child could not be found.");
@@ -395,6 +383,9 @@ impl State for TextBoxState {
     }
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+        if !self.cursor_dirty {
+            return;
+        }
         self.adjust_cursor(ctx);
     }
 }
@@ -437,12 +428,6 @@ widget!(
         /// Sets or shares the padding property.
         padding: Thickness,
 
-        // /// Sets or shares the text offset property.
-        // scroll_offset: Point,
-
-        // /// Sets or shares the (wheel, scroll) delta property.
-        // delta: Point,
-
         /// Sets or shares the focused property.
         focused: bool,
 
@@ -460,7 +445,6 @@ impl Template for TextBox {
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto Regular")
             .text_selection(TextSelection::default())
-            // .scroll_offset(0.0)
             .padding(4.0)
             .background(colors::LYNCH_COLOR)
             .border_brush("transparent")
@@ -469,7 +453,6 @@ impl Template for TextBox {
             .min_width(128.0)
             .height(32.0)
             .focused(false)
-            // .delta(0.0)
             .lost_focus_on_activation(true)
             .child(
                 MouseBehavior::create()
@@ -493,12 +476,6 @@ impl Template for TextBox {
                                     .id(ID_TEXT_BLOCK_ROOT)
                                     .clip(true)
                                     .child(
-                                        //     ScrollViewer::create()
-                                        //         .id(ID_SCROLL_VIEWER)
-                                        //         .scroll_offset(id)
-                                        //         .scroll_viewer_mode(("custom", "disabled"))
-                                        //         .delta(id)
-                                        //         .child(
                                         TextBlock::create()
                                             .id(ID_TEXT_BLOCK)
                                             .vertical_alignment("center")
@@ -508,8 +485,6 @@ impl Template for TextBox {
                                             .font(id)
                                             .font_size(id)
                                             .build(ctx),
-                                        // )
-                                        // .build(ctx),
                                     )
                                     .child(
                                         Cursor::create()
@@ -519,7 +494,6 @@ impl Template for TextBox {
                                             .text(id)
                                             .font(id)
                                             .font_size(id)
-                                            // .scroll_offset(id)
                                             .focused(id)
                                             .text_selection(id)
                                             .build(ctx),
