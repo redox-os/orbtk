@@ -49,8 +49,8 @@ impl<'a> BuildContext<'a> {
             .unwrap();
     }
 
-    /// Appends a child to to overlay (on the top of the main tree). If the overlay does not exists an error
-    /// will be returned.
+    /// Appends a child to overlay (on the top of the main tree). If the overlay does not exists an
+    /// error will be returned.
     pub fn append_child_to_overlay(&mut self, child: Entity) -> Result<(), String> {
         if let Some(overlay) = self.ecm.entity_store().overlay {
             self.append_child(overlay.into(), child);
@@ -132,7 +132,7 @@ impl<'a> BuildContext<'a> {
             .insert(widget, render_object);
     }
 
-    /// Registers a event handler with a widget.
+    /// Registers an event handler with a widget.
     pub fn register_handler(&mut self, widget: Entity, handler: Rc<dyn EventHandler>) {
         if !self.handlers.contains_key(&widget) {
             self.handlers.insert(widget, vec![]);

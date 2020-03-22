@@ -34,7 +34,7 @@ pub trait Layout: Any {
         theme: &ThemeValue,
     ) -> DirtySize;
 
-    /// Arranges an sizes the children.
+    /// Arranges and sizes the children.
     fn arrange(
         &self,
         render_context_2_d: &mut RenderContext2D,

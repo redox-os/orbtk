@@ -9,8 +9,8 @@ use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
 use super::{component, component_try_mut, Layout};
 
-/// Orders its children in a grid layout with columns and rows. If now columns and rows are defined
-/// the gird layout could also be used as alignment layout.
+/// Orders its children in a grid layout with columns and rows. If no columns and rows are defined
+/// the grid layout could also be used as an alignment layout.
 #[derive(Default)]
 pub struct GridLayout {
     desired_size: RefCell<DirtySize>,

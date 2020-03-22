@@ -90,7 +90,7 @@ impl<'a> Context<'a> {
     }
 
     /// Returns a child of the widget of the current state referenced by css `id`.
-    /// If the no id is defined its panics.
+    /// If there is no id defined, it will panic.
     pub fn child<'b>(&mut self, id: impl Into<&'b str>) -> WidgetContainer<'_> {
         self.entity_of_child(id)
             .map(move |child| self.get_widget(child))
@@ -98,7 +98,7 @@ impl<'a> Context<'a> {
     }
 
     /// Returns a child of the widget of the current state referenced by css `id`.
-    /// If the no id is defined None will returned.
+    /// If there is no id defined, None will returned.
     pub fn try_child<'b>(&mut self, id: impl Into<&'b str>) -> Option<WidgetContainer<'_>> {
         self.entity_of_child(id)
             .map(move |child| self.get_widget(child))
@@ -111,7 +111,7 @@ impl<'a> Context<'a> {
         self.get_widget(entity)
     }
 
-    // Returns the parent of the current widget.
+    /// Returns the parent of the current widget.
     /// If the current widget is the root None will be returned.
     pub fn try_parent(&mut self) -> Option<WidgetContainer<'_>> {
         if self.ecm.entity_store().parent[&self.entity] == None {
@@ -152,7 +152,7 @@ impl<'a> Context<'a> {
     }
 
     /// Returns a parent of the widget of the current state referenced by css `id`.
-    /// If the no id is defined None will returned.
+    /// If there is no id defined None will be returned.
     pub fn try_parent_from_id<'b>(
         &mut self,
         id: impl Into<&'b str>,
@@ -221,8 +221,8 @@ impl<'a> Context<'a> {
         bctx.append_child(parent, child);
     }
 
-    /// Appends a child widget to to overlay (on the top of the main tree). If the overlay does not exists an error
-    /// will be returned.
+    /// Appends a child widget to overlay (on the top of the main tree). If the overlay does not
+    /// exists an error will be returned.
     pub fn append_child_to_overlay<W: Widget>(&mut self, child: W) -> Result<(), String> {
         if let Some(overlay) = self.ecm.entity_store().overlay {
             let bctx = &mut self.build_context();
@@ -239,8 +239,8 @@ impl<'a> Context<'a> {
         self.build_context().append_child(parent, child)
     }
 
-    /// Appends a child entity to to overlay (on the top of the main tree). If the overlay does not exists an error
-    /// will be returned.
+    /// Appends a child entity to overlay (on the top of the main tree). If the overlay does not
+    /// exists an error will be returned.
     pub fn append_child_entity_to_overlay(&mut self, child: Entity) -> Result<(), String> {
         if let Some(overlay) = self.ecm.entity_store().overlay {
             self.append_child_entity_to(overlay.into(), child);
@@ -339,7 +339,7 @@ impl<'a> Context<'a> {
     }
 
     /// Returns the entity of the parent referenced by css `element`.
-    /// If the no id is defined None will returned.
+    /// If there is no id defined None will be returned.
     pub fn parent_entity_by_element<'b>(&mut self, element: impl Into<&'b str>) -> Option<Entity> {
         let mut current = self.entity;
         let element = element.into();
@@ -450,7 +450,7 @@ impl<'a> Context<'a> {
         self.window_shell.render_context_2_d()
     }
 
-    /// Gets a a new sender to send request to the window shell.
+    /// Gets a new sender to send request to the window shell.
     pub fn request_sender(&self) -> Sender<ShellRequest> {
         self.window_shell.request_sender()
     }

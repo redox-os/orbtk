@@ -22,7 +22,7 @@ mod mouse;
 mod system;
 mod window;
 
-/// Defines the strategy a event moves through the tree.
+/// Defines the strategy of an event how it moves through the tree.
 #[derive(Debug, Clone, PartialEq)]
 pub enum EventStrategy {
     // /// From root to leaf.
@@ -30,7 +30,7 @@ pub enum EventStrategy {
     /// From leaf to root.
     BottomUp,
 
-    /// Occures direct.
+    /// Occurs direct.
     Direct,
 }
 

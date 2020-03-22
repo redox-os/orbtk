@@ -4,7 +4,7 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 
 use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree, utils::*};
 
-/// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calulated by the layout objects of layout widgets.
+/// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calculated by the layout objects of layout widgets.
 pub struct LayoutSystem {
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,

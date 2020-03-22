@@ -176,12 +176,12 @@ impl Rows {
         self.0.is_empty()
     }
 
-    /// Returns a reference to an row.
+    /// Returns a reference to a row.
     pub fn get(&self, row: usize) -> Option<&Row> {
         self.0.get(row)
     }
 
-    /// Returns a mutable reference to an row.
+    /// Returns a mutable reference to a row.
     pub fn get_mut(&mut self, row: usize) -> Option<&mut Row> {
         self.0.get_mut(row)
     }
