@@ -56,7 +56,7 @@ pub trait KeyDownHandler: Sized + Widget {
         })
     }
 
-    // Handles events triggered by a specific key.
+    /// Handles events triggered by a specific key.
     fn on_key_down_key<H: Fn() -> bool + 'static>(self, key: Key, handler: H) -> Self {
         self.on_key_down(
             move |_, event| {
