@@ -40,13 +40,13 @@ pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContai
 
 /// Used to define the `parent_type`of a widget.
 pub enum ParentType {
-    /// None children could add to the widget.
+    /// No children could be added to the widget.
     None,
 
     /// Only one child could be added to the widget.
     Single,
 
-    /// Multiple children could be added tot the widget.
+    /// Multiple children could be added to the widget.
     Multi,
 }
 
@@ -61,6 +61,6 @@ pub trait Widget: Template {
     /// Inerts a new event handler.
     fn insert_handler(self, handler: impl Into<Rc<dyn EventHandler>>) -> Self;
 
-    /// Appends a child ot the widget.
+    /// Appends a child to the widget.
     fn child(self, child: Entity) -> Self;
 }

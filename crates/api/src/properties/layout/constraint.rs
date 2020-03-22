@@ -118,7 +118,7 @@ impl Constraint {
         ConstraintBuilder::new()
     }
 
-    // Gets width.
+    /// Gets width.
     pub fn width(&self) -> f64 {
         self.width
     }

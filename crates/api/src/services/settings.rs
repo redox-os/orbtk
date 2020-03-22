@@ -21,7 +21,7 @@ use ron::ser::{to_string_pretty, PrettyConfig};
 use serde::{de::DeserializeOwned, Serialize};
 
 /// `Settings` represents a global settings service that could be use to serialize and deserialize
-/// data in the `ron` file format. Settings are stored in the user settings directory (depending on the operation system)
+/// data in the `ron` file format. Settings are stored in the user settings directory (depending on the operating system)
 /// under the a folder with the given application name.
 pub struct Settings {
     app_name: Box<str>,

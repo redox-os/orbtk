@@ -241,7 +241,7 @@ pub trait MouseHandler: Sized + Widget {
         })
     }
 
-    /// Insert a mouse handler for global up event.s
+    /// Insert a mouse handler for global up event.
     fn on_global_mouse_up<H: Fn(&mut StatesContext, Point) + 'static>(self, handler: H) -> Self {
         self.insert_handler(GlobalMouseUpEventHandler {
             handler: Rc::new(handler),

@@ -1,4 +1,4 @@
-//! This sub module contains extra structs used as widget proerties.
+//! This sub module contains extra structs used as widget properties.
 
 use std::{collections::HashSet, fmt::Debug};
 
@@ -11,7 +11,7 @@ use crate::{css_engine, prelude::*, render, utils};
 mod layout;
 mod widget;
 
-/// Used to the a property of a widget.
+/// Get the property of a widget.
 pub fn get_property<T>(key: &str, entity: Entity, store: &StringComponentStore) -> T
 where
     T: Clone + Component,
