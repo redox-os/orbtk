@@ -46,7 +46,7 @@ pub enum ParentType {
     /// Only one child could be added to the widget.
     Single,
 
-    /// Multiple children could be added tot the widget.
+    /// Multiple children could be added to the widget.
     Multi,
 }
 
@@ -61,6 +61,6 @@ pub trait Widget: Template {
     /// Inerts a new event handler.
     fn insert_handler(self, handler: impl Into<Rc<dyn EventHandler>>) -> Self;
 
-    /// Appends a child ot the widget.
+    /// Appends a child to the widget.
     fn child(self, child: Entity) -> Self;
 }
