@@ -161,12 +161,14 @@ impl Layout for TextSelectionLayout {
 
             let view_port_width = component::<Rectangle>(ecm, parent, "bounds").width();
 
-            if !component::<bool>(ecm, entity, "expanded") {
-                // reset text block position
+            // reset text block position
+            if !component::<bool>(ecm, entity, "expanded") || text_len == 0 {
                 if let Some(margin) = component_try_mut::<Thickness>(ecm, text_block, "margin") {
                     margin.set_left(0.0);
                 }
+            }
 
+            if !component::<bool>(ecm, entity, "expanded") {
                 if pos < 0.0 || pos + size.0 > view_port_width {
                     let delta = if pos < 0.0 {
                         pos
@@ -186,7 +188,6 @@ impl Layout for TextSelectionLayout {
                     }
                 }
             }
-            
             if let Some(margin) = component_try_mut::<Thickness>(ecm, entity, "margin") {
                 margin.set_left(pos);
             }
