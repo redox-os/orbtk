@@ -120,7 +120,13 @@ impl TextBoxState {
 
     fn move_cursor_left(&mut self, ctx: &mut Context) {
         if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
-            self.reset(ctx);
+            if let Some(selection) = ctx
+                .get_widget(self.cursor)
+                .try_get_mut::<TextSelection>("text_selection")
+            {
+                selection.start_index = 0;
+                selection.length = 0;
+            }
         }
 
         if let Some(selection) = ctx
@@ -136,13 +142,12 @@ impl TextBoxState {
         let text_len = ctx.widget().get::<String16>("text").len();
 
         if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
-            self.reset(ctx);
-
             if let Some(selection) = ctx
                 .get_widget(self.cursor)
                 .try_get_mut::<TextSelection>("text_selection")
             {
                 selection.start_index = text_len;
+                selection.length = 0;
             }
 
             return;

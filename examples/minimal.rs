@@ -11,7 +11,7 @@ fn main() {
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
                 .borderless(true)
-                .child(TextBlock::create().text("OrbTk").margin(4.0).build(ctx))
+                .child(TextBox::create().text("OrbTk").margin(4.0).build(ctx))
                 .build(ctx)
         })
         .run();

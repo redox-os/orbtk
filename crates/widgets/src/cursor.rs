@@ -5,7 +5,7 @@ use crate::prelude::*;
 pub struct CursorState;
 
 impl State for CursorState {
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let selection_length = ctx.widget().get::<TextSelection>("text_selection").length;
 
         if selection_length > 0 {

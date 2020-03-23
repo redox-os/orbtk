@@ -113,6 +113,7 @@ impl Layout for TextSelectionLayout {
         let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
         let text_block: Entity = component::<u32>(ecm, entity, "text_block").into();
         let width = component::<Constraint>(ecm, entity, "constraint").width();
+        let mut selection_start = 0;
         let mut text_len = 0;
 
         {
@@ -131,6 +132,7 @@ impl Layout for TextSelectionLayout {
                 if let Some(selection) =
                     try_component::<TextSelection>(ecm, entity, "text_selection")
                 {
+                    selection_start = selection.start_index;
                     if let Some(text_part) = text.get_string(0, selection.start_index) {
                         pos = render_context_2_d
                             .measure(text_part.as_str(), font_size, font.as_str())
@@ -159,16 +161,18 @@ impl Layout for TextSelectionLayout {
                 .expect("TextSelection.arrange: Cursor does not have a parent.")
                 .unwrap();
 
+            let expanded: bool = component(ecm, entity, "expanded");
+
             let view_port_width = component::<Rectangle>(ecm, parent, "bounds").width();
 
             // reset text block position
-            if !component::<bool>(ecm, entity, "expanded") || text_len == 0 {
+            if !expanded || text_len == 0 || (!expanded && selection_start == 0) {
                 if let Some(margin) = component_try_mut::<Thickness>(ecm, text_block, "margin") {
                     margin.set_left(0.0);
                 }
             }
 
-            if !component::<bool>(ecm, entity, "expanded") {
+            if !expanded && selection_start > 0 {
                 if pos < 0.0 || pos + size.0 > view_port_width {
                     let delta = if pos < 0.0 {
                         pos
