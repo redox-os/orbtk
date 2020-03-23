@@ -1,6 +1,11 @@
 use std::rc::Rc;
 
-use crate::{prelude::*, proc_macros::Event, shell::MouseButton, utils::*};
+use crate::{
+    prelude::*,
+    proc_macros::{Event, IntoHandler},
+    shell::MouseButton,
+    utils::*,
+};
 
 /// Checks if the given point is inside of a widget.
 pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>) -> bool {
@@ -90,14 +95,9 @@ impl EventHandler for ClickEventHandler {
 }
 
 /// Used to handle mouse down events. Could be attached to a widget.
+#[derive(IntoHandler)]
 pub struct MouseDownEventHandler {
     handler: Rc<MouseHandlerFunction>,
-}
-
-impl Into<Rc<dyn EventHandler>> for MouseDownEventHandler {
-    fn into(self) -> Rc<dyn EventHandler> {
-        Rc::new(self)
-    }
 }
 
 impl EventHandler for MouseDownEventHandler {
@@ -116,14 +116,9 @@ impl EventHandler for MouseDownEventHandler {
 }
 
 /// Defines an event handler for a global mouse up event. Global mouse up events could not be handled.
+#[derive(IntoHandler)]
 pub struct GlobalMouseUpEventHandler {
     handler: Rc<GlobalMouseHandlerFunction>,
-}
-
-impl Into<Rc<dyn EventHandler>> for GlobalMouseUpEventHandler {
-    fn into(self) -> Rc<dyn EventHandler> {
-        Rc::new(self)
-    }
 }
 
 impl EventHandler for GlobalMouseUpEventHandler {
@@ -143,14 +138,9 @@ impl EventHandler for GlobalMouseUpEventHandler {
 }
 
 /// Used to handle mouse down events. Could be attached to a widget.
+#[derive(IntoHandler)]
 pub struct MouseUpEventHandler {
     handler: Rc<MouseHandlerFunction>,
-}
-
-impl Into<Rc<dyn EventHandler>> for MouseUpEventHandler {
-    fn into(self) -> Rc<dyn EventHandler> {
-        Rc::new(self)
-    }
 }
 
 impl EventHandler for MouseUpEventHandler {
@@ -169,14 +159,9 @@ impl EventHandler for MouseUpEventHandler {
 }
 
 /// Used to handle mouse down events. Could be attached to a widget.
+#[derive(IntoHandler)]
 pub struct MouseMoveEventHandler {
     handler: Rc<MouseHandlerFunction>,
-}
-
-impl Into<Rc<dyn EventHandler>> for MouseMoveEventHandler {
-    fn into(self) -> Rc<dyn EventHandler> {
-        Rc::new(self)
-    }
 }
 
 impl EventHandler for MouseMoveEventHandler {
@@ -194,14 +179,10 @@ impl EventHandler for MouseMoveEventHandler {
     }
 }
 
+/// Used to handle scroll events. Could be attached to a widget.
+#[derive(IntoHandler)]
 pub struct ScrollEventHandler {
     handler: Rc<MouseHandlerFunction>,
-}
-
-impl Into<Rc<dyn EventHandler>> for ScrollEventHandler {
-    fn into(self) -> Rc<dyn EventHandler> {
-        Rc::new(self)
-    }
 }
 
 impl EventHandler for ScrollEventHandler {

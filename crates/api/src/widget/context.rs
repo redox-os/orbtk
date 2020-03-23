@@ -433,6 +433,14 @@ impl<'a> Context<'a> {
     }
 
     /// Pushes an event to the event queue.
+    pub fn push_event_by_window<E: Event>(&mut self, event: E) {
+        self.window_shell
+            .adapter()
+            .event_queue
+            .register_event(event, self.ecm.entity_store().root());
+    }
+
+    /// Pushes an event to the event queue.
     pub fn push_event_strategy_by_entity<E: Event>(
         &mut self,
         event: E,

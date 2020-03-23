@@ -28,6 +28,7 @@ impl Template for TextBlock {
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
+            .horizontal_alignment("left")
             .font("Roboto Regular")
     }
 

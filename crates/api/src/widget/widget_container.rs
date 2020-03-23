@@ -250,6 +250,16 @@ impl<'a> WidgetContainer<'a> {
                 }
             }
 
+            if let Some(expanded) = self.try_clone::<bool>("expanded") {
+                if expanded && !selector.pseudo_classes.contains("expanded") {
+                    add_selector_to_widget("expanded", self);
+                    update = true;
+                } else if !expanded && selector.pseudo_classes.contains("expanded") {
+                    remove_selector_from_widget("expanded", self);
+                    update = true;
+                }
+            }
+
             if update || force {
                 self.update_properties_by_theme();
             }

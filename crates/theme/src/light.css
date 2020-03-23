@@ -68,12 +68,12 @@ container {
     background: transparent;
 }
 
-text-box {
+text_box {
     background: white;
     border-color: #d1d1d1;
 }
 
-text-box:focus {
+text_box:focus {
     border-color: #efd035;
 }
 

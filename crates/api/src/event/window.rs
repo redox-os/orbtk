@@ -11,14 +11,9 @@ pub enum WindowEvent {
 
 pub type WindowHandlerFn = dyn Fn(&mut StatesContext, WindowEvent) -> bool + 'static;
 
+#[derive(IntoHandler)]
 pub struct WindowEventHandler {
     pub handler: Rc<WindowHandlerFn>,
-}
-
-impl Into<Rc<dyn EventHandler>> for WindowEventHandler {
-    fn into(self) -> Rc<dyn EventHandler> {
-        Rc::new(self)
-    }
 }
 
 impl EventHandler for WindowEventHandler {

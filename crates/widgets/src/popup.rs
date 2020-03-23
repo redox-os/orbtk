@@ -1,7 +1,5 @@
 use crate::prelude::*;
 
-use crate::shell::CONSOLE;
-
 /// The `PopupStates` handles the open and close behavior the the `Popup`.
 #[derive(Default, AsAny)]
 pub struct PopupState {}
@@ -27,7 +25,6 @@ impl State for PopupState {
         if let Some(target) = ctx.widget().try_clone::<u32>("target") {
             let target_position: Point = ctx.get_widget(target.into()).clone("position");
             let target_bounds: Rectangle = ctx.get_widget(target.into()).clone("bounds");
-            CONSOLE.log(format!("{:?}", target_bounds));
 
             ctx.widget()
                 .get_mut::<Rectangle>("bounds")

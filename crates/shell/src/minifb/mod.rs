@@ -19,20 +19,39 @@ use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {}
 
-fn key_event_helper<A>(key: &mut KeyHelper, adapter: &mut A, window: &minifb::Window)
+fn key_event_helper_down<A>(key: &mut KeyHelper, adapter: &mut A, window: &minifb::Window)
 where
     A: WindowAdapter,
 {
-    if !key.0 && window.is_key_pressed(key.1, minifb::KeyRepeat::Yes) {
+    let key_repeat = match key.1 {
+        minifb::Key::Left
+        | minifb::Key::Right
+        | minifb::Key::Up
+        | minifb::Key::Down
+        | minifb::Key::Backspace
+        | minifb::Key::Delete => minifb::KeyRepeat::Yes,
+        _ => minifb::KeyRepeat::No,
+    };
+
+    if window.is_key_pressed(key.1, key_repeat) {
         adapter.key_event(KeyEvent {
             key: key.2,
             state: ButtonState::Down,
-            text: String::new(),
+            text: String::default(),
         });
+    }
+}
 
-        key.0 = true;
-    } else {
-        key.0 = false;
+fn key_event_helper_up<A>(key: &mut KeyHelper, adapter: &mut A, window: &minifb::Window)
+where
+    A: WindowAdapter,
+{
+    if window.is_key_released(key.1) {
+        adapter.key_event(KeyEvent {
+            key: key.2,
+            state: ButtonState::Up,
+            text: String::default(),
+        });
     }
 }
 
@@ -43,6 +62,7 @@ fn unicode_to_key_event(uni_char: u32) -> Option<KeyEvent> {
         text = character.to_string();
         Key::from(character)
     } else {
+        
         Key::Unknown
     };
 
@@ -51,6 +71,11 @@ fn unicode_to_key_event(uni_char: u32) -> Option<KeyEvent> {
         || key == Key::Left
         || key == Key::Right
         || key == Key::Backspace
+        || key == Key::Control
+        || key == Key::Home
+        || key == Key::Escape
+        || key == Key::Delete
+        || key == Key::Unknown
     {
         return None;
     }
@@ -104,6 +129,10 @@ where
     key_alt_r: KeyHelper,
     key_escape: KeyHelper,
     key_home: KeyHelper,
+    key_a: KeyHelper,
+    key_c: KeyHelper,
+    key_v: KeyHelper,
+    key_x: KeyHelper,
     update: bool,
     running: bool,
     active: bool,
@@ -161,6 +190,10 @@ where
             key_alt_r: KeyHelper(false, minifb::Key::RightAlt, Key::Alt),
             key_escape: KeyHelper(false, minifb::Key::Escape, Key::Escape),
             key_home: KeyHelper(false, minifb::Key::Home, Key::Home),
+            key_a: KeyHelper(false, minifb::Key::A, Key::A(false)),
+            key_c: KeyHelper(false, minifb::Key::C, Key::C(false)),
+            key_v: KeyHelper(false, minifb::Key::V, Key::V(false)),
+            key_x: KeyHelper(false, minifb::Key::X, Key::X(false)),
             running: true,
             update: true,
             active: false,
@@ -266,21 +299,46 @@ where
             self.adapter.key_event(event);
         }
 
-        key_event_helper(&mut self.key_backspace, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_delete, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_left, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_right, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_up, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_down, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_enter, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_control, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_control_right, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_shift_l, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_shift_r, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_alt, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_alt_r, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_escape, &mut self.adapter, &self.window);
-        key_event_helper(&mut self.key_home, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_backspace, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_delete, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_left, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_right, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_up, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_down, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_enter, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_control, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_control_right, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_shift_l, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_shift_r, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_alt, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_alt_r, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_escape, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_home, &mut self.adapter, &self.window);
+
+        key_event_helper_up(&mut self.key_backspace, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_delete, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_left, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_right, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_up, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_down, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_enter, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_control, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_control_right, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_shift_l, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_shift_r, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_alt, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_alt_r, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_escape, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_home, &mut self.adapter, &self.window);
+
+        key_event_helper_down(&mut self.key_a, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_c, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_v, &mut self.adapter, &self.window);
+        key_event_helper_down(&mut self.key_x, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_a, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_c, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_v, &mut self.adapter, &self.window);
+        key_event_helper_up(&mut self.key_x, &mut self.adapter, &self.window);
 
         // resize
         if self.window_size != self.window.get_size() {

@@ -49,16 +49,19 @@ fn get_key(code: &str, key: String) -> (Key, String) {
     let code = match code {
         "Backspace" => Key::Backspace,
         "Delete" => Key::Delete,
-        "ControlLeft" => Key::Control,
+        "ControlLeft" | "ControlRight" => Key::Control,
         "ShiftLeft" => Key::ShiftL,
         "ShiftRight" => Key::ShiftR,
         "AltLeft" => Key::Alt,
+        "AltRight" => Key::Alt,
         "ArrowUp" => Key::Up,
         "ArrowLeft" => Key::Left,
         "ArrowRight" => Key::Right,
         "ArrowDown" => Key::Down,
         "Escape" => Key::Escape,
         "Enter" => Key::Enter,
+        "OSLeft" | "OSRight" => Key::Home,
+        "CapsLock" => Key::CapsLock,
         _ => {
             text = key.clone();
             Key::from(key.chars().next().unwrap())
@@ -87,7 +90,6 @@ where
     canvas: CanvasElement,
     pub old_canvas: Option<CanvasElement>,
     pub flip: bool,
-    mouse_blocked: Rc<Cell<bool>>,
     adapter: A,
     update: bool,
     running: bool,
@@ -197,7 +199,7 @@ where
             });
         }
 
-        while let Some(event) = self.touch_end_events.borrow_mut().pop() {           
+        while let Some(event) = self.touch_end_events.borrow_mut().pop() {
             self.adapter.mouse_event(MouseEvent {
                 x: event.changed_touches()[0].client_x() as f64,
                 y: event.changed_touches()[0].client_y() as f64,
@@ -221,6 +223,16 @@ where
             self.adapter.key_event(KeyEvent {
                 key: key.0,
                 state: ButtonState::Down,
+                text: key.1,
+            });
+        }
+
+        while let Some(event) = self.key_up_events.borrow_mut().pop() {
+            let key = get_key(event.code().as_str(), event.key());
+
+            self.adapter.key_event(KeyEvent {
+                key: key.0,
+                state: ButtonState::Up,
                 text: key.1,
             });
         }
@@ -586,7 +598,6 @@ where
             running: true,
             request_receiver,
             request_sender,
-            mouse_blocked
         }
     }
 }
@@ -598,13 +609,13 @@ lazy_static! {
 pub struct Console;
 
 impl Console {
-    pub fn time(&self, name: impl Into<String>) {
+    pub fn time(&self, _name: impl Into<String>) {
         // js! {
         //     console.time(@{&name.into()})
         // }
     }
 
-    pub fn time_end(&self, name: impl Into<String>) {
+    pub fn time_end(&self, _name: impl Into<String>) {
         // js! {
         //     console.timeEnd(@{&name.into()})
         // }

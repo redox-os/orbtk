@@ -139,7 +139,7 @@ macro_rules! widget {
                 self
             }
 
-            /// Sets or shares the constraint property.
+            /// Sets or shares the position of the widget. (Be careful the position could be adjusted by layouts).
             pub fn position(self, position: impl IntoPropertySource<Point>) -> Self {
                 self.set_property("position", position)
             }

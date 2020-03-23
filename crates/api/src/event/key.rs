@@ -2,6 +2,7 @@ use std::rc::Rc;
 
 use crate::{
     prelude::*,
+    proc_macros::IntoHandler,
     shell::{Key, KeyEvent},
 };
 
@@ -20,14 +21,9 @@ pub struct KeyUpEvent {
 pub type KeyHandler = dyn Fn(&mut StatesContext, KeyEvent) -> bool + 'static;
 
 /// Used to handle key down events. Could be attached to a widget.
+#[derive(IntoHandler)]
 pub struct KeyDownEventHandler {
     handler: Rc<KeyHandler>,
-}
-
-impl Into<Rc<dyn EventHandler>> for KeyDownEventHandler {
-    fn into(self) -> Rc<dyn EventHandler> {
-        Rc::new(self)
-    }
 }
 
 impl EventHandler for KeyDownEventHandler {

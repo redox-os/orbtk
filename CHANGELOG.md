@@ -15,12 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Service registry for states
 * Settings service (serialize / deserialize data)
 * Direct access of states in callbacks
-* Impl RawWindowHandle for Context
+* Impl RawWindowHandle for Context (wip)
 * Sent requests to window shell
 * Layout fixes and stack layout example
 * Many web fixes
 * State cleanup method
 * Refactor setting of styling selectors
+* TextBox select all (Ctrl + a)
+* Text input support for !, @, #
+* Borderless window
 
 ### 0.3.1-alpha1
 

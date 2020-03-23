@@ -5,22 +5,16 @@ use crate::prelude::*;
 pub struct CursorState;
 
 impl State for CursorState {
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        let mut widget = ctx.widget();
-
-        let selection_length = widget.get::<TextSelection>("text_selection").length;
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+        let selection_length = ctx.widget().get::<TextSelection>("text_selection").length;
 
         if selection_length > 0 {
-            add_selector_to_widget("expanded", &mut widget);
+            ctx.widget().set("expanded", true);
+            ctx.widget().update_theme_by_state(false);
         } else {
-            remove_selector_from_widget("expanded", &mut widget)
+            ctx.widget().set("expanded", false);
+            ctx.widget().update_theme_by_state(false);
         }
-
-        // if *widget.get::<bool>("focused") {
-        //     widget.set("visibility", Visibility::from("visible"));
-        // } else {
-        //     widget.set("visibility", Visibility::from("collapsed"));
-        // }
     }
 }
 
@@ -29,26 +23,20 @@ widget!(
     ///
     /// **CSS element:** `cursor`
     Cursor<CursorState> {
-        /// Sets or shares the text property.
-        text: String16,
-
         /// Sets or shares the text selection property.
         text_selection: TextSelection,
 
         /// Sets or shares the background property.
         background: Brush,
 
-        /// Sets or share the font size property.
-        font_size: f64,
-
-        /// Sets or shares the font property.
-        font: String,
-
-        /// Sets or shares the text offset property.
-        scroll_offset: Point,
+        /// Sets or shares the id of the text block reference.
+        text_block: u32,
 
         /// Sets or shares the focused property.
-        focused: bool
+        focused: bool,
+
+        /// Sets or shares the expanded property.
+        expanded: bool
     }
 );
 
@@ -57,11 +45,8 @@ impl Template for Cursor {
         self.name("Cursor")
             .width(1.0)
             .element("cursor")
-            .text("")
-            .scroll_offset(0.0)
             .background("transparent")
-            .font_size(fonts::FONT_SIZE_12)
-            .font("Roboto Regular")
+            .horizontal_alignment("start")
             .focused(false)
     }
 
