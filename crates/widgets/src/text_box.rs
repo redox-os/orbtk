@@ -85,12 +85,15 @@ impl TextBoxState {
 
     fn request_focus(&self, ctx: &mut Context<'_>) {
         ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
+
+        if ctx.widget().get::<String16>("text").len() > 0 {
+            self.select_all(ctx);
+        }
     }
 
     // Reset selection and offset if text is changed from outside
     fn reset(&self, ctx: &mut Context<'_>) {
         ctx.widget().set("text_selection", TextSelection::default());
-        ctx.widget().set("scroll_offset", Point::default());
         ctx.push_event_strategy_by_entity(
             ChangedEvent(ctx.entity),
             ctx.entity,
