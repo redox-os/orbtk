@@ -156,7 +156,7 @@ impl Layout for TextSelectionLayout {
                 .entity_store()
                 .parent
                 .get(&entity)
-                .expect("TextSelection.arrange: Cursor does not have a parent")
+                .expect("TextSelection.arrange: Cursor does not have a parent.")
                 .unwrap();
 
             let view_port_width = component::<Rectangle>(ecm, parent, "bounds").width();
@@ -167,7 +167,7 @@ impl Layout for TextSelectionLayout {
                     margin.set_left(0.0);
                 }
 
-                if pos < 0.0 || pos + size.0 >= view_port_width {
+                if pos < 0.0 || pos + size.0 > view_port_width {
                     let delta = if pos < 0.0 {
                         pos
                     } else {

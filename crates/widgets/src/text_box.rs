@@ -149,8 +149,8 @@ impl TextBoxState {
             .get_widget(self.cursor)
             .try_get_mut::<TextSelection>("text_selection")
         {
-            if selection.start_index < text_len - 1 {
-                selection.start_index = (selection.start_index + 1).min(text_len - 1);
+            if selection.start_index < text_len {
+                selection.start_index = (selection.start_index + 1).min(text_len);
             }
             selection.length = 0;
         }
@@ -358,6 +358,7 @@ impl Template for TextBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let text_block = TextBlock::create()
             .vertical_alignment("center")
+            .horizontal_alignment("start")
             .foreground(id)
             .text(id)
             .water_mark(id)
@@ -401,7 +402,8 @@ impl Template for TextBox {
                             .child(
                                 Grid::create()
                                     .clip(true)
-                                    .child(text_block)
+                                    // It is important that cursor is the first child
+                                    // should be refactored in the future.
                                     .child(
                                         Cursor::create()
                                             .id(ID_CURSOR)
@@ -411,6 +413,7 @@ impl Template for TextBox {
                                             .text_selection(id)
                                             .build(ctx),
                                     )
+                                    .child(text_block)
                                     .build(ctx),
                             )
                             .build(ctx),

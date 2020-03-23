@@ -46,7 +46,7 @@ impl Template for Cursor {
             .width(1.0)
             .element("cursor")
             .background("transparent")
-            .horizontal_alignment("left")
+            .horizontal_alignment("start")
             .focused(false)
     }
 
