@@ -23,23 +23,14 @@ widget!(
     ///
     /// **CSS element:** `cursor`
     Cursor<CursorState> {
-        /// Sets or shares the text property.
-        text: String16,
-
         /// Sets or shares the text selection property.
         text_selection: TextSelection,
 
         /// Sets or shares the background property.
         background: Brush,
 
-        /// Sets or share the font size property.
-        font_size: f64,
-
-        /// Sets or shares the font property.
-        font: String,
-
-        // /// Sets or shares the text offset property.
-        // scroll_offset: Point,
+        /// Sets or shares the id of the text block reference.
+        text_block: u32,
 
         /// Sets or shares the focused property.
         focused: bool,
@@ -54,11 +45,8 @@ impl Template for Cursor {
         self.name("Cursor")
             .width(1.0)
             .element("cursor")
-            .text("")
-            // .scroll_offset(0.0)
             .background("transparent")
-            .font_size(fonts::FONT_SIZE_12)
-            .font("Roboto Regular")
+            .horizontal_alignment("left")
             .focused(false)
     }
 

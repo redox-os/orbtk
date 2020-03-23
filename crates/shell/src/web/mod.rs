@@ -61,6 +61,7 @@ fn get_key(code: &str, key: String) -> (Key, String) {
         "Escape" => Key::Escape,
         "Enter" => Key::Enter,
         "OSLeft" | "OSRight" => Key::Home,
+        "CapsLock" => Key::CapsLock,
         _ => {
             text = key.clone();
             Key::from(key.chars().next().unwrap())

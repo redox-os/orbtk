@@ -18,6 +18,7 @@ pub enum Key {
     Alt,
     Escape,
     Home,
+    CapsLock,
     A(bool),
     B(bool),
     C(bool),

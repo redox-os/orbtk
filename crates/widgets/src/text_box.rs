@@ -4,16 +4,11 @@ use crate::{
     shell::{Key, KeyEvent},
 };
 
-use crate::shell::CONSOLE;
-
 // --- KEYS --
 
 pub static ELEMENT_TEXT_BOX: &'static str = "text_box";
 
 static ID_CURSOR: &'static str = "id_cursor";
-// static ID_SCROLL_VIEWER: &'static str = "id_scroll_viewer";
-static ID_TEXT_BLOCK: &'static str = "id_text_block";
-static ID_TEXT_BLOCK_ROOT: &'static str = "id_text_block_root";
 
 // --- KEYS --
 
@@ -29,9 +24,6 @@ pub struct TextBoxState {
     action: Option<TextBoxAction>,
     len: usize,
     cursor: Entity,
-    text_block_root: Entity,
-    text_block: Entity,
-    cursor_dirty: bool,
 }
 
 impl TextBoxState {
@@ -113,56 +105,6 @@ impl TextBoxState {
         }
     }
 
-    // Adjust offset of text and cursor if cursor position is out of bounds
-    fn adjust_cursor(&mut self, ctx: &mut Context) {
-        let cursor_x = ctx
-            .get_widget(self.cursor)
-            .get::<Thickness>("margin")
-            .left();
-        let view_port_width = ctx
-            .get_widget(self.text_block_root)
-            .get::<Rectangle>("bounds")
-            .width();
-
-        if cursor_x >= 0.0 && cursor_x < view_port_width {
-            return;
-        }
-
-        let delta = if cursor_x < 0.0 {
-            cursor_x
-        } else {
-            cursor_x - view_port_width
-        };
-
-        if let Some(bounds) = ctx
-            .get_widget(self.text_block)
-            .try_get_mut::<Rectangle>("bounds")
-        {
-            bounds.set_x(bounds.x() - delta);
-        }
-
-        let mut cursor_width = 0.0;
-
-        if let Some(bounds) = ctx
-            .get_widget(self.cursor)
-            .try_get_mut::<Rectangle>("bounds")
-        {
-            cursor_width = bounds.width();
-            bounds.set_x(bounds.x() - delta - cursor_width);
-        }
-
-        if let Some(margin) = ctx
-            .get_widget(self.cursor)
-            .try_get_mut::<Thickness>("margin")
-        {
-            margin.set_left(margin.left() - delta - cursor_width);
-        }
-
-        CONSOLE.log(format!("delta {}", delta));
-
-        self.cursor_dirty = false;
-    }
-
     fn select_all(&self, ctx: &mut Context) {
         let len = ctx.widget().get::<String16>("text").len();
         ctx.widget()
@@ -185,8 +127,6 @@ impl TextBoxState {
             selection.start_index = (selection.start_index as i32 - 1).max(0) as usize;
             selection.length = 0;
         }
-
-        self.cursor_dirty = true;
     }
 
     fn move_cursor_right(&mut self, ctx: &mut Context) {
@@ -202,7 +142,6 @@ impl TextBoxState {
                 selection.start_index = text_len;
             }
 
-            self.cursor_dirty = true;
             return;
         }
 
@@ -210,12 +149,11 @@ impl TextBoxState {
             .get_widget(self.cursor)
             .try_get_mut::<TextSelection>("text_selection")
         {
-            CONSOLE.log(format!("tl: {}, ind: {}", text_len, selection.start_index));
-            selection.start_index = (selection.start_index + 1).min(text_len);
+            if selection.start_index < text_len - 1 {
+                selection.start_index = (selection.start_index + 1).min(text_len - 1);
+            }
             selection.length = 0;
         }
-
-        self.cursor_dirty = true;
     }
 
     fn clear_selection(&mut self, ctx: &mut Context) {
@@ -230,8 +168,6 @@ impl TextBoxState {
         ctx.widget()
             .get_mut::<TextSelection>("text_selection")
             .length = 0;
-
-        self.cursor_dirty = true;
     }
 
     fn back_space(&mut self, ctx: &mut Context) {
@@ -261,7 +197,6 @@ impl TextBoxState {
                 ctx.entity,
                 EventStrategy::Direct,
             );
-            self.cursor_dirty = true;
         }
     }
 
@@ -270,7 +205,6 @@ impl TextBoxState {
 
         if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
             self.clear_selection(ctx);
-            self.cursor_dirty = true;
         } else {
             let index = ctx
                 .widget()
@@ -292,7 +226,6 @@ impl TextBoxState {
                 ctx.entity,
                 EventStrategy::Direct,
             );
-            self.cursor_dirty = true;
         }
     }
 
@@ -344,8 +277,6 @@ impl TextBoxState {
             ctx.entity,
             EventStrategy::Direct,
         );
-
-        self.cursor_dirty = true;
     }
 }
 
@@ -354,12 +285,6 @@ impl State for TextBoxState {
         self.cursor = ctx
             .entity_of_child(ID_CURSOR)
             .expect("TextBoxState.init: cursor child could not be found.");
-        self.text_block_root = ctx
-            .entity_of_child(ID_TEXT_BLOCK_ROOT)
-            .expect("TextBoxState.init: text block root could not be found.");
-        self.text_block = ctx
-            .entity_of_child(ID_TEXT_BLOCK)
-            .expect("TextBoxState.init: text_block child could not be found.");
         self.len = ctx.widget().get::<String16>("text").len();
     }
 
@@ -380,13 +305,6 @@ impl State for TextBoxState {
         self.action = None;
         ctx.widget().update_theme_by_state(false);
         self.len = ctx.widget().get::<String16>("text").len();
-    }
-
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        if !self.cursor_dirty {
-            return;
-        }
-        self.adjust_cursor(ctx);
     }
 }
 
@@ -438,6 +356,15 @@ widget!(
 
 impl Template for TextBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+        let text_block = TextBlock::create()
+            .vertical_alignment("center")
+            .foreground(id)
+            .text(id)
+            .water_mark(id)
+            .font(id)
+            .font_size(id)
+            .build(ctx);
+
         self.name("TextBox")
             .element(ELEMENT_TEXT_BOX)
             .text("")
@@ -473,27 +400,13 @@ impl Template for TextBox {
                             .padding(id)
                             .child(
                                 Grid::create()
-                                    .id(ID_TEXT_BLOCK_ROOT)
                                     .clip(true)
-                                    .child(
-                                        TextBlock::create()
-                                            .id(ID_TEXT_BLOCK)
-                                            .vertical_alignment("center")
-                                            .foreground(id)
-                                            .text(id)
-                                            .water_mark(id)
-                                            .font(id)
-                                            .font_size(id)
-                                            .build(ctx),
-                                    )
+                                    .child(text_block)
                                     .child(
                                         Cursor::create()
                                             .id(ID_CURSOR)
-                                            .margin(0.0)
                                             .horizontal_alignment("start")
-                                            .text(id)
-                                            .font(id)
-                                            .font_size(id)
+                                            .text_block(text_block.0)
                                             .focused(id)
                                             .text_selection(id)
                                             .build(ctx),

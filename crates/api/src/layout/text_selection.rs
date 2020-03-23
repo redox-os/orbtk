@@ -7,7 +7,7 @@ use dces::prelude::Entity;
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
-use super::{component, Layout};
+use super::{component, component_try_mut, try_component, Layout};
 
 /// The text selection layout is used to measure and arrange a text selection cursor.
 #[derive(Default)]
@@ -106,20 +106,16 @@ impl Layout for TextSelectionLayout {
             return (0.0, 0.0);
         }
 
-        if !self.desired_size.borrow().dirty() {
-            return self.desired_size.borrow().size();
-        }
-
         let mut pos = 0.0;
         let mut size = self.desired_size.borrow().size();
 
         let vertical_alignment: Alignment = component(ecm, entity, "vertical_alignment");
         let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
+        let text_block: Entity = component::<u32>(ecm, entity, "text_block").into();
         let width = component::<Constraint>(ecm, entity, "constraint").width();
+        let mut text_len = 0;
 
         {
-            let mut widget = WidgetContainer::new(entity, ecm, &theme);
-
             size.1 = vertical_alignment.align_measure(
                 parent_size.1,
                 size.1,
@@ -127,14 +123,17 @@ impl Layout for TextSelectionLayout {
                 margin.bottom(),
             );
 
-            if let Some(text) = widget.try_get::<String16>("text") {
-                let font = widget.get::<String>("font");
-                let font_size = widget.get::<f64>("font_size");
+            if let Some(text) = try_component::<String16>(ecm, text_block, "text") {
+                let font: String = component(ecm, text_block, "font");
+                let font_size: f64 = component(ecm, text_block, "font_size");
+                text_len = text.len();
 
-                if let Some(selection) = widget.try_get::<TextSelection>("text_selection") {
+                if let Some(selection) =
+                    try_component::<TextSelection>(ecm, entity, "text_selection")
+                {
                     if let Some(text_part) = text.get_string(0, selection.start_index) {
                         pos = render_context_2_d
-                            .measure(text_part.as_str(), *font_size, font.as_str())
+                            .measure(text_part.as_str(), font_size, font.as_str())
                             .width;
                     }
 
@@ -144,7 +143,7 @@ impl Layout for TextSelectionLayout {
                             selection.start_index + selection.length,
                         ) {
                             size.0 = render_context_2_d
-                                .measure(text_part.as_str(), *font_size, font.as_str())
+                                .measure(text_part.as_str(), font_size, font.as_str())
                                 .width;
                         }
                     } else {
@@ -153,11 +152,46 @@ impl Layout for TextSelectionLayout {
                 }
             }
 
-            if let Some(margin) = widget.try_get_mut::<Thickness>("margin") {
+            let parent = ecm
+                .entity_store()
+                .parent
+                .get(&entity)
+                .expect("TextSelection.arrange: Cursor does not have a parent")
+                .unwrap();
+
+            let view_port_width = component::<Rectangle>(ecm, parent, "bounds").width();
+
+            if !component::<bool>(ecm, entity, "expanded") {
+                // reset text block position
+                if let Some(margin) = component_try_mut::<Thickness>(ecm, text_block, "margin") {
+                    margin.set_left(0.0);
+                }
+
+                if pos < 0.0 || pos + size.0 >= view_port_width {
+                    let delta = if pos < 0.0 {
+                        pos
+                    } else {
+                        pos - view_port_width + size.0
+                    };
+
+                    pos = pos - delta;
+
+                    // adjust the position of the text block
+                    if text_len > 0 {
+                        if let Some(margin) =
+                            component_try_mut::<Thickness>(ecm, text_block, "margin")
+                        {
+                            margin.set_left(-delta);
+                        }
+                    }
+                }
+            }
+            
+            if let Some(margin) = component_try_mut::<Thickness>(ecm, entity, "margin") {
                 margin.set_left(pos);
             }
 
-            if let Some(bounds) = widget.try_get_mut::<Rectangle>("bounds") {
+            if let Some(bounds) = component_try_mut::<Rectangle>(ecm, entity, "bounds") {
                 bounds.set_width(size.0);
                 bounds.set_height(size.1);
             }
