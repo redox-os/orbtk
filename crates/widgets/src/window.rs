@@ -9,7 +9,7 @@ pub static ELEMENT_WINDOW: &'static str = "window";
 // --- KEYS --
 
 #[derive(Clone)]
-pub enum Action {
+enum Action {
     WindowEvent(WindowEvent),
     FocusEvent(FocusEvent),
 }
