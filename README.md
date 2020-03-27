@@ -106,7 +106,7 @@ widget!(
 
 ### Widget Templates
 
-Each widget must implement the [Template trait](https://github.com/redox-os/orbtk/blob/develop/crates/api/src/widget/template.rs). A template is used to define the default property values of a widget and to define its structure. A
+Each widget has to implement the [Template trait](https://github.com/redox-os/orbtk/blob/develop/crates/api/src/widget/template.rs). A template is used to define the default property values of a widget and to define its structure. A
 Button e.g. consists of a `Container` widget, a `StackPanel` widget and a `TextBlock` widget.
 
 Base usage of the Template trait:
@@ -120,7 +120,7 @@ impl Template for MyWidget {
             .text("Initial text")
             .child(
                 Container::create()
-                    // Containers references the same background as MyWidget
+                    // Container references the same background as MyWidget
                     .background(id)
                     .child(
                         TextBlock::create()
@@ -134,9 +134,37 @@ impl Template for MyWidget {
 }
 ```
 
-### Widget States
+### Widget State
 
-tbd
+The state of a widget is used to update its inner state. Each state has to implement the [State trait](https://github.com/redox-os/orbtk/blob/develop/crates/api/src/widget/state.rs). The inner state of a widget is represented by the 
+current values of its properties.
+
+Base usage of the state trait:
+
+```rust
+#[derive(Default, AsAny)]
+struct MyWidgetState {
+    ...
+}
+
+impl State for MyWidgetState {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+        // update the widget
+        ...
+    }
+}
+
+impl State for MyWidgetState
+
+widget!(
+    // Add MyState as State of MyWidget
+    MyWidget<MyState> {
+        ...
+    }
+);
+```
+
+The [Context parameter](https://github.com/redox-os/orbtk/blob/develop/crates/api/src/widget/context.rs) of the update method give you access the states widget (entity) and its properties (components). It also provides functions to access the children of the widget and functions to manipulate the widget tree.
 
 ## Run Examples
 
