@@ -154,8 +154,6 @@ impl State for MyWidgetState {
     }
 }
 
-impl State for MyWidgetState
-
 widget!(
     // Add MyState as state of MyWidget
     MyWidget<MyState> {
