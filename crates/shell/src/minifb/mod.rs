@@ -450,6 +450,8 @@ where
 
     resizeable: bool,
 
+    always_on_top: bool,
+
     borderless: bool,
 
     bounds: Rectangle,
@@ -468,6 +470,7 @@ where
             title: String::default(),
             borderless: false,
             resizeable: false,
+            always_on_top: false,
             bounds: Rectangle::default(),
         }
     }
@@ -490,6 +493,12 @@ where
         self
     }
 
+      /// Sets always_on_top.
+      pub fn always_on_top(mut self, always_on_top: bool) -> Self {
+        self.always_on_top = always_on_top;
+        self
+    }
+
     /// Sets the bounds.
     pub fn bounds(mut self, bounds: impl Into<Rectangle>) -> Self {
         self.bounds = bounds.into();
@@ -500,6 +509,7 @@ where
     pub fn build(self) -> WindowShell<A> {
         let window_options = minifb::WindowOptions {
             resize: self.resizeable,
+            topmost: self.always_on_top,
             borderless: self.borderless,
             title: !self.borderless,
             scale_mode: minifb::ScaleMode::UpperLeft,

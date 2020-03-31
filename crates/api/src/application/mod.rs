@@ -109,6 +109,11 @@ impl Application {
             .component_store()
             .get::<bool>("resizeable", window)
             .unwrap();
+        let always_on_top = *world
+            .entity_component_manager()
+            .component_store()
+            .get::<bool>("always_on_top", window)
+            .unwrap();
         let position = *world
             .entity_component_manager()
             .component_store()
@@ -155,6 +160,7 @@ impl Application {
             )))
             .borderless(borderless)
             .resizeable(resizeable)
+            .always_on_top(always_on_top)
             .build(),
         ));
 

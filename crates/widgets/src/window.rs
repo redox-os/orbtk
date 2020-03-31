@@ -127,6 +127,9 @@ widget!(
         /// Sets or shares the resizeable property.
         resizeable: bool,
 
+        /// Sets or shares the property if this window should always be on top.
+        always_on_top: bool,
+
         /// Sets or shares the flag if the window is borderless.
         borderless: bool,
 
@@ -167,6 +170,7 @@ impl Template for Window {
             .title("Window")
             .theme(default_theme())
             .resizeable(false)
+            .always_on_top(false)
             .on_window_event(move |ctx, event| {
                 ctx.get_mut::<WindowState>(id)
                     .push_action(Action::WindowEvent(event));
