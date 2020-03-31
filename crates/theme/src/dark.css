@@ -1,3 +1,12 @@
+* {
+    /* background: #F5F6F7; */
+    background: #3b434a;
+    font-size: 16;
+    font-family: "Roboto Medium";
+    icon-size: 16;
+    icon-family: "Material Icons";
+}
+
 window {
     background: #3b434a;
 }

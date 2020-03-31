@@ -493,8 +493,8 @@ where
         self
     }
 
-      /// Sets always_on_top.
-      pub fn always_on_top(mut self, always_on_top: bool) -> Self {
+    /// Sets always_on_top.
+    pub fn always_on_top(mut self, always_on_top: bool) -> Self {
         self.always_on_top = always_on_top;
         self
     }

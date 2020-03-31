@@ -405,6 +405,11 @@ where
         self
     }
 
+     /// Does nothing on web.
+    pub fn always_on_top(self, always_on_top: bool) -> Self {
+        self
+    }
+
     /// Sets the bounds.
     pub fn bounds(mut self, bounds: impl Into<Rectangle>) -> Self {
         self.bounds = bounds.into();
