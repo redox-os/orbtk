@@ -14,7 +14,7 @@ impl Image {
         }
     }
 
-    /// Load an image from file path. Supports BMP and PNG
+    /// Load an image from file path. Supports BMP and PNG extensions.
     pub fn from_path<P: std::string::ToString + AsRef<Path>>(path: P) -> Result<Self, String> {
         let source = path.to_string();
 
