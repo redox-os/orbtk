@@ -2,10 +2,8 @@
 
 use crate::{event::*, utils::Point};
 
-/// The window adapter is used to work with the window shell.ButtonState
-///
-/// It handles updates from the shell and provides method to update and render
-/// its content.
+/// The window adapter is used to work with the window shell.
+/// It handles updates from the shell and provides method to update and render its content.
 pub trait WindowAdapter {
     // /// Renders the content.
     // fn render(&mut self, _canvas: &mut Canvas) {}
