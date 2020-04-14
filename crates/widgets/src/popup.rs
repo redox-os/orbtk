@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-/// The `PopupStates` handles the open and close behavior the the `Popup`.
+/// The `PopupState` handles the open and close behavior of the `Popup` widget.
 #[derive(Default, AsAny)]
 pub struct PopupState {}
 

@@ -29,7 +29,7 @@ widget!(
         /// Sets or shares the text property.
         text: String16,
 
-        /// Sets or share the font size property.
+        /// Sets or shares the font size property.
         font_size: f64,
 
         /// Sets or shares the font property.
@@ -41,7 +41,7 @@ widget!(
         /// Sets or shares the icon brush property.
         icon_brush: Brush,
 
-        /// Sets or share the icon font size property.
+        /// Sets or shares the icon font size property.
         icon_size: f64,
 
         /// Sets or shares the icon font property.

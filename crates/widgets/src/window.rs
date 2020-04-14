@@ -113,7 +113,7 @@ impl State for WindowState {
 }
 
 widget!(
-    /// The `Window` widget provides access to the properties of a application window.
+    /// The `Window` widget provides access to the properties of an application window.
     /// It also contains global properties like keyboard modifier and focused widget.
     ///
     /// **CSS element:** `window`

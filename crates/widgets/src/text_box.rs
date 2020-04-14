@@ -333,7 +333,7 @@ widget!(
         /// Sets or shares the foreground property.
         foreground: Brush,
 
-        /// Sets or share the font size property.
+        /// Sets or shares the font size property.
         font_size: f64,
 
         /// Sets or shares the font property.
