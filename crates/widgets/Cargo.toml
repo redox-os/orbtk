@@ -11,9 +11,9 @@ edition = "2018"
 
 [dependencies]
 dces = "0.2"
-orbtk-api = { path = "../api", version = "0.3.1-alpha2" }
-orbtk-shell = { path = "../shell", version = "0.3.1-alpha2" }
-orbtk-theme = { path = "../theme", version = "0.3.1-alpha2" }
-orbtk-render = { path = "../render", version = "0.3.1-alpha2" }
-orbtk-utils = { path = "../utils", version = "0.3.1-alpha2" }
-orbtk-proc-macros = { version = "0.3.1-alpha2", path = "../proc-macros" }
+orbtk-api = "0.3.1-alpha2"
+orbtk-shell = "0.3.1-alpha2"
+orbtk-theme = "0.3.1-alpha2"
+orbtk-render = "0.3.1-alpha2"
+orbtk-utils = "0.3.1-alpha2"
+orbtk-proc-macros = "0.3.1-alpha2"
