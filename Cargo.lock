@@ -620,7 +620,7 @@ name = "orbtk-css-engine"
 version = "0.3.1-alpha2"
 dependencies = [
  "cssparser 0.17.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-utils 0.3.1-alpha2",
+ "orbtk-utils 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -675,6 +675,11 @@ dependencies = [
 [[package]]
 name = "orbtk-utils"
 version = "0.3.1-alpha2"
+
+[[package]]
+name = "orbtk-utils"
+version = "0.3.1-alpha2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "orbtk-widgets"
@@ -1585,6 +1590,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum num_cpus 1.13.0 (registry+https://github.com/rust-lang/crates.io-index)" = "05499f3756671c15885fee9034446956fff3f243d6077b91e5767df161f766b3"
 "checksum once_cell 1.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "b1c601810575c99596d4afc46f78a678c80105117c379eb3650cf99b8a21ce5b"
 "checksum orbclient 0.3.27 (registry+https://github.com/rust-lang/crates.io-index)" = "f8b18f57ab94fbd058e30aa57f712ec423c0bb7403f8493a6c58eef0c36d9402"
+"checksum orbtk-utils 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)" = "f2e34dee0cf7e0d5675908a7e890c798f36357de3f9f69941e8319545ada1bde"
 "checksum ordered-float 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "18869315e81473c951eb56ad5558bbc56978562d3ecfb87abb7a1e944cea4518"
 "checksum phf 0.7.24 (registry+https://github.com/rust-lang/crates.io-index)" = "b3da44b85f8e8dfaec21adae67f95d93244b2ecf6ad2a692320598dcc8e6dd18"
 "checksum phf_codegen 0.7.24 (registry+https://github.com/rust-lang/crates.io-index)" = "b03e85129e324ad4166b06b2c7491ae27fe3ec353af72e72cd1654c7225d517e"
