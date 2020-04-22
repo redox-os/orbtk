@@ -601,13 +601,13 @@ dependencies = [
  "dces 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.99.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "dirs 2.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-css-engine 0.3.1-alpha2",
- "orbtk-proc-macros 0.3.1-alpha2",
- "orbtk-render 0.3.1-alpha2",
- "orbtk-shell 0.3.1-alpha2",
- "orbtk-theme 0.3.1-alpha2",
- "orbtk-tree 0.3.1-alpha2",
- "orbtk-utils 0.3.1-alpha2",
+ "orbtk-css-engine 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-proc-macros 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-render 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-shell 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-theme 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-tree 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-utils 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
  "raw-window-handle 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.106 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -635,6 +635,15 @@ dependencies = [
 [[package]]
 name = "orbtk-proc-macros"
 version = "0.3.1-alpha2"
+dependencies = [
+ "quote 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.17 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "orbtk-proc-macros"
+version = "0.3.1-alpha2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "quote 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.17 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -679,6 +688,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "orbtk-shell"
+version = "0.3.1-alpha2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "console_error_panic_hook 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "image 0.22.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "minifb 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-render 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-utils 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "raw-window-handle 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "spin_sleep 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "stdweb 0.4.20 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "orbtk-theme"
 version = "0.3.1-alpha2"
 dependencies = [
@@ -687,8 +712,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "orbtk-theme"
+version = "0.3.1-alpha2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-css-engine 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "orbtk-tree"
 version = "0.3.1-alpha2"
+dependencies = [
+ "dces 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "orbtk-tree"
+version = "0.3.1-alpha2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "dces 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1612,7 +1654,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum once_cell 1.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "b1c601810575c99596d4afc46f78a678c80105117c379eb3650cf99b8a21ce5b"
 "checksum orbclient 0.3.27 (registry+https://github.com/rust-lang/crates.io-index)" = "f8b18f57ab94fbd058e30aa57f712ec423c0bb7403f8493a6c58eef0c36d9402"
 "checksum orbtk-css-engine 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)" = "2bd2446ad3bbb269b5d34474aa66556adc24149411be5a94b5423331229f2e19"
+"checksum orbtk-proc-macros 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)" = "bfabbd9601d69bcfed57916b51bd8b45cd067f6d4078f83d1dc65641c32fcb0a"
 "checksum orbtk-render 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)" = "ca77684bfc332efa7188cc1f264691e0826a182262ccb0670b3def0f6199bd0e"
+"checksum orbtk-shell 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)" = "49d8f44e28aa9fe3a5a721176d3ce4b829f709f8a041dc3c5b923f4c4a0afb2f"
+"checksum orbtk-theme 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)" = "aba87783f8a9cca78b8d8f4e919c78712492efbe27da0ef7a477efc5dd257a41"
+"checksum orbtk-tree 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)" = "083e46cdf2db24dcc2ffb65d6a1feddc1a484159c56f5032e668972a344ccb9c"
 "checksum orbtk-utils 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)" = "f2e34dee0cf7e0d5675908a7e890c798f36357de3f9f69941e8319545ada1bde"
 "checksum ordered-float 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "18869315e81473c951eb56ad5558bbc56978562d3ecfb87abb7a1e944cea4518"
 "checksum phf 0.7.24 (registry+https://github.com/rust-lang/crates.io-index)" = "b3da44b85f8e8dfaec21adae67f95d93244b2ecf6ad2a692320598dcc8e6dd18"
