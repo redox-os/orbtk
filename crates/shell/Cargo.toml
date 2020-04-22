@@ -22,7 +22,7 @@ image = "0.22.3"
 minifb = "0.16.0"
 
 [dependencies]
-orbtk-render = "0.3.1-alpha2"
-orbtk-utils = "0.3.1-alpha2"
+orbtk-render = { path = "../render", version = "0.3.1-alpha2" }
+orbtk-utils = { path = "../utils", version = "0.3.1-alpha2" }
 lazy_static = "1.4.0"
 raw-window-handle = "0.3.3"

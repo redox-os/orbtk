@@ -10,5 +10,5 @@ keywords = ["css", "theme", "styling", "ui"]
 edition = "2018"
 
 [dependencies]
-orbtk-css-engine = "0.3.1-alpha2"
+orbtk-css-engine = { path = "../css-engine", version = "0.3.1-alpha2" }
 lazy_static = "1.4.0"
