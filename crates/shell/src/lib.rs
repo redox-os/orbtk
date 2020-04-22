@@ -37,6 +37,9 @@ pub use orbtk_utils::prelude as utils;
 #[path = "minifb/mod.rs"]
 pub mod platform;
 
+#[cfg(not(target_arch = "wasm32"))]
+pub mod native;
+
 #[cfg(target_arch = "wasm32")]
 #[path = "web/mod.rs"]
 pub mod platform;
