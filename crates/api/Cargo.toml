@@ -15,12 +15,12 @@ serde_derive = "1.0.104"
 ron = "0.5.1"
 dirs = "2.0.2"
 dces = "0.2"
-orbtk-utils = "0.3.1-alpha2"
-orbtk-tree = "0.3.1-alpha2"
-orbtk-css-engine = "0.3.1-alpha2"
-orbtk-render = "0.3.1-alpha2"
-orbtk-shell = "0.3.1-alpha2"
-orbtk-theme = "0.3.1-alpha2"
+orbtk-utils = { path = "../utils", version = "0.3.1-alpha2" }
+orbtk-tree = { path = "../tree", version = "0.3.1-alpha2" }
+orbtk-css-engine = { path = "../css-engine", version = "0.3.1-alpha2" }
+orbtk-render = { path = "../render", version = "0.3.1-alpha2" }
+orbtk-shell = { path = "../shell", version = "0.3.1-alpha2" }
+orbtk-theme = { path = "../theme", version = "0.3.1-alpha2" }
 orbtk-proc-macros = { path = "../proc-macros", version = "0.3.1-alpha2" }
 derive_more = "0.99.3"
 
