@@ -1,6 +1,6 @@
 [package]
 name = "orbtk-widgets"
-version = "0.3.1-alpha2"
+version = "0.3.1-alpha3"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Base OrbTk widget library."
 repository = "https://github.com/redox-os/orbtk"
@@ -11,9 +11,9 @@ edition = "2018"
 
 [dependencies]
 dces = "0.2"
-orbtk-api = "0.3.1-alpha2"
-orbtk-shell = "0.3.1-alpha2"
-orbtk-theme = "0.3.1-alpha2"
-orbtk-render = "0.3.1-alpha2"
-orbtk-utils = "0.3.1-alpha2"
-orbtk-proc-macros = "0.3.1-alpha2"
+orbtk-api = { path = "../api", version = "0.3.1-alpha3" }
+orbtk-shell = { path = "../shell", version = "0.3.1-alpha3" }
+orbtk-theme = { path = "../theme", version = "0.3.1-alpha3" }
+orbtk-render = { path = "../render", version = "0.3.1-alpha3" }
+orbtk-utils = { path = "../utils", version = "0.3.1-alpha3" }
+orbtk-proc-macros = { version = "0.3.1-alpha3", path = "../proc-macros" }

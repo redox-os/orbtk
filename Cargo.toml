@@ -1,6 +1,6 @@
 [package]
 name = "orbtk"
-version = "0.3.1-alpha2"
+version = "0.3.1-alpha3"
 authors = [
     "Florian Blasius <flovanpt@posteo.de>",
     "Jeremy Soller <jackpot51@gmail.com>"
@@ -25,22 +25,22 @@ path = "src/lib.rs"
 opt-level = 1
 
 [dependencies]
-orbtk-api = "0.3.1-alpha2"
-orbtk-css-engine = "0.3.1-alpha2"
-orbtk-proc-macros = "0.3.1-alpha2"
-orbtk-render = "0.3.1-alpha2"
-orbtk-shell = "0.3.1-alpha2"
-orbtk-theme = "0.3.1-alpha2"
-orbtk-utils = "0.3.1-alpha2"
-orbtk-tree = "0.3.1-alpha2"
-orbtk-widgets = "0.3.1-alpha2"
+orbtk-api = { version = "0.3.1-alpha3", path = "crates/api" }
+orbtk-css-engine = { version = "0.3.1-alpha3", path = "crates/css-engine" }
+orbtk-proc-macros = { version = "0.3.1-alpha3", path = "crates/proc-macros" }
+orbtk-render = { version = "0.3.1-alpha3", path = "crates/render" }
+orbtk-shell = { version = "0.3.1-alpha3", path = "crates/shell" }
+orbtk-theme = { version = "0.3.1-alpha3", path="crates/theme" }
+orbtk-utils = { version = "0.3.1-alpha3", path = "crates/utils" }
+orbtk-tree = { version = "0.3.1-alpha3", path="crates/tree" }
+orbtk-widgets = { version = "0.3.1-alpha3", path="crates/widgets" }
 dces = "0.2"
 
 [dev-dependencies]
-euc = "0.4.3"
-vek = "0.9.12"
-serde = "1.0.104"
-serde_derive = "1.0.104"
+euc = "0.5.0"
+vek = "0.10.2"
+serde = "1.0.106"
+serde_derive = "1.0.106"
 
 # [target.'cfg(all(not(target_arch = "wasm32"), not(target_os = "redox")))'.dev-dependencies]
 # wgpu = "0.5.0"
