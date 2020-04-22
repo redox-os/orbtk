@@ -25,15 +25,15 @@ path = "src/lib.rs"
 opt-level = 1
 
 [dependencies]
-orbtk-api = { version = "0.3.1-alpha2", path = "crates/api" }
-orbtk-css-engine = { version = "0.3.1-alpha2", path = "crates/css-engine" }
-orbtk-proc-macros = { version = "0.3.1-alpha2", path = "crates/proc-macros" }
-orbtk-render = { version = "0.3.1-alpha2", path = "crates/render" }
-orbtk-shell = { version = "0.3.1-alpha2", path = "crates/shell" }
-orbtk-theme = { version = "0.3.1-alpha2", path="crates/theme" }
-orbtk-utils = { version = "0.3.1-alpha2", path = "crates/utils" }
-orbtk-tree = { version = "0.3.1-alpha2", path="crates/tree" }
-orbtk-widgets = { version = "0.3.1-alpha2", path="crates/widgets" }
+orbtk-api = "0.3.1-alpha2"
+orbtk-css-engine = "0.3.1-alpha2"
+orbtk-proc-macros = "0.3.1-alpha2"
+orbtk-render = "0.3.1-alpha2"
+orbtk-shell = "0.3.1-alpha2"
+orbtk-theme = "0.3.1-alpha2"
+orbtk-utils = "0.3.1-alpha2"
+orbtk-tree = "0.3.1-alpha2"
+orbtk-widgets = "0.3.1-alpha2"
 dces = "0.2"
 
 [dev-dependencies]

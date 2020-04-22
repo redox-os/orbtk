@@ -580,15 +580,15 @@ version = "0.3.1-alpha2"
 dependencies = [
  "dces 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "euc 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-api 0.3.1-alpha2",
- "orbtk-css-engine 0.3.1-alpha2",
- "orbtk-proc-macros 0.3.1-alpha2",
- "orbtk-render 0.3.1-alpha2",
- "orbtk-shell 0.3.1-alpha2",
- "orbtk-theme 0.3.1-alpha2",
- "orbtk-tree 0.3.1-alpha2",
- "orbtk-utils 0.3.1-alpha2",
- "orbtk-widgets 0.3.1-alpha2",
+ "orbtk-api 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-css-engine 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-proc-macros 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-render 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-shell 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-theme 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-tree 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-utils 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-widgets 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.106 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.106 (registry+https://github.com/rust-lang/crates.io-index)",
  "vek 0.9.12 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -769,6 +769,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "orbtk-widgets"
 version = "0.3.1-alpha2"
+dependencies = [
+ "dces 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-api 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-proc-macros 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-render 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-shell 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-theme 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-utils 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "orbtk-widgets"
+version = "0.3.1-alpha2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "dces 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbtk-api 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1683,6 +1697,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum orbtk-theme 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)" = "aba87783f8a9cca78b8d8f4e919c78712492efbe27da0ef7a477efc5dd257a41"
 "checksum orbtk-tree 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)" = "083e46cdf2db24dcc2ffb65d6a1feddc1a484159c56f5032e668972a344ccb9c"
 "checksum orbtk-utils 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)" = "f2e34dee0cf7e0d5675908a7e890c798f36357de3f9f69941e8319545ada1bde"
+"checksum orbtk-widgets 0.3.1-alpha2 (registry+https://github.com/rust-lang/crates.io-index)" = "a9b48215fac8030c2e4e0bf38dccf648e36b1d6826d31e2cf965f5c51ceb5e86"
 "checksum ordered-float 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "18869315e81473c951eb56ad5558bbc56978562d3ecfb87abb7a1e944cea4518"
 "checksum phf 0.7.24 (registry+https://github.com/rust-lang/crates.io-index)" = "b3da44b85f8e8dfaec21adae67f95d93244b2ecf6ad2a692320598dcc8e6dd18"
 "checksum phf_codegen 0.7.24 (registry+https://github.com/rust-lang/crates.io-index)" = "b03e85129e324ad4166b06b2c7491ae27fe3ec353af72e72cd1654c7225d517e"
