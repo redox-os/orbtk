@@ -1,4 +1,12 @@
+use std::{
+    rc::Rc,
+    cell::RefCell,
+    sync::mpsc::{channel, Receiver, Sender},
+};
+
 pub use super::native::*;
+
+use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {
 
@@ -16,6 +24,7 @@ where
     running: bool,
     request_receiver: Receiver<ShellRequest>,
     request_sender: Sender<ShellRequest>,
+    render_context_2_d: RenderContext2D
 }
 
 // unsafe impl<A> HasRawWindowHandle for WindowShell<A>
@@ -73,7 +82,7 @@ where
 
     /// Gets the render ctx 2D.
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
-       
+       &mut self.render_context_2_d
     }
 
     fn drain_events(&mut self) {
@@ -100,13 +109,7 @@ where
     A: WindowAdapter,
 {
     pub fn run(mut self) {
-        window().request_animation_frame(move |_| {
-            self.updater.update();
-            self.window_shell.borrow_mut().set_update(false);
-            self.window_shell.borrow_mut().flip();
-            self.window_shell.borrow_mut().drain_events();
-            self.run();
-        });
+      
     }
 }
 
@@ -171,7 +174,7 @@ where
     }
 
     /// Builds the window shell.
-    pub fn build(mut self) -> WindowShell<A> {
+    pub fn build(self) -> WindowShell<A> {
         let (request_sender, request_receiver) = channel();
 
         WindowShell {
@@ -180,6 +183,8 @@ where
             running: true,
             request_receiver,
             request_sender,
+            render_context_2_d: RenderContext2D::new(0.0, 0.0),
+            adapter: self.adapter
         }
     }
 }
