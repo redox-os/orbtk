@@ -96,17 +96,46 @@ where
         self.flip = false;
     }
 
-    pub fn run(&mut self) {
+    fn window_builder(&self) -> &GlutinWindowBuilder {
+        &self.window_builder
+    }
+}
+
+/// Implementation of the OrbClient based shell runner.
+pub struct ShellRunner<A>
+where
+    A: WindowAdapter + 'static,
+{
+    pub window_shell: Rc<RefCell<WindowShell<A>>>,
+    pub updater: Box<dyn Updater>,
+}
+
+impl<A> ShellRunner<A>
+where
+    A: WindowAdapter,
+{
+    pub fn run(mut self) {
         let event_loop = EventLoop::new();
 
         // Create an OpenGL 3.x context for Pathfinder to use.
         let gl_context = ContextBuilder::new()
             .with_gl(GlRequest::Latest)
             .with_gl_profile(GlProfile::Core)
-            .build_windowed(self.window_builder.clone(), &event_loop)
+            .build_windowed(
+                self.window_shell.borrow().window_builder().clone(),
+                &event_loop,
+            )
             .unwrap();
 
+        // Load OpenGL, and make the context current.
+        let gl_context = unsafe { gl_context.make_current().unwrap() };
+        gl::load_with(|name| gl_context.get_proc_address(name) as *const _);
+
         event_loop.run(move |event, _, control_flow| {
+            self.updater.update();
+            self.window_shell.borrow_mut().set_update(false);
+
+            gl_context.swap_buffers().unwrap();
             match event {
                 Event::WindowEvent {
                     event: WindowEvent::CloseRequested,
@@ -131,24 +160,6 @@ where
                 }
             };
         })
-    }
-}
-
-/// Implementation of the OrbClient based shell runner.
-pub struct ShellRunner<A>
-where
-    A: WindowAdapter + 'static,
-{
-    pub window_shell: Rc<RefCell<WindowShell<A>>>,
-    pub updater: Box<dyn Updater>,
-}
-
-impl<A> ShellRunner<A>
-where
-    A: WindowAdapter,
-{
-    pub fn run(mut self) {
-        self.window_shell.borrow_mut().run();
     }
 }
 
@@ -222,8 +233,9 @@ where
 
         // Calculate the right logical size of the window.
         // let event_loop = EventLoop::new();
+        let size = (self.bounds.width(), self.bounds.height());
 
-        let physical_window_size = PhysicalSize::new(self.bounds.width(), self.bounds.height());
+        let physical_window_size = PhysicalSize::new(size.0, size.1);
         // Open a window.
         let window_builder = GlutinWindowBuilder::new()
             .with_title(self.title)
@@ -269,7 +281,7 @@ where
             running: true,
             request_receiver,
             request_sender,
-            render_context_2_d: RenderContext2D::new(0.0, 0.0),
+            render_context_2_d: RenderContext2D::new(size.0, size.1),
             adapter: self.adapter,
             window_builder,
         }
