@@ -1,5 +1,13 @@
 use crate::{utils::*, Pipeline, RenderConfig, RenderTarget, TextMetrics};
 
+use pathfinder_canvas::{Canvas, CanvasFontContext, CanvasRenderingContext2D, Path2D};
+use pathfinder_geometry::vector::{Vector2F, Vector2I};
+use pathfinder_renderer::gpu::renderer::Renderer;
+use pathfinder_renderer::gpu::options::{DestFramebuffer, RendererOptions};
+use pathfinder_gl::{GLDevice, GLVersion};
+use pathfinder_color::ColorF;
+use pathfinder_resources::fs::FilesystemResourceLoader;
+
 #[derive(Clone, Default, Debug)]
 pub struct Image {}
 
@@ -23,12 +31,22 @@ impl From<(u32, u32, Vec<u32>)> for Image {
 pub struct Font {}
 
 /// The RenderContext2D trait, provides the rendering ctx. It is used for drawing shapes, text, images, and other objects.
-pub struct RenderContext2D {}
+pub struct RenderContext2D {
+    renderer: Renderer<GLDevice>,
+}
 
 impl RenderContext2D {
     /// Creates a new render ctx 2d.
     pub fn new(width: f64, height: f64) -> Self {
-        RenderContext2D {}
+        let mut renderer = Renderer::new(
+            GLDevice::new(GLVersion::GL3, 0),
+            &FilesystemResourceLoader::locate(),
+            DestFramebuffer::full_window(Vector2I::new(width as i32, height as i32)),
+            RendererOptions {
+                background_color: Some(ColorF::white()),
+            },
+        );
+        RenderContext2D { renderer }
     }
 
     pub fn resize(&mut self, width: f64, height: f64) {}
