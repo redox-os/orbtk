@@ -18,8 +18,9 @@ spin_sleep = "0.3.7"
 image = "0.23.4"
 
 [target.'cfg(all(not(target_arch = "wasm32")))'.dependencies]
+glutin = "0.24.0"
 #minifb = "0.15"
-minifb = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix" }
+# minifb = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix" }
 
 [dependencies]
 orbtk-render = { path = "../render", version = "0.3.1-alpha3" }
