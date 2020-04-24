@@ -1,17 +1,23 @@
 use std::{
-    rc::Rc,
     cell::RefCell,
+    rc::Rc,
     sync::mpsc::{channel, Receiver, Sender},
+    thread,
+};
+
+use glutin::{
+    dpi::PhysicalSize,
+    event::{Event, KeyboardInput, VirtualKeyCode, WindowEvent},
+    event_loop::{ControlFlow, EventLoop},
+    window::WindowBuilder as GlutinWindowBuilder,
+    ContextBuilder, GlProfile, GlRequest,
 };
 
 pub use super::native::*;
 
 use crate::{prelude::*, render::*, utils::*};
 
-pub fn initialize() {
-
-}
-
+pub fn initialize() {}
 
 /// Concrete implementation of the window shell.
 pub struct WindowShell<A>
@@ -24,7 +30,8 @@ where
     running: bool,
     request_receiver: Receiver<ShellRequest>,
     request_sender: Sender<ShellRequest>,
-    render_context_2_d: RenderContext2D
+    render_context_2_d: RenderContext2D,
+    window_builder: GlutinWindowBuilder,
 }
 
 // unsafe impl<A> HasRawWindowHandle for WindowShell<A>
@@ -71,9 +78,7 @@ where
     }
 
     /// Sets the background color of the window.
-    pub fn set_background_color(&mut self, red: u8, green: u8, blue: u8) {
-   
-    }
+    pub fn set_background_color(&mut self, red: u8, green: u8, blue: u8) {}
 
     /// Gets the shell adapter.
     pub fn adapter(&mut self) -> &mut A {
@@ -82,16 +87,50 @@ where
 
     /// Gets the render ctx 2D.
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
-       &mut self.render_context_2_d
+        &mut self.render_context_2_d
     }
 
-    fn drain_events(&mut self) {
-       
-    }
+    fn drain_events(&mut self) {}
 
     pub fn flip(&mut self) {
-      
         self.flip = false;
+    }
+
+    pub fn run(&mut self) {
+        let event_loop = EventLoop::new();
+
+        // Create an OpenGL 3.x context for Pathfinder to use.
+        let gl_context = ContextBuilder::new()
+            .with_gl(GlRequest::Latest)
+            .with_gl_profile(GlProfile::Core)
+            .build_windowed(self.window_builder.clone(), &event_loop)
+            .unwrap();
+
+        event_loop.run(move |event, _, control_flow| {
+            match event {
+                Event::WindowEvent {
+                    event: WindowEvent::CloseRequested,
+                    ..
+                }
+                | Event::WindowEvent {
+                    event:
+                        WindowEvent::KeyboardInput {
+                            input:
+                                KeyboardInput {
+                                    virtual_keycode: Some(VirtualKeyCode::Escape),
+                                    ..
+                                },
+                            ..
+                        },
+                    ..
+                } => {
+                    *control_flow = ControlFlow::Exit;
+                }
+                _ => {
+                    *control_flow = ControlFlow::Wait;
+                }
+            };
+        })
     }
 }
 
@@ -109,7 +148,7 @@ where
     A: WindowAdapter,
 {
     pub fn run(mut self) {
-      
+        self.window_shell.borrow_mut().run();
     }
 }
 
@@ -123,6 +162,8 @@ where
     borderless: bool,
 
     resizeable: bool,
+
+    always_on_top: bool,
 
     bounds: Rectangle,
 
@@ -140,6 +181,7 @@ where
             title: String::default(),
             borderless: false,
             resizeable: false,
+            always_on_top: false,
             bounds: Rectangle::default(),
         }
     }
@@ -162,8 +204,9 @@ where
         self
     }
 
-     /// Does nothing on web.
-    pub fn always_on_top(self, always_on_top: bool) -> Self {
+    /// Does nothing on web.
+    pub fn always_on_top(mut self, always_on_top: bool) -> Self {
+        self.always_on_top = always_on_top;
         self
     }
 
@@ -177,6 +220,49 @@ where
     pub fn build(self) -> WindowShell<A> {
         let (request_sender, request_receiver) = channel();
 
+        // Calculate the right logical size of the window.
+        // let event_loop = EventLoop::new();
+
+        let physical_window_size = PhysicalSize::new(self.bounds.width(), self.bounds.height());
+        // Open a window.
+        let window_builder = GlutinWindowBuilder::new()
+            .with_title(self.title)
+            .with_resizable(self.resizeable)
+            .with_always_on_top(self.always_on_top)
+            .with_decorations(!self.borderless)
+            .with_inner_size(physical_window_size);
+
+        // // Create an OpenGL 3.x context for Pathfinder to use.
+        // let gl_context = ContextBuilder::new()
+        //     .with_gl(GlRequest::Latest)
+        //     .with_gl_profile(GlProfile::Core)
+        //     .build_windowed(window_builder, &event_loop)
+        //     .unwrap();
+
+        // let window_thread = thread::spawn(move || {
+        //     event_loop.run(move |event, _, control_flow| {
+        //         match event {
+        //             Event::WindowEvent { event: WindowEvent::CloseRequested, .. } |
+        //             Event::WindowEvent {
+        //                 event: WindowEvent::KeyboardInput {
+        //                     input: KeyboardInput { virtual_keycode: Some(VirtualKeyCode::Escape), .. },
+        //                     ..
+        //                 },
+        //                 ..
+        //             } => {
+        //                 *control_flow = ControlFlow::Exit;
+        //             },
+        //             _ => {
+        //                 *control_flow = ControlFlow::Wait;
+        //             },
+        //         };
+        //     })
+        // });
+
+        // // Load OpenGL, and make the context current.
+        // let gl_context = unsafe { gl_context.make_current().unwrap() };
+        // gl::load_with(|name| gl_context.get_proc_address(name) as *const _);
+
         WindowShell {
             flip: false,
             update: true,
@@ -184,8 +270,8 @@ where
             request_receiver,
             request_sender,
             render_context_2_d: RenderContext2D::new(0.0, 0.0),
-            adapter: self.adapter
+            adapter: self.adapter,
+            window_builder,
         }
     }
 }
-
