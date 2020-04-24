@@ -22,7 +22,7 @@ pub const LIGHT_THEME_EXTENSION_CSS: &str = include_str!("light.css");
 
 lazy_static! {
     pub static ref DEFAULT_THEME: Arc<Theme> =
-        { Arc::new(Theme::create_from_css(DEFAULT_THEME_CSS).build()) };
+         Arc::new(Theme::create_from_css(DEFAULT_THEME_CSS).build());
 }
 
 lazy_static! {

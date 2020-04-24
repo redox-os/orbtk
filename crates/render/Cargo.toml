@@ -1,6 +1,6 @@
 [package]
 name = "orbtk-render"
-version = "0.3.1-alpha2"
+version = "0.3.1-alpha3"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "2D Render library use by OrbTk."
 repository = "https://github.com/redox-os/orbtk"
@@ -13,9 +13,9 @@ edition = "2018"
 stdweb = "0.4.20"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-raqote = { version = "0.7.12", default-features = false }
-rusttype = "0.8.2"
+raqote = { version = "0.7.14", default-features = false }
+rusttype = "0.8.3"
 image = "0.23"
 
 [dependencies]
-orbtk-utils = { path = "../utils", version = "0.3.1-alpha2" }
+orbtk-utils = { path = "../utils", version = "0.3.1-alpha3" }

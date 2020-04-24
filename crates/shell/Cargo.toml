@@ -1,6 +1,6 @@
 [package]
 name = "orbtk-shell"
-version = "0.3.1-alpha2"
+version = "0.3.1-alpha3"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Window shell crate used by OrbTk."
 repository = "https://github.com/redox-os/orbtk"
@@ -15,14 +15,14 @@ console_error_panic_hook = "0.1.6"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 spin_sleep = "0.3.7"
-image = "0.22.3"
+image = "0.23.4"
 
 [target.'cfg(all(not(target_arch = "wasm32")))'.dependencies]
 #minifb = "0.15"
 minifb = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix" }
 
 [dependencies]
-orbtk-render = { path = "../render", version = "0.3.1-alpha2" }
-orbtk-utils = { path = "../utils", version = "0.3.1-alpha2" }
+orbtk-render = { path = "../render", version = "0.3.1-alpha3" }
+orbtk-utils = { path = "../utils", version = "0.3.1-alpha3" }
 lazy_static = "1.4.0"
 raw-window-handle = "0.3.3"
