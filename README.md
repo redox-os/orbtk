@@ -6,7 +6,7 @@
 [![docs.rs](https://docs.rs/orbtk/badge.svg)](https://docs.rs/orbtk)
 
 The Orbital Widget Toolkit is a cross-platform (G)UI toolkit for building scalable user interfaces with the programming language Rust. It's based
-on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity_component_system) and provides a functional, Reactive-like API.
+on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity_component_system) and provides a [functional Reactive](https://en.wikipedia.org/wiki/Functional_reactive_programming)-like API.
 
 The main goals of OrbTk are speed, ease of use, and cross-platform compatibility.
 
