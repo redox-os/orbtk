@@ -65,7 +65,8 @@ impl RenderContext2D {
 
     // Rectangles
 
-    /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
+    /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the
+    /// specified width and height and whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
         self.fill_style(&self.config.fill_style);
         self.canvas_render_context_2_d
@@ -134,7 +135,8 @@ impl RenderContext2D {
         self.canvas_render_context_2_d.begin_path();
     }
 
-    /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
+    /// Attempts to add a straight line from the current point to the start of the current sub-path.
+    /// If the shape has already been closed or has only one point, this function does nothing.
     pub fn close_path(&mut self) {
         self.canvas_render_context_2_d.close_path();
     }
@@ -167,7 +169,9 @@ impl RenderContext2D {
             .quadratic_curve_to(cpx, cpy, x, y);
     }
 
-    /// Adds a cubic Bézier curve to the current sub-path. It requires three points: the first two are control points and the third one is the end point. The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
+    /// Adds a cubic Bézier curve to the current sub-path.
+    /// It requires three points: the first two are control points and the third one is the end point.
+    /// The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
     pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
         self.canvas_render_context_2_d
             .bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y);
@@ -321,7 +325,7 @@ impl RenderContext2D {
 
     // Transformations
 
-    /// Sets the tranformation.
+    /// Sets the transformation.
     pub fn set_transform(
         &mut self,
         h_scaling: f64,
@@ -344,7 +348,8 @@ impl RenderContext2D {
         self.canvas_render_context_2_d.save();
     }
 
-    /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
+    /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack.
+    /// If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
         self.canvas_render_context_2_d.restore();
         if let Some(config) = &self.saved_config {

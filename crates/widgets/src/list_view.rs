@@ -91,7 +91,7 @@ impl State for ListViewState {
     }
 }
 
-/// The `ListViewItemState` handles the interaction an selection of a `ListViewItem`.
+/// The `ListViewItemState` handles the interaction and selection of a `ListViewItem`.
 #[derive(Default, AsAny)]
 pub struct ListViewItemState {
     request_selection_toggle: Cell<bool>,
@@ -271,7 +271,7 @@ widget!(
         /// Sets or shares the orientation property.
         orientation: Orientation,
 
-        /// Sets or shared the count.
+        /// Sets or shares the item count.
         count: usize,
 
         /// Sets or shares the selection mode property.
@@ -289,7 +289,7 @@ widget!(
 );
 
 impl ListView {
-    /// Define the template build function for the content of the LisetViewItems.
+    /// Define the template build function for the content of the ListViewItems.
     pub fn items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(
         mut self,
         builder: F,

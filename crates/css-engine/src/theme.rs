@@ -298,7 +298,7 @@ impl<'i> cssparser::QualifiedRuleParser<'i> for RuleParser {
                         ParseError::Basic(ref e) => eprintln!("{:?}", e),
                         ParseError::Custom(ref e) => eprintln!("{:?}", e),
                     }
-                    println!("Error occured in `{}`", input.slice(e.span.clone()));
+                    println!("Error occurred in `{}`", input.slice(e.span.clone()));
                 }
             }
         }
@@ -524,7 +524,7 @@ pub fn parse(s: &str) -> Vec<Rule> {
                     ParseError::Basic(ref e) => eprintln!("{:?}", e),
                     ParseError::Custom(ref e) => eprintln!("{:?}", e),
                 }
-                println!("Error occured in `{}`", parser.slice(e.span.clone()));
+                println!("Error occurred in `{}`", parser.slice(e.span.clone()));
             }
         }
     }

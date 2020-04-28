@@ -1,7 +1,7 @@
 /// Describes a new visual rectangle.
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct Rectangle {
-    //// X position of the rectangle.
+    /// X position of the rectangle.
     pub x: f64,
 
     /// Y position of the rectangle.

@@ -226,7 +226,9 @@ impl RenderContext2D {
         self.path = path_builder.finish();
     }
 
-    /// Adds a cubic Bézier curve to the current sub-path. It requires three points: the first two are control points and the third one is the end point. The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
+    /// Adds a cubic Bézier curve to the current sub-path.
+    /// It requires three points: the first two are control points and the third one is the end point.
+    /// The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
     pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.cubic_to(
@@ -335,7 +337,7 @@ impl RenderContext2D {
         self.config.alpha = alpha;
     }
 
-    /// Specific the font family.
+    /// Specifies the font family.
     pub fn set_font_family(&mut self, family: impl Into<String>) {
         self.config.font_config.family = family.into();
     }
@@ -359,7 +361,7 @@ impl RenderContext2D {
 
     // Transformations
 
-    /// Sets the tranformation.
+    /// Sets the transformation.
     pub fn set_transform(
         &mut self,
         h_scaling: f64,
@@ -387,7 +389,8 @@ impl RenderContext2D {
         self.saved_config = Some(self.config.clone());
     }
 
-    /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
+    /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack.
+    /// If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
         self.clip = false;
         self.clip_rect = None;

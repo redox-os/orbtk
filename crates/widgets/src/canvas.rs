@@ -1,11 +1,9 @@
 use crate::prelude::*;
-// CanvasState
-// updates the ThreeObject property
 
 widget!(
     /// Canvas is used to render 3D graphics.
     Canvas {
-        /// Sets or shares the three render pipeline.
+        /// Sets or shares the render pipeline.
         render_pipeline: RenderPipeline
     }
 );

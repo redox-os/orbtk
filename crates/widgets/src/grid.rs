@@ -18,10 +18,10 @@ widget!(
         border_radius: f64
 
         attached_properties: {
-            /// Attach a colum position to a widget.
+            /// Attach a column position to a widget.
             column: usize,
 
-            /// Attach a colum span to a widget.
+            /// Attach a column span to a widget.
             column_span: usize,
 
             /// Attach a row position to a widget.
