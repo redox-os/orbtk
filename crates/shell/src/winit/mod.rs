@@ -12,6 +12,8 @@ use winit::{
     window::WindowBuilder as WinitWindowBuilder,
 };
 
+use pixels::{wgpu::Surface, Error, Pixels, SurfaceTexture};
+
 pub use super::native::*;
 
 use crate::{prelude::*, render::*, utils::*};
@@ -116,16 +118,29 @@ where
     pub fn run(mut self) {
         let event_loop = EventLoop::new();
 
-        let _window = self
+        let window = self
             .window_shell
             .borrow_mut()
             .window_builder()
             .clone()
-            .build(&event_loop);
+            .build(&event_loop)
+            .unwrap();
+        
+
+
+        let mut pixels = {
+            let surface = Surface::create(&window);
+            let surface_texture = SurfaceTexture::new(486, 730, surface);
+            Pixels::new(486, 730, surface_texture).unwrap()
+        };
 
         event_loop.run(move |event, _, control_flow| {
             self.updater.update();
             self.window_shell.borrow_mut().set_update(false);
+
+            if let Some(data) = self.window_shell.borrow_mut().render_context_2_d.data() {
+                pixels.get_frame().copy_from_slice(data);
+            }
 
             match event {
                 Event::WindowEvent {
