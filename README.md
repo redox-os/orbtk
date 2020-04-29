@@ -32,7 +32,7 @@ The main goals of OrbTk are speed, ease of use, and cross-platform compatibility
 * Windows (native | cargo-node)
 * openBSD (not tested, but should work)
 * Web (cargo-node)
-* Android (native planned| cargo-node)
+* Android (native planned | cargo-node)
 * iOS (native planned | cargo-node planned)
 * Ubuntu Touch (native planned | cargo-node planned)
 
