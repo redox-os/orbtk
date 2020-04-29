@@ -147,7 +147,7 @@ enum RenderTask {
 
 // Used to send results to the main thread.
 enum RenderResult {
-    Finish { data: Vec<u32> },
+    Finish { data: Vec<u8> },
 }
 
 // Wrapper for the render thread.
@@ -348,7 +348,7 @@ impl RenderWorker {
                                     .lock()
                                     .unwrap()
                                     .send(RenderResult::Finish {
-                                        data: render_context_2_d.data().iter().copied().collect(),
+                                        data: render_context_2_d.data_u8_mut().iter().copied().collect(),
                                     })
                                     .expect("Could not send render result to main thread.");
                             }
@@ -367,7 +367,7 @@ impl RenderWorker {
 
 /// The RenderContext2D provides a concurrent render ctx.
 pub struct RenderContext2D {
-    output: Vec<u32>,
+    output: Vec<u8>,
     worker: RenderWorker,
     sender: mpsc::Sender<Vec<RenderTask>>,
     result_receiver: mpsc::Receiver<RenderResult>,
@@ -711,7 +711,7 @@ impl RenderContext2D {
         self.tasks.push(RenderTask::Clear { brush });
     }
 
-    pub fn data(&mut self) -> Option<&[u32]> {
+    pub fn data(&mut self) -> Option<&[u8]> {
         if let Ok(RenderResult::Finish { data }) = self.result_receiver.try_recv() {
             self.output = data;
             Some(&self.output)
@@ -720,7 +720,7 @@ impl RenderContext2D {
         }
     }
 
-    pub fn data_mut(&mut self) -> &mut [u32] {
+    pub fn data_mut(&mut self) -> &mut [u8] {
         &mut self.output
     }
 
