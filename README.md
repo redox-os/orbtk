@@ -26,15 +26,15 @@ The main goals of OrbTk are speed, ease of use, and cross-platform compatibility
 
 ## Platforms
 
-* Redox OS (native | cargo-node)
+* Redox OS (native)
 * Linux (native | cargo-node)
 * macOS (native | cargo-node)
 * Windows (native | cargo-node)
 * openBSD (not tested, but should work)
 * Web (cargo-node)
-* Android (native planned after 0.3 | cargo-node)
-* iOS (native planned after 0.3 | cargo-node planned after 0.3)
-* Ubuntu Touch (native planned  after 0.3 | cargo-node planned for 0.3)
+* Android (native planned| cargo-node)
+* iOS (native planned | cargo-node planned)
+* Ubuntu Touch (native planned | cargo-node planned)
 
 ## Planned features
 
