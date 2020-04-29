@@ -127,23 +127,6 @@ impl RectangleRenderObject {
             render_context_2_d.stroke();
         }
     }
-
-    pub(crate) fn ensure_no_corner_overlap(
-        border_radius: &mut f64,
-        bounds: Rectangle
-    ) {
-        let mut ratio = 1.0;
-        let sum = 2.0 * *border_radius;
-        if bounds.width() < sum {
-            ratio = f64::min(ratio, bounds.width() / sum);
-        }
-        if bounds.height() < sum {
-            ratio = f64::min(ratio, bounds.height() / sum);
-}
-        if ratio < 1. {
-            *border_radius *= ratio;
-        }
-    }
 }
 
 impl Into<Box<dyn RenderObject>> for RectangleRenderObject {
@@ -182,9 +165,8 @@ impl RenderObject for RectangleRenderObject {
             || border_thickness.bottom > 0.0;
 
         ctx.render_context_2_d().begin_path();
-        let mut border_radius = border_radius;
-        Self::ensure_no_corner_overlap(&mut border_radius, bounds);
-        if bounds.width() == bounds.height() {
+
+        if bounds.width() == bounds.height() && border_radius >= bounds.width() / 2.0 {
             if !has_thickness {
                 self.render_circle(
                     ctx.render_context_2_d(),
