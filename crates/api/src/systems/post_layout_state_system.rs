@@ -14,6 +14,47 @@ pub struct PostLayoutStateSystem {
     pub registry: Rc<RefCell<Registry>>,
 }
 
+impl PostLayoutStateSystem {
+    fn remove_widget(
+        &self,
+        entity: Entity,
+        theme: &Theme,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        shell: &mut WindowShell<WindowAdapter>,
+    ) {
+        {
+            let render_objects = &self.render_objects;
+            let layouts = &mut self.layouts.borrow_mut();
+            let handlers = &mut self.handlers.borrow_mut();
+            let registry = &mut self.registry.borrow_mut();
+            let new_states = &mut BTreeMap::new();
+
+            let mut ctx = Context::new(
+                (entity, ecm),
+                shell,
+                theme,
+                render_objects,
+                layouts,
+                handlers,
+                &self.states,
+                new_states,
+            );
+
+            if let Some(state) = self.states.borrow_mut().get_mut(&entity) {
+                state.cleanup(registry, &mut ctx);
+            }
+
+            drop(ctx);
+        }
+        self.states.borrow_mut().remove(&entity);
+
+        ecm.remove_entity(entity);
+        self.layouts.borrow_mut().remove(&entity);
+        self.render_objects.borrow_mut().remove(&entity);
+        self.handlers.borrow_mut().remove(&entity);
+    }
+}
+
 impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         if !self.shell.borrow().update() || !self.shell.borrow().running() {
@@ -22,43 +63,59 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
 
         let root = ecm.entity_store().root();
 
-        let window_shell = &mut self.shell.borrow_mut();
+        let mut shell = &mut self.shell.borrow_mut();
         let theme = ecm
             .component_store()
             .get::<Theme>("theme", root)
             .unwrap()
             .clone();
+        let mut remove_widget_list: Vec<Entity> = vec![];
 
-        let render_objects = &self.render_objects;
-        let layouts = &mut self.layouts.borrow_mut();
-        let handlers = &mut self.handlers.borrow_mut();
-        let new_states = &mut BTreeMap::new();
+        {
+            let render_objects = &self.render_objects;
+            let layouts = &mut self.layouts.borrow_mut();
+            let handlers = &mut self.handlers.borrow_mut();
+            let new_states = &mut BTreeMap::new();
 
-        let mut ctx = Context::new(
-            (root, ecm),
-            window_shell,
-            &theme,
-            render_objects,
-            layouts,
-            handlers,
-            &self.states,
-            new_states,
-        );
+            let mut ctx = Context::new(
+                (root, ecm),
+                shell,
+                &theme,
+                render_objects,
+                layouts,
+                handlers,
+                &self.states,
+                new_states,
+            );
 
-        for (node, state) in &mut *self.states.borrow_mut() {
-            ctx.entity = *node;
+            for (node, state) in &mut *self.states.borrow_mut() {
+                ctx.entity = *node;
 
-            state.update_post_layout(&mut *self.registry.borrow_mut(), &mut ctx);
+                state.update_post_layout(&mut *self.registry.borrow_mut(), &mut ctx);
+                remove_widget_list.append(ctx.remove_widget_list());
 
-            // Handle messages.
-            {
-                // todo fix messages.
-                // for (entity, messages) in ctx.messages().iter() {
-                //     if let Some(state) = self.states.borrow().get(&entity) {
-                //         ctx.entity = *entity;
-                //         state.receive_messages(&mut ctx, &messages);
-                //     }
-                // }
+                // Handle messages.
+                {
+                    // todo fix messages.
+                    // for (entity, messages) in ctx.messages().iter() {
+                    //     if let Some(state) = self.states.borrow().get(&entity) {
+                    //         ctx.entity = *entity;
+                    //         state.receive_messages(&mut ctx, &messages);
+                    //     }
+                    // }
+                }
+            }
+        }
+
+        for child in remove_widget_list {
+            let mut entities = vec![child];
+
+            for child in &ecm.entity_store().children[&child] {
+                entities.push(*child);
+            }
+
+            for entity in entities.iter().rev() {
+                self.remove_widget(*entity, &theme, ecm, &mut shell);
             }
         }
     }

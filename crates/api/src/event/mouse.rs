@@ -26,53 +26,96 @@ pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>
     rect.contains((mouse_position.x, mouse_position.y))
 }
 
+/// `MouseMoveEvent` indicates if the mouse position is changed on the window.
 #[derive(Event)]
 pub struct MouseMoveEvent {
+    /// Current x position of the mouse on the window.
     pub x: f64,
+
+    /// Current y position of the mouse on the window.
     pub y: f64,
 }
 
+/// `ScrollEvent` occurs when the mouse wheel is moved.
 #[derive(Event)]
 pub struct ScrollEvent {
+    /// Indicates the scroll offset x and y.
     pub delta: Point,
 }
 
+/// Represents the current mouse state of an mouse event.
+#[derive(Debug, Copy, Clone)]
+pub struct Mouse {
+      /// Indicates the mouse button that is connected to the event.
+      pub button: MouseButton,
+
+      /// Indicates the x position of the event on the window.
+      pub x: f64,
+  
+      /// Indicates the y position of the event on the window.
+      pub y: f64,
+}
+
+/// `MouseUpEvent` occurs when a mouse button is released.
 #[derive(Event)]
 pub struct MouseUpEvent {
+    /// Indicates the mouse button that is released.
     pub button: MouseButton,
+
+    /// Indicates the x position of the event on the window.
     pub x: f64,
 
+    /// Indicates the y position of the event on the window.
     pub y: f64,
 }
 
+/// `ClickEvent` occurs when a user clicked on an element.
 #[derive(Event)]
 pub struct ClickEvent {
+    /// Indicates the x and y position of the click event.
     pub position: Point,
 }
 
+/// `MouseDownEvent` occurs when a mouse button is pressed.
 #[derive(Event)]
 pub struct MouseDownEvent {
-    pub button: MouseButton,
-    pub x: f64,
+     /// Indicates the mouse button that is pressed.
+     pub button: MouseButton,
 
-    pub y: f64,
+     /// Indicates the x position of the event on the window.
+     pub x: f64,
+ 
+     /// Indicates the y position of the event on the window.
+     pub y: f64,
 }
 
+/// `GlobalMouseUpEvent` occurs when a mouse button is released. 
+///
+/// Global events could not be handled and could be read on each state.
 #[derive(Event)]
 pub struct GlobalMouseUpEvent {
+    /// Indicates the mouse button that is released.
     pub button: MouseButton,
+
+    /// Indicates the x position of the event on the window.
     pub x: f64,
 
+    /// Indicates the y position of the event on the window.
     pub y: f64,
 }
 
-pub type MouseHandlerFunction = dyn Fn(&mut StatesContext, Point) -> bool + 'static;
+/// Defines the mouse handler function.
+pub type MouseHandlerFunction = dyn Fn(&mut StatesContext, Mouse) -> bool + 'static;
 
-pub type GlobalMouseHandlerFunction = dyn Fn(&mut StatesContext, Point) + 'static;
+//// Defines a position based event handler.
+pub type PositionHandlerFunction = dyn Fn(&mut StatesContext, Point) -> bool + 'static;
+
+/// Defines the global bouse handler function.
+pub type GlobalMouseHandlerFunction = dyn Fn(&mut StatesContext, Mouse) + 'static;
 
 /// Used to handle click events. Could be attached to a widget.
 pub struct ClickEventHandler {
-    handler: Rc<MouseHandlerFunction>,
+    handler: Rc<PositionHandlerFunction>,
 }
 
 impl Into<Rc<dyn EventHandler>> for ClickEventHandler {
@@ -106,7 +149,7 @@ impl EventHandler for MouseDownEventHandler {
             .downcast_ref::<MouseDownEvent>()
             .ok()
             .map_or(false, |event| {
-                (self.handler)(state_context, Point::new(event.x, event.y))
+                (self.handler)(state_context, Mouse { button: event.button, x: event.x, y: event.y })
             })
     }
 
@@ -127,7 +170,7 @@ impl EventHandler for GlobalMouseUpEventHandler {
             .downcast_ref::<GlobalMouseUpEvent>()
             .ok()
             .map_or(false, |event| {
-                (self.handler)(state_context, Point::new(event.x, event.y));
+                (self.handler)(state_context,  Mouse { button: event.button, x: event.x, y: event.y });
                 false
             })
     }
@@ -149,7 +192,7 @@ impl EventHandler for MouseUpEventHandler {
             .downcast_ref::<MouseUpEvent>()
             .ok()
             .map_or(false, |event| {
-                (self.handler)(state_context, Point::new(event.x, event.y))
+                (self.handler)(state_context,  Mouse { button: event.button, x: event.x, y: event.y })
             })
     }
 
@@ -161,7 +204,7 @@ impl EventHandler for MouseUpEventHandler {
 /// Used to handle mouse down events. Could be attached to a widget.
 #[derive(IntoHandler)]
 pub struct MouseMoveEventHandler {
-    handler: Rc<MouseHandlerFunction>,
+    handler: Rc<PositionHandlerFunction>,
 }
 
 impl EventHandler for MouseMoveEventHandler {
@@ -182,7 +225,7 @@ impl EventHandler for MouseMoveEventHandler {
 /// Used to handle scroll events. Could be attached to a widget.
 #[derive(IntoHandler)]
 pub struct ScrollEventHandler {
-    handler: Rc<MouseHandlerFunction>,
+    handler: Rc<PositionHandlerFunction>,
 }
 
 impl EventHandler for ScrollEventHandler {
@@ -209,21 +252,21 @@ pub trait MouseHandler: Sized + Widget {
     }
 
     /// Insert a mouse down handler.
-    fn on_mouse_down<H: Fn(&mut StatesContext, Point) -> bool + 'static>(self, handler: H) -> Self {
+    fn on_mouse_down<H: Fn(&mut StatesContext, Mouse) -> bool + 'static>(self, handler: H) -> Self {
         self.insert_handler(MouseDownEventHandler {
             handler: Rc::new(handler),
         })
     }
 
     /// Insert a mouse up handler.
-    fn on_mouse_up<H: Fn(&mut StatesContext, Point) -> bool + 'static>(self, handler: H) -> Self {
+    fn on_mouse_up<H: Fn(&mut StatesContext, Mouse) -> bool + 'static>(self, handler: H) -> Self {
         self.insert_handler(MouseUpEventHandler {
             handler: Rc::new(handler),
         })
     }
 
     /// Insert a mouse handler for global up event.
-    fn on_global_mouse_up<H: Fn(&mut StatesContext, Point) + 'static>(self, handler: H) -> Self {
+    fn on_global_mouse_up<H: Fn(&mut StatesContext, Mouse) + 'static>(self, handler: H) -> Self {
         self.insert_handler(GlobalMouseUpEventHandler {
             handler: Rc::new(handler),
         })

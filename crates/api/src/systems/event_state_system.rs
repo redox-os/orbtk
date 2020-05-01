@@ -22,6 +22,7 @@ impl EventStateSystem {
         entity: Entity,
         theme: &Theme,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        shell: &mut WindowShell<WindowAdapter>,
     ) {
         {
             let render_objects = &self.render_objects;
@@ -29,7 +30,6 @@ impl EventStateSystem {
             let handlers = &mut self.handlers.borrow_mut();
             let registry = &mut self.registry.borrow_mut();
             let new_states = &mut BTreeMap::new();
-            let shell = &mut self.shell.borrow_mut();
 
             let mut ctx = Context::new(
                 (entity, ecm),
@@ -45,6 +45,8 @@ impl EventStateSystem {
             if let Some(state) = self.states.borrow_mut().get_mut(&entity) {
                 state.cleanup(registry, &mut ctx);
             }
+
+            drop(ctx);
         }
         self.states.borrow_mut().remove(&entity);
 
@@ -258,20 +260,20 @@ impl EventStateSystem {
                     }
                     unknown_event = false;
                 }
-                // mouse up handling
-                if event.downcast_ref::<MouseUpEvent>().is_ok() {
-                    if self.mouse_down_nodes.borrow().contains(&current_node) {
-                        matching_nodes.push(current_node);
-                        let index = self
-                            .mouse_down_nodes
-                            .borrow()
-                            .iter()
-                            .position(|x| *x == current_node)
-                            .unwrap();
-                        self.mouse_down_nodes.borrow_mut().remove(index);
-                    }
-                    unknown_event = false;
-                }
+                // // mouse up handling
+                // if event.downcast_ref::<MouseUpEvent>().is_ok() {
+                //     if self.mouse_down_nodes.borrow().contains(&current_node) {
+                //         matching_nodes.push(current_node);
+                //         let index = self
+                //             .mouse_down_nodes
+                //             .borrow()
+                //             .iter()
+                //             .position(|x| *x == current_node)
+                //             .unwrap();
+                //         self.mouse_down_nodes.borrow_mut().remove(index);
+                //     }
+                //     unknown_event = false;
+                // }
                 if unknown_event
                     && *WidgetContainer::new(current_node, ecm, &theme).get::<bool>("enabled")
                 {
@@ -447,7 +449,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                 }
 
                 for entity in entities.iter().rev() {
-                    self.remove_widget(*entity, &theme, ecm);
+                    self.remove_widget(*entity, &theme, ecm, &mut shell);
                 }
             }
 

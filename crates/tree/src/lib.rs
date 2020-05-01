@@ -35,7 +35,7 @@ pub enum NotFound {
     Child(Entity),
 }
 
-/// Base data structure to manage the entity entities of a window in a tree based structure.
+/// Base data structure to manage the entities of a window in a tree based structure.
 #[derive(Clone, Default, Debug)]
 pub struct Tree {
     pub root: Option<Entity>,
@@ -151,8 +151,9 @@ impl EntityStore for Tree {
 
         if let Some(parent_index) = self.parent[&entity] {
             if let Some(parent_children) = self.children.get_mut(&parent_index) {
-                let index = parent_children.iter().position(|&r| r == entity).unwrap();
-                parent_children.remove(index);
+                if let Some(index) = parent_children.iter().position(|&r| r == entity) {
+                    parent_children.remove(index);
+                }
             }
         }
 

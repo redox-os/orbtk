@@ -158,10 +158,10 @@ widget!(
     ///
     /// **CSS element:** `Slider`
     Slider<SliderState>: MouseHandler, ChangedHandler {
-        /// Sets or shares the minimum of the range.
+        /// Sets or shares the minimum value of the range.
         minimum: f64,
 
-        /// Sets or shared the maximum of the range.
+        /// Sets or shares the maximum value of the range.
         maximum: f64,
 
         /// Sets or shares the current value of the range.

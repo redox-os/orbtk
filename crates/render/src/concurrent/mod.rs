@@ -29,7 +29,7 @@ enum RenderTask {
         font_file: &'static [u8],
     },
 
-    // Mutli tasks
+    // Multi tasks
     FillRect {
         x: f64,
         y: f64,
@@ -451,7 +451,8 @@ impl RenderContext2D {
 
     // Rectangles
 
-    /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
+    /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the
+    /// specified width and height and whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
         self.tasks.push(RenderTask::FillRect {
             x,
@@ -514,7 +515,8 @@ impl RenderContext2D {
         self.tasks.push(RenderTask::BeginPath());
     }
 
-    /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
+    /// Attempts to add a straight line from the current point to the start of the current sub-path.
+    /// If the shape has already been closed or has only one point, this function does nothing.
     pub fn close_path(&mut self) {
         self.tasks.push(RenderTask::ClosePath());
         self.send_tasks();
@@ -529,7 +531,8 @@ impl RenderContext2D {
         });
     }
 
-    /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
+    /// Creates a circular arc centered at (x, y) with a radius of radius.
+    /// The path starts at startAngle and ends at endAngle.
     pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
         self.tasks.push(RenderTask::Arc {
             x,
@@ -546,7 +549,8 @@ impl RenderContext2D {
         self.tasks.push(RenderTask::MoveTo { x, y });
     }
 
-    /// Adds a straight line to the current sub-path by connecting the sub-path's last point to the specified {x, y} coordinates.
+    /// Adds a straight line to the current sub-path by connecting the sub-path's last point to
+    /// the specified {x, y} coordinates.
     pub fn line_to(&mut self, x: f64, y: f64) {
         self.tasks.push(RenderTask::LineTo { x, y });
     }
@@ -557,7 +561,10 @@ impl RenderContext2D {
             .push(RenderTask::QuadraticCurveTo { cpx, cpy, x, y });
     }
 
-    /// Adds a cubic Bézier curve to the current sub-path. It requires three points: the first two are control points and the third one is the end point. The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
+    /// Adds a cubic Bézier curve to the current sub-path. It requires three points:
+    /// the first two are control points and the third one is the end point.
+    /// The starting point is the latest point in the current path, which can be changed using
+    /// MoveTo{} before creating the Bézier curve.
     pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
         self.tasks.push(RenderTask::BesierCurveTo {
             cp1x,
@@ -623,7 +630,8 @@ impl RenderContext2D {
             .expect("Could not send draw_pipeline to render thread.");
     }
 
-    /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
+    /// Creates a clipping path from the current sub-paths.
+    /// Everything drawn after clip() is called appears inside the clipping path only.
     pub fn clip(&mut self) {
         self.tasks.push(RenderTask::Clip());
     }
@@ -640,7 +648,7 @@ impl RenderContext2D {
         self.tasks.push(RenderTask::SetAlpha { alpha });
     }
 
-    /// Specific the font family.
+    /// Specifies the font family.
     pub fn set_font_family(&mut self, family: impl Into<String>) {
         let family = family.into();
         self.tasks.push(RenderTask::SetFontFamily { family });
@@ -665,7 +673,7 @@ impl RenderContext2D {
 
     // Transformations
 
-    /// Sets the tranformation.
+    /// Sets the transformation.
     pub fn set_transform(
         &mut self,
         h_scaling: f64,
@@ -692,7 +700,8 @@ impl RenderContext2D {
         self.tasks.push(RenderTask::Save());
     }
 
-    /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
+    /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack.
+    /// If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
         self.tasks.push(RenderTask::Restore());
     }

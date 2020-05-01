@@ -31,7 +31,7 @@ impl String16 {
         self.utf16.len()
     }
 
-    /// /// Returns a slice of [`u16`]s bytes that were attempted to convert to a `String`.
+    /// Returns a slice of [`u16`]s bytes that were attempted to convert to a `String`.
     pub fn as_bytes(&self) -> &[u16] {
         &self.utf16
     }
@@ -69,7 +69,7 @@ impl String16 {
         self.utf16.is_empty()
     }
 
-    // Returns `true` if this `String16` ends with the given string slice, and `false` otherwise.
+    /// Returns `true` if this `String16` ends with the given string slice, or `false` otherwise.
     pub fn ends_with(&self, pat: &str) -> bool {
         self.as_string().ends_with(pat)
     }

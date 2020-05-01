@@ -4,8 +4,8 @@ use crate::prelude::*;
 
 #[derive(Debug, Copy, Clone)]
 enum Action {
-    Press(Point),
-    Release(Point),
+    Press(Mouse),
+    Release(Mouse),
     Scroll(Point),
 }
 
@@ -34,11 +34,12 @@ impl State for MouseBehaviorState {
                     ctx.widget().set("pressed", true);
                 }
                 Action::Release(p) => {
+                    let pressed : bool = *ctx.widget().get("pressed");
                     ctx.widget().set("pressed", false);
 
-                    if check_mouse_condition(p, &ctx.widget()) {
+                    if check_mouse_condition(Point::new(p.x, p.y), &ctx.widget()) && pressed {
                         let parent = ctx.entity_of_parent().unwrap();
-                        ctx.push_event_by_entity(ClickEvent { position: p }, parent)
+                        ctx.push_event_by_entity(ClickEvent { position: Point::new(p.x, p.y) }, parent)
                     }
                 }
                 Action::Scroll(p) => {
@@ -83,16 +84,16 @@ impl Template for MouseBehavior {
         self.name("MouseBehavior")
             .delta(0.0)
             .pressed(false)
-            .on_mouse_down(move |states, p| {
+            .on_mouse_down(move |states, m| {
                 states
                     .get::<MouseBehaviorState>(id)
-                    .action(Action::Press(p));
+                    .action(Action::Press(m));
                 false
             })
-            .on_mouse_up(move |states, p| {
+            .on_mouse_up(move |states, m| {
                 states
                     .get::<MouseBehaviorState>(id)
-                    .action(Action::Release(p));
+                    .action(Action::Release(m));
                 false
             })
             .on_scroll(move |states, p| {
