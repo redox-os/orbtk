@@ -142,7 +142,7 @@ impl Application {
                 Rectangle::from((0.0, 0.0, constraint.width(), constraint.height())),
             );
 
-        let window_shell = Rc::new(RefCell::new(
+        let shell = Rc::new(RefCell::new(
             WindowBuilder::new(WindowAdapter {
                 root: window,
                 render_objects: render_objects.clone(),
@@ -165,19 +165,19 @@ impl Application {
         ));
 
         #[cfg(not(target_arch = "wasm32"))]
-        window_shell
+        shell
             .borrow_mut()
             .render_context_2_d()
             .register_font("Roboto Regular", crate::theme::fonts::ROBOTO_REGULAR_FONT);
 
         #[cfg(not(target_arch = "wasm32"))]
-        window_shell
+        shell
             .borrow_mut()
             .render_context_2_d()
             .register_font("Roboto Medium", crate::theme::fonts::ROBOTO_MEDIUM_FONT);
 
         #[cfg(not(target_arch = "wasm32"))]
-        window_shell
+        shell
             .borrow_mut()
             .render_context_2_d()
             .register_font(
@@ -186,7 +186,7 @@ impl Application {
             );
 
         world.register_init_system(InitSystem {
-            shell: window_shell.clone(),
+            shell: shell.clone(),
             layouts: layouts.clone(),
             render_objects: render_objects.clone(),
             handlers: handlers.clone(),
@@ -195,7 +195,7 @@ impl Application {
         });
 
         world.register_cleanup_system(CleanupSystem {
-            shell: window_shell.clone(),
+            shell: shell.clone(),
             layouts: layouts.clone(),
             render_objects: render_objects.clone(),
             handlers: handlers.clone(),
@@ -205,7 +205,7 @@ impl Application {
 
         world
             .create_system(EventStateSystem {
-                shell: window_shell.clone(),
+                shell: shell.clone(),
                 handlers: handlers.clone(),
                 mouse_down_nodes: RefCell::new(vec![]),
                 render_objects: render_objects.clone(),
@@ -218,7 +218,7 @@ impl Application {
 
         world
             .create_system(LayoutSystem {
-                shell: window_shell.clone(),
+                shell: shell.clone(),
                 layouts: layouts.clone(),
             })
             .with_priority(1)
@@ -226,7 +226,7 @@ impl Application {
 
         world
             .create_system(PostLayoutStateSystem {
-                shell: window_shell.clone(),
+                shell: shell.clone(),
                 layouts: layouts.clone(),
                 render_objects: render_objects.clone(),
                 handlers: handlers.clone(),
@@ -238,7 +238,7 @@ impl Application {
 
         world
             .create_system(RenderSystem {
-                shell: window_shell.clone(),
+                shell: shell.clone(),
                 layouts: layouts.clone(),
                 render_objects: render_objects.clone(),
                 handlers: handlers.clone(),
@@ -249,7 +249,7 @@ impl Application {
 
         self.runners.push(ShellRunner {
             updater: Box::new(WorldWrapper { world }),
-            window_shell,
+            shell,
         });
 
         self

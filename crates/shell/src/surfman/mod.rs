@@ -5,13 +5,24 @@ use std::{
     thread,
 };
 
-use glutin::{
-    dpi::PhysicalSize,
-    event::{Event, KeyboardInput, VirtualKeyCode, WindowEvent},
-    event_loop::{ControlFlow, EventLoop},
-    window::WindowBuilder as GlutinWindowBuilder,
-    ContextBuilder, GlProfile, GlRequest,
+use euclid::default::Size2D;
+use pathfinder_canvas::{Canvas, CanvasFontContext, Path2D};
+use pathfinder_color::ColorF;
+use pathfinder_geometry::rect::RectF;
+use pathfinder_geometry::vector::{vec2f, vec2i};
+use pathfinder_gl::{GLDevice, GLVersion};
+use pathfinder_renderer::concurrent::rayon::RayonExecutor;
+use pathfinder_renderer::concurrent::scene_proxy::SceneProxy;
+use pathfinder_renderer::gpu::options::{DestFramebuffer, RendererOptions};
+use pathfinder_renderer::gpu::renderer::Renderer;
+use pathfinder_renderer::options::BuildOptions;
+use pathfinder_resources::embedded::EmbeddedResourceLoader;
+use surfman::{
+    Connection, ContextAttributeFlags, ContextAttributes, GLVersion as SurfmanGLVersion,
 };
+use surfman::{SurfaceAccess, SurfaceType};
+use winit::dpi::LogicalSize;
+use winit::{ControlFlow, Event, EventsLoop, WindowBuilder as WinitWindowBuilder, WindowEvent};
 
 pub use super::native::*;
 
@@ -31,7 +42,7 @@ where
     request_receiver: Receiver<ShellRequest>,
     request_sender: Sender<ShellRequest>,
     render_context_2_d: RenderContext2D,
-    window_builder: GlutinWindowBuilder,
+    window_builder: WinitWindowBuilder,
 }
 
 // unsafe impl<A> HasRawWindowHandle for WindowShell<A>
@@ -96,7 +107,7 @@ where
         self.flip = false;
     }
 
-    fn window_builder(&self) -> &GlutinWindowBuilder {
+    fn window_builder(&self) -> &WinitWindowBuilder {
         &self.window_builder
     }
 }
@@ -115,51 +126,124 @@ where
     A: WindowAdapter,
 {
     pub fn run(mut self) {
-        let event_loop = EventLoop::new();
+        // Open a window.
+        let mut event_loop = EventsLoop::new();
+        let window_size = Size2D::new(640, 480);
+        let logical_size = LogicalSize::new(window_size.width as f64, window_size.height as f64);
 
-        // Create an OpenGL 3.x context for Pathfinder to use.
-        let gl_context = ContextBuilder::new()
-            .with_gl(GlRequest::Latest)
-            .with_gl_profile(GlProfile::Core)
-            .build_windowed(
-                self.shell.borrow().window_builder().clone(),
-                &event_loop,
-            )
+        let window = self
+            .shell
+            .borrow()
+            .window_builder()
+            .clone()
+            .build(&event_loop)
+            .unwrap();
+        window.show();
+
+        // Create a `surfman` device. On a multi-GPU system, we'll request the low-power integrated
+        // GPU.
+        let connection = Connection::from_winit_window(&window).unwrap();
+        let native_widget = connection
+            .create_native_widget_from_winit_window(&window)
+            .unwrap();
+        let adapter = connection.create_low_power_adapter().unwrap();
+        let mut device = connection.create_device(&adapter).unwrap();
+
+        // Request an OpenGL 3.x context. Pathfinder requires this.
+        let context_attributes = ContextAttributes {
+            version: SurfmanGLVersion::new(3, 0),
+            flags: ContextAttributeFlags::ALPHA,
+        };
+        let context_descriptor = device
+            .create_context_descriptor(&context_attributes)
             .unwrap();
 
-        // Load OpenGL, and make the context current.
-        let gl_context = unsafe { gl_context.make_current().unwrap() };
-        gl::load_with(|name| gl_context.get_proc_address(name) as *const _);
+        // Make the OpenGL context via `surfman`, and load OpenGL functions.
+        let surface_type = SurfaceType::Widget { native_widget };
+        let mut context = device.create_context(&context_descriptor).unwrap();
+        let surface = device
+            .create_surface(&context, SurfaceAccess::GPUOnly, surface_type)
+            .unwrap();
+        device
+            .bind_surface_to_context(&mut context, surface)
+            .unwrap();
+        device.make_context_current(&context).unwrap();
+        gl::load_with(|symbol_name| device.get_proc_address(&context, symbol_name));
 
-        event_loop.run(move |event, _, control_flow| {
-            self.updater.update();
-            self.shell.borrow_mut().set_update(false);
+        // Get the real size of the window, taking HiDPI into account.
+        let hidpi_factor = window.get_current_monitor().get_hidpi_factor();
+        let physical_size = logical_size.to_physical(hidpi_factor);
+        let framebuffer_size = vec2i(physical_size.width as i32, physical_size.height as i32);
 
-            gl_context.swap_buffers().unwrap();
-            match event {
-                Event::WindowEvent {
-                    event: WindowEvent::CloseRequested,
-                    ..
-                }
-                | Event::WindowEvent {
-                    event:
-                        WindowEvent::KeyboardInput {
-                            input:
-                                KeyboardInput {
-                                    virtual_keycode: Some(VirtualKeyCode::Escape),
-                                    ..
-                                },
-                            ..
-                        },
-                    ..
-                } => {
-                    *control_flow = ControlFlow::Exit;
-                }
-                _ => {
-                    *control_flow = ControlFlow::Wait;
-                }
-            };
-        })
+        // Create a Pathfinder GL device.
+        let default_framebuffer = device
+            .context_surface_info(&context)
+            .unwrap()
+            .unwrap()
+            .framebuffer_object;
+        let pathfinder_device = GLDevice::new(GLVersion::GL3, default_framebuffer);
+
+        // Create a Pathfinder renderer.
+        let mut renderer = Renderer::new(
+            pathfinder_device,
+            &EmbeddedResourceLoader::new(),
+            DestFramebuffer::full_window(framebuffer_size),
+            RendererOptions {
+                background_color: Some(ColorF::white()),
+                ..RendererOptions::default()
+            },
+        );
+
+        // Make a canvas. We're going to draw a house.
+        let font_context = CanvasFontContext::from_system_source();
+        let mut canvas = Canvas::new(framebuffer_size.to_f32()).get_context_2d(font_context);
+
+        // Set line width.
+        canvas.set_line_width(10.0);
+
+        // Draw walls.
+        canvas.stroke_rect(RectF::new(vec2f(75.0, 140.0), vec2f(150.0, 110.0)));
+
+        // Draw door.
+        canvas.fill_rect(RectF::new(vec2f(130.0, 190.0), vec2f(40.0, 60.0)));
+
+        // Draw roof.
+        let mut path = Path2D::new();
+        path.move_to(vec2f(50.0, 140.0));
+        path.line_to(vec2f(150.0, 60.0));
+        path.line_to(vec2f(250.0, 140.0));
+        path.close_path();
+        canvas.stroke_path(path);
+
+        // Render the canvas to screen.
+        let scene = SceneProxy::from_scene(canvas.into_canvas().into_scene(), RayonExecutor);
+        scene.build_and_render(&mut renderer, BuildOptions::default());
+
+        // Present the surface.
+        let mut surface = device
+            .unbind_surface_from_context(&mut context)
+            .unwrap()
+            .unwrap();
+        device.present_surface(&mut context, &mut surface).unwrap();
+        device
+            .bind_surface_to_context(&mut context, surface)
+            .unwrap();
+
+        // Wait for a keypress.
+        event_loop.run_forever(|event| match event {
+            Event::WindowEvent {
+                event: WindowEvent::CloseRequested,
+                ..
+            }
+            | Event::WindowEvent {
+                event: WindowEvent::KeyboardInput { .. },
+                ..
+            } => ControlFlow::Break,
+            _ => ControlFlow::Continue,
+        });
+
+        // Clean up.
+        drop(device.destroy_context(&mut context));
     }
 }
 
@@ -235,14 +319,14 @@ where
         // let event_loop = EventLoop::new();
         let size = (self.bounds.width(), self.bounds.height());
 
-        let physical_window_size = PhysicalSize::new(size.0, size.1);
+        let logical_size = LogicalSize::new(size.0, size.1);
         // Open a window.
-        let window_builder = GlutinWindowBuilder::new()
+        let window_builder = WinitWindowBuilder::new()
+            .with_dimensions(logical_size)
             .with_title(self.title)
             .with_resizable(self.resizeable)
             .with_always_on_top(self.always_on_top)
-            .with_decorations(!self.borderless)
-            .with_inner_size(physical_window_size);
+            .with_decorations(!self.borderless);
 
         // // Create an OpenGL 3.x context for Pathfinder to use.
         // let gl_context = ContextBuilder::new()

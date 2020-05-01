@@ -35,7 +35,7 @@ pub use orbtk_utils::prelude as utils;
 
 
 #[cfg(not(target_arch = "wasm32"))]
-#[path = "winit/mod.rs"]
+#[path = "surfman/mod.rs"]
 pub mod platform;
 // #[path = "minifb/mod.rs"]
 // pub mod platform;

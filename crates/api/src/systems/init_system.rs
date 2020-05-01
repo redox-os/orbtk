@@ -59,7 +59,7 @@ impl System<Tree, StringComponentStore> for InitSystem {
         }
 
         // init css ids
-        let window_shell = &mut self.shell.borrow_mut();
+        let shell = &mut self.shell.borrow_mut();
         let theme = ecm
             .component_store()
             .get::<Theme>("theme", root)
@@ -79,7 +79,7 @@ impl System<Tree, StringComponentStore> for InitSystem {
 
                 let mut ctx = Context::new(
                     (current_node, ecm),
-                    window_shell,
+                    shell,
                     &theme,
                     render_objects,
                     layouts,

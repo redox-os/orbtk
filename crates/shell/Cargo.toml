@@ -18,8 +18,18 @@ spin_sleep = "0.3.7"
 image = "0.23.4"
 
 [target.'cfg(all(not(target_arch = "wasm32")))'.dependencies]
-winit = "0.22.1"
-pixels = "0.0.3"
+winit = "<0.19.4"
+euclid = "0.20.10"
+gl = "0.14"
+pathfinder_canvas = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_color = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_content = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_geometry = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_gl = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_gpu = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_renderer = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_resources = { git = "https://github.com/servo/pathfinder.git" }
+surfman = { version = "0.2.0", features = ["sm-winit"] }
 # glutin = "0.24.0"
 # gl = "0.14"
 #minifb = "0.15"

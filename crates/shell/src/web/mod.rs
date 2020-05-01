@@ -337,7 +337,7 @@ pub struct ShellRunner<A>
 where
     A: WindowAdapter + 'static,
 {
-    pub window_shell: Rc<RefCell<WindowShell<A>>>,
+    pub shell: Rc<RefCell<WindowShell<A>>>,
     pub updater: Box<dyn Updater>,
 }
 
@@ -348,9 +348,9 @@ where
     pub fn run(mut self) {
         window().request_animation_frame(move |_| {
             self.updater.update();
-            self.window_shell.borrow_mut().set_update(false);
-            self.window_shell.borrow_mut().flip();
-            self.window_shell.borrow_mut().drain_events();
+            self.shell.borrow_mut().set_update(false);
+            self.shell.borrow_mut().flip();
+            self.shell.borrow_mut().drain_events();
             self.run();
         });
     }
