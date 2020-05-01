@@ -65,67 +65,67 @@ impl render::RenderPipeline for CubePipeline {
             * Mat4::rotation_y((self.spin.get() as f32 * 0.004).cos() * 4.0)
             * Mat4::rotation_z((self.spin.get() as f32 * 0.008).sin() * 2.0);
 
-        // Cube {
-        //     mvp,
-        //     positions: &[
-        //         Vec4::new(-1.0, -1.0, -1.0, 1.0), // 0
-        //         Vec4::new(-1.0, -1.0, 1.0, 1.0),  // 1
-        //         Vec4::new(-1.0, 1.0, -1.0, 1.0),  // 2
-        //         Vec4::new(-1.0, 1.0, 1.0, 1.0),   // 3
-        //         Vec4::new(1.0, -1.0, -1.0, 1.0),  // 4
-        //         Vec4::new(1.0, -1.0, 1.0, 1.0),   // 5
-        //         Vec4::new(1.0, 1.0, -1.0, 1.0),   // 6
-        //         Vec4::new(1.0, 1.0, 1.0, 1.0),    // 7
-        //     ],
-        // }
-        // .draw::<rasterizer::Triangles<_, rasterizer::BackfaceCullingEnabled>, _>(
-        //     &[
-        //         // -x
-        //         (0, Rgba::green()),
-        //         (3, Rgba::blue()),
-        //         (2, Rgba::red()),
-        //         (0, Rgba::green()),
-        //         (1, Rgba::red()),
-        //         (3, Rgba::blue()),
-        //         // +x
-        //         (7, Rgba::blue()),
-        //         (4, Rgba::green()),
-        //         (6, Rgba::red()),
-        //         (5, Rgba::red()),
-        //         (4, Rgba::green()),
-        //         (7, Rgba::blue()),
-        //         // -y
-        //         (5, Rgba::blue()),
-        //         (0, Rgba::red()),
-        //         (4, Rgba::green()),
-        //         (1, Rgba::green()),
-        //         (0, Rgba::red()),
-        //         (5, Rgba::blue()),
-        //         // +y
-        //         (2, Rgba::red()),
-        //         (7, Rgba::blue()),
-        //         (6, Rgba::green()),
-        //         (2, Rgba::red()),
-        //         (3, Rgba::green()),
-        //         (7, Rgba::blue()),
-        //         // -z
-        //         (0, Rgba::red()),
-        //         (6, Rgba::green()),
-        //         (4, Rgba::blue()),
-        //         (0, Rgba::red()),
-        //         (2, Rgba::blue()),
-        //         (6, Rgba::green()),
-        //         // +z
-        //         (7, Rgba::green()),
-        //         (1, Rgba::red()),
-        //         (5, Rgba::blue()),
-        //         (3, Rgba::blue()),
-        //         (1, Rgba::red()),
-        //         (7, Rgba::green()),
-        //     ],
-        //     &mut color,
-        //     &mut depth,
-        // );
+        Cube {
+            mvp,
+            positions: &[
+                Vec4::new(-1.0, -1.0, -1.0, 1.0), // 0
+                Vec4::new(-1.0, -1.0, 1.0, 1.0),  // 1
+                Vec4::new(-1.0, 1.0, -1.0, 1.0),  // 2
+                Vec4::new(-1.0, 1.0, 1.0, 1.0),   // 3
+                Vec4::new(1.0, -1.0, -1.0, 1.0),  // 4
+                Vec4::new(1.0, -1.0, 1.0, 1.0),   // 5
+                Vec4::new(1.0, 1.0, -1.0, 1.0),   // 6
+                Vec4::new(1.0, 1.0, 1.0, 1.0),    // 7
+            ],
+        }
+        .draw::<rasterizer::Triangles<_, rasterizer::BackfaceCullingEnabled>, _>(
+            &[
+                // -x
+                (0, Rgba::green()),
+                (3, Rgba::blue()),
+                (2, Rgba::red()),
+                (0, Rgba::green()),
+                (1, Rgba::red()),
+                (3, Rgba::blue()),
+                // +x
+                (7, Rgba::blue()),
+                (4, Rgba::green()),
+                (6, Rgba::red()),
+                (5, Rgba::red()),
+                (4, Rgba::green()),
+                (7, Rgba::blue()),
+                // -y
+                (5, Rgba::blue()),
+                (0, Rgba::red()),
+                (4, Rgba::green()),
+                (1, Rgba::green()),
+                (0, Rgba::red()),
+                (5, Rgba::blue()),
+                // +y
+                (2, Rgba::red()),
+                (7, Rgba::blue()),
+                (6, Rgba::green()),
+                (2, Rgba::red()),
+                (3, Rgba::green()),
+                (7, Rgba::blue()),
+                // -z
+                (0, Rgba::red()),
+                (6, Rgba::green()),
+                (4, Rgba::blue()),
+                (0, Rgba::red()),
+                (2, Rgba::blue()),
+                (6, Rgba::green()),
+                // +z
+                (7, Rgba::green()),
+                (1, Rgba::red()),
+                (5, Rgba::blue()),
+                (3, Rgba::blue()),
+                (1, Rgba::red()),
+                (7, Rgba::green()),
+            ],
+            &mut color,
+            Some(&mut depth),
+        );
 
         render_target.draw(color.as_ref());
     }
