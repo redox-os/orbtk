@@ -22,6 +22,7 @@ impl EventStateSystem {
         entity: Entity,
         theme: &Theme,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        shell: &mut WindowShell<WindowAdapter>,
     ) {
         {
             let render_objects = &self.render_objects;
@@ -29,7 +30,6 @@ impl EventStateSystem {
             let handlers = &mut self.handlers.borrow_mut();
             let registry = &mut self.registry.borrow_mut();
             let new_states = &mut BTreeMap::new();
-            let shell = &mut self.shell.borrow_mut();
 
             let mut ctx = Context::new(
                 (entity, ecm),
@@ -45,6 +45,8 @@ impl EventStateSystem {
             if let Some(state) = self.states.borrow_mut().get_mut(&entity) {
                 state.cleanup(registry, &mut ctx);
             }
+
+            drop(ctx);
         }
         self.states.borrow_mut().remove(&entity);
 
@@ -447,7 +449,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                 }
 
                 for entity in entities.iter().rev() {
-                    self.remove_widget(*entity, &theme, ecm);
+                    self.remove_widget(*entity, &theme, ecm, &mut shell);
                 }
             }
 

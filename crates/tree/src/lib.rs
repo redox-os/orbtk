@@ -151,8 +151,9 @@ impl EntityStore for Tree {
 
         if let Some(parent_index) = self.parent[&entity] {
             if let Some(parent_children) = self.children.get_mut(&parent_index) {
-                let index = parent_children.iter().position(|&r| r == entity).unwrap();
-                parent_children.remove(index);
+                if let Some(index) = parent_children.iter().position(|&r| r == entity) {
+                    parent_children.remove(index);
+                }
             }
         }
 

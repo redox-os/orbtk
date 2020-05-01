@@ -405,7 +405,7 @@ where
         self
     }
 
-     /// Does nothing on web.
+    /// Does nothing on web.
     pub fn always_on_top(self, always_on_top: bool) -> Self {
         self
     }

@@ -282,6 +282,14 @@ impl<'a> Context<'a> {
     pub fn remove_child_from(&mut self, child: Entity, parent: Entity) {
         if self.ecm.entity_store().children[&parent].contains(&child) {
             self.remove_widget_list.push(child);
+
+            let index = self.ecm.entity_store().children[&parent]
+                .iter()
+                .position(|&r| r == child)
+                .unwrap();
+            if let Some(parent) = self.ecm.entity_store().children.get_mut(&parent) {
+                parent.remove(index);
+            }
         }
     }
 
@@ -300,7 +308,7 @@ impl<'a> Context<'a> {
         while !self.ecm.entity_store().children[&parent].is_empty() {
             let child = self.ecm.entity_store().children[&parent][0];
 
-            self.ecm.remove_entity(child);
+            self.remove_child_from(child, parent);
         }
     }
 
