@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 0.3.1-alpha3
 
+* Improve: Mouse event arguments
 * Fix: Crash when a child widget is removed
 
 ### 0.3.1-alpha2

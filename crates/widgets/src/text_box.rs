@@ -15,7 +15,7 @@ static ID_CURSOR: &'static str = "id_cursor";
 #[derive(Clone)]
 enum TextBoxAction {
     Key(KeyEvent),
-    Mouse(Point),
+    Mouse(Mouse),
 }
 
 /// The `TextBoxState` handles the text processing of the `TextBox` widget.
@@ -394,10 +394,10 @@ impl Template for TextBox {
                 MouseBehavior::create()
                     .visibility(id)
                     .enabled(id)
-                    .on_mouse_down(move |states, p| {
+                    .on_mouse_down(move |states, m| {
                         states
                             .get_mut::<TextBoxState>(id)
-                            .action(TextBoxAction::Mouse(p));
+                            .action(TextBoxAction::Mouse(m));
                         true
                     })
                     .child(
