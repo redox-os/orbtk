@@ -107,7 +107,7 @@ pub struct ShellRunner<A>
 where
     A: WindowAdapter + 'static,
 {
-    pub window_shell: Rc<RefCell<WindowShell<A>>>,
+    pub shell: Rc<RefCell<WindowShell<A>>>,
     pub updater: Box<dyn Updater>,
 }
 
@@ -119,7 +119,7 @@ where
         let event_loop = EventLoop::new();
 
         let window = self
-            .window_shell
+            .shell
             .borrow_mut()
             .window_builder()
             .clone()
@@ -136,9 +136,9 @@ where
 
         event_loop.run(move |event, _, control_flow| {
             self.updater.update();
-            self.window_shell.borrow_mut().set_update(false);
+            self.shell.borrow_mut().set_update(false);
 
-            if let Some(data) = self.window_shell.borrow_mut().render_context_2_d.data() {
+            if let Some(data) = self.shell.borrow_mut().render_context_2_d.data() {
                 pixels.get_frame().copy_from_slice(data);
             }
 

@@ -406,7 +406,7 @@ pub struct ShellRunner<A>
 where
     A: WindowAdapter,
 {
-    pub window_shell: Rc<RefCell<WindowShell<A>>>,
+    pub shell: Rc<RefCell<WindowShell<A>>>,
     pub updater: Box<dyn Updater>,
 }
 
@@ -416,7 +416,7 @@ where
 {
     pub fn run(&mut self) {
         loop {
-            if !self.window_shell.borrow().running() || !self.window_shell.borrow().window.is_open()
+            if !self.shell.borrow().running() || !self.shell.borrow().window.is_open()
             {
                 break;
             }
@@ -425,15 +425,15 @@ where
 
             self.updater.update();
 
-            if self.window_shell.borrow_mut().update() {
-                self.window_shell.borrow_mut().set_update(false);
+            if self.shell.borrow_mut().update() {
+                self.shell.borrow_mut().set_update(false);
             }
 
-            if !self.window_shell.borrow_mut().flip() {
-                self.window_shell.borrow_mut().window.update();
+            if !self.shell.borrow_mut().flip() {
+                self.shell.borrow_mut().window.update();
             }
 
-            self.window_shell.borrow_mut().drain_events();
+            self.shell.borrow_mut().drain_events();
 
             // CONSOLE.time_end("complete run");
         }
