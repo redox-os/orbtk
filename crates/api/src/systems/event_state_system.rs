@@ -260,20 +260,20 @@ impl EventStateSystem {
                     }
                     unknown_event = false;
                 }
-                // mouse up handling
-                if event.downcast_ref::<MouseUpEvent>().is_ok() {
-                    if self.mouse_down_nodes.borrow().contains(&current_node) {
-                        matching_nodes.push(current_node);
-                        let index = self
-                            .mouse_down_nodes
-                            .borrow()
-                            .iter()
-                            .position(|x| *x == current_node)
-                            .unwrap();
-                        self.mouse_down_nodes.borrow_mut().remove(index);
-                    }
-                    unknown_event = false;
-                }
+                // // mouse up handling
+                // if event.downcast_ref::<MouseUpEvent>().is_ok() {
+                //     if self.mouse_down_nodes.borrow().contains(&current_node) {
+                //         matching_nodes.push(current_node);
+                //         let index = self
+                //             .mouse_down_nodes
+                //             .borrow()
+                //             .iter()
+                //             .position(|x| *x == current_node)
+                //             .unwrap();
+                //         self.mouse_down_nodes.borrow_mut().remove(index);
+                //     }
+                //     unknown_event = false;
+                // }
                 if unknown_event
                     && *WidgetContainer::new(current_node, ecm, &theme).get::<bool>("enabled")
                 {
