@@ -1,11 +1,17 @@
 use crate::{utils::*, Pipeline, RenderConfig, RenderTarget, TextMetrics};
 
-use pathfinder_canvas::{Canvas, CanvasFontContext, CanvasRenderingContext2D, Path2D};
-use pathfinder_geometry::vector::{Vector2F, Vector2I};
-use pathfinder_renderer::gpu::renderer::Renderer;
-use pathfinder_renderer::gpu::options::{DestFramebuffer, RendererOptions};
+use pathfinder_canvas::{
+    ArcDirection, Canvas, CanvasFontContext, CanvasRenderingContext2D, FillRule, FillStyle, Path2D,
+    RectF,
+};
+use pathfinder_color::{ColorF, ColorU};
+use pathfinder_geometry::vector::{vec2f, vec2i, Vector2F, Vector2I};
 use pathfinder_gl::{GLDevice, GLVersion};
-use pathfinder_color::ColorF;
+use pathfinder_renderer::concurrent::rayon::RayonExecutor;
+use pathfinder_renderer::concurrent::scene_proxy::SceneProxy;
+use pathfinder_renderer::gpu::options::{DestFramebuffer, RendererOptions};
+use pathfinder_renderer::gpu::renderer::Renderer;
+use pathfinder_renderer::options::BuildOptions;
 use pathfinder_resources::fs::FilesystemResourceLoader;
 
 #[derive(Clone, Default, Debug)]
@@ -32,21 +38,38 @@ pub struct Font {}
 
 /// The RenderContext2D trait, provides the rendering ctx. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
-    renderer: Renderer<GLDevice>,
+    renderer: Option<Renderer<GLDevice>>,
+    font_context: Option<CanvasFontContext>,
+    scene: Option<SceneProxy>,
+    canvas: Vec<CanvasRenderingContext2D>,
+    path: Path2D,
+    size: (f64, f64),
 }
 
 impl RenderContext2D {
     /// Creates a new render ctx 2d.
     pub fn new(width: f64, height: f64) -> Self {
-        let mut renderer = Renderer::new(
-            GLDevice::new(GLVersion::GL3, 0),
-            &FilesystemResourceLoader::locate(),
-            DestFramebuffer::full_window(Vector2I::new(width as i32, height as i32)),
-            RendererOptions {
-                background_color: Some(ColorF::white()),
-            },
-        );
-        RenderContext2D { renderer }
+        RenderContext2D {
+            renderer: None,
+            font_context: None,
+            scene: None,
+            canvas: vec![],
+            path: Path2D::new(),
+            size: (width, height),
+        }
+    }
+
+    pub fn new_ex(size: (f64, f64), renderer: Renderer<GLDevice>) -> Self {
+        let font_context = CanvasFontContext::from_system_source();
+        RenderContext2D {
+            renderer: Some(renderer),
+            font_context: Some(font_context.clone()),
+            scene: Some(SceneProxy::new(RayonExecutor)),
+            canvas: vec![Canvas::new(Vector2F::new(size.0 as f32, size.1 as f32))
+                .get_context_2d(font_context)],
+            path: Path2D::new(),
+            size,
+        }
     }
 
     pub fn resize(&mut self, width: f64, height: f64) {}
@@ -82,35 +105,77 @@ impl RenderContext2D {
     }
 
     /// Fills the current or given path with the current file style.
-    pub fn fill(&mut self) {}
+    pub fn fill(&mut self) {
+        self.canvas
+            .get_mut(0)
+            .unwrap()
+            .fill_path(self.path.clone(), FillRule::Winding);
+    }
 
     /// Strokes {outlines} the current or given path with the current stroke style.
-    pub fn stroke(&mut self) {}
+    pub fn stroke(&mut self) {
+        self.canvas
+            .get_mut(0)
+            .unwrap()
+            .stroke_path(self.path.clone());
+    }
 
     /// Starts a new path by emptying the list of sub-paths. Call this when you want to create a new path.
-    pub fn begin_path(&mut self) {}
+    pub fn begin_path(&mut self) {
+        self.path = Path2D::new();
+    }
 
     /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
-    pub fn close_path(&mut self) {}
+    pub fn close_path(&mut self) {
+        self.path.close_path();
+    }
 
     /// Adds a rectangle to the current path.
-    pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {}
+    pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.path.rect(RectF::new(
+            Vector2F::new(x as f32, y as f32),
+            Vector2F::new(width as f32, height as f32),
+        ));
+    }
 
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
-    pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {}
+    pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
+        self.path.arc(
+            Vector2F::new(x as f32, y as f32),
+            radius as f32,
+            start_angle as f32,
+            end_angle as f32,
+            ArcDirection::CW,
+        )
+    }
 
     /// Begins a new sub-path at the point specified by the given {x, y} coordinates.
 
-    pub fn move_to(&mut self, x: f64, y: f64) {}
+    pub fn move_to(&mut self, x: f64, y: f64) {
+        self.path.move_to(Vector2F::new(x as f32, y as f32));
+    }
 
     /// Adds a straight line to the current sub-path by connecting the sub-path's last point to the specified {x, y} coordinates.
-    pub fn line_to(&mut self, x: f64, y: f64) {}
+    pub fn line_to(&mut self, x: f64, y: f64) {
+        self.path.line_to(Vector2F::new(x as f32, y as f32));
+    }
 
     /// Adds a quadratic Bézier curve to the current sub-path.
-    pub fn quadratic_curve_to(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {}
+    pub fn quadratic_curve_to(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
+        self.path.quadratic_curve_to(
+            Vector2F::new(cpx as f32, cpy as f32),
+            Vector2F::new(x as f32, y as f32),
+        );
+    }
 
     /// Adds a cubic Bézier curve to the current sub-path. It requires three points: the first two are control points and the third one is the end point. The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
-    pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {}
+    pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
+        self.path.bezier_curve_to(
+            Vector2F::new(cp1x as f32, cp1y as f32),
+            Vector2F::new(cp2x as f32, cp2y as f32),
+            Vector2F::new(x as f32, y as f32),
+        );
+    }
 
     /// Draws a render target.
     pub fn draw_render_target(&mut self, render_target: &RenderTarget, x: f64, y: f64) {}
@@ -151,10 +216,40 @@ impl RenderContext2D {
     // Fill and stroke style
 
     /// Specifies the fill color to use inside shapes.
-    pub fn set_fill_style(&mut self, fill_style: Brush) {}
+    pub fn set_fill_style(&mut self, fill_style: Brush) {
+        match fill_style {
+            Brush::SolidColor(color) => {
+                self.canvas
+                    .get_mut(0)
+                    .unwrap()
+                    .set_fill_style(FillStyle::Color(ColorU::new(
+                        color.r(),
+                        color.b(),
+                        color.g(),
+                        color.a(),
+                    )))
+            }
+            Brush::LinearGradient { start, end, stops } => {}
+        }
+    }
 
     /// Specifies the fill stroke to use inside shapes.
-    pub fn set_stroke_style(&mut self, stroke_style: Brush) {}
+    pub fn set_stroke_style(&mut self, stroke_style: Brush) {
+        match stroke_style {
+            Brush::SolidColor(color) => {
+                self.canvas
+                    .get_mut(0)
+                    .unwrap()
+                    .set_stroke_style(FillStyle::Color(ColorU::new(
+                        color.r(),
+                        color.b(),
+                        color.g(),
+                        color.a(),
+                    )))
+            }
+            Brush::LinearGradient { start, end, stops } => {}
+        }
+    }
 
     // Transformations
 
@@ -192,7 +287,23 @@ impl RenderContext2D {
     // }
 
     pub fn start(&mut self) {}
-    pub fn finish(&mut self) {}
+    pub fn finish(&mut self) {
+        let canvas = self.canvas.pop().unwrap();
+
+        if let Some(scene) = &mut self.scene {
+            if let Some(renderer) = &mut self.renderer {
+                scene.replace_scene(canvas.into_canvas().into_scene());
+                scene.build_and_render(renderer, BuildOptions::default());
+            }
+        }
+
+        if let Some(font_context) = &self.font_context {
+            self.canvas.push(
+                Canvas::new(Vector2F::new(self.size.0 as f32, self.size.1 as f32))
+                    .get_context_2d(font_context.clone()),
+            )
+        }
+    }
 }
 
 // --- Conversions ---

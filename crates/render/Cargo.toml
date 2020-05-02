@@ -13,12 +13,15 @@ edition = "2018"
 stdweb = "0.4.20"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-# pathfinder_canvas = "0.5.0"
-# pathfinder_geometry = "0.5.1"
-# pathfinder_renderer = "0.5.0"
-# pathfinder_gl = "0.5.0"
-# pathfinder_resources = "0.5.0"
-# pathfinder_color = "0.5.0"
+pathfinder_canvas = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_color = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_content = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_geometry = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_gl = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_gpu = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_renderer = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_resources = { git = "https://github.com/servo/pathfinder.git" }
+surfman = { version = "0.2.0", features = ["sm-winit"] }
 raqote = { version = "0.7.14", default-features = false }
 rusttype = "0.8.3"
 image = "0.23"
