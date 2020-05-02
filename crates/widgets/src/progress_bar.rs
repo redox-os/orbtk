@@ -62,6 +62,7 @@ widget!(
         border_brush: Brush,
         border_radius: f64,
         border_width: Thickness,
+        padding: Thickness,
         val: f64
     }
 );
@@ -74,13 +75,13 @@ impl Template for ProgressBar {
             .border_radius(4.0)
             .border_width(1.0)
             .element("progress_bar")
-            .height(32.0)
+            .height(34.0)
+            .padding((2.0, 4.0, 2.0, 4.0))
             .child(
                 Container::create()
                     .background("#EFD035")
                     .height(24.0)
                     .border_radius(1.0)
-                    .margin((2.0, 4.0, 4.0, 2.0))
                     .width(0.0)
                     .build(build_context),
             )
@@ -89,5 +90,9 @@ impl Template for ProgressBar {
 
     fn render_object(&self) -> Box<dyn RenderObject> {
         Box::new(RectangleRenderObject)
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(PaddingLayout::new())
     }
 }
