@@ -128,8 +128,15 @@ where
     pub fn run(mut self) {
         // Open a window.
         let mut event_loop = EventsLoop::new();
-        let window_size = Size2D::new(640, 480);
-        let logical_size = LogicalSize::new(window_size.width as f64, window_size.height as f64);
+        let size = self
+            .shell
+            .borrow()
+            .window_builder()
+            .window
+            .dimensions
+            .unwrap_or(LogicalSize::new(100.0, 100.0));
+
+        let logical_size = LogicalSize::new(size.width as f64, size.height as f64);
 
         let window = self
             .shell
@@ -194,40 +201,18 @@ where
             },
         );
 
-        // Make a canvas. We're going to draw a house.
-        let font_context = CanvasFontContext::from_system_source();
-        let mut canvas = Canvas::new(framebuffer_size.to_f32()).get_context_2d(font_context);
+        self.shell.borrow_mut().render_context_2_d =
+            RenderContext2D::new_ex((size.width as f64, size.height as f64), renderer);
 
-        // Set line width.
-        canvas.set_line_width(10.0);
-
-        // Draw walls.
-        canvas.stroke_rect(RectF::new(vec2f(75.0, 140.0), vec2f(150.0, 110.0)));
-
-        // Draw door.
-        canvas.fill_rect(RectF::new(vec2f(130.0, 190.0), vec2f(40.0, 60.0)));
-
-        // Draw roof.
-        let mut path = Path2D::new();
-        path.move_to(vec2f(50.0, 140.0));
-        path.line_to(vec2f(150.0, 60.0));
-        path.line_to(vec2f(250.0, 140.0));
-        path.close_path();
-        canvas.stroke_path(path);
-
-        // Render the canvas to screen.
-        let scene = SceneProxy::from_scene(canvas.into_canvas().into_scene(), RayonExecutor);
-        scene.build_and_render(&mut renderer, BuildOptions::default());
-
-        // Present the surface.
-        let mut surface = device
-            .unbind_surface_from_context(&mut context)
-            .unwrap()
-            .unwrap();
-        device.present_surface(&mut context, &mut surface).unwrap();
-        device
-            .bind_surface_to_context(&mut context, surface)
-            .unwrap();
+        // // Present the surface.
+        // let mut surface = device
+        //     .unbind_surface_from_context(&mut context)
+        //     .unwrap()
+        //     .unwrap();
+        // device.present_surface(&mut context, &mut surface).unwrap();
+        // device
+        //     .bind_surface_to_context(&mut context, surface)
+        //     .unwrap();
 
         // Wait for a keypress.
         event_loop.run_forever(|event| match event {
@@ -239,7 +224,23 @@ where
                 event: WindowEvent::KeyboardInput { .. },
                 ..
             } => ControlFlow::Break,
-            _ => ControlFlow::Continue,
+            _ => {
+                self.updater.update();
+                self.shell.borrow_mut().set_update(false);
+                self.shell.borrow_mut().flip();
+                self.shell.borrow_mut().drain_events();
+
+                // Present the rendered canvas via `surfman`.
+                let mut surface = device
+                    .unbind_surface_from_context(&mut context)
+                    .unwrap()
+                    .unwrap();
+                device.present_surface(&mut context, &mut surface).unwrap();
+                device
+                    .bind_surface_to_context(&mut context, surface)
+                    .unwrap();
+                ControlFlow::Continue
+            }
         });
 
         // Clean up.
