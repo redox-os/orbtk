@@ -2,36 +2,44 @@ use crate::prelude::*;
 
 static RANGE_MIN: f64 = 0.0;
 static RANGE_MAX: f64 = 1.0;
+static ID_INDICATOR: &'static str = "PGBAR_INDICATOR";
 
 #[derive(Default, AsAny)]
-struct BarState {}
+struct BarState {
+    indicator: Entity
+}
 
 impl State for BarState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        ctx.child_from_index(0)
+        self.indicator = ctx.entity_of_child(ID_INDICATOR).expect("BarState.init(): Child could not be found!");
+
+        ctx.get_widget(self.indicator)
             .get_mut::<Constraint>("constraint")
             .set_width(0.1);
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let val = ctx.widget().clone_or_default::<f64>("val");
-        let new_width: f64;
-
-        if val == RANGE_MIN {
-            new_width = 0.1;
-        } else {
-            let max_width = ctx.widget().get::<Rectangle>("bounds").width();
-            if val == RANGE_MAX {
-                new_width = max_width * 0.99;
-            } else if val > RANGE_MIN && val < RANGE_MAX {
-                new_width = max_width * val;
-            } else {
-                new_width = max_width * 0.99;
-            }
-        }
-        ctx.child_from_index(0)
+        let max_width = ctx.widget().get::<Rectangle>("bounds").width();
+        let new_width = calculate_width(val, max_width);
+        
+        ctx.get_widget(self.indicator)
             .get_mut::<Constraint>("constraint")
             .set_width(new_width);
+    }
+}
+
+fn calculate_width(curren_progress: f64, max_width: f64) -> f64 {
+    if curren_progress == RANGE_MIN {
+        return 0.01;
+    } else {
+        if curren_progress == RANGE_MAX {
+            return max_width * 0.99;
+        } else if curren_progress > RANGE_MIN && curren_progress < RANGE_MAX {
+            return max_width * curren_progress;
+        } else {
+            return max_width * 0.99;
+        }
     }
 }
 
@@ -53,16 +61,22 @@ widget!(
     /// ```
     /// 
     /// The progress can be controlled by changing the value of the `val` property.
-    /// (this code asssumes that you have a children with id "pgbar")
+    /// (this code assumes that you have a children with id "pgbar")
     /// ```rust
     /// ctx.child("pgbar").set::<f64>("val", amount);
     /// ```
     ProgressBar<BarState> {
+        /// Sets or shares the background color property
         background: Brush,
+        /// Sets or shares the border color property
         border_brush: Brush,
+        /// Sets or shares the border radius property
         border_radius: f64,
+        /// Sets or shares the border width property
         border_width: Thickness,
+        /// Sets or shares the padding property
         padding: Thickness,
+        /// Sets or shares the current progress property
         val: f64
     }
 );
@@ -79,6 +93,8 @@ impl Template for ProgressBar {
             .padding((2.0, 4.0, 2.0, 4.0))
             .child(
                 Container::create()
+                    .id(ID_INDICATOR)
+                    .element("progress_bar_indicator")
                     .background("#EFD035")
                     .height(24.0)
                     .border_radius(1.0)
@@ -94,5 +110,20 @@ impl Template for ProgressBar {
 
     fn layout(&self) -> Box<dyn Layout> {
         Box::new(PaddingLayout::new())
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_calculate_width() {
+        assert_eq!(0.01, calculate_width(0.0, 100.0));
+        assert_eq!(50.0, calculate_width(0.5, 100.0));
+        assert_eq!(99.0, calculate_width(1.0, 100.0));
+        assert_eq!(99.0, calculate_width(1.23, 100.0));
+        assert_eq!(99.0, calculate_width(-1.23, 100.0));
     }
 }
