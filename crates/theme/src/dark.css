@@ -245,3 +245,10 @@ progress_bar {
     padding-top: 4;
     padding-bottom: 4;
 }
+
+progress_bar_indicator {
+    background: #EFD035;
+    border-radius: 1;
+    height: 24;
+    width: 0;
+}
