@@ -177,13 +177,10 @@ impl Application {
             .register_font("Roboto Medium", crate::theme::fonts::ROBOTO_MEDIUM_FONT);
 
         #[cfg(not(target_arch = "wasm32"))]
-        shell
-            .borrow_mut()
-            .render_context_2_d()
-            .register_font(
-                "Material Icons",
-                crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
-            );
+        shell.borrow_mut().render_context_2_d().register_font(
+            "Material Icons",
+            crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
+        );
 
         world.register_init_system(InitSystem {
             shell: shell.clone(),
