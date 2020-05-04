@@ -43,6 +43,7 @@ where
     request_sender: Sender<ShellRequest>,
     render_context_2_d: RenderContext2D,
     window_builder: WinitWindowBuilder,
+    pub mouse_pos: (f64, f64),
 }
 
 // unsafe impl<A> HasRawWindowHandle for WindowShell<A>
@@ -136,6 +137,8 @@ where
             .dimensions
             .unwrap_or(LogicalSize::new(100.0, 100.0));
 
+        let mut render = true;
+
         let logical_size = LogicalSize::new(size.width as f64, size.height as f64);
 
         let window = self
@@ -215,30 +218,70 @@ where
         //     .unwrap();
 
         // Wait for a keypress.
-        event_loop.run_forever(|event| match event {
+        event_loop.run_forever(|evt| match evt {
             Event::WindowEvent {
-                event: WindowEvent::CloseRequested,
+                event: WindowEvent::MouseInput { state, button, .. },
                 ..
+            } => {
+                let button = {
+                    match button {
+                        winit::MouseButton::Left => MouseButton::Left,
+                        winit::MouseButton::Right => MouseButton::Right,
+                        winit::MouseButton::Middle => MouseButton::Middle,
+                        winit::MouseButton::Other(_) => MouseButton::Left,
+                    }
+                };
+
+                let state = {
+                    match state {
+                        winit::ElementState::Pressed => ButtonState::Down,
+                        winit::ElementState::Released => ButtonState::Up,
+                    }
+                };
+
+                let mouse_pos = self.shell.borrow().mouse_pos;
+
+                self.shell.borrow_mut().adapter().mouse_event(MouseEvent {
+                    x: mouse_pos.0,
+                    y: mouse_pos.1,
+                    button,
+                    state,
+                });
+                render = true;
+                ControlFlow::Continue
             }
-            | Event::WindowEvent {
-                event: WindowEvent::KeyboardInput { .. },
+            Event::WindowEvent {
+                event: WindowEvent::CursorMoved { position, ..},
                 ..
-            } => ControlFlow::Break,
+            } => {
+                self.shell.borrow_mut().mouse_pos = (position.x, position.y);
+                self.shell.borrow_mut().adapter().mouse(position.x, position.y);
+                render = true;
+                ControlFlow::Continue
+            }
+            // | Event::WindowEvent {
+            //     event: WindowEvent::KeyboardInput { .. },
+            //     ..
+            // } => ControlFlow::Break,
             _ => {
                 self.updater.update();
-                self.shell.borrow_mut().set_update(false);
+                self.shell.borrow_mut().set_update(true);
                 self.shell.borrow_mut().flip();
                 self.shell.borrow_mut().drain_events();
 
-                // Present the rendered canvas via `surfman`.
-                let mut surface = device
-                    .unbind_surface_from_context(&mut context)
-                    .unwrap()
-                    .unwrap();
-                device.present_surface(&mut context, &mut surface).unwrap();
-                device
-                    .bind_surface_to_context(&mut context, surface)
-                    .unwrap();
+                if render {
+                    // Present the rendered canvas via `surfman`.
+                    let mut surface = device
+                        .unbind_surface_from_context(&mut context)
+                        .unwrap()
+                        .unwrap();
+                    device.present_surface(&mut context, &mut surface).unwrap();
+                    device
+                        .bind_surface_to_context(&mut context, surface)
+                        .unwrap();
+                    render = false;
+                }
+
                 ControlFlow::Continue
             }
         });
@@ -369,6 +412,7 @@ where
             render_context_2_d: RenderContext2D::new(size.0, size.1),
             adapter: self.adapter,
             window_builder,
+            mouse_pos: (0.0, 0.0),
         }
     }
 }
