@@ -22,7 +22,7 @@ pathfinder_gpu = { git = "https://github.com/servo/pathfinder.git" }
 pathfinder_renderer = { git = "https://github.com/servo/pathfinder.git" }
 pathfinder_resources = { git = "https://github.com/servo/pathfinder.git" }
 surfman = { version = "0.2.0", features = ["sm-winit"] }
-raqote = { version = "0.7.14", default-features = false }
+# raqote = { version = "0.7.14", default-features = false }
 rusttype = "0.8.3"
 image = "0.23"
 
