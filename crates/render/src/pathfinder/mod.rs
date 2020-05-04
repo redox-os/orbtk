@@ -80,15 +80,29 @@ impl RenderContext2D {
     // Rectangles
 
     /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
-    pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {}
+    pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.canvas.get_mut(0).unwrap().fill_rect(RectF::new(
+            Vector2F::new(x as f32, y as f32),
+            Vector2F::new(width as f32, height as f32),
+        ));
+    }
 
     /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other ctx settings.
-    pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {}
+    pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.canvas.get_mut(0).unwrap().stroke_rect(RectF::new(
+            Vector2F::new(x as f32, y as f32),
+            Vector2F::new(width as f32, height as f32),
+        ));
+    }
 
     // Text
 
     /// Draws (fills) a given text at the given (x, y) position.
-    pub fn fill_text(&mut self, text: &str, x: f64, y: f64) {}
+    pub fn fill_text(&mut self, text: &str, x: f64, y: f64) {
+        // self.canvas
+        // .get_mut(0)
+        // .unwrap().fill_text(text, vec2f(x as f32, y as f32));
+    }
 
     pub fn measure(
         &mut self,

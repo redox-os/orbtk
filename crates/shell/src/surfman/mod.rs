@@ -6,7 +6,6 @@ use std::{
 };
 
 use euclid::default::Size2D;
-use pathfinder_canvas::{Canvas, CanvasFontContext, Path2D};
 use pathfinder_color::ColorF;
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::{vec2f, vec2i};
