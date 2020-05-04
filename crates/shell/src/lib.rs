@@ -33,7 +33,6 @@ pub mod window;
 
 pub use orbtk_utils::prelude as utils;
 
-
 #[cfg(not(target_arch = "wasm32"))]
 #[path = "surfman/mod.rs"]
 pub mod platform;

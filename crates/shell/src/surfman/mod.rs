@@ -206,18 +206,22 @@ where
         self.shell.borrow_mut().render_context_2_d =
             RenderContext2D::new_ex((size.width as f64, size.height as f64), renderer);
 
-        // // Present the surface.
-        // let mut surface = device
-        //     .unbind_surface_from_context(&mut context)
-        //     .unwrap()
-        //     .unwrap();
-        // device.present_surface(&mut context, &mut surface).unwrap();
-        // device
-        //     .bind_surface_to_context(&mut context, surface)
-        //     .unwrap();
-
         // Wait for a keypress.
         event_loop.run_forever(|evt| match evt {
+            Event::WindowEvent {
+                event: WindowEvent::Resized(s),
+                ..
+            } => {
+                self.shell.borrow_mut().adapter().resize(s.width, s.height);
+                ControlFlow::Continue
+            }
+            Event::WindowEvent {
+                event: WindowEvent::CloseRequested,
+                ..
+            } => {
+                self.shell.borrow_mut().adapter().quit_event();
+                ControlFlow::Break
+            }
             Event::WindowEvent {
                 event: WindowEvent::MouseInput { state, button, .. },
                 ..
@@ -250,11 +254,26 @@ where
                 ControlFlow::Continue
             }
             Event::WindowEvent {
-                event: WindowEvent::CursorMoved { position, ..},
+                event: WindowEvent::MouseWheel { delta, .. },
+                ..
+            } => {
+                match delta {
+                    winit::MouseScrollDelta::LineDelta(_, _) => {}
+                    winit::MouseScrollDelta::PixelDelta(p) => {
+                        self.shell.borrow_mut().adapter().scroll(p.x, p.y);
+                    }
+                }
+                ControlFlow::Continue
+            }
+            Event::WindowEvent {
+                event: WindowEvent::CursorMoved { position, .. },
                 ..
             } => {
                 self.shell.borrow_mut().mouse_pos = (position.x, position.y);
-                self.shell.borrow_mut().adapter().mouse(position.x, position.y);
+                self.shell
+                    .borrow_mut()
+                    .adapter()
+                    .mouse(position.x, position.y);
                 render = true;
                 ControlFlow::Continue
             }
@@ -370,37 +389,6 @@ where
             .with_resizable(self.resizeable)
             .with_always_on_top(self.always_on_top)
             .with_decorations(!self.borderless);
-
-        // // Create an OpenGL 3.x context for Pathfinder to use.
-        // let gl_context = ContextBuilder::new()
-        //     .with_gl(GlRequest::Latest)
-        //     .with_gl_profile(GlProfile::Core)
-        //     .build_windowed(window_builder, &event_loop)
-        //     .unwrap();
-
-        // let window_thread = thread::spawn(move || {
-        //     event_loop.run(move |event, _, control_flow| {
-        //         match event {
-        //             Event::WindowEvent { event: WindowEvent::CloseRequested, .. } |
-        //             Event::WindowEvent {
-        //                 event: WindowEvent::KeyboardInput {
-        //                     input: KeyboardInput { virtual_keycode: Some(VirtualKeyCode::Escape), .. },
-        //                     ..
-        //                 },
-        //                 ..
-        //             } => {
-        //                 *control_flow = ControlFlow::Exit;
-        //             },
-        //             _ => {
-        //                 *control_flow = ControlFlow::Wait;
-        //             },
-        //         };
-        //     })
-        // });
-
-        // // Load OpenGL, and make the context current.
-        // let gl_context = unsafe { gl_context.make_current().unwrap() };
-        // gl::load_with(|name| gl_context.get_proc_address(name) as *const _);
 
         WindowShell {
             flip: false,

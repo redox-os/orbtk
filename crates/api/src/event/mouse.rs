@@ -46,14 +46,14 @@ pub struct ScrollEvent {
 /// Represents the current mouse state of an mouse event.
 #[derive(Debug, Copy, Clone)]
 pub struct Mouse {
-      /// Indicates the mouse button that is connected to the event.
-      pub button: MouseButton,
+    /// Indicates the mouse button that is connected to the event.
+    pub button: MouseButton,
 
-      /// Indicates the x position of the event on the window.
-      pub x: f64,
-  
-      /// Indicates the y position of the event on the window.
-      pub y: f64,
+    /// Indicates the x position of the event on the window.
+    pub x: f64,
+
+    /// Indicates the y position of the event on the window.
+    pub y: f64,
 }
 
 /// `MouseUpEvent` occurs when a mouse button is released.
@@ -79,17 +79,17 @@ pub struct ClickEvent {
 /// `MouseDownEvent` occurs when a mouse button is pressed.
 #[derive(Event)]
 pub struct MouseDownEvent {
-     /// Indicates the mouse button that is pressed.
-     pub button: MouseButton,
+    /// Indicates the mouse button that is pressed.
+    pub button: MouseButton,
 
-     /// Indicates the x position of the event on the window.
-     pub x: f64,
- 
-     /// Indicates the y position of the event on the window.
-     pub y: f64,
+    /// Indicates the x position of the event on the window.
+    pub x: f64,
+
+    /// Indicates the y position of the event on the window.
+    pub y: f64,
 }
 
-/// `GlobalMouseUpEvent` occurs when a mouse button is released. 
+/// `GlobalMouseUpEvent` occurs when a mouse button is released.
 ///
 /// Global events could not be handled and could be read on each state.
 #[derive(Event)]
@@ -149,7 +149,14 @@ impl EventHandler for MouseDownEventHandler {
             .downcast_ref::<MouseDownEvent>()
             .ok()
             .map_or(false, |event| {
-                (self.handler)(state_context, Mouse { button: event.button, x: event.x, y: event.y })
+                (self.handler)(
+                    state_context,
+                    Mouse {
+                        button: event.button,
+                        x: event.x,
+                        y: event.y,
+                    },
+                )
             })
     }
 
@@ -170,7 +177,14 @@ impl EventHandler for GlobalMouseUpEventHandler {
             .downcast_ref::<GlobalMouseUpEvent>()
             .ok()
             .map_or(false, |event| {
-                (self.handler)(state_context,  Mouse { button: event.button, x: event.x, y: event.y });
+                (self.handler)(
+                    state_context,
+                    Mouse {
+                        button: event.button,
+                        x: event.x,
+                        y: event.y,
+                    },
+                );
                 false
             })
     }
@@ -192,7 +206,14 @@ impl EventHandler for MouseUpEventHandler {
             .downcast_ref::<MouseUpEvent>()
             .ok()
             .map_or(false, |event| {
-                (self.handler)(state_context,  Mouse { button: event.button, x: event.x, y: event.y })
+                (self.handler)(
+                    state_context,
+                    Mouse {
+                        button: event.button,
+                        x: event.x,
+                        y: event.y,
+                    },
+                )
             })
     }
 
