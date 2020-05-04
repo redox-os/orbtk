@@ -1,5 +1,7 @@
 //! This module contains elements to work with window events.
 
+use std::char;
+
 /// Represents a keyboard key.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum Key {
@@ -217,6 +219,16 @@ impl From<Key> for Option<u8> {
 impl ToString for Key {
     fn to_string(&self) -> String {
         <&'static str>::from(*self).to_owned()
+    }
+}
+
+impl From<u32> for Key {
+    fn from(uni_char: u32) -> Self {
+        if let Some(character) = char::from_u32(uni_char) {
+            return Key::from(character);
+        }
+
+        Key::Unknown
     }
 }
 

@@ -223,6 +223,12 @@ where
                 ControlFlow::Break
             }
             Event::WindowEvent {
+                event: WindowEvent::KeyboardInput { input, .. }, ..
+            } => {
+                
+                ControlFlow::Continue
+            }
+            Event::WindowEvent {
                 event: WindowEvent::MouseInput { state, button, .. },
                 ..
             } => {
