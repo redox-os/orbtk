@@ -224,8 +224,8 @@ impl RenderContext2D {
                     .unwrap()
                     .set_fill_style(FillStyle::Color(ColorU::new(
                         color.r(),
-                        color.b(),
                         color.g(),
+                        color.b(),
                         color.a(),
                     )))
             }
@@ -242,8 +242,8 @@ impl RenderContext2D {
                     .unwrap()
                     .set_stroke_style(FillStyle::Color(ColorU::new(
                         color.r(),
-                        color.b(),
                         color.g(),
+                        color.b(),
                         color.a(),
                     )))
             }
@@ -286,7 +286,16 @@ impl RenderContext2D {
     // pub fn data_u8_mut(&mut self) -> &mut [u8] {
     // }
 
-    pub fn start(&mut self) {}
+    pub fn start(&mut self) {
+        self.canvas.clear();
+        self.path = Path2D::new();
+        if let Some(font_context) = &self.font_context {
+            self.canvas.push(
+                Canvas::new(Vector2F::new(self.size.0 as f32, self.size.1 as f32))
+                    .get_context_2d(font_context.clone()),
+            )
+        }
+    }
     pub fn finish(&mut self) {
         let canvas = self.canvas.pop().unwrap();
 
