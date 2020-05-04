@@ -233,3 +233,22 @@ thumb {
 thumb:active {
     background: #e1bc21;
 }
+
+progress_bar {
+    background: #212121;
+    border-color: #BABABA;
+    border-radius: 4;
+    border-width: 1;
+    height: 32;
+    padding-left: 2;
+    padding-right: 2;
+    padding-top: 4;
+    padding-bottom: 4;
+}
+
+progress_bar_indicator {
+    background: #EFD035;
+    border-radius: 1;
+    height: 24;
+    width: 0;
+}
