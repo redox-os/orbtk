@@ -45,8 +45,8 @@ fn test_distance() {
     const EXPECTED_RESULT: f64 = 9.48683;
     const ERROR_MARGIN: f64 = 0.00001;
 
-    let point_positive = Point { x: 1., y: 5. };
-    let point_negative = Point { x: -2., y: -4. };
+    let point_positive = Point::new(1., 5.);
+    let point_negative = Point::new(-2., -4.);
 
     assert!(((point_positive.distance(point_negative) - EXPECTED_RESULT).abs() < ERROR_MARGIN));
     assert!(((point_negative.distance(point_positive) - EXPECTED_RESULT).abs() < ERROR_MARGIN));
