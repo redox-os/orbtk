@@ -5,7 +5,7 @@ use dces::prelude::{Entity, World};
 use crate::{prelude::*, shell, tree::Tree, utils::Point};
 
 /// Represents a window. Each window has its own tree, event pipeline and shell.
-pub struct ShellAdapter {
+pub struct ShellAdapter<'a> {
     pub render_objects: BTreeMap<Entity, Box<dyn RenderObject>>,
     pub layouts: BTreeMap<Entity, Box<dyn Layout>>,
     pub handlers: EventHandlerMap,
@@ -13,16 +13,20 @@ pub struct ShellAdapter {
     pub event_queue: EventQueue,
     pub mouse_position: Point,
     pub registry: Registry,
-    pub world: World<Tree, StringComponentStore, ContextProvider<'static>>
+    pub world: World<Tree, StringComponentStore, ContextProvider)>,
 }
 
-impl ShellAdapter {
+impl<'a> ShellAdapter<'a> {
     fn root(&self) -> Entity {
-        self.world.entity_component_manager().entity_store().root.unwrap()
+        self.world
+            .entity_component_manager()
+            .entity_store()
+            .root
+            .unwrap()
     }
 }
 
-impl shell::ShellAdapter for ShellAdapter {
+impl<'a> shell::ShellAdapter<'a> for ShellAdapter<'a> {
     fn resize(&mut self, width: f64, height: f64) {
         self.event_queue.register_event_with_strategy(
             WindowEvent::Resize { width, height },
@@ -111,12 +115,23 @@ impl shell::ShellAdapter for ShellAdapter {
     }
 
     fn run(&mut self, shell_context: &mut shell::ShellContext<'_>) {
-        
+        let context_provider: ContextProvider<'static> = ContextProvider::new(
+            &mut self.render_objects,
+            &mut self.layouts,
+            &mut self.handlers,
+            &mut self.states,
+            &mut self.event_queue,
+            self.mouse_position,
+        );
+        {
+            self.world.run_with_context(&mut (shell_context, &mut context_provider));
+        }
+      
     }
 }
 
-impl Into<Box<dyn shell::ShellAdapter>> for ShellAdapter {
-    fn into(self) -> Box<dyn shell::ShellAdapter> {
+impl<'a> Into<Box<dyn shell::ShellAdapter<'a>>> for ShellAdapter<'a> {
+    fn into(self) -> Box<dyn shell::ShellAdapter<'a>> {
         Box::new(self)
     }
 }

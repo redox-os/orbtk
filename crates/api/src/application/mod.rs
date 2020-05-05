@@ -22,8 +22,8 @@ mod overlay;
 mod shell_adapter;
 
 /// The `Application` represents the entry point of an OrbTk based application.
-pub struct Application {
-    shells: Vec<Rc<RefCell<Shell<ShellAdapter>>>>,
+pub struct Application<'a> {
+    shells: Vec<Shell<'a, ShellAdapter<'a>>>,
     name: Box<str>,
 }
 
@@ -139,117 +139,76 @@ impl Application {
                 "bounds",
                 window,
                 Rectangle::from((0.0, 0.0, constraint.width(), constraint.height())),
-            );
+            ); 
 
-        let shell = Rc::new(RefCell::new(
-            ShellBuilder::new(ShellAdapter {
-                root: window,
-                render_objects: render_objects.clone(),
-                layouts: layouts.clone(),
-                handlers: handlers.clone(),
-                states: states.clone(),
-                ..Default::default()
-            })
-            .title(&(title)[..])
-            .bounds(Rectangle::from((
-                position.x,
-                position.y,
-                constraint.width(),
-                constraint.height(),
-            )))
-            .borderless(borderless)
-            .resizeable(resizeable)
-            .always_on_top(always_on_top)
-            .build(),
-        ));
+        world.register_init_system(InitSystem);
 
-        #[cfg(not(target_arch = "wasm32"))]
-        shell
-            .borrow_mut()
-            .render_context_2_d()
-            .register_font("Roboto Regular", crate::theme::fonts::ROBOTO_REGULAR_FONT);
-
-        #[cfg(not(target_arch = "wasm32"))]
-        shell
-            .borrow_mut()
-            .render_context_2_d()
-            .register_font("Roboto Medium", crate::theme::fonts::ROBOTO_MEDIUM_FONT);
-
-        #[cfg(not(target_arch = "wasm32"))]
-        shell.borrow_mut().render_context_2_d().register_font(
-            "Material Icons",
-            crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
-        );
-
-        world.register_init_system(InitSystem {
-            shell: shell.clone(),
-            layouts: layouts.clone(),
-            render_objects: render_objects.clone(),
-            handlers: handlers.clone(),
-            states: states.clone(),
-            registry: registry.clone(),
-        });
-
-        world.register_cleanup_system(CleanupSystem {
-            shell: shell.clone(),
-            layouts: layouts.clone(),
-            render_objects: render_objects.clone(),
-            handlers: handlers.clone(),
-            states: states.clone(),
-            registry: registry.clone(),
-        });
+        world.register_cleanup_system(CleanupSystem);
 
         world
-            .create_system(EventStateSystem {
-                shell: shell.clone(),
-                handlers: handlers.clone(),
-                mouse_down_nodes: RefCell::new(vec![]),
-                render_objects: render_objects.clone(),
-                states: states.clone(),
-                layouts: layouts.clone(),
-                registry: registry.clone(),
-            })
+            .create_system(EventStateSystem)
             .with_priority(0)
             .build();
 
         world
-            .create_system(LayoutSystem {
-                shell: shell.clone(),
-                layouts: layouts.clone(),
-            })
+            .create_system(LayoutSystem)
             .with_priority(1)
             .build();
 
         world
-            .create_system(PostLayoutStateSystem {
-                shell: shell.clone(),
-                layouts: layouts.clone(),
-                render_objects: render_objects.clone(),
-                handlers: handlers.clone(),
-                states: states.clone(),
-                registry: registry.clone(),
-            })
+            .create_system(PostLayoutStateSystem)
             .with_priority(2)
             .build();
 
         world
-            .create_system(RenderSystem {
-                shell: shell.clone(),
-                layouts: layouts.clone(),
-                render_objects: render_objects.clone(),
-                handlers: handlers.clone(),
-                states: states.clone(),
-            })
+            .create_system(RenderSystem)
             .with_priority(3)
             .build();
 
-        shell.borrow_mut().updater = Some(Box::new(WorldWrapper { world }));
-        self.shells.push(shell);
+            let shell = Rc::new(RefCell::new(
+                ShellBuilder::new(ShellAdapter {
+                    render_objects,
+                    layouts,
+                    handlers,
+                    states,
+                    registry,
+                    event_queue: EventQueue::default(),
+                    mouse_position: Point::default(),
+                    world
+                    
+                })
+                .title(&(title)[..])
+                .bounds(Rectangle::from((
+                    position.x,
+                    position.y,
+                    constraint.width(),
+                    constraint.height(),
+                )))
+                .borderless(borderless)
+                .resizeable(resizeable)
+                .always_on_top(always_on_top)
+                .build(),
+            ));
+    
+            #[cfg(not(target_arch = "wasm32"))]
+            shell
+                .borrow_mut()
+                .render_context_2_d()
+                .register_font("Roboto Regular", crate::theme::fonts::ROBOTO_REGULAR_FONT);
+    
+            #[cfg(not(target_arch = "wasm32"))]
+            shell
+                .borrow_mut()
+                .render_context_2_d()
+                .register_font("Roboto Medium", crate::theme::fonts::ROBOTO_MEDIUM_FONT);
+    
+            #[cfg(not(target_arch = "wasm32"))]
+            shell.borrow_mut().render_context_2_d().register_font(
+                "Material Icons",
+                crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
+            );
 
-        // self.runners.push(ShellRunner {
-        //     updater: Box::new(WorldWrapper { world }),
-        //     shell,
-        // });
+        self.shells.push(shell);
 
         self
     }

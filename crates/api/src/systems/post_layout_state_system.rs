@@ -5,14 +5,7 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 use crate::{css_engine::*, prelude::*, shell::Shell, tree::Tree};
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
-pub struct PostLayoutStateSystem {
-    pub shell: Rc<RefCell<Shell<ShellAdapter>>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub handlers: Rc<RefCell<EventHandlerMap>>,
-    pub registry: Rc<RefCell<Registry>>,
-}
+pub struct PostLayoutStateSystem;
 
 impl PostLayoutStateSystem {
     fn remove_widget(
@@ -56,7 +49,7 @@ impl PostLayoutStateSystem {
 }
 
 impl System<Tree, StringComponentStore, ContextProvider<'_>> for PostLayoutStateSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
+    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>, ctx: &mut ContextProvider) {
         if !self.shell.borrow().update() || !self.shell.borrow().running() {
             return;
         }

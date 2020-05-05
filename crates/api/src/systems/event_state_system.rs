@@ -5,15 +5,7 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 use crate::{css_engine::*, prelude::*, shell::Shell, tree::Tree, utils::*};
 
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
-pub struct EventStateSystem {
-    pub shell: Rc<RefCell<Shell<ShellAdapter>>>,
-    pub handlers: Rc<RefCell<EventHandlerMap>>,
-    pub mouse_down_nodes: RefCell<Vec<Entity>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub registry: Rc<RefCell<Registry>>,
-}
+pub struct EventStateSystem;
 
 impl EventStateSystem {
     // Remove all objects of a widget.
@@ -304,7 +296,7 @@ impl EventStateSystem {
 }
 
 impl System<Tree, StringComponentStore, ContextProvider<'_>> for EventStateSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
+    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>, ctx: &mut ContextProvider) {
         let mut shell = self.shell.borrow_mut();
         let mut update = shell.update();
 

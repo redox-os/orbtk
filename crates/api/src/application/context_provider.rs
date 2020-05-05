@@ -8,8 +8,7 @@ pub struct ContextProvider<'a> {
     handler_map: &'a mut EventHandlerMap,
     states: &'a mut BTreeMap<Entity, Box<dyn State>>,
     event_queue: &'a mut EventQueue,
-    mouse_position: Point,
-    shell_context: &'a mut ShellContext<'a>,
+    mouse_position: Point
 }
 
 impl<'a> ContextProvider<'a> {
@@ -20,8 +19,7 @@ impl<'a> ContextProvider<'a> {
         handler_map: &'a mut EventHandlerMap,
         states: &'a mut BTreeMap<Entity, Box<dyn State>>,
         event_queue: &'a mut EventQueue,
-        mouse_position: Point,
-        shell_context: &'a mut ShellContext<'a>,
+        mouse_position: Point
     ) -> Self {
         ContextProvider {
             render_objects,
@@ -30,7 +28,6 @@ impl<'a> ContextProvider<'a> {
             states,
             event_queue,
             mouse_position,
-            shell_context,
         }
     }
 
@@ -77,13 +74,4 @@ impl<'a> ContextProvider<'a> {
     pub fn mouse_position(&self) -> Point {
         self.mouse_position
     }
-
-    pub fn shell_context(&self) -> &ShellContext<'a> {
-        self.shell_context
-    }
-
-    pub fn shell_context_mut(&mut self) -> &mut ShellContext<'a> {
-        self.shell_context
-    }
-    
 }

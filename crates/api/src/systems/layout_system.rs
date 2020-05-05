@@ -5,13 +5,10 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 use crate::{css_engine::*, prelude::*, shell::Shell, tree::Tree, utils::*};
 
 /// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calculated by the layout objects of layout widgets.
-pub struct LayoutSystem {
-    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub shell: Rc<RefCell<Shell<ShellAdapter>>>,
-}
+pub struct LayoutSystem;
 
 impl System<Tree, StringComponentStore, ContextProvider<'_>> for LayoutSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
+    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>, ctx: &mut ContextProvider) {
         if !self.shell.borrow().update() || !self.shell.borrow().running() {
             return;
         }
