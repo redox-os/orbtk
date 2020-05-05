@@ -2,11 +2,11 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree};
+use crate::{css_engine::*, prelude::*, shell::Shell, tree::Tree};
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 pub struct PostLayoutStateSystem {
-    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
+    pub shell: Rc<RefCell<Shell<ShellAdapter>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
@@ -20,7 +20,7 @@ impl PostLayoutStateSystem {
         entity: Entity,
         theme: &Theme,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-        shell: &mut WindowShell<WindowAdapter>,
+        shell: &mut Shell<ShellAdapter>,
     ) {
         {
             let render_objects = &self.render_objects;
@@ -55,7 +55,7 @@ impl PostLayoutStateSystem {
     }
 }
 
-impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
+impl System<Tree, StringComponentStore, ContextProvider<'_>> for PostLayoutStateSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         if !self.shell.borrow().update() || !self.shell.borrow().running() {
             return;

@@ -72,9 +72,9 @@ fn get_key(code: &str, key: String) -> (Key, String) {
 }
 
 /// Concrete implementation of the window shell.
-pub struct WindowShell<A>
+pub struct Shell<A>
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     render_context_2_d: RenderContext2D,
     pub mouse_move_events: Rc<RefCell<Vec<event::MouseMoveEvent>>>,
@@ -97,9 +97,9 @@ where
     request_sender: Sender<ShellRequest>,
 }
 
-unsafe impl<A> HasRawWindowHandle for WindowShell<A>
+unsafe impl<A> HasRawWindowHandle for Shell<A>
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     fn raw_window_handle(&self) -> RawWindowHandle {
         let handle = WebHandle {
@@ -111,9 +111,9 @@ where
     }
 }
 
-impl<A> WindowShell<A>
+impl<A> Shell<A>
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     /// Gets if the shell is running.
     pub fn running(&self) -> bool {
@@ -335,15 +335,15 @@ where
 /// Implementation of the OrbClient based shell runner.
 pub struct ShellRunner<A>
 where
-    A: WindowAdapter + 'static,
+    A: ShellAdapter + 'static,
 {
-    pub shell: Rc<RefCell<WindowShell<A>>>,
+    pub shell: Rc<RefCell<Shell<A>>>,
     pub updater: Box<dyn Updater>,
 }
 
 impl<A> ShellRunner<A>
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     pub fn run(mut self) {
         window().request_animation_frame(move |_| {
@@ -357,9 +357,9 @@ where
 }
 
 /// Constructs the window shell
-pub struct WindowBuilder<A>
+pub struct ShellBuilder
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     title: String,
 
@@ -372,9 +372,9 @@ where
     adapter: A,
 }
 
-impl<A> WindowBuilder<A>
+impl<A> ShellBuilder
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     /// Create a new window builder with the given adapter.
     pub fn new(adapter: A) -> Self {
@@ -417,7 +417,7 @@ where
     }
 
     /// Builds the window shell.
-    pub fn build(mut self) -> WindowShell<A> {
+    pub fn build(mut self) -> Shell<A> {
         // console_error_panic_hook::set_once();
         let canvas: CanvasElement = document()
             .create_element("canvas")
@@ -583,7 +583,7 @@ where
 
         let (request_sender, request_receiver) = channel();
 
-        WindowShell {
+        Shell {
             render_context_2_d,
             adapter: self.adapter,
             mouse_move_events: mouse_move,

@@ -9,7 +9,7 @@ use crate::{
     css_engine::*,
     prelude::*,
     render::*,
-    shell::{ShellRequest, WindowShell},
+    shell::{ShellRequest, Shell},
     tree::Tree,
 };
 
@@ -18,7 +18,7 @@ use super::{MessageBox, WidgetContainer};
 /// The `Context` is provides access for the states to objects they could work with.
 pub struct Context<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
-    shell: &'a mut WindowShell<WindowAdapter>,
+    shell: &'a mut Shell<ShellAdapter>,
     pub entity: Entity,
     pub theme: &'a ThemeValue,
     render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
@@ -50,7 +50,7 @@ impl<'a> Context<'a> {
             Entity,
             &'a mut EntityComponentManager<Tree, StringComponentStore>,
         ),
-        shell: &'a mut WindowShell<WindowAdapter>,
+        shell: &'a mut Shell<ShellAdapter>,
         theme: &'a ThemeValue,
         render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
         layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,

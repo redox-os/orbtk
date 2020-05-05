@@ -2,7 +2,7 @@
 
 use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc};
 
-use crate::{css_engine::*, prelude::*, shell::WindowShell, utils::*};
+use crate::{css_engine::*, prelude::*, shell::Shell, utils::*};
 
 pub use self::clear::*;
 pub use self::default::*;
@@ -23,7 +23,7 @@ mod text;
 pub trait RenderObject: Any {
     fn render(
         &self,
-        shell: &mut WindowShell<WindowAdapter>,
+        shell: &mut Shell<ShellAdapter>,
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         render_objects: &RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
@@ -148,7 +148,7 @@ pub trait RenderObject: Any {
 
     fn render_children(
         &self,
-        shell: &mut WindowShell<WindowAdapter>,
+        shell: &mut Shell<ShellAdapter>,
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         render_objects: &RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
