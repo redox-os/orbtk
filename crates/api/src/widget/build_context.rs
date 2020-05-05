@@ -18,7 +18,7 @@ pub type WidgetBuildContext = Option<Box<dyn Fn(&mut BuildContext, usize) -> Ent
 #[derive(Constructor)]
 pub struct BuildContext<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
-    render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
+    render_objects: &'a mut BTreeMap<Entity, Box<dyn RenderObject>>,
     layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
     handlers: &'a mut EventHandlerMap,
     states: &'a mut BTreeMap<Entity, Box<dyn State>>,
@@ -128,7 +128,6 @@ impl<'a> BuildContext<'a> {
     /// Registers a render object with a widget.
     pub fn register_render_object(&mut self, widget: Entity, render_object: Box<dyn RenderObject>) {
         self.render_objects
-            .borrow_mut()
             .insert(widget, render_object);
     }
 
