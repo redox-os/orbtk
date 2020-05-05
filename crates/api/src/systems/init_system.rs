@@ -2,11 +2,11 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree};
+use crate::{css_engine::*, prelude::*, shell::Shell, tree::Tree};
 
 /// This system is used to initializes the widgets.
 pub struct InitSystem {
-    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
+    pub shell: Rc<RefCell<Shell<ShellAdapter>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
@@ -41,7 +41,7 @@ impl InitSystem {
     }
 }
 
-impl System<Tree, StringComponentStore> for InitSystem {
+impl System<Tree, StringComponentStore, ContextProvider<'_>> for InitSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         let root = ecm.entity_store().root();
 

@@ -6,37 +6,38 @@ use dces::prelude::{Entity, World};
 
 use crate::{
     prelude::*,
-    shell::{ShellRunner, WindowBuilder},
+    shell::{ShellBuilder, Shell},
     tree::*,
     utils::{Point, Rectangle},
 };
 
+pub use self::context_provider::*;
 pub use self::global::*;
 pub use self::overlay::*;
-pub use self::window::*;
+pub use self::shell_adapter::*;
 
+mod context_provider;
 mod global;
 mod overlay;
-mod window;
+mod shell_adapter;
 
 /// The `Application` represents the entry point of an OrbTk based application.
-#[derive(Default)]
 pub struct Application {
-    runners: Vec<ShellRunner<WindowAdapter>>,
+    shells: Vec<Rc<RefCell<Shell<ShellAdapter>>>>,
     name: Box<str>,
 }
 
 impl Application {
     /// Creates a new application.
     pub fn new() -> Self {
-        Self::default()
+        Application::from_name("orbtk_application")
     }
 
     /// Create a new application with the given name.
     pub fn from_name(name: impl Into<Box<str>>) -> Self {
         Application {
             name: name.into(),
-            ..Default::default()
+            shells: vec![]
         }
     }
 
@@ -143,7 +144,7 @@ impl Application {
             );
 
         let shell = Rc::new(RefCell::new(
-            WindowBuilder::new(WindowAdapter {
+            ShellBuilder::new(ShellAdapter {
                 root: window,
                 render_objects: render_objects.clone(),
                 layouts: layouts.clone(),
@@ -244,23 +245,21 @@ impl Application {
             .with_priority(3)
             .build();
 
-        self.runners.push(ShellRunner {
-            updater: Box::new(WorldWrapper { world }),
-            shell,
-        });
+        shell.borrow_mut().updater = Some(Box::new(WorldWrapper { world }));
+        self.shells.push(shell);
+
+        // self.runners.push(ShellRunner {
+        //     updater: Box::new(WorldWrapper { world }),
+        //     shell,
+        // });
 
         self
     }
 
     /// Starts the application and run it until quit is requested.
     pub fn run(mut self) {
-        while let Some(runner) = self.runners.pop() {
-            #[cfg(not(target_arch = "wasm32"))]
-            let mut runner = runner;
-
-            #[cfg(target_arch = "wasm32")]
-            let runner = runner;
-            runner.run();
+        while let Some(shell) = self.shells.pop() {
+            shell.borrow_mut().run();
         }
     }
 }

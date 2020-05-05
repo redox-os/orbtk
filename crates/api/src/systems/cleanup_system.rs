@@ -2,11 +2,11 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree};
+use crate::{css_engine::*, prelude::*, shell::Shell, tree::Tree};
 
 /// Handles the inner cleanup while window is closing.
 pub struct CleanupSystem {
-    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
+    pub shell: Rc<RefCell<Shell<ShellAdapter>>>,
     pub handlers: Rc<RefCell<EventHandlerMap>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
@@ -14,7 +14,7 @@ pub struct CleanupSystem {
     pub registry: Rc<RefCell<Registry>>,
 }
 
-impl System<Tree, StringComponentStore> for CleanupSystem {
+impl System<Tree, StringComponentStore, ContextProvider<'_>> for CleanupSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         let mut shell = self.shell.borrow_mut();
         let root = ecm.entity_store().root();

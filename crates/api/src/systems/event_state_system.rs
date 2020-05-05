@@ -2,11 +2,11 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree, utils::*};
+use crate::{css_engine::*, prelude::*, shell::Shell, tree::Tree, utils::*};
 
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
 pub struct EventStateSystem {
-    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
+    pub shell: Rc<RefCell<Shell<ShellAdapter>>>,
     pub handlers: Rc<RefCell<EventHandlerMap>>,
     pub mouse_down_nodes: RefCell<Vec<Entity>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
@@ -22,7 +22,7 @@ impl EventStateSystem {
         entity: Entity,
         theme: &Theme,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-        shell: &mut WindowShell<WindowAdapter>,
+        shell: &mut Shell<ShellAdapter>,
     ) {
         {
             let render_objects = &self.render_objects;
@@ -322,7 +322,7 @@ impl EventStateSystem {
     }
 }
 
-impl System<Tree, StringComponentStore> for EventStateSystem {
+impl System<Tree, StringComponentStore, ContextProvider<'_>> for EventStateSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         let mut shell = self.shell.borrow_mut();
         let mut update = shell.update();

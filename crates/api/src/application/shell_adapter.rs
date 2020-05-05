@@ -6,7 +6,7 @@ use crate::{prelude::*, shell, tree::Tree, utils::Point};
 
 /// Represents a window. Each window has its own tree, event pipeline and shell.
 #[derive(Default)]
-pub struct WindowAdapter {
+pub struct ShellAdapter {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: Rc<RefCell<EventHandlerMap>>,
@@ -18,7 +18,7 @@ pub struct WindowAdapter {
 }
 
 pub struct WorldWrapper {
-    pub world: World<Tree, StringComponentStore>,
+    pub world: World<Tree, StringComponentStore, ContextProvider<'static>>,
 }
 
 impl shell::Updater for WorldWrapper {
@@ -27,7 +27,7 @@ impl shell::Updater for WorldWrapper {
     }
 }
 
-impl shell::WindowAdapter for WindowAdapter {
+impl shell::ShellAdapter for ShellAdapter {
     fn resize(&mut self, width: f64, height: f64) {
         self.event_queue.register_event_with_strategy(
             WindowEvent::Resize { width, height },
@@ -114,10 +114,13 @@ impl shell::WindowAdapter for WindowAdapter {
             self.root,
         );
     }
+    fn run(&mut self, shell_context: &mut shell::ShellContext<'_>) {
+        
+    }
 }
 
-impl Into<Box<dyn shell::WindowAdapter>> for WindowAdapter {
-    fn into(self) -> Box<dyn shell::WindowAdapter> {
+impl Into<Box<dyn shell::ShellAdapter>> for ShellAdapter {
+    fn into(self) -> Box<dyn shell::ShellAdapter> {
         Box::new(self)
     }
 }

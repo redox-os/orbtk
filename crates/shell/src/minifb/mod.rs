@@ -21,7 +21,7 @@ pub fn initialize() {}
 
 fn key_event_helper_down<A>(key: &mut KeyHelper, adapter: &mut A, window: &minifb::Window)
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     let key_repeat = match key.1 {
         minifb::Key::Left
@@ -44,7 +44,7 @@ where
 
 fn key_event_helper_up<A>(key: &mut KeyHelper, adapter: &mut A, window: &minifb::Window)
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     if window.is_key_released(key.1) {
         adapter.key_event(KeyEvent {
@@ -101,9 +101,9 @@ impl minifb::InputCallback for KeyInputCallBack {
 struct KeyHelper(bool, minifb::Key, Key);
 
 /// Concrete implementation of the window shell.
-pub struct WindowShell<A>
+pub struct Shell<A>
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     window: minifb::Window,
     render_context_2_d: RenderContext2D,
@@ -140,30 +140,30 @@ where
 }
 
 #[cfg(not(target_os = "redox"))]
-unsafe impl<A> HasRawWindowHandle for WindowShell<A>
+unsafe impl<A> HasRawWindowHandle for Shell<A>
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     fn raw_window_handle(&self) -> RawWindowHandle {
         self.window.raw_window_handle()
     }
 }
 
-impl<A> WindowShell<A>
+impl<A> Shell<A>
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     /// Creates a new window shell with an adapter.
     pub fn new(
         window: minifb::Window,
         adapter: A,
         key_events: Rc<RefCell<Vec<KeyEvent>>>,
-    ) -> WindowShell<A> {
+    ) -> Shell<A> {
         let size = window.get_size();
         let render_context_2_d = RenderContext2D::new(size.0 as f64, size.1 as f64);
         let (request_sender, request_receiver) = channel();
 
-        WindowShell {
+        Shell {
             window,
             // window_size: window_size,
             // mouse_buttons: (false, false, false),
@@ -394,9 +394,9 @@ where
     }
 }
 
-impl<A> Drop for WindowShell<A>
+impl<A> Drop for Shell<A>
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     fn drop(&mut self) {}
 }
@@ -404,15 +404,15 @@ where
 /// Implementation of the OrbClient based shell runner.
 pub struct ShellRunner<A>
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
-    pub shell: Rc<RefCell<WindowShell<A>>>,
+    pub shell: Rc<RefCell<Shell<A>>>,
     pub updater: Box<dyn Updater>,
 }
 
 impl<A> ShellRunner<A>
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     pub fn run(&mut self) {
         loop {
@@ -441,9 +441,9 @@ where
 }
 
 /// Constructs the window shell
-pub struct WindowBuilder<A>
+pub struct ShellBuilder<A>
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     title: String,
 
@@ -458,9 +458,9 @@ where
     adapter: A,
 }
 
-impl<A> WindowBuilder<A>
+impl<A> ShellBuilder<A>
 where
-    A: WindowAdapter,
+    A: ShellAdapter,
 {
     /// Create a new window builder with the given adapter.
     pub fn new(adapter: A) -> Self {
@@ -505,7 +505,7 @@ where
     }
 
     /// Builds the window shell.
-    pub fn build(self) -> WindowShell<A> {
+    pub fn build(self) -> Shell<A> {
         let window_options = minifb::WindowOptions {
             resize: self.resizeable,
             topmost: self.always_on_top,
@@ -536,6 +536,6 @@ where
 
         window.set_position(self.bounds.x as isize, self.bounds.y as isize);
 
-        WindowShell::new(window, self.adapter, key_events)
+        Shell::new(window, self.adapter, key_events)
     }
 }

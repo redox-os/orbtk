@@ -10,7 +10,7 @@ Basic usage of the shell:
 
 use orbtk_shell::prelude::*;
 
-let shell = WindowBuilder::new(MyCustomWindowAdapter::new())
+let shell = WindowBuilder::new(MyCustomShellAdapter::new())
                         .title("Window")
                         .bounds((0.0, 0.0, 100.0, 100.0))
                         .build();
@@ -27,6 +27,7 @@ runner.run()
 #[macro_use]
 extern crate lazy_static;
 
+pub mod context;
 pub mod event;
 pub mod prelude;
 pub mod window;

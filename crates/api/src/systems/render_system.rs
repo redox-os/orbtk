@@ -5,7 +5,7 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 use crate::{
     css_engine::*,
     prelude::*,
-    shell::{WindowShell, CONSOLE},
+    shell::{Shell, CONSOLE},
     tree::Tree,
     utils::Brush,
 };
@@ -13,13 +13,13 @@ use crate::{
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 pub struct RenderSystem {
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
+    pub shell: Rc<RefCell<Shell<ShellAdapter>>>,
     pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
     pub handlers: Rc<RefCell<EventHandlerMap>>,
 }
 
-impl System<Tree, StringComponentStore> for RenderSystem {
+impl System<Tree, StringComponentStore, ContextProvider<'_>> for RenderSystem {
     fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
         if !self.shell.borrow().update()
             || !self.shell.borrow().running()
