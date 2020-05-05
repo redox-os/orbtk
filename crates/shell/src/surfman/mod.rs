@@ -29,10 +29,12 @@ use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {}
 
+use std::marker::PhantomData;
+
 /// Concrete implementation of the window shell.
-pub struct Shell<A>
+pub struct Shell<'a, A>
 where
-    A: ShellAdapter ,
+    A: ShellAdapter<'a> ,
 {
     flip: bool,
     adapter: A,
@@ -43,7 +45,7 @@ where
     render_context_2_d: RenderContext2D,
     window_builder: WinitWindowBuilder,
     mouse_pos: (f64, f64),
-    pub updater: Option<Box<dyn Updater>>,
+    phantom_data: PhantomData<&'a A>
 }
 
 // unsafe impl<A> HasRawWindowHandle for Shell<A>
@@ -60,9 +62,9 @@ where
 //     }
 // }
 
-impl<A> Shell<A>
+impl<'a, A> Shell<'a, A>
 where
-    A: ShellAdapter,
+    A: ShellAdapter<'a>,
 {
     /// Gets if the shell is running.
     pub fn running(&self) -> bool {
@@ -268,9 +270,11 @@ where
             //     ..
             // } => ControlFlow::Break,
             _ => {
-                if let Some(updater) = &mut self.updater {
-                    updater.update();
-                }
+                // if let Some(updater) = &mut self.updater {
+                //     updater.update();
+                // }
+                // todo: shell context
+                // self.adapter.run(self)
                 self.set_update(true);
                 self.flip();
                 self.drain_events();
@@ -297,211 +301,10 @@ where
     }
 }
 
-/// Implementation of the OrbClient based shell runner.
-pub struct ShellRunner<A>
-where
-    A: ShellAdapter + 'static,
-{
-    pub shell: Rc<RefCell<Shell<A>>>,
-    pub updater: Box<dyn Updater>,
-}
-
-impl<A> ShellRunner<A>
-where
-    A: ShellAdapter,
-{
-    pub fn run(mut self) {
-        // Open a window.
-        let mut event_loop = EventsLoop::new();
-        let size = self
-            .shell
-            .borrow()
-            .window_builder()
-            .window
-            .dimensions
-            .unwrap_or(LogicalSize::new(100.0, 100.0));
-
-        let mut render = true;
-
-        let logical_size = LogicalSize::new(size.width as f64, size.height as f64);
-
-        let window = self
-            .shell
-            .borrow()
-            .window_builder()
-            .clone()
-            .build(&event_loop)
-            .unwrap();
-        window.show();
-
-        // Create a `surfman` device. On a multi-GPU system, we'll request the low-power integrated
-        // GPU.
-        let connection = Connection::from_winit_window(&window).unwrap();
-        let native_widget = connection
-            .create_native_widget_from_winit_window(&window)
-            .unwrap();
-        let adapter = connection.create_low_power_adapter().unwrap();
-        let mut device = connection.create_device(&adapter).unwrap();
-
-        // Request an OpenGL 3.x context. Pathfinder requires this.
-        let context_attributes = ContextAttributes {
-            version: SurfmanGLVersion::new(3, 0),
-            flags: ContextAttributeFlags::ALPHA,
-        };
-        let context_descriptor = device
-            .create_context_descriptor(&context_attributes)
-            .unwrap();
-
-        // Make the OpenGL context via `surfman`, and load OpenGL functions.
-        let surface_type = SurfaceType::Widget { native_widget };
-        let mut context = device.create_context(&context_descriptor).unwrap();
-        let surface = device
-            .create_surface(&context, SurfaceAccess::GPUOnly, surface_type)
-            .unwrap();
-        device
-            .bind_surface_to_context(&mut context, surface)
-            .unwrap();
-        device.make_context_current(&context).unwrap();
-        gl::load_with(|symbol_name| device.get_proc_address(&context, symbol_name));
-
-        // Get the real size of the window, taking HiDPI into account.
-        let hidpi_factor = window.get_current_monitor().get_hidpi_factor();
-        let physical_size = logical_size.to_physical(hidpi_factor);
-        let framebuffer_size = vec2i(physical_size.width as i32, physical_size.height as i32);
-
-        // Create a Pathfinder GL device.
-        let default_framebuffer = device
-            .context_surface_info(&context)
-            .unwrap()
-            .unwrap()
-            .framebuffer_object;
-        let pathfinder_device = GLDevice::new(GLVersion::GL3, default_framebuffer);
-
-        // Create a Pathfinder renderer.
-        let mut renderer = Renderer::new(
-            pathfinder_device,
-            &EmbeddedResourceLoader::new(),
-            DestFramebuffer::full_window(framebuffer_size),
-            RendererOptions {
-                background_color: Some(ColorF::white()),
-                ..RendererOptions::default()
-            },
-        );
-
-        self.shell.borrow_mut().render_context_2_d =
-            RenderContext2D::new_ex((size.width as f64, size.height as f64), renderer);
-
-        // Wait for a keypress.
-        event_loop.run_forever(|evt| match evt {
-            Event::WindowEvent {
-                event: WindowEvent::Resized(s),
-                ..
-            } => {
-                self.shell.borrow_mut().adapter().resize(s.width, s.height);
-                ControlFlow::Continue
-            }
-            Event::WindowEvent {
-                event: WindowEvent::CloseRequested,
-                ..
-            } => {
-                self.shell.borrow_mut().adapter().quit_event();
-                ControlFlow::Break
-            }
-            Event::WindowEvent {
-                event: WindowEvent::KeyboardInput { input, .. },
-                ..
-            } => ControlFlow::Continue,
-            Event::WindowEvent {
-                event: WindowEvent::MouseInput { state, button, .. },
-                ..
-            } => {
-                let button = {
-                    match button {
-                        winit::MouseButton::Left => MouseButton::Left,
-                        winit::MouseButton::Right => MouseButton::Right,
-                        winit::MouseButton::Middle => MouseButton::Middle,
-                        winit::MouseButton::Other(_) => MouseButton::Left,
-                    }
-                };
-
-                let state = {
-                    match state {
-                        winit::ElementState::Pressed => ButtonState::Down,
-                        winit::ElementState::Released => ButtonState::Up,
-                    }
-                };
-
-                let mouse_pos = self.shell.borrow().mouse_pos;
-
-                self.shell.borrow_mut().adapter().mouse_event(MouseEvent {
-                    x: mouse_pos.0,
-                    y: mouse_pos.1,
-                    button,
-                    state,
-                });
-                render = true;
-                ControlFlow::Continue
-            }
-            Event::WindowEvent {
-                event: WindowEvent::MouseWheel { delta, .. },
-                ..
-            } => {
-                match delta {
-                    winit::MouseScrollDelta::LineDelta(_, _) => {}
-                    winit::MouseScrollDelta::PixelDelta(p) => {
-                        self.shell.borrow_mut().adapter().scroll(p.x, p.y);
-                    }
-                }
-                ControlFlow::Continue
-            }
-            Event::WindowEvent {
-                event: WindowEvent::CursorMoved { position, .. },
-                ..
-            } => {
-                self.shell.borrow_mut().mouse_pos = (position.x, position.y);
-                self.shell
-                    .borrow_mut()
-                    .adapter()
-                    .mouse(position.x, position.y);
-                render = true;
-                ControlFlow::Continue
-            }
-            // | Event::WindowEvent {
-            //     event: WindowEvent::KeyboardInput { .. },
-            //     ..
-            // } => ControlFlow::Break,
-            _ => {
-                self.updater.update();
-                self.shell.borrow_mut().set_update(true);
-                self.shell.borrow_mut().flip();
-                self.shell.borrow_mut().drain_events();
-
-                if render {
-                    // Present the rendered canvas via `surfman`.
-                    let mut surface = device
-                        .unbind_surface_from_context(&mut context)
-                        .unwrap()
-                        .unwrap();
-                    device.present_surface(&mut context, &mut surface).unwrap();
-                    device
-                        .bind_surface_to_context(&mut context, surface)
-                        .unwrap();
-                    render = false;
-                }
-
-                ControlFlow::Continue
-            }
-        });
-
-        // Clean up.
-        drop(device.destroy_context(&mut context));
-    }
-}
-
 /// Constructs the window shell
-pub struct ShellBuilder<A>
+pub struct ShellBuilder<'a, A>
 where
-    A: ShellAdapter,
+    A: ShellAdapter<'a>,
 {
     title: String,
 
@@ -513,12 +316,14 @@ where
 
     bounds: Rectangle,
 
-    adapter: A
+    adapter: A,
+
+    phantom_data: PhantomData<&'a A>
 }
 
-impl<A> ShellBuilder<A>
+impl<'a, A> ShellBuilder<'a, A>
 where
-    A: ShellAdapter,
+    A: ShellAdapter<'a>,
 {
     /// Create a new window builder with the given adapter.
     pub fn new(adapter: A) -> Self {
@@ -529,6 +334,7 @@ where
             resizeable: false,
             always_on_top: false,
             bounds: Rectangle::default(),
+            phantom_data: PhantomData::default()
         }
     }
 
@@ -563,7 +369,7 @@ where
     }
 
     /// Builds the window shell.
-    pub fn build(self) -> Shell<A> {
+    pub fn build(self) -> Shell<'a, A> {
         let (request_sender, request_receiver) = channel();
 
         // Calculate the right logical size of the window.
@@ -589,7 +395,7 @@ where
             adapter: self.adapter,
             window_builder,
             mouse_pos: (0.0, 0.0),
-            updater: None
+            phantom_data: PhantomData::default()
         }
     }
 }

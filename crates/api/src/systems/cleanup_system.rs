@@ -5,17 +5,10 @@ use dces::prelude::{Entity, EntityComponentManager, System};
 use crate::{css_engine::*, prelude::*, shell::Shell, tree::Tree};
 
 /// Handles the inner cleanup while window is closing.
-pub struct CleanupSystem {
-    pub shell: Rc<RefCell<Shell<ShellAdapter>>>,
-    pub handlers: Rc<RefCell<EventHandlerMap>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub registry: Rc<RefCell<Registry>>,
-}
+pub struct CleanupSystem;
 
 impl System<Tree, StringComponentStore, ContextProvider<'_>> for CleanupSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
+    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>, ctx: &mut ContextProvider) {
         let mut shell = self.shell.borrow_mut();
         let root = ecm.entity_store().root();
         let theme = ecm

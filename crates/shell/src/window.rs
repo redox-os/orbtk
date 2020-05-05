@@ -4,7 +4,7 @@ use crate::{context::ShellContext, event::*, utils::Point};
 
 /// The window adapter is used to work with the window shell.
 /// It handles updates from the shell and provides method to update and render its content.
-pub trait ShellAdapter {
+pub trait ShellAdapter<'a> {
     // /// Renders the content.
     // fn render(&mut self, _canvas: &mut Canvas) {}
 
@@ -36,11 +36,5 @@ pub trait ShellAdapter {
     fn active(&mut self, active: bool);
 
     /// Runs the inner logic of the shell adapter.
-    fn run(&mut self, shell_context: &mut ShellContext<'_>);
-}
-
-/// Used to define an additional updater for the window shell.
-pub trait Updater {
-    /// Called to update the content.
-    fn update(&mut self);
+    fn run(&mut self, shell_context: &mut ShellContext<'a>);
 }

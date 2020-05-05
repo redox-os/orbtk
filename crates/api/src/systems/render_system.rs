@@ -11,16 +11,10 @@ use crate::{
 };
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
-pub struct RenderSystem {
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub shell: Rc<RefCell<Shell<ShellAdapter>>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
-    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub handlers: Rc<RefCell<EventHandlerMap>>,
-}
+pub struct RenderSystem;
 
 impl System<Tree, StringComponentStore, ContextProvider<'_>> for RenderSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
+    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>, ctx: &mut ContextProvider) {
         if !self.shell.borrow().update()
             || !self.shell.borrow().running()
             || ecm.entity_store().parent.is_empty()
