@@ -1,29 +1,24 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::collections::BTreeMap;
 
 use dces::prelude::{Entity, World};
 
 use crate::{prelude::*, shell, tree::Tree, utils::Point};
 
 /// Represents a window. Each window has its own tree, event pipeline and shell.
-#[derive(Default)]
 pub struct ShellAdapter {
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub handlers: Rc<RefCell<EventHandlerMap>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
+    pub render_objects: BTreeMap<Entity, Box<dyn RenderObject>>,
+    pub layouts: BTreeMap<Entity, Box<dyn Layout>>,
+    pub handlers: EventHandlerMap,
+    pub states: BTreeMap<Entity, Box<dyn State>>,
     pub event_queue: EventQueue,
-    pub messages: BTreeMap<Entity, Vec<MessageBox>>,
-    pub root: Entity,
     pub mouse_position: Point,
+    pub registry: Registry,
+    pub world: World<Tree, StringComponentStore, ContextProvider<'static>>
 }
 
-pub struct WorldWrapper {
-    pub world: World<Tree, StringComponentStore, ContextProvider<'static>>,
-}
-
-impl shell::Updater for WorldWrapper {
-    fn update(&mut self) {
-        self.world.run();
+impl ShellAdapter {
+    fn root(&self) -> Entity {
+        self.world.entity_component_manager().entity_store().root.unwrap()
     }
 }
 
@@ -32,7 +27,7 @@ impl shell::ShellAdapter for ShellAdapter {
         self.event_queue.register_event_with_strategy(
             WindowEvent::Resize { width, height },
             EventStrategy::Direct,
-            self.root,
+            self.root(),
         );
     }
 
@@ -43,7 +38,7 @@ impl shell::ShellAdapter for ShellAdapter {
                 x: self.mouse_position.x,
                 y: self.mouse_position.y,
             },
-            self.root,
+            self.root(),
         )
     }
 
@@ -52,7 +47,7 @@ impl shell::ShellAdapter for ShellAdapter {
             ScrollEvent {
                 delta: Point::new(delta_x, delta_y),
             },
-            self.root,
+            self.root(),
         )
     }
 
@@ -65,7 +60,7 @@ impl shell::ShellAdapter for ShellAdapter {
                         y: event.y,
                         button: event.button,
                     },
-                    self.root,
+                    self.root(),
                 );
                 self.event_queue.register_event(
                     GlobalMouseUpEvent {
@@ -73,7 +68,7 @@ impl shell::ShellAdapter for ShellAdapter {
                         y: event.y,
                         button: event.button,
                     },
-                    self.root,
+                    self.root(),
                 );
             }
             shell::ButtonState::Down => self.event_queue.register_event(
@@ -82,7 +77,7 @@ impl shell::ShellAdapter for ShellAdapter {
                     y: event.y,
                     button: event.button,
                 },
-                self.root,
+                self.root(),
             ),
         }
     }
@@ -95,25 +90,26 @@ impl shell::ShellAdapter for ShellAdapter {
         match event.state {
             shell::ButtonState::Up => self
                 .event_queue
-                .register_event(KeyUpEvent { event }, self.root),
+                .register_event(KeyUpEvent { event }, self.root()),
             shell::ButtonState::Down => self
                 .event_queue
-                .register_event(KeyDownEvent { event }, self.root),
+                .register_event(KeyDownEvent { event }, self.root()),
         }
     }
 
     fn quit_event(&mut self) {
         self.event_queue
-            .register_event(SystemEvent::Quit, self.root);
+            .register_event(SystemEvent::Quit, self.root());
     }
 
     fn active(&mut self, active: bool) {
         self.event_queue.register_event_with_strategy(
             WindowEvent::ActiveChanged(active),
             EventStrategy::Direct,
-            self.root,
+            self.root(),
         );
     }
+
     fn run(&mut self, shell_context: &mut shell::ShellContext<'_>) {
         
     }

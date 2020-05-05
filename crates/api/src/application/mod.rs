@@ -45,30 +45,28 @@ impl Application {
     pub fn window<F: Fn(&mut BuildContext) -> Entity + 'static>(mut self, create_fn: F) -> Self {
         let mut world = World::from_stores(Tree::default(), StringComponentStore::default());
 
-        let render_objects = Rc::new(RefCell::new(BTreeMap::new()));
-        let layouts = Rc::new(RefCell::new(BTreeMap::new()));
-        let handlers = Rc::new(RefCell::new(BTreeMap::new()));
-        let states = Rc::new(RefCell::new(BTreeMap::new()));
-        let registry = Rc::new(RefCell::new(Registry::new()));
+        let mut render_objects = BTreeMap::new();
+        let mut layouts = BTreeMap::new();
+        let mut handlers = BTreeMap::new();
+        let mut states = BTreeMap::new();
+        let mut registry = Registry::new();
 
         // register settings service.
         if self.name.is_empty() {
             registry
-                .borrow_mut()
                 .register("settings", Settings::default());
         } else {
             registry
-                .borrow_mut()
                 .register("settings", Settings::new(&*self.name));
         };
 
         let window = {
             let overlay = Overlay::create().build(&mut BuildContext::new(
                 world.entity_component_manager(),
-                &render_objects,
-                &mut layouts.borrow_mut(),
-                &mut handlers.borrow_mut(),
-                &mut states.borrow_mut(),
+                &mut render_objects,
+                &mut layouts,
+                &mut handlers,
+                &mut states,
                 &mut crate::theme::default_theme(),
             ));
 
@@ -79,10 +77,10 @@ impl Application {
 
             let window = create_fn(&mut BuildContext::new(
                 world.entity_component_manager(),
-                &render_objects,
-                &mut layouts.borrow_mut(),
-                &mut handlers.borrow_mut(),
-                &mut states.borrow_mut(),
+                &mut render_objects,
+                &mut layouts,
+                &mut handlers,
+                &mut states,
                 &mut crate::theme::default_theme(),
             ));
 
