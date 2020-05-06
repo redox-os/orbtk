@@ -6,14 +6,12 @@ pub mod prelude;
 
 pub use orbtk_utils::prelude as utils;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(all(not(target_arch = "wasm32"), not(target_os = "redox"), not(feature = "raq")))]
 #[path = "pathfinder/mod.rs"]
 pub mod platform;
-// pub mod concurrent;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(all(not(target_arch = "wasm32"), not(target_os = "redox"), not(feature = "raq")))]
 pub use self::platform::*;
-// pub use self::concurrent::*;
 
 #[cfg(target_arch = "wasm32")]
 #[path = "web/mod.rs"]
@@ -22,9 +20,15 @@ pub mod platform;
 #[cfg(target_arch = "wasm32")]
 pub use platform::RenderContext2D;
 
-// #[cfg(not(target_arch = "wasm32"))]
-// #[path = "raqote/mod.rs"]
-// pub mod platform;
+#[cfg(any(target_os = "redox", feature = "raq"))]
+#[path = "raqote/mod.rs"]
+pub mod platform;
+
+#[cfg(any(target_os = "redox", feature = "raq"))]
+pub mod concurrent;
+
+#[cfg(any(target_os = "redox", feature = "raq"))]
+pub use self::concurrent::*;
 
 pub use self::render_target::*;
 

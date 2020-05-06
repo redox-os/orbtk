@@ -206,7 +206,7 @@ impl Application {
 
     /// Starts the application and run it until quit is requested.
     pub fn run(mut self) {
-        while let Some(mut shell) = self.shells.pop() {
+        while let Some(shell) = self.shells.pop() {
             shell.run();
         }
     }

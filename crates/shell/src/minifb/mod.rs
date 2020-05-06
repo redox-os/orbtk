@@ -392,6 +392,28 @@ where
 
         false
     }
+
+    pub fn run(mut self) {
+        loop {
+            if !self.running() || !self.window.is_open()
+            {
+                break;
+            }
+
+            // CONSOLE.time("complete run");
+ 
+            self.adapter.run(&mut self.render_context_2_d);
+            if self.update() {
+                self.set_update(false);
+            }
+
+            if !self.flip() {
+                self.window.update();
+            }
+
+            self.drain_events();
+        }
+    }
 }
 
 impl<A> Drop for Shell<A>
@@ -399,45 +421,6 @@ where
     A: ShellAdapter,
 {
     fn drop(&mut self) {}
-}
-
-/// Implementation of the OrbClient based shell runner.
-pub struct ShellRunner<A>
-where
-    A: ShellAdapter,
-{
-    pub shell: Rc<RefCell<Shell<A>>>,
-    pub updater: Box<dyn Updater>,
-}
-
-impl<A> ShellRunner<A>
-where
-    A: ShellAdapter,
-{
-    pub fn run(&mut self) {
-        loop {
-            if !self.shell.borrow().running() || !self.shell.borrow().window.is_open()
-            {
-                break;
-            }
-
-            // CONSOLE.time("complete run");
-
-            self.updater.update();
-
-            if self.shell.borrow_mut().update() {
-                self.shell.borrow_mut().set_update(false);
-            }
-
-            if !self.shell.borrow_mut().flip() {
-                self.shell.borrow_mut().window.update();
-            }
-
-            self.shell.borrow_mut().drain_events();
-
-            // CONSOLE.time_end("complete run");
-        }
-    }
 }
 
 /// Constructs the window shell
@@ -464,7 +447,7 @@ where
 {
     /// Create a new window builder with the given adapter.
     pub fn new(adapter: A) -> Self {
-        WindowBuilder {
+        ShellBuilder {
             adapter,
             title: String::default(),
             borderless: false,

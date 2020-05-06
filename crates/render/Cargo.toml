@@ -12,7 +12,7 @@ edition = "2018"
 [target.wasm32-unknown-unknown.dependencies]
 stdweb = "0.4.20"
 
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+[target.'cfg(all(not(target_arch = "wasm32"), not(target_os = "redox"), not(feature = "minifb")))'.dependencies]
 pathfinder_canvas = { git = "https://github.com/servo/pathfinder.git" }
 pathfinder_color = { git = "https://github.com/servo/pathfinder.git" }
 pathfinder_content = { git = "https://github.com/servo/pathfinder.git" }
@@ -22,9 +22,12 @@ pathfinder_gpu = { git = "https://github.com/servo/pathfinder.git" }
 pathfinder_renderer = { git = "https://github.com/servo/pathfinder.git" }
 pathfinder_resources = { git = "https://github.com/servo/pathfinder.git" }
 surfman = { version = "0.2.0", features = ["sm-winit"] }
-# raqote = { version = "0.7.14", default-features = false }
-rusttype = "0.8.3"
 image = "0.23"
 
 [dependencies]
 orbtk-utils = { path = "../utils", version = "0.3.1-alpha3" }
+raqote = { version = "0.7.14", default-features = false, optional = true }
+rusttype = { version = "0.8.3", optional = true }
+
+[features]
+raq = ["raqote", "rusttype"]

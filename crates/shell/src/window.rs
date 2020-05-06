@@ -1,17 +1,11 @@
 //! This module contains traits to inject custom logic into the window shell.
 
 use crate::render::RenderContext2D;
-use crate::{context::ShellContext, event::*, platform::Shell, utils::Point};
+use crate::{event::*, utils::Point};
 
-/// The window adapter is used to work with the window shell.
-/// It handles updates from the shell and provides method to update and render its content.
+/// The `ShellAdapter` represents the bridge to the `Shell` backend.
+/// It receives events from the `WindowShell` and runs it's own logic.  
 pub trait ShellAdapter {
-    // /// Renders the content.
-    // fn render(&mut self, _canvas: &mut Canvas) {}
-
-    // /// Updates the content.
-    // fn update(&mut self) {}
-
     /// Is called after the window is resized.
     fn resize(&mut self, _width: f64, _height: f64) {}
 
