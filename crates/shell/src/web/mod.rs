@@ -72,7 +72,7 @@ fn get_key(code: &str, key: String) -> (Key, String) {
 }
 
 /// Concrete implementation of the window shell.
-pub struct Shell<A>
+pub struct Shell<A: 'static>
 where
     A: ShellAdapter,
 {
@@ -330,34 +330,21 @@ where
         self.old_canvas = None;
         self.flip = false;
     }
-}
 
-/// Implementation of the OrbClient based shell runner.
-pub struct ShellRunner<A>
-where
-    A: ShellAdapter + 'static,
-{
-    pub shell: Rc<RefCell<Shell<A>>>,
-    pub updater: Box<dyn Updater>,
-}
-
-impl<A> ShellRunner<A>
-where
-    A: ShellAdapter,
-{
     pub fn run(mut self) {
+       
         window().request_animation_frame(move |_| {
-            self.updater.update();
-            self.shell.borrow_mut().set_update(false);
-            self.shell.borrow_mut().flip();
-            self.shell.borrow_mut().drain_events();
+            self.adapter.run(&mut self.render_context_2_d);
+            self.set_update(false);
+            self.flip();
+            self.drain_events();
             self.run();
         });
     }
 }
 
 /// Constructs the window shell
-pub struct ShellBuilder
+pub struct ShellBuilder<A>
 where
     A: ShellAdapter,
 {
@@ -372,13 +359,13 @@ where
     adapter: A,
 }
 
-impl<A> ShellBuilder
+impl<A> ShellBuilder<A>
 where
     A: ShellAdapter,
 {
     /// Create a new window builder with the given adapter.
     pub fn new(adapter: A) -> Self {
-        WindowBuilder {
+        ShellBuilder {
             adapter,
             title: String::default(),
             borderless: false,

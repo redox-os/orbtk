@@ -1,17 +1,11 @@
 use std::{
-    cell::RefCell,
-    rc::Rc,
     sync::mpsc::{channel, Receiver, Sender},
-    thread,
 };
 
-use euclid::default::Size2D;
 use pathfinder_color::ColorF;
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::{vec2f, vec2i};
 use pathfinder_gl::{GLDevice, GLVersion};
-use pathfinder_renderer::concurrent::rayon::RayonExecutor;
-use pathfinder_renderer::concurrent::scene_proxy::SceneProxy;
 use pathfinder_renderer::gpu::options::{DestFramebuffer, RendererOptions};
 use pathfinder_renderer::gpu::renderer::Renderer;
 use pathfinder_renderer::options::BuildOptions;
@@ -103,17 +97,11 @@ where
         &mut self.render_context_2_d
     }
 
-    fn drain_events(&mut self) {}
-
     pub fn flip(&mut self) {
         self.flip = false;
     }
 
-    fn window_builder(&self) -> &WinitWindowBuilder {
-        &self.window_builder
-    }
-
-    pub fn run(&mut self) {
+    pub fn run(mut self) {
         // Open a window.
         let mut event_loop = EventsLoop::new();
         let size = self
@@ -270,7 +258,7 @@ where
                 self.adapter.run(&mut self.render_context_2_d);
                 self.set_update(true);
                 self.flip();
-                self.drain_events();
+                // self.drain_events();
 
                 if render {
                     // Present the rendered canvas via `surfman`.
