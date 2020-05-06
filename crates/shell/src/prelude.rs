@@ -1,1 +1,1 @@
-pub use crate::{event::*, context::*, platform::*, window::*, ShellRequest};
+pub use crate::{context::*, event::*, platform::*, window::*, ShellRequest};

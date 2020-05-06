@@ -32,9 +32,9 @@ pub fn initialize() {}
 use std::marker::PhantomData;
 
 /// Concrete implementation of the window shell.
-pub struct Shell<'a, A>
+pub struct Shell<A>
 where
-    A: ShellAdapter<'a> ,
+    A: ShellAdapter,
 {
     flip: bool,
     adapter: A,
@@ -45,7 +45,6 @@ where
     render_context_2_d: RenderContext2D,
     window_builder: WinitWindowBuilder,
     mouse_pos: (f64, f64),
-    phantom_data: PhantomData<&'a A>
 }
 
 // unsafe impl<A> HasRawWindowHandle for Shell<A>
@@ -62,9 +61,9 @@ where
 //     }
 // }
 
-impl<'a, A> Shell<'a, A>
+impl<A> Shell<A>
 where
-    A: ShellAdapter<'a>,
+    A: ShellAdapter,
 {
     /// Gets if the shell is running.
     pub fn running(&self) -> bool {
@@ -127,11 +126,7 @@ where
 
         let logical_size = LogicalSize::new(size.width as f64, size.height as f64);
 
-        let window = self
-            .window_builder
-            .clone()
-            .build(&event_loop)
-            .unwrap();
+        let window = self.window_builder.clone().build(&event_loop).unwrap();
         window.show();
 
         // Create a `surfman` device. On a multi-GPU system, we'll request the low-power integrated
@@ -259,9 +254,7 @@ where
                 ..
             } => {
                 self.mouse_pos = (position.x, position.y);
-                self
-                    .adapter
-                    .mouse(position.x, position.y);
+                self.adapter.mouse(position.x, position.y);
                 render = true;
                 ControlFlow::Continue
             }
@@ -274,7 +267,7 @@ where
                 //     updater.update();
                 // }
                 // todo: shell context
-                // self.adapter.run(self)
+                self.adapter.run(&mut self.render_context_2_d);
                 self.set_update(true);
                 self.flip();
                 self.drain_events();
@@ -302,9 +295,9 @@ where
 }
 
 /// Constructs the window shell
-pub struct ShellBuilder<'a, A>
+pub struct ShellBuilder<A>
 where
-    A: ShellAdapter<'a>,
+    A: ShellAdapter,
 {
     title: String,
 
@@ -317,13 +310,11 @@ where
     bounds: Rectangle,
 
     adapter: A,
-
-    phantom_data: PhantomData<&'a A>
 }
 
-impl<'a, A> ShellBuilder<'a, A>
+impl<A> ShellBuilder<A>
 where
-    A: ShellAdapter<'a>,
+    A: ShellAdapter,
 {
     /// Create a new window builder with the given adapter.
     pub fn new(adapter: A) -> Self {
@@ -334,7 +325,6 @@ where
             resizeable: false,
             always_on_top: false,
             bounds: Rectangle::default(),
-            phantom_data: PhantomData::default()
         }
     }
 
@@ -369,7 +359,7 @@ where
     }
 
     /// Builds the window shell.
-    pub fn build(self) -> Shell<'a, A> {
+    pub fn build(self) -> Shell<A> {
         let (request_sender, request_receiver) = channel();
 
         // Calculate the right logical size of the window.
@@ -395,7 +385,6 @@ where
             adapter: self.adapter,
             window_builder,
             mouse_pos: (0.0, 0.0),
-            phantom_data: PhantomData::default()
         }
     }
 }

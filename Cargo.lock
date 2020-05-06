@@ -7,7 +7,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "ahash"
-version = "0.3.3"
+version = "0.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -315,7 +315,7 @@ dependencies = [
 [[package]]
 name = "dces"
 version = "0.3.0"
-source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=develop#2e81f5dd81e34765e82572e5a4656ef535ce0f98"
+source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=develop#58f66adc80a32f28cf915ef07113db07941343bb"
 
 [[package]]
 name = "deflate"
@@ -507,7 +507,7 @@ name = "hashbrown"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "ahash 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ahash 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "autocfg 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.106 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -956,7 +956,7 @@ dependencies = [
 [[package]]
 name = "pathfinder_canvas"
 version = "0.5.0"
-source = "git+https://github.com/servo/pathfinder.git#a373a1fbc380264fbd38a866d5993b6358f0b926"
+source = "git+https://github.com/servo/pathfinder.git#c7ce2153de7dc5f1d095aeb1f88676176102ef69"
 dependencies = [
  "pathfinder_color 0.5.0 (git+https://github.com/servo/pathfinder.git)",
  "pathfinder_content 0.5.0 (git+https://github.com/servo/pathfinder.git)",
@@ -967,7 +967,7 @@ dependencies = [
 [[package]]
 name = "pathfinder_color"
 version = "0.5.0"
-source = "git+https://github.com/servo/pathfinder.git#a373a1fbc380264fbd38a866d5993b6358f0b926"
+source = "git+https://github.com/servo/pathfinder.git#c7ce2153de7dc5f1d095aeb1f88676176102ef69"
 dependencies = [
  "pathfinder_simd 0.5.0 (git+https://github.com/servo/pathfinder.git)",
 ]
@@ -975,7 +975,7 @@ dependencies = [
 [[package]]
 name = "pathfinder_content"
 version = "0.5.0"
-source = "git+https://github.com/servo/pathfinder.git#a373a1fbc380264fbd38a866d5993b6358f0b926"
+source = "git+https://github.com/servo/pathfinder.git#c7ce2153de7dc5f1d095aeb1f88676176102ef69"
 dependencies = [
  "arrayvec 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "bitflags 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -990,7 +990,7 @@ dependencies = [
 [[package]]
 name = "pathfinder_geometry"
 version = "0.5.1"
-source = "git+https://github.com/servo/pathfinder.git#a373a1fbc380264fbd38a866d5993b6358f0b926"
+source = "git+https://github.com/servo/pathfinder.git#c7ce2153de7dc5f1d095aeb1f88676176102ef69"
 dependencies = [
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "pathfinder_simd 0.5.0 (git+https://github.com/servo/pathfinder.git)",
@@ -999,7 +999,7 @@ dependencies = [
 [[package]]
 name = "pathfinder_gl"
 version = "0.5.0"
-source = "git+https://github.com/servo/pathfinder.git#a373a1fbc380264fbd38a866d5993b6358f0b926"
+source = "git+https://github.com/servo/pathfinder.git#c7ce2153de7dc5f1d095aeb1f88676176102ef69"
 dependencies = [
  "gl 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "half 1.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1013,7 +1013,7 @@ dependencies = [
 [[package]]
 name = "pathfinder_gpu"
 version = "0.5.0"
-source = "git+https://github.com/servo/pathfinder.git#a373a1fbc380264fbd38a866d5993b6358f0b926"
+source = "git+https://github.com/servo/pathfinder.git#c7ce2153de7dc5f1d095aeb1f88676176102ef69"
 dependencies = [
  "bitflags 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "half 1.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1027,7 +1027,7 @@ dependencies = [
 [[package]]
 name = "pathfinder_renderer"
 version = "0.5.0"
-source = "git+https://github.com/servo/pathfinder.git#a373a1fbc380264fbd38a866d5993b6358f0b926"
+source = "git+https://github.com/servo/pathfinder.git#c7ce2153de7dc5f1d095aeb1f88676176102ef69"
 dependencies = [
  "bitflags 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "byteorder 1.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1054,12 +1054,12 @@ dependencies = [
 [[package]]
 name = "pathfinder_resources"
 version = "0.5.0"
-source = "git+https://github.com/servo/pathfinder.git#a373a1fbc380264fbd38a866d5993b6358f0b926"
+source = "git+https://github.com/servo/pathfinder.git#c7ce2153de7dc5f1d095aeb1f88676176102ef69"
 
 [[package]]
 name = "pathfinder_simd"
 version = "0.5.0"
-source = "git+https://github.com/servo/pathfinder.git#a373a1fbc380264fbd38a866d5993b6358f0b926"
+source = "git+https://github.com/servo/pathfinder.git#c7ce2153de7dc5f1d095aeb1f88676176102ef69"
 dependencies = [
  "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1067,7 +1067,7 @@ dependencies = [
 [[package]]
 name = "pathfinder_ui"
 version = "0.5.0"
-source = "git+https://github.com/servo/pathfinder.git#a373a1fbc380264fbd38a866d5993b6358f0b926"
+source = "git+https://github.com/servo/pathfinder.git#c7ce2153de7dc5f1d095aeb1f88676176102ef69"
 dependencies = [
  "hashbrown 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "pathfinder_color 0.5.0 (git+https://github.com/servo/pathfinder.git)",
@@ -1884,7 +1884,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [metadata]
 "checksum adler32 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)" = "5d2e7343e7fc9de883d1b0341e0b13970f764c14101234857d2ddafa1cb1cac2"
-"checksum ahash 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "35b909d1c126f78ace756fc337133356c499eebeefcce930fa5fb018823f2b2d"
+"checksum ahash 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)" = "9c251dce3391a07b43218ca070203ecb8f9f520d35ab71312296a59dbceab154"
 "checksum andrew 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "9b7f09f89872c2b6b29e319377b1fbe91c6f5947df19a25596e121cf19a7b35e"
 "checksum android_glue 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "000444226fcff248f2bc4c7625be32c63caccfecc2723a2b9f78a7487a49c407"
 "checksum approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "f0e60b75072ecd4168020818c0107f2857bb6c4e64252d8d3983f6263b40a5c3"

@@ -1,4 +1,3 @@
-
 use std::sync::mpsc::Sender;
 
 use crate::{prelude::*, render::*, utils::*};
@@ -9,10 +8,13 @@ pub struct ShellContext<'a> {
 }
 
 impl<'a> ShellContext<'a> {
-    pub fn new(render_context_2d: &'a mut RenderContext2D, request_sender: &'a Sender<ShellRequest>) -> Self {
+    pub fn new(
+        render_context_2d: &'a mut RenderContext2D,
+        request_sender: &'a Sender<ShellRequest>,
+    ) -> Self {
         ShellContext {
             render_context_2d,
-            request_sender
+            request_sender,
         }
     }
 
