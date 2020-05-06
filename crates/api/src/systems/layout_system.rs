@@ -2,16 +2,24 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, shell::Shell, tree::Tree, utils::*};
+use crate::{css_engine::*, prelude::*, render::RenderContext2D, tree::Tree, utils::*};
 
 /// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calculated by the layout objects of layout widgets.
-pub struct LayoutSystem;
+#[derive(Constructor)]
+pub struct LayoutSystem {
+    context_provider: ContextProvider,
+}
 
-impl System<Tree, StringComponentStore, ContextProvider<'_>> for LayoutSystem {
-    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>, ctx: &mut ContextProvider) {
-        if !self.shell.borrow().update() || !self.shell.borrow().running() {
-            return;
-        }
+impl System<Tree, StringComponentStore, RenderContext2D> for LayoutSystem {
+    fn run_with_context(
+        &self,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        render_context: &mut RenderContext2D,
+    ) {
+        // todo fix.
+        // if !self.shell.borrow().update() || !self.shell.borrow().running() {
+        //     return;
+        // }
 
         // if self.debug_flag.get() {
         //     shell::log("\n------ Start layout update  ------\n".to_string());
@@ -31,20 +39,20 @@ impl System<Tree, StringComponentStore, ContextProvider<'_>> for LayoutSystem {
             .unwrap()
             .clone();
 
-        self.layouts.borrow()[&root].measure(
-            self.shell.borrow_mut().render_context_2_d(),
+        self.context_provider.layouts.borrow()[&root].measure(
+            render_context,
             root,
             ecm,
-            &self.layouts.borrow(),
+            &self.context_provider.layouts.borrow(),
             &theme,
         );
 
-        self.layouts.borrow()[&root].arrange(
-            self.shell.borrow_mut().render_context_2_d(),
+        self.context_provider.layouts.borrow()[&root].arrange(
+            render_context,
             window_size,
             root,
             ecm,
-            &self.layouts.borrow(),
+            &self.context_provider.layouts.borrow(),
             &theme,
         );
 

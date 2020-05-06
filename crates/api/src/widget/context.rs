@@ -1,32 +1,26 @@
-use std::{cell::RefCell, collections::BTreeMap, sync::mpsc::Sender};
-
-#[cfg(not(target_os = "redox"))]
-use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
+use std::{collections::BTreeMap, cell::RefCell, sync::mpsc::Sender};
 
 use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
-    css_engine::*,
-    prelude::*,
-    render::*,
-    shell::{ShellRequest, Shell},
-    tree::Tree,
+    css_engine::*, prelude::*, render::RenderContext2D, render::*, shell::ShellRequest, tree::Tree,
 };
 
-use super::{MessageBox, WidgetContainer};
+use super::WidgetContainer;
 
 /// The `Context` is provides access for the states to objects they could work with.
 pub struct Context<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
-    shell: &'a mut Shell<ShellAdapter>,
     pub entity: Entity,
     pub theme: &'a ThemeValue,
     render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
-    layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
-    handlers: &'a mut EventHandlerMap,
+    layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
+    handlers: &'a RefCell<EventHandlerMap>,
     states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
     new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
     remove_widget_list: Vec<Entity>,
+    event_queue: &'a RefCell<EventQueue>,
+    render_context: &'a mut RenderContext2D,
 }
 
 impl<'a> Drop for Context<'a> {
@@ -35,14 +29,6 @@ impl<'a> Drop for Context<'a> {
     }
 }
 
-// todo fix
-// #[cfg(not(target_os = "redox"))]
-// unsafe impl<'a> HasRawWindowHandle for Context<'a> {
-//     fn raw_window_handle(&self) -> RawWindowHandle {
-//         self.shell.raw_window_handle()
-//     }
-// }
-
 impl<'a> Context<'a> {
     /// Creates a new container.
     pub fn new(
@@ -50,18 +36,18 @@ impl<'a> Context<'a> {
             Entity,
             &'a mut EntityComponentManager<Tree, StringComponentStore>,
         ),
-        shell: &'a mut Shell<ShellAdapter>,
         theme: &'a ThemeValue,
         render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
-        layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
-        handlers: &'a mut EventHandlerMap,
+        layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
+        handlers: &'a RefCell<EventHandlerMap>,
         states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
         new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
+        event_queue: &'a RefCell<EventQueue>,
+        render_context: &'a mut RenderContext2D,
     ) -> Self {
         Context {
             entity: ecs.0,
             ecm: ecs.1,
-            shell,
             theme,
             render_objects,
             layouts,
@@ -69,6 +55,8 @@ impl<'a> Context<'a> {
             states,
             new_states,
             remove_widget_list: vec![],
+            event_queue,
+            render_context,
         }
     }
 
@@ -393,59 +381,25 @@ impl<'a> Context<'a> {
         None
     }
 
-    /// Sends a message to the widget with the given id over the message channel.
-    pub fn send_message(&mut self, target_widget: &str, message: impl Into<MessageBox>) {
-        let mut entity = None;
-        if let Ok(global) = self.ecm.component_store().get::<Global>("global", 0.into()) {
-            if let Some(en) = global.id_map.get(target_widget) {
-                entity = Some(*en);
-            }
-        }
-
-        if let Some(entity) = entity {
-            self.shell
-                .adapter()
-                .messages
-                .entry(entity)
-                .or_insert_with(Vec::new)
-                .push(message.into());
-        } else {
-            println!(
-                "Context send_message: widget id {} not found.",
-                target_widget
-            );
-        }
-    }
-
     /// Pushes an event to the event queue with the given `strategy`.
     pub fn push_event_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
-        self.shell
-            .adapter()
-            .event_queue
+        self.event_queue.borrow_mut()
             .register_event_with_strategy(event, strategy, self.entity);
     }
 
     /// Pushes an event to the event queue.
     pub fn push_event<E: Event>(&mut self, event: E) {
-        self.shell
-            .adapter()
-            .event_queue
-            .register_event(event, self.entity);
+        self.event_queue.borrow_mut().register_event(event, self.entity);
     }
 
     /// Pushes an event to the event queue.
     pub fn push_event_by_entity<E: Event>(&mut self, event: E, entity: Entity) {
-        self.shell
-            .adapter()
-            .event_queue
-            .register_event(event, entity);
+        self.event_queue.borrow_mut().register_event(event, entity);
     }
 
     /// Pushes an event to the event queue.
     pub fn push_event_by_window<E: Event>(&mut self, event: E) {
-        self.shell
-            .adapter()
-            .event_queue
+        self.event_queue.borrow_mut()
             .register_event(event, self.ecm.entity_store().root());
     }
 
@@ -456,21 +410,19 @@ impl<'a> Context<'a> {
         entity: Entity,
         strategy: EventStrategy,
     ) {
-        self.shell
-            .adapter()
-            .event_queue
+        self.event_queue.borrow_mut()
             .register_event_with_strategy(event, strategy, entity);
     }
 
     /// Returns a mutable reference of the 2d render ctx.
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
-        self.shell.render_context_2_d()
+        self.render_context
     }
 
-    /// Gets a new sender to send request to the window shell.
-    pub fn request_sender(&self) -> Sender<ShellRequest> {
-        self.shell.request_sender()
-    }
+    // /// Gets a new sender to send request to the window shell.
+    // pub fn request_sender(&self) -> Sender<ShellRequest> {
+    //     self.window_shell.request_sender()
+    // }
 
     /// Returns a keys collection of new added states.
     pub fn new_states_keys(&self) -> Vec<Entity> {
