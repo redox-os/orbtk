@@ -211,7 +211,7 @@ impl ComboBoxState {
             popup_bounds.height,
         );
 
-        if !combo_box_global_bounds.contains((x, y)) && !popup_global_bounds.contains((x, y)) {
+        if !combo_box_global_bounds.contains((x, y)) {
             ctx.widget().set("selected", false);
             ctx.get_widget(self.popup)
                 .set("visibility", Visibility::Collapsed);
