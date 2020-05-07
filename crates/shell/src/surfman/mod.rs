@@ -15,15 +15,13 @@ use surfman::{
 };
 use surfman::{SurfaceAccess, SurfaceType};
 use winit::dpi::LogicalSize;
-use winit::{ControlFlow, Event, EventsLoop, WindowBuilder as WinitWindowBuilder, WindowEvent};
+use winit::{ControlFlow, Event, EventsLoop, WindowBuilder, WindowEvent};
 
 pub use super::native::*;
 
 use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {}
-
-use std::marker::PhantomData;
 
 /// Concrete implementation of the window shell.
 pub struct Shell<A>
@@ -37,7 +35,7 @@ where
     request_receiver: Receiver<ShellRequest>,
     request_sender: Sender<ShellRequest>,
     render_context_2_d: RenderContext2D,
-    window_builder: WinitWindowBuilder,
+    window_builder: WindowBuilder,
     mouse_pos: (f64, f64),
 }
 
@@ -192,6 +190,7 @@ where
             }
             Event::WindowEvent {
                 event: WindowEvent::KeyboardInput { input, .. },
+                // todo: implement
                 ..
             } => ControlFlow::Continue,
             Event::WindowEvent {
@@ -356,7 +355,7 @@ where
 
         let logical_size = LogicalSize::new(size.0, size.1);
         // Open a window.
-        let window_builder = WinitWindowBuilder::new()
+        let window_builder = WindowBuilder::new()
             .with_dimensions(logical_size)
             .with_title(self.title)
             .with_resizable(self.resizeable)

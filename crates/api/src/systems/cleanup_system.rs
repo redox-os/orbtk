@@ -1,6 +1,6 @@
 use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
-use dces::prelude::{Entity, EntityComponentManager, System};
+use dces::prelude::{EntityComponentManager, System};
 
 use crate::{css_engine::*, prelude::*, render::RenderContext2D, tree::Tree};
 
