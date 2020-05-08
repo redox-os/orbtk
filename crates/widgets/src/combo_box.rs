@@ -278,6 +278,10 @@ impl State for ComboBoxState {
             }
         }
     }
+
+    fn cleanup(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+        let _ = ctx.remove_child_from_overlay(self.popup);
+    }
 }
 
 // todo use code of list view item, by create combobox item insert entity of popup container

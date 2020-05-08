@@ -55,12 +55,6 @@ impl EventStateSystem {
         self.render_objects.borrow_mut().remove(&entity);
         self.handlers.borrow_mut().remove(&entity);
     }
-    // fn process_top_down_event(
-    //     &self,
-    //     _event: &EventBox,
-    //     _ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-    // ) {
-    // }
 
     fn process_direct(&self, event: &EventBox) -> bool {
         if event.strategy == EventStrategy::Direct {
@@ -260,20 +254,7 @@ impl EventStateSystem {
                     }
                     unknown_event = false;
                 }
-                // // mouse up handling
-                // if event.downcast_ref::<MouseUpEvent>().is_ok() {
-                //     if self.mouse_down_nodes.borrow().contains(&current_node) {
-                //         matching_nodes.push(current_node);
-                //         let index = self
-                //             .mouse_down_nodes
-                //             .borrow()
-                //             .iter()
-                //             .position(|x| *x == current_node)
-                //             .unwrap();
-                //         self.mouse_down_nodes.borrow_mut().remove(index);
-                //     }
-                //     unknown_event = false;
-                // }
+
                 if unknown_event
                     && *WidgetContainer::new(current_node, ecm, &theme).get::<bool>("enabled")
                 {
@@ -384,36 +365,15 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                     let mut keys = vec![];
 
                     if !skip {
-                        let render_objects = &self.render_objects;
-                        let layouts = &mut self.layouts.borrow_mut();
-                        let handlers = &mut self.handlers.borrow_mut();
-                        let registry = &mut self.registry.borrow_mut();
-                        let new_states = &mut BTreeMap::new();
-
-                        let mut ctx = Context::new(
-                            (current_node, ecm),
-                            &mut shell,
-                            &theme,
-                            render_objects,
-                            layouts,
-                            handlers,
-                            &self.states,
-                            new_states,
-                        );
-
-                        if let Some(state) = self.states.borrow_mut().get_mut(&current_node) {
-                            state.update(registry, &mut ctx);
-                        }
-
-                        keys.append(&mut ctx.new_states_keys());
-
-                        remove_widget_list.append(ctx.remove_widget_list());
-                        drop(ctx);
-
-                        for key in keys {
+                        {
+                            let render_objects = &self.render_objects;
+                            let layouts = &mut self.layouts.borrow_mut();
+                            let handlers = &mut self.handlers.borrow_mut();
+                            let registry = &mut self.registry.borrow_mut();
                             let new_states = &mut BTreeMap::new();
+
                             let mut ctx = Context::new(
-                                (key, ecm),
+                                (current_node, ecm),
                                 &mut shell,
                                 &theme,
                                 render_objects,
@@ -422,11 +382,47 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                                 &self.states,
                                 new_states,
                             );
-                            if let Some(state) = self.states.borrow_mut().get_mut(&key) {
-                                state.init(registry, &mut ctx);
+
+                            if let Some(state) = self.states.borrow_mut().get_mut(&current_node) {
+                                state.update(registry, &mut ctx);
                             }
 
+                            keys.append(&mut ctx.new_states_keys());
+
+                            remove_widget_list.append(ctx.remove_widget_list());
                             drop(ctx);
+
+                            for key in keys {
+                                let new_states = &mut BTreeMap::new();
+                                let mut ctx = Context::new(
+                                    (key, ecm),
+                                    &mut shell,
+                                    &theme,
+                                    render_objects,
+                                    layouts,
+                                    handlers,
+                                    &self.states,
+                                    new_states,
+                                );
+                                if let Some(state) = self.states.borrow_mut().get_mut(&key) {
+                                    state.init(registry, &mut ctx);
+                                }
+
+                                drop(ctx);
+                            }
+                        }
+
+                        for remove_widget in remove_widget_list.pop() {
+                            let mut children = vec![];
+                            get_all_children(&mut children, remove_widget, ecm.entity_store());
+
+                            // remove children of target widget.
+                            for entity in children.iter().rev() {
+                                self.remove_widget(*entity, &theme, ecm, &mut shell);
+                            }
+
+                            // remove target widget
+                            self.remove_widget(remove_widget, &theme, ecm, &mut shell);
                         }
                     }
                 }
@@ -437,19 +433,6 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                     current_node = node;
                 } else {
                     break;
-                }
-            }
-
-            // Remove all widgets an its children from the remove children list.
-            for child in remove_widget_list {
-                let mut entities = vec![child];
-
-                for child in &ecm.entity_store().children[&child] {
-                    entities.push(*child);
-                }
-
-                for entity in entities.iter().rev() {
-                    self.remove_widget(*entity, &theme, ecm, &mut shell);
                 }
             }
 

@@ -277,15 +277,16 @@ impl<'a> Context<'a> {
         Err("Context.remove_child_from_overlay: Could not find overlay.".to_string())
     }
 
-    /// Removes a child from the given parent. If the given entity is not a child
+    /// Removes (recursive) a child from the given parent. If the given entity is not a child
     /// of the given parent nothing will happen.
-    pub fn remove_child_from(&mut self, child: Entity, parent: Entity) {
-        if self.ecm.entity_store().children[&parent].contains(&child) {
-            self.remove_widget_list.push(child);
+    pub fn remove_child_from(&mut self, remove_entity: Entity, parent: Entity) {
+        let tree = &*self.ecm.entity_store();
+        if let Some(parent) = find_parent(tree, remove_entity, parent) {
+            self.remove_widget_list.push(remove_entity);
 
             let index = self.ecm.entity_store().children[&parent]
                 .iter()
-                .position(|&r| r == child)
+                .position(|&r| r == remove_entity)
                 .unwrap();
             if let Some(parent) = self.ecm.entity_store().children.get_mut(&parent) {
                 parent.remove(index);
@@ -476,3 +477,31 @@ impl<'a> Context<'a> {
         self.new_states.keys().cloned().collect()
     }
 }
+
+// -- Helpers --
+
+/// Finds th parent of the `target_child`. The parent of the `target_child` must be the given `parent` or 
+/// a child of the given parent.
+pub fn find_parent(tree: &Tree, target_child: Entity, parent: Entity) -> Option<Entity> {
+    if tree.children[&parent].contains(&target_child) {
+        return Some(parent);
+    }
+
+    for child in &tree.children[&parent] {
+        let parent = find_parent(tree, target_child, *child);
+        if parent.is_some() {
+            return parent;
+        }
+    }
+
+    return None;
+}
+
+pub fn get_all_children(children: &mut Vec<Entity>, parent: Entity, tree: &Tree) {
+    for child in &tree.children[&parent] {
+        children.push(*child);
+        get_all_children(children, *child, tree);
+    }
+}
+
+// -- Helpers --

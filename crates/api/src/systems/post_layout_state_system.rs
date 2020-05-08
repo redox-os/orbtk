@@ -72,50 +72,45 @@ impl System<Tree, StringComponentStore> for PostLayoutStateSystem {
         let mut remove_widget_list: Vec<Entity> = vec![];
 
         {
-            let render_objects = &self.render_objects;
-            let layouts = &mut self.layouts.borrow_mut();
-            let handlers = &mut self.handlers.borrow_mut();
-            let new_states = &mut BTreeMap::new();
+            let mut keys = vec![];
 
-            let mut ctx = Context::new(
-                (root, ecm),
-                shell,
-                &theme,
-                render_objects,
-                layouts,
-                handlers,
-                &self.states,
-                new_states,
-            );
+            for key in self.states.borrow().keys() {
+                keys.push(*key);
+            }
 
-            for (node, state) in &mut *self.states.borrow_mut() {
-                ctx.entity = *node;
-
-                state.update_post_layout(&mut *self.registry.borrow_mut(), &mut ctx);
-                remove_widget_list.append(ctx.remove_widget_list());
-
-                // Handle messages.
+            for key in keys {
                 {
-                    // todo fix messages.
-                    // for (entity, messages) in ctx.messages().iter() {
-                    //     if let Some(state) = self.states.borrow().get(&entity) {
-                    //         ctx.entity = *entity;
-                    //         state.receive_messages(&mut ctx, &messages);
-                    //     }
-                    // }
+                    let render_objects = &self.render_objects;
+                    let layouts = &mut self.layouts.borrow_mut();
+                    let handlers = &mut self.handlers.borrow_mut();
+                    let new_states = &mut BTreeMap::new();
+
+                    let mut ctx = Context::new(
+                        (key, ecm),
+                        shell,
+                        &theme,
+                        render_objects,
+                        layouts,
+                        handlers,
+                        &self.states,
+                        new_states,
+                    );
+
+                    self.states.borrow_mut().get_mut(&key).unwrap().update_post_layout(&mut *self.registry.borrow_mut(), &mut ctx);   
                 }
-            }
-        }
 
-        for child in remove_widget_list {
-            let mut entities = vec![child];
+                for remove_widget in remove_widget_list.pop() {
+                    let mut children = vec![];
+                    get_all_children(&mut children, remove_widget, ecm.entity_store());
 
-            for child in &ecm.entity_store().children[&child] {
-                entities.push(*child);
-            }
+                    // remove children of target widget.
+                    for entity in children.iter().rev() {
+                        self.remove_widget(*entity, &theme, ecm, &mut shell);
+                    }
 
-            for entity in entities.iter().rev() {
-                self.remove_widget(*entity, &theme, ecm, &mut shell);
+                    // remove target widget
+                    self.remove_widget(remove_widget, &theme, ecm, &mut shell);
+                }
             }
         }
     }
