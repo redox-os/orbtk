@@ -309,7 +309,8 @@ where
             match request {
                 ShellRequest::Update => {
                     update = true;
-                }
+                },
+                _ => {}
             }
         }
 
