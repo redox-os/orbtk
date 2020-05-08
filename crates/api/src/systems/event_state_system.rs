@@ -383,51 +383,18 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                     let mut keys = vec![];
 
                     if !skip {
-                        let render_objects = &self.context_provider.render_objects;
-                        let layouts = &self.context_provider.layouts;
-                        let handler_map = &self.context_provider.handler_map;
-                        let states = &self.context_provider.states;
-                        let event_queue = &self.context_provider.event_queue;
-                        let registry = &mut self.registry.borrow_mut();
-                        let new_states = &mut BTreeMap::new();
-
-                        let mut ctx = Context::new(
-                            (current_node, ecm),
-                            &theme,
-                            render_objects,
-                            layouts,
-                            handler_map,
-                            states,
-                            new_states,
-                            event_queue,
-                            render_context,
-                        );
-
-                        if let Some(state) = self
-                            .context_provider
-                            .states
-                            .borrow_mut()
-                            .get_mut(&current_node)
                         {
-                            state.update(registry, &mut ctx);
-                        }
-
-                        keys.append(&mut ctx.new_states_keys());
-
-                        remove_widget_list.append(ctx.remove_widget_list());
-                        drop(ctx);
-
-                        for key in keys {
                             let render_objects = &self.context_provider.render_objects;
                             let layouts = &self.context_provider.layouts;
                             let handler_map = &self.context_provider.handler_map;
-                            let states = &self.context_provider.states;
                             let event_queue = &self.context_provider.event_queue;
+                            let states = &self.context_provider.states;
+                            let registry = &mut self.registry.borrow_mut();
                             let new_states = &mut BTreeMap::new();
                          
 
                             let mut ctx = Context::new(
-                                (key, ecm),
+                                (current_node, ecm),
                                 &theme,
                                 render_objects,
                                 layouts,
@@ -437,10 +404,9 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                                 event_queue,
                                 render_context,
                             );
-                            if let Some(state) =
-                                self.context_provider.states.borrow_mut().get_mut(&key)
-                            {
-                                state.init(registry, &mut ctx);
+
+                            if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&current_node) {
+                                state.update(registry, &mut ctx);
                             }
 
                             keys.append(&mut ctx.new_states_keys());
