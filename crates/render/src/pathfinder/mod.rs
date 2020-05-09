@@ -99,9 +99,10 @@ impl RenderContext2D {
 
     /// Draws (fills) a given text at the given (x, y) position.
     pub fn fill_text(&mut self, text: &str, x: f64, y: f64) {
-        // self.canvas
-        // .get_mut(0)
-        // .unwrap().fill_text(text, vec2f(x as f32, y as f32));
+        self.canvas
+            .get_mut(0)
+            .unwrap()
+            .fill_text(text, vec2f(x as f32, y as f32));
     }
 
     pub fn measure(
@@ -110,12 +111,20 @@ impl RenderContext2D {
         font_size: f64,
         family: impl Into<String>,
     ) -> TextMetrics {
-        TextMetrics::default()
+        let t_m = self.canvas.get_mut(0).unwrap().measure_text(text);
+        TextMetrics {
+            width: t_m.width as f64,
+            height: t_m.em_height_ascent as f64
+        }
     }
 
     /// Returns a TextMetrics object.
     pub fn measure_text(&mut self, text: &str) -> TextMetrics {
-        TextMetrics::default()
+        let t_m = self.canvas.get_mut(0).unwrap().measure_text(text);
+        TextMetrics {
+            width: t_m.width as f64,
+            height: t_m.em_height_ascent as f64
+        }
     }
 
     /// Fills the current or given path with the current file style.
@@ -225,7 +234,9 @@ impl RenderContext2D {
     pub fn set_font_family(&mut self, family: impl Into<String>) {}
 
     /// Specifies the font size.
-    pub fn set_font_size(&mut self, size: f64) {}
+    pub fn set_font_size(&mut self, size: f64) {
+        self.canvas.get_mut(0).unwrap().set_font_size(size as f32);
+    }
 
     // Fill and stroke style
 

@@ -18,15 +18,16 @@ spin_sleep = "0.3.7"
 image = "0.23.4"
 
 [target.'cfg(all(not(target_arch = "wasm32"), not(target_os = "redox"), not(feature = "minifb")))'.dependencies]
-winit = "<0.19.4"
-euclid = "0.20.10"
+# winit = "<0.19.4"
 gl = "0.14"
-pathfinder_color = { git = "https://github.com/servo/pathfinder.git" }
-pathfinder_geometry = { git = "https://github.com/servo/pathfinder.git" }
-pathfinder_gl = { git = "https://github.com/servo/pathfinder.git" }
-pathfinder_renderer = { git = "https://github.com/servo/pathfinder.git" }
-pathfinder_resources = { git = "https://github.com/servo/pathfinder.git" }
-surfman = { version = "0.2.0", features = ["sm-winit"] }
+glutin = "0.24"
+euclid = "0.20.10"
+pathfinder_color = "0.5.0"
+pathfinder_geometry = "0.5.1"
+pathfinder_gl =  "0.5.0"
+pathfinder_renderer =  "0.5.0"
+pathfinder_resources =  "0.5.0"
+# surfman = { version = "0.2.0", features = ["sm-winit"] }
 
 [dependencies]
 orbtk-render = { path = "../render", version = "0.3.1-alpha3" }

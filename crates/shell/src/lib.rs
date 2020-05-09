@@ -34,7 +34,7 @@ pub mod window;
 pub use orbtk_utils::prelude as utils;
 
 #[cfg(all(not(target_arch = "wasm32"), not(target_os = "redox"), not(feature = "mfb")))]
-#[path = "surfman/mod.rs"]
+#[path = "glutin/mod.rs"]
 pub mod platform;
 
 #[cfg(any(target_os = "redox", feature = "mfb"))]
