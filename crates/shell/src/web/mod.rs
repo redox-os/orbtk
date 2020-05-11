@@ -74,7 +74,7 @@ fn get_key(code: &str, key: String) -> (Key, String) {
 /// Concrete implementation of the window shell.
 pub struct Shell<A: 'static>
 where
-    A: ShellAdapter,
+    A: WindowAdapter,
 {
     render_context_2_d: RenderContext2D,
     pub mouse_move_events: Rc<RefCell<Vec<event::MouseMoveEvent>>>,
@@ -99,7 +99,7 @@ where
 
 unsafe impl<A> HasRawWindowHandle for Shell<A>
 where
-    A: ShellAdapter,
+    A: WindowAdapter,
 {
     fn raw_window_handle(&self) -> RawWindowHandle {
         let handle = WebHandle {
@@ -113,7 +113,7 @@ where
 
 impl<A> Shell<A>
 where
-    A: ShellAdapter,
+    A: WindowAdapter,
 {
     /// Gets if the shell is running.
     pub fn running(&self) -> bool {
@@ -336,7 +336,7 @@ where
 /// Constructs the window shell
 pub struct ShellBuilder<A>
 where
-    A: ShellAdapter,
+    A: WindowAdapter,
 {
     title: String,
 
@@ -351,7 +351,7 @@ where
 
 impl<A> ShellBuilder<A>
 where
-    A: ShellAdapter,
+    A: WindowAdapter,
 {
     /// Create a new window builder with the given adapter.
     pub fn new(adapter: A) -> Self {

@@ -3,9 +3,9 @@
 use crate::render::RenderContext2D;
 use crate::{event::*, utils::Point};
 
-/// The `ShellAdapter` represents the bridge to the `Shell` backend.
-/// It receives events from the `WindowShell` and runs it's own logic.  
-pub trait ShellAdapter {
+/// The `WindowAdapter` represents the bridge to the `Shell` backend.
+/// It receives events from the `Window` and runs it's own logic.  
+pub trait WindowAdapter {
     /// Is called after the window is resized.
     fn resize(&mut self, _width: f64, _height: f64) {}
 

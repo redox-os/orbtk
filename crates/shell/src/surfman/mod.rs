@@ -24,7 +24,7 @@ pub fn initialize() {}
 /// Concrete implementation of the window shell.
 pub struct Shell<A>
 where
-    A: ShellAdapter,
+    A: WindowAdapter,
 {
     adapter: A,
     update: bool,
@@ -39,7 +39,7 @@ where
 
 // unsafe impl<A> HasRawWindowHandle for Shell<A>
 // where
-//     A: ShellAdapter,
+//     A: WindowAdapter,
 // {
 //     fn raw_window_handle(&self) -> RawWindowHandle {
 //         // let handle = WebHandle {
@@ -53,7 +53,7 @@ where
 
 impl<A> Shell<A>
 where
-    A: ShellAdapter,
+    A: WindowAdapter,
 {
     /// Gets if the shell is running.
     pub fn running(&self) -> bool {
@@ -276,7 +276,7 @@ where
 /// Constructs the window shell
 pub struct ShellBuilder<A>
 where
-    A: ShellAdapter,
+    A: WindowAdapter,
 {
     title: String,
 
@@ -293,7 +293,7 @@ where
 
 impl<A> ShellBuilder<A>
 where
-    A: ShellAdapter,
+    A: WindowAdapter,
 {
     /// Create a new window builder with the given adapter.
     pub fn new(adapter: A) -> Self {

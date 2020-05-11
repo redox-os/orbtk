@@ -3,21 +3,21 @@ use dces::prelude::{Entity, World};
 use crate::{prelude::*, render, shell, tree::Tree, utils::Point};
 
 /// Represents a window. Each window has its own tree, event pipeline and shell.
-pub struct ShellAdapter {
+pub struct WindowAdapter {
     world: World<Tree, StringComponentStore, render::RenderContext2D>,
     ctx: ContextProvider,
 }
 
-impl ShellAdapter {
+impl WindowAdapter {
     pub fn new(
         world: World<Tree, StringComponentStore, render::RenderContext2D>,
         ctx: ContextProvider,
     ) -> Self {
-        ShellAdapter { world, ctx }
+        WindowAdapter { world, ctx }
     }
 }
 
-impl ShellAdapter {
+impl WindowAdapter {
     fn root(&mut self) -> Entity {
         self.world
             .entity_component_manager()
@@ -27,7 +27,7 @@ impl ShellAdapter {
     }
 }
 
-impl shell::ShellAdapter for ShellAdapter {
+impl shell::WindowAdapter for WindowAdapter {
     fn resize(&mut self, width: f64, height: f64) {
         let root = self.root();
         self.ctx

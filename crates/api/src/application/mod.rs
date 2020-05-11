@@ -7,7 +7,7 @@ use dces::prelude::{Entity, World};
 use crate::{
     prelude::*,
     render::RenderContext2D,
-    shell::AShell,
+    shell::Shell,
     tree::*,
     utils::{Point, Rectangle},
 };
@@ -24,8 +24,8 @@ mod shell_adapter;
 
 /// The `Application` represents the entry point of an OrbTk based application.
 pub struct Application {
-    // shells: Vec<Shell<ShellAdapter>>,
-    shell: AShell<ShellAdapter>,
+    // shells: Vec<Shell<WindowAdapter>>,
+    shell: Shell<WindowAdapter>,
     name: Box<str>,
 }
 
@@ -39,7 +39,7 @@ impl Application {
     pub fn from_name(name: impl Into<Box<str>>) -> Self {
         Application {
             name: name.into(),
-            shell: AShell::new(), // shells: vec![],
+            shell: Shell::new(), // shells: vec![],
         }
     }
 
@@ -168,7 +168,7 @@ impl Application {
             .build();
 
         self.shell
-            .create_window(ShellAdapter::new(world, context_provider))
+            .create_window(WindowAdapter::new(world, context_provider))
             .title(&(title)[..])
             .bounds(Rectangle::from((
                 position.x,
