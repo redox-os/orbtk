@@ -3,6 +3,7 @@
 use std::{
     cell::RefCell,
     char,
+    collections::HashMap,
     rc::Rc,
     sync::mpsc::{channel, Receiver, Sender},
     time::Duration,
@@ -507,17 +508,12 @@ where
     A: ShellAdapter,
 {
     shell: &'a mut AShell<A>,
-
     adapter: A,
-
     title: String,
-
     resizeable: bool,
-
     always_on_top: bool,
-
     borderless: bool,
-
+    fonts: HashMap<String, &'static [u8]>,
     bounds: Rectangle,
 }
 
@@ -555,6 +551,12 @@ where
         self
     }
 
+    /// Registers a new font with family key.
+    pub fn font(mut self, family: impl Into<String>, font_file: &'static [u8]) -> Self {
+        self.fonts.insert(family.into(), font_file);
+        self
+    }
+
     pub fn build(self) {
         let window_options = minifb::WindowOptions {
             resize: self.resizeable,
@@ -588,21 +590,42 @@ where
 
         let (request_sender, request_receiver) = channel();
 
-        self.shell.window_shells.push(WindowShell::new(
+        let mut render_context = RenderContext2D::new(self.bounds.width, self.bounds.height);
+
+        for (family, font) in self.fonts {
+            render_context.register_font(&family, font);
+        }
+
+        self.shell.window_shells.push(WindowShell {
             window,
-            self.adapter,
-            RenderContext2D::new(self.bounds.width, self.bounds.height),
+            adapter: self.adapter,
+            render_context,
             request_receiver,
             request_sender,
-            (self.bounds.width, self.bounds.height),
-            true,
-            true,
-        ));
+            window_state: WindowState::default(),
+            mouse: MouseState::default(),
+            update: true,
+            redraw: true,
+            close: false
+        });
     }
 }
 
-#[derive(Constructor)]
-pub struct WindowShell<A>
+#[derive(Copy, Clone, Default, Debug)]
+struct MouseState {
+    mouse_pos: (f32, f32),
+    button_left: bool,
+    button_middle: bool,
+    button_right: bool,
+}
+
+#[derive(Copy, Clone, Default, Debug)]
+struct WindowState {
+    size: (usize, usize),
+    active: bool
+}
+
+struct WindowShell<A>
 where
     A: ShellAdapter,
 {
@@ -611,9 +634,11 @@ where
     render_context: RenderContext2D,
     request_receiver: Receiver<WindowRequest>,
     request_sender: Sender<WindowRequest>,
-    window_size: (f64, f64),
+    window_state: WindowState,
+    mouse: MouseState,
     update: bool,
-    render: bool,
+    redraw: bool,
+    close: bool,
 }
 
 impl<A> WindowShell<A>
@@ -621,12 +646,91 @@ where
     A: ShellAdapter,
 {
     fn is_open(&self) -> bool {
-        self.window.is_open()
+        self.window.is_open() && !self.close
+    }
+
+    fn push_mouse_event(&mut self, pressed: bool, button: MouseButton) {
+        let state = if pressed {
+            ButtonState::Down
+        } else {
+            ButtonState::Up
+        };
+
+        self.adapter.mouse_event(MouseEvent {
+            x: self.mouse.mouse_pos.0 as f64,
+            y: self.mouse.mouse_pos.1 as f64,
+            button,
+            state,
+        });
     }
 
     fn drain_events(&mut self) {
         self.window.update();
-        self.update = true;
+
+        // mouse move
+        if let Some(pos) = self.window.get_mouse_pos(minifb::MouseMode::Discard) {
+            if (pos.0.floor(), pos.1.floor()) != self.mouse.mouse_pos {
+                self.adapter.mouse(pos.0 as f64, pos.1 as f64);
+                self.mouse.mouse_pos = (pos.0.floor(), pos.1.floor());
+                self.update = true;
+            }
+        }
+
+        // mouse buttons
+        let left_button_down = self.window.get_mouse_down(minifb::MouseButton::Left);
+        let middle_button_down = self.window.get_mouse_down(minifb::MouseButton::Middle);
+        let right_button_down = self.window.get_mouse_down(minifb::MouseButton::Right);
+
+        if left_button_down != self.mouse.button_left {
+            if left_button_down {
+                self.push_mouse_event(true, MouseButton::Left);
+            } else {
+                self.push_mouse_event(false, MouseButton::Left);
+            }
+            self.mouse.button_left = left_button_down;
+            self.update = true;
+        }
+
+        if middle_button_down != self.mouse.button_middle {
+            if middle_button_down {
+                self.push_mouse_event(true, MouseButton::Middle);
+            } else {
+                self.push_mouse_event(false, MouseButton::Middle);
+            }
+            self.mouse.button_middle = middle_button_down;
+            self.update = true;
+        }
+
+        if right_button_down != self.mouse.button_right {
+            if right_button_down {
+                self.push_mouse_event(true, MouseButton::Right);
+            } else {
+                self.push_mouse_event(false, MouseButton::Right);
+            }
+            self.mouse.button_right = right_button_down;
+            self.update = true;
+        }
+
+        // scroll
+        if let Some(delta) = self.window.get_scroll_wheel() {
+            self.adapter.scroll(delta.0 as f64, delta.1 as f64);
+            self.update = true;
+        }
+
+        // resize
+        if self.window_state.size != self.window.get_size() {
+            self.window_state.size = self.window.get_size();
+            self.render_context
+                .resize(self.window_state.size.0 as f64, self.window_state.size.1 as f64);
+            self.adapter
+                .resize(self.window_state.size.0 as f64, self.window_state.size.1 as f64);
+            self.update = true;
+        }
+
+        if self.window_state.active != self.window.is_active() {
+            self.adapter.active(self.window.is_active());
+            self.window_state.active = self.window.is_active();
+        }
     }
 
     fn receive_requests(&mut self) {
@@ -634,8 +738,14 @@ where
             match request {
                 WindowRequest::Redraw => {
                     self.update = true;
+                    self.redraw = true;
                 }
-                _ => {}
+                WindowRequest::ChangeTitle(title) => {
+                    self.window.set_title(&title);
+                }
+                WindowRequest::Close => {
+                    self.close = true;
+                }
             }
         }
     }
@@ -646,23 +756,25 @@ where
         }
         self.adapter.run(&mut self.render_context);
         self.update = false;
+        self.redraw = true;
     }
 
     fn render(&mut self) {
-        if self.render {
+        if self.redraw {
             if let Some(data) = self.render_context.data() {
                 let _ = self.window.update_with_buffer(
                     data,
-                    self.window_size.0 as usize,
-                    self.window_size.1 as usize,
+                    self.window_state.size.0 as usize,
+                    self.window_state.size.1 as usize,
                 );
                 CONSOLE.time_end("render");
-                self.render = false;
+                self.redraw = false;
             }
         }
     }
 }
 
+/// Represents an application shell that could handle multiple windows.
 pub struct AShell<A>
 where
     A: ShellAdapter,
@@ -674,12 +786,14 @@ impl<A> AShell<A>
 where
     A: ShellAdapter,
 {
+    /// Creates a new application shell.
     pub fn new() -> Self {
         AShell {
             window_shells: vec![],
         }
     }
 
+    /// Creates a window builder, that could be used to create a window and add it to the application shell.
     pub fn create_window(&mut self, adapter: A) -> WindowBuilder<A> {
         WindowBuilder {
             shell: self,
@@ -689,9 +803,11 @@ where
             resizeable: false,
             always_on_top: false,
             bounds: Rectangle::new(0.0, 0.0, 100.0, 100.0),
+            fonts: HashMap::new(),
         }
     }
 
+    /// Runs (starts) the application shell and its windows.
     pub fn run(&mut self) {
         loop {
             if self.window_shells.is_empty() {

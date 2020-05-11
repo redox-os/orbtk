@@ -77,9 +77,6 @@ pub enum WindowRequest {
     /// Request to close the `Windows`.
     Close,
 
-    /// Request to resize the `Windows` to the specified size.
-    Resize(f64, f64),
-
     /// Request to change the title of the `Windows`.
     ChangeTitle(String),
 }

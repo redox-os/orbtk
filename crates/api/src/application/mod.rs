@@ -7,7 +7,7 @@ use dces::prelude::{Entity, World};
 use crate::{
     prelude::*,
     render::RenderContext2D,
-    shell::{AShell, Shell, ShellBuilder},
+    shell::AShell,
     tree::*,
     utils::{Point, Rectangle},
 };
@@ -178,26 +178,15 @@ impl Application {
             )))
             .borderless(borderless)
             .resizeable(resizeable)
+            .font("Roboto Regular", crate::theme::fonts::ROBOTO_REGULAR_FONT)
+            .font("Roboto Medium", crate::theme::fonts::ROBOTO_MEDIUM_FONT)
+            .font(
+                "Material Icons",
+                crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
+            )
             .always_on_top(always_on_top)
             .build();
 
-        // #[cfg(not(target_arch = "wasm32"))]
-        // shell
-        //     .render_context_2_d()
-        //     .register_font("Roboto Regular", crate::theme::fonts::ROBOTO_REGULAR_FONT);
-
-        // #[cfg(not(target_arch = "wasm32"))]
-        // shell
-        //     .render_context_2_d()
-        //     .register_font("Roboto Medium", crate::theme::fonts::ROBOTO_MEDIUM_FONT);
-
-        // #[cfg(not(target_arch = "wasm32"))]
-        // shell.render_context_2_d().register_font(
-        //     "Material Icons",
-        //     crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
-        // );
-
-        // self.shells.push(shell);
         self
     }
 

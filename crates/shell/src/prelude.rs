@@ -1,1 +1,1 @@
-pub use crate::{event::*, platform::*, window::*, ShellRequest, WindowRequest};
+pub use crate::{event::*, platform::{AShell, CONSOLE, initialize}, window::*, ShellRequest, WindowRequest};

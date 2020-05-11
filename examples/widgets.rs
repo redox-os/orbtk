@@ -469,14 +469,6 @@ fn main() {
                 .child(MainView::create().build(ctx))
                 .build(ctx)
         })
-        .window(|ctx| {
-            Window::create()
-                .title("OrbTk - widgets example window 2")
-                .position((700.0, 100.0))
-                .size(468.0, 730.0)
-                .resizeable(true)
-                .build(ctx)
-        })
         .run();
 }
 

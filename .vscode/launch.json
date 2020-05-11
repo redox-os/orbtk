@@ -162,6 +162,17 @@
     {
       "type": "lldb",
       "request": "launch",
+      "name": "Multi window",
+      "program": "${workspaceFolder}/target/debug/examples/multi_window",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
       "name": "Test",
       "cargo": {
         "args": [
