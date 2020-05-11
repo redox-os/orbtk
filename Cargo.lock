@@ -1133,6 +1133,7 @@ name = "orbtk-shell"
 version = "0.3.1-alpha3"
 dependencies = [
  "console_error_panic_hook 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_more 0.99.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "euclid 0.20.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "gl 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "glutin 0.24.0 (registry+https://github.com/rust-lang/crates.io-index)",

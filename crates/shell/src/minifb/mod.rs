@@ -8,6 +8,8 @@ use std::{
     time::Duration,
 };
 
+use derive_more::Constructor;
+
 pub use super::native::*;
 
 use minifb;
@@ -553,7 +555,7 @@ where
         self
     }
 
-    pub fn build(mut self) {
+    pub fn build(self) {
         let window_options = minifb::WindowOptions {
             resize: self.resizeable,
             topmost: self.always_on_top,
@@ -584,7 +586,80 @@ where
 
         window.set_position(self.bounds.x as isize, self.bounds.y as isize);
 
-        self.shell.window_adapters.push((window, self.adapter));
+        let (request_sender, request_receiver) = channel();
+
+        self.shell.window_shells.push(WindowShell::new(
+            window,
+            self.adapter,
+            RenderContext2D::new(self.bounds.width, self.bounds.height),
+            request_receiver,
+            request_sender,
+            (self.bounds.width, self.bounds.height),
+            true,
+            true,
+        ));
+    }
+}
+
+#[derive(Constructor)]
+pub struct WindowShell<A>
+where
+    A: ShellAdapter,
+{
+    window: minifb::Window,
+    adapter: A,
+    render_context: RenderContext2D,
+    request_receiver: Receiver<WindowRequest>,
+    request_sender: Sender<WindowRequest>,
+    window_size: (f64, f64),
+    update: bool,
+    render: bool,
+}
+
+impl<A> WindowShell<A>
+where
+    A: ShellAdapter,
+{
+    fn is_open(&self) -> bool {
+        self.window.is_open()
+    }
+
+    fn drain_events(&mut self) {
+        self.window.update();
+        self.update = true;
+    }
+
+    fn receive_requests(&mut self) {
+        for request in self.request_receiver.try_iter() {
+            match request {
+                WindowRequest::Redraw => {
+                    self.update = true;
+                }
+                _ => {}
+            }
+        }
+    }
+
+    fn update(&mut self) {
+        if !self.update {
+            return;
+        }
+        self.adapter.run(&mut self.render_context);
+        self.update = false;
+    }
+
+    fn render(&mut self) {
+        if self.render {
+            if let Some(data) = self.render_context.data() {
+                let _ = self.window.update_with_buffer(
+                    data,
+                    self.window_size.0 as usize,
+                    self.window_size.1 as usize,
+                );
+                CONSOLE.time_end("render");
+                self.render = false;
+            }
+        }
     }
 }
 
@@ -592,7 +667,7 @@ pub struct AShell<A>
 where
     A: ShellAdapter,
 {
-    window_adapters: Vec<(minifb::Window, A)>,
+    window_shells: Vec<WindowShell<A>>,
 }
 
 impl<A> AShell<A>
@@ -601,7 +676,7 @@ where
 {
     pub fn new() -> Self {
         AShell {
-            window_adapters: vec![],
+            window_shells: vec![],
         }
     }
 
@@ -617,10 +692,29 @@ where
         }
     }
 
-    pub fn run(mut self) {
+    pub fn run(&mut self) {
         loop {
-            if self.window_adapters.is_empty() {
+            if self.window_shells.is_empty() {
                 return;
+            }
+
+            for i in 0..self.window_shells.len() {
+                let mut remove = false;
+                if let Some(window_shell) = self.window_shells.get_mut(i) {
+                    window_shell.drain_events();
+                    window_shell.receive_requests();
+                    window_shell.update();
+                    window_shell.render();
+
+                    if !window_shell.is_open() {
+                        remove = true;
+                    }
+                }
+
+                if remove {
+                    self.window_shells.remove(i);
+                    break;
+                }
             }
         }
     }

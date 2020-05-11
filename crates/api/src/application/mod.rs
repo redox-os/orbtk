@@ -7,7 +7,7 @@ use dces::prelude::{Entity, World};
 use crate::{
     prelude::*,
     render::RenderContext2D,
-    shell::{Shell, ShellBuilder},
+    shell::{AShell, Shell, ShellBuilder},
     tree::*,
     utils::{Point, Rectangle},
 };
@@ -24,7 +24,8 @@ mod shell_adapter;
 
 /// The `Application` represents the entry point of an OrbTk based application.
 pub struct Application {
-    shells: Vec<Shell<ShellAdapter>>,
+    // shells: Vec<Shell<ShellAdapter>>,
+    shell: AShell<ShellAdapter>,
     name: Box<str>,
 }
 
@@ -38,7 +39,7 @@ impl Application {
     pub fn from_name(name: impl Into<Box<str>>) -> Self {
         Application {
             name: name.into(),
-            shells: vec![],
+            shell: AShell::new(), // shells: vec![],
         }
     }
 
@@ -83,8 +84,6 @@ impl Application {
 
             window
         };
-
-        
 
         let title = world
             .entity_component_manager()
@@ -164,13 +163,12 @@ impl Application {
             .build();
 
         world
-            .create_system(RenderSystem::new(
-                context_provider.clone()
-            ))
+            .create_system(RenderSystem::new(context_provider.clone()))
             .with_priority(3)
             .build();
 
-        let mut shell = ShellBuilder::new(ShellAdapter::new(world, context_provider))
+        self.shell
+            .create_window(ShellAdapter::new(world, context_provider))
             .title(&(title)[..])
             .bounds(Rectangle::from((
                 position.x,
@@ -183,31 +181,28 @@ impl Application {
             .always_on_top(always_on_top)
             .build();
 
-        #[cfg(not(target_arch = "wasm32"))]
-        shell
-            .render_context_2_d()
-            .register_font("Roboto Regular", crate::theme::fonts::ROBOTO_REGULAR_FONT);
+        // #[cfg(not(target_arch = "wasm32"))]
+        // shell
+        //     .render_context_2_d()
+        //     .register_font("Roboto Regular", crate::theme::fonts::ROBOTO_REGULAR_FONT);
 
-        #[cfg(not(target_arch = "wasm32"))]
-        shell
-            .render_context_2_d()
-            .register_font("Roboto Medium", crate::theme::fonts::ROBOTO_MEDIUM_FONT);
+        // #[cfg(not(target_arch = "wasm32"))]
+        // shell
+        //     .render_context_2_d()
+        //     .register_font("Roboto Medium", crate::theme::fonts::ROBOTO_MEDIUM_FONT);
 
-        #[cfg(not(target_arch = "wasm32"))]
-        shell.render_context_2_d().register_font(
-            "Material Icons",
-            crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
-        );
+        // #[cfg(not(target_arch = "wasm32"))]
+        // shell.render_context_2_d().register_font(
+        //     "Material Icons",
+        //     crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
+        // );
 
-        self.shells.push(shell);
-
+        // self.shells.push(shell);
         self
     }
 
     /// Starts the application and run it until quit is requested.
     pub fn run(mut self) {
-        while let Some(shell) = self.shells.pop() {
-            shell.run();
-        }
+        self.shell.run();
     }
 }
