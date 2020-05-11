@@ -1,9 +1,9 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{collections::BTreeMap};
 
 use dces::prelude::{ EntityComponentManager, System};
 
 use crate::{
-    css_engine::*, prelude::*, render::RenderContext2D, shell::CONSOLE, tree::Tree, utils::Brush,
+    css_engine::*, prelude::*, render::RenderContext2D, shell::CONSOLE, tree::Tree
 };
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.

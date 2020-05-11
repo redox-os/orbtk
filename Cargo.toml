@@ -47,7 +47,7 @@ serde_derive = "1.0.106"
 
 [features]
 debug = ["orbtk-api/debug"]
-minifb = ["orbtk-shell/mfb", "orbtk-render/raq"]
+pathfinder = ["orbtk-shell/pfinder", "orbtk-render/pfinder"]
  
 [workspace]
 members = [

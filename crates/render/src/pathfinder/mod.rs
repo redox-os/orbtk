@@ -44,6 +44,8 @@ pub struct RenderContext2D {
     canvas: Vec<CanvasRenderingContext2D>,
     path: Path2D,
     size: (f64, f64),
+    config: RenderConfig,
+    saved_config: Option<RenderConfig>,
 }
 
 impl RenderContext2D {
@@ -56,6 +58,8 @@ impl RenderContext2D {
             canvas: vec![],
             path: Path2D::new(),
             size: (width, height),
+            config: RenderConfig::default(),
+            saved_config: None,
         }
     }
 
@@ -91,6 +95,8 @@ impl RenderContext2D {
                 .get_context_2d(font_context)],
             path: Path2D::new(),
             size,
+            config: RenderConfig::default(),
+            saved_config: None,
         }
     }
 
@@ -250,15 +256,22 @@ impl RenderContext2D {
     }
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
-    pub fn clip(&mut self) {}
+    pub fn clip(&mut self) {
+        // let path = self.path.clone();
+        // self.canvas().clip_path(path, FillRule::EvenOdd);
+    }
 
     // Line styles
 
     /// Sets the thickness of lines.
-    pub fn set_line_width(&mut self, line_width: f64) {}
+    pub fn set_line_width(&mut self, line_width: f64) {
+        self.canvas().set_line_width(line_width as f32);
+    }
 
     /// Sets the alpha value,
-    pub fn set_alpha(&mut self, alpha: f32) {}
+    pub fn set_alpha(&mut self, alpha: f32) {
+        self.canvas().set_global_alpha(alpha as f32);
+    }
 
     /// Specific the font family.
     pub fn set_font_family(&mut self, family: impl Into<String>) {}
@@ -268,7 +281,7 @@ impl RenderContext2D {
         self.canvas().set_font_size(size as f32);
     }
 
-    // Fill and stroke style
+    // Fill and stroke styley
 
     /// Specifies the fill color to use inside shapes.
     pub fn set_fill_style(&mut self, fill_style: Brush) {
@@ -323,23 +336,24 @@ impl RenderContext2D {
     // Canvas states
 
     /// Saves the entire state of the canvas by pushing the current state onto a stack.
-    pub fn save(&mut self) {}
+    pub fn save(&mut self) {
+        self.saved_config = Some(self.config.clone());
+    }
 
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
-    pub fn restore(&mut self) {}
+    pub fn restore(&mut self) {
+        if let Some(config) = &self.saved_config {
+            self.config = config.clone();
+        }
 
-    pub fn clear(&mut self, brush: &Brush) {}
+        self.saved_config = None;
+    }
 
-    // pub fn data(&self) -> &[u32] {
-
-    // }
-
-    // pub fn data_mut(&mut self) -> &mut [u32] {
-
-    // }
-
-    // pub fn data_u8_mut(&mut self) -> &mut [u8] {
-    // }
+    pub fn clear(&mut self, brush: &Brush) {
+        let size = self.size;
+        self.set_fill_style(brush.clone());
+        self.canvas().clear_rect(RectF::new(Vector2F::new(0.0, 0.0), Vector2F::new(size.0 as f32, size.1 as f32)));
+    }
 
     pub fn start(&mut self) {
         self.canvas.clear();

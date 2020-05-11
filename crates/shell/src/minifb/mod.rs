@@ -12,9 +12,6 @@ pub use super::native::*;
 
 use minifb;
 
-#[cfg(not(target_os = "redox"))]
-use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
-
 use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {}
@@ -139,16 +136,6 @@ where
     request_sender: Sender<ShellRequest>,
 }
 
-#[cfg(not(target_os = "redox"))]
-unsafe impl<A> HasRawWindowHandle for Shell<A>
-where
-    A: ShellAdapter,
-{
-    fn raw_window_handle(&self) -> RawWindowHandle {
-        self.window.raw_window_handle()
-    }
-}
-
 impl<A> Shell<A>
 where
     A: ShellAdapter,
@@ -165,9 +152,6 @@ where
 
         Shell {
             window,
-            // window_size: window_size,
-            // mouse_buttons: (false, false, false),
-            // mouse_position: Point::default(),
             render_context_2_d,
             adapter,
             mouse_pos: (0.0, 0.0),
@@ -513,5 +497,131 @@ where
         window.set_position(self.bounds.x as isize, self.bounds.y as isize);
 
         Shell::new(window, self.adapter, key_events)
+    }
+}
+
+pub struct WindowBuilder<'a, A>
+where
+    A: ShellAdapter,
+{
+    shell: &'a mut AShell<A>,
+
+    adapter: A,
+
+    title: String,
+
+    resizeable: bool,
+
+    always_on_top: bool,
+
+    borderless: bool,
+
+    bounds: Rectangle,
+}
+
+impl<'a, A> WindowBuilder<'a, A>
+where
+    A: ShellAdapter,
+{
+    /// Sets the title.
+    pub fn title(mut self, title: impl Into<String>) -> Self {
+        self.title = title.into();
+        self
+    }
+
+    /// Sets borderless.
+    pub fn borderless(mut self, borderless: bool) -> Self {
+        self.borderless = borderless;
+        self
+    }
+
+    /// Sets resizeable.
+    pub fn resizeable(mut self, resizeable: bool) -> Self {
+        self.resizeable = resizeable;
+        self
+    }
+
+    /// Sets always_on_top.
+    pub fn always_on_top(mut self, always_on_top: bool) -> Self {
+        self.always_on_top = always_on_top;
+        self
+    }
+
+    /// Sets the bounds.
+    pub fn bounds(mut self, bounds: impl Into<Rectangle>) -> Self {
+        self.bounds = bounds.into();
+        self
+    }
+
+    pub fn build(mut self) {
+        let window_options = minifb::WindowOptions {
+            resize: self.resizeable,
+            topmost: self.always_on_top,
+            borderless: self.borderless,
+            title: !self.borderless,
+            scale_mode: minifb::ScaleMode::UpperLeft,
+            ..Default::default()
+        };
+
+        let mut window = minifb::Window::new(
+            self.title.as_str(),
+            self.bounds.width as usize,
+            self.bounds.height as usize,
+            window_options,
+        )
+        .unwrap_or_else(|e| {
+            panic!("{}", e);
+        });
+
+        // Limit to max ~60 fps update rate
+        window.limit_update_rate(Some(Duration::from_micros(64000)));
+
+        let key_events = Rc::new(RefCell::new(vec![]));
+
+        window.set_input_callback(Box::new(KeyInputCallBack {
+            key_events: key_events.clone(),
+        }));
+
+        window.set_position(self.bounds.x as isize, self.bounds.y as isize);
+
+        self.shell.window_adapters.push((window, self.adapter));
+    }
+}
+
+pub struct AShell<A>
+where
+    A: ShellAdapter,
+{
+    window_adapters: Vec<(minifb::Window, A)>,
+}
+
+impl<A> AShell<A>
+where
+    A: ShellAdapter,
+{
+    pub fn new() -> Self {
+        AShell {
+            window_adapters: vec![],
+        }
+    }
+
+    pub fn create_window(&mut self, adapter: A) -> WindowBuilder<A> {
+        WindowBuilder {
+            shell: self,
+            adapter,
+            title: String::default(),
+            borderless: false,
+            resizeable: false,
+            always_on_top: false,
+            bounds: Rectangle::new(0.0, 0.0, 100.0, 100.0),
+        }
+    }
+
+    pub fn run(mut self) {
+        loop {
+            if self.window_adapters.is_empty() {
+                return;
+            }
+        }
     }
 }

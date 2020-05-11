@@ -35,20 +35,6 @@ where
     window_size: (f64, f64),
 }
 
-// unsafe impl<A> HasRawWindowHandle for Shell<A>
-// where
-//     A: ShellAdapter,
-// {
-//     fn raw_window_handle(&self) -> RawWindowHandle {
-//         // let handle = WebHandle {
-//         //     id: 0,
-//         //     ..WebHandle::empty()
-//         // };
-
-//         // RawWindowHandle::N
-//     }
-// }
-
 impl<A> Shell<A>
 where
     A: ShellAdapter,
