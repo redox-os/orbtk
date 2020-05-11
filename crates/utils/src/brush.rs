@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 /// Describes a position on a colorful gradient.
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub struct LinearGradientStop {
     pub position: f64,
     pub color: Color,

@@ -211,12 +211,6 @@ where
         self.request_sender.clone()
     }
 
-    /// Sets the background color of the window.
-    pub fn set_background_color(&mut self, red: u8, green: u8, blue: u8) {
-        self.window
-            .set_background_color(red as usize, green as usize, blue as usize);
-    }
-
     /// Sets running.
     pub fn set_running(&mut self, running: bool) {
         self.running = running;
@@ -359,7 +353,7 @@ where
             match request {
                 ShellRequest::Update => {
                     update = true;
-                },
+                }
                 _ => {}
             }
         }
@@ -396,13 +390,11 @@ where
 
     pub fn run(mut self) {
         loop {
-            if !self.running() || !self.window.is_open()
-            {
+            if !self.running() || !self.window.is_open() {
                 break;
             }
 
             // CONSOLE.time("complete run");
- 
             self.adapter.run(&mut self.render_context_2_d);
             if self.update() {
                 self.set_update(false);

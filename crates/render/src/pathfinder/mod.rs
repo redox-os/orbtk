@@ -59,6 +59,28 @@ impl RenderContext2D {
         }
     }
 
+    fn canvas(&mut self) -> &mut CanvasRenderingContext2D {
+        self.canvas.get_mut(0).unwrap()
+    }
+
+    /// Set the background of the render context.
+    pub fn set_background(&mut self, background: Color) {
+        if let Some(renderer) = &mut self.renderer {
+            renderer.set_options(RendererOptions {
+                background_color: Some(
+                    ColorU::new(
+                        background.r(),
+                        background.g(),
+                        background.b(),
+                        background.a(),
+                    )
+                    .to_f32(),
+                ),
+                ..RendererOptions::default()
+            })
+        }
+    }
+
     pub fn new_ex(size: (f64, f64), renderer: Renderer<GLDevice>) -> Self {
         let font_context = CanvasFontContext::from_system_source();
         RenderContext2D {
@@ -72,7 +94,22 @@ impl RenderContext2D {
         }
     }
 
-    pub fn resize(&mut self, width: f64, height: f64) {}
+    pub fn resize(&mut self, width: f64, height: f64) {
+        if let Some(renderer) = &mut self.renderer {
+            renderer.replace_dest_framebuffer(DestFramebuffer::full_window(vec2i(
+                width as i32,
+                height as i32,
+            )));
+        }
+
+        if let Some(font_context) = &self.font_context {
+            self.canvas.clear();
+            self.canvas.push(
+                Canvas::new(Vector2F::new(width as f32, height as f32))
+                    .get_context_2d(font_context.clone()),
+            )
+        }
+    }
 
     /// Registers a new font file.
     pub fn register_font(&mut self, family: &str, font_file: &'static [u8]) {}
@@ -81,7 +118,7 @@ impl RenderContext2D {
 
     /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.canvas.get_mut(0).unwrap().fill_rect(RectF::new(
+        self.canvas().fill_rect(RectF::new(
             Vector2F::new(x as f32, y as f32),
             Vector2F::new(width as f32, height as f32),
         ));
@@ -89,7 +126,7 @@ impl RenderContext2D {
 
     /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other ctx settings.
     pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.canvas.get_mut(0).unwrap().stroke_rect(RectF::new(
+        self.canvas().stroke_rect(RectF::new(
             Vector2F::new(x as f32, y as f32),
             Vector2F::new(width as f32, height as f32),
         ));
@@ -99,10 +136,7 @@ impl RenderContext2D {
 
     /// Draws (fills) a given text at the given (x, y) position.
     pub fn fill_text(&mut self, text: &str, x: f64, y: f64) {
-        self.canvas
-            .get_mut(0)
-            .unwrap()
-            .fill_text(text, vec2f(x as f32, y as f32));
+        self.canvas().fill_text(text, vec2f(x as f32, y as f32));
     }
 
     pub fn measure(
@@ -111,36 +145,32 @@ impl RenderContext2D {
         font_size: f64,
         family: impl Into<String>,
     ) -> TextMetrics {
-        let t_m = self.canvas.get_mut(0).unwrap().measure_text(text);
+        let t_m = self.canvas().measure_text(text);
         TextMetrics {
             width: t_m.width as f64,
-            height: t_m.em_height_ascent as f64
+            height: t_m.em_height_ascent as f64,
         }
     }
 
     /// Returns a TextMetrics object.
     pub fn measure_text(&mut self, text: &str) -> TextMetrics {
-        let t_m = self.canvas.get_mut(0).unwrap().measure_text(text);
+        let t_m = self.canvas().measure_text(text);
         TextMetrics {
             width: t_m.width as f64,
-            height: t_m.em_height_ascent as f64
+            height: t_m.em_height_ascent as f64,
         }
     }
 
     /// Fills the current or given path with the current file style.
     pub fn fill(&mut self) {
-        self.canvas
-            .get_mut(0)
-            .unwrap()
-            .fill_path(self.path.clone(), FillRule::Winding);
+        let path = self.path.clone();
+        self.canvas().fill_path(path, FillRule::Winding);
     }
 
     /// Strokes {outlines} the current or given path with the current stroke style.
     pub fn stroke(&mut self) {
-        self.canvas
-            .get_mut(0)
-            .unwrap()
-            .stroke_path(self.path.clone());
+        let path = self.path.clone();
+        self.canvas().stroke_path(path);
     }
 
     /// Starts a new path by emptying the list of sub-paths. Call this when you want to create a new path.
@@ -235,7 +265,7 @@ impl RenderContext2D {
 
     /// Specifies the font size.
     pub fn set_font_size(&mut self, size: f64) {
-        self.canvas.get_mut(0).unwrap().set_font_size(size as f32);
+        self.canvas().set_font_size(size as f32);
     }
 
     // Fill and stroke style
@@ -321,6 +351,7 @@ impl RenderContext2D {
             )
         }
     }
+
     pub fn finish(&mut self) {
         let canvas = self.canvas.pop().unwrap();
 

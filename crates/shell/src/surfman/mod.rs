@@ -80,9 +80,6 @@ where
         self.update = update;
     }
 
-    /// Sets the background color of the window.
-    pub fn set_background_color(&mut self, red: u8, green: u8, blue: u8) {}
-
     /// Gets the shell adapter.
     pub fn adapter(&mut self) -> &mut A {
         &mut self.adapter

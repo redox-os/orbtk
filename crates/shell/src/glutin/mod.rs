@@ -6,12 +6,10 @@ use glutin::event_loop::{ControlFlow, EventLoop};
 use glutin::window::WindowBuilder;
 use glutin::{ContextBuilder, GlProfile, GlRequest};
 use pathfinder_color::ColorF;
-use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::{vec2f, vec2i};
 use pathfinder_gl::{GLDevice, GLVersion};
 use pathfinder_renderer::gpu::options::{DestFramebuffer, RendererOptions};
 use pathfinder_renderer::gpu::renderer::Renderer;
-use pathfinder_renderer::options::BuildOptions;
 use pathfinder_resources::embedded::EmbeddedResourceLoader;
 
 pub use super::native::*;
@@ -19,8 +17,6 @@ pub use super::native::*;
 use crate::{prelude::*, render::*, utils::*};
 
 pub fn initialize() {}
-
-use std::marker::PhantomData;
 
 /// Concrete implementation of the window shell.
 pub struct Shell<A: 'static>
@@ -36,6 +32,7 @@ where
     render_context_2_d: RenderContext2D,
     window_builder: WindowBuilder,
     mouse_pos: (f64, f64),
+    window_size: (f64, f64),
 }
 
 // unsafe impl<A> HasRawWindowHandle for Shell<A>
@@ -80,10 +77,7 @@ where
     pub fn set_update(&mut self, update: bool) {
         self.update = update;
     }
-
-    /// Sets the background color of the window.
-    pub fn set_background_color(&mut self, red: u8, green: u8, blue: u8) {}
-
+    
     /// Gets the shell adapter.
     pub fn adapter(&mut self) -> &mut A {
         &mut self.adapter
@@ -101,6 +95,7 @@ where
                 ..
             } => {
                 self.adapter.resize(s.width as f64, s.height as f64);
+                self.render_context_2_d().resize(s.width as f64, s.height as f64);
                 self.update = true;
                 *control_flow = ControlFlow::Wait;
             }
@@ -180,7 +175,7 @@ where
         // Open a window.
         // Calculate the right logical size of the window.
         let event_loop = EventLoop::new();
-        let window_size = vec2i(600, 480);
+        let window_size = vec2i(self.window_size.0 as i32, self.window_size.1 as i32);
 
         // Create an OpenGL 3.x context for Pathfinder to use.
         let gl_context = ContextBuilder::new()
@@ -205,7 +200,7 @@ where
         );
 
         self.render_context_2_d =
-            RenderContext2D::new_ex((600 as f64, 400 as f64), renderer);
+            RenderContext2D::new_ex(self.window_size, renderer);
 
         // Wait for a keypress.
         event_loop.run(move |event, _, control_flow| {
@@ -294,9 +289,9 @@ where
 
         // Calculate the right logical size of the window.
         // let event_loop = EventLoop::new();
-        let size = (self.bounds.width(), self.bounds.height());
+        let window_size = (self.bounds.width(), self.bounds.height());
 
-        let logical_size = PhysicalSize::new(size.0, size.1);
+        let logical_size = PhysicalSize::new(window_size.0, window_size.1);
         // Open a window.
         let window_builder = WindowBuilder::new()
             .with_inner_size(logical_size)
@@ -311,10 +306,11 @@ where
             running: true,
             request_receiver,
             request_sender,
-            render_context_2_d: RenderContext2D::new(size.0, size.1),
+            render_context_2_d: RenderContext2D::new(window_size.0, window_size.1),
             adapter: self.adapter,
             window_builder,
             mouse_pos: (0.0, 0.0),
+            window_size
         }
     }
 }

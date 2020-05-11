@@ -20,6 +20,7 @@ impl PartialEq for PipelineWrapper {
 enum RenderTask {
     // Single tasks
     Start(),
+    SetBackground(Color),
     Resize {
         width: f64,
         height: f64,
@@ -158,6 +159,7 @@ struct RenderWorker {
 fn is_single_tasks(task: &RenderTask) -> bool {
     match task {
         RenderTask::Start() => true,
+        RenderTask::SetBackground(_) => true,
         RenderTask::Resize { .. } => true,
         RenderTask::RegisterFont { .. } => true,
         RenderTask::DrawRenderTarget { .. } => true,
@@ -190,6 +192,11 @@ impl RenderWorker {
                     match tasks.remove(0) {
                         RenderTask::Start() => {
                             tasks_collection.clear();
+                            render_context_2_d.start();
+                            continue;
+                        }
+                        RenderTask::SetBackground(background) => {
+                            render_context_2_d.set_background(background);
                             continue;
                         }
                         RenderTask::Resize { width, height } => {
@@ -408,6 +415,12 @@ impl RenderContext2D {
         }
     }
 
+    pub fn set_background(&mut self, background: Color) {
+        self.sender
+            .send(vec![RenderTask::SetBackground(background)])
+            .expect("Could not send set background to render thread.");
+    }
+
     // Sends a render task to the render thread.
     fn send_tasks(&mut self) {
         if !self.tasks.is_empty() {
@@ -422,7 +435,7 @@ impl RenderContext2D {
     pub fn start(&mut self) {
         self.sender
             .send(vec![RenderTask::Start()])
-            .expect("Could not send start ot render thread.");
+            .expect("Could not send start to render thread.");
     }
 
     /// Finishes the current render pipeline.

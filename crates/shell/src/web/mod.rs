@@ -140,17 +140,6 @@ where
         self.update = update;
     }
 
-    /// Sets the background color of the window.
-    pub fn set_background_color(&mut self, red: u8, green: u8, blue: u8) {
-        let width = self.canvas.width();
-        let height = self.canvas.height();
-
-        self.render_context_2_d()
-            .set_fill_style(Brush::SolidColor(Color::rgb(red, green, blue)));
-        self.render_context_2_d()
-            .fill_rect(0.0, 0.0, width.into(), height.into());
-    }
-
     /// Gets the shell adapter.
     pub fn adapter(&mut self) -> &mut A {
         &mut self.adapter

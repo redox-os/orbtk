@@ -32,14 +32,6 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
 
         let root = ecm.entity_store().root();
 
-        // sets the window background of the real window.
-        if let Ok(background) = ecm.component_store().get::<Brush>("background", root) {
-            if let Brush::SolidColor(color) = background {
-                // todo background
-                // shell.set_background_color(color.r(), color.g(), color.b());
-            }
-        };
-
         let theme = ecm
             .component_store()
             .get::<Theme>("theme", root)
