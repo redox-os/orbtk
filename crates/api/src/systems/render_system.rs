@@ -1,10 +1,8 @@
-use std::{collections::BTreeMap};
+use std::collections::BTreeMap;
 
-use dces::prelude::{ EntityComponentManager, System};
+use dces::prelude::{EntityComponentManager, System};
 
-use crate::{
-    css_engine::*, prelude::*, render::RenderContext2D, shell::CONSOLE, tree::Tree
-};
+use crate::{css_engine::*, prelude::*, render::RenderContext2D, shell::CONSOLE, tree::Tree};
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 #[derive(Constructor)]
@@ -54,6 +52,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
             &self.context_provider.handler_map,
             &self.context_provider.states,
             &self.context_provider.event_queue,
+            &self.context_provider.window_sender,
             &theme,
             &mut offsets,
             debug,

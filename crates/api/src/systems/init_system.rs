@@ -89,6 +89,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
                     new_states,
                     event_queue,
                     render_context,
+                    &self.context_provider.window_sender
                 );
 
                 if let Some(state) = self

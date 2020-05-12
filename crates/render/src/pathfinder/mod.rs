@@ -352,7 +352,10 @@ impl RenderContext2D {
     pub fn clear(&mut self, brush: &Brush) {
         let size = self.size;
         self.set_fill_style(brush.clone());
-        self.canvas().clear_rect(RectF::new(Vector2F::new(0.0, 0.0), Vector2F::new(size.0 as f32, size.1 as f32)));
+        self.canvas().clear_rect(RectF::new(
+            Vector2F::new(0.0, 0.0),
+            Vector2F::new(size.0 as f32, size.1 as f32),
+        ));
     }
 
     pub fn start(&mut self) {

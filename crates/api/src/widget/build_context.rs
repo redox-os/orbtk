@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, cell::RefCell, rc::Rc};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::{Component, ComponentBox, Entity, EntityComponentManager, SharedComponentBox};
 
@@ -127,7 +127,9 @@ impl<'a> BuildContext<'a> {
 
     /// Registers a render object with a widget.
     pub fn register_render_object(&mut self, widget: Entity, render_object: Box<dyn RenderObject>) {
-        self.render_objects.borrow_mut().insert(widget, render_object);
+        self.render_objects
+            .borrow_mut()
+            .insert(widget, render_object);
     }
 
     /// Registers an event handler with a widget.
@@ -136,7 +138,11 @@ impl<'a> BuildContext<'a> {
             self.handlers.borrow_mut().insert(widget, vec![]);
         }
 
-        self.handlers.borrow_mut().get_mut(&widget).unwrap().push(handler);
+        self.handlers
+            .borrow_mut()
+            .get_mut(&widget)
+            .unwrap()
+            .push(handler);
     }
 
     /// Registers a layout object with a widget.

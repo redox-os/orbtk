@@ -1,6 +1,6 @@
 use std::sync::mpsc::{channel, Receiver, Sender};
 
-use glutin::dpi::{PhysicalSize, LogicalSize};
+use glutin::dpi::{LogicalSize, PhysicalSize};
 use glutin::event::{self, Event, KeyboardInput, VirtualKeyCode, WindowEvent};
 use glutin::event_loop::{ControlFlow, EventLoop};
 use glutin::window::WindowBuilder;
@@ -63,7 +63,7 @@ where
     pub fn set_update(&mut self, update: bool) {
         self.update = update;
     }
-    
+
     /// Gets the shell adapter.
     pub fn adapter(&mut self) -> &mut A {
         &mut self.adapter
@@ -81,7 +81,8 @@ where
                 ..
             } => {
                 self.adapter.resize(s.width as f64, s.height as f64);
-                self.render_context_2_d().resize(s.width as f64, s.height as f64);
+                self.render_context_2_d()
+                    .resize(s.width as f64, s.height as f64);
                 self.update = true;
                 *control_flow = ControlFlow::Wait;
             }
@@ -153,7 +154,7 @@ where
                 self.render = true;
                 *control_flow = ControlFlow::Wait;
             }
-            _ => *control_flow = ControlFlow::Wait
+            _ => *control_flow = ControlFlow::Wait,
         }
     }
 
@@ -185,8 +186,7 @@ where
             },
         );
 
-        self.render_context_2_d =
-            RenderContext2D::new_ex(self.window_size, renderer);
+        self.render_context_2_d = RenderContext2D::new_ex(self.window_size, renderer);
 
         // Wait for a keypress.
         event_loop.run(move |event, _, control_flow| {
@@ -296,7 +296,7 @@ where
             adapter: self.adapter,
             window_builder,
             mouse_pos: (0.0, 0.0),
-            window_size
+            window_size,
         }
     }
 }

@@ -1,8 +1,8 @@
 //! This module contains all render objects used in OrbTk. Render objects are used to define how to draw parts of a widget.
 
-use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc, sync::mpsc};
 
-use crate::{css_engine::*, prelude::*, render::RenderContext2D, utils::*};
+use crate::{css_engine::*, prelude::*, render::RenderContext2D, utils::*, shell::WindowRequest};
 
 pub use self::default::*;
 pub use self::font_icon::*;
@@ -29,6 +29,7 @@ pub trait RenderObject: Any {
         handlers: &Rc<RefCell<EventHandlerMap>>,
         states: &Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
         event_queue: &Rc<RefCell<EventQueue>>,
+        window_sender: &mpsc::Sender<WindowRequest>,
         theme: &ThemeValue,
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,
@@ -84,7 +85,8 @@ pub trait RenderObject: Any {
                 states,
                 &mut BTreeMap::new(),
                 event_queue,
-                render_context
+                render_context,
+                window_sender
             ),
             &global_position,
         );
@@ -116,6 +118,7 @@ pub trait RenderObject: Any {
             handlers,
             states,
             event_queue,
+            window_sender,
             theme,
             offsets,
             debug,
@@ -157,6 +160,7 @@ pub trait RenderObject: Any {
         handlers: &Rc<RefCell<EventHandlerMap>>,
         states: &Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
         event_queue: &Rc<RefCell<EventQueue>>,
+        window_sender: &mpsc::Sender<WindowRequest>,
         theme: &ThemeValue,
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,
@@ -174,6 +178,7 @@ pub trait RenderObject: Any {
                     handlers,
                     states,
                     event_queue,
+                    window_sender,
                     theme,
                     offsets,
                     debug,

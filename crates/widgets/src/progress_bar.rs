@@ -6,12 +6,14 @@ static ID_INDICATOR: &'static str = "PGBAR_INDICATOR";
 
 #[derive(Default, AsAny)]
 struct BarState {
-    indicator: Entity
+    indicator: Entity,
 }
 
 impl State for BarState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        self.indicator = ctx.entity_of_child(ID_INDICATOR).expect("BarState.init(): Child could not be found!");
+        self.indicator = ctx
+            .entity_of_child(ID_INDICATOR)
+            .expect("BarState.init(): Child could not be found!");
 
         ctx.get_widget(self.indicator)
             .get_mut::<Constraint>("constraint")
@@ -22,7 +24,7 @@ impl State for BarState {
         let val = ctx.widget().clone_or_default::<f64>("val");
         let max_width = ctx.widget().get::<Rectangle>("bounds").width();
         let new_width = calculate_width(val, max_width);
-        
+
         ctx.get_widget(self.indicator)
             .get_mut::<Constraint>("constraint")
             .set_width(new_width);
@@ -49,17 +51,17 @@ widget!(
     /// A progress is visually represented as a horizontal bar which grows when the progress advances.
     /// The ProgressBar expects values between 0.0 and 1.0, whereas 0.0 means 0%, and 1.0 means 100%.
     /// Any value outside of this range cosidered as 100%.
-    /// 
+    ///
     /// This example creates a ProgressBar with default values:
     /// ```rust
     /// ProgressBar::create().build(ctx)
     /// ```
-    /// 
+    ///
     /// The next example creates a ProgressBar initialized with 25% progress:
     /// ```rust
     /// ProgressBar::create().val(0.25).build(ctx)
     /// ```
-    /// 
+    ///
     /// The progress can be controlled by changing the value of the `val` property.
     /// (this code assumes that you have a children with id "pgbar")
     /// ```rust
@@ -112,7 +114,6 @@ impl Template for ProgressBar {
         Box::new(PaddingLayout::new())
     }
 }
-
 
 #[cfg(test)]
 mod tests {

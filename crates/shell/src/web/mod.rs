@@ -298,7 +298,7 @@ where
             match request {
                 ShellRequest::Update => {
                     update = true;
-                },
+                }
                 _ => {}
             }
         }
@@ -322,7 +322,6 @@ where
     }
 
     pub fn run(mut self) {
-       
         window().request_animation_frame(move |_| {
             self.adapter.run(&mut self.render_context_2_d);
             self.set_update(false);

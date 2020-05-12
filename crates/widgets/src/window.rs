@@ -1,6 +1,6 @@
 use std::{collections::VecDeque, rc::Rc};
 
-use crate::prelude::*;
+use crate::{prelude::*, shell::WindowRequest};
 
 // --- KEYS --
 
@@ -19,6 +19,7 @@ enum Action {
 struct WindowState {
     actions: VecDeque<Action>,
     background: Brush,
+    title: String
 }
 
 impl WindowState {
@@ -91,7 +92,7 @@ impl WindowState {
         match background {
             Brush::SolidColor(color) => {
                 ctx.render_context_2_d().set_background(color);
-            },
+            }
             _ => {}
         };
         self.background = background;
@@ -101,11 +102,17 @@ impl WindowState {
 impl State for WindowState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.set_background(ctx);
+        self.title = ctx.widget().clone("title");
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if self.background != *ctx.widget().get("background") {
-           self.set_background(ctx);
+            self.set_background(ctx);
+        }
+
+        if !self.title.eq(ctx.widget().get::<String>("title")) {
+            self.title = ctx.widget().clone("title");
+            ctx.send_window_request(WindowRequest::ChangeTitle(self.title.clone()));
         }
 
         if let Some(action) = self.actions.pop_front() {

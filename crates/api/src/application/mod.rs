@@ -1,6 +1,6 @@
 //! This module contains the base elements of an OrbTk application (Application, WindowBuilder and Window).
 
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, rc::Rc, sync::mpsc};
 
 use dces::prelude::{Entity, World};
 
@@ -15,12 +15,12 @@ use crate::{
 pub use self::context_provider::*;
 pub use self::global::*;
 pub use self::overlay::*;
-pub use self::shell_adapter::*;
+pub use self::window_adapter::*;
 
 mod context_provider;
 mod global;
 mod overlay;
-mod shell_adapter;
+mod window_adapter;
 
 /// The `Application` represents the entry point of an OrbTk based application.
 pub struct Application {
@@ -39,7 +39,7 @@ impl Application {
     pub fn from_name(name: impl Into<Box<str>>) -> Self {
         Application {
             name: name.into(),
-            shell: Shell::new(), // shells: vec![],
+            shell: Shell::new(),
         }
     }
 
@@ -48,8 +48,21 @@ impl Application {
         let mut world: World<Tree, StringComponentStore, RenderContext2D> =
             World::from_stores(Tree::default(), StringComponentStore::default());
 
+        let (sender, receiver) = mpsc::channel();
+
         let registry = Rc::new(RefCell::new(Registry::new()));
-        let context_provider = ContextProvider::new();
+
+        if self.name.is_empty() {
+            registry
+                .borrow_mut()
+                .register("settings", Settings::default());
+        } else {
+            registry
+                .borrow_mut()
+                .register("settings", Settings::new(&*self.name));
+        };
+
+        let context_provider = ContextProvider::new(sender);
 
         let theme = crate::theme::default_theme();
 
@@ -185,6 +198,7 @@ impl Application {
                 crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
             )
             .always_on_top(always_on_top)
+            .request_receiver(receiver)
             .build();
 
         self

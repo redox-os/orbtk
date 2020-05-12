@@ -29,7 +29,7 @@ extern crate lazy_static;
 
 pub mod event;
 pub mod prelude;
-pub mod window;
+pub mod window_adapter;
 
 pub use orbtk_utils::prelude as utils;
 
@@ -37,7 +37,11 @@ pub use orbtk_utils::prelude as utils;
 #[path = "glutin/mod.rs"]
 pub mod platform;
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "default", not(feature = "pfinder")))]
+#[cfg(all(
+    not(target_arch = "wasm32"),
+    feature = "default",
+    not(feature = "pfinder")
+))]
 #[path = "minifb/mod.rs"]
 pub mod platform;
 

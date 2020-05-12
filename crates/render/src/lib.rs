@@ -13,14 +13,26 @@ pub mod platform;
 #[cfg(any(target_arch = "wasm32", feature = "pfinder"))]
 pub use self::platform::*;
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "default", not(feature = "pfinder")))]
+#[cfg(all(
+    not(target_arch = "wasm32"),
+    feature = "default",
+    not(feature = "pfinder")
+))]
 #[path = "raqote/mod.rs"]
 pub mod platform;
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "default", not(feature = "pfinder")))]
+#[cfg(all(
+    not(target_arch = "wasm32"),
+    feature = "default",
+    not(feature = "pfinder")
+))]
 pub mod concurrent;
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "default", not(feature = "pfinder")))]
+#[cfg(all(
+    not(target_arch = "wasm32"),
+    feature = "default",
+    not(feature = "pfinder")
+))]
 pub use self::concurrent::*;
 
 #[cfg(target_arch = "wasm32")]

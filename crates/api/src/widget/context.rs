@@ -1,9 +1,9 @@
-use std::{collections::BTreeMap, cell::RefCell, sync::mpsc::Sender};
+use std::{cell::RefCell, collections::BTreeMap, sync::mpsc};
 
 use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
-    css_engine::*, prelude::*, render::RenderContext2D, render::*, shell::ShellRequest, tree::Tree,
+    css_engine::*, prelude::*, render::RenderContext2D, shell::WindowRequest, tree::Tree,
 };
 
 use super::WidgetContainer;
@@ -21,6 +21,7 @@ pub struct Context<'a> {
     remove_widget_list: Vec<Entity>,
     event_queue: &'a RefCell<EventQueue>,
     render_context: &'a mut RenderContext2D,
+    window_sender: &'a mpsc::Sender::<WindowRequest>
 }
 
 impl<'a> Drop for Context<'a> {
@@ -44,6 +45,7 @@ impl<'a> Context<'a> {
         new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
         event_queue: &'a RefCell<EventQueue>,
         render_context: &'a mut RenderContext2D,
+        window_sender: &'a mpsc::Sender::<WindowRequest>
     ) -> Self {
         Context {
             entity: ecs.0,
@@ -57,6 +59,7 @@ impl<'a> Context<'a> {
             remove_widget_list: vec![],
             event_queue,
             render_context,
+            window_sender
         }
     }
 
@@ -384,13 +387,16 @@ impl<'a> Context<'a> {
 
     /// Pushes an event to the event queue with the given `strategy`.
     pub fn push_event_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
-        self.event_queue.borrow_mut()
+        self.event_queue
+            .borrow_mut()
             .register_event_with_strategy(event, strategy, self.entity);
     }
 
     /// Pushes an event to the event queue.
     pub fn push_event<E: Event>(&mut self, event: E) {
-        self.event_queue.borrow_mut().register_event(event, self.entity);
+        self.event_queue
+            .borrow_mut()
+            .register_event(event, self.entity);
     }
 
     /// Pushes an event to the event queue.
@@ -400,7 +406,8 @@ impl<'a> Context<'a> {
 
     /// Pushes an event to the event queue.
     pub fn push_event_by_window<E: Event>(&mut self, event: E) {
-        self.event_queue.borrow_mut()
+        self.event_queue
+            .borrow_mut()
             .register_event(event, self.ecm.entity_store().root());
     }
 
@@ -411,7 +418,8 @@ impl<'a> Context<'a> {
         entity: Entity,
         strategy: EventStrategy,
     ) {
-        self.event_queue.borrow_mut()
+        self.event_queue
+            .borrow_mut()
             .register_event_with_strategy(event, strategy, entity);
     }
 
@@ -420,10 +428,10 @@ impl<'a> Context<'a> {
         self.render_context
     }
 
-    // /// Gets a new sender to send request to the window shell.
-    // pub fn request_sender(&self) -> Sender<ShellRequest> {
-    //     self.window_shell.request_sender()
-    // }
+    /// Gets a new sender that allows to communicate with the window shell.
+    pub fn send_window_request(&self, request: WindowRequest)  {
+        self.window_sender.send(request).expect("Context::send_window_request: could not send request to window.");
+    }
 
     /// Returns a keys collection of new added states.
     pub fn new_states_keys(&self) -> Vec<Entity> {
@@ -433,7 +441,7 @@ impl<'a> Context<'a> {
 
 // -- Helpers --
 
-/// Finds th parent of the `target_child`. The parent of the `target_child` must be the given `parent` or 
+/// Finds th parent of the `target_child`. The parent of the `target_child` must be the given `parent` or
 /// a child of the given parent.
 pub fn find_parent(tree: &Tree, target_child: Entity, parent: Entity) -> Option<Entity> {
     if tree.children[&parent].contains(&target_child) {

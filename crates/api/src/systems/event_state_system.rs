@@ -39,6 +39,7 @@ impl EventStateSystem {
                 new_states,
                 event_queue,
                 render_context,
+                &self.context_provider.window_sender
             );
 
             if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
@@ -376,7 +377,12 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                 let mut skip = false;
 
                 {
-                    if !self.context_provider.states.borrow().contains_key(&current_node) {
+                    if !self
+                        .context_provider
+                        .states
+                        .borrow()
+                        .contains_key(&current_node)
+                    {
                         skip = true;
                     }
 
@@ -391,7 +397,6 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                             let states = &self.context_provider.states;
                             let registry = &mut self.registry.borrow_mut();
                             let new_states = &mut BTreeMap::new();
-                         
 
                             let mut ctx = Context::new(
                                 (current_node, ecm),
@@ -403,9 +408,15 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                                 new_states,
                                 event_queue,
                                 render_context,
+                                &self.context_provider.window_sender
                             );
 
-                            if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&current_node) {
+                            if let Some(state) = self
+                                .context_provider
+                                .states
+                                .borrow_mut()
+                                .get_mut(&current_node)
+                            {
                                 state.update(registry, &mut ctx);
                             }
 
@@ -426,8 +437,11 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                                     new_states,
                                     event_queue,
                                     render_context,
+                                    &self.context_provider.window_sender
                                 );
-                                if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&key) {
+                                if let Some(state) =
+                                    self.context_provider.states.borrow_mut().get_mut(&key)
+                                {
                                     state.init(registry, &mut ctx);
                                 }
 

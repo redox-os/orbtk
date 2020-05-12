@@ -1,1 +1,6 @@
-pub use crate::{event::*, platform::{Shell, CONSOLE, initialize}, window::*, ShellRequest, WindowRequest};
+pub use crate::{
+    event::*,
+    platform::{initialize, Shell, CONSOLE},
+    window_adapter::*,
+    ShellRequest, WindowRequest,
+};

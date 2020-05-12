@@ -22,5 +22,5 @@ pub struct WindowState {
 #[derive(Constructor)]
 pub struct KeyState {
     pub minifb_key: minifb::Key,
-    pub key: Key
+    pub key: Key,
 }

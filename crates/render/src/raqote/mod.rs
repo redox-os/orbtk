@@ -443,7 +443,7 @@ impl RenderContext2D {
     }
 
     pub fn start(&mut self) {
-       self.clear(&Brush::from(self.background));
+        self.clear(&Brush::from(self.background));
     }
     pub fn finish(&mut self) {}
 }

@@ -18,7 +18,7 @@ pub struct RenderContext2D {
     config: RenderConfig,
     saved_config: Option<RenderConfig>,
     export_data: Vec<u32>,
-    background: Color
+    background: Color,
 }
 
 impl RenderContext2D {
@@ -43,7 +43,7 @@ impl RenderContext2D {
             canvas_render_context_2_d: ctx,
             font_config: FontConfig::default(),
             export_data,
-            background: Color::default()
+            background: Color::default(),
         }
     }
 
@@ -67,7 +67,7 @@ impl RenderContext2D {
             canvas_render_context_2_d,
             font_config: FontConfig::default(),
             export_data,
-            background: Color::default()
+            background: Color::default(),
         }
     }
 
