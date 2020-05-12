@@ -69,6 +69,8 @@ where
                 state: ButtonState::Down,
                 text: String::default(),
             });
+
+            self.update = true;
         }
     }
 
@@ -82,6 +84,8 @@ where
                 state: ButtonState::Up,
                 text: String::default(),
             });
+
+            self.update = true;
         }
     }
 
@@ -166,6 +170,7 @@ where
         // keys
         while let Some(event) = self.key_events.borrow_mut().pop() {
             self.adapter.key_event(event);
+            self.update = true;
         }
 
         for i in 0..self.key_states.len() {
