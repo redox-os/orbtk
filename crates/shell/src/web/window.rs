@@ -1,10 +1,17 @@
-use std::{cell::RefCell, rc::Rc, sync::mpsc};
+use std::sync::mpsc;
+
+use stdweb::{
+    traits::*,
+    js,
+    unstable::TryInto,
+    web::{document, event, html_element::CanvasElement, CanvasRenderingContext2d, window},
+};
 
 use derive_more::Constructor;
 
-use super::CONSOLE;
+use super::EventState;
 use crate::{
-    event::{ButtonState, KeyEvent, MouseButton, MouseEvent},
+    event::{ButtonState, KeyEvent, MouseButton, MouseEvent, Key},
     render::RenderContext2D,
     window_adapter::WindowAdapter,
     WindowRequest,
@@ -18,13 +25,14 @@ where
     A: WindowAdapter,
 {
     adapter: A,
-    // render_context: RenderContext2D,
+    render_context: RenderContext2D,
     request_receiver: Option<mpsc::Receiver<WindowRequest>>,
-    // window_state: WindowState,
-    // mouse: MouseState,
+    event_state: EventState,
+    canvas: CanvasElement,
+    old_canvas: Option<CanvasElement>,
     update: bool,
     redraw: bool,
-    close: bool
+    close: bool,
 }
 
 impl<A> Window<A>
@@ -38,7 +46,149 @@ where
 
     /// Drain events and propagate the events to the adapter.
     pub fn drain_events(&mut self) {
-       
+        while let Some(event) = self.event_state.mouse_move_events.borrow_mut().pop() {
+            self.adapter
+                .mouse(event.client_x() as f64, event.client_y() as f64);
+            self.update = true;
+        }
+
+        while let Some(event) = self.event_state.mouse_down_events.borrow_mut().pop() {
+            self.adapter.mouse_event(MouseEvent {
+                x: event.client_x() as f64,
+                y: event.client_y() as f64,
+                button: get_mouse_button(event.button()),
+                state: ButtonState::Down,
+            });
+            self.update = true;
+        }
+
+        while let Some(event) = self.event_state.mouse_up_events.borrow_mut().pop() {
+            self.adapter.mouse_event(MouseEvent {
+                x: event.client_x() as f64,
+                y: event.client_y() as f64,
+                button: get_mouse_button(event.button()),
+                state: ButtonState::Up,
+            });
+            self.update = true;
+        }
+
+        while let Some(event) = self.event_state.scroll_events.borrow_mut().pop() {
+            self.adapter.scroll(event.delta_x(), event.delta_y());
+            self.update = true;
+        }
+
+        // todo tmp solution to map touch events to mouse vent
+        while let Some(event) = self.event_state.touch_start_events.borrow_mut().pop() {
+            self.adapter.mouse_event(MouseEvent {
+                x: event.changed_touches()[0].client_x() as f64,
+                y: event.changed_touches()[0].client_y() as f64,
+                button: MouseButton::Left,
+                state: ButtonState::Down,
+            });
+            self.update = true;
+        }
+
+        while let Some(event) = self.event_state.touch_end_events.borrow_mut().pop() {
+            self.adapter.mouse_event(MouseEvent {
+                x: event.changed_touches()[0].client_x() as f64,
+                y: event.changed_touches()[0].client_y() as f64,
+                button: MouseButton::Left,
+                state: ButtonState::Up,
+            });
+
+            self.update = true;
+        }
+
+        while let Some(event) = self.event_state.touch_move_events.borrow_mut().pop() {
+            self.adapter.mouse(
+                event.changed_touches()[0].client_x() as f64,
+                event.changed_touches()[0].client_y() as f64,
+            );
+            self.update = true;
+        }
+
+        while let Some(event) = self.event_state.key_down_events.borrow_mut().pop() {
+            let key = get_key(event.code().as_str(), event.key());
+
+            self.adapter.key_event(KeyEvent {
+                key: key.0,
+                state: ButtonState::Down,
+                text: key.1,
+            });
+            self.update = true;
+        }
+
+        while let Some(event) = self.event_state.key_up_events.borrow_mut().pop() {
+            let key = get_key(event.code().as_str(), event.key());
+
+            self.adapter.key_event(KeyEvent {
+                key: key.0,
+                state: ButtonState::Up,
+                text: key.1,
+            });
+            self.update = true;
+        }
+
+        while let Some(_) = self.event_state.resize_events.borrow_mut().pop() {
+            let window_size = (
+                window().inner_width() as f64,
+                window().inner_height() as f64,
+            );
+
+            let canvas: CanvasElement = document()
+                .create_element("canvas")
+                .unwrap()
+                .try_into()
+                .unwrap();
+
+            canvas.set_width(window_size.0 as u32);
+            canvas.set_height(window_size.1 as u32);
+
+            js! {
+                document.body.style.padding = 0;
+                document.body.style.margin = 0;
+                @{&canvas}.style.display = "block";
+                @{&canvas}.style.margin = "0";
+            }
+
+            let device_pixel_ratio = window().device_pixel_ratio();
+            let ctx: CanvasRenderingContext2d = canvas.get_context().unwrap();
+
+            let backing_store_ratio = js! {
+                var ctx = @{&ctx};
+                 return ctx.webkitBackingStorePixelRatio ||
+                     ctx.mozBackingStorePixelRatio ||
+                     ctx.msBackingStorePixelRatio ||
+                     ctx.oBackingStorePixelRatio ||
+                     ctx.backingStorePixelRatio || 1;
+            };
+
+            let ratio: f64 = js! {
+                return @{&device_pixel_ratio} / @{&backing_store_ratio};
+            }
+            .try_into()
+            .unwrap();
+
+            if device_pixel_ratio != backing_store_ratio {
+                let old_width = canvas.width();
+                let old_height = canvas.height();
+                canvas.set_width((old_width as f64 * ratio) as u32);
+                canvas.set_height((old_height as f64 * ratio) as u32);
+
+                js! {
+                    @{&canvas}.style.width = @{&old_width} + "px";
+                    @{&canvas}.style.height = @{&old_height} + "px";
+                }
+
+                ctx.scale(ratio, ratio);
+            }
+
+            self.render_context.set_canvas_render_context_2d(ctx);
+            self.adapter.resize(window_size.0, window_size.1);
+            self.old_canvas = Some(self.canvas.clone());
+            self.canvas = canvas;
+            self.update = true;
+        }
     }
 
     /// Receives window request from the application and handles them.
@@ -51,7 +201,7 @@ where
                         self.redraw = true;
                     }
                     WindowRequest::ChangeTitle(title) => {
-                        // todo: fix
+                        document().set_title(title.as_str());
                         self.update = true;
                         self.redraw = true;
                     }
@@ -68,13 +218,64 @@ where
         if !self.update {
             return;
         }
-        // self.adapter.run(&mut self.render_context);
+        self.adapter.run(&mut self.render_context);
         self.update = false;
         self.redraw = true;
     }
 
     /// Swaps the current frame buffer.
     pub fn render(&mut self) {
-      
+        if !self.redraw || !self.old_canvas.is_some() {
+            return;
+        }
+
+        document()
+            .body()
+            .unwrap()
+            .replace_child(&self.canvas, self.old_canvas.as_ref().unwrap())
+            .expect("Could not open document");
+
+        self.old_canvas = None;
+        self.redraw = false;
     }
 }
+
+// -- Helpers --
+
+fn get_mouse_button(button: event::MouseButton) -> MouseButton {
+    match button {
+        event::MouseButton::Wheel => MouseButton::Middle,
+        event::MouseButton::Right => MouseButton::Right,
+        _ => MouseButton::Left,
+    }
+}
+
+fn get_key(code: &str, key: String) -> (Key, String) {
+    let mut text = String::from("");
+
+    let code = match code {
+        "Backspace" => Key::Backspace,
+        "Delete" => Key::Delete,
+        "ControlLeft" | "ControlRight" => Key::Control,
+        "ShiftLeft" => Key::ShiftL,
+        "ShiftRight" => Key::ShiftR,
+        "AltLeft" => Key::Alt,
+        "AltRight" => Key::Alt,
+        "ArrowUp" => Key::Up,
+        "ArrowLeft" => Key::Left,
+        "ArrowRight" => Key::Right,
+        "ArrowDown" => Key::Down,
+        "Escape" => Key::Escape,
+        "Enter" => Key::Enter,
+        "OSLeft" | "OSRight" => Key::Home,
+        "CapsLock" => Key::CapsLock,
+        _ => {
+            text = key.clone();
+            Key::from(key.chars().next().unwrap())
+        }
+    };
+
+    (code, text)
+}
+
+// -- Helpers --
