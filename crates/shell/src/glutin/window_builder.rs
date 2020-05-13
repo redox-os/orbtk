@@ -1,30 +1,39 @@
 use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, time::Duration};
 
-use minifb;
+use glutin::{
+    dpi::{LogicalSize, PhysicalSize},
+    window, ContextBuilder, GlProfile, GlRequest,
+};
+use pathfinder_color::ColorF;
+use pathfinder_geometry::vector::{vec2f, vec2i};
+use pathfinder_gl::{GLDevice, GLVersion};
+use pathfinder_renderer::gpu::{
+    options::{DestFramebuffer, RendererOptions},
+    renderer::Renderer,
+};
+use pathfinder_resources::embedded::EmbeddedResourceLoader;
 
-use super::{KeyState, MouseState, Shell, Window, WindowState};
+use super::{Shell, Window};
+
 use crate::{
     event::{ButtonState, Key, KeyEvent},
     render::RenderContext2D,
     utils::Rectangle,
-    WindowRequest,
     window_adapter::WindowAdapter,
+    WindowRequest,
 };
 
 /// The `WindowBuilder` is used to construct a window shell for the minifb backend.
-pub struct WindowBuilder<'a, A>
+pub struct WindowBuilder<'a, A: 'static>
 where
     A: WindowAdapter,
 {
+    window_builder: window::WindowBuilder,
     shell: &'a mut Shell<A>,
     adapter: A,
-    title: String,
-    resizeable: bool,
-    always_on_top: bool,
-    borderless: bool,
     fonts: HashMap<String, &'static [u8]>,
+    request_receiver: Option<mpsc::Receiver<WindowRequest>>,
     bounds: Rectangle,
-    request_receiver: Option<mpsc::Receiver<WindowRequest>>
 }
 
 impl<'a, A> WindowBuilder<'a, A>
@@ -34,45 +43,46 @@ where
     /// Creates a new window builder.
     pub fn new(shell: &'a mut Shell<A>, adapter: A) -> Self {
         WindowBuilder {
+            window_builder: window::WindowBuilder::new(),
             shell,
             adapter,
-            title: String::default(),
-            resizeable: false,
-            always_on_top: false,
-            borderless: false,
             fonts: HashMap::new(),
-            bounds: Rectangle::new(0.0, 0.0, 100.0, 75.0),
             request_receiver: None,
+            bounds: Rectangle::default(),
         }
     }
 
     /// Sets the title.
     pub fn title(mut self, title: impl Into<String>) -> Self {
-        self.title = title.into();
+        self.window_builder = self.window_builder.with_title(title);
         self
     }
 
     /// Sets borderless.
     pub fn borderless(mut self, borderless: bool) -> Self {
-        self.borderless = borderless;
+        self.window_builder = self.window_builder.with_decorations(!borderless);
         self
     }
 
     /// Sets resizeable.
     pub fn resizeable(mut self, resizeable: bool) -> Self {
-        self.resizeable = resizeable;
+        self.window_builder = self.window_builder.with_resizable(resizeable);
         self
     }
 
     /// Sets always_on_top.
     pub fn always_on_top(mut self, always_on_top: bool) -> Self {
-        self.always_on_top = always_on_top;
+        self.window_builder = self.window_builder.with_always_on_top(always_on_top);
         self
     }
 
     /// Sets the bounds.
     pub fn bounds(mut self, bounds: impl Into<Rectangle>) -> Self {
         self.bounds = bounds.into();
+        let window_size = (self.bounds.width(), self.bounds.height());
+        let physical_size = PhysicalSize::new(window_size.0, window_size.1);
+
+        self.window_builder = self.window_builder.with_inner_size(physical_size);
         self
     }
 
@@ -90,121 +100,42 @@ where
 
     /// Builds the window shell and add it to the application `Shell`.
     pub fn build(self) {
-        let window_options = minifb::WindowOptions {
-            resize: self.resizeable,
-            topmost: self.always_on_top,
-            borderless: self.borderless,
-            title: !self.borderless,
-            scale_mode: minifb::ScaleMode::UpperLeft,
-            ..Default::default()
-        };
+        // Create an OpenGL 3.x context for Pathfinder to use.
+        let gl_context = ContextBuilder::new()
+            .with_gl(GlRequest::Latest)
+            .with_gl_profile(GlProfile::Core)
+            .build_windowed(self.window_builder, self.shell.event_loop())
+            .unwrap();
 
-        let mut window = minifb::Window::new(
-            self.title.as_str(),
-            self.bounds.width as usize,
-            self.bounds.height as usize,
-            window_options,
-        )
-        .unwrap_or_else(|e| {
-            panic!("{}", e);
-        });
+        // Load OpenGL, and make the context current.
+        let gl_context = unsafe { gl_context.make_current().unwrap() };
+        gl::load_with(|name| gl_context.get_proc_address(name) as *const _);
 
-        // Limit to max ~60 fps update rate
-        window.limit_update_rate(Some(Duration::from_micros(64000)));
+        let window_size = (self.bounds.width(), self.bounds.height());
 
-        let key_events = Rc::new(RefCell::new(vec![]));
+        let logical_size = PhysicalSize::new(window_size.0, window_size.1);
 
-        window.set_input_callback(Box::new(KeyInputCallBack {
-            key_events: key_events.clone(),
-        }));
+        // Create a Pathfinder renderer.
+        let mut renderer = Renderer::new(
+            GLDevice::new(GLVersion::GL3, 0),
+            &EmbeddedResourceLoader::new(),
+            DestFramebuffer::full_window(vec2i(window_size.0 as i32, window_size.1 as i32)),
+            RendererOptions {
+                background_color: Some(ColorF::white()),
+                ..RendererOptions::default()
+            },
+        );
 
-        window.set_position(self.bounds.x as isize, self.bounds.y as isize);
-
-        let mut render_context = RenderContext2D::new(self.bounds.width, self.bounds.height);
-
-        for (family, font) in self.fonts {
-            render_context.register_font(&family, font);
-        }
+        let render_context = RenderContext2D::new_ex(window_size, renderer);
 
         self.shell.window_shells.push(Window::new(
-            window,
+            gl_context,
             self.adapter,
             render_context,
             self.request_receiver,
-            WindowState::default(),
-            MouseState::default(),
             true,
             true,
             false,
-            vec![
-                KeyState::new(minifb::Key::Backspace, Key::Backspace),
-                KeyState::new(minifb::Key::Left, Key::Left),
-                KeyState::new(minifb::Key::Right, Key::Right),
-                KeyState::new(minifb::Key::Up, Key::Up),
-                KeyState::new(minifb::Key::Down, Key::Down),
-                KeyState::new(minifb::Key::Delete, Key::Delete),
-                KeyState::new(minifb::Key::Enter, Key::Enter),
-                KeyState::new(minifb::Key::LeftCtrl, Key::Control),
-                KeyState::new(minifb::Key::RightCtrl, Key::Control),
-                KeyState::new(minifb::Key::LeftShift, Key::ShiftL),
-                KeyState::new(minifb::Key::RightShift, Key::ShiftR),
-                KeyState::new(minifb::Key::LeftAlt, Key::Alt),
-                KeyState::new(minifb::Key::RightAlt, Key::Alt),
-                KeyState::new(minifb::Key::Escape, Key::Escape),
-                KeyState::new(minifb::Key::Home, Key::Home),
-                KeyState::new(minifb::Key::A, Key::A(false)),
-                KeyState::new(minifb::Key::C, Key::C(false)),
-                KeyState::new(minifb::Key::V, Key::V(false)),
-                KeyState::new(minifb::Key::X, Key::X(false)),
-            ],
-            key_events,
-        ));
+        ))
     }
 }
-
-// -- Helpers --
-
-// minifb key input helper
-struct KeyInputCallBack {
-    key_events: Rc<RefCell<Vec<KeyEvent>>>,
-}
-
-impl KeyInputCallBack {
-    fn uni_char_to_key_event(&mut self, uni_char: u32) {
-        let mut text = String::new();
-
-        let key = if let Some(character) = char::from_u32(uni_char) {
-            text = character.to_string();
-            Key::from(character)
-        } else {
-            Key::Unknown
-        };
-        if key == Key::Up
-            || key == Key::Down
-            || key == Key::Left
-            || key == Key::Right
-            || key == Key::Backspace
-            || key == Key::Control
-            || key == Key::Home
-            || key == Key::Escape
-            || key == Key::Delete
-            || key == Key::Unknown
-        {
-            return;
-        }
-
-        self.key_events.borrow_mut().push(KeyEvent {
-            key,
-            state: ButtonState::Down,
-            text,
-        });
-    }
-}
-
-impl minifb::InputCallback for KeyInputCallBack {
-    fn add_char(&mut self, uni_char: u32) {
-        self.uni_char_to_key_event(uni_char);
-    }
-}
-
-// -- Helpers --
