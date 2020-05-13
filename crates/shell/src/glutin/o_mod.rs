@@ -1,19 +1,16 @@
 use std::sync::mpsc::{channel, Receiver, Sender};
 
+use glutin::dpi::{LogicalSize, PhysicalSize};
+use glutin::event::{self, Event, KeyboardInput, VirtualKeyCode, WindowEvent};
+use glutin::event_loop::{ControlFlow, EventLoop};
+use glutin::window::WindowBuilder;
+use glutin::{ContextBuilder, GlProfile, GlRequest};
 use pathfinder_color::ColorF;
-use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::{vec2f, vec2i};
 use pathfinder_gl::{GLDevice, GLVersion};
 use pathfinder_renderer::gpu::options::{DestFramebuffer, RendererOptions};
 use pathfinder_renderer::gpu::renderer::Renderer;
-use pathfinder_renderer::options::BuildOptions;
 use pathfinder_resources::embedded::EmbeddedResourceLoader;
-use surfman::{
-    Connection, ContextAttributeFlags, ContextAttributes, GLVersion as SurfmanGLVersion,
-};
-use surfman::{SurfaceAccess, SurfaceType};
-use winit::dpi::LogicalSize;
-use winit::{ControlFlow, Event, EventsLoop, WindowBuilder, WindowEvent};
 
 pub use super::native::*;
 
@@ -22,7 +19,7 @@ use crate::{prelude::*, render::*, utils::*};
 pub fn initialize() {}
 
 /// Concrete implementation of the window shell.
-pub struct Shell<A>
+pub struct Shell<A: 'static>
 where
     A: WindowAdapter,
 {
@@ -35,21 +32,8 @@ where
     render_context_2_d: RenderContext2D,
     window_builder: WindowBuilder,
     mouse_pos: (f64, f64),
+    window_size: (f64, f64),
 }
-
-// unsafe impl<A> HasRawWindowHandle for Shell<A>
-// where
-//     A: WindowAdapter,
-// {
-//     fn raw_window_handle(&self) -> RawWindowHandle {
-//         // let handle = WebHandle {
-//         //     id: 0,
-//         //     ..WebHandle::empty()
-//         // };
-
-//         // RawWindowHandle::N
-//     }
-// }
 
 impl<A> Shell<A>
 where
@@ -90,45 +74,47 @@ where
         &mut self.render_context_2_d
     }
 
-    fn drain_events(&mut self, event: Event) -> ControlFlow {
+    fn drain_events(&mut self, event: Event<()>, control_flow: &mut ControlFlow) {
         match event {
             Event::WindowEvent {
                 event: WindowEvent::Resized(s),
                 ..
             } => {
-                self.adapter.resize(s.width, s.height);
+                self.adapter.resize(s.width as f64, s.height as f64);
+                self.render_context_2_d()
+                    .resize(s.width as f64, s.height as f64);
                 self.update = true;
-                ControlFlow::Continue
+                *control_flow = ControlFlow::Wait;
             }
             Event::WindowEvent {
                 event: WindowEvent::CloseRequested,
                 ..
             } => {
                 self.adapter.quit_event();
-                ControlFlow::Break
+                *control_flow = ControlFlow::Exit;
             }
             Event::WindowEvent {
                 event: WindowEvent::KeyboardInput { input, .. },
                 // todo: implement
                 ..
-            } => ControlFlow::Continue,
+            } => *control_flow = ControlFlow::Wait,
             Event::WindowEvent {
                 event: WindowEvent::MouseInput { state, button, .. },
                 ..
             } => {
                 let button = {
                     match button {
-                        winit::MouseButton::Left => MouseButton::Left,
-                        winit::MouseButton::Right => MouseButton::Right,
-                        winit::MouseButton::Middle => MouseButton::Middle,
-                        winit::MouseButton::Other(_) => MouseButton::Left,
+                        event::MouseButton::Left => MouseButton::Left,
+                        event::MouseButton::Right => MouseButton::Right,
+                        event::MouseButton::Middle => MouseButton::Middle,
+                        event::MouseButton::Other(_) => MouseButton::Left,
                     }
                 };
 
                 let state = {
                     match state {
-                        winit::ElementState::Pressed => ButtonState::Down,
-                        winit::ElementState::Released => ButtonState::Up,
+                        event::ElementState::Pressed => ButtonState::Down,
+                        event::ElementState::Released => ButtonState::Up,
                     }
                 };
 
@@ -142,21 +128,21 @@ where
                 });
                 self.update = true;
                 self.render = true;
-                ControlFlow::Continue
+                *control_flow = ControlFlow::Wait;
             }
             Event::WindowEvent {
                 event: WindowEvent::MouseWheel { delta, .. },
                 ..
             } => {
                 match delta {
-                    winit::MouseScrollDelta::LineDelta(_, _) => {}
-                    winit::MouseScrollDelta::PixelDelta(p) => {
+                    event::MouseScrollDelta::LineDelta(_, _) => {}
+                    event::MouseScrollDelta::PixelDelta(p) => {
                         self.adapter.scroll(p.x, p.y);
                     }
                 }
                 self.render = true;
                 self.update = true;
-                ControlFlow::Continue
+                *control_flow = ControlFlow::Wait;
             }
             Event::WindowEvent {
                 event: WindowEvent::CursorMoved { position, .. },
@@ -166,86 +152,45 @@ where
                 self.adapter.mouse(position.x, position.y);
                 self.update = true;
                 self.render = true;
-                ControlFlow::Continue
+                *control_flow = ControlFlow::Wait;
             }
-            _ => ControlFlow::Continue,
+            _ => *control_flow = ControlFlow::Wait,
         }
     }
 
     pub fn run(mut self) {
         // Open a window.
-        let mut event_loop = EventsLoop::new();
-        let size = self
-            .window_builder
-            .window
-            .dimensions
-            .unwrap_or(LogicalSize::new(100.0, 100.0));
+        // Calculate the right logical size of the window.
+        let event_loop = EventLoop::new();
+        let window_size = vec2i(self.window_size.0 as i32, self.window_size.1 as i32);
 
-        let logical_size = LogicalSize::new(size.width as f64, size.height as f64);
-
-        let window = self.window_builder.clone().build(&event_loop).unwrap();
-        window.show();
-
-        // Create a `surfman` device. On a multi-GPU system, we'll request the low-power integrated
-        // GPU.
-        let connection = Connection::from_winit_window(&window).unwrap();
-        let native_widget = connection
-            .create_native_widget_from_winit_window(&window)
-            .unwrap();
-        let adapter = connection.create_low_power_adapter().unwrap();
-        let mut device = connection.create_device(&adapter).unwrap();
-
-        // Request an OpenGL 3.x context. Pathfinder requires this.
-        let context_attributes = ContextAttributes {
-            version: SurfmanGLVersion::new(3, 0),
-            flags: ContextAttributeFlags::ALPHA,
-        };
-        let context_descriptor = device
-            .create_context_descriptor(&context_attributes)
+        // Create an OpenGL 3.x context for Pathfinder to use.
+        let gl_context = ContextBuilder::new()
+            .with_gl(GlRequest::Latest)
+            .with_gl_profile(GlProfile::Core)
+            .build_windowed(self.window_builder.clone(), &event_loop)
             .unwrap();
 
-        // Make the OpenGL context via `surfman`, and load OpenGL functions.
-        let surface_type = SurfaceType::Widget { native_widget };
-        let mut context = device.create_context(&context_descriptor).unwrap();
-        let surface = device
-            .create_surface(&context, SurfaceAccess::GPUOnly, surface_type)
-            .unwrap();
-        device
-            .bind_surface_to_context(&mut context, surface)
-            .unwrap();
-        device.make_context_current(&context).unwrap();
-        gl::load_with(|symbol_name| device.get_proc_address(&context, symbol_name));
-
-        // Get the real size of the window, taking HiDPI into account.
-        let hidpi_factor = window.get_current_monitor().get_hidpi_factor();
-        let physical_size = logical_size.to_physical(hidpi_factor);
-        let framebuffer_size = vec2i(physical_size.width as i32, physical_size.height as i32);
-
-        // Create a Pathfinder GL device.
-        let default_framebuffer = device
-            .context_surface_info(&context)
-            .unwrap()
-            .unwrap()
-            .framebuffer_object;
-        let pathfinder_device = GLDevice::new(GLVersion::GL3, default_framebuffer);
+        // Load OpenGL, and make the context current.
+        let gl_context = unsafe { gl_context.make_current().unwrap() };
+        gl::load_with(|name| gl_context.get_proc_address(name) as *const _);
 
         // Create a Pathfinder renderer.
         let mut renderer = Renderer::new(
-            pathfinder_device,
+            GLDevice::new(GLVersion::GL3, 0),
             &EmbeddedResourceLoader::new(),
-            DestFramebuffer::full_window(framebuffer_size),
+            DestFramebuffer::full_window(window_size),
             RendererOptions {
                 background_color: Some(ColorF::white()),
                 ..RendererOptions::default()
             },
         );
 
-        self.render_context_2_d =
-            RenderContext2D::new_ex((size.width as f64, size.height as f64), renderer);
+        self.render_context_2_d = RenderContext2D::new_ex(self.window_size, renderer);
 
         // Wait for a keypress.
-        event_loop.run_forever(|evt| {
-            let control_flow = self.drain_events(evt);
+        event_loop.run(move |event, _, control_flow| {
+            self.drain_events(event, control_flow);
 
             if self.update {
                 self.adapter.run(&mut self.render_context_2_d);
@@ -253,23 +198,10 @@ where
             }
 
             if self.render {
-                // Present the rendered canvas via `surfman`.
-                let mut surface = device
-                    .unbind_surface_from_context(&mut context)
-                    .unwrap()
-                    .unwrap();
-                device.present_surface(&mut context, &mut surface).unwrap();
-                device
-                    .bind_surface_to_context(&mut context, surface)
-                    .unwrap();
+                gl_context.swap_buffers().unwrap();
                 self.render = false;
             }
-
-            control_flow
         });
-
-        // Clean up.
-        drop(device.destroy_context(&mut context));
     }
 }
 
@@ -343,12 +275,12 @@ where
 
         // Calculate the right logical size of the window.
         // let event_loop = EventLoop::new();
-        let size = (self.bounds.width(), self.bounds.height());
+        let window_size = (self.bounds.width(), self.bounds.height());
 
-        let logical_size = LogicalSize::new(size.0, size.1);
+        let logical_size = PhysicalSize::new(window_size.0, window_size.1);
         // Open a window.
         let window_builder = WindowBuilder::new()
-            .with_dimensions(logical_size)
+            .with_inner_size(logical_size)
             .with_title(self.title)
             .with_resizable(self.resizeable)
             .with_always_on_top(self.always_on_top)
@@ -360,10 +292,11 @@ where
             running: true,
             request_receiver,
             request_sender,
-            render_context_2_d: RenderContext2D::new(size.0, size.1),
+            render_context_2_d: RenderContext2D::new(window_size.0, window_size.1),
             adapter: self.adapter,
             window_builder,
             mouse_pos: (0.0, 0.0),
+            window_size,
         }
     }
 }
