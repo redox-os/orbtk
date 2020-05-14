@@ -1,5 +1,7 @@
 //! This module contains a platform specific implementation of the window shell.
 
+use std::sync::mpsc;
+
 pub use super::native::*;
 
 use crate::prelude::*;
@@ -22,6 +24,7 @@ where
     A: WindowAdapter,
 {
     window_shells: Vec<Window<A>>,
+    requests: mpsc::Receiver<A>
 }
 
 impl<A> Shell<A>
@@ -29,9 +32,10 @@ where
     A: WindowAdapter,
 {
     /// Creates a new application shell.
-    pub fn new() -> Self {
+    pub fn new(requests: mpsc::Receiver<A>) -> Self {
         Shell {
             window_shells: vec![],
+            requests
         }
     }
 
@@ -67,6 +71,10 @@ where
                     self.window_shells.remove(i);
                     break;
                 }
+            }
+
+            if let Ok(_request) = self.requests.try_recv() {
+                println!("Rec");
             }
         }
     }

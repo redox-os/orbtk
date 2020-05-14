@@ -5,7 +5,7 @@ use std::{
     sync::mpsc
 };
 
-use crate::{prelude::*, utils::Point, shell::WindowRequest};
+use crate::{prelude::*, utils::Point, shell::WindowRequest, application::WindowAdapter};
 
 /// Temporary solution to share dependencies. Will be refactored soon.
 #[derive(Clone)]
@@ -16,12 +16,13 @@ pub struct ContextProvider {
     pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     pub event_queue: Rc<RefCell<EventQueue>>,
     pub mouse_position: Rc<Cell<Point>>,
-    pub window_sender: mpsc::Sender<WindowRequest>
+    pub window_sender: mpsc::Sender<WindowRequest>,
+    pub shell_sender: mpsc::Sender<WindowAdapter>
 }
 
 impl ContextProvider {
     /// Creates a new context provider.
-    pub fn new(window_sender: mpsc::Sender::<WindowRequest>) -> Self {
+    pub fn new(window_sender: mpsc::Sender::<WindowRequest>, shell_sender: mpsc::Sender<WindowAdapter>) -> Self {
        ContextProvider {
            render_objects: Rc::new(RefCell::new(BTreeMap::new())),
            layouts: Rc::new(RefCell::new(BTreeMap::new())),
@@ -29,7 +30,8 @@ impl ContextProvider {
            states: Rc::new(RefCell::new(BTreeMap::new())),
            event_queue: Rc::new(RefCell::new(EventQueue::new())),
            mouse_position: Rc::new(Cell::new(Point::new(0.0, 0.0))),
-           window_sender
+           window_sender,
+           shell_sender
        }
     }
 }

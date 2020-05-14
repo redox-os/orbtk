@@ -25,6 +25,7 @@ mod window_adapter;
 /// The `Application` represents the entry point of an OrbTk based application.
 pub struct Application {
     // shells: Vec<Shell<WindowAdapter>>,
+    request_sender: mpsc::Sender<WindowAdapter>,
     shell: Shell<WindowAdapter>,
     name: Box<str>,
 }
@@ -37,9 +38,12 @@ impl Application {
 
     /// Create a new application with the given name.
     pub fn from_name(name: impl Into<Box<str>>) -> Self {
+        let (sender, receiver) = mpsc::channel();
+
         Application {
+            request_sender: sender,
             name: name.into(),
-            shell: Shell::new(),
+            shell: Shell::new(receiver),
         }
     }
 
@@ -62,7 +66,7 @@ impl Application {
                 .register("settings", Settings::new(&*self.name));
         };
 
-        let context_provider = ContextProvider::new(sender);
+        let context_provider = ContextProvider::new(sender, self.request_sender.clone());
 
         let theme = crate::theme::default_theme();
 
