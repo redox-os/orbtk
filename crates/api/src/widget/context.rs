@@ -3,7 +3,12 @@ use std::{cell::RefCell, collections::BTreeMap, sync::mpsc};
 use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
-    css_engine::*, prelude::*, render::RenderContext2D, shell::WindowRequest, tree::Tree,
+    application::create_window,
+    css_engine::*,
+    prelude::*,
+    render::RenderContext2D,
+    shell::{ShellRequest, WindowRequest},
+    tree::Tree,
 };
 
 use super::WidgetContainer;
@@ -21,7 +26,8 @@ pub struct Context<'a> {
     remove_widget_list: Vec<Entity>,
     event_queue: &'a RefCell<EventQueue>,
     render_context: &'a mut RenderContext2D,
-    window_sender: &'a mpsc::Sender::<WindowRequest>
+    window_sender: &'a mpsc::Sender<WindowRequest>,
+    shell_sender: &'a mpsc::Sender<ShellRequest<WindowAdapter>>,
 }
 
 impl<'a> Drop for Context<'a> {
@@ -45,7 +51,8 @@ impl<'a> Context<'a> {
         new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
         event_queue: &'a RefCell<EventQueue>,
         render_context: &'a mut RenderContext2D,
-        window_sender: &'a mpsc::Sender::<WindowRequest>
+        window_sender: &'a mpsc::Sender<WindowRequest>,
+        shell_sender: &'a mpsc::Sender<ShellRequest<WindowAdapter>>,
     ) -> Self {
         Context {
             entity: ecs.0,
@@ -59,7 +66,8 @@ impl<'a> Context<'a> {
             remove_widget_list: vec![],
             event_queue,
             render_context,
-            window_sender
+            window_sender,
+            shell_sender,
         }
     }
 
@@ -425,7 +433,11 @@ impl<'a> Context<'a> {
 
     /// Creates and show a new window.
     pub fn show_window<F: Fn(&mut BuildContext) -> Entity + 'static>(&mut self, create_fn: F) {
-
+        let (adapter, settings, receiver) =
+            create_window("blub", self.shell_sender.clone(), create_fn);
+        self.shell_sender
+            .send(ShellRequest::CreateWindow(adapter, settings, receiver))
+            .expect("Context.show_window: Could not send shell request.");
     }
 
     /// Returns a mutable reference of the 2d render ctx.
@@ -434,8 +446,10 @@ impl<'a> Context<'a> {
     }
 
     /// Gets a new sender that allows to communicate with the window shell.
-    pub fn send_window_request(&self, request: WindowRequest)  {
-        self.window_sender.send(request).expect("Context::send_window_request: could not send request to window.");
+    pub fn send_window_request(&self, request: WindowRequest) {
+        self.window_sender
+            .send(request)
+            .expect("Context::send_window_request: could not send request to window.");
     }
 
     /// Returns a keys collection of new added states.

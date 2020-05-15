@@ -2,7 +2,14 @@
 
 use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc, sync::mpsc};
 
-use crate::{css_engine::*, prelude::*, render::RenderContext2D, utils::*, shell::WindowRequest};
+use crate::{
+    application::WindowAdapter,
+    css_engine::*,
+    prelude::*,
+    render::RenderContext2D,
+    shell::{ShellRequest, WindowRequest},
+    utils::*,
+};
 
 pub use self::default::*;
 pub use self::font_icon::*;
@@ -30,6 +37,7 @@ pub trait RenderObject: Any {
         states: &Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
         event_queue: &Rc<RefCell<EventQueue>>,
         window_sender: &mpsc::Sender<WindowRequest>,
+        shell_sender: &mpsc::Sender<ShellRequest<WindowAdapter>>,
         theme: &ThemeValue,
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,
@@ -86,7 +94,8 @@ pub trait RenderObject: Any {
                 &mut BTreeMap::new(),
                 event_queue,
                 render_context,
-                window_sender
+                window_sender,
+                shell_sender,
             ),
             &global_position,
         );
@@ -119,6 +128,7 @@ pub trait RenderObject: Any {
             states,
             event_queue,
             window_sender,
+            shell_sender,
             theme,
             offsets,
             debug,
@@ -161,6 +171,7 @@ pub trait RenderObject: Any {
         states: &Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
         event_queue: &Rc<RefCell<EventQueue>>,
         window_sender: &mpsc::Sender<WindowRequest>,
+        shell_sender: &mpsc::Sender<ShellRequest<WindowAdapter>>,
         theme: &ThemeValue,
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,
@@ -179,6 +190,7 @@ pub trait RenderObject: Any {
                     states,
                     event_queue,
                     window_sender,
+                    shell_sender,
                     theme,
                     offsets,
                     debug,

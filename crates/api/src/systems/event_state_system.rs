@@ -39,7 +39,8 @@ impl EventStateSystem {
                 new_states,
                 event_queue,
                 render_context,
-                &self.context_provider.window_sender
+                &self.context_provider.window_sender,
+                &self.context_provider.shell_sender,
             );
 
             if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
@@ -408,7 +409,8 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                                 new_states,
                                 event_queue,
                                 render_context,
-                                &self.context_provider.window_sender
+                                &self.context_provider.window_sender,
+                                &self.context_provider.shell_sender,
                             );
 
                             if let Some(state) = self
@@ -437,7 +439,8 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                                     new_states,
                                     event_queue,
                                     render_context,
-                                    &self.context_provider.window_sender
+                                    &self.context_provider.window_sender,
+                                    &self.context_provider.shell_sender,
                                 );
                                 if let Some(state) =
                                     self.context_provider.states.borrow_mut().get_mut(&key)

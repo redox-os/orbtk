@@ -54,6 +54,8 @@ pub mod platform;
 
 pub use orbtk_render::prelude as render;
 
+use std::{collections::HashMap, sync::mpsc};
+
 /// Used to send a request to the window.
 #[derive(Clone, Debug)]
 pub enum WindowRequest {
@@ -70,7 +72,7 @@ pub enum WindowRequest {
 /// Used to send a request to the application shell.
 pub enum ShellRequest<W> where W: window_adapter::WindowAdapter {
     /// Request redraw of the `Windows`s content.
-    CreateWindow(W, WindowSettings),
+    CreateWindow(W, WindowSettings, mpsc::Receiver<WindowRequest>),
 }
 
 /// Contains settings of a window.
@@ -93,4 +95,7 @@ pub struct WindowSettings {
 
     /// The initial size of the window.
     pub size: (f64, f64),
+
+    /// List of fonts to register.
+    pub fonts: HashMap<String, &'static [u8]>,
 }

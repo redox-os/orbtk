@@ -1,15 +1,12 @@
 //! This module contains the base elements of an OrbTk application (Application, WindowBuilder and Window).
 
-use std::{cell::RefCell, rc::Rc, sync::mpsc};
+use std::sync::mpsc;
 
-use dces::prelude::{Entity, World};
+use dces::prelude::Entity;
 
 use crate::{
     prelude::*,
-    render::RenderContext2D,
     shell::{Shell, ShellRequest},
-    tree::*,
-    utils::{Point, Rectangle},
 };
 
 pub use self::context_provider::*;

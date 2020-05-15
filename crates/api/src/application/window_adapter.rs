@@ -1,11 +1,11 @@
 use dces::prelude::{Entity, World};
-use std::{cell::RefCell, sync::mpsc};
+use std::{cell::RefCell, collections::HashMap, sync::mpsc};
 
 use crate::{
     prelude::*,
     properties::Constraint,
     render, shell,
-    shell::{ShellRequest, WindowSettings, WindowRequest},
+    shell::{ShellRequest, WindowRequest, WindowSettings},
     tree::Tree,
     utils::{Point, Rectangle},
 };
@@ -219,6 +219,20 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         .get::<Point>("position", window)
         .unwrap();
 
+    let mut fonts = HashMap::new();
+    fonts.insert(
+        "Roboto Regular".to_string(),
+        crate::theme::fonts::ROBOTO_REGULAR_FONT,
+    );
+    fonts.insert(
+        "Roboto Medium".to_string(),
+        crate::theme::fonts::ROBOTO_MEDIUM_FONT,
+    );
+    fonts.insert(
+        "Material Icons".to_string(),
+        crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
+    );
+
     let settings = WindowSettings {
         title: world
             .entity_component_manager()
@@ -243,6 +257,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             .unwrap(),
         position: (position.x, position.y),
         size: (constraint.width(), constraint.height()),
+        fonts,
     };
 
     world
@@ -295,5 +310,9 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         .with_priority(3)
         .build();
 
-    (WindowAdapter::new(world, context_provider), settings, receiver)
+    (
+        WindowAdapter::new(world, context_provider),
+        settings,
+        receiver,
+    )
 }

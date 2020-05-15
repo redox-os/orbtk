@@ -56,7 +56,7 @@ where
             resizeable: settings.resizeable,
             always_on_top: settings.always_on_top,
             borderless: settings.borderless,
-            fonts: HashMap::new(),
+            fonts: settings.fonts,
             bounds: Rectangle::new(settings.position.0, settings.position.1, settings.size.0, settings.size.1),
             request_receiver: None
         }

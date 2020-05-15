@@ -53,6 +53,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
             &self.context_provider.states,
             &self.context_provider.event_queue,
             &self.context_provider.window_sender,
+            &self.context_provider.shell_sender,
             &theme,
             &mut offsets,
             debug,
