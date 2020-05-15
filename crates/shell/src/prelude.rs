@@ -3,4 +3,5 @@ pub use crate::{
     platform::{initialize, Shell, CONSOLE},
     window_adapter::*,
     ShellRequest, WindowRequest,
+    WindowSettings
 };

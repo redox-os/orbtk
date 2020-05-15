@@ -54,25 +54,7 @@ pub mod platform;
 
 pub use orbtk_render::prelude as render;
 
-/// Used to sent requests to the window `Shell`.
-#[derive(Clone, Debug)]
-pub enum ShellRequest {
-    /// Request redraw of the `Shell`s content.
-    Update,
-
-    /// Request redraw of the `Shell`s content.
-    Redraw,
-
-    /// Request to close the `Shell`.
-    Close,
-
-    /// Request to resize the `Shell` to the specified size.
-    Resize(f64, f64),
-
-    /// Request to change the title of the `Shell`.
-    ChangeTitle(String),
-}
-
+/// Used to send a request to the window.
 #[derive(Clone, Debug)]
 pub enum WindowRequest {
     /// Request redraw of the `Windows`s content.
@@ -83,4 +65,32 @@ pub enum WindowRequest {
 
     /// Request to change the title of the `Windows`.
     ChangeTitle(String),
+}
+
+/// Used to send a request to the application shell.
+pub enum ShellRequest<W> where W: window_adapter::WindowAdapter {
+    /// Request redraw of the `Windows`s content.
+    CreateWindow(W, WindowSettings),
+}
+
+/// Contains settings of a window.
+#[derive(Clone, Debug, Default)]
+pub struct WindowSettings {
+    /// Title of the window.
+    pub title: String,
+
+    /// Is the window borderless / without decorations?
+    pub borderless: bool,
+
+    /// Is the window resizable?
+    pub resizeable: bool,
+
+    /// Will the window always shown on top of other windows.
+    pub always_on_top: bool,
+
+    /// The initial position of the window.
+    pub position: (f64, f64),
+
+    /// The initial size of the window.
+    pub size: (f64, f64),
 }

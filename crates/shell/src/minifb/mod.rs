@@ -24,7 +24,7 @@ where
     A: WindowAdapter,
 {
     window_shells: Vec<Window<A>>,
-    requests: mpsc::Receiver<A>
+    requests: mpsc::Receiver<ShellRequest<A>>
 }
 
 impl<A> Shell<A>
@@ -32,7 +32,7 @@ where
     A: WindowAdapter,
 {
     /// Creates a new application shell.
-    pub fn new(requests: mpsc::Receiver<A>) -> Self {
+    pub fn new(requests: mpsc::Receiver<ShellRequest<A>>) -> Self {
         Shell {
             window_shells: vec![],
             requests

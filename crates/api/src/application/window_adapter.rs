@@ -1,6 +1,14 @@
 use dces::prelude::{Entity, World};
+use std::{cell::RefCell, sync::mpsc};
 
-use crate::{prelude::*, render, shell, tree::Tree, utils::Point};
+use crate::{
+    prelude::*,
+    properties::Constraint,
+    render, shell,
+    shell::{ShellRequest, WindowSettings},
+    tree::Tree,
+    utils::{Point, Rectangle},
+};
 
 /// Represents a window. Each window has its own tree, event pipeline and shell.
 pub struct WindowAdapter {
@@ -9,6 +17,7 @@ pub struct WindowAdapter {
 }
 
 impl WindowAdapter {
+    /// Creates a new WindowAdapter.
     pub fn new(
         world: World<Tree, StringComponentStore, render::RenderContext2D>,
         ctx: ContextProvider,
@@ -136,4 +145,155 @@ impl shell::WindowAdapter for WindowAdapter {
     fn run(&mut self, render_context: &mut render::RenderContext2D) {
         self.world.run_with_context(render_context);
     }
+}
+
+/// Creates a `WindowAdapter` and a `WindowSettings` object from a window builder closure.
+pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
+    app_name: impl Into<String>,
+    request_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
+    create_fn: F,
+) -> (WindowAdapter, WindowSettings) {
+    let app_name = app_name.into();
+    let mut world: World<Tree, StringComponentStore, render::RenderContext2D> =
+        World::from_stores(Tree::default(), StringComponentStore::default());
+
+    let (sender, receiver) = mpsc::channel();
+
+    let registry = Rc::new(RefCell::new(Registry::new()));
+
+    if app_name.is_empty() {
+        registry
+            .borrow_mut()
+            .register("settings", Settings::default());
+    } else {
+        registry
+            .borrow_mut()
+            .register("settings", Settings::new(app_name));
+    };
+
+    let context_provider = ContextProvider::new(sender, request_sender.clone());
+
+    let theme = crate::theme::default_theme();
+
+    let window = {
+        let overlay = Overlay::create().build(&mut BuildContext::new(
+            world.entity_component_manager(),
+            &context_provider.render_objects,
+            &context_provider.layouts,
+            &context_provider.handler_map,
+            &mut *context_provider.states.borrow_mut(),
+            &theme,
+        ));
+
+        {
+            let tree: &mut Tree = world.entity_component_manager().entity_store_mut();
+            tree.set_overlay(overlay);
+        }
+
+        let window = create_fn(&mut BuildContext::new(
+            world.entity_component_manager(),
+            &context_provider.render_objects,
+            &context_provider.layouts,
+            &context_provider.handler_map,
+            &mut *context_provider.states.borrow_mut(),
+            &theme,
+        ));
+
+        {
+            let tree: &mut Tree = world.entity_component_manager().entity_store_mut();
+            tree.set_root(window);
+        }
+
+        window
+    };
+
+    let constraint = *world
+        .entity_component_manager()
+        .component_store()
+        .get::<Constraint>("constraint", window)
+        .unwrap();
+
+    let position = *world
+        .entity_component_manager()
+        .component_store()
+        .get::<Point>("position", window)
+        .unwrap();
+
+    let settings = WindowSettings {
+        title: world
+            .entity_component_manager()
+            .component_store()
+            .get::<String>("title", window)
+            .unwrap()
+            .clone(),
+        borderless: *world
+            .entity_component_manager()
+            .component_store()
+            .get::<bool>("borderless", window)
+            .unwrap(),
+        resizeable: *world
+            .entity_component_manager()
+            .component_store()
+            .get::<bool>("resizeable", window)
+            .unwrap(),
+        always_on_top: *world
+            .entity_component_manager()
+            .component_store()
+            .get::<bool>("always_on_top", window)
+            .unwrap(),
+        position: (position.x, position.y),
+        size: (constraint.width(), constraint.height()),
+    };
+
+    world
+        .entity_component_manager()
+        .component_store_mut()
+        .register("global", window, Global::default());
+    world
+        .entity_component_manager()
+        .component_store_mut()
+        .register("global", window, Global::default());
+    world
+        .entity_component_manager()
+        .component_store_mut()
+        .register(
+            "bounds",
+            window,
+            Rectangle::from((0.0, 0.0, constraint.width(), constraint.height())),
+        );
+
+    world.register_init_system(InitSystem::new(context_provider.clone(), registry.clone()));
+
+    world.register_cleanup_system(CleanupSystem::new(
+        context_provider.clone(),
+        registry.clone(),
+    ));
+
+    world
+        .create_system(EventStateSystem::new(
+            context_provider.clone(),
+            registry.clone(),
+        ))
+        .with_priority(0)
+        .build();
+
+    world
+        .create_system(LayoutSystem::new(context_provider.clone()))
+        .with_priority(1)
+        .build();
+
+    world
+        .create_system(PostLayoutStateSystem::new(
+            context_provider.clone(),
+            registry.clone(),
+        ))
+        .with_priority(2)
+        .build();
+
+    world
+        .create_system(RenderSystem::new(context_provider.clone()))
+        .with_priority(3)
+        .build();
+
+    (WindowAdapter::new(world, context_provider), settings)
 }

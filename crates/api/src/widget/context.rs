@@ -423,6 +423,11 @@ impl<'a> Context<'a> {
             .register_event_with_strategy(event, strategy, entity);
     }
 
+    /// Creates and show a new window.
+    pub fn show_window<F: Fn(&mut BuildContext) -> Entity + 'static>(&mut self, create_fn: F) {
+
+    }
+
     /// Returns a mutable reference of the 2d render ctx.
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
         self.render_context
