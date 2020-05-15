@@ -49,26 +49,10 @@ impl Application {
 
     /// Creates a new window and add it to the application.
     pub fn window<F: Fn(&mut BuildContext) -> Entity + 'static>(mut self, create_fn: F) -> Self {
-        let (adapter, settings) = create_window(self.name, self.request_sender, create_fn);
+        let (adapter, settings, receiver) = create_window(self.name.clone(), self.request_sender.clone(), create_fn);
 
         self.shell
-            .create_window(adapter)
-            .title(&(title)[..])
-            .bounds(Rectangle::from((
-                position.x,
-                position.y,
-                constraint.width(),
-                constraint.height(),
-            )))
-            .borderless(borderless)
-            .resizeable(resizeable)
-            .font("Roboto Regular", crate::theme::fonts::ROBOTO_REGULAR_FONT)
-            .font("Roboto Medium", crate::theme::fonts::ROBOTO_MEDIUM_FONT)
-            .font(
-                "Material Icons",
-                crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
-            )
-            .always_on_top(always_on_top)
+            .create_window_from_settings(settings, adapter)
             .request_receiver(receiver)
             .build();
 

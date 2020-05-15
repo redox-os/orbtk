@@ -47,6 +47,15 @@ where
         )
     }
 
+    /// Creates a window builder from a settings object.
+    pub fn create_window_from_settings(&mut self, settings: WindowSettings, adapter: A) -> WindowBuilder<A> {
+        WindowBuilder::from_settings(
+            settings,
+            self,
+            adapter
+        )
+    }
+
     /// Runs (starts) the application shell and its windows.
     pub fn run(&mut self) {
         loop {

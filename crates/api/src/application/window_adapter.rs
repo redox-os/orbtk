@@ -5,7 +5,7 @@ use crate::{
     prelude::*,
     properties::Constraint,
     render, shell,
-    shell::{ShellRequest, WindowSettings},
+    shell::{ShellRequest, WindowSettings, WindowRequest},
     tree::Tree,
     utils::{Point, Rectangle},
 };
@@ -152,7 +152,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     app_name: impl Into<String>,
     request_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
     create_fn: F,
-) -> (WindowAdapter, WindowSettings) {
+) -> (WindowAdapter, WindowSettings, mpsc::Receiver<WindowRequest>) {
     let app_name = app_name.into();
     let mut world: World<Tree, StringComponentStore, render::RenderContext2D> =
         World::from_stores(Tree::default(), StringComponentStore::default());
@@ -295,5 +295,5 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         .with_priority(3)
         .build();
 
-    (WindowAdapter::new(world, context_provider), settings)
+    (WindowAdapter::new(world, context_provider), settings, receiver)
 }
