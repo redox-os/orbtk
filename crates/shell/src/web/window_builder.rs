@@ -19,6 +19,7 @@ use crate::{
     utils::Rectangle,
     window_adapter::WindowAdapter,
     WindowRequest,
+    WindowSettings
 };
 
 /// The `WindowBuilder` is used to construct a window shell for the web backend.
@@ -53,6 +54,21 @@ where
             fonts: HashMap::new(),
             bounds: Rectangle::new(0.0, 0.0, 100.0, 75.0),
             request_receiver: None,
+        }
+    }
+
+    /// Creates the window builder from a settings object.
+    pub fn from_settings(settings: WindowSettings, shell: &'a mut Shell<A>, adapter: A) -> Self {
+        WindowBuilder {
+            shell,
+            adapter,
+            title: settings.title,
+            resizeable: settings.resizeable,
+            always_on_top: settings.always_on_top,
+            borderless: settings.borderless,
+            fonts: settings.fonts,
+            bounds: Rectangle::new(settings.position.0, settings.position.1, settings.size.0, settings.size.1),
+            request_receiver: None
         }
     }
 
