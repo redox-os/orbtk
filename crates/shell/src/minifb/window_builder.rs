@@ -2,8 +2,9 @@ use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, time::D
 
 use minifb;
 
-use super::{KeyState, MouseState, Shell, Window, WindowState};
+use super::{KeyState, MouseState, Window, WindowState};
 use crate::{
+    Shell,
     event::{ButtonState, Key, KeyEvent},
     render::RenderContext2D,
     utils::Rectangle,
@@ -13,7 +14,7 @@ use crate::{
 };
 
 /// The `WindowBuilder` is used to construct a window shell for the minifb backend.
-pub struct WindowBuilder<'a, A>
+pub struct WindowBuilder<'a, A: 'static>
 where
     A: WindowAdapter,
 {

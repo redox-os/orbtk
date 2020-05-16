@@ -13,8 +13,9 @@ use stdweb::{
     web::{document, event, html_element::CanvasElement, window, CanvasRenderingContext2d},
 };
 
-use super::{Shell, Window, EventState};
+use super::{Window, EventState};
 use crate::{
+    Shell,
     render::RenderContext2D,
     utils::Rectangle,
     window_adapter::WindowAdapter,
