@@ -17,40 +17,10 @@ mod window_builder;
 /// Does nothing. This function is only use by the web backend.
 pub fn initialize() {}
 
-/// Represents an application shell that could handle multiple windows. This implementation
-/// is based on `glutin`.
-pub struct Shell<A: 'static>
-where
-    A: WindowAdapter,
-{
-    window_shells: Vec<Window<A>>,
-    event_loop: EventLoop<()>,
-}
-
 impl<A> Shell<A>
 where
     A: WindowAdapter,
 {
-    /// Creates a new application shell.
-    pub fn new() -> Self {
-        Shell {
-            window_shells: vec![],
-            event_loop: EventLoop::new()
-        }
-    }
-
-    /// Creates a window builder, that could be used to create a window and add it to the application shell.
-    pub fn create_window(&mut self, adapter: A) -> WindowBuilder<A> {
-        WindowBuilder::new(
-            self,
-            adapter
-        )
-    }
-
-    pub fn event_loop(&self) -> &EventLoop<()> {
-        &self.event_loop
-    }
-
     /// Runs (starts) the application shell and its windows.
     pub fn run(&mut self) {
         self.event_loop.run(move |event, _, control_flow| {

@@ -20,7 +20,7 @@ use crate::{
     render::RenderContext2D,
     utils::Rectangle,
     window_adapter::WindowAdapter,
-    WindowRequest,
+    WindowRequest, WindowSettings,
 };
 
 /// The `WindowBuilder` is used to construct a window shell for the minifb backend.
@@ -49,6 +49,32 @@ where
             fonts: HashMap::new(),
             request_receiver: None,
             bounds: Rectangle::default(),
+        }
+    }
+
+    /// Creates the window builder from a settings object.
+    pub fn from_settings(settings: WindowSettings, shell: &'a mut Shell<A>, adapter: A) -> Self {
+        let window_size = (settings.size.0, settings.size.1);
+        let physical_size = PhysicalSize::new(window_size.0, window_size.1);
+        let window_builder = window::WindowBuilder::new()
+            .with_title(settings.title)
+            .with_decorations(!settings.borderless)
+            .with_resizable(settings.resizeable)
+            .with_always_on_top(settings.always_on_top)
+            .with_inner_size(physical_size);
+
+        WindowBuilder {
+            shell,
+            adapter,
+            fonts: HashMap::new(),
+            window_builder,
+            request_receiver: None,
+            bounds: Rectangle::new(
+                settings.position.0,
+                settings.position.1,
+                settings.size.0,
+                settings.size.1,
+            ),
         }
     }
 

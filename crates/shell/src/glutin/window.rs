@@ -1,6 +1,6 @@
 use std::{cell::RefCell, rc::Rc, sync::mpsc};
 
-use glutin::ContextWrapper;
+use glutin::{ContextWrapper, PossiblyCurrent, window};
 
 use derive_more::Constructor;
 
@@ -18,7 +18,7 @@ pub struct Window<A>
 where
     A: WindowAdapter,
 {
-    gl_context: ContextWrapper,
+    gl_context: ContextWrapper<PossiblyCurrent, window::Window>,
     adapter: A,
     render_context: RenderContext2D,
     request_receiver: Option<mpsc::Receiver<WindowRequest>>,
