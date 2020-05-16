@@ -1,7 +1,5 @@
 //! This module contains a platform specific implementation of the window shell.
 
-use std::sync::mpsc;
-
 pub use super::native::*;
 
 use crate::prelude::*;

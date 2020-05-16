@@ -168,10 +168,10 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     } else {
         registry
             .borrow_mut()
-            .register("settings", Settings::new(app_name));
+            .register("settings", Settings::new(app_name.clone()));
     };
 
-    let context_provider = ContextProvider::new(sender, request_sender.clone());
+    let context_provider = ContextProvider::new(sender, request_sender.clone(), app_name);
 
     let theme = crate::theme::default_theme();
 

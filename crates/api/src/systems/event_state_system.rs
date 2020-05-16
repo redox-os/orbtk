@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -21,26 +21,13 @@ impl EventStateSystem {
         render_context: &mut RenderContext2D,
     ) {
         {
-            let render_objects = &self.context_provider.render_objects;
-            let layouts = &self.context_provider.layouts;
-            let handler_map = &self.context_provider.handler_map;
-            let states = &self.context_provider.states;
-            let event_queue = &self.context_provider.event_queue;
             let registry = &mut self.registry.borrow_mut();
-            let new_states = &mut BTreeMap::new();
 
             let mut ctx = Context::new(
                 (entity, ecm),
                 &theme,
-                render_objects,
-                layouts,
-                handler_map,
-                states,
-                new_states,
-                event_queue,
+                &self.context_provider,
                 render_context,
-                &self.context_provider.window_sender,
-                &self.context_provider.shell_sender,
             );
 
             if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
@@ -391,26 +378,13 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
 
                     if !skip {
                         {
-                            let render_objects = &self.context_provider.render_objects;
-                            let layouts = &self.context_provider.layouts;
-                            let handler_map = &self.context_provider.handler_map;
-                            let event_queue = &self.context_provider.event_queue;
-                            let states = &self.context_provider.states;
                             let registry = &mut self.registry.borrow_mut();
-                            let new_states = &mut BTreeMap::new();
 
                             let mut ctx = Context::new(
                                 (current_node, ecm),
                                 &theme,
-                                render_objects,
-                                layouts,
-                                handler_map,
-                                states,
-                                new_states,
-                                event_queue,
+                                &self.context_provider,
                                 render_context,
-                                &self.context_provider.window_sender,
-                                &self.context_provider.shell_sender,
                             );
 
                             if let Some(state) = self
@@ -428,19 +402,11 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                             drop(ctx);
 
                             for key in keys {
-                                let new_states = &mut BTreeMap::new();
                                 let mut ctx = Context::new(
                                     (key, ecm),
                                     &theme,
-                                    render_objects,
-                                    layouts,
-                                    handler_map,
-                                    states,
-                                    new_states,
-                                    event_queue,
+                                    &self.context_provider,
                                     render_context,
-                                    &self.context_provider.window_sender,
-                                    &self.context_provider.shell_sender,
                                 );
                                 if let Some(state) =
                                     self.context_provider.states.borrow_mut().get_mut(&key)

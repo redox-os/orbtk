@@ -1,9 +1,9 @@
-use std::{cell::RefCell, collections::BTreeMap, sync::mpsc};
+use std::{collections::BTreeMap};
 
 use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
-    application::create_window,
+    application::{create_window, ContextProvider},
     css_engine::*,
     prelude::*,
     render::RenderContext2D,
@@ -18,21 +18,22 @@ pub struct Context<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     pub entity: Entity,
     pub theme: &'a ThemeValue,
-    render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
-    layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
-    handlers: &'a RefCell<EventHandlerMap>,
-    states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
-    new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
+    provider: &'a ContextProvider,
+    // render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
+    // layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
+    // handlers: &'a RefCell<EventHandlerMap>,
+    // states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
+    new_states: BTreeMap<Entity, Box<dyn State>>,
     remove_widget_list: Vec<Entity>,
-    event_queue: &'a RefCell<EventQueue>,
+    // event_queue: &'a RefCell<EventQueue>,
     render_context: &'a mut RenderContext2D,
-    window_sender: &'a mpsc::Sender<WindowRequest>,
-    shell_sender: &'a mpsc::Sender<ShellRequest<WindowAdapter>>,
+    // window_sender: &'a mpsc::Sender<WindowRequest>,
+    // shell_sender: &'a mpsc::Sender<ShellRequest<WindowAdapter>>,
 }
 
 impl<'a> Drop for Context<'a> {
     fn drop(&mut self) {
-        self.states.borrow_mut().append(&mut self.new_states);
+        self.provider.states.borrow_mut().append(&mut self.new_states);
     }
 }
 
@@ -44,30 +45,31 @@ impl<'a> Context<'a> {
             &'a mut EntityComponentManager<Tree, StringComponentStore>,
         ),
         theme: &'a ThemeValue,
-        render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
-        layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
-        handlers: &'a RefCell<EventHandlerMap>,
-        states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
-        new_states: &'a mut BTreeMap<Entity, Box<dyn State>>,
-        event_queue: &'a RefCell<EventQueue>,
+        provider: &'a ContextProvider,
+        // render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
+        // layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
+        // handlers: &'a RefCell<EventHandlerMap>,
+        // states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
+        // event_queue: &'a RefCell<EventQueue>,
         render_context: &'a mut RenderContext2D,
-        window_sender: &'a mpsc::Sender<WindowRequest>,
-        shell_sender: &'a mpsc::Sender<ShellRequest<WindowAdapter>>,
+        // window_sender: &'a mpsc::Sender<WindowRequest>,
+        // shell_sender: &'a mpsc::Sender<ShellRequest<WindowAdapter>>,
     ) -> Self {
         Context {
             entity: ecs.0,
             ecm: ecs.1,
             theme,
-            render_objects,
-            layouts,
-            handlers,
-            states,
-            new_states,
+            provider,
+            // render_objects,
+            // layouts,
+            // handlers,
+            // states,
+            new_states: BTreeMap::new(),
             remove_widget_list: vec![],
-            event_queue,
+            // event_queue,
             render_context,
-            window_sender,
-            shell_sender,
+            // window_sender,
+            // shell_sender,
         }
     }
 
@@ -206,10 +208,10 @@ impl<'a> Context<'a> {
     pub fn build_context(&mut self) -> BuildContext {
         BuildContext::new(
             self.ecm,
-            self.render_objects,
-            self.layouts,
-            self.handlers,
-            self.new_states,
+            &self.provider.render_objects,
+            &self.provider.layouts,
+            &self.provider.handler_map,
+            &mut self.new_states,
             self.theme,
         )
     }
@@ -395,26 +397,26 @@ impl<'a> Context<'a> {
 
     /// Pushes an event to the event queue with the given `strategy`.
     pub fn push_event_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
-        self.event_queue
+        self.provider.event_queue
             .borrow_mut()
             .register_event_with_strategy(event, strategy, self.entity);
     }
 
     /// Pushes an event to the event queue.
     pub fn push_event<E: Event>(&mut self, event: E) {
-        self.event_queue
+        self.provider.event_queue
             .borrow_mut()
             .register_event(event, self.entity);
     }
 
     /// Pushes an event to the event queue.
     pub fn push_event_by_entity<E: Event>(&mut self, event: E, entity: Entity) {
-        self.event_queue.borrow_mut().register_event(event, entity);
+        self.provider.event_queue.borrow_mut().register_event(event, entity);
     }
 
     /// Pushes an event to the event queue.
     pub fn push_event_by_window<E: Event>(&mut self, event: E) {
-        self.event_queue
+        self.provider.event_queue
             .borrow_mut()
             .register_event(event, self.ecm.entity_store().root());
     }
@@ -426,7 +428,7 @@ impl<'a> Context<'a> {
         entity: Entity,
         strategy: EventStrategy,
     ) {
-        self.event_queue
+        self.provider.event_queue
             .borrow_mut()
             .register_event_with_strategy(event, strategy, entity);
     }
@@ -434,8 +436,8 @@ impl<'a> Context<'a> {
     /// Creates and show a new window.
     pub fn show_window<F: Fn(&mut BuildContext) -> Entity + 'static>(&mut self, create_fn: F) {
         let (adapter, settings, receiver) =
-            create_window("blub", self.shell_sender.clone(), create_fn);
-        self.shell_sender
+            create_window(self.provider.application_name.clone(), self.provider.shell_sender.clone(), create_fn);
+        self.provider.shell_sender
             .send(ShellRequest::CreateWindow(adapter, settings, receiver))
             .expect("Context.show_window: Could not send shell request.");
     }
@@ -447,7 +449,7 @@ impl<'a> Context<'a> {
 
     /// Gets a new sender that allows to communicate with the window shell.
     pub fn send_window_request(&self, request: WindowRequest) {
-        self.window_sender
+        self.provider.window_sender
             .send(request)
             .expect("Context::send_window_request: could not send request to window.");
     }

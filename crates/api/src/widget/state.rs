@@ -1,4 +1,4 @@
-use super::{Context, MessageBox, Registry};
+use super::{Context, Registry};
 use std::any::Any;
 
 pub trait AsAny: Any {

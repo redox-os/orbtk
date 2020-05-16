@@ -1,13 +1,12 @@
 //! This module contains all render objects used in OrbTk. Render objects are used to define how to draw parts of a widget.
 
-use std::{any::Any, cell::RefCell, collections::BTreeMap, rc::Rc, sync::mpsc};
+use std::{any::Any, collections::BTreeMap};
 
 use crate::{
-    application::WindowAdapter,
+    application::ContextProvider,
     css_engine::*,
     prelude::*,
     render::RenderContext2D,
-    shell::{ShellRequest, WindowRequest},
     utils::*,
 };
 
@@ -31,13 +30,7 @@ pub trait RenderObject: Any {
         render_context: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-        render_objects: &RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
-        layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-        handlers: &Rc<RefCell<EventHandlerMap>>,
-        states: &Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
-        event_queue: &Rc<RefCell<EventQueue>>,
-        window_sender: &mpsc::Sender<WindowRequest>,
-        shell_sender: &mpsc::Sender<ShellRequest<WindowAdapter>>,
+        context_provider: &ContextProvider,
         theme: &ThemeValue,
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,
@@ -87,15 +80,8 @@ pub trait RenderObject: Any {
             &mut Context::new(
                 (entity, ecm),
                 &theme,
-                render_objects,
-                layouts,
-                handlers,
-                states,
-                &mut BTreeMap::new(),
-                event_queue,
+                context_provider,
                 render_context,
-                window_sender,
-                shell_sender,
             ),
             &global_position,
         );
@@ -122,13 +108,7 @@ pub trait RenderObject: Any {
             render_context,
             entity,
             ecm,
-            render_objects,
-            layouts,
-            handlers,
-            states,
-            event_queue,
-            window_sender,
-            shell_sender,
+            context_provider,
             theme,
             offsets,
             debug,
@@ -165,13 +145,7 @@ pub trait RenderObject: Any {
         render_context: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-        render_objects: &RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
-        layouts: &Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-        handlers: &Rc<RefCell<EventHandlerMap>>,
-        states: &Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
-        event_queue: &Rc<RefCell<EventQueue>>,
-        window_sender: &mpsc::Sender<WindowRequest>,
-        shell_sender: &mpsc::Sender<ShellRequest<WindowAdapter>>,
+        context_provider: &ContextProvider,
         theme: &ThemeValue,
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,
@@ -179,18 +153,12 @@ pub trait RenderObject: Any {
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
 
-            if let Some(render_object) = render_objects.borrow().get(&child) {
+            if let Some(render_object) = context_provider.render_objects.borrow().get(&child) {
                 render_object.render(
                     render_context,
                     child,
                     ecm,
-                    render_objects,
-                    layouts,
-                    handlers,
-                    states,
-                    event_queue,
-                    window_sender,
-                    shell_sender,
+                    context_provider,
                     theme,
                     offsets,
                     debug,

@@ -61,7 +61,6 @@ impl State for MainViewState {
                     }
                 }
                 Action::IncrementCounter => {
-                    ctx.window().set("title", String::from("blub"));
                     *ctx.widget().get_mut::<usize>("counter") += 1;
 
                     let counter = *ctx.widget().get::<usize>("counter");

@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -20,30 +20,15 @@ impl PostLayoutStateSystem {
         render_context: &mut RenderContext2D,
     ) {
         {
-            let render_objects = &self.context_provider.render_objects;
-            let layouts = &self.context_provider.layouts;
-            let handler_map = &self.context_provider.handler_map;
-            let states = &self.context_provider.states;
-            let event_queue = &self.context_provider.event_queue;
-            let registry = &mut self.registry.borrow_mut();
-            let new_states = &mut BTreeMap::new();
-
             let mut ctx = Context::new(
                 (entity, ecm),
                 &theme,
-                render_objects,
-                layouts,
-                handler_map,
-                states,
-                new_states,
-                event_queue,
+                &self.context_provider,
                 render_context,
-                &self.context_provider.window_sender,
-                &self.context_provider.shell_sender,
             );
 
             if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
-                state.cleanup(registry, &mut ctx);
+                state.cleanup(&mut self.registry.borrow_mut(), &mut ctx);
             }
 
             drop(ctx);
@@ -92,25 +77,11 @@ impl System<Tree, StringComponentStore, RenderContext2D> for PostLayoutStateSyst
 
             for key in keys {
                 {
-                    let render_objects = &self.context_provider.render_objects;
-                    let layouts = &self.context_provider.layouts;
-                    let handler_map = &self.context_provider.handler_map;
-                    let event_queue = &self.context_provider.event_queue;
-                    let states = &self.context_provider.states;
-                    let new_states = &mut BTreeMap::new();
-
                     let mut ctx = Context::new(
                         (key, ecm),
                         &theme,
-                        render_objects,
-                        layouts,
-                        handler_map,
-                        states,
-                        new_states,
-                        event_queue,
+                        &self.context_provider,
                         render_context,
-                        &self.context_provider.window_sender,
-                        &self.context_provider.shell_sender,
                     );
 
                     self.context_provider

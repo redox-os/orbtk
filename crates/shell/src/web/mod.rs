@@ -2,8 +2,6 @@
 
 use stdweb::{js, web::window};
 
-use std::sync::mpsc;
-
 use crate::prelude::*;
 
 use self::states::*;

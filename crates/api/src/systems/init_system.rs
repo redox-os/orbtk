@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
@@ -72,25 +72,11 @@ impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
             self.init_id(current_node, ecm.component_store_mut(), root);
 
             {
-                let render_objects = &self.context_provider.render_objects;
-                let layouts = &self.context_provider.layouts;
-                let handler_map = &self.context_provider.handler_map;
-                let states = &self.context_provider.states;
-                let event_queue = &self.context_provider.event_queue;
-                let new_states = &mut BTreeMap::new();
-
                 let mut ctx = Context::new(
                     (current_node, ecm),
                     &theme,
-                    render_objects,
-                    layouts,
-                    handler_map,
-                    states,
-                    new_states,
-                    event_queue,
+                    &self.context_provider,
                     render_context,
-                    &self.context_provider.window_sender,
-                    &self.context_provider.shell_sender,
                 );
 
                 if let Some(state) = self

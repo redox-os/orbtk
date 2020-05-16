@@ -23,6 +23,7 @@ pub struct ContextProvider {
     pub mouse_position: Rc<Cell<Point>>,
     pub window_sender: mpsc::Sender<WindowRequest>,
     pub shell_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
+    pub application_name: String,
 }
 
 impl ContextProvider {
@@ -30,6 +31,7 @@ impl ContextProvider {
     pub fn new(
         window_sender: mpsc::Sender<WindowRequest>,
         shell_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
+        application_name: impl Into<String>,
     ) -> Self {
         ContextProvider {
             render_objects: Rc::new(RefCell::new(BTreeMap::new())),
@@ -40,6 +42,7 @@ impl ContextProvider {
             mouse_position: Rc::new(Cell::new(Point::new(0.0, 0.0))),
             window_sender,
             shell_sender,
+            application_name: application_name.into()
         }
     }
 }
