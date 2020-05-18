@@ -34,12 +34,17 @@ impl State for MouseBehaviorState {
                     ctx.widget().set("pressed", true);
                 }
                 Action::Release(p) => {
-                    let pressed : bool = *ctx.widget().get("pressed");
+                    let pressed: bool = *ctx.widget().get("pressed");
                     ctx.widget().set("pressed", false);
 
                     if check_mouse_condition(Point::new(p.x, p.y), &ctx.widget()) && pressed {
                         let parent = ctx.entity_of_parent().unwrap();
-                        ctx.push_event_by_entity(ClickEvent { position: Point::new(p.x, p.y) }, parent)
+                        ctx.push_event_by_entity(
+                            ClickEvent {
+                                position: Point::new(p.x, p.y),
+                            },
+                            parent,
+                        )
                     }
                 }
                 Action::Scroll(p) => {

@@ -1,18 +1,14 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree, utils::*};
+use crate::{css_engine::*, prelude::*, render::RenderContext2D, tree::Tree, utils::*};
 
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
+#[derive(Constructor)]
 pub struct EventStateSystem {
-    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub handlers: Rc<RefCell<EventHandlerMap>>,
-    pub mouse_down_nodes: RefCell<Vec<Entity>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub registry: Rc<RefCell<Registry>>,
+    context_provider: ContextProvider,
+    registry: Rc<RefCell<Registry>>,
 }
 
 impl EventStateSystem {
@@ -22,46 +18,49 @@ impl EventStateSystem {
         entity: Entity,
         theme: &Theme,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-        shell: &mut WindowShell<WindowAdapter>,
+        render_context: &mut RenderContext2D,
     ) {
         {
-            let render_objects = &self.render_objects;
-            let layouts = &mut self.layouts.borrow_mut();
-            let handlers = &mut self.handlers.borrow_mut();
             let registry = &mut self.registry.borrow_mut();
-            let new_states = &mut BTreeMap::new();
 
             let mut ctx = Context::new(
                 (entity, ecm),
-                shell,
-                theme,
-                render_objects,
-                layouts,
-                handlers,
-                &self.states,
-                new_states,
+                &theme,
+                &self.context_provider,
+                render_context,
             );
 
-            if let Some(state) = self.states.borrow_mut().get_mut(&entity) {
+            if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
                 state.cleanup(registry, &mut ctx);
             }
 
             drop(ctx);
         }
-        self.states.borrow_mut().remove(&entity);
+        self.context_provider.states.borrow_mut().remove(&entity);
 
         ecm.remove_entity(entity);
-        self.layouts.borrow_mut().remove(&entity);
-        self.render_objects.borrow_mut().remove(&entity);
-        self.handlers.borrow_mut().remove(&entity);
+        self.context_provider.layouts.borrow_mut().remove(&entity);
+        self.context_provider
+            .render_objects
+            .borrow_mut()
+            .remove(&entity);
+        self.context_provider
+            .handler_map
+            .borrow_mut()
+            .remove(&entity);
     }
 
     fn process_direct(&self, event: &EventBox) -> bool {
         if event.strategy == EventStrategy::Direct {
-            if let Some(handlers) = self.handlers.borrow().get(&event.source) {
+            if let Some(handlers) = self
+                .context_provider
+                .handler_map
+                .borrow()
+                .get(&event.source)
+            {
                 handlers.iter().any(|handler| {
                     handler.handle_event(
-                        &mut StatesContext::new(&mut *self.states.borrow_mut()),
+                        &mut StatesContext::new(&mut *self.context_provider.states.borrow_mut()),
                         &event,
                     )
                 });
@@ -136,7 +135,12 @@ impl EventStateSystem {
 
             if disabled_parents.is_empty() {
                 let mut has_handler = false;
-                if let Some(handlers) = self.handlers.borrow().get(&current_node) {
+                if let Some(handlers) = self
+                    .context_provider
+                    .handler_map
+                    .borrow()
+                    .get(&current_node)
+                {
                     if handlers.iter().any(|handler| handler.handles_event(event)) {
                         has_handler = true;
                     }
@@ -227,7 +231,6 @@ impl EventStateSystem {
                         }
                         if add {
                             matching_nodes.push(current_node);
-                            self.mouse_down_nodes.borrow_mut().push(current_node);
                         }
                     }
                     unknown_event = false;
@@ -283,10 +286,10 @@ impl EventStateSystem {
         let mut handled = false;
 
         for node in matching_nodes.iter().rev() {
-            if let Some(handlers) = self.handlers.borrow().get(node) {
+            if let Some(handlers) = self.context_provider.handler_map.borrow().get(node) {
                 handled = handlers.iter().any(|handler| {
                     handler.handle_event(
-                        &mut StatesContext::new(&mut *self.states.borrow_mut()),
+                        &mut StatesContext::new(&mut *self.context_provider.states.borrow_mut()),
                         event,
                     )
                 });
@@ -303,20 +306,24 @@ impl EventStateSystem {
     }
 }
 
-impl System<Tree, StringComponentStore> for EventStateSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
-        let mut shell = self.shell.borrow_mut();
-        let mut update = shell.update();
+impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
+    fn run_with_context(
+        &self,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        render_context: &mut RenderContext2D,
+    ) {
+        // todo fix
+        // let mut update = shell.update();
+        let mut update = false;
 
         loop {
             {
-                let adapter = shell.adapter();
-                let mouse_position = adapter.mouse_position;
-                for event in adapter.event_queue.into_iter() {
+                let mouse_position = self.context_provider.mouse_position.get();
+                for event in self.context_provider.event_queue.borrow_mut().into_iter() {
                     if let Ok(event) = event.downcast_ref::<SystemEvent>() {
                         match event {
                             SystemEvent::Quit => {
-                                shell.set_running(false);
+                                // todo send close shell request
                                 return;
                             }
                         }
@@ -340,7 +347,8 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                 }
             }
 
-            shell.set_update(update);
+            // todo fix
+            // shell.set_update(update);
 
             // handle states
 
@@ -353,12 +361,16 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                 .clone();
             let mut current_node = root;
             let mut remove_widget_list: Vec<Entity> = vec![];
-
             loop {
                 let mut skip = false;
 
                 {
-                    if !self.states.borrow().contains_key(&current_node) {
+                    if !self
+                        .context_provider
+                        .states
+                        .borrow()
+                        .contains_key(&current_node)
+                    {
                         skip = true;
                     }
 
@@ -366,24 +378,21 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
 
                     if !skip {
                         {
-                            let render_objects = &self.render_objects;
-                            let layouts = &mut self.layouts.borrow_mut();
-                            let handlers = &mut self.handlers.borrow_mut();
                             let registry = &mut self.registry.borrow_mut();
-                            let new_states = &mut BTreeMap::new();
 
                             let mut ctx = Context::new(
                                 (current_node, ecm),
-                                &mut shell,
                                 &theme,
-                                render_objects,
-                                layouts,
-                                handlers,
-                                &self.states,
-                                new_states,
+                                &self.context_provider,
+                                render_context,
                             );
 
-                            if let Some(state) = self.states.borrow_mut().get_mut(&current_node) {
+                            if let Some(state) = self
+                                .context_provider
+                                .states
+                                .borrow_mut()
+                                .get_mut(&current_node)
+                            {
                                 state.update(registry, &mut ctx);
                             }
 
@@ -393,18 +402,15 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                             drop(ctx);
 
                             for key in keys {
-                                let new_states = &mut BTreeMap::new();
                                 let mut ctx = Context::new(
                                     (key, ecm),
-                                    &mut shell,
                                     &theme,
-                                    render_objects,
-                                    layouts,
-                                    handlers,
-                                    &self.states,
-                                    new_states,
+                                    &self.context_provider,
+                                    render_context,
                                 );
-                                if let Some(state) = self.states.borrow_mut().get_mut(&key) {
+                                if let Some(state) =
+                                    self.context_provider.states.borrow_mut().get_mut(&key)
+                                {
                                     state.init(registry, &mut ctx);
                                 }
 
@@ -418,11 +424,11 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
 
                             // remove children of target widget.
                             for entity in children.iter().rev() {
-                                self.remove_widget(*entity, &theme, ecm, &mut shell);
+                                self.remove_widget(*entity, &theme, ecm, render_context);
                             }
 
                             // remove target widget
-                            self.remove_widget(remove_widget, &theme, ecm, &mut shell);
+                            self.remove_widget(remove_widget, &theme, ecm, render_context);
                         }
                     }
                 }
@@ -436,7 +442,7 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                 }
             }
 
-            if shell.adapter().event_queue.is_empty() {
+            if self.context_provider.event_queue.borrow().is_empty() {
                 break;
             }
         }

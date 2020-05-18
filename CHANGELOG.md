@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 0.3.1-alpha3
 
+* Text input support for ', /, \, [, ], {, }
+* Multiple window support
+* Pathfinder / Glutin backend (experimental)
 * ProgressBar widget
 * Measure distance between two Points
 * Improve: Mouse event arguments

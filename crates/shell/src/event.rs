@@ -1,5 +1,7 @@
 //! This module contains elements to work with window events.
 
+use std::char;
+
 /// Represents a keyboard key.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum Key {
@@ -60,6 +62,13 @@ pub enum Key {
     Dot,
     QuestionMark,
     ExclamationMark,
+    Slash,
+    Backslash,
+    Quote,
+    BraceLeft,
+    BraceRight,
+    CurlyBraceLeft,
+    CurlyBraceRight,
 }
 
 impl From<Key> for &'static str {
@@ -133,6 +142,13 @@ impl From<Key> for &'static str {
             Key::Dot => ".",
             Key::QuestionMark => "?",
             Key::ExclamationMark => "!",
+            Key::Slash => "/",
+            Key::Quote => "'",
+            Key::Backslash => "\\",
+            Key::BraceLeft => "[",
+            Key::BraceRight => "]",
+            Key::CurlyBraceLeft => "{",
+            Key::CurlyBraceRight => "}",
             _ => "",
         }
     }
@@ -209,6 +225,13 @@ impl From<Key> for Option<u8> {
             Key::Dot => Some(b'.'),
             Key::QuestionMark => Some(b'?'),
             Key::ExclamationMark => Some(b'!'),
+            Key::Slash => Some(b'/'),
+            Key::Quote => Some(b'\''),
+            Key::Backslash => Some(b'\\'),
+            Key::BraceLeft => Some(b'['),
+            Key::BraceRight => Some(b']'),
+            Key::CurlyBraceLeft => Some(b'{'),
+            Key::CurlyBraceRight => Some(b'}'),
             _ => None,
         }
     }
@@ -217,6 +240,16 @@ impl From<Key> for Option<u8> {
 impl ToString for Key {
     fn to_string(&self) -> String {
         <&'static str>::from(*self).to_owned()
+    }
+}
+
+impl From<u32> for Key {
+    fn from(uni_char: u32) -> Self {
+        if let Some(character) = char::from_u32(uni_char) {
+            return Key::from(character);
+        }
+
+        Key::Unknown
     }
 }
 
@@ -293,6 +326,13 @@ impl From<char> for Key {
             '.' => Key::Dot,
             '?' => Key::QuestionMark,
             '!' => Key::ExclamationMark,
+            '/' => Key::Slash,
+            '\'' => Key::Quote,
+            '\\' => Key::Backslash,
+            '[' => Key::BraceLeft,
+            ']' => Key::BraceRight,
+            '{' =>  Key::CurlyBraceLeft,
+            '}' => Key::CurlyBraceRight,
             '\u{f700}' => Key::Up,
             '\u{f701}' => Key::Down,
             '\u{f702}' => Key::Left,

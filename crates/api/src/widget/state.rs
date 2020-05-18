@@ -1,4 +1,4 @@
-use super::{Context, MessageBox, Registry};
+use super::{Context, Registry};
 use std::any::Any;
 
 pub trait AsAny: Any {
@@ -26,7 +26,4 @@ pub trait State: AsAny {
     ///
     /// This update method is called after layout is calculated and before rendering.
     fn update_post_layout(&mut self, _: &mut Registry, _: &mut Context) {}
-
-    /// Receives all messages from the message channel. This message is only called if the state has messages.
-    fn receive_messages(&mut self, _: &mut Registry, _: &mut Context, _messages: &[MessageBox]) {}
 }

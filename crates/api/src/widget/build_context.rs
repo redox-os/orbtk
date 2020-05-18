@@ -19,8 +19,8 @@ pub type WidgetBuildContext = Option<Box<dyn Fn(&mut BuildContext, usize) -> Ent
 pub struct BuildContext<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
-    layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
-    handlers: &'a mut EventHandlerMap,
+    layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
+    handlers: &'a RefCell<EventHandlerMap>,
     states: &'a mut BTreeMap<Entity, Box<dyn State>>,
     theme: &'a ThemeValue,
 }
@@ -134,15 +134,19 @@ impl<'a> BuildContext<'a> {
 
     /// Registers an event handler with a widget.
     pub fn register_handler(&mut self, widget: Entity, handler: Rc<dyn EventHandler>) {
-        if !self.handlers.contains_key(&widget) {
-            self.handlers.insert(widget, vec![]);
+        if !self.handlers.borrow().contains_key(&widget) {
+            self.handlers.borrow_mut().insert(widget, vec![]);
         }
 
-        self.handlers.get_mut(&widget).unwrap().push(handler);
+        self.handlers
+            .borrow_mut()
+            .get_mut(&widget)
+            .unwrap()
+            .push(handler);
     }
 
     /// Registers a layout object with a widget.
     pub fn register_layout(&mut self, widget: Entity, layout: Box<dyn Layout>) {
-        self.layouts.insert(widget, layout);
+        self.layouts.borrow_mut().insert(widget, layout);
     }
 }

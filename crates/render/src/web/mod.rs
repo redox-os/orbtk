@@ -18,6 +18,7 @@ pub struct RenderContext2D {
     config: RenderConfig,
     saved_config: Option<RenderConfig>,
     export_data: Vec<u32>,
+    background: Color,
 }
 
 impl RenderContext2D {
@@ -42,7 +43,13 @@ impl RenderContext2D {
             canvas_render_context_2_d: ctx,
             font_config: FontConfig::default(),
             export_data,
+            background: Color::default(),
         }
+    }
+
+    /// Set the background of the render context.
+    pub fn set_background(&mut self, background: Color) {
+        self.background = background;
     }
 
     /// Creates a new render ctx 2d.
@@ -60,6 +67,7 @@ impl RenderContext2D {
             canvas_render_context_2_d,
             font_config: FontConfig::default(),
             export_data,
+            background: Color::default(),
         }
     }
 
@@ -441,7 +449,10 @@ impl RenderContext2D {
         &self.export_data
     }
 
-    pub fn start(&mut self) {}
+    pub fn start(&mut self) {
+        let background = Brush::from(self.background);
+        self.clear(&background)
+    }
     pub fn finish(&mut self) {}
 
     fn fill_style<'a>(&self, brush: &Brush) {

@@ -1,17 +1,14 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree};
+use crate::{css_engine::*, prelude::*, render::RenderContext2D, tree::Tree};
 
 /// This system is used to initializes the widgets.
+#[derive(Constructor)]
 pub struct InitSystem {
-    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub handlers: Rc<RefCell<EventHandlerMap>>,
-    pub registry: Rc<RefCell<Registry>>,
+    context_provider: ContextProvider,
+    registry: Rc<RefCell<Registry>>,
 }
 
 impl InitSystem {
@@ -41,8 +38,12 @@ impl InitSystem {
     }
 }
 
-impl System<Tree, StringComponentStore> for InitSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
+impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
+    fn run_with_context(
+        &self,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        render_context: &mut RenderContext2D,
+    ) {
         let root = ecm.entity_store().root();
 
         #[cfg(feature = "debug")]
@@ -59,7 +60,6 @@ impl System<Tree, StringComponentStore> for InitSystem {
         }
 
         // init css ids
-        let window_shell = &mut self.shell.borrow_mut();
         let theme = ecm
             .component_store()
             .get::<Theme>("theme", root)
@@ -72,23 +72,19 @@ impl System<Tree, StringComponentStore> for InitSystem {
             self.init_id(current_node, ecm.component_store_mut(), root);
 
             {
-                let render_objects = &self.render_objects;
-                let layouts = &mut self.layouts.borrow_mut();
-                let handlers = &mut self.handlers.borrow_mut();
-                let new_states = &mut BTreeMap::new();
-
                 let mut ctx = Context::new(
                     (current_node, ecm),
-                    window_shell,
                     &theme,
-                    render_objects,
-                    layouts,
-                    handlers,
-                    &self.states,
-                    new_states,
+                    &self.context_provider,
+                    render_context,
                 );
 
-                if let Some(state) = self.states.borrow_mut().get_mut(&current_node) {
+                if let Some(state) = self
+                    .context_provider
+                    .states
+                    .borrow_mut()
+                    .get_mut(&current_node)
+                {
                     state.init(&mut *self.registry.borrow_mut(), &mut ctx);
                 }
 
