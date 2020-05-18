@@ -1,6 +1,6 @@
 use std::{cell::RefCell, rc::Rc, sync::mpsc};
 
-use glutin::{event_loop::ControlFlow, event, window, ContextWrapper, PossiblyCurrent};
+use glutin::{event, event_loop::ControlFlow, window, ContextWrapper, PossiblyCurrent};
 
 use derive_more::Constructor;
 
@@ -59,8 +59,11 @@ where
             }
             event::Event::WindowEvent {
                 event: event::WindowEvent::CloseRequested,
-                ..
+                window_id,
             } => {
+                if !window_id.eq(&self.id()) {
+                    return;
+                }
                 self.adapter.quit_event();
                 *control_flow = ControlFlow::Exit;
             }
@@ -103,8 +106,11 @@ where
             }
             event::Event::WindowEvent {
                 event: event::WindowEvent::MouseWheel { delta, .. },
-                ..
+                window_id,
             } => {
+                if !window_id.eq(&self.id()) {
+                    return;
+                }
                 match delta {
                     event::MouseScrollDelta::LineDelta(_, _) => {}
                     event::MouseScrollDelta::PixelDelta(p) => {
@@ -117,8 +123,11 @@ where
             }
             event::Event::WindowEvent {
                 event: event::WindowEvent::CursorMoved { position, .. },
-                ..
+                window_id,
             } => {
+                if !window_id.eq(&self.id()) {
+                    return;
+                }
                 self.mouse_pos = (position.x, position.y);
                 self.adapter.mouse(position.x, position.y);
                 self.update = true;
