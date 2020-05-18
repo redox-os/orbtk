@@ -19,16 +19,9 @@ pub struct Context<'a> {
     pub entity: Entity,
     pub theme: &'a ThemeValue,
     provider: &'a ContextProvider,
-    // render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
-    // layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
-    // handlers: &'a RefCell<EventHandlerMap>,
-    // states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
     new_states: BTreeMap<Entity, Box<dyn State>>,
     remove_widget_list: Vec<Entity>,
-    // event_queue: &'a RefCell<EventQueue>,
     render_context: &'a mut RenderContext2D,
-    // window_sender: &'a mpsc::Sender<WindowRequest>,
-    // shell_sender: &'a mpsc::Sender<ShellRequest<WindowAdapter>>,
 }
 
 impl<'a> Drop for Context<'a> {
@@ -46,30 +39,16 @@ impl<'a> Context<'a> {
         ),
         theme: &'a ThemeValue,
         provider: &'a ContextProvider,
-        // render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
-        // layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
-        // handlers: &'a RefCell<EventHandlerMap>,
-        // states: &'a RefCell<BTreeMap<Entity, Box<dyn State>>>,
-        // event_queue: &'a RefCell<EventQueue>,
         render_context: &'a mut RenderContext2D,
-        // window_sender: &'a mpsc::Sender<WindowRequest>,
-        // shell_sender: &'a mpsc::Sender<ShellRequest<WindowAdapter>>,
     ) -> Self {
         Context {
             entity: ecs.0,
             ecm: ecs.1,
             theme,
             provider,
-            // render_objects,
-            // layouts,
-            // handlers,
-            // states,
             new_states: BTreeMap::new(),
             remove_widget_list: vec![],
-            // event_queue,
             render_context,
-            // window_sender,
-            // shell_sender,
         }
     }
 
