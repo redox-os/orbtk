@@ -143,11 +143,11 @@ Basic usage of the state trait:
 
 ```rust
 #[derive(Default, AsAny)]
-struct MyWidgetState {
+struct MyState {
     ...
 }
 
-impl State for MyWidgetState {
+impl State for MyState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         // update the widget
         ...
