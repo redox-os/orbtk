@@ -4,18 +4,18 @@ use orbtk::prelude::*;
 
 #[derive(AsAny, Default)]
 struct MainState {
-    show_dialog: bool,
+    show_window: bool,
 }
 
 impl MainState {
-    fn show_dialog(&mut self) {
-        self.show_dialog = true;
+    fn show_window(&mut self) {
+        self.show_window = true;
     }
 }
 
 impl State for MainState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        if self.show_dialog {
+        if self.show_window {
             ctx.child("button").set("enabled", false);
             ctx.show_window(|ctx| {
                 Window::create()
@@ -24,12 +24,12 @@ impl State for MainState {
                     .size(100.0, 75.0)
                     .child(
                         Stack::create()
-                            .child(TextBlock::create().text("Dialog").margin(4.0).build(ctx))
+                            .child(TextBlock::create().text("New window").margin(4.0).build(ctx))
                             .build(ctx),
                     )
                     .build(ctx)
             });
-            self.show_dialog = true;
+            self.show_window = false;
         }
     }
 }
@@ -45,11 +45,11 @@ impl Template for MainView {
                     Button::create()
                         .id("button")
                         .on_click(move |states, _| {
-                            states.get_mut::<MainState>(id).show_dialog();
+                            states.get_mut::<MainState>(id).show_window();
                             true
                         })
                         .margin(4.0)
-                        .text("Show dialog")
+                        .text("Show window")
                         .build(ctx),
                 )
                 .build(ctx),

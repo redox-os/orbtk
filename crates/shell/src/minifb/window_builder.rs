@@ -2,9 +2,8 @@ use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, time::D
 
 use minifb;
 
-use super::{KeyState, MouseState, Window, WindowState};
+use super::{KeyState, MouseState, Window, WindowState, Shell};
 use crate::{
-    Shell,
     event::{ButtonState, Key, KeyEvent},
     render::RenderContext2D,
     utils::Rectangle,

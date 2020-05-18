@@ -1176,6 +1176,7 @@ name = "orbtk-widgets"
 version = "0.3.1-alpha3"
 dependencies = [
  "dces 0.3.0 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=develop)",
+ "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbtk-api 0.3.1-alpha3",
  "orbtk-proc-macros 0.3.1-alpha3",
  "orbtk-render 0.3.1-alpha3",

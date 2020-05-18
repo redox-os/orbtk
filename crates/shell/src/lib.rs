@@ -27,9 +27,6 @@ runner.run()
 #[macro_use]
 extern crate lazy_static;
 
-use platform::{WindowBuilder, Window};
-use window_adapter::WindowAdapter;
-
 pub mod event;
 pub mod prelude;
 pub mod window_adapter;
@@ -101,58 +98,4 @@ pub struct WindowSettings {
 
     /// List of fonts to register.
     pub fonts: HashMap<String, &'static [u8]>,
-}
-
-/// Represents an application shell that could handle multiple windows.
-pub struct Shell<A: 'static>
-where
-    A: WindowAdapter,
-{
-    window_shells: Vec<Window<A>>,
-    requests: mpsc::Receiver<ShellRequest<A>>,
-}
-
-impl<A> Shell<A>
-where
-    A: WindowAdapter,
-{
-    /// Creates a new application shell.
-    pub fn new(requests: mpsc::Receiver<ShellRequest<A>>) -> Self {
-        Shell {
-            window_shells: vec![],
-            requests,
-        }
-    }
-
-    /// Creates a window builder, that could be used to create a window and add it to the application shell.
-    pub fn create_window(&mut self, adapter: A) -> WindowBuilder<A> {
-        WindowBuilder::new(self, adapter)
-    }
-
-    /// Creates a window builder from a settings object.
-    pub fn create_window_from_settings(
-        &mut self,
-        settings: WindowSettings,
-        adapter: A,
-    ) -> WindowBuilder<A> {
-        WindowBuilder::from_settings(settings, self, adapter)
-    }
-
-    /// Receives window request from the application and handles them.
-    pub fn receive_requests(&mut self) {
-        let mut requests = vec![];
-        for request in self.requests.try_iter() {
-            requests.push(request);
-        }
-
-        for request in requests {
-            match request {
-                ShellRequest::CreateWindow(adapter, settings, window_requests) => {
-                    self.create_window_from_settings(settings, adapter)
-                        .request_receiver(window_requests)
-                        .build();
-                }
-            }
-        }
-    }
 }

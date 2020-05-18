@@ -162,6 +162,7 @@ where
             true,
             true,
             false,
+            (0.0, 0.0)
         ))
     }
 }

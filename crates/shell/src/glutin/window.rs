@@ -1,6 +1,6 @@
 use std::{cell::RefCell, rc::Rc, sync::mpsc};
 
-use glutin::{ContextWrapper, PossiblyCurrent, window};
+use glutin::{event_loop::ControlFlow, event, window, ContextWrapper, PossiblyCurrent};
 
 use derive_more::Constructor;
 
@@ -12,7 +12,7 @@ use crate::{
 };
 
 /// Represents a wrapper for a glutin window. It handles events, propagate them to
-/// the window adapter and handles the update and render pipeline.
+/// the window adapter and handles the update and redraw pipeline.
 #[derive(Constructor)]
 pub struct Window<A>
 where
@@ -24,21 +24,109 @@ where
     request_receiver: Option<mpsc::Receiver<WindowRequest>>,
     update: bool,
     redraw: bool,
-    close: bool
+    close: bool,
+    mouse_pos: (f64, f64),
 }
 
 impl<A> Window<A>
 where
     A: WindowAdapter,
 {
+    /// Returns an glutin specific window id.
+    pub fn id(&self) -> window::WindowId {
+        self.gl_context.window().id()
+    }
+
     /// Check if the window is open.
     pub fn is_open(&self) -> bool {
         true
     }
 
     /// Drain events and propagate the events to the adapter.
-    pub fn drain_events(&mut self) {
-       
+    pub fn drain_events(&mut self, control_flow: &mut ControlFlow, event: &event::Event<()>) {
+        match event {
+            event::Event::WindowEvent {
+                event: event::WindowEvent::Resized(s),
+                window_id,
+            } => {
+                if !window_id.eq(&self.id()) {
+                    return;
+                }
+                self.adapter.resize(s.width as f64, s.height as f64);
+                self.render_context.resize(s.width as f64, s.height as f64);
+                self.update = true;
+                *control_flow = ControlFlow::Wait;
+            }
+            event::Event::WindowEvent {
+                event: event::WindowEvent::CloseRequested,
+                ..
+            } => {
+                self.adapter.quit_event();
+                *control_flow = ControlFlow::Exit;
+            }
+            event::Event::WindowEvent {
+                event: event::WindowEvent::KeyboardInput { input, .. },
+                // todo: implement
+                ..
+            } => *control_flow = ControlFlow::Wait,
+            event::Event::WindowEvent {
+                event: event::WindowEvent::MouseInput { state, button, .. },
+                ..
+            } => {
+                let button = {
+                    match button {
+                        event::MouseButton::Left => MouseButton::Left,
+                        event::MouseButton::Right => MouseButton::Right,
+                        event::MouseButton::Middle => MouseButton::Middle,
+                        event::MouseButton::Other(_) => MouseButton::Left,
+                    }
+                };
+
+                let state = {
+                    match state {
+                        event::ElementState::Pressed => ButtonState::Down,
+                        event::ElementState::Released => ButtonState::Up,
+                    }
+                };
+
+                let mouse_pos = self.mouse_pos;
+
+                self.adapter.mouse_event(MouseEvent {
+                    x: mouse_pos.0,
+                    y: mouse_pos.1,
+                    button,
+                    state,
+                });
+                self.update = true;
+                self.redraw = true;
+                *control_flow = ControlFlow::Wait;
+            }
+            event::Event::WindowEvent {
+                event: event::WindowEvent::MouseWheel { delta, .. },
+                ..
+            } => {
+                match delta {
+                    event::MouseScrollDelta::LineDelta(_, _) => {}
+                    event::MouseScrollDelta::PixelDelta(p) => {
+                        self.adapter.scroll(p.x, p.y);
+                    }
+                }
+                self.redraw = true;
+                self.update = true;
+                *control_flow = ControlFlow::Wait;
+            }
+            event::Event::WindowEvent {
+                event: event::WindowEvent::CursorMoved { position, .. },
+                ..
+            } => {
+                self.mouse_pos = (position.x, position.y);
+                self.adapter.mouse(position.x, position.y);
+                self.update = true;
+                self.redraw = true;
+                *control_flow = ControlFlow::Wait;
+            }
+            _ => *control_flow = ControlFlow::Wait,
+        }
     }
 
     /// Receives window request from the application and handles them.
@@ -77,7 +165,7 @@ where
     /// Swaps the current frame buffer.
     pub fn render(&mut self) {
         if self.redraw {
-            
+            self.gl_context.swap_buffers().unwrap();
             self.redraw = false;
         }
     }
