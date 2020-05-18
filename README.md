@@ -245,6 +245,7 @@ cargo doc --no-deps --open
 * [Space Editor](https://codeberg.org/flovanco/space-editor): 2D Tile Map Editor compatible with OrbGame
 * [doit](https://codeberg.org/flovanco/doit): Task app
 * [OrbCalculator](https://gitlab.redox-os.org/redox-os/orbcalculator): Calculator based on OrbTk
+* [Kanter](https://github.com/lukors/kanter): Node based texture editor 
 
 ## Contribution
 
