@@ -60,6 +60,11 @@ pub enum Key {
     Dot,
     QuestionMark,
     ExclamationMark,
+    NumpadDivide,
+    NumpadMultiply,
+    NumpadSubtract,
+    NumpadAdd,
+    NumpadEnter,
 }
 
 impl From<Key> for &'static str {
@@ -133,6 +138,10 @@ impl From<Key> for &'static str {
             Key::Dot => ".",
             Key::QuestionMark => "?",
             Key::ExclamationMark => "!",
+            Key::NumpadDivide => "/",
+            Key::NumpadMultiply => "*",
+            Key::NumpadSubtract => "-",
+            Key::NumpadAdd => "+",
             _ => "",
         }
     }
@@ -209,6 +218,10 @@ impl From<Key> for Option<u8> {
             Key::Dot => Some(b'.'),
             Key::QuestionMark => Some(b'?'),
             Key::ExclamationMark => Some(b'!'),
+            Key::NumpadDivide => Some(b'/'),
+            Key::NumpadMultiply => Some(b'*'),
+            Key::NumpadSubtract => Some(b'-'),
+            Key::NumpadAdd => Some(b'+'),
             _ => None,
         }
     }
@@ -298,6 +311,10 @@ impl From<char> for Key {
             '\u{f702}' => Key::Left,
             '\u{f703}' => Key::Right,
             '\u{8}' => Key::Backspace,
+            '/' => Key::NumpadDivide,
+            '*' => Key::NumpadMultiply,
+            '-' => Key::NumpadSubtract,
+            '+' => Key::NumpadAdd,
             _ => Key::Unknown,
         }
     }
