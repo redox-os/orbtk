@@ -252,3 +252,30 @@ progress_bar_indicator {
     height: 24;
     width: 0;
 }
+
+numeric_box {
+    background: transparent;
+    border-color: #647b91;
+    border-radius: 3;
+    border-width: 1;
+    height: 32;
+}
+
+numeric_box_input {
+    border-color:  #647b91;
+    border-radius: 3;
+    border-width: 1;
+    max-width: 64;
+}
+
+numeric_box_button {
+    border-color: transparent;
+    border-width: 0;
+    border-radius: 0;
+    font-size: 13;
+    max-height: 14;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
