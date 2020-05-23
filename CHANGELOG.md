@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 0.3.1-alpha3
 
+* NumericBox widget
 * Update caret position on TextBox by mouse click
 * Text input support for ', /, \, [, ], {, }
 * Multiple window support
