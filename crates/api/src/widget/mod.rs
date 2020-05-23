@@ -6,7 +6,6 @@ use crate::{css_engine::*, event::EventHandler};
 
 pub use self::build_context::*;
 pub use self::context::*;
-pub use self::message::*;
 pub use self::registry::*;
 pub use self::state::*;
 pub use self::states_context::*;
@@ -15,7 +14,6 @@ pub use self::widget_container::*;
 
 mod build_context;
 mod context;
-mod message;
 mod registry;
 mod state;
 mod states_context;

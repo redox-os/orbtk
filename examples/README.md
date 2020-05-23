@@ -9,6 +9,7 @@
 * grid: grid layout example
 * image: image widget
 * minimal: minimal example
+* multi_window: multi window example
 * overlay: draw widgets on the top
 * settings: use registry and settings service (load / save)
 * stack: stack layout example

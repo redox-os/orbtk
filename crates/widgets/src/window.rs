@@ -1,6 +1,6 @@
 use std::{collections::VecDeque, rc::Rc};
 
-use crate::prelude::*;
+use crate::{prelude::*, shell::WindowRequest};
 
 // --- KEYS --
 
@@ -18,6 +18,8 @@ enum Action {
 #[derive(Default, AsAny)]
 struct WindowState {
     actions: VecDeque<Action>,
+    background: Brush,
+    title: String
 }
 
 impl WindowState {
@@ -84,10 +86,35 @@ impl WindowState {
 
         ctx.widget().get_mut::<Global>("global").focused_widget = None;
     }
+
+    fn set_background(&mut self, ctx: &mut Context) {
+        let background: Brush = ctx.widget().clone("background");
+        match background {
+            Brush::SolidColor(color) => {
+                ctx.render_context_2_d().set_background(color);
+            }
+            _ => {}
+        };
+        self.background = background;
+    }
 }
 
 impl State for WindowState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.set_background(ctx);
+        self.title = ctx.widget().clone("title");
+    }
+
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+        if self.background != *ctx.widget().get("background") {
+            self.set_background(ctx);
+        }
+
+        if !self.title.eq(ctx.widget().get::<String>("title")) {
+            self.title = ctx.widget().clone("title");
+            ctx.send_window_request(WindowRequest::ChangeTitle(self.title.clone()));
+        }
+
         if let Some(action) = self.actions.pop_front() {
             match action {
                 Action::WindowEvent(window_event) => match window_event {
@@ -181,10 +208,6 @@ impl Template for Window {
                     .push_action(Action::FocusEvent(event));
                 true
             })
-    }
-
-    fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(ClearRenderObject)
     }
 
     fn layout(&self) -> Box<dyn Layout> {

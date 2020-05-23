@@ -2,7 +2,7 @@
 use std::fmt;
 
 /// A r g b a color.
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 #[repr(packed)]
 pub struct Color {
     pub data: u32,

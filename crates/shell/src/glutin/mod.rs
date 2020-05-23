@@ -1,8 +1,11 @@
-//! This module contains a platform specific implementation of the window shell.
+//! self module contains a platform specific implementation of the window shell.
 
 use std::sync::mpsc;
 
 pub use super::native::*;
+
+use lazy_static;
+use glutin::event_loop::{ControlFlow, EventLoop};
 
 use crate::prelude::*;
 
@@ -14,7 +17,7 @@ mod states;
 mod window;
 mod window_builder;
 
-/// Does nothing. This function is only use by the web backend.
+/// Does nothing. self function is only use by the web backend.
 pub fn initialize() {}
 
 /// Represents an application shell that could handle multiple windows.
@@ -24,6 +27,7 @@ where
 {
     window_shells: Vec<Window<A>>,
     requests: mpsc::Receiver<ShellRequest<A>>,
+    event_loop: Vec<EventLoop<()>>,
 }
 
 impl<A> Shell<A>
@@ -35,6 +39,7 @@ where
         Shell {
             window_shells: vec![],
             requests,
+            event_loop: vec![EventLoop::new()],
         }
     }
 
@@ -70,11 +75,15 @@ where
         }
     }
 
-     /// Runs (starts) the application shell and its windows.
-     pub fn run(&mut self) {
-        loop {
+    pub fn event_loop(&self) -> &EventLoop<()> {
+        self.event_loop.get(0).unwrap()
+    }
+
+    /// Runs (starts) the application shell and its windows.
+    pub fn run(mut self) {
+        self.event_loop.pop().unwrap().run(move |event, _, control_flow| {
             if self.window_shells.is_empty() {
-                return;
+                *control_flow = ControlFlow::Exit;
             }
 
             for i in 0..self.window_shells.len() {
@@ -82,7 +91,7 @@ where
                 if let Some(window_shell) = self.window_shells.get_mut(i) {
                     window_shell.render();
                     window_shell.update();
-                    window_shell.drain_events();
+                    window_shell.drain_events(control_flow, &event);
                     window_shell.receive_requests();
                     if !window_shell.is_open() {
                         remove = true;
@@ -94,8 +103,6 @@ where
                     break;
                 }
             }
-
-            self.receive_requests();
-        }
+        });
     }
 }

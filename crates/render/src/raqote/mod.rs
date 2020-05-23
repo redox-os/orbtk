@@ -22,6 +22,8 @@ pub struct RenderContext2D {
     clip: bool,
     last_rect: Rectangle,
     clip_rect: Option<Rectangle>,
+
+    background: Color,
 }
 
 impl RenderContext2D {
@@ -39,7 +41,13 @@ impl RenderContext2D {
             clip: false,
             last_rect: Rectangle::new(0.0, 0.0, width, height),
             clip_rect: None,
+            background: Color::default(),
         }
+    }
+
+    /// Set the background of the render context.
+    pub fn set_background(&mut self, background: Color) {
+        self.background = background;
     }
 
     pub fn resize(&mut self, width: f64, height: f64) {
@@ -434,7 +442,9 @@ impl RenderContext2D {
         self.draw_target.get_data_u8_mut()
     }
 
-    pub fn start(&mut self) {}
+    pub fn start(&mut self) {
+        self.clear(&Brush::from(self.background));
+    }
     pub fn finish(&mut self) {}
 }
 

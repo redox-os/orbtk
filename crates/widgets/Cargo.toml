@@ -10,7 +10,7 @@ keywords = ["ui", "widgets"]
 edition = "2018"
 
 [dependencies]
-dces = "0.2"
+dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "develop" }
 orbtk-api = { path = "../api", version = "0.3.1-alpha3" }
 orbtk-shell = { path = "../shell", version = "0.3.1-alpha3" }
 orbtk-theme = { path = "../theme", version = "0.3.1-alpha3" }
@@ -18,3 +18,4 @@ orbtk-render = { path = "../render", version = "0.3.1-alpha3" }
 orbtk-utils = { path = "../utils", version = "0.3.1-alpha3" }
 orbtk-proc-macros = { version = "0.3.1-alpha3", path = "../proc-macros" }
 rust_decimal = "1.5.0"
+lazy_static = "1.4"
