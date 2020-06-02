@@ -9,9 +9,9 @@ pub struct Font {
 
 impl Font {
     pub fn from_bytes(bytes: &'static [u8]) -> Result<Self, &'static str> {
-        rusttype::Font::from_bytes(bytes)
+        rusttype::Font::try_from_bytes(bytes)
             .map(|font| Font { inner: font })
-            .map_err(|_| "Could not load font from bytes")
+            .ok_or("Could not load font from bytes")
     }
 
     pub fn measure_text(&self, text: &str, size: f64) -> (f64, f64) {
