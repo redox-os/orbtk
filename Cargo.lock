@@ -1183,6 +1183,7 @@ dependencies = [
  "orbtk-shell 0.3.1-alpha3",
  "orbtk-theme 0.3.1-alpha3",
  "orbtk-utils 0.3.1-alpha3",
+ "rust_decimal 1.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1340,14 +1341,6 @@ name = "pathfinder_text"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "dces 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-api 0.3.1-alpha3",
- "orbtk-proc-macros 0.3.1-alpha3",
- "orbtk-render 0.3.1-alpha3",
- "orbtk-shell 0.3.1-alpha3",
- "orbtk-theme 0.3.1-alpha3",
- "orbtk-utils 0.3.1-alpha3",
- "rust_decimal 1.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "font-kit 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pathfinder_content 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pathfinder_geometry 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",

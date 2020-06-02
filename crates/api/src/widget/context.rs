@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap};
+use std::{collections::BTreeMap, sync::mpsc};
 
 use dces::prelude::{Entity, EntityComponentManager};
 
@@ -431,6 +431,11 @@ impl<'a> Context<'a> {
         self.provider.window_sender
             .send(request)
             .expect("Context::send_window_request: could not send request to window.");
+    }
+
+    /// Gets a window request sender.
+    pub fn window_sender(&self) -> mpsc::Sender<WindowRequest> {
+        self.provider.window_sender.clone()
     }
 
     /// Returns a keys collection of new added states.
