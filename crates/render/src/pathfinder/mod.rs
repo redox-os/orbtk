@@ -45,7 +45,9 @@ pub struct RenderContext2D {
     canvas: Vec<CanvasRenderingContext2D>,
     path: Path2D,
     size: (f64, f64),
+    origin_size: (f64, f64),
     config: RenderConfig,
+    device_pixel_ratio: f32,
     saved_config: Option<RenderConfig>,
 }
 
@@ -59,6 +61,8 @@ impl RenderContext2D {
             canvas: vec![],
             path: Path2D::new(),
             size: (width, height),
+            origin_size: (width, height),
+            device_pixel_ratio: 1.0,
             config: RenderConfig::default(),
             saved_config: None,
         }
@@ -86,8 +90,11 @@ impl RenderContext2D {
         }
     }
 
-    pub fn new_ex(size: (f64, f64), renderer: Renderer<GLDevice>, font_handles: Vec<Handle>) -> Self {
+    pub fn new_ex(origin_size: (f64, f64), size: (f64, f64), renderer: Renderer<GLDevice>, font_handles: Vec<Handle>) -> Self {
         let font_context = CanvasFontContext::from_fonts(font_handles.iter().cloned());
+
+        let  device_pixel_ratio = size.0 as f32 / origin_size.0 as f32;
+
 
         RenderContext2D {
             renderer: Some(renderer),
@@ -97,26 +104,28 @@ impl RenderContext2D {
                 .get_context_2d(font_context)],
             path: Path2D::new(),
             size,
+            origin_size,
+            device_pixel_ratio,
             config: RenderConfig::default(),
             saved_config: None,
         }
     }
 
     pub fn resize(&mut self, width: f64, height: f64) {
-        if let Some(renderer) = &mut self.renderer {
-            renderer.replace_dest_framebuffer(DestFramebuffer::full_window(vec2i(
-                width as i32,
-                height as i32,
-            )));
-        }
+        // if let Some(renderer) = &mut self.renderer {
+        //     renderer.replace_dest_framebuffer(DestFramebuffer::full_window(vec2i(
+        //         width as i32,
+        //         height as i32,
+        //     )));
+        // }
 
-        if let Some(font_context) = &self.font_context {
-            self.canvas.clear();
-            self.canvas.push(
-                Canvas::new(Vector2F::new(width as f32, height as f32))
-                    .get_context_2d(font_context.clone()),
-            )
-        }
+        // if let Some(font_context) = &self.font_context {
+        //     self.canvas.clear();
+        //     self.canvas.push(
+        //         Canvas::new(Vector2F::new(width as f32, height as f32))
+        //             .get_context_2d(font_context.clone()),
+        //     )
+        // }
     }
 
     /// Registers a new font file.
@@ -126,17 +135,23 @@ impl RenderContext2D {
 
     /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        let device_pixel_ratio = self.device_pixel_ratio();
         self.canvas().fill_rect(RectF::new(
-            Vector2F::new(x as f32, y as f32),
-            Vector2F::new(width as f32, height as f32),
+            Vector2F::new(x as f32, y as f32) * device_pixel_ratio,
+            Vector2F::new(width as f32, height as f32) * device_pixel_ratio,
         ));
     }
 
+    pub fn device_pixel_ratio(&self) -> f32 {
+        self.device_pixel_ratio
+    }
+ 
     /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other ctx settings.
     pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        let device_pixel_ratio = self.device_pixel_ratio();
         self.canvas().stroke_rect(RectF::new(
-            Vector2F::new(x as f32, y as f32),
-            Vector2F::new(width as f32, height as f32),
+            Vector2F::new(x as f32, y as f32) * device_pixel_ratio,
+            Vector2F::new(width as f32, height as f32) * device_pixel_ratio,
         ));
     }
 
@@ -144,7 +159,8 @@ impl RenderContext2D {
 
     /// Draws (fills) a given text at the given (x, y) position.
     pub fn fill_text(&mut self, text: &str, x: f64, y: f64) {
-        self.canvas().fill_text(text, vec2f(x as f32, y as f32));
+        let device_pixel_ratio = self.device_pixel_ratio();
+        self.canvas().fill_text(text, vec2f(x as f32, y as f32) * device_pixel_ratio);
     }
 
     pub fn measure(
@@ -195,19 +211,21 @@ impl RenderContext2D {
 
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        let device_pixel_ratio = self.device_pixel_ratio();
         self.path.rect(RectF::new(
             Vector2F::new(x as f32, y as f32),
             Vector2F::new(width as f32, height as f32),
-        ));
+        ) * device_pixel_ratio);
     }
 
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
     pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
+        let device_pixel_ratio = self.device_pixel_ratio();
         self.path.arc(
-            Vector2F::new(x as f32, y as f32),
-            radius as f32,
-            start_angle as f32,
-            end_angle as f32,
+            Vector2F::new(x as f32, y as f32) * device_pixel_ratio,
+            radius as f32 * device_pixel_ratio,
+            start_angle as f32 * device_pixel_ratio,
+            end_angle as f32 * device_pixel_ratio,
             ArcDirection::CW,
         )
     }
@@ -215,28 +233,34 @@ impl RenderContext2D {
     /// Begins a new sub-path at the point specified by the given {x, y} coordinates.
 
     pub fn move_to(&mut self, x: f64, y: f64) {
-        self.path.move_to(Vector2F::new(x as f32, y as f32));
+        let device_pixel_ratio = self.device_pixel_ratio();
+        let x_a = x as f32 * device_pixel_ratio;
+
+        self.path.move_to(Vector2F::new(x as f32 * device_pixel_ratio, y as f32 * device_pixel_ratio));
     }
 
     /// Adds a straight line to the current sub-path by connecting the sub-path's last point to the specified {x, y} coordinates.
     pub fn line_to(&mut self, x: f64, y: f64) {
-        self.path.line_to(Vector2F::new(x as f32, y as f32));
+        let device_pixel_ratio = self.device_pixel_ratio();
+        self.path.line_to(Vector2F::new(x as f32, y as f32) * device_pixel_ratio);
     }
 
     /// Adds a quadratic Bézier curve to the current sub-path.
     pub fn quadratic_curve_to(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
+        let device_pixel_ratio = self.device_pixel_ratio();
         self.path.quadratic_curve_to(
-            Vector2F::new(cpx as f32, cpy as f32),
-            Vector2F::new(x as f32, y as f32),
+            Vector2F::new(cpx as f32, cpy as f32) * device_pixel_ratio,
+            Vector2F::new(x as f32, y as f32) * device_pixel_ratio,
         );
     }
 
     /// Adds a cubic Bézier curve to the current sub-path. It requires three points: the first two are control points and the third one is the end point. The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
     pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
+        let device_pixel_ratio = self.device_pixel_ratio();
         self.path.bezier_curve_to(
-            Vector2F::new(cp1x as f32, cp1y as f32),
-            Vector2F::new(cp2x as f32, cp2y as f32),
-            Vector2F::new(x as f32, y as f32),
+            Vector2F::new(cp1x as f32, cp1y as f32) * device_pixel_ratio,
+            Vector2F::new(cp2x as f32, cp2y as f32) * device_pixel_ratio,
+            Vector2F::new(x as f32, y as f32) * device_pixel_ratio,
         );
     }
 
@@ -262,19 +286,21 @@ impl RenderContext2D {
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
     pub fn clip(&mut self) {
         // let path = self.path.clone();
-        // self.canvas().clip_path(path, FillRule::EvenOdd);
+        // self.canvas().clip_path(path, FillRule::Winding);
     }
 
     // Line styles
 
     /// Sets the thickness of lines.
     pub fn set_line_width(&mut self, line_width: f64) {
-        self.canvas().set_line_width(line_width as f32);
+        let device_pixel_ratio = self.device_pixel_ratio();
+        self.canvas().set_line_width(line_width as f32 * device_pixel_ratio);
     }
 
     /// Sets the alpha value,
     pub fn set_alpha(&mut self, alpha: f32) {
-        self.canvas().set_global_alpha(alpha as f32);
+        let device_pixel_ratio = self.device_pixel_ratio();
+        self.canvas().set_global_alpha(alpha as f32 * device_pixel_ratio);
     }
 
     /// Specific the font family.
@@ -284,7 +310,8 @@ impl RenderContext2D {
 
     /// Specifies the font size.
     pub fn set_font_size(&mut self, size: f64) {
-        self.canvas().set_font_size(size as f32);
+        let device_pixel_ratio = self.device_pixel_ratio();
+        self.canvas().set_font_size(size as f32 * device_pixel_ratio);
     }
 
     // Fill and stroke styley
@@ -356,11 +383,12 @@ impl RenderContext2D {
     }
 
     pub fn clear(&mut self, brush: &Brush) {
+        let device_pixel_ratio = self.device_pixel_ratio();
         let size = self.size;
         self.set_fill_style(brush.clone());
         self.canvas().clear_rect(RectF::new(
             Vector2F::new(0.0, 0.0),
-            Vector2F::new(size.0 as f32, size.1 as f32),
+            Vector2F::new(size.0 as f32, size.1 as f32) * device_pixel_ratio,
         ));
     }
 

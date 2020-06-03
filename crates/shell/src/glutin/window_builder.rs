@@ -139,11 +139,8 @@ where
 
         let logical_size = LogicalSize::new(self.bounds.width(), self.bounds.height());
 
-        let hidpi_factor = gl_context.window().current_monitor().scale_factor();
-        let physical_size: PhysicalSize<f64> = logical_size.to_physical(hidpi_factor);
-        // gl_context.window().set_inner_size(physical_size);
-
-        // println!("{:?}, {:?}, {:?}", window_size, hidpi_factor, physical_size);
+        let scale_factor = gl_context.window().current_monitor().scale_factor();
+        let physical_size: PhysicalSize<f64> = logical_size.to_physical(scale_factor);
 
         let framebuffer_size = vec2i(physical_size.width as i32, physical_size.height as i32);
       
@@ -164,16 +161,11 @@ where
             let mut font_data = vec![];
             font_data.extend_from_slice(font);
             let font = Handle::from_memory(Arc::new(font_data), 0);
-            println!("{}",font.load().unwrap().postscript_name().unwrap());
             font_handles.push(font);
            
         }
 
-        println!("{}", font_handles.len());
-
-        let mut render_context = RenderContext2D::new_ex((framebuffer_size.x() as f64, framebuffer_size.y() as f64), renderer, font_handles);
-
-       
+        let mut render_context = RenderContext2D::new_ex((self.bounds.width(), self.bounds.height()), (framebuffer_size.x() as f64, framebuffer_size.y() as f64), renderer, font_handles);     
 
         self.shell.window_shells.push(Window::new(
             gl_context,
@@ -183,7 +175,8 @@ where
             true,
             true,
             false,
-            (0.0, 0.0)
+            (0.0, 0.0),
+            scale_factor
         ))
     }
 }

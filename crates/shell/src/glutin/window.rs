@@ -26,6 +26,7 @@ where
     redraw: bool,
     close: bool,
     mouse_pos: (f64, f64),
+    scale_factor: f64
 }
 
 impl<A> Window<A>
@@ -128,6 +129,7 @@ where
                 if !window_id.eq(&self.id()) {
                     return;
                 }
+                let position = position.to_logical::<f64>(self.scale_factor);
                 self.mouse_pos = (position.x, position.y);
                 self.adapter.mouse(position.x, position.y);
                 self.update = true;
