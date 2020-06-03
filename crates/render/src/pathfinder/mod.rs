@@ -3,7 +3,7 @@ use crate::{utils::*, Pipeline, RenderConfig, RenderTarget, TextMetrics};
 use font_kit::handle::Handle;
 use pathfinder_canvas::{
     ArcDirection, Canvas, CanvasFontContext, CanvasRenderingContext2D, FillRule, FillStyle, Path2D,
-    RectF,
+    RectF, TextBaseline
 };
 use pathfinder_color::{ColorF, ColorU};
 use pathfinder_geometry::vector::{vec2f, vec2i, Vector2F, Vector2I};
@@ -159,8 +159,9 @@ impl RenderContext2D {
 
     /// Draws (fills) a given text at the given (x, y) position.
     pub fn fill_text(&mut self, text: &str, x: f64, y: f64) {
+        self.canvas().set_text_baseline(TextBaseline::Top);
         let device_pixel_ratio = self.device_pixel_ratio();
-        self.canvas().fill_text(text, vec2f(x as f32, y as f32) * device_pixel_ratio);
+        self.canvas().fill_text(text, vec2f(x as f32, y as f32)  * device_pixel_ratio);
     }
 
     pub fn measure(
@@ -170,11 +171,11 @@ impl RenderContext2D {
         family: impl Into<String>,
     ) -> TextMetrics {
         self.set_font_family(family);
-        self.set_font_size(font_size);
+        self.canvas().set_font_size(font_size as f32);
         let t_m = self.canvas().measure_text(text);
         TextMetrics {
             width: t_m.width as f64,
-            height: t_m.em_height_ascent as f64,
+            height: t_m.actual_bounding_box_ascent as f64,
         }
     }
 
@@ -183,7 +184,7 @@ impl RenderContext2D {
         let t_m = self.canvas().measure_text(text);
         TextMetrics {
             width: t_m.width as f64,
-            height: t_m.em_height_ascent as f64,
+            height: t_m.actual_bounding_box_ascent as f64,
         }
     }
 
