@@ -50,7 +50,7 @@ pub struct RenderContext2D {
 
 impl RenderContext2D {
     /// Creates a new render ctx 2d.
-    pub fn new(width: f64, height: f64) -> Self {
+    pub fn new(width: f64, height: f64, ) -> Self {
         RenderContext2D {
             renderer: None,
             font_context: None,

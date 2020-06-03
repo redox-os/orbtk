@@ -1,9 +1,10 @@
-use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, time::Duration};
+use std::{cell::RefCell, sync::Arc, char, collections::HashMap, rc::Rc, sync::mpsc, time::Duration};
 
 use glutin::{
     dpi::{LogicalSize, PhysicalSize},
     window, ContextBuilder, GlProfile, GlRequest,
 };
+use font_kit::handle::Handle;
 use pathfinder_color::ColorF;
 use pathfinder_geometry::vector::{vec2f, vec2i};
 use pathfinder_gl::{GLDevice, GLVersion};
@@ -152,7 +153,17 @@ where
             },
         );
 
-        let render_context = RenderContext2D::new_ex(window_size, renderer);
+        let mut font_handles = vec![];
+        for (_, font) in self.fonts {
+            let mut font_data = vec![];
+            font_data.extend_from_slice(font);
+            let font = Handle::from_memory(Arc::new(font_data), 0);
+            font_handles.push(font);
+        }
+
+        let mut render_context = RenderContext2D::new_ex(window_size, renderer);
+
+       
 
         self.shell.window_shells.push(Window::new(
             gl_context,
