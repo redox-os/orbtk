@@ -23,7 +23,7 @@ pathfinder_gl = { version = "0.5", optional = true }
 pathfinder_gpu =  { version = "0.5", optional = true }
 pathfinder_renderer = { version = "0.5", optional = true }
 pathfinder_resources =  { version = "0.5", optional = true }
-font-kit = "0.7.1"
+font-kit = "0.6"
 image = "0.23"
 
 [dependencies]

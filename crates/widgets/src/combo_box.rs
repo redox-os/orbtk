@@ -157,7 +157,7 @@ impl Template for ComboBoxItem {
             .border_brush("transparent")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(32.0)
-            .font("Roboto Regular")
+            .font("Roboto-Regular")
             .on_click(move |states, _| {
                 states.get::<ComboBoxItemState>(id).toggle_selection();
                 false

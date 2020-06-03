@@ -26,7 +26,7 @@ impl Template for FontIconBlock {
             .icon("")
             .icon_brush(colors::LINK_WATER_COLOR)
             .icon_size(fonts::ICON_FONT_SIZE_12)
-            .icon_font("Material Icons")
+            .icon_font("MaterialIcons-Regular")
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

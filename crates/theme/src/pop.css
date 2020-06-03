@@ -3,9 +3,9 @@
     /* background: #F5F6F7; */
     background: #3b434a;
     font-size: 16;
-    font-family: "Roboto Regular";
+    font-family: "Roboto-Regular";
     icon-size: 16;
-    icon-family: "Material Icons";
+    icon-family: "MaterialIcons-Regular";
 }
 
 window {
@@ -15,7 +15,7 @@ window {
 .body {
     color: #dfebf5;
     font-size: 16;
-    font-family: "Roboto Regular";
+    font-family: "Roboto-Regular";
 }
 
 check-box {
@@ -55,7 +55,7 @@ switch-toggle:selected {
 button, toggle-button {
     background: #647b91;
     border-radius: 2;
-    font-family: "Roboto Medium";
+    font-family: "Roboto-Medium";
 }
 
 button.primary {

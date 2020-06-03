@@ -1,5 +1,6 @@
 use crate::{utils::*, Pipeline, RenderConfig, RenderTarget, TextMetrics};
 
+use font_kit::handle::Handle;
 use pathfinder_canvas::{
     ArcDirection, Canvas, CanvasFontContext, CanvasRenderingContext2D, FillRule, FillStyle, Path2D,
     RectF,
@@ -85,8 +86,9 @@ impl RenderContext2D {
         }
     }
 
-    pub fn new_ex(size: (f64, f64), renderer: Renderer<GLDevice>) -> Self {
-        let font_context = CanvasFontContext::from_system_source();
+    pub fn new_ex(size: (f64, f64), renderer: Renderer<GLDevice>, font_handles: Vec<Handle>) -> Self {
+        let font_context = CanvasFontContext::from_fonts(font_handles.iter().cloned());
+
         RenderContext2D {
             renderer: Some(renderer),
             font_context: Some(font_context.clone()),
@@ -151,6 +153,8 @@ impl RenderContext2D {
         font_size: f64,
         family: impl Into<String>,
     ) -> TextMetrics {
+        self.set_font_family(family);
+        self.set_font_size(font_size);
         let t_m = self.canvas().measure_text(text);
         TextMetrics {
             width: t_m.width as f64,
@@ -274,7 +278,9 @@ impl RenderContext2D {
     }
 
     /// Specific the font family.
-    pub fn set_font_family(&mut self, family: impl Into<String>) {}
+    pub fn set_font_family(&mut self, family: impl Into<String>) {
+        self.canvas().set_font(family.into().as_str());
+    }
 
     /// Specifies the font size.
     pub fn set_font_size(&mut self, size: f64) {

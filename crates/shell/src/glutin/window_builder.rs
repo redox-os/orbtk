@@ -67,7 +67,7 @@ where
         WindowBuilder {
             shell,
             adapter,
-            fonts: HashMap::new(),
+            fonts: settings.fonts,
             window_builder,
             request_receiver: None,
             bounds: Rectangle::new(
@@ -158,10 +158,14 @@ where
             let mut font_data = vec![];
             font_data.extend_from_slice(font);
             let font = Handle::from_memory(Arc::new(font_data), 0);
+            println!("{}",font.load().unwrap().postscript_name().unwrap());
             font_handles.push(font);
+           
         }
 
-        let mut render_context = RenderContext2D::new_ex(window_size, renderer);
+        println!("{}", font_handles.len());
+
+        let mut render_context = RenderContext2D::new_ex(window_size, renderer, font_handles);
 
        
 
