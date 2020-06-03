@@ -55,14 +55,13 @@ where
 
     /// Creates the window builder from a settings object.
     pub fn from_settings(settings: WindowSettings, shell: &'a mut Shell<A>, adapter: A) -> Self {
-        let window_size = (settings.size.0, settings.size.1);
-        let physical_size = PhysicalSize::new(window_size.0, window_size.1);
+        let logical_size = LogicalSize::new(settings.size.0, settings.size.1);
         let window_builder = window::WindowBuilder::new()
             .with_title(settings.title)
             .with_decorations(!settings.borderless)
             .with_resizable(settings.resizeable)
             .with_always_on_top(settings.always_on_top)
-            .with_inner_size(physical_size);
+            .with_inner_size(logical_size);
 
         WindowBuilder {
             shell,
@@ -138,15 +137,22 @@ where
         let gl_context = unsafe { gl_context.make_current().unwrap() };
         gl::load_with(|name| gl_context.get_proc_address(name) as *const _);
 
-        let window_size = (self.bounds.width(), self.bounds.height());
+        let logical_size = LogicalSize::new(self.bounds.width(), self.bounds.height());
 
-        let logical_size = PhysicalSize::new(window_size.0, window_size.1);
+        let hidpi_factor = gl_context.window().current_monitor().scale_factor();
+        let physical_size: PhysicalSize<f64> = logical_size.to_physical(hidpi_factor);
+        // gl_context.window().set_inner_size(physical_size);
+
+        // println!("{:?}, {:?}, {:?}", window_size, hidpi_factor, physical_size);
+
+        let framebuffer_size = vec2i(physical_size.width as i32, physical_size.height as i32);
+      
 
         // Create a Pathfinder renderer.
         let mut renderer = Renderer::new(
             GLDevice::new(GLVersion::GL3, 0),
             &EmbeddedResourceLoader::new(),
-            DestFramebuffer::full_window(vec2i(window_size.0 as i32, window_size.1 as i32)),
+            DestFramebuffer::full_window(framebuffer_size),
             RendererOptions {
                 background_color: Some(ColorF::white()),
                 ..RendererOptions::default()
@@ -165,7 +171,7 @@ where
 
         println!("{}", font_handles.len());
 
-        let mut render_context = RenderContext2D::new_ex(window_size, renderer, font_handles);
+        let mut render_context = RenderContext2D::new_ex((framebuffer_size.x() as f64, framebuffer_size.y() as f64), renderer, font_handles);
 
        
 

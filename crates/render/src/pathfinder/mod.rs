@@ -373,6 +373,8 @@ impl RenderContext2D {
                     .get_context_2d(font_context.clone()),
             )
         }
+
+        // self.canvas().scale(vec2f(3.0, 3.0));
     }
 
     pub fn finish(&mut self) {
