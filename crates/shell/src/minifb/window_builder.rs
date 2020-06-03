@@ -125,9 +125,6 @@ where
             panic!("{}", e);
         });
 
-        // Limit to max ~60 fps update rate
-        window.limit_update_rate(Some(Duration::from_micros(64000)));
-
         let key_events = Rc::new(RefCell::new(vec![]));
 
         window.set_input_callback(Box::new(KeyInputCallBack {
