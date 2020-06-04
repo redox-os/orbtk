@@ -1,10 +1,12 @@
-use std::{cell::RefCell, sync::Arc, char, collections::HashMap, rc::Rc, sync::mpsc, time::Duration};
+use std::{
+    cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, sync::Arc, time::Duration,
+};
 
+use font_kit::handle::Handle;
 use glutin::{
     dpi::{LogicalSize, PhysicalSize},
     window, ContextBuilder, GlProfile, GlRequest,
 };
-use font_kit::handle::Handle;
 use pathfinder_color::ColorF;
 use pathfinder_geometry::vector::{vec2f, vec2i};
 use pathfinder_gl::{GLDevice, GLVersion};
@@ -143,7 +145,6 @@ where
         let physical_size: PhysicalSize<f64> = logical_size.to_physical(scale_factor);
 
         let framebuffer_size = vec2i(physical_size.width as i32, physical_size.height as i32);
-      
 
         // Create a Pathfinder renderer.
         let mut renderer = Renderer::new(
@@ -162,10 +163,14 @@ where
             font_data.extend_from_slice(font);
             let font = Handle::from_memory(Arc::new(font_data), 0);
             font_handles.push(font);
-           
         }
 
-        let mut render_context = RenderContext2D::new_ex((self.bounds.width(), self.bounds.height()), (framebuffer_size.x() as f64, framebuffer_size.y() as f64), renderer, font_handles);     
+        let mut render_context = RenderContext2D::new_ex(
+            (self.bounds.width(), self.bounds.height()),
+            (framebuffer_size.x() as f64, framebuffer_size.y() as f64),
+            renderer,
+            font_handles,
+        );
 
         self.shell.window_shells.push(Window::new(
             gl_context,
@@ -176,7 +181,7 @@ where
             true,
             false,
             (0.0, 0.0),
-            scale_factor
+            scale_factor,
         ))
     }
 }

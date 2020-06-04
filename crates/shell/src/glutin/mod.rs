@@ -4,8 +4,8 @@ use std::sync::mpsc;
 
 pub use super::native::*;
 
-use lazy_static;
 use glutin::event_loop::{ControlFlow, EventLoop};
+use lazy_static;
 
 use crate::prelude::*;
 
@@ -81,29 +81,32 @@ where
 
     /// Runs (starts) the application shell and its windows.
     pub fn run(mut self) {
-        self.event_loop.pop().unwrap().run(move |event, _, control_flow| {
-            if self.window_shells.is_empty() {
-                *control_flow = ControlFlow::Exit;
-            }
+        self.event_loop
+            .pop()
+            .unwrap()
+            .run(move |event, _, control_flow| {
+                if self.window_shells.is_empty() {
+                    *control_flow = ControlFlow::Exit;
+                }
 
-            for i in 0..self.window_shells.len() {
-                let mut remove = false;
-                if let Some(window_shell) = self.window_shells.get_mut(i) {                        
-                    window_shell.drain_events(control_flow, &event);
-                    window_shell.receive_requests();
-                    window_shell.update();
-                    window_shell.render();
-                  
-                    if !window_shell.is_open() {
-                        remove = true;
+                for i in 0..self.window_shells.len() {
+                    let mut remove = false;
+                    if let Some(window_shell) = self.window_shells.get_mut(i) {
+                        window_shell.drain_events(control_flow, &event);
+                        window_shell.receive_requests();
+                        window_shell.update();
+                        window_shell.render();
+
+                        if !window_shell.is_open() {
+                            remove = true;
+                        }
+                    }
+
+                    if remove {
+                        self.window_shells.remove(i);
+                        break;
                     }
                 }
-
-                if remove {
-                    self.window_shells.remove(i);
-                    break;
-                }
-            }
-        });
+            });
     }
 }

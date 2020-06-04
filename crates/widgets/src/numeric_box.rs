@@ -117,7 +117,7 @@ widget!(
     /// The widget can be controlled by clicking on the two control buttons, or the keybaord's
     /// Up and Down, Numpad+ and Numpad- keys, or the mouse scroll.
     /// Note: after the widget is initialized, changing the min, max or step properties has no effect.
-    /// 
+    ///
     /// # Examples:
     /// Create a NumericBox with default values:
     /// ```rust

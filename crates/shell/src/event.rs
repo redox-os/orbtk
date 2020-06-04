@@ -355,7 +355,7 @@ impl From<char> for Key {
             '\\' => Key::Backslash,
             '[' => Key::BraceLeft,
             ']' => Key::BraceRight,
-            '{' =>  Key::CurlyBraceLeft,
+            '{' => Key::CurlyBraceLeft,
             '}' => Key::CurlyBraceRight,
             '\u{f700}' => Key::Up,
             '\u{f701}' => Key::Down,

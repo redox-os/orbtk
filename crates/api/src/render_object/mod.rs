@@ -3,11 +3,7 @@
 use std::{any::Any, collections::BTreeMap};
 
 use crate::{
-    application::ContextProvider,
-    css_engine::*,
-    prelude::*,
-    render::RenderContext2D,
-    utils::*,
+    application::ContextProvider, css_engine::*, prelude::*, render::RenderContext2D, utils::*,
 };
 
 pub use self::default::*;
@@ -77,12 +73,7 @@ pub trait RenderObject: Any {
         }
 
         self.render_self(
-            &mut Context::new(
-                (entity, ecm),
-                &theme,
-                context_provider,
-                render_context,
-            ),
+            &mut Context::new((entity, ecm), &theme, context_provider, render_context),
             &global_position,
         );
 

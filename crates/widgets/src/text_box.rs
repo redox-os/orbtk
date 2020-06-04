@@ -87,13 +87,16 @@ impl TextBoxState {
         ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
 
         // select all text if there is text and the element is not focused yet.
-        if ctx.widget().get::<String16>("text").len() > 0 && !(*ctx.widget().get::<bool>("focused")) {
+        if ctx.widget().get::<String16>("text").len() > 0 && !(*ctx.widget().get::<bool>("focused"))
+        {
             self.select_all(ctx);
             return;
         }
 
         // change only the caret position if the text is already selected or if the element is focused already
-        if *ctx.get_widget(self.cursor).get::<bool>("expanded") || *ctx.widget().get::<bool>("focused") {
+        if *ctx.get_widget(self.cursor).get::<bool>("expanded")
+            || *ctx.widget().get::<bool>("focused")
+        {
             ctx.widget()
                 .get_mut::<TextSelection>("text_selection")
                 .start_index = self.get_new_caret_position(ctx, p);
@@ -105,7 +108,11 @@ impl TextBoxState {
 
     // Get new position for the caret based on current mouse position
     fn get_new_caret_position(&self, ctx: &mut Context<'_>, p: Mouse) -> usize {
-        if let Some((index, _x)) = self.map_chars_index_to_position(ctx).iter().min_by_key(|(_index, x)| (p.x - x).abs() as u64) {
+        if let Some((index, _x)) = self
+            .map_chars_index_to_position(ctx)
+            .iter()
+            .min_by_key(|(_index, x)| (p.x - x).abs() as u64)
+        {
             return *index;
         }
 
@@ -116,7 +123,8 @@ impl TextBoxState {
     fn map_chars_index_to_position(&self, ctx: &mut Context<'_>) -> Vec<(usize, f64)> {
         let text: String = ctx.widget().get::<String16>("text").as_string();
         // start x position of the cursor is start position of the text element + padding left
-        let start_position: f64 = ctx.widget().get::<Point>("position").x + ctx.widget().get::<Thickness>("padding").left;
+        let start_position: f64 =
+            ctx.widget().get::<Point>("position").x + ctx.widget().get::<Thickness>("padding").left;
         // array which will hold char index and it's x position
         let mut position_index: Vec<(usize, f64)> = Vec::with_capacity(text.len());
         position_index.push((0, start_position));
@@ -125,7 +133,10 @@ impl TextBoxState {
         let font_size: f64 = ctx.widget().clone_or_default::<f64>("font_size");
 
         for (index, _) in text.chars().enumerate() {
-            let bound_width: f64 = ctx.render_context_2_d().measure(&text[..index + 1], font_size, &font).width;
+            let bound_width: f64 = ctx
+                .render_context_2_d()
+                .measure(&text[..index + 1], font_size, &font)
+                .width;
             let next_position: f64 = start_position + bound_width;
 
             position_index.push((index + 1, next_position));

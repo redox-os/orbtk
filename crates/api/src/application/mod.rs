@@ -46,7 +46,8 @@ impl Application {
 
     /// Creates a new window and add it to the application.
     pub fn window<F: Fn(&mut BuildContext) -> Entity + 'static>(mut self, create_fn: F) -> Self {
-        let (adapter, settings, receiver) = create_window(self.name.clone(), self.request_sender.clone(), create_fn);
+        let (adapter, settings, receiver) =
+            create_window(self.name.clone(), self.request_sender.clone(), create_fn);
 
         self.shell
             .create_window_from_settings(settings, adapter)

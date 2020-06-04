@@ -26,7 +26,7 @@ where
     redraw: bool,
     close: bool,
     mouse_pos: (f64, f64),
-    scale_factor: f64
+    scale_factor: f64,
 }
 
 impl<A> Window<A>

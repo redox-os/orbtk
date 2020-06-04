@@ -70,8 +70,8 @@ where
         }
     }
 
-     /// Runs (starts) the application shell and its windows.
-     pub fn run(&mut self) {
+    /// Runs (starts) the application shell and its windows.
+    pub fn run(&mut self) {
         loop {
             if self.window_shells.is_empty() {
                 return;

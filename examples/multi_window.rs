@@ -1,5 +1,4 @@
 /// mutli window will not work properly on web now. But it will be fixed.
-
 use orbtk::prelude::*;
 
 #[derive(AsAny, Default)]
@@ -24,7 +23,12 @@ impl State for MainState {
                     .size(100.0, 75.0)
                     .child(
                         Stack::create()
-                            .child(TextBlock::create().text("New window").margin(4.0).build(ctx))
+                            .child(
+                                TextBlock::create()
+                                    .text("New window")
+                                    .margin(4.0)
+                                    .build(ctx),
+                            )
                             .build(ctx),
                     )
                     .build(ctx)

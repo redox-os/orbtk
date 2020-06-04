@@ -42,7 +42,7 @@ impl ContextProvider {
             mouse_position: Rc::new(Cell::new(Point::new(0.0, 0.0))),
             window_sender,
             shell_sender,
-            application_name: application_name.into()
+            application_name: application_name.into(),
         }
     }
 }
