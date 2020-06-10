@@ -45,6 +45,8 @@ impl State for MouseBehaviorState {
                             },
                             parent,
                         )
+                    } else {
+                        return;
                     }
                 }
                 Action::Scroll(p) => {

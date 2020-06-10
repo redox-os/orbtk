@@ -351,6 +351,8 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
             // shell.set_update(update);
 
             // handle states
+            
+            crate::shell::CONSOLE.time("update-time:");
 
             let root = ecm.entity_store().root();
 
@@ -441,6 +443,8 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                     break;
                 }
             }
+
+            crate::shell::CONSOLE.time_end("update-time:");
 
             if self.context_provider.event_queue.borrow().is_empty() {
                 break;

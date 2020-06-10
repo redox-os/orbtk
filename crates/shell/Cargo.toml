@@ -45,3 +45,4 @@ pfinder = [
     "pathfinder_renderer",
     "pathfinder_resources"
 ]
+log = []
