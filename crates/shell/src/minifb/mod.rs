@@ -79,12 +79,13 @@ where
 
             for i in 0..self.window_shells.len() {
                 let mut remove = false;
-                if let Some(window_shell) = self.window_shells.get_mut(i) {           
+                if let Some(window_shell) = self.window_shells.get_mut(i) {        
                     window_shell.update();
-                    window_shell.render();
+                    window_shell.render();   
                     
                     window_shell.drain_events();
-                    window_shell.receive_requests();
+                    window_shell.receive_requests();    
+                   
                   
                     if !window_shell.is_open() {
                         remove = true;

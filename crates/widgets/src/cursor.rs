@@ -7,11 +7,12 @@ pub struct CursorState;
 impl State for CursorState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let selection_length = ctx.widget().get::<TextSelection>("text_selection").length;
+        let expanded = *ctx.widget().get::<bool>("expanded");
 
-        if selection_length > 0 {
+        if selection_length > 0 && !expanded {
             ctx.widget().set("expanded", true);
             ctx.widget().update_theme_by_state(false);
-        } else {
+        } else if expanded {
             ctx.widget().set("expanded", false);
             ctx.widget().update_theme_by_state(false);
         }

@@ -351,10 +351,12 @@ impl State for TextBoxState {
                     self.request_focus(ctx, p);
                 }
             }
+
+            self.action = None;
+            ctx.widget().update_theme_by_state(false);
         }
 
-        self.action = None;
-        ctx.widget().update_theme_by_state(false);
+       
         self.len = ctx.widget().get::<String16>("text").len();
     }
 }

@@ -220,7 +220,7 @@ where
                     self.window_state.size.0 as usize,
                     self.window_state.size.1 as usize,
                 );
-                CONSOLE.time_end("render");
+                // CONSOLE.time_end("render");
                 self.redraw = false;
             }
         }
