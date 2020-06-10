@@ -9,7 +9,9 @@
       "type": "shell",
       "args": [
         "build",
-        "--examples=minimal"
+        "--examples=minimal",
+        "--features",
+        "log"
       ],
       "presentation": {
         "reveal": "always",
