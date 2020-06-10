@@ -246,6 +246,7 @@ cargo doc --no-deps --open
 * [doit](https://codeberg.org/flovanco/doit): Task app
 * [OrbCalculator](https://gitlab.redox-os.org/redox-os/orbcalculator): Calculator based on OrbTk
 * [Kanter](https://github.com/lukors/kanter): Node based texture editor 
+* [twin-commander](https://github.com/kivimango/twin-commander): A twin-panel file manager specifically for the Redox OS 
 
 ## Contribution
 
