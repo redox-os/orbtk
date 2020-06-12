@@ -28,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Set nightly default
-        run:  rustup default nightly
+        run:  rustup default nightly-2019-11-25
       - name: Update
         run: sudo apt update
       - name: Install fuse
