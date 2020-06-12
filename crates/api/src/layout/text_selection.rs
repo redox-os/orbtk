@@ -109,7 +109,7 @@ impl Layout for TextSelectionLayout {
         let mut pos = 0.0;
         let mut size = self.desired_size.borrow().size();
 
-        let vertical_alignment: Alignment = component(ecm, entity, "vertical_alignment");
+        let vertical_alignment: Alignment = component(ecm, entity, "v_align");
         let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
         let text_block: Entity = component::<u32>(ecm, entity, "text_block").into();
         let width = component::<Constraint>(ecm, entity, "constraint").width();

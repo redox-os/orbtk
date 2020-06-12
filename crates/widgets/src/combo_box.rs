@@ -361,7 +361,7 @@ impl Template for ComboBox {
                     .child(
                         FontIconBlock::new()
                             .attach(Grid::column(2))
-                            .vertical_alignment("center")
+                            .v_align("center")
                             .icon(material_font_icons::ARROW_DOWN_ICON)
                             .build(ctx),
                     )
@@ -371,7 +371,7 @@ impl Template for ComboBox {
         self.state_mut().selected_container = selected_container;
 
         let items_panel = Stack::new()
-            .vertical_alignment("start")
+            .v_align("start")
             .id(ITEMS_PANEL)
             .orientation("vertical")
             .build(ctx);

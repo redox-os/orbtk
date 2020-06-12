@@ -41,8 +41,8 @@ impl Layout for StackLayout {
             return desired.clone();
         }
 
-        let halign: Alignment = component(ecm, entity, "horizontal_alignment");
-        let valign: Alignment = component(ecm, entity, "vertical_alignment");
+        let halign: Alignment = component(ecm, entity, "h_align");
+        let valign: Alignment = component(ecm, entity, "v_align");
         let (old_valign, old_halign) = self.old_alignment.get();
 
         if halign != old_halign || valign != old_valign {
@@ -113,8 +113,8 @@ impl Layout for StackLayout {
             return self.desired_size.borrow().size();
         }
 
-        let halign: Alignment = component(ecm, entity, "horizontal_alignment");
-        let valign: Alignment = component(ecm, entity, "vertical_alignment");
+        let halign: Alignment = component(ecm, entity, "h_align");
+        let valign: Alignment = component(ecm, entity, "v_align");
         let margin: Thickness = component(ecm, entity, "margin");
         let constraint: Constraint = component(ecm, entity, "constraint");
         let orientation: Orientation = component(ecm, entity, "orientation");
@@ -145,16 +145,12 @@ impl Layout for StackLayout {
 
             match orientation {
                 Orientation::Horizontal => {
-                    if let Some(halign) =
-                        component_try_mut::<Alignment>(ecm, child, "horizontal_alignment")
-                    {
+                    if let Some(halign) = component_try_mut::<Alignment>(ecm, child, "h_align") {
                         *halign = Alignment::Start;
                     }
                 }
                 _ => {
-                    if let Some(halign) =
-                        component_try_mut::<Alignment>(ecm, child, "vertical_alignment")
-                    {
+                    if let Some(halign) = component_try_mut::<Alignment>(ecm, child, "v_align") {
                         *halign = Alignment::Start;
                     }
                 }
@@ -178,8 +174,8 @@ impl Layout for StackLayout {
                 apply_spacing(&mut child_margin, spacing, orientation, index, nchildren);
             }
 
-            let child_halign: Alignment = component(ecm, child, "horizontal_alignment");
-            let child_valign: Alignment = component(ecm, child, "vertical_alignment");
+            let child_halign: Alignment = component(ecm, child, "h_align");
+            let child_valign: Alignment = component(ecm, child, "v_align");
 
             if let Some(child_bounds) = component_try_mut::<Rectangle>(ecm, child, "bounds") {
                 apply_arrangement(

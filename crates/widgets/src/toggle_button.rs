@@ -101,11 +101,11 @@ impl Template for ToggleButton {
                                         Stack::new()
                                             .orientation("horizontal")
                                             .spacing(id)
-                                            .vertical_alignment("center")
-                                            .horizontal_alignment("center")
+                                            .v_align("center")
+                                            .h_align("center")
                                             .child(
                                                 FontIconBlock::new()
-                                                    .vertical_alignment("center")
+                                                    .v_align("center")
                                                     .icon(id)
                                                     .icon_brush(id)
                                                     .icon_size(id)
@@ -114,7 +114,7 @@ impl Template for ToggleButton {
                                             )
                                             .child(
                                                 TextBlock::new()
-                                                    .vertical_alignment("center")
+                                                    .v_align("center")
                                                     .foreground(id)
                                                     .text(id)
                                                     .font_size(id)

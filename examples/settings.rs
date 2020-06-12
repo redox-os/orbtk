@@ -88,12 +88,7 @@ impl Template for MainView {
                         .add(4.0)
                         .add("Auto"),
                 )
-                .child(
-                    TextBox::new()
-                        .vertical_alignment("center")
-                        .text(id)
-                        .build(ctx),
-                )
+                .child(TextBox::new().v_align("center").text(id).build(ctx))
                 .child(
                     Button::new()
                         .class("single_content")

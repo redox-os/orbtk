@@ -302,7 +302,7 @@ impl ListView {
 impl Template for ListView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let items_panel = Stack::new()
-            .vertical_alignment("start")
+            .v_align("start")
             .id(ITEMS_PANEL)
             .orientation(id)
             .build(ctx);

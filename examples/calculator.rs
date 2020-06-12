@@ -198,7 +198,7 @@ impl Template for MainView {
             .text("")
             .child(
                 Grid::new()
-                    .rows(Rows::new().add(72.0).add("*").build())
+                    .rows(Rows::new().add(72.0).add("*"))
                     .child(
                         Container::new()
                             .padding(8.0)
@@ -217,7 +217,7 @@ impl Template for MainView {
                                                     .text("")
                                                     .element("text-block")
                                                     .id("input")
-                                                    .vertical_alignment("start")
+                                                    .v_align("start")
                                                     .build(ctx),
                                             )
                                             .build(ctx),
@@ -226,8 +226,8 @@ impl Template for MainView {
                                         TextBlock::new()
                                             .element("text-block")
                                             .text(id)
-                                            .vertical_alignment("end")
-                                            .horizontal_alignment("end")
+                                            .v_align("end")
+                                            .h_align("end")
                                             .build(ctx),
                                     )
                                     .build(ctx),

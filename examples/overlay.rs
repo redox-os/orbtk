@@ -12,8 +12,8 @@ impl Template for MainView {
                 TextBlock::new()
                     .foreground("#3b434a")
                     .text("Overlay")
-                    .vertical_alignment("center")
-                    .horizontal_alignment("center")
+                    .v_align("center")
+                    .h_align("center")
                     .build(ctx),
             )
             .build(ctx);
@@ -26,8 +26,8 @@ impl Template for MainView {
                     TextBlock::new()
                         .text("MainView")
                         .element("h1")
-                        .vertical_alignment("center")
-                        .horizontal_alignment("center")
+                        .v_align("center")
+                        .h_align("center")
                         .build(ctx),
                 )
                 .build(ctx),

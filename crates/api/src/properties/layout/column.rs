@@ -137,8 +137,8 @@ impl ColumnsBuilder {
         ColumnsBuilder::default()
     }
 
-     /// Inserts a new column.
-     pub fn add<C: Into<Column>>(mut self, column: C) -> Self {
+    /// Inserts a new column.
+    pub fn add<C: Into<Column>>(mut self, column: C) -> Self {
         self.columns.push(column.into());
         self
     }

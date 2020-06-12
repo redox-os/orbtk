@@ -16,7 +16,7 @@ impl Template for MainView {
         self.name("MainView").child(
             Grid::new()
                 .columns(Columns::new().add("*").add("auto").add(50.0))
-                .rows(Rows::new().add("*").add("*").build())
+                .rows(Rows::new().add("*").add("*"))
                 .child(
                     Grid::new()
                         .element("lynch")
@@ -26,8 +26,8 @@ impl Template for MainView {
                             TextBlock::new()
                                 .text("(0,0)")
                                 .element("light-text")
-                                .horizontal_alignment("center")
-                                .vertical_alignment("center")
+                                .h_align("center")
+                                .v_align("center")
                                 .build(ctx),
                         )
                         .build(ctx),
@@ -42,8 +42,8 @@ impl Template for MainView {
                             TextBlock::new()
                                 .text("(1,0)")
                                 .element("white")
-                                .horizontal_alignment("center")
-                                .vertical_alignment("center")
+                                .h_align("center")
+                                .v_align("center")
                                 .build(ctx),
                         )
                         .build(ctx),
@@ -56,8 +56,8 @@ impl Template for MainView {
                             TextBlock::new()
                                 .text("(2,0)")
                                 .element("linkwater")
-                                .horizontal_alignment("center")
-                                .vertical_alignment("center")
+                                .h_align("center")
+                                .v_align("center")
                                 .build(ctx),
                         )
                         .build(ctx),
@@ -72,8 +72,8 @@ impl Template for MainView {
                             TextBlock::new()
                                 .text("(0,1) - ColumnSpan 3")
                                 .element("goldendream")
-                                .horizontal_alignment("center")
-                                .vertical_alignment("center")
+                                .h_align("center")
+                                .v_align("center")
                                 .build(ctx),
                         )
                         .build(ctx),

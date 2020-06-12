@@ -47,7 +47,7 @@ impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.child(
             Stack::new()
-                .horizontal_alignment("center")
+                .h_align("center")
                 .margin((16.0, 16.0, 16.0, 16.0))
                 .spacing(8.0)
                 .child(
@@ -59,7 +59,7 @@ impl Template for MainView {
                 )
                 .child(
                     Stack::new()
-                        .horizontal_alignment("center")
+                        .h_align("center")
                         .spacing(8.0)
                         .child(
                             Button::new()

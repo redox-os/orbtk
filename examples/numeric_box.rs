@@ -8,7 +8,7 @@ impl Template for MainView {
             Stack::new()
                 .spacing(8.0)
                 .orientation("vertical")
-                .horizontal_alignment("center")
+                .h_align("center")
                 .child(
                     TextBlock::new()
                         .text("Tyre pressure")

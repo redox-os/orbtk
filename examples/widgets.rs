@@ -242,7 +242,7 @@ impl Template for MainView {
                                     .element("h1")
                                     .id("value_text")
                                     .text("0")
-                                    .horizontal_alignment("center")
+                                    .h_align("center")
                                     .build(ctx),
                             )
                             .child(
@@ -343,7 +343,7 @@ impl Template for MainView {
                                             .clone();
                                         TextBlock::new()
                                             .margin((0.0, 0.0, 0.0, 2.0))
-                                            .vertical_alignment("center")
+                                            .v_align("center")
                                             .text(text)
                                             .build(bc)
                                     })
@@ -421,7 +421,7 @@ impl Template for MainView {
                                             .clone();
                                         TextBlock::new()
                                             .margin((0.0, 0.0, 0.0, 2.0))
-                                            .vertical_alignment("center")
+                                            .v_align("center")
                                             .text(text)
                                             .build(bc)
                                     })

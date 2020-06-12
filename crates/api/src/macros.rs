@@ -62,8 +62,8 @@ macro_rules! widget {
             element: Option<String>,
             id: Option<String>,
             classes: HashSet<String>,
-            horizontal_alignment: Alignment,
-            vertical_alignment: Alignment,
+            h_align: Alignment,
+            v_align: Alignment,
             margin: Thickness,
             enabled: bool,
             clip: bool,
@@ -134,13 +134,29 @@ macro_rules! widget {
             }
 
             /// Sets or shares the vertical alignment property.
+            #[inline(always)]
+            pub fn v_align(self, v_align: impl IntoPropertySource<Alignment>) -> Self {
+                self.set_property("v_align", v_align)
+            }
+
+             /// Sets or shares the horizontal alignment property.
+             #[inline(always)]
+             pub fn h_align(self, h_align: impl IntoPropertySource<Alignment>) -> Self {
+                 self.set_property("h_align", h_align)
+             }
+
+            /// Sets or shares the vertical alignment property.
+            #[inline(always)]
+            #[deprecated = "Use v_align instead"]
             pub fn vertical_alignment(self, vertical_alignment: impl IntoPropertySource<Alignment>) -> Self {
-                self.set_property("vertical_alignment", vertical_alignment)
+                self.v_align(vertical_alignment)
             }
 
             /// Sets or shares the horizontal alignment property.
+            #[inline(always)]
+            #[deprecated = "Use h_align instead"]
             pub fn horizontal_alignment(self, horizontal_alignment: impl IntoPropertySource<Alignment>) -> Self {
-                self.set_property("horizontal_alignment", horizontal_alignment)
+                self.h_align(horizontal_alignment)
             }
 
             /// Sets or shares the visibility property.
@@ -366,8 +382,8 @@ macro_rules! widget {
                 // register default set of properties
                 ctx.register_property("bounds", entity, this.bounds);
                 ctx.register_property("position", entity, this.position);
-                ctx.register_property("vertical_alignment", entity, this.vertical_alignment);
-                ctx.register_property("horizontal_alignment", entity, this.horizontal_alignment);
+                ctx.register_property("v_align", entity, this.v_align);
+                ctx.register_property("h_align", entity, this.h_align);
                 ctx.register_property("visibility", entity, this.visibility);
                 ctx.register_property("margin", entity, this.margin);
                 ctx.register_property("enabled", entity, this.enabled);

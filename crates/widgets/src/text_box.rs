@@ -420,8 +420,8 @@ widget!(
 impl Template for TextBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let text_block = TextBlock::new()
-            .vertical_alignment("center")
-            .horizontal_alignment("start")
+            .v_align("center")
+            .h_align("start")
             .foreground(id)
             .text(id)
             .water_mark(id)
@@ -470,7 +470,7 @@ impl Template for TextBox {
                                     .child(
                                         Cursor::new()
                                             .id(ID_CURSOR)
-                                            .horizontal_alignment("start")
+                                            .h_align("start")
                                             .text_block(text_block.0)
                                             .focused(id)
                                             .text_selection(id)

@@ -41,10 +41,10 @@ impl State for SwitchState {
             let mut switch_toggle = ctx.get_widget(self.switch_toggle);
 
             if self.selected {
-                switch_toggle.set("horizontal_alignment", Alignment::from("end"));
+                switch_toggle.set("h_align", Alignment::from("end"));
                 add_selector_to_widget("selected", &mut switch_toggle);
             } else {
-                switch_toggle.set("horizontal_alignment", Alignment::from("start"));
+                switch_toggle.set("h_align", Alignment::from("start"));
                 remove_selector_from_widget("selected", &mut switch_toggle);
             }
 
@@ -115,15 +115,15 @@ impl Template for Switch {
                             .child(
                                 Container::new()
                                     .element(SWITCH_TRACK)
-                                    .vertical_alignment("center")
+                                    .v_align("center")
                                     .build(ctx),
                             )
                             .child(
                                 Container::new()
                                     .element(SWITCH_TOGGLE)
                                     .id(SWITCH_TOGGLE)
-                                    .vertical_alignment("center")
-                                    .horizontal_alignment("start")
+                                    .v_align("center")
+                                    .h_align("start")
                                     .width(20.0)
                                     .height(20.0)
                                     .border_radius(10.0)

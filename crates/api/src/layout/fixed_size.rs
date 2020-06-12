@@ -38,8 +38,8 @@ impl Layout for FixedSizeLayout {
 
         let widget = WidgetContainer::new(entity, ecm, theme);
 
-        let horizontal_alignment: Alignment = *widget.get("horizontal_alignment");
-        let vertical_alignment: Alignment = *widget.get("vertical_alignment");
+        let horizontal_alignment: Alignment = *widget.get("h_align");
+        let vertical_alignment: Alignment = *widget.get("v_align");
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0

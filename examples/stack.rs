@@ -20,28 +20,28 @@ impl Template for MainView {
                             Button::new()
                                 .class("single_content")
                                 .text("left")
-                                .horizontal_alignment("start")
+                                .h_align("start")
                                 .build(ctx),
                         )
                         .child(
                             Button::new()
                                 .class("single_content")
                                 .text("center")
-                                .horizontal_alignment("center")
+                                .h_align("center")
                                 .build(ctx),
                         )
                         .child(
                             Button::new()
                                 .class("single_content")
                                 .text("stretch")
-                                .horizontal_alignment("stretch")
+                                .h_align("stretch")
                                 .build(ctx),
                         )
                         .child(
                             Button::new()
                                 .class("single_content")
                                 .text("right")
-                                .horizontal_alignment("end")
+                                .h_align("end")
                                 .build(ctx),
                         )
                         .build(ctx),
@@ -62,14 +62,14 @@ impl Template for MainView {
                             Button::new()
                                 .class("single_content")
                                 .text("top")
-                                .vertical_alignment("start")
+                                .v_align("start")
                                 .build(ctx),
                         )
                         .child(
                             Button::new()
                                 .class("single_content")
                                 .text("center")
-                                .vertical_alignment("center")
+                                .v_align("center")
                                 .build(ctx),
                         )
                         .child(
@@ -77,14 +77,14 @@ impl Template for MainView {
                                 .class("single_content")
                                 .height(0.0)
                                 .text("stretch")
-                                .vertical_alignment("stretch")
+                                .v_align("stretch")
                                 .build(ctx),
                         )
                         .child(
                             Button::new()
                                 .class("single_content")
                                 .text("bottom")
-                                .vertical_alignment("end")
+                                .v_align("end")
                                 .build(ctx),
                         )
                         .build(ctx),
