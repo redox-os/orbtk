@@ -86,9 +86,9 @@ impl State for MainViewState {
                     println!("entry changed: {}", text);
                 }
                 Action::ValueChanged(entity) => {
-                    let value =
-                        ((*ctx.get_widget(entity).get::<f64>("value")).floor() as i32).to_string();
-                    ctx.child("value_text").set("text", String16::from(value));
+                    let val =
+                        ((*ctx.get_widget(entity).get::<f64>("val")).floor() as i32).to_string();
+                    ctx.child("value_text").set("text", String16::from(val));
                 }
             }
 
