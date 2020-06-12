@@ -75,12 +75,12 @@ impl Template for Button {
             .pressed(false)
             .spacing(8.0)
             .child(
-                MouseBehavior::create()
+                MouseBehavior::new()
                     .pressed(id)
                     .enabled(id)
                     .target(id.0)
                     .child(
-                        Container::create()
+                        Container::new()
                             .background(id)
                             .border_radius(id)
                             .border_width(id)
@@ -88,12 +88,12 @@ impl Template for Button {
                             .padding(id)
                             .opacity(id)
                             .child(
-                                Stack::create()
+                                Stack::new()
                                     .orientation("horizontal")
                                     .spacing(id)
                                     .horizontal_alignment("center")
                                     .child(
-                                        FontIconBlock::create()
+                                        FontIconBlock::new()
                                             .vertical_alignment("center")
                                             .icon(id)
                                             .icon_brush(id)
@@ -103,7 +103,7 @@ impl Template for Button {
                                             .build(ctx),
                                     )
                                     .child(
-                                        TextBlock::create()
+                                        TextBlock::new()
                                             .vertical_alignment("center")
                                             .foreground(id)
                                             .text(id)

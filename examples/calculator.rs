@@ -15,7 +15,7 @@ fn get_theme() -> ThemeValue {
 
 #[cfg(feature = "light-theme")]
 fn get_theme() -> ThemeValue {
-    ThemeValue::create()
+    ThemeValue::new()
         .extension_css(DARK_EXT)
         .extension_css(LIGHT_EXT)
         .build()
@@ -138,7 +138,7 @@ fn generate_digit_button(
     column_span: usize,
     row: usize,
 ) -> Entity {
-    let mut button = Button::create()
+    let mut button = Button::new()
         .class("single_content")
         .min_size(48.0, 48.0)
         .text(sight.to_string())
@@ -166,7 +166,7 @@ fn generate_operation_button(
     column_span: usize,
     row: usize,
 ) -> Entity {
-    let mut button = Button::create()
+    let mut button = Button::new()
         .class("single_content")
         .min_size(48.0, 48.0)
         .text(sight.to_string())
@@ -197,21 +197,21 @@ impl Template for MainView {
             .height(336.0)
             .text("")
             .child(
-                Grid::create()
-                    .rows(Rows::create().row(72.0).row("*").build())
+                Grid::new()
+                    .rows(Rows::new().row(72.0).row("*").build())
                     .child(
-                        Container::create()
+                        Container::new()
                             .padding(8.0)
                             .element("container")
                             .class("header")
                             .attach(Grid::row(0))
                             .child(
-                                Grid::create()
+                                Grid::new()
                                     .child(
-                                        ScrollViewer::create()
+                                        ScrollViewer::new()
                                             .scroll_viewer_mode(("custom", "disabled"))
                                             .child(
-                                                TextBlock::create()
+                                                TextBlock::new()
                                                     .width(0.0)
                                                     .height(14.0)
                                                     .text("")
@@ -223,7 +223,7 @@ impl Template for MainView {
                                             .build(ctx),
                                     )
                                     .child(
-                                        TextBlock::create()
+                                        TextBlock::new()
                                             .element("text-block")
                                             .text(id)
                                             .vertical_alignment("end")
@@ -235,26 +235,25 @@ impl Template for MainView {
                             .build(ctx),
                     )
                     .child(
-                        Container::create()
+                        Container::new()
                             .element("container")
                             .class("content")
                             .padding(8.0)
                             .attach(Grid::row(1))
                             .child(
-                                Grid::create()
+                                Grid::new()
                                     .columns(
-                                        Columns::create()
+                                        Columns::new()
                                             .column(48.0)
                                             .column(4.0)
                                             .column(48.0)
                                             .column(4.0)
                                             .column(48.0)
                                             .column(4.0)
-                                            .column(48.0)
-                                            .build(),
+                                            .column(48.0),
                                     )
                                     .rows(
-                                        Rows::create()
+                                        Rows::new()
                                             .row(48.0)
                                             .row(4.0)
                                             .row(48.0)
@@ -263,8 +262,7 @@ impl Template for MainView {
                                             .row(4.0)
                                             .row(48.0)
                                             .row(4.0)
-                                            .row(48.0)
-                                            .build(),
+                                            .row(48.0),
                                     )
                                     // row 0
                                     .child(generate_operation_button(ctx, id, 'C', false, 0, 5, 0))
@@ -300,12 +298,12 @@ impl Template for MainView {
 fn main() {
     Application::new()
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - Calculator example")
                 .position((100.0, 100.0))
                 .size(212.0, 336.0)
                 .theme(get_theme())
-                .child(MainView::create().build(ctx))
+                .child(MainView::new().build(ctx))
                 .build(ctx)
         })
         .run();

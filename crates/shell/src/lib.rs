@@ -70,7 +70,10 @@ pub enum WindowRequest {
 }
 
 /// Used to send a request to the application shell.
-pub enum ShellRequest<W> where W: window_adapter::WindowAdapter {
+pub enum ShellRequest<W>
+where
+    W: window_adapter::WindowAdapter,
+{
     /// Request redraw of the `Windows`s content.
     CreateWindow(W, WindowSettings, mpsc::Receiver<WindowRequest>),
 }

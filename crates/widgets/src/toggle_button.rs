@@ -81,30 +81,30 @@ impl Template for ToggleButton {
             .pressed(false)
             .spacing(8.0)
             .child(
-                MouseBehavior::create()
+                MouseBehavior::new()
                     .pressed(id)
                     .enabled(id)
                     .target(id.0)
                     .child(
-                        SelectionBehavior::create()
+                        SelectionBehavior::new()
                             .selected(id)
                             .enabled(id)
                             .target(id.0)
                             .child(
-                                Container::create()
+                                Container::new()
                                     .background(id)
                                     .border_radius(id)
                                     .border_width(id)
                                     .border_brush(id)
                                     .padding(id)
                                     .child(
-                                        Stack::create()
+                                        Stack::new()
                                             .orientation("horizontal")
                                             .spacing(id)
                                             .vertical_alignment("center")
                                             .horizontal_alignment("center")
                                             .child(
-                                                FontIconBlock::create()
+                                                FontIconBlock::new()
                                                     .vertical_alignment("center")
                                                     .icon(id)
                                                     .icon_brush(id)
@@ -113,7 +113,7 @@ impl Template for ToggleButton {
                                                     .build(ctx),
                                             )
                                             .child(
-                                                TextBlock::create()
+                                                TextBlock::new()
                                                     .vertical_alignment("center")
                                                     .foreground(id)
                                                     .text(id)

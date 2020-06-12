@@ -117,16 +117,16 @@ widget!(
     /// The widget can be controlled by clicking on the two control buttons, or the keybaord's
     /// Up and Down, Numpad+ and Numpad- keys, or the mouse scroll.
     /// Note: after the widget is initialized, changing the min, max or step properties has no effect.
-    /// 
+    ///
     /// # Examples:
     /// Create a NumericBox with default values:
     /// ```rust
-    /// NumericBox::create().build(ctx)
+    /// NumericBox::new().build(ctx)
     /// ```
     ///
     /// Create a NumericBox with custom values:
     /// ```rust
-    /// NumericBox::create().min(10.0).max(100.0).val(50.0).step(5.0).build(ctx)
+    /// NumericBox::new().min(10.0).max(100.0).val(50.0).step(5.0).build(ctx)
     /// ```
     NumericBox<NumericBoxState>: KeyDownHandler {
         /// Sets or shares the background color property
@@ -179,7 +179,7 @@ impl Template for NumericBox {
             .val(0.0)
             .width(100.0)
             .child(
-                MouseBehavior::create()
+                MouseBehavior::new()
                     .on_mouse_down(move |states, _| {
                         states
                             .get_mut::<NumericBoxState>(id)
@@ -195,11 +195,11 @@ impl Template for NumericBox {
                     .build(ctx),
             )
             .child(
-                Stack::create()
+                Stack::new()
                     .orientation("horizontal")
                     .spacing(0.0)
                     .child(
-                        TextBox::create()
+                        TextBox::new()
                             .border_brush(id)
                             .border_radius(id)
                             .border_width(id)
@@ -211,11 +211,11 @@ impl Template for NumericBox {
                             .build(ctx),
                     )
                     .child(
-                        Stack::create()
+                        Stack::new()
                             .orientation("vertical")
                             .spacing(0.0)
                             .child(
-                                Button::create()
+                                Button::new()
                                     .border_brush("transparent")
                                     .border_radius(0.0)
                                     .border_width(0.0)
@@ -234,7 +234,7 @@ impl Template for NumericBox {
                                     .build(ctx),
                             )
                             .child(
-                                Button::create()
+                                Button::new()
                                     .border_brush("transparent")
                                     .border_radius(0.0)
                                     .border_width(0.0)

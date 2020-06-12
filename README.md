@@ -74,11 +74,11 @@ use orbtk::prelude::*;
 fn main() {
       Application::new()
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - minimal example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
-                .child(TextBlock::create().text("OrbTk").build(ctx))
+                .child(ctx, TextBlock::new().text("OrbTk").build(ctx))
                 .build(ctx)
         })
         .run();
@@ -118,12 +118,12 @@ impl Template for MyWidget {
             .background("#000000")
             .count(0)
             .text("Initial text")
-            .child(
-                Container::create()
+            .child(ctx, 
+                Container::new()
                     // Container references the same background as MyWidget
                     .background(id)
-                    .child(
-                        TextBlock::create()
+                    .child(ctx, 
+                      TextBlock::new()
                             // TextBlock references the same text as MyWidget
                             .text(id)
                             .build(ctx)

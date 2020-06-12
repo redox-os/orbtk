@@ -191,11 +191,11 @@ impl Template for Slider {
             .height(24.0)
             .border_radius(2.0)
             .child(
-                Grid::create()
+                Grid::new()
                     .id(ID_TRACK)
                     .margin((8.0, 0.0, 8.0, 0.0))
                     .child(
-                        Container::create()
+                        Container::new()
                             .border_radius(id)
                             .background(id)
                             .vertical_alignment("center")
@@ -203,7 +203,7 @@ impl Template for Slider {
                             .build(ctx),
                     )
                     .child(
-                        Button::create()
+                        Button::new()
                             .element("thumb")
                             .id(ID_THUMB)
                             .vertical_alignment("center")

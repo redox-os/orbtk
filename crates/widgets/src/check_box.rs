@@ -75,21 +75,21 @@ impl Template for CheckBox {
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
             .child(
-                MouseBehavior::create()
+                MouseBehavior::new()
                     .pressed(id)
                     .enabled(id)
                     .target(id.0)
                     .child(
-                        SelectionBehavior::create()
+                        SelectionBehavior::new()
                             .selected(id)
                             .enabled(id)
                             .target(id.0)
                             .child(
-                                Stack::create()
+                                Stack::new()
                                     .orientation("horizontal")
                                     .spacing(8.0)
                                     .child(
-                                        Container::create()
+                                        Container::new()
                                             .size(24.0, 24.0)
                                             .background(id)
                                             .border_radius(id)
@@ -98,7 +98,7 @@ impl Template for CheckBox {
                                             .padding(id)
                                             .opacity(id)
                                             .child(
-                                                FontIconBlock::create()
+                                                FontIconBlock::new()
                                                     .vertical_alignment("center")
                                                     .horizontal_alignment("center")
                                                     .icon(id)
@@ -111,7 +111,7 @@ impl Template for CheckBox {
                                             .build(ctx),
                                     )
                                     .child(
-                                        TextBlock::create()
+                                        TextBlock::new()
                                             .vertical_alignment("center")
                                             .foreground(id)
                                             .text(id)

@@ -1,17 +1,17 @@
 use std::sync::mpsc;
 
 use stdweb::{
-    traits::*,
     js,
+    traits::*,
     unstable::TryInto,
-    web::{document, event, html_element::CanvasElement, CanvasRenderingContext2d, window},
+    web::{document, event, html_element::CanvasElement, window, CanvasRenderingContext2d},
 };
 
 use derive_more::Constructor;
 
 use super::EventState;
 use crate::{
-    event::{ButtonState, KeyEvent, MouseButton, MouseEvent, Key},
+    event::{ButtonState, Key, KeyEvent, MouseButton, MouseEvent},
     render::RenderContext2D,
     window_adapter::WindowAdapter,
     WindowRequest,

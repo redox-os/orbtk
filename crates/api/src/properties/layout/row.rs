@@ -54,8 +54,16 @@ pub struct Row {
 
 impl Row {
     /// Creates a new `RowBuilder` object with default values.
-    pub fn create() -> RowBuilder {
+    #[inline]
+    pub fn new() -> RowBuilder {
         RowBuilder::new()
+    }
+
+    /// Creates a new `RowBuilder` object with default values.
+    #[inline(always)]
+    #[deprecated]
+    pub fn create() -> RowBuilder {
+        Row::new()
     }
 
     /// Gets the row height.
@@ -85,15 +93,15 @@ impl Row {
 impl From<&str> for Row {
     fn from(t: &str) -> Self {
         match t {
-            "Auto" | "auto" => Row::create().height(RowHeight::Auto).build(),
-            _ => Row::create().height(RowHeight::Stretch).build(),
+            "Auto" | "auto" => Row::new().height(RowHeight::Auto).build(),
+            _ => Row::new().height(RowHeight::Stretch).build(),
         }
     }
 }
 
 impl From<f64> for Row {
     fn from(t: f64) -> Self {
-        Row::create().height(RowHeight::Height(t)).build()
+        Row::new().height(RowHeight::Height(t)).build()
     }
 }
 
@@ -156,12 +164,26 @@ impl RowsBuilder {
     }
 }
 
+impl From<RowsBuilder> for Rows {
+    fn from(builder: RowsBuilder) -> Self {
+        builder.build()
+    }
+}
+
 /// Helper struct used inside of the row Property.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct Rows(Vec<Row>);
 
 impl Rows {
     /// Creates a new `RowsBuilder` object with default values.
+    #[inline(always)]
+    pub fn new() -> RowsBuilder {
+        RowsBuilder::new()
+    }
+
+    /// Creates a new `RowsBuilder` object with default values.
+    #[inline(always)]
+    #[deprecated]
     pub fn create() -> RowsBuilder {
         RowsBuilder::new()
     }
@@ -264,8 +286,8 @@ mod tests {
 
         let builder = RowsBuilder::new();
         let rows = builder
-            .row(Row::create().build())
-            .row(Row::create().build())
+            .row(Row::new().build())
+            .row(Row::new().build())
             .build();
 
         assert_eq!(rows.len(), 2);

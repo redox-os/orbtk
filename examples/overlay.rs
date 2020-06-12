@@ -4,12 +4,12 @@ widget!(MainView);
 
 impl Template for MainView {
     fn template(self, _: Entity, ctx: &mut BuildContext) -> Self {
-        let container = Container::create()
+        let container = Container::new()
             .background("#dfebf5")
             .width(200.0)
             .height(200.0)
             .child(
-                TextBlock::create()
+                TextBlock::new()
                     .foreground("#3b434a")
                     .text("Overlay")
                     .vertical_alignment("center")
@@ -20,10 +20,10 @@ impl Template for MainView {
 
         ctx.append_child_to_overlay(container).unwrap();
         self.name("MainView").child(
-            Container::create()
+            Container::new()
                 .background("#e1bc21")
                 .child(
-                    TextBlock::create()
+                    TextBlock::new()
                         .text("MainView")
                         .element("h1")
                         .vertical_alignment("center")
@@ -41,11 +41,11 @@ fn main() {
 
     Application::new()
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - overlay example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
-                .child(MainView::create().build(ctx))
+                .child(MainView::new().build(ctx))
                 .build(ctx)
         })
         .run();

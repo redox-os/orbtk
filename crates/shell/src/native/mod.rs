@@ -20,7 +20,7 @@ impl Console {
             .insert(name.into(), Instant::now());
     }
 
-    pub fn time_end(&self, name: impl Into<String>) {   
+    pub fn time_end(&self, name: impl Into<String>) {
         if let Some((_k, _v)) = self.instants.lock().unwrap().remove_entry(&name.into()) {
             #[cfg(feature = "log")]
             println!("{} {}ms - timer ended", _k, _v.elapsed().as_millis());

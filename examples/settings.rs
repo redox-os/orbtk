@@ -76,27 +76,26 @@ widget!(MainView<MainViewState> {
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MainView").child(
-            Grid::create()
-                .rows(Rows::create().row(36.0).row(4.0).row("auto").build())
+            Grid::new()
+                .rows(Rows::new().row(36.0).row(4.0).row("auto").build())
                 .columns(
-                    Columns::create()
+                    Columns::new()
                         .column(160.0)
                         .column(4.0)
                         .column("Auto")
                         .column(4.0)
                         .column("Auto")
                         .column(4.0)
-                        .column("Auto")
-                        .build(),
+                        .column("Auto"),
                 )
                 .child(
-                    TextBox::create()
+                    TextBox::new()
                         .vertical_alignment("center")
                         .text(id)
                         .build(ctx),
                 )
                 .child(
-                    Button::create()
+                    Button::new()
                         .class("single_content")
                         .attach(Grid::row(0))
                         .attach(Grid::column(2))
@@ -108,7 +107,7 @@ impl Template for MainView {
                         .build(ctx),
                 )
                 .child(
-                    Button::create()
+                    Button::new()
                         .class("single_content")
                         .attach(Grid::row(0))
                         .attach(Grid::column(4))
@@ -120,7 +119,7 @@ impl Template for MainView {
                         .build(ctx),
                 )
                 .child(
-                    Button::create()
+                    Button::new()
                         .class("single_content")
                         .attach(Grid::row(0))
                         .attach(Grid::column(6))
@@ -132,7 +131,7 @@ impl Template for MainView {
                         .build(ctx),
                 )
                 .child(
-                    TextBlock::create()
+                    TextBlock::new()
                         .attach(Grid::row(2))
                         .attach(Grid::column(0))
                         .text(("info_text", id))
@@ -146,11 +145,11 @@ impl Template for MainView {
 fn main() {
     Application::from_name("orbtk-settings")
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - settings example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
-                .child(MainView::create().margin(4.0).build(ctx))
+                .child(MainView::new().margin(4.0).build(ctx))
                 .build(ctx)
         })
         .run();

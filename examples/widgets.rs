@@ -109,7 +109,7 @@ impl State for MainViewState {
 }
 
 fn create_header(ctx: &mut BuildContext, text: &str) -> Entity {
-    TextBlock::create()
+    TextBlock::new()
         .text(text)
         .element("text-block")
         .class("h1")
@@ -173,24 +173,23 @@ impl Template for MainView {
             .selection_list_count(10)
             .combo_box_list_count(10)
             .child(
-                Grid::create()
+                Grid::new()
                     .margin(8.0)
                     .columns(
-                        Columns::create()
+                        Columns::new()
                             .column(132.0)
                             .column(16.0)
                             .column(132.0)
                             .column(16.0)
-                            .column(132.0)
-                            .build(),
+                            .column(132.0),
                     )
                     .child(
-                        Stack::create()
+                        Stack::new()
                             .attach(Grid::column(0))
                             // Column 0
                             .child(create_header(ctx, "Buttons"))
                             .child(
-                                Button::create()
+                                Button::new()
                                     .text("Button")
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .icon(material_font_icons::CHECK_FONT_ICON)
@@ -203,7 +202,7 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                Button::create()
+                                Button::new()
                                     .text("Primary")
                                     .element("button")
                                     .class("primary")
@@ -214,7 +213,7 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                ToggleButton::create()
+                                ToggleButton::new()
                                     .class("single_content")
                                     .text("ToggleButton")
                                     .margin((0.0, 8.0, 0.0, 0.0))
@@ -223,7 +222,7 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                CheckBox::create()
+                                CheckBox::new()
                                     .text("CheckBox")
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(0))
@@ -231,14 +230,14 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                Switch::create()
+                                Switch::new()
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(5))
                                     .build(ctx),
                             )
                             .child(
-                                TextBlock::create()
+                                TextBlock::new()
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .element("h1")
                                     .id("value_text")
@@ -247,7 +246,7 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                Slider::create()
+                                Slider::new()
                                     .on_changed(move |states, entity| {
                                         state(id, states).action(Action::ValueChanged(entity));
                                     })
@@ -256,11 +255,11 @@ impl Template for MainView {
                             .build(ctx),
                     )
                     .child(
-                        Stack::create()
+                        Stack::new()
                             .attach(Grid::column(2))
                             .child(create_header(ctx, "Text"))
                             .child(
-                                TextBlock::create()
+                                TextBlock::new()
                                     .class("body")
                                     .text(("result", id))
                                     .margin((0.0, 8.0, 0.0, 0.0))
@@ -269,7 +268,7 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                TextBox::create()
+                                TextBox::new()
                                     .water_mark("TextBox...")
                                     .text(("text_one", id))
                                     .margin((0.0, 8.0, 0.0, 0.0))
@@ -284,7 +283,7 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                TextBox::create()
+                                TextBox::new()
                                     .water_mark("TextBox...")
                                     .text(("text_two", id))
                                     .margin((0.0, 8.0, 0.0, 0.0))
@@ -299,7 +298,7 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                Button::create()
+                                Button::new()
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .class("single_content")
                                     .text("clear text")
@@ -312,28 +311,21 @@ impl Template for MainView {
                             .build(ctx),
                     )
                     .child(
-                        Grid::create()
+                        Grid::new()
                             .rows(
-                                Rows::create()
+                                Rows::new()
                                     .row("auto")
                                     .row(32.0)
                                     .row(16.0)
                                     .row(204.0)
                                     .row("auto")
                                     .row(192.0)
-                                    .row("auto")
-                                    .build(),
+                                    .row("auto"),
                             )
-                            .columns(
-                                Columns::create()
-                                    .column("*")
-                                    .column(4.0)
-                                    .column("*")
-                                    .build(),
-                            )
+                            .columns(Columns::new().column("*").column(4.0).column("*"))
                             .attach(Grid::column(4))
                             .child(
-                                TextBlock::create()
+                                TextBlock::new()
                                     .text("Items")
                                     .element("text-block")
                                     .class("h1")
@@ -343,13 +335,13 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                ComboBox::create()
+                                ComboBox::new()
                                     .items_builder(move |bc, index| {
                                         let text = bc
                                             .get_widget(id)
                                             .get::<Vec<String>>("combo_box_list")[index]
                                             .clone();
-                                        TextBlock::create()
+                                        TextBlock::new()
                                             .margin((0.0, 0.0, 0.0, 2.0))
                                             .vertical_alignment("center")
                                             .text(text)
@@ -364,7 +356,7 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                ItemsWidget::create()
+                                ItemsWidget::new()
                                     .element("items-widget")
                                     .id("items")
                                     .padding((4.0, 4.0, 4.0, 2.0))
@@ -377,7 +369,7 @@ impl Template for MainView {
                                             [index]
                                             .clone();
 
-                                        Button::create()
+                                        Button::new()
                                             .margin((0.0, 0.0, 0.0, 2.0))
                                             .text(text)
                                             .build(bc)
@@ -386,7 +378,7 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                Button::create()
+                                Button::new()
                                     .element("button")
                                     .class("single_content")
                                     .id("remove-item-button")
@@ -401,7 +393,7 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                Button::create()
+                                Button::new()
                                     .element("button")
                                     .class("single_content")
                                     .id("add-item-button")
@@ -416,7 +408,7 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                ListView::create()
+                                ListView::new()
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(5))
@@ -427,7 +419,7 @@ impl Template for MainView {
                                             .get_widget(id)
                                             .get::<Vec<String>>("selection_list")[index]
                                             .clone();
-                                        TextBlock::create()
+                                        TextBlock::new()
                                             .margin((0.0, 0.0, 0.0, 2.0))
                                             .vertical_alignment("center")
                                             .text(text)
@@ -438,7 +430,7 @@ impl Template for MainView {
                             )
                             .child(
                                 // todo: wrong text width????
-                                TextBlock::create()
+                                TextBlock::new()
                                     .element("text-block")
                                     .id("selection")
                                     .max_width(120.0)
@@ -461,12 +453,12 @@ fn main() {
 
     Application::new()
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - widgets example")
                 .position((100.0, 100.0))
                 .size(468.0, 730.0)
                 .resizeable(true)
-                .child(MainView::create().build(ctx))
+                .child(MainView::new().build(ctx))
                 .build(ctx)
         })
         .run();

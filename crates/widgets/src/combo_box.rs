@@ -225,7 +225,7 @@ impl State for ComboBoxState {
                     let item = {
                         let build_context = &mut ctx.build_context();
                         let child = builder.borrow()(build_context, i);
-                        let mut item = ComboBoxItem::create()
+                        let mut item = ComboBoxItem::new()
                             .index(i)
                             .combo_box(entity)
                             .selected_container(self.selected_container);
@@ -235,7 +235,7 @@ impl State for ComboBoxState {
                         }
                         let item = item.build(build_context);
 
-                        let mouse_behavior = MouseBehavior::create().build(build_context);
+                        let mouse_behavior = MouseBehavior::new().build(build_context);
                         build_context.register_shared_property::<Selector>(
                             "selector",
                             mouse_behavior,
@@ -345,9 +345,9 @@ impl ComboBox {
 
 impl Template for ComboBox {
     fn template(mut self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let selected_container = Container::create().attach(Grid::column(0)).build(ctx);
+        let selected_container = Container::new().attach(Grid::column(0)).build(ctx);
 
-        let container = Container::create()
+        let container = Container::new()
             .id(CONTAINER)
             .background(id)
             .border_radius(id)
@@ -355,17 +355,11 @@ impl Template for ComboBox {
             .border_brush(id)
             .padding(id)
             .child(
-                Grid::create()
-                    .columns(
-                        Columns::create()
-                            .column("*")
-                            .column(4.0)
-                            .column(14.0)
-                            .build(),
-                    )
+                Grid::new()
+                    .columns(Columns::new().column("*").column(4.0).column(14.0))
                     .child(selected_container)
                     .child(
-                        FontIconBlock::create()
+                        FontIconBlock::new()
                             .attach(Grid::column(2))
                             .vertical_alignment("center")
                             .icon(material_font_icons::ARROW_DOWN_ICON)
@@ -376,24 +370,24 @@ impl Template for ComboBox {
             .build(ctx);
         self.state_mut().selected_container = selected_container;
 
-        let items_panel = Stack::create()
+        let items_panel = Stack::new()
             .vertical_alignment("start")
             .id(ITEMS_PANEL)
             .orientation("vertical")
             .build(ctx);
 
         self.state_mut().items_panel = items_panel;
-        let scroll_viewer = ScrollViewer::create()
+        let scroll_viewer = ScrollViewer::new()
             .scroll_viewer_mode(("disabled", "auto"))
             .child(items_panel)
             .build(ctx);
 
-        let popup = Popup::create()
+        let popup = Popup::new()
             .height(200.0)
             .open(("selected", id))
             .child(scroll_viewer)
             .child(
-                ScrollIndicator::create()
+                ScrollIndicator::new()
                     .padding(2.0)
                     .content_id(items_panel.0)
                     .scroll_offset(scroll_viewer)
@@ -413,12 +407,12 @@ impl Template for ComboBox {
             .selected(false)
             .selected_index(-1)
             .child(
-                MouseBehavior::create()
+                MouseBehavior::new()
                     .pressed(id)
                     .enabled(id)
                     .target(id.0)
                     .child(
-                        SelectionBehavior::create()
+                        SelectionBehavior::new()
                             .selected(id)
                             .enabled(id)
                             .target(id.0)

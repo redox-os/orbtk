@@ -102,7 +102,7 @@ impl Template for Switch {
             .border_width(1.0)
             .padding(4.0)
             .child(
-                MouseBehavior::create()
+                MouseBehavior::new()
                     .pressed(id)
                     .enabled(id)
                     .target(id.0)
@@ -111,15 +111,15 @@ impl Template for Switch {
                         false
                     })
                     .child(
-                        Grid::create()
+                        Grid::new()
                             .child(
-                                Container::create()
+                                Container::new()
                                     .element(SWITCH_TRACK)
                                     .vertical_alignment("center")
                                     .build(ctx),
                             )
                             .child(
-                                Container::create()
+                                Container::new()
                                     .element(SWITCH_TOGGLE)
                                     .id(SWITCH_TOGGLE)
                                     .vertical_alignment("center")

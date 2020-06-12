@@ -33,6 +33,21 @@ widget!(
     }
 );
 
+impl Grid {
+    /// Sets column and row to the given widget and add it as child.
+    pub fn place<W>(self, ctx: &mut BuildContext, child: W, column: usize, row: usize) -> Self
+    where
+        W: Widget,
+    {
+        self.child(
+            child
+                .attach(Grid::column(column))
+                .attach(Grid::row(row))
+                .build(ctx),
+        )
+    }
+}
+
 impl Template for Grid {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Grid")

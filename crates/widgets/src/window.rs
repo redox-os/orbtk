@@ -19,7 +19,7 @@ enum Action {
 struct WindowState {
     actions: VecDeque<Action>,
     background: Brush,
-    title: String
+    title: String,
 }
 
 impl WindowState {

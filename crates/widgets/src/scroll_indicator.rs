@@ -87,9 +87,9 @@ impl Template for ScrollIndicator {
             .horizontal_alignment("stretch")
             .padding(0.0)
             .child(
-                Grid::create()
+                Grid::new()
                     .child(
-                        ScrollBar::create()
+                        ScrollBar::new()
                             .element("scroll-bar")
                             .id("vertical-scroll-bar")
                             .min_height(8.0)
@@ -99,7 +99,7 @@ impl Template for ScrollIndicator {
                             .build(ctx),
                     )
                     .child(
-                        ScrollBar::create()
+                        ScrollBar::new()
                             .element("scroll-bar")
                             .id("horizontal-scroll-bar")
                             .min_width(8.0)

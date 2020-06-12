@@ -2,14 +2,13 @@ use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, time::D
 
 use minifb;
 
-use super::{KeyState, MouseState, Window, WindowState, Shell};
+use super::{KeyState, MouseState, Shell, Window, WindowState};
 use crate::{
     event::{ButtonState, Key, KeyEvent},
     render::RenderContext2D,
     utils::Rectangle,
-    WindowRequest,
-    WindowSettings,
     window_adapter::WindowAdapter,
+    WindowRequest, WindowSettings,
 };
 
 /// The `WindowBuilder` is used to construct a window shell for the minifb backend.
@@ -25,7 +24,7 @@ where
     borderless: bool,
     fonts: HashMap<String, &'static [u8]>,
     bounds: Rectangle,
-    request_receiver: Option<mpsc::Receiver<WindowRequest>>
+    request_receiver: Option<mpsc::Receiver<WindowRequest>>,
 }
 
 impl<'a, A> WindowBuilder<'a, A>
@@ -57,8 +56,13 @@ where
             always_on_top: settings.always_on_top,
             borderless: settings.borderless,
             fonts: settings.fonts,
-            bounds: Rectangle::new(settings.position.0, settings.position.1, settings.size.0, settings.size.1),
-            request_receiver: None
+            bounds: Rectangle::new(
+                settings.position.0,
+                settings.position.1,
+                settings.size.0,
+                settings.size.1,
+            ),
+            request_receiver: None,
         }
     }
 

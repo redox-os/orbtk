@@ -82,22 +82,6 @@ macro_rules! widget {
         }
 
         impl $widget {
-            /// Sets or shares an attached property.
-            pub fn attach<P: Component + Debug>(mut self, property: AttachedProperty<P>) -> Self {
-                match property.property_source {
-                    PropertySource::Value(value) => {
-                        self.attached_properties.insert(property.key, ComponentBox::new(value));
-                    }
-                    PropertySource::Source(source) => {
-                        self.shared_attached_properties.insert((property.key.clone(), property.key), SharedComponentBox::new(TypeId::of::<P>(), source));
-                    }
-                    PropertySource::KeySource(source_key, source) => {
-                        self.shared_attached_properties.insert((property.key, source_key), SharedComponentBox::new(TypeId::of::<P>(), source));
-                    }
-                }
-                self
-            }
-
             // internal helper
             fn set_property<P: Component + Debug>(mut self, key: &str, property: impl IntoPropertySource<P>) -> Self {
                 match property.into_source() {
@@ -322,7 +306,9 @@ macro_rules! widget {
         )*
 
         impl Widget for $widget {
-            fn create() -> Self {
+            /// Creates a new widget.
+            #[inline]
+            fn new() -> Self {
                 $widget {
                     event_handlers: vec![],
                     enabled: true,
@@ -336,6 +322,21 @@ macro_rules! widget {
                     children: vec![],
                     ..Default::default()
                 }
+            }
+
+            fn attach<P: Component + Debug>(mut self, property: AttachedProperty<P>) -> Self {
+                match property.property_source {
+                    PropertySource::Value(value) => {
+                        self.attached_properties.insert(property.key, ComponentBox::new(value));
+                    }
+                    PropertySource::Source(source) => {
+                        self.shared_attached_properties.insert((property.key.clone(), property.key), SharedComponentBox::new(TypeId::of::<P>(), source));
+                    }
+                    PropertySource::KeySource(source_key, source) => {
+                        self.shared_attached_properties.insert((property.key, source_key), SharedComponentBox::new(TypeId::of::<P>(), source));
+                    }
+                }
+                self
             }
 
             fn insert_handler(mut self, handler: impl Into<Rc<dyn EventHandler>>) -> Self {

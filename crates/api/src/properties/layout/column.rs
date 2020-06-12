@@ -54,8 +54,16 @@ pub struct Column {
 
 impl Column {
     /// Creates a new `ColumnBuilder` object with default values.
-    pub fn create() -> ColumnBuilder {
+    #[inline]
+    pub fn new() -> ColumnBuilder {
         ColumnBuilder::new()
+    }
+
+    /// Creates a new `ColumnBuilder` object with default values.
+    #[inline(always)]
+    #[deprecated]
+    pub fn create() -> ColumnBuilder {
+        Column::new()
     }
 
     /// Gets the column width.
@@ -85,15 +93,15 @@ impl Column {
 impl From<&str> for Column {
     fn from(t: &str) -> Self {
         match t {
-            "Auto" | "auto" => Column::create().width(ColumnWidth::Auto).build(),
-            _ => Column::create().width(ColumnWidth::Stretch).build(),
+            "Auto" | "auto" => Column::new().width(ColumnWidth::Auto).build(),
+            _ => Column::new().width(ColumnWidth::Stretch).build(),
         }
     }
 }
 
 impl From<f64> for Column {
     fn from(t: f64) -> Self {
-        Column::create().width(ColumnWidth::Width(t)).build()
+        Column::new().width(ColumnWidth::Width(t)).build()
     }
 }
 
@@ -157,14 +165,28 @@ impl ColumnsBuilder {
     }
 }
 
+impl From<ColumnsBuilder> for Columns {
+    fn from(builder: ColumnsBuilder) -> Self {
+        builder.build()
+    }
+}
+
 /// Helper struct used inside of the columns Property.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct Columns(pub Vec<Column>);
 
 impl Columns {
     /// Creates a new `ColumnsBuilder` object with default values.
-    pub fn create() -> ColumnsBuilder {
+    #[inline(always)]
+    pub fn new() -> ColumnsBuilder {
         ColumnsBuilder::new()
+    }
+
+    /// Creates a new `ColumnsBuilder` object with default values.
+    #[inline(always)]
+    #[deprecated]
+    pub fn create() -> ColumnsBuilder {
+        Columns::new()
     }
 
     /// Returns the number of elements in the columns list, also referred to as its 'length'.
@@ -262,8 +284,8 @@ mod tests {
 
         let builder = ColumnsBuilder::new();
         let columns = builder
-            .column(Column::create().build())
-            .column(Column::create().build())
+            .column(Column::new().build())
+            .column(Column::new().build())
             .build();
 
         assert_eq!(columns.len(), 2);

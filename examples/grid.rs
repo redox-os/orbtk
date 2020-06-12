@@ -14,22 +14,16 @@ widget!(MainView);
 impl Template for MainView {
     fn template(self, _: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MainView").child(
-            Grid::create()
-                .columns(
-                    Columns::create()
-                        .column("*")
-                        .column("auto")
-                        .column(50.0)
-                        .build(),
-                )
-                .rows(Rows::create().row("*").row("*").build())
+            Grid::new()
+                .columns(Columns::new().column("*").column("auto").column(50.0))
+                .rows(Rows::new().row("*").row("*").build())
                 .child(
-                    Grid::create()
+                    Grid::new()
                         .element("lynch")
                         .margin((10.0, 0.0, 0.0, 4.0))
                         .attach(Grid::column(0))
                         .child(
-                            TextBlock::create()
+                            TextBlock::new()
                                 .text("(0,0)")
                                 .element("light-text")
                                 .horizontal_alignment("center")
@@ -39,13 +33,13 @@ impl Template for MainView {
                         .build(ctx),
                 )
                 .child(
-                    Grid::create()
+                    Grid::new()
                         .element("bluebayoux")
                         .margin(10.0)
-                        .constraint(Constraint::create().width(150.0).build())
+                        .constraint(Constraint::new().width(150.0))
                         .attach(Grid::column(1))
                         .child(
-                            TextBlock::create()
+                            TextBlock::new()
                                 .text("(1,0)")
                                 .element("white")
                                 .horizontal_alignment("center")
@@ -55,11 +49,11 @@ impl Template for MainView {
                         .build(ctx),
                 )
                 .child(
-                    Grid::create()
+                    Grid::new()
                         .element("linkwater")
                         .attach(Grid::column(2))
                         .child(
-                            TextBlock::create()
+                            TextBlock::new()
                                 .text("(2,0)")
                                 .element("linkwater")
                                 .horizontal_alignment("center")
@@ -69,13 +63,13 @@ impl Template for MainView {
                         .build(ctx),
                 )
                 .child(
-                    Grid::create()
+                    Grid::new()
                         .element("goldendream")
                         .attach(Grid::column(0))
                         .attach(Grid::row(1))
                         .attach(Grid::column_span(3))
                         .child(
-                            TextBlock::create()
+                            TextBlock::new()
                                 .text("(0,1) - ColumnSpan 3")
                                 .element("goldendream")
                                 .horizontal_alignment("center")
@@ -95,13 +89,13 @@ fn main() {
 
     Application::new()
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - grid example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
                 .theme(get_theme())
                 .resizeable(true)
-                .child(MainView::create().build(ctx))
+                .child(MainView::new().build(ctx))
                 .build(ctx)
         })
         .run();

@@ -46,23 +46,23 @@ impl State for MainViewState {
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.child(
-            Stack::create()
+            Stack::new()
                 .horizontal_alignment("center")
                 .margin((16.0, 16.0, 16.0, 16.0))
                 .spacing(8.0)
                 .child(
-                    ProgressBar::create()
+                    ProgressBar::new()
                         .id("pgbar")
                         .val(0.0)
                         .width(512.0)
                         .build(ctx),
                 )
                 .child(
-                    Stack::create()
+                    Stack::new()
                         .horizontal_alignment("center")
                         .spacing(8.0)
                         .child(
-                            Button::create()
+                            Button::new()
                                 .text("Progress by 25%")
                                 .width(256.0)
                                 .on_click(move |states, _| -> bool {
@@ -74,7 +74,7 @@ impl Template for MainView {
                                 .build(ctx),
                         )
                         .child(
-                            Button::create()
+                            Button::new()
                                 .text("Reset")
                                 .width(256.0)
                                 .on_click(move |states, _| -> bool {
@@ -86,7 +86,7 @@ impl Template for MainView {
                                 .build(ctx),
                         )
                         .child(
-                            Button::create()
+                            Button::new()
                                 .text("Set to 100%")
                                 .width(256.0)
                                 .on_click(move |states, _| -> bool {
@@ -107,13 +107,13 @@ impl Template for MainView {
 fn main() {
     Application::new()
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - ProgressBar example")
                 .position((0.0, 0.0))
                 .size(720.0, 576.0)
                 .borderless(false)
                 .resizeable(true)
-                .child(MainView::create().build(ctx))
+                .child(MainView::new().build(ctx))
                 .build(ctx)
         })
         .run();

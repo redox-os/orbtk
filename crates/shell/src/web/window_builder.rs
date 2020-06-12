@@ -13,13 +13,10 @@ use stdweb::{
     web::{document, event, html_element::CanvasElement, window, CanvasRenderingContext2d},
 };
 
-use super::{Window, EventState, Shell};
+use super::{EventState, Shell, Window};
 use crate::{
-    render::RenderContext2D,
-    utils::Rectangle,
-    window_adapter::WindowAdapter,
-    WindowRequest,
-    WindowSettings
+    render::RenderContext2D, utils::Rectangle, window_adapter::WindowAdapter, WindowRequest,
+    WindowSettings,
 };
 
 /// The `WindowBuilder` is used to construct a window shell for the web backend.
@@ -67,8 +64,13 @@ where
             always_on_top: settings.always_on_top,
             borderless: settings.borderless,
             fonts: settings.fonts,
-            bounds: Rectangle::new(settings.position.0, settings.position.1, settings.size.0, settings.size.1),
-            request_receiver: None
+            bounds: Rectangle::new(
+                settings.position.0,
+                settings.position.1,
+                settings.size.0,
+                settings.size.1,
+            ),
+            request_receiver: None,
         }
     }
 
