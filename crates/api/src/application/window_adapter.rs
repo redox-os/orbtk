@@ -176,7 +176,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     let theme = crate::theme::default_theme();
 
     let window = {
-        let overlay = Overlay::create().build(&mut BuildContext::new(
+        let overlay = Overlay::new().build(&mut BuildContext::new(
             world.entity_component_manager(),
             &context_provider.render_objects,
             &context_provider.layouts,

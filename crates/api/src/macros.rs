@@ -62,8 +62,8 @@ macro_rules! widget {
             element: Option<String>,
             id: Option<String>,
             classes: HashSet<String>,
-            horizontal_alignment: Alignment,
-            vertical_alignment: Alignment,
+            h_align: Alignment,
+            v_align: Alignment,
             margin: Thickness,
             enabled: bool,
             clip: bool,
@@ -82,22 +82,6 @@ macro_rules! widget {
         }
 
         impl $widget {
-            /// Sets or shares an attached property.
-            pub fn attach<P: Component + Debug>(mut self, property: AttachedProperty<P>) -> Self {
-                match property.property_source {
-                    PropertySource::Value(value) => {
-                        self.attached_properties.insert(property.key, ComponentBox::new(value));
-                    }
-                    PropertySource::Source(source) => {
-                        self.shared_attached_properties.insert((property.key.clone(), property.key), SharedComponentBox::new(TypeId::of::<P>(), source));
-                    }
-                    PropertySource::KeySource(source_key, source) => {
-                        self.shared_attached_properties.insert((property.key, source_key), SharedComponentBox::new(TypeId::of::<P>(), source));
-                    }
-                }
-                self
-            }
-
             // internal helper
             fn set_property<P: Component + Debug>(mut self, key: &str, property: impl IntoPropertySource<P>) -> Self {
                 match property.into_source() {
@@ -150,13 +134,29 @@ macro_rules! widget {
             }
 
             /// Sets or shares the vertical alignment property.
+            #[inline(always)]
+            pub fn v_align(self, v_align: impl IntoPropertySource<Alignment>) -> Self {
+                self.set_property("v_align", v_align)
+            }
+
+             /// Sets or shares the horizontal alignment property.
+             #[inline(always)]
+             pub fn h_align(self, h_align: impl IntoPropertySource<Alignment>) -> Self {
+                 self.set_property("h_align", h_align)
+             }
+
+            /// Sets or shares the vertical alignment property.
+            #[inline(always)]
+            #[deprecated = "Use v_align instead"]
             pub fn vertical_alignment(self, vertical_alignment: impl IntoPropertySource<Alignment>) -> Self {
-                self.set_property("vertical_alignment", vertical_alignment)
+                self.v_align(vertical_alignment)
             }
 
             /// Sets or shares the horizontal alignment property.
+            #[inline(always)]
+            #[deprecated = "Use h_align instead"]
             pub fn horizontal_alignment(self, horizontal_alignment: impl IntoPropertySource<Alignment>) -> Self {
-                self.set_property("horizontal_alignment", horizontal_alignment)
+                self.h_align(horizontal_alignment)
             }
 
             /// Sets or shares the visibility property.
@@ -322,7 +322,9 @@ macro_rules! widget {
         )*
 
         impl Widget for $widget {
-            fn create() -> Self {
+            /// Creates a new widget.
+            #[inline]
+            fn new() -> Self {
                 $widget {
                     event_handlers: vec![],
                     enabled: true,
@@ -336,6 +338,21 @@ macro_rules! widget {
                     children: vec![],
                     ..Default::default()
                 }
+            }
+
+            fn attach<P: Component + Debug>(mut self, property: AttachedProperty<P>) -> Self {
+                match property.property_source {
+                    PropertySource::Value(value) => {
+                        self.attached_properties.insert(property.key, ComponentBox::new(value));
+                    }
+                    PropertySource::Source(source) => {
+                        self.shared_attached_properties.insert((property.key.clone(), property.key), SharedComponentBox::new(TypeId::of::<P>(), source));
+                    }
+                    PropertySource::KeySource(source_key, source) => {
+                        self.shared_attached_properties.insert((property.key, source_key), SharedComponentBox::new(TypeId::of::<P>(), source));
+                    }
+                }
+                self
             }
 
             fn insert_handler(mut self, handler: impl Into<Rc<dyn EventHandler>>) -> Self {
@@ -365,8 +382,8 @@ macro_rules! widget {
                 // register default set of properties
                 ctx.register_property("bounds", entity, this.bounds);
                 ctx.register_property("position", entity, this.position);
-                ctx.register_property("vertical_alignment", entity, this.vertical_alignment);
-                ctx.register_property("horizontal_alignment", entity, this.horizontal_alignment);
+                ctx.register_property("v_align", entity, this.v_align);
+                ctx.register_property("h_align", entity, this.h_align);
                 ctx.register_property("visibility", entity, this.visibility);
                 ctx.register_property("margin", entity, this.margin);
                 ctx.register_property("enabled", entity, this.enabled);

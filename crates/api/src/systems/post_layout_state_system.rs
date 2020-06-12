@@ -77,12 +77,8 @@ impl System<Tree, StringComponentStore, RenderContext2D> for PostLayoutStateSyst
 
             for key in keys {
                 {
-                    let mut ctx = Context::new(
-                        (key, ecm),
-                        &theme,
-                        &self.context_provider,
-                        render_context,
-                    );
+                    let mut ctx =
+                        Context::new((key, ecm), &theme, &self.context_provider, render_context);
 
                     self.context_provider
                         .states

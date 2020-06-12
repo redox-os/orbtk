@@ -5,24 +5,24 @@ widget!(MainView);
 impl Template for MainView {
     fn template(self, _id: Entity, ctx: &mut BuildContext) -> Self {
         self.child(
-            Stack::create()
+            Stack::new()
                 .spacing(8.0)
                 .orientation("vertical")
-                .horizontal_alignment("center")
+                .h_align("center")
                 .child(
-                    TextBlock::create()
+                    TextBlock::new()
                         .text("Tyre pressure")
                         .font_size(20.0)
                         .build(ctx),
                 )
                 .child(
-                    NumericBox::create()
+                    NumericBox::new()
                         .max(123.0)
                         .step(0.123)
                         .val(0.123)
                         .build(ctx),
                 )
-                .child(Button::create().text("Blow air").build(ctx))
+                .child(Button::new().text("Blow air").build(ctx))
                 .build(ctx),
         )
     }
@@ -31,12 +31,12 @@ impl Template for MainView {
 fn main() {
     Application::new()
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - NumericBox example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
                 .resizeable(true)
-                .child(MainView::create().build(ctx))
+                .child(MainView::new().build(ctx))
                 .build(ctx)
         })
         .run();

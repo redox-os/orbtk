@@ -19,7 +19,7 @@ pub struct EventBox {
 }
 
 impl EventBox {
-    /// Creates a new `EventBox`. 
+    /// Creates a new `EventBox`.
     pub fn new<E: Event>(event: E, strategy: EventStrategy, source: Entity) -> Self {
         EventBox {
             event: Box::new(event),
@@ -48,7 +48,7 @@ impl EventBox {
         Err(EventError::WrongType(TypeId::of::<E>()))
     }
 
-     /// Downcasts the box as reference of an concrete event.
+    /// Downcasts the box as reference of an concrete event.
     pub fn downcast_ref<E: Any>(&self) -> Result<&E, EventError> {
         if self.event_type == TypeId::of::<E>() {
             return Ok(&*self.event.downcast_ref::<E>().unwrap());

@@ -83,13 +83,13 @@ impl Template for ItemsWidget {
             .padding(2.0)
             .orientation("vertical")
             .child(
-                Container::create()
+                Container::new()
                     .background(id)
                     .border_radius(id)
                     .border_width(id)
                     .border_brush(id)
                     .padding(id)
-                    .child(Stack::create().id("items_panel").orientation(id).build(ctx))
+                    .child(Stack::new().id("items_panel").orientation(id).build(ctx))
                     .build(ctx),
             )
     }

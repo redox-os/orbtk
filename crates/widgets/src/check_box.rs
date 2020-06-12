@@ -75,21 +75,21 @@ impl Template for CheckBox {
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
             .child(
-                MouseBehavior::create()
+                MouseBehavior::new()
                     .pressed(id)
                     .enabled(id)
                     .target(id.0)
                     .child(
-                        SelectionBehavior::create()
+                        SelectionBehavior::new()
                             .selected(id)
                             .enabled(id)
                             .target(id.0)
                             .child(
-                                Stack::create()
+                                Stack::new()
                                     .orientation("horizontal")
                                     .spacing(8.0)
                                     .child(
-                                        Container::create()
+                                        Container::new()
                                             .size(24.0, 24.0)
                                             .background(id)
                                             .border_radius(id)
@@ -98,9 +98,9 @@ impl Template for CheckBox {
                                             .padding(id)
                                             .opacity(id)
                                             .child(
-                                                FontIconBlock::create()
-                                                    .vertical_alignment("center")
-                                                    .horizontal_alignment("center")
+                                                FontIconBlock::new()
+                                                    .v_align("center")
+                                                    .h_align("center")
                                                     .icon(id)
                                                     .icon_brush(id)
                                                     .icon_size(id)
@@ -111,8 +111,8 @@ impl Template for CheckBox {
                                             .build(ctx),
                                     )
                                     .child(
-                                        TextBlock::create()
-                                            .vertical_alignment("center")
+                                        TextBlock::new()
+                                            .v_align("center")
                                             .foreground(id)
                                             .text(id)
                                             .font_size(id)

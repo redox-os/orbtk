@@ -206,17 +206,10 @@ impl Template for MainView {
         self.name("MainView")
             .render_pipeline(RenderPipeline(Box::new(CubePipeline::default())))
             .child(
-                Grid::create()
-                    .rows(
-                        Rows::create()
-                            .row("auto")
-                            .row("*")
-                            .row("auto")
-                            .row("*")
-                            .build(),
-                    )
+                Grid::new()
+                    .rows(Rows::new().add("auto").add("*").add("auto").add("*"))
                     .child(
-                        TextBlock::create()
+                        TextBlock::new()
                             .attach(Grid::row(0))
                             .text("Canvas (render with euc crate)")
                             .element("text-block")
@@ -225,15 +218,15 @@ impl Template for MainView {
                             .build(ctx),
                     )
                     .child(
-                        Canvas::create()
+                        Canvas::new()
                             .attach(Grid::row(1))
                             .render_pipeline(id)
                             .build(ctx),
                     )
                     .child(
-                        Button::create()
+                        Button::new()
                             .text("spin cube")
-                            .vertical_alignment("end")
+                            .v_align("end")
                             .attach(Grid::row(1))
                             .margin(4.0)
                             .on_click(move |states, _| {
@@ -243,7 +236,7 @@ impl Template for MainView {
                             .build(ctx),
                     )
                     .child(
-                        TextBlock::create()
+                        TextBlock::new()
                             .attach(Grid::row(2))
                             .text("Canvas (render with OrbTk)")
                             .element("text-block")
@@ -252,7 +245,7 @@ impl Template for MainView {
                             .build(ctx),
                     )
                     .child(
-                        Canvas::create()
+                        Canvas::new()
                             .attach(Grid::row(3))
                             .render_pipeline(RenderPipeline(Box::new(Graphic2DPipeline::default())))
                             .build(ctx),
@@ -268,11 +261,11 @@ fn main() {
 
     Application::new()
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - canvas example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
-                .child(MainView::create().build(ctx))
+                .child(MainView::new().build(ctx))
                 .build(ctx)
         })
         .run();

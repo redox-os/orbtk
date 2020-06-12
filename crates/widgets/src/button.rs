@@ -75,12 +75,12 @@ impl Template for Button {
             .pressed(false)
             .spacing(8.0)
             .child(
-                MouseBehavior::create()
+                MouseBehavior::new()
                     .pressed(id)
                     .enabled(id)
                     .target(id.0)
                     .child(
-                        Container::create()
+                        Container::new()
                             .background(id)
                             .border_radius(id)
                             .border_width(id)
@@ -88,13 +88,13 @@ impl Template for Button {
                             .padding(id)
                             .opacity(id)
                             .child(
-                                Stack::create()
+                                Stack::new()
                                     .orientation("horizontal")
                                     .spacing(id)
-                                    .horizontal_alignment("center")
+                                    .h_align("center")
                                     .child(
-                                        FontIconBlock::create()
-                                            .vertical_alignment("center")
+                                        FontIconBlock::new()
+                                            .v_align("center")
                                             .icon(id)
                                             .icon_brush(id)
                                             .icon_size(id)
@@ -103,8 +103,8 @@ impl Template for Button {
                                             .build(ctx),
                                     )
                                     .child(
-                                        TextBlock::create()
-                                            .vertical_alignment("center")
+                                        TextBlock::new()
+                                            .v_align("center")
                                             .foreground(id)
                                             .text(id)
                                             .font_size(id)
