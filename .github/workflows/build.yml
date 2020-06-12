@@ -34,7 +34,7 @@ jobs:
       - name: Install fuse
         run: sudo apt install libfuse-dev
       - name: Install redoxer
-        run: cargo +nightly install redoxer
+        run: cargo +nightly-2019-11-25 install redoxer
       - name: Install redoxer toolchain
         run: redoxer install
       - name: Build
