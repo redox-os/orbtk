@@ -177,11 +177,11 @@ impl Template for MainView {
                     .margin(8.0)
                     .columns(
                         Columns::new()
-                            .column(132.0)
-                            .column(16.0)
-                            .column(132.0)
-                            .column(16.0)
-                            .column(132.0),
+                            .add(132.0)
+                            .add(16.0)
+                            .add(132.0)
+                            .add(16.0)
+                            .add(132.0),
                     )
                     .child(
                         Stack::new()
@@ -314,15 +314,15 @@ impl Template for MainView {
                         Grid::new()
                             .rows(
                                 Rows::new()
-                                    .row("auto")
-                                    .row(32.0)
-                                    .row(16.0)
-                                    .row(204.0)
-                                    .row("auto")
-                                    .row(192.0)
-                                    .row("auto"),
+                                    .add("auto")
+                                    .add(32.0)
+                                    .add(16.0)
+                                    .add(204.0)
+                                    .add("auto")
+                                    .add(192.0)
+                                    .add("auto"),
                             )
-                            .columns(Columns::new().column("*").column(4.0).column("*"))
+                            .columns(Columns::new().add("*").add(4.0).add("*"))
                             .attach(Grid::column(4))
                             .child(
                                 TextBlock::new()

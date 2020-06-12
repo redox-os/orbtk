@@ -356,7 +356,7 @@ impl Template for ComboBox {
             .padding(id)
             .child(
                 Grid::new()
-                    .columns(Columns::new().column("*").column(4.0).column(14.0))
+                    .columns(Columns::new().add("*").add(4.0).add(14.0))
                     .child(selected_container)
                     .child(
                         FontIconBlock::new()

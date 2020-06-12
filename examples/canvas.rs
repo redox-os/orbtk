@@ -207,7 +207,7 @@ impl Template for MainView {
             .render_pipeline(RenderPipeline(Box::new(CubePipeline::default())))
             .child(
                 Grid::new()
-                    .rows(Rows::new().row("auto").row("*").row("auto").row("*"))
+                    .rows(Rows::new().add("auto").add("*").add("auto").add("*"))
                     .child(
                         TextBlock::new()
                             .attach(Grid::row(0))

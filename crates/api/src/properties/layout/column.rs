@@ -61,7 +61,7 @@ impl Column {
 
     /// Creates a new `ColumnBuilder` object with default values.
     #[inline(always)]
-    #[deprecated]
+    #[deprecated = "Use new instead"]
     pub fn create() -> ColumnBuilder {
         Column::new()
     }
@@ -137,10 +137,17 @@ impl ColumnsBuilder {
         ColumnsBuilder::default()
     }
 
-    /// Inserts a new column.
-    pub fn column<C: Into<Column>>(mut self, column: C) -> Self {
+     /// Inserts a new column.
+     pub fn add<C: Into<Column>>(mut self, column: C) -> Self {
         self.columns.push(column.into());
         self
+    }
+
+    /// Inserts a new column.
+    #[inline(always)]
+    #[deprecated = "Use add instead"]
+    pub fn column<C: Into<Column>>(self, column: C) -> Self {
+        self.add(column)
     }
 
     /// Inserts a list of columns.
@@ -184,7 +191,7 @@ impl Columns {
 
     /// Creates a new `ColumnsBuilder` object with default values.
     #[inline(always)]
-    #[deprecated]
+    #[deprecated = "Use new instead"]
     pub fn create() -> ColumnsBuilder {
         Columns::new()
     }
@@ -284,8 +291,8 @@ mod tests {
 
         let builder = ColumnsBuilder::new();
         let columns = builder
-            .column(Column::new().build())
-            .column(Column::new().build())
+            .add(Column::new().build())
+            .add(Column::new().build())
             .build();
 
         assert_eq!(columns.len(), 2);

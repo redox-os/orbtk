@@ -55,7 +55,7 @@ pub trait Widget: Template {
 
     /// Creates a new widget.
     #[inline(always)]
-    #[deprecated]
+    #[deprecated = "Use new instead"]
     fn create() -> Self {
         Self::new()
     }

@@ -121,7 +121,7 @@ impl Constraint {
 
     /// Returns a constraint builder.
     #[inline(always)]
-    #[deprecated]
+    #[deprecated = "Use new instead"]
     pub fn create() -> ConstraintBuilder {
         Constraint::new()
     }

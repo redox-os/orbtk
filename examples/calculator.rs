@@ -198,7 +198,7 @@ impl Template for MainView {
             .text("")
             .child(
                 Grid::new()
-                    .rows(Rows::new().row(72.0).row("*").build())
+                    .rows(Rows::new().add(72.0).add("*").build())
                     .child(
                         Container::new()
                             .padding(8.0)
@@ -244,25 +244,25 @@ impl Template for MainView {
                                 Grid::new()
                                     .columns(
                                         Columns::new()
-                                            .column(48.0)
-                                            .column(4.0)
-                                            .column(48.0)
-                                            .column(4.0)
-                                            .column(48.0)
-                                            .column(4.0)
-                                            .column(48.0),
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0),
                                     )
                                     .rows(
                                         Rows::new()
-                                            .row(48.0)
-                                            .row(4.0)
-                                            .row(48.0)
-                                            .row(4.0)
-                                            .row(48.0)
-                                            .row(4.0)
-                                            .row(48.0)
-                                            .row(4.0)
-                                            .row(48.0),
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0),
                                     )
                                     // row 0
                                     .child(generate_operation_button(ctx, id, 'C', false, 0, 5, 0))

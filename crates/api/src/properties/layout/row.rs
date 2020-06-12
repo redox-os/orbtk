@@ -61,7 +61,7 @@ impl Row {
 
     /// Creates a new `RowBuilder` object with default values.
     #[inline(always)]
-    #[deprecated]
+    #[deprecated = "Use new instead"]
     pub fn create() -> RowBuilder {
         Row::new()
     }
@@ -137,9 +137,16 @@ impl RowsBuilder {
     }
 
     /// Inserts a new row.
-    pub fn row<R: Into<Row>>(mut self, row: R) -> Self {
+    pub fn add<R: Into<Row>>(mut self, row: R) -> Self {
         self.row_definitions.push(row.into());
         self
+    }
+
+    /// Inserts a new row.
+    #[inline]
+    #[deprecated = "Use add instead"]
+    pub fn row<R: Into<Row>>(self, row: R) -> Self {
+        self.add(row)
     }
 
     /// Inserts a list of rows.
@@ -183,7 +190,7 @@ impl Rows {
 
     /// Creates a new `RowsBuilder` object with default values.
     #[inline(always)]
-    #[deprecated]
+    #[deprecated = "Use new instead"]
     pub fn create() -> RowsBuilder {
         RowsBuilder::new()
     }
@@ -286,8 +293,8 @@ mod tests {
 
         let builder = RowsBuilder::new();
         let rows = builder
-            .row(Row::new().build())
-            .row(Row::new().build())
+            .add(Row::new().build())
+            .add(Row::new().build())
             .build();
 
         assert_eq!(rows.len(), 2);

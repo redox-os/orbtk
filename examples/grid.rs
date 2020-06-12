@@ -15,8 +15,8 @@ impl Template for MainView {
     fn template(self, _: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MainView").child(
             Grid::new()
-                .columns(Columns::new().column("*").column("auto").column(50.0))
-                .rows(Rows::new().row("*").row("*").build())
+                .columns(Columns::new().add("*").add("auto").add(50.0))
+                .rows(Rows::new().add("*").add("*").build())
                 .child(
                     Grid::new()
                         .element("lynch")
