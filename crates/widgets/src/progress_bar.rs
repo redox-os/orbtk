@@ -99,6 +99,7 @@ impl Template for ProgressBar {
                     .element("progress_bar_indicator")
                     .background("#EFD035")
                     .height(24.0)
+                    .v_align("start")
                     .border_radius(1.0)
                     .width(0.0)
                     .build(ctx),

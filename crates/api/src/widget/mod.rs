@@ -61,7 +61,7 @@ pub trait Widget: Template {
     }
 
     // This method will always be overwritten by the `widget!` macros.
-    fn attach<P: Component + Debug>(self, property: AttachedProperty<P>) -> Self {
+    fn attach<P: Component + Debug>(self, _: AttachedProperty<P>) -> Self {
         self
     }
 

@@ -174,10 +174,10 @@ impl Template for NumericBox {
             .height(32.0)
             .margin(4.0)
             .min(0.0)
-            .max(MAX)
+            .max(200.0)
             .step(1.0)
             .val(0.0)
-            .width(100.0)
+            .width(128.0)
             .child(
                 MouseBehavior::new()
                     .on_mouse_down(move |states, _| {
@@ -195,63 +195,66 @@ impl Template for NumericBox {
                     .build(ctx),
             )
             .child(
-                Stack::new()
-                    .orientation("horizontal")
-                    .spacing(0.0)
+                Grid::new()
+                    .columns(Columns::new().add("*").add(32.))
+                    .rows(Rows::new().add(16.0).add(16.0))
                     .child(
                         TextBox::new()
+                            .h_align("stretch")
+                            .attach(Grid::column(0))
+                            .attach(Grid::row_span(2))
+                            .attach(Grid::row(0))
                             .border_brush(id)
                             .border_radius(id)
                             .border_width(id)
                             .element(ELEMENT_INPUT)
                             .enabled(false)
                             .id(ID_INPUT)
-                            .max_width(64.0)
+                            .max_width(96.)
                             .text("0")
                             .build(ctx),
                     )
                     .child(
-                        Stack::new()
-                            .orientation("vertical")
-                            .spacing(0.0)
-                            .child(
-                                Button::new()
-                                    .border_brush("transparent")
-                                    .border_radius(0.0)
-                                    .border_width(0.0)
-                                    .class("single_content")
-                                    .element(ELEMENT_BTN)
-                                    .max_width(32.0)
-                                    .margin(1.0)
-                                    .padding(0.0)
-                                    .text("+")
-                                    .on_click(move |states, _| {
-                                        states
-                                            .get_mut::<NumericBoxState>(id)
-                                            .action(InputAction::Inc);
-                                        true
-                                    })
-                                    .build(ctx),
-                            )
-                            .child(
-                                Button::new()
-                                    .border_brush("transparent")
-                                    .border_radius(0.0)
-                                    .border_width(0.0)
-                                    .class("single_content")
-                                    .element(ELEMENT_BTN)
-                                    .max_width(32.0)
-                                    .margin(1.0)
-                                    .padding(0.0)
-                                    .text("-")
-                                    .on_click(move |states, _| {
-                                        states
-                                            .get_mut::<NumericBoxState>(id)
-                                            .action(InputAction::Dec);
-                                        true
-                                    })
-                                    .build(ctx),
-                            )
+                        Button::new()
+                            .attach(Grid::column(1))
+                            .attach(Grid::row(0))
+                            .border_brush("transparent")
+                            .border_radius(0.0)
+                            .border_width(0.0)
+                            .min_width(30.0)
+                            .height(30.0)
+                            .class("single_content")
+                            .element(ELEMENT_BTN)
+                            .text("+")
+                            .margin(1)
+                            .on_click(move |states, _| {
+                                states
+                                    .get_mut::<NumericBoxState>(id)
+                                    .action(InputAction::Inc);
+                                true
+                            })
+                            .build(ctx),
+                    )
+                    .child(
+                        Button::new()
+                            .attach(Grid::column(1))
+                            .attach(Grid::row(1))
+                            .border_brush("transparent")
+                            .border_radius(0.0)
+                            .border_width(0.0)
+                            .class("single_content")
+                            .element(ELEMENT_BTN)
+                            .min_width(30.0)
+                            .height(30.0)
+                            .padding(0.0)
+                            .margin(1)
+                            .text("-")
+                            .on_click(move |states, _| {
+                                states
+                                    .get_mut::<NumericBoxState>(id)
+                                    .action(InputAction::Dec);
+                                true
+                            })
                             .build(ctx),
                     )
                     .build(ctx),

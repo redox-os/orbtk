@@ -308,6 +308,14 @@ impl Template for MainView {
                                     })
                                     .build(ctx),
                             )
+                            .child(
+                                NumericBox::new()
+                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .max(123.0)
+                                    .step(0.123)
+                                    .val(0.123)
+                                    .build(ctx),
+                            )
                             .build(ctx),
                     )
                     .child(
