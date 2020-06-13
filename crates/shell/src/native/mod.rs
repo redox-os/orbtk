@@ -27,6 +27,7 @@ impl Console {
         }
     }
 
+    #[allow(unused_variables)]
     pub fn log(&self, message: impl Into<String>) {
         #[cfg(feature = "log")]
         println!("{}", message.into());

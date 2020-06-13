@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc, sync::mpsc};
 
 use derive_more::Constructor;
 
-use super::{KeyState, MouseState, WindowState, CONSOLE};
+use super::{KeyState, MouseState, WindowState};
 use crate::{
     event::{ButtonState, KeyEvent, MouseButton, MouseEvent},
     render::RenderContext2D,
