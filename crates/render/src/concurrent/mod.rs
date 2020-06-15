@@ -176,6 +176,7 @@ impl RenderWorker {
     fn new(
         width: f64,
         height: f64,
+        finish_sender: mpsc::Sender<bool>,
         receiver: Arc<Mutex<mpsc::Receiver<Vec<RenderTask>>>>,
         sender: Arc<Mutex<mpsc::Sender<RenderResult>>>,
     ) -> Self {
@@ -358,6 +359,7 @@ impl RenderWorker {
                                         data: render_context_2_d.data().iter().copied().collect(),
                                     })
                                     .expect("Could not send render result to main thread.");
+                                finish_sender.send(true).expect("Could not send render result to main thread.");;
                             }
                             _ => {}
                         };
@@ -378,6 +380,7 @@ pub struct RenderContext2D {
     worker: RenderWorker,
     sender: mpsc::Sender<Vec<RenderTask>>,
     result_receiver: mpsc::Receiver<RenderResult>,
+    finish_receiver: mpsc::Receiver<bool>,
     tasks: Vec<RenderTask>,
     measure_context: platform::RenderContext2D,
 }
@@ -398,21 +401,27 @@ impl RenderContext2D {
     pub fn new(width: f64, height: f64) -> Self {
         let (sender, receiver) = mpsc::channel();
 
+        let (finish_sender, finish_receiver) = mpsc::channel();
         let (result_sender, result_receiver) = mpsc::channel();
 
         let receiver = Arc::new(Mutex::new(receiver));
         let result_sender = Arc::new(Mutex::new(result_sender));
 
-        let worker = RenderWorker::new(width, height, receiver, result_sender);
+        let worker = RenderWorker::new(width, height, finish_sender, receiver, result_sender);
 
         RenderContext2D {
             output: vec![0; width as usize * height as usize],
             worker,
             sender,
             result_receiver,
+            finish_receiver,
             tasks: vec![],
             measure_context: platform::RenderContext2D::new(width, height),
         }
+    }
+
+    pub fn finish_receiver(&self) -> &mpsc::Receiver<bool> {
+        &self.finish_receiver
     }
 
     pub fn set_background(&mut self, background: Color) {
