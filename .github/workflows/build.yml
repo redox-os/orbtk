@@ -24,10 +24,9 @@ jobs:
   build_redox:
     name: Build on Redox OS
     runs-on: ubuntu-latest
-    container: 
-      image: redoxos/redoxer
+    container: redoxos/redoxer
     
-   steps:
+    steps:
       - uses: actions/checkout@v1
       - name: Install redoxer
         run: cargo install redoxer
