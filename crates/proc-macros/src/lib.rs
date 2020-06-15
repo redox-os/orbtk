@@ -3,7 +3,8 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
-use syn::{parse_macro_input, DataStruct, DeriveInput, Ident, Meta, MetaNameValue, NestedMeta};
+use case::CaseExt;
+use syn::{parse_macro_input, DataStruct, DeriveInput, Ident, Meta, NestedMeta};
 
 #[proc_macro_derive(Pipeline)]
 pub fn derive_pipeline(input: TokenStream) -> TokenStream {
@@ -85,6 +86,9 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
 
     let ident = &input.ident;
 
+    let helper = ident.to_string().as_str().to_snake();
+    let helper = syn::Ident::new(helper.as_str(), Span::call_site());
+
     let name = syn::Ident::new(format!("{}Ctx", ident).as_str(), Span::call_site());
     let mut generated = vec![];
 
@@ -149,25 +153,25 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
                                     /// Gets a reference of the property value.
                                     #[inline(always)]
                                     pub fn #field_name(&self) -> &#ty {
-                                        self.widget.get::<#ty>(#field_name_str)
+                                        self.ctx.get::<#ty>(#field_name_str)
                                     }
 
                                     /// Gets a mutable reference of the property value.
                                     #[inline(always)]
                                     pub fn #get_mut(&mut self) -> &mut #ty {
-                                        self.widget.get_mut::<#ty>(#field_name_str)
+                                        self.ctx.get_mut::<#ty>(#field_name_str)
                                     }
 
                                     /// Sets the property value.
                                     #[inline(always)]
                                     pub fn #setter(&mut self, value: impl Into<#ty>) {
-                                        self.widget.set(#field_name_str, value.into());
+                                        self.ctx.set(#field_name_str, value.into());
                                     }
 
                                     /// Clones the property value.
                                     #[inline(always)]
                                     pub fn #clone(&mut self) -> #ty {
-                                        self.widget.clone(#field_name_str)
+                                        self.ctx.clone(#field_name_str)
                                     }
                                 };
 
@@ -186,7 +190,12 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
     let gen = quote! {
         /// Represents a widget context that provides methods to access the properties of a widget.
         pub struct #name<'a> {
-            widget: WidgetContainer<'a>
+            ctx: WidgetContainer<'a>
+        }
+
+        /// Gets a context wrapper to access the properties of the widget.
+        pub fn #helper(ctx: WidgetContainer<'_>) -> #name {
+            #ident::get(ctx)
         }
 
         impl<'a> #name<'a> {
@@ -195,18 +204,18 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
 
         impl #ident {
             /// Gets a widget context that wraps the given widgets an provides access to the its properties.
-            pub fn get<'a>(widget: WidgetContainer<'a>) -> #name<'a> {
-                if *widget.get::<TypeId>("type_id") != TypeId::of::<#ident>() {
-                    panic!("Wrong widget type {} for entity {:?} with type_id: {:?}.", std::any::type_name::<#ident>(), widget.entity(), widget.get::<TypeId>("type_id"));
+            pub fn get<'a>(ctx: WidgetContainer<'a>) -> #name<'a> {
+                if *ctx.get::<TypeId>("type_id") != TypeId::of::<#ident>() {
+                    panic!("Wrong widget type {} for entity {:?} with type_id: {:?}.", 
+                        std::any::type_name::<#ident>(), ctx.entity(), 
+                        ctx.get::<TypeId>("type_id"));
                 }
 
                 #name {
-                    widget
+                    ctx
                 }
             }
         }
-
-
     };
 
     TokenStream::from(gen)

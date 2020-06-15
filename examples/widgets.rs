@@ -35,63 +35,57 @@ impl State for MainViewState {
         if let Some(action) = self.action {
             match action {
                 Action::AddItem => {
-                    let len = MainView::get(ctx.widget()).list().len();
+                    let len = main_view(ctx.widget()).list().len();
 
                     if len < 5 {
-                        MainView::get(ctx.widget())
+                        main_view(ctx.widget())
                             .list_mut()
                             .push(format!("Item {}", len + 1));
-                        ItemsWidget::get(ctx.widget()).set_count(len + 1);
-                        Button::get(ctx.child("remove-item-button")).set_enabled(true);
+                        items_widget(ctx.child("items")).set_count(len + 1);
+                        button(ctx.child("remove-item-button")).set_enabled(true);
 
                         if len == 4 {
-                            Button::get(ctx.child("add-item-button")).set_enabled(false);
+                            button(ctx.child("add-item-button")).set_enabled(false);
                         }
                     }
                 }
                 Action::RemoveItem => {
-                    let len = ctx.widget().get::<List>("list").len();
+                    let len = main_view(ctx.widget()).list().len();
                     if len > 0 {
-                        MainView::get(ctx.widget()).list_mut().remove(len - 1);
-                        ItemsWidget::get(ctx.child("items")).set_count(len - 1);
-                        Button::get(ctx.child("add-item-button")).set_enabled(true);
+                        main_view(ctx.widget()).list_mut().remove(len - 1);
+                        items_widget(ctx.child("items")).set_count(len - 1);
+                        button(ctx.child("add-item-button")).set_enabled(true);
 
                         if len == 1 {
-                            Button::get(ctx.child("remove-item-button")).set_enabled(false);
+                            button(ctx.child("remove-item-button")).set_enabled(false);
                         }
                     }
                 }
                 Action::IncrementCounter => {
-                    *MainView::get(ctx.widget()).counter_mut() += 1;
+                    *main_view(ctx.widget()).counter_mut() += 1;
 
-                    let counter = *MainView::get(ctx.widget()).counter();
+                    let counter = *main_view(ctx.widget()).counter();
 
-                    ctx.widget().set(
-                        "result",
-                        String16::from(format!("Button count: {}", counter)),
-                    );
+                    main_view(ctx.widget())
+                        .set_result(String16::from(format!("Button count: {}", counter)));
                 }
                 Action::ClearText => {
-                    MainView::get(ctx.widget()).set_text_one(String16::default());
-                    MainView::get(ctx.widget()).set_text_two(String16::default());
+                    main_view(ctx.widget()).set_text_one(String16::default());
+                    main_view(ctx.widget()).set_text_two(String16::default());
                 }
                 Action::EntryActivated(entity) => {
-                    let mut text_box = TextBox::get(ctx.get_widget(entity));
+                    let mut text_box = text_box(ctx.get_widget(entity));
                     let text = text_box.text_mut();
                     println!("submitting {}", text);
                     text.clear();
                 }
                 Action::EntryChanged(entity) => {
-                    println!(
-                        "entry changed: {}",
-                        TextBox::get(ctx.get_widget(entity)).text()
-                    );
+                    println!("entry changed: {}", text_box(ctx.get_widget(entity)).text());
                 }
                 Action::ValueChanged(entity) => {
-                    let val =
-                        ((Slider::get(ctx.get_widget(entity)).val()).floor() as i32).to_string();
+                    let val = ((slider(ctx.get_widget(entity)).val()).floor() as i32).to_string();
 
-                    TextBlock::get(ctx.child("value_text")).set_text(String16::from(val));
+                    text_block(ctx.child("value_text")).set_text(String16::from(val));
                 }
             }
 
@@ -102,12 +96,11 @@ impl State for MainViewState {
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         let mut selection_string = "Selected:".to_string();
 
-        for index in &ctx.widget().get::<SelectedIndices>("selected_indices").0 {
+        for index in &main_view(ctx.widget()).selected_indices().0 {
             selection_string = format!("{} {}", selection_string, index);
         }
 
-        ctx.child("selection")
-            .set("text", String16::from(selection_string));
+        text_block(ctx.child("selection")).set_text(selection_string);
     }
 }
 
