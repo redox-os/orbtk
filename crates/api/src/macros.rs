@@ -50,7 +50,9 @@ macro_rules! widget {
             attached_properties: HashMap<String, ComponentBox>,
             shared_attached_properties: HashMap<(String, String), SharedComponentBox>,
             event_handlers: Vec<Rc<dyn EventHandler>>,
+            #[property(Rectangle)]
             bounds: Rectangle,
+            #[property(Point)]
             position: Point,
             min_width: Option<f64>,
             min_height: Option<f64>,

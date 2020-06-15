@@ -12,30 +12,30 @@ enum Action {
 /// The `MouseBehaviorState` handles the `MouseBehavior` widget.
 #[derive(Default, AsAny)]
 pub struct MouseBehaviorState {
-    action: Cell<Option<Action>>,
+    action: Option<Action>,
     has_delta: Cell<bool>,
 }
 
 impl MouseBehaviorState {
-    fn action(&self, action: Action) {
-        self.action.set(Some(action));
+    fn action(&mut self, action: Action) {
+        self.action = Some(action);
     }
 }
 
 impl State for MouseBehaviorState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        if !ctx.widget().get::<bool>("enabled") {
+        if !mouse_behavior(ctx.widget()).enabled() {
             return;
         }
 
-        if let Some(action) = self.action.get() {
+        if let Some(action) = self.action {
             match action {
                 Action::Press(_) => {
-                    ctx.widget().set("pressed", true);
+                    mouse_behavior(ctx.widget()).set_pressed(true);
                 }
                 Action::Release(p) => {
-                    let pressed: bool = *ctx.widget().get("pressed");
-                    ctx.widget().set("pressed", false);
+                    let pressed: bool = *mouse_behavior(ctx.widget()).pressed();
+                    mouse_behavior(ctx.widget()).set_pressed(false);
 
                     if check_mouse_condition(Point::new(p.x, p.y), &ctx.widget()) && pressed {
                         let parent = ctx.entity_of_parent().unwrap();
@@ -45,26 +45,29 @@ impl State for MouseBehaviorState {
                             },
                             parent,
                         )
-                    } else {
+                    } 
+
+                    if !pressed {
+                        self.action = None;
                         return;
                     }
                 }
                 Action::Scroll(p) => {
-                    ctx.widget().set("position", p);
+                    mouse_behavior(ctx.widget()).set_position(p);
                     self.has_delta.set(true);
                 }
             };
 
-            let target: Entity = (*ctx.widget().get::<u32>("target")).into();
+            let target: Entity = (*mouse_behavior(ctx.widget()).target()).into();
             ctx.get_widget(target).update_theme_by_state(false);
 
-            self.action.set(None);
+            self.action = None;
         }
     }
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
         if self.has_delta.get() {
-            ctx.widget().set("delta", Point::new(0.0, 0.0));
+            mouse_behavior(ctx.widget()).set_delta(Point::default());
             self.has_delta.set(false);
         }
     }
@@ -93,19 +96,19 @@ impl Template for MouseBehavior {
             .pressed(false)
             .on_mouse_down(move |states, m| {
                 states
-                    .get::<MouseBehaviorState>(id)
+                    .get_mut::<MouseBehaviorState>(id)
                     .action(Action::Press(m));
                 false
             })
             .on_mouse_up(move |states, m| {
                 states
-                    .get::<MouseBehaviorState>(id)
+                    .get_mut::<MouseBehaviorState>(id)
                     .action(Action::Release(m));
                 false
             })
             .on_scroll(move |states, p| {
                 states
-                    .get::<MouseBehaviorState>(id)
+                    .get_mut::<MouseBehaviorState>(id)
                     .action(Action::Scroll(p));
                 false
             })
