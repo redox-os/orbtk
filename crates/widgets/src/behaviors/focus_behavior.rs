@@ -16,11 +16,11 @@ impl FocusBehaviorState {
 
 impl State for FocusBehaviorState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        if !self.request_focus.get() || !ctx.widget().get::<bool>("enabled") {
+        if !self.request_focus.get() || !focus_behavior(ctx.widget()).enabled() {
             return;
         }
 
-        let target: Entity = (*ctx.widget().get::<u32>("target")).into();
+        let target: Entity = (*focus_behavior(ctx.widget()).target()).into();
 
         ctx.push_event_by_window(FocusEvent::RequestFocus(target));
 

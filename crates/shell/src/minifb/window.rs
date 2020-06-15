@@ -181,6 +181,11 @@ where
 
     /// Receives window request from the application and handles them.
     pub fn receive_requests(&mut self) {
+        if let Ok(result) = self.render_context.finish_receiver().try_recv() {
+            if result {
+                self.redraw = true;
+            }
+        }
         if let Some(request_receiver) = &self.request_receiver {
             for request in request_receiver.try_iter() {
                 match request {

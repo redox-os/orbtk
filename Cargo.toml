@@ -25,9 +25,9 @@ path = "src/lib.rs"
 opt-level = 1
 
 [dependencies]
+orbtk-proc-macros = { version = "0.3.1-alpha3", path = "crates/proc-macros" }
 orbtk-api = { version = "0.3.1-alpha3", path = "crates/api" }
 orbtk-css-engine = { version = "0.3.1-alpha3", path = "crates/css-engine" }
-orbtk-proc-macros = { version = "0.3.1-alpha3", path = "crates/proc-macros" }
 orbtk-render = { version = "0.3.1-alpha3", path = "crates/render" }
 orbtk-shell = { version = "0.3.1-alpha3", path = "crates/shell" }
 orbtk-theme = { version = "0.3.1-alpha3", path="crates/theme" }

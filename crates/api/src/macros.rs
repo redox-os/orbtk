@@ -45,12 +45,14 @@ macro_rules! widget {
                 $( attached_properties: { $($(#[$att_prop_doc:meta])* $att_property:ident: $att_property_type:tt ),* } )*
              } )* ) => {
         $(#[$widget_doc])*
-        #[derive(Default)]
+        #[derive(Default, WidgetCtx)]
         pub struct $widget {
             attached_properties: HashMap<String, ComponentBox>,
             shared_attached_properties: HashMap<(String, String), SharedComponentBox>,
             event_handlers: Vec<Rc<dyn EventHandler>>,
+            #[property(Rectangle)]
             bounds: Rectangle,
+            #[property(Point)]
             position: Point,
             min_width: Option<f64>,
             min_height: Option<f64>,
@@ -62,16 +64,24 @@ macro_rules! widget {
             element: Option<String>,
             id: Option<String>,
             classes: HashSet<String>,
+            #[property(Alignment)]
             h_align: Alignment,
+            #[property(Alignment)]
             v_align: Alignment,
+            #[property(Thickness)]
             margin: Thickness,
+            #[property(bool)]
             enabled: bool,
+            #[property(bool)]
             clip: bool,
+            #[property(f32)]
             opacity: f32,
+            #[property(Visibility)]
             visibility: Visibility,
             _empty: Option<RefCell<i32>>,
              $(
                 $(
+                    #[property($property_type)]
                     $property: Option<PropertySource<$property_type>>,
                 )*
              )*
@@ -389,6 +399,8 @@ macro_rules! widget {
                 ctx.register_property("enabled", entity, this.enabled);
                 ctx.register_property("clip", entity, this.clip);
                 ctx.register_property("opacity", entity, this.opacity);
+                ctx.register_property("type_id", entity, TypeId::of::<$widget>());
+                ctx.register_property("type_name", entity, std::any::type_name::<$widget>().to_string());
 
                 if this.element.is_some() || this.id.is_some() || this.classes.len() > 0 {
                     let mut selector = Selector::new();

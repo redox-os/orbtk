@@ -260,13 +260,7 @@ fn calculate_thumb_x(mouse_x: f64, thumb_width: f64, slider_x: f64, track_width:
         .min(track_width - thumb_width)
 }
 
-fn calculate_val(
-    thumb_x: f64,
-    min: f64,
-    max: f64,
-    thumb_width: f64,
-    track_width: f64,
-) -> f64 {
+fn calculate_val(thumb_x: f64, min: f64, max: f64, thumb_width: f64, track_width: f64) -> f64 {
     thumb_x / (track_width - thumb_width) * (max - min)
 }
 
