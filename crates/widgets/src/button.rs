@@ -1,6 +1,24 @@
 use super::behaviors::MouseBehavior;
 use crate::prelude::*;
 
+// pub struct ButtonCtx<'a> {
+//     widget: crate::api::WidgetContainer<'a>
+// }
+
+// impl<'a> ButtonCtx<'a> {
+//     pub fn set_foreground(&mut self, foreground: impl Into<Brush>) {
+//         self.widget.set("foreground", foreground.into());
+//     }
+// }
+
+// impl Button {
+//     pub fn get<'a>(widget: crate::api::WidgetContainer<'a>) -> ButtonCtx<'a> {
+//         ButtonCtx {
+//             widget
+//         }
+//     }
+// }
+
 widget!(
     /// The `Button` widget can be clicked by user. It's used to perform an action.
     ///

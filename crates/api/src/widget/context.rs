@@ -54,7 +54,7 @@ impl<'a> Context<'a> {
             render_context,
         }
     }
-
+    
     // -- Widgets --
 
     /// Returns a specific widget.

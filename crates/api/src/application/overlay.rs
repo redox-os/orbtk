@@ -14,6 +14,7 @@ use crate::{
     layout::{AbsoluteLayout, Layout},
     properties::*,
     utils::*,
+    proc_macros::WidgetCtx,
     widget,
     widget::*,
 };

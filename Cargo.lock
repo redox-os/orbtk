@@ -1188,6 +1188,7 @@ dependencies = [
 name = "orbtk-proc-macros"
 version = "0.3.1-alpha3"
 dependencies = [
+ "proc-macro2 1.0.18 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.30 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

@@ -35,10 +35,11 @@ impl State for MainViewState {
         if let Some(action) = self.action {
             match action {
                 Action::AddItem => {
-                    let len = ctx.widget().get::<List>("list").len();
+                    let len = MainView::get(ctx.widget()).list().len();
+
                     if len < 5 {
-                        ctx.widget()
-                            .get_mut::<List>("list")
+                        MainView::get(ctx.widget())
+                            .list_mut()
                             .push(format!("Item {}", len + 1));
                         ctx.child("items").set("count", len + 1);
                         ctx.child("remove-item-button").set("enabled", true);

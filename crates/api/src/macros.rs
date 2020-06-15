@@ -43,9 +43,9 @@ macro_rules! widget {
     ( $(#[$widget_doc:meta])* $widget:ident $(<$state:ident>)* $(: $( $handler:ident ),*)*
             $( { $($(#[$prop_doc:meta])* $property:ident: $property_type:tt ),*
                 $( attached_properties: { $($(#[$att_prop_doc:meta])* $att_property:ident: $att_property_type:tt ),* } )*
-             } )* ) => {
+             } )* ) => { 
         $(#[$widget_doc])*
-        #[derive(Default)]
+        #[derive(Default, WidgetCtx)]
         pub struct $widget {
             attached_properties: HashMap<String, ComponentBox>,
             shared_attached_properties: HashMap<(String, String), SharedComponentBox>,
@@ -72,6 +72,7 @@ macro_rules! widget {
             _empty: Option<RefCell<i32>>,
              $(
                 $(
+                    #[property($property_type)]
                     $property: Option<PropertySource<$property_type>>,
                 )*
              )*

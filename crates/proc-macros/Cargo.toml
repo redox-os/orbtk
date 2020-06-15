@@ -15,6 +15,7 @@ proc-macro = true
 [dependencies]
 quote = "1.0.3"
 syn = "1.0.17"
+proc-macro2 = "1.0"
 
 [features]
 debug = []
