@@ -1,9 +1,9 @@
 extern crate proc_macro;
 
+use case::CaseExt;
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
-use case::CaseExt;
 use syn::{parse_macro_input, DataStruct, DeriveInput, Ident, Meta, NestedMeta};
 
 #[proc_macro_derive(Pipeline)]
@@ -206,8 +206,8 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
             /// Gets a widget context that wraps the given widgets an provides access to the its properties.
             pub fn get<'a>(ctx: WidgetContainer<'a>) -> #name<'a> {
                 if *ctx.get::<TypeId>("type_id") != TypeId::of::<#ident>() {
-                    panic!("Wrong widget type {} for entity {:?} with type_id: {:?}.", 
-                        std::any::type_name::<#ident>(), ctx.entity(), 
+                    panic!("Wrong widget type {} for entity {:?} with type_id: {:?}.",
+                        std::any::type_name::<#ident>(), ctx.entity(),
                         ctx.get::<TypeId>("type_id"));
                 }
 
