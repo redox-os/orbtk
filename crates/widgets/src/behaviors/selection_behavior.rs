@@ -15,24 +15,24 @@ impl SelectionBehaviorState {
 
 impl State for SelectionBehaviorState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        self.selected = *ctx.widget().get::<bool>("selected");
+        self.selected = *selection_behavior(ctx.widget()).selected();
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        let selected = *ctx.widget().get::<bool>("selected");
+        let selected = *selection_behavior(ctx.widget()).selected();
 
         if self.selected == selected && !self.toggle_selection {
             return;
         }
 
-        if *ctx.widget().get::<bool>("enabled") && self.toggle_selection {
-            ctx.widget().set("selected", !selected);
+        if *selection_behavior(ctx.widget()).enabled() && self.toggle_selection {
+            selection_behavior(ctx.widget()).set_selected(!selected);
         }
 
         self.toggle_selection = false;
-        self.selected = *ctx.widget().get::<bool>("selected");
+        self.selected = *selection_behavior(ctx.widget()).selected();
 
-        let target: Entity = (*ctx.widget().get::<u32>("target")).into();
+        let target: Entity = (*selection_behavior(ctx.widget()).target()).into();
         ctx.push_event_strategy_by_entity(ChangedEvent(target), target, EventStrategy::Direct);
         ctx.get_widget(target).update_theme_by_state(false);
     }
