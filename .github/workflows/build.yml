@@ -24,21 +24,16 @@ jobs:
   build_redox:
     name: Build on Redox OS
     runs-on: ubuntu-latest
+    container: redoxos/redoxer
     
-    steps:
+   steps:
       - uses: actions/checkout@v1
-      - name: Set nightly default
-        run:  rustup default nightly-2019-11-25
-      - name: Update
-        run: sudo apt update
-      - name: Install fuse
-        run: sudo apt install libfuse-dev
       - name: Install redoxer
-        run: cargo +nightly-2019-11-25 install redoxer
+        run: cargo install redoxer
       - name: Install redoxer toolchain
-        run: redoxer +nightly-2019-11-25 install
+        run: redoxer  install
       - name: Build
-        run: redoxer build
+        run: redoxer build --example widgets --verbose
            
   build_macos:
     name: Build on macOS-latest
