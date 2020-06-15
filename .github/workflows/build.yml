@@ -36,7 +36,7 @@ jobs:
       - name: Install redoxer
         run: cargo +nightly-2019-11-25 install redoxer
       - name: Install redoxer toolchain
-        run: redoxer install
+        run: redoxer +nightly-2019-11-25 install
       - name: Build
         run: redoxer build
            
