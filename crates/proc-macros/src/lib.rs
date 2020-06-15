@@ -135,6 +135,11 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
                                     Span::call_site(),
                                 );
 
+                                let clone = Ident::new(
+                                    format!("clone_{}", field_name).as_str(),
+                                    Span::call_site(),
+                                );
+
                                 let get_mut = Ident::new(
                                     format!("{}_mut", field_name).as_str(),
                                     Span::call_site(),
@@ -147,14 +152,22 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
                                         self.widget.get::<#ty>(#field_name_str)
                                     }
 
+                                    /// Gets a mutable reference of the property value.
                                     #[inline(always)]
                                     pub fn #get_mut(&mut self) -> &mut #ty {
                                         self.widget.get_mut::<#ty>(#field_name_str)
                                     }
 
+                                    /// Sets the property value.
                                     #[inline(always)]
-                                    pub fn #setter(&mut self, value: #ty) {
-                                        self.widget.set(#field_name_str, value);
+                                    pub fn #setter(&mut self, value: impl Into<#ty>) {
+                                        self.widget.set(#field_name_str, value.into());
+                                    }
+
+                                    /// Clones the property value.
+                                    #[inline(always)]
+                                    pub fn #clone(&mut self) -> #ty {
+                                        self.widget.clone(#field_name_str)
                                     }
                                 };
 
@@ -167,22 +180,11 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
                     }
                 }
             }
-
-            // let ty = field.ty.clone();
-
-            // let gen = quote! {
-            //     /// Gets a reference of the property value.
-            //     #[inline(always)]
-            //     pub fn #field_name(&self) -> &#ty {
-            //         self.widget.get::<#ty>(field_name.to_string().as_str())
-            //     }
-            // };
-
-            // generated.push(gen);
         }
     }
 
     let gen = quote! {
+        /// Represents a widget context that provides methods to access the properties of a widget.
         pub struct #name<'a> {
             widget: WidgetContainer<'a>
         }
@@ -192,7 +194,12 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
         }
 
         impl #ident {
+            /// Gets a widget context that wraps the given widgets an provides access to the its properties.
             pub fn get<'a>(widget: WidgetContainer<'a>) -> #name<'a> {
+                if *widget.get::<TypeId>("type_id") != TypeId::of::<#ident>() {
+                    panic!("Wrong widget type {} for entity {:?} with type_id: {:?}.", std::any::type_name::<#ident>(), widget.entity(), widget.get::<TypeId>("type_id"));
+                }
+
                 #name {
                     widget
                 }

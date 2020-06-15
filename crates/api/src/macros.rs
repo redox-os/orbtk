@@ -62,12 +62,19 @@ macro_rules! widget {
             element: Option<String>,
             id: Option<String>,
             classes: HashSet<String>,
+            #[property(Alignment)]
             h_align: Alignment,
+            #[property(Alignment)]
             v_align: Alignment,
+            #[property(Thickness)]
             margin: Thickness,
+            #[property(bool)]
             enabled: bool,
+            #[property(bool)]
             clip: bool,
+            #[property(f32)]
             opacity: f32,
+            #[property(Visibility)]
             visibility: Visibility,
             _empty: Option<RefCell<i32>>,
              $(
@@ -390,6 +397,7 @@ macro_rules! widget {
                 ctx.register_property("enabled", entity, this.enabled);
                 ctx.register_property("clip", entity, this.clip);
                 ctx.register_property("opacity", entity, this.opacity);
+                ctx.register_property("type_id", entity, TypeId::of::<$widget>());
 
                 if this.element.is_some() || this.id.is_some() || this.classes.len() > 0 {
                     let mut selector = Selector::new();
