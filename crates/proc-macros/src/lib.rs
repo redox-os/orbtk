@@ -206,9 +206,10 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
             /// Gets a widget context that wraps the given widgets an provides access to the its properties.
             pub fn get<'a>(ctx: WidgetContainer<'a>) -> #name<'a> {
                 if *ctx.get::<TypeId>("type_id") != TypeId::of::<#ident>() {
-                    panic!("Wrong widget type {} for entity {:?} with type_id: {:?}.",
+                    let type_name = ctx.clone::<String>("type_name");
+                    panic!("Wrong widget type {} for entity {:?} with type: {}.",
                         std::any::type_name::<#ident>(), ctx.entity(),
-                        ctx.get::<TypeId>("type_id"));
+                        type_name);
                 }
 
                 #name {

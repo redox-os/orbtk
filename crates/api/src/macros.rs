@@ -400,6 +400,7 @@ macro_rules! widget {
                 ctx.register_property("clip", entity, this.clip);
                 ctx.register_property("opacity", entity, this.opacity);
                 ctx.register_property("type_id", entity, TypeId::of::<$widget>());
+                ctx.register_property("type_name", entity, std::any::type_name::<$widget>().to_string());
 
                 if this.element.is_some() || this.id.is_some() || this.classes.len() > 0 {
                     let mut selector = Selector::new();
