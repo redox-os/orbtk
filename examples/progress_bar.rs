@@ -25,7 +25,7 @@ impl State for MainViewState {
         if let Some(action) = self.action {
             match action {
                 ProgressEvent::Advance(amount) => {
-                    let old_width = ctx.child("pgbar").clone_or_default::<f64>("val");
+                    let old_width = *progress_bar(ctx.child("pgbar")).val();
                     let new_width = old_width + amount;
                     // Set the ProgressBar's val property to the calculated percentage
                     // (whereas 0.0 means 0 %, and 1.0 means 100 %) to advance the progress

@@ -66,11 +66,9 @@ impl MainViewState {
         }
 
         if result % 1.0 == 0.0 {
-            ctx.widget()
-                .set("text", String16::from(format!("{}", result)));
+            main_view(ctx.widget()).set_text(format!("{}", result));
         } else {
-            ctx.widget()
-                .set("text", String16::from(format!("{:.8}", result)));
+            main_view(ctx.widget()).set_text(format!("{:.8}", result));
         }
 
         self.left_side = Some(result);
@@ -84,7 +82,7 @@ impl State for MainViewState {
             match action {
                 Action::Digit(digit) => {
                     self.input.push(digit);
-                    ctx.child("input").get_mut::<String16>("text").push(digit);
+                    text_block(ctx.child("input")).text_mut().push(digit);
                 }
                 Action::Operator(operator) => match operator {
                     'C' => {
@@ -92,8 +90,8 @@ impl State for MainViewState {
                         self.left_side = None;
                         self.operator = None;
                         self.right_side = None;
-                        ctx.widget().get_mut::<String16>("text").clear();
-                        ctx.child("input").get_mut::<String16>("text").clear()
+                        main_view(ctx.widget()).text_mut().clear();
+                        text_block(ctx.child("input")).text_mut().clear()
                     }
                     '=' => {
                         self.right_side = Some(self.input.parse().unwrap_or(0.0));
@@ -102,7 +100,7 @@ impl State for MainViewState {
                         self.left_side = None;
                         self.operator = None;
                         self.right_side = None;
-                        ctx.child("input").get_mut::<String16>("text").clear()
+                        text_block(ctx.child("input")).text_mut().clear()
                     }
                     _ => {
                         if self.input.is_empty() {
@@ -115,9 +113,7 @@ impl State for MainViewState {
                             self.calculate(ctx);
                         }
 
-                        ctx.child("input")
-                            .get_mut::<String16>("text")
-                            .push(operator);
+                        text_block(ctx.child("input")).text_mut().push(operator);
                         self.input.clear();
                         self.operator = Some(operator);
                     }

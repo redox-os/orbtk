@@ -359,7 +359,9 @@ impl RenderWorker {
                                         data: render_context_2_d.data().iter().copied().collect(),
                                     })
                                     .expect("Could not send render result to main thread.");
-                                finish_sender.send(true).expect("Could not send render result to main thread.");
+                                finish_sender
+                                    .send(true)
+                                    .expect("Could not send render result to main thread.");
                             }
                             _ => {}
                         };
