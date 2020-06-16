@@ -54,6 +54,8 @@ macro_rules! widget {
             bounds: Rectangle,
             #[property(Point)]
             position: Point,
+            #[property(Constraint)]
+            constraint: Constraint,
             min_width: Option<f64>,
             min_height: Option<f64>,
             max_width: Option<f64>,
