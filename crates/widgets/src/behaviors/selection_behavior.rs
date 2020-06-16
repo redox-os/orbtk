@@ -14,11 +14,11 @@ impl SelectionBehaviorState {
 }
 
 impl State for SelectionBehaviorState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.selected = *selection_behavior(ctx.widget()).selected();
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         let selected = *selection_behavior(ctx.widget()).selected();
 
         if self.selected == selected && !self.toggle_selection {

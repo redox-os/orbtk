@@ -31,7 +31,7 @@ impl TextBoxState {
         self.action = Some(action);
     }
 
-    fn handle_key_event(&mut self, key_event: KeyEvent, ctx: &mut Context<'_>) {
+    fn handle_key_event(&mut self, key_event: KeyEvent, ctx: &mut Context) {
         if !ctx.widget().get::<bool>("focused") {
             return;
         }
@@ -83,7 +83,7 @@ impl TextBoxState {
         }
     }
 
-    fn request_focus(&self, ctx: &mut Context<'_>, p: Mouse) {
+    fn request_focus(&self, ctx: &mut Context, p: Mouse) {
         ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
 
         // select all text if there is text and the element is not focused yet.
@@ -107,7 +107,7 @@ impl TextBoxState {
     }
 
     // Get new position for the caret based on current mouse position
-    fn get_new_caret_position(&self, ctx: &mut Context<'_>, p: Mouse) -> usize {
+    fn get_new_caret_position(&self, ctx: &mut Context, p: Mouse) -> usize {
         if let Some((index, _x)) = self
             .map_chars_index_to_position(ctx)
             .iter()
@@ -120,7 +120,7 @@ impl TextBoxState {
     }
 
     // Returns a vector with a tuple of each char's starting index (usize) and position (f64)
-    fn map_chars_index_to_position(&self, ctx: &mut Context<'_>) -> Vec<(usize, f64)> {
+    fn map_chars_index_to_position(&self, ctx: &mut Context) -> Vec<(usize, f64)> {
         let text: String = ctx.widget().get::<String16>("text").as_string();
         // start x position of the cursor is start position of the text element + padding left
         let start_position: f64 =
@@ -146,7 +146,7 @@ impl TextBoxState {
     }
 
     // Reset selection and offset if text is changed from outside
-    fn reset(&self, ctx: &mut Context<'_>) {
+    fn reset(&self, ctx: &mut Context) {
         ctx.widget().set("text_selection", TextSelection::default());
         ctx.push_event_strategy_by_entity(
             ChangedEvent(ctx.entity),
@@ -155,7 +155,7 @@ impl TextBoxState {
         );
     }
 
-    fn check_outside_update(&self, ctx: &mut Context<'_>) {
+    fn check_outside_update(&self, ctx: &mut Context) {
         let len = ctx.widget().get::<String16>("text").len();
         if self.len != len && self.len > len {
             self.reset(ctx);
@@ -343,14 +343,14 @@ impl TextBoxState {
 }
 
 impl State for TextBoxState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.cursor = ctx
             .entity_of_child(ID_CURSOR)
             .expect("TextBoxState.init: cursor child could not be found.");
         self.len = ctx.widget().get::<String16>("text").len();
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.check_outside_update(ctx);
 
         if let Some(action) = self.action.clone() {

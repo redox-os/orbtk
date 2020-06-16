@@ -15,7 +15,7 @@ impl FocusBehaviorState {
 }
 
 impl State for FocusBehaviorState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if !self.request_focus.get() || !focus_behavior(ctx.widget()).enabled() {
             return;
         }

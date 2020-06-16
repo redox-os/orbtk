@@ -26,7 +26,7 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&mut self, registry: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, registry: &mut Registry, ctx: &mut Context) {
         if let Some(action) = self.action {
             match action {
                 Action::Load => {

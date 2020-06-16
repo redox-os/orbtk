@@ -12,7 +12,7 @@ impl Into<Box<dyn RenderObject>> for FontIconRenderObject {
 }
 
 impl RenderObject for FontIconRenderObject {
-    fn render_self(&self, ctx: &mut Context<'_>, global_position: &Point) {
+    fn render_self(&self, ctx: &mut Context, global_position: &Point) {
         let (bounds, icon, icon_brush, icon_font, icon_size) = {
             let widget = ctx.widget();
             (

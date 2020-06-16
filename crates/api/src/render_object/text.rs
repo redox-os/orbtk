@@ -13,7 +13,7 @@ impl Into<Box<dyn RenderObject>> for TextRenderObject {
 }
 
 impl RenderObject for TextRenderObject {
-    fn render_self(&self, ctx: &mut Context<'_>, global_position: &Point) {
+    fn render_self(&self, ctx: &mut Context, global_position: &Point) {
         let (bounds, text, foreground, font, font_size) = {
             let widget = ctx.widget();
             let text = widget.clone::<String16>("text");

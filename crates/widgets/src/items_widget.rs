@@ -7,7 +7,7 @@ pub struct ItemsWidgetState {
 }
 
 impl State for ItemsWidgetState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         let count: usize = ctx.widget().clone_or_default("count");
         let request_update: bool = *ctx.widget().get("request_update");
 

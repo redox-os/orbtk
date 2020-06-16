@@ -20,7 +20,7 @@ impl State for BarState {
             .set_width(0.1);
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         let val = ctx.widget().clone_or_default::<f64>("val");
         let max_width = ctx.widget().get::<Rectangle>("bounds").width();
         let new_width = calculate_width(val, max_width);

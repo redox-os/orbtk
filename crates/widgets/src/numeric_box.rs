@@ -33,7 +33,7 @@ impl NumericBoxState {
         self.action = Some(action);
     }
 
-    fn change_val(&mut self, new_value: Decimal, ctx: &mut Context<'_>) {
+    fn change_val(&mut self, new_value: Decimal, ctx: &mut Context) {
         if new_value >= self.min && new_value <= self.max {
             self.current_value = new_value;
             ctx.get_widget(self.input)
@@ -41,7 +41,7 @@ impl NumericBoxState {
         }
     }
 
-    fn request_focus(&self, ctx: &mut Context<'_>) {
+    fn request_focus(&self, ctx: &mut Context) {
         if !ctx.widget().get::<bool>("focused") {
             ctx.widget().set::<bool>("focused", true);
             ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
@@ -49,7 +49,7 @@ impl NumericBoxState {
     }
 }
 
-fn default_or(key: &str, default_value: f64, ctx: &mut Context<'_>) -> Decimal {
+fn default_or(key: &str, default_value: f64, ctx: &mut Context) -> Decimal {
     let property = ctx.widget().clone_or_default(key);
 
     match Decimal::from_f64(property) {
@@ -59,7 +59,7 @@ fn default_or(key: &str, default_value: f64, ctx: &mut Context<'_>) -> Decimal {
 }
 
 impl State for NumericBoxState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.input = ctx.entity_of_child(ID_INPUT).expect(
             "NumericBoxState
         .init(): the child input could not be found!",
@@ -75,7 +75,7 @@ impl State for NumericBoxState {
     }
 
     // TODO: let the user type the value, or select it for cut, copy, paste operations
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if let Some(action) = &self.action {
             match action {
                 InputAction::Inc => {

@@ -35,7 +35,7 @@ impl ComboBoxItemState {
 }
 
 impl State for ComboBoxItemState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         let selected_index = ctx
             .get_widget(self.combo_box)
             .clone_or_default::<i32>("selected_index");
@@ -212,7 +212,7 @@ impl ComboBoxState {
 }
 
 impl State for ComboBoxState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
 
@@ -265,7 +265,7 @@ impl State for ComboBoxState {
         }
     }
 
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         if self.action.is_none() || !(*ctx.widget().get::<bool>("selected")) {
             return;
         }
@@ -279,7 +279,7 @@ impl State for ComboBoxState {
         }
     }
 
-    fn cleanup(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn cleanup(&mut self, _: &mut Registry, ctx: &mut Context) {
         let _ = ctx.remove_child_from_overlay(self.popup);
     }
 }

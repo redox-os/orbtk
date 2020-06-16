@@ -13,7 +13,7 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if self.clear {
             // Clears the text property of MainView and because
             // of the sharing also the text of the TextBox.

@@ -148,7 +148,7 @@ struct MyState {
 }
 
 impl State for MyState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         // update the widget
         ...
     }

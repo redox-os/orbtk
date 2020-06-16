@@ -24,7 +24,7 @@ impl State for SwitchState {
             .expect("SwitchState.init: Switch toggle child could not be found.");
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if *ctx.widget().get::<bool>("selected") == self.selected {
             return;
         }

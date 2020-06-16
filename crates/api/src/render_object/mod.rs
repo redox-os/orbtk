@@ -129,7 +129,7 @@ pub trait RenderObject: Any {
         }
     }
 
-    fn render_self(&self, _: &mut Context<'_>, _: &Point) {}
+    fn render_self(&self, _: &mut Context, _: &Point) {}
 
     fn render_children(
         &self,
