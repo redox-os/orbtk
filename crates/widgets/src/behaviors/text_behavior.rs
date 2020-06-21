@@ -1,4 +1,15 @@
-use crate::prelude::*;
+use super::MouseBehavior;
+
+use crate::{
+    prelude::*,
+    shell::{Key, KeyEvent}
+};
+
+#[derive(Clone)]
+enum TextBehaviorAction {
+    Key(KeyEvent),
+    Mouse(Mouse),
+}
 
 #[derive(Default, AsAny)]
 pub struct TextBehaviorState {
@@ -325,9 +336,9 @@ impl TextBehaviorState {
 
 impl State for TextBehaviorState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        self.cursor = ctx
-            .entity_of_child(ID_CURSOR)
-            .expect("TextBoxState.init: cursor child could not be found.");
+        self.cursor = Entity::from(ctx
+            .widget().clone::<u32>("cursor"));
+            //.expect("TextBoxState.init: cursor child could not be found.");
         self.len = ctx.widget().get::<String16>("text").len();
     }
 
@@ -336,12 +347,10 @@ impl State for TextBehaviorState {
 
         if let Some(action) = self.action.clone() {
             match action {
-                TextBehaviorAction
-        ::Key(event) => {
+                TextBehaviorAction::Key(event) => {
                     self.handle_key_event(event, ctx);
                 }
-                TextBehaviorAction
-        ::Mouse(p) => {
+                TextBehaviorAction::Mouse(p) => {
                     self.request_focus(ctx, p);
                 }
             }
@@ -355,12 +364,23 @@ impl State for TextBehaviorState {
 }
 
 widget!(
-    TextBehavior<TextBehaviorState>: ActivateHandler, ChangedHandler, KeyDownHandler {
+    TextBehavior<TextBehaviorState>: ChangedHandler, KeyDownHandler {
+        cursor: u32,
+
+        /// Sets or shares the font size property.
+        font_size: f64,
+
+        /// Sets or shares the font property.
+        font: String,
+
         /// Sets or shares the focused property.
         focused: bool,
 
         /// Sets or shares ta value that describes if the text input should lost focus on activation (enter).
         lost_focus_on_activation: bool,
+
+        /// Sets or shares the padding property.
+        padding: Thickness,
 
         /// Sets or shares the text property.
         text: String16,
@@ -369,6 +389,38 @@ widget!(
         text_selection: TextSelection,
 
         /// Sets or shares the watermark text property.
-        water_mark: String16,
+        water_mark: String16
     }
 );
+
+impl Template for TextBehavior {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+        self.name("TextBehavior")
+        .focused(false)
+        .font("Roboto Regular")
+        .font_size(fonts::FONT_SIZE_12)
+        .lost_focus_on_activation(true)
+        .padding(4.0)
+        .text("")
+        .text_selection(TextSelection::default())
+        .water_mark("")
+        .on_key_down(move |states, event| -> bool {
+            states
+                .get_mut::<TextBehaviorState>(id)
+                .action(TextBehaviorAction::Key(event));
+            false
+        })
+        .child(
+            MouseBehavior::new()
+                .visibility(id)
+                .enabled(id)
+                .on_mouse_down(move |states, m| {
+                    states
+                        .get_mut::<TextBehaviorState>(id)
+                        .action(TextBehaviorAction::Mouse(m));
+                    true
+                })
+                .build(ctx)
+            )
+    }
+}
