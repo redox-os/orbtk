@@ -1,3 +1,16 @@
-pub use self::material_font_icons::*;
+pub use self::{
+    material_icons_font_ttf::*,
+    material_icons_font::*,
+    material_icons_round_font::*,
+    material_icons_sharp_font::*,
+    material_icons_twotone_font::*,
+};
 
-pub mod material_font_icons;
+// ttf mappings
+pub mod material_icons_font_ttf;
+
+// woff2 mappings
+pub mod material_icons_font;
+pub mod material_icons_round_font;
+pub mod material_icons_sharp_font;
+pub mod material_icons_twotone_font;
