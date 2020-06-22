@@ -6,15 +6,11 @@ fn main() {
 
     Application::new()
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - image example")
                 .position((100.0, 100.0))
                 .size(800.0, 420.0)
-                .child(
-                    ImageWidget::create()
-                        .image("res/orbtk-space.png")
-                        .build(ctx),
-                )
+                .child(ImageWidget::new().image("res/orbtk-space.png").build(ctx))
                 .build(ctx)
         })
         .run();

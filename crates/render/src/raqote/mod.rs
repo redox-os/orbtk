@@ -69,8 +69,17 @@ impl RenderContext2D {
 
     /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.rect(x, y, width, height);
-        self.fill();
+        self.draw_target.fill_rect(
+            x as f32,
+            y as f32,
+            width as f32,
+            height as f32,
+            &brush_to_source(&self.config.fill_style),
+            &raqote::DrawOptions {
+                alpha: self.config.alpha,
+                ..Default::default()
+            },
+        );
     }
 
     /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other ctx settings.

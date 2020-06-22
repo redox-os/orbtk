@@ -5,7 +5,7 @@ use crate::prelude::*;
 pub struct ScrollIndicatorState;
 
 impl State for ScrollIndicatorState {
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         let padding = *ctx.widget().get::<Thickness>("padding");
         let scroll_offset = *ctx.widget().get::<Point>("scroll_offset");
         let content_id = *ctx.widget().get::<u32>("content_id");
@@ -83,29 +83,29 @@ impl Template for ScrollIndicator {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ScrollIndicator")
             .element("scroll-indicator")
-            .vertical_alignment("stretch")
-            .horizontal_alignment("stretch")
+            .v_align("stretch")
+            .h_align("stretch")
             .padding(0.0)
             .child(
-                Grid::create()
+                Grid::new()
                     .child(
-                        ScrollBar::create()
+                        ScrollBar::new()
                             .element("scroll-bar")
                             .id("vertical-scroll-bar")
                             .min_height(8.0)
                             .margin((0.0, 0.0, 0.0, 6.0))
-                            .horizontal_alignment("end")
+                            .h_align("end")
                             .opacity(id)
                             .build(ctx),
                     )
                     .child(
-                        ScrollBar::create()
+                        ScrollBar::new()
                             .element("scroll-bar")
                             .id("horizontal-scroll-bar")
                             .min_width(8.0)
                             .margin((0.0, 0.0, 6.0, 0.0))
                             .height(4.0)
-                            .vertical_alignment("end")
+                            .v_align("end")
                             .opacity(id)
                             .build(ctx),
                     )

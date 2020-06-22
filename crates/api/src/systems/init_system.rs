@@ -31,11 +31,6 @@ impl InitSystem {
             }
         }
     }
-
-    // Read all initial data from css
-    fn read_init_from_theme(&self, ctx: &mut Context) {
-        ctx.widget().update_theme_by_state(true);
-    }
 }
 
 impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
@@ -88,7 +83,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
                     state.init(&mut *self.registry.borrow_mut(), &mut ctx);
                 }
 
-                self.read_init_from_theme(&mut ctx);
+                drop(ctx);
             }
 
             let mut it = ecm.entity_store().start_node(current_node).into_iter();

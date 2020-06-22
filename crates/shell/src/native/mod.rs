@@ -22,11 +22,14 @@ impl Console {
 
     pub fn time_end(&self, name: impl Into<String>) {
         if let Some((_k, _v)) = self.instants.lock().unwrap().remove_entry(&name.into()) {
-            // println!("{} {}ms - timer ended", k, v.elapsed().as_millis());
+            #[cfg(feature = "log")]
+            println!("{} {}ms - timer ended", _k, _v.elapsed().as_millis());
         }
     }
 
+    #[allow(unused_variables)]
     pub fn log(&self, message: impl Into<String>) {
+        #[cfg(feature = "log")]
         println!("{}", message.into());
     }
 }

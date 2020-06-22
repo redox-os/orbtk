@@ -33,7 +33,7 @@ impl NumericBoxState {
         self.action = Some(action);
     }
 
-    fn change_val(&mut self, new_value: Decimal, ctx: &mut Context<'_>) {
+    fn change_val(&mut self, new_value: Decimal, ctx: &mut Context) {
         if new_value >= self.min && new_value <= self.max {
             self.current_value = new_value;
             ctx.get_widget(self.input)
@@ -41,7 +41,7 @@ impl NumericBoxState {
         }
     }
 
-    fn request_focus(&self, ctx: &mut Context<'_>) {
+    fn request_focus(&self, ctx: &mut Context) {
         if !ctx.widget().get::<bool>("focused") {
             ctx.widget().set::<bool>("focused", true);
             ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
@@ -49,7 +49,7 @@ impl NumericBoxState {
     }
 }
 
-fn default_or(key: &str, default_value: f64, ctx: &mut Context<'_>) -> Decimal {
+fn default_or(key: &str, default_value: f64, ctx: &mut Context) -> Decimal {
     let property = ctx.widget().clone_or_default(key);
 
     match Decimal::from_f64(property) {
@@ -59,7 +59,7 @@ fn default_or(key: &str, default_value: f64, ctx: &mut Context<'_>) -> Decimal {
 }
 
 impl State for NumericBoxState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.input = ctx.entity_of_child(ID_INPUT).expect(
             "NumericBoxState
         .init(): the child input could not be found!",
@@ -75,7 +75,7 @@ impl State for NumericBoxState {
     }
 
     // TODO: let the user type the value, or select it for cut, copy, paste operations
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if let Some(action) = &self.action {
             match action {
                 InputAction::Inc => {
@@ -121,12 +121,12 @@ widget!(
     /// # Examples:
     /// Create a NumericBox with default values:
     /// ```rust
-    /// NumericBox::create().build(ctx)
+    /// NumericBox::new().build(ctx)
     /// ```
     ///
     /// Create a NumericBox with custom values:
     /// ```rust
-    /// NumericBox::create().min(10.0).max(100.0).val(50.0).step(5.0).build(ctx)
+    /// NumericBox::new().min(10.0).max(100.0).val(50.0).step(5.0).build(ctx)
     /// ```
     NumericBox<NumericBoxState>: KeyDownHandler {
         /// Sets or shares the background color property
@@ -174,12 +174,12 @@ impl Template for NumericBox {
             .height(32.0)
             .margin(4.0)
             .min(0.0)
-            .max(MAX)
+            .max(200.0)
             .step(1.0)
             .val(0.0)
-            .width(100.0)
+            .width(128.0)
             .child(
-                MouseBehavior::create()
+                MouseBehavior::new()
                     .on_mouse_down(move |states, _| {
                         states
                             .get_mut::<NumericBoxState>(id)
@@ -195,63 +195,66 @@ impl Template for NumericBox {
                     .build(ctx),
             )
             .child(
-                Stack::create()
-                    .orientation("horizontal")
-                    .spacing(0.0)
+                Grid::new()
+                    .columns(Columns::new().add("*").add(32.))
+                    .rows(Rows::new().add(16.0).add(16.0))
                     .child(
-                        TextBox::create()
+                        TextBox::new()
+                            .h_align("stretch")
+                            .attach(Grid::column(0))
+                            .attach(Grid::row_span(2))
+                            .attach(Grid::row(0))
                             .border_brush(id)
                             .border_radius(id)
                             .border_width(id)
                             .element(ELEMENT_INPUT)
                             .enabled(false)
                             .id(ID_INPUT)
-                            .max_width(64.0)
+                            .max_width(96.)
                             .text("0")
                             .build(ctx),
                     )
                     .child(
-                        Stack::create()
-                            .orientation("vertical")
-                            .spacing(0.0)
-                            .child(
-                                Button::create()
-                                    .border_brush("transparent")
-                                    .border_radius(0.0)
-                                    .border_width(0.0)
-                                    .class("single_content")
-                                    .element(ELEMENT_BTN)
-                                    .max_width(32.0)
-                                    .margin(1.0)
-                                    .padding(0.0)
-                                    .text("+")
-                                    .on_click(move |states, _| {
-                                        states
-                                            .get_mut::<NumericBoxState>(id)
-                                            .action(InputAction::Inc);
-                                        true
-                                    })
-                                    .build(ctx),
-                            )
-                            .child(
-                                Button::create()
-                                    .border_brush("transparent")
-                                    .border_radius(0.0)
-                                    .border_width(0.0)
-                                    .class("single_content")
-                                    .element(ELEMENT_BTN)
-                                    .max_width(32.0)
-                                    .margin(1.0)
-                                    .padding(0.0)
-                                    .text("-")
-                                    .on_click(move |states, _| {
-                                        states
-                                            .get_mut::<NumericBoxState>(id)
-                                            .action(InputAction::Dec);
-                                        true
-                                    })
-                                    .build(ctx),
-                            )
+                        Button::new()
+                            .attach(Grid::column(1))
+                            .attach(Grid::row(0))
+                            .border_brush("transparent")
+                            .border_radius(0.0)
+                            .border_width(0.0)
+                            .min_width(30.0)
+                            .height(30.0)
+                            .class("single_content")
+                            .element(ELEMENT_BTN)
+                            .text("+")
+                            .margin(1)
+                            .on_click(move |states, _| {
+                                states
+                                    .get_mut::<NumericBoxState>(id)
+                                    .action(InputAction::Inc);
+                                true
+                            })
+                            .build(ctx),
+                    )
+                    .child(
+                        Button::new()
+                            .attach(Grid::column(1))
+                            .attach(Grid::row(1))
+                            .border_brush("transparent")
+                            .border_radius(0.0)
+                            .border_width(0.0)
+                            .class("single_content")
+                            .element(ELEMENT_BTN)
+                            .min_width(30.0)
+                            .height(30.0)
+                            .padding(0.0)
+                            .margin(1)
+                            .text("-")
+                            .on_click(move |states, _| {
+                                states
+                                    .get_mut::<NumericBoxState>(id)
+                                    .action(InputAction::Dec);
+                                true
+                            })
                             .build(ctx),
                     )
                     .build(ctx),

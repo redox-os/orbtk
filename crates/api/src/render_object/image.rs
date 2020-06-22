@@ -10,7 +10,7 @@ impl Into<Box<dyn RenderObject>> for ImageRenderObject {
 }
 
 impl RenderObject for ImageRenderObject {
-    fn render_self(&self, ctx: &mut Context<'_>, global_position: &Point) {
+    fn render_self(&self, ctx: &mut Context, global_position: &Point) {
         let (_, mut image) = {
             let widget = ctx.widget();
             (

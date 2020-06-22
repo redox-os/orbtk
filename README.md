@@ -74,11 +74,11 @@ use orbtk::prelude::*;
 fn main() {
       Application::new()
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - minimal example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
-                .child(TextBlock::create().text("OrbTk").build(ctx))
+                .child(ctx, TextBlock::new().text("OrbTk").build(ctx))
                 .build(ctx)
         })
         .run();
@@ -118,12 +118,12 @@ impl Template for MyWidget {
             .background("#000000")
             .count(0)
             .text("Initial text")
-            .child(
-                Container::create()
+            .child(ctx, 
+                Container::new()
                     // Container references the same background as MyWidget
                     .background(id)
-                    .child(
-                        TextBlock::create()
+                    .child(ctx, 
+                      TextBlock::new()
                             // TextBlock references the same text as MyWidget
                             .text(id)
                             .build(ctx)
@@ -148,7 +148,7 @@ struct MyState {
 }
 
 impl State for MyState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         // update the widget
         ...
     }
@@ -246,6 +246,7 @@ cargo doc --no-deps --open
 * [doit](https://codeberg.org/flovanco/doit): Task app
 * [OrbCalculator](https://gitlab.redox-os.org/redox-os/orbcalculator): Calculator based on OrbTk
 * [Kanter](https://github.com/lukors/kanter): Node based texture editor 
+* [twin-commander](https://github.com/kivimango/twin-commander): A twin-panel file manager specifically for the Redox OS 
 
 ## Contribution
 

@@ -24,7 +24,7 @@ impl State for SwitchState {
             .expect("SwitchState.init: Switch toggle child could not be found.");
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if *ctx.widget().get::<bool>("selected") == self.selected {
             return;
         }
@@ -41,10 +41,10 @@ impl State for SwitchState {
             let mut switch_toggle = ctx.get_widget(self.switch_toggle);
 
             if self.selected {
-                switch_toggle.set("horizontal_alignment", Alignment::from("end"));
+                switch_toggle.set("h_align", Alignment::from("end"));
                 add_selector_to_widget("selected", &mut switch_toggle);
             } else {
-                switch_toggle.set("horizontal_alignment", Alignment::from("start"));
+                switch_toggle.set("h_align", Alignment::from("start"));
                 remove_selector_from_widget("selected", &mut switch_toggle);
             }
 
@@ -102,7 +102,7 @@ impl Template for Switch {
             .border_width(1.0)
             .padding(4.0)
             .child(
-                MouseBehavior::create()
+                MouseBehavior::new()
                     .pressed(id)
                     .enabled(id)
                     .target(id.0)
@@ -111,19 +111,19 @@ impl Template for Switch {
                         false
                     })
                     .child(
-                        Grid::create()
+                        Grid::new()
                             .child(
-                                Container::create()
+                                Container::new()
                                     .element(SWITCH_TRACK)
-                                    .vertical_alignment("center")
+                                    .v_align("center")
                                     .build(ctx),
                             )
                             .child(
-                                Container::create()
+                                Container::new()
                                     .element(SWITCH_TOGGLE)
                                     .id(SWITCH_TOGGLE)
-                                    .vertical_alignment("center")
-                                    .horizontal_alignment("start")
+                                    .v_align("center")
+                                    .h_align("start")
                                     .width(20.0)
                                     .height(20.0)
                                     .border_radius(10.0)

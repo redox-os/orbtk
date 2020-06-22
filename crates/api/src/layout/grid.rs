@@ -255,8 +255,8 @@ impl Layout for GridLayout {
             return *self.desired_size.borrow();
         }
 
-        let horizontal_alignment: Alignment = component(ecm, entity, "horizontal_alignment");
-        let vertical_alignment: Alignment = component(ecm, entity, "vertical_alignment");
+        let horizontal_alignment: Alignment = component(ecm, entity, "h_align");
+        let vertical_alignment: Alignment = component(ecm, entity, "v_align");
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -318,8 +318,8 @@ impl Layout for GridLayout {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment: Alignment = component(ecm, entity, "horizontal_alignment");
-        let vertical_alignment: Alignment = component(ecm, entity, "vertical_alignment");
+        let horizontal_alignment: Alignment = component(ecm, entity, "h_align");
+        let vertical_alignment: Alignment = component(ecm, entity, "v_align");
         let margin: Thickness = *ecm.component_store().get("margin", entity).unwrap();
         let constraint: Constraint = component(ecm, entity, "constraint");
 
@@ -394,14 +394,10 @@ impl Layout for GridLayout {
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
 
-            let child_horizontal_alignment: Alignment = *ecm
-                .component_store()
-                .get("horizontal_alignment", child)
-                .unwrap();
-            let child_vertical_alignment: Alignment = *ecm
-                .component_store()
-                .get("vertical_alignment", child)
-                .unwrap();
+            let child_horizontal_alignment: Alignment =
+                *ecm.component_store().get("h_align", child).unwrap();
+            let child_vertical_alignment: Alignment =
+                *ecm.component_store().get("v_align", child).unwrap();
             let mut cell_position = (0.0, 0.0);
             let mut available_size = size;
 

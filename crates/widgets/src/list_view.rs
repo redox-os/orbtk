@@ -25,7 +25,7 @@ impl State for ListViewState {
             .expect("ListViewState.init: ItemsPanel child could not be found.");
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
 
@@ -37,9 +37,9 @@ impl State for ListViewState {
                     let item = {
                         let build_context = &mut ctx.build_context();
                         let child = builder(build_context, i);
-                        let item = ListViewItem::create().build(build_context);
+                        let item = ListViewItem::new().build(build_context);
 
-                        let mouse_behavior = MouseBehavior::create().build(build_context);
+                        let mouse_behavior = MouseBehavior::new().build(build_context);
                         build_context.register_shared_property::<Selector>(
                             "selector",
                             mouse_behavior,
@@ -69,7 +69,7 @@ impl State for ListViewState {
         }
     }
 
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         for index in ctx
             .widget()
             .get::<SelectedEntities>("selected_entities")
@@ -104,7 +104,7 @@ impl ListViewItemState {
 }
 
 impl State for ListViewItemState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if !ctx.widget().get::<bool>("enabled") || !self.request_selection_toggle.get() {
             return;
         }
@@ -231,7 +231,7 @@ impl Template for ListViewItem {
                 false
             })
             .child(
-                MouseBehavior::create()
+                MouseBehavior::new()
                     .pressed(id)
                     .enabled(id)
                     .target(id.0)
@@ -301,13 +301,13 @@ impl ListView {
 
 impl Template for ListView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let items_panel = Stack::create()
-            .vertical_alignment("start")
+        let items_panel = Stack::new()
+            .v_align("start")
             .id(ITEMS_PANEL)
             .orientation(id)
             .build(ctx);
 
-        let scroll_viewer = ScrollViewer::create()
+        let scroll_viewer = ScrollViewer::new()
             .scroll_viewer_mode(("disabled", "auto"))
             .delta(id)
             .child(items_panel)
@@ -327,7 +327,7 @@ impl Template for ListView {
             .delta(0.0)
             .orientation("vertical")
             .child(
-                Container::create()
+                Container::new()
                     .background(id)
                     .border_radius(id)
                     .border_width(id)
@@ -336,7 +336,7 @@ impl Template for ListView {
                     .opacity(id)
                     .child(scroll_viewer)
                     .child(
-                        ScrollIndicator::create()
+                        ScrollIndicator::new()
                             .padding(2.0)
                             .content_id(items_panel.0)
                             .scroll_offset(scroll_viewer)

@@ -26,7 +26,7 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&mut self, registry: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, registry: &mut Registry, ctx: &mut Context) {
         if let Some(action) = self.action {
             match action {
                 Action::Load => {
@@ -35,13 +35,11 @@ impl State for MainViewState {
                         .get::<Settings>("settings")
                         .load::<Global>("global")
                     {
-                        ctx.widget().set("text", String16::from(global.label));
+                        main_view(ctx.widget()).set_text(String16::from(global.label));
                     }
 
-                    ctx.widget().set(
-                        "info_text",
-                        String16::from("Label loaded from settings file."),
-                    );
+                    main_view(ctx.widget())
+                        .set_info_text(String16::from("Label loaded from settings file."));
                 }
                 Action::Save => {
                     // save label to settings file.
@@ -54,12 +52,12 @@ impl State for MainViewState {
                             },
                         )
                         .unwrap();
-                    ctx.widget()
-                        .set("info_text", String16::from("Label saved to settings file."));
+                    main_view(ctx.widget())
+                        .set_info_text(String16::from("Label saved to settings file."));
                 }
                 Action::Clear => {
-                    ctx.widget().set("text", String16::default());
-                    ctx.widget().set("info_text", String16::from(""));
+                    main_view(ctx.widget()).set_text(String16::default());
+                    main_view(ctx.widget()).set_info_text(String16::default());
                 }
             }
 
@@ -76,27 +74,21 @@ widget!(MainView<MainViewState> {
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MainView").child(
-            Grid::create()
-                .rows(Rows::create().row(36.0).row(4.0).row("auto").build())
+            Grid::new()
+                .rows(Rows::new().add(36.0).add(4.0).add("auto").build())
                 .columns(
-                    Columns::create()
-                        .column(160.0)
-                        .column(4.0)
-                        .column("Auto")
-                        .column(4.0)
-                        .column("Auto")
-                        .column(4.0)
-                        .column("Auto")
-                        .build(),
+                    Columns::new()
+                        .add(160.0)
+                        .add(4.0)
+                        .add("Auto")
+                        .add(4.0)
+                        .add("Auto")
+                        .add(4.0)
+                        .add("Auto"),
                 )
+                .child(TextBox::new().v_align("center").text(id).build(ctx))
                 .child(
-                    TextBox::create()
-                        .vertical_alignment("center")
-                        .text(id)
-                        .build(ctx),
-                )
-                .child(
-                    Button::create()
+                    Button::new()
                         .class("single_content")
                         .attach(Grid::row(0))
                         .attach(Grid::column(2))
@@ -108,7 +100,7 @@ impl Template for MainView {
                         .build(ctx),
                 )
                 .child(
-                    Button::create()
+                    Button::new()
                         .class("single_content")
                         .attach(Grid::row(0))
                         .attach(Grid::column(4))
@@ -120,7 +112,7 @@ impl Template for MainView {
                         .build(ctx),
                 )
                 .child(
-                    Button::create()
+                    Button::new()
                         .class("single_content")
                         .attach(Grid::row(0))
                         .attach(Grid::column(6))
@@ -132,7 +124,7 @@ impl Template for MainView {
                         .build(ctx),
                 )
                 .child(
-                    TextBlock::create()
+                    TextBlock::new()
                         .attach(Grid::row(2))
                         .attach(Grid::column(0))
                         .text(("info_text", id))
@@ -146,11 +138,11 @@ impl Template for MainView {
 fn main() {
     Application::from_name("orbtk-settings")
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - settings example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
-                .child(MainView::create().margin(4.0).build(ctx))
+                .child(MainView::new().margin(4.0).build(ctx))
                 .build(ctx)
         })
         .run();

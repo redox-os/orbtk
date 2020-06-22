@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc, sync::mpsc};
 
 use derive_more::Constructor;
 
-use super::{KeyState, MouseState, WindowState, CONSOLE};
+use super::{KeyState, MouseState, WindowState};
 use crate::{
     event::{ButtonState, KeyEvent, MouseButton, MouseEvent},
     render::RenderContext2D,
@@ -181,6 +181,11 @@ where
 
     /// Receives window request from the application and handles them.
     pub fn receive_requests(&mut self) {
+        if let Ok(result) = self.render_context.finish_receiver().try_recv() {
+            if result {
+                self.redraw = true;
+            }
+        }
         if let Some(request_receiver) = &self.request_receiver {
             for request in request_receiver.try_iter() {
                 match request {
@@ -220,7 +225,7 @@ where
                     self.window_state.size.0 as usize,
                     self.window_state.size.1 as usize,
                 );
-                CONSOLE.time_end("render");
+                // CONSOLE.time_end("render");
                 self.redraw = false;
             }
         }

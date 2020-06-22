@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use dces::prelude::{EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, render::RenderContext2D, shell::CONSOLE, tree::Tree};
+use crate::{css_engine::*, prelude::*, render::RenderContext2D, tree::Tree};
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 #[derive(Constructor)]
@@ -39,7 +39,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
         let mut offsets = BTreeMap::new();
         offsets.insert(root, (0.0, 0.0));
 
-        CONSOLE.time("render");
+        // CONSOLE.time("render");
 
         render_context.start();
         render_context.begin_path();

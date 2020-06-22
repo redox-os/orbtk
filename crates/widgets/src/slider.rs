@@ -18,9 +18,9 @@ enum SliderAction {
 #[derive(Default, AsAny)]
 pub struct SliderState {
     action: Option<SliderAction>,
-    value: f64,
-    minimum: f64,
-    maximum: f64,
+    val: f64,
+    min: f64,
+    max: f64,
     thumb: Entity,
     track: Entity,
 }
@@ -31,38 +31,38 @@ impl SliderState {
         self.action = Some(action);
     }
 
-    // adjust minimum, maximum and value
+    // adjust min, max and val
     fn adjust(&mut self, ctx: &mut Context) -> bool {
         let mut has_changes = false;
 
-        if *ctx.widget().get::<f64>("minimum") != self.minimum {
-            let minimum = adjust_minimum(
-                *ctx.widget().get::<f64>("minimum"),
-                *ctx.widget().get::<f64>("maximum"),
+        if *ctx.widget().get::<f64>("min") != self.min {
+            let min = adjust_min(
+                *ctx.widget().get::<f64>("min"),
+                *ctx.widget().get::<f64>("max"),
             );
-            ctx.widget().set("minimum", minimum);
-            self.minimum = minimum;
+            ctx.widget().set("min", min);
+            self.min = min;
             has_changes = true;
         }
 
-        if *ctx.widget().get::<f64>("maximum") != self.maximum {
-            let maximum = adjust_maximum(
-                *ctx.widget().get::<f64>("minimum"),
-                *ctx.widget().get::<f64>("maximum"),
+        if *ctx.widget().get::<f64>("max") != self.max {
+            let max = adjust_max(
+                *ctx.widget().get::<f64>("min"),
+                *ctx.widget().get::<f64>("max"),
             );
-            ctx.widget().set("maximum", maximum);
-            self.maximum = maximum;
+            ctx.widget().set("max", max);
+            self.max = max;
             has_changes = true;
         }
 
-        if *ctx.widget().get::<f64>("value") != self.value {
-            let value = adjust_value(
-                *ctx.widget().get::<f64>("value"),
-                *ctx.widget().get::<f64>("minimum"),
-                *ctx.widget().get::<f64>("maximum"),
+        if *ctx.widget().get::<f64>("val") != self.val {
+            let val = adjust_val(
+                *ctx.widget().get::<f64>("val"),
+                *ctx.widget().get::<f64>("min"),
+                *ctx.widget().get::<f64>("max"),
             );
-            ctx.widget().set("value", value);
-            self.value = value;
+            ctx.widget().set("val", val);
+            self.val = val;
             has_changes = true;
         }
 
@@ -71,9 +71,9 @@ impl SliderState {
 
     // adjust the thump position
     fn adjust_thumb_x(&self, ctx: &mut Context) {
-        let value = *ctx.widget().get::<f64>("value");
-        let minimum = *ctx.widget().get::<f64>("minimum");
-        let maximum = *ctx.widget().get::<f64>("maximum");
+        let val = *ctx.widget().get::<f64>("val");
+        let min = *ctx.widget().get::<f64>("min");
+        let max = *ctx.widget().get::<f64>("max");
 
         let thumb_width = ctx
             .get_widget(self.thumb)
@@ -87,10 +87,10 @@ impl SliderState {
 
         ctx.get_widget(self.thumb)
             .get_mut::<Thickness>("margin")
-            .set_left(calculate_thumb_x_from_value(
-                value,
-                minimum,
-                maximum,
+            .set_left(calculate_thumb_x_from_val(
+                val,
+                min,
+                max,
                 track_width,
                 thumb_width,
             ));
@@ -129,12 +129,12 @@ impl State for SliderState {
                             .get_mut::<Thickness>("margin")
                             .set_left(thumb_x);
 
-                        let minimum = *ctx.widget().get("minimum");
-                        let maximum = *ctx.widget().get("maximum");
+                        let min = *ctx.widget().get("min");
+                        let max = *ctx.widget().get("max");
 
                         ctx.widget().set(
-                            "value",
-                            calculate_value(thumb_x, minimum, maximum, thumb_width, track_width),
+                            "val",
+                            calculate_val(thumb_x, min, max, thumb_width, track_width),
                         );
 
                         ctx.push_event(ChangedEvent(ctx.entity));
@@ -154,18 +154,18 @@ impl State for SliderState {
 }
 
 widget!(
-    /// The `Slider` allows to use a value in a range of values.
+    /// The `Slider` allows to use a val in a range of vals.
     ///
     /// **CSS element:** `Slider`
     Slider<SliderState>: MouseHandler, ChangedHandler {
-        /// Sets or shares the minimum value of the range.
-        minimum: f64,
+        /// Sets or shares the min val of the range.
+        min: f64,
 
-        /// Sets or shares the maximum value of the range.
-        maximum: f64,
+        /// Sets or shares the max val of the range.
+        max: f64,
 
-        /// Sets or shares the current value of the range.
-        value: f64,
+        /// Sets or shares the current val of the range.
+        val: f64,
 
         /// Sets or shares the background property.
         background: Brush,
@@ -185,29 +185,29 @@ impl Template for Slider {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Slider")
             .element(ELEMENT_SLIDER)
-            .minimum(0.0)
-            .maximum(100.0)
-            .value(0.0)
+            .min(0.0)
+            .max(100.0)
+            .val(0.0)
             .height(24.0)
             .border_radius(2.0)
             .child(
-                Grid::create()
+                Grid::new()
                     .id(ID_TRACK)
                     .margin((8.0, 0.0, 8.0, 0.0))
                     .child(
-                        Container::create()
+                        Container::new()
                             .border_radius(id)
                             .background(id)
-                            .vertical_alignment("center")
+                            .v_align("center")
                             .height(2.0)
                             .build(ctx),
                     )
                     .child(
-                        Button::create()
+                        Button::new()
                             .element("thumb")
                             .id(ID_THUMB)
-                            .vertical_alignment("center")
-                            .horizontal_alignment("start")
+                            .v_align("center")
+                            .h_align("start")
                             .max_width(24.0)
                             .max_height(24.0)
                             .border_radius(12.0)
@@ -226,32 +226,32 @@ impl Template for Slider {
 
 // --- Helpers --
 
-fn adjust_value(value: f64, minimum: f64, maximum: f64) -> f64 {
-    if value < minimum {
-        return minimum;
+fn adjust_val(val: f64, min: f64, max: f64) -> f64 {
+    if val < min {
+        return min;
     }
 
-    if value > maximum {
-        return maximum;
+    if val > max {
+        return max;
     }
 
-    value
+    val
 }
 
-fn adjust_minimum(minimum: f64, maximum: f64) -> f64 {
-    if minimum > maximum {
-        return maximum;
+fn adjust_min(min: f64, max: f64) -> f64 {
+    if min > max {
+        return max;
     }
 
-    minimum
+    min
 }
 
-fn adjust_maximum(minimum: f64, maximum: f64) -> f64 {
-    if maximum < minimum {
-        return minimum;
+fn adjust_max(min: f64, max: f64) -> f64 {
+    if max < min {
+        return min;
     }
 
-    maximum
+    max
 }
 
 fn calculate_thumb_x(mouse_x: f64, thumb_width: f64, slider_x: f64, track_width: f64) -> f64 {
@@ -260,24 +260,18 @@ fn calculate_thumb_x(mouse_x: f64, thumb_width: f64, slider_x: f64, track_width:
         .min(track_width - thumb_width)
 }
 
-fn calculate_value(
-    thumb_x: f64,
-    minimum: f64,
-    maximum: f64,
-    thumb_width: f64,
-    track_width: f64,
-) -> f64 {
-    thumb_x / (track_width - thumb_width) * (maximum - minimum)
+fn calculate_val(thumb_x: f64, min: f64, max: f64, thumb_width: f64, track_width: f64) -> f64 {
+    thumb_x / (track_width - thumb_width) * (max - min)
 }
 
-fn calculate_thumb_x_from_value(
-    value: f64,
-    minimum: f64,
-    maximum: f64,
+fn calculate_thumb_x_from_val(
+    val: f64,
+    min: f64,
+    max: f64,
     track_width: f64,
     thumb_width: f64,
 ) -> f64 {
-    (value / (maximum - minimum)) * (track_width - thumb_width)
+    (val / (max - min)) * (track_width - thumb_width)
 }
 
 // --- Helpers --
@@ -297,49 +291,49 @@ mod tests {
     }
 
     #[test]
-    fn test_calculate_value() {
-        assert_eq!(0.0, calculate_value(0.0, 0.0, 100.0, 32.0, 100.0));
-        assert_eq!(50.0, calculate_value(34.0, 0.0, 100.0, 32.0, 100.0));
-        assert_eq!(100.0, calculate_value(68.0, 0.0, 100.0, 32.0, 100.0));
-        assert_eq!(0.0, calculate_value(0.0, -50.0, 50.0, 32.0, 100.0));
-        assert_eq!(50.0, calculate_value(34.0, -50.0, 50.0, 32.0, 100.0));
-        assert_eq!(100.0, calculate_value(68.0, -50.0, 50.0, 32.0, 100.0));
+    fn test_calculate_val() {
+        assert_eq!(0.0, calculate_val(0.0, 0.0, 100.0, 32.0, 100.0));
+        assert_eq!(50.0, calculate_val(34.0, 0.0, 100.0, 32.0, 100.0));
+        assert_eq!(100.0, calculate_val(68.0, 0.0, 100.0, 32.0, 100.0));
+        assert_eq!(0.0, calculate_val(0.0, -50.0, 50.0, 32.0, 100.0));
+        assert_eq!(50.0, calculate_val(34.0, -50.0, 50.0, 32.0, 100.0));
+        assert_eq!(100.0, calculate_val(68.0, -50.0, 50.0, 32.0, 100.0));
     }
 
     #[test]
-    fn test_adjust_value() {
-        assert_eq!(0.0, adjust_value(-10.0, 0.0, 100.0));
-        assert_eq!(10.0, adjust_value(10.0, 0.0, 100.0));
-        assert_eq!(100.0, adjust_value(500.0, 0.0, 100.0));
+    fn test_adjust_val() {
+        assert_eq!(0.0, adjust_val(-10.0, 0.0, 100.0));
+        assert_eq!(10.0, adjust_val(10.0, 0.0, 100.0));
+        assert_eq!(100.0, adjust_val(500.0, 0.0, 100.0));
     }
 
     #[test]
-    fn test_adjust_minimum() {
-        assert_eq!(0.0, adjust_minimum(0.0, 100.0));
-        assert_eq!(5.0, adjust_minimum(5.0, 100.0));
-        assert_eq!(100.0, adjust_minimum(500.0, 100.0));
+    fn test_adjust_min() {
+        assert_eq!(0.0, adjust_min(0.0, 100.0));
+        assert_eq!(5.0, adjust_min(5.0, 100.0));
+        assert_eq!(100.0, adjust_min(500.0, 100.0));
     }
 
     #[test]
-    fn test_adjust_maximum() {
-        assert_eq!(100.0, adjust_maximum(0.0, 100.0));
-        assert_eq!(100.0, adjust_maximum(100.0, 5.0));
-        assert_eq!(100.0, adjust_maximum(0.0, 100.0));
+    fn test_adjust_max() {
+        assert_eq!(100.0, adjust_max(0.0, 100.0));
+        assert_eq!(100.0, adjust_max(100.0, 5.0));
+        assert_eq!(100.0, adjust_max(0.0, 100.0));
     }
 
     #[test]
-    fn test_calculate_thumb_x_from_value() {
+    fn test_calculate_thumb_x_from_val() {
         assert_eq!(
             0.0,
-            calculate_thumb_x_from_value(0.0, 0.0, 100.0, 100.0, 32.0)
+            calculate_thumb_x_from_val(0.0, 0.0, 100.0, 100.0, 32.0)
         );
         assert_eq!(
             34.0,
-            calculate_thumb_x_from_value(50.0, 0.0, 100.0, 100.0, 32.0)
+            calculate_thumb_x_from_val(50.0, 0.0, 100.0, 100.0, 32.0)
         );
         assert_eq!(
             68.0,
-            calculate_thumb_x_from_value(100.0, 0.0, 100.0, 100.0, 32.0)
+            calculate_thumb_x_from_val(100.0, 0.0, 100.0, 100.0, 32.0)
         );
     }
 }

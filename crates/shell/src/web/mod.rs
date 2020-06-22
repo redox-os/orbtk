@@ -133,6 +133,7 @@ impl Console {
     }
 
     pub fn log(&self, message: impl Into<String>) {
+        #[cfg(feature = "log")]
         js! {
             console.log(@{&message.into()});
         }

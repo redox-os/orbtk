@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.3.1 (OrbTk next) wip
 
-### 0.3.1-alpha3
+### 0.3.1-alpha3 (wip)
 
+* Add widget access helpers for states
+* API update check deprecated methods an replace to new ones
+* Performance improvements
 * NumericBox widget
 * Update caret position on TextBox by mouse click
 * Text input support for ', /, \, [, ], {, }

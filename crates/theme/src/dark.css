@@ -161,6 +161,10 @@ text_box:focus {
     border-color: #f8de4c;
 }
 
+numeric_box:focus {
+    border-color: #f8de4c;
+}
+
 cursor {
     opacity: 1.0;
     background: transparent;

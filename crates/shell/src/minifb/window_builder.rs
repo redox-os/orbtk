@@ -130,7 +130,7 @@ where
         });
 
         // Limit to max ~60 fps update rate
-        window.limit_update_rate(Some(Duration::from_micros(64000)));
+        window.limit_update_rate(Some(Duration::from_micros(16600)));
 
         let key_events = Rc::new(RefCell::new(vec![]));
 

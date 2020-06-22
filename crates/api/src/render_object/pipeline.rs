@@ -9,7 +9,7 @@ impl Into<Box<dyn RenderObject>> for PipelineRenderObject {
 }
 
 impl RenderObject for PipelineRenderObject {
-    fn render_self(&self, ctx: &mut Context<'_>, _: &Point) {
+    fn render_self(&self, ctx: &mut Context, _: &Point) {
         let bounds = *ctx.widget().get::<Rectangle>("bounds");
         let pipeline = ctx
             .widget()

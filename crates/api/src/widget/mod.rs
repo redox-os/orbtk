@@ -1,8 +1,8 @@
-use std::rc::Rc;
+use std::{fmt::Debug, rc::Rc};
 
-use dces::prelude::Entity;
+use dces::prelude::{Component, Entity};
 
-use crate::{css_engine::*, event::EventHandler};
+use crate::{css_engine::*, event::EventHandler, properties::AttachedProperty};
 
 pub use self::build_context::*;
 pub use self::context::*;
@@ -51,7 +51,19 @@ pub enum ParentType {
 /// The `Widget` trait is used to define a new widget.
 pub trait Widget: Template {
     /// Creates a new widget.
-    fn create() -> Self;
+    fn new() -> Self;
+
+    /// Creates a new widget.
+    #[inline(always)]
+    #[deprecated = "Use new instead"]
+    fn create() -> Self {
+        Self::new()
+    }
+
+    // This method will always be overwritten by the `widget!` macros.
+    fn attach<P: Component + Debug>(self, _: AttachedProperty<P>) -> Self {
+        self
+    }
 
     /// Builds the widget and returns the template of the widget.
     fn build(self, ctx: &mut BuildContext) -> Entity;
