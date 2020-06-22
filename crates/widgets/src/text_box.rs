@@ -107,11 +107,7 @@ impl TextBoxState {
     }
 
     // Get new position for the caret based on current mouse position
-<<<<<<< HEAD
-    fn get_new_caret_position(&self, ctx: &mut Context<'_>, p: Mouse) -> usize {
-=======
     fn get_new_caret_position(&self, ctx: &mut Context, p: Mouse) -> usize {
->>>>>>> origin/develop
         if let Some((index, _x)) = self
             .map_chars_index_to_position(ctx)
             .iter()

@@ -22,18 +22,8 @@ impl State for MainState {
                     .position((120.0, 120.0))
                     .size(100.0, 75.0)
                     .child(
-<<<<<<< HEAD
-                        Stack::create()
-                            .child(
-                                TextBlock::create()
-                                    .text("New window")
-                                    .margin(4.0)
-                                    .build(ctx),
-                            )
-=======
                         Stack::new()
                             .child(TextBlock::new().text("New window").margin(4.0).build(ctx))
->>>>>>> origin/develop
                             .build(ctx),
                     )
                     .build(ctx)

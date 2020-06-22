@@ -1224,14 +1224,9 @@ name = "orbtk-shell"
 version = "0.3.1-alpha3"
 dependencies = [
  "console_error_panic_hook 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
-<<<<<<< HEAD
- "derive_more 0.99.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "euclid 0.20.11 (registry+https://github.com/rust-lang/crates.io-index)",
- "font-kit 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
-=======
  "derive_more 0.99.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "euclid 0.20.13 (registry+https://github.com/rust-lang/crates.io-index)",
->>>>>>> origin/develop
+ "font-kit 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "gl 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "glutin 0.24.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.23.4 (registry+https://github.com/rust-lang/crates.io-index)",
