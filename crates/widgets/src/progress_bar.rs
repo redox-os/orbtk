@@ -47,7 +47,7 @@ widget!(
     /// (e.g. copying a file, downloading a video from the internet).
     /// A progress is visually represented as a horizontal bar which grows when the progress advances.
     /// The ProgressBar expects values between 0.0 and 1.0, whereas 0.0 means 0%, and 1.0 means 100%.
-    /// Any value outside of this range cosidered as 100%.
+    /// Any value outside of this range considered as 100%.
     ///
     /// This example creates a ProgressBar with default values:
     /// ```rust
@@ -96,11 +96,12 @@ impl Template for ProgressBar {
                     .element("progress_bar_indicator")
                     .background("#EFD035")
                     .height(24.0)
-                    .v_align("start")
+                    .v_align("center")
                     .border_radius(1.0)
                     .width(0.0)
                     .build(ctx),
             )
+            .width(100.0)
             .val(0.0)
     }
 
