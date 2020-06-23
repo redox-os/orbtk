@@ -225,11 +225,10 @@ cargo doc --no-deps --open
 ## Sub Crates
 
 * [api](https://github.com/redox-os/orbtk/tree/develop/crates/api): base api elements of OrbTk e.g. widget and application parts
-* [css-engine](https://github.com/redox-os/orbtk/tree/develop/crates/css-engine): parse and read values from a css file
 * [proc-macros](https://github.com/redox-os/orbtk/tree/develop/crates/proc-macros): procedural helper macros
 * [render](https://github.com/redox-os/orbtk/tree/develop/crates/render): cross platform 2D/3D render library
 * [shell](https://github.com/redox-os/orbtk/tree/develop/crates/api): cross platform window and event handling
-* [theme](https://github.com/redox-os/orbtk/tree/develop/crates/theme): OrbTks default theme (light and dark)
+* [theming](https://github.com/redox-os/orbtk/tree/develop/crates/theme): provide mechanism to style OrbTk UI's in rust and ron (replaces css-engine)
 * [tree](https://github.com/redox-os/orbtk/tree/develop/crates/tree): tree structure based on DCES
 * [utils](https://github.com/redox-os/orbtk/tree/develop/crates/utils): helper structs and traits
 * [widgets](https://github.com/redox-os/orbtk/tree/develop/crates/widgets): base widget library

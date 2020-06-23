@@ -1,0 +1,15 @@
+Theme (
+    resources: {
+        "BLACK": "#000000",
+        "WHITE": "#ffffff",
+        "BRIGHT_GRAY": "#3b434a",
+        "LYNCH": "#647b91",
+        "PERIWINKLE_GRAY": "#ccdeed",        
+        "SUNFLOWER": "#e1bc21",
+        "ENERGY_YELLOW": "#f8de4c",
+        "LINK_WATER": "#dfebf5",
+        "GOLDEN_DREAM": "#efd035",     
+        "BLUE_BAYOUX": "#516475",   
+        "BOMBAY": "#afb1b8",
+    },
+)

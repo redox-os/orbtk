@@ -31,6 +31,7 @@ orbtk-css-engine = { version = "0.3.1-alpha3", path = "crates/css-engine" }
 orbtk-render = { version = "0.3.1-alpha3", path = "crates/render" }
 orbtk-shell = { version = "0.3.1-alpha3", path = "crates/shell" }
 orbtk-theme = { version = "0.3.1-alpha3", path="crates/theme" }
+orbtk-theming = { version = "0.3.1-alpha3", path="crates/theming" }
 orbtk-utils = { version = "0.3.1-alpha3", path = "crates/utils" }
 orbtk-tree = { version = "0.3.1-alpha3", path="crates/tree" }
 orbtk-widgets = { version = "0.3.1-alpha3", path="crates/widgets" }

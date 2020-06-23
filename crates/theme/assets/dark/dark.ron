@@ -1,0 +1,169 @@
+Theme (
+    styles: {
+        "base": (
+            properties: {
+                "background": "$BRIGHT_GRAY",
+                "font_size": "$FONT_SIZE_16",
+                "font_family": "$MEDIUM_FONT",
+                "icon_size": "ICON_SIZE_16",
+                "icon_family": "$ICON_FONT",
+            },
+        ),
+        "window": (
+             properties: {
+                  "background": "$BRIGHT_GRAY",
+             }
+        ),
+        "button": ( 
+            base: "base",
+            properties: {
+                "height": 36,
+                "foreground": "$LINK_WATER",
+                "background": "$LYNCH",
+                "border_radius": 4,
+                "font_family": "$MEDIUM_FONT",
+            }, 
+            states: {
+                "pressed": {
+                    "background": "$BLUE_BYOUX",
+                    "foreground": "$BLACK",
+                    "icon_brush": "$LINK_WATER",
+                },
+                "disabled": {
+                    "background": "$ROLLING_STONE",
+                    "foreground": "$BRIGHT_GRAY",
+                    "icon_brush": "$BRIGHT_GRAY",
+                },
+            },
+        ),
+        "button_primary": (
+            base: "button",
+            properties: {
+                "background": "$GOLDEN_DREAM",
+                "foreground": "$BRIGHT_GRAY",
+                "icon_brush": "$BRIGHT_GRAY",
+            },
+        ),
+         "button_square": ( 
+            base: "button",
+            properties: {
+                "border_radius": 1,
+            }, 
+        ),
+        "button_single_content": (
+            base: "button",
+            properties: {
+                "spacing": 0,
+            },
+        ),
+        "check_box": (
+              base: "base",
+            properites: {
+                "icon_size": "ICON_SIZE_18",
+                "background": "transparent",
+                "border_radius": 2,
+                "border_width": 1,
+                "border_brush": "$BOMBAY",
+                "icon_brush": "transparent",
+            },
+            states: {
+                "selected": {
+                    "background": "$GOLDEN_DREAM",
+                    "border_brush": "$GOLDEN_DREAM",
+                    "icon_brush": "$BRIGHT_GRAY",
+                },
+            },
+        ),
+        "grid": (
+            base: "base",
+            properties: {
+                "background": "transparent",
+            },
+        ),
+        "switch": (
+            base: "base",
+            properties: {
+                "width": 36,
+                "height": 32,
+            },
+        ),
+        "switch_track": (
+            base: "base",
+            properties: {
+                "height": 14,
+                "border_radius": 7,
+                "background": "#6C7A90",
+            }
+        ),
+        "switch_toggle": (
+            base: "base",
+            properties: {
+                "width": 20,
+                "height": 20,
+                "border_radius": 10,
+                "background": "white",
+            },
+            states: {
+                "selected": {
+                    "background": "$ENERGY_YELLOW",
+                },
+            },
+        ),
+        "container": (
+            base: "base",
+            properties: {
+                "padding": 4,
+            },
+        ),
+        "combo_box": (
+            base: "base",
+            properties: {
+                "foreground": "$LINK_WATER",
+                "background": "$BRIGHT_GRAY",
+                "border_brush": "$LYNCH",
+                "border_width": 1,
+                "border_radius": 3,
+                "padding": 6,
+            },
+            states: {
+                "selected": {
+                    "border_brush": "$ENERGY_YELLOW",
+                },
+            },
+        ),
+        "combo_box_item": (
+            base: "base",
+            properties: {
+               "font_size": "$FONT_SIZE_12",
+                "foreground": "$PERIWINDLE_GRAY",
+                "background": "transparent",
+                "padding_left": 8,
+                "padding_right": 8,
+            },
+            states: {
+                "selected": {
+                    "foreground": "$BRIGHT_GRAY",
+                    "background": "$SUNFLOWER",
+                },
+            },
+        ),
+        "text_block_header": (
+            base: "base",
+            properties: {
+                "font_size": "$FONT_SIZE_24",
+            },
+        ),
+        "text_box": (
+            base: "base",
+            properties: {
+                "height": 32,
+                "foreground": "$PERIWINDLE_GRAY",
+                "background": "$BRIGHT_GRAY",
+                "border_brush": "$LYNCH",
+                "border_width": 1,
+                "border_radius": 3,
+                "padding": 6,
+            },
+        ),
+    },
+)
