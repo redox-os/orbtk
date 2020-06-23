@@ -212,8 +212,8 @@ impl Template for MainView {
                         TextBlock::new()
                             .attach(Grid::row(0))
                             .text("Canvas (render with euc crate)")
-                            .element("text-block")
-                            .class("h1")
+                            .style("text-block")
+                            .style("h1")
                             .margin(4.0)
                             .build(ctx),
                     )
@@ -239,8 +239,8 @@ impl Template for MainView {
                         TextBlock::new()
                             .attach(Grid::row(2))
                             .text("Canvas (render with OrbTk)")
-                            .element("text-block")
-                            .class("h1")
+                            .style("text-block")
+                            .style("h1")
                             .margin(4.0)
                             .build(ctx),
                     )

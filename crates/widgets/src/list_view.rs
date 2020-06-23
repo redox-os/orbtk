@@ -217,7 +217,7 @@ impl Template for ListViewItem {
             .height(24.0)
             .selected(false)
             .pressed(false)
-            .element("list-view-item")
+            .style("list-view-item")
             .padding(0.0)
             .background("transparent")
             .border_radius(0.0)
@@ -314,7 +314,7 @@ impl Template for ListView {
             .build(ctx);
 
         self.name("ListView")
-            .element("list-view")
+            .style("list-view")
             .id(LIST_VIEW)
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)

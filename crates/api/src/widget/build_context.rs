@@ -22,7 +22,7 @@ pub struct BuildContext<'a> {
     layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
     handlers: &'a RefCell<EventHandlerMap>,
     states: &'a mut BTreeMap<Entity, Box<dyn State>>,
-    theme: &'a ThemeValue,
+    theme: &'a Theme,
 }
 
 impl<'a> BuildContext<'a> {

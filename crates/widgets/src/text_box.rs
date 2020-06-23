@@ -430,7 +430,7 @@ impl Template for TextBox {
             .build(ctx);
 
         self.name("TextBox")
-            .element(ELEMENT_TEXT_BOX)
+            .style(ELEMENT_TEXT_BOX)
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)

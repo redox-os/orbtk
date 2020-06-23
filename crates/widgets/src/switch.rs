@@ -31,9 +31,9 @@ impl State for SwitchState {
 
         ctx.widget().set("selected", self.selected);
 
-        let element = ctx.widget().clone::<Selector>("selector").element.unwrap();
+        let element = ctx.widget().clone::<Selector>("selector").style.unwrap();
 
-        if let Some(parent) = ctx.parent_entity_by_element(&*element) {
+        if let Some(parent) = ctx.parent_entity_by_style(&*element) {
             ctx.get_widget(parent).update_theme_by_state(false);
         }
 
@@ -93,7 +93,7 @@ widget!(
 impl Template for Switch {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Switch")
-            .element("switch")
+            .style("switch")
             .pressed(false)
             .selected(false)
             .width(36.0)
@@ -114,13 +114,13 @@ impl Template for Switch {
                         Grid::new()
                             .child(
                                 Container::new()
-                                    .element(SWITCH_TRACK)
+                                    .style(SWITCH_TRACK)
                                     .v_align("center")
                                     .build(ctx),
                             )
                             .child(
                                 Container::new()
-                                    .element(SWITCH_TOGGLE)
+                                    .style(SWITCH_TOGGLE)
                                     .id(SWITCH_TOGGLE)
                                     .v_align("center")
                                     .h_align("start")

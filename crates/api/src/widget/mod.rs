@@ -2,7 +2,7 @@ use std::{fmt::Debug, rc::Rc};
 
 use dces::prelude::{Component, Entity};
 
-use crate::{css_engine::*, event::EventHandler, properties::AttachedProperty};
+use crate::{event::EventHandler, properties::AttachedProperty};
 
 pub use self::build_context::*;
 pub use self::context::*;
@@ -22,18 +22,20 @@ mod widget_container;
 
 /// Adds the given `pseudo_class` to the css selector of the given `widget`.
 pub fn add_selector_to_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
-    if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
-        selector.pseudo_classes.insert(String::from(pseudo_class));
-        selector.set_dirty(true);
-    }
+    // todo fix theming
+    // if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
+    //     selector.pseudo_classes.insert(String::from(pseudo_class));
+    //     selector.set_dirty(true);
+    // }
 }
 
 /// Removes the given `pseudo_class` from the css selector of the given `widget`.
 pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
-    if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
-        selector.pseudo_classes.remove(pseudo_class);
-        selector.set_dirty(true);
-    }
+    // todo fix theming
+    // if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
+    //     selector.pseudo_classes.remove(pseudo_class);
+    //     selector.set_dirty(true);
+    // }
 }
 
 /// Used to define the `parent_type`of a widget.

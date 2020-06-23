@@ -3,8 +3,8 @@ use orbtk::theme::DEFAULT_THEME_CSS;
 
 static CSS_EXT: &'static str = include_str!("../res/grid.css");
 
-fn get_theme() -> ThemeValue {
-    ThemeValue::create_from_css(DEFAULT_THEME_CSS)
+fn get_theme() -> Theme {
+    Theme::create_from_css(DEFAULT_THEME_CSS)
         .extension_css(CSS_EXT)
         .build()
 }
@@ -19,13 +19,13 @@ impl Template for MainView {
                 .rows(Rows::new().add("*").add("*"))
                 .child(
                     Grid::new()
-                        .element("lynch")
+                        .style("lynch")
                         .margin((10.0, 0.0, 0.0, 4.0))
                         .attach(Grid::column(0))
                         .child(
                             TextBlock::new()
                                 .text("(0,0)")
-                                .element("light-text")
+                                .style("light-text")
                                 .h_align("center")
                                 .v_align("center")
                                 .build(ctx),
@@ -34,14 +34,14 @@ impl Template for MainView {
                 )
                 .child(
                     Grid::new()
-                        .element("bluebayoux")
+                        .style("bluebayoux")
                         .margin(10.0)
                         .constraint(Constraint::new().width(150.0))
                         .attach(Grid::column(1))
                         .child(
                             TextBlock::new()
                                 .text("(1,0)")
-                                .element("white")
+                                .style("white")
                                 .h_align("center")
                                 .v_align("center")
                                 .build(ctx),
@@ -50,12 +50,12 @@ impl Template for MainView {
                 )
                 .child(
                     Grid::new()
-                        .element("linkwater")
+                        .style("linkwater")
                         .attach(Grid::column(2))
                         .child(
                             TextBlock::new()
                                 .text("(2,0)")
-                                .element("linkwater")
+                                .style("linkwater")
                                 .h_align("center")
                                 .v_align("center")
                                 .build(ctx),
@@ -64,14 +64,14 @@ impl Template for MainView {
                 )
                 .child(
                     Grid::new()
-                        .element("goldendream")
+                        .style("goldendream")
                         .attach(Grid::column(0))
                         .attach(Grid::row(1))
                         .attach(Grid::column_span(3))
                         .child(
                             TextBlock::new()
                                 .text("(0,1) - ColumnSpan 3")
-                                .element("goldendream")
+                                .style("goldendream")
                                 .h_align("center")
                                 .v_align("center")
                                 .build(ctx),

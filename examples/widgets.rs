@@ -107,8 +107,8 @@ impl State for MainViewState {
 fn create_header(ctx: &mut BuildContext, text: &str) -> Entity {
     TextBlock::new()
         .text(text)
-        .element("text-block")
-        .class("h1")
+        .style("text-block")
+        .style("h1")
         .build(ctx)
 }
 
@@ -200,8 +200,8 @@ impl Template for MainView {
                             .child(
                                 Button::new()
                                     .text("Primary")
-                                    .element("button")
-                                    .class("primary")
+                                    .style("button")
+                                    .style("primary")
                                     .margin((0., 8., 0., 0.))
                                     .icon(material_font_icons::CHECK_FONT_ICON)
                                     .attach(Grid::column(0))
@@ -210,7 +210,7 @@ impl Template for MainView {
                             )
                             .child(
                                 ToggleButton::new()
-                                    .class("single_content")
+                                    .style("single_content")
                                     .text("ToggleButton")
                                     .margin((0., 8., 0., 0.))
                                     .attach(Grid::column(0))
@@ -235,7 +235,7 @@ impl Template for MainView {
                             .child(
                                 TextBlock::new()
                                     .margin((0., 8., 0., 0.))
-                                    .element("h1")
+                                    .style("h1")
                                     .id("value_text")
                                     .text("0")
                                     .h_align("center")
@@ -256,7 +256,7 @@ impl Template for MainView {
                             .child(create_header(ctx, "Text"))
                             .child(
                                 TextBlock::new()
-                                    .class("body")
+                                    .style("body")
                                     .text(("result", id))
                                     .margin((0., 8., 0., 0.))
                                     .attach(Grid::column(2))
@@ -296,7 +296,7 @@ impl Template for MainView {
                             .child(
                                 Button::new()
                                     .margin((0., 8., 0., 0.))
-                                    .class("single_content")
+                                    .style("single_content")
                                     .text("clear text")
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::ClearText);
@@ -331,8 +331,8 @@ impl Template for MainView {
                             .child(
                                 TextBlock::new()
                                     .text("Items")
-                                    .element("text-block")
-                                    .class("h1")
+                                    .style("text-block")
+                                    .style("h1")
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(0))
@@ -361,7 +361,7 @@ impl Template for MainView {
                             )
                             .child(
                                 ItemsWidget::new()
-                                    .element("items-widget")
+                                    .style("items-widget")
                                     .id("items")
                                     .padding((4., 4., 4., 2.))
                                     .attach(Grid::column(0))
@@ -383,8 +383,8 @@ impl Template for MainView {
                             )
                             .child(
                                 Button::new()
-                                    .element("button")
-                                    .class("single_content")
+                                    .style("button")
+                                    .style("single_content")
                                     .id("remove-item-button")
                                     .icon(material_font_icons::MINUS_FONT_ICON)
                                     .on_click(move |states, _| {
@@ -398,8 +398,8 @@ impl Template for MainView {
                             )
                             .child(
                                 Button::new()
-                                    .element("button")
-                                    .class("single_content")
+                                    .style("button")
+                                    .style("single_content")
                                     .id("add-item-button")
                                     .icon(material_font_icons::ADD_FONT_ICON)
                                     .on_click(move |states, _| {
@@ -435,7 +435,7 @@ impl Template for MainView {
                             .child(
                                 // todo: wrong text width????
                                 TextBlock::new()
-                                    .element("text-block")
+                                    .style("text-block")
                                     .id("selection")
                                     .max_width(120.)
                                     .attach(Grid::column(0))

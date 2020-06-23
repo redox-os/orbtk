@@ -184,7 +184,7 @@ widget!(
 impl Template for Slider {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Slider")
-            .element(ELEMENT_SLIDER)
+            .style(ELEMENT_SLIDER)
             .min(0.0)
             .max(100.0)
             .val(0.0)
@@ -204,7 +204,7 @@ impl Template for Slider {
                     )
                     .child(
                         Button::new()
-                            .element("thumb")
+                            .style("thumb")
                             .id(ID_THUMB)
                             .v_align("center")
                             .h_align("start")

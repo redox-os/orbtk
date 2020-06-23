@@ -4,7 +4,6 @@ use dces::prelude::{Entity, EntityComponentManager};
 
 use crate::{
     application::{create_window, ContextProvider},
-    css_engine::*,
     prelude::*,
     render::RenderContext2D,
     shell::{ShellRequest, WindowRequest},
@@ -17,7 +16,7 @@ use super::WidgetContainer;
 pub struct Context<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     pub entity: Entity,
-    pub theme: &'a ThemeValue,
+    pub theme: &'a Theme,
     provider: &'a ContextProvider,
     new_states: BTreeMap<Entity, Box<dyn State>>,
     remove_widget_list: Vec<Entity>,
@@ -40,7 +39,7 @@ impl<'a> Context<'a> {
             Entity,
             &'a mut EntityComponentManager<Tree, StringComponentStore>,
         ),
-        theme: &'a ThemeValue,
+        theme: &'a Theme,
         provider: &'a ContextProvider,
         render_context: &'a mut RenderContext2D,
     ) -> Self {
@@ -114,15 +113,9 @@ impl<'a> Context<'a> {
         let id = id.into();
 
         while let Some(parent) = self.ecm.entity_store().parent[&current] {
-            if let Ok(selector) = self
-                .ecm
-                .component_store()
-                .get::<Selector>("selector", parent)
-            {
-                if let Some(parent_id) = &selector.id {
-                    if parent_id == id {
-                        return self.get_widget(parent);
-                    }
+            if let Ok(parent_id) = self.ecm.component_store().get::<String>("id", parent) {
+                if parent_id == id {
+                    return self.get_widget(parent);
                 }
             }
 
@@ -145,15 +138,9 @@ impl<'a> Context<'a> {
         let id = id.into();
 
         while let Some(parent) = self.ecm.entity_store().parent[&current] {
-            if let Ok(selector) = self
-                .ecm
-                .component_store()
-                .get::<Selector>("selector", parent)
-            {
-                if let Some(parent_id) = &selector.id {
-                    if parent_id == id {
-                        return Some(self.get_widget(parent));
-                    }
+            if let Ok(parent_id) = self.ecm.component_store().get::<String>("id", parent) {
+                if parent_id == id {
+                    return Some(self.get_widget(parent));
                 }
             }
 
@@ -306,15 +293,10 @@ impl<'a> Context<'a> {
         let mut current_node = self.entity;
 
         loop {
-            if let Ok(selector) = self
-                .ecm
-                .component_store()
-                .get::<Selector>("selector", current_node)
-            {
-                if let Some(child_id) = &selector.id {
-                    if child_id == id {
-                        return Some(current_node);
-                    }
+
+            if let Ok(child_id) = self.ecm.component_store().get::<String>("id", current_node) {
+                if child_id == id {
+                    return Some(current_node);
                 }
             }
 
@@ -333,7 +315,7 @@ impl<'a> Context<'a> {
 
     /// Returns the entity of the parent referenced by css `element`.
     /// If there is no id defined None will be returned.
-    pub fn parent_entity_by_element<'b>(&mut self, element: impl Into<&'b str>) -> Option<Entity> {
+    pub fn parent_entity_by_style<'b>(&mut self, element: impl Into<&'b str>) -> Option<Entity> {
         let mut current = self.entity;
         let element = element.into();
 
@@ -343,7 +325,7 @@ impl<'a> Context<'a> {
                 .component_store()
                 .get::<Selector>("selector", parent)
             {
-                if let Some(parent_element) = &selector.element {
+                if let Some(parent_element) = &selector.style {
                     if parent_element == element
                         && self
                             .ecm

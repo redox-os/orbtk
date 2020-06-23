@@ -75,7 +75,7 @@ impl ItemsWidget {
 impl Template for ItemsWidget {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ItemsWidget")
-            .element("items-widget")
+            .style("items-widget")
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
             .border_width(1.0)

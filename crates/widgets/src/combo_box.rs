@@ -149,7 +149,7 @@ impl Template for ComboBoxItem {
             .height(24.0)
             .selected(false)
             .pressed(false)
-            .element("combo_box_item")
+            .style("combo_box_item")
             .padding(0.0)
             .background("transparent")
             .border_radius(0.0)
@@ -401,7 +401,7 @@ impl Template for ComboBox {
         let _ = ctx.append_child_to_overlay(popup);
 
         self.name("ComboBox")
-            .element("combo_box")
+            .style("combo_box")
             .height(32.0)
             .min_width(80.0)
             .selected(false)

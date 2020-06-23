@@ -173,7 +173,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
 
     let context_provider = ContextProvider::new(sender, request_sender.clone(), app_name);
 
-    let theme = crate::theme::default_theme();
+    let theme = crate::theme::dark_theme();
 
     let window = {
         let overlay = Overlay::new().build(&mut BuildContext::new(

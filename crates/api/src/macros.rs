@@ -63,9 +63,8 @@ macro_rules! widget {
             width: Option<f64>,
             height: Option<f64>,
             name: Option<String>,
-            element: Option<String>,
+            style: Option<String>,
             id: Option<String>,
-            classes: HashSet<String>,
             #[property(Alignment)]
             h_align: Alignment,
             #[property(Alignment)]
@@ -119,19 +118,13 @@ macro_rules! widget {
                 self
             }
 
-            /// Sets the element selector.
-            pub fn element(mut self, element: impl Into<String>) -> Self {
-                if !self.element.is_none() {
+            /// Sets the style selector (replaces the old selector property).
+            pub fn style(mut self, style: impl Into<String>) -> Self {
+                if !self.style.is_none() {
                     return self;
                 }
 
-                self.element = Some(element.into());
-                self
-            }
-
-            /// Inserts class selector.
-            pub fn class(mut self, class: impl Into<String>) -> Self {
-                self.classes.insert(class.into());
+                self.style = Some(style.into());
                 self
             }
 
@@ -404,23 +397,16 @@ macro_rules! widget {
                 ctx.register_property("type_id", entity, TypeId::of::<$widget>());
                 ctx.register_property("type_name", entity, std::any::type_name::<$widget>().to_string());
 
-                if this.element.is_some() || this.id.is_some() || this.classes.len() > 0 {
-                    let mut selector = Selector::new();
-                    //selector.set_dirty(true);
-                    if let Some(element) = this.element {
-                        selector = selector.with(element);
-                    }
-                    if let Some(id) = this.id {
-                        selector = selector.id(id);
-                    }
-                    let mut classes = this.classes;
-                    for class in classes.drain() {
-                        selector = selector.class(class);
-                    }
-                    ctx.register_property("selector", entity, selector);
+                if let Some(id) = this.id {
+                    ctx.register_property("id", entity, id);
                 }
 
-
+                if let Some(style) = this.style {
+                    ctx.register_property("selector", entity, Selector::new(style));
+                } else {
+                    ctx.register_property("selector", entity, Selector::default());
+                }
+                
                 let mut constraint = Constraint::default();
 
                 if let Some(width) = this.width {
@@ -442,7 +428,6 @@ macro_rules! widget {
                     constraint.set_max_height(max_height);
                 }
                 ctx.register_property("constraint", entity, constraint);
-
 
                 // register attached properties
                 for (key, property) in this.attached_properties {

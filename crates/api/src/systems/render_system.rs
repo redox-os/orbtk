@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use dces::prelude::{EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, render::RenderContext2D, tree::Tree};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree};
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
 #[derive(Constructor)]

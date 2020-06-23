@@ -1,3 +1,5 @@
+use std::fmt;
+
 /// The selector is used to read a property value from the `Theme`.
 #[derive(Debug, Clone, Default)]
 pub struct Selector {
@@ -29,5 +31,26 @@ impl Selector {
     /// Clears the current state and reset to default.
     pub fn clear_state(&mut self) {
         self.state = None;
+    }
+}
+
+impl fmt::Display for Selector {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(style) = &self.style {
+            return write!(f, "Selector ( style: {} )", style);
+        }
+        write!(f, "Selector ( empty )")
+    }
+}
+
+impl From<&str> for Selector {
+    fn from(s: &str) -> Self {
+        Selector::new(s)
+    }
+}
+
+impl From<String> for Selector {
+    fn from(s: String) -> Self {
+        Selector::new(s)
     }
 }

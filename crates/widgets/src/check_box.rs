@@ -57,7 +57,7 @@ widget!(
 impl Template for CheckBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("CheckBox")
-            .element("check-box")
+            .style("check-box")
             .selected(false)
             .height(24.0)
             .background(colors::LYNCH_COLOR)

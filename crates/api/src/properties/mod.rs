@@ -6,7 +6,7 @@ use dces::prelude::{Component, Entity, StringComponentStore};
 
 pub use self::layout::*;
 pub use self::widget::*;
-use crate::{css_engine, prelude::*, render, utils};
+use crate::{prelude::*, render, utils};
 
 mod layout;
 mod widget;
@@ -106,8 +106,8 @@ into_property_source!(utils::Visibility: &str);
 into_property_source!(Vec<String>);
 
 // Implementation of css types
-into_property_source!(css_engine::Selector: &str, String);
-into_property_source!(css_engine::Theme);
+into_property_source!(Selector: &str, String);
+into_property_source!(Theme);
 
 // Implementation of render property types
 into_property_source!(render::Image: &str, String, (u32, u32, Vec<u32>));

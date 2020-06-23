@@ -7,15 +7,15 @@ static DARK_EXT: &'static str = include_str!("../res/calculator-dark.css");
 static LIGHT_EXT: &'static str = include_str!("../res/calculator-light.css");
 
 #[cfg(not(feature = "light-theme"))]
-fn get_theme() -> ThemeValue {
-    ThemeValue::create_from_css(DEFAULT_THEME_CSS)
+fn get_theme() -> Theme {
+    Theme::create_from_css(DEFAULT_THEME_CSS)
         .extension_css(DARK_EXT)
         .build()
 }
 
 #[cfg(feature = "light-theme")]
-fn get_theme() -> ThemeValue {
-    ThemeValue::new()
+fn get_theme() -> Theme {
+    Theme::new()
         .extension_css(DARK_EXT)
         .extension_css(LIGHT_EXT)
         .build()
@@ -135,7 +135,7 @@ fn generate_digit_button(
     row: usize,
 ) -> Entity {
     let mut button = Button::new()
-        .class("single_content")
+        .style("single_content")
         .min_size(48.0, 48.0)
         .text(sight.to_string())
         .on_click(move |states, _| -> bool {
@@ -146,9 +146,9 @@ fn generate_digit_button(
         .attach(Grid::row(row))
         .attach(Grid::column_span(column_span));
 
-    if primary {
-        button = button.class("primary");
-    }
+    // if primary {
+    //     button = button.style("primary");
+    // }
 
     button.build(ctx)
 }
@@ -163,10 +163,10 @@ fn generate_operation_button(
     row: usize,
 ) -> Entity {
     let mut button = Button::new()
-        .class("single_content")
+        .style("single_content")
         .min_size(48.0, 48.0)
         .text(sight.to_string())
-        .class("square")
+        .style("square")
         .on_click(move |states, _| -> bool {
             state(id, states).action(Action::Operator(sight));
             true
@@ -175,9 +175,9 @@ fn generate_operation_button(
         .attach(Grid::column_span(column_span))
         .attach(Grid::row(row));
 
-    if primary {
-        button = button.class("primary");
-    }
+    // if primary {
+    //     button = button.style("primary");
+    // }
 
     button.build(ctx)
 }
@@ -198,8 +198,8 @@ impl Template for MainView {
                     .child(
                         Container::new()
                             .padding(8.0)
-                            .element("container")
-                            .class("header")
+                            .style("container")
+                            .style("header")
                             .attach(Grid::row(0))
                             .child(
                                 Grid::new()
@@ -211,7 +211,7 @@ impl Template for MainView {
                                                     .width(0.0)
                                                     .height(14.0)
                                                     .text("")
-                                                    .element("text-block")
+                                                    .style("text-block")
                                                     .id("input")
                                                     .v_align("start")
                                                     .build(ctx),
@@ -220,7 +220,7 @@ impl Template for MainView {
                                     )
                                     .child(
                                         TextBlock::new()
-                                            .element("text-block")
+                                            .style("text-block")
                                             .text(id)
                                             .v_align("end")
                                             .h_align("end")
@@ -232,8 +232,8 @@ impl Template for MainView {
                     )
                     .child(
                         Container::new()
-                            .element("container")
-                            .class("content")
+                            .style("container")
+                            .style("content")
                             .padding(8.0)
                             .attach(Grid::row(1))
                             .child(

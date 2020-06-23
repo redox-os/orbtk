@@ -74,7 +74,7 @@ widget!(
 impl Template for Button {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Button")
-            .element("button")
+            .style("button")
             .height(36.0)
             .min_width(64.0)
             .background(colors::LYNCH_COLOR)

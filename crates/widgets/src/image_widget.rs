@@ -17,7 +17,7 @@ widget!(
 
 impl Template for ImageWidget {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        self.name("ImageWidget").element("image-widget").image("")
+        self.name("ImageWidget").style("image-widget").image("")
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

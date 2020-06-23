@@ -11,6 +11,7 @@ pub use orbtk_proc_macros as proc_macros;
 pub use orbtk_render::prelude as render;
 pub use orbtk_shell::prelude as shell;
 pub use orbtk_theme::prelude as theme;
+pub use orbtk_theming as theming;
 pub use orbtk_utils::prelude as utils;
 
 pub use self::button::*;
@@ -23,7 +24,7 @@ pub use self::font_icon_block::*;
 pub use self::grid::*;
 pub use self::image_widget::*;
 pub use self::items_widget::*;
-pub use self::list_view::*;
+pub use self::list_view::*; 
 pub use self::numeric_box::*;
 pub use self::popup::*;
 pub use self::progress_bar::*;

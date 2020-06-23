@@ -248,7 +248,7 @@ impl Layout for GridLayout {
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
-        theme: &ThemeValue,
+        theme: &Theme,
     ) -> DirtySize {
         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
@@ -307,7 +307,7 @@ impl Layout for GridLayout {
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
-        theme: &ThemeValue,
+        theme: &Theme,
     ) -> (f64, f64) {
         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
