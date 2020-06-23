@@ -10,14 +10,11 @@ struct BarState {
 }
 
 impl State for BarState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, registry: &mut Registry, ctx: &mut Context) {
         self.indicator = ctx
             .entity_of_child(ID_INDICATOR)
             .expect("BarState.init(): Child could not be found!");
-
-        ctx.get_widget(self.indicator)
-            .get_mut::<Constraint>("constraint")
-            .set_width(0.1);
+        self.update(registry, ctx);
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
