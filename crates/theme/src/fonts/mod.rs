@@ -19,8 +19,6 @@
 
 // Reference to the material icon fonts.
 pub const MATERIAL_ICONS_FONT_TTF: &[u8] = include_bytes!("MaterialIcons.ttf");
-// legacy: Google version
-pub const MATERIAL_ICONS_REGULAR_FONT_TTF: &[u8] = include_bytes!("MaterialIcons-Regular.ttf");
 
 pub const MATERIAL_ICONS_BASELINE_FONT: &[u8] = include_bytes!("MaterialIcons-Baseline.woff2");
 pub const MATERIAL_ICONS_OUTLINED_FONT: &[u8] = include_bytes!("MaterialIcons-Outlined.woff2");
