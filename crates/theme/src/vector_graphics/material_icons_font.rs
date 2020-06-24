@@ -28,8 +28,8 @@
 // font-family: "Material Icons";
 // font-weight: normal;
 // font-style:  normal;
-// font-format: woff2
-// font-src:    MaterialIcons.woff2
+// font-format: ttf
+// font-src:    MaterialIcons.ttf
 
 //pub const MD_: &str = "";
 
