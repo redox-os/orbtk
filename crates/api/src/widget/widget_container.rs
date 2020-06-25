@@ -47,12 +47,20 @@ impl<'a> WidgetContainer<'a> {
             return property;
         }
 
+        let name = self
+            .ecm
+            .component_store()
+            .get::<String>("name", self.current_node)
+            .unwrap()
+            .clone();
+
         panic!(
-            "Entity {} does not contain property type {:?} with key: {}",
-            self.current_node.0,
-            TypeId::of::<P>(),
-            key
-        );
+        "Widget with name: {} and entity: {} does not contain property width type_id {:?} for key: {}",
+        name,
+        self.current_node.0,
+        TypeId::of::<P>(),
+        key
+    );
     }
 
     /// Gets a mutable reference of the property of type `P`.
@@ -106,12 +114,20 @@ impl<'a> WidgetContainer<'a> {
             return property.clone();
         }
 
+        let name = self
+            .ecm
+            .component_store()
+            .get::<String>("name", self.current_node)
+            .unwrap()
+            .clone();
+
         panic!(
-            "Entity {} does not contain property type {:?}, with key: {}",
-            self.current_node.0,
-            TypeId::of::<P>(),
-            key
-        );
+        "Widget with name: {} and entity: {} does not contain property width type_id {:?} for key: {}",
+        name,
+        self.current_node.0,
+        TypeId::of::<P>(),
+        key
+    );
     }
 
     /// Clones the property of type `P` from the given widget entity. If the entity does
@@ -145,10 +161,19 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
+        let name = self
+            .ecm
+            .component_store()
+            .get::<String>("name", self.current_node)
+            .unwrap()
+            .clone();
+
         panic!(
-            "Entity {} does not contain property type {:?}",
+            "Widget with name: {} and entity: {} does not contain property width type_id {:?} for key: {}",
+            name,
             self.current_node.0,
-            TypeId::of::<P>()
+            TypeId::of::<P>(),
+            key
         );
     }
 
