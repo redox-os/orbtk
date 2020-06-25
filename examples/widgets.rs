@@ -41,6 +41,7 @@ impl State for MainViewState {
                         main_view(ctx.widget())
                             .list_mut()
                             .push(format!("Item {}", len + 1));
+                            ctx.child("items").set::<usize>("blub", len + 1);
                         items_widget(ctx.child("items")).set_count(len + 1);
                         button(ctx.child("remove-item-button")).set_enabled(true);
 
