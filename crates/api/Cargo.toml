@@ -12,7 +12,7 @@ edition = "2018"
 [dependencies]
 serde = "1.0.106"
 serde_derive = "1.0.106"
-ron = "0.5.1"
+ron = "0.6"
 dirs = "2.0.2"
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "develop" }
 orbtk-proc-macros = { path = "../proc-macros", version = "0.3.1-alpha3" }

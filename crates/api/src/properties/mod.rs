@@ -88,7 +88,7 @@ into_property_source!(i64);
 
 // Implementation of PropertySource for utils types
 into_property_source!(utils::Alignment: &str);
-into_property_source!(utils::Brush: &str, utils::Color);
+into_property_source!(utils::Brush: &str, utils::Color, ron::Value);
 into_property_source!(utils::Orientation: &str);
 into_property_source!(utils::Point: f64, i32, (i32, i32), (f64, f64));
 into_property_source!(utils::Rectangle: (i32, i32, i32, i32), (f64, f64, f64, f64));
@@ -98,7 +98,8 @@ into_property_source!(
     (i32, i32),
     (f64, f64),
     (i32, i32, i32, i32),
-    (f64, f64, f64, f64)
+    (f64, f64, f64, f64),
+    ron::Value
 );
 into_property_source!(utils::String16: &str, String);
 into_property_source!(utils::SelectionMode: &str);

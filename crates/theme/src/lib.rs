@@ -5,8 +5,6 @@ It provides fonts, icons and colors.
 
  */
 
-use std::sync::Arc;
-
 use orbtk_theming::{config::ThemeConfig, prelude::*};
 
 pub mod colors;
