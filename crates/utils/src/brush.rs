@@ -63,6 +63,16 @@ impl From<String> for Brush {
     }
 }
 
+impl From<ron::Value> for Brush {
+    fn from(v: ron::Value) -> Self {
+        if let Ok(value) = v.into_rust::<String>() {
+            return Brush::from(value);
+        }
+
+        Brush::default()
+    } 
+}
+
 // impl From<Vec<LinearGradientStop>> for Brush {
 //     fn from(gradient: Vec<LinearGradientStop>) -> Brush {
 //         Brush::LinearGradient(gradient)

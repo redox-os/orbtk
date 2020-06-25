@@ -1236,6 +1236,9 @@ dependencies = [
 [[package]]
 name = "orbtk-utils"
 version = "0.3.1-alpha3"
+dependencies = [
+ "ron 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "orbtk-widgets"

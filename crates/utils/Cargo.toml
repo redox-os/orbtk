@@ -8,3 +8,6 @@ readme = "README.md"
 license = "MIT"
 keywords = ["helpers", "utils", "traits", "ui"]
 edition = "2018"
+
+[dependencies]
+ron = "0.6"
