@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Install fuse
-        run: apt install fuse
+        run: sudo apt install fuse
       - name: Install rust nightly-2019-11-25
         run: rustup toolchain install nightly-2019-11-25
       - name: Set rust nightly-2019-11-25 as default
