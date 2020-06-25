@@ -134,11 +134,13 @@ Theme (
         "combo_box_item": (
             base: "base",
             properties: {
-               "font_size": "$FONT_SIZE_12",
+                "font_size": "$FONT_SIZE_12",
                 "foreground": "$PERIWINDLE_GRAY",
                 "background": "transparent",
-                "padding_left": 8,
-                "padding_right": 8,
+                "padding": {
+                    "left": 8,
+                    "right" 8
+                }
             },
             states: {
                 "selected": {
