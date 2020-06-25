@@ -108,7 +108,7 @@ fn create_header(ctx: &mut BuildContext, text: &str) -> Entity {
     TextBlock::new()
         .text(text)
         .style("text-block")
-        .style("h1")
+        .style("text_block_header")
         .build(ctx)
 }
 
@@ -200,8 +200,7 @@ impl Template for MainView {
                             .child(
                                 Button::new()
                                     .text("Primary")
-                                    .style("button")
-                                    .style("primary")
+                                    .style("button_primary")
                                     .margin((0., 8., 0., 0.))
                                     .icon(material_font_icons::CHECK_FONT_ICON)
                                     .attach(Grid::column(0))
@@ -210,7 +209,7 @@ impl Template for MainView {
                             )
                             .child(
                                 ToggleButton::new()
-                                    .style("single_content")
+                                    .style("button_single_content")
                                     .text("ToggleButton")
                                     .margin((0., 8., 0., 0.))
                                     .attach(Grid::column(0))
@@ -235,7 +234,7 @@ impl Template for MainView {
                             .child(
                                 TextBlock::new()
                                     .margin((0., 8., 0., 0.))
-                                    .style("h1")
+                                    .style("text_block_header")
                                     .id("value_text")
                                     .text("0")
                                     .h_align("center")
@@ -296,7 +295,7 @@ impl Template for MainView {
                             .child(
                                 Button::new()
                                     .margin((0., 8., 0., 0.))
-                                    .style("single_content")
+                                    .style("button_single_content")
                                     .text("clear text")
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::ClearText);
@@ -332,7 +331,7 @@ impl Template for MainView {
                                 TextBlock::new()
                                     .text("Items")
                                     .style("text-block")
-                                    .style("h1")
+                                    .style("text_block_header")
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(0))
@@ -373,10 +372,7 @@ impl Template for MainView {
                                             [index]
                                             .clone();
 
-                                        Button::new()
-                                            .margin((0., 0., 0., 2.))
-                                            .text(text)
-                                            .build(bc)
+                                        Button::new().margin((0., 0., 0., 2.)).text(text).build(bc)
                                     })
                                     .count(("list_count", id))
                                     .build(ctx),
@@ -384,7 +380,7 @@ impl Template for MainView {
                             .child(
                                 Button::new()
                                     .style("button")
-                                    .style("single_content")
+                                    .style("button_single_content")
                                     .id("remove-item-button")
                                     .icon(material_font_icons::MINUS_FONT_ICON)
                                     .on_click(move |states, _| {
@@ -399,7 +395,7 @@ impl Template for MainView {
                             .child(
                                 Button::new()
                                     .style("button")
-                                    .style("single_content")
+                                    .style("button_single_content")
                                     .id("add-item-button")
                                     .icon(material_font_icons::ADD_FONT_ICON)
                                     .on_click(move |states, _| {

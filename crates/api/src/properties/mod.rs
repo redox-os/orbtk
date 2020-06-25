@@ -76,8 +76,6 @@ where
     }
 }
 
-
-
 // Implementation of PropertySource for default types
 into_property_source!(bool);
 into_property_source!(String: &str, utils::Value);

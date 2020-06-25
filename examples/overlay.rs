@@ -25,7 +25,7 @@ impl Template for MainView {
                 .child(
                     TextBlock::new()
                         .text("MainView")
-                        .style("h1")
+                        .style("text_block_header")
                         .v_align("center")
                         .h_align("center")
                         .build(ctx),

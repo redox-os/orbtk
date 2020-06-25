@@ -135,7 +135,7 @@ fn generate_digit_button(
     row: usize,
 ) -> Entity {
     let mut button = Button::new()
-        .style("single_content")
+        .style("button_single_content")
         .min_size(48.0, 48.0)
         .text(sight.to_string())
         .on_click(move |states, _| -> bool {
@@ -147,7 +147,7 @@ fn generate_digit_button(
         .attach(Grid::column_span(column_span));
 
     // if primary {
-    //     button = button.style("primary");
+    //     button = button.style("button_primary");
     // }
 
     button.build(ctx)
@@ -163,7 +163,7 @@ fn generate_operation_button(
     row: usize,
 ) -> Entity {
     let mut button = Button::new()
-        .style("single_content")
+        .style("button_single_content")
         .min_size(48.0, 48.0)
         .text(sight.to_string())
         .style("square")
@@ -176,7 +176,7 @@ fn generate_operation_button(
         .attach(Grid::row(row));
 
     // if primary {
-    //     button = button.style("primary");
+    //     button = button.style("button_primary");
     // }
 
     button.build(ctx)

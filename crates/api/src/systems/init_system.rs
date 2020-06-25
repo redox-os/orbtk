@@ -16,7 +16,7 @@ impl InitSystem {
     fn init_id(&self, node: Entity, store: &mut StringComponentStore, root: Entity) {
         // Add css id to global id map.
         let id = if let Ok(id) = store.get::<String>("id", node) {
-            Some((node, id.clone()))       
+            Some((node, id.clone()))
         } else {
             None
         };

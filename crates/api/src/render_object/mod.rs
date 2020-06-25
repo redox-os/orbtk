@@ -2,9 +2,7 @@
 
 use std::{any::Any, collections::BTreeMap};
 
-use crate::{
-    application::ContextProvider, prelude::*, render::RenderContext2D, utils::*,
-};
+use crate::{application::ContextProvider, prelude::*, render::RenderContext2D, utils::*};
 
 pub use self::default::*;
 pub use self::font_icon::*;

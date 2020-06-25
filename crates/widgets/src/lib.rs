@@ -24,7 +24,7 @@ pub use self::font_icon_block::*;
 pub use self::grid::*;
 pub use self::image_widget::*;
 pub use self::items_widget::*;
-pub use self::list_view::*; 
+pub use self::list_view::*;
 pub use self::numeric_box::*;
 pub use self::popup::*;
 pub use self::progress_bar::*;

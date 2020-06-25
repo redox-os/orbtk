@@ -4,7 +4,10 @@ pub struct Value(pub ron::Value);
 
 impl Value {
     /// Converts the internal value to the given type.
-    pub fn get<T>(self) -> T where T:  Default + DeserializeOwned {
+    pub fn get<T>(self) -> T
+    where
+        T: Default + DeserializeOwned,
+    {
         if let Ok(value) = self.0.into_rust::<T>() {
             return value;
         }
@@ -23,7 +26,7 @@ impl Into<String> for Value {
     fn into(self) -> String {
         self.get::<String>()
     }
-} 
+}
 
 impl Into<f64> for Value {
     fn into(self) -> f64 {

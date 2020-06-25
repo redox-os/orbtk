@@ -406,7 +406,7 @@ macro_rules! widget {
                 } else {
                     ctx.register_property("selector", entity, Selector::default());
                 }
-                
+
                 let mut constraint = Constraint::default();
 
                 if let Some(width) = this.width {

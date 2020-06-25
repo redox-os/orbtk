@@ -199,9 +199,6 @@ impl<'a> WidgetContainer<'a> {
         if let Some(selector) = self.try_clone::<Selector>("selector") {
             let mut update = false;
 
-
-         
-
             // todo fix theming
 
             // if let Some(focus) = self.try_clone::<bool>("focused") {
@@ -275,7 +272,11 @@ impl<'a> WidgetContainer<'a> {
         self.update_internal_theme_by_state(force, &(self.current_node.clone()));
     }
 
-    fn update_value<T, V>(&mut self, key: &str, value: V) where T: Component + Clone, V: Into<T> {
+    fn update_value<T, V>(&mut self, key: &str, value: V)
+    where
+        T: Component + Clone,
+        V: Into<T>,
+    {
         if self.has::<T>(key) {
             self.set::<T>(key, value.into());
         }
@@ -283,8 +284,6 @@ impl<'a> WidgetContainer<'a> {
 
     /// Update all properties for the theme.
     pub fn update_properties_by_theme(&mut self) {
-
-
         // todo fix theming
         if !self.has::<Selector>("selector") {
             return;
@@ -297,13 +296,13 @@ impl<'a> WidgetContainer<'a> {
                 match key.as_str() {
                     "foreground" | "background" | "icon_brush" | "border_brush" => {
                         self.update_value::<Brush, Value>(key, Value(value.clone()));
-                    },
+                    }
                     "font_size" | "icon_size" | "spacing" | "border_radius" => {
                         self.update_value::<f64, Value>(key, Value(value.clone()));
-                    },
+                    }
                     "padding" | "border_width" => {
                         self.update_value::<Thickness, Value>(key, Value(value.clone()));
-                    },
+                    }
                     "font_family" | "icon_family" => {
                         self.update_value::<String, Value>(key, Value(value.clone()));
                     }
@@ -316,18 +315,13 @@ impl<'a> WidgetContainer<'a> {
         //     return;
         // }
 
-   
- 
         // if self.has::<f32>("opacity") {
         //     if let Some(opacity) = self.theme.float("opacity", &selector) {
         //         self.set::<f32>("opacity", opacity);
         //     }
         // }
 
-
         // self.update_font_properties_by_theme(&selector);
-
-
 
         // if let Some(mut constraint) = self.try_clone::<Constraint>("constraint") {
         //     if let Some(width) = self.theme.uint("width", &selector) {
@@ -356,8 +350,6 @@ impl<'a> WidgetContainer<'a> {
 
         //     self.set::<Constraint>("constraint", constraint);
         // }
-
-  
 
         // self.get_mut::<Selector>("selector").set_dirty(true);
     }

@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use ron::Value;
 
-use crate::{config::{ThemeConfig, RESOURCE_KEY}, Style, Selector};
+use crate::{
+    config::{ThemeConfig, RESOURCE_KEY},
+    Selector, Style,
+};
 
 #[derive(Debug, Clone, Default)]
 pub struct Theme {
@@ -21,11 +24,11 @@ impl Theme {
 
             for state_key in theme.styles.get(style_key).unwrap().states.keys() {
                 let mut state = HashMap::new();
-                Theme::read_states(style_key,state_key, &theme, &mut state);
+                Theme::read_states(style_key, state_key, &theme, &mut state);
                 states.insert(state_key.clone(), state);
-            }     
+            }
 
-            styles.insert(style_key.clone(), Style { properties, states});
+            styles.insert(style_key.clone(), Style { properties, states });
         }
 
         Theme { styles }
@@ -42,13 +45,13 @@ impl Theme {
 
         if let Some(style) = &selector.style {
             if let Some(state) = &selector.state {
-                return self.styles.get(style)?.states.get(state)
+                return self.styles.get(style)?.states.get(state);
             }
 
             return Some(&self.styles.get(style)?.properties);
         }
 
-        return None
+        return None;
     }
 
     fn read_properties(key: &String, theme: &ThemeConfig, properties: &mut HashMap<String, Value>) {
@@ -76,7 +79,7 @@ impl Theme {
         }
 
         if let Some(style) = theme.styles.get(style_key) {
-            Theme::read_states(&style.base,  state_key, theme, states);
+            Theme::read_states(&style.base, state_key, theme, states);
 
             for (key, value) in &style.properties {
                 Theme::read_property(key, value, theme, states);
@@ -90,7 +93,12 @@ impl Theme {
         }
     }
 
-    fn read_property(key: &String, value: &Value, theme: &ThemeConfig, map: &mut HashMap<String, Value>) {
+    fn read_property(
+        key: &String,
+        value: &Value,
+        theme: &ThemeConfig,
+        map: &mut HashMap<String, Value>,
+    ) {
         if let Ok(value) = value.clone().into_rust::<String>() {
             if value.starts_with(RESOURCE_KEY) {
                 if let Some(value) = theme.resources.get(&value.replace(RESOURCE_KEY, "")) {

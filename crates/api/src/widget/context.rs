@@ -293,7 +293,6 @@ impl<'a> Context<'a> {
         let mut current_node = self.entity;
 
         loop {
-
             if let Ok(child_id) = self.ecm.component_store().get::<String>("id", current_node) {
                 if child_id == id {
                     return Some(current_node);
