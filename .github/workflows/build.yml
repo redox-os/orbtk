@@ -36,9 +36,9 @@ jobs:
       - name: Set rust nightly-2019-11-25 as default
         run: rustup default nightly-2019-11-25
       - name: Install redoxer
-        run: cargo install redoxer
+        run: cargo +nightly-2019-11-25 install redoxer
       - name: Install redoxer toolchain
-        run: redoxer  install
+        run: redoxer install
       - name: Build
         run: redoxer build --example widgets --verbose
            
