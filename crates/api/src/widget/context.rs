@@ -122,8 +122,6 @@ impl<'a> Context<'a> {
             current = parent;
         }
 
-        
-
         panic!(
             "Parent with id: {}, of child with entity: {} could not be found",
             id, self.entity.0

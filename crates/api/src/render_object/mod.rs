@@ -112,8 +112,6 @@ pub trait RenderObject: Any {
         // render debug border for each widget
         if debug {
             if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
-                let selector = Selector::from("debug-border");
-
                 render_context.begin_path();
                 render_context.set_stroke_style(Brush::from("#0033cc"));
                 render_context.stroke_rect(

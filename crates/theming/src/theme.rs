@@ -39,7 +39,7 @@ impl Theme {
     }
 
     pub fn properties<'a>(&'a self, selector: &Selector) -> Option<&'a HashMap<String, Value>> {
-        if !selector.dirty {
+        if !selector.dirty() {
             return None;
         }
 

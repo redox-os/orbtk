@@ -2,7 +2,7 @@ use std::{fmt::Debug, rc::Rc};
 
 use dces::prelude::{Component, Entity};
 
-use crate::{event::EventHandler, properties::AttachedProperty};
+use crate::{event::EventHandler, properties::AttachedProperty, theming::Selector};
 
 pub use self::build_context::*;
 pub use self::context::*;
@@ -20,22 +20,21 @@ mod states_context;
 mod template;
 mod widget_container;
 
-/// Adds the given `pseudo_class` to the css selector of the given `widget`.
-pub fn add_selector_to_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
-    // todo fix theming
-    // if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
-    //     selector.pseudo_classes.insert(String::from(pseudo_class));
-    //     selector.set_dirty(true);
-    // }
-}
+/// Toggles the selector state`.
+pub fn toggle_flag(flag: &str, widget: &mut WidgetContainer<'_>) {
+    if !widget.has::<bool>(flag) {
+        return;
+    }
 
-/// Removes the given `pseudo_class` from the css selector of the given `widget`.
-pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
-    // todo fix theming
-    // if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
-    //     selector.pseudo_classes.remove(pseudo_class);
-    //     selector.set_dirty(true);
-    // }
+    let value = *widget.get::<bool>(flag);
+
+    if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
+        if value {
+            selector.set_state(flag);
+        } else {
+            selector.clear_state();
+        }
+    }
 }
 
 /// Used to define the `parent_type`of a widget.

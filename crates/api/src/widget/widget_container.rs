@@ -215,86 +215,52 @@ impl<'a> WidgetContainer<'a> {
     }
 
     fn update_internal_theme_by_state(&mut self, force: bool, entity: &Entity) {
+        let internal_force = if let Ok(selector) = self
+            .ecm
+            .component_store()
+            .get::<Selector>("selector", *entity)
+        {
+            if selector.dirty() {
+                true
+            } else {
+                false
+            }
+        } else {
+            false
+        };
+
         for child in &(self.ecm.entity_store().children.clone())[&entity] {
-            self.update_internal_theme_by_state(force, child);
+            self.update_internal_theme_by_state(internal_force || force, child);
         }
 
         self.current_node = *entity;
 
-        if let Some(selector) = self.try_clone::<Selector>("selector") {
-            let mut update = false;
-
-            // todo fix theming
-
-            // if let Some(focus) = self.try_clone::<bool>("focused") {
-            //     if focus && !selector.pseudo_classes.contains("focus") {
-            //         add_selector_to_widget("focus", self);
-            //         update = true;
-            //     } else if !focus && selector.pseudo_classes.contains("focus") {
-            //         remove_selector_from_widget("focus", self);
-            //         update = true;
-            //     }
-            // }
-
-            // if let Some(selected) = self.try_clone::<bool>("selected") {
-            //     if selected && !selector.pseudo_classes.contains("selected") {
-            //         add_selector_to_widget("selected", self);
-            //         update = true;
-            //     } else if !selected && selector.pseudo_classes.contains("selected") {
-            //         remove_selector_from_widget("selected", self);
-            //         update = true;
-            //     }
-            // }
-
-            // if let Some(pressed) = self.try_clone::<bool>("pressed") {
-            //     if pressed && !selector.pseudo_classes.contains("active") {
-            //         add_selector_to_widget("active", self);
-            //         update = true;
-            //     } else if !pressed && selector.pseudo_classes.contains("active") {
-            //         remove_selector_from_widget("active", self);
-            //         update = true;
-            //     }
-            // }
-
-            // if let Some(enabled) = self.try_clone::<bool>("enabled") {
-            //     if !enabled && !selector.pseudo_classes.contains("disabled") {
-            //         add_selector_to_widget("disabled", self);
-            //         update = true;
-            //     } else if enabled && selector.pseudo_classes.contains("disabled") {
-            //         remove_selector_from_widget("disabled", self);
-            //         update = true;
-            //     }
-            // }
-
-            // if let Some(text) = self.try_clone::<String16>("text") {
-            //     if text.is_empty() && !selector.pseudo_classes.contains("empty") {
-            //         add_selector_to_widget("empty", self);
-            //         update = true;
-            //     } else if !text.is_empty() && selector.pseudo_classes.contains("empty") {
-            //         remove_selector_from_widget("empty", self);
-            //         update = true;
-            //     }
-            // }
-
-            // if let Some(expanded) = self.try_clone::<bool>("expanded") {
-            //     if expanded && !selector.pseudo_classes.contains("expanded") {
-            //         add_selector_to_widget("expanded", self);
-            //         update = true;
-            //     } else if !expanded && selector.pseudo_classes.contains("expanded") {
-            //         remove_selector_from_widget("expanded", self);
-            //         update = true;
-            //     }
-            // }
-
-            if update || force {
-                self.update_properties_by_theme();
-            }
-        }
+        self.update_properties_by_theme(force);
     }
 
     /// Updates the theme by the inner state e.g. `selected` or `pressed`.
     pub fn update_theme_by_state(&mut self, force: bool) {
         self.update_internal_theme_by_state(force, &(self.current_node.clone()));
+    }
+
+    fn update_constraint(&mut self, key: &str, value: Value) {
+        let value = if let Ok(value) = value.0.into_rust::<f64>() {
+            value
+        } else {
+            0.0
+        };
+
+        if let Some(mut constraint) = self.try_clone::<Constraint>("constraint") {
+            match key {
+                "width" => constraint.set_width(value),
+                "height" => constraint.set_height(value),
+                "min_width" => constraint.set_min_width(value),
+                "min_height" => constraint.set_min_height(value),
+                "max_width" => constraint.set_max_width(value),
+                "max_height" => constraint.set_max_height(value),
+                _ => {}
+            }
+        }
     }
 
     fn update_value<T, V>(&mut self, key: &str, value: V)
@@ -308,13 +274,16 @@ impl<'a> WidgetContainer<'a> {
     }
 
     /// Update all properties for the theme.
-    pub fn update_properties_by_theme(&mut self) {
-        // todo fix theming
+    pub fn update_properties_by_theme(&mut self, force: bool) {
         if !self.has::<Selector>("selector") {
             return;
         }
 
         let selector = self.clone::<Selector>("selector");
+
+        if !selector.dirty() && !force {
+            return;
+        }
 
         if let Some(props) = self.theme.properties(&selector) {
             for (key, value) in props {
@@ -331,51 +300,16 @@ impl<'a> WidgetContainer<'a> {
                     "font_family" | "icon_family" => {
                         self.update_value::<String, Value>(key, Value(value.clone()));
                     }
+                    "opacity" => {
+                        self.update_value::<f32, Value>(key, Value(value.clone()));
+                    }
+                    "width" | "height" | "min_width" | "min_height" | "max_width"
+                    | "max_height" => self.update_constraint(key, Value(value.clone())),
                     _ => {}
                 }
             }
         }
 
-        // if !selector.dirty() {
-        //     return;
-        // }
-
-        // if self.has::<f32>("opacity") {
-        //     if let Some(opacity) = self.theme.float("opacity", &selector) {
-        //         self.set::<f32>("opacity", opacity);
-        //     }
-        // }
-
-        // self.update_font_properties_by_theme(&selector);
-
-        // if let Some(mut constraint) = self.try_clone::<Constraint>("constraint") {
-        //     if let Some(width) = self.theme.uint("width", &selector) {
-        //         constraint.set_width(width as f64);
-        //     }
-
-        //     if let Some(height) = self.theme.uint("height", &selector) {
-        //         constraint.set_height(height as f64);
-        //     }
-
-        //     if let Some(min_width) = self.theme.uint("min-width", &selector) {
-        //         constraint.set_min_width(min_width as f64);
-        //     }
-
-        //     if let Some(min_height) = self.theme.uint("min-height", &selector) {
-        //         constraint.set_min_height(min_height as f64);
-        //     }
-
-        //     if let Some(max_width) = self.theme.uint("max-width", &selector) {
-        //         constraint.set_max_width(max_width as f64);
-        //     }
-
-        //     if let Some(max_height) = self.theme.uint("max-height", &selector) {
-        //         constraint.set_max_height(max_height as f64);
-        //     }
-
-        //     self.set::<Constraint>("constraint", constraint);
-        // }
-
-        // self.get_mut::<Selector>("selector").set_dirty(true);
+        self.get_mut::<Selector>("selector").set_dirty(true);
     }
 }

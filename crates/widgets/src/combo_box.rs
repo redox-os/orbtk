@@ -257,7 +257,7 @@ impl State for ComboBoxState {
 
                         item
                     };
-                    ctx.get_widget(item).update_properties_by_theme();
+                    ctx.get_widget(item).update_properties_by_theme(false);
                 }
             }
 

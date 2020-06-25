@@ -10,7 +10,7 @@ pub struct Selector {
     pub state: Option<String>,
 
     /// Check if the selector is dirty.
-    pub dirty: bool,
+    dirty: bool,
 }
 
 impl Selector {
@@ -26,11 +26,23 @@ impl Selector {
     /// Set the current state of the selector.
     pub fn set_state(&mut self, state: impl Into<String>) {
         self.state = Some(state.into());
+        self.dirty = true;
     }
 
     /// Clears the current state and reset to default.
     pub fn clear_state(&mut self) {
         self.state = None;
+        self.dirty = true;
+    }
+
+    /// Gets the dirty flag.
+    pub fn dirty(&self) -> bool {
+        self.dirty
+    }
+
+    /// Sets the dirty flag.
+    pub fn set_dirty(&mut self, dirty: bool) {
+        self.dirty = dirty;
     }
 }
 

@@ -1,17 +1,17 @@
 use orbtk::prelude::*;
-use orbtk::theme::DEFAULT_THEME_CSS;
+// use orbtk::theme::DEFAULT_THEME_CSS;
 
-static DARK_EXT: &'static str = include_str!("../res/calculator-dark.css");
+// static DARK_EXT: &'static str = include_str!("../res/calculator-dark.css");
 
-#[cfg(feature = "light-theme")]
-static LIGHT_EXT: &'static str = include_str!("../res/calculator-light.css");
+// #[cfg(feature = "light-theme")]
+// static LIGHT_EXT: &'static str = include_str!("../res/calculator-light.css");
 
-#[cfg(not(feature = "light-theme"))]
-fn get_theme() -> Theme {
-    Theme::create_from_css(DEFAULT_THEME_CSS)
-        .extension_css(DARK_EXT)
-        .build()
-}
+// #[cfg(not(feature = "light-theme"))]
+// fn get_theme() -> Theme {
+//     Theme::create_from_css(DEFAULT_THEME_CSS)
+//         .extension_css(DARK_EXT)
+//         .build()
+// }
 
 #[cfg(feature = "light-theme")]
 fn get_theme() -> Theme {
@@ -298,7 +298,7 @@ fn main() {
                 .title("OrbTk - Calculator example")
                 .position((100.0, 100.0))
                 .size(212.0, 336.0)
-                .theme(get_theme())
+                // .theme(get_theme())
                 .child(MainView::new().build(ctx))
                 .build(ctx)
         })

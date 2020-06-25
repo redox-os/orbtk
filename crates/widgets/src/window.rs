@@ -62,6 +62,7 @@ impl WindowState {
             let mut old_focused_element = ctx.get_widget(old_focused_element);
             old_focused_element.set("focused", false);
             old_focused_element.update_theme_by_state(false);
+            toggle_flag("focused", &mut old_focused_element);
         }
 
         ctx.widget().get_mut::<Global>("global").focused_widget = Some(entity);
@@ -69,6 +70,7 @@ impl WindowState {
         if ctx.get_widget(entity).has::<bool>("focused") {
             ctx.get_widget(entity).set("focused", true);
             ctx.get_widget(entity).update_theme_by_state(false);
+            toggle_flag("focused", &mut ctx.get_widget(entity));
         }
     }
 

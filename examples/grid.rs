@@ -1,13 +1,13 @@
 use orbtk::prelude::*;
-use orbtk::theme::DEFAULT_THEME_CSS;
+// use orbtk::theme::DEFAULT_THEME_CSS;
 
-static CSS_EXT: &'static str = include_str!("../res/grid.css");
+// static CSS_EXT: &'static str = include_str!("../res/grid.css");
 
-fn get_theme() -> Theme {
-    Theme::create_from_css(DEFAULT_THEME_CSS)
-        .extension_css(CSS_EXT)
-        .build()
-}
+// fn get_theme() -> Theme {
+//     Theme::create_from_css(DEFAULT_THEME_CSS)
+//         .extension_css(CSS_EXT)
+//         .build()
+// }
 
 widget!(MainView);
 
@@ -93,7 +93,7 @@ fn main() {
                 .title("OrbTk - grid example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
-                .theme(get_theme())
+                // .theme(get_theme())
                 .resizeable(true)
                 .child(MainView::new().build(ctx))
                 .build(ctx)

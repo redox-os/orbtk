@@ -42,10 +42,10 @@ impl State for SwitchState {
 
             if self.selected {
                 switch_toggle.set("h_align", Alignment::from("end"));
-                add_selector_to_widget("selected", &mut switch_toggle);
+                toggle_flag("selected", &mut switch_toggle);
             } else {
                 switch_toggle.set("h_align", Alignment::from("start"));
-                remove_selector_from_widget("selected", &mut switch_toggle);
+                toggle_flag("selected", &mut switch_toggle);
             }
 
             switch_toggle.update_theme_by_state(true);

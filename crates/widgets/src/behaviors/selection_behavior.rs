@@ -33,6 +33,9 @@ impl State for SelectionBehaviorState {
         self.selected = *selection_behavior(ctx.widget()).selected();
 
         let target: Entity = (*selection_behavior(ctx.widget()).target()).into();
+
+        toggle_flag("selected", &mut ctx.get_widget(target));
+
         ctx.push_event_strategy_by_entity(ChangedEvent(target), target, EventStrategy::Direct);
         ctx.get_widget(target).update_theme_by_state(false);
     }
