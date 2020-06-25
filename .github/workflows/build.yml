@@ -26,10 +26,13 @@ jobs:
   build_redox:
     name: Build on Redox OS
     runs-on: ubuntu-latest
-    container: redoxos/redoxer
     
     steps:
       - uses: actions/checkout@v1
+      - name: Install rust nightly-2019-11-25
+        run: rustup toolchain install nightly-2019-11-25
+      - name: Set rust nightly-2019-11-25 as default
+        run: rustup default nightly-2019-11-25
       - name: Install redoxer
         run: cargo install redoxer
       - name: Install redoxer toolchain
