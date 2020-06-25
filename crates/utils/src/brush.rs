@@ -63,13 +63,10 @@ impl From<String> for Brush {
     }
 }
 
-impl From<ron::Value> for Brush {
-    fn from(v: ron::Value) -> Self {
-        if let Ok(value) = v.into_rust::<String>() {
-            return Brush::from(value);
-        }
-
-        Brush::default()
+impl From<Value> for Brush {
+    fn from(v: Value) -> Self {
+        let value = v.get::<String>();
+        return Brush::from(value);
     } 
 }
 
