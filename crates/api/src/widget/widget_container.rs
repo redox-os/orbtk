@@ -2,7 +2,7 @@ use std::any::TypeId;
 
 use crate::{
     prelude::*,
-    utils::{Brush, String16, Thickness},
+    utils::{Brush, String16, Thickness, Value},
 };
 
 use dces::prelude::{Component, Entity, EntityComponentManager};
@@ -200,6 +200,8 @@ impl<'a> WidgetContainer<'a> {
             let mut update = false;
 
 
+         
+
             // todo fix theming
 
             // if let Some(focus) = self.try_clone::<bool>("focused") {
@@ -273,79 +275,59 @@ impl<'a> WidgetContainer<'a> {
         self.update_internal_theme_by_state(force, &(self.current_node.clone()));
     }
 
+    fn update_value<T, V>(&mut self, key: &str, value: V) where T: Component + Clone, V: Into<T> {
+        if self.has::<T>(key) {
+            self.set::<T>(key, value.into());
+        }
+    }
+
     /// Update all properties for the theme.
     pub fn update_properties_by_theme(&mut self) {
-        // todo fix theming
-        // if !self.has::<Selector>("selector") {
-        //     return;
-        // }
 
-        // let selector = self.clone::<Selector>("selector");
+
+        // todo fix theming
+        if !self.has::<Selector>("selector") {
+            return;
+        }
+
+        let selector = self.clone::<Selector>("selector");
+
+        if let Some(props) = self.theme.properties(&selector) {
+            for (key, value) in props {
+                match key.as_str() {
+                    "foreground" | "background" | "icon_brush" | "border_brush" => {
+                        self.update_value::<Brush, Value>(key, Value(value.clone()));
+                    },
+                    "font_size" | "icon_size" | "spacing" | "border_radius" => {
+                        self.update_value::<f64, Value>(key, Value(value.clone()));
+                    },
+                    "padding" | "border_width" => {
+                        self.update_value::<Thickness, Value>(key, Value(value.clone()));
+                    },
+                    "font_family" | "icon_family" => {
+                        self.update_value::<String, Value>(key, Value(value.clone()));
+                    }
+                    _ => {}
+                }
+            }
+        }
 
         // if !selector.dirty() {
         //     return;
         // }
 
-        // if self.has::<Brush>("foreground") {
-        //     if let Some(color) = self.theme.brush("color", &selector) {
-        //         self.set::<Brush>("foreground", color);
-        //     }
-        // }
-
-        // if self.has::<Brush>("background") {
-        //     if let Some(background) = self.theme.brush("background", &selector) {
-        //         self.set::<Brush>("background", background);
-        //     }
-        // }
-
-        // if self.has::<Brush>("border_brush") {
-        //     if let Some(border_brush) = self.theme.brush("border-color", &selector) {
-        //         self.set::<Brush>("border_brush", border_brush);
-        //     }
-        // }
-
-        // if self.has::<f64>("border_radius") {
-        //     if let Some(radius) = self.theme.uint("border-radius", &selector) {
-        //         self.set::<f64>("border_radius", f64::from(radius));
-        //     }
-        // }
-
+   
+ 
         // if self.has::<f32>("opacity") {
         //     if let Some(opacity) = self.theme.float("opacity", &selector) {
         //         self.set::<f32>("opacity", opacity);
         //     }
         // }
 
-        // if self.has::<Thickness>("border_width") {
-        //     if let Some(border_width) = self.theme.uint("border-width", &selector) {
-        //         self.set::<Thickness>("border_width", Thickness::from(border_width as f64));
-        //     }
-        // }
 
         // self.update_font_properties_by_theme(&selector);
 
-        // if let Some(mut padding) = self.try_clone::<Thickness>("padding") {
-        //     if let Some(pad) = self.theme.uint("padding", &selector) {
-        //         padding.set_thickness(pad as f64);
-        //     }
 
-        //     if let Some(left) = self.theme.uint("padding-left", &selector) {
-        //         padding.set_left(left as f64);
-        //     }
-
-        //     if let Some(top) = self.theme.uint("padding-top", &selector) {
-        //         padding.set_top(top as f64);
-        //     }
-
-        //     if let Some(right) = self.theme.uint("padding-right", &selector) {
-        //         padding.set_right(right as f64);
-        //     }
-
-        //     if let Some(bottom) = self.theme.uint("padding-bottom", &selector) {
-        //         padding.set_bottom(bottom as f64);
-        //     }
-        //     self.set::<Thickness>("padding", padding);
-        // }
 
         // if let Some(mut constraint) = self.try_clone::<Constraint>("constraint") {
         //     if let Some(width) = self.theme.uint("width", &selector) {
@@ -375,45 +357,8 @@ impl<'a> WidgetContainer<'a> {
         //     self.set::<Constraint>("constraint", constraint);
         // }
 
-        // if self.has::<f64>("spacing") {
-        //     if let Some(spacing) = self.theme.uint("spacing", &selector) {
-        //         self.set::<f64>("spacing", spacing.into());
-        //     }
-        // }
+  
 
         // self.get_mut::<Selector>("selector").set_dirty(true);
-    }
-
-    pub fn update_font_properties_by_theme(&mut self, selector: &Selector) {
-        // todo fix theming
-        // if self.has::<f64>("font_size") {
-        //     if let Some(size) = self.theme.uint("font-size", selector) {
-        //         self.set::<f64>("font_size", f64::from(size));
-        //     }
-        // }
-
-        // if self.has::<String>("font_family") {
-        //     if let Some(font_family) = self.theme.string("font-family", selector) {
-        //         self.set::<String>("font_family", font_family);
-        //     }
-        // }
-
-        // if self.has::<Brush>("icon_brush") {
-        //     if let Some(color) = self.theme.brush("icon-color", selector) {
-        //         self.set::<Brush>("icon_brush", color);
-        //     }
-        // }
-
-        // if self.has::<f64>("icon_size") {
-        //     if let Some(size) = self.theme.uint("icon-size", selector) {
-        //         self.set::<f64>("icon_size", f64::from(size));
-        //     }
-        // }
-
-        // if self.has::<String>("icon_family") {
-        //     if let Some(font_family) = self.theme.string("icon-family", selector) {
-        //         self.set::<String>("icon_family", font_family);
-        //     }
-        // }
     }
 }

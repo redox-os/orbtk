@@ -30,3 +30,9 @@ impl Into<f64> for Value {
         self.get::<f64>()
     }
 }
+
+impl Into<f32> for Value {
+    fn into(self) -> f32 {
+        self.get::<f32>()
+    }
+}

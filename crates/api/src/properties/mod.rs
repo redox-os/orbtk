@@ -83,7 +83,7 @@ into_property_source!(bool);
 into_property_source!(String: &str, utils::Value);
 into_property_source!(usize);
 into_property_source!(u32);
-into_property_source!(f32);
+into_property_source!(f32: utils::Value);
 into_property_source!(f64: i32, f32, utils::Value);
 into_property_source!(i32);
 into_property_source!(i64);
