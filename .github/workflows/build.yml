@@ -15,24 +15,31 @@ jobs:
         os: [ubuntu-latest, windows-latest]
       
     steps:
+      - if: matrix.os == 'ubuntu-latest'
+        run: sudo apt install libwayland-cursor0 libxkbcommon-dev libwayland-dev
       - uses: actions/checkout@v1
       - name: Build
         run: cargo build --verbose
-      - name: Build example
+      - name: Build widgets example
         run: cargo build --example widgets --verbose
       
   build_redox:
     name: Build on Redox OS
-    runs-on: ubuntu-latest
-    container: redoxos/redoxer
+    runs-on: ubuntu-18.04
     
     steps:
       - uses: actions/checkout@v1
+      - name: Install fuse
+        run: sudo apt install libfuse-dev
+      - name: Install rust nightly-2019-11-25
+        run: rustup toolchain install nightly-2019-11-25
+      - name: Set rust nightly-2019-11-25 as default
+        run: rustup default nightly-2019-11-25
       - name: Install redoxer
-        run: cargo install redoxer
+        run: cargo +nightly-2019-11-25 install redoxer
       - name: Install redoxer toolchain
-        run: redoxer  install
-      - name: Build
+        run: redoxer toolchain
+      - name: Build widgets example
         run: redoxer build --example widgets --verbose
            
   build_macos:
@@ -45,7 +52,7 @@ jobs:
         run: brew install rust
       - name: Build
         run: cargo build --verbose
-      - name: Build example
+      - name: Build widgets example
         run: cargo build --example widgets --verbose
 
   build_web:

@@ -1164,7 +1164,6 @@ pub const MD_SAVE: &str = "";
 //   content: '\e1f6';
 // }
 
-
 // .md-edit_attributes:after {
 //   content: '\e1fa';
 // }
