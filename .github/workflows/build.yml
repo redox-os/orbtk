@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build
         run: cargo build --verbose
-      - name: Build example
+      - name: Build widgets example
         run: cargo build --example widgets --verbose
       
   build_redox:
@@ -38,8 +38,8 @@ jobs:
       - name: Install redoxer
         run: cargo +nightly-2019-11-25 install redoxer
       - name: Install redoxer toolchain
-        run: redoxer install
-      - name: Build
+        run: redoxer toolchain
+      - name: Build widgets example
         run: redoxer build --example widgets --verbose
            
   build_macos:
@@ -52,7 +52,7 @@ jobs:
         run: brew install rust
       - name: Build
         run: cargo build --verbose
-      - name: Build example
+      - name: Build widgets example
         run: cargo build --example widgets --verbose
 
   build_web:
