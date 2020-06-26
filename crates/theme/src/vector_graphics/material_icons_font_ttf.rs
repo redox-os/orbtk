@@ -91,6 +91,7 @@ pub const MD_CLOSE: &str = "";
 pub const MD_CREATE: &str = "";
 pub const MD_CREATE_NEW_FOLDER: &str = "";
 pub const MD_DELETE: &str = "";
+pub const MD_EDIT: &str = "";
 pub const MD_KEYBOARD_ARROW_DOWN: &str = "";
 pub const MD_KEYBOARD_ARROW_LEFT: &str = "";
 pub const MD_KEYBOARD_ARROW_RIGHT: &str = "";
@@ -100,10 +101,15 @@ pub const MD_KEYBOARD_CAPSLOCK: &str = "";
 pub const MD_KEYBOARD_HIDE: &str = "";
 pub const MD_KEYBOARD_ARROW_RETURN: &str = "";
 pub const MD_KEYBOARD_TAB: &str = "";
+pub const MD_MENU: &str = "";
 pub const MD_MINUS: &str = "";
 pub const MD_PLUS: &str = "";
 pub const MD_PLUS_MINUS: &str = "";
 pub const MD_PLUS_ONE: &str = "";
+pub const MD_POWER: &str = "";
+pub const MD_POWER_INPUT: &str = "";
+pub const MD_POWER_OFF: &str = "";
+pub const MD_POWER_SETTINGS_NEW: &str = "";
 pub const MD_REMOVE: &str = "";
 pub const MD_REMOVE_CIRCLE: &str = "";
 pub const MD_SAVE: &str = "";
@@ -1158,9 +1164,6 @@ pub const MD_SAVE: &str = "";
 //   content: '\e1f6';
 // }
 
-// .md-edit:after {
-//   content: '\e1f8';
-// }
 
 // .md-edit_attributes:after {
 //   content: '\e1fa';
