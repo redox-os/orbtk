@@ -78,7 +78,7 @@ fn main() {
                 .title("OrbTk - minimal example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
-                .child(ctx, TextBlock::new().text("OrbTk").build(ctx))
+                .child(TextBlock::new().text("OrbTk").build(ctx))
                 .build(ctx)
         })
         .run();
@@ -118,12 +118,10 @@ impl Template for MyWidget {
             .background("#000000")
             .count(0)
             .text("Initial text")
-            .child(ctx, 
-                Container::new()
+            .child(Container::new()
                     // Container references the same background as MyWidget
                     .background(id)
-                    .child(ctx, 
-                      TextBlock::new()
+                    .child(TextBlock::new()
                             // TextBlock references the same text as MyWidget
                             .text(id)
                             .build(ctx)
