@@ -1,8 +1,5 @@
-use super::behaviors::MouseBehavior;
-use crate::{
-    prelude::*,
-    shell::{Key, KeyEvent},
-};
+use super::behaviors::TextBehavior;
+use crate::prelude::*;
 
 // --- KEYS --
 
@@ -10,41 +7,11 @@ pub static ELEMENT_TEXT_BOX: &'static str = "text_box";
 
 static ID_CURSOR: &'static str = "id_cursor";
 
-// --- KEYS --
-
-#[derive(Clone)]
-enum TextBoxAction {
-    Key(KeyEvent),
-    Mouse(Mouse),
-}
-
-/// The `TextBoxState` handles the text processing of the `TextBox` widget.
-#[derive(Default, AsAny)]
-pub struct TextBoxState {
-    action: Option<TextBoxAction>,
-    len: usize,
-    cursor: Entity,
-}
-
-impl TextBoxState {
-    fn action(&mut self, action: TextBoxAction) {
-        self.action = Some(action);
-    }
-}
-
-impl State for TextBoxState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-    }
-
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-    }
-}
-
 widget!(
     /// The `TextBox` widget represents a single line text input widget.
     ///
     /// * CSS element: `text_box`
-    TextBox<TextBoxState>: ActivateHandler, ChangedHandler, KeyDownHandler {
+    TextBox: ActivateHandler, ChangedHandler {
         /// Sets or shares the text property.
         text: String16,
 
@@ -98,6 +65,26 @@ impl Template for TextBox {
             .font_size(id)
             .build(ctx);
 
+        let cursor = Cursor::new()
+            .id(ID_CURSOR)
+            .h_align("start")
+            .text_block(text_block.0)
+            .focused(id)
+            .text_selection(id)
+            .build(ctx);
+
+        let text_behavior = TextBehavior::new()
+            .cursor(cursor.0)
+            .font_size(id)
+            .font(id)
+            .focused(id)
+            .lost_focus_on_activation(id)
+            .padding(id)
+            .text(id)
+            .text_selection(id)
+            .water_mark(id)
+            .build(ctx);
+
         self.name("TextBox")
             .element(ELEMENT_TEXT_BOX)
             .text("")
@@ -115,48 +102,23 @@ impl Template for TextBox {
             .focused(false)
             .lost_focus_on_activation(true)
             .child(
-                MouseBehavior::new()
-                    .visibility(id)
-                    .enabled(id)
-                    .on_mouse_down(move |states, m| {
-                        states
-                            .get_mut::<TextBoxState>(id)
-                            .action(TextBoxAction::Mouse(m));
-                        true
-                    })
+                Container::new()
+                    .background(id)
+                    .border_radius(id)
+                    .border_width(id)
+                    .border_brush(id)
+                    .padding(id)
                     .child(
-                        Container::new()
-                            .background(id)
-                            .border_radius(id)
-                            .border_width(id)
-                            .border_brush(id)
-                            .padding(id)
-                            .child(
-                                Grid::new()
-                                    .clip(true)
-                                    // It is important that cursor is the first child
-                                    // should be refactored in the future.
-                                    .child(
-                                        Cursor::new()
-                                            .id(ID_CURSOR)
-                                            .h_align("start")
-                                            .text_block(text_block.0)
-                                            .focused(id)
-                                            .text_selection(id)
-                                            .build(ctx),
-                                    )
-                                    .child(text_block)
-                                    .build(ctx),
-                            )
+                        Grid::new()
+                            .clip(true)
+                            // It is important that cursor is the first child
+                            // should be refactored in the future.
+                            .child(cursor)
+                            .child(text_block)
+                            .child(text_behavior)
                             .build(ctx),
                     )
                     .build(ctx),
             )
-            .on_key_down(move |states, event| -> bool {
-                states
-                    .get_mut::<TextBoxState>(id)
-                    .action(TextBoxAction::Key(event));
-                false
-            })
     }
 }
