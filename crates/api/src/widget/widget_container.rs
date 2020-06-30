@@ -47,19 +47,14 @@ impl<'a> WidgetContainer<'a> {
             return property;
         }
 
-        let name = self
-            .ecm
-            .component_store()
-            .get::<String>("name", self.current_node)
-            .unwrap()
-            .clone();
+       let name = self.get_name();
 
-        panic!(
-        "Widget with name: {} and entity: {} does not contain property width type_id {:?} for key: {}",
-        name,
-        self.current_node.0,
-        TypeId::of::<P>(),
-        key
+       panic!(
+       "Widget with name: {} and entity: {} does not contain property width type_id {:?} for key: {}",
+       name,
+       self.current_node.0,
+       TypeId::of::<P>(),
+       key
     );
     }
 
@@ -114,13 +109,8 @@ impl<'a> WidgetContainer<'a> {
             return property.clone();
         }
 
-        let name = self
-            .ecm
-            .component_store()
-            .get::<String>("name", self.current_node)
-            .unwrap()
-            .clone();
-
+        let name = self.get_name();
+        
         panic!(
         "Widget with name: {} and entity: {} does not contain property width type_id {:?} for key: {}",
         name,
@@ -161,12 +151,7 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
-        let name = self
-            .ecm
-            .component_store()
-            .get::<String>("name", self.current_node)
-            .unwrap()
-            .clone();
+        let name = self.get_name();
 
         panic!(
             "Widget with name: {} and entity: {} does not contain property width type_id {:?} for key: {}",
@@ -436,5 +421,14 @@ impl<'a> WidgetContainer<'a> {
                 self.set::<String>("icon_family", font_family);
             }
         }
+    }
+
+    fn get_name(&self) -> String {
+        self
+        .ecm
+        .component_store()
+        .get::<String>("name", self.current_node)
+        .unwrap()
+        .clone()
     }
 }
