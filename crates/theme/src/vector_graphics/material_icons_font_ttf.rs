@@ -71,7 +71,17 @@ pub const MD_ALARM: &str = "";
 pub const MD_ALARM_ADD: &str = "";
 pub const MD_ALARM_OFF: &str = "";
 pub const MD_ALARM_ON: &str = "";
+pub const MD_ALBUM: &str = "";
+pub const MD_ALL_INBOX: &str = "";
+pub const MD_ALL_INCLUSIVE: &str = "";
+pub const MD_ALL_OUT: &str = "";
+pub const MD_ALTERNATE_EMAIL: &str = "";
+pub const MD_AM_STORIES: &str = "";
 pub const MD_ANDROID: &str = "";
+pub const MD_ANNOUNCEMENT: &str = "";
+pub const MD_APARTMEMT: &str = "";
+pub const MD_APPS: &str = "";
+pub const MD_ARCHIVE: &str = "";
 pub const MD_ARROW_BACK: &str = "";
 pub const MD_ARROW_BACK_IOS: &str = "";
 pub const MD_ARROW_DOWNWARD: &str = "";
@@ -84,6 +94,24 @@ pub const MD_ARROW_LEFT: &str = "";
 pub const MD_ARROW_RIGHT: &str = "";
 pub const MD_ARROW_RIGHT_ALT: &str = "";
 pub const MD_ARROW_UPWARD: &str = "";
+pub const MD_ART_ACK: &str = "";
+pub const MD_ASPECT_RATIO: &str = "";
+pub const MD_ASSESSMENT: &str = "";
+pub const MD_ASSIGNMENT: &str = "";
+pub const MD_ASSIGNMENT_IND: &str = "";
+pub const MD_ASSIGNMENT_LATE: &str = "";
+pub const MD_ASSIGNMENT_RETURN: &str = "";
+pub const MD_ASSIGNMENT_RETURNED: &str = "";
+pub const MD_ASSIGNMENT_TURNED_IN: &str = "";
+pub const MD_ASSISTANT: &str = "";
+pub const MD_ASSISTANT_PHOTO: &str = "";
+pub const MD_ATM: &str = "";
+pub const MD_ATTACH_FILE: &str = "";
+pub const MD_ATTACH_MONEY: &str = "";
+pub const MD_ATTACHMENT: &str = "";
+pub const MD_AUDIOTRACK: &str = "";
+pub const MD_AUTORENEW: &str = "";
+pub const MD_AV_TIMER: &str = "";
 pub const MD_CHECK: &str = "";
 pub const MD_CLEAR: &str = "";
 pub const MD_CLEAR_ALL: &str = "";
@@ -92,6 +120,9 @@ pub const MD_CREATE: &str = "";
 pub const MD_CREATE_NEW_FOLDER: &str = "";
 pub const MD_DELETE: &str = "";
 pub const MD_EDIT: &str = "";
+pub const MD_DELETE_FOREVER: &str = "";
+pub const MD_DELETE_OUTLINE: &str = "";
+pub const MD_DELETE_SWEEP: &str = "";
 pub const MD_KEYBOARD_ARROW_DOWN: &str = "";
 pub const MD_KEYBOARD_ARROW_LEFT: &str = "";
 pub const MD_KEYBOARD_ARROW_RIGHT: &str = "";
@@ -118,119 +149,8 @@ pub const MD_SAVE: &str = "";
  *  WIP: this unicodes needs your update!
  */
 
-// last edited: dec= 57416 -> e048
-// .md-album:after {
-//   content: '\e04a';
-// }
+// last edited: dec= 57416 -> e085
 
-// .md-all_inbox:after {
-//   content: '\e04c';
-// }
-
-// .md-all_inclusive:after {
-//   content: '\e04e';
-// }
-
-// .md-all_out:after {
-//   content: '\e04f';
-// }
-
-// .md-alternate_email:after {
-//   content: '\e051';
-// }
-
-// .md-amp_stories:after {
-//   content: '\e053';
-// }
-
-// .md-announcement:after {
-//   content: '\e056';
-// }
-
-// .md-apartment:after {
-//   content: '\e058';
-// }
-
-// .md-apps:after {
-//   content: '\e059';
-// }
-
-// .md-archive:after {
-//   content: '\e05a';
-// }
-
-
-// .md-art_track:after {
-//   content: '\e069';
-// }
-
-// .md-aspect_ratio:after {
-//   content: '\e06a';
-// }
-
-// .md-assessment:after {
-//   content: '\e06c';
-// }
-
-// .md-assignment:after {
-//   content: '\e06e';
-// }
-
-// .md-assignment_ind:after {
-//   content: '\e070';
-// }
-
-// .md-assignment_late:after {
-//   content: '\e072';
-// }
-
-// .md-assignment_return:after {
-//   content: '\e074';
-// }
-
-// .md-assignment_returned:after {
-//   content: '\e076';
-// }
-
-// .md-assignment_turned_in:after {
-//   content: '\e078';
-// }
-
-// .md-assistant:after {
-//   content: '\e07a';
-// }
-
-// .md-assistant_photo:after {
-//   content: '\e07c';
-// }
-
-// .md-atm:after {
-//   content: '\e07e';
-// }
-
-// .md-attach_file:after {
-//   content: '\e07f';
-// }
-
-// .md-attach_money:after {
-//   content: '\e080';
-// }
-
-// .md-attachment:after {
-//   content: '\e081';
-// }
-
-// .md-audiotrack:after {
-//   content: '\e082';
-// }
-
-// .md-autorenew:after {
-//   content: '\e084';
-// }
-
-// .md-av_timer:after {
-//   content: '\e085';
-// }
 
 // .md-backspace:after {
 //   content: '\e086';
@@ -958,22 +878,6 @@ pub const MD_SAVE: &str = "";
 
 // .md-dehaze:after {
 //   content: '\e1a0';
-// }
-
-// .md-delete:after {
-//   content: '\e1a1';
-// }
-
-// .md-delete_forever:after {
-//   content: '\e1a3';
-// }
-
-// .md-delete_outline:after {
-//   content: '\e1a5';
-// }
-
-// .md-delete_sweep:after {
-//   content: '\e1a6';
 // }
 
 // .md-departure_board:after {
