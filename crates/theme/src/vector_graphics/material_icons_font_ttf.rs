@@ -196,12 +196,105 @@ pub const MD_BUILD: &str = ""
 pub const MD_BURST_MODE: &str = ""
 pub const MD_BUSINESS: &str = ""
 pub const MD_BUSINESS_CENTER: &str = ""
+pub const MD_CACHED: &str = "";
+pub const MD_CAKE: &str = "";
+pub const MD_CALENDAR_ODAY: &str = "";
+pub const MD_CALENDAR_VIEW_DAY: &str = "";
+pub const MD_CALL: &str = "";
+pub const MD_CALL_END: &str = "";
+pub const MD_CALL_MADE: &str = "";
+pub const MD_CALL_MERGE: &str = "";
+pub const MD_CALL_MISSED: &str = "";
+pub const MD_CALL_MISSED_OUTGOING: &str = "";
+pub const MD_CALL_RECEIVED: &str = "";
+pub const MD_CALL_SPLIT: &str = "";
+pub const MD_CALL_TO_ACTION: &str = "";
+pub const MD_CAMERA: &str = "";
+pub const MD_CAMERA_ALT: &str = "";
+pub const MD_CAMERA_ENHANCE: &str = "";
+pub const MD_CAMERA_FRONT: &str = "";
+pub const MD_CAMERA_REAR: &str = "";
+pub const MD_CAMERA_ROLL: &str = "";
+pub const MD_CANCEL: &str = "";
+pub const MD_CANCEL_PRESENTATION: &str = "";
+pub const MD_CANCEL_SCHEDULE_SEND: &str = "";
+pub const MD_CARD_GIFTCARD: &str = "";
+pub const MD_CARD_MEMBERSHIP: &str = "";
+pub const MD_CARD_TRAVEL: &str = "";
+pub const MD_CASOMP: &str = "";
+pub const MD_CAST: &str = "";
+pub const MD_CAST_CONNECTED: &str = "";
+pub const MD_CAST_FOR_EDUCATION: &str = "";
+pub const MD_CATEGORY: &str = "";
+pub const MD_CELL_WIFI_AFTER: &str = "";
+pub const MD_CELL_WIFI_BEFORE: &str = "";
+pub const MD_CENTER_FCUS_STRONG: &str = "";
+pub const MD_CENTER_FOCUS_WEAK: &str = "";
+pub const MD_CHANGE_HISTORY: &str = "";
+pub const MD_CHAT: &str = "";
+pub const MD_CHAT_BUBBLE: &str = "";
+pub const MD_CHAT_BUBBLE_OUTLINE: &str = "";
 pub const MD_CHECK: &str = "";
+pub const MD_CHECK_BOX: &str = "";
+pub const MD_CHECK_BOX_OUTLINE_BLANK: &str = "";
+pub const MD_CHECK_CIRCLE: &str = "";
+pub const MD_CHECK_CIRCLE_OUTLINE: &str = "";
+pub const MD_CHEVRON_LEFT: &str = "";
+pub const MD_CHEVRON_RIGHT: &str = "";
+pub const MD_CHILD_CARE: &str = "";
+pub const MD_CHILD_FRIENDLY: &str = "";
+pub const MD_CHROME_READER_MODE: &str = "";
+pub const MD_CLASS: &str = "";
 pub const MD_CLEAR: &str = "";
 pub const MD_CLEAR_ALL: &str = "";
 pub const MD_CLOSE: &str = "";
+pub const MD_CLOSED_CAPTION: &str = "";
+pub const MD_CLOUD: &str = "";
+pub const MD_CLOUD_CIRCLE: &str = "";
+pub const MD_CLOUD_DONE: &str = "";
+pub const MD_CLOUD_DOWNLOAD: &str = "";
+pub const MD_CLOUD_OFF: &str = "";
+pub const MD_CLOUD_QUEUE: &str = "";
+pub const MD_CLOUD_UPLOAD: &str = "";
+pub const MD_CODE: &str = "";
+pub const MD_COLLECTIONS: &str = "";
+pub const MD_COLLECTIONS_BOOKMARK: &str = "";
+pub const MD_COLOR_LENS: &str = "";
+pub const MD_COLORIZE: &str = "";
+pub const MD_COMMENT: &str = "";
+pub const MD_COMMUTE: &str = "";
+pub const MD_COMPARE: &str = "";
+pub const MD_COMPARE_ARROWS: &str = "";
+pub const MD_COMPASS_CALIBRATION: &str = "";
+pub const MD_COMPUTER: &str = "";
+pub const MD_CONFIRMATION: &str = "";
+pub const MD_CONTACT_MAIL: &str = "";
+pub const MD_CONTACT_PHONE: &str = "";
+pub const MD_CONTACT_SUPPORT: &str = "";
+pub const MD_CONTACTLESS: &str = "";
+pub const MD_CONTACTS: &str = "";
+pub const MD_CONTENT_COPY: &str = "";
+pub const MD_CONTENT_CUT: &str = "";
+pub const MD_CONTENT_PASTE: &str = "";
+pub const MD_CONTROL_CAMERA: &str = "";
+pub const MD_CONTROL_POINT: &str = "";
+pub const MD_CONTROL_POINT_DUPLICATE: &str = "";
+pub const MD_COPYRIGHT: &str = "";
 pub const MD_CREATE: &str = "";
 pub const MD_CREATE_NEW_FOLDER: &str = "";
+pub const MD_CREDIT_CARD: &str = "";
+pub const MD_CROP: &str = "";
+pub const MD_CROP_16_9: &str = "";
+pub const MD_CROP_3_2: &str = "";
+pub const MD_CROP_5_4: &str = "";
+pub const MD_CROP_7_5: &str = "";
+pub const MD_CROP_DIN: &str = "";
+pub const MD_CROP_FREE: &str = "";
+pub const MD_CROP_LANDSCAPE: &str = "";
+pub const MD_CROP_ORIGINAL: &str = ""
+pub const MD_CROP_PORTRAIT: &str = "";
+pub const MD_CROP_ROTATE: &str = "";
+pub const MD_CROP_SQUARE: &str = "";
 pub const MD_DELETE: &str = "";
 pub const MD_EDIT: &str = "";
 pub const MD_DELETE_FOREVER: &str = "";
@@ -233,379 +326,7 @@ pub const MD_SAVE: &str = "";
  *  WIP: this unicodes needs your update!
  */
 
-// last edited: dec= 57416 -> e0f5
-
-// .md-cached:after {
-//   content: '\e0f7';
-// }
-
-// .md-cake:after {
-//   content: '\e0f8';
-// }
-
-// .md-calendar_today:after {
-//   content: '\e0fa';
-// }
-
-// .md-calendar_view_day:after {
-//   content: '\e0fc';
-// }
-
-// .md-call:after {
-//   content: '\e0fe';
-// }
-
-// .md-call_end:after {
-//   content: '\e100';
-// }
-
-// .md-call_made:after {
-//   content: '\e102';
-// }
-
-// .md-call_merge:after {
-//   content: '\e103';
-// }
-
-// .md-call_missed:after {
-//   content: '\e104';
-// }
-
-// .md-call_missed_outgoing:after {
-//   content: '\e105';
-// }
-
-// .md-call_received:after {
-//   content: '\e106';
-// }
-
-// .md-call_split:after {
-//   content: '\e107';
-// }
-
-// .md-call_to_action:after {
-//   content: '\e108';
-// }
-
-// .md-camera:after {
-//   content: '\e10a';
-// }
-
-// .md-camera_alt:after {
-//   content: '\e10c';
-// }
-
-// .md-camera_enhance:after {
-//   content: '\e10e';
-// }
-
-// .md-camera_front:after {
-//   content: '\e110';
-// }
-
-// .md-camera_rear:after {
-//   content: '\e112';
-// }
-
-// .md-camera_roll:after {
-//   content: '\e114';
-// }
-
-// .md-cancel:after {
-//   content: '\e116';
-// }
-
-// .md-cancel_presentation:after {
-//   content: '\e118';
-// }
-
-// .md-cancel_schedule_send:after {
-//   content: '\e11a';
-// }
-
-// .md-card_giftcard:after {
-//   content: '\e11c';
-// }
-
-// .md-card_membership:after {
-//   content: '\e11e';
-// }
-
-// .md-card_travel:after {
-//   content: '\e120';
-// }
-
-// .md-casino:after {
-//   content: '\e122';
-// }
-
-// .md-cast:after {
-//   content: '\e124';
-// }
-
-// .md-cast_connected:after {
-//   content: '\e125';
-// }
-
-// .md-cast_for_education:after {
-//   content: '\e127';
-// }
-
-// .md-category:after {
-//   content: '\e128';
-// }
-
-// .md-cell_wifi:after {
-//   content: '\e12a';
-// }
-
-// .md-cell_wifi:before {
-//   content: '\e12b';
-// }
-
-// .md-center_focus_strong:after {
-//   content: '\e12c';
-// }
-
-// .md-center_focus_weak:after {
-//   content: '\e12e';
-// }
-
-// .md-change_history:after {
-//   content: '\e130';
-// }
-
-// .md-chat:after {
-//   content: '\e132';
-// }
-
-// .md-chat_bubble:after {
-//   content: '\e134';
-// }
-
-// .md-chat_bubble_outline:after {
-//   content: '\e136';
-// }
-
-// .md-check_box:after {
-//   content: '\e138';
-// }
-
-// .md-check_box_outline_blank:after {
-//   content: '\e13a';
-// }
-
-// .md-check_circle:after {
-//   content: '\e13b';
-// }
-
-// .md-check_circle_outline:after {
-//   content: '\e13d';
-// }
-
-// .md-chevron_left:after {
-//   content: '\e13e';
-// }
-
-// .md-chevron_right:after {
-//   content: '\e13f';
-// }
-
-// .md-child_care:after {
-//   content: '\e140';
-// }
-
-// .md-child_friendly:after {
-//   content: '\e142';
-// }
-
-// .md-chrome_reader_mode:after {
-//   content: '\e144';
-// }
-
-// .md-class:after {
-//   content: '\e146';
-// }
-
-// .md-closed_caption:after {
-//   content: '\e14b';
-// }
-
-// .md-cloud:after {
-//   content: '\e14d';
-// }
-
-// .md-cloud_circle:after {
-//   content: '\e14f';
-// }
-
-// .md-cloud_done:after {
-//   content: '\e151';
-// }
-
-// .md-cloud_download:after {
-//   content: '\e153';
-// }
-
-// .md-cloud_off:after {
-//   content: '\e155';
-// }
-
-// .md-cloud_queue:after {
-//   content: '\e157';
-// }
-
-// .md-cloud_upload:after {
-//   content: '\e159';
-// }
-
-// .md-code:after {
-//   content: '\e15b';
-// }
-
-// .md-collections:after {
-//   content: '\e15c';
-// }
-
-// .md-collections_bookmark:after {
-//   content: '\e15e';
-// }
-
-// .md-color_lens:after {
-//   content: '\e160';
-// }
-
-// .md-colorize:after {
-//   content: '\e162';
-// }
-
-// .md-comment:after {
-//   content: '\e164';
-// }
-
-// .md-commute:after {
-//   content: '\e166';
-// }
-
-// .md-compare:after {
-//   content: '\e167';
-// }
-
-// .md-compare_arrows:after {
-//   content: '\e169';
-// }
-
-// .md-compass_calibration:after {
-//   content: '\e16a';
-// }
-
-// .md-computer:after {
-//   content: '\e16c';
-// }
-
-// .md-confirmation_number:after {
-//   content: '\e16e';
-// }
-
-// .md-contact_mail:after {
-//   content: '\e170';
-// }
-
-// .md-contact_phone:after {
-//   content: '\e172';
-// }
-
-// .md-contact_support:after {
-//   content: '\e174';
-// }
-
-// .md-contactless:after {
-//   content: '\e176';
-// }
-
-// .md-contacts:after {
-//   content: '\e178';
-// }
-
-// .md-content_copy:after {
-//   content: '\e17a';
-// }
-
-// .md-content_cut:after {
-//   content: '\e17c';
-// }
-
-// .md-content_paste:after {
-//   content: '\e17e';
-// }
-
-// .md-control_camera:after {
-//   content: '\e180';
-// }
-
-// .md-control_point:after {
-//   content: '\e181';
-// }
-
-// .md-control_point_duplicate:after {
-//   content: '\e183';
-// }
-
-// .md-copyright:after {
-//   content: '\e185';
-// }
-
-// .md-credit_card:after {
-//   content: '\e18b';
-// }
-
-// .md-crop:after {
-//   content: '\e18d';
-// }
-
-// .md-crop_16_9:after {
-//   content: '\e18e';
-// }
-
-// .md-crop_3_2:after {
-//   content: '\e18f';
-// }
-
-// .md-crop_5_4:after {
-//   content: '\e190';
-// }
-
-// .md-crop_7_5:after {
-//   content: '\e191';
-// }
-
-// .md-crop_din:after {
-//   content: '\e192';
-// }
-
-// .md-crop_free:after {
-//   content: '\e193';
-// }
-
-// .md-crop_landscape:after {
-//   content: '\e194';
-// }
-
-// .md-crop_original:after {
-//   content: '\e195';
-// }
-
-// .md-crop_portrait:after {
-//   content: '\e196';
-// }
-
-// .md-crop_rotate:after {
-//   content: '\e197';
-// }
-
-// .md-crop_square:after {
-//   content: '\e198';
-// }
+// last edited: dec= 57752 -> e0198
 
 // .md-dashboard:after {
 //   content: '\e199';
