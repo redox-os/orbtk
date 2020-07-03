@@ -112,6 +112,90 @@ pub const MD_ATTACHMENT: &str = "";
 pub const MD_AUDIOTRACK: &str = "";
 pub const MD_AUTORENEW: &str = "";
 pub const MD_AV_TIMER: &str = "";
+pub const MD_BACKSPACE: &str = ""
+pub const MD_BACKUP: &str = ""
+pub const MD_BALLOT: &str = ""
+pub const MD_BAR_CHART: &str = ""
+pub const MD_BARCODE: &str = ""
+pub const MD_BATHTUB: &str = ""
+pub const MD_BATTERY_20_AFTER: &str = ""
+pub const MD_BATTERY_20_BEFORE: &str = ""
+pub const MD_BATTERY_30_AFTER: &str = ""
+pub const MD_BATTERY_30_BEFORE: &str = ""
+pub const MD_BATTERY_50_AFTER: &str = ""
+pub const MD_BATTERY_50_BEFORE: &str = ""
+pub const MD_BATTERY_60_AFTER: &str = ""
+pub const MD_BATTERY_60_BEFORE: &str = ""
+pub const MD_BATTERY_80_AFTER: &str = ""
+pub const MD_BATTERY_80_BEFORE: &str = ""
+pub const MD_BATTERY_90_AFTER: &str = ""
+pub const MD_BATTERY_90_BEFORE: &str = ""
+pub const MD_BATTERY_ALERT: &str = ""
+pub const MD_BATTERY_CHARGING_20_AFTER: &str = ""
+pub const MD_BATTERY_CHARGING_20_BEFORE: &str = ""
+pub const MD_BATTERY_CHARGING_30_AFTER: &str = ""
+pub const MD_BATTERY_CHARGING_30_BEFORE: &str = ""
+pub const MD_BATTERY_CHARGING_50_AFTER: &str = ""
+pub const MD_BATTERY_CHARGING_50_BEFORE: &str = ""
+pub const MD_BATTERY_CHARGING_60_AFTER: &str = ""
+pub const MD_BATTERY_CHARGING_60_BEFORE: &str = ""
+pub const MD_BATTERY_CHARGING_80_AFTER: &str = ""
+pub const MD_BATTERY_CHARGING_80_BEFORE: &str = ""
+pub const MD_BATTERY_CHARGING_90_AFTER: &str = ""
+pub const MD_BATTERY_CHARGING_90_BEFORE: &str = ""
+pub const MD_BATTERY_CHARGING_FULL: &str = ""
+pub const MD_BATTERY: &str = ""
+pub const MD_BATTERY_STD: &str = ""
+pub const MD_BATTERY_UNKNOWN: &str = ""
+pub const MD_BEACH_ACCESS: &str = ""
+pub const MD_BEENHERE: &str = ""
+pub const MD_BLOCK: &str = ""
+pub const MD_BLUETOOTH: &str = ""
+pub const MD_BLUETOOTH_AUDIO: &str = ""
+pub const MD_BLUETOOTH_CONNECTED: &str = ""
+pub const MD_BLUETOOTH_DISABLED: &str = ""
+pub const MD_BLUETOOTH_SEARCHING: &str = ""
+pub const MD_BLUR_CIRCULAR: &str = ""
+pub const MD_BLUR_LINEAR: &str = ""
+pub const MD_BLUR_OFF: &str =""
+pub const MD_BLUR_ON: &str = ""
+pub const MD_BOOK: &str = ""
+pub const MD_BOOKMARK: &str = ""
+pub const MD_BOOKMARK_BORDER: &str = ""
+pub const MD_BOOKMARKS: &str = ""
+pub const MD_BORDER_ALL: &str = ""
+pub const MD_BORDER_BOTTOM: &str = ""
+pub const MD_BORDER_CLEAR_AFTER: &str = ""
+pub const MD_BORDER_COLOR_AFTER: &str = ""
+pub const MD_BORDER_COLOR_BEFORE: &str = ""
+pub const MD_BORDER_HORIZONTAL: &str = ""
+pub const MD_BORDER_INNER: &str = ""
+pub const MD_BORDER_LEFT: &str = ""
+pub const MD_BORDER_OUTER: &str = ""
+pub const MD_BORDER_RIGHT: &str = ""
+pub const MD_BORDER_STYLE: &str = ""
+pub const MD_BORDER_STYLE: &str = ""
+pub const MD_BORDER_VERTICAL: &str = ""
+pub const MD_WATERMARK: &str = ""
+pub const MD_BRIGHTNESS_2: &str = ""
+pub const MD_BRIGHTNESS_2: &str = ""
+pub const MD_BRIGHTNESS_3: &str = ""
+pub const MD_BRIGHTNESS_4: &str = ""
+pub const MD_BRIGHTNESS_5: &str = ""
+pub const MD_BRIGHTNESS_6: &str = ""
+pub const MD_BRIGHTNESS_7: &str = ""
+pub const MD_BRIGHTNESS_AUTO: &str = ""
+pub const MD_BRIGHTNESS_HIGH: &str = ""
+pub const MD_BRIGHTNESS_LOW: &str = ""
+pub const MD_BRIGHTNESS_MIDIUM: &str = ""
+pub const MD_BROKEN_IMAGE: &str = ""
+pub const MD_BRUSH_AFTER: &str = ""
+pub const MD_BUBBLE_CHART: &str = ""
+pub const MD_BUG_REPORT: &str = ""
+pub const MD_BUILD: &str = ""
+pub const MD_BURST_MODE: &str = ""
+pub const MD_BUSINESS: &str = ""
+pub const MD_BUSINESS_CENTER: &str = ""
 pub const MD_CHECK: &str = "";
 pub const MD_CLEAR: &str = "";
 pub const MD_CLEAR_ALL: &str = "";
@@ -149,344 +233,7 @@ pub const MD_SAVE: &str = "";
  *  WIP: this unicodes needs your update!
  */
 
-// last edited: dec= 57416 -> e085
-
-
-// .md-backspace:after {
-//   content: '\e086';
-// }
-
-// .md-backup:after {
-//   content: '\e088';
-// }
-
-// .md-ballot:after {
-//   content: '\e08a';
-// }
-
-// .md-bar_chart:after {
-//   content: '\e08c';
-// }
-
-// .md-barcode:after {
-//   content: '\e08d';
-// }
-
-// .md-bathtub:after {
-//   content: '\e08e';
-// }
-
-// .md-battery_20:after {
-//   content: '\e090';
-// }
-
-// .md-battery_20:before {
-//   content: '\e091';
-// }
-
-// .md-battery_30:after {
-//   content: '\e092';
-// }
-
-// .md-battery_30:before {
-//   content: '\e093';
-// }
-
-// .md-battery_50:after {
-//   content: '\e094';
-// }
-
-// .md-battery_50:before {
-//   content: '\e095';
-// }
-
-// .md-battery_60:after {
-//   content: '\e096';
-// }
-
-// .md-battery_60:before {
-//   content: '\e097';
-// }
-
-// .md-battery_80:after {
-//   content: '\e098';
-// }
-
-// .md-battery_80:before {
-//   content: '\e099';
-// }
-
-// .md-battery_90:after {
-//   content: '\e09a';
-// }
-
-// .md-battery_90:before {
-//   content: '\e09b';
-// }
-
-// .md-battery_alert:after {
-//   content: '\e09c';
-// }
-
-// .md-battery_charging_20:after {
-//   content: '\e09d';
-// }
-
-// .md-battery_charging_20:before {
-//   content: '\e09e';
-// }
-
-// .md-battery_charging_30:after {
-//   content: '\e09f';
-// }
-
-// .md-battery_charging_30:before {
-//   content: '\e0a0';
-// }
-
-// .md-battery_charging_50:after {
-//   content: '\e0a1';
-// }
-
-// .md-battery_charging_50:before {
-//   content: '\e0a2';
-// }
-
-// .md-battery_charging_60:after {
-//   content: '\e0a3';
-// }
-
-// .md-battery_charging_60:before {
-//   content: '\e0a4';
-// }
-
-// .md-battery_charging_80:after {
-//   content: '\e0a5';
-// }
-
-// .md-battery_charging_80:before {
-//   content: '\e0a6';
-// }
-
-// .md-battery_charging_90:after {
-//   content: '\e0a7';
-// }
-
-// .md-battery_charging_90:before {
-//   content: '\e0a8';
-// }
-
-// .md-battery_charging_full:after {
-//   content: '\e0a9';
-// }
-
-// .md-battery_full:after {
-//   content: '\e0aa';
-// }
-
-// .md-battery_std:after {
-//   content: '\e0ab';
-// }
-
-// .md-battery_unknown:after {
-//   content: '\e0ac';
-// }
-
-// .md-beach_access:after {
-//   content: '\e0ad';
-// }
-
-// .md-beenhere:after {
-//   content: '\e0af';
-// }
-
-// .md-block:after {
-//   content: '\e0b1';
-// }
-
-// .md-bluetooth:after {
-//   content: '\e0b2';
-// }
-
-// .md-bluetooth_audio:after {
-//   content: '\e0b3';
-// }
-
-// .md-bluetooth_connected:after {
-//   content: '\e0b4';
-// }
-
-// .md-bluetooth_disabled:after {
-//   content: '\e0b5';
-// }
-
-// .md-bluetooth_searching:after {
-//   content: '\e0b6';
-// }
-
-// .md-blur_circular:after {
-//   content: '\e0b7';
-// }
-
-// .md-blur_linear:after {
-//   content: '\e0b8';
-// }
-
-// .md-blur_off:after {
-//   content: '\e0b9';
-// }
-
-// .md-blur_on:after {
-//   content: '\e0ba';
-// }
-
-// .md-book:after {
-//   content: '\e0bb';
-// }
-
-// .md-bookmark:after {
-//   content: '\e0bd';
-// }
-
-// .md-bookmark_border:after {
-//   content: '\e0bf';
-// }
-
-// .md-bookmarks:after {
-//   content: '\e0c0';
-// }
-
-// .md-border_all:after {
-//   content: '\e0c2';
-// }
-
-// .md-border_bottom:after {
-//   content: '\e0c3';
-// }
-
-// .md-border_clear:after {
-//   content: '\e0c4';
-// }
-
-// .md-border_color:after {
-//   content: '\e0c5';
-// }
-
-// .md-border_color:before {
-//   content: '\e0c6';
-// }
-
-// .md-border_horizontal:after {
-//   content: '\e0c7';
-// }
-
-// .md-border_inner:after {
-//   content: '\e0c8';
-// }
-
-// .md-border_left:after {
-//   content: '\e0c9';
-// }
-
-// .md-border_outer:after {
-//   content: '\e0ca';
-// }
-
-// .md-border_right:after {
-//   content: '\e0cb';
-// }
-
-// .md-border_style:after {
-//   content: '\e0cc';
-// }
-
-// .md-border_top:after {
-//   content: '\e0cd';
-// }
-
-// .md-border_vertical:after {
-//   content: '\e0ce';
-// }
-
-// .md-branding_watermark:after {
-//   content: '\e0cf';
-// }
-
-// .md-brightness_1:after {
-//   content: '\e0d1';
-// }
-
-// .md-brightness_2:after {
-//   content: '\e0d3';
-// }
-
-// .md-brightness_3:after {
-//   content: '\e0d5';
-// }
-
-// .md-brightness_4:after {
-//   content: '\e0d7';
-// }
-
-// .md-brightness_5:after {
-//   content: '\e0d9';
-// }
-
-// .md-brightness_6:after {
-//   content: '\e0db';
-// }
-
-// .md-brightness_7:after {
-//   content: '\e0dd';
-// }
-
-// .md-brightness_auto:after {
-//   content: '\e0df';
-// }
-
-// .md-brightness_high:after {
-//   content: '\e0e1';
-// }
-
-// .md-brightness_low:after {
-//   content: '\e0e3';
-// }
-
-// .md-brightness_medium:after {
-//   content: '\e0e5';
-// }
-
-// .md-broken_image:after {
-//   content: '\e0e7';
-// }
-
-// .md-brush:after {
-//   content: '\e0e9';
-// }
-
-// .md-bubble_chart:after {
-//   content: '\e0eb';
-// }
-
-// .md-bug_report:after {
-//   content: '\e0ed';
-// }
-
-// .md-build:after {
-//   content: '\e0ef';
-// }
-
-// .md-burst_mode:after {
-//   content: '\e0f1';
-// }
-
-// .md-business:after {
-//   content: '\e0f3';
-// }
-
-// .md-business_center:after {
-//   content: '\e0f5';
-// }
+// last edited: dec= 57416 -> e0f5
 
 // .md-cached:after {
 //   content: '\e0f7';
