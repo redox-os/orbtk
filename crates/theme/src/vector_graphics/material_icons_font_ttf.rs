@@ -348,6 +348,46 @@ pub const MD_DRIVE_ETA: &str = "";
 pub const MD_DUO: &str = "";
 pub const MD_DVR: &str = "";
 pub const MD_DYNAMIC_FEED: &str = "";
+pub const MD_ECO: &str = "";
+pub const MD_EDIT_ATTRIBUTES: &str = "";
+pub const MD_EDIT_LOCATION: &str = "";
+pub const MD_EJECT: &str = "";
+pub const MD_EMAIL: &str = "";
+pub const MD_EMOJI_EMOTIONS: &str = "";
+pub const MD_EMOJI_EVENTS: &str = "";
+pub const MD_EMOJI_FLAGS: &str = "";
+pub const MD_EMOJI_FOOD_BEVERAGE: &str = "";
+pub const MD_EMOJI_NATURE: &str = "";
+pub const MD_EMOJI_OBJECTS: &str = "";
+pub const MD_EMOJI_PEOPLE: &str = "";
+pub const MD_EMOJI_SYMBOLS: &str = "";
+pub const MD_EMOJI_TRANSPORTATION: &str = "";
+pub const MD_ENHANCED_ENCRYPTION: &str = "";
+pub const MD_EQUALIZER: &str = "";
+pub const MD_EQUALS: &str = "";
+pub const MD_ERROR: &str = "";
+pub const MD_ERROR_OUTLINE: &str = "";
+pub const MD_EURO: &str = "";
+pub const MD_EURO_SYMBOL: &str = "";
+pub const MD_EV_STATION: &str = "";
+pub const MD_EVENT: &str = "";
+pub const MD_EVENT_AVAILABLE: &str = "";
+pub const MD_EVENT_BUSY: &str = "";
+pub const MD_EVENT_NOTE: &str = "";
+pub const MD_EVENT_SEAT: &str = "";
+pub const MD_EXIT_TO_APP: &str = "";
+pub const MD_EXPAND_LESS: &str = "";
+pub const MD_EXPAND_MORE: &str = "";
+pub const MD_EXLICIT: &str = "";
+pub const MD_EXPLORE: &str = "";
+pub const MD_EXPLORE_OFF: &str = "";
+pub const MD_EXPOSURE: &str = "";
+pub const MD_EXPOSURE_NEG_1: &str = "";
+pub const MD_EXPOSURE_NEG_2: &str = "";
+pub const MD_EXPOSURE_PLUS_1: &str = "";
+pub const MD_EXPOSURE_PLUS_2: &str = "";
+pub const MD_EXPOSURE_ZERO: &str = "";
+pub const MD_EXTENSION: &str = "";
 pub const MD_DELETE_FOREVER: &str = "";
 pub const MD_DELETE_OUTLINE: &str = "";
 pub const MD_DELETE_SWEEP: &str = "";
@@ -379,369 +419,7 @@ pub const MD_SAVE: &str = "";
 
 // last edited: dec= 57752 -> e0198
 
-// .md-dashboard:after {
-//   content: '\e199';
-// }
 
-// .md-data_usage:after {
-//   content: '\e19b';
-// }
-
-// .md-date_range:after {
-//   content: '\e19c';
-// }
-
-// .md-deck:after {
-//   content: '\e19e';
-// }
-
-// .md-dehaze:after {
-//   content: '\e1a0';
-// }
-
-// .md-departure_board:after {
-//   content: '\e1a8';
-// }
-
-// .md-description:after {
-//   content: '\e1aa';
-// }
-
-// .md-desktop_access_disabled:after {
-//   content: '\e1ac';
-// }
-
-// .md-desktop_mac:after {
-//   content: '\e1ae';
-// }
-
-// .md-desktop_windows:after {
-//   content: '\e1b0';
-// }
-
-// .md-details:after {
-//   content: '\e1b2';
-// }
-
-// .md-developer_board:after {
-//   content: '\e1b4';
-// }
-
-// .md-developer_mode:after {
-//   content: '\e1b6';
-// }
-
-// .md-device_hub:after {
-//   content: '\e1b7';
-// }
-
-// .md-device_unknown:after {
-//   content: '\e1b8';
-// }
-
-// .md-devices:after {
-//   content: '\e1ba';
-// }
-
-// .md-devices_other:after {
-//   content: '\e1bc';
-// }
-
-// .md-dialer_sip:after {
-//   content: '\e1be';
-// }
-
-// .md-dialpad:after {
-//   content: '\e1c0';
-// }
-
-// .md-directions:after {
-//   content: '\e1c1';
-// }
-
-// .md-directions_bike:after {
-//   content: '\e1c3';
-// }
-
-// .md-directions_boat:after {
-//   content: '\e1c4';
-// }
-
-// .md-directions_bus:after {
-//   content: '\e1c6';
-// }
-
-// .md-directions_car:after {
-//   content: '\e1c8';
-// }
-
-// .md-directions_railway:after {
-//   content: '\e1ca';
-// }
-
-// .md-directions_run:after {
-//   content: '\e1cc';
-// }
-
-// .md-directions_subway:after {
-//   content: '\e1cd';
-// }
-
-// .md-directions_transit:after {
-//   content: '\e1cf';
-// }
-
-// .md-directions_walk:after {
-//   content: '\e1d1';
-// }
-
-// .md-disc_full:after {
-//   content: '\e1d2';
-// }
-
-// .md-divide:after {
-//   content: '\e1d4';
-// }
-
-// .md-dns:after {
-//   content: '\e1d6';
-// }
-
-// .md-do_not_disturb:after {
-//   content: '\e1d8';
-// }
-
-// .md-do_not_disturb_alt:after {
-//   content: '\e1da';
-// }
-
-// .md-do_not_disturb_off:after {
-//   content: '\e1dc';
-// }
-
-// .md-dock:after {
-//   content: '\e1de';
-// }
-
-// .md-domain:after {
-//   content: '\e1e0';
-// }
-
-// .md-domain_disabled:after {
-//   content: '\e1e2';
-// }
-
-// .md-done:after {
-//   content: '\e1e4';
-// }
-
-// .md-done_all:after {
-//   content: '\e1e5';
-// }
-
-// .md-done_outline:after {
-//   content: '\e1e6';
-// }
-
-// .md-donut_large:after {
-//   content: '\e1e7';
-// }
-
-// .md-donut_small:after {
-//   content: '\e1e8';
-// }
-
-// .md-double_arrow:after {
-//   content: '\e1ea';
-// }
-
-// .md-drafts:after {
-//   content: '\e1eb';
-// }
-
-// .md-drag_handle:after {
-//   content: '\e1ed';
-// }
-
-// .md-drag_indicator:after {
-//   content: '\e1ee';
-// }
-
-// .md-drive_eta:after {
-//   content: '\e1ef';
-// }
-
-// .md-duo:after {
-//   content: '\e1f1';
-// }
-
-// .md-dvr:after {
-//   content: '\e1f2';
-// }
-
-// .md-dynamic_feed:after {
-//   content: '\e1f4';
-// }
-
-// .md-eco:after {
-//   content: '\e1f6';
-// }
-
-// .md-edit_attributes:after {
-//   content: '\e1fa';
-// }
-
-// .md-edit_location:after {
-//   content: '\e1fc';
-// }
-
-// .md-eject:after {
-//   content: '\e1fe';
-// }
-
-// .md-email:after {
-//   content: '\e200';
-// }
-
-// .md-emoji_emotions:after {
-//   content: '\e202';
-// }
-
-// .md-emoji_events:after {
-//   content: '\e204';
-// }
-
-// .md-emoji_flags:after {
-//   content: '\e206';
-// }
-
-// .md-emoji_food_beverage:after {
-//   content: '\e208';
-// }
-
-// .md-emoji_nature:after {
-//   content: '\e20a';
-// }
-
-// .md-emoji_objects:after {
-//   content: '\e20c';
-// }
-
-// .md-emoji_people:after {
-//   content: '\e20e';
-// }
-
-// .md-emoji_symbols:after {
-//   content: '\e20f';
-// }
-
-// .md-emoji_transportation:after {
-//   content: '\e210';
-// }
-
-// .md-enhanced_encryption:after {
-//   content: '\e211';
-// }
-
-// .md-equalizer:after {
-//   content: '\e213';
-// }
-
-// .md-equals:after {
-//   content: '\e214';
-// }
-
-// .md-error:after {
-//   content: '\e215';
-// }
-
-// .md-error_outline:after {
-//   content: '\e217';
-// }
-
-// .md-euro:after {
-//   content: '\e218';
-// }
-
-// .md-euro_symbol:after {
-//   content: '\e219';
-// }
-
-// .md-ev_station:after {
-//   content: '\e21a';
-// }
-
-// .md-event:after {
-//   content: '\e21c';
-// }
-
-// .md-event_available:after {
-//   content: '\e21e';
-// }
-
-// .md-event_busy:after {
-//   content: '\e220';
-// }
-
-// .md-event_note:after {
-//   content: '\e222';
-// }
-
-// .md-event_seat:after {
-//   content: '\e224';
-// }
-
-// .md-exit_to_app:after {
-//   content: '\e226';
-// }
-
-// .md-expand_less:after {
-//   content: '\e227';
-// }
-
-// .md-expand_more:after {
-//   content: '\e228';
-// }
-
-// .md-explicit:after {
-//   content: '\e229';
-// }
-
-// .md-explore:after {
-//   content: '\e22b';
-// }
-
-// .md-explore_off:after {
-//   content: '\e22d';
-// }
-
-// .md-exposure:after {
-//   content: '\e22f';
-// }
-
-// .md-exposure_neg_1:after {
-//   content: '\e231';
-// }
-
-// .md-exposure_neg_2:after {
-//   content: '\e232';
-// }
-
-// .md-exposure_plus_1:after {
-//   content: '\e233';
-// }
-
-// .md-exposure_plus_2:after {
-//   content: '\e234';
-// }
-
-// .md-exposure_zero:after {
-//   content: '\e235';
-// }
-
-// .md-extension:after {
-//   content: '\e236';
-// }
 
 // .md-face:after {
 //   content: '\e238';
