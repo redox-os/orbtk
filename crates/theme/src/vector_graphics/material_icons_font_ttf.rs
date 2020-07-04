@@ -5,6 +5,30 @@
 /// https://github.com/material-icons/material-icons
 /// This repository includes only icons as icon font
 
+/*
+ * Howto evaluate the glyph codes
+ */
+// emacs: to insert a glyph, use insert-char (bind:: C-x 8 Ret)
+// eg: 'Edit'-Glyph ""
+// - dec code point => (insert-char 57848 1)
+// - hex code_point => C-x 8 Ret #xe1f8 Ret
+// - oct code_point => C-x 8 Ret #o377 Ret
+//
+// michal w. sieron <michalwsieron@gmail.com> wrote a python script
+// that takes a fonts baseline.css and generates the rust accessible uni-codes.
+// source: https://gist.github.com/michalsieron/913f025b19ac8e213c423c35292d9aad
+// following constants are generated with this code.
+
+/*
+ * CSS Definiton:
+ */
+// CSS-url:     https://github.com/material-icons/material-icons-font/blob/master/css/baseline.css
+// font-family: "Material Icons";
+// font-weight: normal;
+// font-style:  normal;
+// font-format: ttf
+// font-src:    MaterialIcons.ttf
+
 pub const MD_360: &str = "\u{e000}";
 pub const MD_3D_ROTATION: &str = "\u{e001}";
 pub const MD_4K: &str = "\u{e002}";
