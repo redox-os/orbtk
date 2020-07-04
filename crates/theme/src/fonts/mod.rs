@@ -18,7 +18,7 @@
 // (and WOFF2, a more highly compressed WOFF, for the newest browsers that support it.)
 
 // Reference to the material icon fonts.
-pub const MATERIAL_ICONS_FONT_TTF: &[u8] = include_bytes!("MaterialIcons.ttf");
+pub const MATERIAL_ICONS_FONT: &[u8] = include_bytes!("MaterialIcons.ttf");
 
 pub const MATERIAL_ICONS_BASELINE_FONT: &[u8] = include_bytes!("MaterialIcons-Baseline.woff2");
 pub const MATERIAL_ICONS_OUTLINED_FONT: &[u8] = include_bytes!("MaterialIcons-Outlined.woff2");
