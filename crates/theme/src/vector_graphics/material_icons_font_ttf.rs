@@ -14,12 +14,10 @@
 // - hex code_point => C-x 8 Ret #xe1f8 Ret
 // - oct code_point => C-x 8 Ret #o377 Ret
 //
-// Hex string to dezimal
-// (string-to-number "ex1f8" 16) => 57848
-// Hex string to dezimal
-// (string-to-number "160770" 8) => 57848
-// Dezimal string to hex
-// (format "%X" 57848) ;;        => "e1f8"
+// michal w. sieron <michalwsieron@gmail.com> wrote a python script
+// that takes a fonts baseline.css and generates the rust accessible uni-codes.
+// source: https://gist.github.com/michalsieron/913f025b19ac8e213c423c35292d9aad
+// following constants are generated with this code.
 
 /*
  * CSS Definiton:
@@ -31,5370 +29,1376 @@
 // font-format: ttf
 // font-src:    MaterialIcons.ttf
 
-//pub const MD_: &str = "";
-
-// icons (hex-code accending)
-pub const MD_360: &str = "";
-pub const MD_3D: &str = "";
-pub const MD_4K: &str = "";
-pub const MD_AC_UNIT: &str = "";
-pub const MD_ACCESS_ALARM: &str = "";
-pub const MD_ACCESS_ALARMS: &str = "";
-pub const MD_ACCESSIBILITY: &str = "";
-pub const MD_ACCESSIBILITY_NEW: &str = "";
-pub const MD_ACCESSIBLE: &str = "";
-pub const MD_ACCESSIBLE_FORWARD: &str = "";
-pub const MD_ACCOUNT_BALANCE: &str = "";
-pub const MD_ACCOUNT_BALANCE_WALLET: &str = "";
-pub const MD_ACCOUNT_BOX: &str = "";
-pub const MD_ACCOUNT_CIRCLE: &str = "";
-pub const MD_ACCOUNT_TREE: &str = "";
-pub const MD_ADB: &str = "";
-pub const MD_ADD: &str = "";
-pub const MD_ADD_A_PHOTO: &str = "";
-pub const MD_ADD_ALARM: &str = "";
-pub const MD_ADD_ALERT: &str = "";
-pub const MD_ADD_BOX: &str = "";
-pub const MD_ADD_CIRCLE: &str = "";
-pub const MD_ADD_CIRCLE_OUTLINE: &str = "";
-pub const MD_ADD_PHOTO_ALTERNATE: &str = "";
-pub const MD_ADD_SHPPING_CART: &str = "";
-pub const MD_ADD_TO_HOME_SCREEN: &str = "";
-pub const MD_ADD_TO_PHOTOS: &str = "";
-pub const MD_ADD_TO_QUEUE: &str = "";
-pub const MD_AIRLINE_SEAT_FLAT_ANGLED: &str = "";
-pub const MD_AIRLINE_SEAT_INDIVIDUAL_SUITE: &str = "";
-pub const MD_AIRLANEMODE_INACTIVE: &str = "";
-pub const MD_AIRLAY: &str = "";
-pub const MD_AIRPORT_SHUTTLE: &str = "";
-pub const MD_ALARM: &str = "";
-pub const MD_ALARM_ADD: &str = "";
-pub const MD_ALARM_OFF: &str = "";
-pub const MD_ALARM_ON: &str = "";
-pub const MD_ALBUM: &str = "";
-pub const MD_ALL_INBOX: &str = "";
-pub const MD_ALL_INCLUSIVE: &str = "";
-pub const MD_ALL_OUT: &str = "";
-pub const MD_ALTERNATE_EMAIL: &str = "";
-pub const MD_AM_STORIES: &str = "";
-pub const MD_ANDROID: &str = "";
-pub const MD_ANNOUNCEMENT: &str = "";
-pub const MD_APARTMEMT: &str = "";
-pub const MD_APPS: &str = "";
-pub const MD_ARCHIVE: &str = "";
-pub const MD_ARROW_BACK: &str = "";
-pub const MD_ARROW_BACK_IOS: &str = "";
-pub const MD_ARROW_DOWNWARD: &str = "";
-pub const MD_ARROW_DROP_DOWN: &str = "";
-pub const MD_ARROW_DROP_DOWN_CIRCLE: &str = "";
-pub const MD_ARROW_DROP_UP: &str = "";
-pub const MD_ARROW_FORWARD: &str = "";
-pub const MD_ARROW_FORWARD_IOS: &str = "";
-pub const MD_ARROW_LEFT: &str = "";
-pub const MD_ARROW_RIGHT: &str = "";
-pub const MD_ARROW_RIGHT_ALT: &str = "";
-pub const MD_ARROW_UPWARD: &str = "";
-pub const MD_ART_ACK: &str = "";
-pub const MD_ASPECT_RATIO: &str = "";
-pub const MD_ASSESSMENT: &str = "";
-pub const MD_ASSIGNMENT: &str = "";
-pub const MD_ASSIGNMENT_IND: &str = "";
-pub const MD_ASSIGNMENT_LATE: &str = "";
-pub const MD_ASSIGNMENT_RETURN: &str = "";
-pub const MD_ASSIGNMENT_RETURNED: &str = "";
-pub const MD_ASSIGNMENT_TURNED_IN: &str = "";
-pub const MD_ASSISTANT: &str = "";
-pub const MD_ASSISTANT_PHOTO: &str = "";
-pub const MD_ATM: &str = "";
-pub const MD_ATTACH_FILE: &str = "";
-pub const MD_ATTACH_MONEY: &str = "";
-pub const MD_ATTACHMENT: &str = "";
-pub const MD_AUDIOTRACK: &str = "";
-pub const MD_AUTORENEW: &str = "";
-pub const MD_AV_TIMER: &str = "";
-pub const MD_BACKSPACE: &str = "";
-pub const MD_BACKUP: &str = "";
-pub const MD_BALLOT: &str = "";
-pub const MD_BAR_CHART: &str = "";
-pub const MD_BARCODE: &str = "";
-pub const MD_BATHTUB: &str = "";
-pub const MD_BATTERY_20_AFTER: &str = "";
-pub const MD_BATTERY_20_BEFORE: &str = "";
-pub const MD_BATTERY_30_AFTER: &str = "";
-pub const MD_BATTERY_30_BEFORE: &str = "";
-pub const MD_BATTERY_50_AFTER: &str = "";
-pub const MD_BATTERY_50_BEFORE: &str = "";
-pub const MD_BATTERY_60_AFTER: &str = "";
-pub const MD_BATTERY_60_BEFORE: &str = "";
-pub const MD_BATTERY_80_AFTER: &str = "";
-pub const MD_BATTERY_80_BEFORE: &str = "";
-pub const MD_BATTERY_90_AFTER: &str = "";
-pub const MD_BATTERY_90_BEFORE: &str = "";
-pub const MD_BATTERY_ALERT: &str = "";
-pub const MD_BATTERY_CHARGING_20_AFTER: &str = "";
-pub const MD_BATTERY_CHARGING_20_BEFORE: &str = "";
-pub const MD_BATTERY_CHARGING_30_AFTER: &str = "";
-pub const MD_BATTERY_CHARGING_30_BEFORE: &str = "";
-pub const MD_BATTERY_CHARGING_50_AFTER: &str = "";
-pub const MD_BATTERY_CHARGING_50_BEFORE: &str = "";
-pub const MD_BATTERY_CHARGING_60_AFTER: &str = "";
-pub const MD_BATTERY_CHARGING_60_BEFORE: &str = "";
-pub const MD_BATTERY_CHARGING_80_AFTER: &str = "";
-pub const MD_BATTERY_CHARGING_80_BEFORE: &str = "";
-pub const MD_BATTERY_CHARGING_90_AFTER: &str = "";
-pub const MD_BATTERY_CHARGING_90_BEFORE: &str = "";
-pub const MD_BATTERY_CHARGING_FULL: &str = "";
-pub const MD_BATTERY: &str = "";
-pub const MD_BATTERY_STD: &str = "";
-pub const MD_BATTERY_UNKNOWN: &str = "";
-pub const MD_BEACH_ACCESS: &str = "";
-pub const MD_BEENHERE: &str = "";
-pub const MD_BLOCK: &str = "";
-pub const MD_BLUETOOTH: &str = "";
-pub const MD_BLUETOOTH_AUDIO: &str = "";
-pub const MD_BLUETOOTH_CONNECTED: &str = "";
-pub const MD_BLUETOOTH_DISABLED: &str = "";
-pub const MD_BLUETOOTH_SEARCHING: &str = "";
-pub const MD_BLUR_CIRCULAR: &str = "";
-pub const MD_BLUR_LINEAR: &str = "";
-pub const MD_BLUR_OFF: &str ="";
-pub const MD_BLUR_ON: &str = "";
-pub const MD_BOOK: &str = "";
-pub const MD_BOOKMARK: &str = "";
-pub const MD_BOOKMARK_BORDER: &str = "";
-pub const MD_BOOKMARKS: &str = "";
-pub const MD_BORDER_ALL: &str = "";
-pub const MD_BORDER_BOTTOM: &str = "";
-pub const MD_BORDER_CLEAR_AFTER: &str = "";
-pub const MD_BORDER_COLOR_AFTER: &str = "";
-pub const MD_BORDER_COLOR_BEFORE: &str = "";
-pub const MD_BORDER_HORIZONTAL: &str = "";
-pub const MD_BORDER_INNER: &str = "";
-pub const MD_BORDER_LEFT: &str = "";
-pub const MD_BORDER_OUTER: &str = "";
-pub const MD_BORDER_RIGHT: &str = "";
-pub const MD_BORDER_STYLE: &str = "";
-pub const MD_BORDER_STYLE_ALT: &str = "";
-pub const MD_BORDER_VERTICAL: &str = "";
-pub const MD_WATERMARK: &str = "";
-pub const MD_BRIGHTNESS_2: &str = "";
-pub const MD_BRIGHTNESS_3: &str = "";
-pub const MD_BRIGHTNESS_4: &str = "";
-pub const MD_BRIGHTNESS_5: &str = "";
-pub const MD_BRIGHTNESS_6: &str = "";
-pub const MD_BRIGHTNESS_7: &str = "";
-pub const MD_BRIGHTNESS_AUTO: &str = "";
-pub const MD_BRIGHTNESS_HIGH: &str = "";
-pub const MD_BRIGHTNESS_LOW: &str = "";
-pub const MD_BRIGHTNESS_MIDIUM: &str = "";
-pub const MD_BROKEN_IMAGE: &str = "";
-pub const MD_BRUSH_AFTER: &str = "";
-pub const MD_BUBBLE_CHART: &str = "";
-pub const MD_BUG_REPORT: &str = "";
-pub const MD_BUILD: &str = "";
-pub const MD_BURST_MODE: &str = "";
-pub const MD_BUSINESS: &str = "";
-pub const MD_BUSINESS_CENTER: &str = "";
-pub const MD_CACHED: &str = "";
-pub const MD_CAKE: &str = "";
-pub const MD_CALENDAR_ODAY: &str = "";
-pub const MD_CALENDAR_VIEW_DAY: &str = "";
-pub const MD_CALL: &str = "";
-pub const MD_CALL_END: &str = "";
-pub const MD_CALL_MADE: &str = "";
-pub const MD_CALL_MERGE: &str = "";
-pub const MD_CALL_MISSED: &str = "";
-pub const MD_CALL_MISSED_OUTGOING: &str = "";
-pub const MD_CALL_RECEIVED: &str = "";
-pub const MD_CALL_SPLIT: &str = "";
-pub const MD_CALL_TO_ACTION: &str = "";
-pub const MD_CAMERA: &str = "";
-pub const MD_CAMERA_ALT: &str = "";
-pub const MD_CAMERA_ENHANCE: &str = "";
-pub const MD_CAMERA_FRONT: &str = "";
-pub const MD_CAMERA_REAR: &str = "";
-pub const MD_CAMERA_ROLL: &str = "";
-pub const MD_CANCEL: &str = "";
-pub const MD_CANCEL_PRESENTATION: &str = "";
-pub const MD_CANCEL_SCHEDULE_SEND: &str = "";
-pub const MD_CARD_GIFTCARD: &str = "";
-pub const MD_CARD_MEMBERSHIP: &str = "";
-pub const MD_CARD_TRAVEL: &str = "";
-pub const MD_CASOMP: &str = "";
-pub const MD_CAST: &str = "";
-pub const MD_CAST_CONNECTED: &str = "";
-pub const MD_CAST_FOR_EDUCATION: &str = "";
-pub const MD_CATEGORY: &str = "";
-pub const MD_CELL_WIFI_AFTER: &str = "";
-pub const MD_CELL_WIFI_BEFORE: &str = "";
-pub const MD_CENTER_FCUS_STRONG: &str = "";
-pub const MD_CENTER_FOCUS_WEAK: &str = "";
-pub const MD_CHANGE_HISTORY: &str = "";
-pub const MD_CHAT: &str = "";
-pub const MD_CHAT_BUBBLE: &str = "";
-pub const MD_CHAT_BUBBLE_OUTLINE: &str = "";
-pub const MD_CHECK: &str = "";
-pub const MD_CHECK_BOX: &str = "";
-pub const MD_CHECK_BOX_OUTLINE_BLANK: &str = "";
-pub const MD_CHECK_CIRCLE: &str = "";
-pub const MD_CHECK_CIRCLE_OUTLINE: &str = "";
-pub const MD_CHEVRON_LEFT: &str = "";
-pub const MD_CHEVRON_RIGHT: &str = "";
-pub const MD_CHILD_CARE: &str = "";
-pub const MD_CHILD_FRIENDLY: &str = "";
-pub const MD_CHROME_READER_MODE: &str = "";
-pub const MD_CLASS: &str = "";
-pub const MD_CLEAR: &str = "";
-pub const MD_CLEAR_ALL: &str = "";
-pub const MD_CLOSE: &str = "";
-pub const MD_CLOSED_CAPTION: &str = "";
-pub const MD_CLOUD: &str = "";
-pub const MD_CLOUD_CIRCLE: &str = "";
-pub const MD_CLOUD_DONE: &str = "";
-pub const MD_CLOUD_DOWNLOAD: &str = "";
-pub const MD_CLOUD_OFF: &str = "";
-pub const MD_CLOUD_QUEUE: &str = "";
-pub const MD_CLOUD_UPLOAD: &str = "";
-pub const MD_CODE: &str = "";
-pub const MD_COLLECTIONS: &str = "";
-pub const MD_COLLECTIONS_BOOKMARK: &str = "";
-pub const MD_COLOR_LENS: &str = "";
-pub const MD_COLORIZE: &str = "";
-pub const MD_COMMENT: &str = "";
-pub const MD_COMMUTE: &str = "";
-pub const MD_COMPARE: &str = "";
-pub const MD_COMPARE_ARROWS: &str = "";
-pub const MD_COMPASS_CALIBRATION: &str = "";
-pub const MD_COMPUTER: &str = "";
-pub const MD_CONFIRMATION: &str = "";
-pub const MD_CONTACT_MAIL: &str = "";
-pub const MD_CONTACT_PHONE: &str = "";
-pub const MD_CONTACT_SUPPORT: &str = "";
-pub const MD_CONTACTLESS: &str = "";
-pub const MD_CONTACTS: &str = "";
-pub const MD_CONTENT_COPY: &str = "";
-pub const MD_CONTENT_CUT: &str = "";
-pub const MD_CONTENT_PASTE: &str = "";
-pub const MD_CONTROL_CAMERA: &str = "";
-pub const MD_CONTROL_POINT: &str = "";
-pub const MD_CONTROL_POINT_DUPLICATE: &str = "";
-pub const MD_COPYRIGHT: &str = "";
-pub const MD_CREATE: &str = "";
-pub const MD_CREATE_NEW_FOLDER: &str = "";
-pub const MD_CREDIT_CARD: &str = "";
-pub const MD_CROP: &str = "";
-pub const MD_CROP_16_9: &str = "";
-pub const MD_CROP_3_2: &str = "";
-pub const MD_CROP_5_4: &str = "";
-pub const MD_CROP_7_5: &str = "";
-pub const MD_CROP_DIN: &str = "";
-pub const MD_CROP_FREE: &str = "";
-pub const MD_CROP_LANDSCAPE: &str = "";
-pub const MD_CROP_ORIGINAL: &str = "";
-pub const MD_CROP_PORTRAIT: &str = "";
-pub const MD_CROP_ROTATE: &str = "";
-pub const MD_CROP_SQUARE: &str = "";
-pub const MD_DELETE: &str = "";
-pub const MD_EDIT: &str = "";
-pub const MD_DASHBOARD: &str = "";
-pub const MD_DATA_USAGE: &str = "";
-pub const MD_DATE_RANGE: &str = "";
-pub const MD_DECK: &str = "";
-pub const MD_DEHAZE: &str = "";
-pub const MD_DEPARTURE_BOARD: &str = "";
-pub const MD_DESCRIPTION: &str = "";
-pub const MD_DESKTOP_ACCESS_DISABLED: &str = "";
-pub const MD_DESKTOP_MAC: &str = "";
-pub const MD_DESKTOP_WINDOWS: &str = "";
-pub const MD_DETAILS: &str = "";
-pub const MD_DEVELOPER_BOARD: &str = "";
-pub const MD_DEVELOPER_MODE: &str = "";
-pub const MD_DEVICE_HUB: &str = "";
-pub const MD_DEVICE_UNKNOWN: &str = "";
-pub const MD_DEVICES: &str = "";
-pub const MD_DEVICES_OTHER: &str = "";
-pub const MD_DIALER_SIP: &str = "";
-pub const MD_DIALPAD: &str = "";
-pub const MD_DIRECTIONS: &str = "";
-pub const MD_DDIRECTIONS_BIKE: &str = "";
-pub const MD_DIRECTIONS_BOAT: &str = "";
-pub const MD_DIRECTIONS_BUS: &str = "";
-pub const MD_DIRECTIONS_CAR: &str = "";
-pub const MD_DIRECTIONS_RAILWAY: &str = "";
-pub const MD_DIRECTIONS_RUN: &str = "";
-pub const MD_DIRECTIONS_SUBWAY: &str = "";
-pub const MD_DIRECTIONS_TRANSIT: &str = "";
-pub const MD_DIRECTIONS_WLAK: &str = "";
-pub const MD_DISC_FULL: &str = "";
-pub const MD_DIVIDE: &str = "";
-pub const MD_DNS: &str = "";
-pub const MD_DO_NOT_DISTURB: &str = "";
-pub const MD_DO_NOT_DISTURB_ALT: &str = "";
-pub const MD_DO_NOT_DISTURB_OFF: &str = "";
-pub const MD_DOCK: &str = "";
-pub const MD_DOMAIN: &str = "";
-pub const MD_DOMAIN_DISABLED: &str = "";
-pub const MD_DONE: &str = "";
-pub const MD_DONE_ALL: &str = "";
-pub const MD_DONE_OUTLINE: &str = "";
-pub const MD_DONUT_LARGE: &str = "";
-pub const MD_DONUT_SMALL: &str = "";
-pub const MD_DOUBLE_ARROW: &str = "";
-pub const MD_DRAFTS: &str = "";
-pub const MD_DRAG_HANDLE: &str = "";
-pub const MD_DRAG_INDICATOR: &str = "";
-pub const MD_DRIVE_ETA: &str = "";
-pub const MD_DUO: &str = "";
-pub const MD_DVR: &str = "";
-pub const MD_DYNAMIC_FEED: &str = "";
-pub const MD_ECO: &str = "";
-pub const MD_EDIT_ATTRIBUTES: &str = "";
-pub const MD_EDIT_LOCATION: &str = "";
-pub const MD_EJECT: &str = "";
-pub const MD_EMAIL: &str = "";
-pub const MD_EMOJI_EMOTIONS: &str = "";
-pub const MD_EMOJI_EVENTS: &str = "";
-pub const MD_EMOJI_FLAGS: &str = "";
-pub const MD_EMOJI_FOOD_BEVERAGE: &str = "";
-pub const MD_EMOJI_NATURE: &str = "";
-pub const MD_EMOJI_OBJECTS: &str = "";
-pub const MD_EMOJI_PEOPLE: &str = "";
-pub const MD_EMOJI_SYMBOLS: &str = "";
-pub const MD_EMOJI_TRANSPORTATION: &str = "";
-pub const MD_ENHANCED_ENCRYPTION: &str = "";
-pub const MD_EQUALIZER: &str = "";
-pub const MD_EQUALS: &str = "";
-pub const MD_ERROR: &str = "";
-pub const MD_ERROR_OUTLINE: &str = "";
-pub const MD_EURO: &str = "";
-pub const MD_EURO_SYMBOL: &str = "";
-pub const MD_EV_STATION: &str = "";
-pub const MD_EVENT: &str = "";
-pub const MD_EVENT_AVAILABLE: &str = "";
-pub const MD_EVENT_BUSY: &str = "";
-pub const MD_EVENT_NOTE: &str = "";
-pub const MD_EVENT_SEAT: &str = "";
-pub const MD_EXIT_TO_APP: &str = "";
-pub const MD_EXPAND_LESS: &str = "";
-pub const MD_EXPAND_MORE: &str = "";
-pub const MD_EXLICIT: &str = "";
-pub const MD_EXPLORE: &str = "";
-pub const MD_EXPLORE_OFF: &str = "";
-pub const MD_EXPOSURE: &str = "";
-pub const MD_EXPOSURE_NEG_1: &str = "";
-pub const MD_EXPOSURE_NEG_2: &str = "";
-pub const MD_EXPOSURE_PLUS_1: &str = "";
-pub const MD_EXPOSURE_PLUS_2: &str = "";
-pub const MD_EXPOSURE_ZERO: &str = "";
-pub const MD_EXTENSION: &str = "";
-pub const MD_DELETE_FOREVER: &str = "";
-pub const MD_DELETE_OUTLINE: &str = "";
-pub const MD_DELETE_SWEEP: &str = "";
-pub const MD_KEYBOARD_ARROW_DOWN: &str = "";
-pub const MD_KEYBOARD_ARROW_LEFT: &str = "";
-pub const MD_KEYBOARD_ARROW_RIGHT: &str = "";
-pub const MD_KEYBOARD_ARROW_UP: &str = "";
-pub const MD_KEYBOARD_BACKSPACE: &str = "";
-pub const MD_KEYBOARD_CAPSLOCK: &str = "";
-pub const MD_KEYBOARD_HIDE: &str = "";
-pub const MD_KEYBOARD_ARROW_RETURN: &str = "";
-pub const MD_KEYBOARD_TAB: &str = "";
-pub const MD_MENU: &str = "";
-pub const MD_MINUS: &str = "";
-pub const MD_PLUS: &str = "";
-pub const MD_PLUS_MINUS: &str = "";
-pub const MD_PLUS_ONE: &str = "";
-pub const MD_POWER: &str = "";
-pub const MD_POWER_INPUT: &str = "";
-pub const MD_POWER_OFF: &str = "";
-pub const MD_POWER_SETTINGS_NEW: &str = "";
-pub const MD_REMOVE: &str = "";
-pub const MD_REMOVE_CIRCLE: &str = "";
-pub const MD_SAVE: &str = "";
-
-/*
- *  WIP: this unicodes needs your update!
- */
-
-// last edited: dec= 57752 -> e0198
-
-
-
-// .md-face:after {
-//   content: '\e238';
-// }
-
-// .md-fast_forward:after {
-//   content: '\e23a';
-// }
-
-// .md-fast_rewind:after {
-//   content: '\e23c';
-// }
-
-// .md-fastfood:after {
-//   content: '\e23e';
-// }
-
-// .md-favorite:after {
-//   content: '\e240';
-// }
-
-// .md-favorite_border:after {
-//   content: '\e242';
-// }
-
-// .md-featured_play_list:after {
-//   content: '\e243';
-// }
-
-// .md-featured_video:after {
-//   content: '\e245';
-// }
-
-// .md-feedback:after {
-//   content: '\e247';
-// }
-
-// .md-fiber_dvr:after {
-//   content: '\e249';
-// }
-
-// .md-fiber_manual_record:after {
-//   content: '\e24b';
-// }
-
-// .md-fiber_new:after {
-//   content: '\e24d';
-// }
-
-// .md-fiber_pin:after {
-//   content: '\e24f';
-// }
-
-// .md-fiber_smart_record:after {
-//   content: '\e251';
-// }
-
-// .md-file_copy:after {
-//   content: '\e253';
-// }
-
-// .md-file_upload:after {
-//   content: '\e255';
-// }
-
-// .md-filter:after {
-//   content: '\e257';
-// }
-
-// .md-filter_1:after {
-//   content: '\e259';
-// }
-
-// .md-filter_2:after {
-//   content: '\e25b';
-// }
-
-// .md-filter_3:after {
-//   content: '\e25d';
-// }
-
-// .md-filter_4:after {
-//   content: '\e25f';
-// }
-
-// .md-filter_5:after {
-//   content: '\e261';
-// }
-
-// .md-filter_6:after {
-//   content: '\e263';
-// }
-
-// .md-filter_7:after {
-//   content: '\e265';
-// }
-
-// .md-filter_8:after {
-//   content: '\e267';
-// }
-
-// .md-filter_9:after {
-//   content: '\e269';
-// }
-
-// .md-filter_9_plus:after {
-//   content: '\e26b';
-// }
-
-// .md-filter_b_and_w:after {
-//   content: '\e26d';
-// }
-
-// .md-filter_center_focus:after {
-//   content: '\e26f';
-// }
-
-// .md-filter_drama:after {
-//   content: '\e270';
-// }
-
-// .md-filter_frames:after {
-//   content: '\e272';
-// }
-
-// .md-filter_hdr:after {
-//   content: '\e274';
-// }
-
-// .md-filter_list:after {
-//   content: '\e276';
-// }
-
-// .md-filter_none:after {
-//   content: '\e277';
-// }
-
-// .md-filter_tilt_shift:after {
-//   content: '\e279';
-// }
-
-// .md-filter_vintage:after {
-//   content: '\e27a';
-// }
-
-// .md-find_in_page:after {
-//   content: '\e27c';
-// }
-
-// .md-find_replace:after {
-//   content: '\e27e';
-// }
-
-// .md-fingerprint:after {
-//   content: '\e27f';
-// }
-
-// .md-fireplace:after {
-//   content: '\e280';
-// }
-
-// .md-first_page:after {
-//   content: '\e282';
-// }
-
-// .md-fitness_center:after {
-//   content: '\e283';
-// }
-
-// .md-flag:after {
-//   content: '\e284';
-// }
-
-// .md-flare:after {
-//   content: '\e286';
-// }
-
-// .md-flash_auto:after {
-//   content: '\e287';
-// }
-
-// .md-flash_off:after {
-//   content: '\e288';
-// }
-
-// .md-flash_on:after {
-//   content: '\e289';
-// }
-
-// .md-flight:after {
-//   content: '\e28a';
-// }
-
-// .md-flight_land:after {
-//   content: '\e28b';
-// }
-
-// .md-flight_takeoff:after {
-//   content: '\e28c';
-// }
-
-// .md-flip:after {
-//   content: '\e28d';
-// }
-
-// .md-flip_camera_android:after {
-//   content: '\e28e';
-// }
-
-// .md-flip_camera_ios:after {
-//   content: '\e290';
-// }
-
-// .md-flip_to_back:after {
-//   content: '\e292';
-// }
-
-// .md-flip_to_front:after {
-//   content: '\e293';
-// }
-
-// .md-folder:after {
-//   content: '\e294';
-// }
-
-// .md-folder_open:after {
-//   content: '\e296';
-// }
-
-// .md-folder_shared:after {
-//   content: '\e298';
-// }
-
-// .md-folder_special:after {
-//   content: '\e29a';
-// }
-
-// .md-font_download:after {
-//   content: '\e29c';
-// }
-
-// .md-format_align_center:after {
-//   content: '\e29e';
-// }
-
-// .md-format_align_justify:after {
-//   content: '\e29f';
-// }
-
-// .md-format_align_left:after {
-//   content: '\e2a0';
-// }
-
-// .md-format_align_right:after {
-//   content: '\e2a1';
-// }
-
-// .md-format_bold:after {
-//   content: '\e2a2';
-// }
-
-// .md-format_clear:after {
-//   content: '\e2a3';
-// }
-
-// .md-format_color_fill:after {
-//   content: '\e2a4';
-// }
-
-// .md-format_color_fill:before {
-//   content: '\e2a5';
-// }
-
-// .md-format_color_reset:after {
-//   content: '\e2a6';
-// }
-
-// .md-format_color_text:after {
-//   content: '\e2a8';
-// }
-
-// .md-format_color_text:before {
-//   content: '\e2a9';
-// }
-
-// .md-format_indent_decrease:after {
-//   content: '\e2aa';
-// }
-
-// .md-format_indent_increase:after {
-//   content: '\e2ab';
-// }
-
-// .md-format_italic:after {
-//   content: '\e2ac';
-// }
-
-// .md-format_line_spacing:after {
-//   content: '\e2ad';
-// }
-
-// .md-format_list_bulleted:after {
-//   content: '\e2ae';
-// }
-
-// .md-format_list_numbered:after {
-//   content: '\e2af';
-// }
-
-// .md-format_list_numbered_rtl:after {
-//   content: '\e2b0';
-// }
-
-// .md-format_paint:after {
-//   content: '\e2b1';
-// }
-
-// .md-format_quote:after {
-//   content: '\e2b3';
-// }
-
-// .md-format_shapes:after {
-//   content: '\e2b5';
-// }
-
-// .md-format_size:after {
-//   content: '\e2b7';
-// }
-
-// .md-format_strikethrough:after {
-//   content: '\e2b8';
-// }
-
-// .md-format_textdirection_l_to_r:after {
-//   content: '\e2b9';
-// }
-
-// .md-format_textdirection_r_to_l:after {
-//   content: '\e2bb';
-// }
-
-// .md-format_underlined:after {
-//   content: '\e2bd';
-// }
-
-// .md-forum:after {
-//   content: '\e2be';
-// }
-
-// .md-forward:after {
-//   content: '\e2c0';
-// }
-
-// .md-forward_10:after {
-//   content: '\e2c2';
-// }
-
-// .md-forward_30:after {
-//   content: '\e2c3';
-// }
-
-// .md-forward_5:after {
-//   content: '\e2c4';
-// }
-
-// .md-free_breakfast:after {
-//   content: '\e2c5';
-// }
-
-// .md-fullscreen:after {
-//   content: '\e2c7';
-// }
-
-// .md-fullscreen_exit:after {
-//   content: '\e2c8';
-// }
-
-// .md-functions:after {
-//   content: '\e2c9';
-// }
-
-// .md-g_translate:after {
-//   content: '\e2ca';
-// }
-
-// .md-gamepad:after {
-//   content: '\e2cb';
-// }
-
-// .md-games:after {
-//   content: '\e2cd';
-// }
-
-// .md-gavel:after {
-//   content: '\e2cf';
-// }
-
-// .md-gesture:after {
-//   content: '\e2d0';
-// }
-
-// .md-get_app:after {
-//   content: '\e2d1';
-// }
-
-// .md-gif:after {
-//   content: '\e2d3';
-// }
-
-// .md-golf_course:after {
-//   content: '\e2d5';
-// }
-
-// .md-gps_fixed:after {
-//   content: '\e2d7';
-// }
-
-// .md-gps_not_fixed:after {
-//   content: '\e2d9';
-// }
-
-// .md-gps_off:after {
-//   content: '\e2da';
-// }
-
-// .md-grade:after {
-//   content: '\e2db';
-// }
-
-// .md-gradient:after {
-//   content: '\e2dd';
-// }
-
-// .md-grain:after {
-//   content: '\e2de';
-// }
-
-// .md-graphic_eq:after {
-//   content: '\e2df';
-// }
-
-// .md-greater_than:after {
-//   content: '\e2e0';
-// }
-
-// .md-greater_than_equal:after {
-//   content: '\e2e1';
-// }
-
-// .md-grid_off:after {
-//   content: '\e2e2';
-// }
-
-// .md-grid_on:after {
-//   content: '\e2e4';
-// }
-
-// .md-group:after {
-//   content: '\e2e6';
-// }
-
-// .md-group_add:after {
-//   content: '\e2e8';
-// }
-
-// .md-group_work:after {
-//   content: '\e2ea';
-// }
-
-// .md-hd:after {
-//   content: '\e2ec';
-// }
-
-// .md-hdr_off:after {
-//   content: '\e2ee';
-// }
-
-// .md-hdr_on:after {
-//   content: '\e2ef';
-// }
-
-// .md-hdr_strong:after {
-//   content: '\e2f0';
-// }
-
-// .md-hdr_weak:after {
-//   content: '\e2f2';
-// }
-
-// .md-headset:after {
-//   content: '\e2f4';
-// }
-
-// .md-headset_mic:after {
-//   content: '\e2f6';
-// }
-
-// .md-healing:after {
-//   content: '\e2f8';
-// }
-
-// .md-hearing:after {
-//   content: '\e2fa';
-// }
-
-// .md-height:after {
-//   content: '\e2fb';
-// }
-
-// .md-help:after {
-//   content: '\e2fc';
-// }
-
-// .md-help_outline:after {
-//   content: '\e2fe';
-// }
-
-// .md-high_quality:after {
-//   content: '\e2ff';
-// }
-
-// .md-highlight:after {
-//   content: '\e301';
-// }
-
-// .md-highlight_off:after {
-//   content: '\e303';
-// }
-
-// .md-history:after {
-//   content: '\e305';
-// }
-
-// .md-home:after {
-//   content: '\e306';
-// }
-
-// .md-home_work:after {
-//   content: '\e308';
-// }
-
-// .md-horizontal_split:after {
-//   content: '\e30a';
-// }
-
-// .md-hot_tub:after {
-//   content: '\e30c';
-// }
-
-// .md-hotel:after {
-//   content: '\e30d';
-// }
-
-// .md-hourglass_empty:after {
-//   content: '\e30f';
-// }
-
-// .md-hourglass_full:after {
-//   content: '\e310';
-// }
-
-// .md-house:after {
-//   content: '\e312';
-// }
-
-// .md-how_to_reg:after {
-//   content: '\e314';
-// }
-
-// .md-how_to_vote:after {
-//   content: '\e316';
-// }
-
-// .md-http:after {
-//   content: '\e318';
-// }
-
-// .md-https:after {
-//   content: '\e319';
-// }
-
-// .md-image:after {
-//   content: '\e31b';
-// }
-
-// .md-image_aspect_ratio:after {
-//   content: '\e31d';
-// }
-
-// .md-image_search:after {
-//   content: '\e31f';
-// }
-
-// .md-import_contacts:after {
-//   content: '\e321';
-// }
-
-// .md-import_export:after {
-//   content: '\e323';
-// }
-
-// .md-important_devices:after {
-//   content: '\e324';
-// }
-
-// .md-inbox:after {
-//   content: '\e326';
-// }
-
-// .md-indeterminate_check_box:after {
-//   content: '\e328';
-// }
-
-// .md-info:after {
-//   content: '\e32a';
-// }
-
-// .md-input:after {
-//   content: '\e32c';
-// }
-
-// .md-insert_chart:after {
-//   content: '\e32d';
-// }
-
-// .md-insert_chart_outlined:after {
-//   content: '\e32f';
-// }
-
-// .md-insert_comment:after {
-//   content: '\e330';
-// }
-
-// .md-insert_drive_file:after {
-//   content: '\e332';
-// }
-
-// .md-insert_emoticon:after {
-//   content: '\e334';
-// }
-
-// .md-insert_invitation:after {
-//   content: '\e336';
-// }
-
-// .md-insert_link:after {
-//   content: '\e338';
-// }
-
-// .md-insert_photo:after {
-//   content: '\e339';
-// }
-
-// .md-invert_colors:after {
-//   content: '\e33b';
-// }
-
-// .md-invert_colors_off:after {
-//   content: '\e33d';
-// }
-
-// .md-iso:after {
-//   content: '\e33f';
-// }
-
-// .md-keyboard:after {
-//   content: '\e341';
-// }
-
-// .md-keyboard_arrow_down:after {
-//   content: '\e343';
-// }
-
-// .md-keyboard_voice:after {
-//   content: '\e34d';
-// }
-
-// .md-king_bed:after {
-//   content: '\e34f';
-// }
-
-// .md-kitchen:after {
-//   content: '\e351';
-// }
-
-// .md-label:after {
-//   content: '\e353';
-// }
-
-// .md-label_important:after {
-//   content: '\e355';
-// }
-
-// .md-label_off:after {
-//   content: '\e357';
-// }
-
-// .md-landscape:after {
-//   content: '\e359';
-// }
-
-// .md-language:after {
-//   content: '\e35b';
-// }
-
-// .md-laptop:after {
-//   content: '\e35d';
-// }
-
-// .md-laptop_chromebook:after {
-//   content: '\e35f';
-// }
-
-// .md-laptop_mac:after {
-//   content: '\e361';
-// }
-
-// .md-laptop_windows:after {
-//   content: '\e363';
-// }
-
-// .md-last_page:after {
-//   content: '\e365';
-// }
-
-// .md-launch:after {
-//   content: '\e366';
-// }
-
-// .md-layers:after {
-//   content: '\e367';
-// }
-
-// .md-layers_clear:after {
-//   content: '\e369';
-// }
-
-// .md-leak_add:after {
-//   content: '\e36b';
-// }
-
-// .md-leak_remove:after {
-//   content: '\e36c';
-// }
-
-// .md-lens:after {
-//   content: '\e36d';
-// }
-
-// .md-less_than:after {
-//   content: '\e36f';
-// }
-
-// .md-less_than_equal:after {
-//   content: '\e370';
-// }
-
-// .md-library_add:after {
-//   content: '\e371';
-// }
-
-// .md-library_books:after {
-//   content: '\e373';
-// }
-
-// .md-library_music:after {
-//   content: '\e375';
-// }
-
-// .md-lightbulb:after {
-//   content: '\e377';
-// }
-
-// .md-line_style:after {
-//   content: '\e379';
-// }
-
-// .md-line_weight:after {
-//   content: '\e37a';
-// }
-
-// .md-linear_scale:after {
-//   content: '\e37b';
-// }
-
-// .md-link:after {
-//   content: '\e37c';
-// }
-
-// .md-link_off:after {
-//   content: '\e37e';
-// }
-
-// .md-linked_camera:after {
-//   content: '\e37f';
-// }
-
-// .md-list:after {
-//   content: '\e381';
-// }
-
-// .md-list_alt:after {
-//   content: '\e382';
-// }
-
-// .md-live_help:after {
-//   content: '\e384';
-// }
-
-// .md-live_tv:after {
-//   content: '\e386';
-// }
-
-// .md-local_activity:after {
-//   content: '\e388';
-// }
-
-// .md-local_airport:after {
-//   content: '\e38a';
-// }
-
-// .md-local_atm:after {
-//   content: '\e38b';
-// }
-
-// .md-local_bar:after {
-//   content: '\e38d';
-// }
-
-// .md-local_cafe:after {
-//   content: '\e38f';
-// }
-
-// .md-local_car_wash:after {
-//   content: '\e391';
-// }
-
-// .md-local_convenience_store:after {
-//   content: '\e393';
-// }
-
-// .md-local_dining:after {
-//   content: '\e395';
-// }
-
-// .md-local_drink:after {
-//   content: '\e396';
-// }
-
-// .md-local_florist:after {
-//   content: '\e398';
-// }
-
-// .md-local_gas_station:after {
-//   content: '\e39a';
-// }
-
-// .md-local_grocery_store:after {
-//   content: '\e39c';
-// }
-
-// .md-local_hospital:after {
-//   content: '\e39e';
-// }
-
-// .md-local_hotel:after {
-//   content: '\e3a0';
-// }
-
-// .md-local_laundry_service:after {
-//   content: '\e3a2';
-// }
-
-// .md-local_library:after {
-//   content: '\e3a4';
-// }
-
-// .md-local_mall:after {
-//   content: '\e3a6';
-// }
-
-// .md-local_movies:after {
-//   content: '\e3a8';
-// }
-
-// .md-local_offer:after {
-//   content: '\e3aa';
-// }
-
-// .md-local_parking:after {
-//   content: '\e3ac';
-// }
-
-// .md-local_pharmacy:after {
-//   content: '\e3ad';
-// }
-
-// .md-local_phone:after {
-//   content: '\e3af';
-// }
-
-// .md-local_pizza:after {
-//   content: '\e3b1';
-// }
-
-// .md-local_play:after {
-//   content: '\e3b3';
-// }
-
-// .md-local_post_office:after {
-//   content: '\e3b5';
-// }
-
-// .md-local_printshop:after {
-//   content: '\e3b7';
-// }
-
-// .md-local_see:after {
-//   content: '\e3b9';
-// }
-
-// .md-local_shipping:after {
-//   content: '\e3bb';
-// }
-
-// .md-local_taxi:after {
-//   content: '\e3bd';
-// }
-
-// .md-location_city:after {
-//   content: '\e3bf';
-// }
-
-// .md-location_disabled:after {
-//   content: '\e3c0';
-// }
-
-// .md-location_off:after {
-//   content: '\e3c1';
-// }
-
-// .md-location_on:after {
-//   content: '\e3c2';
-// }
-
-// .md-location_searching:after {
-//   content: '\e3c4';
-// }
-
-// .md-lock:after {
-//   content: '\e3c5';
-// }
-
-// .md-lock_open:after {
-//   content: '\e3c7';
-// }
-
-// .md-log_in:after {
-//   content: '\e3c9';
-// }
-
-// .md-log_out:after {
-//   content: '\e3ca';
-// }
-
-// .md-looks:after {
-//   content: '\e3cb';
-// }
-
-// .md-looks_3:after {
-//   content: '\e3cc';
-// }
-
-// .md-looks_4:after {
-//   content: '\e3ce';
-// }
-
-// .md-looks_5:after {
-//   content: '\e3d0';
-// }
-
-// .md-looks_6:after {
-//   content: '\e3d2';
-// }
-
-// .md-looks_one:after {
-//   content: '\e3d4';
-// }
-
-// .md-looks_two:after {
-//   content: '\e3d6';
-// }
-
-// .md-loop:after {
-//   content: '\e3d8';
-// }
-
-// .md-loupe:after {
-//   content: '\e3d9';
-// }
-
-// .md-low_priority:after {
-//   content: '\e3db';
-// }
-
-// .md-loyalty:after {
-//   content: '\e3dc';
-// }
-
-// .md-mail:after {
-//   content: '\e3de';
-// }
-
-// .md-mail_outline:after {
-//   content: '\e3e0';
-// }
-
-// .md-map:after {
-//   content: '\e3e1';
-// }
-
-// .md-markunread:after {
-//   content: '\e3e3';
-// }
-
-// .md-markunread_mailbox:after {
-//   content: '\e3e5';
-// }
-
-// .md-maximize:after {
-//   content: '\e3e7';
-// }
-
-// .md-meeting_room:after {
-//   content: '\e3e8';
-// }
-
-// .md-memory:after {
-//   content: '\e3ea';
-// }
-
-// .md-menu:after {
-//   content: '\e3ec';
-// }
-
-// .md-menu_book:after {
-//   content: '\e3ed';
-// }
-
-// .md-menu_open:after {
-//   content: '\e3ef';
-// }
-
-// .md-merge_type:after {
-//   content: '\e3f0';
-// }
-
-// .md-message:after {
-//   content: '\e3f1';
-// }
-
-// .md-mic:after {
-//   content: '\e3f3';
-// }
-
-// .md-mic_none:after {
-//   content: '\e3f5';
-// }
-
-// .md-mic_off:after {
-//   content: '\e3f7';
-// }
-
-// .md-minimize:after {
-//   content: '\e3f9';
-// }
-
-// .md-missed_video_call:after {
-//   content: '\e3fb';
-// }
-
-// .md-mms:after {
-//   content: '\e3fd';
-// }
-
-// .md-mobile_friendly:after {
-//   content: '\e3ff';
-// }
-
-// .md-mobile_off:after {
-//   content: '\e400';
-// }
-
-// .md-mobile_screen_share:after {
-//   content: '\e401';
-// }
-
-// .md-mode_comment:after {
-//   content: '\e403';
-// }
-
-// .md-monetization_on:after {
-//   content: '\e405';
-// }
-
-// .md-money:after {
-//   content: '\e407';
-// }
-
-// .md-money_off:after {
-//   content: '\e409';
-// }
-
-// .md-monochrome_photos:after {
-//   content: '\e40a';
-// }
-
-// .md-mood:after {
-//   content: '\e40c';
-// }
-
-// .md-mood_bad:after {
-//   content: '\e40e';
-// }
-
-// .md-more:after {
-//   content: '\e410';
-// }
-
-// .md-more_horiz:after {
-//   content: '\e412';
-// }
-
-// .md-more_vert:after {
-//   content: '\e413';
-// }
-
-// .md-motorcycle:after {
-//   content: '\e414';
-// }
-
-// .md-mouse:after {
-//   content: '\e416';
-// }
-
-// .md-move_to_inbox:after {
-//   content: '\e418';
-// }
-
-// .md-movie:after {
-//   content: '\e41a';
-// }
-
-// .md-movie_creation:after {
-//   content: '\e41c';
-// }
-
-// .md-movie_filter:after {
-//   content: '\e41e';
-// }
-
-// .md-multiline_chart:after {
-//   content: '\e420';
-// }
-
-// .md-museum:after {
-//   content: '\e421';
-// }
-
-// .md-music_note:after {
-//   content: '\e423';
-// }
-
-// .md-music_off:after {
-//   content: '\e425';
-// }
-
-// .md-music_video:after {
-//   content: '\e427';
-// }
-
-// .md-my_location:after {
-//   content: '\e429';
-// }
-
-// .md-nature:after {
-//   content: '\e42b';
-// }
-
-// .md-nature_people:after {
-//   content: '\e42d';
-// }
-
-// .md-navigate_before:after {
-//   content: '\e42f';
-// }
-
-// .md-navigate_next:after {
-//   content: '\e430';
-// }
-
-// .md-navigation:after {
-//   content: '\e431';
-// }
-
-// .md-near_me:after {
-//   content: '\e433';
-// }
-
-// .md-network_cell:after {
-//   content: '\e435';
-// }
-
-// .md-network_cell:before {
-//   content: '\e436';
-// }
-
-// .md-network_check:after {
-//   content: '\e437';
-// }
-
-// .md-network_locked:after {
-//   content: '\e438';
-// }
-
-// .md-network_wifi:after {
-//   content: '\e439';
-// }
-
-// .md-network_wifi:before {
-//   content: '\e43a';
-// }
-
-// .md-new_releases:after {
-//   content: '\e43b';
-// }
-
-// .md-next_week:after {
-//   content: '\e43d';
-// }
-
-// .md-nfc:after {
-//   content: '\e43f';
-// }
-
-// .md-nights_stay:after {
-//   content: '\e440';
-// }
-
-// .md-no_encryption:after {
-//   content: '\e442';
-// }
-
-// .md-no_meeting_room:after {
-//   content: '\e444';
-// }
-
-// .md-no_sim:after {
-//   content: '\e446';
-// }
-
-// .md-not_equal:after {
-//   content: '\e448';
-// }
-
-// .md-not_interested:after {
-//   content: '\e449';
-// }
-
-// .md-not_listed_location:after {
-//   content: '\e44a';
-// }
-
-// .md-note:after {
-//   content: '\e44c';
-// }
-
-// .md-note_add:after {
-//   content: '\e44e';
-// }
-
-// .md-notes:after {
-//   content: '\e450';
-// }
-
-// .md-notification_important:after {
-//   content: '\e451';
-// }
-
-// .md-notifications:after {
-//   content: '\e453';
-// }
-
-// .md-notifications_active:after {
-//   content: '\e455';
-// }
-
-// .md-notifications_none:after {
-//   content: '\e457';
-// }
-
-// .md-notifications_off:after {
-//   content: '\e459';
-// }
-
-// .md-notifications_paused:after {
-//   content: '\e45b';
-// }
-
-// .md-offline_bolt:after {
-//   content: '\e45d';
-// }
-
-// .md-offline_pin:after {
-//   content: '\e45f';
-// }
-
-// .md-ondemand_video:after {
-//   content: '\e461';
-// }
-
-// .md-opacity:after {
-//   content: '\e463';
-// }
-
-// .md-open_in_browser:after {
-//   content: '\e465';
-// }
-
-// .md-open_in_new:after {
-//   content: '\e466';
-// }
-
-// .md-open_with:after {
-//   content: '\e467';
-// }
-
-// .md-outdoor_grill:after {
-//   content: '\e468';
-// }
-
-// .md-outlined_flag:after {
-//   content: '\e46a';
-// }
-
-// .md-pages:after {
-//   content: '\e46b';
-// }
-
-// .md-pageview:after {
-//   content: '\e46d';
-// }
-
-// .md-palette:after {
-//   content: '\e46f';
-// }
-
-// .md-pan_tool:after {
-//   content: '\e471';
-// }
-
-// .md-panorama:after {
-//   content: '\e473';
-// }
-
-// .md-panorama_fish_eye:after {
-//   content: '\e475';
-// }
-
-// .md-panorama_horizontal:after {
-//   content: '\e477';
-// }
-
-// .md-panorama_vertical:after {
-//   content: '\e479';
-// }
-
-// .md-panorama_wide_angle:after {
-//   content: '\e47b';
-// }
-
-// .md-party_mode:after {
-//   content: '\e47d';
-// }
-
-// .md-pause:after {
-//   content: '\e47f';
-// }
-
-// .md-pause_circle_filled:after {
-//   content: '\e480';
-// }
-
-// .md-pause_circle_outline:after {
-//   content: '\e482';
-// }
-
-// .md-pause_presentation:after {
-//   content: '\e483';
-// }
-
-// .md-payment:after {
-//   content: '\e485';
-// }
-
-// .md-people:after {
-//   content: '\e487';
-// }
-
-// .md-people_alt:after {
-//   content: '\e489';
-// }
-
-// .md-people_outline:after {
-//   content: '\e48b';
-// }
-
-// .md-percentage:after {
-//   content: '\e48d';
-// }
-
-// .md-perm_camera_mic:after {
-//   content: '\e48f';
-// }
-
-// .md-perm_contact_calendar:after {
-//   content: '\e491';
-// }
-
-// .md-perm_data_setting:after {
-//   content: '\e493';
-// }
-
-// .md-perm_device_information:after {
-//   content: '\e494';
-// }
-
-// .md-perm_identity:after {
-//   content: '\e496';
-// }
-
-// .md-perm_media:after {
-//   content: '\e498';
-// }
-
-// .md-perm_phone_msg:after {
-//   content: '\e49a';
-// }
-
-// .md-perm_scan_wifi:after {
-//   content: '\e49c';
-// }
-
-// .md-person:after {
-//   content: '\e49e';
-// }
-
-// .md-person_add:after {
-//   content: '\e4a0';
-// }
-
-// .md-person_add_disabled:after {
-//   content: '\e4a2';
-// }
-
-// .md-person_outline:after {
-//   content: '\e4a4';
-// }
-
-// .md-person_pin:after {
-//   content: '\e4a6';
-// }
-
-// .md-person_pin_circle:after {
-//   content: '\e4a8';
-// }
-
-// .md-personal_video:after {
-//   content: '\e4aa';
-// }
-
-// .md-pets:after {
-//   content: '\e4ac';
-// }
-
-// .md-phone:after {
-//   content: '\e4ad';
-// }
-
-// .md-phone_android:after {
-//   content: '\e4af';
-// }
-
-// .md-phone_bluetooth_speaker:after {
-//   content: '\e4b1';
-// }
-
-// .md-phone_callback:after {
-//   content: '\e4b3';
-// }
-
-// .md-phone_disabled:after {
-//   content: '\e4b5';
-// }
-
-// .md-phone_enabled:after {
-//   content: '\e4b6';
-// }
-
-// .md-phone_forwarded:after {
-//   content: '\e4b7';
-// }
-
-// .md-phone_in_talk:after {
-//   content: '\e4b9';
-// }
-
-// .md-phone_iphone:after {
-//   content: '\e4bb';
-// }
-
-// .md-phone_locked:after {
-//   content: '\e4bd';
-// }
-
-// .md-phone_missed:after {
-//   content: '\e4bf';
-// }
-
-// .md-phone_paused:after {
-//   content: '\e4c1';
-// }
-
-// .md-phonelink:after {
-//   content: '\e4c3';
-// }
-
-// .md-phonelink_erase:after {
-//   content: '\e4c5';
-// }
-
-// .md-phonelink_lock:after {
-//   content: '\e4c6';
-// }
-
-// .md-phonelink_off:after {
-//   content: '\e4c7';
-// }
-
-// .md-phonelink_ring:after {
-//   content: '\e4c9';
-// }
-
-// .md-phonelink_setup:after {
-//   content: '\e4cb';
-// }
-
-// .md-photo:after {
-//   content: '\e4cc';
-// }
-
-// .md-photo_album:after {
-//   content: '\e4ce';
-// }
-
-// .md-photo_camera:after {
-//   content: '\e4d0';
-// }
-
-// .md-photo_filter:after {
-//   content: '\e4d2';
-// }
-
-// .md-photo_library:after {
-//   content: '\e4d3';
-// }
-
-// .md-photo_size_select_actual:after {
-//   content: '\e4d5';
-// }
-
-// .md-photo_size_select_large:after {
-//   content: '\e4d7';
-// }
-
-// .md-photo_size_select_small:after {
-//   content: '\e4d8';
-// }
-
-// .md-picture_as_pdf:after {
-//   content: '\e4d9';
-// }
-
-// .md-picture_in_picture:after {
-//   content: '\e4db';
-// }
-
-// .md-picture_in_picture_alt:after {
-//   content: '\e4dd';
-// }
-
-// .md-pie_chart:after {
-//   content: '\e4df';
-// }
-
-// .md-pin:after {
-//   content: '\e4e1';
-// }
-
-// .md-pin_drop:after {
-//   content: '\e4e3';
-// }
-
-// .md-pin_off:after {
-//   content: '\e4e5';
-// }
-
-// .md-place:after {
-//   content: '\e4e7';
-// }
-
-// .md-play_arrow:after {
-//   content: '\e4e9';
-// }
-
-// .md-play_circle_filled:after {
-//   content: '\e4eb';
-// }
-
-// .md-play_circle_filled_white:after {
-//   content: '\e4ed';
-// }
-
-// .md-play_circle_outline:after {
-//   content: '\e4ef';
-// }
-
-// .md-play_for_work:after {
-//   content: '\e4f0';
-// }
-
-// .md-playlist_add:after {
-//   content: '\e4f1';
-// }
-
-// .md-playlist_add_check:after {
-//   content: '\e4f2';
-// }
-
-// .md-playlist_play:after {
-//   content: '\e4f3';
-// }
-
-// .md-plus_one:after {
-//   content: '\e4f7';
-// }
-
-// .md-policy:after {
-//   content: '\e4f8';
-// }
-
-// .md-poll:after {
-//   content: '\e4fa';
-// }
-
-// .md-polymer:after {
-//   content: '\e4fc';
-// }
-
-// .md-pool:after {
-//   content: '\e4fd';
-// }
-
-// .md-portable_wifi_off:after {
-//   content: '\e4ff';
-// }
-
-// .md-portrait:after {
-//   content: '\e500';
-// }
-
-// .md-post_add:after {
-//   content: '\e502';
-// }
-
-// .md-power:after {
-//   content: '\e503';
-// }
-
-// .md-power_input:after {
-//   content: '\e505';
-// }
-
-// .md-power_off:after {
-//   content: '\e506';
-// }
-
-// .md-power_settings_new:after {
-//   content: '\e508';
-// }
-
-// .md-pregnant_woman:after {
-//   content: '\e509';
-// }
-
-// .md-present_to_all:after {
-//   content: '\e50a';
-// }
-
-// .md-print:after {
-//   content: '\e50c';
-// }
-
-// .md-print_disabled:after {
-//   content: '\e50e';
-// }
-
-// .md-priority_high:after {
-//   content: '\e510';
-// }
-
-// .md-public:after {
-//   content: '\e511';
-// }
-
-// .md-publish:after {
-//   content: '\e513';
-// }
-
-// .md-qrcode:after {
-//   content: '\e515';
-// }
-
-// .md-query_builder:after {
-//   content: '\e517';
-// }
-
-// .md-question_answer:after {
-//   content: '\e519';
-// }
-
-// .md-queue:after {
-//   content: '\e51b';
-// }
-
-// .md-queue_music:after {
-//   content: '\e51d';
-// }
-
-// .md-queue_play_next:after {
-//   content: '\e51f';
-// }
-
-// .md-radio:after {
-//   content: '\e520';
-// }
-
-// .md-radio_button_checked:after {
-//   content: '\e522';
-// }
-
-// .md-radio_button_unchecked:after {
-//   content: '\e523';
-// }
-
-// .md-rate_review:after {
-//   content: '\e524';
-// }
-
-// .md-receipt:after {
-//   content: '\e526';
-// }
-
-// .md-recent_actors:after {
-//   content: '\e528';
-// }
-
-// .md-record_voice_over:after {
-//   content: '\e52a';
-// }
-
-// .md-redeem:after {
-//   content: '\e52c';
-// }
-
-// .md-redo:after {
-//   content: '\e52e';
-// }
-
-// .md-refresh:after {
-//   content: '\e52f';
-// }
-
-// .md-remove_circle_outline:after {
-//   content: '\e533';
-// }
-
-// .md-remove_from_queue:after {
-//   content: '\e534';
-// }
-
-// .md-remove_red_eye:after {
-//   content: '\e536';
-// }
-
-// .md-remove_shopping_cart:after {
-//   content: '\e538';
-// }
-
-// .md-reorder:after {
-//   content: '\e53a';
-// }
-
-// .md-repeat:after {
-//   content: '\e53b';
-// }
-
-// .md-repeat_one:after {
-//   content: '\e53c';
-// }
-
-// .md-replay:after {
-//   content: '\e53d';
-// }
-
-// .md-replay_10:after {
-//   content: '\e53e';
-// }
-
-// .md-replay_30:after {
-//   content: '\e53f';
-// }
-
-// .md-replay_5:after {
-//   content: '\e540';
-// }
-
-// .md-reply:after {
-//   content: '\e541';
-// }
-
-// .md-reply_all:after {
-//   content: '\e542';
-// }
-
-// .md-report:after {
-//   content: '\e543';
-// }
-
-// .md-report_off:after {
-//   content: '\e545';
-// }
-
-// .md-report_problem:after {
-//   content: '\e547';
-// }
-
-// .md-restaurant:after {
-//   content: '\e549';
-// }
-
-// .md-restaurant_menu:after {
-//   content: '\e54a';
-// }
-
-// .md-restore:after {
-//   content: '\e54b';
-// }
-
-// .md-restore_from_trash:after {
-//   content: '\e54c';
-// }
-
-// .md-restore_page:after {
-//   content: '\e54e';
-// }
-
-// .md-ring_volume:after {
-//   content: '\e550';
-// }
-
-// .md-rocket:after {
-//   content: '\e552';
-// }
-
-// .md-room:after {
-//   content: '\e554';
-// }
-
-// .md-room_service:after {
-//   content: '\e556';
-// }
-
-// .md-rotate_90_degrees_ccw:after {
-//   content: '\e558';
-// }
-
-// .md-rotate_left:after {
-//   content: '\e55a';
-// }
-
-// .md-rotate_right:after {
-//   content: '\e55b';
-// }
-
-// .md-rounded_corner:after {
-//   content: '\e55c';
-// }
-
-// .md-router:after {
-//   content: '\e55d';
-// }
-
-// .md-rowing:after {
-//   content: '\e55f';
-// }
-
-// .md-rss_feed:after {
-//   content: '\e560';
-// }
-
-// .md-rv_hookup:after {
-//   content: '\e561';
-// }
-
-// .md-satellite:after {
-//   content: '\e563';
-// }
-
-// .md-save_alt:after {
-//   content: '\e567';
-// }
-
-// .md-scanner:after {
-//   content: '\e568';
-// }
-
-// .md-scatter_plot:after {
-//   content: '\e56a';
-// }
-
-// .md-schedule:after {
-//   content: '\e56c';
-// }
-
-// .md-school:after {
-//   content: '\e56e';
-// }
-
-// .md-score:after {
-//   content: '\e570';
-// }
-
-// .md-screen_lock_landscape:after {
-//   content: '\e572';
-// }
-
-// .md-screen_lock_portrait:after {
-//   content: '\e574';
-// }
-
-// .md-screen_lock_rotation:after {
-//   content: '\e576';
-// }
-
-// .md-screen_rotation:after {
-//   content: '\e577';
-// }
-
-// .md-screen_share:after {
-//   content: '\e579';
-// }
-
-// .md-sd_card:after {
-//   content: '\e57b';
-// }
-
-// .md-sd_storage:after {
-//   content: '\e57d';
-// }
-
-// .md-search:after {
-//   content: '\e57f';
-// }
-
-// .md-security:after {
-//   content: '\e580';
-// }
-
-// .md-select_all:after {
-//   content: '\e582';
-// }
-
-// .md-send:after {
-//   content: '\e583';
-// }
-
-// .md-sentiment_dissatisfied:after {
-//   content: '\e585';
-// }
-
-// .md-sentiment_neutral:after {
-//   content: '\e587';
-// }
-
-// .md-sentiment_satisfied:after {
-//   content: '\e589';
-// }
-
-// .md-sentiment_satisfied_alt:after {
-//   content: '\e58b';
-// }
-
-// .md-sentiment_slightly_dissatisfied:after {
-//   content: '\e58d';
-// }
-
-// .md-sentiment_very_dissatisfied:after {
-//   content: '\e58f';
-// }
-
-// .md-sentiment_very_satisfied:after {
-//   content: '\e591';
-// }
-
-// .md-settings:after {
-//   content: '\e593';
-// }
-
-// .md-settings_applications:after {
-//   content: '\e595';
-// }
-
-// .md-settings_backup_restore:after {
-//   content: '\e597';
-// }
-
-// .md-settings_bluetooth:after {
-//   content: '\e598';
-// }
-
-// .md-settings_brightness:after {
-//   content: '\e599';
-// }
-
-// .md-settings_cell:after {
-//   content: '\e59b';
-// }
-
-// .md-settings_ethernet:after {
-//   content: '\e59d';
-// }
-
-// .md-settings_input_antenna:after {
-//   content: '\e59e';
-// }
-
-// .md-settings_input_component:after {
-//   content: '\e59f';
-// }
-
-// .md-settings_input_composite:after {
-//   content: '\e5a1';
-// }
-
-// .md-settings_input_hdmi:after {
-//   content: '\e5a3';
-// }
-
-// .md-settings_input_svideo:after {
-//   content: '\e5a5';
-// }
-
-// .md-settings_overscan:after {
-//   content: '\e5a7';
-// }
-
-// .md-settings_phone:after {
-//   content: '\e5a9';
-// }
-
-// .md-settings_power:after {
-//   content: '\e5ab';
-// }
-
-// .md-settings_remote:after {
-//   content: '\e5ac';
-// }
-
-// .md-settings_system_daydream:after {
-//   content: '\e5ae';
-// }
-
-// .md-settings_voice:after {
-//   content: '\e5b0';
-// }
-
-// .md-share:after {
-//   content: '\e5b2';
-// }
-
-// .md-shop:after {
-//   content: '\e5b4';
-// }
-
-// .md-shop_two:after {
-//   content: '\e5b6';
-// }
-
-// .md-shopping_basket:after {
-//   content: '\e5b8';
-// }
-
-// .md-shopping_cart:after {
-//   content: '\e5ba';
-// }
-
-// .md-short_text:after {
-//   content: '\e5bc';
-// }
-
-// .md-show_chart:after {
-//   content: '\e5bd';
-// }
-
-// .md-shuffle:after {
-//   content: '\e5be';
-// }
-
-// .md-shutter_speed:after {
-//   content: '\e5bf';
-// }
-
-// .md-signal_cellular_0_bar:after {
-//   content: '\e5c1';
-// }
-
-// .md-signal_cellular_0_bar:before {
-//   content: '\e5c2';
-// }
-
-// .md-signal_cellular_1_bar:after {
-//   content: '\e5c3';
-// }
-
-// .md-signal_cellular_1_bar:before {
-//   content: '\e5c4';
-// }
-
-// .md-signal_cellular_2_bar:after {
-//   content: '\e5c5';
-// }
-
-// .md-signal_cellular_2_bar:before {
-//   content: '\e5c6';
-// }
-
-// .md-signal_cellular_3_bar:after {
-//   content: '\e5c7';
-// }
-
-// .md-signal_cellular_3_bar:before {
-//   content: '\e5c8';
-// }
-
-// .md-signal_cellular_4_bar:after {
-//   content: '\e5c9';
-// }
-
-// .md-signal_cellular_alt:after {
-//   content: '\e5ca';
-// }
-
-// .md-signal_cellular_connected_no_internet_0_bar:after {
-//   content: '\e5cb';
-// }
-
-// .md-signal_cellular_connected_no_internet_0_bar:before {
-//   content: '\e5cc';
-// }
-
-// .md-signal_cellular_connected_no_internet_1_bar:after {
-//   content: '\e5cd';
-// }
-
-// .md-signal_cellular_connected_no_internet_1_bar:before {
-//   content: '\e5ce';
-// }
-
-// .md-signal_cellular_connected_no_internet_2_bar:after {
-//   content: '\e5cf';
-// }
-
-// .md-signal_cellular_connected_no_internet_2_bar:before {
-//   content: '\e5d0';
-// }
-
-// .md-signal_cellular_connected_no_internet_3_bar:after {
-//   content: '\e5d1';
-// }
-
-// .md-signal_cellular_connected_no_internet_3_bar:before {
-//   content: '\e5d2';
-// }
-
-// .md-signal_cellular_connected_no_internet_4_bar:after {
-//   content: '\e5d3';
-// }
-
-// .md-signal_cellular_no_sim:after {
-//   content: '\e5d4';
-// }
-
-// .md-signal_cellular_null:after {
-//   content: '\e5d6';
-// }
-
-// .md-signal_cellular_off:after {
-//   content: '\e5d7';
-// }
-
-// .md-signal_wifi_0_bar:after {
-//   content: '\e5d8';
-// }
-
-// .md-signal_wifi_0_bar:before {
-//   content: '\e5d9';
-// }
-
-// .md-signal_wifi_1_bar:after {
-//   content: '\e5da';
-// }
-
-// .md-signal_wifi_1_bar:before {
-//   content: '\e5db';
-// }
-
-// .md-signal_wifi_1_bar_lock:after {
-//   content: '\e5dc';
-// }
-
-// .md-signal_wifi_1_bar_lock:before {
-//   content: '\e5dd';
-// }
-
-// .md-signal_wifi_2_bar:after {
-//   content: '\e5de';
-// }
-
-// .md-signal_wifi_2_bar:before {
-//   content: '\e5df';
-// }
-
-// .md-signal_wifi_2_bar_lock:after {
-//   content: '\e5e0';
-// }
-
-// .md-signal_wifi_2_bar_lock:before {
-//   content: '\e5e1';
-// }
-
-// .md-signal_wifi_3_bar:after {
-//   content: '\e5e2';
-// }
-
-// .md-signal_wifi_3_bar:before {
-//   content: '\e5e3';
-// }
-
-// .md-signal_wifi_3_bar_lock:after {
-//   content: '\e5e4';
-// }
-
-// .md-signal_wifi_3_bar_lock:before {
-//   content: '\e5e5';
-// }
-
-// .md-signal_wifi_4_bar:after {
-//   content: '\e5e6';
-// }
-
-// .md-signal_wifi_4_bar_lock:after {
-//   content: '\e5e7';
-// }
-
-// .md-signal_wifi_off:after {
-//   content: '\e5e8';
-// }
-
-// .md-sim_card:after {
-//   content: '\e5e9';
-// }
-
-// .md-sim_card_alert:after {
-//   content: '\e5eb';
-// }
-
-// .md-single_bed:after {
-//   content: '\e5ed';
-// }
-
-// .md-skip_next:after {
-//   content: '\e5ef';
-// }
-
-// .md-skip_previous:after {
-//   content: '\e5f1';
-// }
-
-// .md-slideshow:after {
-//   content: '\e5f3';
-// }
-
-// .md-slow_motion_video:after {
-//   content: '\e5f5';
-// }
-
-// .md-smartphone:after {
-//   content: '\e5f6';
-// }
-
-// .md-smoke_free:after {
-//   content: '\e5f8';
-// }
-
-// .md-smoking_rooms:after {
-//   content: '\e5f9';
-// }
-
-// .md-sms:after {
-//   content: '\e5fb';
-// }
-
-// .md-sms_failed:after {
-//   content: '\e5fd';
-// }
-
-// .md-snooze:after {
-//   content: '\e5ff';
-// }
-
-// .md-sort:after {
-//   content: '\e600';
-// }
-
-// .md-sort_by_alpha:after {
-//   content: '\e601';
-// }
-
-// .md-spa:after {
-//   content: '\e602';
-// }
-
-// .md-space_bar:after {
-//   content: '\e604';
-// }
-
-// .md-speaker:after {
-//   content: '\e605';
-// }
-
-// .md-speaker_group:after {
-//   content: '\e607';
-// }
-
-// .md-speaker_notes:after {
-//   content: '\e609';
-// }
-
-// .md-speaker_notes_off:after {
-//   content: '\e60b';
-// }
-
-// .md-speaker_phone:after {
-//   content: '\e60d';
-// }
-
-// .md-speed:after {
-//   content: '\e60f';
-// }
-
-// .md-spellcheck:after {
-//   content: '\e610';
-// }
-
-// .md-sports:after {
-//   content: '\e611';
-// }
-
-// .md-sports_baseball:after {
-//   content: '\e612';
-// }
-
-// .md-sports_basketball:after {
-//   content: '\e614';
-// }
-
-// .md-sports_cricket:after {
-//   content: '\e616';
-// }
-
-// .md-sports_esports:after {
-//   content: '\e618';
-// }
-
-// .md-sports_football:after {
-//   content: '\e61a';
-// }
-
-// .md-sports_golf:after {
-//   content: '\e61c';
-// }
-
-// .md-sports_handball:after {
-//   content: '\e61e';
-// }
-
-// .md-sports_hockey:after {
-//   content: '\e61f';
-// }
-
-// .md-sports_kabaddi:after {
-//   content: '\e620';
-// }
-
-// .md-sports_mma:after {
-//   content: '\e621';
-// }
-
-// .md-sports_motorsports:after {
-//   content: '\e623';
-// }
-
-// .md-sports_rugby:after {
-//   content: '\e625';
-// }
-
-// .md-sports_soccer:after {
-//   content: '\e627';
-// }
-
-// .md-sports_tennis:after {
-//   content: '\e629';
-// }
-
-// .md-sports_volleyball:after {
-//   content: '\e62a';
-// }
-
-// .md-square_foot:after {
-//   content: '\e62c';
-// }
-
-// .md-star:after {
-//   content: '\e62e';
-// }
-
-// .md-star_border:after {
-//   content: '\e630';
-// }
-
-// .md-star_half:after {
-//   content: '\e631';
-// }
-
-// .md-star_rate:after {
-//   content: '\e632';
-// }
-
-// .md-stars:after {
-//   content: '\e633';
-// }
-
-// .md-stay_current_landscape:after {
-//   content: '\e635';
-// }
-
-// .md-stay_current_portrait:after {
-//   content: '\e637';
-// }
-
-// .md-stay_primary_landscape:after {
-//   content: '\e639';
-// }
-
-// .md-stay_primary_portrait:after {
-//   content: '\e63b';
-// }
-
-// .md-stop:after {
-//   content: '\e63d';
-// }
-
-// .md-stop_circle:after {
-//   content: '\e63f';
-// }
-
-// .md-stop_screen_share:after {
-//   content: '\e641';
-// }
-
-// .md-storage:after {
-//   content: '\e643';
-// }
-
-// .md-store:after {
-//   content: '\e644';
-// }
-
-// .md-store_mall_directory:after {
-//   content: '\e646';
-// }
-
-// .md-storefront:after {
-//   content: '\e648';
-// }
-
-// .md-straighten:after {
-//   content: '\e64a';
-// }
-
-// .md-streetview:after {
-//   content: '\e64c';
-// }
-
-// .md-strikethrough_s:after {
-//   content: '\e64d';
-// }
-
-// .md-style:after {
-//   content: '\e64e';
-// }
-
-// .md-subdirectory_arrow_left:after {
-//   content: '\e650';
-// }
-
-// .md-subdirectory_arrow_right:after {
-//   content: '\e651';
-// }
-
-// .md-subject:after {
-//   content: '\e652';
-// }
-
-// .md-subscriptions:after {
-//   content: '\e653';
-// }
-
-// .md-subtitles:after {
-//   content: '\e655';
-// }
-
-// .md-subway:after {
-//   content: '\e657';
-// }
-
-// .md-supervised_user_circle:after {
-//   content: '\e659';
-// }
-
-// .md-supervisor_account:after {
-//   content: '\e65b';
-// }
-
-// .md-surround_sound:after {
-//   content: '\e65d';
-// }
-
-// .md-swap_calls:after {
-//   content: '\e65f';
-// }
-
-// .md-swap_horiz:after {
-//   content: '\e660';
-// }
-
-// .md-swap_horizontal_circle:after {
-//   content: '\e661';
-// }
-
-// .md-swap_vert:after {
-//   content: '\e663';
-// }
-
-// .md-swap_vertical_circle:after {
-//   content: '\e664';
-// }
-
-// .md-switch_camera:after {
-//   content: '\e666';
-// }
-
-// .md-switch_video:after {
-//   content: '\e668';
-// }
-
-// .md-sync:after {
-//   content: '\e66a';
-// }
-
-// .md-sync_alt:after {
-//   content: '\e66b';
-// }
-
-// .md-sync_disabled:after {
-//   content: '\e66c';
-// }
-
-// .md-sync_problem:after {
-//   content: '\e66d';
-// }
-
-// .md-system_update:after {
-//   content: '\e66e';
-// }
-
-// .md-system_update_alt:after {
-//   content: '\e670';
-// }
-
-// .md-tab:after {
-//   content: '\e671';
-// }
-
-// .md-tab_unselected:after {
-//   content: '\e672';
-// }
-
-// .md-table_chart:after {
-//   content: '\e673';
-// }
-
-// .md-tablet:after {
-//   content: '\e675';
-// }
-
-// .md-tablet_android:after {
-//   content: '\e677';
-// }
-
-// .md-tablet_mac:after {
-//   content: '\e679';
-// }
-
-// .md-tag_faces:after {
-//   content: '\e67b';
-// }
-
-// .md-tap_and_play:after {
-//   content: '\e67d';
-// }
-
-// .md-terrain:after {
-//   content: '\e67e';
-// }
-
-// .md-text_fields:after {
-//   content: '\e680';
-// }
-
-// .md-text_format:after {
-//   content: '\e681';
-// }
-
-// .md-text_rotate_up:after {
-//   content: '\e682';
-// }
-
-// .md-text_rotate_vertical:after {
-//   content: '\e683';
-// }
-
-// .md-text_rotation_angledown:after {
-//   content: '\e684';
-// }
-
-// .md-text_rotation_angleup:after {
-//   content: '\e685';
-// }
-
-// .md-text_rotation_down:after {
-//   content: '\e686';
-// }
-
-// .md-text_rotation_none:after {
-//   content: '\e687';
-// }
-
-// .md-textsms:after {
-//   content: '\e688';
-// }
-
-// .md-texture:after {
-//   content: '\e68a';
-// }
-
-// .md-theaters:after {
-//   content: '\e68b';
-// }
-
-// .md-thumb_down:after {
-//   content: '\e68d';
-// }
-
-// .md-thumb_down_alt:after {
-//   content: '\e68f';
-// }
-
-// .md-thumb_up:after {
-//   content: '\e691';
-// }
-
-// .md-thumb_up_alt:after {
-//   content: '\e693';
-// }
-
-// .md-thumbs_up_down:after {
-//   content: '\e695';
-// }
-
-// .md-time_to_leave:after {
-//   content: '\e697';
-// }
-
-// .md-timelapse:after {
-//   content: '\e699';
-// }
-
-// .md-timeline:after {
-//   content: '\e69b';
-// }
-
-// .md-timer:after {
-//   content: '\e69c';
-// }
-
-// .md-timer_10:after {
-//   content: '\e69e';
-// }
-
-// .md-timer_3:after {
-//   content: '\e69f';
-// }
-
-// .md-timer_off:after {
-//   content: '\e6a0';
-// }
-
-// .md-title:after {
-//   content: '\e6a2';
-// }
-
-// .md-toc:after {
-//   content: '\e6a3';
-// }
-
-// .md-today:after {
-//   content: '\e6a4';
-// }
-
-// .md-toggle_off:after {
-//   content: '\e6a6';
-// }
-
-// .md-toggle_on:after {
-//   content: '\e6a8';
-// }
-
-// .md-toll:after {
-//   content: '\e6aa';
-// }
-
-// .md-tonality:after {
-//   content: '\e6ac';
-// }
-
-// .md-touch_app:after {
-//   content: '\e6ae';
-// }
-
-// .md-toys:after {
-//   content: '\e6b0';
-// }
-
-// .md-track_changes:after {
-//   content: '\e6b2';
-// }
-
-// .md-traffic:after {
-//   content: '\e6b3';
-// }
-
-// .md-train:after {
-//   content: '\e6b5';
-// }
-
-// .md-tram:after {
-//   content: '\e6b7';
-// }
-
-// .md-transfer_within_a_station:after {
-//   content: '\e6b9';
-// }
-
-// .md-transform:after {
-//   content: '\e6ba';
-// }
-
-// .md-transit_enterexit:after {
-//   content: '\e6bb';
-// }
-
-// .md-translate:after {
-//   content: '\e6bc';
-// }
-
-// .md-trending_down:after {
-//   content: '\e6bd';
-// }
-
-// .md-trending_flat:after {
-//   content: '\e6be';
-// }
-
-// .md-trending_up:after {
-//   content: '\e6bf';
-// }
-
-// .md-trip_origin:after {
-//   content: '\e6c0';
-// }
-
-// .md-tune:after {
-//   content: '\e6c1';
-// }
-
-// .md-turned_in:after {
-//   content: '\e6c2';
-// }
-
-// .md-turned_in_not:after {
-//   content: '\e6c4';
-// }
-
-// .md-tv:after {
-//   content: '\e6c5';
-// }
-
-// .md-tv_off:after {
-//   content: '\e6c7';
-// }
-
-// .md-unarchive:after {
-//   content: '\e6c9';
-// }
-
-// .md-undo:after {
-//   content: '\e6cb';
-// }
-
-// .md-unfold_less:after {
-//   content: '\e6cc';
-// }
-
-// .md-unfold_more:after {
-//   content: '\e6cd';
-// }
-
-// .md-unsubscribe:after {
-//   content: '\e6ce';
-// }
-
-// .md-update:after {
-//   content: '\e6d0';
-// }
-
-// .md-usb:after {
-//   content: '\e6d1';
-// }
-
-// .md-verified_user:after {
-//   content: '\e6d2';
-// }
-
-// .md-vertical_align_bottom:after {
-//   content: '\e6d4';
-// }
-
-// .md-vertical_align_center:after {
-//   content: '\e6d5';
-// }
-
-// .md-vertical_align_top:after {
-//   content: '\e6d6';
-// }
-
-// .md-vertical_split:after {
-//   content: '\e6d7';
-// }
-
-// .md-vibration:after {
-//   content: '\e6d9';
-// }
-
-// .md-video_call:after {
-//   content: '\e6db';
-// }
-
-// .md-video_label:after {
-//   content: '\e6dd';
-// }
-
-// .md-video_library:after {
-//   content: '\e6df';
-// }
-
-// .md-videocam:after {
-//   content: '\e6e1';
-// }
-
-// .md-videocam_off:after {
-//   content: '\e6e3';
-// }
-
-// .md-videogame_asset:after {
-//   content: '\e6e5';
-// }
-
-// .md-view_agenda:after {
-//   content: '\e6e7';
-// }
-
-// .md-view_array:after {
-//   content: '\e6e9';
-// }
-
-// .md-view_carousel:after {
-//   content: '\e6eb';
-
-// .md-rv_hookup:after {
-//   content: '\e561';
-// }
-
-// .md-satellite:after {
-//   content: '\e563';
-// }
-
-// .md-save_alt:after {
-//   content: '\e567';
-// }
-
-// .md-scanner:after {
-//   content: '\e568';
-// }
-
-// .md-scatter_plot:after {
-//   content: '\e56a';
-// }
-
-// .md-schedule:after {
-//   content: '\e56c';
-// }
-
-// .md-school:after {
-//   content: '\e56e';
-// }
-
-// .md-score:after {
-//   content: '\e570';
-// }
-
-// .md-screen_lock_landscape:after {
-//   content: '\e572';
-// }
-
-// .md-screen_lock_portrait:after {
-//   content: '\e574';
-// }
-
-// .md-screen_lock_rotation:after {
-//   content: '\e576';
-// }
-
-// .md-screen_rotation:after {
-//   content: '\e577';
-// }
-
-// .md-screen_share:after {
-//   content: '\e579';
-// }
-
-// .md-sd_card:after {
-//   content: '\e57b';
-// }
-
-// .md-sd_storage:after {
-//   content: '\e57d';
-// }
-
-// .md-search:after {
-//   content: '\e57f';
-// }
-
-// .md-security:after {
-//   content: '\e580';
-// }
-
-// .md-select_all:after {
-//   content: '\e582';
-// }
-
-// .md-send:after {
-//   content: '\e583';
-// }
-
-// .md-sentiment_dissatisfied:after {
-//   content: '\e585';
-// }
-
-// .md-sentiment_neutral:after {
-//   content: '\e587';
-// }
-
-// .md-sentiment_satisfied:after {
-//   content: '\e589';
-// }
-
-// .md-sentiment_satisfied_alt:after {
-//   content: '\e58b';
-// }
-
-// .md-sentiment_slightly_dissatisfied:after {
-//   content: '\e58d';
-// }
-
-// .md-sentiment_very_dissatisfied:after {
-//   content: '\e58f';
-// }
-
-// .md-sentiment_very_satisfied:after {
-//   content: '\e591';
-// }
-
-// .md-settings:after {
-//   content: '\e593';
-// }
-
-// .md-settings_applications:after {
-//   content: '\e595';
-// }
-
-// .md-settings_backup_restore:after {
-//   content: '\e597';
-// }
-
-// .md-settings_bluetooth:after {
-//   content: '\e598';
-// }
-
-// .md-settings_brightness:after {
-//   content: '\e599';
-// }
-
-// .md-settings_cell:after {
-//   content: '\e59b';
-// }
-
-// .md-settings_ethernet:after {
-//   content: '\e59d';
-// }
-
-// .md-settings_input_antenna:after {
-//   content: '\e59e';
-// }
-
-// .md-settings_input_component:after {
-//   content: '\e59f';
-// }
-
-// .md-settings_input_composite:after {
-//   content: '\e5a1';
-// }
-
-// .md-settings_input_hdmi:after {
-//   content: '\e5a3';
-// }
-
-// .md-settings_input_svideo:after {
-//   content: '\e5a5';
-// }
-
-// .md-settings_overscan:after {
-//   content: '\e5a7';
-// }
-
-// .md-settings_phone:after {
-//   content: '\e5a9';
-// }
-
-// .md-settings_power:after {
-//   content: '\e5ab';
-// }
-
-// .md-settings_remote:after {
-//   content: '\e5ac';
-// }
-
-// .md-settings_system_daydream:after {
-//   content: '\e5ae';
-// }
-
-// .md-settings_voice:after {
-//   content: '\e5b0';
-// }
-
-// .md-share:after {
-//   content: '\e5b2';
-// }
-
-// .md-shop:after {
-//   content: '\e5b4';
-// }
-
-// .md-shop_two:after {
-//   content: '\e5b6';
-// }
-
-// .md-shopping_basket:after {
-//   content: '\e5b8';
-// }
-
-// .md-shopping_cart:after {
-//   content: '\e5ba';
-// }
-
-// .md-short_text:after {
-//   content: '\e5bc';
-// }
-
-// .md-show_chart:after {
-//   content: '\e5bd';
-// }
-
-// .md-shuffle:after {
-//   content: '\e5be';
-// }
-
-// .md-shutter_speed:after {
-//   content: '\e5bf';
-// }
-
-// .md-signal_cellular_0_bar:after {
-//   content: '\e5c1';
-// }
-
-// .md-signal_cellular_0_bar:before {
-//   content: '\e5c2';
-// }
-
-// .md-signal_cellular_1_bar:after {
-//   content: '\e5c3';
-// }
-
-// .md-signal_cellular_1_bar:before {
-//   content: '\e5c4';
-// }
-
-// .md-signal_cellular_2_bar:after {
-//   content: '\e5c5';
-// }
-
-// .md-signal_cellular_2_bar:before {
-//   content: '\e5c6';
-// }
-
-// .md-signal_cellular_3_bar:after {
-//   content: '\e5c7';
-// }
-
-// .md-signal_cellular_3_bar:before {
-//   content: '\e5c8';
-// }
-
-// .md-signal_cellular_4_bar:after {
-//   content: '\e5c9';
-// }
-
-// .md-signal_cellular_alt:after {
-//   content: '\e5ca';
-// }
-
-// .md-signal_cellular_connected_no_internet_0_bar:after {
-//   content: '\e5cb';
-// }
-
-// .md-signal_cellular_connected_no_internet_0_bar:before {
-//   content: '\e5cc';
-// }
-
-// .md-signal_cellular_connected_no_internet_1_bar:after {
-//   content: '\e5cd';
-// }
-
-// .md-signal_cellular_connected_no_internet_1_bar:before {
-//   content: '\e5ce';
-// }
-
-// .md-signal_cellular_connected_no_internet_2_bar:after {
-//   content: '\e5cf';
-// }
-
-// .md-signal_cellular_connected_no_internet_2_bar:before {
-//   content: '\e5d0';
-// }
-
-// .md-signal_cellular_connected_no_internet_3_bar:after {
-//   content: '\e5d1';
-// }
-
-// .md-signal_cellular_connected_no_internet_3_bar:before {
-//   content: '\e5d2';
-// }
-
-// .md-signal_cellular_connected_no_internet_4_bar:after {
-//   content: '\e5d3';
-// }
-
-// .md-signal_cellular_no_sim:after {
-//   content: '\e5d4';
-// }
-
-// .md-signal_cellular_null:after {
-//   content: '\e5d6';
-// }
-
-// .md-signal_cellular_off:after {
-//   content: '\e5d7';
-// }
-
-// .md-signal_wifi_0_bar:after {
-//   content: '\e5d8';
-// }
-
-// .md-signal_wifi_0_bar:before {
-//   content: '\e5d9';
-// }
-
-// .md-signal_wifi_1_bar:after {
-//   content: '\e5da';
-// }
-
-// .md-signal_wifi_1_bar:before {
-//   content: '\e5db';
-// }
-
-// .md-signal_wifi_1_bar_lock:after {
-//   content: '\e5dc';
-// }
-
-// .md-signal_wifi_1_bar_lock:before {
-//   content: '\e5dd';
-// }
-
-// .md-signal_wifi_2_bar:after {
-//   content: '\e5de';
-// }
-
-// .md-signal_wifi_2_bar:before {
-//   content: '\e5df';
-// }
-
-// .md-signal_wifi_2_bar_lock:after {
-//   content: '\e5e0';
-// }
-
-// .md-signal_wifi_2_bar_lock:before {
-//   content: '\e5e1';
-// }
-
-// .md-signal_wifi_3_bar:after {
-//   content: '\e5e2';
-// }
-
-// .md-signal_wifi_3_bar:before {
-//   content: '\e5e3';
-// }
-
-// .md-signal_wifi_3_bar_lock:after {
-//   content: '\e5e4';
-// }
-
-// .md-signal_wifi_3_bar_lock:before {
-//   content: '\e5e5';
-// }
-
-// .md-signal_wifi_4_bar:after {
-//   content: '\e5e6';
-// }
-
-// .md-signal_wifi_4_bar_lock:after {
-//   content: '\e5e7';
-// }
-
-// .md-signal_wifi_off:after {
-//   content: '\e5e8';
-// }
-
-// .md-sim_card:after {
-//   content: '\e5e9';
-// }
-
-// .md-sim_card_alert:after {
-//   content: '\e5eb';
-// }
-
-// .md-single_bed:after {
-//   content: '\e5ed';
-// }
-
-// .md-skip_next:after {
-//   content: '\e5ef';
-// }
-
-// .md-skip_previous:after {
-//   content: '\e5f1';
-// }
-
-// .md-slideshow:after {
-//   content: '\e5f3';
-// }
-
-// .md-slow_motion_video:after {
-//   content: '\e5f5';
-// }
-
-// .md-smartphone:after {
-//   content: '\e5f6';
-// }
-
-// .md-smoke_free:after {
-//   content: '\e5f8';
-// }
-
-// .md-smoking_rooms:after {
-//   content: '\e5f9';
-// }
-
-// .md-sms:after {
-//   content: '\e5fb';
-// }
-
-// .md-sms_failed:after {
-//   content: '\e5fd';
-// }
-
-// .md-snooze:after {
-//   content: '\e5ff';
-// }
-
-// .md-sort:after {
-//   content: '\e600';
-// }
-
-// .md-sort_by_alpha:after {
-//   content: '\e601';
-// }
-
-// .md-spa:after {
-//   content: '\e602';
-// }
-
-// .md-space_bar:after {
-//   content: '\e604';
-// }
-
-// .md-speaker:after {
-//   content: '\e605';
-// }
-
-// .md-speaker_group:after {
-//   content: '\e607';
-// }
-
-// .md-speaker_notes:after {
-//   content: '\e609';
-// }
-
-// .md-speaker_notes_off:after {
-//   content: '\e60b';
-// }
-
-// .md-speaker_phone:after {
-//   content: '\e60d';
-// }
-
-// .md-speed:after {
-//   content: '\e60f';
-// }
-
-// .md-spellcheck:after {
-//   content: '\e610';
-// }
-
-// .md-sports:after {
-//   content: '\e611';
-// }
-
-// .md-sports_baseball:after {
-//   content: '\e612';
-// }
-
-// .md-sports_basketball:after {
-//   content: '\e614';
-// }
-
-// .md-sports_cricket:after {
-//   content: '\e616';
-// }
-
-// .md-sports_esports:after {
-//   content: '\e618';
-// }
-
-// .md-sports_football:after {
-//   content: '\e61a';
-// }
-
-// .md-sports_golf:after {
-//   content: '\e61c';
-// }
-
-// .md-sports_handball:after {
-//   content: '\e61e';
-// }
-
-// .md-sports_hockey:after {
-//   content: '\e61f';
-// }
-
-// .md-sports_kabaddi:after {
-//   content: '\e620';
-// }
-
-// .md-sports_mma:after {
-//   content: '\e621';
-// }
-
-// .md-sports_motorsports:after {
-//   content: '\e623';
-// }
-
-// .md-sports_rugby:after {
-//   content: '\e625';
-// }
-
-// .md-sports_soccer:after {
-//   content: '\e627';
-// }
-
-// .md-sports_tennis:after {
-//   content: '\e629';
-// }
-
-// .md-sports_volleyball:after {
-//   content: '\e62a';
-// }
-
-// .md-square_foot:after {
-//   content: '\e62c';
-// }
-
-// .md-star:after {
-//   content: '\e62e';
-// }
-
-// .md-star_border:after {
-//   content: '\e630';
-// }
-
-// .md-star_half:after {
-//   content: '\e631';
-// }
-
-// .md-star_rate:after {
-//   content: '\e632';
-// }
-
-// .md-stars:after {
-//   content: '\e633';
-// }
-
-// .md-stay_current_landscape:after {
-//   content: '\e635';
-// }
-
-// .md-stay_current_portrait:after {
-//   content: '\e637';
-// }
-
-// .md-stay_primary_landscape:after {
-//   content: '\e639';
-// }
-
-// .md-stay_primary_portrait:after {
-//   content: '\e63b';
-// }
-
-// .md-stop:after {
-//   content: '\e63d';
-// }
-
-// .md-stop_circle:after {
-//   content: '\e63f';
-// }
-
-// .md-stop_screen_share:after {
-//   content: '\e641';
-// }
-
-// .md-storage:after {
-//   content: '\e643';
-// }
-
-// .md-store:after {
-//   content: '\e644';
-// }
-
-// .md-store_mall_directory:after {
-//   content: '\e646';
-// }
-
-// .md-storefront:after {
-//   content: '\e648';
-// }
-
-// .md-straighten:after {
-//   content: '\e64a';
-// }
-
-// .md-streetview:after {
-//   content: '\e64c';
-// }
-
-// .md-strikethrough_s:after {
-//   content: '\e64d';
-// }
-
-// .md-style:after {
-//   content: '\e64e';
-// }
-
-// .md-subdirectory_arrow_left:after {
-//   content: '\e650';
-// }
-
-// .md-subdirectory_arrow_right:after {
-//   content: '\e651';
-// }
-
-// .md-subject:after {
-//   content: '\e652';
-// }
-
-// .md-subscriptions:after {
-//   content: '\e653';
-// }
-
-// .md-subtitles:after {
-//   content: '\e655';
-// }
-
-// .md-subway:after {
-//   content: '\e657';
-// }
-
-// .md-supervised_user_circle:after {
-//   content: '\e659';
-// }
-
-// .md-supervisor_account:after {
-//   content: '\e65b';
-// }
-
-// .md-surround_sound:after {
-//   content: '\e65d';
-// }
-
-// .md-swap_calls:after {
-//   content: '\e65f';
-// }
-
-// .md-swap_horiz:after {
-//   content: '\e660';
-// }
-
-// .md-swap_horizontal_circle:after {
-//   content: '\e661';
-// }
-
-// .md-swap_vert:after {
-//   content: '\e663';
-// }
-
-// .md-swap_vertical_circle:after {
-//   content: '\e664';
-// }
-
-// .md-switch_camera:after {
-//   content: '\e666';
-// }
-
-// .md-switch_video:after {
-//   content: '\e668';
-// }
-
-// .md-sync:after {
-//   content: '\e66a';
-// }
-
-// .md-sync_alt:after {
-//   content: '\e66b';
-// }
-
-// .md-sync_disabled:after {
-//   content: '\e66c';
-// }
-
-// .md-sync_problem:after {
-//   content: '\e66d';
-// }
-
-// .md-system_update:after {
-//   content: '\e66e';
-// }
-
-// .md-system_update_alt:after {
-//   content: '\e670';
-// }
-
-// .md-tab:after {
-//   content: '\e671';
-// }
-
-// .md-tab_unselected:after {
-//   content: '\e672';
-// }
-
-// .md-table_chart:after {
-//   content: '\e673';
-// }
-
-// .md-tablet:after {
-//   content: '\e675';
-// }
-
-// .md-tablet_android:after {
-//   content: '\e677';
-// }
-
-// .md-tablet_mac:after {
-//   content: '\e679';
-// }
-
-// .md-tag_faces:after {
-//   content: '\e67b';
-// }
-
-// .md-tap_and_play:after {
-//   content: '\e67d';
-// }
-
-// .md-terrain:after {
-//   content: '\e67e';
-// }
-
-// .md-text_fields:after {
-//   content: '\e680';
-// }
-
-// .md-text_format:after {
-//   content: '\e681';
-// }
-
-// .md-text_rotate_up:after {
-//   content: '\e682';
-// }
-
-// .md-text_rotate_vertical:after {
-//   content: '\e683';
-// }
-
-// .md-text_rotation_angledown:after {
-//   content: '\e684';
-// }
-
-// .md-text_rotation_angleup:after {
-//   content: '\e685';
-// }
-
-// .md-text_rotation_down:after {
-//   content: '\e686';
-// }
-
-// .md-text_rotation_none:after {
-//   content: '\e687';
-// }
-
-// .md-textsms:after {
-//   content: '\e688';
-// }
-
-// .md-texture:after {
-//   content: '\e68a';
-// }
-
-// .md-theaters:after {
-//   content: '\e68b';
-// }
-
-// .md-thumb_down:after {
-//   content: '\e68d';
-// }
-
-// .md-thumb_down_alt:after {
-//   content: '\e68f';
-// }
-
-// .md-thumb_up:after {
-//   content: '\e691';
-// }
-
-// .md-thumb_up_alt:after {
-//   content: '\e693';
-// }
-
-// .md-thumbs_up_down:after {
-//   content: '\e695';
-// }
-
-// .md-time_to_leave:after {
-//   content: '\e697';
-// }
-
-// .md-timelapse:after {
-//   content: '\e699';
-// }
-
-// .md-timeline:after {
-//   content: '\e69b';
-// }
-
-// .md-timer:after {
-//   content: '\e69c';
-// }
-
-// .md-timer_10:after {
-//   content: '\e69e';
-// }
-
-// .md-timer_3:after {
-//   content: '\e69f';
-// }
-
-// .md-timer_off:after {
-//   content: '\e6a0';
-// }
-
-// .md-title:after {
-//   content: '\e6a2';
-// }
-
-// .md-toc:after {
-//   content: '\e6a3';
-// }
-
-// .md-today:after {
-//   content: '\e6a4';
-// }
-
-// .md-toggle_off:after {
-//   content: '\e6a6';
-// }
-
-// .md-toggle_on:after {
-//   content: '\e6a8';
-// }
-
-// .md-toll:after {
-//   content: '\e6aa';
-// }
-
-// .md-tonality:after {
-//   content: '\e6ac';
-// }
-
-// .md-touch_app:after {
-//   content: '\e6ae';
-// }
-
-// .md-toys:after {
-//   content: '\e6b0';
-// }
-
-// .md-track_changes:after {
-//   content: '\e6b2';
-// }
-
-// .md-traffic:after {
-//   content: '\e6b3';
-// }
-
-// .md-train:after {
-//   content: '\e6b5';
-// }
-
-// .md-tram:after {
-//   content: '\e6b7';
-// }
-
-// .md-transfer_within_a_station:after {
-//   content: '\e6b9';
-// }
-
-// .md-transform:after {
-//   content: '\e6ba';
-// }
-
-// .md-transit_enterexit:after {
-//   content: '\e6bb';
-// }
-
-// .md-translate:after {
-//   content: '\e6bc';
-// }
-
-// .md-trending_down:after {
-//   content: '\e6bd';
-// }
-
-// .md-trending_flat:after {
-//   content: '\e6be';
-// }
-
-// .md-trending_up:after {
-//   content: '\e6bf';
-// }
-
-// .md-trip_origin:after {
-//   content: '\e6c0';
-// }
-
-// .md-tune:after {
-//   content: '\e6c1';
-// }
-
-// .md-turned_in:after {
-//   content: '\e6c2';
-// }
-
-// .md-turned_in_not:after {
-//   content: '\e6c4';
-// }
-
-// .md-tv:after {
-//   content: '\e6c5';
-// }
-
-// .md-tv_off:after {
-//   content: '\e6c7';
-// }
-
-// .md-unarchive:after {
-//   content: '\e6c9';
-// }
-
-// .md-undo:after {
-//   content: '\e6cb';
-// }
-
-// .md-unfold_less:after {
-//   content: '\e6cc';
-// }
-
-// .md-unfold_more:after {
-//   content: '\e6cd';
-// }
-
-// .md-unsubscribe:after {
-//   content: '\e6ce';
-// }
-
-// .md-update:after {
-//   content: '\e6d0';
-// }
-
-// .md-usb:after {
-//   content: '\e6d1';
-// }
-
-// .md-verified_user:after {
-//   content: '\e6d2';
-// }
-
-// .md-vertical_align_bottom:after {
-//   content: '\e6d4';
-// }
-
-// .md-vertical_align_center:after {
-//   content: '\e6d5';
-// }
-
-// .md-vertical_align_top:after {
-//   content: '\e6d6';
-// }
-
-// .md-vertical_split:after {
-//   content: '\e6d7';
-// }
-
-// .md-vibration:after {
-//   content: '\e6d9';
-// }
-
-// .md-video_call:after {
-//   content: '\e6db';
-// }
-
-// .md-video_label:after {
-//   content: '\e6dd';
-// }
-
-// .md-video_library:after {
-//   content: '\e6df';
-// }
-
-// .md-videocam:after {
-//   content: '\e6e1';
-// }
-
-// .md-videocam_off:after {
-//   content: '\e6e3';
-// }
-
-// .md-videogame_asset:after {
-//   content: '\e6e5';
-// }
-
-// .md-view_agenda:after {
-//   content: '\e6e7';
-// }
-
-// .md-view_array:after {
-//   content: '\e6e9';
-// }
-
-// .md-view_carousel:after {
-//   content: '\e6eb';
-// }
-
-// .md-view_column:after {
-//   content: '\e6ed';
-// }
-
-// .md-view_comfy:after {
-//   content: '\e6ef';
-// }
-
-// .md-view_compact:after {
-//   content: '\e6f1';
-// }
-
-// .md-view_day:after {
-//   content: '\e6f3';
-// }
-
-// .md-view_headline:after {
-//   content: '\e6f5';
-// }
-
-// .md-view_list:after {
-//   content: '\e6f6';
-// }
-
-// .md-view_module:after {
-//   content: '\e6f8';
-// }
-
-// .md-view_quilt:after {
-//   content: '\e6fa';
-// }
-
-// .md-view_stream:after {
-//   content: '\e6fc';
-// }
-
-// .md-view_week:after {
-//   content: '\e6fe';
-// }
-
-// .md-vignette:after {
-//   content: '\e700';
-// }
-
-// .md-visibility:after {
-//   content: '\e702';
-// }
-
-// .md-visibility_off:after {
-//   content: '\e704';
-// }
-
-// .md-voice_chat:after {
-//   content: '\e706';
-// }
-
-// .md-voice_over_off:after {
-//   content: '\e708';
-// }
-
-// .md-voicemail:after {
-//   content: '\e70a';
-// }
-
-// .md-volume_down:after {
-//   content: '\e70b';
-// }
-
-// .md-volume_mute:after {
-//   content: '\e70d';
-// }
-
-// .md-volume_off:after {
-//   content: '\e70f';
-// }
-
-// .md-volume_up:after {
-//   content: '\e711';
-// }
-
-// .md-vpn_key:after {
-//   content: '\e713';
-// }
-
-// .md-vpn_lock:after {
-//   content: '\e715';
-// }
-
-// .md-wallpaper:after {
-//   content: '\e717';
-// }
-
-// .md-warning:after {
-//   content: '\e718';
-// }
-
-// .md-watch:after {
-//   content: '\e71a';
-// }
-
-// .md-watch_later:after {
-//   content: '\e71c';
-// }
-
-// .md-waves:after {
-//   content: '\e71e';
-// }
-
-// .md-wb_auto:after {
-//   content: '\e71f';
-// }
-
-// .md-wb_cloudy:after {
-//   content: '\e721';
-// }
-
-// .md-wb_incandescent:after {
-//   content: '\e723';
-// }
-
-// .md-wb_iridescent:after {
-//   content: '\e725';
-// }
-
-// .md-wb_sunny:after {
-//   content: '\e727';
-// }
-
-// .md-wc:after {
-//   content: '\e729';
-// }
-
-// .md-web:after {
-//   content: '\e72a';
-// }
-
-// .md-web_asset:after {
-//   content: '\e72c';
-// }
-
-// .md-weekend:after {
-//   content: '\e72e';
-// }
-
-// .md-whatshot:after {
-//   content: '\e730';
-// }
-
-// .md-where_to_vote:after {
-//   content: '\e732';
-// }
-
-// .md-widgets:after {
-//   content: '\e734';
-// }
-
-// .md-wifi:after {
-//   content: '\e736';
-// }
-
-// .md-wifi_lock:after {
-//   content: '\e737';
-// }
-
-// .md-wifi_off:after {
-//   content: '\e738';
-// }
-
-// .md-wifi_tethering:after {
-//   content: '\e739';
-// }
-
-// .md-work:after {
-//   content: '\e73a';
-// }
-
-// .md-work_off:after {
-//   content: '\e73c';
-// }
-
-// .md-work_outline:after {
-//   content: '\e73e';
-// }
-
-// .md-wrap_text:after {
-//   content: '\e73f';
-// }
-
-// .md-youtube_searched_for:after {
-//   content: '\e740';
-// }
-
-// .md-zoom_in:after {
-//   content: '\e741';
-// }
-
-// .md-zoom_out:after {
-//   content: '\e742';
-// }
-
-// .md-zoom_out_map:after {
-//   content: '\e743';
-// }
-
-// .md-add_ic_call:after {
-//   content: '\e744';
-// }
-
-// .md-library_add_check:after {
-//   content: '\e746';
-// }
-
-// .md-star_outline:after {
-//   content: '\e748';
-// }
-
-// .md-two_wheeler:after {
-//   content: '\e749';
-// }
-
-// .md-5g:after {
-//   content: '\e74a';
-// }
-
-// .md-ad_units:after {
-//   content: '\e74b';
-// }
-
-// .md-add_business:after {
-//   content: '\e74d';
-// }
-
-// .md-add_location_alt:after {
-//   content: '\e74f';
-// }
-
-// .md-add_road:after {
-//   content: '\e751';
-// }
-
-// .md-addchart:after {
-//   content: '\e752';
-// }
-
-// .md-admin_panel_settings:after {
-//   content: '\e753';
-// }
-
-// .md-agriculture:after {
-//   content: '\e755';
-// }
-
-// .md-alt_route:after {
-//   content: '\e757';
-// }
-
-// .md-analytics:after {
-//   content: '\e758';
-// }
-
-// .md-anchor:after {
-//   content: '\e75a';
-// }
-
-// .md-api:after {
-//   content: '\e75b';
-// }
-
-// .md-app_blocking:after {
-//   content: '\e75c';
-// }
-
-// .md-app_settings_alt:after {
-//   content: '\e75e';
-// }
-
-// .md-architecture:after {
-//   content: '\e760';
-// }
-
-// .md-arrow_circle_down:after {
-//   content: '\e761';
-// }
-
-// .md-arrow_circle_up:after {
-//   content: '\e763';
-// }
-
-// .md-article:after {
-//   content: '\e765';
-// }
-
-// .md-attach_email:after {
-//   content: '\e767';
-// }
-
-// .md-auto_delete:after {
-//   content: '\e768';
-// }
-
-// .md-baby_changing_station:after {
-//   content: '\e76a';
-// }
-
-// .md-backpack:after {
-//   content: '\e76b';
-// }
-
-// .md-backup_table:after {
-//   content: '\e76d';
-// }
-
-// .md-batch_prediction:after {
-//   content: '\e76f';
-// }
-
-// .md-bedtime:after {
-//   content: '\e771';
-// }
-
-// .md-bike_scooter:after {
-//   content: '\e773';
-// }
-
-// .md-biotech:after {
-//   content: '\e774';
-// }
-
-// .md-browser_not_supported:after {
-//   content: '\e776';
-// }
-
-// .md-build_circle:after {
-//   content: '\e777';
-// }
-
-// .md-calculate:after {
-//   content: '\e779';
-// }
-
-// .md-campaign:after {
-//   content: '\e77b';
-// }
-
-// .md-charging_station:after {
-//   content: '\e77d';
-// }
-
-// .md-checkroom:after {
-//   content: '\e77f';
-// }
-
-// .md-cleaning_services:after {
-//   content: '\e780';
-// }
-
-// .md-close_fullscreen:after {
-//   content: '\e782';
-// }
-
-// .md-comment_bank:after {
-//   content: '\e783';
-// }
-
-// .md-construction:after {
-//   content: '\e785';
-// }
-
-// .md-corporate_fare:after {
-//   content: '\e786';
-// }
-
-// .md-design_services:after {
-//   content: '\e788';
-// }
-
-// .md-directions_off:after {
-//   content: '\e78a';
-// }
-
-// .md-do_not_step:after {
-//   content: '\e78b';
-// }
-
-// .md-do_not_touch:after {
-//   content: '\e78d';
-// }
-
-// .md-domain_verification:after {
-//   content: '\e78f';
-// }
-
-// .md-dry:after {
-//   content: '\e791';
-// }
-
-// .md-dynamic_form:after {
-//   content: '\e793';
-// }
-
-// .md-edit_road:after {
-//   content: '\e795';
-// }
-
-// .md-electric_bike:after {
-//   content: '\e797';
-// }
-
-// .md-electric_car:after {
-//   content: '\e798';
-// }
-
-// .md-electric_moped:after {
-//   content: '\e79a';
-// }
-
-// .md-electric_scooter:after {
-//   content: '\e79c';
-// }
-
-// .md-electrical_services:after {
-//   content: '\e79d';
-// }
-
-// .md-elevator:after {
-//   content: '\e79e';
-// }
-
-// .md-engineering:after {
-//   content: '\e7a0';
-// }
-
-// .md-escalator:after {
-//   content: '\e7a2';
-// }
-
-// .md-escalator_warning:after {
-//   content: '\e7a4';
-// }
-
-// .md-fact_check:after {
-//   content: '\e7a5';
-// }
-
-// .md-family_restroom:after {
-//   content: '\e7a7';
-// }
-
-// .md-filter_alt:after {
-//   content: '\e7a8';
-// }
-
-// .md-flaky:after {
-//   content: '\e7aa';
-// }
-
-// .md-forward_to_inbox:after {
-//   content: '\e7ab';
-// }
-
-// .md-grading:after {
-//   content: '\e7ad';
-// }
-
-// .md-handyman:after {
-//   content: '\e7ae';
-// }
-
-// .md-hearing_disabled:after {
-//   content: '\e7b0';
-// }
-
-// .md-help_center:after {
-//   content: '\e7b1';
-// }
-
-// .md-highlight_alt:after {
-//   content: '\e7b3';
-// }
-
-// .md-history_edu:after {
-//   content: '\e7b4';
-// }
-
-// .md-history_toggle_off:after {
-//   content: '\e7b6';
-// }
-
-// .md-home_repair_service:after {
-//   content: '\e7b7';
-// }
-
-// .md-horizontal_rule:after {
-//   content: '\e7b9';
-// }
-
-// .md-hourglass_bottom:after {
-//   content: '\e7ba';
-// }
-
-// .md-hourglass_disabled:after {
-//   content: '\e7bc';
-// }
-
-// .md-hourglass_top:after {
-//   content: '\e7bd';
-// }
-
-// .md-hvac:after {
-//   content: '\e7bf';
-// }
-
-// .md-image_not_supported:after {
-//   content: '\e7c1';
-// }
-
-// .md-insights:after {
-//   content: '\e7c3';
-// }
-
-// .md-integration_instructions:after {
-//   content: '\e7c4';
-// }
-
-// .md-legend_toggle:after {
-//   content: '\e7c6';
-// }
-
-// .md-login:after {
-//   content: '\e7c7';
-// }
-
-// .md-maps_ugc:after {
-//   content: '\e7c8';
-// }
-
-// .md-mark_chat_read:after {
-//   content: '\e7ca';
-// }
-
-// .md-mark_chat_unread:after {
-//   content: '\e7cc';
-// }
-
-// .md-mark_email_read:after {
-//   content: '\e7ce';
-// }
-
-// .md-mark_email_unread:after {
-//   content: '\e7d0';
-// }
-
-// .md-mediation:after {
-//   content: '\e7d2';
-// }
-
-// .md-medical_services:after {
-//   content: '\e7d3';
-// }
-
-// .md-military_tech:after {
-//   content: '\e7d5';
-// }
-
-// .md-miscellaneous_services:after {
-//   content: '\e7d7';
-// }
-
-// .md-model_training:after {
-//   content: '\e7d8';
-// }
-
-// .md-moped:after {
-//   content: '\e7d9';
-// }
-
-// .md-more_time:after {
-//   content: '\e7db';
-// }
-
-// .md-multiple_stop:after {
-//   content: '\e7dc';
-// }
-
-// .md-nat:after {
-//   content: '\e7dd';
-// }
-
-// .md-next_plan:after {
-//   content: '\e7df';
-// }
-
-// .md-no_cell:after {
-//   content: '\e7e1';
-// }
-
-// .md-no_drinks:after {
-//   content: '\e7e3';
-// }
-
-// .md-no_flash:after {
-//   content: '\e7e5';
-// }
-
-// .md-no_food:after {
-//   content: '\e7e7';
-// }
-
-// .md-no_photography:after {
-//   content: '\e7e9';
-// }
-
-// .md-no_stroller:after {
-//   content: '\e7eb';
-// }
-
-// .md-not_accessible:after {
-//   content: '\e7ed';
-// }
-
-// .md-not_started:after {
-//   content: '\e7ee';
-// }
-
-// .md-online_prediction:after {
-//   content: '\e7f0';
-// }
-
-// .md-open_in_full:after {
-//   content: '\e7f1';
-// }
-
-// .md-outlet:after {
-//   content: '\e7f2';
-// }
-
-// .md-payments:after {
-//   content: '\e7f4';
-// }
-
-// .md-pedal_bike:after {
-//   content: '\e7f6';
-// }
-
-// .md-pending:after {
-//   content: '\e7f7';
-// }
-
-// .md-pending_actions:after {
-//   content: '\e7f9';
-// }
-
-// .md-person_add_alt_1:after {
-//   content: '\e7fb';
-// }
-
-// .md-person_remove:after {
-//   content: '\e7fd';
-// }
-
-// .md-person_remove_alt_1:after {
-//   content: '\e7ff';
-// }
-
-// .md-person_search:after {
-//   content: '\e801';
-// }
-
-// .md-pest_control:after {
-//   content: '\e803';
-// }
-
-// .md-pest_control_rodent:after {
-//   content: '\e805';
-// }
-
-// .md-plagiarism:after {
-//   content: '\e807';
-// }
-
-// .md-plumbing:after {
-//   content: '\e809';
-// }
-
-// .md-point_of_sale:after {
-//   content: '\e80a';
-// }
-
-// .md-preview:after {
-//   content: '\e80c';
-// }
-
-// .md-privacy_tip:after {
-//   content: '\e80e';
-// }
-
-// .md-psychology:after {
-//   content: '\e810';
-// }
-
-// .md-public_off:after {
-//   content: '\e812';
-// }
-
-// .md-push_pin:after {
-//   content: '\e814';
-// }
-
-// .md-qr_code:after {
-//   content: '\e816';
-// }
-
-// .md-quickreply:after {
-//   content: '\e818';
-// }
-
-// .md-read_more:after {
-//   content: '\e81a';
-// }
-
-// .md-receipt_long:after {
-//   content: '\e81b';
-// }
-
-// .md-request_quote:after {
-//   content: '\e81d';
-// }
-
-// .md-room_preferences:after {
-//   content: '\e81f';
-// }
-
-// .md-rule:after {
-//   content: '\e821';
-// }
-
-// .md-rule_folder:after {
-//   content: '\e822';
-// }
-
-// .md-run_circle:after {
-//   content: '\e824';
-// }
-
-// .md-science:after {
-//   content: '\e826';
-// }
-
-// .md-search_off:after {
-//   content: '\e828';
-// }
-
-// .md-self_improvement:after {
-//   content: '\e829';
-// }
-
-// .md-sensor_door:after {
-//   content: '\e82a';
-// }
-
-// .md-sensor_window:after {
-//   content: '\e82c';
-// }
-
-// .md-shopping_bag:after {
-//   content: '\e82e';
-// }
-
-// .md-smart_button:after {
-//   content: '\e830';
-// }
-
-// .md-snippet_folder:after {
-//   content: '\e831';
-// }
-
-// .md-soap:after {
-//   content: '\e833';
-// }
-
-// .md-source:after {
-//   content: '\e835';
-// }
-
-// .md-stairs:after {
-//   content: '\e837';
-// }
-
-// .md-stroller:after {
-//   content: '\e839';
-// }
-
-// .md-subscript:after {
-//   content: '\e83b';
-// }
-
-// .md-subtitles_off:after {
-//   content: '\e83c';
-// }
-
-// .md-superscript:after {
-//   content: '\e83e';
-// }
-
-// .md-support:after {
-//   content: '\e83f';
-// }
-
-// .md-support_agent:after {
-//   content: '\e841';
-// }
-
-// .md-switch_left:after {
-//   content: '\e842';
-// }
-
-// .md-switch_right:after {
-//   content: '\e844';
-// }
-
-// .md-table_rows:after {
-//   content: '\e846';
-// }
-
-// .md-table_view:after {
-//   content: '\e848';
-// }
-
-// .md-text_snippet:after {
-//   content: '\e84a';
-// }
-
-// .md-topic:after {
-//   content: '\e84c';
-// }
-
-// .md-tour:after {
-//   content: '\e84e';
-// }
-
-// .md-tty:after {
-//   content: '\e850';
-// }
-
-// .md-umbrella:after {
-//   content: '\e852';
-// }
-
-// .md-upgrade:after {
-//   content: '\e854';
-// }
-
-// .md-verified:after {
-//   content: '\e855';
-// }
-
-// .md-video_settings:after {
-//   content: '\e857';
-// }
-
-// .md-view_sidebar:after {
-//   content: '\e858';
-// }
-
-// .md-wash:after {
-//   content: '\e85a';
-// }
-
-// .md-wheelchair_pickup:after {
-//   content: '\e85c';
-// }
-
-// .md-wifi_calling:after {
-//   content: '\e85d';
-// }
-
-// .md-wifi_protected_setup:after {
-//   content: '\e85f';
-// }
-
-// .md-wrong_location:after {
-//   content: '\e860';
-// }
-
-// .md-wysiwyg:after {
-//   content: '\e861';
-// }
-
-// .md-bento:after {
-//   content: '\e864';
-// }
-
-// .md-carpenter:after {
-//   content: '\e866';
-// }
-
-// .md-closed_caption_disabled:after {
-//   content: '\e868';
-// }
-
-// .md-countertops:after {
-//   content: '\e86a';
-// }
-
-// .md-east:after {
-//   content: '\e86c';
-// }
-
-// .md-fence:after {
-//   content: '\e86d';
-// }
-
-// .md-fire_extinguisher:after {
-//   content: '\e86f';
-// }
-
-// .md-food_bank:after {
-//   content: '\e870';
-// }
-
-// .md-foundation:after {
-//   content: '\e872';
-// }
-
-// .md-grass:after {
-//   content: '\e874';
-// }
-
-// .md-house_siding:after {
-//   content: '\e875';
-// }
-
-// .md-leaderboard:after {
-//   content: '\e877';
-// }
-
-// .md-microwave:after {
-//   content: '\e879';
-// }
-
-// .md-near_me_disabled:after {
-//   content: '\e87b';
-// }
-
-// .md-night_shelter:after {
-//   content: '\e87d';
-// }
-
-// .md-no_meals:after {
-//   content: '\e87f';
-// }
-
-// .md-no_transfer:after {
-//   content: '\e880';
-// }
-
-// .md-north:after {
-//   content: '\e882';
-// }
-
-// .md-north_east:after {
-//   content: '\e883';
-// }
-
-// .md-north_west:after {
-//   content: '\e884';
-// }
-
-// .md-qr_code_scanner:after {
-//   content: '\e885';
-// }
-
-// .md-rice_bowl:after {
-//   content: '\e886';
-// }
-
-// .md-roofing:after {
-//   content: '\e888';
-// }
-
-// .md-set_meal:after {
-//   content: '\e88a';
-// }
-
-// .md-south:after {
-//   content: '\e88c';
-// }
-
-// .md-south_east:after {
-//   content: '\e88d';
-// }
-
-// .md-south_west:after {
-//   content: '\e88e';
-// }
-
-// .md-sports_bar:after {
-//   content: '\e88f';
-// }
-
-// .md-sticky_note_2:after {
-//   content: '\e891';
-// }
-
-// .md-tapas:after {
-//   content: '\e893';
-// }
-
-// .md-water_damage:after {
-//   content: '\e895';
-// }
-
-// .md-west:after {
-//   content: '\e897';
-// }
-
-// .md-wine_bar:after {
-//   content: '\e898';
-// }
+pub const MD_360: &str = "\u{e000}";
+pub const MD_3D_ROTATION: &str = "\u{e001}";
+pub const MD_4K: &str = "\u{e002}";
+pub const MD_AC_UNIT: &str = "\u{e004}";
+pub const MD_ACCESS_ALARM: &str = "\u{e005}";
+pub const MD_ACCESS_ALARMS: &str = "\u{e007}";
+pub const MD_ACCESS_TIME: &str = "\u{e009}";
+pub const MD_ACCESSIBILITY: &str = "\u{e00b}";
+pub const MD_ACCESSIBILITY_NEW: &str = "\u{e00c}";
+pub const MD_ACCESSIBLE: &str = "\u{e00d}";
+pub const MD_ACCESSIBLE_FORWARD: &str = "\u{e00e}";
+pub const MD_ACCOUNT_BALANCE: &str = "\u{e00f}";
+pub const MD_ACCOUNT_BALANCE_WALLET: &str = "\u{e011}";
+pub const MD_ACCOUNT_BOX: &str = "\u{e013}";
+pub const MD_ACCOUNT_CIRCLE: &str = "\u{e015}";
+pub const MD_ACCOUNT_TREE: &str = "\u{e017}";
+pub const MD_ADB: &str = "\u{e019}";
+pub const MD_ADD: &str = "\u{e01a}";
+pub const MD_ADD_A_PHOTO: &str = "\u{e01b}";
+pub const MD_ADD_ALARM: &str = "\u{e01d}";
+pub const MD_ADD_ALERT: &str = "\u{e01f}";
+pub const MD_ADD_BOX: &str = "\u{e021}";
+pub const MD_ADD_CIRCLE: &str = "\u{e023}";
+pub const MD_ADD_CIRCLE_OUTLINE: &str = "\u{e025}";
+pub const MD_ADD_COMMENT: &str = "\u{e026}";
+pub const MD_ADD_LOCATION: &str = "\u{e028}";
+pub const MD_ADD_PHOTO_ALTERNATE: &str = "\u{e02a}";
+pub const MD_ADD_SHOPPING_CART: &str = "\u{e02c}";
+pub const MD_ADD_TO_HOME_SCREEN: &str = "\u{e02d}";
+pub const MD_ADD_TO_PHOTOS: &str = "\u{e02e}";
+pub const MD_ADD_TO_QUEUE: &str = "\u{e030}";
+pub const MD_ADJUST: &str = "\u{e032}";
+pub const MD_AIRLINE_SEAT_FLAT: &str = "\u{e033}";
+pub const MD_AIRLINE_SEAT_FLAT_ANGLED: &str = "\u{e035}";
+pub const MD_AIRLINE_SEAT_INDIVIDUAL_SUITE: &str = "\u{e037}";
+pub const MD_AIRLINE_SEAT_LEGROOM_EXTRA: &str = "\u{e039}";
+pub const MD_AIRLINE_SEAT_LEGROOM_NORMAL: &str = "\u{e03a}";
+pub const MD_AIRLINE_SEAT_LEGROOM_REDUCED: &str = "\u{e03b}";
+pub const MD_AIRLINE_SEAT_RECLINE_EXTRA: &str = "\u{e03c}";
+pub const MD_AIRLINE_SEAT_RECLINE_NORMAL: &str = "\u{e03d}";
+pub const MD_AIRPLANEMODE_ACTIVE: &str = "\u{e03e}";
+pub const MD_AIRPLANEMODE_INACTIVE: &str = "\u{e03f}";
+pub const MD_AIRPLAY: &str = "\u{e040}";
+pub const MD_AIRPORT_SHUTTLE: &str = "\u{e041}";
+pub const MD_ALARM: &str = "\u{e043}";
+pub const MD_ALARM_ADD: &str = "\u{e045}";
+pub const MD_ALARM_OFF: &str = "\u{e047}";
+pub const MD_ALARM_ON: &str = "\u{e048}";
+pub const MD_ALBUM: &str = "\u{e04a}";
+pub const MD_ALL_INBOX: &str = "\u{e04c}";
+pub const MD_ALL_INCLUSIVE: &str = "\u{e04e}";
+pub const MD_ALL_OUT: &str = "\u{e04f}";
+pub const MD_ALTERNATE_EMAIL: &str = "\u{e051}";
+pub const MD_AMP_STORIES: &str = "\u{e053}";
+pub const MD_ANDROID: &str = "\u{e055}";
+pub const MD_ANNOUNCEMENT: &str = "\u{e056}";
+pub const MD_APARTMENT: &str = "\u{e058}";
+pub const MD_APPS: &str = "\u{e059}";
+pub const MD_ARCHIVE: &str = "\u{e05a}";
+pub const MD_ARROW_BACK: &str = "\u{e05c}";
+pub const MD_ARROW_BACK_IOS: &str = "\u{e05d}";
+pub const MD_ARROW_DOWNWARD: &str = "\u{e05e}";
+pub const MD_ARROW_DROP_DOWN: &str = "\u{e05f}";
+pub const MD_ARROW_DROP_DOWN_CIRCLE: &str = "\u{e060}";
+pub const MD_ARROW_DROP_UP: &str = "\u{e062}";
+pub const MD_ARROW_FORWARD: &str = "\u{e063}";
+pub const MD_ARROW_FORWARD_IOS: &str = "\u{e064}";
+pub const MD_ARROW_LEFT: &str = "\u{e065}";
+pub const MD_ARROW_RIGHT: &str = "\u{e066}";
+pub const MD_ARROW_RIGHT_ALT: &str = "\u{e067}";
+pub const MD_ARROW_UPWARD: &str = "\u{e068}";
+pub const MD_ART_TRACK: &str = "\u{e069}";
+pub const MD_ASPECT_RATIO: &str = "\u{e06a}";
+pub const MD_ASSESSMENT: &str = "\u{e06c}";
+pub const MD_ASSIGNMENT: &str = "\u{e06e}";
+pub const MD_ASSIGNMENT_IND: &str = "\u{e070}";
+pub const MD_ASSIGNMENT_LATE: &str = "\u{e072}";
+pub const MD_ASSIGNMENT_RETURN: &str = "\u{e074}";
+pub const MD_ASSIGNMENT_RETURNED: &str = "\u{e076}";
+pub const MD_ASSIGNMENT_TURNED_IN: &str = "\u{e078}";
+pub const MD_ASSISTANT: &str = "\u{e07a}";
+pub const MD_ASSISTANT_PHOTO: &str = "\u{e07c}";
+pub const MD_ATM: &str = "\u{e07e}";
+pub const MD_ATTACH_FILE: &str = "\u{e07f}";
+pub const MD_ATTACH_MONEY: &str = "\u{e080}";
+pub const MD_ATTACHMENT: &str = "\u{e081}";
+pub const MD_AUDIOTRACK: &str = "\u{e082}";
+pub const MD_AUTORENEW: &str = "\u{e084}";
+pub const MD_AV_TIMER: &str = "\u{e085}";
+pub const MD_BACKSPACE: &str = "\u{e086}";
+pub const MD_BACKUP: &str = "\u{e088}";
+pub const MD_BALLOT: &str = "\u{e08a}";
+pub const MD_BAR_CHART: &str = "\u{e08c}";
+pub const MD_BARCODE: &str = "\u{e08d}";
+pub const MD_BATHTUB: &str = "\u{e08e}";
+pub const MD_BATTERY_20_AFTER: &str = "\u{e090}";
+pub const MD_BATTERY_20_BEFORE: &str = "\u{e091}";
+pub const MD_BATTERY_30_AFTER: &str = "\u{e092}";
+pub const MD_BATTERY_30_BEFORE: &str = "\u{e093}";
+pub const MD_BATTERY_50_AFTER: &str = "\u{e094}";
+pub const MD_BATTERY_50_BEFORE: &str = "\u{e095}";
+pub const MD_BATTERY_60_AFTER: &str = "\u{e096}";
+pub const MD_BATTERY_60_BEFORE: &str = "\u{e097}";
+pub const MD_BATTERY_80_AFTER: &str = "\u{e098}";
+pub const MD_BATTERY_80_BEFORE: &str = "\u{e099}";
+pub const MD_BATTERY_90_AFTER: &str = "\u{e09a}";
+pub const MD_BATTERY_90_BEFORE: &str = "\u{e09b}";
+pub const MD_BATTERY_ALERT: &str = "\u{e09c}";
+pub const MD_BATTERY_CHARGING_20_AFTER: &str = "\u{e09d}";
+pub const MD_BATTERY_CHARGING_20_BEFORE: &str = "\u{e09e}";
+pub const MD_BATTERY_CHARGING_30_AFTER: &str = "\u{e09f}";
+pub const MD_BATTERY_CHARGING_30_BEFORE: &str = "\u{e0a0}";
+pub const MD_BATTERY_CHARGING_50_AFTER: &str = "\u{e0a1}";
+pub const MD_BATTERY_CHARGING_50_BEFORE: &str = "\u{e0a2}";
+pub const MD_BATTERY_CHARGING_60_AFTER: &str = "\u{e0a3}";
+pub const MD_BATTERY_CHARGING_60_BEFORE: &str = "\u{e0a4}";
+pub const MD_BATTERY_CHARGING_80_AFTER: &str = "\u{e0a5}";
+pub const MD_BATTERY_CHARGING_80_BEFORE: &str = "\u{e0a6}";
+pub const MD_BATTERY_CHARGING_90_AFTER: &str = "\u{e0a7}";
+pub const MD_BATTERY_CHARGING_90_BEFORE: &str = "\u{e0a8}";
+pub const MD_BATTERY_CHARGING_FULL: &str = "\u{e0a9}";
+pub const MD_BATTERY_FULL: &str = "\u{e0aa}";
+pub const MD_BATTERY_STD: &str = "\u{e0ab}";
+pub const MD_BATTERY_UNKNOWN: &str = "\u{e0ac}";
+pub const MD_BEACH_ACCESS: &str = "\u{e0ad}";
+pub const MD_BEENHERE: &str = "\u{e0af}";
+pub const MD_BLOCK: &str = "\u{e0b1}";
+pub const MD_BLUETOOTH: &str = "\u{e0b2}";
+pub const MD_BLUETOOTH_AUDIO: &str = "\u{e0b3}";
+pub const MD_BLUETOOTH_CONNECTED: &str = "\u{e0b4}";
+pub const MD_BLUETOOTH_DISABLED: &str = "\u{e0b5}";
+pub const MD_BLUETOOTH_SEARCHING: &str = "\u{e0b6}";
+pub const MD_BLUR_CIRCULAR: &str = "\u{e0b7}";
+pub const MD_BLUR_LINEAR: &str = "\u{e0b8}";
+pub const MD_BLUR_OFF: &str = "\u{e0b9}";
+pub const MD_BLUR_ON: &str = "\u{e0ba}";
+pub const MD_BOOK: &str = "\u{e0bb}";
+pub const MD_BOOKMARK: &str = "\u{e0bd}";
+pub const MD_BOOKMARK_BORDER: &str = "\u{e0bf}";
+pub const MD_BOOKMARKS: &str = "\u{e0c0}";
+pub const MD_BORDER_ALL: &str = "\u{e0c2}";
+pub const MD_BORDER_BOTTOM: &str = "\u{e0c3}";
+pub const MD_BORDER_CLEAR: &str = "\u{e0c4}";
+pub const MD_BORDER_COLOR_AFTER: &str = "\u{e0c5}";
+pub const MD_BORDER_COLOR_BEFORE: &str = "\u{e0c6}";
+pub const MD_BORDER_HORIZONTAL: &str = "\u{e0c7}";
+pub const MD_BORDER_INNER: &str = "\u{e0c8}";
+pub const MD_BORDER_LEFT: &str = "\u{e0c9}";
+pub const MD_BORDER_OUTER: &str = "\u{e0ca}";
+pub const MD_BORDER_RIGHT: &str = "\u{e0cb}";
+pub const MD_BORDER_STYLE: &str = "\u{e0cc}";
+pub const MD_BORDER_TOP: &str = "\u{e0cd}";
+pub const MD_BORDER_VERTICAL: &str = "\u{e0ce}";
+pub const MD_BRANDING_WATERMARK: &str = "\u{e0cf}";
+pub const MD_BRIGHTNESS_1: &str = "\u{e0d1}";
+pub const MD_BRIGHTNESS_2: &str = "\u{e0d3}";
+pub const MD_BRIGHTNESS_3: &str = "\u{e0d5}";
+pub const MD_BRIGHTNESS_4: &str = "\u{e0d7}";
+pub const MD_BRIGHTNESS_5: &str = "\u{e0d9}";
+pub const MD_BRIGHTNESS_6: &str = "\u{e0db}";
+pub const MD_BRIGHTNESS_7: &str = "\u{e0dd}";
+pub const MD_BRIGHTNESS_AUTO: &str = "\u{e0df}";
+pub const MD_BRIGHTNESS_HIGH: &str = "\u{e0e1}";
+pub const MD_BRIGHTNESS_LOW: &str = "\u{e0e3}";
+pub const MD_BRIGHTNESS_MEDIUM: &str = "\u{e0e5}";
+pub const MD_BROKEN_IMAGE: &str = "\u{e0e7}";
+pub const MD_BRUSH: &str = "\u{e0e9}";
+pub const MD_BUBBLE_CHART: &str = "\u{e0eb}";
+pub const MD_BUG_REPORT: &str = "\u{e0ed}";
+pub const MD_BUILD: &str = "\u{e0ef}";
+pub const MD_BURST_MODE: &str = "\u{e0f1}";
+pub const MD_BUSINESS: &str = "\u{e0f3}";
+pub const MD_BUSINESS_CENTER: &str = "\u{e0f5}";
+pub const MD_CACHED: &str = "\u{e0f7}";
+pub const MD_CAKE: &str = "\u{e0f8}";
+pub const MD_CALENDAR_TODAY: &str = "\u{e0fa}";
+pub const MD_CALENDAR_VIEW_DAY: &str = "\u{e0fc}";
+pub const MD_CALL: &str = "\u{e0fe}";
+pub const MD_CALL_END: &str = "\u{e100}";
+pub const MD_CALL_MADE: &str = "\u{e102}";
+pub const MD_CALL_MERGE: &str = "\u{e103}";
+pub const MD_CALL_MISSED: &str = "\u{e104}";
+pub const MD_CALL_MISSED_OUTGOING: &str = "\u{e105}";
+pub const MD_CALL_RECEIVED: &str = "\u{e106}";
+pub const MD_CALL_SPLIT: &str = "\u{e107}";
+pub const MD_CALL_TO_ACTION: &str = "\u{e108}";
+pub const MD_CAMERA: &str = "\u{e10a}";
+pub const MD_CAMERA_ALT: &str = "\u{e10c}";
+pub const MD_CAMERA_ENHANCE: &str = "\u{e10e}";
+pub const MD_CAMERA_FRONT: &str = "\u{e110}";
+pub const MD_CAMERA_REAR: &str = "\u{e112}";
+pub const MD_CAMERA_ROLL: &str = "\u{e114}";
+pub const MD_CANCEL: &str = "\u{e116}";
+pub const MD_CANCEL_PRESENTATION: &str = "\u{e118}";
+pub const MD_CANCEL_SCHEDULE_SEND: &str = "\u{e11a}";
+pub const MD_CARD_GIFTCARD: &str = "\u{e11c}";
+pub const MD_CARD_MEMBERSHIP: &str = "\u{e11e}";
+pub const MD_CARD_TRAVEL: &str = "\u{e120}";
+pub const MD_CASINO: &str = "\u{e122}";
+pub const MD_CAST: &str = "\u{e124}";
+pub const MD_CAST_CONNECTED: &str = "\u{e125}";
+pub const MD_CAST_FOR_EDUCATION: &str = "\u{e127}";
+pub const MD_CATEGORY: &str = "\u{e128}";
+pub const MD_CELL_WIFI_AFTER: &str = "\u{e12a}";
+pub const MD_CELL_WIFI_BEFORE: &str = "\u{e12b}";
+pub const MD_CENTER_FOCUS_STRONG: &str = "\u{e12c}";
+pub const MD_CENTER_FOCUS_WEAK: &str = "\u{e12e}";
+pub const MD_CHANGE_HISTORY: &str = "\u{e130}";
+pub const MD_CHAT: &str = "\u{e132}";
+pub const MD_CHAT_BUBBLE: &str = "\u{e134}";
+pub const MD_CHAT_BUBBLE_OUTLINE: &str = "\u{e136}";
+pub const MD_CHECK: &str = "\u{e137}";
+pub const MD_CHECK_BOX: &str = "\u{e138}";
+pub const MD_CHECK_BOX_OUTLINE_BLANK: &str = "\u{e13a}";
+pub const MD_CHECK_CIRCLE: &str = "\u{e13b}";
+pub const MD_CHECK_CIRCLE_OUTLINE: &str = "\u{e13d}";
+pub const MD_CHEVRON_LEFT: &str = "\u{e13e}";
+pub const MD_CHEVRON_RIGHT: &str = "\u{e13f}";
+pub const MD_CHILD_CARE: &str = "\u{e140}";
+pub const MD_CHILD_FRIENDLY: &str = "\u{e142}";
+pub const MD_CHROME_READER_MODE: &str = "\u{e144}";
+pub const MD_CLASS: &str = "\u{e146}";
+pub const MD_CLEAR: &str = "\u{e148}";
+pub const MD_CLEAR_ALL: &str = "\u{e149}";
+pub const MD_CLOSE: &str = "\u{e14a}";
+pub const MD_CLOSED_CAPTION: &str = "\u{e14b}";
+pub const MD_CLOUD: &str = "\u{e14d}";
+pub const MD_CLOUD_CIRCLE: &str = "\u{e14f}";
+pub const MD_CLOUD_DONE: &str = "\u{e151}";
+pub const MD_CLOUD_DOWNLOAD: &str = "\u{e153}";
+pub const MD_CLOUD_OFF: &str = "\u{e155}";
+pub const MD_CLOUD_QUEUE: &str = "\u{e157}";
+pub const MD_CLOUD_UPLOAD: &str = "\u{e159}";
+pub const MD_CODE: &str = "\u{e15b}";
+pub const MD_COLLECTIONS: &str = "\u{e15c}";
+pub const MD_COLLECTIONS_BOOKMARK: &str = "\u{e15e}";
+pub const MD_COLOR_LENS: &str = "\u{e160}";
+pub const MD_COLORIZE: &str = "\u{e162}";
+pub const MD_COMMENT: &str = "\u{e164}";
+pub const MD_COMMUTE: &str = "\u{e166}";
+pub const MD_COMPARE: &str = "\u{e167}";
+pub const MD_COMPARE_ARROWS: &str = "\u{e169}";
+pub const MD_COMPASS_CALIBRATION: &str = "\u{e16a}";
+pub const MD_COMPUTER: &str = "\u{e16c}";
+pub const MD_CONFIRMATION_NUMBER: &str = "\u{e16e}";
+pub const MD_CONTACT_MAIL: &str = "\u{e170}";
+pub const MD_CONTACT_PHONE: &str = "\u{e172}";
+pub const MD_CONTACT_SUPPORT: &str = "\u{e174}";
+pub const MD_CONTACTLESS: &str = "\u{e176}";
+pub const MD_CONTACTS: &str = "\u{e178}";
+pub const MD_CONTENT_COPY: &str = "\u{e17a}";
+pub const MD_CONTENT_CUT: &str = "\u{e17c}";
+pub const MD_CONTENT_PASTE: &str = "\u{e17e}";
+pub const MD_CONTROL_CAMERA: &str = "\u{e180}";
+pub const MD_CONTROL_POINT: &str = "\u{e181}";
+pub const MD_CONTROL_POINT_DUPLICATE: &str = "\u{e183}";
+pub const MD_COPYRIGHT: &str = "\u{e185}";
+pub const MD_CREATE: &str = "\u{e187}";
+pub const MD_CREATE_NEW_FOLDER: &str = "\u{e189}";
+pub const MD_CREDIT_CARD: &str = "\u{e18b}";
+pub const MD_CROP: &str = "\u{e18d}";
+pub const MD_CROP_16_9: &str = "\u{e18e}";
+pub const MD_CROP_3_2: &str = "\u{e18f}";
+pub const MD_CROP_5_4: &str = "\u{e190}";
+pub const MD_CROP_7_5: &str = "\u{e191}";
+pub const MD_CROP_DIN: &str = "\u{e192}";
+pub const MD_CROP_FREE: &str = "\u{e193}";
+pub const MD_CROP_LANDSCAPE: &str = "\u{e194}";
+pub const MD_CROP_ORIGINAL: &str = "\u{e195}";
+pub const MD_CROP_PORTRAIT: &str = "\u{e196}";
+pub const MD_CROP_ROTATE: &str = "\u{e197}";
+pub const MD_CROP_SQUARE: &str = "\u{e198}";
+pub const MD_DASHBOARD: &str = "\u{e199}";
+pub const MD_DATA_USAGE: &str = "\u{e19b}";
+pub const MD_DATE_RANGE: &str = "\u{e19c}";
+pub const MD_DECK: &str = "\u{e19e}";
+pub const MD_DEHAZE: &str = "\u{e1a0}";
+pub const MD_DELETE: &str = "\u{e1a1}";
+pub const MD_DELETE_FOREVER: &str = "\u{e1a3}";
+pub const MD_DELETE_OUTLINE: &str = "\u{e1a5}";
+pub const MD_DELETE_SWEEP: &str = "\u{e1a6}";
+pub const MD_DEPARTURE_BOARD: &str = "\u{e1a8}";
+pub const MD_DESCRIPTION: &str = "\u{e1aa}";
+pub const MD_DESKTOP_ACCESS_DISABLED: &str = "\u{e1ac}";
+pub const MD_DESKTOP_MAC: &str = "\u{e1ae}";
+pub const MD_DESKTOP_WINDOWS: &str = "\u{e1b0}";
+pub const MD_DETAILS: &str = "\u{e1b2}";
+pub const MD_DEVELOPER_BOARD: &str = "\u{e1b4}";
+pub const MD_DEVELOPER_MODE: &str = "\u{e1b6}";
+pub const MD_DEVICE_HUB: &str = "\u{e1b7}";
+pub const MD_DEVICE_UNKNOWN: &str = "\u{e1b8}";
+pub const MD_DEVICES: &str = "\u{e1ba}";
+pub const MD_DEVICES_OTHER: &str = "\u{e1bc}";
+pub const MD_DIALER_SIP: &str = "\u{e1be}";
+pub const MD_DIALPAD: &str = "\u{e1c0}";
+pub const MD_DIRECTIONS: &str = "\u{e1c1}";
+pub const MD_DIRECTIONS_BIKE: &str = "\u{e1c3}";
+pub const MD_DIRECTIONS_BOAT: &str = "\u{e1c4}";
+pub const MD_DIRECTIONS_BUS: &str = "\u{e1c6}";
+pub const MD_DIRECTIONS_CAR: &str = "\u{e1c8}";
+pub const MD_DIRECTIONS_RAILWAY: &str = "\u{e1ca}";
+pub const MD_DIRECTIONS_RUN: &str = "\u{e1cc}";
+pub const MD_DIRECTIONS_SUBWAY: &str = "\u{e1cd}";
+pub const MD_DIRECTIONS_TRANSIT: &str = "\u{e1cf}";
+pub const MD_DIRECTIONS_WALK: &str = "\u{e1d1}";
+pub const MD_DISC_FULL: &str = "\u{e1d2}";
+pub const MD_DIVIDE: &str = "\u{e1d4}";
+pub const MD_DNS: &str = "\u{e1d6}";
+pub const MD_DO_NOT_DISTURB: &str = "\u{e1d8}";
+pub const MD_DO_NOT_DISTURB_ALT: &str = "\u{e1da}";
+pub const MD_DO_NOT_DISTURB_OFF: &str = "\u{e1dc}";
+pub const MD_DOCK: &str = "\u{e1de}";
+pub const MD_DOMAIN: &str = "\u{e1e0}";
+pub const MD_DOMAIN_DISABLED: &str = "\u{e1e2}";
+pub const MD_DONE: &str = "\u{e1e4}";
+pub const MD_DONE_ALL: &str = "\u{e1e5}";
+pub const MD_DONE_OUTLINE: &str = "\u{e1e6}";
+pub const MD_DONUT_LARGE: &str = "\u{e1e7}";
+pub const MD_DONUT_SMALL: &str = "\u{e1e8}";
+pub const MD_DOUBLE_ARROW: &str = "\u{e1ea}";
+pub const MD_DRAFTS: &str = "\u{e1eb}";
+pub const MD_DRAG_HANDLE: &str = "\u{e1ed}";
+pub const MD_DRAG_INDICATOR: &str = "\u{e1ee}";
+pub const MD_DRIVE_ETA: &str = "\u{e1ef}";
+pub const MD_DUO: &str = "\u{e1f1}";
+pub const MD_DVR: &str = "\u{e1f2}";
+pub const MD_DYNAMIC_FEED: &str = "\u{e1f4}";
+pub const MD_ECO: &str = "\u{e1f6}";
+pub const MD_EDIT: &str = "\u{e1f8}";
+pub const MD_EDIT_ATTRIBUTES: &str = "\u{e1fa}";
+pub const MD_EDIT_LOCATION: &str = "\u{e1fc}";
+pub const MD_EJECT: &str = "\u{e1fe}";
+pub const MD_EMAIL: &str = "\u{e200}";
+pub const MD_EMOJI_EMOTIONS: &str = "\u{e202}";
+pub const MD_EMOJI_EVENTS: &str = "\u{e204}";
+pub const MD_EMOJI_FLAGS: &str = "\u{e206}";
+pub const MD_EMOJI_FOOD_BEVERAGE: &str = "\u{e208}";
+pub const MD_EMOJI_NATURE: &str = "\u{e20a}";
+pub const MD_EMOJI_OBJECTS: &str = "\u{e20c}";
+pub const MD_EMOJI_PEOPLE: &str = "\u{e20e}";
+pub const MD_EMOJI_SYMBOLS: &str = "\u{e20f}";
+pub const MD_EMOJI_TRANSPORTATION: &str = "\u{e210}";
+pub const MD_ENHANCED_ENCRYPTION: &str = "\u{e211}";
+pub const MD_EQUALIZER: &str = "\u{e213}";
+pub const MD_EQUALS: &str = "\u{e214}";
+pub const MD_ERROR: &str = "\u{e215}";
+pub const MD_ERROR_OUTLINE: &str = "\u{e217}";
+pub const MD_EURO: &str = "\u{e218}";
+pub const MD_EURO_SYMBOL: &str = "\u{e219}";
+pub const MD_EV_STATION: &str = "\u{e21a}";
+pub const MD_EVENT: &str = "\u{e21c}";
+pub const MD_EVENT_AVAILABLE: &str = "\u{e21e}";
+pub const MD_EVENT_BUSY: &str = "\u{e220}";
+pub const MD_EVENT_NOTE: &str = "\u{e222}";
+pub const MD_EVENT_SEAT: &str = "\u{e224}";
+pub const MD_EXIT_TO_APP: &str = "\u{e226}";
+pub const MD_EXPAND_LESS: &str = "\u{e227}";
+pub const MD_EXPAND_MORE: &str = "\u{e228}";
+pub const MD_EXPLICIT: &str = "\u{e229}";
+pub const MD_EXPLORE: &str = "\u{e22b}";
+pub const MD_EXPLORE_OFF: &str = "\u{e22d}";
+pub const MD_EXPOSURE: &str = "\u{e22f}";
+pub const MD_EXPOSURE_NEG_1: &str = "\u{e231}";
+pub const MD_EXPOSURE_NEG_2: &str = "\u{e232}";
+pub const MD_EXPOSURE_PLUS_1: &str = "\u{e233}";
+pub const MD_EXPOSURE_PLUS_2: &str = "\u{e234}";
+pub const MD_EXPOSURE_ZERO: &str = "\u{e235}";
+pub const MD_EXTENSION: &str = "\u{e236}";
+pub const MD_FACE: &str = "\u{e238}";
+pub const MD_FAST_FORWARD: &str = "\u{e23a}";
+pub const MD_FAST_REWIND: &str = "\u{e23c}";
+pub const MD_FASTFOOD: &str = "\u{e23e}";
+pub const MD_FAVORITE: &str = "\u{e240}";
+pub const MD_FAVORITE_BORDER: &str = "\u{e242}";
+pub const MD_FEATURED_PLAY_LIST: &str = "\u{e243}";
+pub const MD_FEATURED_VIDEO: &str = "\u{e245}";
+pub const MD_FEEDBACK: &str = "\u{e247}";
+pub const MD_FIBER_DVR: &str = "\u{e249}";
+pub const MD_FIBER_MANUAL_RECORD: &str = "\u{e24b}";
+pub const MD_FIBER_NEW: &str = "\u{e24d}";
+pub const MD_FIBER_PIN: &str = "\u{e24f}";
+pub const MD_FIBER_SMART_RECORD: &str = "\u{e251}";
+pub const MD_FILE_COPY: &str = "\u{e253}";
+pub const MD_FILE_UPLOAD: &str = "\u{e255}";
+pub const MD_FILTER: &str = "\u{e257}";
+pub const MD_FILTER_1: &str = "\u{e259}";
+pub const MD_FILTER_2: &str = "\u{e25b}";
+pub const MD_FILTER_3: &str = "\u{e25d}";
+pub const MD_FILTER_4: &str = "\u{e25f}";
+pub const MD_FILTER_5: &str = "\u{e261}";
+pub const MD_FILTER_6: &str = "\u{e263}";
+pub const MD_FILTER_7: &str = "\u{e265}";
+pub const MD_FILTER_8: &str = "\u{e267}";
+pub const MD_FILTER_9: &str = "\u{e269}";
+pub const MD_FILTER_9_PLUS: &str = "\u{e26b}";
+pub const MD_FILTER_B_AND_W: &str = "\u{e26d}";
+pub const MD_FILTER_CENTER_FOCUS: &str = "\u{e26f}";
+pub const MD_FILTER_DRAMA: &str = "\u{e270}";
+pub const MD_FILTER_FRAMES: &str = "\u{e272}";
+pub const MD_FILTER_HDR: &str = "\u{e274}";
+pub const MD_FILTER_LIST: &str = "\u{e276}";
+pub const MD_FILTER_NONE: &str = "\u{e277}";
+pub const MD_FILTER_TILT_SHIFT: &str = "\u{e279}";
+pub const MD_FILTER_VINTAGE: &str = "\u{e27a}";
+pub const MD_FIND_IN_PAGE: &str = "\u{e27c}";
+pub const MD_FIND_REPLACE: &str = "\u{e27e}";
+pub const MD_FINGERPRINT: &str = "\u{e27f}";
+pub const MD_FIREPLACE: &str = "\u{e280}";
+pub const MD_FIRST_PAGE: &str = "\u{e282}";
+pub const MD_FITNESS_CENTER: &str = "\u{e283}";
+pub const MD_FLAG: &str = "\u{e284}";
+pub const MD_FLARE: &str = "\u{e286}";
+pub const MD_FLASH_AUTO: &str = "\u{e287}";
+pub const MD_FLASH_OFF: &str = "\u{e288}";
+pub const MD_FLASH_ON: &str = "\u{e289}";
+pub const MD_FLIGHT: &str = "\u{e28a}";
+pub const MD_FLIGHT_LAND: &str = "\u{e28b}";
+pub const MD_FLIGHT_TAKEOFF: &str = "\u{e28c}";
+pub const MD_FLIP: &str = "\u{e28d}";
+pub const MD_FLIP_CAMERA_ANDROID: &str = "\u{e28e}";
+pub const MD_FLIP_CAMERA_IOS: &str = "\u{e290}";
+pub const MD_FLIP_TO_BACK: &str = "\u{e292}";
+pub const MD_FLIP_TO_FRONT: &str = "\u{e293}";
+pub const MD_FOLDER: &str = "\u{e294}";
+pub const MD_FOLDER_OPEN: &str = "\u{e296}";
+pub const MD_FOLDER_SHARED: &str = "\u{e298}";
+pub const MD_FOLDER_SPECIAL: &str = "\u{e29a}";
+pub const MD_FONT_DOWNLOAD: &str = "\u{e29c}";
+pub const MD_FORMAT_ALIGN_CENTER: &str = "\u{e29e}";
+pub const MD_FORMAT_ALIGN_JUSTIFY: &str = "\u{e29f}";
+pub const MD_FORMAT_ALIGN_LEFT: &str = "\u{e2a0}";
+pub const MD_FORMAT_ALIGN_RIGHT: &str = "\u{e2a1}";
+pub const MD_FORMAT_BOLD: &str = "\u{e2a2}";
+pub const MD_FORMAT_CLEAR: &str = "\u{e2a3}";
+pub const MD_FORMAT_COLOR_FILL_AFTER: &str = "\u{e2a4}";
+pub const MD_FORMAT_COLOR_FILL_BEFORE: &str = "\u{e2a5}";
+pub const MD_FORMAT_COLOR_RESET: &str = "\u{e2a6}";
+pub const MD_FORMAT_COLOR_TEXT_AFTER: &str = "\u{e2a8}";
+pub const MD_FORMAT_COLOR_TEXT_BEFORE: &str = "\u{e2a9}";
+pub const MD_FORMAT_INDENT_DECREASE: &str = "\u{e2aa}";
+pub const MD_FORMAT_INDENT_INCREASE: &str = "\u{e2ab}";
+pub const MD_FORMAT_ITALIC: &str = "\u{e2ac}";
+pub const MD_FORMAT_LINE_SPACING: &str = "\u{e2ad}";
+pub const MD_FORMAT_LIST_BULLETED: &str = "\u{e2ae}";
+pub const MD_FORMAT_LIST_NUMBERED: &str = "\u{e2af}";
+pub const MD_FORMAT_LIST_NUMBERED_RTL: &str = "\u{e2b0}";
+pub const MD_FORMAT_PAINT: &str = "\u{e2b1}";
+pub const MD_FORMAT_QUOTE: &str = "\u{e2b3}";
+pub const MD_FORMAT_SHAPES: &str = "\u{e2b5}";
+pub const MD_FORMAT_SIZE: &str = "\u{e2b7}";
+pub const MD_FORMAT_STRIKETHROUGH: &str = "\u{e2b8}";
+pub const MD_FORMAT_TEXTDIRECTION_L_TO_R: &str = "\u{e2b9}";
+pub const MD_FORMAT_TEXTDIRECTION_R_TO_L: &str = "\u{e2bb}";
+pub const MD_FORMAT_UNDERLINED: &str = "\u{e2bd}";
+pub const MD_FORUM: &str = "\u{e2be}";
+pub const MD_FORWARD: &str = "\u{e2c0}";
+pub const MD_FORWARD_10: &str = "\u{e2c2}";
+pub const MD_FORWARD_30: &str = "\u{e2c3}";
+pub const MD_FORWARD_5: &str = "\u{e2c4}";
+pub const MD_FREE_BREAKFAST: &str = "\u{e2c5}";
+pub const MD_FULLSCREEN: &str = "\u{e2c7}";
+pub const MD_FULLSCREEN_EXIT: &str = "\u{e2c8}";
+pub const MD_FUNCTIONS: &str = "\u{e2c9}";
+pub const MD_G_TRANSLATE: &str = "\u{e2ca}";
+pub const MD_GAMEPAD: &str = "\u{e2cb}";
+pub const MD_GAMES: &str = "\u{e2cd}";
+pub const MD_GAVEL: &str = "\u{e2cf}";
+pub const MD_GESTURE: &str = "\u{e2d0}";
+pub const MD_GET_APP: &str = "\u{e2d1}";
+pub const MD_GIF: &str = "\u{e2d3}";
+pub const MD_GOLF_COURSE: &str = "\u{e2d5}";
+pub const MD_GPS_FIXED: &str = "\u{e2d7}";
+pub const MD_GPS_NOT_FIXED: &str = "\u{e2d9}";
+pub const MD_GPS_OFF: &str = "\u{e2da}";
+pub const MD_GRADE: &str = "\u{e2db}";
+pub const MD_GRADIENT: &str = "\u{e2dd}";
+pub const MD_GRAIN: &str = "\u{e2de}";
+pub const MD_GRAPHIC_EQ: &str = "\u{e2df}";
+pub const MD_GREATER_THAN: &str = "\u{e2e0}";
+pub const MD_GREATER_THAN_EQUAL: &str = "\u{e2e1}";
+pub const MD_GRID_OFF: &str = "\u{e2e2}";
+pub const MD_GRID_ON: &str = "\u{e2e4}";
+pub const MD_GROUP: &str = "\u{e2e6}";
+pub const MD_GROUP_ADD: &str = "\u{e2e8}";
+pub const MD_GROUP_WORK: &str = "\u{e2ea}";
+pub const MD_HD: &str = "\u{e2ec}";
+pub const MD_HDR_OFF: &str = "\u{e2ee}";
+pub const MD_HDR_ON: &str = "\u{e2ef}";
+pub const MD_HDR_STRONG: &str = "\u{e2f0}";
+pub const MD_HDR_WEAK: &str = "\u{e2f2}";
+pub const MD_HEADSET: &str = "\u{e2f4}";
+pub const MD_HEADSET_MIC: &str = "\u{e2f6}";
+pub const MD_HEALING: &str = "\u{e2f8}";
+pub const MD_HEARING: &str = "\u{e2fa}";
+pub const MD_HEIGHT: &str = "\u{e2fb}";
+pub const MD_HELP: &str = "\u{e2fc}";
+pub const MD_HELP_OUTLINE: &str = "\u{e2fe}";
+pub const MD_HIGH_QUALITY: &str = "\u{e2ff}";
+pub const MD_HIGHLIGHT: &str = "\u{e301}";
+pub const MD_HIGHLIGHT_OFF: &str = "\u{e303}";
+pub const MD_HISTORY: &str = "\u{e305}";
+pub const MD_HOME: &str = "\u{e306}";
+pub const MD_HOME_WORK: &str = "\u{e308}";
+pub const MD_HORIZONTAL_SPLIT: &str = "\u{e30a}";
+pub const MD_HOT_TUB: &str = "\u{e30c}";
+pub const MD_HOTEL: &str = "\u{e30d}";
+pub const MD_HOURGLASS_EMPTY: &str = "\u{e30f}";
+pub const MD_HOURGLASS_FULL: &str = "\u{e310}";
+pub const MD_HOUSE: &str = "\u{e312}";
+pub const MD_HOW_TO_REG: &str = "\u{e314}";
+pub const MD_HOW_TO_VOTE: &str = "\u{e316}";
+pub const MD_HTTP: &str = "\u{e318}";
+pub const MD_HTTPS: &str = "\u{e319}";
+pub const MD_IMAGE: &str = "\u{e31b}";
+pub const MD_IMAGE_ASPECT_RATIO: &str = "\u{e31d}";
+pub const MD_IMAGE_SEARCH: &str = "\u{e31f}";
+pub const MD_IMPORT_CONTACTS: &str = "\u{e321}";
+pub const MD_IMPORT_EXPORT: &str = "\u{e323}";
+pub const MD_IMPORTANT_DEVICES: &str = "\u{e324}";
+pub const MD_INBOX: &str = "\u{e326}";
+pub const MD_INDETERMINATE_CHECK_BOX: &str = "\u{e328}";
+pub const MD_INFO: &str = "\u{e32a}";
+pub const MD_INPUT: &str = "\u{e32c}";
+pub const MD_INSERT_CHART: &str = "\u{e32d}";
+pub const MD_INSERT_CHART_OUTLINED: &str = "\u{e32f}";
+pub const MD_INSERT_COMMENT: &str = "\u{e330}";
+pub const MD_INSERT_DRIVE_FILE: &str = "\u{e332}";
+pub const MD_INSERT_EMOTICON: &str = "\u{e334}";
+pub const MD_INSERT_INVITATION: &str = "\u{e336}";
+pub const MD_INSERT_LINK: &str = "\u{e338}";
+pub const MD_INSERT_PHOTO: &str = "\u{e339}";
+pub const MD_INVERT_COLORS: &str = "\u{e33b}";
+pub const MD_INVERT_COLORS_OFF: &str = "\u{e33d}";
+pub const MD_ISO: &str = "\u{e33f}";
+pub const MD_KEYBOARD: &str = "\u{e341}";
+pub const MD_KEYBOARD_ARROW_DOWN: &str = "\u{e343}";
+pub const MD_KEYBOARD_ARROW_LEFT: &str = "\u{e344}";
+pub const MD_KEYBOARD_ARROW_RIGHT: &str = "\u{e345}";
+pub const MD_KEYBOARD_ARROW_UP: &str = "\u{e346}";
+pub const MD_KEYBOARD_BACKSPACE: &str = "\u{e347}";
+pub const MD_KEYBOARD_CAPSLOCK: &str = "\u{e348}";
+pub const MD_KEYBOARD_HIDE: &str = "\u{e349}";
+pub const MD_KEYBOARD_RETURN: &str = "\u{e34b}";
+pub const MD_KEYBOARD_TAB: &str = "\u{e34c}";
+pub const MD_KEYBOARD_VOICE: &str = "\u{e34d}";
+pub const MD_KING_BED: &str = "\u{e34f}";
+pub const MD_KITCHEN: &str = "\u{e351}";
+pub const MD_LABEL: &str = "\u{e353}";
+pub const MD_LABEL_IMPORTANT: &str = "\u{e355}";
+pub const MD_LABEL_OFF: &str = "\u{e357}";
+pub const MD_LANDSCAPE: &str = "\u{e359}";
+pub const MD_LANGUAGE: &str = "\u{e35b}";
+pub const MD_LAPTOP: &str = "\u{e35d}";
+pub const MD_LAPTOP_CHROMEBOOK: &str = "\u{e35f}";
+pub const MD_LAPTOP_MAC: &str = "\u{e361}";
+pub const MD_LAPTOP_WINDOWS: &str = "\u{e363}";
+pub const MD_LAST_PAGE: &str = "\u{e365}";
+pub const MD_LAUNCH: &str = "\u{e366}";
+pub const MD_LAYERS: &str = "\u{e367}";
+pub const MD_LAYERS_CLEAR: &str = "\u{e369}";
+pub const MD_LEAK_ADD: &str = "\u{e36b}";
+pub const MD_LEAK_REMOVE: &str = "\u{e36c}";
+pub const MD_LENS: &str = "\u{e36d}";
+pub const MD_LESS_THAN: &str = "\u{e36f}";
+pub const MD_LESS_THAN_EQUAL: &str = "\u{e370}";
+pub const MD_LIBRARY_ADD: &str = "\u{e371}";
+pub const MD_LIBRARY_BOOKS: &str = "\u{e373}";
+pub const MD_LIBRARY_MUSIC: &str = "\u{e375}";
+pub const MD_LIGHTBULB: &str = "\u{e377}";
+pub const MD_LINE_STYLE: &str = "\u{e379}";
+pub const MD_LINE_WEIGHT: &str = "\u{e37a}";
+pub const MD_LINEAR_SCALE: &str = "\u{e37b}";
+pub const MD_LINK: &str = "\u{e37c}";
+pub const MD_LINK_OFF: &str = "\u{e37e}";
+pub const MD_LINKED_CAMERA: &str = "\u{e37f}";
+pub const MD_LIST: &str = "\u{e381}";
+pub const MD_LIST_ALT: &str = "\u{e382}";
+pub const MD_LIVE_HELP: &str = "\u{e384}";
+pub const MD_LIVE_TV: &str = "\u{e386}";
+pub const MD_LOCAL_ACTIVITY: &str = "\u{e388}";
+pub const MD_LOCAL_AIRPORT: &str = "\u{e38a}";
+pub const MD_LOCAL_ATM: &str = "\u{e38b}";
+pub const MD_LOCAL_BAR: &str = "\u{e38d}";
+pub const MD_LOCAL_CAFE: &str = "\u{e38f}";
+pub const MD_LOCAL_CAR_WASH: &str = "\u{e391}";
+pub const MD_LOCAL_CONVENIENCE_STORE: &str = "\u{e393}";
+pub const MD_LOCAL_DINING: &str = "\u{e395}";
+pub const MD_LOCAL_DRINK: &str = "\u{e396}";
+pub const MD_LOCAL_FLORIST: &str = "\u{e398}";
+pub const MD_LOCAL_GAS_STATION: &str = "\u{e39a}";
+pub const MD_LOCAL_GROCERY_STORE: &str = "\u{e39c}";
+pub const MD_LOCAL_HOSPITAL: &str = "\u{e39e}";
+pub const MD_LOCAL_HOTEL: &str = "\u{e3a0}";
+pub const MD_LOCAL_LAUNDRY_SERVICE: &str = "\u{e3a2}";
+pub const MD_LOCAL_LIBRARY: &str = "\u{e3a4}";
+pub const MD_LOCAL_MALL: &str = "\u{e3a6}";
+pub const MD_LOCAL_MOVIES: &str = "\u{e3a8}";
+pub const MD_LOCAL_OFFER: &str = "\u{e3aa}";
+pub const MD_LOCAL_PARKING: &str = "\u{e3ac}";
+pub const MD_LOCAL_PHARMACY: &str = "\u{e3ad}";
+pub const MD_LOCAL_PHONE: &str = "\u{e3af}";
+pub const MD_LOCAL_PIZZA: &str = "\u{e3b1}";
+pub const MD_LOCAL_PLAY: &str = "\u{e3b3}";
+pub const MD_LOCAL_POST_OFFICE: &str = "\u{e3b5}";
+pub const MD_LOCAL_PRINTSHOP: &str = "\u{e3b7}";
+pub const MD_LOCAL_SEE: &str = "\u{e3b9}";
+pub const MD_LOCAL_SHIPPING: &str = "\u{e3bb}";
+pub const MD_LOCAL_TAXI: &str = "\u{e3bd}";
+pub const MD_LOCATION_CITY: &str = "\u{e3bf}";
+pub const MD_LOCATION_DISABLED: &str = "\u{e3c0}";
+pub const MD_LOCATION_OFF: &str = "\u{e3c1}";
+pub const MD_LOCATION_ON: &str = "\u{e3c2}";
+pub const MD_LOCATION_SEARCHING: &str = "\u{e3c4}";
+pub const MD_LOCK: &str = "\u{e3c5}";
+pub const MD_LOCK_OPEN: &str = "\u{e3c7}";
+pub const MD_LOG_IN: &str = "\u{e3c9}";
+pub const MD_LOG_OUT: &str = "\u{e3ca}";
+pub const MD_LOOKS: &str = "\u{e3cb}";
+pub const MD_LOOKS_3: &str = "\u{e3cc}";
+pub const MD_LOOKS_4: &str = "\u{e3ce}";
+pub const MD_LOOKS_5: &str = "\u{e3d0}";
+pub const MD_LOOKS_6: &str = "\u{e3d2}";
+pub const MD_LOOKS_ONE: &str = "\u{e3d4}";
+pub const MD_LOOKS_TWO: &str = "\u{e3d6}";
+pub const MD_LOOP: &str = "\u{e3d8}";
+pub const MD_LOUPE: &str = "\u{e3d9}";
+pub const MD_LOW_PRIORITY: &str = "\u{e3db}";
+pub const MD_LOYALTY: &str = "\u{e3dc}";
+pub const MD_MAIL: &str = "\u{e3de}";
+pub const MD_MAIL_OUTLINE: &str = "\u{e3e0}";
+pub const MD_MAP: &str = "\u{e3e1}";
+pub const MD_MARKUNREAD: &str = "\u{e3e3}";
+pub const MD_MARKUNREAD_MAILBOX: &str = "\u{e3e5}";
+pub const MD_MAXIMIZE: &str = "\u{e3e7}";
+pub const MD_MEETING_ROOM: &str = "\u{e3e8}";
+pub const MD_MEMORY: &str = "\u{e3ea}";
+pub const MD_MENU: &str = "\u{e3ec}";
+pub const MD_MENU_BOOK: &str = "\u{e3ed}";
+pub const MD_MENU_OPEN: &str = "\u{e3ef}";
+pub const MD_MERGE_TYPE: &str = "\u{e3f0}";
+pub const MD_MESSAGE: &str = "\u{e3f1}";
+pub const MD_MIC: &str = "\u{e3f3}";
+pub const MD_MIC_NONE: &str = "\u{e3f5}";
+pub const MD_MIC_OFF: &str = "\u{e3f7}";
+pub const MD_MINIMIZE: &str = "\u{e3f9}";
+pub const MD_MINUS: &str = "\u{e3fa}";
+pub const MD_MISSED_VIDEO_CALL: &str = "\u{e3fb}";
+pub const MD_MMS: &str = "\u{e3fd}";
+pub const MD_MOBILE_FRIENDLY: &str = "\u{e3ff}";
+pub const MD_MOBILE_OFF: &str = "\u{e400}";
+pub const MD_MOBILE_SCREEN_SHARE: &str = "\u{e401}";
+pub const MD_MODE_COMMENT: &str = "\u{e403}";
+pub const MD_MONETIZATION_ON: &str = "\u{e405}";
+pub const MD_MONEY: &str = "\u{e407}";
+pub const MD_MONEY_OFF: &str = "\u{e409}";
+pub const MD_MONOCHROME_PHOTOS: &str = "\u{e40a}";
+pub const MD_MOOD: &str = "\u{e40c}";
+pub const MD_MOOD_BAD: &str = "\u{e40e}";
+pub const MD_MORE: &str = "\u{e410}";
+pub const MD_MORE_HORIZ: &str = "\u{e412}";
+pub const MD_MORE_VERT: &str = "\u{e413}";
+pub const MD_MOTORCYCLE: &str = "\u{e414}";
+pub const MD_MOUSE: &str = "\u{e416}";
+pub const MD_MOVE_TO_INBOX: &str = "\u{e418}";
+pub const MD_MOVIE: &str = "\u{e41a}";
+pub const MD_MOVIE_CREATION: &str = "\u{e41c}";
+pub const MD_MOVIE_FILTER: &str = "\u{e41e}";
+pub const MD_MULTILINE_CHART: &str = "\u{e420}";
+pub const MD_MUSEUM: &str = "\u{e421}";
+pub const MD_MUSIC_NOTE: &str = "\u{e423}";
+pub const MD_MUSIC_OFF: &str = "\u{e425}";
+pub const MD_MUSIC_VIDEO: &str = "\u{e427}";
+pub const MD_MY_LOCATION: &str = "\u{e429}";
+pub const MD_NATURE: &str = "\u{e42b}";
+pub const MD_NATURE_PEOPLE: &str = "\u{e42d}";
+pub const MD_NAVIGATE_BEFORE: &str = "\u{e42f}";
+pub const MD_NAVIGATE_NEXT: &str = "\u{e430}";
+pub const MD_NAVIGATION: &str = "\u{e431}";
+pub const MD_NEAR_ME: &str = "\u{e433}";
+pub const MD_NETWORK_CELL_AFTER: &str = "\u{e435}";
+pub const MD_NETWORK_CELL_BEFORE: &str = "\u{e436}";
+pub const MD_NETWORK_CHECK: &str = "\u{e437}";
+pub const MD_NETWORK_LOCKED: &str = "\u{e438}";
+pub const MD_NETWORK_WIFI_AFTER: &str = "\u{e439}";
+pub const MD_NETWORK_WIFI_BEFORE: &str = "\u{e43a}";
+pub const MD_NEW_RELEASES: &str = "\u{e43b}";
+pub const MD_NEXT_WEEK: &str = "\u{e43d}";
+pub const MD_NFC: &str = "\u{e43f}";
+pub const MD_NIGHTS_STAY: &str = "\u{e440}";
+pub const MD_NO_ENCRYPTION: &str = "\u{e442}";
+pub const MD_NO_MEETING_ROOM: &str = "\u{e444}";
+pub const MD_NO_SIM: &str = "\u{e446}";
+pub const MD_NOT_EQUAL: &str = "\u{e448}";
+pub const MD_NOT_INTERESTED: &str = "\u{e449}";
+pub const MD_NOT_LISTED_LOCATION: &str = "\u{e44a}";
+pub const MD_NOTE: &str = "\u{e44c}";
+pub const MD_NOTE_ADD: &str = "\u{e44e}";
+pub const MD_NOTES: &str = "\u{e450}";
+pub const MD_NOTIFICATION_IMPORTANT: &str = "\u{e451}";
+pub const MD_NOTIFICATIONS: &str = "\u{e453}";
+pub const MD_NOTIFICATIONS_ACTIVE: &str = "\u{e455}";
+pub const MD_NOTIFICATIONS_NONE: &str = "\u{e457}";
+pub const MD_NOTIFICATIONS_OFF: &str = "\u{e459}";
+pub const MD_NOTIFICATIONS_PAUSED: &str = "\u{e45b}";
+pub const MD_OFFLINE_BOLT: &str = "\u{e45d}";
+pub const MD_OFFLINE_PIN: &str = "\u{e45f}";
+pub const MD_ONDEMAND_VIDEO: &str = "\u{e461}";
+pub const MD_OPACITY: &str = "\u{e463}";
+pub const MD_OPEN_IN_BROWSER: &str = "\u{e465}";
+pub const MD_OPEN_IN_NEW: &str = "\u{e466}";
+pub const MD_OPEN_WITH: &str = "\u{e467}";
+pub const MD_OUTDOOR_GRILL: &str = "\u{e468}";
+pub const MD_OUTLINED_FLAG: &str = "\u{e46a}";
+pub const MD_PAGES: &str = "\u{e46b}";
+pub const MD_PAGEVIEW: &str = "\u{e46d}";
+pub const MD_PALETTE: &str = "\u{e46f}";
+pub const MD_PAN_TOOL: &str = "\u{e471}";
+pub const MD_PANORAMA: &str = "\u{e473}";
+pub const MD_PANORAMA_FISH_EYE: &str = "\u{e475}";
+pub const MD_PANORAMA_HORIZONTAL: &str = "\u{e477}";
+pub const MD_PANORAMA_VERTICAL: &str = "\u{e479}";
+pub const MD_PANORAMA_WIDE_ANGLE: &str = "\u{e47b}";
+pub const MD_PARTY_MODE: &str = "\u{e47d}";
+pub const MD_PAUSE: &str = "\u{e47f}";
+pub const MD_PAUSE_CIRCLE_FILLED: &str = "\u{e480}";
+pub const MD_PAUSE_CIRCLE_OUTLINE: &str = "\u{e482}";
+pub const MD_PAUSE_PRESENTATION: &str = "\u{e483}";
+pub const MD_PAYMENT: &str = "\u{e485}";
+pub const MD_PEOPLE: &str = "\u{e487}";
+pub const MD_PEOPLE_ALT: &str = "\u{e489}";
+pub const MD_PEOPLE_OUTLINE: &str = "\u{e48b}";
+pub const MD_PERCENTAGE: &str = "\u{e48d}";
+pub const MD_PERM_CAMERA_MIC: &str = "\u{e48f}";
+pub const MD_PERM_CONTACT_CALENDAR: &str = "\u{e491}";
+pub const MD_PERM_DATA_SETTING: &str = "\u{e493}";
+pub const MD_PERM_DEVICE_INFORMATION: &str = "\u{e494}";
+pub const MD_PERM_IDENTITY: &str = "\u{e496}";
+pub const MD_PERM_MEDIA: &str = "\u{e498}";
+pub const MD_PERM_PHONE_MSG: &str = "\u{e49a}";
+pub const MD_PERM_SCAN_WIFI: &str = "\u{e49c}";
+pub const MD_PERSON: &str = "\u{e49e}";
+pub const MD_PERSON_ADD: &str = "\u{e4a0}";
+pub const MD_PERSON_ADD_DISABLED: &str = "\u{e4a2}";
+pub const MD_PERSON_OUTLINE: &str = "\u{e4a4}";
+pub const MD_PERSON_PIN: &str = "\u{e4a6}";
+pub const MD_PERSON_PIN_CIRCLE: &str = "\u{e4a8}";
+pub const MD_PERSONAL_VIDEO: &str = "\u{e4aa}";
+pub const MD_PETS: &str = "\u{e4ac}";
+pub const MD_PHONE: &str = "\u{e4ad}";
+pub const MD_PHONE_ANDROID: &str = "\u{e4af}";
+pub const MD_PHONE_BLUETOOTH_SPEAKER: &str = "\u{e4b1}";
+pub const MD_PHONE_CALLBACK: &str = "\u{e4b3}";
+pub const MD_PHONE_DISABLED: &str = "\u{e4b5}";
+pub const MD_PHONE_ENABLED: &str = "\u{e4b6}";
+pub const MD_PHONE_FORWARDED: &str = "\u{e4b7}";
+pub const MD_PHONE_IN_TALK: &str = "\u{e4b9}";
+pub const MD_PHONE_IPHONE: &str = "\u{e4bb}";
+pub const MD_PHONE_LOCKED: &str = "\u{e4bd}";
+pub const MD_PHONE_MISSED: &str = "\u{e4bf}";
+pub const MD_PHONE_PAUSED: &str = "\u{e4c1}";
+pub const MD_PHONELINK: &str = "\u{e4c3}";
+pub const MD_PHONELINK_ERASE: &str = "\u{e4c5}";
+pub const MD_PHONELINK_LOCK: &str = "\u{e4c6}";
+pub const MD_PHONELINK_OFF: &str = "\u{e4c7}";
+pub const MD_PHONELINK_RING: &str = "\u{e4c9}";
+pub const MD_PHONELINK_SETUP: &str = "\u{e4cb}";
+pub const MD_PHOTO: &str = "\u{e4cc}";
+pub const MD_PHOTO_ALBUM: &str = "\u{e4ce}";
+pub const MD_PHOTO_CAMERA: &str = "\u{e4d0}";
+pub const MD_PHOTO_FILTER: &str = "\u{e4d2}";
+pub const MD_PHOTO_LIBRARY: &str = "\u{e4d3}";
+pub const MD_PHOTO_SIZE_SELECT_ACTUAL: &str = "\u{e4d5}";
+pub const MD_PHOTO_SIZE_SELECT_LARGE: &str = "\u{e4d7}";
+pub const MD_PHOTO_SIZE_SELECT_SMALL: &str = "\u{e4d8}";
+pub const MD_PICTURE_AS_PDF: &str = "\u{e4d9}";
+pub const MD_PICTURE_IN_PICTURE: &str = "\u{e4db}";
+pub const MD_PICTURE_IN_PICTURE_ALT: &str = "\u{e4dd}";
+pub const MD_PIE_CHART: &str = "\u{e4df}";
+pub const MD_PIN: &str = "\u{e4e1}";
+pub const MD_PIN_DROP: &str = "\u{e4e3}";
+pub const MD_PIN_OFF: &str = "\u{e4e5}";
+pub const MD_PLACE: &str = "\u{e4e7}";
+pub const MD_PLAY_ARROW: &str = "\u{e4e9}";
+pub const MD_PLAY_CIRCLE_FILLED: &str = "\u{e4eb}";
+pub const MD_PLAY_CIRCLE_FILLED_WHITE: &str = "\u{e4ed}";
+pub const MD_PLAY_CIRCLE_OUTLINE: &str = "\u{e4ef}";
+pub const MD_PLAY_FOR_WORK: &str = "\u{e4f0}";
+pub const MD_PLAYLIST_ADD: &str = "\u{e4f1}";
+pub const MD_PLAYLIST_ADD_CHECK: &str = "\u{e4f2}";
+pub const MD_PLAYLIST_PLAY: &str = "\u{e4f3}";
+pub const MD_PLUS: &str = "\u{e4f4}";
+pub const MD_PLUS_MINUS: &str = "\u{e4f5}";
+pub const MD_PLUS_MINUS_ALT: &str = "\u{e4f6}";
+pub const MD_PLUS_ONE: &str = "\u{e4f7}";
+pub const MD_POLICY: &str = "\u{e4f8}";
+pub const MD_POLL: &str = "\u{e4fa}";
+pub const MD_POLYMER: &str = "\u{e4fc}";
+pub const MD_POOL: &str = "\u{e4fd}";
+pub const MD_PORTABLE_WIFI_OFF: &str = "\u{e4ff}";
+pub const MD_PORTRAIT: &str = "\u{e500}";
+pub const MD_POST_ADD: &str = "\u{e502}";
+pub const MD_POWER: &str = "\u{e503}";
+pub const MD_POWER_INPUT: &str = "\u{e505}";
+pub const MD_POWER_OFF: &str = "\u{e506}";
+pub const MD_POWER_SETTINGS_NEW: &str = "\u{e508}";
+pub const MD_PREGNANT_WOMAN: &str = "\u{e509}";
+pub const MD_PRESENT_TO_ALL: &str = "\u{e50a}";
+pub const MD_PRINT: &str = "\u{e50c}";
+pub const MD_PRINT_DISABLED: &str = "\u{e50e}";
+pub const MD_PRIORITY_HIGH: &str = "\u{e510}";
+pub const MD_PUBLIC: &str = "\u{e511}";
+pub const MD_PUBLISH: &str = "\u{e513}";
+pub const MD_QRCODE: &str = "\u{e515}";
+pub const MD_QUERY_BUILDER: &str = "\u{e517}";
+pub const MD_QUESTION_ANSWER: &str = "\u{e519}";
+pub const MD_QUEUE: &str = "\u{e51b}";
+pub const MD_QUEUE_MUSIC: &str = "\u{e51d}";
+pub const MD_QUEUE_PLAY_NEXT: &str = "\u{e51f}";
+pub const MD_RADIO: &str = "\u{e520}";
+pub const MD_RADIO_BUTTON_CHECKED: &str = "\u{e522}";
+pub const MD_RADIO_BUTTON_UNCHECKED: &str = "\u{e523}";
+pub const MD_RATE_REVIEW: &str = "\u{e524}";
+pub const MD_RECEIPT: &str = "\u{e526}";
+pub const MD_RECENT_ACTORS: &str = "\u{e528}";
+pub const MD_RECORD_VOICE_OVER: &str = "\u{e52a}";
+pub const MD_REDEEM: &str = "\u{e52c}";
+pub const MD_REDO: &str = "\u{e52e}";
+pub const MD_REFRESH: &str = "\u{e52f}";
+pub const MD_REMOVE: &str = "\u{e530}";
+pub const MD_REMOVE_CIRCLE: &str = "\u{e531}";
+pub const MD_REMOVE_CIRCLE_OUTLINE: &str = "\u{e533}";
+pub const MD_REMOVE_FROM_QUEUE: &str = "\u{e534}";
+pub const MD_REMOVE_RED_EYE: &str = "\u{e536}";
+pub const MD_REMOVE_SHOPPING_CART: &str = "\u{e538}";
+pub const MD_REORDER: &str = "\u{e53a}";
+pub const MD_REPEAT: &str = "\u{e53b}";
+pub const MD_REPEAT_ONE: &str = "\u{e53c}";
+pub const MD_REPLAY: &str = "\u{e53d}";
+pub const MD_REPLAY_10: &str = "\u{e53e}";
+pub const MD_REPLAY_30: &str = "\u{e53f}";
+pub const MD_REPLAY_5: &str = "\u{e540}";
+pub const MD_REPLY: &str = "\u{e541}";
+pub const MD_REPLY_ALL: &str = "\u{e542}";
+pub const MD_REPORT: &str = "\u{e543}";
+pub const MD_REPORT_OFF: &str = "\u{e545}";
+pub const MD_REPORT_PROBLEM: &str = "\u{e547}";
+pub const MD_RESTAURANT: &str = "\u{e549}";
+pub const MD_RESTAURANT_MENU: &str = "\u{e54a}";
+pub const MD_RESTORE: &str = "\u{e54b}";
+pub const MD_RESTORE_FROM_TRASH: &str = "\u{e54c}";
+pub const MD_RESTORE_PAGE: &str = "\u{e54e}";
+pub const MD_RING_VOLUME: &str = "\u{e550}";
+pub const MD_ROCKET: &str = "\u{e552}";
+pub const MD_ROOM: &str = "\u{e554}";
+pub const MD_ROOM_SERVICE: &str = "\u{e556}";
+pub const MD_ROTATE_90_DEGREES_CCW: &str = "\u{e558}";
+pub const MD_ROTATE_LEFT: &str = "\u{e55a}";
+pub const MD_ROTATE_RIGHT: &str = "\u{e55b}";
+pub const MD_ROUNDED_CORNER: &str = "\u{e55c}";
+pub const MD_ROUTER: &str = "\u{e55d}";
+pub const MD_ROWING: &str = "\u{e55f}";
+pub const MD_RSS_FEED: &str = "\u{e560}";
+pub const MD_RV_HOOKUP: &str = "\u{e561}";
+pub const MD_SATELLITE: &str = "\u{e563}";
+pub const MD_SAVE: &str = "\u{e565}";
+pub const MD_SAVE_ALT: &str = "\u{e567}";
+pub const MD_SCANNER: &str = "\u{e568}";
+pub const MD_SCATTER_PLOT: &str = "\u{e56a}";
+pub const MD_SCHEDULE: &str = "\u{e56c}";
+pub const MD_SCHOOL: &str = "\u{e56e}";
+pub const MD_SCORE: &str = "\u{e570}";
+pub const MD_SCREEN_LOCK_LANDSCAPE: &str = "\u{e572}";
+pub const MD_SCREEN_LOCK_PORTRAIT: &str = "\u{e574}";
+pub const MD_SCREEN_LOCK_ROTATION: &str = "\u{e576}";
+pub const MD_SCREEN_ROTATION: &str = "\u{e577}";
+pub const MD_SCREEN_SHARE: &str = "\u{e579}";
+pub const MD_SD_CARD: &str = "\u{e57b}";
+pub const MD_SD_STORAGE: &str = "\u{e57d}";
+pub const MD_SEARCH: &str = "\u{e57f}";
+pub const MD_SECURITY: &str = "\u{e580}";
+pub const MD_SELECT_ALL: &str = "\u{e582}";
+pub const MD_SEND: &str = "\u{e583}";
+pub const MD_SENTIMENT_DISSATISFIED: &str = "\u{e585}";
+pub const MD_SENTIMENT_NEUTRAL: &str = "\u{e587}";
+pub const MD_SENTIMENT_SATISFIED: &str = "\u{e589}";
+pub const MD_SENTIMENT_SATISFIED_ALT: &str = "\u{e58b}";
+pub const MD_SENTIMENT_SLIGHTLY_DISSATISFIED: &str = "\u{e58d}";
+pub const MD_SENTIMENT_VERY_DISSATISFIED: &str = "\u{e58f}";
+pub const MD_SENTIMENT_VERY_SATISFIED: &str = "\u{e591}";
+pub const MD_SETTINGS: &str = "\u{e593}";
+pub const MD_SETTINGS_APPLICATIONS: &str = "\u{e595}";
+pub const MD_SETTINGS_BACKUP_RESTORE: &str = "\u{e597}";
+pub const MD_SETTINGS_BLUETOOTH: &str = "\u{e598}";
+pub const MD_SETTINGS_BRIGHTNESS: &str = "\u{e599}";
+pub const MD_SETTINGS_CELL: &str = "\u{e59b}";
+pub const MD_SETTINGS_ETHERNET: &str = "\u{e59d}";
+pub const MD_SETTINGS_INPUT_ANTENNA: &str = "\u{e59e}";
+pub const MD_SETTINGS_INPUT_COMPONENT: &str = "\u{e59f}";
+pub const MD_SETTINGS_INPUT_COMPOSITE: &str = "\u{e5a1}";
+pub const MD_SETTINGS_INPUT_HDMI: &str = "\u{e5a3}";
+pub const MD_SETTINGS_INPUT_SVIDEO: &str = "\u{e5a5}";
+pub const MD_SETTINGS_OVERSCAN: &str = "\u{e5a7}";
+pub const MD_SETTINGS_PHONE: &str = "\u{e5a9}";
+pub const MD_SETTINGS_POWER: &str = "\u{e5ab}";
+pub const MD_SETTINGS_REMOTE: &str = "\u{e5ac}";
+pub const MD_SETTINGS_SYSTEM_DAYDREAM: &str = "\u{e5ae}";
+pub const MD_SETTINGS_VOICE: &str = "\u{e5b0}";
+pub const MD_SHARE: &str = "\u{e5b2}";
+pub const MD_SHOP: &str = "\u{e5b4}";
+pub const MD_SHOP_TWO: &str = "\u{e5b6}";
+pub const MD_SHOPPING_BASKET: &str = "\u{e5b8}";
+pub const MD_SHOPPING_CART: &str = "\u{e5ba}";
+pub const MD_SHORT_TEXT: &str = "\u{e5bc}";
+pub const MD_SHOW_CHART: &str = "\u{e5bd}";
+pub const MD_SHUFFLE: &str = "\u{e5be}";
+pub const MD_SHUTTER_SPEED: &str = "\u{e5bf}";
+pub const MD_SIGNAL_CELLULAR_0_BAR_AFTER: &str = "\u{e5c1}";
+pub const MD_SIGNAL_CELLULAR_0_BAR_BEFORE: &str = "\u{e5c2}";
+pub const MD_SIGNAL_CELLULAR_1_BAR_AFTER: &str = "\u{e5c3}";
+pub const MD_SIGNAL_CELLULAR_1_BAR_BEFORE: &str = "\u{e5c4}";
+pub const MD_SIGNAL_CELLULAR_2_BAR_AFTER: &str = "\u{e5c5}";
+pub const MD_SIGNAL_CELLULAR_2_BAR_BEFORE: &str = "\u{e5c6}";
+pub const MD_SIGNAL_CELLULAR_3_BAR_AFTER: &str = "\u{e5c7}";
+pub const MD_SIGNAL_CELLULAR_3_BAR_BEFORE: &str = "\u{e5c8}";
+pub const MD_SIGNAL_CELLULAR_4_BAR: &str = "\u{e5c9}";
+pub const MD_SIGNAL_CELLULAR_ALT: &str = "\u{e5ca}";
+pub const MD_SIGNAL_CELLULAR_CONNECTED_NO_INTERNET_0_BAR_AFTER: &str = "\u{e5cb}";
+pub const MD_SIGNAL_CELLULAR_CONNECTED_NO_INTERNET_0_BAR_BEFORE: &str = "\u{e5cc}";
+pub const MD_SIGNAL_CELLULAR_CONNECTED_NO_INTERNET_1_BAR_AFTER: &str = "\u{e5cd}";
+pub const MD_SIGNAL_CELLULAR_CONNECTED_NO_INTERNET_1_BAR_BEFORE: &str = "\u{e5ce}";
+pub const MD_SIGNAL_CELLULAR_CONNECTED_NO_INTERNET_2_BAR_AFTER: &str = "\u{e5cf}";
+pub const MD_SIGNAL_CELLULAR_CONNECTED_NO_INTERNET_2_BAR_BEFORE: &str = "\u{e5d0}";
+pub const MD_SIGNAL_CELLULAR_CONNECTED_NO_INTERNET_3_BAR_AFTER: &str = "\u{e5d1}";
+pub const MD_SIGNAL_CELLULAR_CONNECTED_NO_INTERNET_3_BAR_BEFORE: &str = "\u{e5d2}";
+pub const MD_SIGNAL_CELLULAR_CONNECTED_NO_INTERNET_4_BAR: &str = "\u{e5d3}";
+pub const MD_SIGNAL_CELLULAR_NO_SIM: &str = "\u{e5d4}";
+pub const MD_SIGNAL_CELLULAR_NULL: &str = "\u{e5d6}";
+pub const MD_SIGNAL_CELLULAR_OFF: &str = "\u{e5d7}";
+pub const MD_SIGNAL_WIFI_0_BAR_AFTER: &str = "\u{e5d8}";
+pub const MD_SIGNAL_WIFI_0_BAR_BEFORE: &str = "\u{e5d9}";
+pub const MD_SIGNAL_WIFI_1_BAR_AFTER: &str = "\u{e5da}";
+pub const MD_SIGNAL_WIFI_1_BAR_BEFORE: &str = "\u{e5db}";
+pub const MD_SIGNAL_WIFI_1_BAR_LOCK_AFTER: &str = "\u{e5dc}";
+pub const MD_SIGNAL_WIFI_1_BAR_LOCK_BEFORE: &str = "\u{e5dd}";
+pub const MD_SIGNAL_WIFI_2_BAR_AFTER: &str = "\u{e5de}";
+pub const MD_SIGNAL_WIFI_2_BAR_BEFORE: &str = "\u{e5df}";
+pub const MD_SIGNAL_WIFI_2_BAR_LOCK_AFTER: &str = "\u{e5e0}";
+pub const MD_SIGNAL_WIFI_2_BAR_LOCK_BEFORE: &str = "\u{e5e1}";
+pub const MD_SIGNAL_WIFI_3_BAR_AFTER: &str = "\u{e5e2}";
+pub const MD_SIGNAL_WIFI_3_BAR_BEFORE: &str = "\u{e5e3}";
+pub const MD_SIGNAL_WIFI_3_BAR_LOCK_AFTER: &str = "\u{e5e4}";
+pub const MD_SIGNAL_WIFI_3_BAR_LOCK_BEFORE: &str = "\u{e5e5}";
+pub const MD_SIGNAL_WIFI_4_BAR: &str = "\u{e5e6}";
+pub const MD_SIGNAL_WIFI_4_BAR_LOCK: &str = "\u{e5e7}";
+pub const MD_SIGNAL_WIFI_OFF: &str = "\u{e5e8}";
+pub const MD_SIM_CARD: &str = "\u{e5e9}";
+pub const MD_SIM_CARD_ALERT: &str = "\u{e5eb}";
+pub const MD_SINGLE_BED: &str = "\u{e5ed}";
+pub const MD_SKIP_NEXT: &str = "\u{e5ef}";
+pub const MD_SKIP_PREVIOUS: &str = "\u{e5f1}";
+pub const MD_SLIDESHOW: &str = "\u{e5f3}";
+pub const MD_SLOW_MOTION_VIDEO: &str = "\u{e5f5}";
+pub const MD_SMARTPHONE: &str = "\u{e5f6}";
+pub const MD_SMOKE_FREE: &str = "\u{e5f8}";
+pub const MD_SMOKING_ROOMS: &str = "\u{e5f9}";
+pub const MD_SMS: &str = "\u{e5fb}";
+pub const MD_SMS_FAILED: &str = "\u{e5fd}";
+pub const MD_SNOOZE: &str = "\u{e5ff}";
+pub const MD_SORT: &str = "\u{e600}";
+pub const MD_SORT_BY_ALPHA: &str = "\u{e601}";
+pub const MD_SPA: &str = "\u{e602}";
+pub const MD_SPACE_BAR: &str = "\u{e604}";
+pub const MD_SPEAKER: &str = "\u{e605}";
+pub const MD_SPEAKER_GROUP: &str = "\u{e607}";
+pub const MD_SPEAKER_NOTES: &str = "\u{e609}";
+pub const MD_SPEAKER_NOTES_OFF: &str = "\u{e60b}";
+pub const MD_SPEAKER_PHONE: &str = "\u{e60d}";
+pub const MD_SPEED: &str = "\u{e60f}";
+pub const MD_SPELLCHECK: &str = "\u{e610}";
+pub const MD_SPORTS: &str = "\u{e611}";
+pub const MD_SPORTS_BASEBALL: &str = "\u{e612}";
+pub const MD_SPORTS_BASKETBALL: &str = "\u{e614}";
+pub const MD_SPORTS_CRICKET: &str = "\u{e616}";
+pub const MD_SPORTS_ESPORTS: &str = "\u{e618}";
+pub const MD_SPORTS_FOOTBALL: &str = "\u{e61a}";
+pub const MD_SPORTS_GOLF: &str = "\u{e61c}";
+pub const MD_SPORTS_HANDBALL: &str = "\u{e61e}";
+pub const MD_SPORTS_HOCKEY: &str = "\u{e61f}";
+pub const MD_SPORTS_KABADDI: &str = "\u{e620}";
+pub const MD_SPORTS_MMA: &str = "\u{e621}";
+pub const MD_SPORTS_MOTORSPORTS: &str = "\u{e623}";
+pub const MD_SPORTS_RUGBY: &str = "\u{e625}";
+pub const MD_SPORTS_SOCCER: &str = "\u{e627}";
+pub const MD_SPORTS_TENNIS: &str = "\u{e629}";
+pub const MD_SPORTS_VOLLEYBALL: &str = "\u{e62a}";
+pub const MD_SQUARE_FOOT: &str = "\u{e62c}";
+pub const MD_STAR: &str = "\u{e62e}";
+pub const MD_STAR_BORDER: &str = "\u{e630}";
+pub const MD_STAR_HALF: &str = "\u{e631}";
+pub const MD_STAR_RATE: &str = "\u{e632}";
+pub const MD_STARS: &str = "\u{e633}";
+pub const MD_STAY_CURRENT_LANDSCAPE: &str = "\u{e635}";
+pub const MD_STAY_CURRENT_PORTRAIT: &str = "\u{e637}";
+pub const MD_STAY_PRIMARY_LANDSCAPE: &str = "\u{e639}";
+pub const MD_STAY_PRIMARY_PORTRAIT: &str = "\u{e63b}";
+pub const MD_STOP: &str = "\u{e63d}";
+pub const MD_STOP_CIRCLE: &str = "\u{e63f}";
+pub const MD_STOP_SCREEN_SHARE: &str = "\u{e641}";
+pub const MD_STORAGE: &str = "\u{e643}";
+pub const MD_STORE: &str = "\u{e644}";
+pub const MD_STORE_MALL_DIRECTORY: &str = "\u{e646}";
+pub const MD_STOREFRONT: &str = "\u{e648}";
+pub const MD_STRAIGHTEN: &str = "\u{e64a}";
+pub const MD_STREETVIEW: &str = "\u{e64c}";
+pub const MD_STRIKETHROUGH_S: &str = "\u{e64d}";
+pub const MD_STYLE: &str = "\u{e64e}";
+pub const MD_SUBDIRECTORY_ARROW_LEFT: &str = "\u{e650}";
+pub const MD_SUBDIRECTORY_ARROW_RIGHT: &str = "\u{e651}";
+pub const MD_SUBJECT: &str = "\u{e652}";
+pub const MD_SUBSCRIPTIONS: &str = "\u{e653}";
+pub const MD_SUBTITLES: &str = "\u{e655}";
+pub const MD_SUBWAY: &str = "\u{e657}";
+pub const MD_SUPERVISED_USER_CIRCLE: &str = "\u{e659}";
+pub const MD_SUPERVISOR_ACCOUNT: &str = "\u{e65b}";
+pub const MD_SURROUND_SOUND: &str = "\u{e65d}";
+pub const MD_SWAP_CALLS: &str = "\u{e65f}";
+pub const MD_SWAP_HORIZ: &str = "\u{e660}";
+pub const MD_SWAP_HORIZONTAL_CIRCLE: &str = "\u{e661}";
+pub const MD_SWAP_VERT: &str = "\u{e663}";
+pub const MD_SWAP_VERTICAL_CIRCLE: &str = "\u{e664}";
+pub const MD_SWITCH_CAMERA: &str = "\u{e666}";
+pub const MD_SWITCH_VIDEO: &str = "\u{e668}";
+pub const MD_SYNC: &str = "\u{e66a}";
+pub const MD_SYNC_ALT: &str = "\u{e66b}";
+pub const MD_SYNC_DISABLED: &str = "\u{e66c}";
+pub const MD_SYNC_PROBLEM: &str = "\u{e66d}";
+pub const MD_SYSTEM_UPDATE: &str = "\u{e66e}";
+pub const MD_SYSTEM_UPDATE_ALT: &str = "\u{e670}";
+pub const MD_TAB: &str = "\u{e671}";
+pub const MD_TAB_UNSELECTED: &str = "\u{e672}";
+pub const MD_TABLE_CHART: &str = "\u{e673}";
+pub const MD_TABLET: &str = "\u{e675}";
+pub const MD_TABLET_ANDROID: &str = "\u{e677}";
+pub const MD_TABLET_MAC: &str = "\u{e679}";
+pub const MD_TAG_FACES: &str = "\u{e67b}";
+pub const MD_TAP_AND_PLAY: &str = "\u{e67d}";
+pub const MD_TERRAIN: &str = "\u{e67e}";
+pub const MD_TEXT_FIELDS: &str = "\u{e680}";
+pub const MD_TEXT_FORMAT: &str = "\u{e681}";
+pub const MD_TEXT_ROTATE_UP: &str = "\u{e682}";
+pub const MD_TEXT_ROTATE_VERTICAL: &str = "\u{e683}";
+pub const MD_TEXT_ROTATION_ANGLEDOWN: &str = "\u{e684}";
+pub const MD_TEXT_ROTATION_ANGLEUP: &str = "\u{e685}";
+pub const MD_TEXT_ROTATION_DOWN: &str = "\u{e686}";
+pub const MD_TEXT_ROTATION_NONE: &str = "\u{e687}";
+pub const MD_TEXTSMS: &str = "\u{e688}";
+pub const MD_TEXTURE: &str = "\u{e68a}";
+pub const MD_THEATERS: &str = "\u{e68b}";
+pub const MD_THUMB_DOWN: &str = "\u{e68d}";
+pub const MD_THUMB_DOWN_ALT: &str = "\u{e68f}";
+pub const MD_THUMB_UP: &str = "\u{e691}";
+pub const MD_THUMB_UP_ALT: &str = "\u{e693}";
+pub const MD_THUMBS_UP_DOWN: &str = "\u{e695}";
+pub const MD_TIME_TO_LEAVE: &str = "\u{e697}";
+pub const MD_TIMELAPSE: &str = "\u{e699}";
+pub const MD_TIMELINE: &str = "\u{e69b}";
+pub const MD_TIMER: &str = "\u{e69c}";
+pub const MD_TIMER_10: &str = "\u{e69e}";
+pub const MD_TIMER_3: &str = "\u{e69f}";
+pub const MD_TIMER_OFF: &str = "\u{e6a0}";
+pub const MD_TITLE: &str = "\u{e6a2}";
+pub const MD_TOC: &str = "\u{e6a3}";
+pub const MD_TODAY: &str = "\u{e6a4}";
+pub const MD_TOGGLE_OFF: &str = "\u{e6a6}";
+pub const MD_TOGGLE_ON: &str = "\u{e6a8}";
+pub const MD_TOLL: &str = "\u{e6aa}";
+pub const MD_TONALITY: &str = "\u{e6ac}";
+pub const MD_TOUCH_APP: &str = "\u{e6ae}";
+pub const MD_TOYS: &str = "\u{e6b0}";
+pub const MD_TRACK_CHANGES: &str = "\u{e6b2}";
+pub const MD_TRAFFIC: &str = "\u{e6b3}";
+pub const MD_TRAIN: &str = "\u{e6b5}";
+pub const MD_TRAM: &str = "\u{e6b7}";
+pub const MD_TRANSFER_WITHIN_A_STATION: &str = "\u{e6b9}";
+pub const MD_TRANSFORM: &str = "\u{e6ba}";
+pub const MD_TRANSIT_ENTEREXIT: &str = "\u{e6bb}";
+pub const MD_TRANSLATE: &str = "\u{e6bc}";
+pub const MD_TRENDING_DOWN: &str = "\u{e6bd}";
+pub const MD_TRENDING_FLAT: &str = "\u{e6be}";
+pub const MD_TRENDING_UP: &str = "\u{e6bf}";
+pub const MD_TRIP_ORIGIN: &str = "\u{e6c0}";
+pub const MD_TUNE: &str = "\u{e6c1}";
+pub const MD_TURNED_IN: &str = "\u{e6c2}";
+pub const MD_TURNED_IN_NOT: &str = "\u{e6c4}";
+pub const MD_TV: &str = "\u{e6c5}";
+pub const MD_TV_OFF: &str = "\u{e6c7}";
+pub const MD_UNARCHIVE: &str = "\u{e6c9}";
+pub const MD_UNDO: &str = "\u{e6cb}";
+pub const MD_UNFOLD_LESS: &str = "\u{e6cc}";
+pub const MD_UNFOLD_MORE: &str = "\u{e6cd}";
+pub const MD_UNSUBSCRIBE: &str = "\u{e6ce}";
+pub const MD_UPDATE: &str = "\u{e6d0}";
+pub const MD_USB: &str = "\u{e6d1}";
+pub const MD_VERIFIED_USER: &str = "\u{e6d2}";
+pub const MD_VERTICAL_ALIGN_BOTTOM: &str = "\u{e6d4}";
+pub const MD_VERTICAL_ALIGN_CENTER: &str = "\u{e6d5}";
+pub const MD_VERTICAL_ALIGN_TOP: &str = "\u{e6d6}";
+pub const MD_VERTICAL_SPLIT: &str = "\u{e6d7}";
+pub const MD_VIBRATION: &str = "\u{e6d9}";
+pub const MD_VIDEO_CALL: &str = "\u{e6db}";
+pub const MD_VIDEO_LABEL: &str = "\u{e6dd}";
+pub const MD_VIDEO_LIBRARY: &str = "\u{e6df}";
+pub const MD_VIDEOCAM: &str = "\u{e6e1}";
+pub const MD_VIDEOCAM_OFF: &str = "\u{e6e3}";
+pub const MD_VIDEOGAME_ASSET: &str = "\u{e6e5}";
+pub const MD_VIEW_AGENDA: &str = "\u{e6e7}";
+pub const MD_VIEW_ARRAY: &str = "\u{e6e9}";
+pub const MD_VIEW_CAROUSEL: &str = "\u{e6eb}";
+pub const MD_VIEW_COLUMN: &str = "\u{e6ed}";
+pub const MD_VIEW_COMFY: &str = "\u{e6ef}";
+pub const MD_VIEW_COMPACT: &str = "\u{e6f1}";
+pub const MD_VIEW_DAY: &str = "\u{e6f3}";
+pub const MD_VIEW_HEADLINE: &str = "\u{e6f5}";
+pub const MD_VIEW_LIST: &str = "\u{e6f6}";
+pub const MD_VIEW_MODULE: &str = "\u{e6f8}";
+pub const MD_VIEW_QUILT: &str = "\u{e6fa}";
+pub const MD_VIEW_STREAM: &str = "\u{e6fc}";
+pub const MD_VIEW_WEEK: &str = "\u{e6fe}";
+pub const MD_VIGNETTE: &str = "\u{e700}";
+pub const MD_VISIBILITY: &str = "\u{e702}";
+pub const MD_VISIBILITY_OFF: &str = "\u{e704}";
+pub const MD_VOICE_CHAT: &str = "\u{e706}";
+pub const MD_VOICE_OVER_OFF: &str = "\u{e708}";
+pub const MD_VOICEMAIL: &str = "\u{e70a}";
+pub const MD_VOLUME_DOWN: &str = "\u{e70b}";
+pub const MD_VOLUME_MUTE: &str = "\u{e70d}";
+pub const MD_VOLUME_OFF: &str = "\u{e70f}";
+pub const MD_VOLUME_UP: &str = "\u{e711}";
+pub const MD_VPN_KEY: &str = "\u{e713}";
+pub const MD_VPN_LOCK: &str = "\u{e715}";
+pub const MD_WALLPAPER: &str = "\u{e717}";
+pub const MD_WARNING: &str = "\u{e718}";
+pub const MD_WATCH: &str = "\u{e71a}";
+pub const MD_WATCH_LATER: &str = "\u{e71c}";
+pub const MD_WAVES: &str = "\u{e71e}";
+pub const MD_WB_AUTO: &str = "\u{e71f}";
+pub const MD_WB_CLOUDY: &str = "\u{e721}";
+pub const MD_WB_INCANDESCENT: &str = "\u{e723}";
+pub const MD_WB_IRIDESCENT: &str = "\u{e725}";
+pub const MD_WB_SUNNY: &str = "\u{e727}";
+pub const MD_WC: &str = "\u{e729}";
+pub const MD_WEB: &str = "\u{e72a}";
+pub const MD_WEB_ASSET: &str = "\u{e72c}";
+pub const MD_WEEKEND: &str = "\u{e72e}";
+pub const MD_WHATSHOT: &str = "\u{e730}";
+pub const MD_WHERE_TO_VOTE: &str = "\u{e732}";
+pub const MD_WIDGETS: &str = "\u{e734}";
+pub const MD_WIFI: &str = "\u{e736}";
+pub const MD_WIFI_LOCK: &str = "\u{e737}";
+pub const MD_WIFI_OFF: &str = "\u{e738}";
+pub const MD_WIFI_TETHERING: &str = "\u{e739}";
+pub const MD_WORK: &str = "\u{e73a}";
+pub const MD_WORK_OFF: &str = "\u{e73c}";
+pub const MD_WORK_OUTLINE: &str = "\u{e73e}";
+pub const MD_WRAP_TEXT: &str = "\u{e73f}";
+pub const MD_YOUTUBE_SEARCHED_FOR: &str = "\u{e740}";
+pub const MD_ZOOM_IN: &str = "\u{e741}";
+pub const MD_ZOOM_OUT: &str = "\u{e742}";
+pub const MD_ZOOM_OUT_MAP: &str = "\u{e743}";
+pub const MD_ADD_IC_CALL: &str = "\u{e744}";
+pub const MD_LIBRARY_ADD_CHECK: &str = "\u{e746}";
+pub const MD_STAR_OUTLINE: &str = "\u{e748}";
+pub const MD_TWO_WHEELER: &str = "\u{e749}";
+pub const MD_5G: &str = "\u{e74a}";
+pub const MD_AD_UNITS: &str = "\u{e74b}";
+pub const MD_ADD_BUSINESS: &str = "\u{e74d}";
+pub const MD_ADD_LOCATION_ALT: &str = "\u{e74f}";
+pub const MD_ADD_ROAD: &str = "\u{e751}";
+pub const MD_ADDCHART: &str = "\u{e752}";
+pub const MD_ADMIN_PANEL_SETTINGS: &str = "\u{e753}";
+pub const MD_AGRICULTURE: &str = "\u{e755}";
+pub const MD_ALT_ROUTE: &str = "\u{e757}";
+pub const MD_ANALYTICS: &str = "\u{e758}";
+pub const MD_ANCHOR: &str = "\u{e75a}";
+pub const MD_API: &str = "\u{e75b}";
+pub const MD_APP_BLOCKING: &str = "\u{e75c}";
+pub const MD_APP_SETTINGS_ALT: &str = "\u{e75e}";
+pub const MD_ARCHITECTURE: &str = "\u{e760}";
+pub const MD_ARROW_CIRCLE_DOWN: &str = "\u{e761}";
+pub const MD_ARROW_CIRCLE_UP: &str = "\u{e763}";
+pub const MD_ARTICLE: &str = "\u{e765}";
+pub const MD_ATTACH_EMAIL: &str = "\u{e767}";
+pub const MD_AUTO_DELETE: &str = "\u{e768}";
+pub const MD_BABY_CHANGING_STATION: &str = "\u{e76a}";
+pub const MD_BACKPACK: &str = "\u{e76b}";
+pub const MD_BACKUP_TABLE: &str = "\u{e76d}";
+pub const MD_BATCH_PREDICTION: &str = "\u{e76f}";
+pub const MD_BEDTIME: &str = "\u{e771}";
+pub const MD_BIKE_SCOOTER: &str = "\u{e773}";
+pub const MD_BIOTECH: &str = "\u{e774}";
+pub const MD_BROWSER_NOT_SUPPORTED: &str = "\u{e776}";
+pub const MD_BUILD_CIRCLE: &str = "\u{e777}";
+pub const MD_CALCULATE: &str = "\u{e779}";
+pub const MD_CAMPAIGN: &str = "\u{e77b}";
+pub const MD_CHARGING_STATION: &str = "\u{e77d}";
+pub const MD_CHECKROOM: &str = "\u{e77f}";
+pub const MD_CLEANING_SERVICES: &str = "\u{e780}";
+pub const MD_CLOSE_FULLSCREEN: &str = "\u{e782}";
+pub const MD_COMMENT_BANK: &str = "\u{e783}";
+pub const MD_CONSTRUCTION: &str = "\u{e785}";
+pub const MD_CORPORATE_FARE: &str = "\u{e786}";
+pub const MD_DESIGN_SERVICES: &str = "\u{e788}";
+pub const MD_DIRECTIONS_OFF: &str = "\u{e78a}";
+pub const MD_DO_NOT_STEP: &str = "\u{e78b}";
+pub const MD_DO_NOT_TOUCH: &str = "\u{e78d}";
+pub const MD_DOMAIN_VERIFICATION: &str = "\u{e78f}";
+pub const MD_DRY: &str = "\u{e791}";
+pub const MD_DYNAMIC_FORM: &str = "\u{e793}";
+pub const MD_EDIT_ROAD: &str = "\u{e795}";
+pub const MD_ELECTRIC_BIKE: &str = "\u{e797}";
+pub const MD_ELECTRIC_CAR: &str = "\u{e798}";
+pub const MD_ELECTRIC_MOPED: &str = "\u{e79a}";
+pub const MD_ELECTRIC_SCOOTER: &str = "\u{e79c}";
+pub const MD_ELECTRICAL_SERVICES: &str = "\u{e79d}";
+pub const MD_ELEVATOR: &str = "\u{e79e}";
+pub const MD_ENGINEERING: &str = "\u{e7a0}";
+pub const MD_ESCALATOR: &str = "\u{e7a2}";
+pub const MD_ESCALATOR_WARNING: &str = "\u{e7a4}";
+pub const MD_FACT_CHECK: &str = "\u{e7a5}";
+pub const MD_FAMILY_RESTROOM: &str = "\u{e7a7}";
+pub const MD_FILTER_ALT: &str = "\u{e7a8}";
+pub const MD_FLAKY: &str = "\u{e7aa}";
+pub const MD_FORWARD_TO_INBOX: &str = "\u{e7ab}";
+pub const MD_GRADING: &str = "\u{e7ad}";
+pub const MD_HANDYMAN: &str = "\u{e7ae}";
+pub const MD_HEARING_DISABLED: &str = "\u{e7b0}";
+pub const MD_HELP_CENTER: &str = "\u{e7b1}";
+pub const MD_HIGHLIGHT_ALT: &str = "\u{e7b3}";
+pub const MD_HISTORY_EDU: &str = "\u{e7b4}";
+pub const MD_HISTORY_TOGGLE_OFF: &str = "\u{e7b6}";
+pub const MD_HOME_REPAIR_SERVICE: &str = "\u{e7b7}";
+pub const MD_HORIZONTAL_RULE: &str = "\u{e7b9}";
+pub const MD_HOURGLASS_BOTTOM: &str = "\u{e7ba}";
+pub const MD_HOURGLASS_DISABLED: &str = "\u{e7bc}";
+pub const MD_HOURGLASS_TOP: &str = "\u{e7bd}";
+pub const MD_HVAC: &str = "\u{e7bf}";
+pub const MD_IMAGE_NOT_SUPPORTED: &str = "\u{e7c1}";
+pub const MD_INSIGHTS: &str = "\u{e7c3}";
+pub const MD_INTEGRATION_INSTRUCTIONS: &str = "\u{e7c4}";
+pub const MD_LEGEND_TOGGLE: &str = "\u{e7c6}";
+pub const MD_LOGIN: &str = "\u{e7c7}";
+pub const MD_MAPS_UGC: &str = "\u{e7c8}";
+pub const MD_MARK_CHAT_READ: &str = "\u{e7ca}";
+pub const MD_MARK_CHAT_UNREAD: &str = "\u{e7cc}";
+pub const MD_MARK_EMAIL_READ: &str = "\u{e7ce}";
+pub const MD_MARK_EMAIL_UNREAD: &str = "\u{e7d0}";
+pub const MD_MEDIATION: &str = "\u{e7d2}";
+pub const MD_MEDICAL_SERVICES: &str = "\u{e7d3}";
+pub const MD_MILITARY_TECH: &str = "\u{e7d5}";
+pub const MD_MISCELLANEOUS_SERVICES: &str = "\u{e7d7}";
+pub const MD_MODEL_TRAINING: &str = "\u{e7d8}";
+pub const MD_MOPED: &str = "\u{e7d9}";
+pub const MD_MORE_TIME: &str = "\u{e7db}";
+pub const MD_MULTIPLE_STOP: &str = "\u{e7dc}";
+pub const MD_NAT: &str = "\u{e7dd}";
+pub const MD_NEXT_PLAN: &str = "\u{e7df}";
+pub const MD_NO_CELL: &str = "\u{e7e1}";
+pub const MD_NO_DRINKS: &str = "\u{e7e3}";
+pub const MD_NO_FLASH: &str = "\u{e7e5}";
+pub const MD_NO_FOOD: &str = "\u{e7e7}";
+pub const MD_NO_PHOTOGRAPHY: &str = "\u{e7e9}";
+pub const MD_NO_STROLLER: &str = "\u{e7eb}";
+pub const MD_NOT_ACCESSIBLE: &str = "\u{e7ed}";
+pub const MD_NOT_STARTED: &str = "\u{e7ee}";
+pub const MD_ONLINE_PREDICTION: &str = "\u{e7f0}";
+pub const MD_OPEN_IN_FULL: &str = "\u{e7f1}";
+pub const MD_OUTLET: &str = "\u{e7f2}";
+pub const MD_PAYMENTS: &str = "\u{e7f4}";
+pub const MD_PEDAL_BIKE: &str = "\u{e7f6}";
+pub const MD_PENDING: &str = "\u{e7f7}";
+pub const MD_PENDING_ACTIONS: &str = "\u{e7f9}";
+pub const MD_PERSON_ADD_ALT_1: &str = "\u{e7fb}";
+pub const MD_PERSON_REMOVE: &str = "\u{e7fd}";
+pub const MD_PERSON_REMOVE_ALT_1: &str = "\u{e7ff}";
+pub const MD_PERSON_SEARCH: &str = "\u{e801}";
+pub const MD_PEST_CONTROL: &str = "\u{e803}";
+pub const MD_PEST_CONTROL_RODENT: &str = "\u{e805}";
+pub const MD_PLAGIARISM: &str = "\u{e807}";
+pub const MD_PLUMBING: &str = "\u{e809}";
+pub const MD_POINT_OF_SALE: &str = "\u{e80a}";
+pub const MD_PREVIEW: &str = "\u{e80c}";
+pub const MD_PRIVACY_TIP: &str = "\u{e80e}";
+pub const MD_PSYCHOLOGY: &str = "\u{e810}";
+pub const MD_PUBLIC_OFF: &str = "\u{e812}";
+pub const MD_PUSH_PIN: &str = "\u{e814}";
+pub const MD_QR_CODE: &str = "\u{e816}";
+pub const MD_QUICKREPLY: &str = "\u{e818}";
+pub const MD_READ_MORE: &str = "\u{e81a}";
+pub const MD_RECEIPT_LONG: &str = "\u{e81b}";
+pub const MD_REQUEST_QUOTE: &str = "\u{e81d}";
+pub const MD_ROOM_PREFERENCES: &str = "\u{e81f}";
+pub const MD_RULE: &str = "\u{e821}";
+pub const MD_RULE_FOLDER: &str = "\u{e822}";
+pub const MD_RUN_CIRCLE: &str = "\u{e824}";
+pub const MD_SCIENCE: &str = "\u{e826}";
+pub const MD_SEARCH_OFF: &str = "\u{e828}";
+pub const MD_SELF_IMPROVEMENT: &str = "\u{e829}";
+pub const MD_SENSOR_DOOR: &str = "\u{e82a}";
+pub const MD_SENSOR_WINDOW: &str = "\u{e82c}";
+pub const MD_SHOPPING_BAG: &str = "\u{e82e}";
+pub const MD_SMART_BUTTON: &str = "\u{e830}";
+pub const MD_SNIPPET_FOLDER: &str = "\u{e831}";
+pub const MD_SOAP: &str = "\u{e833}";
+pub const MD_SOURCE: &str = "\u{e835}";
+pub const MD_STAIRS: &str = "\u{e837}";
+pub const MD_STROLLER: &str = "\u{e839}";
+pub const MD_SUBSCRIPT: &str = "\u{e83b}";
+pub const MD_SUBTITLES_OFF: &str = "\u{e83c}";
+pub const MD_SUPERSCRIPT: &str = "\u{e83e}";
+pub const MD_SUPPORT: &str = "\u{e83f}";
+pub const MD_SUPPORT_AGENT: &str = "\u{e841}";
+pub const MD_SWITCH_LEFT: &str = "\u{e842}";
+pub const MD_SWITCH_RIGHT: &str = "\u{e844}";
+pub const MD_TABLE_ROWS: &str = "\u{e846}";
+pub const MD_TABLE_VIEW: &str = "\u{e848}";
+pub const MD_TEXT_SNIPPET: &str = "\u{e84a}";
+pub const MD_TOPIC: &str = "\u{e84c}";
+pub const MD_TOUR: &str = "\u{e84e}";
+pub const MD_TTY: &str = "\u{e850}";
+pub const MD_UMBRELLA: &str = "\u{e852}";
+pub const MD_UPGRADE: &str = "\u{e854}";
+pub const MD_VERIFIED: &str = "\u{e855}";
+pub const MD_VIDEO_SETTINGS: &str = "\u{e857}";
+pub const MD_VIEW_SIDEBAR: &str = "\u{e858}";
+pub const MD_WASH: &str = "\u{e85a}";
+pub const MD_WHEELCHAIR_PICKUP: &str = "\u{e85c}";
+pub const MD_WIFI_CALLING: &str = "\u{e85d}";
+pub const MD_WIFI_PROTECTED_SETUP: &str = "\u{e85f}";
+pub const MD_WRONG_LOCATION: &str = "\u{e860}";
+pub const MD_WYSIWYG: &str = "\u{e861}";
+pub const MD_BENTO: &str = "\u{e864}";
+pub const MD_CARPENTER: &str = "\u{e866}";
+pub const MD_CLOSED_CAPTION_DISABLED: &str = "\u{e868}";
+pub const MD_COUNTERTOPS: &str = "\u{e86a}";
+pub const MD_EAST: &str = "\u{e86c}";
+pub const MD_FENCE: &str = "\u{e86d}";
+pub const MD_FIRE_EXTINGUISHER: &str = "\u{e86f}";
+pub const MD_FOOD_BANK: &str = "\u{e870}";
+pub const MD_FOUNDATION: &str = "\u{e872}";
+pub const MD_GRASS: &str = "\u{e874}";
+pub const MD_HOUSE_SIDING: &str = "\u{e875}";
+pub const MD_LEADERBOARD: &str = "\u{e877}";
+pub const MD_MICROWAVE: &str = "\u{e879}";
+pub const MD_NEAR_ME_DISABLED: &str = "\u{e87b}";
+pub const MD_NIGHT_SHELTER: &str = "\u{e87d}";
+pub const MD_NO_MEALS: &str = "\u{e87f}";
+pub const MD_NO_TRANSFER: &str = "\u{e880}";
+pub const MD_NORTH: &str = "\u{e882}";
+pub const MD_NORTH_EAST: &str = "\u{e883}";
+pub const MD_NORTH_WEST: &str = "\u{e884}";
+pub const MD_QR_CODE_SCANNER: &str = "\u{e885}";
+pub const MD_RICE_BOWL: &str = "\u{e886}";
+pub const MD_ROOFING: &str = "\u{e888}";
+pub const MD_SET_MEAL: &str = "\u{e88a}";
+pub const MD_SOUTH: &str = "\u{e88c}";
+pub const MD_SOUTH_EAST: &str = "\u{e88d}";
+pub const MD_SOUTH_WEST: &str = "\u{e88e}";
+pub const MD_SPORTS_BAR: &str = "\u{e88f}";
+pub const MD_STICKY_NOTE_2: &str = "\u{e891}";
+pub const MD_TAPAS: &str = "\u{e893}";
+pub const MD_WATER_DAMAGE: &str = "\u{e895}";
+pub const MD_WEST: &str = "\u{e897}";
+pub const MD_WINE_BAR: &str = "\u{e898}";
