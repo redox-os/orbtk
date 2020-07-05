@@ -29,11 +29,8 @@ pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>
 /// `MouseMoveEvent` indicates if the mouse position is changed on the window.
 #[derive(Event)]
 pub struct MouseMoveEvent {
-    /// Current x position of the mouse on the window.
-    pub x: f64,
-
-    /// Current y position of the mouse on the window.
-    pub y: f64,
+    /// Indicates position of the mouse on the window.
+    pub position: Point,
 }
 
 /// `ScrollEvent` occurs when the mouse wheel is moved.
@@ -49,11 +46,8 @@ pub struct Mouse {
     /// Indicates the mouse button that is connected to the event.
     pub button: MouseButton,
 
-    /// Indicates the x position of the event on the window.
-    pub x: f64,
-
-    /// Indicates the y position of the event on the window.
-    pub y: f64,
+    /// Indicates position of the mouse on the window.
+    pub position: Point,
 }
 
 /// `MouseUpEvent` occurs when a mouse button is released.
@@ -62,11 +56,8 @@ pub struct MouseUpEvent {
     /// Indicates the mouse button that is released.
     pub button: MouseButton,
 
-    /// Indicates the x position of the event on the window.
-    pub x: f64,
-
-    /// Indicates the y position of the event on the window.
-    pub y: f64,
+    /// Indicates position of the mouse on the window.
+    pub position: Point,
 }
 
 /// `ClickEvent` occurs when a user clicked on an element.
@@ -82,11 +73,8 @@ pub struct MouseDownEvent {
     /// Indicates the mouse button that is pressed.
     pub button: MouseButton,
 
-    /// Indicates the x position of the event on the window.
-    pub x: f64,
-
-    /// Indicates the y position of the event on the window.
-    pub y: f64,
+    /// Indicates position of the mouse on the window.
+    pub position: Point,
 }
 
 /// `GlobalMouseUpEvent` occurs when a mouse button is released.
@@ -97,11 +85,8 @@ pub struct GlobalMouseUpEvent {
     /// Indicates the mouse button that is released.
     pub button: MouseButton,
 
-    /// Indicates the x position of the event on the window.
-    pub x: f64,
-
-    /// Indicates the y position of the event on the window.
-    pub y: f64,
+    /// Indicates position of the mouse on the window.
+    pub position: Point,
 }
 
 /// Defines the mouse handler function.
@@ -153,8 +138,7 @@ impl EventHandler for MouseDownEventHandler {
                     state_context,
                     Mouse {
                         button: event.button,
-                        x: event.x,
-                        y: event.y,
+                        position: Point::new(event.position.x, event.position.y),
                     },
                 )
             })
@@ -181,8 +165,7 @@ impl EventHandler for GlobalMouseUpEventHandler {
                     state_context,
                     Mouse {
                         button: event.button,
-                        x: event.x,
-                        y: event.y,
+                        position: Point::new(event.position.x, event.position.y),
                     },
                 );
                 false
@@ -210,8 +193,7 @@ impl EventHandler for MouseUpEventHandler {
                     state_context,
                     Mouse {
                         button: event.button,
-                        x: event.x,
-                        y: event.y,
+                        position: Point::new(event.position.x, event.position.y),
                     },
                 )
             })
@@ -234,7 +216,10 @@ impl EventHandler for MouseMoveEventHandler {
             .downcast_ref::<MouseMoveEvent>()
             .ok()
             .map_or(false, |event| {
-                (self.handler)(state_context, Point::new(event.x, event.y))
+                (self.handler)(
+                    state_context,
+                    Point::new(event.position.x, event.position.y),
+                )
             })
     }
 

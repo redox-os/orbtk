@@ -111,7 +111,7 @@ impl TextBoxState {
         if let Some((index, _x)) = self
             .map_chars_index_to_position(ctx)
             .iter()
-            .min_by_key(|(_index, x)| (p.x - x).abs() as u64)
+            .min_by_key(|(_index, x)| (p.position.x - x).abs() as u64)
         {
             return *index;
         }
