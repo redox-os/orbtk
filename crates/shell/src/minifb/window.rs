@@ -10,6 +10,8 @@ use crate::{
     WindowRequest,
 };
 
+use orbtk_utils::Point;
+
 /// Represents a wrapper for a minifb window. It handles events, propagate them to
 /// the window adapter and handles the update and render pipeline.
 #[derive(Constructor)]
@@ -42,8 +44,7 @@ where
         };
 
         self.adapter.mouse_event(MouseEvent {
-            x: self.mouse.mouse_pos.0 as f64,
-            y: self.mouse.mouse_pos.1 as f64,
+            position: Point::new(self.mouse.mouse_pos.0 as f64, self.mouse.mouse_pos.1 as f64),
             button,
             state,
         });

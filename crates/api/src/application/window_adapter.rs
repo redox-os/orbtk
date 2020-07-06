@@ -76,14 +76,14 @@ impl shell::WindowAdapter for WindowAdapter {
             shell::ButtonState::Up => {
                 self.ctx.event_queue.borrow_mut().register_event(
                     MouseUpEvent {
-                        position: Point::new(event.x, event.y),
+                        position: Point::new(event.position.x, event.position.y),
                         button: event.button,
                     },
                     root,
                 );
                 self.ctx.event_queue.borrow_mut().register_event(
                     GlobalMouseUpEvent {
-                        position: Point::new(event.x, event.y),
+                        position: Point::new(event.position.x, event.position.y),
                         button: event.button,
                     },
                     root,
@@ -91,7 +91,7 @@ impl shell::WindowAdapter for WindowAdapter {
             }
             shell::ButtonState::Down => self.ctx.event_queue.borrow_mut().register_event(
                 MouseDownEvent {
-                    position: Point::new(event.x, event.y),
+                    position: Point::new(event.position.x, event.position.y),
                     button: event.button,
                 },
                 root,
