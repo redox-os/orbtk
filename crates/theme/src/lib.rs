@@ -12,12 +12,18 @@ use std::sync::Arc;
 
 use orbtk_css_engine::prelude::*;
 
+/// provides `constants` to reference colors.
 pub mod colors;
+/// provides `constants` assiciated to fonts.
 pub mod fonts;
 pub mod prelude;
+/// provides information processed by the `graphic render` (e.g. glyphs, icons).
 pub mod vector_graphics;
 
+/// orbtk's `default` rendering theme referencing the `dark` stylesheet.
 pub const DEFAULT_THEME_CSS: &str = include_str!("dark.css");
+
+/// the `light` variant of orbtk's rendering theme. References the `light` stylesheet.
 pub const LIGHT_THEME_EXTENSION_CSS: &str = include_str!("light.css");
 
 lazy_static! {
