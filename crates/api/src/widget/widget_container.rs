@@ -62,7 +62,7 @@ impl<'a> WidgetContainer<'a> {
     ///
     /// # Panics
     ///
-    /// Panics if the widget does not contains the property.
+    /// Panics if the widget does not contain the property.
     pub fn get_mut<P>(&mut self, key: &str) -> &mut P
     where
         P: Clone + Component,

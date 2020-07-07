@@ -41,12 +41,14 @@ impl State for MainViewState {
                         main_view(ctx.widget())
                             .list_mut()
                             .push(format!("Item {}", len + 1));
-                            ctx.child("items").set::<usize>("count", len + 1);
+                        ctx.child("items").clone_or_default::<usize>("Item");
                         items_widget(ctx.child("items")).set_count(len + 1);
                         button(ctx.child("remove-item-button")).set_enabled(true);
+                        button(ctx.child("remove-item-button")).set_visibility(Visibility::Visible);
 
                         if len == 4 {
                             button(ctx.child("add-item-button")).set_enabled(false);
+                            button(ctx.child("add-item-button")).set_visibility(Visibility::Collapsed);
                         }
                     }
                 }
@@ -56,9 +58,11 @@ impl State for MainViewState {
                         main_view(ctx.widget()).list_mut().remove(len - 1);
                         items_widget(ctx.child("items")).set_count(len - 1);
                         button(ctx.child("add-item-button")).set_enabled(true);
+                        button(ctx.child("add-item-button")).set_visibility(Visibility::Visible);
 
                         if len == 1 {
                             button(ctx.child("remove-item-button")).set_enabled(false);
+                            button(ctx.child("remove-item-button")).set_visibility(Visibility::Collapsed);
                         }
                     }
                 }
@@ -144,16 +148,16 @@ impl Template for MainView {
             ])
             .list_count(3)
             .selection_list(vec![
-                "Item 1".to_string(),
-                "Item 2".to_string(),
-                "Item 3".to_string(),
-                "Item 4".to_string(),
-                "Item 5".to_string(),
-                "Item 6".to_string(),
-                "Item 7".to_string(),
-                "Item 8".to_string(),
-                "Item 9".to_string(),
-                "Item 10".to_string(),
+                "Select Item 1".to_string(),
+                "Select Item 2".to_string(),
+                "Select Item 3".to_string(),
+                "Select Item 4".to_string(),
+                "Select Item 5".to_string(),
+                "Select Item 6".to_string(),
+                "Select Item 7".to_string(),
+                "Select Item 8".to_string(),
+                "Select Item 9".to_string(),
+                "Select Item 10".to_string(),
             ])
             .combo_box_list(vec![
                 "CB 1".to_string(),
@@ -369,6 +373,7 @@ impl Template for MainView {
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(3))
                                     .margin((0., 0., 0., 8.))
+                                    // bc = build-context
                                     .items_builder(move |bc, index| {
                                         let text = bc.get_widget(id).get::<Vec<String>>("list")
                                             [index]
