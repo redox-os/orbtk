@@ -34,17 +34,31 @@ impl NumericBoxState {
     }
 
     fn change_val(&mut self, new_value: Decimal, ctx: &mut Context) {
-        if new_value >= self.min && new_value <= self.max {
-            self.current_value = new_value;
-            ctx.get_widget(self.input)
-                .set::<String16>("text", String16::from(self.current_value.to_string()));
+        self.current_value = self.max(self.min(new_value));
+        ctx.get_widget(self.input)
+            .set::<String16>("text", String16::from(self.current_value.to_string()));
 
-            ctx.push_event_strategy_by_entity(
-                ChangedEvent(ctx.entity),
-                ctx.entity,
-                EventStrategy::Direct,
-            );
+        ctx.push_event_strategy_by_entity(
+            ChangedEvent(ctx.entity),
+            ctx.entity,
+            EventStrategy::Direct,
+        );
+    }
+
+    fn min(&self, d: Decimal) -> Decimal {
+        if d < self.min {
+            return self.min;
+        } else {
+            return d;
         }
+    }
+
+    fn max(&self, d: Decimal) -> Decimal {
+       if d > self.max {
+           return self.max;
+       } else {
+           return d;
+       }
     }
 
     fn request_focus(&self, ctx: &mut Context) {
