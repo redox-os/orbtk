@@ -7,8 +7,6 @@ use rust_decimal::prelude::*;
 pub static ID_INPUT: &'static str = "numeric_box_input";
 pub static ELEMENT_INPUT: &'static str = "numeric_box_input";
 pub static ELEMENT_BTN: &'static str = "numeric_box_button";
-// one mouse up scroll is delta.y = 12.0
-static ONE_SCROLL: f64 = 12.0;
 
 pub enum InputAction {
     Inc,
@@ -125,11 +123,10 @@ impl State for NumericBoxState {
                     _ => {}
                 },
                 InputAction::ChangeByMouseScroll(delta) => {
-                    match Decimal::from_f64(delta.y / ONE_SCROLL) {
-                        Some(scroll_count) => {
-                            self.change_val(self.current_value + (self.step * scroll_count), ctx);
-                        }
-                        None => {}
+                    if delta.y < 0.0 {
+                        self.change_val(self.current_value - self.step, ctx);
+                    } else {
+                        self.change_val(self.current_value + self.step, ctx);
                     }
                 }
                 InputAction::Focus => {
