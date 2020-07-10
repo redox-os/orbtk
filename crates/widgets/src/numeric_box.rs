@@ -44,7 +44,7 @@ impl NumericBoxState {
     }
 
     fn min(&self, d: Decimal) -> Decimal {
-        if d < self.min {
+        if d <= self.min {
             return self.min;
         } else {
             return d;
@@ -52,7 +52,7 @@ impl NumericBoxState {
     }
 
     fn max(&self, d: Decimal) -> Decimal {
-       if d > self.max {
+       if d >= self.max {
            return self.max;
        } else {
            return d;
