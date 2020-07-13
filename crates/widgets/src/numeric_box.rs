@@ -32,6 +32,11 @@ impl NumericBoxState {
     }
 
     fn change_val(&mut self, new_value: Decimal, ctx: &mut Context) {
+        if self.current_value == self.min && new_value < self.min
+        || self.current_value == self.max && new_value > self.max {
+            return;
+        }
+
         self.current_value = self.max(self.min(new_value));
         ctx.get_widget(self.input)
             .set::<String16>("text", String16::from(self.current_value.to_string()));
