@@ -9,11 +9,6 @@ Theme (
                 "icon_family": "$ICON_FONT",
             },
         ),
-        "window": (
-             properties: {
-                  "background": "$BRIGHT_GRAY",
-             }
-        ),
         "button": ( 
             base: "base",
             properties: {
@@ -25,9 +20,7 @@ Theme (
             }, 
             states: {
                 "pressed": {
-                    "background": "$BLUE_BYOUX",
-                    "foreground": "$BLACK",
-                    "icon_brush": "$LINK_WATER",
+                    "background": "$BLUE_BAYOUX",
                 },
                 "disabled": {
                     "background": "$ROLLING_STONE",
@@ -42,6 +35,18 @@ Theme (
                 "background": "$GOLDEN_DREAM",
                 "foreground": "$BRIGHT_GRAY",
                 "icon_brush": "$BRIGHT_GRAY",
+            },
+            states: {
+                "pressed": {
+                    "background": "$BLUE_BAYOUX",
+                    "foreground": "$LINK_WATER",
+                    "icon_brush": "$LINK_WATER",
+                },
+                "disabled": {
+                    "background": "$ROLLING_STONE",
+                    "foreground": "$BRIGHT_GRAY",
+                    "icon_brush": "$BRIGHT_GRAY",
+                },
             },
         ),
          "button_square": ( 
