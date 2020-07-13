@@ -33,7 +33,8 @@ impl NumericBoxState {
 
     fn change_val(&mut self, new_value: Decimal, ctx: &mut Context) {
         if self.current_value == self.min && new_value < self.min
-        || self.current_value == self.max && new_value > self.max {
+            || self.current_value == self.max && new_value > self.max
+        {
             return;
         }
 
@@ -57,11 +58,11 @@ impl NumericBoxState {
     }
 
     fn max(&self, d: Decimal) -> Decimal {
-       if d >= self.max {
-           return self.max;
-       } else {
-           return d;
-       }
+        if d >= self.max {
+            return self.max;
+        } else {
+            return d;
+        }
     }
 
     fn request_focus(&self, ctx: &mut Context) {
@@ -118,7 +119,7 @@ impl State for NumericBoxState {
                         if *ctx.widget().get::<bool>("lost_focus_on_activation") {
                             ctx.push_event_by_window(FocusEvent::RemoveFocus(ctx.entity));
                         }
-                
+
                         ctx.push_event_strategy_by_entity(
                             ActivateEvent(ctx.entity),
                             ctx.entity,
