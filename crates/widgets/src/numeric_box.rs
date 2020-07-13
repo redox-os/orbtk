@@ -249,6 +249,7 @@ impl Template for NumericBox {
                             .id(ID_INPUT)
                             .max_width(96.)
                             .text("0")
+                            .lost_focus_on_activation(id)
                             .build(ctx),
                     )
                     .child(
