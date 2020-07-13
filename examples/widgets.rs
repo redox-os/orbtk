@@ -385,7 +385,6 @@ impl Template for MainView {
                             )
                             .child(
                                 Button::new()
-                                    .style("button")
                                     .style("button_single_content")
                                     .id("remove-item-button")
                                     .icon(material_font_icons::MINUS_FONT_ICON)
@@ -400,7 +399,6 @@ impl Template for MainView {
                             )
                             .child(
                                 Button::new()
-                                    .style("button")
                                     .style("button_single_content")
                                     .id("add-item-button")
                                     .icon(material_font_icons::ADD_FONT_ICON)

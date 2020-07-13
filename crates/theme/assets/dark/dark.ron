@@ -5,7 +5,7 @@ Theme (
                 "background": "$BRIGHT_GRAY",
                 "font_size": "$FONT_SIZE_16",
                 "font_family": "$MEDIUM_FONT",
-                "icon_size": "ICON_SIZE_16",
+                "icon_size": "$ICON_SIZE_16",
                 "icon_family": "$ICON_FONT",
             },
         ),
@@ -14,12 +14,15 @@ Theme (
             properties: {
                 "height": 36,
                 "foreground": "$LINK_WATER",
+                "icon_brush": "$LINK_WATER",
                 "background": "$LYNCH",
                 "border_radius": 4,
-                "font_family": "$MEDIUM_FONT",
             }, 
             states: {
                 "pressed": {
+                    "background": "$BLUE_BAYOUX",
+                },
+                "selected": {
                     "background": "$BLUE_BAYOUX",
                 },
                 "disabled": {
@@ -36,20 +39,8 @@ Theme (
                 "foreground": "$BRIGHT_GRAY",
                 "icon_brush": "$BRIGHT_GRAY",
             },
-            states: {
-                "pressed": {
-                    "background": "$BLUE_BAYOUX",
-                    "foreground": "$LINK_WATER",
-                    "icon_brush": "$LINK_WATER",
-                },
-                "disabled": {
-                    "background": "$ROLLING_STONE",
-                    "foreground": "$BRIGHT_GRAY",
-                    "icon_brush": "$BRIGHT_GRAY",
-                },
-            },
         ),
-         "button_square": ( 
+        "button_square": ( 
             base: "button",
             properties: {
                 "border_radius": 1,
@@ -62,9 +53,9 @@ Theme (
             },
         ),
         "check_box": (
-              base: "base",
-            properites: {
-                "icon_size": "ICON_SIZE_18",
+            base: "base",
+            properties: {
+                "icon_size": "$ICON_SIZE_18",
                 "background": "transparent",
                 "border_radius": 2,
                 "border_width": 1,
@@ -97,7 +88,7 @@ Theme (
             properties: {
                 "height": 14,
                 "border_radius": 7,
-                "background": "#6C7A90",
+                "background": "$SLATE_GRAY",
             }
         ),
         "switch_toggle": (

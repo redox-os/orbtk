@@ -22,6 +22,16 @@ impl Theme {
 
             let mut states = HashMap::new();
 
+            let base_key = theme.styles.get(style_key).unwrap().base.clone();
+
+            if let Some(base) = theme.styles.get(&base_key) {
+                for state_key in base.states.keys() {
+                    let mut state = HashMap::new();
+                    Theme::read_states(&base_key, state_key, &theme, &mut state);
+                    states.insert(state_key.clone(), state);
+                }
+            }
+
             for state_key in theme.styles.get(style_key).unwrap().states.keys() {
                 let mut state = HashMap::new();
                 Theme::read_states(style_key, state_key, &theme, &mut state);
@@ -79,8 +89,6 @@ impl Theme {
         }
 
         if let Some(style) = theme.styles.get(style_key) {
-            Theme::read_states(&style.base, state_key, theme, states);
-
             for (key, value) in &style.properties {
                 Theme::read_property(key, value, theme, states);
             }
