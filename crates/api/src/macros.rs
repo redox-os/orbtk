@@ -46,6 +46,7 @@ macro_rules! widget {
              } )* ) => {
         $(#[$widget_doc])*
         #[derive(Default, WidgetCtx)]
+        #[allow(dead_code)]
         pub struct $widget {
             attached_properties: HashMap<String, ComponentBox>,
             shared_attached_properties: HashMap<(String, String), SharedComponentBox>,

@@ -1,4 +1,4 @@
-use std::any::TypeId;
+use std::any::type_name;
 
 use crate::{
     prelude::*,
@@ -46,18 +46,13 @@ impl<'a> WidgetContainer<'a> {
             return property;
         }
 
-        let name = self
-            .ecm
-            .component_store()
-            .get::<String>("name", self.current_node)
-            .unwrap()
-            .clone();
+        let name = self.get_name();
 
         panic!(
-        "Widget with name: {} and entity: {} does not contain property width type_id {:?} for key: {}",
+        "Widget: {} with entity: {} does not contain property with type {:?} for key: {}",
         name,
         self.current_node.0,
-        TypeId::of::<P>(),
+        type_name::<P>(),
         key
     );
     }
@@ -66,7 +61,7 @@ impl<'a> WidgetContainer<'a> {
     ///
     /// # Panics
     ///
-    /// Panics if the widget does not contains the property.
+    /// Panics if the widget does not contain the property.
     pub fn get_mut<P>(&mut self, key: &str) -> &mut P
     where
         P: Clone + Component,
@@ -82,7 +77,7 @@ impl<'a> WidgetContainer<'a> {
         panic!(
             "Entity {} does not contain property type {:?}, with key: {}",
             self.current_node.0,
-            TypeId::of::<P>(),
+            type_name::<P>(),
             key
         );
     }
@@ -113,18 +108,13 @@ impl<'a> WidgetContainer<'a> {
             return property.clone();
         }
 
-        let name = self
-            .ecm
-            .component_store()
-            .get::<String>("name", self.current_node)
-            .unwrap()
-            .clone();
-
+        let name = self.get_name();
+        
         panic!(
-        "Widget with name: {} and entity: {} does not contain property width type_id {:?} for key: {}",
+        "Widget: {} with entity: {} does not contain property with type {:?} for key: {}",
         name,
         self.current_node.0,
-        TypeId::of::<P>(),
+        type_name::<P>(),
         key
     );
     }
@@ -160,18 +150,13 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
-        let name = self
-            .ecm
-            .component_store()
-            .get::<String>("name", self.current_node)
-            .unwrap()
-            .clone();
+        let name = self.get_name();
 
         panic!(
-            "Widget with name: {} and entity: {} does not contain property width type_id {:?} for key: {}",
+            "Widget: {} with entity: {} does not contain property with type {:?} for key: {}",
             name,
             self.current_node.0,
-            TypeId::of::<P>(),
+            type_name::<P>(),
             key
         );
     }
@@ -311,5 +296,18 @@ impl<'a> WidgetContainer<'a> {
         }
 
         self.get_mut::<Selector>("selector").set_dirty(true);
+    }
+
+    fn get_name(&self) -> String {
+        if self.has::<String>("name") {
+            self
+            .ecm
+            .component_store()
+            .get::<String>("name", self.current_node)
+            .unwrap()
+            .clone()
+        } else {
+            String::from("unknown")
+        }
     }
 }
