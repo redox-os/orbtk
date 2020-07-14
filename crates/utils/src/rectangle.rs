@@ -165,4 +165,33 @@ mod tests {
         let p = Point::new(30.0, 40.0);
         assert!(!rect.contains(p), "{:?}", p);
     }
+
+    #[test]
+    fn test_contains_rect() {
+        let rect = Rectangle::new((5.0, 10.0), 20.0, 30.0);
+
+        // Contains itself
+        let r = Rectangle::new((5.0, 10.0), 20.0, 30.0);
+        assert!(rect.contains_rect(&r), "{:?}", r);
+
+        // Contains rect on one of its edges
+        let r = Rectangle::new((5.0, 20.0), 10.0, 20.0);
+        assert!(rect.contains_rect(&r), "{:?}", r);
+
+        // Contains rect on two of its edges
+        let r = Rectangle::new((5.0, 10.0), 10.0, 20.0);
+        assert!(rect.contains_rect(&r), "{:?}", r);
+
+        // Contains rect completly inside
+        let r = Rectangle::new((10.0, 20.0), 5.0, 10.0);
+        assert!(rect.contains_rect(&r), "{:?}", r);
+
+        // Does not contain rect partially inside
+        let r = Rectangle::new((20.0, 25.0), 20.0, 30.0);
+        assert!(!rect.contains_rect(&r), "{:?}", r);
+
+        // Does not contain rect completly outside
+        let r = Rectangle::new((50.0, 100.0), 20.0, 30.0);
+        assert!(!rect.contains_rect(&r), "{:?}", r);
+    }
 }
