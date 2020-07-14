@@ -76,14 +76,14 @@ impl shell::WindowAdapter for WindowAdapter {
             shell::ButtonState::Up => {
                 self.ctx.event_queue.borrow_mut().register_event(
                     MouseUpEvent {
-                        position: Point::new(event.position.x, event.position.y),
+                        position: event.position,
                         button: event.button,
                     },
                     root,
                 );
                 self.ctx.event_queue.borrow_mut().register_event(
                     GlobalMouseUpEvent {
-                        position: Point::new(event.position.x, event.position.y),
+                        position: event.position,
                         button: event.button,
                     },
                     root,
@@ -91,7 +91,7 @@ impl shell::WindowAdapter for WindowAdapter {
             }
             shell::ButtonState::Down => self.ctx.event_queue.borrow_mut().register_event(
                 MouseDownEvent {
-                    position: Point::new(event.position.x, event.position.y),
+                    position: event.position,
                     button: event.button,
                 },
                 root,
@@ -254,7 +254,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             .component_store()
             .get::<bool>("always_on_top", window)
             .unwrap(),
-        position: (position.x, position.y),
+        position: (position.x(), position.y()),
         size: (constraint.width(), constraint.height()),
         fonts,
     };
