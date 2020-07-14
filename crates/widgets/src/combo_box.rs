@@ -195,13 +195,12 @@ impl ComboBoxState {
         let combo_box_bounds = ctx.widget().clone::<Rectangle>("bounds");
 
         let combo_box_global_bounds = Rectangle::new(
-            combo_box_position.x,
-            combo_box_position.y,
-            combo_box_bounds.width,
-            combo_box_bounds.height,
+            combo_box_position,
+            combo_box_bounds.width(),
+            combo_box_bounds.height(),
         );
 
-        if !combo_box_global_bounds.contains((p.x, p.y)) {
+        if !combo_box_global_bounds.contains(p) {
             ctx.widget().set("selected", false);
             ctx.get_widget(self.popup)
                 .set("visibility", Visibility::Collapsed);

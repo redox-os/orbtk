@@ -111,7 +111,7 @@ impl TextBoxState {
         if let Some((index, _x)) = self
             .map_chars_index_to_position(ctx)
             .iter()
-            .min_by_key(|(_index, x)| (p.position.x - x).abs() as u64)
+            .min_by_key(|(_index, x)| (p.position.x() - x).abs() as u64)
         {
             return *index;
         }
@@ -124,7 +124,7 @@ impl TextBoxState {
         let text: String = ctx.widget().get::<String16>("text").as_string();
         // start x position of the cursor is start position of the text element + padding left
         let start_position: f64 =
-            ctx.widget().get::<Point>("position").x + ctx.widget().get::<Thickness>("padding").left;
+            ctx.widget().get::<Point>("position").x() + ctx.widget().get::<Thickness>("padding").left;
         // array which will hold char index and it's x position
         let mut position_index: Vec<(usize, f64)> = Vec::with_capacity(text.len());
         position_index.push((0, start_position));
