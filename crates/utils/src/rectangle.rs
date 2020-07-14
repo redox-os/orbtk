@@ -88,9 +88,9 @@ impl Rectangle {
     pub fn contains(&self, point: impl Into<Point>) -> bool {
         let point: Point = point.into();
         point.x() >= self.x()
-            && point.x() < self.x() + self.width()
+            && point.x() <= self.x() + self.width()
             && point.y() >= self.y()
-            && point.y() < self.y() + self.height()
+            && point.y() <= self.y() + self.height()
     }
 
     /// Checks if this rect contains the given `rect`.
