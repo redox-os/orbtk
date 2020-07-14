@@ -102,10 +102,10 @@ impl Rectangle {
 
     /// Checks if this rect intersects with the given `rect`.
     pub fn intersects(&self, rect: &Rectangle) -> bool {
-        !(rect.x() >= (self.x() + self.width())
-            || self.x() >= (rect.x() + rect.width())
-            || rect.y() >= (self.y() + self.height())
-            || self.y() >= (rect.y() + rect.height()))
+        !(rect.x() > (self.x() + self.width())
+            || self.x() > (rect.x() + rect.width())
+            || rect.y() > (self.y() + self.height())
+            || self.y() > (rect.y() + rect.height()))
     }
 }
 
@@ -145,7 +145,7 @@ mod tests {
         let p = Point::new(5.0, 10.0);
         assert!(rect.contains(p), "{:?}", p);
 
-        // Contains point in its lower right corner
+        // Contains point in its bottom right corner
         let p = Point::new(25.0, 40.0);
         assert!(rect.contains(p), "{:?}", p);
 
@@ -190,8 +190,53 @@ mod tests {
         let r = Rectangle::new((20.0, 25.0), 20.0, 30.0);
         assert!(!rect.contains_rect(&r), "{:?}", r);
 
-        // Does not contain rect completly outside
+        // Does not contain rect completely outside
         let r = Rectangle::new((50.0, 100.0), 20.0, 30.0);
         assert!(!rect.contains_rect(&r), "{:?}", r);
+    }
+
+    #[test]
+    fn test_intersects() {
+        let rect = Rectangle::new((5.0, 10.0), 20.0, 30.0);
+
+        // Intersects with itself
+        let r = Rectangle::new((5.0, 10.0), 20.0, 30.0);
+        assert!(rect.intersects(&r), "{:?}", r);
+
+        // Intersects with rect with origin on right edge
+        let r = Rectangle::new((25.0, 10.0), 20.0, 30.0);
+        assert!(rect.intersects(&r), "{:?}", r);
+
+        // Intersects with rect with end on left edge
+        let r = Rectangle::new((-15.0, 10.0), 20.0, 30.0);
+        assert!(rect.intersects(&r), "{:?}", r);
+
+        // Intersects with rect with origin on bottom edge
+        let r = Rectangle::new((5.0, 40.0), 20.0, 30.0);
+        assert!(rect.intersects(&r), "{:?}", r);
+
+        // Intersects with rect with end on upper edge
+        let r = Rectangle::new((5.0, -20.0), 20.0, 30.0);
+        assert!(rect.intersects(&r), "{:?}", r);
+
+        // Does not intersect with rect where origin is further
+        // right than origin + width of this rect
+        let r = Rectangle::new((30.0, 10.0), 20.0, 30.0);
+        assert!(!rect.intersects(&r), "{:?}", r);
+
+        // Does not intersect with rect where end + width is further
+        // left than origin of this rect
+        let r = Rectangle::new((-20.0, 10.0), 20.0, 30.0);
+        assert!(!rect.intersects(&r), "{:?}", r);
+
+        // Does not intersect with rect where origin is further
+        // down than origin + width of this rect
+        let r = Rectangle::new((5.0, 50.0), 20.0, 30.0);
+        assert!(!rect.intersects(&r), "{:?}", r);
+
+        // Does not intersect with rect where origin + height is further
+        // up than origin of this rect
+        let r = Rectangle::new((5.0, -30.0), 20.0, 30.0);
+        assert!(!rect.intersects(&r), "{:?}", r);
     }
 }
