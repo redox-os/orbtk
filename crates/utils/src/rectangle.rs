@@ -136,4 +136,21 @@ mod tests {
         assert_eq!(rect.width(), 20.0);
         assert_eq!(rect.height(), 30.0);
     }
+
+    #[test]
+    fn test_contains() {
+        let rect = Rectangle::new((5.0, 10.0), 20.0, 30.0);
+
+        let p = Point::new(5.0, 10.0);
+        assert!(rect.contains(p), "{:?}", p);
+
+        let p = Point::new(25.0, 40.0);
+        assert!(rect.contains(p), "{:?}", p);
+
+        let p = Point::new(15.0, 15.0);
+        assert!(rect.contains(p), "{:?}", p);
+
+        let p = Point::new(30.0, 15.0);
+        assert!(!rect.contains(p), "{:?}", p);
+    }
 }
