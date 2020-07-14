@@ -141,16 +141,28 @@ mod tests {
     fn test_contains() {
         let rect = Rectangle::new((5.0, 10.0), 20.0, 30.0);
 
+        // Contains point in its origin
         let p = Point::new(5.0, 10.0);
         assert!(rect.contains(p), "{:?}", p);
 
+        // Contains point in its lower right corner
         let p = Point::new(25.0, 40.0);
         assert!(rect.contains(p), "{:?}", p);
 
+        // Contains normal point
         let p = Point::new(15.0, 15.0);
         assert!(rect.contains(p), "{:?}", p);
 
+        // Doesn't contain point with x out of rect
         let p = Point::new(30.0, 15.0);
+        assert!(!rect.contains(p), "{:?}", p);
+
+        // Doesn't contain point with y out of rect
+        let p = Point::new(15.0, 50.0);
+        assert!(!rect.contains(p), "{:?}", p);
+
+        // Doesn't contain point with both x and y out of rect
+        let p = Point::new(30.0, 40.0);
         assert!(!rect.contains(p), "{:?}", p);
     }
 }
