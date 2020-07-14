@@ -84,7 +84,7 @@ impl Rectangle {
         self.height = height;
     }
 
-    /// Check if this rect contains the given `point`.
+    /// Checks if this rect contains the given `point`.
     pub fn contains(&self, point: impl Into<Point>) -> bool {
         let point: Point = point.into();
         point.x() >= self.x()
@@ -93,12 +93,14 @@ impl Rectangle {
             && point.y() < self.y() + self.height()
     }
 
+    /// Checks if this rect contains the given `rect`.
     pub fn contains_rect(&self, rect: &Rectangle) -> bool {
         let p1 = rect.position();
         let p2 = (p1.x() + rect.width(), p1.y() + rect.height());
         self.contains(p1) && self.contains(p2)
     }
 
+    /// Checks if this rect intersects with the given `rect`.
     pub fn intersects(&self, rect: &Rectangle) -> bool {
         !(rect.x() >= (self.x() + self.width())
             || self.x() >= (rect.x() + rect.width())
