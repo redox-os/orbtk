@@ -19,7 +19,7 @@ impl RectangleRenderObject {
         border_brush: utils::Brush,
         border_thickness: Thickness,
     ) {
-        render_context_2_d.rect(rect.x, rect.y, rect.width, rect.height);
+        render_context_2_d.rect(rect.x(), rect.y(), rect.width(), rect.height());
 
         if !brush.is_transparent() {
             render_context_2_d.set_fill_style(brush);
@@ -109,10 +109,10 @@ impl RectangleRenderObject {
     ) {
         self.render_rounded_rect_path(
             render_context_2_d,
-            rect.x,
-            rect.y,
-            rect.width,
-            rect.height,
+            rect.x(),
+            rect.y(),
+            rect.width(),
+            rect.height(),
             radius,
         );
 
@@ -170,8 +170,8 @@ impl RenderObject for RectangleRenderObject {
             if !has_thickness {
                 self.render_circle(
                     ctx.render_context_2_d(),
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
+                    global_position.x() + bounds.x(),
+                    global_position.y() + bounds.y(),
                     bounds.width(),
                     bounds.height(),
                     border_radius,
@@ -181,8 +181,8 @@ impl RenderObject for RectangleRenderObject {
             } else {
                 self.render_bordered_circle(
                     ctx.render_context_2_d(),
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
+                    global_position.x() + bounds.x(),
+                    global_position.y() + bounds.y(),
                     bounds.width(),
                     bounds.height(),
                     border_radius,
@@ -196,8 +196,7 @@ impl RenderObject for RectangleRenderObject {
             self.render_rounded_bordered_rect_path(
                 ctx.render_context_2_d(),
                 Rectangle::new(
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
+                    *global_position + bounds.position(),
                     bounds.width(),
                     bounds.height(),
                 ),
@@ -209,8 +208,8 @@ impl RenderObject for RectangleRenderObject {
         } else if border_radius > 0. {
             self.render_rounded_rect_path(
                 ctx.render_context_2_d(),
-                global_position.x + bounds.x(),
-                global_position.y + bounds.y(),
+                global_position.x() + bounds.x(),
+                global_position.y() + bounds.y(),
                 bounds.width(),
                 bounds.height(),
                 border_radius,
@@ -222,8 +221,7 @@ impl RenderObject for RectangleRenderObject {
             self.render_bordered_rect_path(
                 ctx.render_context_2_d(),
                 Rectangle::new(
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
+                    *global_position + bounds.position(),
                     bounds.width(),
                     bounds.height(),
                 ),
@@ -233,8 +231,8 @@ impl RenderObject for RectangleRenderObject {
             );
         } else {
             ctx.render_context_2_d().rect(
-                global_position.x + bounds.x(),
-                global_position.y + bounds.y(),
+                global_position.x() + bounds.x(),
+                global_position.y() + bounds.y(),
                 bounds.width(),
                 bounds.height(),
             );
