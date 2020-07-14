@@ -18,12 +18,12 @@ pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>
     let bounds = widget.get::<Rectangle>("bounds");
     let position = widget.get::<Point>("position");
 
-    let mut rect = Rectangle::new(0.0, 0.0, bounds.width(), bounds.height());
+    let mut rect = Rectangle::new((0.0, 0.0), bounds.width(), bounds.height());
 
-    rect.set_x(position.x);
-    rect.set_y(position.y);
+    rect.set_x(position.x());
+    rect.set_y(position.y());
 
-    rect.contains((mouse_position.x, mouse_position.y))
+    rect.contains(mouse_position)
 }
 
 /// `MouseMoveEvent` indicates if the mouse position is changed on the window.
@@ -138,7 +138,7 @@ impl EventHandler for MouseDownEventHandler {
                     state_context,
                     Mouse {
                         button: event.button,
-                        position: Point::new(event.position.x, event.position.y),
+                        position: event.position,
                     },
                 )
             })
@@ -165,7 +165,7 @@ impl EventHandler for GlobalMouseUpEventHandler {
                     state_context,
                     Mouse {
                         button: event.button,
-                        position: Point::new(event.position.x, event.position.y),
+                        position: event.position,
                     },
                 );
                 false
@@ -193,7 +193,7 @@ impl EventHandler for MouseUpEventHandler {
                     state_context,
                     Mouse {
                         button: event.button,
-                        position: Point::new(event.position.x, event.position.y),
+                        position: event.position,
                     },
                 )
             })
@@ -218,7 +218,7 @@ impl EventHandler for MouseMoveEventHandler {
             .map_or(false, |event| {
                 (self.handler)(
                     state_context,
-                    Point::new(event.position.x, event.position.y),
+                    event.position,
                 )
             })
     }
@@ -240,7 +240,7 @@ impl EventHandler for ScrollEventHandler {
             .downcast_ref::<ScrollEvent>()
             .ok()
             .map_or(false, |event| {
-                (self.handler)(state_context, Point::new(event.delta.x, event.delta.y))
+                (self.handler)(state_context, event.delta)
             })
     }
 
