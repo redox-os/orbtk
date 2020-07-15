@@ -244,5 +244,21 @@ Theme (
                 "padding": 4,
             }
         ),
+        "combo_box": (
+            base: "base",
+            properties: {
+                "foreground": "$LINK_WATER",
+                "background": "$BRIGHT_GRAY",
+                "border_brush": "#647b91",
+                "border_width": 1,
+                "border_radius": 3,
+                "padding": 6,
+            },
+            states: {
+                "selected": {
+                    "border_brush": "#f8de4c",
+                },
+            },
+        )
     },
 )
