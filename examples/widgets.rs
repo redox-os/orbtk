@@ -89,10 +89,8 @@ impl State for MainViewState {
                 Action::EntryChanged(entity) => {
                     println!("entry changed: {}", text_box(ctx.get_widget(entity)).text());
                 }
-                Action::ValueChanged(entity) => {
-                    let val = ((slider(ctx.get_widget(entity)).val()).floor() as i32).to_string();
-
-                    text_block(ctx.child("value_text")).set_text(String16::from(val));
+                Action::ValueChanged(_entity) => {
+                    //println!("Slider value changed");
                 }
             }
 
@@ -135,6 +133,14 @@ widget!(
 
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+        let slider = Slider::new()
+            .min(0.0)
+            .max(1.0)
+            .on_changed(move |states, entity| {
+                state(id, states).action(Action::ValueChanged(entity));
+            })
+            .build(ctx);
+
         self.name("MainView")
             .result("Button count: 0")
             .counter(0)
@@ -190,7 +196,7 @@ impl Template for MainView {
                             .child(
                                 Button::new()
                                     .text("Button")
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .icon(material_icons_font::MD_CHECK)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(1))
@@ -204,7 +210,7 @@ impl Template for MainView {
                                 Button::new()
                                     .text("Primary")
                                     .style("button_primary")
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .icon(material_icons_font::MD_360)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(2))
@@ -223,32 +229,23 @@ impl Template for MainView {
                             .child(
                                 CheckBox::new()
                                     .text("CheckBox")
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(4))
                                     .build(ctx),
                             )
                             .child(
                                 Switch::new()
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(5))
                                     .build(ctx),
                             )
+                            .child(slider)
                             .child(
-                                TextBlock::new()
-                                    .margin((0., 8., 0., 0.))
-                                    .style("header")
-                                    .id("value_text")
-                                    .text("0")
-                                    .h_align("center")
-                                    .build(ctx),
-                            )
-                            .child(
-                                Slider::new()
-                                    .on_changed(move |states, entity| {
-                                        state(id, states).action(Action::ValueChanged(entity));
-                                    })
+                                ProgressBar::new()
+                                    .val(slider)
+                                    .margin((0, 8, 0, 0))
                                     .build(ctx),
                             )
                             .build(ctx),
@@ -261,7 +258,7 @@ impl Template for MainView {
                                 TextBlock::new()
                                     .style("body")
                                     .text(("result", id))
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(1))
                                     .build(ctx),
@@ -270,7 +267,7 @@ impl Template for MainView {
                                 TextBox::new()
                                     .water_mark("TextBox...")
                                     .text(("text_one", id))
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
                                     .on_activate(move |states, entity| {
@@ -285,7 +282,7 @@ impl Template for MainView {
                                 TextBox::new()
                                     .water_mark("TextBox...")
                                     .text(("text_two", id))
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
                                     .on_activate(move |states, entity| {
@@ -298,7 +295,7 @@ impl Template for MainView {
                             )
                             .child(
                                 Button::new()
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .style("button_single_content")
                                     .text("clear text")
                                     .icon(material_icons_font::MD_CLEAR)
@@ -310,7 +307,7 @@ impl Template for MainView {
                             )
                             .child(
                                 NumericBox::new()
-                                    .margin((-0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .max(123.)
                                     .step(0.123)
                                     .val(0.123)
@@ -349,7 +346,7 @@ impl Template for MainView {
                                             .get::<Vec<String>>("combo_box_list")[index]
                                             .clone();
                                         TextBlock::new()
-                                            .margin((0., 0., 0., 2.))
+                                            .margin((0, 0, 0, 2))
                                             .v_align("center")
                                             .text(text)
                                             .build(bc)
@@ -358,7 +355,7 @@ impl Template for MainView {
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(1))
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .count(("combo_box_list_count", id))
                                     .build(ctx),
                             )
@@ -376,7 +373,7 @@ impl Template for MainView {
                                             [index]
                                             .clone();
 
-                                        Button::new().margin((0., 0., 0., 2.)).text(text).build(bc)
+                                        Button::new().margin((0, 0, 0, 2)).text(text).build(bc)
                                     })
                                     .count(("list_count", id))
                                     .build(ctx),
@@ -422,7 +419,7 @@ impl Template for MainView {
                                             .get::<Vec<String>>("selection_list")[index]
                                             .clone();
                                         TextBlock::new()
-                                            .margin((0., 0., 0., 2.))
+                                            .margin((0, 0, 0, 2))
                                             .v_align("center")
                                             .text(text)
                                             .build(bc)
@@ -433,7 +430,7 @@ impl Template for MainView {
                             .child(
                                 // todo: wrong text width????
                                 TextBlock::new()
-                                    .style("text-block")
+                                    .style("text-tleck-block")
                                     .id("selection")
                                     .max_width(120.)
                                     .attach(Grid::column(0))

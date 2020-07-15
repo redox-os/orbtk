@@ -101,7 +101,7 @@ impl Template for ProgressBar {
                     .width(0.0)
                     .build(ctx),
             )
-            .width(100.0)
+            .min_width(100.0)
             .val(0.0)
     }
 

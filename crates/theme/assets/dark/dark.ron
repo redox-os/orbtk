@@ -322,5 +322,23 @@ Theme (
                 },
             },
         ),
+        "progress_bar": (
+             properties: {
+                "background": "$MINE_SHAFT",
+                "border_color": "$SILVER",
+                "border_radius": 4,
+                "border_width": 1,
+                "height": 16,
+                "padding": 2,
+             },
+        ),
+        "progress_bar_indicator": (
+            properties: {
+                "background": "$GOLDEN_DREAM",
+                "border_radius": 1,
+                "height": 12,
+                "width": 0,
+            }
+        )
     },
 )
