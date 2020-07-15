@@ -98,7 +98,7 @@ Theme (
             },
             states: {
                 "selected": {
-                    "background": "$BLACK",
+                    "background": "$GOLDEN_DREAM",
                 },
             },
         ),
@@ -158,6 +158,26 @@ Theme (
                 "border_width": 1,
                 "border_radius": 3,
                 "padding": 6,
+            },
+        ),
+        "slider": (
+            properties: {
+                "height": 24,
+                "border_radius": 2,
+                "background": "$MINE_SHAFT",
+            }
+        ),
+        "thumb": (
+            properties: {
+                "max_width": 24,
+                "max_height": 24,
+                "border_radius": 12,
+                "background": "$LYNCH",
+            },
+            states: {
+                "pressed": {
+                    "background": "$GOLDEN_DREAM",
+                },
             },
         ),
     },
