@@ -38,7 +38,7 @@ impl<'a> BuildContext<'a> {
 
     /// Update theme by state.
     pub fn update_theme_by_state(&mut self, entity: Entity) {
-        self.get_widget(entity).update_theme_by_state(true);
+        self.get_widget(entity).update(true);
     }
 
     /// Appends a child to a parent.

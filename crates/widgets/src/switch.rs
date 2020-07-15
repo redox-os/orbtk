@@ -34,7 +34,7 @@ impl State for SwitchState {
         let element = ctx.widget().clone::<Selector>("selector").style.unwrap();
 
         if let Some(parent) = ctx.parent_entity_by_style(&*element) {
-            ctx.get_widget(parent).update_theme_by_state(false);
+            ctx.get_widget(parent).update(false);
         }
 
         {
@@ -42,13 +42,12 @@ impl State for SwitchState {
 
             if self.selected {
                 switch_toggle.set("h_align", Alignment::from("end"));
-                toggle_flag("selected", &mut switch_toggle);
             } else {
-                switch_toggle.set("h_align", Alignment::from("start"));
-                toggle_flag("selected", &mut switch_toggle);
+                switch_toggle.set("h_align", Alignment::from("start"))
             }
 
-            switch_toggle.update_theme_by_state(true);
+            toggle_flag("selected", &mut switch_toggle);
+            switch_toggle.update(true);
         }
 
         ctx.push_event_strategy_by_entity(
@@ -57,8 +56,7 @@ impl State for SwitchState {
             EventStrategy::Direct,
         );
 
-        ctx.get_widget(self.switch_toggle)
-            .update_theme_by_state(false);
+        ctx.get_widget(self.switch_toggle).update(false);
     }
 }
 
@@ -120,8 +118,8 @@ impl Template for Switch {
                             )
                             .child(
                                 Container::new()
-                                    .style(SWITCH_TOGGLE)
                                     .id(SWITCH_TOGGLE)
+                                    .style(SWITCH_TOGGLE)
                                     .v_align("center")
                                     .h_align("start")
                                     .width(20.0)

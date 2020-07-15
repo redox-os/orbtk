@@ -191,88 +191,88 @@ macro_rules! widget {
             }
 
             /// Inserts a new width.
-            pub fn width(mut self, width: f64) -> Self {
+            pub fn width(mut self, width: impl Into<f64>) -> Self {
                 if !self.width.is_none() {
                     return self;
                 }
-                self.width = Some(width);
+                self.width = Some(width.into());
                 self
             }
 
             /// Inserts a new height.
-            pub fn height(mut self, height: f64) -> Self {
+            pub fn height(mut self, height: impl Into<f64>) -> Self {
                 if !self.height.is_none() {
                     return self;
                 }
-                self.height = Some(height);
+                self.height = Some(height.into());
                 self
             }
 
             /// Inserts a new size.
-            pub fn size(mut self, width: f64, height: f64) -> Self {
+            pub fn size(mut self, width: impl Into<f64>, height: impl Into<f64>) -> Self {
                 if self.width.is_none() {
-                    self.width = Some(width);
+                    self.width = Some(width.into());
                 }
                 if self.height.is_none() {
-                    self.height = Some(height);
+                    self.height = Some(height.into());
                 }
                 self
             }
 
             /// Inserts a new min_width.
-            pub fn min_width(mut self, min_width: f64) -> Self {
+            pub fn min_width(mut self, min_width: impl Into<f64>) -> Self {
                 if !self.min_width.is_none() {
                     return self;
                 }
-                self.min_width = Some(min_width);
+                self.min_width = Some(min_width.into());
                 self
             }
 
             /// Inserts a new min_height.
-            pub fn min_height(mut self, min_height: f64) -> Self {
+            pub fn min_height(mut self, min_height: impl Into<f64>) -> Self {
                 if !self.min_height.is_none() {
                     return self;
                 }
-                self.min_height = Some(min_height);
+                self.min_height = Some(min_height.into());
                 self
             }
 
             /// Inserts a new min_size.
-            pub fn min_size(mut self, min_width: f64, min_height: f64) -> Self {
+            pub fn min_size(mut self, min_width: impl Into<f64>, min_height: impl Into<f64>) -> Self {
                 if self.min_width.is_none() {
-                    self.min_width = Some(min_width);
+                    self.min_width = Some(min_width.into());
                 }
                 if self.min_height.is_none() {
-                    self.min_height = Some(min_height);
+                    self.min_height = Some(min_height.into());
                 }
                 self
             }
 
             /// Inserts a new max_width.
-            pub fn max_width(mut self, max_width: f64) -> Self {
+            pub fn max_width(mut self, max_width: impl Into<f64>) -> Self {
                 if !self.max_width.is_none() {
                     return self;
                 }
-                self.max_width = Some(max_width);
+                self.max_width = Some(max_width.into());
                 self
             }
 
             /// Inserts a new max_height.
-            pub fn max_height(mut self, max_height: f64) -> Self {
+            pub fn max_height(mut self, max_height: impl Into<f64>) -> Self {
                 if !self.max_height.is_none() {
                     return self;
                 }
-                self.max_height = Some(max_height);
+                self.max_height = Some(max_height.into());
                 self
             }
 
             /// Inserts a new min_size.
-            pub fn max_size(mut self, max_width: f64, max_height: f64) -> Self {
+            pub fn max_size(mut self, max_width: impl Into<f64>, max_height: impl Into<f64>) -> Self {
                 if self.max_width.is_none() {
-                    self.max_width = Some(max_width);
+                    self.max_width = Some(max_width.into());
                 }
                 if self.max_height.is_none() {
-                    self.max_height = Some(max_height);
+                    self.max_height = Some(max_height.into());
                 }
                 self
             }

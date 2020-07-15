@@ -61,7 +61,7 @@ impl State for ListViewState {
 
                         item
                     };
-                    ctx.get_widget(item).update_properties_by_theme(false);
+                    ctx.get_widget(item).update_widget(entity, false);
                 }
             }
 
@@ -80,7 +80,7 @@ impl State for ListViewState {
             let mut widget = ctx.get_widget(*index);
             widget.set("selected", !widget.get::<bool>("selected"));
 
-            widget.update_theme_by_state(false);
+            widget.update(false);
         }
 
         *self.selected_entities.borrow_mut() = ctx

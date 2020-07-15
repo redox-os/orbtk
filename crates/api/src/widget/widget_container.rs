@@ -2,7 +2,7 @@ use std::any::type_name;
 
 use crate::{
     prelude::*,
-    utils::{Brush, String16, Thickness, Value},
+    utils::{Brush, Thickness, Value},
 };
 
 use dces::prelude::{Component, Entity, EntityComponentManager};
@@ -199,35 +199,6 @@ impl<'a> WidgetContainer<'a> {
         false
     }
 
-    fn update_internal_theme_by_state(&mut self, force: bool, entity: &Entity) {
-        let internal_force = if let Ok(selector) = self
-            .ecm
-            .component_store()
-            .get::<Selector>("selector", *entity)
-        {
-            if selector.dirty() {
-                true
-            } else {
-                false
-            }
-        } else {
-            false
-        };
-
-        for child in &(self.ecm.entity_store().children.clone())[&entity] {
-            self.update_internal_theme_by_state(internal_force || force, child);
-        }
-
-        self.current_node = *entity;
-
-        self.update_properties_by_theme(force);
-    }
-
-    /// Updates the theme by the inner state e.g. `selected` or `pressed`.
-    pub fn update_theme_by_state(&mut self, force: bool) {
-        self.update_internal_theme_by_state(force, &(self.current_node.clone()));
-    }
-
     fn update_constraint(&mut self, key: &str, value: Value) {
         let value = if let Ok(value) = value.0.into_rust::<f64>() {
             value
@@ -235,7 +206,7 @@ impl<'a> WidgetContainer<'a> {
             0.0
         };
 
-        if let Some(mut constraint) = self.try_clone::<Constraint>("constraint") {
+        if let Some(constraint) = self.try_get_mut::<Constraint>("constraint") {
             match key {
                 "width" => constraint.set_width(value),
                 "height" => constraint.set_height(value),
@@ -258,8 +229,14 @@ impl<'a> WidgetContainer<'a> {
         }
     }
 
-    /// Update all properties for the theme.
-    pub fn update_properties_by_theme(&mut self, force: bool) {
+    /// Update all properties from theme for the current widget.
+    pub fn update(&mut self, force: bool) {
+        self.update_widget(self.current_node, force);
+    }
+
+    /// Update all properties from theme for the given widget.
+    pub fn update_widget(&mut self, entity: Entity, force: bool) {
+        self.current_node = entity;
         if !self.has::<Selector>("selector") {
             return;
         }
@@ -295,7 +272,14 @@ impl<'a> WidgetContainer<'a> {
             }
         }
 
-        self.get_mut::<Selector>("selector").set_dirty(true);
+        let force = selector.dirty() || force;
+
+        for child in &(self.ecm.entity_store().children.clone())[&entity] {
+            self.update_widget(*child, force);
+        }
+
+        self.current_node = entity;
+        self.get_mut::<Selector>("selector").set_dirty(false);
     }
 
     fn get_name(&self) -> String {

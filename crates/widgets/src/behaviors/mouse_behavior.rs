@@ -61,7 +61,7 @@ impl State for MouseBehaviorState {
                 }
             };
 
-            ctx.get_widget(target).update_theme_by_state(false);
+            ctx.get_widget(target).update(false);
 
             self.action = None;
         }

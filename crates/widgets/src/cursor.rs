@@ -11,10 +11,10 @@ impl State for CursorState {
 
         if selection_length > 0 && !expanded {
             ctx.widget().set("expanded", true);
-            ctx.widget().update_theme_by_state(false);
+            ctx.widget().update(false);
         } else if expanded {
             ctx.widget().set("expanded", false);
-            ctx.widget().update_theme_by_state(false);
+            ctx.widget().update(false);
         }
     }
 }

@@ -43,7 +43,7 @@ impl WindowState {
                 ctx.window().get_mut::<Global>("global").focused_widget = None;
                 if ctx.get_widget(focused_widget).has::<bool>("focused") {
                     ctx.get_widget(focused_widget).set("focused", false);
-                    ctx.get_widget(focused_widget).update_theme_by_state(false);
+                    ctx.get_widget(focused_widget).update(false);
                 }
             }
         }
@@ -61,7 +61,7 @@ impl WindowState {
         if let Some(old_focused_element) = ctx.window().get::<Global>("global").focused_widget {
             let mut old_focused_element = ctx.get_widget(old_focused_element);
             old_focused_element.set("focused", false);
-            old_focused_element.update_theme_by_state(false);
+            old_focused_element.update(false);
             toggle_flag("focused", &mut old_focused_element);
         }
 
@@ -69,7 +69,7 @@ impl WindowState {
 
         if ctx.get_widget(entity).has::<bool>("focused") {
             ctx.get_widget(entity).set("focused", true);
-            ctx.get_widget(entity).update_theme_by_state(false);
+            ctx.get_widget(entity).update(false);
             toggle_flag("focused", &mut ctx.get_widget(entity));
         }
     }
@@ -81,7 +81,7 @@ impl WindowState {
             }
             let mut old_focused_element = ctx.get_widget(old_focused_element);
             old_focused_element.set("focused", false);
-            old_focused_element.update_theme_by_state(false);
+            old_focused_element.update(false);
         }
 
         ctx.widget().get_mut::<Global>("global").focused_widget = None;

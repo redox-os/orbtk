@@ -58,11 +58,11 @@ impl State for ComboBoxItemState {
             .clone::<SelectedItem>("selected_item")
         {
             ctx.get_widget(item).set("selected", false);
-            ctx.get_widget(item).update_theme_by_state(false);
+            ctx.get_widget(item).update(false);
         }
 
         ctx.widget().set("selected", true);
-        ctx.widget().update_theme_by_state(false);
+        ctx.widget().update(false);
         ctx.get_widget(self.combo_box)
             .set("selected_index", self.index as i32);
         ctx.get_widget(self.combo_box)
@@ -205,8 +205,8 @@ impl ComboBoxState {
             ctx.widget().set("selected", false);
             ctx.get_widget(self.popup)
                 .set("visibility", Visibility::Collapsed);
-            ctx.get_widget(self.popup).update_theme_by_state(false);
-            ctx.widget().update_theme_by_state(false);
+            ctx.get_widget(self.popup).update(false);
+            ctx.widget().update(false);
         }
     }
 }
@@ -257,7 +257,7 @@ impl State for ComboBoxState {
 
                         item
                     };
-                    ctx.get_widget(item).update_properties_by_theme(false);
+                    ctx.get_widget(item).update_widget(entity, false);
                 }
             }
 

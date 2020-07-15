@@ -364,7 +364,7 @@ impl State for TextBoxState {
             }
 
             self.action = None;
-            ctx.widget().update_theme_by_state(false);
+            ctx.widget().update(false);
         }
 
         self.len = ctx.widget().get::<String16>("text").len();
