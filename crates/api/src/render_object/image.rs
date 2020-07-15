@@ -20,8 +20,11 @@ impl RenderObject for ImageRenderObject {
         };
 
         if let Some(image) = &mut image {
-            ctx.render_context_2_d()
-                .draw_image(image, bounds.x + global_position.x, bounds.y + global_position.y);
+            ctx.render_context_2_d().draw_image(
+                image,
+                bounds.x + global_position.x,
+                bounds.y + global_position.y,
+            );
         }
     }
 }

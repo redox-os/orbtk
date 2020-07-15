@@ -49,12 +49,12 @@ impl<'a> WidgetContainer<'a> {
         let name = self.get_name();
 
         panic!(
-        "Widget: {} with entity: {} does not contain property with type {:?} for key: {}",
-        name,
-        self.current_node.0,
-        type_name::<P>(),
-        key
-    );
+            "Widget: {} with entity: {} does not contain property with type {:?} for key: {}",
+            name,
+            self.current_node.0,
+            type_name::<P>(),
+            key
+        );
     }
 
     /// Gets a mutable reference of the property of type `P`.
@@ -109,14 +109,14 @@ impl<'a> WidgetContainer<'a> {
         }
 
         let name = self.get_name();
-        
+
         panic!(
-        "Widget: {} with entity: {} does not contain property with type {:?} for key: {}",
-        name,
-        self.current_node.0,
-        type_name::<P>(),
-        key
-    );
+            "Widget: {} with entity: {} does not contain property with type {:?} for key: {}",
+            name,
+            self.current_node.0,
+            type_name::<P>(),
+            key
+        );
     }
 
     /// Clones the property of type `P` from the given widget entity. If the entity does
@@ -284,12 +284,11 @@ impl<'a> WidgetContainer<'a> {
 
     fn get_name(&self) -> String {
         if self.has::<String>("name") {
-            self
-            .ecm
-            .component_store()
-            .get::<String>("name", self.current_node)
-            .unwrap()
-            .clone()
+            self.ecm
+                .component_store()
+                .get::<String>("name", self.current_node)
+                .unwrap()
+                .clone()
         } else {
             String::from("unknown")
         }

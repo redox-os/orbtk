@@ -2,20 +2,37 @@ use crate::prelude::*;
 
 // Default state of the `Cursor` widget.
 #[derive(Default, AsAny)]
-pub struct CursorState;
+pub struct CursorState {
+    focused: bool,
+    expanded: bool,
+}
 
 impl State for CursorState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        let selection_length = ctx.widget().get::<TextSelection>("text_selection").length;
-        let expanded = *ctx.widget().get::<bool>("expanded");
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+        let cursor = cursor(ctx.widget());
+        self.focused = *cursor.focused();
+        self.expanded = *cursor.expanded();
+    }
 
-        if selection_length > 0 && !expanded {
-            ctx.widget().set("expanded", true);
-            ctx.widget().update(false);
-        } else if expanded {
-            ctx.widget().set("expanded", false);
-            ctx.widget().update(false);
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+        let mut cursor = cursor(ctx.widget());
+
+        if self.focused == *cursor.focused() && self.expanded == *cursor.expanded() {
+            return;
         }
+
+        self.focused = *cursor.focused();
+        self.expanded = *cursor.expanded();
+
+        cursor.selector_mut().clear_state();
+
+        if self.expanded && self.focused {
+            cursor.selector_mut().set_state("expanded");
+        } else if self.focused {
+            cursor.selector_mut().set_state("focused");
+        }
+
+        cursor.update(false);
     }
 }
 

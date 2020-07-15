@@ -152,12 +152,39 @@ Theme (
             base: "base",
             properties: {
                 "height": 32,
-                "foreground": "$PERIWINDLE_GRAY",
+                "foreground": "$PERIWINKLE_GRAY",
                 "background": "$BRIGHT_GRAY",
                 "border_brush": "$LYNCH",
                 "border_width": 1,
                 "border_radius": 3,
                 "padding": 6,
+            },
+            states: {
+                "focused": {
+                    "border_brush": "$GOLDEN_DREAM",
+                },
+                "empty": {
+                    "foreground": "$SILVER_CHALICE",
+                },
+                "empty_focused": {
+                    "foreground": "$SILVER_CHALICE",
+                    "border_brush": "$GOLDEN_DREAM",
+                }
+            },
+        ),
+        "cursor": (
+            properties: {
+                "opacity": 1,
+                "background": "transparent",
+            },
+            states: {
+                "focused": {
+                    "background": "$ENERGY_YELLOW",
+                },
+                "expanded": {
+                    "opacity": 0.3,
+                    "background": "$ENERGY_YELLOW",
+                },
             },
         ),
         "slider": (

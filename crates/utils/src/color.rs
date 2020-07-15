@@ -77,7 +77,7 @@ impl From<&str> for Color {
         if s == "transparent" {
             return Color::rgba(0, 0, 0, 0);
         }
-        
+
         let clean_hex = s.trim_start_matches('#');
         match clean_hex.len() {
             6 | 8 => {

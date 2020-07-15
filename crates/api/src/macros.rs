@@ -80,6 +80,8 @@ macro_rules! widget {
             opacity: f32,
             #[property(Visibility)]
             visibility: Visibility,
+            #[property(Selector)]
+            selector: Selector,
             _empty: Option<RefCell<i32>>,
              $(
                 $(
@@ -405,7 +407,7 @@ macro_rules! widget {
                 if let Some(style) = this.style {
                     ctx.register_property("selector", entity, Selector::new(style));
                 } else {
-                    ctx.register_property("selector", entity, Selector::default());
+                    ctx.register_property("selector", entity, this.selector);
                 }
 
                 let mut constraint = this.constraint;

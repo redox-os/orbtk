@@ -44,6 +44,17 @@ impl Selector {
     pub fn set_dirty(&mut self, dirty: bool) {
         self.dirty = dirty;
     }
+
+    /// Check if the selector has the given state.
+    pub fn has_state(&self, state: &str) -> bool {
+        if let Some(st) = &self.state {
+            if st.as_str() == state {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 
 impl fmt::Display for Selector {

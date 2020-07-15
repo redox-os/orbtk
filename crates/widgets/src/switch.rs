@@ -37,17 +37,19 @@ impl State for SwitchState {
             ctx.get_widget(parent).update(false);
         }
 
-        {    
+        {
             let mut switch_toggle = ctx.get_widget(self.switch_toggle);
 
             if self.selected {
                 switch_toggle.set("h_align", Alignment::from("end"));
-                switch_toggle.get_mut::<Selector>("selector").set_state("selected");
+                switch_toggle
+                    .get_mut::<Selector>("selector")
+                    .set_state("selected");
             } else {
                 switch_toggle.set("h_align", Alignment::from("start"));
                 switch_toggle.get_mut::<Selector>("selector").clear_state();
             }
-      
+
             switch_toggle.update(true);
         }
 

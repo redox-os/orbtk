@@ -60,17 +60,24 @@ impl WindowState {
 
         if let Some(old_focused_element) = ctx.window().get::<Global>("global").focused_widget {
             let mut old_focused_element = ctx.get_widget(old_focused_element);
+
             old_focused_element.set("focused", false);
+            old_focused_element
+                .get_mut::<Selector>("selector")
+                .clear_state();
             old_focused_element.update(false);
-            toggle_flag("focused", &mut old_focused_element);
         }
 
         ctx.widget().get_mut::<Global>("global").focused_widget = Some(entity);
 
         if ctx.get_widget(entity).has::<bool>("focused") {
-            ctx.get_widget(entity).set("focused", true);
-            ctx.get_widget(entity).update(false);
-            toggle_flag("focused", &mut ctx.get_widget(entity));
+            let mut focused_element = ctx.get_widget(entity);
+
+            focused_element.set("focused", true);
+            focused_element
+                .get_mut::<Selector>("selector")
+                .set_state("focused");
+            focused_element.update(false);
         }
     }
 

@@ -200,6 +200,11 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
 
         impl<'a> #name<'a> {
             #(#generated)*
+
+            /// Update all properties from theme for the current widget.
+            fn update(&mut self, force: bool) {
+                self.ctx.update(force);
+            }
         }
 
         impl #ident {

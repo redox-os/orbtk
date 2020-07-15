@@ -48,7 +48,8 @@ impl State for MainViewState {
 
                         if len == 4 {
                             button(ctx.child("add-item-button")).set_enabled(false);
-                            button(ctx.child("add-item-button")).set_visibility(Visibility::Collapsed);
+                            button(ctx.child("add-item-button"))
+                                .set_visibility(Visibility::Collapsed);
                         }
                     }
                 }
@@ -62,7 +63,8 @@ impl State for MainViewState {
 
                         if len == 1 {
                             button(ctx.child("remove-item-button")).set_enabled(false);
-                            button(ctx.child("remove-item-button")).set_visibility(Visibility::Collapsed);
+                            button(ctx.child("remove-item-button"))
+                                .set_visibility(Visibility::Collapsed);
                         }
                     }
                 }
