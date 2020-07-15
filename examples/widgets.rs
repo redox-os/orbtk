@@ -112,10 +112,7 @@ impl State for MainViewState {
 }
 
 fn create_header(ctx: &mut BuildContext, text: &str) -> Entity {
-    TextBlock::new()
-        .text(text)
-        .style("header")
-        .build(ctx)
+    TextBlock::new().text(text).style("header").build(ctx)
 }
 
 type List = Vec<String>;
@@ -194,7 +191,7 @@ impl Template for MainView {
                                 Button::new()
                                     .text("Button")
                                     .margin((0., 8., 0., 0.))
-                                    .icon(material_font_icons::CHECK_FONT_ICON)
+                                    .icon(material_icons_font::MD_CHECK)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(1))
                                     .on_click(move |states, _| {
@@ -208,7 +205,7 @@ impl Template for MainView {
                                     .text("Primary")
                                     .style("button_primary")
                                     .margin((0., 8., 0., 0.))
-                                    .icon(material_font_icons::CHECK_FONT_ICON)
+                                    .icon(material_icons_font::MD_360)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(2))
                                     .build(ctx),
@@ -217,7 +214,8 @@ impl Template for MainView {
                                 ToggleButton::new()
                                     .style("button_single_content")
                                     .text("ToggleButton")
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0., 8., 2., 0.))
+                                    .icon(material_icons_font::MD_ALARM_ON)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(3))
                                     .build(ctx),
@@ -303,6 +301,7 @@ impl Template for MainView {
                                     .margin((0., 8., 0., 0.))
                                     .style("button_single_content")
                                     .text("clear text")
+                                    .icon(material_icons_font::MD_CLEAR)
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::ClearText);
                                         true
@@ -387,7 +386,7 @@ impl Template for MainView {
                                 Button::new()
                                     .style("button_single_content")
                                     .id("remove-item-button")
-                                    .icon(material_font_icons::MINUS_FONT_ICON)
+                                    .icon(material_icons_font::MD_REMOVE_CIRCLE)
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::RemoveItem);
                                         true
@@ -401,7 +400,7 @@ impl Template for MainView {
                                 Button::new()
                                     .style("button_single_content")
                                     .id("add-item-button")
-                                    .icon(material_font_icons::ADD_FONT_ICON)
+                                    .icon(material_icons_font::MD_ADD_CIRCLE)
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::AddItem);
                                         true

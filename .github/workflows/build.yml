@@ -31,12 +31,12 @@ jobs:
       - uses: actions/checkout@v1
       - name: Install fuse
         run: sudo apt install libfuse-dev
-      - name: Install rust nightly-2019-11-25
-        run: rustup toolchain install nightly-2019-11-25
-      - name: Set rust nightly-2019-11-25 as default
-        run: rustup default nightly-2019-11-25
+      - name: Install rust nightly
+        run: rustup toolchain install nightly
+      - name: Set rust nightl as default
+        run: rustup default nightly
       - name: Install redoxer
-        run: cargo +nightly-2019-11-25 install redoxer
+        run: cargo +nightly install redoxer
       - name: Install redoxer toolchain
         run: redoxer toolchain
       - name: Build widgets example

@@ -7,9 +7,12 @@ It provides fonts, icons and colors.
 
 use orbtk_theming::{config::ThemeConfig, prelude::*};
 
+/// provides `constants` to reference colors.
 pub mod colors;
+/// provides `constants` assiciated to fonts.
 pub mod fonts;
 pub mod prelude;
+/// provides information processed by the `graphic render` (e.g. glyphs, icons).
 pub mod vector_graphics;
 
 pub const DEFAULT_THEME_RON: &str = include_str!("../assets/dark/dark.ron");
