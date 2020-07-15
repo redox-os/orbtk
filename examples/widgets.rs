@@ -193,7 +193,7 @@ impl Template for MainView {
                                 Button::new()
                                     .text("Button")
                                     .margin((0., 8., 0., 0.))
-                                    .icon(material_font_icons::CHECK_FONT_ICON)
+                                    .icon(material_icons_font::MD_CHECK)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(1))
                                     .on_click(move |states, _| {
@@ -208,7 +208,7 @@ impl Template for MainView {
                                     .element("button")
                                     .class("primary")
                                     .margin((0., 8., 0., 0.))
-                                    .icon(material_font_icons::CHECK_FONT_ICON)
+                                    .icon(material_icons_font::MD_360)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(2))
                                     .build(ctx),
@@ -217,7 +217,8 @@ impl Template for MainView {
                                 ToggleButton::new()
                                     .class("single_content")
                                     .text("ToggleButton")
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0., 8., 2., 0.))
+                                    .icon(material_icons_font::MD_ALARM_ON)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(3))
                                     .build(ctx),
@@ -302,6 +303,8 @@ impl Template for MainView {
                                 Button::new()
                                     .margin((0., 8., 0., 0.))
                                     .class("single_content")
+                                    .margin((0., 8., 8., 0.))
+                                    .icon(material_icons_font::MD_CLEAR)
                                     .text("clear text")
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::ClearText);
@@ -392,7 +395,7 @@ impl Template for MainView {
                                     .element("button")
                                     .class("single_content")
                                     .id("remove-item-button")
-                                    .icon(material_font_icons::MINUS_FONT_ICON)
+                                    .icon(material_icons_font::MD_REMOVE_CIRCLE)
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::RemoveItem);
                                         true
@@ -407,7 +410,7 @@ impl Template for MainView {
                                     .element("button")
                                     .class("single_content")
                                     .id("add-item-button")
-                                    .icon(material_font_icons::ADD_FONT_ICON)
+                                    .icon(material_icons_font::MD_ADD_CIRCLE)
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::AddItem);
                                         true

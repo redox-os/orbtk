@@ -69,7 +69,7 @@ impl Template for CheckBox {
             .text("")
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto Regular")
-            .icon(material_font_icons::CHECK_FONT_ICON)
+            .icon(material_icons_font::MD_CHECK)
             .icon_font("Material Icons")
             .icon_size(fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)

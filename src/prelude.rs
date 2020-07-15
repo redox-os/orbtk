@@ -14,7 +14,13 @@ pub use crate::{
     proc_macros::*,
     render,
     shell::Key,
-    theme::{colors, default_theme, fonts, light_theme, vector_graphics::material_font_icons},
+    theme::{
+        colors,
+        default_theme,
+        fonts,
+        light_theme,
+        vector_graphics::material_icons_font
+    },
     tree::*,
     utils::*,
     widgets::*,

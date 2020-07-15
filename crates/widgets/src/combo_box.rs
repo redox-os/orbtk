@@ -362,7 +362,7 @@ impl Template for ComboBox {
                         FontIconBlock::new()
                             .attach(Grid::column(2))
                             .v_align("center")
-                            .icon(material_font_icons::ARROW_DOWN_ICON)
+                            .icon(material_icons_font::MD_ARROW_DROP_DOWN_CIRCLE)
                             .build(ctx),
                     )
                     .build(ctx),
