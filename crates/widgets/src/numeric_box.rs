@@ -260,7 +260,7 @@ impl Template for NumericBox {
                             .attach(Grid::row(0))
                             .min_width(14)
                             .height(15)
-                            .text("+")
+                            .icon(material_icons_font::MD_KEYBOARD_ARROW_UP)
                             .margin(1)
                             .on_click(move |states, _| {
                                 states
@@ -279,7 +279,7 @@ impl Template for NumericBox {
                             .height(15)
                             .padding(0.0)
                             .margin(1)
-                            .text("-")
+                            .icon(material_icons_font::MD_KEYBOARD_ARROW_DOWN)
                             .on_click(move |states, _| {
                                 states
                                     .get_mut::<NumericBoxState>(id)

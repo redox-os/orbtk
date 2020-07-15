@@ -53,13 +53,19 @@ Theme (
             },
         ),
         "button_small": (
-             properties: {
-                "height": 14,
-                "font_size": "$FONT_SIZE_12",
-                "border_brush": "transparent",
+            properties: {
+                "border_radius": 0,
+                "icon_brush": "$LINK_WATER",
+                "font_size": "$ICON_SIZE_12",
                 "background": "transparent",
-                "foreground": "$BRIGHT_GRAY",
-                "icon_brush": "$BRIGHT_GRAY",
+                "height": 14,
+                "spacing": 0,
+                "padding": 0,
+            },
+            states: {
+                "pressed": {
+                    "background": "$BLUE_BAYOUX",
+                },
             },
         ),
         "button_square": ( 
