@@ -219,6 +219,24 @@ impl<'a> WidgetContainer<'a> {
         }
     }
 
+    fn update_padding(&mut self, key: &str, value: Value) {
+        let value = if let Ok(value) = value.0.into_rust::<f64>() {
+            value
+        } else {
+            0.0
+        };
+
+        if let Some(padding) = self.try_get_mut::<Thickness>("padding") {
+            match key {
+                "padding_left" => padding.set_left(value),
+                "padding_top" => padding.set_top(value),
+                "padding_right" => padding.set_right(value),
+                "padding_bottom" => padding.set_bottom(value),
+                _ => {}
+            }
+        }
+    }
+
     fn update_value<T, V>(&mut self, key: &str, value: V)
     where
         T: Component + Clone,
@@ -258,6 +276,9 @@ impl<'a> WidgetContainer<'a> {
                     }
                     "padding" | "border_width" => {
                         self.update_value::<Thickness, Value>(key, Value(value.clone()));
+                    }
+                    "padding_left" | "padding_top" | "padding_right" | "padding_bottom" => {
+                        self.update_padding(key, Value(value.clone()));
                     }
                     "font_family" | "icon_family" => {
                         self.update_value::<String, Value>(key, Value(value.clone()));

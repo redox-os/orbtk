@@ -58,10 +58,16 @@ impl State for ComboBoxItemState {
             .clone::<SelectedItem>("selected_item")
         {
             ctx.get_widget(item).set("selected", false);
+            ctx.get_widget(item)
+                .get_mut::<Selector>("selector")
+                .clear_state();
             ctx.get_widget(item).update(false);
         }
 
         ctx.widget().set("selected", true);
+        ctx.widget()
+            .get_mut::<Selector>("selector")
+            .set_state("selected");
         ctx.widget().update(false);
         ctx.get_widget(self.combo_box)
             .set("selected_index", self.index as i32);
@@ -143,13 +149,13 @@ impl ComboBoxItem {
 }
 
 impl Template for ComboBoxItem {
-    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ComboBoxItem")
+            .style("combo_box_item")
             .min_width(64.0)
             .height(24.0)
             .selected(false)
             .pressed(false)
-            .style("combo_box_item")
             .padding(0.0)
             .background("transparent")
             .border_radius(0.0)
@@ -158,6 +164,13 @@ impl Template for ComboBoxItem {
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(32.0)
             .font("Roboto Regular")
+            .child(
+                MouseBehavior::new()
+                    .pressed(id)
+                    .enabled(id)
+                    .target(id.0)
+                    .build(ctx),
+            )
             .on_click(move |states, _| {
                 states.get::<ComboBoxItemState>(id).toggle_selection();
                 false
@@ -203,6 +216,7 @@ impl ComboBoxState {
 
         if !combo_box_global_bounds.contains((x, y)) {
             ctx.widget().set("selected", false);
+            ctx.widget().get_mut::<Selector>("selector").clear_state();
             ctx.get_widget(self.popup)
                 .set("visibility", Visibility::Collapsed);
             ctx.get_widget(self.popup).update(false);

@@ -249,16 +249,43 @@ Theme (
             properties: {
                 "foreground": "$LINK_WATER",
                 "background": "$BRIGHT_GRAY",
-                "border_brush": "#647b91",
+                "border_brush": "$LYNCH",
                 "border_width": 1,
                 "border_radius": 3,
                 "padding": 6,
             },
             states: {
                 "selected": {
-                    "border_brush": "#f8de4c",
+                    "border_brush": "$ENERGY_YELLOW",
                 },
             },
-        )
+        ),
+        "popup": ( 
+            properties: {
+                "background": "$RIVER_BAD",
+                "border_brush": "$LYNCH",
+                "border_width": 1,
+                "border_radius": 2,
+            },
+        ),
+        "combo_box_item": (
+            properties: {
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "#ccdeed",
+                "background": "transparent",
+                "padding_left": 8,
+                "padding_right": 8,
+            },
+            states: {
+                "selected": {
+                    "foreground": "$BRIGHT_GRAY",
+                    "background": "$SUNFLOWER",
+                },
+                "pressed": {
+                    "foreground": "$BRIGHT_GRAY",
+                    "background": "$SUNFLOWER",
+                },
+            },
+        ),
     },
 )
