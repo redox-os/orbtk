@@ -114,8 +114,7 @@ impl State for MainViewState {
 fn create_header(ctx: &mut BuildContext, text: &str) -> Entity {
     TextBlock::new()
         .text(text)
-        .style("text-block")
-        .style("text_block_header")
+        .style("header")
         .build(ctx)
 }
 
@@ -241,7 +240,7 @@ impl Template for MainView {
                             .child(
                                 TextBlock::new()
                                     .margin((0., 8., 0., 0.))
-                                    .style("text_block_header")
+                                    .style("header")
                                     .id("value_text")
                                     .text("0")
                                     .h_align("center")
@@ -337,8 +336,7 @@ impl Template for MainView {
                             .child(
                                 TextBlock::new()
                                     .text("Items")
-                                    .style("text-block")
-                                    .style("text_block_header")
+                                    .style("header")
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(0))

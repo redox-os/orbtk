@@ -9,6 +9,18 @@ Theme (
                 "icon_family": "$ICON_FONT",
             },
         ),
+        "body": (
+            properties: {
+                "font_size": "$FONT_SIZE_16",
+                "font_family": "$MEDIUM_FONT",
+            },
+        ),
+        "header": (
+            base: "body",
+            properties: {
+                "font_size": "$FONT_SIZE_24",
+            }
+        ),
         "button": ( 
             base: "base",
             properties: {
@@ -36,6 +48,16 @@ Theme (
             base: "button",
             properties: {
                 "background": "$GOLDEN_DREAM",
+                "foreground": "$BRIGHT_GRAY",
+                "icon_brush": "$BRIGHT_GRAY",
+            },
+        ),
+        "button_small": (
+             properties: {
+                "height": 14,
+                "font_size": "$FONT_SIZE_12",
+                "border_brush": "transparent",
+                "background": "transparent",
                 "foreground": "$BRIGHT_GRAY",
                 "icon_brush": "$BRIGHT_GRAY",
             },
