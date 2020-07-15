@@ -20,6 +20,12 @@ impl Template for MainView {
                         .max(123.0)
                         .step(0.123)
                         .val(0.123)
+                        .on_activate(move |_states, _entity| {
+                            println!("on_activate()");
+                        })
+                        .on_changed(move |_states, _entity| {
+                            println!("on_changed()");
+                        })
                         .build(ctx),
                 )
                 .child(Button::new().text("Blow air").build(ctx))
