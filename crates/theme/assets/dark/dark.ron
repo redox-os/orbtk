@@ -287,5 +287,40 @@ Theme (
                 },
             },
         ),
+        "scroll_bar": (
+            properties: {
+                "background": "$LYNCH",
+                "border_radius": 2,
+            },
+        ),
+        "list_view": (
+            base: "base",
+            properties: {
+                "foreground": "$LINK_WATER",
+                "background": "transparent",
+                "border_brush": "$LYNCH",
+                "border_width": 1,
+                "border_radius": 3,
+            },
+        ),
+        "list_view_item": (
+            properties: {
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "#ccdeed",
+                "background": "transparent",
+                "padding_left": 8,
+                "padding_right": 8,
+            },
+            states: {
+                "selected": {
+                    "foreground": "$BRIGHT_GRAY",
+                    "background": "$SUNFLOWER",
+                },
+                "pressed": {
+                    "foreground": "$BRIGHT_GRAY",
+                    "background": "$SUNFLOWER",
+                },
+            },
+        ),
     },
 )
