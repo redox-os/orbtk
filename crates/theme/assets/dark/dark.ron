@@ -235,5 +235,14 @@ Theme (
                 },
             },
         ),
+        "items_widget": (
+            properties: {
+                "background": "transparent",
+                "border_brush": "#647b91",
+                "border_width": 1,
+                "border_radius": 2,
+                "padding": 4,
+            }
+        ),
     },
 )

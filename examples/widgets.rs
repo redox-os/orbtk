@@ -364,7 +364,6 @@ impl Template for MainView {
                             )
                             .child(
                                 ItemsWidget::new()
-                                    .style("items-widget")
                                     .id("items")
                                     .padding((4., 4., 4., 2.))
                                     .attach(Grid::column(0))
