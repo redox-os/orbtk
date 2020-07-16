@@ -55,7 +55,7 @@ To include OrbTk in your project, add this dependency
 line to your `Cargo.toml` file:
 
 ```text
-orbtk = "0.3.1-alpha1"
+orbtk = "0.3.1-alpha2"
 ```
 
 To use the latest development version of OrbTk, add this dependency
