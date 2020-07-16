@@ -201,7 +201,7 @@ widget!(
 impl Template for NumericBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("NumericBox")
-            .style("text_box")
+            .style("numeric_box")
             .background("transparent")
             .foreground(colors::LINK_WATER_COLOR)
             .border_brush("#647b91")
@@ -242,6 +242,7 @@ impl Template for NumericBox {
                             .attach(Grid::column(0))
                             .attach(Grid::row_span(2))
                             .attach(Grid::row(0))
+                            .foreground(id)
                             .border_brush("transparent")
                             .border_width(0)
                             .background("transparent")

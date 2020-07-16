@@ -140,40 +140,6 @@ Theme (
                 "padding": 4,
             },
         ),
-        "combo_box": (
-            base: "base",
-            properties: {
-                "foreground": "$LINK_WATER",
-                "background": "$BRIGHT_GRAY",
-                "border_brush": "$SILVER_CHALICE",
-                "border_width": 1,
-                "border_radius": 3,
-                "padding": 6,
-            },
-            states: {
-                "selected": {
-                    "border_brush": "$ENERGY_YELLOW",
-                },
-            },
-        ),
-        "combo_box_item": (
-            base: "base",
-            properties: {
-                "font_size": "$FONT_SIZE_12",
-                "foreground": "$PERIWINKLE_GRAY",
-                "background": "transparent",
-                "padding": {
-                    "left": 8,
-                    "right": 8,
-                },
-            },
-            states: {
-                "selected": {
-                    "foreground": "$BRIGHT_GRAY",
-                    "background": "$SUNFLOWER",
-                },
-            },
-        ),
         "text_block_header": (
             base: "base",
             properties: {
@@ -184,7 +150,7 @@ Theme (
             base: "base",
             properties: {
                 "height": 32,
-                "foreground": "$WHITE",
+                "foreground": "$BRIGHT_GRAY",
                 "background": "$ALABASTER",
                 "border_brush": "$SILVER_CHALICE",
                 "border_width": 1,
@@ -196,10 +162,27 @@ Theme (
                     "border_brush": "$SUNFLOWER",
                 },
                 "empty": {
-                    "foreground": "$WHITE",
+                    "foreground": "$SILVER_CHALICE",
                 },
                 "empty_focused": {
-                    "foreground": "$GOLDEN_DREAM",
+                    "foreground": "$SILVER_CHALICE",
+                    "border_brush": "$SUNFLOWER",
+                }
+            },
+        ),
+        "numeric_box": (
+            base: "base",
+            properties: {
+                "height": 32,
+                "foreground": "$BRIGHT_GRAY",
+                "background": "$ALABASTER",
+                "border_brush": "$SILVER_CHALICE",
+                "border_width": 1,
+                "border_radius": 3,
+                "padding": 6,
+            },
+            states: {
+                "focused": {
                     "border_brush": "$SUNFLOWER",
                 }
             },
@@ -248,10 +231,18 @@ Theme (
                 "padding": 4,
             }
         ),
+        "small_text": (
+            base: "body",
+             properties: {
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "$BRIGHT_GRAY",
+            },
+        ),
         "combo_box": (
             base: "base",
             properties: {
-                "foreground": "$LINK_WATER",
+                "foreground": "$BRIGHT_GRAY",
+                "icon_brush": "$BRIGHT_GRAY",
                 "background": "$ALABASTER",
                 "border_brush": "$SILVER_CHALICE",
                 "border_width": 1,
@@ -275,7 +266,7 @@ Theme (
         "combo_box_item": (
             properties: {
                 "font_size": "$FONT_SIZE_12",
-                "foreground": "$PERIWINKLE_GRAY",
+                "foreground": "$BRIGHT_GRAY",
                 "background": "transparent",
                 "padding_left": 8,
                 "padding_right": 8,
@@ -310,7 +301,7 @@ Theme (
         "list_view_item": (
             properties: {
                 "font_size": "$FONT_SIZE_12",
-                "foreground": "#ccdeed",
+                "foreground": "$BRIGHT_GRAY",
                 "background": "transparent",
                 "padding_left": 8,
                 "padding_right": 8,

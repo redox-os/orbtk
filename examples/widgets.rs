@@ -350,6 +350,7 @@ impl Template for MainView {
                                             .get::<Vec<String>>("combo_box_list")[index]
                                             .clone();
                                         TextBlock::new()
+                                            .style("small_text")
                                             .margin((0, 0, 0, 2))
                                             .v_align("center")
                                             .text(text)
@@ -452,6 +453,7 @@ impl Template for MainView {
                             .attach(Grid::column(0))
                             .child(
                                 TextBlock::new()
+                                    .style("body")
                                     .text("Toggle theme: ")
                                     .v_align("center")
                                     .margin((0, 0, 4, 0))
@@ -477,7 +479,6 @@ fn main() {
     orbtk::initialize();
 
     Application::new()
-        .theme(light_theme())
         .window(|ctx| {
             Window::new()
                 .title("OrbTk - widgets example")

@@ -25,7 +25,6 @@ widget!(
 impl Template for TextBlock {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("TextBlock")
-            .style("body")
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)

@@ -152,17 +152,17 @@ impl Template for ComboBoxItem {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ComboBoxItem")
             .style("combo_box_item")
-            .min_width(64.0)
-            .height(24.0)
+            .min_width(64)
+            .height(24)
             .selected(false)
             .pressed(false)
-            .padding(0.0)
+            .padding(0)
             .background("transparent")
-            .border_radius(0.0)
-            .border_width(0.0)
+            .border_radius(0)
+            .border_width(0)
             .border_brush("transparent")
             .foreground(colors::LINK_WATER_COLOR)
-            .font_size(32.0)
+            .font_size(32)
             .font("Roboto Regular")
             .child(
                 MouseBehavior::new()
@@ -341,7 +341,19 @@ widget!(
         pressed: bool,
 
         /// Sets or shares the flag if the drop down is open.
-        selected: bool
+        selected: bool,
+
+        /// Sets or shares the icon property.
+        icon: String,
+
+        /// Sets or shares the icon brush property.
+        icon_brush: Brush,
+
+        /// Sets or share the icon font size property.
+        icon_size: f64,
+
+        /// Sets or shares the icon font property.
+        icon_font: String
     }
 );
 
@@ -375,7 +387,10 @@ impl Template for ComboBox {
                         FontIconBlock::new()
                             .attach(Grid::column(2))
                             .v_align("center")
-                            .icon(material_icons_font::MD_ARROW_DROP_DOWN)
+                            .icon_brush(id)
+                            .icon_size(id)
+                            .icon_font(id)
+                            .icon(id)
                             .build(ctx),
                     )
                     .build(ctx),
@@ -415,6 +430,10 @@ impl Template for ComboBox {
 
         self.name("ComboBox")
             .style("combo_box")
+            .icon(material_icons_font::MD_ARROW_DROP_DOWN)
+            .icon_font("Material Icons")
+            .icon_size(fonts::ICON_FONT_SIZE_12)
+            .icon_brush(colors::LINK_WATER_COLOR)
             .height(32.0)
             .min_width(80.0)
             .selected(false)
