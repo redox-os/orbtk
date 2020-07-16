@@ -7,10 +7,8 @@ use rust_decimal::prelude::*;
 pub static ID_INPUT: &'static str = "numeric_box_input";
 pub static ELEMENT_INPUT: &'static str = "numeric_box_input";
 pub static ELEMENT_BTN: &'static str = "numeric_box_button";
-// one mouse up scroll is delta.y = 12.0
-static ONE_SCROLL: f64 = 12.0;
 
-enum InputAction {
+pub enum InputAction {
     Inc,
     Dec,
     ChangeByKey(KeyEvent),
@@ -19,13 +17,13 @@ enum InputAction {
 }
 
 #[derive(Default, AsAny)]
-struct NumericBoxState {
-    action: Option<InputAction>,
+pub struct NumericBoxState {
+    pub action: Option<InputAction>,
     pub input: Entity,
-    min: Decimal,
-    max: Decimal,
-    step: Decimal,
-    current_value: Decimal,
+    pub min: Decimal,
+    pub max: Decimal,
+    pub step: Decimal,
+    pub current_value: Decimal,
 }
 
 impl NumericBoxState {
@@ -34,10 +32,36 @@ impl NumericBoxState {
     }
 
     fn change_val(&mut self, new_value: Decimal, ctx: &mut Context) {
-        if new_value >= self.min && new_value <= self.max {
-            self.current_value = new_value;
-            ctx.get_widget(self.input)
-                .set::<String16>("text", String16::from(self.current_value.to_string()));
+        if self.current_value == self.min && new_value < self.min
+            || self.current_value == self.max && new_value > self.max
+        {
+            return;
+        }
+
+        self.current_value = self.max(self.min(new_value));
+        ctx.get_widget(self.input)
+            .set::<String16>("text", String16::from(self.current_value.to_string()));
+
+        ctx.push_event_strategy_by_entity(
+            ChangedEvent(ctx.entity),
+            ctx.entity,
+            EventStrategy::Direct,
+        );
+    }
+
+    fn min(&self, d: Decimal) -> Decimal {
+        if d <= self.min {
+            return self.min;
+        } else {
+            return d;
+        }
+    }
+
+    fn max(&self, d: Decimal) -> Decimal {
+        if d >= self.max {
+            return self.max;
+        } else {
+            return d;
         }
     }
 
@@ -91,14 +115,24 @@ impl State for NumericBoxState {
                     Key::Down | Key::NumpadSubtract => {
                         self.change_val(self.current_value - self.step, ctx);
                     }
+                    Key::Enter => {
+                        if *ctx.widget().get::<bool>("lost_focus_on_activation") {
+                            ctx.push_event_by_window(FocusEvent::RemoveFocus(ctx.entity));
+                        }
+
+                        ctx.push_event_strategy_by_entity(
+                            ActivateEvent(ctx.entity),
+                            ctx.entity,
+                            EventStrategy::Direct,
+                        )
+                    }
                     _ => {}
                 },
                 InputAction::ChangeByMouseScroll(delta) => {
-                    match Decimal::from_f64(delta.y / ONE_SCROLL) {
-                        Some(scroll_count) => {
-                            self.change_val(self.current_value + (self.step * scroll_count), ctx);
-                        }
-                        None => {}
+                    if delta.y < 0.0 {
+                        self.change_val(self.current_value - self.step, ctx);
+                    } else {
+                        self.change_val(self.current_value + self.step, ctx);
                     }
                 }
                 InputAction::Focus => {
@@ -128,7 +162,7 @@ widget!(
     /// ```rust
     /// NumericBox::new().min(10.0).max(100.0).val(50.0).step(5.0).build(ctx)
     /// ```
-    NumericBox<NumericBoxState>: KeyDownHandler {
+    NumericBox<NumericBoxState>: ActivateHandler, ChangedHandler, KeyDownHandler {
         /// Sets or shares the background color property
         background: Brush,
 
@@ -146,6 +180,9 @@ widget!(
 
         /// Sets or shares the foreground color property
         foreground: Brush,
+
+        /// Sets or shares the value that describes if the NumericBox should lost focus on activation (when enter pressed).
+        lost_focus_on_activation: bool,
 
         /// Sets or shares the minimum allowed value property
         min: f64,
@@ -172,6 +209,7 @@ impl Template for NumericBox {
             .element("numeric_box")
             .focused(false)
             .height(32.0)
+            .lost_focus_on_activation(true)
             .margin(4.0)
             .min(0.0)
             .max(200.0)
@@ -212,6 +250,7 @@ impl Template for NumericBox {
                             .id(ID_INPUT)
                             .max_width(96.)
                             .text("0")
+                            .lost_focus_on_activation(id)
                             .build(ctx),
                     )
                     .child(

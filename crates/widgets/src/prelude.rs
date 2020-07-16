@@ -12,5 +12,11 @@ pub use ecs::*;
 pub use orbtk_api::css_engine::{Selector, Theme};
 pub use orbtk_render::prelude::Image;
 pub use proc_macros::*;
-pub use theme::{colors, default_theme, fonts, light_theme, vector_graphics::material_font_icons};
+pub use theme::{
+    colors,
+    default_theme,
+    fonts,
+    light_theme,
+    vector_graphics::material_icons_font
+};
 pub use utils::*;

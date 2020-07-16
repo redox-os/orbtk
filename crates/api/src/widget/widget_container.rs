@@ -1,4 +1,4 @@
-use std::any::TypeId;
+use std::any::type_name;
 
 use crate::{
     css_engine::*,
@@ -47,19 +47,22 @@ impl<'a> WidgetContainer<'a> {
             return property;
         }
 
+        let name = self.get_name();
+
         panic!(
-            "Entity {} does not contain property type {:?} with key: {}",
-            self.current_node.0,
-            TypeId::of::<P>(),
-            key
-        );
+        "Widget: {} with entity: {} does not contain property with type {:?} for key: {}",
+        name,
+        self.current_node.0,
+        type_name::<P>(),
+        key
+    );
     }
 
     /// Gets a mutable reference of the property of type `P`.
     ///
     /// # Panics
     ///
-    /// Panics if the widget does not contains the property.
+    /// Panics if the widget does not contain the property.
     pub fn get_mut<P>(&mut self, key: &str) -> &mut P
     where
         P: Clone + Component,
@@ -75,7 +78,7 @@ impl<'a> WidgetContainer<'a> {
         panic!(
             "Entity {} does not contain property type {:?}, with key: {}",
             self.current_node.0,
-            TypeId::of::<P>(),
+            type_name::<P>(),
             key
         );
     }
@@ -106,12 +109,15 @@ impl<'a> WidgetContainer<'a> {
             return property.clone();
         }
 
+        let name = self.get_name();
+        
         panic!(
-            "Entity {} does not contain property type {:?}, with key: {}",
-            self.current_node.0,
-            TypeId::of::<P>(),
-            key
-        );
+        "Widget: {} with entity: {} does not contain property with type {:?} for key: {}",
+        name,
+        self.current_node.0,
+        type_name::<P>(),
+        key
+    );
     }
 
     /// Clones the property of type `P` from the given widget entity. If the entity does
@@ -145,10 +151,14 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
+        let name = self.get_name();
+
         panic!(
-            "Entity {} does not contain property type {:?}",
+            "Widget: {} with entity: {} does not contain property with type {:?} for key: {}",
+            name,
             self.current_node.0,
-            TypeId::of::<P>()
+            type_name::<P>(),
+            key
         );
     }
 
@@ -410,6 +420,19 @@ impl<'a> WidgetContainer<'a> {
             if let Some(font_family) = self.theme.string("icon-family", selector) {
                 self.set::<String>("icon_family", font_family);
             }
+        }
+    }
+
+    fn get_name(&self) -> String {
+        if self.has::<String>("name") {
+            self
+            .ecm
+            .component_store()
+            .get::<String>("name", self.current_node)
+            .unwrap()
+            .clone()
+        } else {
+            String::from("unknown")
         }
     }
 }

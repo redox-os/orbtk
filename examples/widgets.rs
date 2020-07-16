@@ -41,11 +41,14 @@ impl State for MainViewState {
                         main_view(ctx.widget())
                             .list_mut()
                             .push(format!("Item {}", len + 1));
+                        ctx.child("items").clone_or_default::<usize>("Item");
                         items_widget(ctx.child("items")).set_count(len + 1);
                         button(ctx.child("remove-item-button")).set_enabled(true);
+                        button(ctx.child("remove-item-button")).set_visibility(Visibility::Visible);
 
                         if len == 4 {
                             button(ctx.child("add-item-button")).set_enabled(false);
+                            button(ctx.child("add-item-button")).set_visibility(Visibility::Collapsed);
                         }
                     }
                 }
@@ -55,9 +58,11 @@ impl State for MainViewState {
                         main_view(ctx.widget()).list_mut().remove(len - 1);
                         items_widget(ctx.child("items")).set_count(len - 1);
                         button(ctx.child("add-item-button")).set_enabled(true);
+                        button(ctx.child("add-item-button")).set_visibility(Visibility::Visible);
 
                         if len == 1 {
                             button(ctx.child("remove-item-button")).set_enabled(false);
+                            button(ctx.child("remove-item-button")).set_visibility(Visibility::Collapsed);
                         }
                     }
                 }
@@ -143,16 +148,16 @@ impl Template for MainView {
             ])
             .list_count(3)
             .selection_list(vec![
-                "Item 1".to_string(),
-                "Item 2".to_string(),
-                "Item 3".to_string(),
-                "Item 4".to_string(),
-                "Item 5".to_string(),
-                "Item 6".to_string(),
-                "Item 7".to_string(),
-                "Item 8".to_string(),
-                "Item 9".to_string(),
-                "Item 10".to_string(),
+                "Select Item 1".to_string(),
+                "Select Item 2".to_string(),
+                "Select Item 3".to_string(),
+                "Select Item 4".to_string(),
+                "Select Item 5".to_string(),
+                "Select Item 6".to_string(),
+                "Select Item 7".to_string(),
+                "Select Item 8".to_string(),
+                "Select Item 9".to_string(),
+                "Select Item 10".to_string(),
             ])
             .combo_box_list(vec![
                 "CB 1".to_string(),
@@ -188,7 +193,7 @@ impl Template for MainView {
                                 Button::new()
                                     .text("Button")
                                     .margin((0., 8., 0., 0.))
-                                    .icon(material_font_icons::CHECK_FONT_ICON)
+                                    .icon(material_icons_font::MD_CHECK)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(1))
                                     .on_click(move |states, _| {
@@ -203,7 +208,7 @@ impl Template for MainView {
                                     .element("button")
                                     .class("primary")
                                     .margin((0., 8., 0., 0.))
-                                    .icon(material_font_icons::CHECK_FONT_ICON)
+                                    .icon(material_icons_font::MD_360)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(2))
                                     .build(ctx),
@@ -212,7 +217,8 @@ impl Template for MainView {
                                 ToggleButton::new()
                                     .class("single_content")
                                     .text("ToggleButton")
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0., 8., 2., 0.))
+                                    .icon(material_icons_font::MD_ALARM_ON)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(3))
                                     .build(ctx),
@@ -297,6 +303,8 @@ impl Template for MainView {
                                 Button::new()
                                     .margin((0., 8., 0., 0.))
                                     .class("single_content")
+                                    .margin((0., 8., 8., 0.))
+                                    .icon(material_icons_font::MD_CLEAR)
                                     .text("clear text")
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::ClearText);
@@ -368,6 +376,7 @@ impl Template for MainView {
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(3))
                                     .margin((0., 0., 0., 8.))
+                                    // bc = build-context
                                     .items_builder(move |bc, index| {
                                         let text = bc.get_widget(id).get::<Vec<String>>("list")
                                             [index]
@@ -386,7 +395,7 @@ impl Template for MainView {
                                     .element("button")
                                     .class("single_content")
                                     .id("remove-item-button")
-                                    .icon(material_font_icons::MINUS_FONT_ICON)
+                                    .icon(material_icons_font::MD_REMOVE_CIRCLE)
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::RemoveItem);
                                         true
@@ -401,7 +410,7 @@ impl Template for MainView {
                                     .element("button")
                                     .class("single_content")
                                     .id("add-item-button")
-                                    .icon(material_font_icons::ADD_FONT_ICON)
+                                    .icon(material_icons_font::MD_ADD_CIRCLE)
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::AddItem);
                                         true

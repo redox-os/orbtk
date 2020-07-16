@@ -229,8 +229,8 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         crate::theme::fonts::ROBOTO_MEDIUM_FONT,
     );
     fonts.insert(
-        "MaterialIcons-Regular".to_string(),
-        crate::theme::fonts::MATERIAL_ICONS_REGULAR_FONT,
+        "Material Icons".to_string(),
+        crate::theme::fonts::MATERIAL_ICONS_FONT,
     );
 
     let settings = WindowSettings {
