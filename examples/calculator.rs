@@ -1,5 +1,5 @@
-use orbtk::prelude::*;
 use orbtk::{
+    prelude::*,
     theme::{DARK_COLORS_RON, DARK_THEME_RON, DEFAULT_FONTS_RON},
     theming::config::ThemeConfig,
 };

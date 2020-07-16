@@ -11,6 +11,7 @@ enum Action {
     ValueChanged(Entity),
     IncrementCounter,
     RemoveItem,
+    ToggleTheme(Entity),
 }
 
 #[derive(AsAny)]
@@ -91,6 +92,12 @@ impl State for MainViewState {
                 }
                 Action::ValueChanged(_entity) => {
                     //println!("Slider value changed");
+                }
+                Action::ToggleTheme(entity) => {
+                    let light = *ctx.get_widget(entity).get::<bool>("selected");
+
+                    let theme = if light { light_theme() } else { dark_theme() };
+                    ctx.switch_theme(theme);
                 }
             }
 
@@ -179,15 +186,8 @@ impl Template for MainView {
             .combo_box_list_count(10)
             .child(
                 Grid::new()
-                    .margin(8.)
-                    .columns(
-                        Columns::new()
-                            .add(132.)
-                            .add(16.)
-                            .add(132.)
-                            .add(16.)
-                            .add(132.),
-                    )
+                    .margin(8)
+                    .columns(Columns::new().add(132).add(16).add(132).add(16).add(132))
                     .child(
                         Stack::new()
                             .attach(Grid::column(0))
@@ -220,7 +220,7 @@ impl Template for MainView {
                                 ToggleButton::new()
                                     .style("button_single_content")
                                     .text("ToggleButton")
-                                    .margin((0., 8., 2., 0.))
+                                    .margin((0, 8, 2, 0))
                                     .icon(material_icons_font::MD_ALARM_ON)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(3))
@@ -236,6 +236,9 @@ impl Template for MainView {
                             )
                             .child(
                                 Switch::new()
+                                    .on_changed(move |states, entity| {
+                                        state(id, states).action(Action::ToggleTheme(entity));
+                                    })
                                     .margin((0, 8, 0, 0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(5))
@@ -308,7 +311,7 @@ impl Template for MainView {
                             .child(
                                 NumericBox::new()
                                     .margin((0, 8, 0, 0))
-                                    .max(123.)
+                                    .max(123)
                                     .step(0.123)
                                     .val(0.123)
                                     .build(ctx),
@@ -320,14 +323,14 @@ impl Template for MainView {
                             .rows(
                                 Rows::new()
                                     .add("auto")
-                                    .add(32.)
-                                    .add(16.)
-                                    .add(204.)
+                                    .add(32)
+                                    .add(16)
+                                    .add(204)
                                     .add("auto")
-                                    .add(192.)
+                                    .add(192)
                                     .add("auto"),
                             )
-                            .columns(Columns::new().add("*").add(4.).add("*"))
+                            .columns(Columns::new().add("*").add(4).add("*"))
                             .attach(Grid::column(4))
                             .child(
                                 TextBlock::new()
@@ -362,11 +365,11 @@ impl Template for MainView {
                             .child(
                                 ItemsWidget::new()
                                     .id("items")
-                                    .padding((4., 4., 4., 2.))
+                                    .padding((4, 4, 4, 2))
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(3))
-                                    .margin((0., 0., 0., 8.))
+                                    .margin((0, 0, 0, 8))
                                     // bc = build-context
                                     .items_builder(move |bc, index| {
                                         let text = bc.get_widget(id).get::<Vec<String>>("list")
@@ -387,7 +390,7 @@ impl Template for MainView {
                                         state(id, states).action(Action::RemoveItem);
                                         true
                                     })
-                                    .min_width(0.)
+                                    .min_width(0)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(4))
                                     .build(ctx),
@@ -401,7 +404,7 @@ impl Template for MainView {
                                         state(id, states).action(Action::AddItem);
                                         true
                                     })
-                                    .min_width(0.)
+                                    .min_width(0)
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(4))
                                     .build(ctx),
@@ -412,7 +415,7 @@ impl Template for MainView {
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(5))
                                     .selected_indices(id)
-                                    .margin((0., 16., 0., 8.))
+                                    .margin((0, 16, 0, 8))
                                     .items_builder(move |bc, index| {
                                         let text = bc
                                             .get_widget(id)
@@ -432,7 +435,7 @@ impl Template for MainView {
                                 TextBlock::new()
                                     .style("text-tleck-block")
                                     .id("selection")
-                                    .max_width(120.)
+                                    .max_width(120)
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(6))
@@ -454,8 +457,8 @@ fn main() {
         .window(|ctx| {
             Window::new()
                 .title("OrbTk - widgets example")
-                .position((100., 100.))
-                .size(468., 730.)
+                .position((100, 100))
+                .size(468, 730)
                 .resizeable(true)
                 .child(MainView::new().build(ctx))
                 .build(ctx)

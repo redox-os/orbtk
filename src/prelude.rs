@@ -13,7 +13,7 @@ pub use crate::{
     proc_macros::*,
     render,
     shell::Key,
-    theme::{colors, dark_theme, fonts, vector_graphics::material_icons_font},
+    theme::{colors, dark_theme, fonts, light_theme, vector_graphics::material_icons_font},
     theming::prelude::*,
     tree::*,
     utils::*,

@@ -16,7 +16,7 @@ use super::WidgetContainer;
 pub struct Context<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     pub entity: Entity,
-    pub theme: &'a Theme,
+    pub theme: Theme,
     provider: &'a ContextProvider,
     new_states: BTreeMap<Entity, Box<dyn State>>,
     remove_widget_list: Vec<Entity>,
@@ -39,14 +39,14 @@ impl<'a> Context<'a> {
             Entity,
             &'a mut EntityComponentManager<Tree, StringComponentStore>,
         ),
-        theme: &'a Theme,
+        theme: &Theme,
         provider: &'a ContextProvider,
         render_context: &'a mut RenderContext2D,
     ) -> Self {
         Context {
             entity: ecs.0,
             ecm: ecs.1,
-            theme,
+            theme: theme.clone(),
             provider,
             new_states: BTreeMap::new(),
             remove_widget_list: vec![],
@@ -58,7 +58,7 @@ impl<'a> Context<'a> {
 
     /// Returns a specific widget.
     pub fn get_widget(&mut self, entity: Entity) -> WidgetContainer<'_> {
-        WidgetContainer::new(entity, self.ecm, self.theme)
+        WidgetContainer::new(entity, self.ecm, &self.theme)
     }
 
     /// Returns the widget of the current state ctx.
@@ -181,7 +181,7 @@ impl<'a> Context<'a> {
             &self.provider.layouts,
             &self.provider.handler_map,
             &mut self.new_states,
-            self.theme,
+            &self.theme,
         )
     }
 
@@ -438,6 +438,16 @@ impl<'a> Context<'a> {
     /// Returns a keys collection of new added states.
     pub fn new_states_keys(&self) -> Vec<Entity> {
         self.new_states.keys().cloned().collect()
+    }
+
+    /// Switch the current theme.
+    pub fn switch_theme(&mut self, theme: Theme) {
+        self.theme = theme.clone();
+
+        self.window().get_mut::<Global>("global").theme = theme;
+
+        // update on window to update all widgets in the tree
+        self.window().update(true);
     }
 }
 

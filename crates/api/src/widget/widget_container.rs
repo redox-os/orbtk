@@ -259,9 +259,13 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
+        if force {
+            self.get_mut::<Selector>("selector").set_dirty(true);
+        }
+
         let selector = self.clone::<Selector>("selector");
 
-        if !selector.dirty() && !force {
+        if !selector.dirty() {
             return;
         }
 
