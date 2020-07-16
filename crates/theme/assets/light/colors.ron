@@ -2,19 +2,24 @@ Theme (
     resources: {
         "BLACK": "#000000",
         "WHITE": "#ffffff",
-        "BRIGHT_GRAY": "#3b434a",
-        "LYNCH": "#ffffff",
+      
+        "LYNCH": "#dadada",
         "PERIWINKLE_GRAY": "#ccdeed",        
         "SUNFLOWER": "#e1bc21",
         "ENERGY_YELLOW": "#f8de4c",
-        "LINK_WATER": "#dfebf5",
+        "LINK_WATER": "#3b434a",
         "GOLDEN_DREAM": "#efd035",     
-        "BLUE_BAYOUX": "#516475",   
+        "BLUE_BAYOUX": "#a8a8a8",   
         "BOMBAY": "#afb1b8",
         "SLATE_GRAY": "#6c7a90",
         "MINE_SHAFT": "#212121",
-        "SILVER_CHALICE": "#9e9e9e",
+        
         "RIVER_BAD": "#444e55",
-        "Silver": "bababa",
+        "SILVER": "bababa",
+
+    
+        "BRIGHT_GRAY": "#3b434a",
+        "SILVER_CHALICE": "#9e9e9e",
+
     },
 )

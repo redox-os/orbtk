@@ -2,15 +2,20 @@ Theme (
     styles: {
         "base": (
             properties: {
-                "background": "$BRIGHT_GRAY",
                 "font_size": "$FONT_SIZE_16",
                 "font_family": "$MEDIUM_FONT",
                 "icon_size": "$ICON_SIZE_16",
                 "icon_family": "$ICON_FONT",
             },
         ),
+        "window": (
+             properties: {
+                "background": "$ALABASTER",
+             },
+        ),
         "body": (
             properties: {
+                "foreground": "$BRIGHT_GRAY",
                 "font_size": "$FONT_SIZE_16",
                 "font_family": "$MEDIUM_FONT",
             },
@@ -25,17 +30,17 @@ Theme (
             base: "base",
             properties: {
                 "height": 36,
-                "foreground": "$LINK_WATER",
-                "icon_brush": "$LINK_WATER",
-                "background": "$LYNCH",
+                "foreground": "$BRIGHT_GRAY",
+                "icon_brush": "$BRIGHT_GRAY",
+                "background": "$ALTO",
                 "border_radius": 4,
             }, 
             states: {
                 "pressed": {
-                    "background": "$BLUE_BAYOUX",
+                    "background": "$SILVER_CHALICE",
                 },
                 "selected": {
-                    "background": "$BLUE_BAYOUX",
+                    "background": "$SILVER_CHALICE",
                 },
                 "disabled": {
                     "background": "$ROLLING_STONE",
@@ -48,14 +53,12 @@ Theme (
             base: "button",
             properties: {
                 "background": "$GOLDEN_DREAM",
-                "foreground": "$BRIGHT_GRAY",
-                "icon_brush": "$BRIGHT_GRAY",
             },
         ),
         "button_small": (
             properties: {
                 "border_radius": 0,
-                "icon_brush": "$LINK_WATER",
+                "icon_brush": "$BRIGHT_GRAY",
                 "font_size": "$ICON_SIZE_12",
                 "background": "transparent",
                 "height": 14,
@@ -64,7 +67,7 @@ Theme (
             },
             states: {
                 "pressed": {
-                    "background": "$BLUE_BAYOUX",
+                    "background": "$SILVER_CHALICE",
                 },
             },
         ),
@@ -87,7 +90,7 @@ Theme (
                 "background": "transparent",
                 "border_radius": 2,
                 "border_width": 1,
-                "border_brush": "$BOMBAY",
+                "border_brush": "$SILVER_CHALICE",
                 "icon_brush": "transparent",
             },
             states: {
@@ -114,7 +117,7 @@ Theme (
             properties: {
                 "height": 14,
                 "border_radius": 7,
-                "background": "$SLATE_GRAY",
+                "background": "$BRIGHT_GRAY",
             }
         ),
         "switch_toggle": (
@@ -141,7 +144,7 @@ Theme (
             properties: {
                 "foreground": "$LINK_WATER",
                 "background": "$BRIGHT_GRAY",
-                "border_brush": "$LYNCH",
+                "border_brush": "$SILVER_CHALICE",
                 "border_width": 1,
                 "border_radius": 3,
                 "padding": 6,
@@ -181,22 +184,22 @@ Theme (
             properties: {
                 "height": 32,
                 "foreground": "$PERIWINKLE_GRAY",
-                "background": "$BRIGHT_GRAY",
-                "border_brush": "$LYNCH",
+                "background": "$ALABASTER",
+                "border_brush": "$SILVER_CHALICE",
                 "border_width": 1,
                 "border_radius": 3,
                 "padding": 6,
             },
             states: {
                 "focused": {
-                    "border_brush": "$GOLDEN_DREAM",
+                    "border_brush": "$GOLD_TIPS",
                 },
                 "empty": {
-                    "foreground": "$SILVER_CHALICE",
+                    "foreground": "#GOLDEN_DREAM",
                 },
                 "empty_focused": {
-                    "foreground": "$SILVER_CHALICE",
-                    "border_brush": "$GOLDEN_DREAM",
+                    "foreground": "$GOLDEN_DREAM",
+                    "border_brush": "$GOLD_TIPS",
                 }
             },
         ),
@@ -207,11 +210,11 @@ Theme (
             },
             states: {
                 "focused": {
-                    "background": "$ENERGY_YELLOW",
+                    "background": "$GOLD_TIPS",
                 },
                 "expanded": {
                     "opacity": 0.3,
-                    "background": "$ENERGY_YELLOW",
+                    "background": "$GOLD_TIPS",
                 },
             },
         ),
@@ -219,7 +222,7 @@ Theme (
             properties: {
                 "height": 24,
                 "border_radius": 2,
-                "background": "$MINE_SHAFT",
+                "background": "$SILVER_CHALICE",
             }
         ),
         "thumb": (
@@ -238,7 +241,7 @@ Theme (
         "items_widget": (
             properties: {
                 "background": "transparent",
-                "border_brush": "#647b91",
+                "border_brush": "$SILVER_CHALICE",
                 "border_width": 1,
                 "border_radius": 2,
                 "padding": 4,
@@ -248,8 +251,8 @@ Theme (
             base: "base",
             properties: {
                 "foreground": "$LINK_WATER",
-                "background": "$BRIGHT_GRAY",
-                "border_brush": "$LYNCH",
+                "background": "$ALABASTER",
+                "border_brush": "$SILVER_CHALICE",
                 "border_width": 1,
                 "border_radius": 3,
                 "padding": 6,
@@ -262,7 +265,7 @@ Theme (
         ),
         "popup": ( 
             properties: {
-                "background": "$RIVER_BAD",
+                "background": "$WHITE",
                 "border_brush": "$LYNCH",
                 "border_width": 1,
                 "border_radius": 2,
@@ -298,7 +301,7 @@ Theme (
             properties: {
                 "foreground": "$LINK_WATER",
                 "background": "transparent",
-                "border_brush": "$LYNCH",
+                "border_brush": "$SILVER_CHALICE",
                 "border_width": 1,
                 "border_radius": 3,
             },
@@ -324,8 +327,8 @@ Theme (
         ),
         "progress_bar": (
              properties: {
-                "background": "$MINE_SHAFT",
-                "border_color": "$SILVER",
+                "background": "$WHITE",
+                "border_color": "$SILVER_CHALICE",
                 "border_radius": 4,
                 "border_width": 1,
                 "height": 16,

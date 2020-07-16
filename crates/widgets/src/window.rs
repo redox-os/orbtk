@@ -213,6 +213,10 @@ impl Template for Window {
             })
     }
 
+    fn render_object(&self) -> Box<dyn RenderObject> {
+        Box::new(RectangleRenderObject)
+    }
+
     fn layout(&self) -> Box<dyn Layout> {
         Box::new(GridLayout::new())
     }

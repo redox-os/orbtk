@@ -188,9 +188,11 @@ impl Template for MainView {
                 Grid::new()
                     .margin(8)
                     .columns(Columns::new().add(132).add(16).add(132).add(16).add(132))
+                    .rows(Rows::new().add("*").add(32))
                     .child(
                         Stack::new()
                             .attach(Grid::column(0))
+                            .attach(Grid::row(0))
                             // Column 0
                             .child(create_header(ctx, "Buttons"))
                             .child(
@@ -236,9 +238,6 @@ impl Template for MainView {
                             )
                             .child(
                                 Switch::new()
-                                    .on_changed(move |states, entity| {
-                                        state(id, states).action(Action::ToggleTheme(entity));
-                                    })
                                     .margin((0, 8, 0, 0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(5))
@@ -256,6 +255,7 @@ impl Template for MainView {
                     .child(
                         Stack::new()
                             .attach(Grid::column(2))
+                            .attach(Grid::row(0))
                             .child(create_header(ctx, "Text"))
                             .child(
                                 TextBlock::new()
@@ -332,6 +332,7 @@ impl Template for MainView {
                             )
                             .columns(Columns::new().add("*").add(4).add("*"))
                             .attach(Grid::column(4))
+                            .attach(Grid::row(0))
                             .child(
                                 TextBlock::new()
                                     .text("Items")
@@ -433,13 +434,35 @@ impl Template for MainView {
                             .child(
                                 // todo: wrong text width????
                                 TextBlock::new()
-                                    .style("text-tleck-block")
+                                    .style("body")
                                     .id("selection")
                                     .max_width(120)
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(6))
                                     .text("Selected:")
+                                    .build(ctx),
+                            )
+                            .build(ctx),
+                    )
+                    .child(
+                        Stack::new()
+                            .orientation("horizontal")
+                            .attach(Grid::row(1))
+                            .attach(Grid::column(0))
+                            .child(
+                                TextBlock::new()
+                                    .text("Toggle theme: ")
+                                    .v_align("center")
+                                    .margin((0, 0, 4, 0))
+                                    .build(ctx),
+                            )
+                            .child(
+                                Switch::new()
+                                    .on_changed(move |states, entity| {
+                                        state(id, states).action(Action::ToggleTheme(entity));
+                                    })
+                                    .v_align("center")
                                     .build(ctx),
                             )
                             .build(ctx),

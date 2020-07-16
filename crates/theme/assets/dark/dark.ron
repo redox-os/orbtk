@@ -2,15 +2,20 @@ Theme (
     styles: {
         "base": (
             properties: {
-                "background": "$BRIGHT_GRAY",
                 "font_size": "$FONT_SIZE_16",
                 "font_family": "$MEDIUM_FONT",
                 "icon_size": "$ICON_SIZE_16",
                 "icon_family": "$ICON_FONT",
             },
         ),
+        "window": (
+             properties: {
+                "background": "$BRIGHT_GRAY",
+             },
+        ),
         "body": (
             properties: {
+                "foreground": "$LINK_WATER",
                 "font_size": "$FONT_SIZE_16",
                 "font_family": "$MEDIUM_FONT",
             },

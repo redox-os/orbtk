@@ -1,6 +1,6 @@
 use orbtk::{
     prelude::*,
-    theme::{DARK_COLORS_RON, DARK_THEME_RON, DEFAULT_FONTS_RON},
+    theme::{COLORS_RON, DARK_THEME_RON, FONTS_RON},
     theming::config::ThemeConfig,
 };
 
@@ -10,8 +10,8 @@ fn theme() -> Theme {
     Theme::from_config(
         ThemeConfig::from(DARK_THEME_RON)
             .extend(ThemeConfig::from(DARK_EXT))
-            .extend(ThemeConfig::from(DARK_COLORS_RON))
-            .extend(ThemeConfig::from(DEFAULT_FONTS_RON)),
+            .extend(ThemeConfig::from(COLORS_RON))
+            .extend(ThemeConfig::from(FONTS_RON)),
     )
 }
 

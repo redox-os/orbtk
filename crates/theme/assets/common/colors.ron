@@ -15,6 +15,9 @@ Theme (
         "MINE_SHAFT": "#212121",
         "SILVER_CHALICE": "#9e9e9e",
         "RIVER_BAD": "#444e55",
-        "Silver": "bababa",
+        "SILVER": "#bababa",
+        "GOLD_TIPS": "#ebbf13",
+        "ALABASTER": "#fafafa",
+        "ALTO": "#dadada",
     },
 )
