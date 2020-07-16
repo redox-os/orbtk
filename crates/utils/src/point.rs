@@ -3,8 +3,8 @@ use core::ops::{Add, Sub};
 // todo: documentation
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct Point {
-    pub x: f64,
-    pub y: f64,
+    x: f64,
+    y: f64,
 }
 
 impl Point {
@@ -15,6 +15,22 @@ impl Point {
     /// Returns the distance between this `Point` and the given `Point`.
     pub fn distance(&self, other: Self) -> f64 {
         ((self.x - other.x).powf(2.) + (self.y - other.y).powf(2.)).sqrt()
+    }
+
+    pub fn x(&self) -> f64 {
+        self.x
+    }
+
+    pub fn y(&self) -> f64 {
+        self.y
+    }
+
+    pub fn set_x(&mut self, x: f64) {
+        self.x = x;
+    }
+
+    pub fn set_y(&mut self, y: f64) {
+        self.y = y;
     }
 }
 

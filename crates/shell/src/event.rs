@@ -2,6 +2,8 @@
 
 use std::char;
 
+use orbtk_utils::Point;
+
 /// Represents a keyboard key.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum Key {
@@ -389,9 +391,7 @@ pub enum ButtonState {
 /// Represents a mouse event.
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub struct MouseEvent {
-    pub x: f64,
-
-    pub y: f64,
+    pub position: Point,
 
     pub button: MouseButton,
 

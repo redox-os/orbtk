@@ -28,10 +28,10 @@ impl State for PopupState {
 
             ctx.widget()
                 .get_mut::<Rectangle>("bounds")
-                .set_x(target_position.x + target_bounds.x());
+                .set_x(target_position.x() + target_bounds.x());
             ctx.widget()
                 .get_mut::<Rectangle>("bounds")
-                .set_y(1.0 + target_position.y + target_bounds.y() + target_bounds.height());
+                .set_y(1.0 + target_position.y() + target_bounds.y() + target_bounds.height());
         }
     }
 }
