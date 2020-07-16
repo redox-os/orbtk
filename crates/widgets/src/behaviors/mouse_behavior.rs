@@ -29,9 +29,12 @@ impl State for MouseBehaviorState {
         }
 
         if let Some(action) = self.action {
+            let target: Entity = (*mouse_behavior(ctx.widget()).target()).into();
+
             match action {
                 Action::Press(_) => {
                     mouse_behavior(ctx.widget()).set_pressed(true);
+                    toggle_flag("pressed", &mut ctx.get_widget(target));
                 }
                 Action::Release(p) => {
                     if !*mouse_behavior(ctx.widget()).pressed() {
@@ -40,6 +43,7 @@ impl State for MouseBehaviorState {
                     }
 
                     mouse_behavior(ctx.widget()).set_pressed(false);
+                    toggle_flag("pressed", &mut ctx.get_widget(target));
 
                     if check_mouse_condition(p.position, &ctx.widget()) {
                         let parent = ctx.entity_of_parent().unwrap();
@@ -57,8 +61,7 @@ impl State for MouseBehaviorState {
                 }
             };
 
-            let target: Entity = (*mouse_behavior(ctx.widget()).target()).into();
-            ctx.get_widget(target).update_theme_by_state(false);
+            ctx.get_widget(target).update(false);
 
             self.action = None;
         }

@@ -2,9 +2,7 @@
 
 use std::{any::Any, collections::BTreeMap};
 
-use crate::{
-    application::ContextProvider, css_engine::*, prelude::*, render::RenderContext2D, utils::*,
-};
+use crate::{application::ContextProvider, prelude::*, render::RenderContext2D, utils::*};
 
 pub use self::default::*;
 pub use self::font_icon::*;
@@ -27,7 +25,7 @@ pub trait RenderObject: Any {
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         context_provider: &ContextProvider,
-        theme: &ThemeValue,
+        theme: &Theme,
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,
     ) {
@@ -114,10 +112,8 @@ pub trait RenderObject: Any {
         // render debug border for each widget
         if debug {
             if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
-                let selector = Selector::from("debug-border");
-                let brush = theme.brush("border-color", &selector).unwrap();
                 render_context.begin_path();
-                render_context.set_stroke_style(brush);
+                render_context.set_stroke_style(Brush::from("#0033cc"));
                 render_context.stroke_rect(
                     global_position.x() + bounds.x(),
                     global_position.y() + bounds.y(),
@@ -137,7 +133,7 @@ pub trait RenderObject: Any {
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         context_provider: &ContextProvider,
-        theme: &ThemeValue,
+        theme: &Theme,
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,
     ) {

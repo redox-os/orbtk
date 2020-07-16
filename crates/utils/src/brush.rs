@@ -63,6 +63,13 @@ impl From<String> for Brush {
     }
 }
 
+impl From<Value> for Brush {
+    fn from(v: Value) -> Self {
+        let value = v.get::<String>();
+        return Brush::from(value);
+    }
+}
+
 // impl From<Vec<LinearGradientStop>> for Brush {
 //     fn from(gradient: Vec<LinearGradientStop>) -> Brush {
 //         Brush::LinearGradient(gradient)

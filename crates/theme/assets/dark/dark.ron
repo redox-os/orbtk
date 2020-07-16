@@ -1,0 +1,340 @@
+Theme (
+    styles: {
+        "base": (
+            properties: {
+                "font_size": "$FONT_SIZE_16",
+                "font_family": "$MEDIUM_FONT",
+                "icon_size": "$ICON_SIZE_16",
+                "icon_family": "$ICON_FONT",
+            },
+        ),
+        "window": (
+             properties: {
+                "background": "$BRIGHT_GRAY",
+             },
+        ),
+        "body": (
+            properties: {
+                "foreground": "$LINK_WATER",
+                "font_size": "$FONT_SIZE_16",
+                "font_family": "$MEDIUM_FONT",
+            },
+        ),
+        "header": (
+            base: "body",
+            properties: {
+                "font_size": "$FONT_SIZE_24",
+            }
+        ),
+        "button": ( 
+            base: "base",
+            properties: {
+                "height": 36,
+                "foreground": "$LINK_WATER",
+                "icon_brush": "$LINK_WATER",
+                "background": "$LYNCH",
+                "border_radius": 4,
+            }, 
+            states: {
+                "pressed": {
+                    "background": "$BLUE_BAYOUX",
+                },
+                "selected": {
+                    "background": "$BLUE_BAYOUX",
+                },
+                "disabled": {
+                    "background": "$ROLLING_STONE",
+                    "foreground": "$BRIGHT_GRAY",
+                    "icon_brush": "$BRIGHT_GRAY",
+                },
+            },
+        ),
+        "button_primary": (
+            base: "button",
+            properties: {
+                "background": "$GOLDEN_DREAM",
+                "foreground": "$BRIGHT_GRAY",
+                "icon_brush": "$BRIGHT_GRAY",
+            },
+        ),
+        "button_small": (
+            properties: {
+                "border_radius": 0,
+                "icon_brush": "$LINK_WATER",
+                "font_size": "$ICON_SIZE_12",
+                "background": "transparent",
+                "height": 14,
+                "spacing": 0,
+                "padding": 0,
+            },
+            states: {
+                "pressed": {
+                    "background": "$BLUE_BAYOUX",
+                },
+            },
+        ),
+        "button_square": ( 
+            base: "button",
+            properties: {
+                "border_radius": 1,
+            }, 
+        ),
+        "button_single_content": (
+            base: "button",
+            properties: {
+                "spacing": 0,
+            },
+        ),
+        "check_box": (
+            base: "base",
+            properties: {
+                "icon_size": "$ICON_SIZE_18",
+                "background": "transparent",
+                "border_radius": 2,
+                "border_width": 1,
+                "border_brush": "$BOMBAY",
+                "icon_brush": "transparent",
+            },
+            states: {
+                "selected": {
+                    "background": "$GOLDEN_DREAM",
+                    "border_brush": "$GOLDEN_DREAM",
+                    "icon_brush": "$BRIGHT_GRAY",
+                },
+            },
+        ),
+        "grid": (
+            base: "base",
+            properties: {
+                "background": "transparent",
+            },
+        ),
+        "switch": (
+            properties: {
+                "width": 36,
+                "height": 32,
+            },
+        ),
+        "switch_track": (
+            properties: {
+                "height": 14,
+                "border_radius": 7,
+                "background": "$SLATE_GRAY",
+            }
+        ),
+        "switch_toggle": (
+            properties: {
+                "width": 20,
+                "height": 20,
+                "border_radius": 10,
+                "background": "$WHITE",
+            },
+            states: {
+                "selected": {
+                    "background": "$GOLDEN_DREAM",
+                },
+            },
+        ),
+        "container": (
+            base: "base",
+            properties: {
+                "padding": 4,
+            },
+        ),
+        "text_block_header": (
+            base: "base",
+            properties: {
+                "font_size": "$FONT_SIZE_24",
+            },
+        ),
+        "text_box": (
+            base: "base",
+            properties: {
+                "height": 32,
+                "foreground": "$PERIWINKLE_GRAY",
+                "background": "$BRIGHT_GRAY",
+                "border_brush": "$LYNCH",
+                "border_width": 1,
+                "border_radius": 3,
+                "padding": 6,
+            },
+            states: {
+                "focused": {
+                    "border_brush": "$GOLDEN_DREAM",
+                },
+                "empty": {
+                    "foreground": "$SILVER_CHALICE",
+                },
+                "empty_focused": {
+                    "foreground": "$SILVER_CHALICE",
+                    "border_brush": "$GOLDEN_DREAM",
+                }
+            },
+        ),
+        "numeric_box": (
+            base: "base",
+            properties: {
+                "height": 32,
+                "foreground": "$PERIWINKLE_GRAY",
+                "background": "$BRIGHT_GRAY",
+                "border_brush": "$LYNCH",
+                "border_width": 1,
+                "border_radius": 3,
+                "padding": 6,
+            },
+            states: {
+                "focused": {
+                    "border_brush": "$GOLDEN_DREAM",
+                }
+            },
+        ),
+        "cursor": (
+            properties: {
+                "opacity": 1,
+                "background": "transparent",
+            },
+            states: {
+                "focused": {
+                    "background": "$ENERGY_YELLOW",
+                },
+                "expanded": {
+                    "opacity": 0.3,
+                    "background": "$ENERGY_YELLOW",
+                },
+            },
+        ),
+        "slider": (
+            properties: {
+                "height": 24,
+                "border_radius": 2,
+                "background": "$MINE_SHAFT",
+            }
+        ),
+        "thumb": (
+            properties: {
+                "max_width": 24,
+                "max_height": 24,
+                "border_radius": 12,
+                "background": "$LYNCH",
+            },
+            states: {
+                "pressed": {
+                    "background": "$GOLDEN_DREAM",
+                },
+            },
+        ),
+        "items_widget": (
+            properties: {
+                "background": "transparent",
+                "border_brush": "#647b91",
+                "border_width": 1,
+                "border_radius": 2,
+                "padding": 4,
+            }
+        ),
+        "small_text": (
+            base: "body",
+             properties: {
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "$PERIWINKLE_GRAY",
+            },
+        ),
+        "combo_box": (
+            base: "base",
+            properties: {
+                "foreground": "$LINK_WATER",
+                "icon_brush": "$LINK_WATER",
+                "background": "$BRIGHT_GRAY",
+                "border_brush": "$LYNCH",
+                "border_width": 1,
+                "border_radius": 3,
+                "padding": 6,
+            },
+            states: {
+                "selected": {
+                    "border_brush": "$ENERGY_YELLOW",
+                },
+            },
+        ),
+        "popup": ( 
+            properties: {
+                "background": "$RIVER_BAD",
+                "border_brush": "$LYNCH",
+                "border_width": 1,
+                "border_radius": 2,
+            },
+        ),
+        "combo_box_item": (
+            properties: {
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "$PERIWINKLE_GRAY",
+                "background": "transparent",
+                "padding_left": 8,
+                "padding_right": 8,
+            },
+            states: {
+                "selected": {
+                    "foreground": "$BRIGHT_GRAY",
+                    "background": "$SUNFLOWER",
+                },
+                "pressed": {
+                    "foreground": "$BRIGHT_GRAY",
+                    "background": "$SUNFLOWER",
+                },
+            },
+        ),
+        "scroll_bar": (
+            properties: {
+                "background": "$LYNCH",
+                "border_radius": 2,
+            },
+        ),
+        "list_view": (
+            base: "base",
+            properties: {
+                "foreground": "$LINK_WATER",
+                "background": "transparent",
+                "border_brush": "$LYNCH",
+                "border_width": 1,
+                "border_radius": 3,
+            },
+        ),
+        "list_view_item": (
+            properties: {
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "#ccdeed",
+                "background": "transparent",
+                "padding_left": 8,
+                "padding_right": 8,
+            },
+            states: {
+                "selected": {
+                    "foreground": "$BRIGHT_GRAY",
+                    "background": "$SUNFLOWER",
+                },
+                "pressed": {
+                    "foreground": "$BRIGHT_GRAY",
+                    "background": "$SUNFLOWER",
+                },
+            },
+        ),
+        "progress_bar": (
+             properties: {
+                "background": "$MINE_SHAFT",
+                "border_color": "$SILVER",
+                "border_radius": 4,
+                "border_width": 1,
+                "height": 16,
+                "padding": 2,
+             },
+        ),
+        "progress_bar_indicator": (
+            properties: {
+                "background": "$GOLDEN_DREAM",
+                "border_radius": 1,
+                "height": 12,
+                "width": 0,
+            }
+        )
+    },
+)

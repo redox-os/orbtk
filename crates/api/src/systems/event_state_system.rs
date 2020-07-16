@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, render::RenderContext2D, tree::Tree, utils::*};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::*};
 
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
 #[derive(Constructor)]
@@ -86,8 +86,9 @@ impl EventStateSystem {
 
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Global>("global", root)
             .unwrap()
+            .theme
             .clone();
 
         // global key handling
@@ -358,8 +359,9 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
 
             let theme = ecm
                 .component_store()
-                .get::<Theme>("theme", root)
+                .get::<Global>("global", root)
                 .unwrap()
+                .theme
                 .clone();
             let mut current_node = root;
             let mut remove_widget_list: Vec<Entity> = vec![];

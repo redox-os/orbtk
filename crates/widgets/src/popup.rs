@@ -65,7 +65,7 @@ widget!(
 impl Template for Popup {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Popup")
-            .element("popup")
+            .style("popup")
             .open(false)
             .padding(0.0)
             .background("transparent")

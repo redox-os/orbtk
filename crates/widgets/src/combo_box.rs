@@ -58,11 +58,17 @@ impl State for ComboBoxItemState {
             .clone::<SelectedItem>("selected_item")
         {
             ctx.get_widget(item).set("selected", false);
-            ctx.get_widget(item).update_theme_by_state(false);
+            ctx.get_widget(item)
+                .get_mut::<Selector>("selector")
+                .clear_state();
+            ctx.get_widget(item).update(false);
         }
 
         ctx.widget().set("selected", true);
-        ctx.widget().update_theme_by_state(false);
+        ctx.widget()
+            .get_mut::<Selector>("selector")
+            .set_state("selected");
+        ctx.widget().update(false);
         ctx.get_widget(self.combo_box)
             .set("selected_index", self.index as i32);
         ctx.get_widget(self.combo_box)
@@ -143,21 +149,28 @@ impl ComboBoxItem {
 }
 
 impl Template for ComboBoxItem {
-    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ComboBoxItem")
-            .min_width(64.0)
-            .height(24.0)
+            .style("combo_box_item")
+            .min_width(64)
+            .height(24)
             .selected(false)
             .pressed(false)
-            .element("combo_box_item")
-            .padding(0.0)
+            .padding(0)
             .background("transparent")
-            .border_radius(0.0)
-            .border_width(0.0)
+            .border_radius(0)
+            .border_width(0)
             .border_brush("transparent")
             .foreground(colors::LINK_WATER_COLOR)
-            .font_size(32.0)
+            .font_size(32)
             .font("Roboto Regular")
+            .child(
+                MouseBehavior::new()
+                    .pressed(id)
+                    .enabled(id)
+                    .target(id.0)
+                    .build(ctx),
+            )
             .on_click(move |states, _| {
                 states.get::<ComboBoxItemState>(id).toggle_selection();
                 false
@@ -202,10 +215,11 @@ impl ComboBoxState {
 
         if !combo_box_global_bounds.contains(p) {
             ctx.widget().set("selected", false);
+            ctx.widget().get_mut::<Selector>("selector").clear_state();
             ctx.get_widget(self.popup)
                 .set("visibility", Visibility::Collapsed);
-            ctx.get_widget(self.popup).update_theme_by_state(false);
-            ctx.widget().update_theme_by_state(false);
+            ctx.get_widget(self.popup).update(false);
+            ctx.widget().update(false);
         }
     }
 }
@@ -256,7 +270,7 @@ impl State for ComboBoxState {
 
                         item
                     };
-                    ctx.get_widget(item).update_properties_by_theme();
+                    ctx.get_widget(item).update_widget(entity, false);
                 }
             }
 
@@ -327,7 +341,19 @@ widget!(
         pressed: bool,
 
         /// Sets or shares the flag if the drop down is open.
-        selected: bool
+        selected: bool,
+
+        /// Sets or shares the icon property.
+        icon: String,
+
+        /// Sets or shares the icon brush property.
+        icon_brush: Brush,
+
+        /// Sets or share the icon font size property.
+        icon_size: f64,
+
+        /// Sets or shares the icon font property.
+        icon_font: String
     }
 );
 
@@ -361,7 +387,10 @@ impl Template for ComboBox {
                         FontIconBlock::new()
                             .attach(Grid::column(2))
                             .v_align("center")
-                            .icon(material_icons_font::MD_ARROW_DROP_DOWN)
+                            .icon_brush(id)
+                            .icon_size(id)
+                            .icon_font(id)
+                            .icon(id)
                             .build(ctx),
                     )
                     .build(ctx),
@@ -400,7 +429,11 @@ impl Template for ComboBox {
         let _ = ctx.append_child_to_overlay(popup);
 
         self.name("ComboBox")
-            .element("combo_box")
+            .style("combo_box")
+            .icon(material_icons_font::MD_ARROW_DROP_DOWN)
+            .icon_font("Material Icons")
+            .icon_size(fonts::ICON_FONT_SIZE_12)
+            .icon_brush(colors::LINK_WATER_COLOR)
             .height(32.0)
             .min_width(80.0)
             .selected(false)

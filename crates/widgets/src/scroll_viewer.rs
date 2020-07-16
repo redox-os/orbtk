@@ -48,7 +48,7 @@ widget!(
 impl Template for ScrollViewer {
     fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("ScrollViewer")
-            .element("scroll-viewer")
+            .style("scroll-viewer")
             .scroll_offset(0.0)
             .delta(0.0)
             .clip(true)

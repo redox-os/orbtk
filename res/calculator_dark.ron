@@ -1,0 +1,42 @@
+Theme (
+    styles: {
+        "header_area": (
+            properties: {
+                "background": "$RIVER_BAD",
+            },
+        ),
+        "content_area": (
+            properties: {
+                "background": "$BRIGHT_GRAY",
+            },
+        ),
+        "calculator_button": (
+            base: "button",
+            properties: {
+                "border_radius": 1,
+                "font_size": "$FONT_SIZE_20",
+                "spacing": 0,
+            },
+        ),
+        "calculator_button_primary": (
+            base: "calculator_button",
+            properties: {
+                "background": "$GOLDEN_DREAM",
+                "foreground": "$BRIGHT_GRAY",
+                "icon_brush": "$BRIGHT_GRAY",
+            },
+        ),
+        "input": (
+            base: "header",
+            properties: {
+                "font_size": "$FONT_SIZE_16"
+            },
+        ),
+        "result": (
+            base: "header",
+            properties: {
+                "font_size": "$FONT_SIZE_32"
+            }
+        ),
+    },
+)

@@ -162,6 +162,50 @@ widget!(
 
 The [Context parameter](https://github.com/redox-os/orbtk/blob/develop/crates/api/src/widget/context.rs) of the update method provides access to the state's widget (entity) and its properties (components). It also provides functions to access the children of the widget, and to manipulate the widget tree.
 
+### Styling widgets and define themes
+
+OrbTk provides a theme engine base on [RON](https://github.com/ron-rs/ron). The engine provides the following features:
+
+* Split theme in different files
+* Outsource resources like colors and font stuff
+* Derive styles
+* Dynamic theme switch
+* State styling (pressed | selected | focused | disabled)
+
+Short example: 
+```ron
+Theme (
+    styles: {
+        "base": (
+            properties: {
+                "font_size": "$FONT_SIZE_12",
+                "font_family": "$MEDIUM_FONT",
+            }
+        ),
+        "button": (
+            base: "base",
+            properties: {
+                "background": "$BLACK",
+            },
+            states: {
+                "pressed": {
+                    "background": "$WHITE",
+                }
+            }
+        )
+    }
+    resource: {
+        "BLACK": "#000000",
+        "WHITE": "#ffffff",
+        "MEDIUM_FONT": "Roboto Medium",
+        "FONT_SIZE_12": 12,
+        "FONT_SIZE_16": 16,
+    }
+)
+```
+
+OrbTk will also provide a plain mechanism to style and theme widgets and UIs. 
+
 ## Run Examples
 
 You can find examples in the `examples/` directory.
@@ -223,11 +267,10 @@ cargo doc --no-deps --open
 ## Sub Crates
 
 * [api](https://github.com/redox-os/orbtk/tree/develop/crates/api): base api elements of OrbTk e.g. widget and application parts
-* [css-engine](https://github.com/redox-os/orbtk/tree/develop/crates/css-engine): parse and read values from a css file
 * [proc-macros](https://github.com/redox-os/orbtk/tree/develop/crates/proc-macros): procedural helper macros
 * [render](https://github.com/redox-os/orbtk/tree/develop/crates/render): cross platform 2D/3D render library
 * [shell](https://github.com/redox-os/orbtk/tree/develop/crates/api): cross platform window and event handling
-* [theme](https://github.com/redox-os/orbtk/tree/develop/crates/theme): OrbTks default theme (light and dark)
+* [theming](https://github.com/redox-os/orbtk/tree/develop/crates/theme): provide mechanism to style OrbTk UI's in rust and ron (replaces css-engine)
 * [tree](https://github.com/redox-os/orbtk/tree/develop/crates/tree): tree structure based on DCES
 * [utils](https://github.com/redox-os/orbtk/tree/develop/crates/utils): helper structs and traits
 * [widgets](https://github.com/redox-os/orbtk/tree/develop/crates/widgets): base widget library

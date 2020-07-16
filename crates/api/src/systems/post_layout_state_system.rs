@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, render::RenderContext2D, tree::Tree};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree};
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 #[derive(Constructor)]
@@ -63,9 +63,11 @@ impl System<Tree, StringComponentStore, RenderContext2D> for PostLayoutStateSyst
 
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Global>("global", root)
             .unwrap()
+            .theme
             .clone();
+
         let mut remove_widget_list: Vec<Entity> = vec![];
 
         {

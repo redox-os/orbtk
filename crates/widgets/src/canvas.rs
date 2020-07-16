@@ -10,7 +10,7 @@ widget!(
 
 impl Template for Canvas {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
-        self.name("Canvas").element("canvas-three")
+        self.name("Canvas").style("canvas-three")
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

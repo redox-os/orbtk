@@ -19,7 +19,9 @@ impl State for BarState {
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         let val = ctx.widget().clone_or_default::<f64>("val");
-        let max_width = ctx.widget().get::<Rectangle>("bounds").width();
+        let max_width = ctx.widget().get::<Rectangle>("bounds").width()
+            - ctx.widget().get::<Thickness>("padding").left()
+            - ctx.widget().get::<Thickness>("padding").right();
         let new_width = calculate_width(val, max_width);
 
         ctx.get_widget(self.indicator)
@@ -85,15 +87,15 @@ impl Template for ProgressBar {
         self.name("ProgressBar")
             .background("#000000")
             .border_brush("#BABABA")
-            .border_radius(4.0)
-            .border_width(1.0)
-            .element("progress_bar")
-            .height(34.0)
-            .padding((2.0, 4.0, 2.0, 4.0))
+            .border_radius(4)
+            .border_width(1)
+            .style("progress_bar")
+            .height(34)
+            .padding((2, 4, 2, 4))
             .child(
                 Container::new()
                     .id(ID_INDICATOR)
-                    .element("progress_bar_indicator")
+                    .style("progress_bar_indicator")
                     .background("#EFD035")
                     .height(24.0)
                     .v_align("center")
@@ -101,7 +103,7 @@ impl Template for ProgressBar {
                     .width(0.0)
                     .build(ctx),
             )
-            .width(100.0)
+            .min_width(100.0)
             .val(0.0)
     }
 

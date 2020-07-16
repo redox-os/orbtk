@@ -74,6 +74,10 @@ impl ToString for Color {
 
 impl From<&str> for Color {
     fn from(s: &str) -> Color {
+        if s == "transparent" {
+            return Color::rgba(0, 0, 0, 0);
+        }
+
         let clean_hex = s.trim_start_matches('#');
         match clean_hex.len() {
             6 | 8 => {

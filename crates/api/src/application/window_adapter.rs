@@ -149,6 +149,7 @@ impl shell::WindowAdapter for WindowAdapter {
 /// Creates a `WindowAdapter` and a `WindowSettings` object from a window builder closure.
 pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     app_name: impl Into<String>,
+    theme: Theme,
     request_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
     create_fn: F,
 ) -> (WindowAdapter, WindowSettings, mpsc::Receiver<WindowRequest>) {
@@ -171,8 +172,6 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     };
 
     let context_provider = ContextProvider::new(sender, request_sender.clone(), app_name);
-
-    let theme = crate::theme::default_theme();
 
     let window = {
         let overlay = Overlay::new().build(&mut BuildContext::new(
@@ -259,14 +258,13 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         fonts,
     };
 
+    let mut global = Global::default();
+    global.theme = theme;
+
     world
         .entity_component_manager()
         .component_store_mut()
-        .register("global", window, Global::default());
-    world
-        .entity_component_manager()
-        .component_store_mut()
-        .register("global", window, Global::default());
+        .register("global", window, global);
     world
         .entity_component_manager()
         .component_store_mut()

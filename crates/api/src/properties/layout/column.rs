@@ -105,6 +105,12 @@ impl From<f64> for Column {
     }
 }
 
+impl From<i32> for Column {
+    fn from(t: i32) -> Self {
+        Column::new().width(ColumnWidth::Width(t.into())).build()
+    }
+}
+
 /// Used to define the width of a grid column.
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum ColumnWidth {

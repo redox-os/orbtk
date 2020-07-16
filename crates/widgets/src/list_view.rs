@@ -61,7 +61,7 @@ impl State for ListViewState {
 
                         item
                     };
-                    ctx.get_widget(item).update_properties_by_theme();
+                    ctx.get_widget(item).update_widget(entity, false);
                 }
             }
 
@@ -78,9 +78,16 @@ impl State for ListViewState {
             .symmetric_difference(&*self.selected_entities.borrow())
         {
             let mut widget = ctx.get_widget(*index);
-            widget.set("selected", !widget.get::<bool>("selected"));
+            let selected = !widget.get::<bool>("selected");
+            widget.set("selected", selected);
 
-            widget.update_theme_by_state(false);
+            if selected {
+                widget.get_mut::<Selector>("selector").set_state("selected");
+            } else {
+                widget.get_mut::<Selector>("selector").clear_state();
+            }
+
+            widget.update(false);
         }
 
         *self.selected_entities.borrow_mut() = ctx
@@ -213,11 +220,11 @@ widget!(
 impl Template for ListViewItem {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ListViewItem")
+            .style("list_view_item")
             .min_width(64.0)
             .height(24.0)
             .selected(false)
             .pressed(false)
-            .element("list-view-item")
             .padding(0.0)
             .background("transparent")
             .border_radius(0.0)
@@ -314,7 +321,7 @@ impl Template for ListView {
             .build(ctx);
 
         self.name("ListView")
-            .element("list-view")
+            .style("list_view")
             .id(LIST_VIEW)
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)

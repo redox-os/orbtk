@@ -105,6 +105,12 @@ impl From<f64> for Row {
     }
 }
 
+impl From<i32> for Row {
+    fn from(t: i32) -> Self {
+        Row::new().height(RowHeight::Height(t.into())).build()
+    }
+}
+
 /// Used to define the height of a grid row.
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum RowHeight {

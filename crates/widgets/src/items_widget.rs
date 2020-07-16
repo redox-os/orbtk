@@ -75,22 +75,21 @@ impl ItemsWidget {
 impl Template for ItemsWidget {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ItemsWidget")
-            .element("items-widget")
+            .style("items_widget")
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
             .border_width(1.0)
             .border_brush(colors::BOMBAY_COLOR)
             .padding(2.0)
             .orientation("vertical")
-            .child(
-                Container::new()
-                    .background(id)
-                    .border_radius(id)
-                    .border_width(id)
-                    .border_brush(id)
-                    .padding(id)
-                    .child(Stack::new().id("items_panel").orientation(id).build(ctx))
-                    .build(ctx),
-            )
+            .child(Stack::new().id("items_panel").orientation(id).build(ctx))
+    }
+
+    fn render_object(&self) -> Box<dyn RenderObject> {
+        Box::new(RectangleRenderObject)
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(PaddingLayout::new())
     }
 }

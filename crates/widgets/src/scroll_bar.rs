@@ -19,7 +19,7 @@ impl Template for ScrollBar {
             .width(4.0)
             .border_radius(2.0)
             .background("#647b91")
-            .element("scroll-bar")
+            .style("scroll-bar")
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

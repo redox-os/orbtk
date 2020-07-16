@@ -19,59 +19,59 @@ impl ConstraintBuilder {
     }
 
     /// Inserts a new width.
-    pub fn width(mut self, width: f64) -> Self {
-        self.width = width;
+    pub fn width(mut self, width: impl Into<f64>) -> Self {
+        self.width = width.into();
         self
     }
 
     /// Inserts a new height.
-    pub fn height(mut self, height: f64) -> Self {
-        self.height = height;
+    pub fn height(mut self, height: impl Into<f64>) -> Self {
+        self.height = height.into();
         self
     }
 
     /// Inserts a new size.
-    pub fn size(mut self, width: f64, height: f64) -> Self {
-        self.width = width;
-        self.height = height;
+    pub fn size(mut self, width: impl Into<f64>, height: impl Into<f64>) -> Self {
+        self.width = width.into();
+        self.height = height.into();
         self
     }
 
     /// Inserts a new min_width.
-    pub fn min_width(mut self, min_width: f64) -> Self {
-        self.min_width = min_width;
+    pub fn min_width(mut self, min_width: impl Into<f64>) -> Self {
+        self.min_width = min_width.into();
         self
     }
 
     /// Inserts a new min_height.
-    pub fn min_height(mut self, min_height: f64) -> Self {
-        self.min_height = min_height;
+    pub fn min_height(mut self, min_height: impl Into<f64>) -> Self {
+        self.min_height = min_height.into();
         self
     }
 
     /// Inserts a new min_size.
-    pub fn min_size(mut self, min_width: f64, min_height: f64) -> Self {
-        self.min_width = min_width;
-        self.min_height = min_height;
+    pub fn min_size(mut self, min_width: impl Into<f64>, min_height: impl Into<f64>) -> Self {
+        self.min_width = min_width.into();
+        self.min_height = min_height.into();
         self
     }
 
     /// Inserts a new max_width.
-    pub fn max_width(mut self, max_width: f64) -> Self {
-        self.max_width = max_width;
+    pub fn max_width(mut self, max_width: impl Into<f64>) -> Self {
+        self.max_width = max_width.into();
         self
     }
 
     /// Inserts a new max_height.
-    pub fn max_height(mut self, max_height: f64) -> Self {
-        self.max_height = max_height;
+    pub fn max_height(mut self, max_height: impl Into<f64>) -> Self {
+        self.max_height = max_height.into();
         self
     }
 
     /// Inserts a new min_size.
-    pub fn max_size(mut self, max_width: f64, max_height: f64) -> Self {
-        self.max_width = max_width;
-        self.max_height = max_height;
+    pub fn max_size(mut self, max_width: impl Into<f64>, max_height: impl Into<f64>) -> Self {
+        self.max_width = max_width.into();
+        self.max_height = max_height.into();
         self
     }
 

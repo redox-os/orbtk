@@ -53,22 +53,31 @@ impl WindowState {
         let focused_widget = ctx.widget().get::<Global>("global").focused_widget;
 
         if (focused_widget.is_some() && focused_widget.unwrap() == entity)
-            || !ctx.get_widget(entity).get::<bool>("enabled")
+            || !*ctx.get_widget(entity).get::<bool>("enabled")
         {
             return;
         }
 
         if let Some(old_focused_element) = ctx.window().get::<Global>("global").focused_widget {
             let mut old_focused_element = ctx.get_widget(old_focused_element);
+
             old_focused_element.set("focused", false);
-            old_focused_element.update_theme_by_state(false);
+            old_focused_element
+                .get_mut::<Selector>("selector")
+                .clear_state();
+            old_focused_element.update(false);
         }
 
         ctx.window().get_mut::<Global>("global").focused_widget = Some(entity);
 
         if ctx.get_widget(entity).has::<bool>("focused") {
-            ctx.get_widget(entity).set("focused", true);
-            ctx.get_widget(entity).update_theme_by_state(false);
+            let mut focused_element = ctx.get_widget(entity);
+
+            focused_element.set("focused", true);
+            focused_element
+                .get_mut::<Selector>("selector")
+                .set_state("focused");
+            focused_element.update(false);
         }
     }
 
@@ -79,7 +88,7 @@ impl WindowState {
             }
             let mut old_focused_element = ctx.get_widget(old_focused_element);
             old_focused_element.set("focused", false);
-            old_focused_element.update_theme_by_state(false);
+            old_focused_element.update(false);
         }
 
         ctx.widget().get_mut::<Global>("global").focused_widget = None;
@@ -159,10 +168,7 @@ widget!(
         borderless: bool,
 
         /// Sets or shares a value that describes if the current window is active.
-        active: bool,
-
-        /// Sets or shares the theme property.
-        theme: Theme
+        active: bool
     }
 );
 
@@ -191,9 +197,8 @@ impl Template for Window {
         self.name("Window")
             .background(colors::BRIGHT_GRAY_COLOR)
             .size(100.0, 100.0)
-            .element(ELEMENT_WINDOW)
+            .style(ELEMENT_WINDOW)
             .title("Window")
-            .theme(default_theme())
             .resizeable(false)
             .always_on_top(false)
             .on_window_event(move |ctx, event| {
@@ -206,6 +211,10 @@ impl Template for Window {
                     .push_action(Action::FocusEvent(event));
                 true
             })
+    }
+
+    fn render_object(&self) -> Box<dyn RenderObject> {
+        Box::new(RectangleRenderObject)
     }
 
     fn layout(&self) -> Box<dyn Layout> {
