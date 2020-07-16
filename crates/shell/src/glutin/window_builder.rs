@@ -181,10 +181,7 @@ where
             true,
             false,
             (0.0, 0.0),
-<<<<<<< HEAD
             scale_factor,
-=======
->>>>>>> origin/develop
         ))
     }
 }
