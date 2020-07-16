@@ -37,16 +37,16 @@ impl WindowState {
     fn active_changed(&self, active: bool, ctx: &mut Context) {
         window(ctx.widget()).set_active(active);
 
-        if !active {
-            // remove focus if the window is not active
-            if let Some(focused_widget) = ctx.window().get::<Global>("global").focused_widget {
-                ctx.window().get_mut::<Global>("global").focused_widget = None;
-                if ctx.get_widget(focused_widget).has::<bool>("focused") {
-                    ctx.get_widget(focused_widget).set("focused", false);
-                    ctx.get_widget(focused_widget).update_theme_by_state(false);
-                }
-            }
-        }
+        // if !active {
+        //     // remove focus if the window is not active
+        //     if let Some(focused_widget) = ctx.window().get::<Global>("global").focused_widget {
+        //         ctx.window().get_mut::<Global>("global").focused_widget = None;
+        //         if ctx.get_widget(focused_widget).has::<bool>("focused") {
+        //             ctx.get_widget(focused_widget).set("focused", false);
+        //             ctx.get_widget(focused_widget).update_theme_by_state(false);
+        //         }
+        //     }
+        // }
     }
 
     fn request_focus(&self, entity: Entity, ctx: &mut Context) {
@@ -64,7 +64,7 @@ impl WindowState {
             old_focused_element.update_theme_by_state(false);
         }
 
-        ctx.widget().get_mut::<Global>("global").focused_widget = Some(entity);
+        ctx.window().get_mut::<Global>("global").focused_widget = Some(entity);
 
         if ctx.get_widget(entity).has::<bool>("focused") {
             ctx.get_widget(entity).set("focused", true);
