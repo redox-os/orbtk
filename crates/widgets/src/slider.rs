@@ -192,6 +192,7 @@ impl Template for Slider {
             .border_radius(2.0)
             .child(
                 Grid::new()
+                    .margin((8, 0))
                     .id(ID_TRACK)
                     .child(
                         Container::new()

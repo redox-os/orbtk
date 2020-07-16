@@ -86,6 +86,7 @@ Theme (
         "check_box": (
             base: "base",
             properties: {
+                "foreground": "$BRIGHT_GRAY",
                 "icon_size": "$ICON_SIZE_18",
                 "background": "transparent",
                 "border_radius": 2,
@@ -117,7 +118,7 @@ Theme (
             properties: {
                 "height": 14,
                 "border_radius": 7,
-                "background": "$BRIGHT_GRAY",
+                "background": "$SILVER_CHALICE",
             }
         ),
         "switch_toggle": (
@@ -125,7 +126,7 @@ Theme (
                 "width": 20,
                 "height": 20,
                 "border_radius": 10,
-                "background": "$WHITE",
+                "background": "$ALTO",
             },
             states: {
                 "selected": {
@@ -159,7 +160,7 @@ Theme (
             base: "base",
             properties: {
                 "font_size": "$FONT_SIZE_12",
-                "foreground": "$PERIWINDLE_GRAY",
+                "foreground": "$PERIWINKLE_GRAY",
                 "background": "transparent",
                 "padding": {
                     "left": 8,
@@ -183,7 +184,7 @@ Theme (
             base: "base",
             properties: {
                 "height": 32,
-                "foreground": "$PERIWINKLE_GRAY",
+                "foreground": "$WHITE",
                 "background": "$ALABASTER",
                 "border_brush": "$SILVER_CHALICE",
                 "border_width": 1,
@@ -192,14 +193,14 @@ Theme (
             },
             states: {
                 "focused": {
-                    "border_brush": "$GOLD_TIPS",
+                    "border_brush": "$SUNFLOWER",
                 },
                 "empty": {
-                    "foreground": "#GOLDEN_DREAM",
+                    "foreground": "$WHITE",
                 },
                 "empty_focused": {
                     "foreground": "$GOLDEN_DREAM",
-                    "border_brush": "$GOLD_TIPS",
+                    "border_brush": "$SUNFLOWER",
                 }
             },
         ),
@@ -230,7 +231,7 @@ Theme (
                 "max_width": 24,
                 "max_height": 24,
                 "border_radius": 12,
-                "background": "$LYNCH",
+                "background": "$ALTO",
             },
             states: {
                 "pressed": {
@@ -274,7 +275,7 @@ Theme (
         "combo_box_item": (
             properties: {
                 "font_size": "$FONT_SIZE_12",
-                "foreground": "#ccdeed",
+                "foreground": "$PERIWINKLE_GRAY",
                 "background": "transparent",
                 "padding_left": 8,
                 "padding_right": 8,
@@ -292,7 +293,7 @@ Theme (
         ),
         "scroll_bar": (
             properties: {
-                "background": "$LYNCH",
+                "background": "$ALTO",
                 "border_radius": 2,
             },
         ),

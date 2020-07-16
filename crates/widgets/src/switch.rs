@@ -116,6 +116,7 @@ impl Template for Switch {
                             .child(
                                 Container::new()
                                     .style(SWITCH_TRACK)
+                                    .margin((2, 0))
                                     .v_align("center")
                                     .build(ctx),
                             )

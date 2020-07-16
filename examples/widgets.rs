@@ -477,6 +477,7 @@ fn main() {
     orbtk::initialize();
 
     Application::new()
+        .theme(light_theme())
         .window(|ctx| {
             Window::new()
                 .title("OrbTk - widgets example")

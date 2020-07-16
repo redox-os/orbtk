@@ -210,12 +210,11 @@ impl Template for NumericBox {
             .focused(false)
             .height(32.0)
             .lost_focus_on_activation(true)
-            .margin(4.0)
             .min(0.0)
             .max(200.0)
             .step(1.0)
             .val(0.0)
-            .width(128.0)
+            .min_width(128.0)
             .child(
                 MouseBehavior::new()
                     .on_mouse_down(move |states, _| {
