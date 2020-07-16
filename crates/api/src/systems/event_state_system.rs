@@ -86,8 +86,9 @@ impl EventStateSystem {
 
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Global>("global", root)
             .unwrap()
+            .theme
             .clone();
 
         // global key handling
@@ -358,8 +359,9 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
 
             let theme = ecm
                 .component_store()
-                .get::<Theme>("theme", root)
+                .get::<Global>("global", root)
                 .unwrap()
+                .theme
                 .clone();
             let mut current_node = root;
             let mut remove_widget_list: Vec<Entity> = vec![];

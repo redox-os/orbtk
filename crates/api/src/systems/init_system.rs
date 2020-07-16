@@ -53,8 +53,9 @@ impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
         // init css ids
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Global>("global", root)
             .unwrap()
+            .theme
             .clone();
 
         let mut current_node = root;

@@ -53,7 +53,7 @@ impl WindowState {
         let focused_widget = ctx.widget().get::<Global>("global").focused_widget;
 
         if (focused_widget.is_some() && focused_widget.unwrap() == entity)
-            || !ctx.get_widget(entity).get::<bool>("enabled")
+            || !*ctx.get_widget(entity).get::<bool>("enabled")
         {
             return;
         }
@@ -168,10 +168,7 @@ widget!(
         borderless: bool,
 
         /// Sets or shares a value that describes if the current window is active.
-        active: bool,
-
-        /// Sets or shares the theme property.
-        theme: Theme
+        active: bool
     }
 );
 
@@ -202,7 +199,6 @@ impl Template for Window {
             .size(100.0, 100.0)
             .style(ELEMENT_WINDOW)
             .title("Window")
-            .theme(dark_theme())
             .resizeable(false)
             .always_on_top(false)
             .on_window_event(move |ctx, event| {

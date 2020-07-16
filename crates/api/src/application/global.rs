@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use dces::prelude::Entity;
 
-use crate::shell::Key;
+use crate::{shell::Key, theming::Theme};
 
 #[derive(Default, Clone)]
 /// The `Global` struct is used to define global `properties` that could be access application width.
@@ -15,6 +15,9 @@ pub struct Global {
 
     /// Stores the state of the keyboard
     pub keyboard_state: KeyboardState,
+
+    /// The current window theme
+    pub theme: Theme,
 }
 
 #[derive(Clone, Default)]

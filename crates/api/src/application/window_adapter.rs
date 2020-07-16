@@ -259,14 +259,13 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         fonts,
     };
 
+    let mut global = Global::default();
+    global.theme = theme;
+
     world
         .entity_component_manager()
         .component_store_mut()
-        .register("global", window, Global::default());
-    world
-        .entity_component_manager()
-        .component_store_mut()
-        .register("global", window, Global::default());
+        .register("global", window, global);
     world
         .entity_component_manager()
         .component_store_mut()

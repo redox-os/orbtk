@@ -363,7 +363,9 @@ impl State for TextBoxState {
         self.focused = *ctx.widget().get::<bool>("focused");
 
         if self.len == 0 {
-            ctx.widget().get_mut::<Selector>("selector").set_state("empty");
+            ctx.widget()
+                .get_mut::<Selector>("selector")
+                .set_state("empty");
             ctx.widget().update(false);
         }
     }
@@ -392,10 +394,14 @@ impl State for TextBoxState {
         self.len = ctx.widget().get::<String16>("text").len();
 
         if self.len == 0 && self.focused {
-            ctx.widget().get_mut::<Selector>("selector").set_state("empty_focused");
+            ctx.widget()
+                .get_mut::<Selector>("selector")
+                .set_state("empty_focused");
             ctx.widget().update(false);
         } else if self.len > 0 && self.focused {
-            ctx.widget().get_mut::<Selector>("selector").set_state("focused");
+            ctx.widget()
+                .get_mut::<Selector>("selector")
+                .set_state("focused");
             ctx.widget().update(false);
         }
     }

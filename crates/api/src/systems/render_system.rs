@@ -32,8 +32,9 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
 
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Global>("global", root)
             .unwrap()
+            .theme
             .clone();
 
         let mut offsets = BTreeMap::new();
