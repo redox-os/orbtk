@@ -407,6 +407,7 @@ impl<'a> Context<'a> {
     pub fn show_window<F: Fn(&mut BuildContext) -> Entity + 'static>(&mut self, create_fn: F) {
         let (adapter, settings, receiver) = create_window(
             self.provider.application_name.clone(),
+            self.theme.clone(),
             self.provider.shell_sender.clone(),
             create_fn,
         );

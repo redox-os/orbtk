@@ -265,6 +265,7 @@ fn main() {
                 .title("OrbTk - canvas example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
+                .resizeable(true)
                 .child(MainView::new().build(ctx))
                 .build(ctx)
         })

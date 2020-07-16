@@ -150,6 +150,7 @@ impl shell::WindowAdapter for WindowAdapter {
 /// Creates a `WindowAdapter` and a `WindowSettings` object from a window builder closure.
 pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     app_name: impl Into<String>,
+    theme: Theme,
     request_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
     create_fn: F,
 ) -> (WindowAdapter, WindowSettings, mpsc::Receiver<WindowRequest>) {
@@ -172,8 +173,6 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     };
 
     let context_provider = ContextProvider::new(sender, request_sender.clone(), app_name);
-
-    let theme = crate::theme::dark_theme();
 
     let window = {
         let overlay = Overlay::new().build(&mut BuildContext::new(

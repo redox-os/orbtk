@@ -25,12 +25,19 @@ pub struct Application {
     request_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
     shell: Shell<WindowAdapter>,
     name: Box<str>,
+    theme: Theme,
 }
 
 impl Application {
     /// Creates a new application.
     pub fn new() -> Self {
         Application::from_name("orbtk_application")
+    }
+
+    /// Sets the default theme for the application. Could be changed per window.
+    pub fn theme(mut self, theme: Theme) -> Self {
+        self.theme = theme;
+        self
     }
 
     /// Create a new application with the given name.
@@ -41,13 +48,18 @@ impl Application {
             request_sender: sender,
             name: name.into(),
             shell: Shell::new(receiver),
+            theme: crate::theme::dark_theme(),
         }
     }
 
     /// Creates a new window and add it to the application.
     pub fn window<F: Fn(&mut BuildContext) -> Entity + 'static>(mut self, create_fn: F) -> Self {
-        let (adapter, settings, receiver) =
-            create_window(self.name.clone(), self.request_sender.clone(), create_fn);
+        let (adapter, settings, receiver) = create_window(
+            self.name.clone(),
+            self.theme.clone(),
+            self.request_sender.clone(),
+            create_fn,
+        );
 
         self.shell
             .create_window_from_settings(settings, adapter)

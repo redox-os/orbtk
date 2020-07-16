@@ -15,14 +15,14 @@ pub mod prelude;
 /// provides information processed by the `graphic render` (e.g. glyphs, icons).
 pub mod vector_graphics;
 
-pub const DEFAULT_THEME_RON: &str = include_str!("../assets/dark/dark.ron");
-pub const DEFAULT_COLORS_RON: &str = include_str!("../assets/dark/colors.ron");
+pub const DARK_THEME_RON: &str = include_str!("../assets/dark/dark.ron");
+pub const DARK_COLORS_RON: &str = include_str!("../assets/dark/colors.ron");
 pub const DEFAULT_FONTS_RON: &str = include_str!("../assets/dark/fonts.ron");
 
 pub fn dark_theme() -> Theme {
     Theme::from_config(
-        ThemeConfig::from(DEFAULT_THEME_RON)
-            .extend(ThemeConfig::from(DEFAULT_COLORS_RON))
+        ThemeConfig::from(DARK_THEME_RON)
+            .extend(ThemeConfig::from(DARK_COLORS_RON))
             .extend(ThemeConfig::from(DEFAULT_FONTS_RON)),
     )
 }
