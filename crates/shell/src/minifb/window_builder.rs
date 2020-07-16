@@ -41,7 +41,7 @@ where
             always_on_top: false,
             borderless: false,
             fonts: HashMap::new(),
-            bounds: Rectangle::new(0.0, 0.0, 100.0, 75.0),
+            bounds: Rectangle::new((0.0, 0.0), 100.0, 75.0),
             request_receiver: None,
         }
     }
@@ -57,8 +57,7 @@ where
             borderless: settings.borderless,
             fonts: settings.fonts,
             bounds: Rectangle::new(
-                settings.position.0,
-                settings.position.1,
+                settings.position,
                 settings.size.0,
                 settings.size.1,
             ),
@@ -121,8 +120,8 @@ where
 
         let mut window = minifb::Window::new(
             self.title.as_str(),
-            self.bounds.width as usize,
-            self.bounds.height as usize,
+            self.bounds.width() as usize,
+            self.bounds.height() as usize,
             window_options,
         )
         .unwrap_or_else(|e| {
@@ -138,9 +137,9 @@ where
             key_events: key_events.clone(),
         }));
 
-        window.set_position(self.bounds.x as isize, self.bounds.y as isize);
+        window.set_position(self.bounds.x() as isize, self.bounds.y() as isize);
 
-        let mut render_context = RenderContext2D::new(self.bounds.width, self.bounds.height);
+        let mut render_context = RenderContext2D::new(self.bounds.width(), self.bounds.height());
 
         for (family, font) in self.fonts {
             render_context.register_font(&family, font);

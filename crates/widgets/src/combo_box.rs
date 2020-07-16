@@ -14,7 +14,7 @@ type SelectedItem = Option<Entity>;
 
 #[derive(Debug, Copy, Clone)]
 enum Action {
-    CheckMouseUpOutside { x: f64, y: f64 },
+    CheckMouseUpOutside { position: Point },
 }
 
 /// The `ComboBoxItemState` handles the interaction an selection of a `ComboBoxItem`.
@@ -203,18 +203,17 @@ impl ComboBoxState {
     }
 
     // closes the popup on mouse up outside of the combobox and popup.
-    fn close_popup(&mut self, ctx: &mut Context, x: f64, y: f64) {
+    fn close_popup(&mut self, ctx: &mut Context, p: Point) {
         let combo_box_position = ctx.widget().clone::<Point>("position");
         let combo_box_bounds = ctx.widget().clone::<Rectangle>("bounds");
 
         let combo_box_global_bounds = Rectangle::new(
-            combo_box_position.x,
-            combo_box_position.y,
-            combo_box_bounds.width,
-            combo_box_bounds.height,
+            combo_box_position,
+            combo_box_bounds.width(),
+            combo_box_bounds.height(),
         );
 
-        if !combo_box_global_bounds.contains((x, y)) {
+        if !combo_box_global_bounds.contains(p) {
             ctx.widget().set("selected", false);
             ctx.widget().get_mut::<Selector>("selector").clear_state();
             ctx.get_widget(self.popup)
@@ -286,8 +285,8 @@ impl State for ComboBoxState {
 
         if let Some(action) = self.action {
             match action {
-                Action::CheckMouseUpOutside { x, y } => {
-                    self.close_popup(ctx, x, y);
+                Action::CheckMouseUpOutside { position } => {
+                    self.close_popup(ctx, position);
                 }
             }
         }
@@ -438,7 +437,9 @@ impl Template for ComboBox {
             .on_global_mouse_up(move |states, e| {
                 states
                     .get_mut::<ComboBoxState>(id)
-                    .action(Action::CheckMouseUpOutside { x: e.x, y: e.y })
+                    .action(Action::CheckMouseUpOutside {
+                        position: e.position,
+                    })
             })
     }
 }

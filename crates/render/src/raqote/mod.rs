@@ -39,7 +39,7 @@ impl RenderContext2D {
             saved_config: None,
             fonts: HashMap::new(),
             clip: false,
-            last_rect: Rectangle::new(0.0, 0.0, width, height),
+            last_rect: Rectangle::new((0.0, 0.0), width, height),
             clip_rect: None,
             background: Color::default(),
         }
@@ -202,7 +202,7 @@ impl RenderContext2D {
 
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.last_rect = Rectangle::new(x, y, width, height);
+        self.last_rect = Rectangle::new((x, y), width, height);
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.rect(x as f32, y as f32, width as f32, height as f32);
         self.path = path_builder.finish();
@@ -296,9 +296,9 @@ impl RenderContext2D {
     pub fn draw_image_with_clip(&mut self, image: &Image, clip: Rectangle, x: f64, y: f64) {
         let mut y = y as i32;
         let stride = image.width();
-        let mut offset = clip.y.mul_add(stride, clip.x) as usize;
+        let mut offset = clip.y().mul_add(stride, clip.x()) as usize;
         let last_offset = cmp::min(
-            ((clip.y + clip.height).mul_add(stride, clip.x)) as usize,
+            ((clip.y() + clip.height()).mul_add(stride, clip.x())) as usize,
             image.data().len(),
         );
         while offset < last_offset {
@@ -309,7 +309,7 @@ impl RenderContext2D {
                 y as f32,
                 &raqote::Image {
                     data: &image.data()[offset..],
-                    width: clip.width as i32,
+                    width: clip.width() as i32,
                     height: 1,
                 },
                 &raqote::DrawOptions {
@@ -497,8 +497,8 @@ fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
 
             raqote::Source::new_linear_gradient(
                 raqote::Gradient { stops: g_stops },
-                raqote::Point::new(start.x as f32, start.y as f32),
-                raqote::Point::new(end.x as f32, start.y as f32),
+                raqote::Point::new(start.x() as f32, start.y() as f32),
+                raqote::Point::new(end.x() as f32, start.y() as f32),
                 raqote::Spread::Pad,
             )
         }

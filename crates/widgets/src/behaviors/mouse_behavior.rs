@@ -45,11 +45,11 @@ impl State for MouseBehaviorState {
                     mouse_behavior(ctx.widget()).set_pressed(false);
                     toggle_flag("pressed", &mut ctx.get_widget(target));
 
-                    if check_mouse_condition(Point::new(p.x, p.y), &ctx.widget()) {
+                    if check_mouse_condition(p.position, &ctx.widget()) {
                         let parent = ctx.entity_of_parent().unwrap();
                         ctx.push_event_by_entity(
                             ClickEvent {
-                                position: Point::new(p.x, p.y),
+                                position: p.position,
                             },
                             parent,
                         )

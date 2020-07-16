@@ -24,8 +24,8 @@ impl RenderObject for FontIconRenderObject {
             )
         };
 
-        if bounds.width == 0.0
-            || bounds.height == 0.0
+        if bounds.width() == 0.0
+            || bounds.height() == 0.0
             || icon_brush.is_transparent()
             || icon_size == 0.0
             || icon.is_empty()
@@ -41,8 +41,8 @@ impl RenderObject for FontIconRenderObject {
 
             ctx.render_context_2_d().fill_text(
                 &icon,
-                global_position.x + bounds.x,
-                global_position.y + bounds.y,
+                global_position.x() + bounds.x(),
+                global_position.y() + bounds.y(),
             );
             ctx.render_context_2_d().close_path();
         }

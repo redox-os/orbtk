@@ -120,7 +120,7 @@ impl State for SliderState {
                             .get_widget(self.track)
                             .get::<Rectangle>("bounds")
                             .width();
-                        let slider_x = ctx.widget().get::<Point>("position").x;
+                        let slider_x = ctx.widget().get::<Point>("position").x();
 
                         let thumb_x =
                             calculate_thumb_x(mouse_x, thumb_width, slider_x, track_width);
@@ -217,7 +217,7 @@ impl Template for Slider {
             .on_mouse_move(move |states, p| {
                 states
                     .get_mut::<SliderState>(id)
-                    .action(SliderAction::Move { mouse_x: p.x });
+                    .action(SliderAction::Move { mouse_x: p.x() });
                 true
             })
     }

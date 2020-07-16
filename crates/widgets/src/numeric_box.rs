@@ -129,7 +129,7 @@ impl State for NumericBoxState {
                     _ => {}
                 },
                 InputAction::ChangeByMouseScroll(delta) => {
-                    if delta.y < 0.0 {
+                    if delta.y() < 0.0 {
                         self.change_val(self.current_value - self.step, ctx);
                     } else {
                         self.change_val(self.current_value + self.step, ctx);

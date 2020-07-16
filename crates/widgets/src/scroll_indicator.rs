@@ -14,8 +14,8 @@ impl State for ScrollIndicatorState {
             .get::<Rectangle>("bounds");
         let bounds = *ctx.widget().get::<Rectangle>("bounds");
 
-        let horizontal_p = bounds.width / content_bounds.width;
-        let vertical_p = bounds.height / content_bounds.height;
+        let horizontal_p = bounds.width() / content_bounds.width();
+        let vertical_p = bounds.height() / content_bounds.height();
 
         // calculate vertical scroll bar height and position.
         if let Some(mut vertical_scroll_bar) = ctx.try_child("vertical-scroll-bar") {
@@ -27,13 +27,13 @@ impl State for ScrollIndicatorState {
                     .get::<Constraint>("constraint")
                     .min_height();
                 let height =
-                    ((bounds.height - padding.top - padding.bottom - scroll_bar_margin_bottom)
+                    ((bounds.height() - padding.top - padding.bottom - scroll_bar_margin_bottom)
                         * vertical_p)
                         .max(vertical_min_height);
 
                 let scroll_bar_bounds = vertical_scroll_bar.get_mut::<Rectangle>("bounds");
-                scroll_bar_bounds.height = height;
-                scroll_bar_bounds.y = -(scroll_offset.y as f64 * vertical_p);
+                scroll_bar_bounds.set_height(height);
+                scroll_bar_bounds.set_y(-(scroll_offset.y() as f64 * vertical_p));
             } else {
                 vertical_scroll_bar.set("visibility", Visibility::from("collapsed"));
             }
@@ -49,12 +49,12 @@ impl State for ScrollIndicatorState {
                     .get::<Constraint>("constraint")
                     .min_width();
                 let width =
-                    ((bounds.width - padding.left - padding.right - scroll_bar_margin_right)
+                    ((bounds.width() - padding.left - padding.right - scroll_bar_margin_right)
                         * horizontal_p)
                         .max(horizontal_min_width);
                 let scroll_bar_bounds = horizontal_scroll_bar.get_mut::<Rectangle>("bounds");
-                scroll_bar_bounds.width = width;
-                scroll_bar_bounds.x = -(scroll_offset.x as f64 * horizontal_p);
+                scroll_bar_bounds.set_width(width);
+                scroll_bar_bounds.set_x(-(scroll_offset.x() as f64 * horizontal_p));
             } else {
                 horizontal_scroll_bar.set("visibility", Visibility::from("collapsed"));
             }

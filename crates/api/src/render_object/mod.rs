@@ -61,8 +61,8 @@ pub trait RenderObject: Any {
             if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
                 render_context.save();
                 render_context.rect(
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
+                    global_position.x() + bounds.x(),
+                    global_position.y() + bounds.y(),
                     bounds.width(),
                     bounds.height(),
                 );
@@ -79,8 +79,8 @@ pub trait RenderObject: Any {
 
         if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
             global_pos = (
-                global_position.x + bounds.x(),
-                global_position.y + bounds.y(),
+                global_position.x() + bounds.x(),
+                global_position.y() + bounds.y(),
             );
             offsets.insert(entity, global_pos);
         }
@@ -89,8 +89,8 @@ pub trait RenderObject: Any {
             .component_store_mut()
             .get_mut::<Point>("position", entity)
         {
-            g_pos.x = global_pos.0;
-            g_pos.y = global_pos.1;
+            g_pos.set_x(global_pos.0);
+            g_pos.set_y(global_pos.1);
         }
 
         self.render_children(
@@ -115,8 +115,8 @@ pub trait RenderObject: Any {
                 render_context.begin_path();
                 render_context.set_stroke_style(Brush::from("#0033cc"));
                 render_context.stroke_rect(
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
+                    global_position.x() + bounds.x(),
+                    global_position.y() + bounds.y(),
                     bounds.width(),
                     bounds.height(),
                 );

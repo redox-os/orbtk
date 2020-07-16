@@ -216,14 +216,14 @@ impl EventStateSystem {
                 // mouse down handling
                 if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
                     if check_mouse_condition(
-                        Point::new(event.x, event.y),
+                        event.position,
                         &WidgetContainer::new(current_node, ecm, &theme),
                     ) {
                         let mut add = true;
                         if let Some(op) = clipped_parent.get(0) {
                             // todo: improve check path if exists
                             if !check_mouse_condition(
-                                Point::new(event.x, event.y),
+                                event.position,
                                 &WidgetContainer::new(*op, ecm, &theme),
                             ) && has_handler
                             {
@@ -239,14 +239,14 @@ impl EventStateSystem {
                 // mouse move handling
                 if let Ok(event) = event.downcast_ref::<MouseMoveEvent>() {
                     if check_mouse_condition(
-                        Point::new(event.x, event.y),
+                        event.position,
                         &WidgetContainer::new(current_node, ecm, &theme),
                     ) {
                         let mut add = true;
                         if let Some(op) = clipped_parent.get(0) {
                             // todo: improve check path if exists
                             if !check_mouse_condition(
-                                Point::new(event.x, event.y),
+                                event.position,
                                 &WidgetContainer::new(*op, ecm, &theme),
                             ) {
                                 add = false;
