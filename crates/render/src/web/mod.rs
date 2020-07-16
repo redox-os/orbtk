@@ -219,7 +219,7 @@ impl RenderContext2D {
                 img = document.image_store.load_image(@{&image.source});
                 img.then(
                     function(i) {
-                         @{&self.canvas_render_context_2_d}.drawImage(img, @{&clip.x}, @{&clip.y}, @{&clip.width}, @{&clip.height}, @{&x}, @{&y}, @{&clip.width}, @{&clip.height});
+                         @{&self.canvas_render_context_2_d}.drawImage(img, @{&clip.x()}, @{&clip.y()}, @{&clip.width()}, @{&clip.height()}, @{&x}, @{&y}, @{&clip.width()}, @{&clip.height()});
                     }
                 )
             } else {
@@ -464,7 +464,7 @@ impl RenderContext2D {
             Brush::LinearGradient { start, end, stops } => {
                 let web_gradient = self
                     .canvas_render_context_2_d
-                    .create_linear_gradient(start.x, start.y, end.x, end.y);
+                    .create_linear_gradient(start.x(), start.y(), end.x(), end.y());
 
                 for stop in stops {
                     web_gradient
@@ -487,7 +487,7 @@ impl RenderContext2D {
             Brush::LinearGradient { start, end, stops } => {
                 let web_gradient = self
                     .canvas_render_context_2_d
-                    .create_linear_gradient(start.x, start.y, end.x, end.y);
+                    .create_linear_gradient(start.x(), start.y(), end.x(), end.y());
 
                 for stop in stops {
                     web_gradient
