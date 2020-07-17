@@ -17,6 +17,8 @@ use crate::{
     WindowRequest,
 };
 
+use orbtk_utils::Point;
+
 /// Represents a wrapper for a web window. It handles events, propagate them to
 /// the window adapter and handles the update and render pipeline.
 #[derive(Constructor)]
@@ -54,8 +56,10 @@ where
 
         while let Some(event) = self.event_state.mouse_down_events.borrow_mut().pop() {
             self.adapter.mouse_event(MouseEvent {
-                x: event.client_x() as f64,
-                y: event.client_y() as f64,
+                position: Point::new(
+                    event.client_x() as f64,
+                    event.client_y() as f64
+                ),
                 button: get_mouse_button(event.button()),
                 state: ButtonState::Down,
             });
@@ -64,8 +68,10 @@ where
 
         while let Some(event) = self.event_state.mouse_up_events.borrow_mut().pop() {
             self.adapter.mouse_event(MouseEvent {
-                x: event.client_x() as f64,
-                y: event.client_y() as f64,
+                position: Point::new(
+                    event.client_x() as f64,
+                    event.client_y() as f64
+                ),
                 button: get_mouse_button(event.button()),
                 state: ButtonState::Up,
             });
@@ -80,8 +86,10 @@ where
         // todo tmp solution to map touch events to mouse vent
         while let Some(event) = self.event_state.touch_start_events.borrow_mut().pop() {
             self.adapter.mouse_event(MouseEvent {
-                x: event.changed_touches()[0].client_x() as f64,
-                y: event.changed_touches()[0].client_y() as f64,
+                position: Point::new(
+                    event.changed_touches()[0].client_x() as f64,
+                    event.changed_touches()[0].client_y() as f64
+                ),
                 button: MouseButton::Left,
                 state: ButtonState::Down,
             });
@@ -90,8 +98,10 @@ where
 
         while let Some(event) = self.event_state.touch_end_events.borrow_mut().pop() {
             self.adapter.mouse_event(MouseEvent {
-                x: event.changed_touches()[0].client_x() as f64,
-                y: event.changed_touches()[0].client_y() as f64,
+                position: Point::new(
+                    event.changed_touches()[0].client_x() as f64,
+                    event.changed_touches()[0].client_y() as f64
+                ),
                 button: MouseButton::Left,
                 state: ButtonState::Up,
             });
@@ -102,7 +112,7 @@ where
         while let Some(event) = self.event_state.touch_move_events.borrow_mut().pop() {
             self.adapter.mouse(
                 event.changed_touches()[0].client_x() as f64,
-                event.changed_touches()[0].client_y() as f64,
+                event.changed_touches()[0].client_y() as f64
             );
             self.update = true;
         }
