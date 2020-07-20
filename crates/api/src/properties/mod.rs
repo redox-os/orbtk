@@ -49,6 +49,11 @@ impl<P: Component + Debug> From<Entity> for PropertySource<P> {
     }
 }
 
+impl<P: Component + Debug> IntoPropertySource<P> for PropertySource<P>
+{
+    fn into_source(self) -> PropertySource<P> {self}
+}
+
 /// Used to convert components / properties into a PropertySource object.
 pub trait IntoPropertySource<P: Component + Debug> {
     fn into_source(self) -> PropertySource<P>;
