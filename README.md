@@ -208,6 +208,12 @@ OrbTk will also provide a plain mechanism to style and theme widgets and UIs.
 
 ## Run Examples
 
+On Linux you first need to install
+
+```shell
+sudo apt install libxkbcommon-dev libwayland-cursor0 libwayland-dev
+```
+
 You can find examples in the `examples/` directory.
 
 You can start the widgets example by executing the following command:
