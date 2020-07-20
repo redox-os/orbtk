@@ -1,4 +1,5 @@
 use std::fmt;
+use serde::{Serialize, Deserialize};
 
 /// A UTF-16 encoded, growable string.
 ///
@@ -6,7 +7,7 @@ use std::fmt;
 ///
 /// let mut string16 = String16::from("Übung");
 /// string16.push('ä');
-#[derive(Clone, Default, PartialEq)]
+#[derive(Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct String16 {
     utf16: Vec<u16>,
 }
