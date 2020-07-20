@@ -126,8 +126,8 @@ impl TextBoxState {
     fn map_chars_index_to_position(&self, ctx: &mut Context) -> Vec<(usize, f64)> {
         let text: String = ctx.widget().get::<String16>("text").as_string();
         // start x position of the cursor is start position of the text element + padding left
-        let start_position: f64 =
-            ctx.widget().get::<Point>("position").x() + ctx.widget().get::<Thickness>("padding").left;
+        let start_position: f64 = ctx.widget().get::<Point>("position").x()
+            + ctx.widget().get::<Thickness>("padding").left;
         // array which will hold char index and it's x position
         let mut position_index: Vec<(usize, f64)> = Vec::with_capacity(text.len());
         position_index.push((0, start_position));
@@ -329,6 +329,7 @@ impl TextBoxState {
                 selection.start_index = 1;
                 selection.length = 0
             }
+            ctx.get_widget(self.cursor).set("expanded", false);
         } else {
             let current_selection = *ctx
                 .get_widget(self.cursor)
