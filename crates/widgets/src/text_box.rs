@@ -384,6 +384,12 @@ impl State for TextBoxState {
             ctx.widget().update(false);
         }
 
+        if !focused && *ctx.widget().get::<bool>("request_focus") {
+            ctx.widget().set("request_focus", false);
+            ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
+            self.select_all(ctx);
+        }
+
         if self.focused != *ctx.widget().get::<bool>("focused") {
             self.focused = *ctx.widget().get::<bool>("focused");
         }
@@ -460,7 +466,10 @@ widget!(
         focused: bool,
 
         /// Sets or shares ta value that describes if the TextBox should lost focus on activation (enter).
-        lost_focus_on_activation: bool
+        lost_focus_on_activation: bool,
+
+        /// Used to request focus from outside. Set to `true` tor request focus.
+        request_focus: bool
     }
 );
 
