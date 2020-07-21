@@ -77,6 +77,11 @@ impl State for ListViewState {
             .symmetric_difference(&*self.selected_entities.borrow())
         {
             let mut widget = ctx.get_widget(*index);
+
+            if !widget.has::<bool>("selected") {
+                continue;
+            }
+
             let selected = !widget.get::<bool>("selected");
             widget.set("selected", selected);
 
