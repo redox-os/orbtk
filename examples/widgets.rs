@@ -429,6 +429,7 @@ impl Template for MainView {
                                             .text(text)
                                             .build(bc)
                                     })
+                                    .on_selection_changed(|_, _, _| println!("Selection changed"))
                                     .count(("selection_list_count", id))
                                     .build(ctx),
                             )
