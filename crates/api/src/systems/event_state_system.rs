@@ -153,34 +153,7 @@ impl EventStateSystem {
                         clipped_parent.pop();
                     }
                 }
-                // key down event
-                if event.downcast_ref::<KeyDownEvent>().is_ok() {
-                    if let Some(focused) = ecm
-                        .component_store()
-                        .get::<Global>("global", root)
-                        .unwrap()
-                        .focused_widget
-                    {
-                        if current_node == focused && has_handler {
-                            matching_nodes.push(current_node);
-                        }
-                    }
-                    unknown_event = false;
-                }
-                // key up event
-                if event.downcast_ref::<KeyUpEvent>().is_ok() {
-                    if let Some(focused) = ecm
-                        .component_store()
-                        .get::<Global>("global", root)
-                        .unwrap()
-                        .focused_widget
-                    {
-                        if current_node == focused && has_handler {
-                            matching_nodes.push(current_node);
-                        }
-                    }
-                    unknown_event = false;
-                }
+
                 // scroll handling
                 if event.downcast_ref::<ScrollEvent>().is_ok() {
                     if check_mouse_condition(
