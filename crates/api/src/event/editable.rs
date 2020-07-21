@@ -19,7 +19,7 @@ crate::trigger_event!(
 #[derive(Clone, Event)]
 pub struct SelectionChangedEvent(pub Entity, pub Vec<usize>);
 
-pub type WindowHandlerFn = dyn Fn(&mut StatesContext, Entity, Vec<usize>) -> bool + 'static;
+pub type WindowHandlerFn = dyn Fn(&mut StatesContext, Entity, Vec<usize>) + 'static;
 
 #[derive(IntoHandler)]
 pub struct SelectionChangedEventHandler {
@@ -29,7 +29,8 @@ pub struct SelectionChangedEventHandler {
 impl EventHandler for SelectionChangedEventHandler {
     fn handle_event(&self, states: &mut StatesContext, event: &EventBox) -> bool {
         if let Ok(event) = event.downcast_ref::<SelectionChangedEvent>() {
-            return (self.handler)(states, event.0, event.1.clone());
+            (self.handler)(states, event.0, event.1.clone());
+            return true;
         }
 
         false
@@ -42,7 +43,7 @@ impl EventHandler for SelectionChangedEventHandler {
 
 pub trait SelectionChangedHandler: Sized + Widget {
     /// Inserts a click handler.
-    fn on_selection_changed<H: Fn(&mut StatesContext, Entity, Vec<usize>) -> bool + 'static>(
+    fn on_selection_changed<H: Fn(&mut StatesContext, Entity, Vec<usize>) + 'static>(
         self,
         handler: H,
     ) -> Self {
