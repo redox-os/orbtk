@@ -29,6 +29,7 @@ impl State for ListViewState {
         let entity = ctx.entity;
 
         if count != self.count || *ctx.widget().get::<bool>("dirty") {
+            ctx.widget().set("list_dirty", false);
             if let Some(builder) = &self.builder {
                 ctx.clear_children_of(self.items_panel);
 
