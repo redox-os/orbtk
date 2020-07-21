@@ -224,10 +224,7 @@ widget!(
         selected: bool,
 
         /// Sets or shares the parent id.
-        parent: u32,
-
-        /// Use this flag to force the redrawing of the items.
-        dirty: bool
+        parent: u32
     }
 );
 
@@ -305,7 +302,10 @@ widget!(
         selected_entities: SelectedEntities,
 
         /// Sets or shares the (wheel, scroll) delta property.
-        delta: Point
+        delta: Point,
+
+         /// Use this flag to force the redrawing of the items.
+         dirty: bool
     }
 );
 
