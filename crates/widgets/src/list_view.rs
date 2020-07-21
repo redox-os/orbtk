@@ -28,7 +28,7 @@ impl State for ListViewState {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
 
-        if count != self.count && *ctx.widget().get::<bool>("dirty") {
+        if count != self.count || *ctx.widget().get::<bool>("dirty") {
             if let Some(builder) = &self.builder {
                 ctx.clear_children_of(self.items_panel);
 
@@ -304,8 +304,8 @@ widget!(
         /// Sets or shares the (wheel, scroll) delta property.
         delta: Point,
 
-         /// Use this flag to force the redrawing of the items.
-         dirty: bool
+        /// Use this flag to force the redrawing of the items.
+        dirty: bool
     }
 );
 
