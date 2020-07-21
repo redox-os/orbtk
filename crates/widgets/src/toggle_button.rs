@@ -61,7 +61,7 @@ widget!(
 impl Template for ToggleButton {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ToggleButton")
-            .style("toggle-button")
+            .style("button")
             .selected(false)
             .height(36.0)
             .min_width(64.0)
