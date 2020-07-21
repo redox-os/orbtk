@@ -88,6 +88,9 @@ impl WindowState {
             }
             let mut old_focused_element = ctx.get_widget(old_focused_element);
             old_focused_element.set("focused", false);
+            old_focused_element
+                .get_mut::<Selector>("selector")
+                .clear_state();
             old_focused_element.update(false);
         }
 

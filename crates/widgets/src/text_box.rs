@@ -308,16 +308,6 @@ impl TextBoxState {
             ctx.push_event_by_window(FocusEvent::RemoveFocus(ctx.entity));
         }
 
-        if self.len == 0 {
-            ctx.widget()
-                .get_mut::<Selector>("selector")
-                .set_state("empty");
-        } else {
-            ctx.widget().get_mut::<Selector>("selector").clear_state();
-        }
-
-        ctx.widget().update(false);
-
         ctx.push_event_strategy_by_entity(
             ActivateEvent(ctx.entity),
             ctx.entity,
@@ -383,6 +373,16 @@ impl State for TextBoxState {
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.check_outside_update(ctx);
+
+        let focused = *ctx.widget().get::<bool>("focused");
+        let empty = ctx.widget().get::<String16>("text").is_empty();
+
+        if !focused && empty && !ctx.widget().get::<Selector>("selector").has_state("empty") {
+            ctx.widget()
+                .get_mut::<Selector>("selector")
+                .set_state("empty");
+            ctx.widget().update(false);
+        }
 
         if self.focused != *ctx.widget().get::<bool>("focused") {
             self.focused = *ctx.widget().get::<bool>("focused");
