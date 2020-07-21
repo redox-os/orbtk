@@ -4,7 +4,7 @@ use std::{
 };
 
 use super::behaviors::MouseBehavior;
-use crate::{prelude::*, shell::WindowRequest, utils::SelectionMode as SelMode};
+use crate::{prelude::*, utils::SelectionMode as SelMode};
 
 static ITEMS_PANEL: &'static str = "items_panel";
 
@@ -185,8 +185,6 @@ impl State for ListViewItemState {
             parent_entity,
             EventStrategy::Direct,
         );
-
-        ctx.send_window_request(WindowRequest::Redraw);
     }
 }
 
