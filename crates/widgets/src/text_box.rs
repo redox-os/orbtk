@@ -308,6 +308,16 @@ impl TextBoxState {
             ctx.push_event_by_window(FocusEvent::RemoveFocus(ctx.entity));
         }
 
+        if self.len == 0 {
+            ctx.widget()
+                .get_mut::<Selector>("selector")
+                .set_state("empty");
+        } else {
+            ctx.widget().get_mut::<Selector>("selector").clear_state();
+        }
+
+        ctx.widget().update(false);
+
         ctx.push_event_strategy_by_entity(
             ActivateEvent(ctx.entity),
             ctx.entity,
