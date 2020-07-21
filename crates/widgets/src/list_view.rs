@@ -173,8 +173,15 @@ impl State for ListViewItemState {
             .0
             .insert(index);
 
+        let selected_indices: Vec<usize> = parent
+            .get::<SelectedIndices>("selected_indices")
+            .0
+            .iter()
+            .map(|i| *i)
+            .collect();
+
         ctx.push_event_strategy_by_entity(
-            ChangedEvent(parent_entity),
+            SelectionChangedEvent(parent_entity, selected_indices),
             parent_entity,
             EventStrategy::Direct,
         );
@@ -263,7 +270,7 @@ widget!(
     /// The `ListView` is an items drawer widget with selectable items.
     ///
     /// **CSS element:** `items-widget`
-    ListView<ListViewState> : ChangedHandler {
+    ListView<ListViewState> : SelectionChangedHandler {
         /// Sets or shares the background property.
         background: Brush,
 
