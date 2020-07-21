@@ -83,29 +83,6 @@ Theme (
                 "spacing": 0,
             },
         ),
-	"toggle-button": (
-            base: "base",
-            properties: {
-                "height": 36,
-                "foreground": "$BRIGHT_GRAY",
-                "icon_brush": "$BRIGHT_GRAY",
-                "background": "$ALTO",
-                "border_radius": 4,
-            },
-            states: {
-                "pressed": {
-                    "background": "$SILVER_CHALICE",
-                },
-                "selected": {
-                    "background": "$SILVER_CHALICE",
-                },
-                "disabled": {
-                    "background": "$ROLLING_STONE",
-                    "foreground": "$BRIGHT_GRAY",
-                    "icon_brush": "$BRIGHT_GRAY",
-                },
-            },
-        ),
         "check_box": (
             base: "base",
             properties: {
