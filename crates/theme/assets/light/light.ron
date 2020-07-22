@@ -211,8 +211,8 @@ Theme (
         ),
         "thumb": (
             properties: {
-                "max_width": 24,
-                "max_height": 24,
+                "width": 24,
+                "height": 24,
                 "border_radius": 12,
                 "background": "$ALTO",
             },

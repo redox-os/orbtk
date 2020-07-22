@@ -88,6 +88,7 @@ Theme (
         "check_box": (
             base: "base",
             properties: {
+                "foreground": "$LINK_WATER",
                 "icon_size": "$ICON_SIZE_18",
                 "background": "transparent",
                 "border_radius": 2,
@@ -212,8 +213,8 @@ Theme (
         ),
         "thumb": (
             properties: {
-                "max_width": 24,
-                "max_height": 24,
+                "width": 24,
+                "height": 24,
                 "border_radius": 12,
                 "background": "$LYNCH",
             },
