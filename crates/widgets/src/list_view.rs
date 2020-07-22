@@ -28,8 +28,8 @@ impl State for ListViewState {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
 
-        if count != self.count || *ctx.widget().get::<bool>("dirty") {
-            ctx.widget().set("dirty", false);
+        if count != self.count || *ctx.widget().get::<bool>("request_update") {
+            ctx.widget().set("request_update", false);
             if let Some(builder) = &self.builder {
                 ctx.clear_children_of(self.items_panel);
 
@@ -306,7 +306,7 @@ widget!(
         delta: Point,
 
         /// Use this flag to force the redrawing of the items.
-        dirty: bool
+        request_update: bool
     }
 );
 

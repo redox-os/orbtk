@@ -57,7 +57,7 @@ widget!(
         /// Sets or shared the count.
         count: usize,
 
-        /// Sets or shares a value to request an update.
+        /// Use this flag to force the redrawing of the items.
         request_update: bool
     }
 );
