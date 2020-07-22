@@ -21,6 +21,7 @@ Theme (
         "ALTO": "#dadada",
         "CADET_BLUE": "#9dafbf",
         "FIORD": "#475b6e",
-        "MANATEE": "#949ca5"
+        "MANATEE": "#949ca5",
+        "GRAY_NURSE": "#edeeed"
     },
 )
