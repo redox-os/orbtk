@@ -21,7 +21,7 @@ mod template;
 mod widget_container;
 
 /// Toggles the selector state`.
-pub fn toggle_flag(flag: &str, widget: &mut WidgetContainer<'_>) {
+pub fn toggle_flag(flag: &str, widget: &mut WidgetContainer) {
     if !widget.has::<bool>(flag) {
         return;
     }

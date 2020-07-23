@@ -18,6 +18,7 @@ impl State for SelectionBehaviorState {
         self.selected = *selection_behavior(ctx.widget()).selected();
         let target = *ctx.widget().get::<u32>("target");
         toggle_flag("selected", &mut ctx.get_widget(Entity(target)));
+        ctx.get_widget(Entity(target)).update(false);
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
