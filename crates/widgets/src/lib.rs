@@ -38,6 +38,7 @@ pub use self::text_block::*;
 pub use self::text_box::*;
 pub use self::toggle_button::*;
 pub use self::window::*;
+pub use self::tab_widget::*;
 
 pub mod behaviors;
 mod button;
@@ -64,3 +65,4 @@ mod text_block;
 mod text_box;
 mod toggle_button;
 mod window;
+mod tab_widget;
