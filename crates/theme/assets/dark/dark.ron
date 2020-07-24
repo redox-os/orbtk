@@ -85,6 +85,25 @@ Theme (
                 "spacing": 0,
             },
         ),
+         "button_icon_only": (
+            base: "button",
+            properties: {
+                "icon_size": "$ICON_SIZE_12",
+                "icon_brush": "$LINK_WATER",
+                "background": "transparent",
+                "spacing": 0,
+                "min_width": 24,
+                "height": 24
+            },
+            states: {
+                 "pressed": {
+                    "background": "$BLUE_BAYOUX",
+                },
+                "disabled": {
+                    "icon_brush": "$MANATEE",
+                },
+            }
+        ),
         "check_box": (
             base: "base",
             properties: {
@@ -227,7 +246,7 @@ Theme (
         "items_widget": (
             properties: {
                 "background": "transparent",
-                "border_brush": "#647b91",
+                "border_brush": "$LYNCH",
                 "border_width": 1,
                 "border_radius": 2,
                 "padding": 4,
@@ -335,6 +354,36 @@ Theme (
                 "border_radius": 1,
                 "height": 12,
                 "width": 0,
+            }
+        ),
+        "tab_widget": (
+            properties: {
+                "border_brush": "$BLUE_BAYOUX",
+                "border_width": 1,
+                "background": "transparent",
+            },
+        ),
+        "tab_header": (
+            base: "base",
+            properties: {
+                "height": 32,
+                "font_sze": "$FONT_SIZE_12",
+                "foreground": "$WHITE",
+                "background": "$FIORD",
+                "padding_left": 8,
+                "padding_right": 8,
+                "border_radius": 0
+            },
+            states: {
+                "selected": {
+                    "background": "$GORDUROY"
+                }
+            }
+        ),
+        "tab_header_bar": (
+             properties: {
+                "background": "$GOLD_TIPS",
+                "height": 2
             }
         )
     },

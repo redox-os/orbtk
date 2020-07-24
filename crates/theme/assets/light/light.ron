@@ -334,6 +334,36 @@ Theme (
                 "height": 12,
                 "width": 0,
             }
+        ),
+        "tab_widget": (
+            properties: {
+                "border_brush": "$SILVER_CHALICE",
+                "border_width": 1,
+                "background": "transparent",
+            },
+        ),
+        "tab_header": (
+            base: "base",
+            properties: {
+                "height": 32,
+                "font_sze": "$FONT_SIZE_12",
+                "foreground": "$BRIGHT_GRAY",
+                "background": "$ALTO",
+                "padding_left": 8,
+                "padding_right": 8,
+                "border_radius": 0
+            },
+            states: {
+                "selected": {
+                    "background": "$ATHS_SPECIAL"
+                }
+            }
+        ),
+        "tab_header_bar": (
+             properties: {
+                "background": "$GOLDEN_DREAM",
+                "height": 2
+            }
         )
     },
 )

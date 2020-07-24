@@ -184,6 +184,17 @@
     {
       "type": "lldb",
       "request": "launch",
+      "name": "TabWidget",
+      "program": "${workspaceFolder}/target/debug/examples/tab_widget",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
       "name": "Test",
       "cargo": {
         "args": [

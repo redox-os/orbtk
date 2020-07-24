@@ -1,7 +1,9 @@
+use super::behaviors::MouseBehavior;
 use crate::prelude::*;
 
 // --- KEYS --
 const HEADER_CONTAINER: &str = "header_container";
+const HEADER_BAR: &str = "header_bar";
 const BODY_CONTAINER: &str = "body_container";
 // --- KEYS --
 
@@ -12,12 +14,39 @@ Once the template function is called, they are no more used.
 #[derive(Default, AsAny)]
 pub struct TabHeaderState {
     //Callback called when user click on the header of the tab (normally used to switch to the clicked tab). Only used during initialization
-    on_header_click_callback: Option<Box<dyn 'static + Fn(&mut StatesContext, Point) -> bool>>,
+    on_header_mouse_down_callback: Option<Box<dyn 'static + Fn(&mut StatesContext, Mouse) -> bool>>,
     //Callback called when user click on the close button near the tab header (normally used to close the tab). Only used during initialization
     on_close_click_callback: Option<Box<dyn 'static + Fn(&mut StatesContext, Point) -> bool>>,
+
+    header_bar: Entity,
 }
 
-impl State for TabHeaderState {}
+impl State for TabHeaderState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.header_bar = ctx.child(HEADER_BAR).entity();
+    }
+
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+        // set visibility of selection indicator bar
+        // should be refactored after property converter are implemented
+        // ```rust
+        // Container::new().style(HEADER_BAR).visibility(("selected", id, |sel| {
+        //    if sel Visibility::Visible else Visibility::Collapsed
+        // }))
+        // ```
+        let selected = *ctx.widget().get::<bool>("selected");
+        let vis = *ctx
+            .get_widget(self.header_bar)
+            .get::<Visibility>("visibility");
+        if selected && vis != Visibility::Visible {
+            ctx.get_widget(self.header_bar)
+                .set("visibility", Visibility::Visible);
+        } else if !selected && vis == Visibility::Visible {
+            ctx.get_widget(self.header_bar)
+                .set("visibility", Visibility::Collapsed);
+        }
+    }
+}
 
 widget!(
     /// The `TabHeader` widget is used internally to managed tabs headers. Not meant for other uses.
@@ -65,6 +94,9 @@ widget!(
         /// Sets or shares the selected property.
         selected: bool,
 
+        /// Sets or shares the pressed property.
+        pressed: bool,
+
         /// Sets or shares the spacing between icon and text.
         spacing: f64,
 
@@ -75,11 +107,11 @@ widget!(
 
 impl TabHeader {
     ///Set the callback that is called when user click on the header (generally used to switch tab)
-    pub fn on_header_click<T: 'static + Fn(&mut StatesContext, Point) -> bool>(
+    pub fn on_header_mouse_down<T: 'static + Fn(&mut StatesContext, Mouse) -> bool>(
         mut self,
         callback: T,
     ) -> Self {
-        self.state.on_header_click_callback = Some(Box::new(callback));
+        self.state.on_header_mouse_down_callback = Some(Box::new(callback));
         self
     }
 
@@ -95,43 +127,9 @@ impl TabHeader {
 
 impl Template for TabHeader {
     fn template(mut self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let mut toggle_button = ToggleButton::new()
-            .background(id)
-            .border_radius(id)
-            .border_width(id)
-            .border_brush(id)
-            .padding(id)
-            .foreground(id)
-            .text(id)
-            .font_size(id)
-            .font(id)
-            .icon(id)
-            .icon_brush(id)
-            .icon_size(id)
-            .icon_font(id)
-            .selected(id)
-            .spacing(id);
-
-        if let Some(callback) = self.state.on_header_click_callback.take() {
-            toggle_button = toggle_button.on_click(callback);
-        }
-
         let mut button = Button::new()
-            .background(id)
-            .border_radius(id)
-            .border_width(id)
-            .border_brush(id)
-            .padding(id)
-            .foreground(id)
-            .font_size(id)
-            .font(id)
-            .icon(id)
-            .icon_brush(id)
-            .icon_size(id)
-            .icon_font(id)
-            .spacing(id)
-            .text("X")
-            .width(2)
+            .style("button_icon_only")
+            .icon(material_icons_font::MD_CLOSE)
             .visibility(("close_button", id));
 
         if let Some(callback) = self.state.on_close_click_callback.take() {
@@ -139,7 +137,14 @@ impl Template for TabHeader {
         }
         //if self.close_button() == false {button = button.visibility(Visibility::Collapsed);}
 
-        self.name("TabWidget")
+        let mut mouse_behavior = MouseBehavior::new().enabled(id).target(id.0).pressed(id);
+
+        if let Some(callback) = self.state.on_header_mouse_down_callback.take() {
+            mouse_behavior = mouse_behavior.on_mouse_down(callback);
+        }
+
+        self.name("TabHeader")
+            .style("tab_header")
             .selected(false)
             .height(36)
             .min_width(64)
@@ -159,12 +164,37 @@ impl Template for TabHeader {
             .spacing(8)
             .close_button(Visibility::Visible)
             .child(
-                Stack::new()
-                    .orientation("horizontal")
-                    .child(toggle_button.build(ctx))
-                    .child(button.build(ctx))
+                mouse_behavior
+                    .child(
+                        Stack::new()
+                            .margin(("padding", id))
+                            .orientation("horizontal")
+                            .child(
+                                TextBlock::new()
+                                    .text(id)
+                                    .v_align("center")
+                                    .font(id)
+                                    .font_size(id)
+                                    .foreground(id)
+                                    .build(ctx),
+                            )
+                            .child(button.v_align("center").build(ctx))
+                            .build(ctx),
+                    )
+                    .child(
+                        Container::new()
+                            .id(HEADER_BAR)
+                            .v_align("start")
+                            .visibility("collapsed")
+                            .style("tab_header_bar")
+                            .build(ctx),
+                    )
                     .build(ctx),
             )
+    }
+
+    fn render_object(&self) -> Box<dyn RenderObject> {
+        Box::new(RectangleRenderObject)
     }
 }
 
@@ -260,14 +290,16 @@ impl TabWidgetState {
     fn refresh_selected_tab(&mut self, ctx: &mut Context) {
         let tab = self.tabs[self.selected];
         ctx.get_widget(tab.0).set("selected", true);
+        toggle_flag("selected", &mut ctx.get_widget(tab.0));
+        ctx.get_widget(tab.0).update(false);
         ctx.get_widget(tab.1).set("visibility", Visibility::Visible);
     }
 
     /**
-    Change the selected tab by index. Unlike the public "select_by_index", this happen immediatly.
+    Change the selected tab by index. Unlike the public "select_by_index", this happen immediately.
     */
     fn select_by_index_internal(&mut self, ctx: &mut Context, mut index: usize) {
-        //No tabs could be selected if there are no one, so return immediatly
+        //No tabs could be selected if there are no one, so return immediately
         if self.tabs.len() == 0 {
             return;
         }
@@ -283,12 +315,16 @@ impl TabWidgetState {
 
             //Toggle current button, the new button is toggled by user click
             ctx.get_widget(current_tab.0).set("selected", false);
+            toggle_flag("selected", &mut ctx.get_widget(current_tab.0));
+            ctx.get_widget(current_tab.0).update(true);
 
             //Hide current body
             ctx.get_widget(current_tab.1)
                 .set("visibility", Visibility::Hidden);
 
-            //The new tab is not "selected" because it is already done by the user click
+            ctx.get_widget(new_tab.0).set("selected", true);
+            toggle_flag("selected", &mut ctx.get_widget(new_tab.0));
+            ctx.get_widget(new_tab.0).update(false);
 
             //Show new body
             ctx.get_widget(new_tab.1)
@@ -382,7 +418,7 @@ impl TabWidgetState {
                 Visibility::Collapsed
             })
             .text(String16::from(text))
-            .on_header_click(move |states, _| {
+            .on_header_mouse_down(move |states, _| {
                 states
                     .get_mut::<TabWidgetState>(cloned_entity)
                     .select_by_body(body);
@@ -442,10 +478,24 @@ widget!(
     .build(ctx)
      ```
      */
-    TabWidget<TabWidgetState>: ChangedHandler
-    {
+    TabWidget<TabWidgetState>: ChangedHandler {
         /// Sets or shares the spacing between tabs.
-        spacing: f64
+        spacing: f64,
+
+        /// Sets or shares the background property.
+        background: Brush,
+
+        /// Sets or shares the border radius property.
+        border_radius: f64,
+
+        /// Sets or shares the border thickness property.
+        border_width: Thickness,
+
+        /// Sets or shares the border brush property.
+        border_brush: Brush,
+
+        /// Sets or shares the padding property.
+        padding: Thickness
     }
 );
 
@@ -469,24 +519,29 @@ impl TabWidget {
 impl Template for TabWidget {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("TabWidget")
-        .close_button(true)
-        .child(
-            Grid::new()
-                .rows(Rows::new().add(32).add("*"))
-                .child(
-                    Stack::new()
-                        .id(HEADER_CONTAINER)
-                        .orientation("horizontal")
-                        .spacing(id)
-                        .build(ctx),
-                )
-                .child(
-                    Grid::new()
-                        .attach(Grid::row(1))
-                        .id(BODY_CONTAINER)
-                        .build(ctx),
-                )
-                .build(ctx),
-        )
+            .style("tab_widget")
+            .close_button(true)
+            .child(
+                Grid::new()
+                    .rows(Rows::new().add(32).add("*"))
+                    .child(
+                        Stack::new()
+                            .id(HEADER_CONTAINER)
+                            .orientation("horizontal")
+                            .spacing(id)
+                            .build(ctx),
+                    )
+                    .child(
+                        Container::new()
+                            .id(BODY_CONTAINER)
+                            .background(id)
+                            .border_brush(id)
+                            .border_width(id)
+                            .border_radius(id)
+                            .attach(Grid::row(1))
+                            .build(ctx),
+                    )
+                    .build(ctx),
+            )
     }
 }
