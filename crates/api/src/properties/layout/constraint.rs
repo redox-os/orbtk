@@ -442,8 +442,6 @@ mod tests {
         constraint.set_min_height(10.0);
         constraint.set_max_width(50.0);
         constraint.set_max_height(60.0);
-        constraint.set_width(0.0);
-        constraint.set_height(0.0);
 
         assert_eq!(constraint.perform((10.0, 59.0)), (10.0, 59.0));
         assert_eq!(constraint.perform((5.0, 40.0)), (10.0, 40.0));
