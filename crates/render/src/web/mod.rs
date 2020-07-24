@@ -462,9 +462,12 @@ impl RenderContext2D {
                     .set_fill_style_color(&color.to_string());
             }
             Brush::LinearGradient { start, end, stops } => {
-                let web_gradient = self
-                    .canvas_render_context_2_d
-                    .create_linear_gradient(start.x(), start.y(), end.x(), end.y());
+                let web_gradient = self.canvas_render_context_2_d.create_linear_gradient(
+                    start.x(),
+                    start.y(),
+                    end.x(),
+                    end.y(),
+                );
 
                 for stop in stops {
                     web_gradient
@@ -485,9 +488,12 @@ impl RenderContext2D {
                     .set_stroke_style_color(&color.to_string());
             }
             Brush::LinearGradient { start, end, stops } => {
-                let web_gradient = self
-                    .canvas_render_context_2_d
-                    .create_linear_gradient(start.x(), start.y(), end.x(), end.y());
+                let web_gradient = self.canvas_render_context_2_d.create_linear_gradient(
+                    start.x(),
+                    start.y(),
+                    end.x(),
+                    end.y(),
+                );
 
                 for stop in stops {
                     web_gradient

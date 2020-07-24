@@ -215,12 +215,7 @@ impl EventHandler for MouseMoveEventHandler {
         event
             .downcast_ref::<MouseMoveEvent>()
             .ok()
-            .map_or(false, |event| {
-                (self.handler)(
-                    state_context,
-                    event.position,
-                )
-            })
+            .map_or(false, |event| (self.handler)(state_context, event.position))
     }
 
     fn handles_event(&self, event: &EventBox) -> bool {
@@ -239,9 +234,7 @@ impl EventHandler for ScrollEventHandler {
         event
             .downcast_ref::<ScrollEvent>()
             .ok()
-            .map_or(false, |event| {
-                (self.handler)(state_context, event.delta)
-            })
+            .map_or(false, |event| (self.handler)(state_context, event.delta))
     }
 
     fn handles_event(&self, event: &EventBox) -> bool {
