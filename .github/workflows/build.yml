@@ -25,12 +25,9 @@ jobs:
       
   build_redox:
     name: Build on Redox OS
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     
     steps:
-      - run: apt-cache policy libc6
-      - name: Build widgets example
-        run: redoxer build --example widgets --verbose
       - name: Install redoxer
         run: cargo install redoxer
       - name: Install redoxer toolchain
