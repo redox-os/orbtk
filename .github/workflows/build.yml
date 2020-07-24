@@ -26,9 +26,14 @@ jobs:
   build_redox:
     name: Build on Redox OS
     runs-on: ubuntu-latest
-    container: redoxos/redoxer
     
     steps:
+      - name: Build widgets example
+        run: redoxer build --example widgets --verbose
+      - name: Install redoxer
+        run: cargo install redoxer
+      - name: Install redoxer toolchain
+        run: redoxer toolchain
       - name: Build widgets example
         run: redoxer build --example widgets --verbose
            
@@ -38,6 +43,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+      - run: apt-cache policy libc6
       - name: Install rust
         run: brew install rust
       - name: Build
