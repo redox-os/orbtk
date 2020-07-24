@@ -28,8 +28,15 @@ jobs:
     runs-on: ubuntu-20.04
     
     steps:
+      - uses: actions/checkout@v1
+      - name: Install fuse
+        run: sudo apt install libfuse-dev
+      - name: Install rust nightly
+        run: rustup toolchain install nightly
+      - name: Set rust nightl as default
+        run: rustup default nightly
       - name: Install redoxer
-        run: cargo install redoxer
+        run: cargo +nightly install redoxer
       - name: Install redoxer toolchain
         run: redoxer toolchain
       - name: Build widgets example
