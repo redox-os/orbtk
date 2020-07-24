@@ -299,6 +299,17 @@ cargo doc --no-deps --open
 
 If you want to help improve OrbTk you submit your feedback in the issue tracker, or make a pull request to fix an issue https://github.com/redox-os/orbtk/issues. You can also discuss OrbTk with us on the Redox chat https://redox-os.org/community/ (join the OrbTk channel).
 
+#### Contribution check list
+
+* Documentation for all `pub` structs, traits and funs
+* Add tests if needed
+* Use static &str for widget ids and new style definitions 
+* For widget development check ProgressBar or Slider as example
+* Add changes to changelog
+* Expand examples or create a new one if needed
+* `cargo fmt` add the end
+* Create PR
+
 ## License
 
 Licensed under MIT license ([LICENSE](LICENSE)).
