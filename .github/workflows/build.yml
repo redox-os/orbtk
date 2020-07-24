@@ -26,19 +26,9 @@ jobs:
   build_redox:
     name: Build on Redox OS
     runs-on: ubuntu-latest
+    container: redoxos/redoxer
     
     steps:
-      - uses: actions/checkout@v1
-      - name: Install fuse
-        run: sudo apt install libfuse-dev
-      - name: Install rust nightly
-        run: rustup toolchain install nightly
-      - name: Set rust nightl as default
-        run: rustup default nightly
-      - name: Install redoxer
-        run: cargo +nightly install redoxer
-      - name: Install redoxer toolchain
-        run: redoxer toolchain
       - name: Build widgets example
         run: redoxer build --example widgets --verbose
            
