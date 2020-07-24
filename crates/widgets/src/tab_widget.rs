@@ -376,7 +376,7 @@ impl TabWidgetState {
     fn create_tab_header(&self, ctx: &mut Context, text: String, body: Entity) -> Entity {
         let cloned_entity = ctx.entity;
         TabHeader::new()
-            .visibility(if self.close_button_visibility {
+            .close_button(if self.close_button_visibility {
                 Visibility::Visible
             } else {
                 Visibility::Collapsed
@@ -444,8 +444,6 @@ widget!(
      */
     TabWidget<TabWidgetState>: ChangedHandler
     {
-        /// Sets or shares the visibility of the close button.
-        //close_button: bool,
         /// Sets or shares the spacing between tabs.
         spacing: f64
     }
@@ -470,7 +468,9 @@ impl TabWidget {
 
 impl Template for TabWidget {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        self.name("TabWidget").child(
+        self.name("TabWidget")
+        .close_button(true)
+        .child(
             Grid::new()
                 .rows(Rows::new().add(32).add("*"))
                 .child(
