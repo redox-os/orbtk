@@ -28,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - run: apt-cache policy libc6
       - name: Build widgets example
         run: redoxer build --example widgets --verbose
       - name: Install redoxer
@@ -43,7 +44,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - run: apt-cache policy libc6
       - name: Install rust
         run: brew install rust
       - name: Build
