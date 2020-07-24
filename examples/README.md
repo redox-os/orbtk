@@ -15,6 +15,7 @@
 * settings: use registry and settings service (load / save)
 * stack: stack layout example
 * widgets: widget overview
+* tab_widget: tab widget example
 
 ## License
 
