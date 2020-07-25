@@ -438,6 +438,7 @@ impl State for TabWidgetState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.header_container = ctx.child(HEADER_CONTAINER).entity();
         self.body_container = ctx.child(BODY_CONTAINER).entity();
+        self.close_button_visibility = true;
     }
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         let actions: Vec<TabWidgetAction> = self.actions.drain(..).collect();
@@ -520,7 +521,6 @@ impl Template for TabWidget {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("TabWidget")
             .style("tab_widget")
-            .close_button(true)
             .child(
                 Grid::new()
                     .rows(Rows::new().add(32).add("*"))
