@@ -1,6 +1,6 @@
 # Create project
 
-To start your first OrbTk project you could use [cargo](https://doc.rust-lang.org/cargo/) to create and run it.
+To start your first OrbTk project you can use [cargo](https://doc.rust-lang.org/cargo/) to create and run it.
 
 1. Create your project with the following command:
 
@@ -24,10 +24,10 @@ To start your first OrbTk project you could use [cargo](https://doc.rust-lang.or
    edition = "2018"
    
    [dependencies]
-   orbtk = "0.3.1-alpha1"
+   orbtk = "0.3.1-alpha2"
    ```
 
-4. As next replace the content of the file `main.rs` with the following content:
+4. Next replace the content of the file `main.rs` with the following content:
 
     ```rust,no_run
     use orbtk::prelude::*;
