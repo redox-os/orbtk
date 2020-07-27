@@ -18,26 +18,25 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
     ) {
         let root = ecm.entity_store().root();
 
-        let mut dirty_widgets = ecm
+        let dirty_widgets = ecm
             .component_store()
-            .get::<HashSet<Entity>>("dirty_widgets", root)
+            .get::<Vec<Entity>>("dirty_widgets", root)
             .unwrap()
             .clone();
-
-        for widget in dirty_widgets.clone() {
-            if let Ok(dirty) = ecm.component_store_mut().get_mut::<bool>("dirty", widget) {
-                *dirty = true;
-            } else {
-                dirty_widgets.remove(&widget);
-            }
-        }
 
         if dirty_widgets.is_empty() {
             return;
         }
 
+        // reset the dirty flag of all dirty widgets to `false`
+        for widget in dirty_widgets {
+            if let Ok(dirty) = ecm.component_store_mut().get_mut::<bool>("dirty", widget) {
+                *dirty = false;
+            }
+        }
+
         ecm.component_store_mut()
-            .get_mut::<HashSet<Entity>>("dirty_widgets", root)
+            .get_mut::<Vec<Entity>>("dirty_widgets", root)
             .unwrap()
             .clear();
 

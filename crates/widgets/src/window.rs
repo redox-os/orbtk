@@ -9,7 +9,7 @@ pub static STYLE_WINDOW: &'static str = "window";
 // --- KEYS --
 
 // internal type to handle dirty widgets.
-type DirtyWidgets = HashSet<Entity>;
+type DirtyWidgets = Vec<Entity>;
 
 #[derive(Clone)]
 enum Action {

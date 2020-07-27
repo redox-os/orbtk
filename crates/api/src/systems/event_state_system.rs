@@ -346,95 +346,91 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                 .unwrap()
                 .theme
                 .clone();
-            let mut current_node = root;
+
             let mut remove_widget_list: Vec<Entity> = vec![];
+
+            let mut dirty_index = 0;
+
             loop {
+                if dirty_index
+                    >= ecm
+                        .component_store()
+                        .get::<Vec<Entity>>("dirty_widgets", root)
+                        .unwrap()
+                        .len()
+                {
+                    break;
+                }
+
                 let mut skip = false;
 
-                {
-                    if !self
-                        .context_provider
-                        .states
-                        .borrow()
-                        .contains_key(&current_node)
+                let widget = *ecm
+                    .component_store()
+                    .get::<Vec<Entity>>("dirty_widgets", root)
+                    .unwrap()
+                    .get(dirty_index)
+                    .unwrap();
+
+                if !self.context_provider.states.borrow().contains_key(&widget) {
+                    skip = true;
+                }
+
+                let mut keys = vec![];
+
+                if !skip {
                     {
-                        skip = true;
-                    }
+                        let registry = &mut self.registry.borrow_mut();
 
-                    if !*ecm
-                        .component_store()
-                        .get::<bool>("dirty", current_node)
-                        .unwrap()
-                    {
-                        skip = true;
-                    }
+                        let mut ctx = Context::new(
+                            (widget, ecm),
+                            &theme,
+                            &self.context_provider,
+                            render_context,
+                        );
 
-                    let mut keys = vec![];
-
-                    if !skip {
+                        if let Some(state) =
+                            self.context_provider.states.borrow_mut().get_mut(&widget)
                         {
-                            let registry = &mut self.registry.borrow_mut();
+                            state.update(registry, &mut ctx);
+                        }
 
+                        keys.append(&mut ctx.new_states_keys());
+
+                        remove_widget_list.append(ctx.remove_widget_list());
+                        drop(ctx);
+
+                        for key in keys {
                             let mut ctx = Context::new(
-                                (current_node, ecm),
+                                (key, ecm),
                                 &theme,
                                 &self.context_provider,
                                 render_context,
                             );
-
-                            if let Some(state) = self
-                                .context_provider
-                                .states
-                                .borrow_mut()
-                                .get_mut(&current_node)
+                            if let Some(state) =
+                                self.context_provider.states.borrow_mut().get_mut(&key)
                             {
-                                state.update(registry, &mut ctx);
+                                state.init(registry, &mut ctx);
                             }
 
-                            keys.append(&mut ctx.new_states_keys());
-
-                            remove_widget_list.append(ctx.remove_widget_list());
                             drop(ctx);
-
-                            for key in keys {
-                                let mut ctx = Context::new(
-                                    (key, ecm),
-                                    &theme,
-                                    &self.context_provider,
-                                    render_context,
-                                );
-                                if let Some(state) =
-                                    self.context_provider.states.borrow_mut().get_mut(&key)
-                                {
-                                    state.init(registry, &mut ctx);
-                                }
-
-                                drop(ctx);
-                            }
-                        }
-
-                        for remove_widget in remove_widget_list.pop() {
-                            let mut children = vec![];
-                            get_all_children(&mut children, remove_widget, ecm.entity_store());
-
-                            // remove children of target widget.
-                            for entity in children.iter().rev() {
-                                self.remove_widget(*entity, &theme, ecm, render_context);
-                            }
-
-                            // remove target widget
-                            self.remove_widget(remove_widget, &theme, ecm, render_context);
                         }
                     }
-                }
-                let mut it = ecm.entity_store().start_node(current_node).into_iter();
-                it.next();
 
-                if let Some(node) = it.next() {
-                    current_node = node;
-                } else {
-                    break;
+                    for remove_widget in remove_widget_list.pop() {
+                        let mut children = vec![];
+                        get_all_children(&mut children, remove_widget, ecm.entity_store());
+
+                        // remove children of target widget.
+                        for entity in children.iter().rev() {
+                            self.remove_widget(*entity, &theme, ecm, render_context);
+                        }
+
+                        // remove target widget
+                        self.remove_widget(remove_widget, &theme, ecm, render_context);
+                    }
                 }
+
+                dirty_index += 1;
             }
 
             // crate::shell::CONSOLE.time_end("update-time:");

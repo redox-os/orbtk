@@ -18,7 +18,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for LayoutSystem {
 
         // if ecm
         //     .component_store()
-        //     .get::<HashSet<Entity>>("dirty_widgets", root)
+        //     .get::<Vec<Entity>>("dirty_widgets", root)
         //     .unwrap()
         //     .is_empty()
         // {

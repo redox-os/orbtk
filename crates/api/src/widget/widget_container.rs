@@ -42,12 +42,21 @@ impl<'a> WidgetContainer<'a> {
             .get_mut::<bool>("dirty", self.current_node)
             .unwrap() = false;
 
+        let index = self
+            .ecm
+            .component_store()
+            .get::<Vec<Entity>>("dirty_widgets", root)
+            .unwrap()
+            .iter()
+            .position(|&r| r == self.current_node)
+            .unwrap();
+
         if let Ok(dirty_widgets) = self
             .ecm
             .component_store_mut()
-            .get_mut::<HashSet<Entity>>("dirty_widgets", root)
+            .get_mut::<Vec<Entity>>("dirty_widgets", root)
         {
-            dirty_widgets.remove(&self.current_node);
+            dirty_widgets.remove(index);
         }
     }
 
@@ -69,9 +78,12 @@ impl<'a> WidgetContainer<'a> {
             if let Ok(dirty_widgets) = self
                 .ecm
                 .component_store_mut()
-                .get_mut::<HashSet<Entity>>("dirty_widgets", root)
+                .get_mut::<Vec<Entity>>("dirty_widgets", root)
             {
-                dirty_widgets.insert(entity);
+                // don't add the same widget twice in a row
+                if dirty_widgets.is_empty() || *dirty_widgets.last().unwrap() != entity {
+                    dirty_widgets.push(entity);
+                }
             }
         }
     }

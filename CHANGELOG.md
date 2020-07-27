@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add widget access helpers for states
 * API update check deprecated methods an replace to new ones
 * Performance improvements
+* Change state update order from tree order to incoming changes order
 * NumericBox widget
 * Update caret position on TextBox by mouse click
 * Text input support for ', /, \, [, ], {, }

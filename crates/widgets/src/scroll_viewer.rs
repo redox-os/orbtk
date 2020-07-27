@@ -1,5 +1,3 @@
-use std::cell::Cell;
-
 use crate::prelude::*;
 
 /// The `ScrollViewerState` handles the `ScrollViewer` widget.

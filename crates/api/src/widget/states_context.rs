@@ -34,9 +34,12 @@ impl<'a> StatesContext<'a> {
         if let Ok(dirty_widgets) = self
             .ecm
             .component_store_mut()
-            .get_mut::<HashSet<Entity>>("dirty_widgets", root)
+            .get_mut::<Vec<Entity>>("dirty_widgets", root)
         {
-            dirty_widgets.insert(entity);
+            // don't add the same widget twice in a row
+            if dirty_widgets.is_empty() || *dirty_widgets.last().unwrap() != entity {
+                dirty_widgets.push(entity);
+            }
         }
     }
 

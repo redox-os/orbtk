@@ -281,13 +281,22 @@ impl<'a> Context<'a> {
         while !self.ecm.entity_store().children[&parent].is_empty() {
             let child = self.ecm.entity_store().children[&parent][0];
 
-            // remove child also from list of dirty widgets
-            if let Ok(dirty_widgets) = self
+            if let Some(index) = self
                 .ecm
-                .component_store_mut()
-                .get_mut::<HashSet<Entity>>("dirty_widgets", root)
+                .component_store()
+                .get::<Vec<Entity>>("dirty_widgets", root)
+                .unwrap()
+                .iter()
+                .position(|&r| r == child)
             {
-                dirty_widgets.remove(&child);
+                // remove child also from list of dirty widgets
+                if let Ok(dirty_widgets) = self
+                    .ecm
+                    .component_store_mut()
+                    .get_mut::<Vec<Entity>>("dirty_widgets", root)
+                {
+                    dirty_widgets.remove(index);
+                }
             }
 
             self.remove_child_from(child, parent);
