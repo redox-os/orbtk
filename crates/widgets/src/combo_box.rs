@@ -270,7 +270,7 @@ impl State for ComboBoxState {
 
                         item
                     };
-                    ctx.get_widget(item).update_widget(entity, false);
+                    ctx.get_widget(item).update_widget(entity, false, false);
                 }
             }
 

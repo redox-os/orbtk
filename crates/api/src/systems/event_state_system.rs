@@ -50,7 +50,11 @@ impl EventStateSystem {
             .remove(&entity);
     }
 
-    fn process_direct(&self, event: &EventBox) -> bool {
+    fn process_direct(
+        &self,
+        event: &EventBox,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+    ) -> bool {
         if event.strategy == EventStrategy::Direct {
             if let Some(handlers) = self
                 .context_provider
@@ -60,7 +64,10 @@ impl EventStateSystem {
             {
                 handlers.iter().any(|handler| {
                     handler.handle_event(
-                        &mut StatesContext::new(&mut *self.context_provider.states.borrow_mut()),
+                        &mut StatesContext::new(
+                            &mut *self.context_provider.states.borrow_mut(),
+                            ecm,
+                        ),
                         &event,
                     )
                 });
@@ -263,7 +270,10 @@ impl EventStateSystem {
             if let Some(handlers) = self.context_provider.handler_map.borrow().get(node) {
                 handled = handlers.iter().any(|handler| {
                     handler.handle_event(
-                        &mut StatesContext::new(&mut *self.context_provider.states.borrow_mut()),
+                        &mut StatesContext::new(
+                            &mut *self.context_provider.states.borrow_mut(),
+                            ecm,
+                        ),
                         event,
                     )
                 });
@@ -306,7 +316,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                     match event.strategy {
                         EventStrategy::Direct => {
                             if event.strategy == EventStrategy::Direct {
-                                update = self.process_direct(&event) || update;
+                                update = self.process_direct(&event, ecm) || update;
                             }
                         }
                         // EventStrategy::TopDown => {
@@ -347,6 +357,14 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                         .states
                         .borrow()
                         .contains_key(&current_node)
+                    {
+                        skip = true;
+                    }
+
+                    if !*ecm
+                        .component_store()
+                        .get::<bool>("dirty", current_node)
+                        .unwrap()
                     {
                         skip = true;
                     }

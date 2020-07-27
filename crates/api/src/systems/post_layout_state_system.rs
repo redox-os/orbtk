@@ -78,6 +78,10 @@ impl System<Tree, StringComponentStore, RenderContext2D> for PostLayoutStateSyst
             }
 
             for key in keys {
+                if !*ecm.component_store().get::<bool>("dirty", key).unwrap() {
+                    continue;
+                }
+
                 {
                     let mut ctx =
                         Context::new((key, ecm), &theme, &self.context_provider, render_context);

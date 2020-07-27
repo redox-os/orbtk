@@ -14,10 +14,10 @@ impl State for BarState {
         self.indicator = ctx
             .entity_of_child(ID_INDICATOR)
             .expect("BarState.init(): Child could not be found!");
-        self.update(registry, ctx);
+        self.update_post_layout(registry, ctx);
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         let val = ctx.widget().clone_or_default::<f64>("val");
         let max_width = ctx.widget().get::<Rectangle>("bounds").width()
             - ctx.widget().get::<Thickness>("padding").left()

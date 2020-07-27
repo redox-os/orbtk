@@ -17,14 +17,8 @@ pub struct ListViewState {
     items_panel: Entity,
 }
 
-impl State for ListViewState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        self.items_panel = ctx
-            .entity_of_child(ITEMS_PANEL)
-            .expect("ListViewState.init: ItemsPanel child could not be found.");
-    }
-
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+impl ListViewState {
+    fn generate_items(&mut self, ctx: &mut Context) {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
 
@@ -61,12 +55,22 @@ impl State for ListViewState {
 
                         item
                     };
-                    ctx.get_widget(item).update_widget(entity, false);
+                    ctx.get_widget(item).update_widget(entity, false, false);
                 }
             }
 
             self.count = count;
         }
+    }
+}
+
+impl State for ListViewState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.items_panel = ctx
+            .entity_of_child(ITEMS_PANEL)
+            .expect("ListViewState.init: ItemsPanel child could not be found.");
+
+        self.generate_items(ctx);
     }
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {

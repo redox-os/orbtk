@@ -5,10 +5,17 @@ use crate::prelude::*;
 pub struct PopupState {}
 
 impl State for PopupState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+        ctx.widget().set("visibility", Visibility::Collapsed)
+    }
+
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        if *ctx.widget().get::<bool>("open") {
+        let visibility = ctx.widget().clone::<Visibility>("visibility");
+        let open = *ctx.widget().get::<bool>("open");
+
+        if open && visibility != Visibility::Visible {
             ctx.widget().set("visibility", Visibility::Visible);
-        } else {
+        } else if !open && visibility == Visibility::Visible {
             ctx.widget().set("visibility", Visibility::Collapsed);
             {
                 ctx.widget().get_mut::<Rectangle>("bounds").set_width(0.0);

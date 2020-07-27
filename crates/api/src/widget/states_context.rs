@@ -1,17 +1,43 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 
-use dces::prelude::{Component, Entity};
+use dces::prelude::{Component, Entity, EntityComponentManager, StringComponentStore};
+
+use crate::tree::Tree;
 
 use super::State;
 
 /// The `StatesContext` provides access to the widget states.
 pub struct StatesContext<'a> {
     states: &'a mut BTreeMap<Entity, Box<dyn State>>,
+    ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
 }
 
 impl<'a> StatesContext<'a> {
-    pub fn new(states: &'a mut BTreeMap<Entity, Box<dyn State>>) -> Self {
-        StatesContext { states }
+    /// Creates a new state context.
+    pub fn new(
+        states: &'a mut BTreeMap<Entity, Box<dyn State>>,
+        ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
+    ) -> Self {
+        StatesContext { states, ecm }
+    }
+
+    // Mark the widget as dirty.
+    fn mark_as_dirty(&mut self, entity: Entity) {
+        *self
+            .ecm
+            .component_store_mut()
+            .get_mut::<bool>("dirty", entity)
+            .unwrap() = true;
+
+        let root = self.ecm.entity_store().root();
+
+        if let Ok(dirty_widgets) = self
+            .ecm
+            .component_store_mut()
+            .get_mut::<HashSet<Entity>>("dirty_widgets", root)
+        {
+            dirty_widgets.insert(entity);
+        }
     }
 
     /// Gets the state of the given widget.
@@ -44,6 +70,7 @@ impl<'a> StatesContext<'a> {
     ///
     /// Panics if the there is no state for the given entity or the given state type is wrong.
     pub fn get_mut<S: Component>(&mut self, entity: Entity) -> &mut S {
+        self.mark_as_dirty(entity);
         self.states
             .get_mut(&entity)
             .unwrap_or_else(|| {
@@ -75,6 +102,7 @@ impl<'a> StatesContext<'a> {
 
     /// Try to get a mutable reference of the state of the given widget.
     pub fn try_get_mut<S: Component>(&mut self, entity: Entity) -> Option<&mut S> {
+        self.mark_as_dirty(entity);
         if let Some(e) = self.states.get_mut(&entity) {
             if let Some(r) = e.as_any_mut().downcast_mut() {
                 return Some(r);

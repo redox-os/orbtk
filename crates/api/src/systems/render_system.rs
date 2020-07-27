@@ -16,12 +16,30 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         render_context: &mut RenderContext2D,
     ) {
-        // if !self.shell.borrow().update()
-        //     || !self.shell.borrow().running()
-        //     || ecm.entity_store().parent.is_empty()
-        // {
-        //     return;
-        // }
+        let root = ecm.entity_store().root();
+
+        let mut dirty_widgets = ecm
+            .component_store()
+            .get::<HashSet<Entity>>("dirty_widgets", root)
+            .unwrap()
+            .clone();
+
+        for widget in dirty_widgets.clone() {
+            if let Ok(dirty) = ecm.component_store_mut().get_mut::<bool>("dirty", widget) {
+                *dirty = true;
+            } else {
+                dirty_widgets.remove(&widget);
+            }
+        }
+
+        if dirty_widgets.is_empty() {
+            return;
+        }
+
+        ecm.component_store_mut()
+            .get_mut::<HashSet<Entity>>("dirty_widgets", root)
+            .unwrap()
+            .clear();
 
         #[cfg(feature = "debug")]
         let debug = true;
@@ -54,6 +72,8 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
             debug,
         );
         render_context.finish();
+
+        println!("Render");
 
         //  print_tree(root, 0, ecm);
     }

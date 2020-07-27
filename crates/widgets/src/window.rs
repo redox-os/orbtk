@@ -8,6 +8,9 @@ pub static ELEMENT_WINDOW: &'static str = "window";
 
 // --- KEYS --
 
+// internal type to handle dirty widgets.
+type DirtyWidgets = HashSet<Entity>;
+
 #[derive(Clone)]
 enum Action {
     WindowEvent(WindowEvent),
@@ -171,7 +174,10 @@ widget!(
         borderless: bool,
 
         /// Sets or shares a value that describes if the current window is active.
-        active: bool
+        active: bool,
+
+        /// Internal property to handle dirty widgets.
+        dirty_widgets: DirtyWidgets
     }
 );
 

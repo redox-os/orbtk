@@ -387,6 +387,10 @@ macro_rules! widget {
                     ctx.register_state(entity, this.state);
                 )*
 
+                if entity.0 == 147 {
+                    println!("Hierrrrr");
+                }
+
                 // register default set of properties
                 ctx.register_property("bounds", entity, this.bounds);
                 ctx.register_property("position", entity, this.position);
@@ -399,6 +403,7 @@ macro_rules! widget {
                 ctx.register_property("opacity", entity, this.opacity);
                 ctx.register_property("type_id", entity, TypeId::of::<$widget>());
                 ctx.register_property("type_name", entity, std::any::type_name::<$widget>().to_string());
+                ctx.register_property("dirty", entity, false);
 
                 if let Some(id) = this.id {
                     ctx.register_property("id", entity, id);

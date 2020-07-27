@@ -277,8 +277,18 @@ impl<'a> Context<'a> {
 
     /// Clears all children of the given widget.
     pub fn clear_children_of(&mut self, parent: Entity) {
+        let root = self.ecm.entity_store().root();
         while !self.ecm.entity_store().children[&parent].is_empty() {
             let child = self.ecm.entity_store().children[&parent][0];
+
+            // remove child also from list of dirty widgets
+            if let Ok(dirty_widgets) = self
+                .ecm
+                .component_store_mut()
+                .get_mut::<HashSet<Entity>>("dirty_widgets", root)
+            {
+                dirty_widgets.remove(&child);
+            }
 
             self.remove_child_from(child, parent);
         }
@@ -447,7 +457,7 @@ impl<'a> Context<'a> {
         self.window().get_mut::<Global>("global").theme = theme;
 
         // update on window to update all widgets in the tree
-        self.window().update(true);
+        self.window().update_dirty(true);
     }
 }
 

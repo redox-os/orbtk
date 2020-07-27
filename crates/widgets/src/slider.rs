@@ -138,6 +138,8 @@ impl State for SliderState {
                         );
 
                         ctx.push_event(ChangedEvent(ctx.entity));
+                    } else {
+                        ctx.widget().clear_dirty();
                     }
                 }
             }
@@ -219,7 +221,7 @@ impl Template for Slider {
                 states
                     .get_mut::<SliderState>(id)
                     .action(SliderAction::Move { mouse_x: p.x() });
-                true
+                false
             })
     }
 }
