@@ -7,10 +7,11 @@ pub struct ItemsWidgetState {
 }
 
 impl State for ItemsWidgetState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        let count = ctx.widget().clone_or_default::<usize>("count");
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+        let count: usize = ctx.widget().clone_or_default("count");
+        let request_update: bool = *ctx.widget().get("request_update");
 
-        if count != self.count {
+        if count != self.count || request_update {
             if let Some(builder) = &self.builder {
                 if let Some(items_panel) = ctx.entity_of_child("items_panel") {
                     ctx.clear_children_of(items_panel);
@@ -18,18 +19,14 @@ impl State for ItemsWidgetState {
                     for i in 0..count {
                         let bctx = &mut ctx.build_context();
 
-                        let child = {
-                            let child = builder(bctx, i);
-                            bctx.append_child(items_panel, child);
-                            child
-                        };
-
-                        ctx.get_widget(child).update_properties_by_theme();
+                        let child = builder(bctx, i);
+                        bctx.append_child(items_panel, child);
                     }
                 }
             }
 
             self.count = count;
+            ctx.widget().set("request_update", false);
         }
     }
 }
@@ -60,8 +57,8 @@ widget!(
         /// Sets or shared the count.
         count: usize,
 
-        /// Sets or shares the css selector property.
-        selector: Selector
+        /// Use this flag to force the redrawing of the items.
+        request_update: bool
     }
 );
 
@@ -78,27 +75,21 @@ impl ItemsWidget {
 impl Template for ItemsWidget {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ItemsWidget")
-            .selector("items-widget")
+            .style("items_widget")
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
             .border_width(1.0)
             .border_brush(colors::BOMBAY_COLOR)
             .padding(2.0)
             .orientation("vertical")
-            .child(
-                Container::create()
-                    .background(id)
-                    .border_radius(id)
-                    .border_width(id)
-                    .border_brush(id)
-                    .padding(id)
-                    .child(
-                        Stack::create()
-                            .selector(Selector::default().id("items_panel"))
-                            .orientation(id)
-                            .build(ctx),
-                    )
-                    .build(ctx),
-            )
+            .child(Stack::new().id("items_panel").orientation(id).build(ctx))
+    }
+
+    fn render_object(&self) -> Box<dyn RenderObject> {
+        Box::new(RectangleRenderObject)
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(PaddingLayout::new())
     }
 }

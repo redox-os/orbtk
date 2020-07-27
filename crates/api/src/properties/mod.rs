@@ -1,4 +1,4 @@
-//! This sub module contains extra structs used as widget proerties.
+//! This sub module contains extra structs used as widget properties.
 
 use std::{collections::HashSet, fmt::Debug};
 
@@ -6,12 +6,12 @@ use dces::prelude::{Component, Entity, StringComponentStore};
 
 pub use self::layout::*;
 pub use self::widget::*;
-use crate::{css_engine, prelude::*, render, utils};
+use crate::{prelude::*, render, utils};
 
 mod layout;
 mod widget;
 
-/// Used to the a property of a widget.
+/// Get the property of a widget.
 pub fn get_property<T>(key: &str, entity: Entity, store: &StringComponentStore) -> T
 where
     T: Clone + Component,
@@ -78,17 +78,17 @@ where
 
 // Implementation of PropertySource for default types
 into_property_source!(bool);
-into_property_source!(String: &str);
+into_property_source!(String: &str, utils::Value);
 into_property_source!(usize);
 into_property_source!(u32);
-into_property_source!(f32);
-into_property_source!(f64: i32, f32);
+into_property_source!(f32: utils::Value);
+into_property_source!(f64: i32, f32, utils::Value);
 into_property_source!(i32);
 into_property_source!(i64);
 
 // Implementation of PropertySource for utils types
 into_property_source!(utils::Alignment: &str);
-into_property_source!(utils::Brush: &str, utils::Color);
+into_property_source!(utils::Brush: &str, utils::Color, utils::Value);
 into_property_source!(utils::Orientation: &str);
 into_property_source!(utils::Point: f64, i32, (i32, i32), (f64, f64));
 into_property_source!(utils::Rectangle: (i32, i32, i32, i32), (f64, f64, f64, f64));
@@ -98,7 +98,8 @@ into_property_source!(
     (i32, i32),
     (f64, f64),
     (i32, i32, i32, i32),
-    (f64, f64, f64, f64)
+    (f64, f64, f64, f64),
+    utils::Value
 );
 into_property_source!(utils::String16: &str, String);
 into_property_source!(utils::SelectionMode: &str);
@@ -106,17 +107,17 @@ into_property_source!(utils::Visibility: &str);
 into_property_source!(Vec<String>);
 
 // Implementation of css types
-into_property_source!(css_engine::Selector: &str, String);
-into_property_source!(css_engine::Theme);
+into_property_source!(Selector: &str, String);
+into_property_source!(Theme);
 
 // Implementation of render property types
-into_property_source!(render::Image: &str);
+into_property_source!(render::Image: &str, String, (u32, u32, Vec<u32>));
 
 // Implementation of custom property types
-into_property_source!(Columns);
-into_property_source!(Constraint);
+into_property_source!(Columns: ColumnsBuilder);
+into_property_source!(Constraint: ConstraintBuilder);
 into_property_source!(RenderPipeline);
-into_property_source!(Rows);
+into_property_source!(Rows: RowsBuilder);
 into_property_source!(ScrollViewerMode: (&str, &str));
 into_property_source!(SelectedEntities: HashSet<Entity>);
 into_property_source!(SelectedIndices: HashSet<usize>);

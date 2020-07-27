@@ -22,6 +22,8 @@ pub struct RenderContext2D {
     clip: bool,
     last_rect: Rectangle,
     clip_rect: Option<Rectangle>,
+
+    background: Color,
 }
 
 impl RenderContext2D {
@@ -37,9 +39,15 @@ impl RenderContext2D {
             saved_config: None,
             fonts: HashMap::new(),
             clip: false,
-            last_rect: Rectangle::new(0.0, 0.0, width, height),
+            last_rect: Rectangle::new((0.0, 0.0), width, height),
             clip_rect: None,
+            background: Color::default(),
         }
+    }
+
+    /// Set the background of the render context.
+    pub fn set_background(&mut self, background: Color) {
+        self.background = background;
     }
 
     pub fn resize(&mut self, width: f64, height: f64) {
@@ -61,8 +69,17 @@ impl RenderContext2D {
 
     /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.rect(x, y, width, height);
-        self.fill();
+        self.draw_target.fill_rect(
+            x as f32,
+            y as f32,
+            width as f32,
+            height as f32,
+            &brush_to_source(&self.config.fill_style),
+            &raqote::DrawOptions {
+                alpha: self.config.alpha,
+                ..Default::default()
+            },
+        );
     }
 
     /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other ctx settings.
@@ -185,7 +202,7 @@ impl RenderContext2D {
 
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.last_rect = Rectangle::new(x, y, width, height);
+        self.last_rect = Rectangle::new((x, y), width, height);
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.rect(x as f32, y as f32, width as f32, height as f32);
         self.path = path_builder.finish();
@@ -226,7 +243,9 @@ impl RenderContext2D {
         self.path = path_builder.finish();
     }
 
-    /// Adds a cubic Bézier curve to the current sub-path. It requires three points: the first two are control points and the third one is the end point. The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
+    /// Adds a cubic Bézier curve to the current sub-path.
+    /// It requires three points: the first two are control points and the third one is the end point.
+    /// The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
     pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.cubic_to(
@@ -277,9 +296,9 @@ impl RenderContext2D {
     pub fn draw_image_with_clip(&mut self, image: &Image, clip: Rectangle, x: f64, y: f64) {
         let mut y = y as i32;
         let stride = image.width();
-        let mut offset = clip.y.mul_add(stride, clip.x) as usize;
+        let mut offset = clip.y().mul_add(stride, clip.x()) as usize;
         let last_offset = cmp::min(
-            ((clip.y + clip.height).mul_add(stride, clip.x)) as usize,
+            ((clip.y() + clip.height()).mul_add(stride, clip.x())) as usize,
             image.data().len(),
         );
         while offset < last_offset {
@@ -290,7 +309,7 @@ impl RenderContext2D {
                 y as f32,
                 &raqote::Image {
                     data: &image.data()[offset..],
-                    width: clip.width as i32,
+                    width: clip.width() as i32,
                     height: 1,
                 },
                 &raqote::DrawOptions {
@@ -335,7 +354,7 @@ impl RenderContext2D {
         self.config.alpha = alpha;
     }
 
-    /// Specific the font family.
+    /// Specifies the font family.
     pub fn set_font_family(&mut self, family: impl Into<String>) {
         self.config.font_config.family = family.into();
     }
@@ -359,7 +378,7 @@ impl RenderContext2D {
 
     // Transformations
 
-    /// Sets the tranformation.
+    /// Sets the transformation.
     pub fn set_transform(
         &mut self,
         h_scaling: f64,
@@ -387,7 +406,8 @@ impl RenderContext2D {
         self.saved_config = Some(self.config.clone());
     }
 
-    /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
+    /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack.
+    /// If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
         self.clip = false;
         self.clip_rect = None;
@@ -431,7 +451,9 @@ impl RenderContext2D {
         self.draw_target.get_data_u8_mut()
     }
 
-    pub fn start(&mut self) {}
+    pub fn start(&mut self) {
+        self.clear(&Brush::from(self.background));
+    }
     pub fn finish(&mut self) {}
 }
 
@@ -475,8 +497,8 @@ fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
 
             raqote::Source::new_linear_gradient(
                 raqote::Gradient { stops: g_stops },
-                raqote::Point::new(start.x as f32, start.y as f32),
-                raqote::Point::new(end.x as f32, start.y as f32),
+                raqote::Point::new(start.x() as f32, start.y() as f32),
+                raqote::Point::new(end.x() as f32, start.y() as f32),
                 raqote::Spread::Pad,
             )
         }

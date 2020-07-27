@@ -124,7 +124,7 @@ impl render::RenderPipeline for CubePipeline {
                 (7, Rgba::green()),
             ],
             &mut color,
-            &mut depth,
+            Some(&mut depth),
         );
 
         render_target.draw(color.as_ref());
@@ -166,7 +166,7 @@ impl render::RenderPipeline for Graphic2DPipeline {
             ],
         });
         render_context.fill_rect(x, y, width, height);
-        render_target.draw(render_context.data());
+        // render_target.draw(render_context.data());
     }
 }
 
@@ -182,7 +182,7 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if let Some(cube) = ctx
             .widget()
             .get_mut::<RenderPipeline>("render_pipeline")
@@ -206,33 +206,27 @@ impl Template for MainView {
         self.name("MainView")
             .render_pipeline(RenderPipeline(Box::new(CubePipeline::default())))
             .child(
-                Grid::create()
-                    .rows(
-                        Rows::create()
-                            .row("auto")
-                            .row("*")
-                            .row("auto")
-                            .row("*")
-                            .build(),
-                    )
+                Grid::new()
+                    .rows(Rows::new().add("auto").add("*").add("auto").add("*"))
                     .child(
-                        TextBlock::create()
+                        TextBlock::new()
                             .attach(Grid::row(0))
                             .text("Canvas (render with euc crate)")
-                            .selector(Selector::new().with("text-block").class("h1"))
+                            .style("text-block")
+                            .style("text_block_header")
                             .margin(4.0)
                             .build(ctx),
                     )
                     .child(
-                        Canvas::create()
+                        Canvas::new()
                             .attach(Grid::row(1))
                             .render_pipeline(id)
                             .build(ctx),
                     )
                     .child(
-                        Button::create()
+                        Button::new()
                             .text("spin cube")
-                            .vertical_alignment("end")
+                            .v_align("end")
                             .attach(Grid::row(1))
                             .margin(4.0)
                             .on_click(move |states, _| {
@@ -242,15 +236,16 @@ impl Template for MainView {
                             .build(ctx),
                     )
                     .child(
-                        TextBlock::create()
+                        TextBlock::new()
                             .attach(Grid::row(2))
                             .text("Canvas (render with OrbTk)")
-                            .selector(Selector::new().with("text-block").class("h1"))
+                            .style("text-block")
+                            .style("text_block_header")
                             .margin(4.0)
                             .build(ctx),
                     )
                     .child(
-                        Canvas::create()
+                        Canvas::new()
                             .attach(Grid::row(3))
                             .render_pipeline(RenderPipeline(Box::new(Graphic2DPipeline::default())))
                             .build(ctx),
@@ -266,11 +261,12 @@ fn main() {
 
     Application::new()
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - canvas example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
-                .child(MainView::create().build(ctx))
+                .resizeable(true)
+                .child(MainView::new().build(ctx))
                 .build(ctx)
         })
         .run();

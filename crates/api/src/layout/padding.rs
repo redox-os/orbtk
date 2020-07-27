@@ -7,13 +7,14 @@ use dces::prelude::Entity;
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
 
-use super::Layout;
+use super::{component, component_try_mut, Layout};
 
 /// Add padding to the widget.
 #[derive(Default)]
 pub struct PaddingLayout {
     desired_size: RefCell<DirtySize>,
     old_alignment: Cell<(Alignment, Alignment)>,
+    old_parent_size: Cell<(f64, f64)>,
 }
 
 impl PaddingLayout {
@@ -29,26 +30,15 @@ impl Layout for PaddingLayout {
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
-        theme: &ThemeValue,
+        theme: &Theme,
     ) -> DirtySize {
-        if *ecm
-            .component_store()
-            .get::<Visibility>("visibility", entity)
-            .unwrap()
-            == Visibility::Collapsed
-        {
+        if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return *self.desired_size.borrow();
         }
 
-        let horizontal_alignment: Alignment = *ecm
-            .component_store()
-            .get("horizontal_alignment", entity)
-            .unwrap();
-        let vertical_alignment: Alignment = *ecm
-            .component_store()
-            .get("vertical_alignment", entity)
-            .unwrap();
+        let horizontal_alignment: Alignment = component(ecm, entity, "h_align");
+        let vertical_alignment: Alignment = component(ecm, entity, "v_align");
 
         if horizontal_alignment != self.old_alignment.get().1
             || vertical_alignment != self.old_alignment.get().0
@@ -56,10 +46,7 @@ impl Layout for PaddingLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
-        let constraint = *ecm
-            .component_store()
-            .get::<Constraint>("constraint", entity)
-            .unwrap();
+        let constraint: Constraint = component(ecm, entity, "constraint");
         if constraint.width() > 0.0 {
             self.desired_size.borrow_mut().set_width(constraint.width());
         }
@@ -70,10 +57,7 @@ impl Layout for PaddingLayout {
                 .set_height(constraint.height());
         }
 
-        let padding = *ecm
-            .component_store()
-            .get::<Thickness>("padding", entity)
-            .unwrap();
+        let padding: Thickness = component(ecm, entity, "padding");
 
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
@@ -111,7 +95,7 @@ impl Layout for PaddingLayout {
                     .set_size(desired_size.0, desired_size.1);
             }
         }
-
+        self.desired_size.borrow_mut().set_dirty(true);
         *self.desired_size.borrow()
     }
 
@@ -122,42 +106,25 @@ impl Layout for PaddingLayout {
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
-        theme: &ThemeValue,
+        theme: &Theme,
     ) -> (f64, f64) {
-        if *ecm
-            .component_store()
-            .get::<Visibility>("visibility", entity)
-            .unwrap()
-            == Visibility::Collapsed
-        {
+        if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return (0.0, 0.0);
         }
 
-        if !self.desired_size.borrow().dirty() {
+        if !self.desired_size.borrow().dirty() && parent_size == self.old_parent_size.get() {
             return self.desired_size.borrow().size();
         }
 
-        let horizontal_alignment: Alignment = *ecm
-            .component_store()
-            .get("horizontal_alignment", entity)
-            .unwrap();
-        let vertical_alignment: Alignment = *ecm
-            .component_store()
-            .get("vertical_alignment", entity)
-            .unwrap();
+        let horizontal_alignment: Alignment = component(ecm, entity, "h_align");
+        let vertical_alignment: Alignment = component(ecm, entity, "v_align");
         let margin = *ecm
             .component_store()
             .get::<Thickness>("margin", entity)
             .unwrap();
-        let padding = *ecm
-            .component_store()
-            .get::<Thickness>("padding", entity)
-            .unwrap();
-        let constraint = *ecm
-            .component_store()
-            .get::<Constraint>("constraint", entity)
-            .unwrap();
+        let padding: Thickness = component(ecm, entity, "padding");
+        let constraint: Constraint = component(ecm, entity, "constraint");
 
         let size = constraint.perform((
             horizontal_alignment.align_measure(
@@ -174,10 +141,7 @@ impl Layout for PaddingLayout {
             ),
         ));
 
-        if let Ok(bounds) = ecm
-            .component_store_mut()
-            .get_mut::<Rectangle>("bounds", entity)
-        {
+        if let Some(bounds) = component_try_mut::<Rectangle>(ecm, entity, "bounds") {
             bounds.set_width(size.0);
             bounds.set_height(size.1);
         }
@@ -190,7 +154,7 @@ impl Layout for PaddingLayout {
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
 
-            let child_margin: Thickness = *ecm.component_store().get("margin", child).unwrap();
+            let child_margin: Thickness = component(ecm, entity, "margin");
 
             if let Some(child_layout) = layouts.get(&child) {
                 child_layout.arrange(
@@ -203,14 +167,10 @@ impl Layout for PaddingLayout {
                 );
             }
 
-            let child_horizontal_alignment: Alignment = *ecm
-                .component_store()
-                .get("horizontal_alignment", child)
-                .unwrap();
-            let child_vertical_alignment: Alignment = *ecm
-                .component_store()
-                .get("vertical_alignment", child)
-                .unwrap();
+            let child_horizontal_alignment: Alignment =
+                *ecm.component_store().get("h_align", child).unwrap();
+            let child_vertical_alignment: Alignment =
+                *ecm.component_store().get("v_align", child).unwrap();
             if let Ok(child_bounds) = ecm
                 .component_store_mut()
                 .get_mut::<Rectangle>("bounds", child)
@@ -235,7 +195,7 @@ impl Layout for PaddingLayout {
                 );
             }
         }
-
+        self.old_parent_size.set(parent_size);
         self.desired_size.borrow_mut().set_dirty(false);
         size
     }

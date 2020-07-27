@@ -14,7 +14,7 @@ impl Image {
         }
     }
 
-    /// Load an image from file path. Supports BMP and PNG
+    /// Load an image from file path. Supports BMP and PNG extensions.
     pub fn from_path<P: std::string::ToString + AsRef<Path>>(path: P) -> Result<Self, String> {
         let source = path.to_string();
 
@@ -95,5 +95,12 @@ impl Image {
         .unwrap();
 
         height as f64
+    }
+}
+
+// todo not yet available for web
+impl From<(u32, u32, Vec<u32>)> for Image {
+    fn from(image: (u32, u32, Vec<u32>)) -> Self {
+        Image::new(image.0.into(), image.1.into())
     }
 }

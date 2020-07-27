@@ -18,6 +18,7 @@ pub struct RenderContext2D {
     config: RenderConfig,
     saved_config: Option<RenderConfig>,
     export_data: Vec<u32>,
+    background: Color,
 }
 
 impl RenderContext2D {
@@ -42,7 +43,13 @@ impl RenderContext2D {
             canvas_render_context_2_d: ctx,
             font_config: FontConfig::default(),
             export_data,
+            background: Color::default(),
         }
+    }
+
+    /// Set the background of the render context.
+    pub fn set_background(&mut self, background: Color) {
+        self.background = background;
     }
 
     /// Creates a new render ctx 2d.
@@ -60,12 +67,14 @@ impl RenderContext2D {
             canvas_render_context_2_d,
             font_config: FontConfig::default(),
             export_data,
+            background: Color::default(),
         }
     }
 
     // Rectangles
 
-    /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
+    /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the
+    /// specified width and height and whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
         self.fill_style(&self.config.fill_style);
         self.canvas_render_context_2_d
@@ -125,7 +134,7 @@ impl RenderContext2D {
 
     /// Strokes {outlines} the current or given path with the current stroke style.
     pub fn stroke(&mut self) {
-        self.stroke_style(&self.config.fill_style);
+        self.stroke_style(&self.config.stroke_style);
         self.canvas_render_context_2_d.stroke();
     }
 
@@ -134,7 +143,8 @@ impl RenderContext2D {
         self.canvas_render_context_2_d.begin_path();
     }
 
-    /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
+    /// Attempts to add a straight line from the current point to the start of the current sub-path.
+    /// If the shape has already been closed or has only one point, this function does nothing.
     pub fn close_path(&mut self) {
         self.canvas_render_context_2_d.close_path();
     }
@@ -167,7 +177,9 @@ impl RenderContext2D {
             .quadratic_curve_to(cpx, cpy, x, y);
     }
 
-    /// Adds a cubic Bézier curve to the current sub-path. It requires three points: the first two are control points and the third one is the end point. The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
+    /// Adds a cubic Bézier curve to the current sub-path.
+    /// It requires three points: the first two are control points and the third one is the end point.
+    /// The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
     pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
         self.canvas_render_context_2_d
             .bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y);
@@ -176,7 +188,7 @@ impl RenderContext2D {
     // Draw image
 
     /// Draws a render target.
-    pub fn draw_render_target(&mut self, render_target: &RenderTarget, x: f64, y: f64) {
+    pub fn draw_render_target(&mut self, _render_target: &RenderTarget, _x: f64, _y: f64) {
         // todo
     }
 
@@ -207,7 +219,7 @@ impl RenderContext2D {
                 img = document.image_store.load_image(@{&image.source});
                 img.then(
                     function(i) {
-                         @{&self.canvas_render_context_2_d}.drawImage(img, @{&clip.x}, @{&clip.y}, @{&clip.width}, @{&clip.height}, @{&x}, @{&y}, @{&clip.width}, @{&clip.height});
+                         @{&self.canvas_render_context_2_d}.drawImage(img, @{&clip.x()}, @{&clip.y()}, @{&clip.width()}, @{&clip.height()}, @{&x}, @{&y}, @{&clip.width()}, @{&clip.height()});
                     }
                 )
             } else {
@@ -283,6 +295,7 @@ impl RenderContext2D {
 
     /// Sets the thickness of lines.
     pub fn set_line_width(&mut self, line_width: f64) {
+        self.config.line_width = line_width;
         self.canvas_render_context_2_d.set_line_width(line_width);
     }
 
@@ -294,7 +307,7 @@ impl RenderContext2D {
 
     /// Specific the font family.
     pub fn set_font_family(&mut self, family: impl Into<String>) {
-        self.font_config.family = family.into().replace(" Regular", "");
+        self.font_config.family = family.into();
         self.canvas_render_context_2_d
             .set_font(&self.font_config.to_string());
     }
@@ -320,7 +333,7 @@ impl RenderContext2D {
 
     // Transformations
 
-    /// Sets the tranformation.
+    /// Sets the transformation.
     pub fn set_transform(
         &mut self,
         h_scaling: f64,
@@ -343,7 +356,8 @@ impl RenderContext2D {
         self.canvas_render_context_2_d.save();
     }
 
-    /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack. If there is no saved state, this method does nothing.
+    /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack.
+    /// If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
         self.canvas_render_context_2_d.restore();
         if let Some(config) = &self.saved_config {
@@ -435,7 +449,10 @@ impl RenderContext2D {
         &self.export_data
     }
 
-    pub fn start(&mut self) {}
+    pub fn start(&mut self) {
+        let background = Brush::from(self.background);
+        self.clear(&background)
+    }
     pub fn finish(&mut self) {}
 
     fn fill_style<'a>(&self, brush: &Brush) {
@@ -445,9 +462,12 @@ impl RenderContext2D {
                     .set_fill_style_color(&color.to_string());
             }
             Brush::LinearGradient { start, end, stops } => {
-                let web_gradient = self
-                    .canvas_render_context_2_d
-                    .create_linear_gradient(start.x, start.y, end.x, end.y);
+                let web_gradient = self.canvas_render_context_2_d.create_linear_gradient(
+                    start.x(),
+                    start.y(),
+                    end.x(),
+                    end.y(),
+                );
 
                 for stop in stops {
                     web_gradient
@@ -468,9 +488,12 @@ impl RenderContext2D {
                     .set_stroke_style_color(&color.to_string());
             }
             Brush::LinearGradient { start, end, stops } => {
-                let web_gradient = self
-                    .canvas_render_context_2_d
-                    .create_linear_gradient(start.x, start.y, end.x, end.y);
+                let web_gradient = self.canvas_render_context_2_d.create_linear_gradient(
+                    start.x(),
+                    start.y(),
+                    end.x(),
+                    end.y(),
+                );
 
                 for stop in stops {
                     web_gradient

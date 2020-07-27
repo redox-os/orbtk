@@ -13,11 +13,11 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if self.clear {
             // Clears the text property of MainView and because
             // of the sharing also the text of the TextBox.
-            ctx.widget().set("text", String16::from(""));
+            main_view(ctx.widget()).set_text(String16::default());
             self.clear = false;
         }
     }
@@ -30,14 +30,14 @@ widget!(MainView<MainViewState> {
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MainView").child(
-            Stack::create()
+            Stack::new()
                 .orientation("horizontal")
                 // By injecting the id of the parent the text property
                 // is shared between the MainView and the TextBox. This
                 // means both references the same String16 object.
-                .child(TextBox::create().height(32.0).text(id).build(ctx))
+                .child(TextBox::new().height(32.0).text(id).build(ctx))
                 .child(
-                    Button::create()
+                    Button::new()
                         .margin((8.0, 0.0, 0.0, 0.0))
                         // mouse click event handler
                         .on_click(move |states, _| {
@@ -56,11 +56,11 @@ impl Template for MainView {
 fn main() {
     Application::new()
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - minimal example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
-                .child(MainView::create().margin(4.0).build(ctx))
+                .child(MainView::new().margin(4.0).build(ctx))
                 .build(ctx)
         })
         .run();

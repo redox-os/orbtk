@@ -22,7 +22,7 @@ Cross platform window shell library. It's part of [OrbTk](https://gitlab.redox-o
 * [stdweb](https://github.com/koute/stdweb) (Apache 2.0, MIT): web window and events
 * [minifb](https://github.com/emoon/rust_minifb) (Apache 2.0, MIT): window and events for desktop platforms
 * [image](https://github.com/image-rs/image)(MIT): load pixel images e.g. png
-* [spin_sleep](https://github.com/alexheretic/spin-sleep)(Apache 2.0): Frame rate limiter and fps counter
+* [raw-window-handle](https://github.com/rust-windowing/raw-window-handle) (MIT): access to a window's platform-specific raw window handle
 
 ## License
 

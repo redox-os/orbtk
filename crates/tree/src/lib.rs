@@ -35,10 +35,11 @@ pub enum NotFound {
     Child(Entity),
 }
 
-/// Base data structure to manage the entity entities of a window in a tree based structure.
+/// Base data structure to manage the entities of a window in a tree based structure.
 #[derive(Clone, Default, Debug)]
 pub struct Tree {
-    pub root: Entity,
+    pub root: Option<Entity>,
+    pub overlay: Option<Entity>,
     pub children: BTreeMap<Entity, Vec<Entity>>,
     pub parent: BTreeMap<Entity, Option<Entity>>,
     iterator_start_node: Cell<Option<Entity>>,
@@ -48,6 +49,19 @@ impl Tree {
     /// Creates a new tree with default values.
     pub fn new() -> Self {
         Tree::default()
+    }
+
+    /// Returns the root of the tree.
+    pub fn root(&self) -> Entity {
+        if let Some(root) = self.root {
+            return root;
+        }
+
+        if let Some(root) = self.parent.keys().next() {
+            return *root;
+        }
+
+        0.into()
     }
 
     // /// Configure the tree iterator with a start node.
@@ -65,8 +79,25 @@ impl Tree {
 
     /// Sets the root.
     pub fn set_root(&mut self, root: impl Into<Entity>) {
-        self.root = root.into();
-        // self.iterator_start_node.set(self.root);
+        let root = root.into();
+        self.root = Some(root);
+
+        if let Some(overlay) = self.overlay {
+            if let Some(p) = self.children.get_mut(&root) {
+                p.push(overlay);
+            }
+        }
+    }
+
+    pub fn set_overlay(&mut self, overlay: impl Into<Entity>) {
+        let overlay = overlay.into();
+        self.overlay = Some(overlay);
+
+        if let Some(root) = self.root {
+            if let Some(p) = self.children.get_mut(&root) {
+                p.push(overlay);
+            }
+        }
     }
 
     /// Appends a `child` entity to the given `parent` entity.
@@ -78,13 +109,23 @@ impl Tree {
     ) -> Result<Entity, NotFound> {
         let parent = parent.into();
         let child = child.into();
-        if let Some(p) = self.children.get_mut(&parent) {
-            p.push(child);
-        } else {
-            return Err(NotFound::Parent(parent));
-        }
 
-        self.parent.insert(child, Some(parent));
+        if self.root.is_some() && parent == self.root.unwrap() && self.overlay.is_some() {
+            // insert child to root before overlay
+            let len = self.children.len();
+            if let Some(p) = self.children.get_mut(&parent) {
+                p.insert(len - 2, child);
+            } else {
+                return Err(NotFound::Parent(parent));
+            }
+        } else {
+            if let Some(p) = self.children.get_mut(&parent) {
+                p.push(child);
+            } else {
+                return Err(NotFound::Parent(parent));
+            }
+            self.parent.insert(child, Some(parent));
+        }
 
         Ok(child)
     }
@@ -110,8 +151,9 @@ impl EntityStore for Tree {
 
         if let Some(parent_index) = self.parent[&entity] {
             if let Some(parent_children) = self.children.get_mut(&parent_index) {
-                let index = parent_children.iter().position(|&r| r == entity).unwrap();
-                parent_children.remove(index);
+                if let Some(index) = parent_children.iter().position(|&r| r == entity) {
+                    parent_children.remove(index);
+                }
             }
         }
 
@@ -129,7 +171,11 @@ impl<'a> IntoIterator for &'a Tree {
             if let Some(start_node) = self.iterator_start_node.get() {
                 start_node
             } else {
-                self.root
+                if let Some(root) = self.root {
+                    root
+                } else {
+                    0.into()
+                }
             }
         };
 
@@ -155,10 +201,16 @@ impl<'a> Iterator for TreeIterator<'a> {
 
     fn next(&mut self) -> Option<Entity> {
         if let Some(node) = self.current_node {
+            if !self.tree.children.contains_key(&node) {
+                panic!("TreeIterator.next: Tree does not contains node {}", node.0);
+            }
             if !self.tree.children[&node].is_empty() {
                 self.current_node = Some(self.tree.children[&node][0]);
                 return self.current_node;
             } else {
+                if !self.tree.children.contains_key(&node) {
+                    panic!("TreeIterator.next: Tree does not contains node {}", node.0);
+                }
                 let mut tree_node = node;
                 while let Some(parent) = self.tree.parent[&tree_node] {
                     let siblings = &self.tree.children[&parent];

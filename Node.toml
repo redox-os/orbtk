@@ -3,13 +3,13 @@ name = "widgets"
 width = 468
 height = 730
     [[apps.fonts]]
-    font_family = "Material Icons"
-    src = "crates/theme/src/fonts/MaterialIcons-Regular.ttf"
+    font_family = "MaterialIcons-Regular"
+    src = "crates/theme/src/fonts/MaterialIcons-RegularIcons-Regular.ttf"
     [[apps.fonts]]
-    font_family = "Roboto Regular"
+    font_family = "Roboto-Regular"
     src = "crates/theme/src/fonts/Roboto-Regular.ttf"
     [[apps.fonts]]
-    font_family = "Roboto Medium"
+    font_family = "Roboto-Medium"
     src = "crates/theme/src/fonts/Roboto-Medium.ttf"
 
 [[apps]]
@@ -28,11 +28,11 @@ name = "canvas"
 width = 468
 height = 730
     [[apps.fonts]]
-    font_family = "Material Icons"
-    src = "crates/theme/src/fonts/MaterialIcons-Regular.ttf"
+    font_family = "MaterialIcons-Regular"
+    src = "crates/theme/src/fonts/MaterialIcons-RegularIcons-Regular.ttf"
     [[apps.fonts]]
-    font_family = "Roboto Regular"
+    font_family = "Roboto-Regular"
     src = "crates/theme/src/fonts/Roboto-Regular.ttf"
     [[apps.fonts]]
-    font_family = "Roboto Medium"
+    font_family = "Roboto-Medium"
     src = "crates/theme/src/fonts/Roboto-Medium.ttf"

@@ -1,12 +1,18 @@
-use orbtk::prelude::*;
-use orbtk::theme::DEFAULT_THEME_CSS;
+use orbtk::{
+    prelude::*,
+    theme::{COLORS_RON, DARK_THEME_RON, FONTS_RON},
+    theming::config::ThemeConfig,
+};
 
-static CSS_EXT: &'static str = include_str!("../res/grid.css");
+static DARK_EXT: &'static str = include_str!("../res/grid.ron");
 
-fn get_theme() -> ThemeValue {
-    ThemeValue::create_from_css(DEFAULT_THEME_CSS)
-        .extension_css(CSS_EXT)
-        .build()
+fn theme() -> Theme {
+    Theme::from_config(
+        ThemeConfig::from(DARK_THEME_RON)
+            .extend(ThemeConfig::from(DARK_EXT))
+            .extend(ThemeConfig::from(COLORS_RON))
+            .extend(ThemeConfig::from(FONTS_RON)),
+    )
 }
 
 widget!(MainView);
@@ -14,72 +20,66 @@ widget!(MainView);
 impl Template for MainView {
     fn template(self, _: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MainView").child(
-            Grid::create()
-                .columns(
-                    Columns::create()
-                        .column("*")
-                        .column("auto")
-                        .column(50.0)
-                        .build(),
-                )
-                .rows(Rows::create().row("*").row("*").build())
+            Grid::new()
+                .columns(Columns::new().add("*").add("auto").add(50))
+                .rows(Rows::new().add("*").add("*"))
                 .child(
-                    Grid::create()
-                        .selector("lynch")
-                        .margin((10.0, 0.0, 0.0, 4.0))
+                    Grid::new()
+                        .style("lynch")
+                        .margin((10, 0, 0, 4))
                         .attach(Grid::column(0))
                         .child(
-                            TextBlock::create()
+                            TextBlock::new()
                                 .text("(0,0)")
-                                .selector("light-text")
-                                .horizontal_alignment("center")
-                                .vertical_alignment("center")
+                                .style("light_text")
+                                .h_align("center")
+                                .v_align("center")
                                 .build(ctx),
                         )
                         .build(ctx),
                 )
                 .child(
-                    Grid::create()
-                        .selector("bluebayoux")
-                        .margin(10.0)
-                        .constraint(Constraint::create().width(150.0).build())
+                    Grid::new()
+                        .style("bluebayoux")
+                        .margin(10)
+                        .constraint(Constraint::new().width(150))
                         .attach(Grid::column(1))
                         .child(
-                            TextBlock::create()
+                            TextBlock::new()
                                 .text("(1,0)")
-                                .selector("white")
-                                .horizontal_alignment("center")
-                                .vertical_alignment("center")
+                                .style("body")
+                                .h_align("center")
+                                .v_align("center")
                                 .build(ctx),
                         )
                         .build(ctx),
                 )
                 .child(
-                    Grid::create()
-                        .selector("linkwater")
+                    Grid::new()
+                        .style("linkwater")
                         .attach(Grid::column(2))
                         .child(
-                            TextBlock::create()
+                            TextBlock::new()
                                 .text("(2,0)")
-                                .selector("linkwater")
-                                .horizontal_alignment("center")
-                                .vertical_alignment("center")
+                                .style("dark_text")
+                                .h_align("center")
+                                .v_align("center")
                                 .build(ctx),
                         )
                         .build(ctx),
                 )
                 .child(
-                    Grid::create()
-                        .selector("goldendream")
+                    Grid::new()
+                        .style("goldendream")
                         .attach(Grid::column(0))
                         .attach(Grid::row(1))
                         .attach(Grid::column_span(3))
                         .child(
-                            TextBlock::create()
+                            TextBlock::new()
                                 .text("(0,1) - ColumnSpan 3")
-                                .selector("goldendream")
-                                .horizontal_alignment("center")
-                                .vertical_alignment("center")
+                                .style("dark_text")
+                                .h_align("center")
+                                .v_align("center")
                                 .build(ctx),
                         )
                         .build(ctx),
@@ -94,14 +94,14 @@ fn main() {
     orbtk::initialize();
 
     Application::new()
+        .theme(theme())
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - grid example")
-                .position((100.0, 100.0))
-                .size(420.0, 730.0)
-                .theme(get_theme())
+                .position((100, 100))
+                .size(420, 730)
                 .resizeable(true)
-                .child(MainView::create().build(ctx))
+                .child(MainView::new().build(ctx))
                 .build(ctx)
         })
         .run();

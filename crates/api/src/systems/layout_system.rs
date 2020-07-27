@@ -1,27 +1,30 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use dces::prelude::{EntityComponentManager, System};
 
-use dces::prelude::{Entity, EntityComponentManager, System};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::*};
 
-use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree, utils::*};
-
-/// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calulated by the layout objects of layout widgets.
+/// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calculated by the layout objects of layout widgets.
+#[derive(Constructor)]
 pub struct LayoutSystem {
-    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
+    context_provider: ContextProvider,
 }
 
-impl System<Tree, StringComponentStore> for LayoutSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
-        if !self.shell.borrow().update() || !self.shell.borrow().running() {
-            return;
-        }
+impl System<Tree, StringComponentStore, RenderContext2D> for LayoutSystem {
+    fn run_with_context(
+        &self,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        render_context: &mut RenderContext2D,
+    ) {
+        // todo fix.
+        // if !self.shell.borrow().update() || !self.shell.borrow().running() {
+        //     return;
+        // }
 
         // if self.debug_flag.get() {
         //     shell::log("\n------ Start layout update  ------\n".to_string());
         // }
 
         let mut window_size = (0.0, 0.0);
-        let root = ecm.entity_store().root;
+        let root = ecm.entity_store().root();
 
         if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", root) {
             window_size.0 = bounds.width();
@@ -30,24 +33,25 @@ impl System<Tree, StringComponentStore> for LayoutSystem {
 
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Global>("global", root)
             .unwrap()
+            .theme
             .clone();
 
-        self.layouts.borrow()[&root].measure(
-            self.shell.borrow_mut().render_context_2_d(),
+        self.context_provider.layouts.borrow()[&root].measure(
+            render_context,
             root,
             ecm,
-            &self.layouts.borrow(),
+            &self.context_provider.layouts.borrow(),
             &theme,
         );
 
-        self.layouts.borrow()[&root].arrange(
-            self.shell.borrow_mut().render_context_2_d(),
+        self.context_provider.layouts.borrow()[&root].arrange(
+            render_context,
             window_size,
             root,
             ecm,
-            &self.layouts.borrow(),
+            &self.context_provider.layouts.borrow(),
             &theme,
         );
 

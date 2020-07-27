@@ -19,7 +19,7 @@ impl RectangleRenderObject {
         border_brush: utils::Brush,
         border_thickness: Thickness,
     ) {
-        render_context_2_d.rect(rect.x, rect.y, rect.width, rect.height);
+        render_context_2_d.rect(rect.x(), rect.y(), rect.width(), rect.height());
 
         if !brush.is_transparent() {
             render_context_2_d.set_fill_style(brush);
@@ -105,14 +105,14 @@ impl RectangleRenderObject {
         radius: f64,
         brush: utils::Brush,
         border_brush: utils::Brush,
-        _border_thickness: Thickness,
+        border_thickness: Thickness,
     ) {
         self.render_rounded_rect_path(
             render_context_2_d,
-            rect.x,
-            rect.y,
-            rect.width,
-            rect.height,
+            rect.x(),
+            rect.y(),
+            rect.width(),
+            rect.height(),
             radius,
         );
 
@@ -122,6 +122,7 @@ impl RectangleRenderObject {
         }
 
         if !border_brush.is_transparent() {
+            render_context_2_d.set_line_width(border_thickness.left());
             render_context_2_d.set_stroke_style(border_brush);
             render_context_2_d.stroke();
         }
@@ -135,7 +136,7 @@ impl Into<Box<dyn RenderObject>> for RectangleRenderObject {
 }
 
 impl RenderObject for RectangleRenderObject {
-    fn render_self(&self, ctx: &mut Context<'_>, global_position: &Point) {
+    fn render_self(&self, ctx: &mut Context, global_position: &Point) {
         let (bounds, background, border_radius, border_thickness, border_brush) = {
             let widget = ctx.widget();
             (
@@ -169,8 +170,8 @@ impl RenderObject for RectangleRenderObject {
             if !has_thickness {
                 self.render_circle(
                     ctx.render_context_2_d(),
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
+                    global_position.x() + bounds.x(),
+                    global_position.y() + bounds.y(),
                     bounds.width(),
                     bounds.height(),
                     border_radius,
@@ -180,8 +181,8 @@ impl RenderObject for RectangleRenderObject {
             } else {
                 self.render_bordered_circle(
                     ctx.render_context_2_d(),
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
+                    global_position.x() + bounds.x(),
+                    global_position.y() + bounds.y(),
                     bounds.width(),
                     bounds.height(),
                     border_radius,
@@ -195,8 +196,7 @@ impl RenderObject for RectangleRenderObject {
             self.render_rounded_bordered_rect_path(
                 ctx.render_context_2_d(),
                 Rectangle::new(
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
+                    *global_position + bounds.position(),
                     bounds.width(),
                     bounds.height(),
                 ),
@@ -208,8 +208,8 @@ impl RenderObject for RectangleRenderObject {
         } else if border_radius > 0. {
             self.render_rounded_rect_path(
                 ctx.render_context_2_d(),
-                global_position.x + bounds.x(),
-                global_position.y + bounds.y(),
+                global_position.x() + bounds.x(),
+                global_position.y() + bounds.y(),
                 bounds.width(),
                 bounds.height(),
                 border_radius,
@@ -221,8 +221,7 @@ impl RenderObject for RectangleRenderObject {
             self.render_bordered_rect_path(
                 ctx.render_context_2_d(),
                 Rectangle::new(
-                    global_position.x + bounds.x(),
-                    global_position.y + bounds.y(),
+                    *global_position + bounds.position(),
                     bounds.width(),
                     bounds.height(),
                 ),
@@ -232,8 +231,8 @@ impl RenderObject for RectangleRenderObject {
             );
         } else {
             ctx.render_context_2_d().rect(
-                global_position.x + bounds.x(),
-                global_position.y + bounds.y(),
+                global_position.x() + bounds.x(),
+                global_position.y() + bounds.y(),
                 bounds.width(),
                 bounds.height(),
             );

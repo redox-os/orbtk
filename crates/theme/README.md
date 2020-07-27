@@ -11,9 +11,8 @@ Base resources and css styles of OrbTks default theme (dark and light). It's par
 
 ## Resources
 
-* [Material Icons](https://github.com/google/material-design-icons) (Apache 2.0): Default icon font
+* [Material Icons](https://github.com/material-icons/material-icons-font) (Apache 2.0): Default icon font
 * [Roboto](https://github.com/google/roboto) (Apache 2.0): Default font
-* [OpenMoji](https://openmoji.org/) (LGPL-3.0, CC BY-SA 4.0): Default emoji font file
 
 ## License
 

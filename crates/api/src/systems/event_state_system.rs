@@ -1,37 +1,66 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree, utils::*};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::*};
 
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
+#[derive(Constructor)]
 pub struct EventStateSystem {
-    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub handlers: Rc<RefCell<EventHandlerMap>>,
-    pub mouse_down_nodes: RefCell<Vec<Entity>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub registry: Rc<RefCell<Registry>>,
+    context_provider: ContextProvider,
+    registry: Rc<RefCell<Registry>>,
 }
 
 impl EventStateSystem {
-    // fn process_top_down_event(
-    //     &self,
-    //     _event: &EventBox,
-    //     _ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-    // ) {
-    // }
-
-    fn process_direct(
+    // Remove all objects of a widget.
+    fn remove_widget(
         &self,
-        event: &EventBox
-    ) -> bool {
+        entity: Entity,
+        theme: &Theme,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        render_context: &mut RenderContext2D,
+    ) {
+        {
+            let registry = &mut self.registry.borrow_mut();
+
+            let mut ctx = Context::new(
+                (entity, ecm),
+                &theme,
+                &self.context_provider,
+                render_context,
+            );
+
+            if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
+                state.cleanup(registry, &mut ctx);
+            }
+
+            drop(ctx);
+        }
+        self.context_provider.states.borrow_mut().remove(&entity);
+
+        ecm.remove_entity(entity);
+        self.context_provider.layouts.borrow_mut().remove(&entity);
+        self.context_provider
+            .render_objects
+            .borrow_mut()
+            .remove(&entity);
+        self.context_provider
+            .handler_map
+            .borrow_mut()
+            .remove(&entity);
+    }
+
+    fn process_direct(&self, event: &EventBox) -> bool {
         if event.strategy == EventStrategy::Direct {
-            if let Some(handlers) = self.handlers.borrow().get(&event.source) {
+            if let Some(handlers) = self
+                .context_provider
+                .handler_map
+                .borrow()
+                .get(&event.source)
+            {
                 handlers.iter().any(|handler| {
                     handler.handle_event(
-                        &mut StatesContext::new(&mut *self.states.borrow_mut()),
+                        &mut StatesContext::new(&mut *self.context_provider.states.borrow_mut()),
                         &event,
                     )
                 });
@@ -52,35 +81,15 @@ impl EventStateSystem {
         let mut update = false;
 
         let mut current_node = event.source;
-        let root = ecm.entity_store().root;
+        let root = ecm.entity_store().root();
+        let mut disabled_parents = vec![];
 
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Global>("global", root)
             .unwrap()
+            .theme
             .clone();
-
-        // resize
-        if let Ok(WindowEvent::Resize { width, height }) = event.downcast_ref::<WindowEvent>() {
-            // update window size
-            if let Ok(bounds) = ecm
-                .component_store_mut()
-                .get_mut::<Rectangle>("bounds", root)
-            {
-                bounds.set_width(*width);
-                bounds.set_height(*height);
-            }
-
-            if let Ok(constraint) = ecm
-                .component_store_mut()
-                .get_mut::<Constraint>("constraint", root)
-            {
-                constraint.set_width(*width);
-                constraint.set_height(*height);
-            }
-
-            update = true;
-        }
 
         // global key handling
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
@@ -101,170 +110,140 @@ impl EventStateSystem {
         let mut clipped_parent = vec![];
 
         loop {
-            let mut has_handler = false;
-            if let Some(handlers) = self.handlers.borrow().get(&current_node) {
-                if handlers.iter().any(|handler| handler.handles_event(event)) {
-                    has_handler = true;
-                }
-            }
-
-            if let Some(cp) = clipped_parent.last() {
-                if ecm.entity_store().parent[&current_node] == Some(*cp) {
-                    clipped_parent.push(current_node);
-                } else {
-                    clipped_parent.pop();
-                }
-            }
-
-            // key down event
-            if event.downcast_ref::<KeyDownEvent>().is_ok() {
-                if let Some(focused) = ecm
-                    .component_store()
-                    .get::<Global>("global", root)
-                    .unwrap()
-                    .focused_widget
-                {
-                    if current_node == focused && has_handler {
-                        matching_nodes.push(current_node);
+            if !disabled_parents.is_empty() {
+                if let Some(parent) = ecm.entity_store().parent[&current_node] {
+                    if disabled_parents.contains(&parent) {
+                        disabled_parents.push(current_node);
+                    } else {
+                        disabled_parents.clear();
                     }
                 }
-
-                unknown_event = false;
             }
-
-            // key up event
-            if event.downcast_ref::<KeyUpEvent>().is_ok() {
-                if let Some(focused) = ecm
-                    .component_store()
-                    .get::<Global>("global", root)
-                    .unwrap()
-                    .focused_widget
-                {
-                    if current_node == focused && has_handler {
-                        matching_nodes.push(current_node);
-                    }
+            if let Ok(enabled) = ecm.component_store().get::<bool>("enabled", current_node) {
+                if !enabled {
+                    disabled_parents.push(current_node);
                 }
-
-                unknown_event = false;
             }
 
-            // scroll handling
-            if event.downcast_ref::<ScrollEvent>().is_ok() {
-                if check_mouse_condition(
-                    mouse_position,
-                    &WidgetContainer::new(current_node, ecm, &theme),
-                ) && has_handler
-                {
-                    matching_nodes.push(current_node);
-                }
-
-                unknown_event = false;
-            }
-
-            // click handling
-            if let Ok(event) = event.downcast_ref::<ClickEvent>() {
-                if check_mouse_condition(
-                    event.position,
-                    &WidgetContainer::new(current_node, ecm, &theme),
-                ) {
-                    let mut add = true;
-                    if let Some(op) = clipped_parent.get(0) {
-                        if !check_mouse_condition(
-                            event.position,
-                            &WidgetContainer::new(*op, ecm, &theme),
-                        ) {
-                            add = false;
-                        }
-                    }
-
-                    if add && has_handler {
-                        matching_nodes.push(current_node);
-                    }
-                }
-
-                unknown_event = false;
-            }
-
-            // mouse down handling
-            if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
-                if check_mouse_condition(
-                    Point::new(event.x, event.y),
-                    &WidgetContainer::new(current_node, ecm, &theme),
-                ) {
-                    let mut add = true;
-                    if let Some(op) = clipped_parent.get(0) {
-                        // todo: improve check path if exists
-                        if !check_mouse_condition(
-                            Point::new(event.x, event.y),
-                            &WidgetContainer::new(*op, ecm, &theme),
-                        ) && has_handler
-                        {
-                            add = false;
-                        }
-                    }
-
-                    if add {
-                        matching_nodes.push(current_node);
-                        self.mouse_down_nodes.borrow_mut().push(current_node);
-                    }
-                }
-
-                unknown_event = false;
-            }
-
-            // mouse move handling
-            if let Ok(event) = event.downcast_ref::<MouseMoveEvent>() {
-                if check_mouse_condition(
-                    Point::new(event.x, event.y),
-                    &WidgetContainer::new(current_node, ecm, &theme),
-                ) {
-                    let mut add = true;
-                    if let Some(op) = clipped_parent.get(0) {
-                        // todo: improve check path if exists
-                        if !check_mouse_condition(
-                            Point::new(event.x, event.y),
-                            &WidgetContainer::new(*op, ecm, &theme),
-                        ) {
-                            add = false;
-                        }
-                    }
-
-                    if add && has_handler {
-                        matching_nodes.push(current_node);
-                    }
-                }
-
-                unknown_event = false;
-            }
-
-            // mouse up handling
-            if event.downcast_ref::<MouseUpEvent>().is_ok() {
-                if self.mouse_down_nodes.borrow().contains(&current_node) {
-                    matching_nodes.push(current_node);
-                    let index = self
-                        .mouse_down_nodes
-                        .borrow()
-                        .iter()
-                        .position(|x| *x == current_node)
-                        .unwrap();
-                    self.mouse_down_nodes.borrow_mut().remove(index);
-                }
-
-                unknown_event = false;
-            }
-
-            if unknown_event
-                && *WidgetContainer::new(current_node, ecm, &theme).get::<bool>("enabled")
+            if let Ok(visibility) = ecm
+                .component_store()
+                .get::<Visibility>("visibility", current_node)
             {
-                if has_handler {
-                    matching_nodes.push(current_node);
+                if *visibility != Visibility::Visible {
+                    disabled_parents.push(current_node);
                 }
             }
 
-            if let Ok(clip) = ecm.component_store().get::<bool>("clip", current_node) {
-                if *clip {
-                    clipped_parent.clear();
-                    clipped_parent.push(current_node);
+            if disabled_parents.is_empty() {
+                let mut has_handler = false;
+                if let Some(handlers) = self
+                    .context_provider
+                    .handler_map
+                    .borrow()
+                    .get(&current_node)
+                {
+                    if handlers.iter().any(|handler| handler.handles_event(event)) {
+                        has_handler = true;
+                    }
+                }
+                if let Some(cp) = clipped_parent.last() {
+                    if ecm.entity_store().parent[&current_node] == Some(*cp) {
+                        clipped_parent.push(current_node);
+                    } else {
+                        clipped_parent.pop();
+                    }
+                }
+
+                // scroll handling
+                if event.downcast_ref::<ScrollEvent>().is_ok() {
+                    if check_mouse_condition(
+                        mouse_position,
+                        &WidgetContainer::new(current_node, ecm, &theme),
+                    ) && has_handler
+                    {
+                        matching_nodes.push(current_node);
+                    }
+                    unknown_event = false;
+                }
+                // click handling
+                if let Ok(event) = event.downcast_ref::<ClickEvent>() {
+                    if check_mouse_condition(
+                        event.position,
+                        &WidgetContainer::new(current_node, ecm, &theme),
+                    ) {
+                        let mut add = true;
+                        if let Some(op) = clipped_parent.get(0) {
+                            if !check_mouse_condition(
+                                event.position,
+                                &WidgetContainer::new(*op, ecm, &theme),
+                            ) {
+                                add = false;
+                            }
+                        }
+                        if add && has_handler {
+                            matching_nodes.push(current_node);
+                        }
+                    }
+                    unknown_event = false;
+                }
+                // mouse down handling
+                if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
+                    if check_mouse_condition(
+                        event.position,
+                        &WidgetContainer::new(current_node, ecm, &theme),
+                    ) {
+                        let mut add = true;
+                        if let Some(op) = clipped_parent.get(0) {
+                            // todo: improve check path if exists
+                            if !check_mouse_condition(
+                                event.position,
+                                &WidgetContainer::new(*op, ecm, &theme),
+                            ) && has_handler
+                            {
+                                add = false;
+                            }
+                        }
+                        if add {
+                            matching_nodes.push(current_node);
+                        }
+                    }
+                    unknown_event = false;
+                }
+                // mouse move handling
+                if let Ok(event) = event.downcast_ref::<MouseMoveEvent>() {
+                    if check_mouse_condition(
+                        event.position,
+                        &WidgetContainer::new(current_node, ecm, &theme),
+                    ) {
+                        let mut add = true;
+                        if let Some(op) = clipped_parent.get(0) {
+                            // todo: improve check path if exists
+                            if !check_mouse_condition(
+                                event.position,
+                                &WidgetContainer::new(*op, ecm, &theme),
+                            ) {
+                                add = false;
+                            }
+                        }
+                        if add && has_handler {
+                            matching_nodes.push(current_node);
+                        }
+                    }
+                    unknown_event = false;
+                }
+
+                if unknown_event
+                    && *WidgetContainer::new(current_node, ecm, &theme).get::<bool>("enabled")
+                {
+                    if has_handler {
+                        matching_nodes.push(current_node);
+                    }
+                }
+                if let Ok(clip) = ecm.component_store().get::<bool>("clip", current_node) {
+                    if *clip {
+                        clipped_parent.clear();
+                        clipped_parent.push(current_node);
+                    }
                 }
             }
 
@@ -279,29 +258,12 @@ impl EventStateSystem {
         }
 
         let mut handled = false;
-        let mut disabled_parent = None;
 
         for node in matching_nodes.iter().rev() {
-            if let Some(dp) = disabled_parent {
-                if ecm.entity_store().parent[&node] == Some(dp) {
-                    disabled_parent = Some(*node);
-                    continue;
-                } else {
-                    disabled_parent = None;
-                }
-            }
-
-            if let Ok(enabled) = ecm.component_store().get::<bool>("enabled", *node) {
-                if !enabled {
-                    disabled_parent = Some(*node);
-                    continue;
-                }
-            }
-
-            if let Some(handlers) = self.handlers.borrow().get(node) {
+            if let Some(handlers) = self.context_provider.handler_map.borrow().get(node) {
                 handled = handlers.iter().any(|handler| {
                     handler.handle_event(
-                        &mut StatesContext::new(&mut *self.states.borrow_mut()),
+                        &mut StatesContext::new(&mut *self.context_provider.states.borrow_mut()),
                         event,
                     )
                 });
@@ -318,20 +280,24 @@ impl EventStateSystem {
     }
 }
 
-impl System<Tree, StringComponentStore> for EventStateSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
-        let mut shell = self.shell.borrow_mut();
-        let mut update = shell.update();
+impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
+    fn run_with_context(
+        &self,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        render_context: &mut RenderContext2D,
+    ) {
+        // todo fix
+        // let mut update = shell.update();
+        let mut update = false;
 
         loop {
             {
-                let adapter = shell.adapter();
-                let mouse_position = adapter.mouse_position;
-                for event in adapter.event_queue.into_iter() {
+                let mouse_position = self.context_provider.mouse_position.get();
+                for event in self.context_provider.event_queue.borrow_mut().into_iter() {
                     if let Ok(event) = event.downcast_ref::<SystemEvent>() {
                         match event {
                             SystemEvent::Quit => {
-                                shell.set_running(false);
+                                // todo send close shell request
                                 return;
                             }
                         }
@@ -355,50 +321,92 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                 }
             }
 
-            shell.set_update(update);
+            // todo fix
+            // shell.set_update(update);
 
             // handle states
 
-            let root = ecm.entity_store().root;
+            // crate::shell::CONSOLE.time("update-time:");
+
+            let root = ecm.entity_store().root();
 
             let theme = ecm
                 .component_store()
-                .get::<Theme>("theme", root)
+                .get::<Global>("global", root)
                 .unwrap()
+                .theme
                 .clone();
             let mut current_node = root;
-
+            let mut remove_widget_list: Vec<Entity> = vec![];
             loop {
                 let mut skip = false;
 
                 {
-                    if !self.states.borrow().contains_key(&current_node) {
+                    if !self
+                        .context_provider
+                        .states
+                        .borrow()
+                        .contains_key(&current_node)
+                    {
                         skip = true;
                     }
 
+                    let mut keys = vec![];
+
                     if !skip {
-                        let render_objects = &self.render_objects;
-                        let layouts = &mut self.layouts.borrow_mut();
-                        let handlers = &mut self.handlers.borrow_mut();
-                        let registry = &mut self.registry.borrow_mut();
-                        let new_states = &mut BTreeMap::new();
+                        {
+                            let registry = &mut self.registry.borrow_mut();
 
-                        let mut ctx = Context::new(
-                            (current_node, ecm),
-                            &mut shell,
-                            &theme,
-                            render_objects,
-                            layouts,
-                            handlers,
-                            &self.states,
-                            new_states,
-                        );
+                            let mut ctx = Context::new(
+                                (current_node, ecm),
+                                &theme,
+                                &self.context_provider,
+                                render_context,
+                            );
 
-                        if let Some(state) = self.states.borrow_mut().get_mut(&current_node) {
-                            state.update(registry, &mut ctx);
+                            if let Some(state) = self
+                                .context_provider
+                                .states
+                                .borrow_mut()
+                                .get_mut(&current_node)
+                            {
+                                state.update(registry, &mut ctx);
+                            }
+
+                            keys.append(&mut ctx.new_states_keys());
+
+                            remove_widget_list.append(ctx.remove_widget_list());
+                            drop(ctx);
+
+                            for key in keys {
+                                let mut ctx = Context::new(
+                                    (key, ecm),
+                                    &theme,
+                                    &self.context_provider,
+                                    render_context,
+                                );
+                                if let Some(state) =
+                                    self.context_provider.states.borrow_mut().get_mut(&key)
+                                {
+                                    state.init(registry, &mut ctx);
+                                }
+
+                                drop(ctx);
+                            }
                         }
 
-                        drop(ctx)
+                        for remove_widget in remove_widget_list.pop() {
+                            let mut children = vec![];
+                            get_all_children(&mut children, remove_widget, ecm.entity_store());
+
+                            // remove children of target widget.
+                            for entity in children.iter().rev() {
+                                self.remove_widget(*entity, &theme, ecm, render_context);
+                            }
+
+                            // remove target widget
+                            self.remove_widget(remove_widget, &theme, ecm, render_context);
+                        }
                     }
                 }
                 let mut it = ecm.entity_store().start_node(current_node).into_iter();
@@ -411,7 +419,9 @@ impl System<Tree, StringComponentStore> for EventStateSystem {
                 }
             }
 
-            if shell.adapter().event_queue.is_empty() {
+            // crate::shell::CONSOLE.time_end("update-time:");
+
+            if self.context_provider.event_queue.borrow().is_empty() {
                 break;
             }
         }

@@ -2,9 +2,9 @@ use std::collections::HashMap;
 
 use dces::prelude::Entity;
 
-use crate::shell::Key;
+use crate::{shell::Key, theming::Theme};
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 /// The `Global` struct is used to define global `properties` that could be access application width.
 pub struct Global {
     /// Contains the current focused widget.
@@ -15,6 +15,9 @@ pub struct Global {
 
     /// Stores the state of the keyboard
     pub keyboard_state: KeyboardState,
+
+    /// The current window theme
+    pub theme: Theme,
 }
 
 #[derive(Clone, Default)]
@@ -26,6 +29,7 @@ pub struct Global {
 ///
 /// There are several convenience methods to check common modifiers (ctrl, shift, alt, etc).
 /// This is useful if you don't care which shift key is down.
+#[derive(Debug)]
 pub struct KeyboardState {
     key_list: HashMap<Key, bool>,
 }
@@ -79,7 +83,7 @@ mod tests {
         assert_eq!(state.is_key_down(Key::ShiftL), true);
         state.set_key_state(Key::ShiftL, false);
         assert_eq!(state.is_key_down(Key::ShiftL), false);
-        // Set quite a few in a row
+        // Set quit a few in a row
         state.set_key_state(Key::ShiftL, true);
         state.set_key_state(Key::ShiftR, true);
         state.set_key_state(Key::Space, true);

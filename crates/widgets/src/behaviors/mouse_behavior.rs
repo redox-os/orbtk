@@ -4,62 +4,72 @@ use crate::prelude::*;
 
 #[derive(Debug, Copy, Clone)]
 enum Action {
-    Press(Point),
-    Release(Point),
+    Press(Mouse),
+    Release(Mouse),
     Scroll(Point),
 }
 
 /// The `MouseBehaviorState` handles the `MouseBehavior` widget.
 #[derive(Default, AsAny)]
 pub struct MouseBehaviorState {
-    action: Cell<Option<Action>>,
+    action: Option<Action>,
     has_delta: Cell<bool>,
 }
 
 impl MouseBehaviorState {
-    fn action(&self, action: Action) {
-        self.action.set(Some(action));
+    fn action(&mut self, action: Action) {
+        self.action = Some(action);
     }
 }
 
 impl State for MouseBehaviorState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-        if !ctx.widget().get::<bool>("enabled") {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+        if !mouse_behavior(ctx.widget()).enabled() {
             return;
         }
 
-        if let Some(action) = self.action.get() {
+        if let Some(action) = self.action {
+            let target: Entity = (*mouse_behavior(ctx.widget()).target()).into();
+
             match action {
                 Action::Press(_) => {
-                    ctx.widget().set("pressed", true);
+                    mouse_behavior(ctx.widget()).set_pressed(true);
+                    toggle_flag("pressed", &mut ctx.get_widget(target));
                 }
                 Action::Release(p) => {
-                    ctx.widget().set("pressed", false);
+                    if !*mouse_behavior(ctx.widget()).pressed() {
+                        self.action = None;
+                        return;
+                    }
 
-                    if check_mouse_condition(p, &ctx.widget()) {
+                    mouse_behavior(ctx.widget()).set_pressed(false);
+                    toggle_flag("pressed", &mut ctx.get_widget(target));
+
+                    if check_mouse_condition(p.position, &ctx.widget()) {
                         let parent = ctx.entity_of_parent().unwrap();
-                        ctx.push_event_by_entity(ClickEvent { position: p }, parent)
+                        ctx.push_event_by_entity(
+                            ClickEvent {
+                                position: p.position,
+                            },
+                            parent,
+                        )
                     }
                 }
                 Action::Scroll(p) => {
-                    ctx.widget().set("position", p);
+                    mouse_behavior(ctx.widget()).set_position(p);
                     self.has_delta.set(true);
                 }
             };
 
-            let element = ctx.widget().clone::<Selector>("selector").element.unwrap();
+            ctx.get_widget(target).update(false);
 
-            if let Some(parent) = ctx.parent_entity_by_element(&*element) {
-                ctx.get_widget(parent).update_theme_by_state(false);
-            }
-
-            self.action.set(None);
+            self.action = None;
         }
     }
 
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         if self.has_delta.get() {
-            ctx.widget().set("delta", Point::new(0.0, 0.0));
+            mouse_behavior(ctx.widget()).set_delta(Point::default());
             self.has_delta.set(false);
         }
     }
@@ -67,16 +77,16 @@ impl State for MouseBehaviorState {
 
 widget!(
     /// The `MouseBehavior` widget is used to handle internal the pressed behavior of a widget.
-    /// 
+    ///
     /// **CSS element:** `check-box`
     MouseBehavior<MouseBehaviorState>: MouseHandler {
-        /// Sets or shares the css selector property. 
-        selector: Selector,
+        /// Sets or shares the target of the behavior.
+        target: u32,
 
-        /// Sets or shares the pressed property. 
+        /// Sets or shares the pressed property.
         pressed: bool,
 
-        /// Sets or shares the (wheel, scroll) delta property. 
+        /// Sets or shares the (wheel, scroll) delta property.
         delta: Point
     }
 );
@@ -84,24 +94,23 @@ widget!(
 impl Template for MouseBehavior {
     fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("MouseBehavior")
-            .selector("")
             .delta(0.0)
             .pressed(false)
-            .on_mouse_down(move |states, p| {
+            .on_mouse_down(move |states, m| {
                 states
-                    .get::<MouseBehaviorState>(id)
-                    .action(Action::Press(p));
+                    .get_mut::<MouseBehaviorState>(id)
+                    .action(Action::Press(m));
                 false
             })
-            .on_mouse_up(move |states, p| {
+            .on_mouse_up(move |states, m| {
                 states
-                    .get::<MouseBehaviorState>(id)
-                    .action(Action::Release(p));
+                    .get_mut::<MouseBehaviorState>(id)
+                    .action(Action::Release(m));
                 false
             })
             .on_scroll(move |states, p| {
                 states
-                    .get::<MouseBehaviorState>(id)
+                    .get_mut::<MouseBehaviorState>(id)
                     .action(Action::Scroll(p));
                 false
             })

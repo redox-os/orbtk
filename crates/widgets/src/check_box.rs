@@ -3,9 +3,10 @@ use crate::prelude::*;
 
 widget!(
     /// The `CheckBox` widget can be switch its selected state. It contains a selection box and a text.
-    /// 
+    ///
     /// **CSS element:** `check-box`
-    CheckBox: MouseHandler, ChangedHandler {
+    CheckBox: MouseHandler,
+    ChangedHandler {
         /// Sets or shares the background property.
         background: Brush,
 
@@ -45,13 +46,10 @@ widget!(
         /// Sets or shares the icon font property.
         icon_font: String,
 
-        /// Sets or shares the css selector property. 
-        selector: Selector,
-
-        /// Sets or shares the pressed property. 
+        /// Sets or shares the pressed property.
         pressed: bool,
 
-        /// Sets or shares the selected property. 
+        /// Sets or shares the selected property.
         selected: bool
     }
 );
@@ -59,7 +57,7 @@ widget!(
 impl Template for CheckBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("CheckBox")
-            .selector("check-box")
+            .style("check_box")
             .selected(false)
             .height(24.0)
             .background(colors::LYNCH_COLOR)
@@ -70,28 +68,28 @@ impl Template for CheckBox {
             .foreground(colors::LINK_WATER_COLOR)
             .text("")
             .font_size(fonts::FONT_SIZE_12)
-            .font("Roboto Regular")
-            .icon(material_font_icons::CHECK_FONT_ICON)
-            .icon_font("Material Icons")
+            .font("Roboto-Regular")
+            .icon(material_icons_font::MD_CHECK)
+            .icon_font("MaterialIcons-Regular")
             .icon_size(fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
             .child(
-                MouseBehavior::create()
+                MouseBehavior::new()
                     .pressed(id)
                     .enabled(id)
-                    .selector(id)
+                    .target(id.0)
                     .child(
-                        SelectionBehavior::create()
+                        SelectionBehavior::new()
                             .selected(id)
                             .enabled(id)
-                            .selector(id)
-                            .parent(id.0)
+                            .target(id.0)
                             .child(
-                                Stack::create()
+                                Stack::new()
                                     .orientation("horizontal")
+                                    .spacing(8.0)
                                     .child(
-                                        Container::create()
+                                        Container::new()
                                             .size(24.0, 24.0)
                                             .background(id)
                                             .border_radius(id)
@@ -100,9 +98,9 @@ impl Template for CheckBox {
                                             .padding(id)
                                             .opacity(id)
                                             .child(
-                                                FontIconBlock::create()
-                                                    .vertical_alignment("center")
-                                                    .horizontal_alignment("center")
+                                                FontIconBlock::new()
+                                                    .v_align("center")
+                                                    .h_align("center")
                                                     .icon(id)
                                                     .icon_brush(id)
                                                     .icon_size(id)
@@ -113,9 +111,8 @@ impl Template for CheckBox {
                                             .build(ctx),
                                     )
                                     .child(
-                                        TextBlock::create()
-                                            .vertical_alignment("center")
-                                            .margin((8.0, 0.0, 0.0, 0.0))
+                                        TextBlock::new()
+                                            .v_align("center")
                                             .foreground(id)
                                             .text(id)
                                             .font_size(id)

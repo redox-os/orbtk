@@ -1,3 +1,5 @@
+use crate::Value;
+
 /// Used to describes a thickness e.g a border thickness.
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct Thickness {
@@ -116,6 +118,51 @@ impl From<(f64, f64)> for Thickness {
 impl From<f64> for Thickness {
     fn from(t: f64) -> Self {
         Thickness::new(t, t, t, t)
+    }
+}
+
+impl From<Value> for Thickness {
+    fn from(v: Value) -> Self {
+        match v.0 {
+            ron::Value::Number(value) => {
+                return Thickness::from(value.into_f64());
+            }
+            ron::Value::Map(map) => {
+                let mut left = 0.0;
+                let mut top = 0.0;
+                let mut right = 0.0;
+                let mut bottom = 0.0;
+
+                for (key, value) in map.iter() {
+                    if let Ok(key) = key.clone().into_rust::<String>() {
+                        let value = if let Ok(value) = value.clone().into_rust::<f64>() {
+                            value
+                        } else {
+                            0.0
+                        };
+
+                        if key.as_str().eq("left") {
+                            left = value;
+                        }
+
+                        if key.as_str().eq("top") {
+                            top = value;
+                        }
+
+                        if key.as_str().eq("right") {
+                            right = value;
+                        }
+
+                        if key.as_str().eq("bottom") {
+                            bottom = value;
+                        }
+                    }
+                }
+
+                return Thickness::from((left, top, right, bottom));
+            }
+            _ => return Thickness::default(),
+        }
     }
 }
 

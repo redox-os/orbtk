@@ -12,7 +12,7 @@ impl Into<Box<dyn RenderObject>> for FontIconRenderObject {
 }
 
 impl RenderObject for FontIconRenderObject {
-    fn render_self(&self, ctx: &mut Context<'_>, global_position: &Point) {
+    fn render_self(&self, ctx: &mut Context, global_position: &Point) {
         let (bounds, icon, icon_brush, icon_font, icon_size) = {
             let widget = ctx.widget();
             (
@@ -24,8 +24,8 @@ impl RenderObject for FontIconRenderObject {
             )
         };
 
-        if bounds.width == 0.0
-            || bounds.height == 0.0
+        if bounds.width() == 0.0
+            || bounds.height() == 0.0
             || icon_brush.is_transparent()
             || icon_size == 0.0
             || icon.is_empty()
@@ -41,8 +41,8 @@ impl RenderObject for FontIconRenderObject {
 
             ctx.render_context_2_d().fill_text(
                 &icon,
-                global_position.x + bounds.x,
-                global_position.y + bounds.y,
+                global_position.x() + bounds.x(),
+                global_position.y() + bounds.y(),
             );
             ctx.render_context_2_d().close_path();
         }

@@ -54,8 +54,16 @@ pub struct Row {
 
 impl Row {
     /// Creates a new `RowBuilder` object with default values.
-    pub fn create() -> RowBuilder {
+    #[inline]
+    pub fn new() -> RowBuilder {
         RowBuilder::new()
+    }
+
+    /// Creates a new `RowBuilder` object with default values.
+    #[inline(always)]
+    #[deprecated = "Use new instead"]
+    pub fn create() -> RowBuilder {
+        Row::new()
     }
 
     /// Gets the row height.
@@ -85,15 +93,21 @@ impl Row {
 impl From<&str> for Row {
     fn from(t: &str) -> Self {
         match t {
-            "Auto" | "auto" => Row::create().height(RowHeight::Auto).build(),
-            _ => Row::create().height(RowHeight::Stretch).build(),
+            "Auto" | "auto" => Row::new().height(RowHeight::Auto).build(),
+            _ => Row::new().height(RowHeight::Stretch).build(),
         }
     }
 }
 
 impl From<f64> for Row {
     fn from(t: f64) -> Self {
-        Row::create().height(RowHeight::Height(t)).build()
+        Row::new().height(RowHeight::Height(t)).build()
+    }
+}
+
+impl From<i32> for Row {
+    fn from(t: i32) -> Self {
+        Row::new().height(RowHeight::Height(t.into())).build()
     }
 }
 
@@ -129,9 +143,16 @@ impl RowsBuilder {
     }
 
     /// Inserts a new row.
-    pub fn row<R: Into<Row>>(mut self, row: R) -> Self {
+    pub fn add<R: Into<Row>>(mut self, row: R) -> Self {
         self.row_definitions.push(row.into());
         self
+    }
+
+    /// Inserts a new row.
+    #[inline]
+    #[deprecated = "Use add instead"]
+    pub fn row<R: Into<Row>>(self, row: R) -> Self {
+        self.add(row)
     }
 
     /// Inserts a list of rows.
@@ -156,12 +177,26 @@ impl RowsBuilder {
     }
 }
 
+impl From<RowsBuilder> for Rows {
+    fn from(builder: RowsBuilder) -> Self {
+        builder.build()
+    }
+}
+
 /// Helper struct used inside of the row Property.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct Rows(Vec<Row>);
 
 impl Rows {
     /// Creates a new `RowsBuilder` object with default values.
+    #[inline(always)]
+    pub fn new() -> RowsBuilder {
+        RowsBuilder::new()
+    }
+
+    /// Creates a new `RowsBuilder` object with default values.
+    #[inline(always)]
+    #[deprecated = "Use new instead"]
     pub fn create() -> RowsBuilder {
         RowsBuilder::new()
     }
@@ -176,12 +211,12 @@ impl Rows {
         self.0.is_empty()
     }
 
-    /// Returns a reference to an row.
+    /// Returns a reference to a row.
     pub fn get(&self, row: usize) -> Option<&Row> {
         self.0.get(row)
     }
 
-    /// Returns a mutable reference to an row.
+    /// Returns a mutable reference to a row.
     pub fn get_mut(&mut self, row: usize) -> Option<&mut Row> {
         self.0.get_mut(row)
     }
@@ -264,8 +299,8 @@ mod tests {
 
         let builder = RowsBuilder::new();
         let rows = builder
-            .row(Row::create().build())
-            .row(Row::create().build())
+            .add(Row::new().build())
+            .add(Row::new().build())
             .build();
 
         assert_eq!(rows.len(), 2);

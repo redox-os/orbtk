@@ -1,9 +1,27 @@
 use super::behaviors::MouseBehavior;
 use crate::prelude::*;
 
+// pub struct ButtonCtx<'a> {
+//     widget: crate::api::WidgetContainer<'a>
+// }
+
+// impl<'a> ButtonCtx<'a> {
+//     pub fn set_foreground(&mut self, foreground: impl Into<Brush>) {
+//         self.widget.set("foreground", foreground.into());
+//     }
+// }
+
+// impl Button {
+//     pub fn get<'a>(widget: crate::api::WidgetContainer<'a>) -> ButtonCtx<'a> {
+//         ButtonCtx {
+//             widget
+//         }
+//     }
+// }
+
 widget!(
     /// The `Button` widget can be clicked by user. It's used to perform an action.
-    /// 
+    ///
     /// **CSS element:** `button`
     Button: MouseHandler {
         /// Sets or shares the background property.
@@ -45,41 +63,42 @@ widget!(
         /// Sets or shares the icon font property.
         icon_font: String,
 
-        /// Sets or shares the css selector property. 
-        selector: Selector,
+        /// Sets or shares the pressed property.
+        pressed: bool,
 
-        /// Sets or shares the pressed property. 
-        pressed: bool
+        /// Sets or shares the spacing between icon and text.
+        spacing: f64
     }
 );
 
 impl Template for Button {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Button")
-            .selector("button")
-            .height(32.0)
-            .min_width(80.0)
+            .style("button")
+            .height(36.0)
+            .min_width(64.0)
             .background(colors::LYNCH_COLOR)
-            .border_radius(2.0)
+            .border_radius(4.0)
             .border_width(0.0)
             .border_brush("transparent")
-            .padding((8.0, 0.0, 8.0, 0.0))
+            .padding((16.0, 0.0, 16.0, 0.0))
             .foreground(colors::LINK_WATER_COLOR)
             .text("")
             .font_size(fonts::FONT_SIZE_12)
-            .font("Roboto Regular")
+            .font("Roboto-Regular")
             .icon("")
-            .icon_font("Material Icons")
+            .icon_font("MaterialIcons-Regular")
             .icon_size(fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
+            .spacing(8.0)
             .child(
-                MouseBehavior::create()
+                MouseBehavior::new()
                     .pressed(id)
                     .enabled(id)
-                    .selector(id)
+                    .target(id.0)
                     .child(
-                        Container::create()
+                        Container::new()
                             .background(id)
                             .border_radius(id)
                             .border_width(id)
@@ -87,13 +106,13 @@ impl Template for Button {
                             .padding(id)
                             .opacity(id)
                             .child(
-                                Stack::create()
+                                Stack::new()
                                     .orientation("horizontal")
-                                    .vertical_alignment("center")
-                                    .horizontal_alignment("center")
+                                    .spacing(id)
+                                    .h_align("center")
                                     .child(
-                                        FontIconBlock::create()
-                                            .margin((0.0, 0.0, 2.0, 0.0))
+                                        FontIconBlock::new()
+                                            .v_align("center")
                                             .icon(id)
                                             .icon_brush(id)
                                             .icon_size(id)
@@ -102,7 +121,8 @@ impl Template for Button {
                                             .build(ctx),
                                     )
                                     .child(
-                                        TextBlock::create()
+                                        TextBlock::new()
+                                            .v_align("center")
                                             .foreground(id)
                                             .text(id)
                                             .font_size(id)

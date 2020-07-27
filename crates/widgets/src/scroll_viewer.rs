@@ -15,13 +15,13 @@ impl ScrollViewerState {
 }
 
 impl State for ScrollViewerState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if let Some(delta) = self.delta.get() {
             ctx.widget().set("delta", delta);
         }
     }
 
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         if self.delta.get().is_some() {
             ctx.widget().set("delta", Point::new(0.0, 0.0));
             self.delta.set(None);
@@ -40,10 +40,7 @@ widget!(
         /// Sets or shares the scroll mode property.
         scroll_viewer_mode: ScrollViewerMode,
 
-        /// Sets or shares the css selector property.
-        selector: Selector,
-
-        /// Sets or shares the (wheel, scroll) delta property. 
+        /// Sets or shares the (wheel, scroll) delta property.
         delta: Point
     }
 );
@@ -51,7 +48,7 @@ widget!(
 impl Template for ScrollViewer {
     fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("ScrollViewer")
-            .selector("scroll-viewer")
+            .style("scroll-viewer")
             .scroll_offset(0.0)
             .delta(0.0)
             .clip(true)

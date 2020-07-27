@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 /// Describes a position on a colorful gradient.
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub struct LinearGradientStop {
     pub position: f64,
     pub color: Color,
@@ -60,6 +60,13 @@ impl From<&str> for Brush {
 impl From<String> for Brush {
     fn from(s: String) -> Brush {
         Brush::SolidColor(Color::from(s))
+    }
+}
+
+impl From<Value> for Brush {
+    fn from(v: Value) -> Self {
+        let value = v.get::<String>();
+        return Brush::from(value);
     }
 }
 

@@ -2,34 +2,28 @@ use std::rc::Rc;
 
 use crate::{
     prelude::*,
+    proc_macros::IntoHandler,
     shell::{Key, KeyEvent},
 };
 
 use super::{Event, EventBox, EventHandler};
 
+#[derive(Event)]
 pub struct KeyDownEvent {
     pub event: KeyEvent,
 }
 
-impl Event for KeyDownEvent {}
-
+#[derive(Event)]
 pub struct KeyUpEvent {
     pub event: KeyEvent,
 }
 
-impl Event for KeyUpEvent {}
-
 pub type KeyHandler = dyn Fn(&mut StatesContext, KeyEvent) -> bool + 'static;
 
 /// Used to handle key down events. Could be attached to a widget.
+#[derive(IntoHandler)]
 pub struct KeyDownEventHandler {
     handler: Rc<KeyHandler>,
-}
-
-impl Into<Rc<dyn EventHandler>> for KeyDownEventHandler {
-    fn into(self) -> Rc<dyn EventHandler> {
-        Rc::new(self)
-    }
 }
 
 impl EventHandler for KeyDownEventHandler {
@@ -58,7 +52,7 @@ pub trait KeyDownHandler: Sized + Widget {
         })
     }
 
-    // Handles events triggered by a specific key.
+    /// Handles events triggered by a specific key.
     fn on_key_down_key<H: Fn() -> bool + 'static>(self, key: Key, handler: H) -> Self {
         self.on_key_down(
             move |_, event| {

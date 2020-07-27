@@ -9,6 +9,7 @@ pub use crate::widget::StatesContext;
 pub use self::editable::*;
 pub use self::event_handler::*;
 pub use self::event_queue::*;
+pub use self::focus::*;
 pub use self::key::*;
 pub use self::mouse::*;
 pub use self::system::*;
@@ -17,21 +18,21 @@ pub use self::window::*;
 mod editable;
 mod event_handler;
 mod event_queue;
+mod focus;
 mod key;
 mod mouse;
 mod system;
 mod window;
 
-/// Defines the strategy a event moves through the tree.
+/// Defines the strategy of an event how it moves through the tree.
 #[derive(Debug, Clone, PartialEq)]
 pub enum EventStrategy {
     // /// From root to leaf.
     // TopDown,
-
     /// From leaf to root.
     BottomUp,
 
-    /// Occures direct.
+    /// Occurs direct.
     Direct,
 }
 

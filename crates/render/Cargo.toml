@@ -1,6 +1,6 @@
 [package]
 name = "orbtk-render"
-version = "0.3.1-alpha2"
+version = "0.3.1-alpha3"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "2D Render library use by OrbTk."
 repository = "https://github.com/redox-os/orbtk"
@@ -13,9 +13,31 @@ edition = "2018"
 stdweb = "0.4.20"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-raqote = { version = "0.7.6", default-features = false}
-rusttype = "0.8.2"
-image = "0.22.3"
+raqote = { version = "0.8", default-features = false, optional = true }
+rusttype = { version = "0.8.3", optional = true }
+pathfinder_canvas = { version = "0.5.0", features = ["pf-text"], optional = true }
+pathfinder_color = { version = "0.5", optional = true }
+pathfinder_content = { version = "0.5", optional = true }
+pathfinder_geometry = { version = "0.5", optional = true }
+pathfinder_gl = { version = "0.5", optional = true }
+pathfinder_gpu =  { version = "0.5", optional = true }
+pathfinder_renderer = { version = "0.5", optional = true }
+pathfinder_resources =  { version = "0.5", optional = true }
+font-kit = "0.6"
+image = "0.23"
 
 [dependencies]
-orbtk-utils = { path = "../utils", version = "0.3.1-alpha2" }
+orbtk-utils = { path = "../utils", version = "0.3.1-alpha3" }
+
+[features]
+default = ["raqote", "rusttype"]
+pfinder = [
+    "pathfinder_canvas",
+    "pathfinder_color",
+    "pathfinder_content",
+    "pathfinder_geometry",
+    "pathfinder_gl",
+    "pathfinder_gpu",
+    "pathfinder_renderer",
+    "pathfinder_resources"
+]

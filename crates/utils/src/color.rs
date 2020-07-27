@@ -2,7 +2,7 @@
 use std::fmt;
 
 /// A r g b a color.
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 #[repr(packed)]
 pub struct Color {
     pub data: u32,
@@ -16,7 +16,7 @@ impl Color {
         }
     }
 
-    /// Set the alpha
+    /// Create a new color from RGB and alpha values
     pub const fn rgba(r: u8, g: u8, b: u8, a: u8) -> Self {
         Color {
             data: ((a as u32) << 24) | ((r as u32) << 16) | ((g as u32) << 8) | (b as u32),
@@ -74,6 +74,10 @@ impl ToString for Color {
 
 impl From<&str> for Color {
     fn from(s: &str) -> Color {
+        if s == "transparent" {
+            return Color::rgba(0, 0, 0, 0);
+        }
+
         let clean_hex = s.trim_start_matches('#');
         match clean_hex.len() {
             6 | 8 => {
@@ -99,7 +103,7 @@ impl From<String> for Color {
     }
 }
 
-/// Compare two colors (Do not take care of alpha)
+/// Compares two colors (the alpha value is ignored)
 impl PartialEq for Color {
     fn eq(&self, other: &Color) -> bool {
         self.r() == other.r() && self.g() == other.g() && self.b() == other.b()

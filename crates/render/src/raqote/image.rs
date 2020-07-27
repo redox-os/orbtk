@@ -82,3 +82,9 @@ impl Image {
         &mut self.render_target.data
     }
 }
+
+impl From<(u32, u32, Vec<u32>)> for Image {
+    fn from(image: (u32, u32, Vec<u32>)) -> Self {
+        Image::from_data(image.0, image.1, image.2).unwrap()
+    }
+}

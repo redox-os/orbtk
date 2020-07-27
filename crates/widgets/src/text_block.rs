@@ -14,14 +14,11 @@ widget!(
         /// Sets or shares the foreground property.
         foreground: Brush,
 
-        /// Sets or share the font size property.
+        /// Sets or shares the font size property.
         font_size: f64,
 
         /// Sets or shares the font property.
-        font: String,
-
-        /// Sets or shares the css selector property.
-        selector: Selector
+        font: String
     }
 );
 
@@ -31,7 +28,7 @@ impl Template for TextBlock {
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
-            .font("Roboto Regular")
+            .font("Roboto-Regular")
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

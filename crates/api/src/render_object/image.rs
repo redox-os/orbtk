@@ -10,8 +10,8 @@ impl Into<Box<dyn RenderObject>> for ImageRenderObject {
 }
 
 impl RenderObject for ImageRenderObject {
-    fn render_self(&self, ctx: &mut Context<'_>, global_position: &Point) {
-        let (_, mut image) = {
+    fn render_self(&self, ctx: &mut Context, global_position: &Point) {
+        let (bounds, mut image) = {
             let widget = ctx.widget();
             (
                 widget.clone::<Rectangle>("bounds"),
@@ -20,8 +20,11 @@ impl RenderObject for ImageRenderObject {
         };
 
         if let Some(image) = &mut image {
-            ctx.render_context_2_d()
-                .draw_image(image, global_position.x, global_position.y);
+            ctx.render_context_2_d().draw_image(
+                image,
+                bounds.x() + global_position.x(),
+                bounds.y() + global_position.y(),
+            );
         }
     }
 }

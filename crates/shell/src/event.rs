@@ -1,5 +1,9 @@
 //! This module contains elements to work with window events.
 
+use std::char;
+
+use orbtk_utils::Point;
+
 /// Represents a keyboard key.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum Key {
@@ -18,6 +22,7 @@ pub enum Key {
     Alt,
     Escape,
     Home,
+    CapsLock,
     A(bool),
     B(bool),
     C(bool),
@@ -44,6 +49,8 @@ pub enum Key {
     X(bool),
     Y(bool),
     Z(bool),
+    Hash,
+    At,
     Zero,
     One,
     Two,
@@ -57,6 +64,29 @@ pub enum Key {
     Dot,
     QuestionMark,
     ExclamationMark,
+    Numpad0,
+    Numpad1,
+    Numpad2,
+    Numpad3,
+    Numpad4,
+    Numpad5,
+    Numpad6,
+    Numpad7,
+    Numpad8,
+    Numpad9,
+    NumpadDivide,
+    NumpadMultiply,
+    NumpadSubtract,
+    NumpadAdd,
+    NumpadEnter,
+    NumpadDot,
+    Slash,
+    Backslash,
+    Quote,
+    BraceLeft,
+    BraceRight,
+    CurlyBraceLeft,
+    CurlyBraceRight,
 }
 
 impl From<Key> for &'static str {
@@ -114,6 +144,8 @@ impl From<Key> for &'static str {
             Key::X(true) => "X",
             Key::Y(true) => "Y",
             Key::Z(true) => "Z",
+            Key::Hash => "#",
+            Key::At => "@",
             Key::Zero => "0",
             Key::One => "1",
             Key::Two => "2",
@@ -128,6 +160,17 @@ impl From<Key> for &'static str {
             Key::Dot => ".",
             Key::QuestionMark => "?",
             Key::ExclamationMark => "!",
+            Key::NumpadDivide => "/",
+            Key::NumpadMultiply => "*",
+            Key::NumpadSubtract => "-",
+            Key::NumpadAdd => "+",
+            Key::Slash => "/",
+            Key::Quote => "'",
+            Key::Backslash => "\\",
+            Key::BraceLeft => "[",
+            Key::BraceRight => "]",
+            Key::CurlyBraceLeft => "{",
+            Key::CurlyBraceRight => "}",
             _ => "",
         }
     }
@@ -188,6 +231,8 @@ impl From<Key> for Option<u8> {
             Key::X(true) => Some(b'X'),
             Key::Y(true) => Some(b'Y'),
             Key::Z(true) => Some(b'Z'),
+            Key::Hash => Some(b'#'),
+            Key::At => Some(b'@'),
             Key::Zero => Some(b'0'),
             Key::One => Some(b'1'),
             Key::Two => Some(b'2'),
@@ -202,6 +247,17 @@ impl From<Key> for Option<u8> {
             Key::Dot => Some(b'.'),
             Key::QuestionMark => Some(b'?'),
             Key::ExclamationMark => Some(b'!'),
+            Key::NumpadDivide => Some(b'/'),
+            Key::NumpadMultiply => Some(b'*'),
+            Key::NumpadSubtract => Some(b'-'),
+            Key::NumpadAdd => Some(b'+'),
+            Key::Slash => Some(b'/'),
+            Key::Quote => Some(b'\''),
+            Key::Backslash => Some(b'\\'),
+            Key::BraceLeft => Some(b'['),
+            Key::BraceRight => Some(b']'),
+            Key::CurlyBraceLeft => Some(b'{'),
+            Key::CurlyBraceRight => Some(b'}'),
             _ => None,
         }
     }
@@ -210,6 +266,16 @@ impl From<Key> for Option<u8> {
 impl ToString for Key {
     fn to_string(&self) -> String {
         <&'static str>::from(*self).to_owned()
+    }
+}
+
+impl From<u32> for Key {
+    fn from(uni_char: u32) -> Self {
+        if let Some(character) = char::from_u32(uni_char) {
+            return Key::from(character);
+        }
+
+        Key::Unknown
     }
 }
 
@@ -270,6 +336,8 @@ impl From<char> for Key {
             'X' => Key::X(true),
             'Y' => Key::Y(true),
             'Z' => Key::Z(true),
+            '#' => Key::Hash,
+            '@' => Key::At,
             '0' => Key::Zero,
             '1' => Key::One,
             '2' => Key::Two,
@@ -284,11 +352,21 @@ impl From<char> for Key {
             '.' => Key::Dot,
             '?' => Key::QuestionMark,
             '!' => Key::ExclamationMark,
+            '/' => Key::Slash,
+            '\'' => Key::Quote,
+            '\\' => Key::Backslash,
+            '[' => Key::BraceLeft,
+            ']' => Key::BraceRight,
+            '{' => Key::CurlyBraceLeft,
+            '}' => Key::CurlyBraceRight,
             '\u{f700}' => Key::Up,
             '\u{f701}' => Key::Down,
             '\u{f702}' => Key::Left,
             '\u{f703}' => Key::Right,
             '\u{8}' => Key::Backspace,
+            '*' => Key::NumpadMultiply,
+            '-' => Key::NumpadSubtract,
+            '+' => Key::NumpadAdd,
             _ => Key::Unknown,
         }
     }
@@ -313,9 +391,7 @@ pub enum ButtonState {
 /// Represents a mouse event.
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub struct MouseEvent {
-    pub x: f64,
-
-    pub y: f64,
+    pub position: Point,
 
     pub button: MouseButton,
 

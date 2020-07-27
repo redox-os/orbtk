@@ -11,6 +11,7 @@ enum Action {
     ValueChanged(Entity),
     IncrementCounter,
     RemoveItem,
+    ToggleTheme(Entity),
 }
 
 #[derive(AsAny)]
@@ -31,63 +32,72 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if let Some(action) = self.action {
             match action {
                 Action::AddItem => {
-                    let len = ctx.widget().get::<List>("list").len();
+                    let len = main_view(ctx.widget()).list().len();
+
                     if len < 5 {
-                        ctx.widget()
-                            .get_mut::<List>("list")
+                        main_view(ctx.widget())
+                            .list_mut()
                             .push(format!("Item {}", len + 1));
-                        ctx.child("items").set("count", len + 1);
-                        ctx.child("remove-item-button").set("enabled", true);
+                        ctx.child("items").clone_or_default::<usize>("Item");
+                        items_widget(ctx.child("items")).set_count(len + 1);
+                        button(ctx.child("remove-item-button")).set_enabled(true);
+                        button(ctx.child("remove-item-button")).set_visibility(Visibility::Visible);
 
                         if len == 4 {
-                            ctx.child("add-item-button").set("enabled", false);
+                            button(ctx.child("add-item-button")).set_enabled(false);
+                            button(ctx.child("add-item-button"))
+                                .set_visibility(Visibility::Collapsed);
                         }
                     }
                 }
                 Action::RemoveItem => {
-                    let len = ctx.widget().get::<List>("list").len();
+                    let len = main_view(ctx.widget()).list().len();
                     if len > 0 {
-                        ctx.widget().get_mut::<List>("list").remove(len - 1);
-                        ctx.child("items").set("count", len - 1);
-                        ctx.child("add-item-button").set("enabled", true);
+                        main_view(ctx.widget()).list_mut().remove(len - 1);
+                        items_widget(ctx.child("items")).set_count(len - 1);
+                        button(ctx.child("add-item-button")).set_enabled(true);
+                        button(ctx.child("add-item-button")).set_visibility(Visibility::Visible);
 
                         if len == 1 {
-                            ctx.child("remove-item-button").set("enabled", false);
+                            button(ctx.child("remove-item-button")).set_enabled(false);
+                            button(ctx.child("remove-item-button"))
+                                .set_visibility(Visibility::Collapsed);
                         }
                     }
                 }
                 Action::IncrementCounter => {
-                    *ctx.widget().get_mut::<usize>("counter") += 1;
+                    *main_view(ctx.widget()).counter_mut() += 1;
 
-                    let counter = *ctx.widget().get::<usize>("counter");
+                    let counter = *main_view(ctx.widget()).counter();
 
-                    ctx.widget().set(
-                        "result",
-                        String16::from(format!("Button count: {}", counter)),
-                    );
+                    main_view(ctx.widget())
+                        .set_result(String16::from(format!("Button count: {}", counter)));
                 }
                 Action::ClearText => {
-                    ctx.widget().set("text_one", String16::from(""));
-                    ctx.widget().set("text_two", String16::from(""));
+                    main_view(ctx.widget()).set_text_one(String16::default());
+                    main_view(ctx.widget()).set_text_two(String16::default());
                 }
                 Action::EntryActivated(entity) => {
-                    let mut widget = ctx.get_widget(entity);
-                    let text = widget.get_mut::<String16>("text");
+                    let mut text_box = text_box(ctx.get_widget(entity));
+                    let text = text_box.text_mut();
                     println!("submitting {}", text);
                     text.clear();
                 }
                 Action::EntryChanged(entity) => {
-                    let widget = ctx.get_widget(entity);
-                    let text = widget.get::<String16>("text");
-                    println!("entry changed: {}", text);
+                    println!("entry changed: {}", text_box(ctx.get_widget(entity)).text());
                 }
-                Action::ValueChanged(entity) => {
-                    let value = ((*ctx.get_widget(entity).get::<f64>("value")).floor() as i32).to_string();
-                    ctx.child("value_text").set("text", String16::from(value));
+                Action::ValueChanged(_entity) => {
+                    //println!("Slider value changed");
+                }
+                Action::ToggleTheme(entity) => {
+                    let light = *ctx.get_widget(entity).get::<bool>("selected");
+
+                    let theme = if light { light_theme() } else { dark_theme() };
+                    ctx.switch_theme(theme);
                 }
             }
 
@@ -95,23 +105,19 @@ impl State for MainViewState {
         }
     }
 
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         let mut selection_string = "Selected:".to_string();
 
-        for index in &ctx.widget().get::<SelectedIndices>("selected_indices").0 {
+        for index in &main_view(ctx.widget()).selected_indices().0 {
             selection_string = format!("{} {}", selection_string, index);
         }
 
-        ctx.child("selection")
-            .set("text", String16::from(selection_string));
+        text_block(ctx.child("selection")).set_text(selection_string);
     }
 }
 
 fn create_header(ctx: &mut BuildContext, text: &str) -> Entity {
-    TextBlock::create()
-        .text(text)
-        .selector(Selector::new().with("text-block").class("h1"))
-        .build(ctx)
+    TextBlock::new().text(text).style("header").build(ctx)
 }
 
 type List = Vec<String>;
@@ -121,8 +127,10 @@ widget!(
         selected_indices: SelectedIndices,
         counter: usize,
         list_count: usize,
+        combo_box_list_count: usize,
         list: List,
         selection_list: List,
+        combo_box_list: List,
         selection_list_count: usize,
         text_one: String16,
         text_two: String16,
@@ -132,6 +140,14 @@ widget!(
 
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+        let slider = Slider::new()
+            .min(0.0)
+            .max(1.0)
+            .on_changed(move |states, entity| {
+                state(id, states).action(Action::ValueChanged(entity));
+            })
+            .build(ctx);
+
         self.name("MainView")
             .result("Button count: 0")
             .counter(0)
@@ -143,40 +159,47 @@ impl Template for MainView {
             ])
             .list_count(3)
             .selection_list(vec![
-                "Item 1".to_string(),
-                "Item 2".to_string(),
-                "Item 3".to_string(),
-                "Item 4".to_string(),
-                "Item 5".to_string(),
-                "Item 6".to_string(),
-                "Item 7".to_string(),
-                "Item 8".to_string(),
-                "Item 9".to_string(),
-                "Item 10".to_string(),
+                "Select Item 1".to_string(),
+                "Select Item 2".to_string(),
+                "Select Item 3".to_string(),
+                "Select Item 4".to_string(),
+                "Select Item 5".to_string(),
+                "Select Item 6".to_string(),
+                "Select Item 7".to_string(),
+                "Select Item 8".to_string(),
+                "Select Item 9".to_string(),
+                "Select Item 10".to_string(),
+            ])
+            .combo_box_list(vec![
+                "CB 1".to_string(),
+                "CB 2".to_string(),
+                "CB 3".to_string(),
+                "CB 4".to_string(),
+                "CB 5".to_string(),
+                "CB 6".to_string(),
+                "CB 7".to_string(),
+                "CB 8".to_string(),
+                "CB 9".to_string(),
+                "CB 10".to_string(),
             ])
             .selection_list_count(10)
+            .combo_box_list_count(10)
             .child(
-                Grid::create()
-                    .margin(8.0)
-                    .columns(
-                        Columns::create()
-                            .column(132.0)
-                            .column(16.0)
-                            .column(132.0)
-                            .column(16.0)
-                            .column(132.0)
-                            .build(),
-                    )
+                Grid::new()
+                    .margin(8)
+                    .columns(Columns::new().add(132).add(16).add(132).add(16).add(132))
+                    .rows(Rows::new().add("*").add(32))
                     .child(
-                        Stack::create()
+                        Stack::new()
                             .attach(Grid::column(0))
+                            .attach(Grid::row(0))
                             // Column 0
                             .child(create_header(ctx, "Buttons"))
                             .child(
-                                Button::create()
+                                Button::new()
                                     .text("Button")
-                                    .margin((0.0, 8.0, 0.0, 0.0))
-                                    .icon(material_font_icons::CHECK_FONT_ICON)
+                                    .margin((0, 8, 0, 0))
+                                    .icon(material_icons_font::MD_CHECK)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(1))
                                     .on_click(move |states, _| {
@@ -186,73 +209,68 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                Button::create()
+                                Button::new()
                                     .text("Primary")
-                                    .selector(Selector::new().with("button").class("primary"))
-                                    .margin((0.0, 8.0, 0.0, 0.0))
-                                    .icon(material_font_icons::CHECK_FONT_ICON)
+                                    .style("button_primary")
+                                    .margin((0, 8, 0, 0))
+                                    .icon(material_icons_font::MD_360)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(2))
                                     .build(ctx),
                             )
                             .child(
-                                ToggleButton::create()
+                                ToggleButton::new()
+                                    .style("button_single_content")
                                     .text("ToggleButton")
-                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .margin((0, 8, 2, 0))
+                                    .icon(material_icons_font::MD_ALARM_ON)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(3))
                                     .build(ctx),
                             )
                             .child(
-                                CheckBox::create()
+                                CheckBox::new()
                                     .text("CheckBox")
-                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(4))
                                     .build(ctx),
                             )
                             .child(
-                                Switch::create()
-                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                Switch::new()
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(5))
                                     .build(ctx),
                             )
+                            .child(slider)
                             .child(
-                                TextBlock::create()
-                                    .margin((0.0, 8.0, 0.0, 0.0))
-                                    .selector(Selector::from("h1").id("value_text"))
-                                    .text("0")
-                                    .horizontal_alignment("center")
-                                    .build(ctx),
-                            )
-                            .child(
-                                Slider::create()
-                                    .on_changed(move |states, entity| {
-                                        state(id, states).action(Action::ValueChanged(entity));
-                                    })
+                                ProgressBar::new()
+                                    .val(slider)
+                                    .margin((0, 8, 0, 0))
                                     .build(ctx),
                             )
                             .build(ctx),
                     )
                     .child(
-                        Stack::create()
+                        Stack::new()
                             .attach(Grid::column(2))
+                            .attach(Grid::row(0))
                             .child(create_header(ctx, "Text"))
                             .child(
-                                TextBlock::create()
-                                    .selector(Selector::new().class("body"))
+                                TextBlock::new()
+                                    .style("body")
                                     .text(("result", id))
-                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(1))
                                     .build(ctx),
                             )
                             .child(
-                                TextBox::create()
+                                TextBox::new()
                                     .water_mark("TextBox...")
                                     .text(("text_one", id))
-                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
                                     .on_activate(move |states, entity| {
@@ -264,10 +282,10 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                TextBox::create()
+                                TextBox::new()
                                     .water_mark("TextBox...")
                                     .text(("text_two", id))
-                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
                                     .on_activate(move |states, entity| {
@@ -279,122 +297,175 @@ impl Template for MainView {
                                     .build(ctx),
                             )
                             .child(
-                                Button::create()
-                                    .margin((0.0, 8.0, 0.0, 0.0))
+                                Button::new()
+                                    .margin((0, 8, 0, 0))
+                                    .style("button_single_content")
                                     .text("clear text")
+                                    .icon(material_icons_font::MD_CLEAR)
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::ClearText);
                                         true
                                     })
                                     .build(ctx),
                             )
+                            .child(
+                                NumericBox::new()
+                                    .margin((0, 8, 0, 0))
+                                    .max(123)
+                                    .step(0.123)
+                                    .val(0.123)
+                                    .build(ctx),
+                            )
                             .build(ctx),
                     )
                     .child(
-                        Grid::create()
+                        Grid::new()
                             .rows(
-                                Rows::create()
-                                    .row("auto")
-                                    .row(192.0)
-                                    .row("auto")
-                                    .row(192.0)
-                                    .row("auto")
-                                    .build(),
+                                Rows::new()
+                                    .add("auto")
+                                    .add(32)
+                                    .add(16)
+                                    .add(204)
+                                    .add("auto")
+                                    .add(192)
+                                    .add("auto"),
                             )
-                            .columns(
-                                Columns::create()
-                                    .column("*")
-                                    .column(4.0)
-                                    .column("*")
-                                    .build(),
-                            )
+                            .columns(Columns::new().add("*").add(4).add("*"))
                             .attach(Grid::column(4))
+                            .attach(Grid::row(0))
                             .child(
-                                TextBlock::create()
+                                TextBlock::new()
                                     .text("Items")
-                                    .selector(Selector::new().with("text-block").class("h1"))
+                                    .style("header")
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(0))
                                     .build(ctx),
                             )
                             .child(
-                                ItemsWidget::create()
-                                    .selector(Selector::from("items-widget").id("items"))
-                                    .padding((4.0, 4.0, 4.0, 2.0))
+                                ComboBox::new()
+                                    .items_builder(move |bc, index| {
+                                        let text = bc
+                                            .get_widget(id)
+                                            .get::<Vec<String>>("combo_box_list")[index]
+                                            .clone();
+                                        TextBlock::new()
+                                            .style("small_text")
+                                            .margin((0, 0, 0, 2))
+                                            .v_align("center")
+                                            .text(text)
+                                            .build(bc)
+                                    })
+                                    .selected_index(0)
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(1))
-                                    .margin((0.0, 8.0, 0.0, 8.0))
+                                    .margin((0, 8, 0, 0))
+                                    .count(("combo_box_list_count", id))
+                                    .build(ctx),
+                            )
+                            .child(
+                                ItemsWidget::new()
+                                    .id("items")
+                                    .padding((4, 4, 4, 2))
+                                    .attach(Grid::column(0))
+                                    .attach(Grid::column_span(3))
+                                    .attach(Grid::row(3))
+                                    .margin((0, 0, 0, 8))
+                                    // bc = build-context
                                     .items_builder(move |bc, index| {
                                         let text = bc.get_widget(id).get::<Vec<String>>("list")
                                             [index]
                                             .clone();
 
-                                        Button::create()
-                                            .margin((0.0, 0.0, 0.0, 2.0))
-                                            .text(text)
-                                            .build(bc)
+                                        Button::new().margin((0, 0, 0, 2)).text(text).build(bc)
                                     })
                                     .count(("list_count", id))
                                     .build(ctx),
                             )
                             .child(
-                                Button::create()
-                                    .selector(Selector::from("button").id("remove-item-button"))
-                                    .icon(material_font_icons::MINUS_FONT_ICON)
+                                Button::new()
+                                    .style("button_single_content")
+                                    .id("remove-item-button")
+                                    .icon(material_icons_font::MD_REMOVE_CIRCLE)
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::RemoveItem);
                                         true
                                     })
-                                    .min_width(0.0)
+                                    .min_width(0)
                                     .attach(Grid::column(0))
-                                    .attach(Grid::row(2))
+                                    .attach(Grid::row(4))
                                     .build(ctx),
                             )
                             .child(
-                                Button::create()
-                                    .selector(Selector::from("button").id("add-item-button"))
-                                    .icon(material_font_icons::ADD_FONT_ICON)
+                                Button::new()
+                                    .style("button_single_content")
+                                    .id("add-item-button")
+                                    .icon(material_icons_font::MD_ADD_CIRCLE)
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::AddItem);
                                         true
                                     })
-                                    .min_width(0.0)
+                                    .min_width(0)
                                     .attach(Grid::column(2))
-                                    .attach(Grid::row(2))
+                                    .attach(Grid::row(4))
                                     .build(ctx),
                             )
                             .child(
-                                ListView::create()
+                                ListView::new()
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
-                                    .attach(Grid::row(3))
+                                    .attach(Grid::row(5))
                                     .selected_indices(id)
-                                    .margin((0.0, 16.0, 0.0, 8.0))
+                                    .margin((0, 16, 0, 8))
                                     .items_builder(move |bc, index| {
                                         let text = bc
                                             .get_widget(id)
                                             .get::<Vec<String>>("selection_list")[index]
                                             .clone();
-                                        TextBlock::create()
-                                            .margin((0.0, 0.0, 0.0, 2.0))
-                                            .vertical_alignment("center")
+                                        TextBlock::new()
+                                            .margin((0, 0, 0, 2))
+                                            .v_align("center")
                                             .text(text)
                                             .build(bc)
                                     })
+                                    .on_selection_changed(|_, _, _| println!("Selection changed"))
                                     .count(("selection_list_count", id))
                                     .build(ctx),
                             )
                             .child(
                                 // todo: wrong text width????
-                                TextBlock::create()
-                                    .selector(Selector::from("text-block").id("selection"))
-                                    .max_width(120.0)
+                                TextBlock::new()
+                                    .style("body")
+                                    .id("selection")
+                                    .max_width(120)
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
-                                    .attach(Grid::row(4))
+                                    .attach(Grid::row(6))
                                     .text("Selected:")
+                                    .build(ctx),
+                            )
+                            .build(ctx),
+                    )
+                    .child(
+                        Stack::new()
+                            .orientation("horizontal")
+                            .attach(Grid::row(1))
+                            .attach(Grid::column(0))
+                            .child(
+                                TextBlock::new()
+                                    .style("body")
+                                    .text("Toggle theme: ")
+                                    .v_align("center")
+                                    .margin((0, 0, 4, 0))
+                                    .build(ctx),
+                            )
+                            .child(
+                                Switch::new()
+                                    .on_changed(move |states, entity| {
+                                        state(id, states).action(Action::ToggleTheme(entity));
+                                    })
+                                    .v_align("center")
                                     .build(ctx),
                             )
                             .build(ctx),
@@ -410,12 +481,12 @@ fn main() {
 
     Application::new()
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - widgets example")
-                .position((100.0, 100.0))
-                .size(468.0, 730.0)
+                .position((100, 100))
+                .size(468, 730)
                 .resizeable(true)
-                .child(MainView::create().build(ctx))
+                .child(MainView::new().build(ctx))
                 .build(ctx)
         })
         .run();

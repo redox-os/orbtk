@@ -18,6 +18,17 @@
     {
       "type": "lldb",
       "request": "launch",
+      "name": "Widgets pathfinder",
+      "program": "${workspaceFolder}/target/debug/examples/widgets",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build pathfinder",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
       "name": "Widgets browser",
       "program": "cargo-node",
       "cwd": "${workspaceFolder}",
@@ -129,8 +140,63 @@
     {
       "type": "lldb",
       "request": "launch",
+      "name": "Stack",
+      "program": "${workspaceFolder}/target/debug/examples/stack",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
       "name": "Minimal",
       "program": "${workspaceFolder}/target/debug/examples/minimal",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Overlay",
+      "program": "${workspaceFolder}/target/debug/examples/overlay",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Multi window",
+      "program": "${workspaceFolder}/target/debug/examples/multi_window",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Numeric Box",
+      "program": "${workspaceFolder}/target/debug/examples/numeric_box",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "TabWidget",
+      "program": "${workspaceFolder}/target/debug/examples/tab_widget",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
       "sourceLanguages": [

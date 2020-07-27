@@ -5,7 +5,7 @@ use crate::prelude::*;
 pub struct ScrollIndicatorState;
 
 impl State for ScrollIndicatorState {
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         let padding = *ctx.widget().get::<Thickness>("padding");
         let scroll_offset = *ctx.widget().get::<Point>("scroll_offset");
         let content_id = *ctx.widget().get::<u32>("content_id");
@@ -14,8 +14,8 @@ impl State for ScrollIndicatorState {
             .get::<Rectangle>("bounds");
         let bounds = *ctx.widget().get::<Rectangle>("bounds");
 
-        let horizontal_p = bounds.width / content_bounds.width;
-        let vertical_p = bounds.height / content_bounds.height;
+        let horizontal_p = bounds.width() / content_bounds.width();
+        let vertical_p = bounds.height() / content_bounds.height();
 
         // calculate vertical scroll bar height and position.
         if let Some(mut vertical_scroll_bar) = ctx.try_child("vertical-scroll-bar") {
@@ -27,13 +27,13 @@ impl State for ScrollIndicatorState {
                     .get::<Constraint>("constraint")
                     .min_height();
                 let height =
-                    ((bounds.height - padding.top - padding.bottom - scroll_bar_margin_bottom)
+                    ((bounds.height() - padding.top - padding.bottom - scroll_bar_margin_bottom)
                         * vertical_p)
                         .max(vertical_min_height);
 
                 let scroll_bar_bounds = vertical_scroll_bar.get_mut::<Rectangle>("bounds");
-                scroll_bar_bounds.height = height;
-                scroll_bar_bounds.y = -(scroll_offset.y as f64 * vertical_p);
+                scroll_bar_bounds.set_height(height);
+                scroll_bar_bounds.set_y(-(scroll_offset.y() as f64 * vertical_p));
             } else {
                 vertical_scroll_bar.set("visibility", Visibility::from("collapsed"));
             }
@@ -49,12 +49,12 @@ impl State for ScrollIndicatorState {
                     .get::<Constraint>("constraint")
                     .min_width();
                 let width =
-                    ((bounds.width - padding.left - padding.right - scroll_bar_margin_right)
+                    ((bounds.width() - padding.left - padding.right - scroll_bar_margin_right)
                         * horizontal_p)
                         .max(horizontal_min_width);
                 let scroll_bar_bounds = horizontal_scroll_bar.get_mut::<Rectangle>("bounds");
-                scroll_bar_bounds.width = width;
-                scroll_bar_bounds.x = -(scroll_offset.x as f64 * horizontal_p);
+                scroll_bar_bounds.set_width(width);
+                scroll_bar_bounds.set_x(-(scroll_offset.x() as f64 * horizontal_p));
             } else {
                 horizontal_scroll_bar.set("visibility", Visibility::from("collapsed"));
             }
@@ -67,8 +67,6 @@ widget!(
     ///
     /// **CSS element:** `scroll-indicator`
     ScrollIndicator<ScrollIndicatorState> {
-        /// Sets or shares the css selector property.
-        selector: Selector,
 
         /// Sets or shares the scroll offset property.
         scroll_offset: Point,
@@ -84,28 +82,30 @@ widget!(
 impl Template for ScrollIndicator {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ScrollIndicator")
-            .selector("scroll-indicator")
-            .vertical_alignment("stretch")
-            .horizontal_alignment("stretch")
+            .style("scroll-indicator")
+            .v_align("stretch")
+            .h_align("stretch")
             .padding(0.0)
             .child(
-                Grid::create()
+                Grid::new()
                     .child(
-                        ScrollBar::create()
-                            .selector(Selector::from("scroll-bar").id("vertical-scroll-bar"))
+                        ScrollBar::new()
+                            .style("scroll-bar")
+                            .id("vertical-scroll-bar")
                             .min_height(8.0)
                             .margin((0.0, 0.0, 0.0, 6.0))
-                            .horizontal_alignment("end")
+                            .h_align("end")
                             .opacity(id)
                             .build(ctx),
                     )
                     .child(
-                        ScrollBar::create()
-                            .selector(Selector::from("scroll-bar").id("horizontal-scroll-bar"))
+                        ScrollBar::new()
+                            .style("scroll-bar")
+                            .id("horizontal-scroll-bar")
                             .min_width(8.0)
                             .margin((0.0, 0.0, 6.0, 0.0))
                             .height(4.0)
-                            .vertical_alignment("end")
+                            .v_align("end")
                             .opacity(id)
                             .build(ctx),
                     )

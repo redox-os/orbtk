@@ -6,18 +6,23 @@ use crate::{prelude::*, tree::Tree};
 
 use super::State;
 
-pub type WidgetBuildContext =
-    Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>;
+pub type WidgetBuildContext = Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>;
+
+// impl Clone<T> for Box<T> where T:  Fn(&mut BuildContext, usize) -> Entity + 'static + Clone {
+//     fn clone(&self) -> Self {
+
+//     }
+// }
 
 /// Used to create an entity for a widget with its properties as components.
 #[derive(Constructor)]
 pub struct BuildContext<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
-    layouts: &'a mut BTreeMap<Entity, Box<dyn Layout>>,
-    handlers: &'a mut EventHandlerMap,
+    layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
+    handlers: &'a RefCell<EventHandlerMap>,
     states: &'a mut BTreeMap<Entity, Box<dyn State>>,
-    theme: &'a ThemeValue,
+    theme: &'a Theme,
 }
 
 impl<'a> BuildContext<'a> {
@@ -31,12 +36,28 @@ impl<'a> BuildContext<'a> {
         self.ecm.create_entity().build()
     }
 
+    /// Update theme by state.
+    pub fn update_theme_by_state(&mut self, entity: Entity) {
+        self.get_widget(entity).update(true);
+    }
+
     /// Appends a child to a parent.
     pub fn append_child(&mut self, parent: Entity, child: Entity) {
         self.ecm
             .entity_store_mut()
             .append_child(parent, child)
             .unwrap();
+    }
+
+    /// Appends a child to overlay (on the top of the main tree). If the overlay does not exists an
+    /// error will be returned.
+    pub fn append_child_to_overlay(&mut self, child: Entity) -> Result<(), String> {
+        if let Some(overlay) = self.ecm.entity_store().overlay {
+            self.append_child(overlay.into(), child);
+            return Ok(());
+        }
+
+        Err("BuildContext.append_child_to_overlay: Could not find overlay.".to_string())
     }
 
     /// Registers a property as component.
@@ -111,17 +132,21 @@ impl<'a> BuildContext<'a> {
             .insert(widget, render_object);
     }
 
-    /// Registers a event handler with a widget.
+    /// Registers an event handler with a widget.
     pub fn register_handler(&mut self, widget: Entity, handler: Rc<dyn EventHandler>) {
-        if !self.handlers.contains_key(&widget) {
-            self.handlers.insert(widget, vec![]);
+        if !self.handlers.borrow().contains_key(&widget) {
+            self.handlers.borrow_mut().insert(widget, vec![]);
         }
 
-        self.handlers.get_mut(&widget).unwrap().push(handler);
+        self.handlers
+            .borrow_mut()
+            .get_mut(&widget)
+            .unwrap()
+            .push(handler);
     }
 
     /// Registers a layout object with a widget.
     pub fn register_layout(&mut self, widget: Entity, layout: Box<dyn Layout>) {
-        self.layouts.insert(widget, layout);
+        self.layouts.borrow_mut().insert(widget, layout);
     }
 }

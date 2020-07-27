@@ -6,6 +6,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.3.1 (OrbTk next) wip
 
+### 0.3.1-alpha3 (wip)
+
+* Dynamic theme switch
+* Add all material font icons as resource
+* Replaces css-engine with custom Rust/Ron based theming
+* Add widget access helpers for states
+* API update check deprecated methods an replace to new ones
+* Performance improvements
+* NumericBox widget
+* Update caret position on TextBox by mouse click
+* Text input support for ', /, \, [, ], {, }
+* Multiple window support
+* Pathfinder / Glutin backend (experimental)
+* ProgressBar widget
+* Measure distance between two Points
+* Improve: Mouse event arguments
+* Fix: Crash when a child widget is removed
+* TabWidget widget
+
+### 0.3.1-alpha2
+
+* ComboBox / ComboboxItem widget
+* Slider widget
+* Popup widget
+* Overlay layer
+* Service registry for states
+* Settings service (serialize / deserialize data)
+* Direct access of states in callbacks
+* Impl RawWindowHandle for Context (wip)
+* Sent requests to window shell
+* Layout fixes and stack layout example
+* Many web fixes
+* State cleanup method
+* Refactor setting of styling selectors
+* TextBox select all (Ctrl + a)
+* Text input support for !, @, #
+* Borderless window
+
+### 0.3.1-alpha1
+
 * api crate: base api elements of OrbTk e.g. widget and application parts
 * css-engine crate: parse and read values from a css file
 * proc-macros crate: procedural helper macros

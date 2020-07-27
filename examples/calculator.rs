@@ -1,24 +1,18 @@
-use orbtk::prelude::*;
-use orbtk::theme::DEFAULT_THEME_CSS;
+use orbtk::{
+    prelude::*,
+    theme::{COLORS_RON, DARK_THEME_RON, FONTS_RON},
+    theming::config::ThemeConfig,
+};
 
-static DARK_EXT: &'static str = include_str!("../res/calculator-dark.css");
+static DARK_EXT: &'static str = include_str!("../res/calculator_dark.ron");
 
-#[cfg(feature = "light-theme")]
-static LIGHT_EXT: &'static str = include_str!("../res/calculator-light.css");
-
-#[cfg(not(feature = "light-theme"))]
-fn get_theme() -> ThemeValue {
-    ThemeValue::create_from_css(DEFAULT_THEME_CSS)
-        .extension_css(DARK_EXT)
-        .build()
-}
-
-#[cfg(feature = "light-theme")]
-fn get_theme() -> ThemeValue {
-    ThemeValue::create()
-        .extension_css(DARK_EXT)
-        .extension_css(LIGHT_EXT)
-        .build()
+fn theme() -> Theme {
+    Theme::from_config(
+        ThemeConfig::from(DARK_THEME_RON)
+            .extend(ThemeConfig::from(DARK_EXT))
+            .extend(ThemeConfig::from(COLORS_RON))
+            .extend(ThemeConfig::from(FONTS_RON)),
+    )
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -65,7 +59,12 @@ impl MainViewState {
             }
         }
 
-        ctx.widget().set("text", String16::from(result.to_string()));
+        if result % 1.0 == 0.0 {
+            main_view(ctx.widget()).set_text(format!("{}", result));
+        } else {
+            main_view(ctx.widget()).set_text(format!("{:.8}", result));
+        }
+
         self.left_side = Some(result);
         self.right_side = None;
     }
@@ -77,7 +76,7 @@ impl State for MainViewState {
             match action {
                 Action::Digit(digit) => {
                     self.input.push(digit);
-                    ctx.child("input").get_mut::<String16>("text").push(digit);
+                    text_block(ctx.child("input")).text_mut().push(digit);
                 }
                 Action::Operator(operator) => match operator {
                     'C' => {
@@ -85,8 +84,8 @@ impl State for MainViewState {
                         self.left_side = None;
                         self.operator = None;
                         self.right_side = None;
-                        ctx.widget().get_mut::<String16>("text").clear();
-                        ctx.child("input").get_mut::<String16>("text").clear()
+                        main_view(ctx.widget()).text_mut().clear();
+                        text_block(ctx.child("input")).text_mut().clear()
                     }
                     '=' => {
                         self.right_side = Some(self.input.parse().unwrap_or(0.0));
@@ -95,7 +94,7 @@ impl State for MainViewState {
                         self.left_side = None;
                         self.operator = None;
                         self.right_side = None;
-                        ctx.child("input").get_mut::<String16>("text").clear()
+                        text_block(ctx.child("input")).text_mut().clear()
                     }
                     _ => {
                         if self.input.is_empty() {
@@ -108,9 +107,7 @@ impl State for MainViewState {
                             self.calculate(ctx);
                         }
 
-                        ctx.child("input")
-                            .get_mut::<String16>("text")
-                            .push(operator);
+                        text_block(ctx.child("input")).text_mut().push(operator);
                         self.input.clear();
                         self.operator = Some(operator);
                     }
@@ -119,16 +116,6 @@ impl State for MainViewState {
 
             self.action = None;
         }
-    }
-}
-
-fn get_button_selector(primary: bool) -> Selector {
-    let selector = Selector::from("button");
-
-    if primary {
-        selector.class("primary")
-    } else {
-        selector
     }
 }
 
@@ -141,18 +128,25 @@ fn generate_digit_button(
     column_span: usize,
     row: usize,
 ) -> Entity {
-    Button::create()
+    let style = if primary {
+        "calculator_button_primary"
+    } else {
+        "calculator_button"
+    };
+
+    let button = Button::new()
+        .style(style)
         .min_size(48.0, 48.0)
         .text(sight.to_string())
-        .selector(get_button_selector(primary))
         .on_click(move |states, _| -> bool {
             state(id, states).action(Action::Digit(sight));
             true
         })
         .attach(Grid::column(column))
         .attach(Grid::row(row))
-        .attach(Grid::column_span(column_span))
-        .build(ctx)
+        .attach(Grid::column_span(column_span));
+
+    button.build(ctx)
 }
 
 fn generate_operation_button(
@@ -164,18 +158,24 @@ fn generate_operation_button(
     column_span: usize,
     row: usize,
 ) -> Entity {
-    Button::create()
+    let style = if primary {
+        "calculator_button_primary"
+    } else {
+        "calculator_button"
+    };
+
+    let button = Button::new()
+        .style(style)
         .min_size(48.0, 48.0)
         .text(sight.to_string())
-        .selector(get_button_selector(primary).class("square"))
         .on_click(move |states, _| -> bool {
             state(id, states).action(Action::Operator(sight));
             true
         })
         .attach(Grid::column(column))
         .attach(Grid::column_span(column_span))
-        .attach(Grid::row(row))
-        .build(ctx)
+        .attach(Grid::row(row));
+    button.build(ctx)
 }
 
 widget!(MainView<MainViewState> {
@@ -189,37 +189,36 @@ impl Template for MainView {
             .height(336.0)
             .text("")
             .child(
-                Grid::create()
-                    .rows(Rows::create().row(72.0).row("*").build())
+                Grid::new()
+                    .rows(Rows::new().add(72.0).add("*"))
                     .child(
-                        Container::create()
+                        Container::new()
                             .padding(8.0)
-                            .selector(Selector::from("container").class("header"))
+                            .style("header_area")
                             .attach(Grid::row(0))
                             .child(
-                                Grid::create()
+                                Grid::new()
                                     .child(
-                                        ScrollViewer::create()
+                                        ScrollViewer::new()
                                             .scroll_viewer_mode(("custom", "disabled"))
                                             .child(
-                                                TextBlock::create()
+                                                TextBlock::new()
                                                     .width(0.0)
                                                     .height(14.0)
                                                     .text("")
-                                                    .selector(
-                                                        Selector::from("text-block").id("input"),
-                                                    )
-                                                    .vertical_alignment("start")
+                                                    .style("input")
+                                                    .id("input")
+                                                    .v_align("start")
                                                     .build(ctx),
                                             )
                                             .build(ctx),
                                     )
                                     .child(
-                                        TextBlock::create()
-                                            .selector(Selector::from("text-block"))
+                                        TextBlock::new()
+                                            .style("result")
                                             .text(id)
-                                            .vertical_alignment("end")
-                                            .horizontal_alignment("end")
+                                            .v_align("end")
+                                            .h_align("end")
                                             .build(ctx),
                                     )
                                     .build(ctx),
@@ -227,35 +226,33 @@ impl Template for MainView {
                             .build(ctx),
                     )
                     .child(
-                        Container::create()
-                            .selector(Selector::from("container").class("content"))
-                            .padding(8.0)
+                        Container::new()
+                            .style("content_area")
+                            .padding(4.0)
                             .attach(Grid::row(1))
                             .child(
-                                Grid::create()
+                                Grid::new()
                                     .columns(
-                                        Columns::create()
-                                            .column(48.0)
-                                            .column(4.0)
-                                            .column(48.0)
-                                            .column(4.0)
-                                            .column(48.0)
-                                            .column(4.0)
-                                            .column(48.0)
-                                            .build(),
+                                        Columns::new()
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0),
                                     )
                                     .rows(
-                                        Rows::create()
-                                            .row(48.0)
-                                            .row(4.0)
-                                            .row(48.0)
-                                            .row(4.0)
-                                            .row(48.0)
-                                            .row(4.0)
-                                            .row(48.0)
-                                            .row(4.0)
-                                            .row(48.0)
-                                            .build(),
+                                        Rows::new()
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0)
+                                            .add(4.0)
+                                            .add(48.0),
                                     )
                                     // row 0
                                     .child(generate_operation_button(ctx, id, 'C', false, 0, 5, 0))
@@ -290,13 +287,13 @@ impl Template for MainView {
 
 fn main() {
     Application::new()
+        .theme(theme())
         .window(|ctx| {
-            Window::create()
+            Window::new()
                 .title("OrbTk - Calculator example")
                 .position((100.0, 100.0))
                 .size(212.0, 336.0)
-                .theme(get_theme())
-                .child(MainView::create().build(ctx))
+                .child(MainView::new().build(ctx))
                 .build(ctx)
         })
         .run();

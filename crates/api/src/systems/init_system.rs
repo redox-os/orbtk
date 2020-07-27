@@ -1,29 +1,22 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, shell::WindowShell, tree::Tree};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree};
 
 /// This system is used to initializes the widgets.
+#[derive(Constructor)]
 pub struct InitSystem {
-    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub handlers: Rc<RefCell<EventHandlerMap>>,
-    pub registry: Rc<RefCell<Registry>>,
+    context_provider: ContextProvider,
+    registry: Rc<RefCell<Registry>>,
 }
 
 impl InitSystem {
     // init css ids.
     fn init_id(&self, node: Entity, store: &mut StringComponentStore, root: Entity) {
         // Add css id to global id map.
-        let id = if let Ok(selector) = store.get::<Selector>("selector", node) {
-            if let Some(id) = &selector.id {
-                Some((node, id.clone()))
-            } else {
-                None
-            }
+        let id = if let Ok(id) = store.get::<String>("id", node) {
+            Some((node, id.clone()))
         } else {
             None
         };
@@ -34,16 +27,15 @@ impl InitSystem {
             }
         }
     }
-
-    // Read all initial data from css
-    fn read_init_from_theme(&self, ctx: &mut Context) {
-        ctx.widget().update_theme_by_state(true);
-    }
 }
 
-impl System<Tree, StringComponentStore> for InitSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
-        let root = ecm.entity_store().root;
+impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
+    fn run_with_context(
+        &self,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        render_context: &mut RenderContext2D,
+    ) {
+        let root = ecm.entity_store().root();
 
         #[cfg(feature = "debug")]
         let debug = true;
@@ -59,11 +51,11 @@ impl System<Tree, StringComponentStore> for InitSystem {
         }
 
         // init css ids
-        let window_shell = &mut self.shell.borrow_mut();
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Global>("global", root)
             .unwrap()
+            .theme
             .clone();
 
         let mut current_node = root;
@@ -72,27 +64,23 @@ impl System<Tree, StringComponentStore> for InitSystem {
             self.init_id(current_node, ecm.component_store_mut(), root);
 
             {
-                let render_objects = &self.render_objects;
-                let layouts = &mut self.layouts.borrow_mut();
-                let handlers = &mut self.handlers.borrow_mut();
-                let new_states = &mut BTreeMap::new();
-
                 let mut ctx = Context::new(
                     (current_node, ecm),
-                    window_shell,
                     &theme,
-                    render_objects,
-                    layouts,
-                    handlers,
-                    &self.states,
-                    new_states,
+                    &self.context_provider,
+                    render_context,
                 );
 
-                if let Some(state) = self.states.borrow_mut().get_mut(&current_node) {
+                if let Some(state) = self
+                    .context_provider
+                    .states
+                    .borrow_mut()
+                    .get_mut(&current_node)
+                {
                     state.init(&mut *self.registry.borrow_mut(), &mut ctx);
                 }
 
-                self.read_init_from_theme(&mut ctx);
+                drop(ctx);
             }
 
             let mut it = ecm.entity_store().start_node(current_node).into_iter();

@@ -1,67 +1,59 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::collections::BTreeMap;
 
-use dces::prelude::{Entity, EntityComponentManager, System};
+use dces::prelude::{EntityComponentManager, System};
 
-use crate::{
-    css_engine::*,
-    prelude::*,
-    shell::{WindowShell, CONSOLE},
-    tree::Tree,
-};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree};
 
 /// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
+#[derive(Constructor)]
 pub struct RenderSystem {
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub shell: Rc<RefCell<WindowShell<WindowAdapter>>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
-    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub handlers: Rc<RefCell<EventHandlerMap>>,
+    context_provider: ContextProvider,
 }
 
-impl System<Tree, StringComponentStore> for RenderSystem {
-    fn run(&self, ecm: &mut EntityComponentManager<Tree, StringComponentStore>) {
-        if !self.shell.borrow().update()
-            || !self.shell.borrow().running()
-            || ecm.entity_store().parent.is_empty()
-        {
-            return;
-        }
-
-        let mut shell = &mut self.shell.borrow_mut();
+impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
+    fn run_with_context(
+        &self,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        render_context: &mut RenderContext2D,
+    ) {
+        // if !self.shell.borrow().update()
+        //     || !self.shell.borrow().running()
+        //     || ecm.entity_store().parent.is_empty()
+        // {
+        //     return;
+        // }
 
         #[cfg(feature = "debug")]
         let debug = true;
         #[cfg(not(feature = "debug"))]
         let debug = false;
 
-        let root = ecm.entity_store().root;
+        let root = ecm.entity_store().root();
 
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Global>("global", root)
             .unwrap()
+            .theme
             .clone();
 
         let mut offsets = BTreeMap::new();
         offsets.insert(root, (0.0, 0.0));
 
-        CONSOLE.time("render");
+        // CONSOLE.time("render");
 
-        shell.render_context_2_d().start();
-        shell.render_context_2_d().begin_path();
-        self.render_objects.borrow()[&root].render(
-            &mut shell,
+        render_context.start();
+        render_context.begin_path();
+        self.context_provider.render_objects.borrow()[&root].render(
+            render_context,
             root,
             ecm,
-            &self.render_objects,
-            &self.layouts,
-            &self.handlers,
-            &self.states,
+            &self.context_provider,
             &theme,
             &mut offsets,
             debug,
         );
-        shell.render_context_2_d().finish();
+        render_context.finish();
 
         //  print_tree(root, 0, ecm);
     }

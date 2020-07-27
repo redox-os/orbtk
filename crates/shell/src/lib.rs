@@ -29,16 +29,76 @@ extern crate lazy_static;
 
 pub mod event;
 pub mod prelude;
-pub mod window;
+pub mod window_adapter;
 
 pub use orbtk_utils::prelude as utils;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(all(not(target_arch = "wasm32"), feature = "pfinder"))]
+#[path = "glutin/mod.rs"]
+pub mod platform;
+
+#[cfg(all(
+    not(target_arch = "wasm32"),
+    feature = "default",
+    not(feature = "pfinder")
+))]
 #[path = "minifb/mod.rs"]
 pub mod platform;
+
+#[cfg(not(target_arch = "wasm32"))]
+pub mod native;
 
 #[cfg(target_arch = "wasm32")]
 #[path = "web/mod.rs"]
 pub mod platform;
 
 pub use orbtk_render::prelude as render;
+
+use std::{collections::HashMap, sync::mpsc};
+
+/// Used to send a request to the window.
+#[derive(Clone, Debug)]
+pub enum WindowRequest {
+    /// Request redraw of the `Windows`s content.
+    Redraw,
+
+    /// Request to close the `Windows`.
+    Close,
+
+    /// Request to change the title of the `Windows`.
+    ChangeTitle(String),
+}
+
+/// Used to send a request to the application shell.
+pub enum ShellRequest<W>
+where
+    W: window_adapter::WindowAdapter,
+{
+    /// Request redraw of the `Windows`s content.
+    CreateWindow(W, WindowSettings, mpsc::Receiver<WindowRequest>),
+}
+
+/// Contains settings of a window.
+#[derive(Clone, Debug, Default)]
+pub struct WindowSettings {
+    /// Title of the window.
+    pub title: String,
+
+    /// Is the window borderless / without decorations?
+    pub borderless: bool,
+
+    /// Is the window resizable?
+    pub resizeable: bool,
+
+    /// Will the window always shown on top of other windows.
+    pub always_on_top: bool,
+
+    /// The initial position of the window.
+    pub position: (f64, f64),
+
+    /// The initial size of the window.
+    pub size: (f64, f64),
+
+    /// List of fonts to register.
+    pub fonts: HashMap<String, &'static [u8]>,
+}

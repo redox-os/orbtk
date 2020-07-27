@@ -6,57 +6,62 @@ use std::{
 use super::behaviors::MouseBehavior;
 use crate::{prelude::*, utils::SelectionMode as SelMode};
 
+static ITEMS_PANEL: &'static str = "items_panel";
+
+/// The `ListViewState` generates the list box items and handles the selected indices.
 #[derive(Default, AsAny)]
 pub struct ListViewState {
     builder: WidgetBuildContext,
     count: usize,
     selected_entities: RefCell<HashSet<Entity>>,
+    items_panel: Entity,
 }
 
 impl State for ListViewState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.items_panel = ctx
+            .entity_of_child(ITEMS_PANEL)
+            .expect("ListViewState.init: ItemsPanel child could not be found.");
+    }
+
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
 
-        if count != self.count {
+        if count != self.count || *ctx.widget().get::<bool>("request_update") {
+            ctx.widget().set("request_update", false);
             if let Some(builder) = &self.builder {
-                if let Some(items_panel) = ctx.entity_of_child("items_panel") {
-                    ctx.clear_children_of(items_panel);
+                ctx.clear_children_of(self.items_panel);
 
-                    for i in 0..count {
-                        let item = {
-                            let build_context = &mut ctx.build_context();
-                            let child = builder(build_context, i);
-                            let item = ListViewItem::create().build(build_context);
+                for i in 0..count {
+                    let item = {
+                        let build_context = &mut ctx.build_context();
+                        let child = builder(build_context, i);
+                        let item = ListViewItem::new().parent(entity.0).build(build_context);
 
-                            let mouse_behavior = MouseBehavior::create().build(build_context);
-                            build_context.register_shared_property::<Selector>(
-                                "selector",
-                                mouse_behavior,
-                                item,
-                            );
-                            build_context.register_shared_property::<bool>(
-                                "pressed",
-                                mouse_behavior,
-                                item,
-                            );
-                            build_context.append_child(item, mouse_behavior);
+                        let mouse_behavior = MouseBehavior::new().build(build_context);
+                        build_context.register_shared_property::<Selector>(
+                            "selector",
+                            mouse_behavior,
+                            item,
+                        );
+                        build_context.register_shared_property::<bool>(
+                            "pressed",
+                            mouse_behavior,
+                            item,
+                        );
+                        build_context.append_child(item, mouse_behavior);
 
-                            build_context.register_shared_property::<Brush>(
-                                "foreground",
-                                child,
-                                item,
-                            );
-                            build_context.register_shared_property::<f32>("opacity", item, entity);
-                            build_context.register_shared_property::<f32>("opacity", child, entity);
-                            build_context.register_shared_property::<f64>("font_size", child, item);
-                            build_context.append_child(items_panel, item);
-                            build_context.append_child(mouse_behavior, child);
+                        build_context.register_shared_property::<Brush>("foreground", child, item);
+                        build_context.register_shared_property::<f32>("opacity", item, entity);
+                        build_context.register_shared_property::<f32>("opacity", child, entity);
+                        build_context.register_shared_property::<f64>("font_size", child, item);
+                        build_context.append_child(self.items_panel, item);
+                        build_context.append_child(mouse_behavior, child);
 
-                            item
-                        };
-                        ctx.get_widget(item).update_properties_by_theme();
-                    }
+                        item
+                    };
+                    ctx.get_widget(item).update_widget(entity, false);
                 }
             }
 
@@ -64,7 +69,7 @@ impl State for ListViewState {
         }
     }
 
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         for index in ctx
             .widget()
             .get::<SelectedEntities>("selected_entities")
@@ -73,9 +78,21 @@ impl State for ListViewState {
             .symmetric_difference(&*self.selected_entities.borrow())
         {
             let mut widget = ctx.get_widget(*index);
-            widget.set("selected", !widget.get::<bool>("selected"));
 
-            widget.update_theme_by_state(false);
+            if !widget.has::<bool>("selected") {
+                continue;
+            }
+
+            let selected = !widget.get::<bool>("selected");
+            widget.set("selected", selected);
+
+            if selected {
+                widget.get_mut::<Selector>("selector").set_state("selected");
+            } else {
+                widget.get_mut::<Selector>("selector").clear_state();
+            }
+
+            widget.update(false);
         }
 
         *self.selected_entities.borrow_mut() = ctx
@@ -86,6 +103,7 @@ impl State for ListViewState {
     }
 }
 
+/// The `ListViewItemState` handles the interaction and selection of a `ListViewItem`.
 #[derive(Default, AsAny)]
 pub struct ListViewItemState {
     request_selection_toggle: Cell<bool>,
@@ -98,7 +116,7 @@ impl ListViewItemState {
 }
 
 impl State for ListViewItemState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if !ctx.widget().get::<bool>("enabled") || !self.request_selection_toggle.get() {
             return;
         }
@@ -109,54 +127,72 @@ impl State for ListViewItemState {
         let entity = ctx.entity;
         let index = ctx.index_as_child(entity).unwrap();
 
-        if let Some(parent) = &mut ctx.try_parent_from_id("ListView") {
-            let selection_mode = *parent.get::<SelectionMode>("selection_mode");
-            // deselect item
-            if selected {
-                parent
-                    .get_mut::<SelectedEntities>("selected_entities")
-                    .0
-                    .remove(&entity);
-                parent
-                    .get_mut::<SelectedIndices>("selected_indices")
-                    .0
-                    .remove(&index);
-                return;
-            }
+        let parent_entity: Entity = (*ctx.widget().get::<u32>("parent")).into();
 
-            if parent
-                .get::<SelectedEntities>("selected_entities")
-                .0
-                .contains(&entity)
-                || selection_mode == SelMode::None
-            {
-                return;
-            }
+        let mut parent = ctx.get_widget(parent_entity);
 
-            if selection_mode == SelMode::Single {
-                parent
-                    .get_mut::<SelectedEntities>("selected_entities")
-                    .0
-                    .clear();
-                parent
-                    .get_mut::<SelectedIndices>("selected_indices")
-                    .0
-                    .clear();
-            }
-
+        let selection_mode = *parent.get::<SelectionMode>("selection_mode");
+        // deselect item
+        if selected {
             parent
                 .get_mut::<SelectedEntities>("selected_entities")
                 .0
-                .insert(entity);
+                .remove(&entity);
             parent
                 .get_mut::<SelectedIndices>("selected_indices")
                 .0
-                .insert(index);
+                .remove(&index);
+            return;
         }
+
+        if parent
+            .get::<SelectedEntities>("selected_entities")
+            .0
+            .contains(&entity)
+            || selection_mode == SelMode::None
+        {
+            return;
+        }
+
+        if selection_mode == SelMode::Single {
+            parent
+                .get_mut::<SelectedEntities>("selected_entities")
+                .0
+                .clear();
+            parent
+                .get_mut::<SelectedIndices>("selected_indices")
+                .0
+                .clear();
+        }
+
+        parent
+            .get_mut::<SelectedEntities>("selected_entities")
+            .0
+            .insert(entity);
+        parent
+            .get_mut::<SelectedIndices>("selected_indices")
+            .0
+            .insert(index);
+
+        let selected_indices: Vec<usize> = parent
+            .get::<SelectedIndices>("selected_indices")
+            .0
+            .iter()
+            .map(|i| *i)
+            .collect();
+
+        ctx.push_event_strategy_by_entity(
+            SelectionChangedEvent(parent_entity, selected_indices),
+            parent_entity,
+            EventStrategy::Direct,
+        );
     }
 }
 
 widget!(
+    /// The `ListViewItem` describes an item inside of a `ListView`.
+    ///
+    /// **CSS element:** `list-view``
     ListViewItem<ListViewItemState>: MouseHandler {
         /// Sets or shares the background property.
         background: Brush,
@@ -182,25 +218,25 @@ widget!(
         /// Sets or shares the padding property.
         padding: Thickness,
 
-        /// Sets or shares the css selector property.
-        selector: Selector,
-
         /// Sets or shares the pressed property.
         pressed: bool,
 
         /// Sets or shares the selected property.
-        selected: bool
+        selected: bool,
+
+        /// Sets or shares the parent id.
+        parent: u32
     }
 );
 
 impl Template for ListViewItem {
-    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ListViewItem")
+            .style("list_view_item")
             .min_width(64.0)
             .height(24.0)
             .selected(false)
             .pressed(false)
-            .selector("list-view-item")
             .padding(0.0)
             .background("transparent")
             .border_radius(0.0)
@@ -208,11 +244,18 @@ impl Template for ListViewItem {
             .border_brush("transparent")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(32.0)
-            .font("Roboto Regular")
+            .font("Roboto-Regular")
             .on_click(move |states, _| {
                 states.get::<ListViewItemState>(id).toggle_selection();
                 false
             })
+            .child(
+                MouseBehavior::new()
+                    .pressed(id)
+                    .enabled(id)
+                    .target(id.0)
+                    .build(ctx),
+            )
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
@@ -228,7 +271,7 @@ widget!(
     /// The `ListView` is an items drawer widget with selectable items.
     ///
     /// **CSS element:** `items-widget`
-    ListView<ListViewState> {
+    ListView<ListViewState> : SelectionChangedHandler {
         /// Sets or shares the background property.
         background: Brush,
 
@@ -247,11 +290,8 @@ widget!(
         /// Sets or shares the orientation property.
         orientation: Orientation,
 
-        /// Sets or shared the count.
+        /// Sets or shares the item count.
         count: usize,
-
-        /// Sets or shares the css selector property.
-        selector: Selector,
 
         /// Sets or shares the selection mode property.
         selection_mode: SelectionMode,
@@ -263,11 +303,15 @@ widget!(
         selected_entities: SelectedEntities,
 
         /// Sets or shares the (wheel, scroll) delta property.
-        delta: Point
+        delta: Point,
+
+        /// Use this flag to force the redrawing of the items.
+        request_update: bool
     }
 );
 
 impl ListView {
+    /// Define the template build function for the content of the ListViewItems.
     pub fn items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static>(
         mut self,
         builder: F,
@@ -279,20 +323,20 @@ impl ListView {
 
 impl Template for ListView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let items_panel = Stack::create()
-            .vertical_alignment("start")
-            .selector(Selector::default().id("items_panel"))
+        let items_panel = Stack::new()
+            .v_align("start")
+            .id(ITEMS_PANEL)
             .orientation(id)
             .build(ctx);
 
-        let scroll_viewer = ScrollViewer::create()
+        let scroll_viewer = ScrollViewer::new()
             .scroll_viewer_mode(("disabled", "auto"))
             .delta(id)
             .child(items_panel)
             .build(ctx);
 
         self.name("ListView")
-            .selector(Selector::from("list-view").id("ListView"))
+            .style("list_view")
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
             .border_width(1.0)
@@ -304,7 +348,7 @@ impl Template for ListView {
             .delta(0.0)
             .orientation("vertical")
             .child(
-                Container::create()
+                Container::new()
                     .background(id)
                     .border_radius(id)
                     .border_width(id)
@@ -313,7 +357,7 @@ impl Template for ListView {
                     .opacity(id)
                     .child(scroll_viewer)
                     .child(
-                        ScrollIndicator::create()
+                        ScrollIndicator::new()
                             .padding(2.0)
                             .content_id(items_panel.0)
                             .scroll_offset(scroll_viewer)

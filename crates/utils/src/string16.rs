@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use std::fmt;
 
 /// A UTF-16 encoded, growable string.
@@ -6,7 +7,7 @@ use std::fmt;
 ///
 /// let mut string16 = String16::from("Übung");
 /// string16.push('ä');
-#[derive(Clone, Default, PartialEq)]
+#[derive(Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct String16 {
     utf16: Vec<u16>,
 }
@@ -31,7 +32,7 @@ impl String16 {
         self.utf16.len()
     }
 
-    /// /// Returns a slice of [`u16`]s bytes that were attempted to convert to a `String`.
+    /// Returns a slice of [`u16`]s bytes that were attempted to convert to a `String`.
     pub fn as_bytes(&self) -> &[u16] {
         &self.utf16
     }
@@ -50,9 +51,13 @@ impl String16 {
         }
     }
 
-    /// Appends a given string slice onto the end of this `String16`.
+    /// Appends a given char onto the end of this `String16`.
     pub fn push(&mut self, ch: char) {
-        self.utf16.push(ch as u16)
+        let mut buf = [0; 2];
+
+        for part in ch.encode_utf16(&mut buf) {
+            self.utf16.push(*part)
+        }
     }
 
     /// Removes a [`char`] from this `String16` at a byte position and returns it.
@@ -65,7 +70,7 @@ impl String16 {
         self.utf16.is_empty()
     }
 
-    // Returns `true` if this `String16` ends with the given string slice, and `false` otherwise.
+    /// Returns `true` if this `String16` ends with the given string slice, or `false` otherwise.
     pub fn ends_with(&self, pat: &str) -> bool {
         self.as_string().ends_with(pat)
     }
@@ -133,5 +138,18 @@ mod tests {
 
         let string16 = String16::from("World");
         assert_eq!(string16.len(), 5);
+    }
+
+    #[test]
+    fn push() {
+        // Single-u16 encoded char
+        let mut string16 = String16::from("Fo");
+        string16.push('o');
+        assert_eq!(string16, String16::from("Foo"));
+
+        // Two-u16 encoded char
+        let mut string16 = String16::from("Bar");
+        string16.push('𝕊');
+        assert_eq!(string16, String16::from("Bar𝕊"));
     }
 }

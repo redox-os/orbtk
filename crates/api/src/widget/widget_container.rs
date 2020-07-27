@@ -1,9 +1,8 @@
-use std::any::TypeId;
+use std::any::type_name;
 
 use crate::{
-    css_engine::*,
     prelude::*,
-    utils::{Brush, String16, Thickness},
+    utils::{Brush, Thickness, Value},
 };
 
 use dces::prelude::{Component, Entity, EntityComponentManager};
@@ -12,7 +11,7 @@ use dces::prelude::{Component, Entity, EntityComponentManager};
 pub struct WidgetContainer<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     current_node: Entity,
-    theme: &'a ThemeValue,
+    theme: &'a Theme,
 }
 
 impl<'a> WidgetContainer<'a> {
@@ -20,13 +19,18 @@ impl<'a> WidgetContainer<'a> {
     pub fn new(
         root: Entity,
         ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
-        theme: &'a ThemeValue,
+        theme: &'a Theme,
     ) -> Self {
         WidgetContainer {
             ecm,
             current_node: root,
             theme,
         }
+    }
+
+    /// Gets the entity of the widget.
+    pub fn entity(&self) -> Entity {
+        self.current_node
     }
 
     /// Gets the property.
@@ -42,10 +46,13 @@ impl<'a> WidgetContainer<'a> {
             return property;
         }
 
+        let name = self.get_name();
+
         panic!(
-            "Entity {} does not contain property type {:?} with key: {}",
+            "Widget: {} with entity: {} does not contain property with type {:?} for key: {}",
+            name,
             self.current_node.0,
-            TypeId::of::<P>(),
+            type_name::<P>(),
             key
         );
     }
@@ -54,7 +61,7 @@ impl<'a> WidgetContainer<'a> {
     ///
     /// # Panics
     ///
-    /// Panics if the widget does not contains the property.
+    /// Panics if the widget does not contain the property.
     pub fn get_mut<P>(&mut self, key: &str) -> &mut P
     where
         P: Clone + Component,
@@ -70,7 +77,7 @@ impl<'a> WidgetContainer<'a> {
         panic!(
             "Entity {} does not contain property type {:?}, with key: {}",
             self.current_node.0,
-            TypeId::of::<P>(),
+            type_name::<P>(),
             key
         );
     }
@@ -101,10 +108,13 @@ impl<'a> WidgetContainer<'a> {
             return property.clone();
         }
 
+        let name = self.get_name();
+
         panic!(
-            "Entity {} does not contain property type {:?}, with key: {}",
+            "Widget: {} with entity: {} does not contain property with type {:?} for key: {}",
+            name,
             self.current_node.0,
-            TypeId::of::<P>(),
+            type_name::<P>(),
             key
         );
     }
@@ -140,10 +150,14 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
+        let name = self.get_name();
+
         panic!(
-            "Entity {} does not contain property type {:?}",
+            "Widget: {} with entity: {} does not contain property with type {:?} for key: {}",
+            name,
             self.current_node.0,
-            TypeId::of::<P>()
+            type_name::<P>(),
+            key
         );
     }
 
@@ -185,71 +199,68 @@ impl<'a> WidgetContainer<'a> {
         false
     }
 
-    /// Updates the theme by the inner state e.g. `selected` or `pressed`.
-    pub fn update_theme_by_state(&mut self, force: bool) {
-        if let Some(selector) = self.try_clone::<Selector>("selector") {
-            let mut update = false;
+    fn update_constraint(&mut self, key: &str, value: Value) {
+        let value = if let Ok(value) = value.0.into_rust::<f64>() {
+            value
+        } else {
+            0.0
+        };
 
-            if let Some(focus) = self.try_clone::<bool>("focused") {
-                if focus && !selector.pseudo_classes.contains("focus") {
-                    add_selector_to_widget("focus", self);
-                    update = true;
-                } else if !focus && selector.pseudo_classes.contains("focus") {
-                    remove_selector_from_widget("focus", self);
-                    update = true;
-                }
-            }
-
-            if let Some(selected) = self.try_clone::<bool>("selected") {
-                if selected && !selector.pseudo_classes.contains("selected") {
-                    add_selector_to_widget("selected", self);
-                    update = true;
-                } else if !selected && selector.pseudo_classes.contains("selected") {
-                    remove_selector_from_widget("selected", self);
-                    update = true;
-                }
-            }
-
-            if let Some(pressed) = self.try_clone::<bool>("pressed") {
-                if pressed && !selector.pseudo_classes.contains("active") {
-                    add_selector_to_widget("active", self);
-                    update = true;
-                } else if !pressed && selector.pseudo_classes.contains("active") {
-                    remove_selector_from_widget("active", self);
-                    update = true;
-                }
-            }
-
-            if let Some(enabled) = self.try_clone::<bool>("enabled") {
-                if !enabled && !selector.pseudo_classes.contains("disabled") {
-                    add_selector_to_widget("disabled", self);
-                    update = true;
-                } else if enabled && selector.pseudo_classes.contains("disabled") {
-                    remove_selector_from_widget("disabled", self);
-                    update = true;
-                }
-            }
-
-            if let Some(text) = self.try_clone::<String16>("text") {
-                if text.is_empty() && !selector.pseudo_classes.contains("empty") {
-                    add_selector_to_widget("empty", self);
-                    update = true;
-                } else if !text.is_empty() && selector.pseudo_classes.contains("empty") {
-                    remove_selector_from_widget("empty", self);
-                    update = true;
-                }
-            }
-
-            if update || force {
-                self.update_properties_by_theme();
+        if let Some(constraint) = self.try_get_mut::<Constraint>("constraint") {
+            match key {
+                "width" => constraint.set_width(value),
+                "height" => constraint.set_height(value),
+                "min_width" => constraint.set_min_width(value),
+                "min_height" => constraint.set_min_height(value),
+                "max_width" => constraint.set_max_width(value),
+                "max_height" => constraint.set_max_height(value),
+                _ => {}
             }
         }
     }
 
-    /// Update all properties for the theme.
-    pub fn update_properties_by_theme(&mut self) {
+    fn update_padding(&mut self, key: &str, value: Value) {
+        let value = if let Ok(value) = value.0.into_rust::<f64>() {
+            value
+        } else {
+            0.0
+        };
+
+        if let Some(padding) = self.try_get_mut::<Thickness>("padding") {
+            match key {
+                "padding_left" => padding.set_left(value),
+                "padding_top" => padding.set_top(value),
+                "padding_right" => padding.set_right(value),
+                "padding_bottom" => padding.set_bottom(value),
+                _ => {}
+            }
+        }
+    }
+
+    fn update_value<T, V>(&mut self, key: &str, value: V)
+    where
+        T: Component + Clone,
+        V: Into<T>,
+    {
+        if self.has::<T>(key) {
+            self.set::<T>(key, value.into());
+        }
+    }
+
+    /// Update all properties from theme for the current widget.
+    pub fn update(&mut self, force: bool) {
+        self.update_widget(self.current_node, force);
+    }
+
+    /// Update all properties from theme for the given widget.
+    pub fn update_widget(&mut self, entity: Entity, force: bool) {
+        self.current_node = entity;
         if !self.has::<Selector>("selector") {
             return;
+        }
+
+        if force {
+            self.get_mut::<Selector>("selector").set_dirty(true);
         }
 
         let selector = self.clone::<Selector>("selector");
@@ -258,101 +269,53 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
-        if self.has::<Brush>("foreground") {
-            if let Some(color) = self.theme.brush("color", &selector) {
-                self.set::<Brush>("foreground", color);
+        if let Some(props) = self.theme.properties(&selector) {
+            for (key, value) in props {
+                match key.as_str() {
+                    "foreground" | "background" | "icon_brush" | "border_brush" => {
+                        self.update_value::<Brush, Value>(key, Value(value.clone()));
+                    }
+                    "font_size" | "icon_size" | "spacing" | "border_radius" => {
+                        self.update_value::<f64, Value>(key, Value(value.clone()));
+                    }
+                    "padding" | "border_width" => {
+                        self.update_value::<Thickness, Value>(key, Value(value.clone()));
+                    }
+                    "padding_left" | "padding_top" | "padding_right" | "padding_bottom" => {
+                        self.update_padding(key, Value(value.clone()));
+                    }
+                    "font_family" | "icon_family" => {
+                        self.update_value::<String, Value>(key, Value(value.clone()));
+                    }
+                    "opacity" => {
+                        self.update_value::<f32, Value>(key, Value(value.clone()));
+                    }
+                    "width" | "height" | "min_width" | "min_height" | "max_width"
+                    | "max_height" => self.update_constraint(key, Value(value.clone())),
+                    _ => {}
+                }
             }
         }
 
-        if self.has::<Brush>("background") {
-            if let Some(background) = self.theme.brush("background", &selector) {
-                self.set::<Brush>("background", background);
-            }
+        let force = selector.dirty() || force;
+
+        for child in &(self.ecm.entity_store().children.clone())[&entity] {
+            self.update_widget(*child, force);
         }
 
-        if self.has::<Brush>("border_brush") {
-            if let Some(border_brush) = self.theme.brush("border-color", &selector) {
-                self.set::<Brush>("border_brush", border_brush);
-            }
-        }
-
-        if self.has::<f64>("border_radius") {
-            if let Some(radius) = self.theme.float("border-radius", &selector) {
-                self.set::<f64>("border_radius", f64::from(radius));
-            }
-        }
-
-        if self.has::<f32>("opacity") {
-            if let Some(opacity) = self.theme.float("opacity", &selector) {
-                self.set::<f32>("opacity", opacity);
-            }
-        }
-
-        if self.has::<Thickness>("border_width") {
-            if let Some(border_width) = self.theme.uint("border-width", &selector) {
-                self.set::<Thickness>("border_width", Thickness::from(border_width as f64));
-            }
-        }
-
-        self.update_font_properties_by_theme(&selector);
-
-        if let Some(mut padding) = self.try_clone::<Thickness>("padding") {
-            if let Some(pad) = self.theme.uint("padding", &selector) {
-                padding.set_thickness(pad as f64);
-            }
-
-            if let Some(left) = self.theme.uint("padding-left", &selector) {
-                padding.set_left(left as f64);
-            }
-
-            if let Some(top) = self.theme.uint("padding-top", &selector) {
-                padding.set_top(top as f64);
-            }
-
-            if let Some(right) = self.theme.uint("padding-right", &selector) {
-                padding.set_right(right as f64);
-            }
-
-            if let Some(bottom) = self.theme.uint("padding-bottom", &selector) {
-                padding.set_bottom(bottom as f64);
-            }
-            self.set::<Thickness>("padding", padding);
-        }
-
-        // todo padding, icon_margin
-
-        self.get_mut::<Selector>("selector").set_dirty(true);
+        self.current_node = entity;
+        self.get_mut::<Selector>("selector").set_dirty(false);
     }
 
-    pub fn update_font_properties_by_theme(&mut self, selector: &Selector) {
-        if self.has::<f64>("font_size") {
-            if let Some(size) = self.theme.uint("font-size", selector) {
-                self.set::<f64>("font_size", f64::from(size));
-            }
-        }
-
-        if self.has::<String>("font_family") {
-            if let Some(font_family) = self.theme.string("font-family", selector) {
-                self.set::<String>("font_family", font_family);
-            }
-        }
-
-        if self.has::<Brush>("icon_brush") {
-            if let Some(color) = self.theme.brush("icon-color", selector) {
-                self.set::<Brush>("icon_brush", color);
-            }
-        }
-
-        if self.has::<f64>("icon_size") {
-            if let Some(size) = self.theme.uint("icon-size", selector) {
-                self.set::<f64>("icon_size", f64::from(size));
-            }
-        }
-
-        if self.has::<String>("icon_family") {
-            if let Some(font_family) = self.theme.string("icon-family", selector) {
-                self.set::<String>("icon_family", font_family);
-            }
+    fn get_name(&self) -> String {
+        if self.has::<String>("name") {
+            self.ecm
+                .component_store()
+                .get::<String>("name", self.current_node)
+                .unwrap()
+                .clone()
+        } else {
+            String::from("unknown")
         }
     }
 }
