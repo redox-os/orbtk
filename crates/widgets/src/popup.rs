@@ -28,10 +28,10 @@ impl State for PopupState {
 
             ctx.widget()
                 .get_mut::<Rectangle>("bounds")
-                .set_x(target_position.x + target_bounds.x());
+                .set_x(target_position.x() + target_bounds.x());
             ctx.widget()
                 .get_mut::<Rectangle>("bounds")
-                .set_y(1.0 + target_position.y + target_bounds.y() + target_bounds.height());
+                .set_y(1.0 + target_position.y() + target_bounds.y() + target_bounds.height());
         }
     }
 }
@@ -65,7 +65,7 @@ widget!(
 impl Template for Popup {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Popup")
-            .element("popup")
+            .style("popup")
             .open(false)
             .padding(0.0)
             .background("transparent")

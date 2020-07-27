@@ -1,24 +1,18 @@
-use orbtk::prelude::*;
-use orbtk::theme::DEFAULT_THEME_CSS;
+use orbtk::{
+    prelude::*,
+    theme::{COLORS_RON, DARK_THEME_RON, FONTS_RON},
+    theming::config::ThemeConfig,
+};
 
-static DARK_EXT: &'static str = include_str!("../res/calculator-dark.css");
+static DARK_EXT: &'static str = include_str!("../res/calculator_dark.ron");
 
-#[cfg(feature = "light-theme")]
-static LIGHT_EXT: &'static str = include_str!("../res/calculator-light.css");
-
-#[cfg(not(feature = "light-theme"))]
-fn get_theme() -> ThemeValue {
-    ThemeValue::create_from_css(DEFAULT_THEME_CSS)
-        .extension_css(DARK_EXT)
-        .build()
-}
-
-#[cfg(feature = "light-theme")]
-fn get_theme() -> ThemeValue {
-    ThemeValue::new()
-        .extension_css(DARK_EXT)
-        .extension_css(LIGHT_EXT)
-        .build()
+fn theme() -> Theme {
+    Theme::from_config(
+        ThemeConfig::from(DARK_THEME_RON)
+            .extend(ThemeConfig::from(DARK_EXT))
+            .extend(ThemeConfig::from(COLORS_RON))
+            .extend(ThemeConfig::from(FONTS_RON)),
+    )
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -134,8 +128,14 @@ fn generate_digit_button(
     column_span: usize,
     row: usize,
 ) -> Entity {
-    let mut button = Button::new()
-        .class("single_content")
+    let style = if primary {
+        "calculator_button_primary"
+    } else {
+        "calculator_button"
+    };
+
+    let button = Button::new()
+        .style(style)
         .min_size(48.0, 48.0)
         .text(sight.to_string())
         .on_click(move |states, _| -> bool {
@@ -145,10 +145,6 @@ fn generate_digit_button(
         .attach(Grid::column(column))
         .attach(Grid::row(row))
         .attach(Grid::column_span(column_span));
-
-    if primary {
-        button = button.class("primary");
-    }
 
     button.build(ctx)
 }
@@ -162,11 +158,16 @@ fn generate_operation_button(
     column_span: usize,
     row: usize,
 ) -> Entity {
-    let mut button = Button::new()
-        .class("single_content")
+    let style = if primary {
+        "calculator_button_primary"
+    } else {
+        "calculator_button"
+    };
+
+    let button = Button::new()
+        .style(style)
         .min_size(48.0, 48.0)
         .text(sight.to_string())
-        .class("square")
         .on_click(move |states, _| -> bool {
             state(id, states).action(Action::Operator(sight));
             true
@@ -174,11 +175,6 @@ fn generate_operation_button(
         .attach(Grid::column(column))
         .attach(Grid::column_span(column_span))
         .attach(Grid::row(row));
-
-    if primary {
-        button = button.class("primary");
-    }
-
     button.build(ctx)
 }
 
@@ -198,8 +194,7 @@ impl Template for MainView {
                     .child(
                         Container::new()
                             .padding(8.0)
-                            .element("container")
-                            .class("header")
+                            .style("header_area")
                             .attach(Grid::row(0))
                             .child(
                                 Grid::new()
@@ -211,7 +206,7 @@ impl Template for MainView {
                                                     .width(0.0)
                                                     .height(14.0)
                                                     .text("")
-                                                    .element("text-block")
+                                                    .style("input")
                                                     .id("input")
                                                     .v_align("start")
                                                     .build(ctx),
@@ -220,7 +215,7 @@ impl Template for MainView {
                                     )
                                     .child(
                                         TextBlock::new()
-                                            .element("text-block")
+                                            .style("result")
                                             .text(id)
                                             .v_align("end")
                                             .h_align("end")
@@ -232,9 +227,8 @@ impl Template for MainView {
                     )
                     .child(
                         Container::new()
-                            .element("container")
-                            .class("content")
-                            .padding(8.0)
+                            .style("content_area")
+                            .padding(4.0)
                             .attach(Grid::row(1))
                             .child(
                                 Grid::new()
@@ -293,12 +287,12 @@ impl Template for MainView {
 
 fn main() {
     Application::new()
+        .theme(theme())
         .window(|ctx| {
             Window::new()
                 .title("OrbTk - Calculator example")
                 .position((100.0, 100.0))
                 .size(212.0, 336.0)
-                .theme(get_theme())
                 .child(MainView::new().build(ctx))
                 .build(ctx)
         })

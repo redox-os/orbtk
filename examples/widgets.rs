@@ -11,6 +11,7 @@ enum Action {
     ValueChanged(Entity),
     IncrementCounter,
     RemoveItem,
+    ToggleTheme(Entity),
 }
 
 #[derive(AsAny)]
@@ -48,7 +49,8 @@ impl State for MainViewState {
 
                         if len == 4 {
                             button(ctx.child("add-item-button")).set_enabled(false);
-                            button(ctx.child("add-item-button")).set_visibility(Visibility::Collapsed);
+                            button(ctx.child("add-item-button"))
+                                .set_visibility(Visibility::Collapsed);
                         }
                     }
                 }
@@ -62,7 +64,8 @@ impl State for MainViewState {
 
                         if len == 1 {
                             button(ctx.child("remove-item-button")).set_enabled(false);
-                            button(ctx.child("remove-item-button")).set_visibility(Visibility::Collapsed);
+                            button(ctx.child("remove-item-button"))
+                                .set_visibility(Visibility::Collapsed);
                         }
                     }
                 }
@@ -87,10 +90,14 @@ impl State for MainViewState {
                 Action::EntryChanged(entity) => {
                     println!("entry changed: {}", text_box(ctx.get_widget(entity)).text());
                 }
-                Action::ValueChanged(entity) => {
-                    let val = ((slider(ctx.get_widget(entity)).val()).floor() as i32).to_string();
+                Action::ValueChanged(_entity) => {
+                    //println!("Slider value changed");
+                }
+                Action::ToggleTheme(entity) => {
+                    let light = *ctx.get_widget(entity).get::<bool>("selected");
 
-                    text_block(ctx.child("value_text")).set_text(String16::from(val));
+                    let theme = if light { light_theme() } else { dark_theme() };
+                    ctx.switch_theme(theme);
                 }
             }
 
@@ -110,11 +117,7 @@ impl State for MainViewState {
 }
 
 fn create_header(ctx: &mut BuildContext, text: &str) -> Entity {
-    TextBlock::new()
-        .text(text)
-        .element("text-block")
-        .class("h1")
-        .build(ctx)
+    TextBlock::new().text(text).style("header").build(ctx)
 }
 
 type List = Vec<String>;
@@ -137,6 +140,14 @@ widget!(
 
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+        let slider = Slider::new()
+            .min(0.0)
+            .max(1.0)
+            .on_changed(move |states, entity| {
+                state(id, states).action(Action::ValueChanged(entity));
+            })
+            .build(ctx);
+
         self.name("MainView")
             .result("Button count: 0")
             .counter(0)
@@ -175,24 +186,19 @@ impl Template for MainView {
             .combo_box_list_count(10)
             .child(
                 Grid::new()
-                    .margin(8.)
-                    .columns(
-                        Columns::new()
-                            .add(132.)
-                            .add(16.)
-                            .add(132.)
-                            .add(16.)
-                            .add(132.),
-                    )
+                    .margin(8)
+                    .columns(Columns::new().add(132).add(16).add(132).add(16).add(132))
+                    .rows(Rows::new().add("*").add(32))
                     .child(
                         Stack::new()
                             .attach(Grid::column(0))
+                            .attach(Grid::row(0))
                             // Column 0
                             .child(create_header(ctx, "Buttons"))
                             .child(
                                 Button::new()
                                     .text("Button")
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .icon(material_icons_font::MD_CHECK)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(1))
@@ -205,9 +211,8 @@ impl Template for MainView {
                             .child(
                                 Button::new()
                                     .text("Primary")
-                                    .element("button")
-                                    .class("primary")
-                                    .margin((0., 8., 0., 0.))
+                                    .style("button_primary")
+                                    .margin((0, 8, 0, 0))
                                     .icon(material_icons_font::MD_360)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(2))
@@ -215,9 +220,9 @@ impl Template for MainView {
                             )
                             .child(
                                 ToggleButton::new()
-                                    .class("single_content")
+                                    .style("button_single_content")
                                     .text("ToggleButton")
-                                    .margin((0., 8., 2., 0.))
+                                    .margin((0, 8, 2, 0))
                                     .icon(material_icons_font::MD_ALARM_ON)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(3))
@@ -226,32 +231,23 @@ impl Template for MainView {
                             .child(
                                 CheckBox::new()
                                     .text("CheckBox")
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(4))
                                     .build(ctx),
                             )
                             .child(
                                 Switch::new()
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(5))
                                     .build(ctx),
                             )
+                            .child(slider)
                             .child(
-                                TextBlock::new()
-                                    .margin((0., 8., 0., 0.))
-                                    .element("h1")
-                                    .id("value_text")
-                                    .text("0")
-                                    .h_align("center")
-                                    .build(ctx),
-                            )
-                            .child(
-                                Slider::new()
-                                    .on_changed(move |states, entity| {
-                                        state(id, states).action(Action::ValueChanged(entity));
-                                    })
+                                ProgressBar::new()
+                                    .val(slider)
+                                    .margin((0, 8, 0, 0))
                                     .build(ctx),
                             )
                             .build(ctx),
@@ -259,12 +255,13 @@ impl Template for MainView {
                     .child(
                         Stack::new()
                             .attach(Grid::column(2))
+                            .attach(Grid::row(0))
                             .child(create_header(ctx, "Text"))
                             .child(
                                 TextBlock::new()
-                                    .class("body")
+                                    .style("body")
                                     .text(("result", id))
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(1))
                                     .build(ctx),
@@ -273,7 +270,7 @@ impl Template for MainView {
                                 TextBox::new()
                                     .water_mark("TextBox...")
                                     .text(("text_one", id))
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
                                     .on_activate(move |states, entity| {
@@ -288,7 +285,7 @@ impl Template for MainView {
                                 TextBox::new()
                                     .water_mark("TextBox...")
                                     .text(("text_two", id))
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))
                                     .on_activate(move |states, entity| {
@@ -301,11 +298,10 @@ impl Template for MainView {
                             )
                             .child(
                                 Button::new()
-                                    .margin((0., 8., 0., 0.))
-                                    .class("single_content")
-                                    .margin((0., 8., 8., 0.))
-                                    .icon(material_icons_font::MD_CLEAR)
+                                    .margin((0, 8, 0, 0))
+                                    .style("button_single_content")
                                     .text("clear text")
+                                    .icon(material_icons_font::MD_CLEAR)
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::ClearText);
                                         true
@@ -314,8 +310,8 @@ impl Template for MainView {
                             )
                             .child(
                                 NumericBox::new()
-                                    .margin((-0., 8., 0., 0.))
-                                    .max(123.)
+                                    .margin((0, 8, 0, 0))
+                                    .max(123)
                                     .step(0.123)
                                     .val(0.123)
                                     .build(ctx),
@@ -327,20 +323,20 @@ impl Template for MainView {
                             .rows(
                                 Rows::new()
                                     .add("auto")
-                                    .add(32.)
-                                    .add(16.)
-                                    .add(204.)
+                                    .add(32)
+                                    .add(16)
+                                    .add(204)
                                     .add("auto")
-                                    .add(192.)
+                                    .add(192)
                                     .add("auto"),
                             )
-                            .columns(Columns::new().add("*").add(4.).add("*"))
+                            .columns(Columns::new().add("*").add(4).add("*"))
                             .attach(Grid::column(4))
+                            .attach(Grid::row(0))
                             .child(
                                 TextBlock::new()
                                     .text("Items")
-                                    .element("text-block")
-                                    .class("h1")
+                                    .style("header")
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(0))
@@ -354,7 +350,8 @@ impl Template for MainView {
                                             .get::<Vec<String>>("combo_box_list")[index]
                                             .clone();
                                         TextBlock::new()
-                                            .margin((0., 0., 0., 2.))
+                                            .style("small_text")
+                                            .margin((0, 0, 0, 2))
                                             .v_align("center")
                                             .text(text)
                                             .build(bc)
@@ -363,59 +360,53 @@ impl Template for MainView {
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(1))
-                                    .margin((0., 8., 0., 0.))
+                                    .margin((0, 8, 0, 0))
                                     .count(("combo_box_list_count", id))
                                     .build(ctx),
                             )
                             .child(
                                 ItemsWidget::new()
-                                    .element("items-widget")
                                     .id("items")
-                                    .padding((4., 4., 4., 2.))
+                                    .padding((4, 4, 4, 2))
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(3))
-                                    .margin((0., 0., 0., 8.))
+                                    .margin((0, 0, 0, 8))
                                     // bc = build-context
                                     .items_builder(move |bc, index| {
                                         let text = bc.get_widget(id).get::<Vec<String>>("list")
                                             [index]
                                             .clone();
 
-                                        Button::new()
-                                            .margin((0., 0., 0., 2.))
-                                            .text(text)
-                                            .build(bc)
+                                        Button::new().margin((0, 0, 0, 2)).text(text).build(bc)
                                     })
                                     .count(("list_count", id))
                                     .build(ctx),
                             )
                             .child(
                                 Button::new()
-                                    .element("button")
-                                    .class("single_content")
+                                    .style("button_single_content")
                                     .id("remove-item-button")
                                     .icon(material_icons_font::MD_REMOVE_CIRCLE)
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::RemoveItem);
                                         true
                                     })
-                                    .min_width(0.)
+                                    .min_width(0)
                                     .attach(Grid::column(0))
                                     .attach(Grid::row(4))
                                     .build(ctx),
                             )
                             .child(
                                 Button::new()
-                                    .element("button")
-                                    .class("single_content")
+                                    .style("button_single_content")
                                     .id("add-item-button")
                                     .icon(material_icons_font::MD_ADD_CIRCLE)
                                     .on_click(move |states, _| {
                                         state(id, states).action(Action::AddItem);
                                         true
                                     })
-                                    .min_width(0.)
+                                    .min_width(0)
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(4))
                                     .build(ctx),
@@ -426,31 +417,55 @@ impl Template for MainView {
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(5))
                                     .selected_indices(id)
-                                    .margin((0., 16., 0., 8.))
+                                    .margin((0, 16, 0, 8))
                                     .items_builder(move |bc, index| {
                                         let text = bc
                                             .get_widget(id)
                                             .get::<Vec<String>>("selection_list")[index]
                                             .clone();
                                         TextBlock::new()
-                                            .margin((0., 0., 0., 2.))
+                                            .margin((0, 0, 0, 2))
                                             .v_align("center")
                                             .text(text)
                                             .build(bc)
                                     })
+                                    .on_selection_changed(|_, _, _| println!("Selection changed"))
                                     .count(("selection_list_count", id))
                                     .build(ctx),
                             )
                             .child(
                                 // todo: wrong text width????
                                 TextBlock::new()
-                                    .element("text-block")
+                                    .style("body")
                                     .id("selection")
-                                    .max_width(120.)
+                                    .max_width(120)
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
                                     .attach(Grid::row(6))
                                     .text("Selected:")
+                                    .build(ctx),
+                            )
+                            .build(ctx),
+                    )
+                    .child(
+                        Stack::new()
+                            .orientation("horizontal")
+                            .attach(Grid::row(1))
+                            .attach(Grid::column(0))
+                            .child(
+                                TextBlock::new()
+                                    .style("body")
+                                    .text("Toggle theme: ")
+                                    .v_align("center")
+                                    .margin((0, 0, 4, 0))
+                                    .build(ctx),
+                            )
+                            .child(
+                                Switch::new()
+                                    .on_changed(move |states, entity| {
+                                        state(id, states).action(Action::ToggleTheme(entity));
+                                    })
+                                    .v_align("center")
                                     .build(ctx),
                             )
                             .build(ctx),
@@ -468,8 +483,8 @@ fn main() {
         .window(|ctx| {
             Window::new()
                 .title("OrbTk - widgets example")
-                .position((100., 100.))
-                .size(468., 730.)
+                .position((100, 100))
+                .size(468, 730)
                 .resizeable(true)
                 .child(MainView::new().build(ctx))
                 .build(ctx)

@@ -24,6 +24,7 @@ pub struct TextBoxState {
     action: Option<TextBoxAction>,
     len: usize,
     cursor: Entity,
+    focused: bool,
 }
 
 impl TextBoxState {
@@ -103,6 +104,8 @@ impl TextBoxState {
             ctx.widget()
                 .get_mut::<TextSelection>("text_selection")
                 .length = 0;
+
+            ctx.get_widget(self.cursor).set("expanded", false);
         }
     }
 
@@ -111,7 +114,7 @@ impl TextBoxState {
         if let Some((index, _x)) = self
             .map_chars_index_to_position(ctx)
             .iter()
-            .min_by_key(|(_index, x)| (p.x - x).abs() as u64)
+            .min_by_key(|(_index, x)| (p.position.x() - x).abs() as u64)
         {
             return *index;
         }
@@ -123,8 +126,8 @@ impl TextBoxState {
     fn map_chars_index_to_position(&self, ctx: &mut Context) -> Vec<(usize, f64)> {
         let text: String = ctx.widget().get::<String16>("text").as_string();
         // start x position of the cursor is start position of the text element + padding left
-        let start_position: f64 =
-            ctx.widget().get::<Point>("position").x + ctx.widget().get::<Thickness>("padding").left;
+        let start_position: f64 = ctx.widget().get::<Point>("position").x()
+            + ctx.widget().get::<Thickness>("padding").left;
         // array which will hold char index and it's x position
         let mut position_index: Vec<(usize, f64)> = Vec::with_capacity(text.len());
         position_index.push((0, start_position));
@@ -170,6 +173,7 @@ impl TextBoxState {
         ctx.widget()
             .get_mut::<TextSelection>("text_selection")
             .length = len;
+        ctx.get_widget(self.cursor).set("expanded", len > 0);
     }
 
     fn move_cursor_left(&mut self, ctx: &mut Context) {
@@ -190,6 +194,8 @@ impl TextBoxState {
             selection.start_index = (selection.start_index as i32 - 1).max(0) as usize;
             selection.length = 0;
         }
+
+        ctx.get_widget(self.cursor).set("expanded", false);
     }
 
     fn move_cursor_right(&mut self, ctx: &mut Context) {
@@ -204,6 +210,8 @@ impl TextBoxState {
                 selection.length = 0;
             }
 
+            ctx.get_widget(self.cursor).set("expanded", false);
+
             return;
         }
 
@@ -216,6 +224,8 @@ impl TextBoxState {
             }
             selection.length = 0;
         }
+
+        ctx.get_widget(self.cursor).set("expanded", false);
     }
 
     fn clear_selection(&mut self, ctx: &mut Context) {
@@ -230,6 +240,8 @@ impl TextBoxState {
         ctx.widget()
             .get_mut::<TextSelection>("text_selection")
             .length = 0;
+
+        ctx.get_widget(self.cursor).set("expanded", false);
     }
 
     fn back_space(&mut self, ctx: &mut Context) {
@@ -317,6 +329,7 @@ impl TextBoxState {
                 selection.start_index = 1;
                 selection.length = 0
             }
+            ctx.get_widget(self.cursor).set("expanded", false);
         } else {
             let current_selection = *ctx
                 .get_widget(self.cursor)
@@ -348,10 +361,38 @@ impl State for TextBoxState {
             .entity_of_child(ID_CURSOR)
             .expect("TextBoxState.init: cursor child could not be found.");
         self.len = ctx.widget().get::<String16>("text").len();
+        self.focused = *ctx.widget().get::<bool>("focused");
+
+        if self.len == 0 {
+            ctx.widget()
+                .get_mut::<Selector>("selector")
+                .set_state("empty");
+            ctx.widget().update(false);
+        }
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.check_outside_update(ctx);
+
+        let focused = *ctx.widget().get::<bool>("focused");
+        let empty = ctx.widget().get::<String16>("text").is_empty();
+
+        if !focused && empty && !ctx.widget().get::<Selector>("selector").has_state("empty") {
+            ctx.widget()
+                .get_mut::<Selector>("selector")
+                .set_state("empty");
+            ctx.widget().update(false);
+        }
+
+        if !focused && *ctx.widget().get::<bool>("request_focus") {
+            ctx.widget().set("request_focus", false);
+            ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
+            self.select_all(ctx);
+        }
+
+        if self.focused != *ctx.widget().get::<bool>("focused") {
+            self.focused = *ctx.widget().get::<bool>("focused");
+        }
 
         if let Some(action) = self.action.clone() {
             match action {
@@ -364,10 +405,22 @@ impl State for TextBoxState {
             }
 
             self.action = None;
-            ctx.widget().update_theme_by_state(false);
+            ctx.widget().update(false);
         }
 
         self.len = ctx.widget().get::<String16>("text").len();
+
+        if self.len == 0 && self.focused {
+            ctx.widget()
+                .get_mut::<Selector>("selector")
+                .set_state("empty_focused");
+            ctx.widget().update(false);
+        } else if self.len > 0 && self.focused {
+            ctx.widget()
+                .get_mut::<Selector>("selector")
+                .set_state("focused");
+            ctx.widget().update(false);
+        }
     }
 }
 
@@ -413,7 +466,10 @@ widget!(
         focused: bool,
 
         /// Sets or shares ta value that describes if the TextBox should lost focus on activation (enter).
-        lost_focus_on_activation: bool
+        lost_focus_on_activation: bool,
+
+        /// Used to request focus from outside. Set to `true` tor request focus.
+        request_focus: bool
     }
 );
 
@@ -430,7 +486,7 @@ impl Template for TextBox {
             .build(ctx);
 
         self.name("TextBox")
-            .element(ELEMENT_TEXT_BOX)
+            .style(ELEMENT_TEXT_BOX)
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)

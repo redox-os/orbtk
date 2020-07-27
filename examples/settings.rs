@@ -89,7 +89,7 @@ impl Template for MainView {
                 .child(TextBox::new().v_align("center").text(id).build(ctx))
                 .child(
                     Button::new()
-                        .class("single_content")
+                        .style("button_single_content")
                         .attach(Grid::row(0))
                         .attach(Grid::column(2))
                         .on_click(move |states, _| {
@@ -101,7 +101,7 @@ impl Template for MainView {
                 )
                 .child(
                     Button::new()
-                        .class("single_content")
+                        .style("button_single_content")
                         .attach(Grid::row(0))
                         .attach(Grid::column(4))
                         .on_click(move |states, _| {
@@ -113,7 +113,7 @@ impl Template for MainView {
                 )
                 .child(
                     Button::new()
-                        .class("single_content")
+                        .style("button_single_content")
                         .attach(Grid::row(0))
                         .attach(Grid::column(6))
                         .on_click(move |states, _| {

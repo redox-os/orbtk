@@ -55,7 +55,7 @@ To include OrbTk in your project, add this dependency
 line to your `Cargo.toml` file:
 
 ```text
-orbtk = "0.3.1-alpha1"
+orbtk = "0.3.1-alpha2"
 ```
 
 To use the latest development version of OrbTk, add this dependency
@@ -162,7 +162,57 @@ widget!(
 
 The [Context parameter](https://github.com/redox-os/orbtk/blob/develop/crates/api/src/widget/context.rs) of the update method provides access to the state's widget (entity) and its properties (components). It also provides functions to access the children of the widget, and to manipulate the widget tree.
 
+### Styling widgets and define themes
+
+OrbTk provides a theme engine base on [RON](https://github.com/ron-rs/ron). The engine provides the following features:
+
+* Split theme in different files
+* Outsource resources like colors and font stuff
+* Derive styles
+* Dynamic theme switch
+* State styling (pressed | selected | focused | disabled)
+
+Short example: 
+```ron
+Theme (
+    styles: {
+        "base": (
+            properties: {
+                "font_size": "$FONT_SIZE_12",
+                "font_family": "$MEDIUM_FONT",
+            }
+        ),
+        "button": (
+            base: "base",
+            properties: {
+                "background": "$BLACK",
+            },
+            states: {
+                "pressed": {
+                    "background": "$WHITE",
+                }
+            }
+        )
+    },
+    resource: {
+        "BLACK": "#000000",
+        "WHITE": "#ffffff",
+        "MEDIUM_FONT": "Roboto Medium",
+        "FONT_SIZE_12": 12,
+        "FONT_SIZE_16": 16,
+    }
+)
+```
+
+OrbTk will also provide a plain mechanism to style and theme widgets and UIs. 
+
 ## Run Examples
+
+On Linux you first need to install
+
+```shell
+sudo apt install libxkbcommon-dev libwayland-cursor0 libwayland-dev
+```
 
 You can find examples in the `examples/` directory.
 
@@ -223,11 +273,10 @@ cargo doc --no-deps --open
 ## Sub Crates
 
 * [api](https://github.com/redox-os/orbtk/tree/develop/crates/api): base api elements of OrbTk e.g. widget and application parts
-* [css-engine](https://github.com/redox-os/orbtk/tree/develop/crates/css-engine): parse and read values from a css file
 * [proc-macros](https://github.com/redox-os/orbtk/tree/develop/crates/proc-macros): procedural helper macros
 * [render](https://github.com/redox-os/orbtk/tree/develop/crates/render): cross platform 2D/3D render library
 * [shell](https://github.com/redox-os/orbtk/tree/develop/crates/api): cross platform window and event handling
-* [theme](https://github.com/redox-os/orbtk/tree/develop/crates/theme): OrbTks default theme (light and dark)
+* [theming](https://github.com/redox-os/orbtk/tree/develop/crates/theme): provide mechanism to style OrbTk UI's in rust and ron (replaces css-engine)
 * [tree](https://github.com/redox-os/orbtk/tree/develop/crates/tree): tree structure based on DCES
 * [utils](https://github.com/redox-os/orbtk/tree/develop/crates/utils): helper structs and traits
 * [widgets](https://github.com/redox-os/orbtk/tree/develop/crates/widgets): base widget library
@@ -249,6 +298,17 @@ cargo doc --no-deps --open
 ## Contribution
 
 If you want to help improve OrbTk you submit your feedback in the issue tracker, or make a pull request to fix an issue https://github.com/redox-os/orbtk/issues. You can also discuss OrbTk with us on the Redox chat https://redox-os.org/community/ (join the OrbTk channel).
+
+#### Contribution check list
+
+* Documentation for all `pub` structs, traits and funs
+* Add tests if needed
+* Use static &str for widget ids and new style definitions 
+* For widget development check ProgressBar or Slider as example
+* Add changes to changelog
+* Expand examples or create a new one if needed
+* `cargo fmt` add the end
+* Create PR
 
 ## License
 

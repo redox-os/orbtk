@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, render::RenderContext2D, tree::Tree, utils::*};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::*};
 
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
 #[derive(Constructor)]
@@ -86,8 +86,9 @@ impl EventStateSystem {
 
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Global>("global", root)
             .unwrap()
+            .theme
             .clone();
 
         // global key handling
@@ -152,34 +153,7 @@ impl EventStateSystem {
                         clipped_parent.pop();
                     }
                 }
-                // key down event
-                if event.downcast_ref::<KeyDownEvent>().is_ok() {
-                    if let Some(focused) = ecm
-                        .component_store()
-                        .get::<Global>("global", root)
-                        .unwrap()
-                        .focused_widget
-                    {
-                        if current_node == focused && has_handler {
-                            matching_nodes.push(current_node);
-                        }
-                    }
-                    unknown_event = false;
-                }
-                // key up event
-                if event.downcast_ref::<KeyUpEvent>().is_ok() {
-                    if let Some(focused) = ecm
-                        .component_store()
-                        .get::<Global>("global", root)
-                        .unwrap()
-                        .focused_widget
-                    {
-                        if current_node == focused && has_handler {
-                            matching_nodes.push(current_node);
-                        }
-                    }
-                    unknown_event = false;
-                }
+
                 // scroll handling
                 if event.downcast_ref::<ScrollEvent>().is_ok() {
                     if check_mouse_condition(
@@ -215,14 +189,14 @@ impl EventStateSystem {
                 // mouse down handling
                 if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
                     if check_mouse_condition(
-                        Point::new(event.x, event.y),
+                        event.position,
                         &WidgetContainer::new(current_node, ecm, &theme),
                     ) {
                         let mut add = true;
                         if let Some(op) = clipped_parent.get(0) {
                             // todo: improve check path if exists
                             if !check_mouse_condition(
-                                Point::new(event.x, event.y),
+                                event.position,
                                 &WidgetContainer::new(*op, ecm, &theme),
                             ) && has_handler
                             {
@@ -238,14 +212,14 @@ impl EventStateSystem {
                 // mouse move handling
                 if let Ok(event) = event.downcast_ref::<MouseMoveEvent>() {
                     if check_mouse_condition(
-                        Point::new(event.x, event.y),
+                        event.position,
                         &WidgetContainer::new(current_node, ecm, &theme),
                     ) {
                         let mut add = true;
                         if let Some(op) = clipped_parent.get(0) {
                             // todo: improve check path if exists
                             if !check_mouse_condition(
-                                Point::new(event.x, event.y),
+                                event.position,
                                 &WidgetContainer::new(*op, ecm, &theme),
                             ) {
                                 add = false;
@@ -358,8 +332,9 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
 
             let theme = ecm
                 .component_store()
-                .get::<Theme>("theme", root)
+                .get::<Global>("global", root)
                 .unwrap()
+                .theme
                 .clone();
             let mut current_node = root;
             let mut remove_widget_list: Vec<Entity> = vec![];

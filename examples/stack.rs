@@ -10,7 +10,7 @@ impl Template for MainView {
                     TextBlock::new()
                         .margin((0.0, 0.0, 0.0, 8.0))
                         .text("Stack vertical")
-                        .element("h1")
+                        .style("text_block_header")
                         .build(ctx),
                 )
                 .child(
@@ -18,28 +18,28 @@ impl Template for MainView {
                         .spacing(4.0)
                         .child(
                             Button::new()
-                                .class("single_content")
+                                .style("button_single_content")
                                 .text("left")
                                 .h_align("start")
                                 .build(ctx),
                         )
                         .child(
                             Button::new()
-                                .class("single_content")
+                                .style("button_single_content")
                                 .text("center")
                                 .h_align("center")
                                 .build(ctx),
                         )
                         .child(
                             Button::new()
-                                .class("single_content")
+                                .style("button_single_content")
                                 .text("stretch")
                                 .h_align("stretch")
                                 .build(ctx),
                         )
                         .child(
                             Button::new()
-                                .class("single_content")
+                                .style("button_single_content")
                                 .text("right")
                                 .h_align("end")
                                 .build(ctx),
@@ -50,7 +50,7 @@ impl Template for MainView {
                     TextBlock::new()
                         .margin((0.0, 0.0, 0.0, 8.0))
                         .text("Stack horizontal")
-                        .element("h1")
+                        .style("text_block_header")
                         .build(ctx),
                 )
                 .child(
@@ -60,21 +60,21 @@ impl Template for MainView {
                         .height(100.0)
                         .child(
                             Button::new()
-                                .class("single_content")
+                                .style("button_single_content")
                                 .text("top")
                                 .v_align("start")
                                 .build(ctx),
                         )
                         .child(
                             Button::new()
-                                .class("single_content")
+                                .style("button_single_content")
                                 .text("center")
                                 .v_align("center")
                                 .build(ctx),
                         )
                         .child(
                             Button::new()
-                                .class("single_content")
+                                .style("button_single_content")
                                 .height(0.0)
                                 .text("stretch")
                                 .v_align("stretch")
@@ -82,7 +82,7 @@ impl Template for MainView {
                         )
                         .child(
                             Button::new()
-                                .class("single_content")
+                                .style("button_single_content")
                                 .text("bottom")
                                 .v_align("end")
                                 .build(ctx),

@@ -32,7 +32,7 @@ impl Layout for ScrollLayout {
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
-        theme: &ThemeValue,
+        theme: &Theme,
     ) -> DirtySize {
         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
@@ -75,10 +75,10 @@ impl Layout for ScrollLayout {
 
         let off: Point = *ecm.component_store().get("scroll_offset", entity).unwrap();
 
-        if (self.old_offset.get().0 - off.x).abs() > std::f64::EPSILON
-            || (self.old_offset.get().1 - off.y).abs() > std::f64::EPSILON
+        if (self.old_offset.get().0 - off.x()).abs() > std::f64::EPSILON
+            || (self.old_offset.get().1 - off.y()).abs() > std::f64::EPSILON
         {
-            self.old_offset.set((off.x, off.y));
+            self.old_offset.set((off.x(), off.y()));
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
@@ -92,7 +92,7 @@ impl Layout for ScrollLayout {
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
-        theme: &ThemeValue,
+        theme: &Theme,
     ) -> (f64, f64) {
         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
@@ -153,7 +153,7 @@ impl Layout for ScrollLayout {
 
         let off: Point = component(ecm, entity, "scroll_offset");
         let delta: Point = component(ecm, entity, "delta");
-        let mut offset = (off.x, off.y);
+        let mut offset = (off.x(), off.y());
 
         let old_child_size = self.old_child_size.get();
 
@@ -192,7 +192,7 @@ impl Layout for ScrollLayout {
                 ScrollMode::Auto => {
                     // todo: refactor * 1.5
                     offset.0 = delta
-                        .x
+                        .x()
                         .mul_add(1.5, offset.0)
                         .min(0.0)
                         .max(size.0 - child_size.0);
@@ -211,7 +211,7 @@ impl Layout for ScrollLayout {
                 ScrollMode::Auto => {
                     // todo: refactor * 1.5
                     offset.1 = delta
-                        .y
+                        .y()
                         .mul_add(1.5, offset.1)
                         .min(1.1)
                         .max(size.1 - child_size.1);
@@ -263,8 +263,8 @@ impl Layout for ScrollLayout {
                 .component_store_mut()
                 .get_mut::<Point>("scroll_offset", entity)
             {
-                off.x = offset.0;
-                off.y = offset.1;
+                off.set_x(offset.0);
+                off.set_y(offset.1);
             }
 
             self.old_child_size.set(child_size);

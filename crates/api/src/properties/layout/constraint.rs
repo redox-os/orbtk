@@ -19,59 +19,59 @@ impl ConstraintBuilder {
     }
 
     /// Inserts a new width.
-    pub fn width(mut self, width: f64) -> Self {
-        self.width = width;
+    pub fn width(mut self, width: impl Into<f64>) -> Self {
+        self.width = width.into();
         self
     }
 
     /// Inserts a new height.
-    pub fn height(mut self, height: f64) -> Self {
-        self.height = height;
+    pub fn height(mut self, height: impl Into<f64>) -> Self {
+        self.height = height.into();
         self
     }
 
     /// Inserts a new size.
-    pub fn size(mut self, width: f64, height: f64) -> Self {
-        self.width = width;
-        self.height = height;
+    pub fn size(mut self, width: impl Into<f64>, height: impl Into<f64>) -> Self {
+        self.width = width.into();
+        self.height = height.into();
         self
     }
 
     /// Inserts a new min_width.
-    pub fn min_width(mut self, min_width: f64) -> Self {
-        self.min_width = min_width;
+    pub fn min_width(mut self, min_width: impl Into<f64>) -> Self {
+        self.min_width = min_width.into();
         self
     }
 
     /// Inserts a new min_height.
-    pub fn min_height(mut self, min_height: f64) -> Self {
-        self.min_height = min_height;
+    pub fn min_height(mut self, min_height: impl Into<f64>) -> Self {
+        self.min_height = min_height.into();
         self
     }
 
     /// Inserts a new min_size.
-    pub fn min_size(mut self, min_width: f64, min_height: f64) -> Self {
-        self.min_width = min_width;
-        self.min_height = min_height;
+    pub fn min_size(mut self, min_width: impl Into<f64>, min_height: impl Into<f64>) -> Self {
+        self.min_width = min_width.into();
+        self.min_height = min_height.into();
         self
     }
 
     /// Inserts a new max_width.
-    pub fn max_width(mut self, max_width: f64) -> Self {
-        self.max_width = max_width;
+    pub fn max_width(mut self, max_width: impl Into<f64>) -> Self {
+        self.max_width = max_width.into();
         self
     }
 
     /// Inserts a new max_height.
-    pub fn max_height(mut self, max_height: f64) -> Self {
-        self.max_height = max_height;
+    pub fn max_height(mut self, max_height: impl Into<f64>) -> Self {
+        self.max_height = max_height.into();
         self
     }
 
     /// Inserts a new min_size.
-    pub fn max_size(mut self, max_width: f64, max_height: f64) -> Self {
-        self.max_width = max_width;
-        self.max_height = max_height;
+    pub fn max_size(mut self, max_width: impl Into<f64>, max_height: impl Into<f64>) -> Self {
+        self.max_width = max_width.into();
+        self.max_height = max_height.into();
         self
     }
 
@@ -134,6 +134,15 @@ impl Constraint {
     /// Sets width.
     pub fn set_width(&mut self, width: f64) {
         self.width = width;
+
+        // adjust min and max
+        if self.min_width > width {
+            self.min_width = width;
+        }
+
+        if self.max_width < width {
+            self.max_width = width;
+        }
     }
 
     /// Gets height.
@@ -144,6 +153,15 @@ impl Constraint {
     /// Sets height.
     pub fn set_height(&mut self, height: f64) {
         self.height = height;
+
+        // adjust min and max
+        if self.min_height > height {
+            self.min_height = height;
+        }
+
+        if self.max_height < height {
+            self.max_height = height;
+        }
     }
 
     /// Gets the size.
@@ -153,8 +171,8 @@ impl Constraint {
 
     /// Sets the size.
     pub fn set_size(&mut self, width: f64, height: f64) {
-        self.width = width;
-        self.height = height;
+        self.set_width(width);
+        self.set_height(height);
     }
 
     /// Gets min_width.
@@ -162,9 +180,11 @@ impl Constraint {
         self.min_width
     }
 
-    /// Sets min_width.
+    /// Sets min_width and set width to 0.0.
     pub fn set_min_width(&mut self, min_width: f64) {
         self.min_width = min_width;
+
+        self.width = 0.;
     }
 
     /// Gets min_height.
@@ -172,9 +192,11 @@ impl Constraint {
         self.min_height
     }
 
-    /// Sets min_height.
+    /// Sets min_height and set height to min_height if height < min_height.
     pub fn set_min_height(&mut self, min_height: f64) {
         self.min_height = min_height;
+
+        self.height = 0.;
     }
 
     /// Gets the min_size.
@@ -184,8 +206,8 @@ impl Constraint {
 
     /// Sets the min size.
     pub fn set_min_size(&mut self, min_width: f64, min_height: f64) {
-        self.min_width = min_width;
-        self.min_height = min_height;
+        self.set_min_width(min_width);
+        self.set_min_height(min_height);
     }
 
     /// Gets max_width.
@@ -193,9 +215,11 @@ impl Constraint {
         self.max_width
     }
 
-    /// Sets max_width.
+    /// Sets max_width and set width to 0.0.
     pub fn set_max_width(&mut self, max_width: f64) {
         self.max_width = max_width;
+
+        self.width = 0.;
     }
 
     /// Gets max_height.
@@ -203,9 +227,11 @@ impl Constraint {
         self.max_height
     }
 
-    /// Sets max_height.
+    /// Sets max_height and set height to 0.0.
     pub fn set_max_height(&mut self, max_height: f64) {
         self.max_height = max_height;
+
+        self.height = 0.;
     }
 
     /// Gets the max_size.
@@ -215,8 +241,8 @@ impl Constraint {
 
     /// Sets the max size.
     pub fn set_max_size(&mut self, max_width: f64, max_height: f64) {
-        self.max_width = max_width;
-        self.max_height = max_height;
+        self.set_max_width(max_width);
+        self.set_max_height(max_height);
     }
 
     /// Adjust the given `size` to match the constraint.
@@ -416,8 +442,6 @@ mod tests {
         constraint.set_min_height(10.0);
         constraint.set_max_width(50.0);
         constraint.set_max_height(60.0);
-        constraint.set_width(0.0);
-        constraint.set_height(0.0);
 
         assert_eq!(constraint.perform((10.0, 59.0)), (10.0, 59.0));
         assert_eq!(constraint.perform((5.0, 40.0)), (10.0, 40.0));

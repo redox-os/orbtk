@@ -51,7 +51,7 @@ impl Grid {
 impl Template for Grid {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Grid")
-            .element("grid")
+            .style("grid")
             .border_radius(0.0)
             .background("transparent")
             .rows(Rows::default())

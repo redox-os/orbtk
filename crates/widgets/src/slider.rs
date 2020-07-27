@@ -120,7 +120,7 @@ impl State for SliderState {
                             .get_widget(self.track)
                             .get::<Rectangle>("bounds")
                             .width();
-                        let slider_x = ctx.widget().get::<Point>("position").x;
+                        let slider_x = ctx.widget().get::<Point>("position").x();
 
                         let thumb_x =
                             calculate_thumb_x(mouse_x, thumb_width, slider_x, track_width);
@@ -184,7 +184,7 @@ widget!(
 impl Template for Slider {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Slider")
-            .element(ELEMENT_SLIDER)
+            .style(ELEMENT_SLIDER)
             .min(0.0)
             .max(100.0)
             .val(0.0)
@@ -192,8 +192,8 @@ impl Template for Slider {
             .border_radius(2.0)
             .child(
                 Grid::new()
+                    .margin((8, 0))
                     .id(ID_TRACK)
-                    .margin((8.0, 0.0, 8.0, 0.0))
                     .child(
                         Container::new()
                             .border_radius(id)
@@ -204,7 +204,7 @@ impl Template for Slider {
                     )
                     .child(
                         Button::new()
-                            .element("thumb")
+                            .style("thumb")
                             .id(ID_THUMB)
                             .v_align("center")
                             .h_align("start")
@@ -218,7 +218,7 @@ impl Template for Slider {
             .on_mouse_move(move |states, p| {
                 states
                     .get_mut::<SliderState>(id)
-                    .action(SliderAction::Move { mouse_x: p.x });
+                    .action(SliderAction::Move { mouse_x: p.x() });
                 true
             })
     }

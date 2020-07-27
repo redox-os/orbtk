@@ -16,6 +16,9 @@ impl SelectionBehaviorState {
 impl State for SelectionBehaviorState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.selected = *selection_behavior(ctx.widget()).selected();
+        let target = *ctx.widget().get::<u32>("target");
+        toggle_flag("selected", &mut ctx.get_widget(Entity(target)));
+        ctx.get_widget(Entity(target)).update(false);
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
@@ -33,8 +36,11 @@ impl State for SelectionBehaviorState {
         self.selected = *selection_behavior(ctx.widget()).selected();
 
         let target: Entity = (*selection_behavior(ctx.widget()).target()).into();
+
+        toggle_flag("selected", &mut ctx.get_widget(target));
+
         ctx.push_event_strategy_by_entity(ChangedEvent(target), target, EventStrategy::Direct);
-        ctx.get_widget(target).update_theme_by_state(false);
+        ctx.get_widget(target).update(false);
     }
 }
 

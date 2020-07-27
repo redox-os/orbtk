@@ -7,7 +7,6 @@ use super::behaviors::MouseBehavior;
 use crate::{prelude::*, utils::SelectionMode as SelMode};
 
 static ITEMS_PANEL: &'static str = "items_panel";
-pub static LIST_VIEW: &'static str = "list_view";
 
 /// The `ListViewState` generates the list box items and handles the selected indices.
 #[derive(Default, AsAny)]
@@ -29,7 +28,8 @@ impl State for ListViewState {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
 
-        if count != self.count {
+        if count != self.count || *ctx.widget().get::<bool>("request_update") {
+            ctx.widget().set("request_update", false);
             if let Some(builder) = &self.builder {
                 ctx.clear_children_of(self.items_panel);
 
@@ -37,7 +37,7 @@ impl State for ListViewState {
                     let item = {
                         let build_context = &mut ctx.build_context();
                         let child = builder(build_context, i);
-                        let item = ListViewItem::new().build(build_context);
+                        let item = ListViewItem::new().parent(entity.0).build(build_context);
 
                         let mouse_behavior = MouseBehavior::new().build(build_context);
                         build_context.register_shared_property::<Selector>(
@@ -61,7 +61,7 @@ impl State for ListViewState {
 
                         item
                     };
-                    ctx.get_widget(item).update_properties_by_theme();
+                    ctx.get_widget(item).update_widget(entity, false);
                 }
             }
 
@@ -78,9 +78,21 @@ impl State for ListViewState {
             .symmetric_difference(&*self.selected_entities.borrow())
         {
             let mut widget = ctx.get_widget(*index);
-            widget.set("selected", !widget.get::<bool>("selected"));
 
-            widget.update_theme_by_state(false);
+            if !widget.has::<bool>("selected") {
+                continue;
+            }
+
+            let selected = !widget.get::<bool>("selected");
+            widget.set("selected", selected);
+
+            if selected {
+                widget.get_mut::<Selector>("selector").set_state("selected");
+            } else {
+                widget.get_mut::<Selector>("selector").clear_state();
+            }
+
+            widget.update(false);
         }
 
         *self.selected_entities.borrow_mut() = ctx
@@ -115,58 +127,65 @@ impl State for ListViewItemState {
         let entity = ctx.entity;
         let index = ctx.index_as_child(entity).unwrap();
 
-        let mut parent_entity = None;
+        let parent_entity: Entity = (*ctx.widget().get::<u32>("parent")).into();
 
-        if let Some(parent) = &mut ctx.try_parent_from_id(LIST_VIEW) {
-            let selection_mode = *parent.get::<SelectionMode>("selection_mode");
-            // deselect item
-            if selected {
-                parent
-                    .get_mut::<SelectedEntities>("selected_entities")
-                    .0
-                    .remove(&entity);
-                parent
-                    .get_mut::<SelectedIndices>("selected_indices")
-                    .0
-                    .remove(&index);
-                return;
-            }
+        let mut parent = ctx.get_widget(parent_entity);
 
-            if parent
-                .get::<SelectedEntities>("selected_entities")
-                .0
-                .contains(&entity)
-                || selection_mode == SelMode::None
-            {
-                return;
-            }
-
-            if selection_mode == SelMode::Single {
-                parent
-                    .get_mut::<SelectedEntities>("selected_entities")
-                    .0
-                    .clear();
-                parent
-                    .get_mut::<SelectedIndices>("selected_indices")
-                    .0
-                    .clear();
-            }
-
+        let selection_mode = *parent.get::<SelectionMode>("selection_mode");
+        // deselect item
+        if selected {
             parent
                 .get_mut::<SelectedEntities>("selected_entities")
                 .0
-                .insert(entity);
+                .remove(&entity);
             parent
                 .get_mut::<SelectedIndices>("selected_indices")
                 .0
-                .insert(index);
-
-            parent_entity = Some(parent.entity());
+                .remove(&index);
+            return;
         }
 
-        if let Some(parent) = parent_entity {
-            ctx.push_event_strategy_by_entity(ChangedEvent(parent), parent, EventStrategy::Direct);
+        if parent
+            .get::<SelectedEntities>("selected_entities")
+            .0
+            .contains(&entity)
+            || selection_mode == SelMode::None
+        {
+            return;
         }
+
+        if selection_mode == SelMode::Single {
+            parent
+                .get_mut::<SelectedEntities>("selected_entities")
+                .0
+                .clear();
+            parent
+                .get_mut::<SelectedIndices>("selected_indices")
+                .0
+                .clear();
+        }
+
+        parent
+            .get_mut::<SelectedEntities>("selected_entities")
+            .0
+            .insert(entity);
+        parent
+            .get_mut::<SelectedIndices>("selected_indices")
+            .0
+            .insert(index);
+
+        let selected_indices: Vec<usize> = parent
+            .get::<SelectedIndices>("selected_indices")
+            .0
+            .iter()
+            .map(|i| *i)
+            .collect();
+
+        ctx.push_event_strategy_by_entity(
+            SelectionChangedEvent(parent_entity, selected_indices),
+            parent_entity,
+            EventStrategy::Direct,
+        );
     }
 }
 
@@ -213,11 +232,11 @@ widget!(
 impl Template for ListViewItem {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ListViewItem")
+            .style("list_view_item")
             .min_width(64.0)
             .height(24.0)
             .selected(false)
             .pressed(false)
-            .element("list-view-item")
             .padding(0.0)
             .background("transparent")
             .border_radius(0.0)
@@ -252,7 +271,7 @@ widget!(
     /// The `ListView` is an items drawer widget with selectable items.
     ///
     /// **CSS element:** `items-widget`
-    ListView<ListViewState> : ChangedHandler {
+    ListView<ListViewState> : SelectionChangedHandler {
         /// Sets or shares the background property.
         background: Brush,
 
@@ -284,7 +303,10 @@ widget!(
         selected_entities: SelectedEntities,
 
         /// Sets or shares the (wheel, scroll) delta property.
-        delta: Point
+        delta: Point,
+
+        /// Use this flag to force the redrawing of the items.
+        request_update: bool
     }
 );
 
@@ -314,8 +336,7 @@ impl Template for ListView {
             .build(ctx);
 
         self.name("ListView")
-            .element("list-view")
-            .id(LIST_VIEW)
+            .style("list_view")
             .background(colors::LYNCH_COLOR)
             .border_radius(2.0)
             .border_width(1.0)

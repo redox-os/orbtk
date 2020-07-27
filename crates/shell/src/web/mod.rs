@@ -1,6 +1,6 @@
 //! This module contains a platform specific implementation of the window shell.
 use std::sync::mpsc;
-use stdweb::{js, web::window};
+use stdweb::web::window;
 
 use crate::prelude::*;
 

@@ -18,10 +18,10 @@ impl RenderObject for PipelineRenderObject {
             .clone();
 
         ctx.render_context_2_d().draw_pipeline(
-            bounds.x,
-            bounds.y,
-            bounds.width,
-            bounds.height,
+            bounds.x(),
+            bounds.y(),
+            bounds.width(),
+            bounds.height(),
             pipeline,
         );
     }

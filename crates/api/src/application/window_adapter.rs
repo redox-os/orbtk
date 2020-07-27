@@ -52,10 +52,12 @@ impl shell::WindowAdapter for WindowAdapter {
     fn mouse(&mut self, x: f64, y: f64) {
         let root = self.root();
         self.ctx.mouse_position.set(Point::new(x, y));
-        self.ctx
-            .event_queue
-            .borrow_mut()
-            .register_event(MouseMoveEvent { x, y }, root)
+        self.ctx.event_queue.borrow_mut().register_event(
+            MouseMoveEvent {
+                position: Point::new(x, y),
+            },
+            root,
+        )
     }
 
     fn scroll(&mut self, delta_x: f64, delta_y: f64) {
@@ -74,16 +76,14 @@ impl shell::WindowAdapter for WindowAdapter {
             shell::ButtonState::Up => {
                 self.ctx.event_queue.borrow_mut().register_event(
                     MouseUpEvent {
-                        x: event.x,
-                        y: event.y,
+                        position: event.position,
                         button: event.button,
                     },
                     root,
                 );
                 self.ctx.event_queue.borrow_mut().register_event(
                     GlobalMouseUpEvent {
-                        x: event.x,
-                        y: event.y,
+                        position: event.position,
                         button: event.button,
                     },
                     root,
@@ -91,8 +91,7 @@ impl shell::WindowAdapter for WindowAdapter {
             }
             shell::ButtonState::Down => self.ctx.event_queue.borrow_mut().register_event(
                 MouseDownEvent {
-                    x: event.x,
-                    y: event.y,
+                    position: event.position,
                     button: event.button,
                 },
                 root,
@@ -150,6 +149,7 @@ impl shell::WindowAdapter for WindowAdapter {
 /// Creates a `WindowAdapter` and a `WindowSettings` object from a window builder closure.
 pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     app_name: impl Into<String>,
+    theme: Theme,
     request_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
     create_fn: F,
 ) -> (WindowAdapter, WindowSettings, mpsc::Receiver<WindowRequest>) {
@@ -172,8 +172,6 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     };
 
     let context_provider = ContextProvider::new(sender, request_sender.clone(), app_name);
-
-    let theme = crate::theme::default_theme();
 
     let window = {
         let overlay = Overlay::new().build(&mut BuildContext::new(
@@ -255,19 +253,18 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             .component_store()
             .get::<bool>("always_on_top", window)
             .unwrap(),
-        position: (position.x, position.y),
+        position: (position.x(), position.y()),
         size: (constraint.width(), constraint.height()),
         fonts,
     };
 
+    let mut global = Global::default();
+    global.theme = theme;
+
     world
         .entity_component_manager()
         .component_store_mut()
-        .register("global", window, Global::default());
-    world
-        .entity_component_manager()
-        .component_store_mut()
-        .register("global", window, Global::default());
+        .register("global", window, global);
     world
         .entity_component_manager()
         .component_store_mut()

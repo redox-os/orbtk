@@ -22,7 +22,7 @@ pub struct BuildContext<'a> {
     layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
     handlers: &'a RefCell<EventHandlerMap>,
     states: &'a mut BTreeMap<Entity, Box<dyn State>>,
-    theme: &'a ThemeValue,
+    theme: &'a Theme,
 }
 
 impl<'a> BuildContext<'a> {
@@ -38,7 +38,7 @@ impl<'a> BuildContext<'a> {
 
     /// Update theme by state.
     pub fn update_theme_by_state(&mut self, entity: Entity) {
-        self.get_widget(entity).update_theme_by_state(true);
+        self.get_widget(entity).update(true);
     }
 
     /// Appends a child to a parent.

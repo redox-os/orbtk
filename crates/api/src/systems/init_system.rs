@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::{Entity, EntityComponentManager, System};
 
-use crate::{css_engine::*, prelude::*, render::RenderContext2D, tree::Tree};
+use crate::{prelude::*, render::RenderContext2D, tree::Tree};
 
 /// This system is used to initializes the widgets.
 #[derive(Constructor)]
@@ -15,12 +15,8 @@ impl InitSystem {
     // init css ids.
     fn init_id(&self, node: Entity, store: &mut StringComponentStore, root: Entity) {
         // Add css id to global id map.
-        let id = if let Ok(selector) = store.get::<Selector>("selector", node) {
-            if let Some(id) = &selector.id {
-                Some((node, id.clone()))
-            } else {
-                None
-            }
+        let id = if let Ok(id) = store.get::<String>("id", node) {
+            Some((node, id.clone()))
         } else {
             None
         };
@@ -57,8 +53,9 @@ impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
         // init css ids
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Global>("global", root)
             .unwrap()
+            .theme
             .clone();
 
         let mut current_node = root;

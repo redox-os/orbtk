@@ -29,12 +29,12 @@ impl State for SwitchState {
             return;
         }
 
-        ctx.widget().set("selected", self.selected);
+        switch(ctx.widget()).set_selected(self.selected);
 
-        let element = ctx.widget().clone::<Selector>("selector").element.unwrap();
+        let element = ctx.widget().clone::<Selector>("selector").style.unwrap();
 
-        if let Some(parent) = ctx.parent_entity_by_element(&*element) {
-            ctx.get_widget(parent).update_theme_by_state(false);
+        if let Some(parent) = ctx.parent_entity_by_style(&*element) {
+            ctx.get_widget(parent).update(false);
         }
 
         {
@@ -42,13 +42,15 @@ impl State for SwitchState {
 
             if self.selected {
                 switch_toggle.set("h_align", Alignment::from("end"));
-                add_selector_to_widget("selected", &mut switch_toggle);
+                switch_toggle
+                    .get_mut::<Selector>("selector")
+                    .set_state("selected");
             } else {
                 switch_toggle.set("h_align", Alignment::from("start"));
-                remove_selector_from_widget("selected", &mut switch_toggle);
+                switch_toggle.get_mut::<Selector>("selector").clear_state();
             }
 
-            switch_toggle.update_theme_by_state(true);
+            switch_toggle.update(true);
         }
 
         ctx.push_event_strategy_by_entity(
@@ -57,8 +59,7 @@ impl State for SwitchState {
             EventStrategy::Direct,
         );
 
-        ctx.get_widget(self.switch_toggle)
-            .update_theme_by_state(false);
+        ctx.get_widget(self.switch_toggle).update(false);
     }
 }
 
@@ -66,7 +67,7 @@ widget!(
     /// The `Switch` widget can be switch between `on` and `off`.
     ///
     /// **CSS element:** `switch`
-    Switch<SwitchState>: MouseHandler {
+    Switch<SwitchState>: MouseHandler, ChangedHandler {
         /// Sets or shares the background property.
         background: Brush,
 
@@ -93,7 +94,7 @@ widget!(
 impl Template for Switch {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Switch")
-            .element("switch")
+            .style("switch")
             .pressed(false)
             .selected(false)
             .width(36.0)
@@ -114,14 +115,15 @@ impl Template for Switch {
                         Grid::new()
                             .child(
                                 Container::new()
-                                    .element(SWITCH_TRACK)
+                                    .style(SWITCH_TRACK)
+                                    .margin((2, 0))
                                     .v_align("center")
                                     .build(ctx),
                             )
                             .child(
                                 Container::new()
-                                    .element(SWITCH_TOGGLE)
                                     .id(SWITCH_TOGGLE)
+                                    .style(SWITCH_TOGGLE)
                                     .v_align("center")
                                     .h_align("start")
                                     .width(20.0)

@@ -9,8 +9,7 @@ pub struct Font {
 
 impl Font {
     pub fn from_bytes(bytes: &'static [u8]) -> Result<Self, rusttype::Error> {
-        rusttype::Font::from_bytes(bytes)
-            .map(|font| Font { inner: font })
+        rusttype::Font::from_bytes(bytes).map(|font| Font { inner: font })
     }
 
     pub fn measure_text(&self, text: &str, size: f64) -> (f64, f64) {
@@ -50,7 +49,7 @@ impl Font {
             width,
             config,
             position,
-            Rectangle::new(0.0, 0.0, width, std::f64::MAX),
+            Rectangle::new((0.0, 0.0), width, std::f64::MAX),
         );
     }
 
@@ -97,10 +96,10 @@ impl Font {
                         && off_x < pixel_width
                         && off_y >= 0
                         && off_y < pixel_height
-                        && position.0 + off_x as f64 >= clip.x
-                        && position.0 + off_x as f64 <= clip.x + clip.width
-                        && position.1 + off_y as f64 >= clip.y
-                        && position.1 + off_y as f64 <= clip.y + clip.height
+                        && position.0 + off_x as f64 >= clip.x()
+                        && position.0 + off_x as f64 <= clip.x() + clip.width()
+                        && position.1 + off_y as f64 >= clip.y()
+                        && position.1 + off_y as f64 <= clip.y() + clip.height()
                     {
                         // Alpha blending from orbclient
                         let alpha = (config.2 * v * 255.0) as u32;
