@@ -196,7 +196,7 @@ impl State for ListViewItemState {
 widget!(
     /// The `ListViewItem` describes an item inside of a `ListView`.
     ///
-    /// **CSS element:** `list-view``
+    /// **style:** `list-view``
     ListViewItem<ListViewItemState>: MouseHandler {
         /// Sets or shares the background property.
         background: Brush,
@@ -274,7 +274,7 @@ impl Template for ListViewItem {
 widget!(
     /// The `ListView` is an items drawer widget with selectable items.
     ///
-    /// **CSS element:** `items-widget`
+    /// **style:** `items-widget`
     ListView<ListViewState> : SelectionChangedHandler {
         /// Sets or shares the background property.
         background: Brush,
@@ -364,6 +364,7 @@ impl Template for ListView {
                         ScrollIndicator::new()
                             .padding(2.0)
                             .content_id(items_panel.0)
+                            .delta(scroll_viewer)
                             .scroll_offset(scroll_viewer)
                             .opacity(id)
                             .build(ctx),

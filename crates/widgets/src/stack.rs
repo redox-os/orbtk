@@ -3,7 +3,7 @@ use crate::prelude::*;
 widget!(
     /// The `Stack` defines a layout that is used to stack its children vertical or horizontal.
     ///
-    /// **CSS element:** `stack`
+    /// **style:** `stack`
     Stack {
         /// Sets or shares the orientation property.
         orientation: Orientation,

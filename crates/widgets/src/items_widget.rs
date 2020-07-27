@@ -44,7 +44,7 @@ impl State for ItemsWidgetState {
 widget!(
     /// The `ItemsWidget` is a simple no interactive items drawer widget.
     ///
-    /// **CSS element:** `items-widget`
+    /// **style:** `items-widget`
     ItemsWidget<ItemsWidgetState> {
         /// Sets or shares the background property.
         background: Brush,

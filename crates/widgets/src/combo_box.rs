@@ -89,7 +89,7 @@ impl State for ComboBoxItemState {
 widget!(
     /// The `ComboBoxItem` describes an item inside of a `ComboBox`.
     ///
-    /// **CSS element:** `combo_box_item``
+    /// **style:** `combo_box_item``
     ComboBoxItem<ComboBoxItemState>: MouseHandler {
         /// Sets or shares the background property.
         background: Brush,
@@ -302,7 +302,7 @@ impl State for ComboBoxState {
 widget!(
     /// The `ComboBox` represents an selection widget with a drop-down list.
     ///
-    /// **CSS element:** `combo_box`
+    /// **style:** `combo_box`
     ComboBox<ComboBoxState>: MouseHandler, ChangedHandler {
         /// Sets or shares the background property.
         background: Brush,

@@ -5,7 +5,7 @@ widget!(
     /// The `ToggleButton` widget can be clicked by user and could switch between selected / not selected.
     /// It's used to perform an action.
     ///
-    /// **CSS element:** `toggle-button`
+    /// **style:** `toggle-button`
     ToggleButton: MouseHandler,
     ChangedHandler {
         /// Sets or shares the background property.

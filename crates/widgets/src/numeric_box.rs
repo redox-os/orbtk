@@ -5,8 +5,8 @@ use core::f64::MAX;
 use rust_decimal::prelude::*;
 
 pub static ID_INPUT: &'static str = "numeric_box_input";
-pub static ELEMENT_INPUT: &'static str = "numeric_box_input";
-pub static ELEMENT_BTN: &'static str = "numeric_box_button";
+pub static STYLE_INPUT: &'static str = "numeric_box_input";
+pub static STYLE_BTN: &'static str = "numeric_box_button";
 
 pub enum InputAction {
     Inc,

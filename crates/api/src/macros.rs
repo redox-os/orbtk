@@ -387,10 +387,6 @@ macro_rules! widget {
                     ctx.register_state(entity, this.state);
                 )*
 
-                if entity.0 == 147 {
-                    println!("Hierrrrr");
-                }
-
                 // register default set of properties
                 ctx.register_property("bounds", entity, this.bounds);
                 ctx.register_property("position", entity, this.position);

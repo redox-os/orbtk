@@ -1,9 +1,15 @@
 use crate::prelude::*;
 
+// --- KEYS --
+
+pub static STYLE_SCROLL_BAR: &'static str = "scroll_bar";
+
+// --- KEYS --
+
 widget!(
     /// The `ScrollBar` widget represents a position inside of a scroll container.
     ///
-    /// **CSS element:** `scroll-bar`
+    /// **style:** `scroll_bar`
     ScrollBar {
         /// Sets or shares the background property.
         background: Brush,
@@ -16,10 +22,10 @@ widget!(
 impl Template for ScrollBar {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("ScrollBar")
+            .style(STYLE_SCROLL_BAR)
             .width(4.0)
             .border_radius(2.0)
             .background("#647b91")
-            .style("scroll-bar")
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

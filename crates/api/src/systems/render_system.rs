@@ -72,9 +72,5 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
             debug,
         );
         render_context.finish();
-
-        println!("Render");
-
-        //  print_tree(root, 0, ecm);
     }
 }

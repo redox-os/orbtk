@@ -22,7 +22,7 @@ use crate::prelude::*;
 widget!(
     /// The `Button` widget can be clicked by user. It's used to perform an action.
     ///
-    /// **CSS element:** `button`
+    /// **style:** `button`
     Button: MouseHandler {
         /// Sets or shares the background property.
         background: Brush,

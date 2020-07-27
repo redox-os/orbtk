@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 // --- KEYS --
 
-pub static ELEMENT_SLIDER: &'static str = "slider";
+pub static STYLE_SLIDER: &'static str = "slider";
 
 static ID_THUMB: &'static str = "id_thumb";
 static ID_TRACK: &'static str = "id_track";
@@ -156,9 +156,9 @@ impl State for SliderState {
 }
 
 widget!(
-    /// The `Slider` allows to use a val in a range of vals.
+    /// The `Slider` allows to use a val in a range of values.
     ///
-    /// **CSS element:** `Slider`
+    /// **style:** `slider`
     Slider<SliderState>: MouseHandler, ChangedHandler {
         /// Sets or shares the min val of the range.
         min: f64,
@@ -186,7 +186,7 @@ widget!(
 impl Template for Slider {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Slider")
-            .style(ELEMENT_SLIDER)
+            .style(STYLE_SLIDER)
             .min(0.0)
             .max(100.0)
             .val(0.0)

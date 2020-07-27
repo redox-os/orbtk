@@ -6,7 +6,7 @@ use crate::{
 
 // --- KEYS --
 
-pub static ELEMENT_TEXT_BOX: &'static str = "text_box";
+pub static STYLE_TEXT_BOX: &'static str = "text_box";
 
 static ID_CURSOR: &'static str = "id_cursor";
 
@@ -427,7 +427,7 @@ impl State for TextBoxState {
 widget!(
     /// The `TextBox` widget represents a single line text input widget.
     ///
-    /// * CSS element: `text_box`
+    /// * style: `text_box`
     TextBox<TextBoxState>: ActivateHandler, ChangedHandler, KeyDownHandler {
         /// Sets or shares the text property.
         text: String16,
@@ -486,7 +486,7 @@ impl Template for TextBox {
             .build(ctx);
 
         self.name("TextBox")
-            .style(ELEMENT_TEXT_BOX)
+            .style(STYLE_TEXT_BOX)
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)

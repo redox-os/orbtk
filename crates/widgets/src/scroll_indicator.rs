@@ -1,5 +1,12 @@
 use crate::prelude::*;
 
+// --- KEYS --
+
+static ID_SCROLL_BAR_HORIZONTAL: &'static str = "scroll_bar_horizontal";
+static ID_SCROLL_BAR_VERTICAL: &'static str = "scroll_bar_vertical";
+
+// --- KEYS --
+
 /// The `ScrollIndicatorState` handles the `ScrollIndicator` widget.
 #[derive(Default, AsAny)]
 pub struct ScrollIndicatorState;
@@ -22,7 +29,7 @@ impl State for ScrollIndicatorState {
         let vertical_p = bounds.height() / content_bounds.height();
 
         // calculate vertical scroll bar height and position.
-        if let Some(mut vertical_scroll_bar) = ctx.try_child("vertical-scroll-bar") {
+        if let Some(mut vertical_scroll_bar) = ctx.try_child(ID_SCROLL_BAR_VERTICAL) {
             if vertical_p < 1.0 {
                 vertical_scroll_bar.set("visibility", Visibility::from("visible"));
                 let scroll_bar_margin_bottom =
@@ -44,7 +51,7 @@ impl State for ScrollIndicatorState {
         }
 
         // calculate horizontal scroll bar width and position.
-        if let Some(mut horizontal_scroll_bar) = ctx.try_child("horizontal-scroll-bar") {
+        if let Some(mut horizontal_scroll_bar) = ctx.try_child(ID_SCROLL_BAR_HORIZONTAL) {
             if horizontal_p < 1.0 {
                 horizontal_scroll_bar.set("visibility", Visibility::from("visible"));
                 let scroll_bar_margin_right =
@@ -68,8 +75,6 @@ impl State for ScrollIndicatorState {
 
 widget!(
     /// The `ScrollIndicator` widget contains two scroll bars.
-    ///
-    /// **CSS element:** `scroll-indicator`
     ScrollIndicator<ScrollIndicatorState> {
 
         /// Sets or shares the scroll offset property.
@@ -79,14 +84,16 @@ widget!(
         padding: Thickness,
 
         /// Sets or shares the content id property.
-        content_id: u32
+        content_id: u32,
+
+         /// Sets or shares the (wheel, scroll) delta property.
+         delta: Point
     }
 );
 
 impl Template for ScrollIndicator {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ScrollIndicator")
-            .style("scroll-indicator")
             .v_align("stretch")
             .h_align("stretch")
             .padding(0.0)
@@ -94,8 +101,7 @@ impl Template for ScrollIndicator {
                 Grid::new()
                     .child(
                         ScrollBar::new()
-                            .style("scroll-bar")
-                            .id("vertical-scroll-bar")
+                            .id(ID_SCROLL_BAR_VERTICAL)
                             .min_height(8.0)
                             .margin((0.0, 0.0, 0.0, 6.0))
                             .h_align("end")
@@ -104,8 +110,7 @@ impl Template for ScrollIndicator {
                     )
                     .child(
                         ScrollBar::new()
-                            .style("scroll-bar")
-                            .id("horizontal-scroll-bar")
+                            .id(ID_SCROLL_BAR_HORIZONTAL)
                             .min_width(8.0)
                             .margin((0.0, 0.0, 6.0, 0.0))
                             .height(4.0)
