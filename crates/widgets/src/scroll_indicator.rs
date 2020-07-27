@@ -5,6 +5,10 @@ use crate::prelude::*;
 pub struct ScrollIndicatorState;
 
 impl State for ScrollIndicatorState {
+    fn init(&mut self, registry: &mut Registry, ctx: &mut Context) {
+        self.update_post_layout(registry, ctx);
+    }
+
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         let padding = *ctx.widget().get::<Thickness>("padding");
         let scroll_offset = *ctx.widget().get::<Point>("scroll_offset");

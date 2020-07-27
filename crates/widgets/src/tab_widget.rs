@@ -22,8 +22,9 @@ pub struct TabHeaderState {
 }
 
 impl State for TabHeaderState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, registry: &mut Registry, ctx: &mut Context) {
         self.header_bar = ctx.child(HEADER_BAR).entity();
+        self.update(registry, ctx);
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
@@ -435,11 +436,13 @@ impl TabWidgetState {
 }
 
 impl State for TabWidgetState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, registry: &mut Registry, ctx: &mut Context) {
         self.header_container = ctx.child(HEADER_CONTAINER).entity();
         self.body_container = ctx.child(BODY_CONTAINER).entity();
         self.close_button_visibility = true;
+        self.update(registry, ctx);
     }
+
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         let actions: Vec<TabWidgetAction> = self.actions.drain(..).collect();
         for action in actions {
