@@ -18,7 +18,7 @@
  * CSS Definiton:
  */
 // CSS-url:     https://github.com/material-icons/material-icons-font/blob/master/css/baseline.css
-// font-family: "Material Icons";
+// font-family: "MaterialIcons-Regular";
 // font-weight: normal;
 // font-style:  normal;
 // font-format: ttf

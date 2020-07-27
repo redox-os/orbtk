@@ -227,7 +227,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         crate::theme::fonts::ROBOTO_MEDIUM_FONT,
     );
     fonts.insert(
-        "Material Icons".to_string(),
+        "MaterialIcons-Regular".to_string(),
         crate::theme::fonts::MATERIAL_ICONS_FONT,
     );
 

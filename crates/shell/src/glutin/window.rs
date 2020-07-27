@@ -96,8 +96,7 @@ where
                 let mouse_pos = self.mouse_pos;
 
                 self.adapter.mouse_event(MouseEvent {
-                    x: mouse_pos.0,
-                    y: mouse_pos.1,
+                    position: mouse_pos.into(),
                     button,
                     state,
                 });

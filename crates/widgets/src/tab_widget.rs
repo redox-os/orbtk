@@ -156,9 +156,9 @@ impl Template for TabHeader {
             .foreground(colors::LINK_WATER_COLOR)
             .text("Unnamed Tab")
             .font_size(fonts::FONT_SIZE_12)
-            .font("Roboto Regular")
+            .font("Roboto-Regular")
             .icon("")
-            .icon_font("Material Icons")
+            .icon_font("MaterialIcons-Regular")
             .icon_size(fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
             .spacing(8)
@@ -519,29 +519,27 @@ impl TabWidget {
 
 impl Template for TabWidget {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        self.name("TabWidget")
-            .style("tab_widget")
-            .child(
-                Grid::new()
-                    .rows(Rows::new().add(32).add("*"))
-                    .child(
-                        Stack::new()
-                            .id(HEADER_CONTAINER)
-                            .orientation("horizontal")
-                            .spacing(id)
-                            .build(ctx),
-                    )
-                    .child(
-                        Container::new()
-                            .id(BODY_CONTAINER)
-                            .background(id)
-                            .border_brush(id)
-                            .border_width(id)
-                            .border_radius(id)
-                            .attach(Grid::row(1))
-                            .build(ctx),
-                    )
-                    .build(ctx),
-            )
+        self.name("TabWidget").style("tab_widget").child(
+            Grid::new()
+                .rows(Rows::new().add(32).add("*"))
+                .child(
+                    Stack::new()
+                        .id(HEADER_CONTAINER)
+                        .orientation("horizontal")
+                        .spacing(id)
+                        .build(ctx),
+                )
+                .child(
+                    Container::new()
+                        .id(BODY_CONTAINER)
+                        .background(id)
+                        .border_brush(id)
+                        .border_width(id)
+                        .border_radius(id)
+                        .attach(Grid::row(1))
+                        .build(ctx),
+                )
+                .build(ctx),
+        )
     }
 }

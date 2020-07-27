@@ -72,8 +72,7 @@ where
             window_builder,
             request_receiver: None,
             bounds: Rectangle::new(
-                settings.position.0,
-                settings.position.1,
+                (settings.position.0, settings.position.1),
                 settings.size.0,
                 settings.size.1,
             ),
@@ -162,6 +161,12 @@ where
             let mut font_data = vec![];
             font_data.extend_from_slice(font);
             let font = Handle::from_memory(Arc::new(font_data), 0);
+
+            if let Ok(font) = font.load() {
+                if let Some(name) = font.postscript_name() {
+                    println!("Info: Added font with postscript name {}.", name);
+                }
+            }
             font_handles.push(font);
         }
 

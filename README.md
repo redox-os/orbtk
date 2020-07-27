@@ -197,7 +197,7 @@ Theme (
     resource: {
         "BLACK": "#000000",
         "WHITE": "#ffffff",
-        "MEDIUM_FONT": "Roboto Medium",
+        "MEDIUM_FONT": "Roboto-Medium",
         "FONT_SIZE_12": 12,
         "FONT_SIZE_16": 16,
     }

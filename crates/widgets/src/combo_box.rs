@@ -163,7 +163,7 @@ impl Template for ComboBoxItem {
             .border_brush("transparent")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(32)
-            .font("Roboto Regular")
+            .font("Roboto-Regular")
             .child(
                 MouseBehavior::new()
                     .pressed(id)
@@ -431,7 +431,7 @@ impl Template for ComboBox {
         self.name("ComboBox")
             .style("combo_box")
             .icon(material_icons_font::MD_ARROW_DROP_DOWN)
-            .icon_font("Material Icons")
+            .icon_font("MaterialIcons-Regular")
             .icon_size(fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
             .height(32.0)
