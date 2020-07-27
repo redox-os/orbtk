@@ -21,7 +21,8 @@ The main goals of OrbTk are speed, ease of use, and cross-platform compatibility
 * Flexible event system
 * Integrated widget library
 * Custom widgets
-* Theming
+* Custom theming engine
+* Dynamic theme switching
 * Integrated debugging tools
 
 ## Platforms
@@ -40,14 +41,11 @@ The main goals of OrbTk are speed, ease of use, and cross-platform compatibility
 
 * Conformable use of async
 * More default widgets
-* More examples
 * Book
 * Animations
 * Split application in modules
-* Theme update
 * 3D context
 * More integrated debugging tools
-
 
 ## Usage
 
@@ -115,6 +113,7 @@ Basic usage of the Template trait:
 impl Template for MyWidget {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
          self.name("MyWidget")
+            .style("my_widget_style")
             .background("#000000")
             .count(0)
             .text("Initial text")
