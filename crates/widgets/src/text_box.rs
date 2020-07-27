@@ -490,7 +490,7 @@ impl Template for TextBox {
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
-            .font("Roboto Regular")
+            .font("Roboto-Regular")
             .text_selection(TextSelection::default())
             .padding(4.0)
             .background(colors::LYNCH_COLOR)

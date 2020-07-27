@@ -1,5 +1,8 @@
-use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, time::Duration};
+use std::{
+    cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, sync::Arc, time::Duration,
+};
 
+use font_kit::handle::Handle;
 use glutin::{
     dpi::{LogicalSize, PhysicalSize},
     window, ContextBuilder, GlProfile, GlRequest,
@@ -54,24 +57,22 @@ where
 
     /// Creates the window builder from a settings object.
     pub fn from_settings(settings: WindowSettings, shell: &'a mut Shell<A>, adapter: A) -> Self {
-        let window_size = (settings.size.0, settings.size.1);
-        let physical_size = PhysicalSize::new(window_size.0, window_size.1);
+        let logical_size = LogicalSize::new(settings.size.0, settings.size.1);
         let window_builder = window::WindowBuilder::new()
             .with_title(settings.title)
             .with_decorations(!settings.borderless)
             .with_resizable(settings.resizeable)
             .with_always_on_top(settings.always_on_top)
-            .with_inner_size(physical_size);
+            .with_inner_size(logical_size);
 
         WindowBuilder {
             shell,
             adapter,
-            fonts: HashMap::new(),
+            fonts: settings.fonts,
             window_builder,
             request_receiver: None,
             bounds: Rectangle::new(
-                settings.position.0,
-                settings.position.1,
+                (settings.position.0, settings.position.1),
                 settings.size.0,
                 settings.size.1,
             ),
@@ -137,22 +138,44 @@ where
         let gl_context = unsafe { gl_context.make_current().unwrap() };
         gl::load_with(|name| gl_context.get_proc_address(name) as *const _);
 
-        let window_size = (self.bounds.width(), self.bounds.height());
+        let logical_size = LogicalSize::new(self.bounds.width(), self.bounds.height());
 
-        let logical_size = PhysicalSize::new(window_size.0, window_size.1);
+        let scale_factor = gl_context.window().current_monitor().scale_factor();
+        let physical_size: PhysicalSize<f64> = logical_size.to_physical(scale_factor);
+
+        let framebuffer_size = vec2i(physical_size.width as i32, physical_size.height as i32);
 
         // Create a Pathfinder renderer.
         let mut renderer = Renderer::new(
             GLDevice::new(GLVersion::GL3, 0),
             &EmbeddedResourceLoader::new(),
-            DestFramebuffer::full_window(vec2i(window_size.0 as i32, window_size.1 as i32)),
+            DestFramebuffer::full_window(framebuffer_size),
             RendererOptions {
                 background_color: Some(ColorF::white()),
                 ..RendererOptions::default()
             },
         );
 
-        let render_context = RenderContext2D::new_ex(window_size, renderer);
+        let mut font_handles = vec![];
+        for (_, font) in self.fonts {
+            let mut font_data = vec![];
+            font_data.extend_from_slice(font);
+            let font = Handle::from_memory(Arc::new(font_data), 0);
+
+            if let Ok(font) = font.load() {
+                if let Some(name) = font.postscript_name() {
+                    println!("Info: Added font with postscript name {}.", name);
+                }
+            }
+            font_handles.push(font);
+        }
+
+        let mut render_context = RenderContext2D::new_ex(
+            (self.bounds.width(), self.bounds.height()),
+            (framebuffer_size.x() as f64, framebuffer_size.y() as f64),
+            renderer,
+            font_handles,
+        );
 
         self.shell.window_shells.push(Window::new(
             gl_context,
@@ -163,6 +186,7 @@ where
             true,
             false,
             (0.0, 0.0),
+            scale_factor,
         ))
     }
 }

@@ -219,15 +219,15 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
 
     let mut fonts = HashMap::new();
     fonts.insert(
-        "Roboto Regular".to_string(),
+        "Roboto-Regular".to_string(),
         crate::theme::fonts::ROBOTO_REGULAR_FONT,
     );
     fonts.insert(
-        "Roboto Medium".to_string(),
+        "Roboto-Medium".to_string(),
         crate::theme::fonts::ROBOTO_MEDIUM_FONT,
     );
     fonts.insert(
-        "Material Icons".to_string(),
+        "MaterialIcons-Regular".to_string(),
         crate::theme::fonts::MATERIAL_ICONS_FONT,
     );
 

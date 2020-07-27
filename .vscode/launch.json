@@ -18,6 +18,17 @@
     {
       "type": "lldb",
       "request": "launch",
+      "name": "Widgets pathfinder",
+      "program": "${workspaceFolder}/target/debug/examples/widgets",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build pathfinder",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
       "name": "Widgets browser",
       "program": "cargo-node",
       "cwd": "${workspaceFolder}",

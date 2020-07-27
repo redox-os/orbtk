@@ -1,8 +1,8 @@
 Theme (
     resources: {
-        "MEDIUM_FONT": "Roboto Medium",
-        "REGULAR_FONT": "Roboto Regular",
-        "ICON_FONT": "Material Icons",
+        "MEDIUM_FONT": "Roboto-Medium",
+        "REGULAR_FONT": "Roboto-Regular",
+        "ICON_FONT": "MaterialIcons-Regular",
         "FONT_SIZE_12": 12,
         "FONT_SIZE_16": 16,
         "FONT_SIZE_24": 24,
