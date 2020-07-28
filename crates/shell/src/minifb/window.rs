@@ -229,7 +229,7 @@ where
                 );
                 // CONSOLE.time_end("render");
                 self.redraw = false;
-                //super::CONSOLE.time("complete");
+                //super::CONSOLE.time_end("complete");
             }
         }
     }
