@@ -136,8 +136,6 @@ impl State for SliderState {
                             "val",
                             calculate_val(thumb_x, min, max, thumb_width, track_width),
                         );
-
-                        ctx.push_event(ChangedEvent(ctx.entity));
                     } else {
                         ctx.widget().clear_dirty();
                     }
@@ -150,7 +148,6 @@ impl State for SliderState {
 
         if self.adjust(ctx) {
             self.adjust_thumb_x(ctx);
-            ctx.push_event(ChangedEvent(ctx.entity));
         }
     }
 }

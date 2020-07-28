@@ -181,6 +181,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             &context_provider.handler_map,
             &mut *context_provider.states.borrow_mut(),
             &theme,
+            &context_provider.event_queue,
         ));
 
         {
@@ -195,6 +196,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             &context_provider.handler_map,
             &mut *context_provider.states.borrow_mut(),
             &theme,
+            &context_provider.event_queue,
         ));
 
         {

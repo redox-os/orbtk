@@ -151,11 +151,6 @@ impl TextBoxState {
     // Reset selection and offset if text is changed from outside
     fn reset(&self, ctx: &mut Context) {
         ctx.widget().set("text_selection", TextSelection::default());
-        ctx.push_event_strategy_by_entity(
-            ChangedEvent(ctx.entity),
-            ctx.entity,
-            EventStrategy::Direct,
-        );
     }
 
     fn check_outside_update(&self, ctx: &mut Context) {
@@ -245,11 +240,8 @@ impl TextBoxState {
     }
 
     fn back_space(&mut self, ctx: &mut Context) {
-        let mut changed = false;
-
         if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
             self.clear_selection(ctx);
-            changed = true;
         } else {
             let index = ctx
                 .widget()
@@ -260,23 +252,11 @@ impl TextBoxState {
                 ctx.widget()
                     .get_mut::<TextSelection>("text_selection")
                     .start_index = index - 1;
-
-                changed = true;
             }
-        }
-
-        if changed {
-            ctx.push_event_strategy_by_entity(
-                ChangedEvent(ctx.entity),
-                ctx.entity,
-                EventStrategy::Direct,
-            );
         }
     }
 
     fn delete(&mut self, ctx: &mut Context) {
-        let mut changed = false;
-
         if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
             self.clear_selection(ctx);
         } else {
@@ -286,20 +266,11 @@ impl TextBoxState {
                 .start_index;
             if index < ctx.widget().get::<String16>("text").len() {
                 ctx.widget().get_mut::<String16>("text").remove(index);
-                changed = true;
 
                 ctx.widget()
                     .get_mut::<TextSelection>("text_selection")
                     .start_index = index;
             }
-        }
-
-        if changed {
-            ctx.push_event_strategy_by_entity(
-                ChangedEvent(ctx.entity),
-                ctx.entity,
-                EventStrategy::Direct,
-            );
         }
     }
 
@@ -346,12 +317,6 @@ impl TextBoxState {
                     current_selection.start_index + key_event.text.encode_utf16().count();
             }
         }
-
-        ctx.push_event_strategy_by_entity(
-            ChangedEvent(ctx.entity),
-            ctx.entity,
-            EventStrategy::Direct,
-        );
     }
 }
 

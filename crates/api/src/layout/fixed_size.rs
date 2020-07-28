@@ -36,7 +36,7 @@ impl Layout for FixedSizeLayout {
             return *self.desired_size.borrow();
         }
 
-        let widget = WidgetContainer::new(entity, ecm, theme);
+        let widget = WidgetContainer::new(entity, ecm, theme, None);
 
         let horizontal_alignment: Alignment = *widget.get("h_align");
         let vertical_alignment: Alignment = *widget.get("v_align");

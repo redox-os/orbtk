@@ -58,7 +58,12 @@ impl<'a> Context<'a> {
 
     /// Returns a specific widget.
     pub fn get_widget(&mut self, entity: Entity) -> WidgetContainer<'_> {
-        WidgetContainer::new(entity, self.ecm, &self.theme)
+        WidgetContainer::new(
+            entity,
+            self.ecm,
+            &self.theme,
+            Some(&self.provider.event_queue),
+        )
     }
 
     /// Returns the widget of the current state ctx.
@@ -182,6 +187,7 @@ impl<'a> Context<'a> {
             &self.provider.handler_map,
             &mut self.new_states,
             &self.theme,
+            &self.provider.event_queue,
         )
     }
 

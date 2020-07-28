@@ -37,6 +37,7 @@ pub struct WidgetContainer<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     current_node: Entity,
     theme: &'a Theme,
+    event_queue: Option<&'a Rc<RefCell<EventQueue>>>,
 }
 
 impl<'a> WidgetContainer<'a> {
@@ -45,12 +46,18 @@ impl<'a> WidgetContainer<'a> {
         root: Entity,
         ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
         theme: &'a Theme,
+        event_queue: Option<&'a Rc<RefCell<EventQueue>>>,
     ) -> Self {
         WidgetContainer {
             ecm,
             current_node: root,
             theme,
+            event_queue,
         }
+    }
+
+    fn mark_as_dirty(&mut self, key: &str) {
+        mark_as_dirty(key, self.current_node, self.ecm);
     }
 
     /// Gets the entity of the widget.
@@ -118,7 +125,7 @@ impl<'a> WidgetContainer<'a> {
     where
         P: Clone + Component,
     {
-        mark_as_dirty(key, self.current_node, self.ecm);
+        self.mark_as_dirty(key);
 
         if let Ok(property) = self
             .ecm
@@ -195,7 +202,7 @@ impl<'a> WidgetContainer<'a> {
     where
         P: Component + Clone,
     {
-        mark_as_dirty(key, self.current_node, self.ecm);
+        self.mark_as_dirty(key);
 
         self.set_non_dirty(key, value);
     }

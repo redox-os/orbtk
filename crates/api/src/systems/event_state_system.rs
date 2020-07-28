@@ -165,7 +165,12 @@ impl EventStateSystem {
                 if event.downcast_ref::<ScrollEvent>().is_ok() {
                     if check_mouse_condition(
                         mouse_position,
-                        &WidgetContainer::new(current_node, ecm, &theme),
+                        &WidgetContainer::new(
+                            current_node,
+                            ecm,
+                            &theme,
+                            Some(&self.context_provider.event_queue),
+                        ),
                     ) && has_handler
                     {
                         matching_nodes.push(current_node);
@@ -176,13 +181,23 @@ impl EventStateSystem {
                 if let Ok(event) = event.downcast_ref::<ClickEvent>() {
                     if check_mouse_condition(
                         event.position,
-                        &WidgetContainer::new(current_node, ecm, &theme),
+                        &WidgetContainer::new(
+                            current_node,
+                            ecm,
+                            &theme,
+                            Some(&self.context_provider.event_queue),
+                        ),
                     ) {
                         let mut add = true;
                         if let Some(op) = clipped_parent.get(0) {
                             if !check_mouse_condition(
                                 event.position,
-                                &WidgetContainer::new(*op, ecm, &theme),
+                                &WidgetContainer::new(
+                                    *op,
+                                    ecm,
+                                    &theme,
+                                    Some(&self.context_provider.event_queue),
+                                ),
                             ) {
                                 add = false;
                             }
@@ -197,14 +212,24 @@ impl EventStateSystem {
                 if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
                     if check_mouse_condition(
                         event.position,
-                        &WidgetContainer::new(current_node, ecm, &theme),
+                        &WidgetContainer::new(
+                            current_node,
+                            ecm,
+                            &theme,
+                            Some(&self.context_provider.event_queue),
+                        ),
                     ) {
                         let mut add = true;
                         if let Some(op) = clipped_parent.get(0) {
                             // todo: improve check path if exists
                             if !check_mouse_condition(
                                 event.position,
-                                &WidgetContainer::new(*op, ecm, &theme),
+                                &WidgetContainer::new(
+                                    *op,
+                                    ecm,
+                                    &theme,
+                                    Some(&self.context_provider.event_queue),
+                                ),
                             ) && has_handler
                             {
                                 add = false;
@@ -220,14 +245,24 @@ impl EventStateSystem {
                 if let Ok(event) = event.downcast_ref::<MouseMoveEvent>() {
                     if check_mouse_condition(
                         event.position,
-                        &WidgetContainer::new(current_node, ecm, &theme),
+                        &WidgetContainer::new(
+                            current_node,
+                            ecm,
+                            &theme,
+                            Some(&self.context_provider.event_queue),
+                        ),
                     ) {
                         let mut add = true;
                         if let Some(op) = clipped_parent.get(0) {
                             // todo: improve check path if exists
                             if !check_mouse_condition(
                                 event.position,
-                                &WidgetContainer::new(*op, ecm, &theme),
+                                &WidgetContainer::new(
+                                    *op,
+                                    ecm,
+                                    &theme,
+                                    Some(&self.context_provider.event_queue),
+                                ),
                             ) {
                                 add = false;
                             }
@@ -240,7 +275,13 @@ impl EventStateSystem {
                 }
 
                 if unknown_event
-                    && *WidgetContainer::new(current_node, ecm, &theme).get::<bool>("enabled")
+                    && *WidgetContainer::new(
+                        current_node,
+                        ecm,
+                        &theme,
+                        Some(&self.context_provider.event_queue),
+                    )
+                    .get::<bool>("enabled")
                 {
                     if has_handler {
                         matching_nodes.push(current_node);

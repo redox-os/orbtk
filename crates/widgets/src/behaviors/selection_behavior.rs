@@ -39,7 +39,6 @@ impl State for SelectionBehaviorState {
 
         toggle_flag("selected", &mut ctx.get_widget(target));
 
-        ctx.push_event_strategy_by_entity(ChangedEvent(target), target, EventStrategy::Direct);
         ctx.get_widget(target).update(false);
     }
 }

@@ -143,9 +143,9 @@ impl Template for MainView {
         let slider = Slider::new()
             .min(0.0)
             .max(1.0)
-            .on_changed(move |states, entity| {
-                state(id, states).action(Action::ValueChanged(entity));
-            })
+            // .on_changed(move |states, entity| {
+            //     state(id, states).action(Action::ValueChanged(entity));
+            // })
             .build(ctx);
 
         self.name("MainView")
@@ -276,9 +276,9 @@ impl Template for MainView {
                                     .on_activate(move |states, entity| {
                                         state(id, states).action(Action::EntryActivated(entity));
                                     })
-                                    .on_changed(move |states, entity| {
-                                        state(id, states).action(Action::EntryChanged(entity));
-                                    })
+                                    // .on_changed(move |states, entity| {
+                                    //     state(id, states).action(Action::EntryChanged(entity));
+                                    // })
                                     .build(ctx),
                             )
                             .child(
@@ -291,9 +291,9 @@ impl Template for MainView {
                                     .on_activate(move |states, entity| {
                                         state(id, states).action(Action::EntryActivated(entity));
                                     })
-                                    .on_changed(move |states, entity| {
-                                        state(id, states).action(Action::EntryChanged(entity));
-                                    })
+                                    // .on_changed(move |states, entity| {
+                                    //     state(id, states).action(Action::EntryChanged(entity));
+                                    // })
                                     .build(ctx),
                             )
                             .child(
@@ -462,9 +462,9 @@ impl Template for MainView {
                             )
                             .child(
                                 Switch::new()
-                                    .on_changed(move |states, entity| {
-                                        state(id, states).action(Action::ToggleTheme(entity));
-                                    })
+                                    // .on_changed(move |states, entity| {
+                                    //     state(id, states).action(Action::ToggleTheme(entity));
+                                    // })
                                     .v_align("center")
                                     .build(ctx),
                             )

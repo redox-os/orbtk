@@ -53,12 +53,6 @@ impl State for SwitchState {
             switch_toggle.update(true);
         }
 
-        ctx.push_event_strategy_by_entity(
-            ChangedEvent(ctx.entity),
-            ctx.entity,
-            EventStrategy::Direct,
-        );
-
         ctx.get_widget(self.switch_toggle).update(false);
     }
 }

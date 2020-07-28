@@ -41,12 +41,6 @@ impl NumericBoxState {
         self.current_value = self.max(self.min(new_value));
         ctx.get_widget(self.input)
             .set::<String16>("text", String16::from(self.current_value.to_string()));
-
-        ctx.push_event_strategy_by_entity(
-            ChangedEvent(ctx.entity),
-            ctx.entity,
-            EventStrategy::Direct,
-        );
     }
 
     fn min(&self, d: Decimal) -> Decimal {

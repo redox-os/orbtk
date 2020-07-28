@@ -17,12 +17,13 @@ pub struct BuildContext<'a> {
     handlers: &'a RefCell<EventHandlerMap>,
     states: &'a mut BTreeMap<Entity, Box<dyn State>>,
     theme: &'a Theme,
+    event_queue: &'a Rc<RefCell<EventQueue>>,
 }
 
 impl<'a> BuildContext<'a> {
     /// Returns a specific widget.
-    pub fn get_widget(&mut self, entity: Entity) -> WidgetContainer<'_> {
-        WidgetContainer::new(entity, self.ecm, self.theme)
+    pub fn get_widget(&mut self, entity: Entity) -> WidgetContainer {
+        WidgetContainer::new(entity, self.ecm, self.theme, Some(self.event_queue))
     }
 
     /// Creates a new entity.
