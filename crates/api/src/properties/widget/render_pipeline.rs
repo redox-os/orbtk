@@ -26,6 +26,13 @@ impl render::RenderPipeline for EmptyRenderPipeline {
 #[derive(Clone, Debug)]
 pub struct RenderPipeline(pub Box<dyn render::Pipeline>);
 
+impl PartialEq for RenderPipeline {
+    fn eq(&self, _other: &Self) -> bool {
+        // todo this is workaround for property checking
+        false
+    }
+}
+
 impl Default for RenderPipeline {
     fn default() -> Self {
         RenderPipeline(Box::new(EmptyRenderPipeline))

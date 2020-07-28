@@ -5,8 +5,7 @@ widget!(
     /// The `CheckBox` widget can be switch its selected state. It contains a selection box and a text.
     ///
     /// **style:** `check-box`
-    CheckBox: MouseHandler,
-    ChangedHandler {
+    CheckBox: MouseHandler {
         /// Sets or shares the background property.
         background: Brush,
 

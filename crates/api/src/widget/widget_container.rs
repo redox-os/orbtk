@@ -1,6 +1,7 @@
 use std::any::type_name;
 
 use crate::{
+    event::ChangedEvent,
     prelude::*,
     utils::{Brush, Thickness, Value},
 };
@@ -200,9 +201,26 @@ impl<'a> WidgetContainer<'a> {
     /// Panics if the widget does not contains the property.
     pub fn set<P>(&mut self, key: &str, value: P)
     where
-        P: Component + Clone,
+        P: Component + Clone + PartialEq,
     {
+        if self
+            .ecm
+            .component_store()
+            .get::<P>(key, self.current_node)
+            .unwrap()
+            == &value
+        {
+            return;
+        }
         self.mark_as_dirty(key);
+
+        if let Some(event_queue) = self.event_queue {
+            event_queue.borrow_mut().register_event_with_strategy(
+                ChangedEvent(self.current_node, String::from(key)),
+                EventStrategy::Direct,
+                self.current_node,
+            );
+        }
 
         self.set_non_dirty(key, value);
     }

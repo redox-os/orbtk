@@ -24,6 +24,7 @@ pub struct ContextProvider {
     pub window_sender: mpsc::Sender<WindowRequest>,
     pub shell_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
     pub application_name: String,
+    pub first_run: Rc<Cell<bool>>,
 }
 
 impl ContextProvider {
@@ -43,6 +44,7 @@ impl ContextProvider {
             window_sender,
             shell_sender,
             application_name: application_name.into(),
+            first_run: Rc::new(Cell::new(true)),
         }
     }
 }

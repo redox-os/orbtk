@@ -6,8 +6,7 @@ widget!(
     /// It's used to perform an action.
     ///
     /// **style:** `toggle-button`
-    ToggleButton: MouseHandler,
-    ChangedHandler {
+    ToggleButton: MouseHandler {
         /// Sets or shares the background property.
         background: Brush,
 

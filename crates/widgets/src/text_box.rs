@@ -393,7 +393,7 @@ widget!(
     /// The `TextBox` widget represents a single line text input widget.
     ///
     /// * style: `text_box`
-    TextBox<TextBoxState>: ActivateHandler, ChangedHandler, KeyDownHandler {
+    TextBox<TextBoxState>: ActivateHandler, KeyDownHandler {
         /// Sets or shares the text property.
         text: String16,
 

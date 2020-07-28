@@ -156,7 +156,7 @@ widget!(
     /// ```rust
     /// NumericBox::new().min(10.0).max(100.0).val(50.0).step(5.0).build(ctx)
     /// ```
-    NumericBox<NumericBoxState>: ActivateHandler, ChangedHandler, KeyDownHandler {
+    NumericBox<NumericBoxState>: ActivateHandler, KeyDownHandler {
         /// Sets or shares the background color property
         background: Brush,
 

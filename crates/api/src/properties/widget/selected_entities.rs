@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use crate::prelude::*;
 
 /// `SelectedEntities` describes a list of selected entities.
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Default, Debug, PartialEq)]
 pub struct SelectedEntities(pub HashSet<Entity>);
 
 impl From<HashSet<Entity>> for SelectedEntities {

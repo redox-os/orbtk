@@ -24,7 +24,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
             .unwrap()
             .clone();
 
-        if dirty_widgets.is_empty() {
+        if dirty_widgets.is_empty() && !self.context_provider.first_run.get() {
             return;
         }
 
@@ -71,5 +71,9 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
             debug,
         );
         render_context.finish();
+
+        if self.context_provider.first_run.get() {
+            self.context_provider.first_run.set(false);
+        }
     }
 }

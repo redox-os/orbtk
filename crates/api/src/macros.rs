@@ -329,6 +329,8 @@ macro_rules! widget {
             )*
         )*
 
+        impl ChangedHandler for $widget {}
+
         impl Widget for $widget {
             /// Creates a new widget.
             #[inline]

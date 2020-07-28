@@ -61,7 +61,7 @@ widget!(
     /// The `Switch` widget can be switch between `on` and `off`.
     ///
     /// **style:** `switch`
-    Switch<SwitchState>: MouseHandler, ChangedHandler {
+    Switch<SwitchState>: MouseHandler {
         /// Sets or shares the background property.
         background: Brush,
 

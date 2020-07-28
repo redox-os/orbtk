@@ -7,7 +7,7 @@ use crate::{
     Selector, Style,
 };
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct Theme {
     styles: HashMap<String, Style>,
 }

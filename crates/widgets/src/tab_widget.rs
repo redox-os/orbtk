@@ -51,8 +51,7 @@ impl State for TabHeaderState {
 
 widget!(
     /// The `TabHeader` widget is used internally to managed tabs headers. Not meant for other uses.
-    TabHeader<TabHeaderState>: ChangedHandler
-    {
+    TabHeader<TabHeaderState> {
         /// Sets or shares the background property.
         background: Brush,
 
@@ -482,7 +481,7 @@ widget!(
     .build(ctx)
      ```
      */
-    TabWidget<TabWidgetState>: ChangedHandler {
+    TabWidget<TabWidgetState> {
         /// Sets or shares the spacing between tabs.
         spacing: f64,
 

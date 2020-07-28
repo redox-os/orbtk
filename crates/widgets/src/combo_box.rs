@@ -303,7 +303,7 @@ widget!(
     /// The `ComboBox` represents an selection widget with a drop-down list.
     ///
     /// **style:** `combo_box`
-    ComboBox<ComboBoxState>: MouseHandler, ChangedHandler {
+    ComboBox<ComboBoxState>: MouseHandler {
         /// Sets or shares the background property.
         background: Brush,
 

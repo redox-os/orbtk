@@ -55,6 +55,11 @@ impl EventStateSystem {
         event: &EventBox,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
     ) -> bool {
+        // skip all direct events on first run
+        if self.context_provider.first_run.get() {
+            return false;
+        }
+
         if event.strategy == EventStrategy::Direct {
             if let Some(handlers) = self
                 .context_provider
@@ -337,8 +342,6 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         render_context: &mut RenderContext2D,
     ) {
-        // todo fix
-        // let mut update = shell.update();
         let mut update = false;
 
         loop {

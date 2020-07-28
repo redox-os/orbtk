@@ -156,7 +156,7 @@ widget!(
     /// The `Slider` allows to use a val in a range of values.
     ///
     /// **style:** `slider`
-    Slider<SliderState>: MouseHandler, ChangedHandler {
+    Slider<SliderState>: MouseHandler {
         /// Sets or shares the min val of the range.
         min: f64,
 

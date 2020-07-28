@@ -38,6 +38,10 @@ struct CubePipeline {
 
 impl render::RenderPipeline for CubePipeline {
     fn draw(&self, render_target: &mut render::RenderTarget) {
+        if render_target.width() == 0. || render_target.height() == 0. {
+            return;
+        }
+
         let mut color = Buffer2d::new(
             [
                 render_target.width() as usize,
