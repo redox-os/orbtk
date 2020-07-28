@@ -35,9 +35,10 @@ impl State for ScrollIndicatorState {
         let content_size = ctx.widget().get::<Rectangle>("content_bounds").size();
         let view_port_size = ctx.widget().get::<Rectangle>("view_port_bounds").size();
         let padding = *ctx.widget().get::<Thickness>("padding");
+        let scroll_padding = *ctx.widget().get::<Thickness>("scroll_padding");
 
         // adjust vertical scroll bar
-        if mode.vertical == ScrollMode::Auto {
+        if mode.vertical != ScrollMode::Disabled {
             let mut scroll_bar = ctx.get_widget(self.vertical_scroll_bar);
 
             if *scroll_bar.get::<Visibility>("visibility") != Visibility::Visible {
@@ -52,6 +53,36 @@ impl State for ScrollIndicatorState {
                     view_port_size.1,
                     padding.top() + padding.bottom(),
                 ));
+
+            scroll_bar.get_mut::<Rectangle>("bounds").set_y(-offset(
+                size.1,
+                content_size.1,
+                scroll_padding.top(),
+            ));
+        }
+
+        // adjust horizontal scroll bar
+        if mode.horizontal != ScrollMode::Disabled {
+            let mut scroll_bar = ctx.get_widget(self.horizontal_scroll_bar);
+
+            if *scroll_bar.get::<Visibility>("visibility") != Visibility::Visible {
+                scroll_bar.set("visibility", Visibility::Visible);
+            }
+
+            scroll_bar
+                .get_mut::<Rectangle>("bounds")
+                .set_width(scroll_bar_size(
+                    size.0,
+                    content_size.0,
+                    view_port_size.0,
+                    padding.left() + padding.right(),
+                ));
+
+            scroll_bar.get_mut::<Rectangle>("bounds").set_x(-offset(
+                size.0,
+                content_size.0,
+                scroll_padding.left(),
+            ));
         }
     }
 }
@@ -120,4 +151,35 @@ fn scroll_bar_size(size: f64, content_size: f64, view_port_size: f64, padding: f
     (size * view_port_size / content_size) - padding
 }
 
+fn offset(size: f64, content_size: f64, offset: f64) -> f64 {
+    size * offset / content_size
+}
+
 // --- Helpers --
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_scroll_bar_size() {
+        let size = 50.;
+        let content_size = 200.;
+        let view_port_size = 80.0;
+        let padding = 8.;
+
+        assert_eq!(
+            scroll_bar_size(size, content_size, view_port_size, padding),
+            12.
+        );
+    }
+
+    #[test]
+    fn test_offset() {
+        let size = 50.;
+        let content_size = 200.;
+        let offset_in = 8.;
+
+        assert_eq!(offset(size, content_size, offset_in), 2.);
+    }
+}

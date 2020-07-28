@@ -200,6 +200,8 @@ impl Layout for TextSelectionLayout {
                 bounds.set_width(size.0);
                 bounds.set_height(size.1);
             }
+
+            mark_as_dirty("bounds", entity, ecm);
         }
 
         for index in 0..ecm.entity_store().children[&entity].len() {
