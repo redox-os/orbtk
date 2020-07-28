@@ -225,12 +225,13 @@ impl TextBoxState {
 
     fn clear_selection(&mut self, ctx: &mut Context) {
         let selection = ctx.widget().clone::<TextSelection>("text_selection");
+        let mut text = ctx.widget().clone::<String16>("text");
 
-        if let Some(text) = ctx.widget().try_get_mut::<String16>("text") {
-            for i in (selection.start_index..(selection.start_index + selection.length)).rev() {
-                text.remove(i);
-            }
+        for i in (selection.start_index..(selection.start_index + selection.length)).rev() {
+            text.remove(i);
         }
+
+        ctx.widget().set("text", text);
 
         ctx.widget()
             .get_mut::<TextSelection>("text_selection")
@@ -248,7 +249,9 @@ impl TextBoxState {
                 .clone::<TextSelection>("text_selection")
                 .start_index;
             if index > 0 {
-                ctx.widget().get_mut::<String16>("text").remove(index - 1);
+                let mut text = ctx.widget().clone::<String16>("text");
+                text.remove(index - 1);
+                ctx.widget().set("text", text);
                 ctx.widget()
                     .get_mut::<TextSelection>("text_selection")
                     .start_index = index - 1;
@@ -265,7 +268,9 @@ impl TextBoxState {
                 .clone::<TextSelection>("text_selection")
                 .start_index;
             if index < ctx.widget().get::<String16>("text").len() {
-                ctx.widget().get_mut::<String16>("text").remove(index);
+                let mut text = ctx.widget().clone::<String16>("text");
+                text.remove(index);
+                ctx.widget().set("text", text);
 
                 ctx.widget()
                     .get_mut::<TextSelection>("text_selection")
@@ -305,9 +310,10 @@ impl TextBoxState {
             let current_selection = *ctx
                 .get_widget(self.cursor)
                 .get::<TextSelection>("text_selection");
-            ctx.widget()
-                .get_mut::<String16>("text")
-                .insert_str(current_selection.start_index, key_event.text.as_str());
+
+            let mut text = ctx.widget().clone::<String16>("text");
+            text.insert_str(current_selection.start_index, key_event.text.as_str());
+            ctx.widget().set("text", text);
 
             if let Some(selection) = ctx
                 .get_widget(self.cursor)
@@ -453,6 +459,7 @@ impl Template for TextBox {
         self.name("TextBox")
             .style(STYLE_TEXT_BOX)
             .text("")
+            .on_changed_filter(vec!["text"])
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto-Regular")

@@ -82,6 +82,8 @@ macro_rules! widget {
             visibility: Visibility,
             #[property(Selector)]
             selector: Selector,
+            #[property(Filter)]
+            on_changed_filter: Filter,
             _empty: Option<RefCell<i32>>,
              $(
                 $(
@@ -139,6 +141,11 @@ macro_rules! widget {
             /// Sets or shares the constraint property.
             pub fn constraint(self, constraint: impl IntoPropertySource<Constraint>) -> Self {
                 self.set_property("constraint", constraint)
+            }
+
+             /// Sets or shares the filter for the on_changed property callback.
+             pub fn on_changed_filter(self, filter: impl IntoPropertySource<Filter>) -> Self {
+                self.set_property("on_changed_filter", filter)
             }
 
             /// Sets or shares the vertical alignment property.
@@ -390,10 +397,11 @@ macro_rules! widget {
                 )*
 
                 // register default set of properties
-                ctx.register_property("bounds", entity, this.bounds);
+                register_property(ctx, "bounds", entity, this.bounds);
                 ctx.register_property("position", entity, this.position);
                 ctx.register_property("v_align", entity, this.v_align);
                 ctx.register_property("h_align", entity, this.h_align);
+                ctx.register_property("on_changed_filter", entity, this.on_changed_filter);
                 ctx.register_property("visibility", entity, this.visibility);
                 ctx.register_property("margin", entity, this.margin);
                 ctx.register_property("enabled", entity, this.enabled);

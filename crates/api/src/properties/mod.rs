@@ -105,6 +105,7 @@ into_property_source!(utils::String16: &str, String);
 into_property_source!(utils::SelectionMode: &str);
 into_property_source!(utils::Visibility: &str);
 into_property_source!(Vec<String>);
+into_property_source!(utils::Filter: &str, String, Vec<String>, Vec<&str>);
 
 // Implementation of css types
 into_property_source!(Selector: &str, String);

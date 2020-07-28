@@ -145,3 +145,12 @@ impl<'a> BuildContext<'a> {
         self.layouts.borrow_mut().insert(widget, layout);
     }
 }
+
+pub fn register_property<P: Component>(
+    ctx: &mut BuildContext,
+    key: &str,
+    entity: Entity,
+    property: P,
+) {
+    ctx.register_property(key, entity, property);
+}

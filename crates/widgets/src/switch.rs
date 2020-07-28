@@ -96,6 +96,7 @@ impl Template for Switch {
             .border_radius(8.0)
             .border_width(1.0)
             .padding(4.0)
+            .on_changed_filter(vec!["selected"])
             .child(
                 MouseBehavior::new()
                     .pressed(id)

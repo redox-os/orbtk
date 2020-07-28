@@ -3,7 +3,7 @@ use std::any::type_name;
 use crate::{
     event::ChangedEvent,
     prelude::*,
-    utils::{Brush, Thickness, Value},
+    utils::{Brush, Filter, Thickness, Value},
 };
 
 use dces::prelude::{Component, Entity, EntityComponentManager};
@@ -214,12 +214,33 @@ impl<'a> WidgetContainer<'a> {
         }
         self.mark_as_dirty(key);
 
-        if let Some(event_queue) = self.event_queue {
-            event_queue.borrow_mut().register_event_with_strategy(
-                ChangedEvent(self.current_node, String::from(key)),
-                EventStrategy::Direct,
-                self.current_node,
-            );
+        let mut on_changed = false;
+
+        // each widget has this filter therefore unwrap.
+        match self
+            .ecm
+            .component_store()
+            .get::<Filter>("on_changed_filter", self.current_node)
+            .unwrap()
+        {
+            // nothing to do, every key is inactive.
+            Filter::Complete => {}
+            Filter::Nothing => on_changed = true,
+            Filter::List(list) => {
+                if list.contains(&key.to_string()) {
+                    on_changed = true;
+                }
+            }
+        }
+
+        if on_changed {
+            if let Some(event_queue) = self.event_queue {
+                event_queue.borrow_mut().register_event_with_strategy(
+                    ChangedEvent(self.current_node, String::from(key)),
+                    EventStrategy::Direct,
+                    self.current_node,
+                );
+            }
         }
 
         self.set_non_dirty(key, value);

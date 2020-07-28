@@ -57,6 +57,7 @@ impl Template for CheckBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("CheckBox")
             .style("check_box")
+            .on_changed_filter(vec!["selected"])
             .selected(false)
             .height(24.0)
             .background(colors::LYNCH_COLOR)

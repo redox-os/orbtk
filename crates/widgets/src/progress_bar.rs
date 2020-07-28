@@ -93,6 +93,7 @@ impl Template for ProgressBar {
     fn template(self, _: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ProgressBar")
             .style(STYLE_PROGRESS_BAR)
+            .on_changed_filter(vec!["val"])
             .val(0.0)
             .background("#000000")
             .border_brush("#BABABA")
