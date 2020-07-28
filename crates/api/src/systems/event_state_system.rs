@@ -331,9 +331,6 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                 }
             }
 
-            // todo fix
-            // shell.set_update(update);
-
             // handle states
 
             // crate::shell::CONSOLE.time("update-time:");

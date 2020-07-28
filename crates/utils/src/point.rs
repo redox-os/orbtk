@@ -25,12 +25,12 @@ impl Point {
         self.y
     }
 
-    pub fn set_x(&mut self, x: f64) {
-        self.x = x;
+    pub fn set_x(&mut self, x: impl Into<f64>) {
+        self.x = x.into();
     }
 
-    pub fn set_y(&mut self, y: f64) {
-        self.y = y;
+    pub fn set_y(&mut self, y: impl Into<f64>) {
+        self.y = y.into();
     }
 }
 

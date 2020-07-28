@@ -29,7 +29,7 @@ impl Rectangle {
     }
 
     /// Sets x.
-    pub fn set_x(&mut self, x: f64) {
+    pub fn set_x(&mut self, x: impl Into<f64>) {
         self.position.set_x(x);
     }
 
@@ -39,7 +39,7 @@ impl Rectangle {
     }
 
     /// Sets y.
-    pub fn set_y(&mut self, y: f64) {
+    pub fn set_y(&mut self, y: impl Into<f64>) {
         self.position.set_y(y);
     }
 
@@ -59,8 +59,8 @@ impl Rectangle {
     }
 
     /// Sets the width.
-    pub fn set_width(&mut self, width: f64) {
-        self.width = width;
+    pub fn set_width(&mut self, width: impl Into<f64>) {
+        self.width = width.into();
     }
 
     /// Gets the height.
@@ -69,8 +69,8 @@ impl Rectangle {
     }
 
     /// Sets the height.
-    pub fn set_height(&mut self, height: f64) {
-        self.height = height;
+    pub fn set_height(&mut self, height: impl Into<f64>) {
+        self.height = height.into();
     }
 
     /// Gets the size with width and height.
@@ -79,9 +79,9 @@ impl Rectangle {
     }
 
     /// Sets the size with width and height.
-    pub fn set_size(&mut self, width: f64, height: f64) {
-        self.width = width;
-        self.height = height;
+    pub fn set_size(&mut self, width: impl Into<f64>, height: impl Into<f64>) {
+        self.width = width.into();
+        self.height = height.into();
     }
 
     /// Checks if this rect contains the given `point`.

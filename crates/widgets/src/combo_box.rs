@@ -406,7 +406,7 @@ impl Template for ComboBox {
 
         self.state_mut().items_panel = items_panel;
         let scroll_viewer = ScrollViewer::new()
-            .scroll_viewer_mode(("disabled", "auto"))
+            .mode(("disabled", "auto"))
             .child(items_panel)
             .build(ctx);
 
@@ -417,8 +417,10 @@ impl Template for ComboBox {
             .child(
                 ScrollIndicator::new()
                     .padding(2.0)
-                    .content_id(items_panel.0)
-                    .scroll_offset(scroll_viewer)
+                    .content_bounds(("bounds", items_panel))
+                    .view_port_bounds(("bounds", scroll_viewer))
+                    .scroll_padding(("padding", scroll_viewer))
+                    .mode(scroll_viewer)
                     .opacity(id)
                     .build(ctx),
             )

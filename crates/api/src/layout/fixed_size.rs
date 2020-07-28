@@ -146,6 +146,8 @@ impl Layout for FixedSizeLayout {
             bounds.set_height(self.desired_size.borrow().height());
         }
 
+        mark_as_dirty("bounds", entity, ecm);
+
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
             if let Some(child_layout) = layouts.get(&child) {

@@ -306,9 +306,6 @@ widget!(
         /// Sets or shares the list of selected indices.
         selected_entities: SelectedEntities,
 
-        /// Sets or shares the (wheel, scroll) delta property.
-        delta: Point,
-
         /// Use this flag to force the redrawing of the items.
         request_update: bool
     }
@@ -334,8 +331,7 @@ impl Template for ListView {
             .build(ctx);
 
         let scroll_viewer = ScrollViewer::new()
-            .scroll_viewer_mode(("disabled", "auto"))
-            .delta(id)
+            .mode(("disabled", "auto"))
             .child(items_panel)
             .build(ctx);
 
@@ -349,7 +345,6 @@ impl Template for ListView {
             .selection_mode("single")
             .selected_indices(HashSet::new())
             .selected_entities(HashSet::new())
-            .delta(0.0)
             .orientation("vertical")
             .child(
                 Container::new()
@@ -363,9 +358,10 @@ impl Template for ListView {
                     .child(
                         ScrollIndicator::new()
                             .padding(2.0)
-                            .content_id(items_panel.0)
-                            .delta(scroll_viewer)
-                            .scroll_offset(scroll_viewer)
+                            .content_bounds(("bounds", items_panel))
+                            .view_port_bounds(("bounds", scroll_viewer))
+                            .scroll_padding(("padding", scroll_viewer))
+                            .mode(scroll_viewer)
                             .opacity(id)
                             .build(ctx),
                     )

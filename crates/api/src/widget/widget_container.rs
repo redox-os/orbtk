@@ -7,6 +7,31 @@ use crate::{
 
 use dces::prelude::{Component, Entity, EntityComponentManager};
 
+/// Mark the widget and shared widgets as dirty.
+pub fn mark_as_dirty(
+    key: &str,
+    entity: Entity,
+    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+) {
+    let root = ecm.entity_store().root();
+
+    for entity in ecm.component_store().entities_of_component(key, entity) {
+        *ecm.component_store_mut()
+            .get_mut::<bool>("dirty", entity)
+            .unwrap() = true;
+
+        if let Ok(dirty_widgets) = ecm
+            .component_store_mut()
+            .get_mut::<Vec<Entity>>("dirty_widgets", root)
+        {
+            // don't add the same widget twice in a row
+            if dirty_widgets.is_empty() || *dirty_widgets.last().unwrap() != entity {
+                dirty_widgets.push(entity);
+            }
+        }
+    }
+}
+
 /// The `WidgetContainer` wraps the entity of a widget and provides access to its properties, its children properties and its parent properties.
 pub struct WidgetContainer<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
@@ -60,34 +85,6 @@ impl<'a> WidgetContainer<'a> {
         }
     }
 
-    /// Mark the widget and shared widgets as dirty.
-    pub fn mark_as_dirty(&mut self, key: &str) {
-        let root = self.ecm.entity_store().root();
-
-        for entity in self
-            .ecm
-            .component_store()
-            .entities_of_component(key, self.current_node)
-        {
-            *self
-                .ecm
-                .component_store_mut()
-                .get_mut::<bool>("dirty", entity)
-                .unwrap() = true;
-
-            if let Ok(dirty_widgets) = self
-                .ecm
-                .component_store_mut()
-                .get_mut::<Vec<Entity>>("dirty_widgets", root)
-            {
-                // don't add the same widget twice in a row
-                if dirty_widgets.is_empty() || *dirty_widgets.last().unwrap() != entity {
-                    dirty_widgets.push(entity);
-                }
-            }
-        }
-    }
-
     /// Gets the property.
     ///
     /// # Panics
@@ -121,7 +118,7 @@ impl<'a> WidgetContainer<'a> {
     where
         P: Clone + Component,
     {
-        self.mark_as_dirty(key);
+        mark_as_dirty(key, self.current_node, self.ecm);
 
         if let Ok(property) = self
             .ecm
@@ -189,7 +186,7 @@ impl<'a> WidgetContainer<'a> {
         None
     }
 
-    /// Sets the property of type `P`.
+    /// Sets the property of type `P`. Sets the `dirty` flag of the widget to `true`.
     ///
     /// # Panics
     ///
@@ -198,8 +195,20 @@ impl<'a> WidgetContainer<'a> {
     where
         P: Component + Clone,
     {
-        self.mark_as_dirty(key);
+        mark_as_dirty(key, self.current_node, self.ecm);
 
+        self.set_non_dirty(key, value);
+    }
+
+    /// Sets the property of type `P` without setting the widget dirty.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the widget does not contains the property.
+    pub fn set_non_dirty<P>(&mut self, key: &str, value: P)
+    where
+        P: Component + Clone,
+    {
         if let Ok(property) = self
             .ecm
             .component_store_mut()
@@ -243,7 +252,7 @@ impl<'a> WidgetContainer<'a> {
     /// Returns a mutable reference of a property of type `P` from the given widget entity. If the entity does
     /// not exists or it doesn't have a component of type `P` `None` will be returned.
     pub fn try_get_mut<P: Component>(&mut self, key: &str) -> Option<&mut P> {
-        self.mark_as_dirty(key);
+        mark_as_dirty(key, self.current_node, self.ecm);
         self.ecm
             .component_store_mut()
             .get_mut::<P>(key, self.current_node)
@@ -326,7 +335,7 @@ impl<'a> WidgetContainer<'a> {
     }
 
     /// Update all properties from theme for the given widget.
-    pub fn update_widget(&mut self, entity: Entity, force: bool, mark_as_dirty: bool) {
+    pub fn update_widget(&mut self, entity: Entity, force: bool, should_mark_as_dirty: bool) {
         self.current_node = entity;
         if !self.has::<Selector>("selector") {
             return;
@@ -378,7 +387,7 @@ impl<'a> WidgetContainer<'a> {
         let force = selector.dirty() || force;
 
         for child in &(self.ecm.entity_store().children.clone())[&entity] {
-            self.update_widget(*child, force, mark_as_dirty);
+            self.update_widget(*child, force, should_mark_as_dirty);
         }
 
         self.current_node = entity;
@@ -390,8 +399,8 @@ impl<'a> WidgetContainer<'a> {
             .unwrap()
             .set_dirty(false);
 
-        if mark_as_dirty {
-            self.mark_as_dirty("selector");
+        if should_mark_as_dirty {
+            mark_as_dirty("selector", self.current_node, self.ecm);
         }
     }
 
