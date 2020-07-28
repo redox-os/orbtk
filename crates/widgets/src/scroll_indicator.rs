@@ -38,7 +38,7 @@ impl State for ScrollIndicatorState {
         let scroll_padding = *ctx.widget().get::<Thickness>("scroll_padding");
 
         // adjust vertical scroll bar
-        if mode.vertical != ScrollMode::Disabled {
+        if mode.vertical != ScrollMode::Disabled && content_size.1 > view_port_size.1 {
             let mut scroll_bar = ctx.get_widget(self.vertical_scroll_bar);
 
             if *scroll_bar.get::<Visibility>("visibility") != Visibility::Visible {
@@ -62,7 +62,7 @@ impl State for ScrollIndicatorState {
         }
 
         // adjust horizontal scroll bar
-        if mode.horizontal != ScrollMode::Disabled {
+        if mode.horizontal != ScrollMode::Disabled && content_size.0 > view_port_size.0 {
             let mut scroll_bar = ctx.get_widget(self.horizontal_scroll_bar);
 
             if *scroll_bar.get::<Visibility>("visibility") != Visibility::Visible {
