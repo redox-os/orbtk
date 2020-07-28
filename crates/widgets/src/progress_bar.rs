@@ -2,7 +2,14 @@ use crate::prelude::*;
 
 static RANGE_MIN: f64 = 0.0;
 static RANGE_MAX: f64 = 1.0;
+
+// --- KEYS --
+
+pub static STYLE_PROGRESS_BAR: &'static str = "progress_bar";
+pub static STYLE_PROGRESS_BAR_INDICATOR: &'static str = "progress_bar_indicator";
 static ID_INDICATOR: &'static str = "PGBAR_INDICATOR";
+
+// --- KEYS --
 
 #[derive(Default, AsAny)]
 struct BarState {
@@ -14,10 +21,10 @@ impl State for BarState {
         self.indicator = ctx
             .entity_of_child(ID_INDICATOR)
             .expect("BarState.init(): Child could not be found!");
-        self.update(registry, ctx);
+        self.update_post_layout(registry, ctx);
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         let val = ctx.widget().clone_or_default::<f64>("val");
         let max_width = ctx.widget().get::<Rectangle>("bounds").width()
             - ctx.widget().get::<Thickness>("padding").left()
@@ -30,14 +37,14 @@ impl State for BarState {
     }
 }
 
-fn calculate_width(curren_progress: f64, max_width: f64) -> f64 {
-    if curren_progress == RANGE_MIN {
+fn calculate_width(current_progress: f64, max_width: f64) -> f64 {
+    if current_progress == RANGE_MIN {
         return 0.01;
     } else {
-        if curren_progress == RANGE_MAX {
+        if current_progress == RANGE_MAX {
             return max_width * 0.99;
-        } else if curren_progress > RANGE_MIN && curren_progress < RANGE_MAX {
-            return max_width * curren_progress;
+        } else if current_progress > RANGE_MIN && current_progress < RANGE_MAX {
+            return max_width * current_progress;
         } else {
             return max_width * 0.99;
         }
@@ -85,26 +92,27 @@ widget!(
 impl Template for ProgressBar {
     fn template(self, _: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ProgressBar")
+            .style(STYLE_PROGRESS_BAR)
+            .val(0.0)
             .background("#000000")
             .border_brush("#BABABA")
             .border_radius(4)
             .border_width(1)
-            .style("progress_bar")
             .height(34)
+            .min_width(100.0)
             .padding((2, 4, 2, 4))
             .child(
                 Container::new()
                     .id(ID_INDICATOR)
-                    .style("progress_bar_indicator")
+                    .style(STYLE_PROGRESS_BAR_INDICATOR)
                     .background("#EFD035")
-                    .height(24.0)
-                    .v_align("center")
                     .border_radius(1.0)
                     .width(0.0)
+                    .height(24.0)
+                    .v_align("center")
+                    .h_align("start")
                     .build(ctx),
             )
-            .min_width(100.0)
-            .val(0.0)
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

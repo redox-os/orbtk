@@ -146,6 +146,8 @@ impl Layout for PaddingLayout {
             bounds.set_height(size.1);
         }
 
+        mark_as_dirty("bounds", entity, ecm);
+
         let available_size = (
             size.0 - padding.left() - padding.right(),
             size.1 - padding.top() - padding.bottom(),
@@ -194,6 +196,8 @@ impl Layout for PaddingLayout {
                         ),
                 );
             }
+
+            mark_as_dirty("bounds", child, ecm);
         }
         self.old_parent_size.set(parent_size);
         self.desired_size.borrow_mut().set_dirty(false);

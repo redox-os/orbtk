@@ -17,14 +17,8 @@ pub struct ListViewState {
     items_panel: Entity,
 }
 
-impl State for ListViewState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        self.items_panel = ctx
-            .entity_of_child(ITEMS_PANEL)
-            .expect("ListViewState.init: ItemsPanel child could not be found.");
-    }
-
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+impl ListViewState {
+    fn generate_items(&mut self, ctx: &mut Context) {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity;
 
@@ -61,12 +55,22 @@ impl State for ListViewState {
 
                         item
                     };
-                    ctx.get_widget(item).update_widget(entity, false);
+                    ctx.get_widget(item).update_widget(entity, false, false);
                 }
             }
 
             self.count = count;
         }
+    }
+}
+
+impl State for ListViewState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.items_panel = ctx
+            .entity_of_child(ITEMS_PANEL)
+            .expect("ListViewState.init: ItemsPanel child could not be found.");
+
+        self.generate_items(ctx);
     }
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
@@ -192,7 +196,7 @@ impl State for ListViewItemState {
 widget!(
     /// The `ListViewItem` describes an item inside of a `ListView`.
     ///
-    /// **CSS element:** `list-view``
+    /// **style:** `list-view``
     ListViewItem<ListViewItemState>: MouseHandler {
         /// Sets or shares the background property.
         background: Brush,
@@ -270,7 +274,7 @@ impl Template for ListViewItem {
 widget!(
     /// The `ListView` is an items drawer widget with selectable items.
     ///
-    /// **CSS element:** `items-widget`
+    /// **style:** `items-widget`
     ListView<ListViewState> : SelectionChangedHandler {
         /// Sets or shares the background property.
         background: Brush,
@@ -302,9 +306,6 @@ widget!(
         /// Sets or shares the list of selected indices.
         selected_entities: SelectedEntities,
 
-        /// Sets or shares the (wheel, scroll) delta property.
-        delta: Point,
-
         /// Use this flag to force the redrawing of the items.
         request_update: bool
     }
@@ -330,8 +331,7 @@ impl Template for ListView {
             .build(ctx);
 
         let scroll_viewer = ScrollViewer::new()
-            .scroll_viewer_mode(("disabled", "auto"))
-            .delta(id)
+            .mode(("disabled", "auto"))
             .child(items_panel)
             .build(ctx);
 
@@ -345,7 +345,6 @@ impl Template for ListView {
             .selection_mode("single")
             .selected_indices(HashSet::new())
             .selected_entities(HashSet::new())
-            .delta(0.0)
             .orientation("vertical")
             .child(
                 Container::new()
@@ -359,8 +358,10 @@ impl Template for ListView {
                     .child(
                         ScrollIndicator::new()
                             .padding(2.0)
-                            .content_id(items_panel.0)
-                            .scroll_offset(scroll_viewer)
+                            .content_bounds(("bounds", items_panel))
+                            .view_port_bounds(("bounds", scroll_viewer))
+                            .scroll_padding(("padding", scroll_viewer))
+                            .mode(scroll_viewer)
                             .opacity(id)
                             .build(ctx),
                     )

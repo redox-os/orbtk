@@ -50,7 +50,16 @@ impl EventStateSystem {
             .remove(&entity);
     }
 
-    fn process_direct(&self, event: &EventBox) -> bool {
+    fn process_direct(
+        &self,
+        event: &EventBox,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+    ) -> bool {
+        // skip all direct events on first run
+        if self.context_provider.first_run.get() {
+            return false;
+        }
+
         if event.strategy == EventStrategy::Direct {
             if let Some(handlers) = self
                 .context_provider
@@ -60,7 +69,10 @@ impl EventStateSystem {
             {
                 handlers.iter().any(|handler| {
                     handler.handle_event(
-                        &mut StatesContext::new(&mut *self.context_provider.states.borrow_mut()),
+                        &mut StatesContext::new(
+                            &mut *self.context_provider.states.borrow_mut(),
+                            ecm,
+                        ),
                         &event,
                     )
                 });
@@ -158,7 +170,12 @@ impl EventStateSystem {
                 if event.downcast_ref::<ScrollEvent>().is_ok() {
                     if check_mouse_condition(
                         mouse_position,
-                        &WidgetContainer::new(current_node, ecm, &theme),
+                        &WidgetContainer::new(
+                            current_node,
+                            ecm,
+                            &theme,
+                            Some(&self.context_provider.event_queue),
+                        ),
                     ) && has_handler
                     {
                         matching_nodes.push(current_node);
@@ -169,13 +186,23 @@ impl EventStateSystem {
                 if let Ok(event) = event.downcast_ref::<ClickEvent>() {
                     if check_mouse_condition(
                         event.position,
-                        &WidgetContainer::new(current_node, ecm, &theme),
+                        &WidgetContainer::new(
+                            current_node,
+                            ecm,
+                            &theme,
+                            Some(&self.context_provider.event_queue),
+                        ),
                     ) {
                         let mut add = true;
                         if let Some(op) = clipped_parent.get(0) {
                             if !check_mouse_condition(
                                 event.position,
-                                &WidgetContainer::new(*op, ecm, &theme),
+                                &WidgetContainer::new(
+                                    *op,
+                                    ecm,
+                                    &theme,
+                                    Some(&self.context_provider.event_queue),
+                                ),
                             ) {
                                 add = false;
                             }
@@ -190,14 +217,24 @@ impl EventStateSystem {
                 if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
                     if check_mouse_condition(
                         event.position,
-                        &WidgetContainer::new(current_node, ecm, &theme),
+                        &WidgetContainer::new(
+                            current_node,
+                            ecm,
+                            &theme,
+                            Some(&self.context_provider.event_queue),
+                        ),
                     ) {
                         let mut add = true;
                         if let Some(op) = clipped_parent.get(0) {
                             // todo: improve check path if exists
                             if !check_mouse_condition(
                                 event.position,
-                                &WidgetContainer::new(*op, ecm, &theme),
+                                &WidgetContainer::new(
+                                    *op,
+                                    ecm,
+                                    &theme,
+                                    Some(&self.context_provider.event_queue),
+                                ),
                             ) && has_handler
                             {
                                 add = false;
@@ -213,14 +250,24 @@ impl EventStateSystem {
                 if let Ok(event) = event.downcast_ref::<MouseMoveEvent>() {
                     if check_mouse_condition(
                         event.position,
-                        &WidgetContainer::new(current_node, ecm, &theme),
+                        &WidgetContainer::new(
+                            current_node,
+                            ecm,
+                            &theme,
+                            Some(&self.context_provider.event_queue),
+                        ),
                     ) {
                         let mut add = true;
                         if let Some(op) = clipped_parent.get(0) {
                             // todo: improve check path if exists
                             if !check_mouse_condition(
                                 event.position,
-                                &WidgetContainer::new(*op, ecm, &theme),
+                                &WidgetContainer::new(
+                                    *op,
+                                    ecm,
+                                    &theme,
+                                    Some(&self.context_provider.event_queue),
+                                ),
                             ) {
                                 add = false;
                             }
@@ -233,7 +280,13 @@ impl EventStateSystem {
                 }
 
                 if unknown_event
-                    && *WidgetContainer::new(current_node, ecm, &theme).get::<bool>("enabled")
+                    && *WidgetContainer::new(
+                        current_node,
+                        ecm,
+                        &theme,
+                        Some(&self.context_provider.event_queue),
+                    )
+                    .get::<bool>("enabled")
                 {
                     if has_handler {
                         matching_nodes.push(current_node);
@@ -263,7 +316,10 @@ impl EventStateSystem {
             if let Some(handlers) = self.context_provider.handler_map.borrow().get(node) {
                 handled = handlers.iter().any(|handler| {
                     handler.handle_event(
-                        &mut StatesContext::new(&mut *self.context_provider.states.borrow_mut()),
+                        &mut StatesContext::new(
+                            &mut *self.context_provider.states.borrow_mut(),
+                            ecm,
+                        ),
                         event,
                     )
                 });
@@ -286,8 +342,6 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         render_context: &mut RenderContext2D,
     ) {
-        // todo fix
-        // let mut update = shell.update();
         let mut update = false;
 
         loop {
@@ -306,7 +360,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                     match event.strategy {
                         EventStrategy::Direct => {
                             if event.strategy == EventStrategy::Direct {
-                                update = self.process_direct(&event) || update;
+                                update = self.process_direct(&event, ecm) || update;
                             }
                         }
                         // EventStrategy::TopDown => {
@@ -321,9 +375,6 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                 }
             }
 
-            // todo fix
-            // shell.set_update(update);
-
             // handle states
 
             // crate::shell::CONSOLE.time("update-time:");
@@ -336,87 +387,91 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                 .unwrap()
                 .theme
                 .clone();
-            let mut current_node = root;
+
             let mut remove_widget_list: Vec<Entity> = vec![];
+
+            let mut dirty_index = 0;
+
             loop {
+                if dirty_index
+                    >= ecm
+                        .component_store()
+                        .get::<Vec<Entity>>("dirty_widgets", root)
+                        .unwrap()
+                        .len()
+                {
+                    break;
+                }
+
                 let mut skip = false;
 
-                {
-                    if !self
-                        .context_provider
-                        .states
-                        .borrow()
-                        .contains_key(&current_node)
+                let widget = *ecm
+                    .component_store()
+                    .get::<Vec<Entity>>("dirty_widgets", root)
+                    .unwrap()
+                    .get(dirty_index)
+                    .unwrap();
+
+                if !self.context_provider.states.borrow().contains_key(&widget) {
+                    skip = true;
+                }
+
+                let mut keys = vec![];
+
+                if !skip {
                     {
-                        skip = true;
-                    }
+                        let registry = &mut self.registry.borrow_mut();
 
-                    let mut keys = vec![];
+                        let mut ctx = Context::new(
+                            (widget, ecm),
+                            &theme,
+                            &self.context_provider,
+                            render_context,
+                        );
 
-                    if !skip {
+                        if let Some(state) =
+                            self.context_provider.states.borrow_mut().get_mut(&widget)
                         {
-                            let registry = &mut self.registry.borrow_mut();
+                            state.update(registry, &mut ctx);
+                        }
 
+                        keys.append(&mut ctx.new_states_keys());
+
+                        remove_widget_list.append(ctx.remove_widget_list());
+                        drop(ctx);
+
+                        for key in keys {
                             let mut ctx = Context::new(
-                                (current_node, ecm),
+                                (key, ecm),
                                 &theme,
                                 &self.context_provider,
                                 render_context,
                             );
-
-                            if let Some(state) = self
-                                .context_provider
-                                .states
-                                .borrow_mut()
-                                .get_mut(&current_node)
+                            if let Some(state) =
+                                self.context_provider.states.borrow_mut().get_mut(&key)
                             {
-                                state.update(registry, &mut ctx);
+                                state.init(registry, &mut ctx);
                             }
 
-                            keys.append(&mut ctx.new_states_keys());
-
-                            remove_widget_list.append(ctx.remove_widget_list());
                             drop(ctx);
-
-                            for key in keys {
-                                let mut ctx = Context::new(
-                                    (key, ecm),
-                                    &theme,
-                                    &self.context_provider,
-                                    render_context,
-                                );
-                                if let Some(state) =
-                                    self.context_provider.states.borrow_mut().get_mut(&key)
-                                {
-                                    state.init(registry, &mut ctx);
-                                }
-
-                                drop(ctx);
-                            }
-                        }
-
-                        for remove_widget in remove_widget_list.pop() {
-                            let mut children = vec![];
-                            get_all_children(&mut children, remove_widget, ecm.entity_store());
-
-                            // remove children of target widget.
-                            for entity in children.iter().rev() {
-                                self.remove_widget(*entity, &theme, ecm, render_context);
-                            }
-
-                            // remove target widget
-                            self.remove_widget(remove_widget, &theme, ecm, render_context);
                         }
                     }
-                }
-                let mut it = ecm.entity_store().start_node(current_node).into_iter();
-                it.next();
 
-                if let Some(node) = it.next() {
-                    current_node = node;
-                } else {
-                    break;
+                    for remove_widget in remove_widget_list.pop() {
+                        let mut children = vec![];
+                        get_all_children(&mut children, remove_widget, ecm.entity_store());
+
+                        // remove children of target widget.
+                        for entity in children.iter().rev() {
+                            self.remove_widget(*entity, &theme, ecm, render_context);
+                        }
+
+                        // remove target widget
+                        self.remove_widget(remove_widget, &theme, ecm, render_context);
+                    }
                 }
+
+                dirty_index += 1;
             }
 
             // crate::shell::CONSOLE.time_end("update-time:");

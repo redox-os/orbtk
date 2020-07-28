@@ -14,14 +14,16 @@ impl System<Tree, StringComponentStore, RenderContext2D> for LayoutSystem {
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         render_context: &mut RenderContext2D,
     ) {
-        // todo fix.
-        // if !self.shell.borrow().update() || !self.shell.borrow().running() {
-        //     return;
-        // }
+        let root = ecm.entity_store().root();
 
-        // if self.debug_flag.get() {
-        //     shell::log("\n------ Start layout update  ------\n".to_string());
-        // }
+        if ecm
+            .component_store()
+            .get::<Vec<Entity>>("dirty_widgets", root)
+            .unwrap()
+            .is_empty()
+        {
+            return;
+        }
 
         let mut window_size = (0.0, 0.0);
         let root = ecm.entity_store().root();

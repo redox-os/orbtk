@@ -329,6 +329,8 @@ macro_rules! widget {
             )*
         )*
 
+        impl ChangedHandler for $widget {}
+
         impl Widget for $widget {
             /// Creates a new widget.
             #[inline]
@@ -399,6 +401,7 @@ macro_rules! widget {
                 ctx.register_property("opacity", entity, this.opacity);
                 ctx.register_property("type_id", entity, TypeId::of::<$widget>());
                 ctx.register_property("type_name", entity, std::any::type_name::<$widget>().to_string());
+                ctx.register_property("dirty", entity, false);
 
                 if let Some(id) = this.id {
                     ctx.register_property("id", entity, id);

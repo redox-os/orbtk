@@ -53,12 +53,6 @@ impl State for SwitchState {
             switch_toggle.update(true);
         }
 
-        ctx.push_event_strategy_by_entity(
-            ChangedEvent(ctx.entity),
-            ctx.entity,
-            EventStrategy::Direct,
-        );
-
         ctx.get_widget(self.switch_toggle).update(false);
     }
 }
@@ -66,8 +60,8 @@ impl State for SwitchState {
 widget!(
     /// The `Switch` widget can be switch between `on` and `off`.
     ///
-    /// **CSS element:** `switch`
-    Switch<SwitchState>: MouseHandler, ChangedHandler {
+    /// **style:** `switch`
+    Switch<SwitchState>: MouseHandler {
         /// Sets or shares the background property.
         background: Brush,
 

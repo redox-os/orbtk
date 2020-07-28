@@ -5,8 +5,8 @@ use core::f64::MAX;
 use rust_decimal::prelude::*;
 
 pub static ID_INPUT: &'static str = "numeric_box_input";
-pub static ELEMENT_INPUT: &'static str = "numeric_box_input";
-pub static ELEMENT_BTN: &'static str = "numeric_box_button";
+pub static STYLE_INPUT: &'static str = "numeric_box_input";
+pub static STYLE_BTN: &'static str = "numeric_box_button";
 
 pub enum InputAction {
     Inc,
@@ -41,12 +41,6 @@ impl NumericBoxState {
         self.current_value = self.max(self.min(new_value));
         ctx.get_widget(self.input)
             .set::<String16>("text", String16::from(self.current_value.to_string()));
-
-        ctx.push_event_strategy_by_entity(
-            ChangedEvent(ctx.entity),
-            ctx.entity,
-            EventStrategy::Direct,
-        );
     }
 
     fn min(&self, d: Decimal) -> Decimal {
@@ -162,7 +156,7 @@ widget!(
     /// ```rust
     /// NumericBox::new().min(10.0).max(100.0).val(50.0).step(5.0).build(ctx)
     /// ```
-    NumericBox<NumericBoxState>: ActivateHandler, ChangedHandler, KeyDownHandler {
+    NumericBox<NumericBoxState>: ActivateHandler, KeyDownHandler {
         /// Sets or shares the background color property
         background: Brush,
 

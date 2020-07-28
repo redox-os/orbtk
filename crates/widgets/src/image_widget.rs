@@ -3,7 +3,7 @@ use crate::prelude::*;
 widget!(
     /// The `ImageWidget` widget is used to draw an image. It is not interactive.
     ///
-    /// **CSS element:** `image-widget`
+    /// **style:** `image-widget`
     ImageWidget {
         /// Sets or shares the image property.
         ///

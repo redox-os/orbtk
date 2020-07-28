@@ -1,7 +1,7 @@
 use std::fmt;
 
 /// The selector is used to read a property value from the `Theme`.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct Selector {
     /// Represents the key of a style.
     pub style: Option<String>,

@@ -187,6 +187,8 @@ impl Layout for StackLayout {
                     available_size,
                 );
             }
+
+            mark_as_dirty("bounds", child, ecm);
         }
 
         self.set_dirty(false);
@@ -204,6 +206,9 @@ impl Layout for StackLayout {
             bounds.set_width(size.0);
             bounds.set_height(size.1);
         }
+
+        mark_as_dirty("bounds", entity, ecm);
+
         size
     }
 }

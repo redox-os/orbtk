@@ -8,12 +8,6 @@ use super::State;
 
 pub type WidgetBuildContext = Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>;
 
-// impl Clone<T> for Box<T> where T:  Fn(&mut BuildContext, usize) -> Entity + 'static + Clone {
-//     fn clone(&self) -> Self {
-
-//     }
-// }
-
 /// Used to create an entity for a widget with its properties as components.
 #[derive(Constructor)]
 pub struct BuildContext<'a> {
@@ -23,12 +17,13 @@ pub struct BuildContext<'a> {
     handlers: &'a RefCell<EventHandlerMap>,
     states: &'a mut BTreeMap<Entity, Box<dyn State>>,
     theme: &'a Theme,
+    event_queue: &'a Rc<RefCell<EventQueue>>,
 }
 
 impl<'a> BuildContext<'a> {
     /// Returns a specific widget.
-    pub fn get_widget(&mut self, entity: Entity) -> WidgetContainer<'_> {
-        WidgetContainer::new(entity, self.ecm, self.theme)
+    pub fn get_widget(&mut self, entity: Entity) -> WidgetContainer {
+        WidgetContainer::new(entity, self.ecm, self.theme, Some(self.event_queue))
     }
 
     /// Creates a new entity.

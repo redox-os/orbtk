@@ -1,88 +1,115 @@
 use crate::prelude::*;
 
+// --- KEYS --
+
+static ID_SCROLL_BAR_HORIZONTAL: &'static str = "scroll_bar_horizontal";
+static ID_SCROLL_BAR_VERTICAL: &'static str = "scroll_bar_vertical";
+
+// --- KEYS --
+
 /// The `ScrollIndicatorState` handles the `ScrollIndicator` widget.
 #[derive(Default, AsAny)]
-pub struct ScrollIndicatorState;
+pub struct ScrollIndicatorState {
+    horizontal_scroll_bar: Entity,
+    vertical_scroll_bar: Entity,
+}
 
 impl State for ScrollIndicatorState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.horizontal_scroll_bar = ctx
+            .entity_of_child(ID_SCROLL_BAR_HORIZONTAL)
+            .expect("ScrollIndicatorState.init: scroll_bar_horizontal child could not be found.");
+        self.vertical_scroll_bar = ctx
+            .entity_of_child(ID_SCROLL_BAR_HORIZONTAL)
+            .expect("ScrollIndicatorState.init: scroll_bar_vertical child could not be found.");
+    }
+
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
-        let padding = *ctx.widget().get::<Thickness>("padding");
-        let scroll_offset = *ctx.widget().get::<Point>("scroll_offset");
-        let content_id = *ctx.widget().get::<u32>("content_id");
-        let content_bounds = *ctx
-            .get_widget(Entity::from(content_id))
-            .get::<Rectangle>("bounds");
-        let bounds = *ctx.widget().get::<Rectangle>("bounds");
+        let mode = *ctx.widget().get::<ScrollViewerMode>("mode");
 
-        let horizontal_p = bounds.width() / content_bounds.width();
-        let vertical_p = bounds.height() / content_bounds.height();
-
-        // calculate vertical scroll bar height and position.
-        if let Some(mut vertical_scroll_bar) = ctx.try_child("vertical-scroll-bar") {
-            if vertical_p < 1.0 {
-                vertical_scroll_bar.set("visibility", Visibility::from("visible"));
-                let scroll_bar_margin_bottom =
-                    vertical_scroll_bar.get::<Thickness>("margin").bottom();
-                let vertical_min_height = vertical_scroll_bar
-                    .get::<Constraint>("constraint")
-                    .min_height();
-                let height =
-                    ((bounds.height() - padding.top - padding.bottom - scroll_bar_margin_bottom)
-                        * vertical_p)
-                        .max(vertical_min_height);
-
-                let scroll_bar_bounds = vertical_scroll_bar.get_mut::<Rectangle>("bounds");
-                scroll_bar_bounds.set_height(height);
-                scroll_bar_bounds.set_y(-(scroll_offset.y() as f64 * vertical_p));
-            } else {
-                vertical_scroll_bar.set("visibility", Visibility::from("collapsed"));
-            }
+        if mode.vertical != ScrollMode::Auto && mode.horizontal != ScrollMode::Auto {
+            return;
         }
 
-        // calculate horizontal scroll bar width and position.
-        if let Some(mut horizontal_scroll_bar) = ctx.try_child("horizontal-scroll-bar") {
-            if horizontal_p < 1.0 {
-                horizontal_scroll_bar.set("visibility", Visibility::from("visible"));
-                let scroll_bar_margin_right =
-                    horizontal_scroll_bar.get::<Thickness>("margin").right();
-                let horizontal_min_width = horizontal_scroll_bar
-                    .get::<Constraint>("constraint")
-                    .min_width();
-                let width =
-                    ((bounds.width() - padding.left - padding.right - scroll_bar_margin_right)
-                        * horizontal_p)
-                        .max(horizontal_min_width);
-                let scroll_bar_bounds = horizontal_scroll_bar.get_mut::<Rectangle>("bounds");
-                scroll_bar_bounds.set_width(width);
-                scroll_bar_bounds.set_x(-(scroll_offset.x() as f64 * horizontal_p));
-            } else {
-                horizontal_scroll_bar.set("visibility", Visibility::from("collapsed"));
+        let size = ctx.widget().get::<Rectangle>("bounds").size();
+        let content_size = ctx.widget().get::<Rectangle>("content_bounds").size();
+        let view_port_size = ctx.widget().get::<Rectangle>("view_port_bounds").size();
+        let padding = *ctx.widget().get::<Thickness>("padding");
+        let scroll_padding = *ctx.widget().get::<Thickness>("scroll_padding");
+
+        // adjust vertical scroll bar
+        if mode.vertical != ScrollMode::Disabled {
+            let mut scroll_bar = ctx.get_widget(self.vertical_scroll_bar);
+
+            if *scroll_bar.get::<Visibility>("visibility") != Visibility::Visible {
+                scroll_bar.set("visibility", Visibility::Visible);
             }
+
+            scroll_bar
+                .get_mut::<Rectangle>("bounds")
+                .set_height(scroll_bar_size(
+                    size.1,
+                    content_size.1,
+                    view_port_size.1,
+                    padding.top() + padding.bottom(),
+                ));
+
+            scroll_bar.get_mut::<Rectangle>("bounds").set_y(-offset(
+                size.1,
+                content_size.1,
+                scroll_padding.top(),
+            ));
+        }
+
+        // adjust horizontal scroll bar
+        if mode.horizontal != ScrollMode::Disabled {
+            let mut scroll_bar = ctx.get_widget(self.horizontal_scroll_bar);
+
+            if *scroll_bar.get::<Visibility>("visibility") != Visibility::Visible {
+                scroll_bar.set("visibility", Visibility::Visible);
+            }
+
+            scroll_bar
+                .get_mut::<Rectangle>("bounds")
+                .set_width(scroll_bar_size(
+                    size.0,
+                    content_size.0,
+                    view_port_size.0,
+                    padding.left() + padding.right(),
+                ));
+
+            scroll_bar.get_mut::<Rectangle>("bounds").set_x(-offset(
+                size.0,
+                content_size.0,
+                scroll_padding.left(),
+            ));
         }
     }
 }
 
 widget!(
     /// The `ScrollIndicator` widget contains two scroll bars.
-    ///
-    /// **CSS element:** `scroll-indicator`
     ScrollIndicator<ScrollIndicatorState> {
+        /// Shares the mode of the `ScrollViewer`.
+        mode: ScrollViewerMode,
 
-        /// Sets or shares the scroll offset property.
-        scroll_offset: Point,
+        /// Shares the padding of the `ScrollViewer`.
+        scroll_padding: Thickness,
+
+        /// Shares the bounds of the content.
+        content_bounds: Rectangle,
+
+        /// Shares the bounds of the `ScrollViewer`.
+        view_port_bounds: Rectangle,
 
         /// Sets or shares the padding property.
-        padding: Thickness,
-
-        /// Sets or shares the content id property.
-        content_id: u32
+        padding: Thickness
     }
 );
 
 impl Template for ScrollIndicator {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ScrollIndicator")
-            .style("scroll-indicator")
             .v_align("stretch")
             .h_align("stretch")
             .padding(0.0)
@@ -90,8 +117,8 @@ impl Template for ScrollIndicator {
                 Grid::new()
                     .child(
                         ScrollBar::new()
-                            .style("scroll-bar")
-                            .id("vertical-scroll-bar")
+                            .id(ID_SCROLL_BAR_HORIZONTAL)
+                            .visibility("collapsed")
                             .min_height(8.0)
                             .margin((0.0, 0.0, 0.0, 6.0))
                             .h_align("end")
@@ -100,8 +127,8 @@ impl Template for ScrollIndicator {
                     )
                     .child(
                         ScrollBar::new()
-                            .style("scroll-bar")
-                            .id("horizontal-scroll-bar")
+                            .id(ID_SCROLL_BAR_VERTICAL)
+                            .visibility("collapsed")
                             .min_width(8.0)
                             .margin((0.0, 0.0, 6.0, 0.0))
                             .height(4.0)
@@ -115,5 +142,44 @@ impl Template for ScrollIndicator {
 
     fn layout(&self) -> Box<dyn Layout> {
         Box::new(PaddingLayout::new())
+    }
+}
+
+// --- Helpers --
+
+fn scroll_bar_size(size: f64, content_size: f64, view_port_size: f64, padding: f64) -> f64 {
+    (size * view_port_size / content_size) - padding
+}
+
+fn offset(size: f64, content_size: f64, offset: f64) -> f64 {
+    size * offset / content_size
+}
+
+// --- Helpers --
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_scroll_bar_size() {
+        let size = 50.;
+        let content_size = 200.;
+        let view_port_size = 80.0;
+        let padding = 8.;
+
+        assert_eq!(
+            scroll_bar_size(size, content_size, view_port_size, padding),
+            12.
+        );
+    }
+
+    #[test]
+    fn test_offset() {
+        let size = 50.;
+        let content_size = 200.;
+        let offset_in = 8.;
+
+        assert_eq!(offset(size, content_size, offset_in), 2.);
     }
 }

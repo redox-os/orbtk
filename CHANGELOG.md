@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add widget access helpers for states
 * API update check deprecated methods an replace to new ones
 * Performance improvements
+* Change state update order from tree order to incoming changes order
 * NumericBox widget
 * Update caret position on TextBox by mouse click
 * Text input support for ', /, \, [, ], {, }
@@ -24,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Improve: Mouse event arguments
 * Fix: Crash when a child widget is removed
 * TabWidget widget
+* Add on_changed property change callback to all widgets
 
 ### 0.3.1-alpha2
 

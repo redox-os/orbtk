@@ -4,9 +4,12 @@ use crate::{prelude::*, shell::WindowRequest};
 
 // --- KEYS --
 
-pub static ELEMENT_WINDOW: &'static str = "window";
+pub static STYLE_WINDOW: &'static str = "window";
 
 // --- KEYS --
+
+// internal type to handle dirty widgets.
+type DirtyWidgets = Vec<Entity>;
 
 #[derive(Clone)]
 enum Action {
@@ -153,7 +156,7 @@ widget!(
     /// The `Window` widget provides access to the properties of an application window.
     /// It also contains global properties like keyboard modifier and focused widget.
     ///
-    /// **CSS element:** `window`
+    /// **style:** `window`
     Window<WindowState> {
         /// Sets or shares the background property.
         background: Brush,
@@ -171,7 +174,10 @@ widget!(
         borderless: bool,
 
         /// Sets or shares a value that describes if the current window is active.
-        active: bool
+        active: bool,
+
+        /// Internal property to handle dirty widgets.
+        dirty_widgets: DirtyWidgets
     }
 );
 
@@ -200,7 +206,7 @@ impl Template for Window {
         self.name("Window")
             .background(colors::BRIGHT_GRAY_COLOR)
             .size(100.0, 100.0)
-            .style(ELEMENT_WINDOW)
+            .style(STYLE_WINDOW)
             .title("Window")
             .resizeable(false)
             .always_on_top(false)

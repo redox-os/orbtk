@@ -1,42 +1,61 @@
 Theme (
     styles: {
+        "input": (
+            base: "body",
+            properties: {
+                "font_family": "$REGULAR_FONT",
+                "foreground": "$CADET_BLUE"
+            }
+        ),
+        "result": (
+            base: "body",
+            properties: {
+                "font_size": "$FONT_SIZE_36",
+                "foreground": "$LINK_WATER"
+            }
+        ),
         "header_area": (
             properties: {
-                "background": "$RIVER_BAD",
-            },
+                "background": "$RIVER_BAD"
+            }
         ),
         "content_area": (
             properties: {
-                "background": "$BRIGHT_GRAY",
-            },
+                "background": "$BRIGHT_GRAY"
+            }
         ),
-        "calculator_button": (
-            base: "button",
+         "button_calculator": ( 
+            base: "base",
             properties: {
+                "min_width": 48,
+                "height": 48,
+                "foreground": "$LINK_WATER",
+                "icon_brush": "$LINK_WATER",
+                "background": "$LYNCH",
                 "border_radius": 1,
-                "font_size": "$FONT_SIZE_20",
                 "spacing": 0,
+            }, 
+            states: {
+                "pressed": {
+                    "background": "$BLUE_BAYOUX",
+                },
+                "selected": {
+                    "background": "$BLUE_BAYOUX",
+                },
+                "disabled": {
+                    "background": "$ROLLING_STONE",
+                    "foreground": "$BRIGHT_GRAY",
+                    "icon_brush": "$BRIGHT_GRAY",
+                },
             },
         ),
-        "calculator_button_primary": (
-            base: "calculator_button",
+        "button_calculator_primary": (
+            base: "button_calculator",
             properties: {
                 "background": "$GOLDEN_DREAM",
                 "foreground": "$BRIGHT_GRAY",
                 "icon_brush": "$BRIGHT_GRAY",
             },
         ),
-        "input": (
-            base: "header",
-            properties: {
-                "font_size": "$FONT_SIZE_16"
-            },
-        ),
-        "result": (
-            base: "header",
-            properties: {
-                "font_size": "$FONT_SIZE_32"
-            }
-        ),
-    },
+    }
 )

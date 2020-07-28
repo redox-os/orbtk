@@ -6,8 +6,8 @@ pub struct ItemsWidgetState {
     count: usize,
 }
 
-impl State for ItemsWidgetState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+impl ItemsWidgetState {
+    fn generate_items(&mut self, ctx: &mut Context) {
         let count: usize = ctx.widget().clone_or_default("count");
         let request_update: bool = *ctx.widget().get("request_update");
 
@@ -31,10 +31,20 @@ impl State for ItemsWidgetState {
     }
 }
 
+impl State for ItemsWidgetState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.generate_items(ctx);
+    }
+
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.generate_items(ctx);
+    }
+}
+
 widget!(
     /// The `ItemsWidget` is a simple no interactive items drawer widget.
     ///
-    /// **CSS element:** `items-widget`
+    /// **style:** `items-widget`
     ItemsWidget<ItemsWidgetState> {
         /// Sets or shares the background property.
         background: Brush,

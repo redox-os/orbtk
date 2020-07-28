@@ -3,7 +3,7 @@ use crate::prelude::*;
 widget!(
     /// The `Grid` defines a flexible grid area that consists of columns and rows.
     ///
-    /// **CSS element:** `grid`
+    /// **style:** `grid`
     Grid {
         /// Sets or shares the background property.
         background: Brush,

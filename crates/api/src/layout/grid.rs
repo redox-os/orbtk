@@ -503,12 +503,17 @@ impl Layout for GridLayout {
                         ),
                 );
             }
+
+            mark_as_dirty("bounds", child, ecm);
         }
 
         if let Some(bounds) = component_try_mut::<Rectangle>(ecm, entity, "bounds") {
             bounds.set_width(size.0);
             bounds.set_height(size.1);
         }
+
+        // todo refactor the usage of mark_as_dirty on layouts
+        mark_as_dirty("bounds", entity, ecm);
 
         self.desired_size.borrow_mut().set_dirty(false);
         size

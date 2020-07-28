@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 // --- KEYS --
 
-pub static ELEMENT_SLIDER: &'static str = "slider";
+pub static STYLE_SLIDER: &'static str = "slider";
 
 static ID_THUMB: &'static str = "id_thumb";
 static ID_TRACK: &'static str = "id_track";
@@ -136,8 +136,8 @@ impl State for SliderState {
                             "val",
                             calculate_val(thumb_x, min, max, thumb_width, track_width),
                         );
-
-                        ctx.push_event(ChangedEvent(ctx.entity));
+                    } else {
+                        ctx.widget().clear_dirty();
                     }
                 }
             }
@@ -148,16 +148,15 @@ impl State for SliderState {
 
         if self.adjust(ctx) {
             self.adjust_thumb_x(ctx);
-            ctx.push_event(ChangedEvent(ctx.entity));
         }
     }
 }
 
 widget!(
-    /// The `Slider` allows to use a val in a range of vals.
+    /// The `Slider` allows to use a val in a range of values.
     ///
-    /// **CSS element:** `Slider`
-    Slider<SliderState>: MouseHandler, ChangedHandler {
+    /// **style:** `slider`
+    Slider<SliderState>: MouseHandler {
         /// Sets or shares the min val of the range.
         min: f64,
 
@@ -184,7 +183,7 @@ widget!(
 impl Template for Slider {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Slider")
-            .style(ELEMENT_SLIDER)
+            .style(STYLE_SLIDER)
             .min(0.0)
             .max(100.0)
             .val(0.0)
@@ -219,7 +218,7 @@ impl Template for Slider {
                 states
                     .get_mut::<SliderState>(id)
                     .action(SliderAction::Move { mouse_x: p.x() });
-                true
+                false
             })
     }
 }

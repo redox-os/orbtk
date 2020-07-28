@@ -7,8 +7,6 @@ enum Action {
     AddItem,
     ClearText,
     EntryActivated(Entity),
-    EntryChanged(Entity),
-    ValueChanged(Entity),
     IncrementCounter,
     RemoveItem,
     ToggleTheme(Entity),
@@ -87,12 +85,6 @@ impl State for MainViewState {
                     println!("submitting {}", text);
                     text.clear();
                 }
-                Action::EntryChanged(entity) => {
-                    println!("entry changed: {}", text_box(ctx.get_widget(entity)).text());
-                }
-                Action::ValueChanged(_entity) => {
-                    //println!("Slider value changed");
-                }
                 Action::ToggleTheme(entity) => {
                     let light = *ctx.get_widget(entity).get::<bool>("selected");
 
@@ -143,9 +135,9 @@ impl Template for MainView {
         let slider = Slider::new()
             .min(0.0)
             .max(1.0)
-            .on_changed(move |states, entity| {
-                state(id, states).action(Action::ValueChanged(entity));
-            })
+            // .on_changed(move |states, entity| {
+            //     state(id, states).action(Action::ValueChanged(entity));
+            // })
             .build(ctx);
 
         self.name("MainView")
@@ -276,9 +268,6 @@ impl Template for MainView {
                                     .on_activate(move |states, entity| {
                                         state(id, states).action(Action::EntryActivated(entity));
                                     })
-                                    .on_changed(move |states, entity| {
-                                        state(id, states).action(Action::EntryChanged(entity));
-                                    })
                                     .build(ctx),
                             )
                             .child(
@@ -290,9 +279,6 @@ impl Template for MainView {
                                     .attach(Grid::row(2))
                                     .on_activate(move |states, entity| {
                                         state(id, states).action(Action::EntryActivated(entity));
-                                    })
-                                    .on_changed(move |states, entity| {
-                                        state(id, states).action(Action::EntryChanged(entity));
                                     })
                                     .build(ctx),
                             )
@@ -462,8 +448,10 @@ impl Template for MainView {
                             )
                             .child(
                                 Switch::new()
-                                    .on_changed(move |states, entity| {
-                                        state(id, states).action(Action::ToggleTheme(entity));
+                                    .on_changed(move |states, entity, key| {
+                                        if key == "selected" {
+                                            state(id, states).action(Action::ToggleTheme(entity));
+                                        }
                                     })
                                     .v_align("center")
                                     .build(ctx),

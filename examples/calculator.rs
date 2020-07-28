@@ -129,9 +129,9 @@ fn generate_digit_button(
     row: usize,
 ) -> Entity {
     let style = if primary {
-        "calculator_button_primary"
+        "button_calculator_primary"
     } else {
-        "calculator_button"
+        "button_calculator"
     };
 
     let button = Button::new()
@@ -159,9 +159,9 @@ fn generate_operation_button(
     row: usize,
 ) -> Entity {
     let style = if primary {
-        "calculator_button_primary"
+        "button_calculator_primary"
     } else {
-        "calculator_button"
+        "button_calculator"
     };
 
     let button = Button::new()
@@ -200,7 +200,7 @@ impl Template for MainView {
                                 Grid::new()
                                     .child(
                                         ScrollViewer::new()
-                                            .scroll_viewer_mode(("custom", "disabled"))
+                                            .mode(("custom", "disabled"))
                                             .child(
                                                 TextBlock::new()
                                                     .width(0.0)

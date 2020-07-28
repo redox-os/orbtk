@@ -31,7 +31,7 @@ impl State for FocusBehaviorState {
 widget!(
     /// The `FocusBehavior` widget is used to handle internal the pressed behavior of a widget.
     ///
-    /// **CSS element:** `check-box`
+    /// **style:** `check-box`
     FocusBehavior<FocusBehaviorState>: MouseHandler {
         /// Sets or shares the target of the behavior.
         target: u32,

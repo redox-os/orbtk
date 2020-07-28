@@ -39,7 +39,6 @@ impl State for SelectionBehaviorState {
 
         toggle_flag("selected", &mut ctx.get_widget(target));
 
-        ctx.push_event_strategy_by_entity(ChangedEvent(target), target, EventStrategy::Direct);
         ctx.get_widget(target).update(false);
     }
 }
@@ -47,7 +46,7 @@ impl State for SelectionBehaviorState {
 widget!(
     /// The `SelectionBehavior` widget is used to handle internal the pressed behavior of a widget.
     ///
-    /// **CSS element:** `check-box`
+    /// **style:** `check-box`
     SelectionBehavior<SelectionBehaviorState>: MouseHandler {
         /// Sets or shares the target of the behavior.
         target: u32,

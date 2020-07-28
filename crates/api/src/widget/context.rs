@@ -58,7 +58,12 @@ impl<'a> Context<'a> {
 
     /// Returns a specific widget.
     pub fn get_widget(&mut self, entity: Entity) -> WidgetContainer<'_> {
-        WidgetContainer::new(entity, self.ecm, &self.theme)
+        WidgetContainer::new(
+            entity,
+            self.ecm,
+            &self.theme,
+            Some(&self.provider.event_queue),
+        )
     }
 
     /// Returns the widget of the current state ctx.
@@ -182,6 +187,7 @@ impl<'a> Context<'a> {
             &self.provider.handler_map,
             &mut self.new_states,
             &self.theme,
+            &self.provider.event_queue,
         )
     }
 
@@ -277,8 +283,27 @@ impl<'a> Context<'a> {
 
     /// Clears all children of the given widget.
     pub fn clear_children_of(&mut self, parent: Entity) {
+        let root = self.ecm.entity_store().root();
         while !self.ecm.entity_store().children[&parent].is_empty() {
             let child = self.ecm.entity_store().children[&parent][0];
+
+            if let Some(index) = self
+                .ecm
+                .component_store()
+                .get::<Vec<Entity>>("dirty_widgets", root)
+                .unwrap()
+                .iter()
+                .position(|&r| r == child)
+            {
+                // remove child also from list of dirty widgets
+                if let Ok(dirty_widgets) = self
+                    .ecm
+                    .component_store_mut()
+                    .get_mut::<Vec<Entity>>("dirty_widgets", root)
+                {
+                    dirty_widgets.remove(index);
+                }
+            }
 
             self.remove_child_from(child, parent);
         }
@@ -447,7 +472,7 @@ impl<'a> Context<'a> {
         self.window().get_mut::<Global>("global").theme = theme;
 
         // update on window to update all widgets in the tree
-        self.window().update(true);
+        self.window().update_dirty(true);
     }
 }
 

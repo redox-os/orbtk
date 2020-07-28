@@ -36,7 +36,7 @@ impl Layout for FixedSizeLayout {
             return *self.desired_size.borrow();
         }
 
-        let widget = WidgetContainer::new(entity, ecm, theme);
+        let widget = WidgetContainer::new(entity, ecm, theme, None);
 
         let horizontal_alignment: Alignment = *widget.get("h_align");
         let vertical_alignment: Alignment = *widget.get("v_align");
@@ -145,6 +145,8 @@ impl Layout for FixedSizeLayout {
             bounds.set_width(self.desired_size.borrow().width());
             bounds.set_height(self.desired_size.borrow().height());
         }
+
+        mark_as_dirty("bounds", entity, ecm);
 
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];

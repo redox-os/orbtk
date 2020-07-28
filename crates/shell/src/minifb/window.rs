@@ -209,6 +209,7 @@ where
 
     /// Runs update on the adapter.
     pub fn update(&mut self) {
+        //super::CONSOLE.time("complete");
         if !self.update {
             return;
         }
@@ -228,6 +229,7 @@ where
                 );
                 // CONSOLE.time_end("render");
                 self.redraw = false;
+                //super::CONSOLE.time_end("complete");
             }
         }
     }

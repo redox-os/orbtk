@@ -23,9 +23,9 @@ impl Template for MainView {
                         .on_activate(move |_states, _entity| {
                             println!("on_activate()");
                         })
-                        .on_changed(move |_states, _entity| {
-                            println!("on_changed()");
-                        })
+                        // .on_changed(move |_states, _entity| {
+                        //     println!("on_changed()");
+                        // })
                         .build(ctx),
                 )
                 .child(Button::new().text("Blow air").build(ctx))

@@ -4,12 +4,6 @@ use crate::prelude::*;
 use std::rc::Rc;
 
 crate::trigger_event!(
-    ChangedEvent,
-    ChangedEventHandler,
-    ChangedHandler,
-    on_changed
-);
-crate::trigger_event!(
     ActivateEvent,
     ActivateEventHandler,
     ActivateHandler,
@@ -48,6 +42,42 @@ pub trait SelectionChangedHandler: Sized + Widget {
         handler: H,
     ) -> Self {
         self.insert_handler(SelectionChangedEventHandler {
+            handler: Rc::new(handler),
+        })
+    }
+}
+
+#[derive(Clone, Event)]
+/// This event occurs when a property of a widget is updated.
+pub struct ChangedEvent(pub Entity, pub String);
+
+/// Used to define a property changed callback.
+pub type ChangedHandlerFn = dyn Fn(&mut StatesContext, Entity, &str) + 'static;
+
+#[derive(IntoHandler)]
+pub struct ChangedEventHandler {
+    pub handler: Rc<ChangedHandlerFn>,
+}
+
+impl EventHandler for ChangedEventHandler {
+    fn handle_event(&self, states: &mut StatesContext, event: &EventBox) -> bool {
+        if let Ok(event) = event.downcast_ref::<ChangedEvent>() {
+            (self.handler)(states, event.0, event.1.as_str());
+            return true;
+        }
+
+        false
+    }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<ChangedEvent>()
+    }
+}
+
+pub trait ChangedHandler: Sized + Widget {
+    /// Register a on property changed handler.
+    fn on_changed<H: Fn(&mut StatesContext, Entity, &str) + 'static>(self, handler: H) -> Self {
+        self.insert_handler(ChangedEventHandler {
             handler: Rc::new(handler),
         })
     }

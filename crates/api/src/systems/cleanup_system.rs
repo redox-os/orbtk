@@ -25,54 +25,48 @@ impl System<Tree, StringComponentStore, RenderContext2D> for CleanupSystem {
             .unwrap()
             .clone();
 
-        let mut current_node = root;
+        let mut dirty_index = 0;
 
         loop {
-            let mut skip = false;
-
+            if dirty_index
+                >= ecm
+                    .component_store()
+                    .get::<Vec<Entity>>("dirty_widgets", root)
+                    .unwrap()
+                    .len()
             {
-                if !self
-                    .context_provider
-                    .states
-                    .borrow()
-                    .contains_key(&current_node)
-                {
-                    skip = true;
-                }
-
-                let mut keys = vec![];
-
-                if !skip {
-                    let registry = &mut self.registry.borrow_mut();
-
-                    let mut ctx = Context::new(
-                        (current_node, ecm),
-                        &theme,
-                        &self.context_provider,
-                        render_context,
-                    );
-
-                    if let Some(state) = self
-                        .context_provider
-                        .states
-                        .borrow_mut()
-                        .get_mut(&current_node)
-                    {
-                        state.cleanup(registry, &mut ctx);
-                    }
-
-                    keys.append(&mut ctx.new_states_keys());
-                }
-            }
-
-            let mut it = ecm.entity_store().start_node(current_node).into_iter();
-            it.next();
-
-            if let Some(node) = it.next() {
-                current_node = node;
-            } else {
                 break;
             }
+
+            let skip = false;
+
+            let widget = *ecm
+                .component_store()
+                .get::<Vec<Entity>>("dirty_widgets", root)
+                .unwrap()
+                .get(dirty_index)
+                .unwrap();
+
+            let mut keys = vec![];
+
+            if !skip {
+                let registry = &mut self.registry.borrow_mut();
+
+                let mut ctx = Context::new(
+                    (widget, ecm),
+                    &theme,
+                    &self.context_provider,
+                    render_context,
+                );
+
+                if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&widget) {
+                    state.cleanup(registry, &mut ctx);
+                }
+
+                keys.append(&mut ctx.new_states_keys());
+            }
+
+            dirty_index += 1;
         }
     }
 }

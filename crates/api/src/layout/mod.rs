@@ -9,7 +9,6 @@ pub use self::fixed_size::*;
 pub use self::grid::*;
 pub use self::padding::*;
 pub use self::popup::*;
-pub use self::scroll::*;
 pub use self::stack::*;
 pub use self::text_selection::*;
 
@@ -18,7 +17,6 @@ mod fixed_size;
 mod grid;
 mod padding;
 mod popup;
-mod scroll;
 mod stack;
 mod text_selection;
 
