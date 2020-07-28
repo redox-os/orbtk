@@ -6,7 +6,7 @@ pub struct PopupState {}
 
 impl State for PopupState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        ctx.widget().set("visibility", Visibility::Collapsed)
+        ctx.widget().set("visibility", Visibility::Hidden)
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
@@ -16,10 +16,12 @@ impl State for PopupState {
         if open && visibility != Visibility::Visible {
             ctx.widget().set("visibility", Visibility::Visible);
         } else if !open && visibility == Visibility::Visible {
-            ctx.widget().set("visibility", Visibility::Collapsed);
+            // todo (workaround) should be collapsed but is set to hidden to force the layout to calculate.
+            // There is an issue with the ScrollIndicator that does now update on open.
+            ctx.widget().set("visibility", Visibility::Hidden);
             {
-                ctx.widget().get_mut::<Rectangle>("bounds").set_width(0.0);
-                ctx.widget().get_mut::<Rectangle>("bounds").set_height(0.0);
+                // ctx.widget().get_mut::<Rectangle>("bounds").set_width(0.0);
+                // ctx.widget().get_mut::<Rectangle>("bounds").set_height(0.0);
             }
         }
     }

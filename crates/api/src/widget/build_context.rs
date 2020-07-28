@@ -8,12 +8,6 @@ use super::State;
 
 pub type WidgetBuildContext = Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>;
 
-// impl Clone<T> for Box<T> where T:  Fn(&mut BuildContext, usize) -> Entity + 'static + Clone {
-//     fn clone(&self) -> Self {
-
-//     }
-// }
-
 /// Used to create an entity for a widget with its properties as components.
 #[derive(Constructor)]
 pub struct BuildContext<'a> {
