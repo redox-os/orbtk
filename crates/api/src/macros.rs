@@ -40,7 +40,36 @@ macro_rules! into_property_source {
     };
 }
 
-/// Used to define a widget, with properties and event handlers.
+/// Defines a new type of `Widget` with its properties and event handlers.
+/// Widgets defined by this macro can be instantiated by calling the new() method.
+/// Inherits default properties from a base widget.
+/// Implements the [`Widget`] trait automatically.
+/// Also the struct serves as a [`builder`] of the [`builder pattern`].
+/// 
+/// Syntax:
+/// 
+/// ```
+/// widget!(MyWidgetName<MyWidgetStateStruct>: Handler1, Handler2, Handler3 {
+///     property_name_1: PropertyType1,
+///     property_name_2: PropertyType2
+/// });
+/// ```
+/// 
+/// # Examples
+///
+/// Creates a widget named PersonWidget with three properties, without handlers, and with
+/// a state struct called WidgetState.
+/// ```
+/// widget!(PersonWidget<WidgetState> {
+///     name: String16,
+///     age: usize,
+///     average: f64
+/// });
+/// ```
+/// 
+/// [`Widget`]: ./widget/trait.Widget.html
+/// [`builder`]: https://doc.rust-lang.org/1.0.0/style/ownership/builders.html
+/// [`builder pattern`]: https://en.wikipedia.org/wiki/Builder_pattern
 #[macro_export]
 macro_rules! widget {
     ( $(#[$widget_doc:meta])* $widget:ident $(<$state:ident>)* $(: $( $handler:ident ),*)*
@@ -197,7 +226,7 @@ macro_rules! widget {
                 self.set_property("clip", clip)
             }
 
-            // Sets or shares the opacity property.
+            /// Sets or shares the opacity property.
             pub fn opacity(self, opacity: impl IntoPropertySource<f32>) -> Self {
                 self.set_property("opacity", opacity)
             }
