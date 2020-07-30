@@ -66,8 +66,7 @@ impl RectangleRenderObject {
         height: f64,
         radius: f64,
     ) {
-        render_context_2_d.move_to(x, y);
-        render_context_2_d.arc(x + width / 2.0, y + height / 2.0, radius, 0.0, 2. * PI);
+        render_context_2_d.arc(x + width / 2.0, y + height / 2.0, radius, 0., 2. * PI);
         render_context_2_d.close_path();
     }
 
