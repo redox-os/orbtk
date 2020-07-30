@@ -4,7 +4,7 @@ use std::{
 };
 
 use super::behaviors::MouseBehavior;
-use crate::{prelude::*, utils::SelectionMode as SelMode};
+use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
 
 static ITEMS_PANEL: &'static str = "items_panel";
 
@@ -153,12 +153,12 @@ impl State for ListViewItemState {
             .get::<SelectedEntities>("selected_entities")
             .0
             .contains(&entity)
-            || selection_mode == SelMode::None
+            || selection_mode == SelectionMode::None
         {
             return;
         }
 
-        if selection_mode == SelMode::Single {
+        if selection_mode == SelectionMode::Single {
             parent
                 .get_mut::<SelectedEntities>("selected_entities")
                 .0

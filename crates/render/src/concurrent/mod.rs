@@ -3,11 +3,11 @@ use std::{
     thread,
 };
 
-use crate::{platform, utils::*, Pipeline, RenderTarget, TextMetrics};
+use crate::{platform, utils::*, PipelineTrait, RenderTarget, TextMetrics};
 use platform::Image;
 
 #[derive(Clone)]
-struct PipelineWrapper(pub Box<dyn Pipeline>);
+struct PipelineWrapper(pub Box<dyn PipelineTrait>);
 
 impl PartialEq for PipelineWrapper {
     fn eq(&self, _: &Self) -> bool {
@@ -641,7 +641,7 @@ impl RenderContext2D {
         y: f64,
         width: f64,
         height: f64,
-        pipeline: Box<dyn Pipeline>,
+        pipeline: Box<dyn PipelineTrait>,
     ) {
         self.sender
             .send(vec![RenderTask::DrawPipeline {

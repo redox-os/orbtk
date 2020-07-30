@@ -2,7 +2,7 @@ use std::{cmp, collections::HashMap};
 
 use raqote;
 
-use crate::{utils::*, Pipeline, RenderConfig, RenderTarget, TextMetrics};
+use crate::{utils::*, PipelineTrait, RenderConfig, RenderTarget, TextMetrics};
 
 pub use self::font::*;
 pub use self::image::Image;
@@ -328,7 +328,7 @@ impl RenderContext2D {
         y: f64,
         width: f64,
         height: f64,
-        pipeline: Box<dyn Pipeline>,
+        pipeline: Box<dyn PipelineTrait>,
     ) {
         let mut render_target = RenderTarget::new(width as u32, height as u32);
         pipeline.draw_pipeline(&mut render_target);

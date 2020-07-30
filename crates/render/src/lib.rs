@@ -94,7 +94,7 @@ pub trait RenderPipeline {
 }
 
 /// Used to implement a custom render pipeline.
-pub trait Pipeline: RenderPipeline + Any + Send {
+pub trait PipelineTrait: RenderPipeline + Any + Send {
     /// Equality for two Pipeline objects.
     fn box_eq(&self, other: &dyn Any) -> bool;
 
@@ -102,7 +102,7 @@ pub trait Pipeline: RenderPipeline + Any + Send {
     fn as_any(&self) -> &dyn Any;
 
     /// Clones self as box.
-    fn clone_box(&self) -> Box<dyn Pipeline>;
+    fn clone_box(&self) -> Box<dyn PipelineTrait>;
 
     /// Draws the ctx of the pipeline.
     fn draw_pipeline(&self, image: &mut RenderTarget) {
@@ -110,19 +110,19 @@ pub trait Pipeline: RenderPipeline + Any + Send {
     }
 }
 
-impl PartialEq for Box<dyn Pipeline> {
-    fn eq(&self, other: &Box<dyn Pipeline>) -> bool {
+impl PartialEq for Box<dyn PipelineTrait> {
+    fn eq(&self, other: &Box<dyn PipelineTrait>) -> bool {
         self.box_eq(other.as_any())
     }
 }
 
-impl Clone for Box<dyn Pipeline> {
+impl Clone for Box<dyn PipelineTrait> {
     fn clone(&self) -> Self {
         self.clone_box()
     }
 }
 
-impl fmt::Debug for Box<dyn Pipeline> {
+impl fmt::Debug for Box<dyn PipelineTrait> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "Box<dyn Pipeline>")
     }

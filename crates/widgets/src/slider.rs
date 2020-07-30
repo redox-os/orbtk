@@ -1,12 +1,9 @@
-use crate::prelude::*;
+use crate::{api::prelude::*, prelude::*, proc_macros::*};
 
 // --- KEYS --
-
 pub static STYLE_SLIDER: &'static str = "slider";
-
 static ID_THUMB: &'static str = "id_thumb";
 static ID_TRACK: &'static str = "id_track";
-
 // --- KEYS --
 
 #[derive(Copy, Clone)]

@@ -13,14 +13,14 @@ pub fn derive_pipeline(input: TokenStream) -> TokenStream {
     let ident = &input.ident;
 
     let gen = quote! {
-        impl render::Pipeline for #ident {
+        impl PipelineTrait for #ident {
             fn box_eq(&self, other: &dyn Any) -> bool {
                 other.downcast_ref::<Self>().map_or(false, |a| self == a)
             }
             fn as_any(&self) -> &dyn Any {
                 self
             }
-            fn clone_box(&self) -> Box<dyn render::Pipeline> {
+            fn clone_box(&self) -> Box<dyn Pipeline> {
                 Box::new(self.clone())
             }
         }

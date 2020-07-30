@@ -5,7 +5,7 @@ use crate::render;
 #[derive(Clone, PartialEq)]
 struct EmptyRenderPipeline;
 
-impl render::Pipeline for EmptyRenderPipeline {
+impl render::PipelineTrait for EmptyRenderPipeline {
     fn box_eq(&self, other: &dyn Any) -> bool {
         other.downcast_ref::<Self>().map_or(false, |a| self == a)
     }
@@ -13,7 +13,7 @@ impl render::Pipeline for EmptyRenderPipeline {
         self
     }
 
-    fn clone_box(&self) -> Box<dyn render::Pipeline> {
+    fn clone_box(&self) -> Box<dyn render::PipelineTrait> {
         Box::new(self.clone())
     }
 }
@@ -24,17 +24,17 @@ impl render::RenderPipeline for EmptyRenderPipeline {
 
 /// RenderPipeline object.
 #[derive(Clone, Debug)]
-pub struct RenderPipeline(pub Box<dyn render::Pipeline>);
+pub struct DefaultRenderPipeline(pub Box<dyn render::PipelineTrait>);
 
-impl PartialEq for RenderPipeline {
+impl PartialEq for DefaultRenderPipeline {
     fn eq(&self, _other: &Self) -> bool {
         // todo this is workaround for property checking
         false
     }
 }
 
-impl Default for RenderPipeline {
+impl Default for DefaultRenderPipeline {
     fn default() -> Self {
-        RenderPipeline(Box::new(EmptyRenderPipeline))
+        DefaultRenderPipeline(Box::new(EmptyRenderPipeline))
     }
 }

@@ -1,10 +1,10 @@
-use crate::prelude::*;
+use crate::{api::prelude::*, proc_macros::*};
 
 widget!(
     /// Canvas is used to render 3D graphics.
     Canvas {
         /// Sets or shares the render pipeline.
-        render_pipeline: RenderPipeline
+        render_pipeline: DefaultRenderPipeline
     }
 );
 

@@ -4,15 +4,11 @@
 
 pub mod prelude;
 
-pub use dces::prelude as ecs;
-
-pub use orbtk_api::prelude as api;
-pub use orbtk_proc_macros as proc_macros;
-pub use orbtk_render::prelude as render;
-pub use orbtk_shell::prelude as shell;
-pub use orbtk_theme::prelude as theme;
-pub use orbtk_theming as theming;
-pub use orbtk_utils::prelude as utils;
+pub(crate) use orbtk_api as api;
+pub(crate) use orbtk_proc_macros as proc_macros;
+pub(crate) use orbtk_render as render;
+pub(crate) use orbtk_shell as shell;
+pub(crate) use orbtk_theme as theme;
 
 pub use self::button::*;
 pub use self::canvas::*;

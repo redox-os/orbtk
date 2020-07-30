@@ -1,4 +1,4 @@
-use orbtk::{prelude::*, render::platform::RenderContext2D, utils};
+use orbtk::prelude::*;
 use std::cell::Cell;
 
 use euc::{buffer::Buffer2d, rasterizer, Pipeline};
@@ -36,8 +36,8 @@ struct CubePipeline {
     spin: Cell<f32>,
 }
 
-impl render::RenderPipeline for CubePipeline {
-    fn draw(&self, render_target: &mut render::RenderTarget) {
+impl RenderPipeline for CubePipeline {
+    fn draw(&self, render_target: &mut RenderTarget) {
         if render_target.width() == 0. || render_target.height() == 0. {
             return;
         }
@@ -139,8 +139,8 @@ impl render::RenderPipeline for CubePipeline {
 #[derive(Clone, Default, PartialEq, Pipeline)]
 struct Graphic2DPipeline;
 
-impl render::RenderPipeline for Graphic2DPipeline {
-    fn draw(&self, render_target: &mut render::RenderTarget) {
+impl RenderPipeline for Graphic2DPipeline {
+    fn draw(&self, render_target: &mut RenderTarget) {
         let mut render_context =
             RenderContext2D::new(render_target.width(), render_target.height());
 
@@ -208,7 +208,7 @@ widget!(
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MainView")
-            .render_pipeline(RenderPipeline(Box::new(CubePipeline::default())))
+            .render_pipeline(DefaultRenderPipeline(Box::new(CubePipeline::default())))
             .child(
                 Grid::new()
                     .rows(Rows::new().add("auto").add("*").add("auto").add("*"))
@@ -251,7 +251,9 @@ impl Template for MainView {
                     .child(
                         Canvas::new()
                             .attach(Grid::row(3))
-                            .render_pipeline(RenderPipeline(Box::new(Graphic2DPipeline::default())))
+                            .render_pipeline(DefaultRenderPipeline(Box::new(
+                                Graphic2DPipeline::default(),
+                            )))
                             .build(ctx),
                     )
                     .build(ctx),

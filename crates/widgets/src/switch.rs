@@ -1,8 +1,11 @@
 use super::behaviors::MouseBehavior;
-use crate::prelude::*;
 
-static SWITCH_TRACK: &'static str = "switch_track";
-static SWITCH_TOGGLE: &'static str = "switch_toggle";
+use crate::{api::prelude::*, prelude::*, proc_macros::*};
+
+// --- KEYS --
+static ID_SWITCH_TRACK: &'static str = "switch_track";
+static ID_SWITCH_TOGGLE: &'static str = "switch_toggle";
+// --- KEYS --
 
 /// State to handle the position of switch toggle.
 #[derive(Default, AsAny)]
@@ -20,7 +23,7 @@ impl SwitchState {
 impl State for SwitchState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.switch_toggle = ctx
-            .entity_of_child(SWITCH_TOGGLE)
+            .entity_of_child(ID_SWITCH_TOGGLE)
             .expect("SwitchState.init: Switch toggle child could not be found.");
     }
 
@@ -110,15 +113,15 @@ impl Template for Switch {
                         Grid::new()
                             .child(
                                 Container::new()
-                                    .style(SWITCH_TRACK)
+                                    .style(ID_SWITCH_TRACK)
                                     .margin((2, 0))
                                     .v_align("center")
                                     .build(ctx),
                             )
                             .child(
                                 Container::new()
-                                    .id(SWITCH_TOGGLE)
-                                    .style(SWITCH_TOGGLE)
+                                    .id(ID_SWITCH_TOGGLE)
+                                    .style("switch_toggle")
                                     .v_align("center")
                                     .h_align("start")
                                     .width(20.0)

@@ -1,11 +1,9 @@
 use std::{collections::VecDeque, rc::Rc};
 
-use crate::{prelude::*, shell::WindowRequest};
+use crate::{api::prelude::*, proc_macros::*, shell::prelude::WindowRequest, theme::prelude::*};
 
 // --- KEYS --
-
 pub static STYLE_WINDOW: &'static str = "window";
-
 // --- KEYS --
 
 // internal type to handle dirty widgets.

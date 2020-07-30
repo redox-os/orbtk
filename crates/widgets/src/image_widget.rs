@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{api::prelude::*, proc_macros::*, render::prelude::*};
 
 widget!(
     /// The `ImageWidget` widget is used to draw an image. It is not interactive.

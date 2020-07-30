@@ -1,12 +1,17 @@
-use super::behaviors::MouseBehavior;
-use crate::prelude::*;
-use crate::shell::{Key, KeyEvent};
 use core::f64::MAX;
 use rust_decimal::prelude::*;
+
+use super::behaviors::MouseBehavior;
+
+use crate::{api::prelude::*, prelude::*, proc_macros::*, shell::prelude::*, theme::prelude::*};
+
+// --- KEYS --
 
 pub static ID_INPUT: &'static str = "numeric_box_input";
 pub static STYLE_INPUT: &'static str = "numeric_box_input";
 pub static STYLE_BTN: &'static str = "numeric_box_button";
+
+// --- KEYS --
 
 pub enum InputAction {
     Inc,

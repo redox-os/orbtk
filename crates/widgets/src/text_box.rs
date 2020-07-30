@@ -1,15 +1,10 @@
 use super::behaviors::MouseBehavior;
-use crate::{
-    prelude::*,
-    shell::{Key, KeyEvent},
-};
+
+use crate::{api::prelude::*, prelude::*, proc_macros::*, shell::prelude::*, theme::prelude::*};
 
 // --- KEYS --
-
 pub static STYLE_TEXT_BOX: &'static str = "text_box";
-
 static ID_CURSOR: &'static str = "id_cursor";
-
 // --- KEYS --
 
 #[derive(Clone)]

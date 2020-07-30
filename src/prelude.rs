@@ -12,7 +12,6 @@ pub use crate::{
     api::prelude::*,
     proc_macros::*,
     render::prelude::*,
-    shell::prelude::*,
     theme::{colors, dark_theme, fonts, light_theme, vector_graphics::material_icons_font},
     theming::prelude::*,
     tree::prelude::*,

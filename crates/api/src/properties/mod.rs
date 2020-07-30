@@ -117,7 +117,7 @@ into_property_source!(render::Image: &str, String, (u32, u32, Vec<u32>));
 // Implementation of custom property types
 into_property_source!(Columns: ColumnsBuilder);
 into_property_source!(Constraint: ConstraintBuilder);
-into_property_source!(RenderPipeline);
+into_property_source!(DefaultRenderPipeline);
 into_property_source!(Rows: RowsBuilder);
 into_property_source!(ScrollViewerMode: (&str, &str));
 into_property_source!(SelectedEntities: HashSet<Entity>);

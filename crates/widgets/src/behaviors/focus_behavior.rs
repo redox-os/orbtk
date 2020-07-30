@@ -1,22 +1,20 @@
-use std::cell::Cell;
-
-use crate::prelude::*;
+use crate::{api::prelude::*, proc_macros::*};
 
 /// The `FocusBehaviorState` handles the `FocusBehavior` widget.
 #[derive(Default, AsAny)]
 pub struct FocusBehaviorState {
-    request_focus: Cell<bool>,
+    request_focus: bool,
 }
 
 impl FocusBehaviorState {
-    fn request_focus(&self) {
-        self.request_focus.set(!self.request_focus.get());
+    fn request_focus(&mut self) {
+        self.request_focus = true;
     }
 }
 
 impl State for FocusBehaviorState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        if !self.request_focus.get() || !focus_behavior(ctx.widget()).enabled() {
+        if !self.request_focus || !focus_behavior(ctx.widget()).enabled() {
             return;
         }
 
@@ -24,7 +22,7 @@ impl State for FocusBehaviorState {
 
         ctx.push_event_by_window(FocusEvent::RequestFocus(target));
 
-        self.request_focus.set(false);
+        self.request_focus = false;
     }
 }
 
@@ -46,7 +44,7 @@ impl Template for FocusBehavior {
         self.name("FocusBehavior")
             .focused(true)
             .on_mouse_down(move |states, _| {
-                states.get::<FocusBehaviorState>(id).request_focus();
+                states.get_mut::<FocusBehaviorState>(id).request_focus();
                 false
             })
     }

@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{api::prelude::*, proc_macros::*, theme::prelude::*};
 
 widget!(
     /// The `TextBlock` widget is used to draw text. It is not interactive.

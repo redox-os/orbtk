@@ -1,10 +1,8 @@
-use crate::prelude::*;
+use crate::{api::prelude::*, prelude::*, proc_macros::*};
 
 // --- KEYS --
-
 static ID_SCROLL_BAR_HORIZONTAL: &'static str = "scroll_bar_horizontal";
 static ID_SCROLL_BAR_VERTICAL: &'static str = "scroll_bar_vertical";
-
 // --- KEYS --
 
 /// The `ScrollIndicatorState` handles the `ScrollIndicator` widget.
