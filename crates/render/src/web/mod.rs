@@ -5,7 +5,7 @@ use stdweb::{
 };
 
 // pub use crate::image::Image as InnerImage;
-use crate::{utils::*, FontConfig, Pipeline, RenderConfig, RenderTarget, TextMetrics};
+use crate::{utils::*, FontConfig, PipelineTrait, RenderConfig, RenderTarget, TextMetrics};
 
 pub use self::image::*;
 
@@ -234,7 +234,7 @@ impl RenderContext2D {
         y: f64,
         width: f64,
         height: f64,
-        pipeline: Box<dyn Pipeline>,
+        pipeline: Box<dyn PipelineTrait>,
     ) {
         let mut render_target = RenderTarget::new(width as u32, height as u32);
         pipeline.draw_pipeline(&mut render_target);
