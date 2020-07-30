@@ -189,7 +189,7 @@ impl State for MainViewState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if let Some(cube) = ctx
             .widget()
-            .get_mut::<RenderPipeline>("render_pipeline")
+            .get_mut::<DefaultRenderPipeline>("render_pipeline")
             .0
             .as_any()
             .downcast_ref::<CubePipeline>()
@@ -201,7 +201,7 @@ impl State for MainViewState {
 
 widget!(
     MainView<MainViewState> {
-         render_pipeline: RenderPipeline
+         render_pipeline: DefaultRenderPipeline
     }
 );
 

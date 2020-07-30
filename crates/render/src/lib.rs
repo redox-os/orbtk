@@ -124,6 +124,6 @@ impl Clone for Box<dyn PipelineTrait> {
 
 impl fmt::Debug for Box<dyn PipelineTrait> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Box<dyn Pipeline>")
+        write!(f, "Box<dyn PipelineTrait>")
     }
 }

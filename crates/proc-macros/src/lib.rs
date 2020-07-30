@@ -20,7 +20,7 @@ pub fn derive_pipeline(input: TokenStream) -> TokenStream {
             fn as_any(&self) -> &dyn Any {
                 self
             }
-            fn clone_box(&self) -> Box<dyn Pipeline> {
+            fn clone_box(&self) -> Box<dyn PipelineTrait> {
                 Box::new(self.clone())
             }
         }
