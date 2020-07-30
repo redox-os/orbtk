@@ -4,7 +4,7 @@ use std::{any::Any, collections::BTreeMap, rc::Rc};
 
 use dces::entity::Entity;
 
-pub use crate::widget::StatesContext;
+use crate::widget_base::StatesContext;
 
 pub use self::editable::*;
 pub use self::event_handler::*;
@@ -46,40 +46,3 @@ pub trait Event: Any {
 pub type EventHandlerMap = BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>;
 
 pub type TriggerHandler = dyn Fn(&mut StatesContext, Entity) + 'static;
-
-#[macro_export]
-macro_rules! trigger_event {
-    ($event:ident, $event_handler:ident, $trait:ident, $method:tt) => {
-        pub struct $event(pub Entity);
-
-        impl Event for $event {}
-
-        pub struct $event_handler(Rc<TriggerHandler>);
-
-        impl EventHandler for $event_handler {
-            fn handle_event(&self, states: &mut StatesContext, event: &EventBox) -> bool {
-                if let Ok(event) = event.downcast_ref::<$event>() {
-                    (self.0)(states, event.0);
-                }
-
-                false
-            }
-
-            fn handles_event(&self, event: &EventBox) -> bool {
-                event.is_type::<$event>()
-            }
-        }
-
-        impl From<$event_handler> for Rc<dyn EventHandler> {
-            fn from(event: $event_handler) -> Self {
-                Rc::new(event)
-            }
-        }
-
-        pub trait $trait: Sized + Widget {
-            fn $method<H: Fn(&mut StatesContext, Entity) + 'static>(self, handler: H) -> Self {
-                self.insert_handler($event_handler(Rc::new(handler)))
-            }
-        }
-    };
-}

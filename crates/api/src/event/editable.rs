@@ -1,7 +1,10 @@
-use super::{Event, EventBox, EventHandler};
-use crate::prelude::*;
-
 use std::rc::Rc;
+
+use dces::prelude::*;
+
+use super::*;
+
+use crate::{proc_macros::*, widget_base::*};
 
 crate::trigger_event!(
     ActivateEvent,

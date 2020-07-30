@@ -1,6 +1,8 @@
 use std::rc::Rc;
 
-use crate::prelude::*;
+use super::*;
+
+use crate::{proc_macros::*, widget_base::*};
 
 #[derive(Clone, Event)]
 pub enum WindowEvent {

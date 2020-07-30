@@ -1,8 +1,8 @@
 use std::f64::consts::PI;
 
 use crate::{
-    prelude::*,
     render::RenderContext2D,
+    render_object::*,
     utils,
     utils::{Brush, Point, Rectangle, Thickness},
 };

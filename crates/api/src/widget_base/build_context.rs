@@ -1,8 +1,8 @@
 use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
-use dces::prelude::{Component, ComponentBox, Entity, EntityComponentManager, SharedComponentBox};
+use dces::prelude::*;
 
-use crate::{prelude::*, tree::Tree};
+use crate::{prelude::*, render_object::RenderObject, theming::Theme, tree::Tree};
 
 use super::State;
 

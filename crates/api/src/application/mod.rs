@@ -5,8 +5,9 @@ use std::sync::mpsc;
 use dces::prelude::Entity;
 
 use crate::{
-    prelude::*,
     shell::{Shell, ShellRequest},
+    theming::Theme,
+    widget_base::BuildContext,
 };
 
 pub use self::context_provider::*;

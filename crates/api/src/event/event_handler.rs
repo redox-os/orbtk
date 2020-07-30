@@ -1,4 +1,4 @@
-use crate::{event::EventBox, widget::StatesContext};
+use crate::{event::EventBox, widget_base::StatesContext};
 
 /// This trait is used to define an event handler.
 pub trait EventHandler {

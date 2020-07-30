@@ -9,13 +9,13 @@ pub use std::{
 pub use dces::prelude::*;
 
 pub use crate::{
-    api::*,
+    api::prelude::*,
     proc_macros::*,
-    render,
-    shell::Key,
+    render::prelude::*,
+    shell::prelude::*,
     theme::{colors, dark_theme, fonts, light_theme, vector_graphics::material_icons_font},
     theming::prelude::*,
-    tree::*,
-    utils::*,
-    widgets::*,
+    tree::prelude::*,
+    utils::prelude::*,
+    widgets::prelude::*,
 };

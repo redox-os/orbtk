@@ -16,7 +16,7 @@ use crate::{
     theming::Selector,
     utils::*,
     widget,
-    widget::*,
+    widget_base::*,
 };
 
 widget!(

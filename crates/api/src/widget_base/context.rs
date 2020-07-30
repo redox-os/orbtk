@@ -1,12 +1,13 @@
 use std::{collections::BTreeMap, sync::mpsc};
 
-use dces::prelude::{Entity, EntityComponentManager};
+use dces::prelude::*;
 
 use crate::{
     application::{create_window, ContextProvider},
     prelude::*,
     render::RenderContext2D,
     shell::{ShellRequest, WindowRequest},
+    theming::prelude::*,
     tree::Tree,
 };
 

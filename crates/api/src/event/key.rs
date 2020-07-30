@@ -2,11 +2,11 @@ use std::rc::Rc;
 
 use crate::{
     prelude::*,
-    proc_macros::IntoHandler,
+    proc_macros::*,
     shell::{Key, KeyEvent},
 };
 
-use super::{Event, EventBox, EventHandler};
+use super::{EventBox, EventHandler};
 
 #[derive(Event)]
 pub struct KeyDownEvent {

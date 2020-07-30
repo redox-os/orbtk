@@ -5,11 +5,17 @@ use std::{
     sync::mpsc,
 };
 
+use dces::prelude::*;
+
+use super::WindowAdapter;
+
 use crate::{
-    application::WindowAdapter,
-    prelude::*,
+    event::*,
+    layout::*,
+    render_object::*,
     shell::{ShellRequest, WindowRequest},
     utils::Point,
+    widget_base::*,
 };
 
 /// Temporary solution to share dependencies. Will be refactored soon.

@@ -3,9 +3,9 @@ use std::{
     collections::BTreeMap,
 };
 
-use dces::prelude::Entity;
+use dces::prelude::*;
 
-use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::prelude::*};
+use crate::{prelude::*, render::RenderContext2D, theming::*, tree::Tree, utils::prelude::*};
 
 use super::{component, component_or_default, component_try_mut, Layout};
 

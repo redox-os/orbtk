@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::prelude::*;
+use dces::prelude::*;
 
 /// `SelectedEntities` describes a list of selected entities.
 #[derive(Clone, Default, Debug, PartialEq)]

@@ -5,15 +5,13 @@
 #[macro_use]
 extern crate derive_more;
 
-pub use dces::prelude::*;
-
-pub use orbtk_proc_macros as proc_macros;
-pub use orbtk_render::prelude as render;
-pub use orbtk_shell::prelude as shell;
-pub use orbtk_theme::prelude as theme;
-pub use orbtk_theming as theming;
-pub use orbtk_tree::prelude as tree;
-pub use orbtk_utils::prelude as utils;
+pub(crate) use orbtk_proc_macros as proc_macros;
+pub(crate) use orbtk_render::prelude as render;
+pub(crate) use orbtk_shell::prelude as shell;
+pub(crate) use orbtk_theme::prelude as theme;
+pub(crate) use orbtk_theming as theming;
+pub(crate) use orbtk_tree::prelude as tree;
+pub(crate) use orbtk_utils::prelude as utils;
 
 pub mod application;
 #[macro_use]
@@ -24,7 +22,7 @@ pub mod properties;
 pub mod render_object;
 pub mod services;
 pub mod systems;
-pub mod widget;
+pub mod widget_base;
 
 #[macro_use]
 pub mod macros;

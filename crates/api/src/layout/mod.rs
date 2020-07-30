@@ -1,8 +1,8 @@
 use std::{any::Any, collections::BTreeMap};
 
-use dces::prelude::{Component, Entity, EntityComponentManager};
+use dces::prelude::*;
 
-use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::*};
+use crate::{render::RenderContext2D, theming::*, tree::Tree, utils::*};
 
 pub use self::absolute::*;
 pub use self::fixed_size::*;

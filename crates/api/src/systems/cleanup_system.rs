@@ -1,8 +1,8 @@
 use std::{cell::RefCell, rc::Rc};
 
-use dces::prelude::{EntityComponentManager, System};
+use dces::prelude::*;
 
-use crate::{prelude::*, render::RenderContext2D, tree::Tree};
+use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree};
 
 /// Handles the inner cleanup while window is closing.
 #[derive(Constructor)]
