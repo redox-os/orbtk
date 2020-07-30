@@ -219,7 +219,6 @@ impl KeyInputCallBack {
             || key == Key::Home
             || key == Key::Escape
             || key == Key::Delete
-            || key == Key::Unknown
         {
             return;
         }

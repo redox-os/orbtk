@@ -119,7 +119,7 @@ impl TextBoxState {
 
     // Returns a vector with a tuple of each char's starting index (usize) and position (f64)
     fn map_chars_index_to_position(&self, ctx: &mut Context) -> Vec<(usize, f64)> {
-        let text: String = ctx.widget().get::<String16>("text").as_string();
+        let text: String16 = ctx.widget().clone("text");
         // start x position of the cursor is start position of the text element + padding left
         let start_position: f64 = ctx.widget().get::<Point>("position").x()
             + ctx.widget().get::<Thickness>("padding").left;
@@ -130,15 +130,21 @@ impl TextBoxState {
         let font: String = ctx.widget().clone_or_default::<String>("font");
         let font_size: f64 = ctx.widget().clone_or_default::<f64>("font_size");
 
-        for (index, _) in text.chars().enumerate() {
+        for i in 0..text.len() {
             let bound_width: f64 = ctx
                 .render_context_2_d()
-                .measure(&text[..index + 1], font_size, &font)
+                .measure(
+                    &text.get_string(0, i + 1).unwrap().as_str(),
+                    font_size,
+                    &font,
+                )
                 .width;
             let next_position: f64 = start_position + bound_width;
 
-            position_index.push((index + 1, next_position));
+            position_index.push((i + 1, next_position));
         }
+
+        // for (index, _) in text.chars().u.enumerate() {}
 
         position_index
     }
