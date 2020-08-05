@@ -11,7 +11,7 @@ enum TextAction {
     Mouse(Mouse),
 }
 
-/// The `TextBoxState` handles the text processing of the `TextBox` widget.
+/// The `TextBehaviorState` handles the text processing of the `TextBehavior` widget. 
 #[derive(Default, AsAny)]
 pub struct TextBehaviorState {
     action: Option<TextAction>,
@@ -393,8 +393,83 @@ impl State for TextBehaviorState {
 }
 
 widget!(
+    /// The TextBehavior widget shares the same logic of handling text input between
+    /// tex-related widgets.
+    /// 
+    /// Attaching to a widget makes it able to handle text input like:
+    /// * input characters by keyboard
+    /// * select all text with Ctrl+A key combination
+    /// * delete selected text with Backspace or Delete
+    /// * move cursor by the left or right arrow keys or clicking with mouse
+    /// * delete characters by pressing the Backspace or the Delete key
+    /// * run on_activate() callback on pressing the Enter key
+    /// 
+    /// TextBehavior needs the following prerequisites to able to work:
+    /// * a `cursor`: the [`Entity`] of a [`Cursor`] widget
+    /// * a parent: the [`Entity`] of the parent widget
+    /// 
+    /// * and must inherit the following properties from its parent:
+    ///     * focused
+    ///     * font
+    ///     * font_size
+    ///     * lost_focus_on_activation
+    ///     * request_focus
+    ///     * text
+    ///     * text_selection
+    /// 
+    /// # Example
+    /// 
+    /// ```
+    /// use orbtk::prelude::*
+    /// 
+    /// widget!(MyInput {
+    ///     // essential properties TextBehavior needs to inherit
+    ///     focused: bool,
+    ///     font: String,
+    ///     font_size: f64,
+    ///     lost_focus_on_activation: bool,
+    ///     request_focus: bool,
+    ///     text_selection: TextSelection
+    /// });
+    /// 
+    /// impl Template for MyInput {
+    ///     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+    ///         // Cursor depends on a TextBlock
+    ///         let text_block = TextBlock::new()
+    ///             .text(id)
+    ///             .water_mark(id)
+    ///             .font(id)
+    ///             .font_size(id)
+    ///             .build(ctx);
+    /// 
+    ///         let cursor = Cursor::new()
+    ///            // use .0 because Entity wraps an u32
+    ///            .text_block(text_block.0)
+    ///            .focused(id)
+    ///            .text_selection(id)
+    ///            .build(ctx);
+    /// 
+    ///        let text_behavior = TextBehavior::new()
+    ///            .cursor(cursor.0)
+    ///            .focused(id)
+    ///            .font(id)
+    ///            .font_size(id)
+    ///            .lost_focus_on_activation(id)
+    ///            .parent(id.0)
+    ///            .request_focus(id)
+    ///            .text(id)
+    ///            .text_selection(id)
+    ///            .build(ctx);
+    ///
+    ///        self.child(cursor)
+    ///            .child(text_behavior)
+    /// }
+    /// ```
+    /// 
+    /// [`Entity`]: https://docs.rs/dces/0.2.0/dces/entity/struct.Entity.html
+    /// [`Cursor`]: ../struct.Cursor.html
     TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler {
-        /// Sets or shares the Entity of the Cursor widget property.
+        /// Sets or shares the entity of the Cursor widget property.
         cursor: u32,
 
         /// Sets or shares the focused property.
@@ -406,13 +481,13 @@ widget!(
         /// Sets or shares the font size property.
         font_size: f64,
 
-        /// Sets or shares ta value that describes if the widget should lost focus on activation (enter).
+        /// Sets or shares ta value that describes if the widget should lost focus on activation (when Enter pressed).
         lost_focus_on_activation: bool,
         
-        /// Sets or shares the Entity of the parent widget.
+        /// Sets or shares the entity of the parent widget.
         parent: u32,
 
-        /// Sets or shares the request_focus porperty.Used to request focus from outside. Set to `true` tor request focus.
+        /// Sets or shares the request_focus porperty.Used to request focus from outside.Set to `true` to request focus.
         request_focus: bool,
 
         /// Sets or shares the text property.
