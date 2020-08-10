@@ -81,6 +81,7 @@ impl Template for CheckBox {
                     .target(id.0)
                     .child(
                         SelectionBehavior::new()
+                            .on_changed_filter(id)
                             .selected(id)
                             .enabled(id)
                             .target(id.0)

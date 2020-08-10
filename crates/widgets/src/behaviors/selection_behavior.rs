@@ -23,19 +23,18 @@ impl State for SelectionBehaviorState {
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         let selected = *selection_behavior(ctx.widget()).selected();
+        let target: Entity = (*selection_behavior(ctx.widget()).target()).into();
 
         if self.selected == selected && !self.toggle_selection {
             return;
         }
 
         if *selection_behavior(ctx.widget()).enabled() && self.toggle_selection {
-            selection_behavior(ctx.widget()).set_selected(!selected);
+            ctx.get_widget(target).set("selected", !selected);
         }
 
         self.toggle_selection = false;
         self.selected = *selection_behavior(ctx.widget()).selected();
-
-        let target: Entity = (*selection_behavior(ctx.widget()).target()).into();
 
         toggle_flag("selected", &mut ctx.get_widget(target));
 

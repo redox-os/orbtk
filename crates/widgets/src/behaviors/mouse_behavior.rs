@@ -31,7 +31,7 @@ impl State for MouseBehaviorState {
 
             match action {
                 Action::Press(_) => {
-                    mouse_behavior(ctx.widget()).set_pressed(true);
+                    ctx.get_widget(target).set("pressed", true);
                     toggle_flag("pressed", &mut ctx.get_widget(target));
                 }
                 Action::Release(p) => {
@@ -40,7 +40,7 @@ impl State for MouseBehaviorState {
                         return;
                     }
 
-                    mouse_behavior(ctx.widget()).set_pressed(false);
+                    ctx.get_widget(target).set("pressed", false);
                     toggle_flag("pressed", &mut ctx.get_widget(target));
 
                     if check_mouse_condition(p.position, &ctx.widget()) {
