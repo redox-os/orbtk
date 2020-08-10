@@ -44,6 +44,10 @@ impl NumericBoxState {
         }
 
         self.current_value = self.max(self.min(new_value));
+        if let Some(val) = self.current_value.to_f64() {
+            ctx.widget().set("val", val);
+        }
+
         ctx.get_widget(self.input)
             .set::<String16>("text", String16::from(self.current_value.to_string()));
     }
