@@ -24,4 +24,4 @@ To install Redoxer you have to first install the rust toolchain. After that open
 cargo install redoxer
 ```
 
-To compile and run your application on Redox OS you should check the [Redox OS Book](https://doc.redox-os.org/book/getting_started/getting_started.html).
+To compile and run your application on Redox OS you should check the [Redox OS Book](https://doc.redox-os.org/book/ch02-01-getting-started.html).
