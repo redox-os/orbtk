@@ -11,9 +11,6 @@ use stdweb::web::window;
 use ron::de::from_str;
 
 #[cfg(not(target_arch = "wasm32"))]
-use dirs;
-
-#[cfg(not(target_arch = "wasm32"))]
 use ron::de::from_reader;
 
 use ron::ser::{to_string_pretty, PrettyConfig};

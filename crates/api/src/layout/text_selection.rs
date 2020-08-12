@@ -166,32 +166,30 @@ impl Layout for TextSelectionLayout {
             let view_port_width = component::<Rectangle>(ecm, parent, "bounds").width();
 
             // reset text block position
-            if !expanded || text_len == 0 || (!expanded && selection_start == 0) {
+            if !expanded || text_len == 0 {
                 if let Some(margin) = component_try_mut::<Thickness>(ecm, text_block, "margin") {
                     margin.set_left(0.0);
                 }
             }
 
-            if !expanded && selection_start > 0 {
-                if pos < 0.0 || pos + size.0 > view_port_width {
-                    let delta = if pos < 0.0 {
-                        pos
-                    } else {
-                        pos - view_port_width + size.0
-                    };
+            if !expanded && selection_start > 0 && (pos < 0.0 || pos + size.0 > view_port_width) {
+                let delta = if pos < 0.0 {
+                    pos
+                } else {
+                    pos - view_port_width + size.0
+                };
 
-                    pos = pos - delta;
+                pos = pos - delta;
 
-                    // adjust the position of the text block
-                    if text_len > 0 {
-                        if let Some(margin) =
-                            component_try_mut::<Thickness>(ecm, text_block, "margin")
-                        {
-                            margin.set_left(-delta);
-                        }
+                // adjust the position of the text block
+                if text_len > 0 {
+                    if let Some(margin) = component_try_mut::<Thickness>(ecm, text_block, "margin")
+                    {
+                        margin.set_left(-delta);
                     }
                 }
             }
+
             if let Some(margin) = component_try_mut::<Thickness>(ecm, entity, "margin") {
                 margin.set_left(pos);
             }

@@ -457,7 +457,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                         }
                     }
 
-                    for remove_widget in remove_widget_list.pop() {
+                    while let Some(remove_widget) = remove_widget_list.pop() {
                         let mut children = vec![];
                         get_all_children(&mut children, remove_widget, ecm.entity_store());
 

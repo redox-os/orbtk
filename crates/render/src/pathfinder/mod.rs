@@ -1,39 +1,43 @@
-use crate::{utils::*, Pipeline, RenderConfig, RenderTarget, TextMetrics};
+use crate::{utils::*, PipelineTrait, RenderConfig, RenderTarget, TextMetrics};
 
 use font_kit::handle::Handle;
 use pathfinder_canvas::{
     ArcDirection, Canvas, CanvasFontContext, CanvasRenderingContext2D, FillRule, FillStyle, Path2D,
     RectF, TextBaseline,
 };
-use pathfinder_color::{ColorF, ColorU};
-use pathfinder_geometry::vector::{vec2f, vec2i, Vector2F, Vector2I};
-use pathfinder_gl::{GLDevice, GLVersion};
+use pathfinder_color::ColorU;
+use pathfinder_geometry::vector::{vec2f, Vector2F};
+use pathfinder_gl::GLDevice;
 use pathfinder_renderer::concurrent::rayon::RayonExecutor;
 use pathfinder_renderer::concurrent::scene_proxy::SceneProxy;
-use pathfinder_renderer::gpu::options::{DestFramebuffer, RendererOptions};
+use pathfinder_renderer::gpu::options::RendererOptions;
 use pathfinder_renderer::gpu::renderer::Renderer;
 use pathfinder_renderer::options::BuildOptions;
-use pathfinder_resources::fs::FilesystemResourceLoader;
 
-#[derive(Clone, Default, Debug)]
-pub struct Image {}
+pub use self::image::*;
 
-impl Image {
-    pub fn width(&self) -> f64 {
-        0.0
-    }
+#[path = "../raqote/image.rs"]
+mod image;
 
-    /// Gets the height.
-    pub fn height(&self) -> f64 {
-        0.0
-    }
-}
+// #[derive(Clone, Default, Debug)]
+// pub struct Image {}
 
-impl From<(u32, u32, Vec<u32>)> for Image {
-    fn from(image: (u32, u32, Vec<u32>)) -> Self {
-        Image {}
-    }
-}
+// impl Image {
+//     pub fn width(&self) -> f64 {
+//         0.0
+//     }
+
+//     /// Gets the height.
+//     pub fn height(&self) -> f64 {
+//         0.0
+//     }
+// }
+
+// impl From<(u32, u32, Vec<u32>)> for Image {
+//     fn from(image: (u32, u32, Vec<u32>)) -> Self {
+//         Image {}
+//     }
+// }
 
 pub struct Font {}
 
@@ -299,7 +303,7 @@ impl RenderContext2D {
         y: f64,
         width: f64,
         height: f64,
-        pipeline: Box<dyn Pipeline>,
+        pipeline: Box<dyn PipelineTrait>,
     ) {
     }
 
@@ -455,16 +459,16 @@ impl RenderContext2D {
 
 // --- Conversions ---
 
-impl From<&str> for Image {
-    fn from(s: &str) -> Image {
-        Image {}
-    }
-}
+// impl From<&str> for Image {
+//     fn from(s: &str) -> Image {
+//         Image {}
+//     }
+// }
 
-impl From<String> for Image {
-    fn from(s: String) -> Image {
-        Image {}
-    }
-}
+// impl From<String> for Image {
+//     fn from(s: String) -> Image {
+//         Image {}
+//     }
+// }
 
 // --- Conversions ---

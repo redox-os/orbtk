@@ -177,7 +177,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             .register("settings", Settings::new(app_name.clone()));
     };
 
-    let context_provider = ContextProvider::new(sender, request_sender.clone(), app_name);
+    let context_provider = ContextProvider::new(sender, request_sender, app_name);
 
     let window = {
         let overlay = Overlay::new().build(&mut BuildContext::new(
@@ -305,7 +305,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     world
         .create_system(PostLayoutStateSystem::new(
             context_provider.clone(),
-            registry.clone(),
+            registry,
         ))
         .with_priority(2)
         .build();

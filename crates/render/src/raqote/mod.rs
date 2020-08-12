@@ -1,7 +1,5 @@
 use std::{cmp, collections::HashMap};
 
-use raqote;
-
 use crate::{utils::*, PipelineTrait, RenderConfig, RenderTarget, TextMetrics};
 
 pub use self::font::*;
@@ -456,22 +454,6 @@ impl RenderContext2D {
     }
     pub fn finish(&mut self) {}
 }
-
-// --- Conversions ---
-
-impl From<&str> for Image {
-    fn from(s: &str) -> Image {
-        Image::from_path(s).unwrap()
-    }
-}
-
-impl From<String> for Image {
-    fn from(s: String) -> Image {
-        Image::from_path(s).unwrap()
-    }
-}
-
-// --- Conversions ---
 
 fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
     match brush {

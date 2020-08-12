@@ -38,7 +38,7 @@ impl Layout for StackLayout {
         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             let mut desired = self.desired_size.borrow_mut();
             desired.set_size(0.0, 0.0);
-            return desired.clone();
+            return *desired;
         }
 
         let halign: Alignment = component(ecm, entity, "h_align");
@@ -92,7 +92,7 @@ impl Layout for StackLayout {
 
         let mut desired = self.desired_size.borrow_mut();
         desired.set_size(desired_size.0, desired_size.1);
-        desired.clone()
+        *desired
     }
 
     fn arrange(

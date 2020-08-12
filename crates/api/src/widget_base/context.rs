@@ -221,7 +221,7 @@ impl<'a> Context<'a> {
     /// exists an error will be returned.
     pub fn append_child_entity_to_overlay(&mut self, child: Entity) -> Result<(), String> {
         if let Some(overlay) = self.ecm.entity_store().overlay {
-            self.append_child_entity_to(overlay.into(), child);
+            self.append_child_entity_to(overlay, child);
             return Ok(());
         }
 
@@ -248,7 +248,7 @@ impl<'a> Context<'a> {
     /// of the given parent nothing will happen.
     pub fn remove_child_from_overlay(&mut self, child: Entity) -> Result<(), String> {
         if let Some(overlay) = self.ecm.entity_store().overlay {
-            self.remove_child_from(child, overlay.into());
+            self.remove_child_from(child, overlay);
             return Ok(());
         }
 
@@ -493,7 +493,7 @@ pub fn find_parent(tree: &Tree, target_child: Entity, parent: Entity) -> Option<
         }
     }
 
-    return None;
+    None
 }
 
 pub fn get_all_children(children: &mut Vec<Entity>, parent: Entity, tree: &Tree) {

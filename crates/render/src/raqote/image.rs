@@ -1,7 +1,5 @@
 use std::{fmt, path::Path};
 
-use image;
-
 use crate::RenderTarget;
 
 #[derive(Clone, Default)]
@@ -88,3 +86,19 @@ impl From<(u32, u32, Vec<u32>)> for Image {
         Image::from_data(image.0, image.1, image.2).unwrap()
     }
 }
+
+// --- Conversions ---
+
+impl From<&str> for Image {
+    fn from(s: &str) -> Image {
+        Image::from_path(s).unwrap()
+    }
+}
+
+impl From<String> for Image {
+    fn from(s: String) -> Image {
+        Image::from_path(s).unwrap()
+    }
+}
+
+// --- Conversions ---

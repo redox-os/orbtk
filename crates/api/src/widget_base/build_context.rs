@@ -48,7 +48,7 @@ impl<'a> BuildContext<'a> {
     /// error will be returned.
     pub fn append_child_to_overlay(&mut self, child: Entity) -> Result<(), String> {
         if let Some(overlay) = self.ecm.entity_store().overlay {
-            self.append_child(overlay.into(), child);
+            self.append_child(overlay, child);
             return Ok(());
         }
 

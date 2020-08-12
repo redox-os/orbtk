@@ -76,6 +76,17 @@ where
 {
     /// Request redraw of the `Windows`s content.
     CreateWindow(W, WindowSettings, mpsc::Receiver<WindowRequest>),
+
+    None,
+}
+
+impl<W> Default for ShellRequest<W>
+where
+    W: window_adapter::WindowAdapter,
+{
+    fn default() -> Self {
+        ShellRequest::None
+    }
 }
 
 /// Contains settings of a window.

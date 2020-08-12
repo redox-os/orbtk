@@ -190,7 +190,6 @@ impl RenderObject for RectangleRenderObject {
                     border_thickness,
                 );
             }
-            return;
         } else if border_radius > 0. && has_thickness {
             self.render_rounded_bordered_rect_path(
                 ctx.render_context_2_d(),

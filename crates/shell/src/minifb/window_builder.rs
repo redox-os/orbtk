@@ -1,7 +1,5 @@
 use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, time::Duration};
 
-use minifb;
-
 use super::{KeyState, MouseState, Shell, Window, WindowState};
 use crate::{
     event::{ButtonState, Key, KeyEvent},

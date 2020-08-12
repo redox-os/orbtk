@@ -1,5 +1,3 @@
-use lazy_static;
-
 use std::{collections::HashMap, sync::Mutex, time::Instant};
 
 lazy_static! {

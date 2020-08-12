@@ -78,6 +78,7 @@ where
                         .request_receiver(window_requests)
                         .build();
                 }
+                _ => {}
             }
         }
     }

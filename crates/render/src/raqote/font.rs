@@ -1,5 +1,3 @@
-use rusttype;
-
 use crate::utils::{Color, Rectangle};
 
 #[derive(Debug, Clone)]

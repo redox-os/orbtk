@@ -29,10 +29,16 @@ pub struct Application {
     theme: Theme,
 }
 
+impl Default for Application {
+    fn default() -> Self {
+        Application::from_name("orbtk_application")
+    }
+}
+
 impl Application {
     /// Creates a new application.
     pub fn new() -> Self {
-        Application::from_name("orbtk_application")
+        Self::default()
     }
 
     /// Sets the default theme for the application. Could be changed per window.
