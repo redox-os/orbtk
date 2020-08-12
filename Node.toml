@@ -4,7 +4,7 @@ width = 468
 height = 730
     [[apps.fonts]]
     font_family = "MaterialIcons-Regular"
-    src = "crates/theme/src/fonts/MaterialIcons-RegularIcons-Regular.ttf"
+    src = "crates/theme/src/fonts/MaterialIcons.ttf"
     [[apps.fonts]]
     font_family = "Roboto-Regular"
     src = "crates/theme/src/fonts/Roboto-Regular.ttf"
@@ -29,7 +29,7 @@ width = 468
 height = 730
     [[apps.fonts]]
     font_family = "MaterialIcons-Regular"
-    src = "crates/theme/src/fonts/MaterialIcons-RegularIcons-Regular.ttf"
+    src = "crates/theme/src/fonts/MaterialIcons.ttf"
     [[apps.fonts]]
     font_family = "Roboto-Regular"
     src = "crates/theme/src/fonts/Roboto-Regular.ttf"

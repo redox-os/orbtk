@@ -23,24 +23,24 @@ jobs:
       - name: Build widgets example
         run: cargo build --example widgets --verbose
       
-  build_redox:
-    name: Build on Redox OS
-    runs-on: ubuntu-20.04
+  # build_redox:
+  #   name: Build on Redox OS
+  #   runs-on: ubuntu-20.04
     
-    steps:
-      - uses: actions/checkout@v1
-      - name: Install fuse
-        run: sudo apt install libfuse-dev
-      - name: Install rust nightly
-        run: rustup toolchain install nightly
-      - name: Set rust nightl as default
-        run: rustup default nightly
-      - name: Install redoxer
-        run: cargo +nightly install redoxer
-      - name: Install redoxer toolchain
-        run: redoxer toolchain
-      - name: Build widgets example
-        run: redoxer build --example widgets --verbose
+  #   steps:
+  #     - uses: actions/checkout@v1
+  #     - name: Install fuse
+  #       run: sudo apt install libfuse-dev
+  #     - name: Install rust nightly
+  #       run: rustup toolchain install nightly
+  #     - name: Set rust nightl as default
+  #       run: rustup default nightly
+  #     - name: Install redoxer
+  #       run: cargo +nightly install redoxer
+  #     - name: Install redoxer toolchain
+  #       run: redoxer toolchain
+  #     - name: Build widgets example
+  #       run: redoxer build --example widgets --verbose
            
   build_macos:
     name: Build on macOS-latest
