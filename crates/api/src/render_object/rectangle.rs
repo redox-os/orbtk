@@ -193,11 +193,7 @@ impl RenderObject for RectangleRenderObject {
         } else if border_radius > 0. && has_thickness {
             self.render_rounded_bordered_rect_path(
                 ctx.render_context_2_d(),
-                Rectangle::new(
-                    *global_position + bounds.position(),
-                    bounds.width(),
-                    bounds.height(),
-                ),
+                Rectangle::new(*global_position + bounds.position(), bounds.size()),
                 border_radius,
                 background,
                 border_brush,
@@ -218,11 +214,7 @@ impl RenderObject for RectangleRenderObject {
         } else if has_thickness {
             self.render_bordered_rect_path(
                 ctx.render_context_2_d(),
-                Rectangle::new(
-                    *global_position + bounds.position(),
-                    bounds.width(),
-                    bounds.height(),
-                ),
+                Rectangle::new(*global_position + bounds.position(), bounds.size()),
                 background,
                 border_brush,
                 border_thickness,

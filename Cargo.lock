@@ -1226,6 +1226,7 @@ dependencies = [
 name = "orbtk-utils"
 version = "0.3.1-alpha3"
 dependencies = [
+ "derive_more 0.99.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "ron 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.114 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

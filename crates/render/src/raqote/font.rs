@@ -47,7 +47,7 @@ impl Font {
             width,
             config,
             position,
-            Rectangle::new((0.0, 0.0), width, std::f64::MAX),
+            Rectangle::new((0.0, 0.0), (width, std::f64::MAX)),
         );
     }
 

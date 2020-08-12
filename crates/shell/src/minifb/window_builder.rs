@@ -39,7 +39,7 @@ where
             always_on_top: false,
             borderless: false,
             fonts: HashMap::new(),
-            bounds: Rectangle::new((0.0, 0.0), 100.0, 75.0),
+            bounds: Rectangle::new((0.0, 0.0), (100.0, 75.0)),
             request_receiver: None,
         }
     }
@@ -54,7 +54,7 @@ where
             always_on_top: settings.always_on_top,
             borderless: settings.borderless,
             fonts: settings.fonts,
-            bounds: Rectangle::new(settings.position, settings.size.0, settings.size.1),
+            bounds: Rectangle::new(settings.position, (settings.size.0, settings.size.1)),
             request_receiver: None,
         }
     }

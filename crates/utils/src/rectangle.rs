@@ -1,25 +1,30 @@
-use crate::Point;
+use crate::{Point, Size};
 
-/// Describes a new visual rectangle.
+/// A `Rectangle` is normally expressed as a top-left corner and a size
+///
+/// # Examples
+/// ```rust
+/// let rectangle = Rectangle::new((0., 5.),(10., 7.));
+///
+/// assert_eq!(rectangle.x(), 0.);
+/// assert_eq!(rectangle.y(), 5.);
+/// assert_eq!(rectangle.width(), 10.);
+/// assert_eq!(rectangle.height(), 7.);
+/// ```
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct Rectangle {
     /// Position of the rectangle.
     position: Point,
 
-    /// Width of the rectangle.
-    width: f64,
-
-    /// Height of the rectangle.
-    height: f64,
+    size: Size,
 }
 
 impl Rectangle {
     /// Create a new rectangle with the given parameters.
-    pub fn new(position: impl Into<Point>, width: f64, height: f64) -> Self {
+    pub fn new(position: impl Into<Point>, size: impl Into<Size>) -> Self {
         Rectangle {
             position: position.into(),
-            width,
-            height,
+            size: size.into(),
         }
     }
 
@@ -55,33 +60,33 @@ impl Rectangle {
 
     /// Gets the width.
     pub fn width(&self) -> f64 {
-        self.width
+        self.size.width()
     }
 
     /// Sets the width.
     pub fn set_width(&mut self, width: impl Into<f64>) {
-        self.width = width.into();
+        self.size.set_width(width.into());
     }
 
     /// Gets the height.
     pub fn height(&self) -> f64 {
-        self.height
+        self.size.height()
     }
 
     /// Sets the height.
     pub fn set_height(&mut self, height: impl Into<f64>) {
-        self.height = height.into();
+        self.size.set_height(height.into());
     }
 
     /// Gets the size with width and height.
-    pub fn size(&self) -> (f64, f64) {
-        (self.width, self.height)
+    pub fn size(&self) -> Size {
+        self.size
     }
 
     /// Sets the size with width and height.
     pub fn set_size(&mut self, width: impl Into<f64>, height: impl Into<f64>) {
-        self.width = width.into();
-        self.height = height.into();
+        self.size.set_width(width.into());
+        self.size.set_height(height.into());
     }
 
     /// Checks if this rect contains the given `point`.
@@ -111,15 +116,21 @@ impl Rectangle {
 
 // --- Conversions ---
 
+impl From<(Point, Size)> for Rectangle {
+    fn from(t: (Point, Size)) -> Self {
+        Rectangle::new(t.0, t.1)
+    }
+}
+
 impl From<(i32, i32, i32, i32)> for Rectangle {
     fn from(t: (i32, i32, i32, i32)) -> Self {
-        Rectangle::new((t.0 as f64, t.1 as f64), t.2 as f64, t.3 as f64)
+        Rectangle::new((t.0 as f64, t.1 as f64), (t.2 as f64, t.3 as f64))
     }
 }
 
 impl From<(f64, f64, f64, f64)> for Rectangle {
     fn from(t: (f64, f64, f64, f64)) -> Self {
-        Rectangle::new((t.0, t.1), t.2, t.3)
+        Rectangle::new((t.0, t.1), (t.2, t.3))
     }
 }
 
@@ -129,7 +140,7 @@ mod tests {
 
     #[test]
     fn test_new() {
-        let rect = Rectangle::new((5.0, 10.0), 20.0, 30.0);
+        let rect = Rectangle::new((5.0, 10.0), (20.0, 30.0));
 
         assert_eq!(rect.x(), 5.0);
         assert_eq!(rect.y(), 10.0);
@@ -139,7 +150,7 @@ mod tests {
 
     #[test]
     fn test_contains() {
-        let rect = Rectangle::new((5.0, 10.0), 20.0, 30.0);
+        let rect = Rectangle::new((5.0, 10.0), (20.0, 30.0));
 
         // Contains point in its origin
         let p = Point::new(5.0, 10.0);
@@ -168,75 +179,75 @@ mod tests {
 
     #[test]
     fn test_contains_rect() {
-        let rect = Rectangle::new((5.0, 10.0), 20.0, 30.0);
+        let rect = Rectangle::new((5.0, 10.0), (20.0, 30.0));
 
         // Contains itself
-        let r = Rectangle::new((5.0, 10.0), 20.0, 30.0);
+        let r = Rectangle::new((5.0, 10.0), (20.0, 30.0));
         assert!(rect.contains_rect(&r), "{:?}", r);
 
         // Contains rect on one of its edges
-        let r = Rectangle::new((5.0, 20.0), 10.0, 20.0);
+        let r = Rectangle::new((5.0, 20.0), (10.0, 20.0));
         assert!(rect.contains_rect(&r), "{:?}", r);
 
         // Contains rect on two of its edges
-        let r = Rectangle::new((5.0, 10.0), 10.0, 20.0);
+        let r = Rectangle::new((5.0, 10.0), (10.0, 20.0));
         assert!(rect.contains_rect(&r), "{:?}", r);
 
         // Contains rect completly inside
-        let r = Rectangle::new((10.0, 20.0), 5.0, 10.0);
+        let r = Rectangle::new((10.0, 20.0), (5.0, 10.0));
         assert!(rect.contains_rect(&r), "{:?}", r);
 
         // Does not contain rect partially inside
-        let r = Rectangle::new((20.0, 25.0), 20.0, 30.0);
+        let r = Rectangle::new((20.0, 25.0), (20.0, 30.0));
         assert!(!rect.contains_rect(&r), "{:?}", r);
 
         // Does not contain rect completely outside
-        let r = Rectangle::new((50.0, 100.0), 20.0, 30.0);
+        let r = Rectangle::new((50.0, 100.0), (20.0, 30.0));
         assert!(!rect.contains_rect(&r), "{:?}", r);
     }
 
     #[test]
     fn test_intersects() {
-        let rect = Rectangle::new((5.0, 10.0), 20.0, 30.0);
+        let rect = Rectangle::new((5.0, 10.0), (20.0, 30.0));
 
         // Intersects with itself
-        let r = Rectangle::new((5.0, 10.0), 20.0, 30.0);
+        let r = Rectangle::new((5.0, 10.0), (20.0, 30.0));
         assert!(rect.intersects(&r), "{:?}", r);
 
         // Intersects with rect with origin on right edge
-        let r = Rectangle::new((25.0, 10.0), 20.0, 30.0);
+        let r = Rectangle::new((25.0, 10.0), (20.0, 30.0));
         assert!(rect.intersects(&r), "{:?}", r);
 
         // Intersects with rect with end on left edge
-        let r = Rectangle::new((-15.0, 10.0), 20.0, 30.0);
+        let r = Rectangle::new((-15.0, 10.0), (20.0, 30.0));
         assert!(rect.intersects(&r), "{:?}", r);
 
         // Intersects with rect with origin on bottom edge
-        let r = Rectangle::new((5.0, 40.0), 20.0, 30.0);
+        let r = Rectangle::new((5.0, 40.0), (20.0, 30.0));
         assert!(rect.intersects(&r), "{:?}", r);
 
         // Intersects with rect with end on upper edge
-        let r = Rectangle::new((5.0, -20.0), 20.0, 30.0);
+        let r = Rectangle::new((5.0, -20.0), (20.0, 30.0));
         assert!(rect.intersects(&r), "{:?}", r);
 
         // Does not intersect with rect where origin is further
         // right than origin + width of this rect
-        let r = Rectangle::new((30.0, 10.0), 20.0, 30.0);
+        let r = Rectangle::new((30.0, 10.0), (20.0, 30.0));
         assert!(!rect.intersects(&r), "{:?}", r);
 
         // Does not intersect with rect where end + width is further
         // left than origin of this rect
-        let r = Rectangle::new((-20.0, 10.0), 20.0, 30.0);
+        let r = Rectangle::new((-20.0, 10.0), (20.0, 30.0));
         assert!(!rect.intersects(&r), "{:?}", r);
 
         // Does not intersect with rect where origin is further
         // down than origin + width of this rect
-        let r = Rectangle::new((5.0, 50.0), 20.0, 30.0);
+        let r = Rectangle::new((5.0, 50.0), (20.0, 30.0));
         assert!(!rect.intersects(&r), "{:?}", r);
 
         // Does not intersect with rect where origin + height is further
         // up than origin of this rect
-        let r = Rectangle::new((5.0, -30.0), 20.0, 30.0);
+        let r = Rectangle::new((5.0, -30.0), (20.0, 30.0));
         assert!(!rect.intersects(&r), "{:?}", r);
     }
 }

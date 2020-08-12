@@ -37,7 +37,7 @@ impl RenderContext2D {
             saved_config: None,
             fonts: HashMap::new(),
             clip: false,
-            last_rect: Rectangle::new((0.0, 0.0), width, height),
+            last_rect: Rectangle::new((0.0, 0.0), (width, height)),
             clip_rect: None,
             background: Color::default(),
         }
@@ -200,7 +200,7 @@ impl RenderContext2D {
 
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.last_rect = Rectangle::new((x, y), width, height);
+        self.last_rect = Rectangle::new((x, y), (width, height));
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.rect(x as f32, y as f32, width as f32, height as f32);
         self.path = path_builder.finish();

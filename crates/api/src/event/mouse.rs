@@ -18,7 +18,7 @@ pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>
     let bounds = widget.get::<Rectangle>("bounds");
     let position = widget.get::<Point>("position");
 
-    let mut rect = Rectangle::new((0.0, 0.0), bounds.width(), bounds.height());
+    let mut rect = Rectangle::new((0.0, 0.0), (bounds.width(), bounds.height()));
 
     rect.set_x(position.x());
     rect.set_y(position.y());

@@ -29,19 +29,19 @@ impl State for ScrollViewerState {
             if let Some(child) = &mut ctx.try_child_from_index(0) {
                 let child_size = child.get::<Rectangle>("bounds").size();
 
-                if mode.vertical == ScrollMode::Auto && child_size.1 > size.1 {
+                if mode.vertical == ScrollMode::Auto && child_size.height() > size.height() {
                     padding.set_top(offset(
-                        size.1,
-                        child_size.1,
+                        size.height(),
+                        child_size.height(),
                         padding.top(),
                         delta.y() * speed,
                     ));
                 }
 
-                if mode.horizontal == ScrollMode::Auto && child_size.0 > size.0 {
+                if mode.horizontal == ScrollMode::Auto && child_size.width() > size.width() {
                     padding.set_left(offset(
-                        size.0,
-                        child_size.0,
+                        size.width(),
+                        child_size.width(),
                         padding.left(),
                         delta.x() * speed,
                     ));

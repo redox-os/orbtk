@@ -36,7 +36,8 @@ impl State for ScrollIndicatorState {
         let scroll_padding = *ctx.widget().get::<Thickness>("scroll_padding");
 
         // adjust vertical scroll bar
-        if mode.vertical != ScrollMode::Disabled && content_size.1 > view_port_size.1 {
+        if mode.vertical != ScrollMode::Disabled && content_size.height() > view_port_size.height()
+        {
             let mut scroll_bar = ctx.get_widget(self.vertical_scroll_bar);
 
             if *scroll_bar.get::<Visibility>("visibility") != Visibility::Visible {
@@ -46,21 +47,22 @@ impl State for ScrollIndicatorState {
             scroll_bar
                 .get_mut::<Rectangle>("bounds")
                 .set_height(scroll_bar_size(
-                    size.1,
-                    content_size.1,
-                    view_port_size.1,
+                    size.height(),
+                    content_size.height(),
+                    view_port_size.height(),
                     padding.top() + padding.bottom(),
                 ));
 
             scroll_bar.get_mut::<Rectangle>("bounds").set_y(-offset(
-                size.1,
-                content_size.1,
+                size.height(),
+                content_size.height(),
                 scroll_padding.top(),
             ));
         }
 
         // adjust horizontal scroll bar
-        if mode.horizontal != ScrollMode::Disabled && content_size.0 > view_port_size.0 {
+        if mode.horizontal != ScrollMode::Disabled && content_size.width() > view_port_size.width()
+        {
             let mut scroll_bar = ctx.get_widget(self.horizontal_scroll_bar);
 
             if *scroll_bar.get::<Visibility>("visibility") != Visibility::Visible {
@@ -70,15 +72,15 @@ impl State for ScrollIndicatorState {
             scroll_bar
                 .get_mut::<Rectangle>("bounds")
                 .set_width(scroll_bar_size(
-                    size.0,
-                    content_size.0,
-                    view_port_size.0,
+                    size.width(),
+                    content_size.width(),
+                    view_port_size.width(),
                     padding.left() + padding.right(),
                 ));
 
             scroll_bar.get_mut::<Rectangle>("bounds").set_x(-offset(
-                size.0,
-                content_size.0,
+                size.width(),
+                content_size.width(),
                 scroll_padding.left(),
             ));
         }

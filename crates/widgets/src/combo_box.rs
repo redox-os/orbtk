@@ -211,11 +211,7 @@ impl ComboBoxState {
         let combo_box_position = ctx.widget().clone::<Point>("position");
         let combo_box_bounds = ctx.widget().clone::<Rectangle>("bounds");
 
-        let combo_box_global_bounds = Rectangle::new(
-            combo_box_position,
-            combo_box_bounds.width(),
-            combo_box_bounds.height(),
-        );
+        let combo_box_global_bounds = Rectangle::new(combo_box_position, combo_box_bounds.size());
 
         if !combo_box_global_bounds.contains(p) {
             ctx.widget().set("selected", false);

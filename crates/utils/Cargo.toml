@@ -11,4 +11,5 @@ edition = "2018"
 
 [dependencies]
 ron = "0.6"
-serde = "1.0.106"
+serde = "1.0"
+derive_more = "0.99"
