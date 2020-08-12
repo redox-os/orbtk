@@ -18,7 +18,7 @@ In this section you will find different tutorials that will guide you step by st
 
 ### Showcases
 
-* [Space Editor](https://codeberg.org/pinhead-galaxy/space-editor): 2D Tile Map Editor compatible with OrbGame
+* [Space Editor](https://codeberg.org/flovanco/space-editor): 2D Tile Map Editor compatible with OrbGame
 * [OrbCalculator](https://gitlab.redox-os.org/redox-os/orbcalculator): Calculator based on OrbTk
 
 ### Contribution
