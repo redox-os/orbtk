@@ -20,7 +20,7 @@ minifb = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix
 gl = { version = "0.14", optional = true }
 glutin = { version = "0.24", optional = true }
 euclid = { version = "0.20.11", optional = true }
-font-kit = "0.6"
+font-kit = { version = "0.6", optional = true }
 pathfinder_color = { version = "0.5", optional = true }
 pathfinder_geometry = { version = "0.5.1", optional = true }
 pathfinder_gl =  { version = "0.5", optional = true }
@@ -44,6 +44,7 @@ pfinder = [
     "pathfinder_geometry",
     "pathfinder_gl",
     "pathfinder_renderer",
-    "pathfinder_resources"
+    "pathfinder_resources",
+    "font-kit"
 ]
 log = []

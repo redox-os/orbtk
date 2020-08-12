@@ -37,10 +37,10 @@ orbtk-widgets = { version = "0.3.1-alpha3", path="crates/widgets" }
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "develop" }
 
 [dev-dependencies]
-euc = "0.5.0"
-vek = "0.10.2"
-serde = "1.0.106"
-serde_derive = "1.0.106"
+euc = "0.5"
+vek = "0.12"
+serde = "1.0"
+serde_derive = "1.0"
 
 # [target.'cfg(all(not(target_arch = "wasm32"), not(target_os = "redox")))'.dev-dependencies]
 # wgpu = "0.5.0"
