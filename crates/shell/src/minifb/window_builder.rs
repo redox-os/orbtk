@@ -1,6 +1,6 @@
 use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, time::Duration};
 
-use super::{KeyState, MouseState, Shell, Window, WindowState};
+use super::{KeyState, Shell, Window};
 use crate::{
     event::{ButtonState, Key, KeyEvent},
     render::RenderContext2D,
@@ -144,11 +144,6 @@ where
             self.adapter,
             render_context,
             self.request_receiver,
-            WindowState::default(),
-            MouseState::default(),
-            true,
-            true,
-            false,
             vec![
                 KeyState::new(minifb::Key::Backspace, Key::Backspace),
                 KeyState::new(minifb::Key::Left, Key::Left),

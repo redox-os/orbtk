@@ -60,13 +60,10 @@ where
         }
 
         for request in requests {
-            match request {
-                ShellRequest::CreateWindow(adapter, settings, window_requests) => {
-                    self.create_window_from_settings(settings, adapter)
-                        .request_receiver(window_requests)
-                        .build();
-                }
-                _ => {}
+            if let ShellRequest::CreateWindow(adapter, settings, window_requests) = request {
+                self.create_window_from_settings(settings, adapter)
+                    .request_receiver(window_requests)
+                    .build();
             }
         }
     }

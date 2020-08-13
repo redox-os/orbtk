@@ -64,7 +64,7 @@ impl Theme {
         None
     }
 
-    fn read_properties(key: &String, theme: &ThemeConfig, properties: &mut HashMap<String, Value>) {
+    fn read_properties(key: &str, theme: &ThemeConfig, properties: &mut HashMap<String, Value>) {
         if key.is_empty() {
             return;
         }
@@ -79,8 +79,8 @@ impl Theme {
     }
 
     fn read_states(
-        style_key: &String,
-        state_key: &String,
+        style_key: &str,
+        state_key: &str,
         theme: &ThemeConfig,
         states: &mut HashMap<String, Value>,
     ) {
@@ -102,7 +102,7 @@ impl Theme {
     }
 
     fn read_property(
-        key: &String,
+        key: &str,
         value: &Value,
         theme: &ThemeConfig,
         map: &mut HashMap<String, Value>,
@@ -110,13 +110,13 @@ impl Theme {
         if let Ok(value) = value.clone().into_rust::<String>() {
             if value.starts_with(RESOURCE_KEY) {
                 if let Some(value) = theme.resources.get(&value.replace(RESOURCE_KEY, "")) {
-                    map.insert(key.clone(), value.clone());
+                    map.insert(key.to_string(), value.clone());
                 }
             } else {
-                map.insert(key.clone(), Value::String(value));
+                map.insert(key.to_string(), Value::String(value));
             }
         } else {
-            map.insert(key.clone(), value.clone());
+            map.insert(key.to_string(), value.clone());
         }
     }
 }

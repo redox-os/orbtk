@@ -1,7 +1,5 @@
 use std::{cell::RefCell, rc::Rc, sync::mpsc};
 
-use derive_more::Constructor;
-
 use super::{KeyState, MouseState, WindowState};
 use crate::{
     event::{ButtonState, KeyEvent, MouseButton, MouseEvent},
@@ -14,7 +12,6 @@ use orbtk_utils::Point;
 
 /// Represents a wrapper for a minifb window. It handles events, propagate them to
 /// the window adapter and handles the update and render pipeline.
-#[derive(Constructor)]
 pub struct Window<A>
 where
     A: WindowAdapter,
@@ -30,6 +27,34 @@ where
     close: bool,
     key_states: Vec<KeyState>,
     key_events: Rc<RefCell<Vec<KeyEvent>>>,
+}
+
+impl<A> Window<A>
+where
+    A: WindowAdapter,
+{
+    pub fn new(
+        window: minifb::Window,
+        adapter: A,
+        render_context: RenderContext2D,
+        request_receiver: Option<mpsc::Receiver<WindowRequest>>,
+        key_states: Vec<KeyState>,
+        key_events: Rc<RefCell<Vec<KeyEvent>>>,
+    ) -> Self {
+        Window {
+            window,
+            adapter,
+            render_context,
+            request_receiver,
+            window_state: WindowState::default(),
+            mouse: MouseState::default(),
+            update: true,
+            redraw: true,
+            close: false,
+            key_states,
+            key_events,
+        }
+    }
 }
 
 impl<A> Window<A>

@@ -179,7 +179,7 @@ impl Layout for TextSelectionLayout {
                     pos - view_port_width + size.0
                 };
 
-                pos = pos - delta;
+                pos -= delta;
 
                 // adjust the position of the text block
                 if text_len > 0 {

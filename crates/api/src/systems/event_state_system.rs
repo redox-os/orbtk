@@ -287,10 +287,9 @@ impl EventStateSystem {
                         Some(&self.context_provider.event_queue),
                     )
                     .get::<bool>("enabled")
+                    && has_handler
                 {
-                    if has_handler {
-                        matching_nodes.push(current_node);
-                    }
+                    matching_nodes.push(current_node);
                 }
                 if let Ok(clip) = ecm.component_store().get::<bool>("clip", current_node) {
                     if *clip {
