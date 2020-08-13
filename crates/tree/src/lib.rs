@@ -170,12 +170,10 @@ impl<'a> IntoIterator for &'a Tree {
         let start_node = {
             if let Some(start_node) = self.iterator_start_node.get() {
                 start_node
+            } else if let Some(root) = self.root {
+                root
             } else {
-                if let Some(root) = self.root {
-                    root
-                } else {
-                    0.into()
-                }
+                0.into()
             }
         };
 
