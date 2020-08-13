@@ -29,7 +29,7 @@ impl TextBehaviorState {
     }
 
     fn request_focus(&self, ctx: &mut Context, p: Mouse) {
-        ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
+        ctx.push_event_by_window(FocusEvent::RequestFocus(self.target));
 
         // select all text if there is text and the element is not focused yet.
         if !ctx.widget().get::<String16>("text").is_empty()
