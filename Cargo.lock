@@ -384,8 +384,9 @@ dependencies = [
 
 [[package]]
 name = "dces"
-version = "0.3.1"
-source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=develop#562c72e5ade8e9734ab6caa5379644a692054f7f"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aa1f2e499addf80146cf2c9f3de65acb2ba1d45cfd71db021bc4eb3c01b277f7"
 
 [[package]]
 name = "deflate"
