@@ -16,7 +16,7 @@ console_error_panic_hook = "0.1.6"
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 spin_sleep = { version = "1.0", optional = true }
 image = "0.23.4"
-minifb = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix", optional = true }
+minifb = { version = "0.17", optional = true }
 gl = { version = "0.14", optional = true }
 glutin = { version = "0.24", optional = true }
 euclid = { version = "0.20.11", optional = true }
@@ -28,9 +28,9 @@ pathfinder_renderer =  { version = "0.5", optional = true }
 pathfinder_resources =  { version = "0.5", optional = true }
 
 [dependencies]
-derive_more = "0.99.5"
-orbtk-render = "0.3.1-alpha3" 
-orbtk-utils = "0.3.1-alpha3" 
+derive_more = "0.99"
+orbtk-render = "0.3.1-alpha3"
+orbtk-utils = "0.3.1-alpha3"
 lazy_static = "1.4.0"
 raw-window-handle = "0.3.3"
 
