@@ -29,8 +29,8 @@ pathfinder_resources =  { version = "0.5", optional = true }
 
 [dependencies]
 derive_more = "0.99.5"
-orbtk-render = { path = "../render", version = "0.3.1-alpha3" }
-orbtk-utils = { path = "../utils", version = "0.3.1-alpha3" }
+orbtk-render = "0.3.1-alpha3" 
+orbtk-utils = "0.3.1-alpha3" 
 lazy_static = "1.4.0"
 raw-window-handle = "0.3.3"
 
