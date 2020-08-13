@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * NumericBox widget
 * Update caret position on TextBox by mouse click
 * Text input support for ', /, \, [, ], {, }
-* Multiple window support
+* Multiple window support (experimental)
 * Pathfinder / Glutin backend (experimental)
 * ProgressBar widget
 * Measure distance between two Points
