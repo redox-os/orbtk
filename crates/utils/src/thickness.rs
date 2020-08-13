@@ -124,9 +124,7 @@ impl From<f64> for Thickness {
 impl From<Value> for Thickness {
     fn from(v: Value) -> Self {
         match v.0 {
-            ron::Value::Number(value) => {
-                return Thickness::from(value.into_f64());
-            }
+            ron::Value::Number(value) => Thickness::from(value.into_f64()),
             ron::Value::Map(map) => {
                 let mut left = 0.0;
                 let mut top = 0.0;
@@ -161,7 +159,7 @@ impl From<Value> for Thickness {
 
                 return Thickness::from((left, top, right, bottom));
             }
-            _ => return Thickness::default(),
+            _ => Thickness::default(),
         }
     }
 }

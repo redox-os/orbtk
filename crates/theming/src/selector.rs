@@ -53,7 +53,7 @@ impl Selector {
             }
         }
 
-        return false;
+        false
     }
 }
 

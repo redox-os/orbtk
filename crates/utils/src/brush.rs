@@ -66,7 +66,7 @@ impl From<String> for Brush {
 impl From<Value> for Brush {
     fn from(v: Value) -> Self {
         let value = v.get::<String>();
-        return Brush::from(value);
+        Brush::from(value)
     }
 }
 

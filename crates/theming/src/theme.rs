@@ -61,7 +61,7 @@ impl Theme {
             return Some(&self.styles.get(style)?.properties);
         }
 
-        return None;
+        None
     }
 
     fn read_properties(key: &String, theme: &ThemeConfig, properties: &mut HashMap<String, Value>) {
