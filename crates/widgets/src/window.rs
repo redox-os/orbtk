@@ -100,11 +100,8 @@ impl WindowState {
 
     fn set_background(&mut self, ctx: &mut Context) {
         let background: Brush = ctx.widget().clone("background");
-        match background {
-            Brush::SolidColor(color) => {
-                ctx.render_context_2_d().set_background(color);
-            }
-            _ => {}
+        if let Brush::SolidColor(color) = background {
+            ctx.render_context_2_d().set_background(color);
         };
         self.background = background;
     }
