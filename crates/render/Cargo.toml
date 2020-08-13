@@ -27,7 +27,7 @@ font-kit = { version = "0.6", optional = true }
 image = "0.23"
 
 [dependencies]
-orbtk-utils = { path = "../utils", version = "0.3.1-alpha3" }
+orbtk-utils = "0.3.1-alpha3"
 
 [features]
 default = ["raqote", "rusttype"]

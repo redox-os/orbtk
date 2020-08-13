@@ -1261,7 +1261,7 @@ dependencies = [
  "orbtk-theme",
  "orbtk-theming 0.3.1-alpha3",
  "orbtk-tree",
- "orbtk-utils",
+ "orbtk-utils 0.3.1-alpha3",
  "orbtk-widgets",
  "serde",
  "serde_derive",
@@ -1281,7 +1281,7 @@ dependencies = [
  "orbtk-theme",
  "orbtk-theming 0.3.1-alpha3",
  "orbtk-tree",
- "orbtk-utils",
+ "orbtk-utils 0.3.1-alpha3",
  "raw-window-handle",
  "ron",
  "serde",
@@ -1305,7 +1305,7 @@ version = "0.3.1-alpha3"
 dependencies = [
  "font-kit",
  "image",
- "orbtk-utils",
+ "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
  "pathfinder_canvas",
  "pathfinder_color",
  "pathfinder_content",
@@ -1333,7 +1333,7 @@ dependencies = [
  "lazy_static",
  "minifb",
  "orbtk-render",
- "orbtk-utils",
+ "orbtk-utils 0.3.1-alpha3",
  "pathfinder_color",
  "pathfinder_geometry",
  "pathfinder_gl",
@@ -1389,6 +1389,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "orbtk-utils"
+version = "0.3.1-alpha3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fee14d317bac717fccda15caf885a08284431d769aa7fbe5e0364e249d300b45"
+dependencies = [
+ "derive_more",
+ "ron",
+ "serde",
+]
+
+[[package]]
 name = "orbtk-widgets"
 version = "0.3.1-alpha3"
 dependencies = [
@@ -1399,7 +1410,7 @@ dependencies = [
  "orbtk-render",
  "orbtk-shell",
  "orbtk-theme",
- "orbtk-utils",
+ "orbtk-utils 0.3.1-alpha3",
  "rust_decimal",
 ]
 
