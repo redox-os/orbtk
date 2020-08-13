@@ -165,7 +165,9 @@ impl RenderObject for RectangleRenderObject {
 
         ctx.render_context_2_d().begin_path();
 
-        if bounds.width() == bounds.height() && border_radius >= bounds.width() / 2.0 {
+        if (bounds.width() - bounds.height()).abs() < f64::EPSILON
+            && border_radius >= bounds.width() / 2.0
+        {
             if !has_thickness {
                 self.render_circle(
                     ctx.render_context_2_d(),

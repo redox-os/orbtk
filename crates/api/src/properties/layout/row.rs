@@ -222,6 +222,8 @@ impl Rows {
 mod tests {
     use super::*;
 
+    const ERROR: f64 = f64::EPSILON;
+
     #[test]
     fn test_height() {
         let height = RowHeight::Height(64.0);
@@ -239,7 +241,7 @@ mod tests {
         let builder = RowBuilder::new();
         let row = builder.min_height(min_height).build();
 
-        assert_eq!(row.min_height, min_height);
+        assert!((row.min_height - min_height).abs() < ERROR);
     }
 
     #[test]
@@ -249,7 +251,7 @@ mod tests {
         let builder = RowBuilder::new();
         let row = builder.max_height(max_height).build();
 
-        assert_eq!(row.max_height, max_height);
+        assert!((row.max_height - max_height).abs() < ERROR);
     }
 
     #[test]
@@ -267,13 +269,13 @@ mod tests {
             .build();
 
         row.set_current_height(out_one_height);
-        assert_eq!(row.current_height(), min_height);
+        assert!((row.current_height() - min_height).abs() < ERROR);
 
         row.set_current_height(out_two_height);
-        assert_eq!(row.current_height(), max_height);
+        assert!((row.current_height() - max_height).abs() < ERROR);
 
         row.set_current_height(in_height);
-        assert_eq!(row.current_height(), in_height);
+        assert!((row.current_height() - min_height).abs() < ERROR);
     }
 
     #[test]

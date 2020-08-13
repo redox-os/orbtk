@@ -281,13 +281,15 @@ impl From<ConstraintBuilder> for Constraint {
 mod tests {
     use super::*;
 
+    const ERROR: f64 = f64::EPSILON;
+
     #[test]
     fn test_builder_width() {
         let width = 12.0;
 
         let constraint = Constraint::create().width(width).build();
 
-        assert_eq!(constraint.width(), width);
+        assert!((constraint.width() - width).abs() < ERROR);
     }
 
     #[test]
@@ -296,7 +298,7 @@ mod tests {
 
         let constraint = Constraint::create().height(height).build();
 
-        assert_eq!(constraint.height(), height);
+        assert!((constraint.height() - height).abs() < ERROR);
     }
 
     #[test]
@@ -305,7 +307,7 @@ mod tests {
 
         let constraint = Constraint::create().min_width(width).build();
 
-        assert_eq!(constraint.min_width(), width);
+        assert!((constraint.min_width() - width).abs() < ERROR);
     }
 
     #[test]
@@ -314,7 +316,7 @@ mod tests {
 
         let constraint = Constraint::create().min_height(height).build();
 
-        assert_eq!(constraint.min_height(), height);
+        assert!((constraint.min_height() - height).abs() < ERROR);
     }
 
     #[test]
@@ -323,7 +325,7 @@ mod tests {
 
         let constraint = Constraint::create().max_width(width).build();
 
-        assert_eq!(constraint.max_width(), width);
+        assert!((constraint.max_width() - width).abs() < ERROR);
     }
 
     #[test]
@@ -332,7 +334,7 @@ mod tests {
 
         let constraint = Constraint::create().max_height(height).build();
 
-        assert_eq!(constraint.max_height(), height);
+        assert!((constraint.max_height() - height).abs() < ERROR);
     }
 
     #[test]
@@ -341,7 +343,7 @@ mod tests {
 
         let mut constraint = Constraint::default();
         constraint.set_width(width);
-        assert_eq!(constraint.width(), width);
+        assert!((constraint.width() - width).abs() < ERROR);
     }
 
     #[test]
@@ -351,7 +353,7 @@ mod tests {
         let mut constraint = Constraint::default();
         constraint.set_height(height);
 
-        assert_eq!(constraint.height(), height);
+        assert!((constraint.height() - height).abs() < ERROR);
     }
 
     #[test]
@@ -372,7 +374,7 @@ mod tests {
         let mut constraint = Constraint::default();
         constraint.set_min_width(min_width);
 
-        assert_eq!(constraint.min_width(), min_width);
+        assert!((constraint.min_width() - min_width).abs() < ERROR);
     }
 
     #[test]
@@ -382,7 +384,7 @@ mod tests {
         let mut constraint = Constraint::default();
         constraint.set_min_height(min_height);
 
-        assert_eq!(constraint.min_height(), min_height);
+        assert!((constraint.min_height() - min_height).abs() < ERROR);
     }
 
     #[test]
@@ -403,7 +405,7 @@ mod tests {
         let mut constraint = Constraint::default();
         constraint.set_max_width(max_width);
 
-        assert_eq!(constraint.max_width(), max_width);
+        assert!((constraint.max_width() - max_width).abs() < ERROR);
     }
 
     #[test]
@@ -413,7 +415,7 @@ mod tests {
         let mut constraint = Constraint::default();
         constraint.set_max_height(max_height);
 
-        assert_eq!(constraint.max_height(), max_height);
+        assert!((constraint.max_height() - max_height).abs() < ERROR);
     }
 
     #[test]

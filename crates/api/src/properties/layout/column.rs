@@ -223,6 +223,8 @@ impl Columns {
 mod tests {
     use super::*;
 
+    const ERROR: f64 = f64::EPSILON;
+
     #[test]
     fn test_width() {
         let width = ColumnWidth::Width(64.0);
@@ -240,7 +242,7 @@ mod tests {
         let builder = ColumnBuilder::new();
         let column = builder.min_width(min_width).build();
 
-        assert_eq!(column.min_width, min_width);
+        assert!((column.min_width - min_width).abs() < ERROR);
     }
 
     #[test]
@@ -250,7 +252,7 @@ mod tests {
         let builder = ColumnBuilder::new();
         let column = builder.max_width(max_width).build();
 
-        assert_eq!(column.max_width, max_width);
+        assert!((column.max_width - max_width) < ERROR);
     }
 
     #[test]
@@ -265,13 +267,13 @@ mod tests {
         let mut column = builder.min_width(min_width).max_width(max_width).build();
 
         column.set_current_width(out_one_width);
-        assert_eq!(column.current_width(), min_width);
+        assert!((column.current_width() - min_width).abs() < ERROR);
 
         column.set_current_width(out_two_width);
-        assert_eq!(column.current_width(), max_width);
+        assert!((column.current_width() - max_width).abs() < ERROR);
 
         column.set_current_width(in_width);
-        assert_eq!(column.current_width(), in_width);
+        assert!((column.current_width() - min_width).abs() < ERROR);
     }
 
     #[test]
