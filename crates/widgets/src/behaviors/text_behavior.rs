@@ -369,7 +369,7 @@ impl State for TextBehaviorState {
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
                 .set_state("empty");
-            ctx.widget().update(false);
+            ctx.get_widget(self.target).update(false);
         }
 
         if !focused && *ctx.widget().get::<bool>("request_focus") {
