@@ -1259,7 +1259,7 @@ dependencies = [
  "orbtk-render",
  "orbtk-shell",
  "orbtk-theme",
- "orbtk-theming",
+ "orbtk-theming 0.3.1-alpha3",
  "orbtk-tree",
  "orbtk-utils",
  "orbtk-widgets",
@@ -1279,7 +1279,7 @@ dependencies = [
  "orbtk-render",
  "orbtk-shell",
  "orbtk-theme",
- "orbtk-theming",
+ "orbtk-theming 0.3.1-alpha3",
  "orbtk-tree",
  "orbtk-utils",
  "raw-window-handle",
@@ -1349,12 +1349,23 @@ name = "orbtk-theme"
 version = "0.3.1-alpha3"
 dependencies = [
  "lazy_static",
- "orbtk-theming",
+ "orbtk-theming 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "orbtk-theming"
 version = "0.3.1-alpha3"
+dependencies = [
+ "ron",
+ "serde",
+ "serde_derive",
+]
+
+[[package]]
+name = "orbtk-theming"
+version = "0.3.1-alpha3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "df91cb7b3062463b7c07b637e10cd32c1e54520cdddc0a8e8bccf6e2e8d3d6be"
 dependencies = [
  "ron",
  "serde",
