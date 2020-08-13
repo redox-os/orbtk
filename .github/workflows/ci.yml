@@ -3,6 +3,32 @@ on: [push, pull_request]
 name: CI
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      # make sure all code has been formatted with rustfmt
+      - run: rustup component add rustfmt
+      - name: check rustfmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: -- --check --color always
+
+      - run: sudo apt install libwayland-cursor0 libxkbcommon-dev libwayland-dev
+      - run: rustup component add clippy
+      - name: check clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --all-targets -- -D warnings
+     
   build_and_test:
     name: Test
     strategy:
