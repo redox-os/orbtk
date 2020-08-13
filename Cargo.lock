@@ -384,9 +384,8 @@ dependencies = [
 
 [[package]]
 name = "dces"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aa1f2e499addf80146cf2c9f3de65acb2ba1d45cfd71db021bc4eb3c01b277f7"
+version = "0.3.1"
+source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=develop#562c72e5ade8e9734ab6caa5379644a692054f7f"
 
 [[package]]
 name = "deflate"
@@ -416,17 +415,7 @@ checksum = "cb582b60359da160a9477ee80f15c8d784c477e69c217ef2cdd4169c24ea380f"
 dependencies = [
  "proc-macro2 1.0.19",
  "quote 1.0.7",
- "syn 1.0.38",
-]
-
-[[package]]
-name = "derive_more"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "64fba494f26a7e7906d1b4123b46d17717670a9b199cba941bf1a3885d917f0f"
-dependencies = [
- "quote 0.4.2",
- "syn 0.12.15",
+ "syn",
 ]
 
 [[package]]
@@ -437,7 +426,7 @@ checksum = "298998b1cf6b5b2c8a7b023dfd45821825ce3ba8a8af55c921a0e734e4653f76"
 dependencies = [
  "proc-macro2 1.0.19",
  "quote 1.0.7",
- "syn 1.0.38",
+ "syn",
 ]
 
 [[package]]
@@ -447,15 +436,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13aea89a5c93364a98e9b37b2fa237effbb694d5cfe01c5b70941f7eb087d5e3"
 dependencies = [
  "cfg-if",
- "dirs-sys",
-]
-
-[[package]]
-name = "dirs"
-version = "3.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "142995ed02755914747cc6ca76fc7e4583cd18578746716d0508ea6ed558b9ff"
-dependencies = [
  "dirs-sys",
 ]
 
@@ -560,7 +540,7 @@ dependencies = [
  "core-foundation 0.7.0",
  "core-graphics 0.19.2",
  "core-text 15.0.0",
- "dirs 2.0.2",
+ "dirs",
  "dwrote",
  "float-ord",
  "freetype",
@@ -985,6 +965,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "60302e4db3a61da70c0cb7991976248362f30319e88850c487b9b95bbf059e00"
 
 [[package]]
+name = "memchr"
+version = "2.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3728d817d99e5ac407411fa471ff9800a778d88a24685968b36824eaf4bee400"
+
+[[package]]
 name = "memmap"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1006,17 +992,16 @@ dependencies = [
 [[package]]
 name = "minifb"
 version = "0.17.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c2407444bc74256b6f2c6fe3d8cfe0af591f5680b501e751078a96992808aa0"
+source = "git+https://github.com/FloVanGH/rust_minifb?branch=redox_unix#8a9d70d080e789887ea4b9ba0d8920cdf8676d32"
 dependencies = [
  "cast",
  "cc",
  "orbclient",
  "raw-window-handle",
  "tempfile",
- "wayland-client 0.25.0",
+ "wayland-client 0.27.0",
  "wayland-cursor",
- "wayland-protocols 0.25.0",
+ "wayland-protocols 0.27.0",
  "winapi 0.3.9",
  "x11-dl",
  "xkb",
@@ -1144,6 +1129,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "nom"
+version = "5.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ffb4262d26ed83a1c0a33a38fe2bb15797329c85770da05e6b828ddb782627af"
+dependencies = [
+ "memchr",
+ "version_check",
+]
+
+[[package]]
 name = "num"
 version = "0.1.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1224,7 +1219,7 @@ dependencies = [
  "proc-macro-crate",
  "proc-macro2 1.0.19",
  "quote 1.0.7",
- "syn 1.0.38",
+ "syn",
 ]
 
 [[package]]
@@ -1254,19 +1249,19 @@ dependencies = [
 
 [[package]]
 name = "orbtk"
-version = "0.3.1-alpha3"
+version = "0.3.1-alpha4"
 dependencies = [
  "dces",
  "euc",
- "orbtk-api 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-proc-macros 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-render 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-shell 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-theme 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-theming 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-tree 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-widgets 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-api",
+ "orbtk-proc-macros",
+ "orbtk-render",
+ "orbtk-shell",
+ "orbtk-theme",
+ "orbtk-theming",
+ "orbtk-tree",
+ "orbtk-utils",
+ "orbtk-widgets",
  "serde",
  "serde_derive",
  "vek",
@@ -1274,41 +1269,18 @@ dependencies = [
 
 [[package]]
 name = "orbtk-api"
-version = "0.3.1-alpha3"
+version = "0.3.1-alpha4"
 dependencies = [
  "dces",
- "derive_more 0.9.0",
- "dirs 3.0.1",
- "orbtk-proc-macros 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-render 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-shell 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-theme 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-theming 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-tree 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "raw-window-handle",
- "ron",
- "serde",
- "serde_derive",
- "stdweb",
-]
-
-[[package]]
-name = "orbtk-api"
-version = "0.3.1-alpha3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2310a55a68e7940e09913534ca1e8d113bd8425db136a80d0ee0792d0a990444"
-dependencies = [
- "dces",
- "derive_more 0.9.0",
- "dirs 3.0.1",
- "orbtk-proc-macros 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-render 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-shell 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-theme 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-theming 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-tree 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_more",
+ "dirs",
+ "orbtk-proc-macros",
+ "orbtk-render",
+ "orbtk-shell",
+ "orbtk-theme",
+ "orbtk-theming",
+ "orbtk-tree",
+ "orbtk-utils",
  "raw-window-handle",
  "ron",
  "serde",
@@ -1318,55 +1290,21 @@ dependencies = [
 
 [[package]]
 name = "orbtk-proc-macros"
-version = "0.3.1-alpha3"
+version = "0.3.1-alpha4"
 dependencies = [
  "case",
  "proc-macro2 1.0.19",
  "quote 1.0.7",
- "syn 1.0.38",
-]
-
-[[package]]
-name = "orbtk-proc-macros"
-version = "0.3.1-alpha3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6cbfaa472c3514cd7e412cce1907ee43eef58baa5c9aabb38477aebddd4cea67"
-dependencies = [
- "case",
- "proc-macro2 1.0.19",
- "quote 1.0.7",
- "syn 1.0.38",
+ "syn",
 ]
 
 [[package]]
 name = "orbtk-render"
-version = "0.3.1-alpha3"
+version = "0.3.1-alpha4"
 dependencies = [
  "font-kit",
  "image",
- "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "pathfinder_canvas",
- "pathfinder_color",
- "pathfinder_content",
- "pathfinder_geometry",
- "pathfinder_gl",
- "pathfinder_gpu",
- "pathfinder_renderer",
- "pathfinder_resources",
- "raqote",
- "rusttype 0.8.3",
- "stdweb",
-]
-
-[[package]]
-name = "orbtk-render"
-version = "0.3.1-alpha3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0aa21e9d8bcb6601ee69b6af4f0679d44a1b6a5d86773ba5aae2d8e9712314c"
-dependencies = [
- "font-kit",
- "image",
- "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-utils",
  "pathfinder_canvas",
  "pathfinder_color",
  "pathfinder_content",
@@ -1382,10 +1320,10 @@ dependencies = [
 
 [[package]]
 name = "orbtk-shell"
-version = "0.3.1-alpha3"
+version = "0.3.1-alpha4"
 dependencies = [
  "console_error_panic_hook",
- "derive_more 0.99.9",
+ "derive_more",
  "euclid",
  "font-kit",
  "gl",
@@ -1393,35 +1331,8 @@ dependencies = [
  "image",
  "lazy_static",
  "minifb",
- "orbtk-render 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "pathfinder_color",
- "pathfinder_geometry",
- "pathfinder_gl",
- "pathfinder_renderer",
- "pathfinder_resources",
- "raw-window-handle",
- "spin_sleep",
- "stdweb",
-]
-
-[[package]]
-name = "orbtk-shell"
-version = "0.3.1-alpha3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bcf73a57e5c22fc484eebc587e60745d2d6407b0c3e540e0adadc11913d981ba"
-dependencies = [
- "console_error_panic_hook",
- "derive_more 0.99.9",
- "euclid",
- "font-kit",
- "gl",
- "glutin",
- "image",
- "lazy_static",
- "minifb",
- "orbtk-render 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-render",
+ "orbtk-utils",
  "pathfinder_color",
  "pathfinder_geometry",
  "pathfinder_gl",
@@ -1434,36 +1345,15 @@ dependencies = [
 
 [[package]]
 name = "orbtk-theme"
-version = "0.3.1-alpha3"
+version = "0.3.1-alpha4"
 dependencies = [
  "lazy_static",
- "orbtk-theming 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "orbtk-theme"
-version = "0.3.1-alpha3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9cb95b03bd1d0a6823b978bdad46ca6195621e9368dff1ff8b3777b944bd1574"
-dependencies = [
- "lazy_static",
- "orbtk-theming 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-theming",
 ]
 
 [[package]]
 name = "orbtk-theming"
-version = "0.3.1-alpha3"
-dependencies = [
- "ron",
- "serde",
- "serde_derive",
-]
-
-[[package]]
-name = "orbtk-theming"
-version = "0.3.1-alpha3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df91cb7b3062463b7c07b637e10cd32c1e54520cdddc0a8e8bccf6e2e8d3d6be"
+version = "0.3.1-alpha4"
 dependencies = [
  "ron",
  "serde",
@@ -1472,69 +1362,32 @@ dependencies = [
 
 [[package]]
 name = "orbtk-tree"
-version = "0.3.1-alpha3"
-dependencies = [
- "dces",
-]
-
-[[package]]
-name = "orbtk-tree"
-version = "0.3.1-alpha3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4b73051e1b9966053353860f01dd28a7eed14bba64fe86fb9b25eada12593bc8"
+version = "0.3.1-alpha4"
 dependencies = [
  "dces",
 ]
 
 [[package]]
 name = "orbtk-utils"
-version = "0.3.1-alpha3"
+version = "0.3.1-alpha4"
 dependencies = [
- "derive_more 0.99.9",
- "ron",
- "serde",
-]
-
-[[package]]
-name = "orbtk-utils"
-version = "0.3.1-alpha3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fee14d317bac717fccda15caf885a08284431d769aa7fbe5e0364e249d300b45"
-dependencies = [
- "derive_more 0.99.9",
+ "derive_more",
  "ron",
  "serde",
 ]
 
 [[package]]
 name = "orbtk-widgets"
-version = "0.3.1-alpha3"
+version = "0.3.1-alpha4"
 dependencies = [
  "dces",
  "lazy_static",
- "orbtk-api 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-proc-macros 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-render 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-shell 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-theme 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "rust_decimal",
-]
-
-[[package]]
-name = "orbtk-widgets"
-version = "0.3.1-alpha3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df73805b112b2e87fa072c480cdff66685435afa9e2f62d6be341b4fef815c8f"
-dependencies = [
- "dces",
- "lazy_static",
- "orbtk-api 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-proc-macros 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-render 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-shell 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-theme 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
- "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-api",
+ "orbtk-proc-macros",
+ "orbtk-render",
+ "orbtk-shell",
+ "orbtk-theme",
+ "orbtk-utils",
  "rust_decimal",
 ]
 
@@ -1784,15 +1637,6 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cd07deb3c6d1d9ff827999c7f9b04cdfd66b1b17ae508e14fe47b620f2282ae0"
-dependencies = [
- "unicode-xid 0.1.0",
-]
-
-[[package]]
-name = "proc-macro2"
 version = "0.4.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf3d2011ab5c909338f7887f4fc896d35932e29146c12c8d01da6b22a80ba759"
@@ -1807,15 +1651,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04f5f085b5d71e2188cb8271e5da0161ad52c3f227a661a3c135fdf28e258b12"
 dependencies = [
  "unicode-xid 0.2.1",
-]
-
-[[package]]
-name = "quote"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1eca14c727ad12702eb4b6bfb5a232287dcf8385cb8ca83a3eeaf6519c44c408"
-dependencies = [
- "proc-macro2 0.2.3",
 ]
 
 [[package]]
@@ -2143,12 +1978,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "scoped-tls"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea6a9290e3c9cf0f18145ef7ffa62d68ee0bf5fcd651017e586dc7fd5da448c2"
-
-[[package]]
 name = "scoped_threadpool"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2216,7 +2045,7 @@ checksum = "609feed1d0a73cc36a0182a840a9b37b4a82f0b1150369f0536a9e3f2a31dc48"
 dependencies = [
  "proc-macro2 1.0.19",
  "quote 1.0.7",
- "syn 1.0.38",
+ "syn",
 ]
 
 [[package]]
@@ -2370,7 +2199,7 @@ dependencies = [
  "quote 1.0.7",
  "serde",
  "serde_derive",
- "syn 1.0.38",
+ "syn",
 ]
 
 [[package]]
@@ -2386,7 +2215,7 @@ dependencies = [
  "serde_derive",
  "serde_json",
  "sha1",
- "syn 1.0.38",
+ "syn",
 ]
 
 [[package]]
@@ -2400,17 +2229,6 @@ name = "sw-composite"
 version = "0.7.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a042aba3c316feb8b9624ba0369240b84ecdf1b2eff58b2c8987ba2dfa22ac4d"
-
-[[package]]
-name = "syn"
-version = "0.12.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c97c05b8ebc34ddd6b967994d5c6e9852fa92f8b82b3858c39451f97346dcce5"
-dependencies = [
- "proc-macro2 0.2.3",
- "quote 0.4.2",
- "unicode-xid 0.1.0",
-]
 
 [[package]]
 name = "syn"
@@ -2511,6 +2329,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "version_check"
+version = "0.9.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b5a972e5669d67ba988ce3dc826706fb0a8b01471c088cb0b6110b805cc36aed"
+
+[[package]]
 name = "void"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2554,7 +2378,7 @@ dependencies = [
  "log",
  "proc-macro2 1.0.19",
  "quote 1.0.7",
- "syn 1.0.38",
+ "syn",
  "wasm-bindgen-shared",
 ]
 
@@ -2576,7 +2400,7 @@ checksum = "841a6d1c35c6f596ccea1f82504a192a60378f64b3bb0261904ad8f2f5657556"
 dependencies = [
  "proc-macro2 1.0.19",
  "quote 1.0.7",
- "syn 1.0.38",
+ "syn",
  "wasm-bindgen-backend",
  "wasm-bindgen-shared",
 ]
@@ -2606,18 +2430,17 @@ dependencies = [
 
 [[package]]
 name = "wayland-client"
-version = "0.25.0"
+version = "0.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a42cb608953ec8e132c7f53fde722cca9bfbf8b2071d685dbbb8df2b567fee8b"
+checksum = "ab702fefbcd6d6f67fb5816e3a89a3b5a42a94290abbc015311c9a30d1068ae4"
 dependencies = [
  "bitflags",
  "downcast-rs",
  "libc",
  "nix 0.17.0",
- "scoped-tls",
- "wayland-commons 0.25.0",
- "wayland-scanner 0.25.0",
- "wayland-sys 0.25.0",
+ "wayland-commons 0.27.0",
+ "wayland-scanner 0.27.0",
+ "wayland-sys 0.27.0",
 ]
 
 [[package]]
@@ -2632,24 +2455,25 @@ dependencies = [
 
 [[package]]
 name = "wayland-commons"
-version = "0.25.0"
+version = "0.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8caa2f106138cf71358c6a9e84468e4406069cec93cbd6dbfce92225fc175932"
+checksum = "e972e9336ad5a9dd861b4e21ff35ad71d3e5c6b4803d65c39913612f851b95f1"
 dependencies = [
  "nix 0.17.0",
  "once_cell",
  "smallvec",
- "wayland-sys 0.25.0",
+ "wayland-sys 0.27.0",
 ]
 
 [[package]]
 name = "wayland-cursor"
-version = "0.25.0"
+version = "0.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3d774f69a6a4a9eac6d1a29cea45a4750ee7f997520421b2068f099a11b4cbba"
+checksum = "539f346e1a3f706f38c8ccbe1196001e2fb1c9b3e6b605c27d665db2f5b60d41"
 dependencies = [
- "wayland-client 0.25.0",
- "wayland-sys 0.25.0",
+ "nix 0.17.0",
+ "wayland-client 0.27.0",
+ "xcursor",
 ]
 
 [[package]]
@@ -2666,14 +2490,14 @@ dependencies = [
 
 [[package]]
 name = "wayland-protocols"
-version = "0.25.0"
+version = "0.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f784a990d5fa6d846fa93eb8d3bb744ff1e6ec60c7f785b0a0ee2f1a1f20bee9"
+checksum = "f3d6fc54b17b98b5083bc21ae3a30e6d75cb4b01647360e4c3a04648bcf8781d"
 dependencies = [
  "bitflags",
- "wayland-client 0.25.0",
- "wayland-commons 0.25.0",
- "wayland-scanner 0.25.0",
+ "wayland-client 0.27.0",
+ "wayland-commons 0.27.0",
+ "wayland-scanner 0.27.0",
 ]
 
 [[package]]
@@ -2689,9 +2513,9 @@ dependencies = [
 
 [[package]]
 name = "wayland-scanner"
-version = "0.25.0"
+version = "0.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f45ddc08a8078f3efa96b5f413268cc9c53b30712891de081fbc1d5846fbc736"
+checksum = "030f56009d932bd9400bb472764fea8109be1b0fc482d9cd75496c943ac30328"
 dependencies = [
  "proc-macro2 1.0.19",
  "quote 1.0.7",
@@ -2710,11 +2534,11 @@ dependencies = [
 
 [[package]]
 name = "wayland-sys"
-version = "0.25.0"
+version = "0.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "80f9fc64f9045ad5ff491886a9460437655353e8be73c1b3f29f569342553319"
+checksum = "8bdeffbbb474477dfa2acb45ac7479e5fe8f741c64ab032c5d11b94d07edc269"
 dependencies = [
- "dlib",
+ "pkg-config",
 ]
 
 [[package]]
@@ -2830,6 +2654,15 @@ dependencies = [
  "libc",
  "maybe-uninit",
  "pkg-config",
+]
+
+[[package]]
+name = "xcursor"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3a481cfdefd35e1c50073ae33a8000d695c98039544659f5dc5dd71311b0d01"
+dependencies = [
+ "nom",
 ]
 
 [[package]]
