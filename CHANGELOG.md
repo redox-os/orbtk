@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fix: Crash when a child widget is removed
 * TabWidget widget
 * Add on_changed property change callback to all widgets
+* OrbTk book (manual) wip
 
 ### 0.3.1-alpha2
 

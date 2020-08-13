@@ -21,7 +21,7 @@ If you want build and run your Rust application on a [KVM](https://en.wikipedia.
 To install Redoxer you have to first install the rust toolchain. After that open up an terminal and copy and paste the text below and hit the enter key on your keyboard:
 
 ```bash
-cargo install redoxer
+cargo +nightly install redoxer
 ```
 
 To compile and run your application on Redox OS you should check the [Redox OS Book](https://doc.redox-os.org/book/ch02-01-getting-started.html).

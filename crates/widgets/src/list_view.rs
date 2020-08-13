@@ -33,7 +33,8 @@ impl ListViewState {
                         let child = builder(build_context, i);
                         let item = ListViewItem::new().parent(entity.0).build(build_context);
 
-                        let mouse_behavior = MouseBehavior::new().build(build_context);
+                        let mouse_behavior =
+                            MouseBehavior::new().target(item.0).build(build_context);
                         build_context.register_shared_property::<Selector>(
                             "selector",
                             mouse_behavior,

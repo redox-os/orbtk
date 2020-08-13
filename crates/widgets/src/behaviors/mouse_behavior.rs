@@ -12,6 +12,7 @@ enum Action {
 pub struct MouseBehaviorState {
     action: Option<Action>,
     has_delta: bool,
+    target: Entity,
 }
 
 impl MouseBehaviorState {
@@ -21,18 +22,19 @@ impl MouseBehaviorState {
 }
 
 impl State for MouseBehaviorState {
+    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.target = (*mouse_behavior(ctx.widget()).target()).into();
+    }
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if !mouse_behavior(ctx.widget()).enabled() {
             return;
         }
 
         if let Some(action) = self.action {
-            let target: Entity = (*mouse_behavior(ctx.widget()).target()).into();
-
             match action {
                 Action::Press(_) => {
-                    ctx.get_widget(target).set("pressed", true);
-                    toggle_flag("pressed", &mut ctx.get_widget(target));
+                    ctx.get_widget(self.target).set("pressed", true);
+                    toggle_flag("pressed", &mut ctx.get_widget(self.target));
                 }
                 Action::Release(p) => {
                     if !*mouse_behavior(ctx.widget()).pressed() {
@@ -40,8 +42,8 @@ impl State for MouseBehaviorState {
                         return;
                     }
 
-                    ctx.get_widget(target).set("pressed", false);
-                    toggle_flag("pressed", &mut ctx.get_widget(target));
+                    ctx.get_widget(self.target).set("pressed", false);
+                    toggle_flag("pressed", &mut ctx.get_widget(self.target));
 
                     if check_mouse_condition(p.position, &ctx.widget()) {
                         let parent = ctx.entity_of_parent().unwrap();
@@ -59,7 +61,7 @@ impl State for MouseBehaviorState {
                 }
             };
 
-            ctx.get_widget(target).update(false);
+            ctx.get_widget(self.target).update(false);
 
             self.action = None;
         }
