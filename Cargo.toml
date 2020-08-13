@@ -49,6 +49,8 @@ serde_derive = "1.0.106"
 debug = ["orbtk-api/debug"]
 pathfinder = ["orbtk-shell/pfinder", "orbtk-render/pfinder"]
 log = ["orbtk-shell/log"]
+light = ["orbtk-theme/light"]
+redox = ["orbtk-theme/redox"]
  
 [workspace]
 members = [

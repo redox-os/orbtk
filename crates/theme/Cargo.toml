@@ -12,3 +12,7 @@ edition = "2018"
 [dependencies]
 orbtk-theming = { path = "../theming", version = "0.3.1-alpha4" }
 lazy_static = "1.4.0"
+
+[features]
+light = []
+redox = []
