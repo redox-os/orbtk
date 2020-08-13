@@ -157,7 +157,7 @@ impl From<Value> for Thickness {
                     }
                 }
 
-                return Thickness::from((left, top, right, bottom));
+                Thickness::from((left, top, right, bottom))
             }
             _ => Thickness::default(),
         }
