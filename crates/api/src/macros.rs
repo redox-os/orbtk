@@ -45,16 +45,16 @@ macro_rules! into_property_source {
 /// Inherits default properties from a base widget.
 /// Implements the [`Widget`] trait automatically.
 /// Also the struct serves as a [`builder`] of the [`builder pattern`].
-/// 
+///
 /// Syntax:
-/// 
+///
 /// ```
 /// widget!(MyWidgetName<MyWidgetStateStruct>: Handler1, Handler2, Handler3 {
 ///     property_name_1: PropertyType1,
 ///     property_name_2: PropertyType2
 /// });
 /// ```
-/// 
+///
 /// # Examples
 ///
 /// Creates a widget named PersonWidget with three properties, without handlers, and with
@@ -66,7 +66,7 @@ macro_rules! into_property_source {
 ///     average: f64
 /// });
 /// ```
-/// 
+///
 /// [`Widget`]: ./widget/trait.Widget.html
 /// [`builder`]: https://doc.rust-lang.org/1.0.0/style/ownership/builders.html
 /// [`builder pattern`]: https://en.wikipedia.org/wiki/Builder_pattern
