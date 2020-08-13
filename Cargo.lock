@@ -1258,15 +1258,15 @@ version = "0.3.1-alpha3"
 dependencies = [
  "dces",
  "euc",
- "orbtk-api",
- "orbtk-proc-macros 0.3.1-alpha3",
- "orbtk-render 0.3.1-alpha3",
- "orbtk-shell 0.3.1-alpha3",
- "orbtk-theme 0.3.1-alpha3",
- "orbtk-theming 0.3.1-alpha3",
- "orbtk-tree 0.3.1-alpha3",
- "orbtk-utils 0.3.1-alpha3",
- "orbtk-widgets",
+ "orbtk-api 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-proc-macros 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-render 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-shell 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-theme 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-theming 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-tree 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-widgets 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
  "serde_derive",
  "vek",
@@ -1275,6 +1275,29 @@ dependencies = [
 [[package]]
 name = "orbtk-api"
 version = "0.3.1-alpha3"
+dependencies = [
+ "dces",
+ "derive_more 0.9.0",
+ "dirs 3.0.1",
+ "orbtk-proc-macros 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-render 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-shell 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-theme 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-theming 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-tree 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "raw-window-handle",
+ "ron",
+ "serde",
+ "serde_derive",
+ "stdweb",
+]
+
+[[package]]
+name = "orbtk-api"
+version = "0.3.1-alpha3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2310a55a68e7940e09913534ca1e8d113bd8425db136a80d0ee0792d0a990444"
 dependencies = [
  "dces",
  "derive_more 0.9.0",
@@ -1341,8 +1364,17 @@ version = "0.3.1-alpha3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b0aa21e9d8bcb6601ee69b6af4f0679d44a1b6a5d86773ba5aae2d8e9712314c"
 dependencies = [
+ "font-kit",
  "image",
  "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pathfinder_canvas",
+ "pathfinder_color",
+ "pathfinder_content",
+ "pathfinder_geometry",
+ "pathfinder_gl",
+ "pathfinder_gpu",
+ "pathfinder_renderer",
+ "pathfinder_resources",
  "raqote",
  "rusttype 0.8.3",
  "stdweb",
@@ -1381,11 +1413,20 @@ checksum = "bcf73a57e5c22fc484eebc587e60745d2d6407b0c3e540e0adadc11913d981ba"
 dependencies = [
  "console_error_panic_hook",
  "derive_more 0.99.9",
+ "euclid",
+ "font-kit",
+ "gl",
+ "glutin",
  "image",
  "lazy_static",
  "minifb",
  "orbtk-render 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
  "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pathfinder_color",
+ "pathfinder_geometry",
+ "pathfinder_gl",
+ "pathfinder_renderer",
+ "pathfinder_resources",
  "raw-window-handle",
  "spin_sleep",
  "stdweb",
@@ -1471,12 +1512,29 @@ version = "0.3.1-alpha3"
 dependencies = [
  "dces",
  "lazy_static",
- "orbtk-api",
- "orbtk-proc-macros 0.3.1-alpha3",
- "orbtk-render 0.3.1-alpha3",
- "orbtk-shell 0.3.1-alpha3",
- "orbtk-theme 0.3.1-alpha3",
- "orbtk-utils 0.3.1-alpha3",
+ "orbtk-api 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-proc-macros 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-render 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-shell 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-theme 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rust_decimal",
+]
+
+[[package]]
+name = "orbtk-widgets"
+version = "0.3.1-alpha3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "df73805b112b2e87fa072c480cdff66685435afa9e2f62d6be341b4fef815c8f"
+dependencies = [
+ "dces",
+ "lazy_static",
+ "orbtk-api 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-proc-macros 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-render 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-shell 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-theme 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "orbtk-utils 0.3.1-alpha3 (registry+https://github.com/rust-lang/crates.io-index)",
  "rust_decimal",
 ]
 
