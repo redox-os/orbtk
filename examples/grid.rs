@@ -21,8 +21,8 @@ impl Template for MainView {
     fn template(self, _: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MainView").child(
             Grid::new()
-                .columns(Columns::new().add("*").add("auto").add(50))
-                .rows(Rows::new().add("*").add("*"))
+                .columns(Columns::create().push("*").push("auto").push(50))
+                .rows(Rows::create().push("*").push("*"))
                 .child(
                     Grid::new()
                         .style("lynch")
@@ -42,7 +42,7 @@ impl Template for MainView {
                     Grid::new()
                         .style("bluebayoux")
                         .margin(10)
-                        .constraint(Constraint::new().width(150))
+                        .constraint(Constraint::create().width(150))
                         .attach(Grid::column(1))
                         .child(
                             TextBlock::new()

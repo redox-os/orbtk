@@ -179,8 +179,15 @@ impl Template for MainView {
             .child(
                 Grid::new()
                     .margin(8)
-                    .columns(Columns::new().add(132).add(16).add(132).add(16).add(132))
-                    .rows(Rows::new().add("*").add(32))
+                    .columns(
+                        Columns::create()
+                            .push(132)
+                            .push(16)
+                            .push(132)
+                            .push(16)
+                            .push(132),
+                    )
+                    .rows(Rows::create().push("*").push(32))
                     .child(
                         Stack::new()
                             .attach(Grid::column(0))
@@ -307,16 +314,16 @@ impl Template for MainView {
                     .child(
                         Grid::new()
                             .rows(
-                                Rows::new()
-                                    .add("auto")
-                                    .add(32)
-                                    .add(16)
-                                    .add(204)
-                                    .add("auto")
-                                    .add(192)
-                                    .add("auto"),
+                                Rows::create()
+                                    .push("auto")
+                                    .push(32)
+                                    .push(16)
+                                    .push(204)
+                                    .push("auto")
+                                    .push(192)
+                                    .push("auto"),
                             )
-                            .columns(Columns::new().add("*").add(4).add("*"))
+                            .columns(Columns::create().push("*").push(4).push("*"))
                             .attach(Grid::column(4))
                             .attach(Grid::row(0))
                             .child(

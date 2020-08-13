@@ -115,15 +115,8 @@ impl Default for Constraint {
 impl Constraint {
     /// Returns a constraint builder.
     #[inline]
-    pub fn new() -> ConstraintBuilder {
-        ConstraintBuilder::new()
-    }
-
-    /// Returns a constraint builder.
-    #[inline(always)]
-    #[deprecated = "Use new instead"]
     pub fn create() -> ConstraintBuilder {
-        Constraint::new()
+        ConstraintBuilder::new()
     }
 
     /// Gets width.
@@ -292,7 +285,7 @@ mod tests {
     fn test_builder_width() {
         let width = 12.0;
 
-        let constraint = Constraint::new().width(width).build();
+        let constraint = Constraint::create().width(width).build();
 
         assert_eq!(constraint.width(), width);
     }
@@ -301,7 +294,7 @@ mod tests {
     fn test_builder_height() {
         let height = 12.0;
 
-        let constraint = Constraint::new().height(height).build();
+        let constraint = Constraint::create().height(height).build();
 
         assert_eq!(constraint.height(), height);
     }
@@ -310,7 +303,7 @@ mod tests {
     fn test_builder_min_width() {
         let width = 12.0;
 
-        let constraint = Constraint::new().min_width(width).build();
+        let constraint = Constraint::create().min_width(width).build();
 
         assert_eq!(constraint.min_width(), width);
     }
@@ -319,7 +312,7 @@ mod tests {
     fn test_builder_min_height() {
         let height = 12.0;
 
-        let constraint = Constraint::new().min_height(height).build();
+        let constraint = Constraint::create().min_height(height).build();
 
         assert_eq!(constraint.min_height(), height);
     }
@@ -328,7 +321,7 @@ mod tests {
     fn test_builder_max_width() {
         let width = 12.0;
 
-        let constraint = Constraint::new().max_width(width).build();
+        let constraint = Constraint::create().max_width(width).build();
 
         assert_eq!(constraint.max_width(), width);
     }
@@ -337,7 +330,7 @@ mod tests {
     fn test_builder_max_height() {
         let height = 12.0;
 
-        let constraint = Constraint::new().max_height(height).build();
+        let constraint = Constraint::create().max_height(height).build();
 
         assert_eq!(constraint.max_height(), height);
     }

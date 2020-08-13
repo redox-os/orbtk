@@ -75,16 +75,16 @@ impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MainView").child(
             Grid::new()
-                .rows(Rows::new().add(36.0).add(4.0).add("auto").build())
+                .rows(Rows::create().push(36).push(4).push("auto").build())
                 .columns(
-                    Columns::new()
-                        .add(160.0)
-                        .add(4.0)
-                        .add("Auto")
-                        .add(4.0)
-                        .add("Auto")
-                        .add(4.0)
-                        .add("Auto"),
+                    Columns::create()
+                        .push(160)
+                        .push(4)
+                        .push("auto")
+                        .push(4)
+                        .push("auto")
+                        .push(4)
+                        .push("auto"),
                 )
                 .child(TextBox::new().v_align("center").text(id).build(ctx))
                 .child(

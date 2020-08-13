@@ -237,8 +237,8 @@ impl Template for NumericBox {
             )
             .child(
                 Grid::new()
-                    .columns(Columns::new().add("*").add(32.))
-                    .rows(Rows::new().add(16.0).add(16.0))
+                    .columns(Columns::create().push("*").push(32.))
+                    .rows(Rows::create().push(16.0).push(16.0))
                     .child(
                         TextBox::new()
                             .id(ID_INPUT)

@@ -524,7 +524,7 @@ impl Template for TabWidget {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("TabWidget").style("tab_widget").child(
             Grid::new()
-                .rows(Rows::new().add(32).add("*"))
+                .rows(Rows::create().push(32).push("*"))
                 .child(
                     Stack::new()
                         .id(HEADER_CONTAINER)

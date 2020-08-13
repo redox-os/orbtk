@@ -55,15 +55,8 @@ pub struct Row {
 impl Row {
     /// Creates a new `RowBuilder` object with default values.
     #[inline]
-    pub fn new() -> RowBuilder {
-        RowBuilder::new()
-    }
-
-    /// Creates a new `RowBuilder` object with default values.
-    #[inline(always)]
-    #[deprecated = "Use new instead"]
     pub fn create() -> RowBuilder {
-        Row::new()
+        RowBuilder::new()
     }
 
     /// Gets the row height.
@@ -93,21 +86,21 @@ impl Row {
 impl From<&str> for Row {
     fn from(t: &str) -> Self {
         match t {
-            "Auto" | "auto" => Row::new().height(RowHeight::Auto).build(),
-            _ => Row::new().height(RowHeight::Stretch).build(),
+            "Auto" | "auto" => Row::create().height(RowHeight::Auto).build(),
+            _ => Row::create().height(RowHeight::Stretch).build(),
         }
     }
 }
 
 impl From<f64> for Row {
     fn from(t: f64) -> Self {
-        Row::new().height(RowHeight::Height(t)).build()
+        Row::create().height(RowHeight::Height(t)).build()
     }
 }
 
 impl From<i32> for Row {
     fn from(t: i32) -> Self {
-        Row::new().height(RowHeight::Height(t.into())).build()
+        Row::create().height(RowHeight::Height(t.into())).build()
     }
 }
 
@@ -143,16 +136,16 @@ impl RowsBuilder {
     }
 
     /// Inserts a new row.
-    pub fn add<R: Into<Row>>(mut self, row: R) -> Self {
+    pub fn push<R: Into<Row>>(mut self, row: R) -> Self {
         self.row_definitions.push(row.into());
         self
     }
 
     /// Inserts a new row.
     #[inline]
-    #[deprecated = "Use add instead"]
+    #[deprecated = "Use push instead"]
     pub fn row<R: Into<Row>>(self, row: R) -> Self {
-        self.add(row)
+        self.push(row)
     }
 
     /// Inserts a list of rows.
@@ -189,14 +182,7 @@ pub struct Rows(Vec<Row>);
 
 impl Rows {
     /// Creates a new `RowsBuilder` object with default values.
-    #[inline(always)]
-    pub fn new() -> RowsBuilder {
-        RowsBuilder::new()
-    }
-
-    /// Creates a new `RowsBuilder` object with default values.
-    #[inline(always)]
-    #[deprecated = "Use new instead"]
+    #[inline]
     pub fn create() -> RowsBuilder {
         RowsBuilder::new()
     }
@@ -299,8 +285,8 @@ mod tests {
 
         let builder = RowsBuilder::new();
         let rows = builder
-            .add(Row::new().build())
-            .add(Row::new().build())
+            .push(Row::create().build())
+            .push(Row::create().build())
             .build();
 
         assert_eq!(rows.len(), 2);
