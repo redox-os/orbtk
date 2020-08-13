@@ -1,6 +1,4 @@
-use std::{
-    cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, sync::Arc, time::Duration,
-};
+use std::{collections::HashMap, sync::mpsc, sync::Arc};
 
 use font_kit::handle::Handle;
 use glutin::{
@@ -19,11 +17,8 @@ use pathfinder_resources::embedded::EmbeddedResourceLoader;
 use super::{Shell, Window};
 
 use crate::{
-    event::{ButtonState, Key, KeyEvent},
-    render::RenderContext2D,
-    utils::Rectangle,
-    window_adapter::WindowAdapter,
-    WindowRequest, WindowSettings,
+    render::RenderContext2D, utils::Rectangle, window_adapter::WindowAdapter, WindowRequest,
+    WindowSettings,
 };
 
 /// The `WindowBuilder` is used to construct a window shell for the minifb backend.
@@ -73,8 +68,7 @@ where
             request_receiver: None,
             bounds: Rectangle::new(
                 (settings.position.0, settings.position.1),
-                settings.size.0,
-                settings.size.1,
+                (settings.size.0, settings.size.1),
             ),
         }
     }

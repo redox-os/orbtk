@@ -1,11 +1,11 @@
-use std::{cell::RefCell, rc::Rc, sync::mpsc};
+use std::sync::mpsc;
 
 use glutin::{event, event_loop::ControlFlow, window, ContextWrapper, PossiblyCurrent};
 
 use derive_more::Constructor;
 
 use crate::{
-    event::{ButtonState, KeyEvent, MouseButton, MouseEvent},
+    event::{ButtonState, MouseButton, MouseEvent},
     render::RenderContext2D,
     window_adapter::WindowAdapter,
     WindowRequest,

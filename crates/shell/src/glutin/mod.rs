@@ -5,11 +5,9 @@ use std::sync::mpsc;
 pub use super::native::*;
 
 use glutin::event_loop::{ControlFlow, EventLoop};
-use lazy_static;
 
 use crate::prelude::*;
 
-use self::states::*;
 pub use self::window::*;
 pub use self::window_builder::*;
 

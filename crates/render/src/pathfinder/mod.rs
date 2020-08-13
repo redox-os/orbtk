@@ -49,7 +49,7 @@ pub struct RenderContext2D {
     canvas: Vec<CanvasRenderingContext2D>,
     path: Path2D,
     size: (f64, f64),
-    origin_size: (f64, f64),
+    _origin_size: (f64, f64),
     config: RenderConfig,
     device_pixel_ratio: f32,
     saved_config: Option<RenderConfig>,
@@ -65,7 +65,7 @@ impl RenderContext2D {
             canvas: vec![],
             path: Path2D::new(),
             size: (width, height),
-            origin_size: (width, height),
+            _origin_size: (width, height),
             device_pixel_ratio: 1.0,
             config: RenderConfig::default(),
             saved_config: None,
@@ -89,7 +89,6 @@ impl RenderContext2D {
                     )
                     .to_f32(),
                 ),
-                ..RendererOptions::default()
             })
         }
     }
@@ -104,7 +103,7 @@ impl RenderContext2D {
 
         let device_pixel_ratio = size.0 as f32 / origin_size.0 as f32;
 
-        let mut canvas = Canvas::new(Vector2F::new(size.0 as f32, size.1 as f32))
+        let canvas = Canvas::new(Vector2F::new(size.0 as f32, size.1 as f32))
             .get_context_2d(font_context.clone());
 
         // canvas.set_text_baseline(TextBaseline::Top);
@@ -116,14 +115,14 @@ impl RenderContext2D {
             canvas: vec![canvas],
             path: Path2D::new(),
             size,
-            origin_size,
+            _origin_size: origin_size,
             device_pixel_ratio,
             config: RenderConfig::default(),
             saved_config: None,
         }
     }
 
-    pub fn resize(&mut self, width: f64, height: f64) {
+    pub fn resize(&mut self, _width: f64, _height: f64) {
         // if let Some(renderer) = &mut self.renderer {
         //     renderer.replace_dest_framebuffer(DestFramebuffer::full_window(vec2i(
         //         width as i32,
@@ -289,21 +288,21 @@ impl RenderContext2D {
     }
 
     /// Draws a render target.
-    pub fn draw_render_target(&mut self, render_target: &RenderTarget, x: f64, y: f64) {}
+    pub fn draw_render_target(&mut self, _render_target: &RenderTarget, _x: f64, _y: f64) {}
 
     /// Draws the image.
     pub fn draw_image(&mut self, image: &Image, x: f64, y: f64) {}
 
     /// Draws the given part of the image.
-    pub fn draw_image_with_clip(&mut self, image: &Image, clip: Rectangle, x: f64, y: f64) {}
+    pub fn draw_image_with_clip(&mut self, _image: &Image, _clip: Rectangle, _x: f64, _y: f64) {}
 
     pub fn draw_pipeline(
         &mut self,
-        x: f64,
-        y: f64,
-        width: f64,
-        height: f64,
-        pipeline: Box<dyn PipelineTrait>,
+        _x: f64,
+        _y: f64,
+        _width: f64,
+        _height: f64,
+        _pipeline: Box<dyn PipelineTrait>,
     ) {
     }
 
@@ -382,12 +381,12 @@ impl RenderContext2D {
     /// Sets the tranformation.
     pub fn set_transform(
         &mut self,
-        h_scaling: f64,
-        h_skewing: f64,
-        v_skewing: f64,
-        v_scaling: f64,
-        h_moving: f64,
-        v_moving: f64,
+        _h_scaling: f64,
+        _h_skewing: f64,
+        _v_skewing: f64,
+        _v_scaling: f64,
+        _h_moving: f64,
+        _v_moving: f64,
     ) {
     }
 
