@@ -3,8 +3,8 @@ use super::behaviors::MouseBehavior;
 use crate::{api::prelude::*, prelude::*, proc_macros::*};
 
 // --- KEYS --
-static ID_SWITCH_TRACK: &'static str = "switch_track";
-static ID_SWITCH_TOGGLE: &'static str = "switch_toggle";
+static ID_SWITCH_TRACK: &str = "switch_track";
+static ID_SWITCH_TOGGLE: &str = "switch_toggle";
 // --- KEYS --
 
 /// State to handle the position of switch toggle.

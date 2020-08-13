@@ -32,7 +32,8 @@ impl TextBehaviorState {
         ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
 
         // select all text if there is text and the element is not focused yet.
-        if ctx.widget().get::<String16>("text").len() > 0 && !(*ctx.widget().get::<bool>("focused"))
+        if !ctx.widget().get::<String16>("text").is_empty()
+            && !(*ctx.widget().get::<bool>("focused"))
         {
             self.select_all(ctx);
             return;

@@ -5,9 +5,9 @@ static RANGE_MAX: f64 = 1.0;
 
 // --- KEYS --
 
-pub static STYLE_PROGRESS_BAR: &'static str = "progress_bar";
-pub static STYLE_PROGRESS_BAR_INDICATOR: &'static str = "progress_bar_indicator";
-static ID_INDICATOR: &'static str = "PGBAR_INDICATOR";
+pub static STYLE_PROGRESS_BAR: &str = "progress_bar";
+pub static STYLE_PROGRESS_BAR_INDICATOR: &str = "progress_bar_indicator";
+static ID_INDICATOR: &str = "PGBAR_INDICATOR";
 
 // --- KEYS --
 
@@ -38,17 +38,14 @@ impl State for BarState {
 }
 
 fn calculate_width(current_progress: f64, max_width: f64) -> f64 {
-    if current_progress == RANGE_MIN {
+    if (current_progress - RANGE_MIN).abs() < f64::EPSILON {
         return 0.01;
-    } else {
-        if current_progress == RANGE_MAX {
-            return max_width * 0.99;
-        } else if current_progress > RANGE_MIN && current_progress < RANGE_MAX {
-            return max_width * current_progress;
-        } else {
-            return max_width * 0.99;
-        }
+    } else if (current_progress - RANGE_MAX).abs() < f64::EPSILON {
+        return max_width * 0.99;
+    } else if current_progress > RANGE_MIN && current_progress < RANGE_MAX {
+        return max_width * current_progress;
     }
+    max_width * 0.99
 }
 
 widget!(
@@ -129,12 +126,14 @@ impl Template for ProgressBar {
 mod tests {
     use super::*;
 
+    const ERROR: f64 = f64::EPSILON;
+
     #[test]
     fn test_calculate_width() {
-        assert_eq!(0.01, calculate_width(0.0, 100.0));
-        assert_eq!(50.0, calculate_width(0.5, 100.0));
-        assert_eq!(99.0, calculate_width(1.0, 100.0));
-        assert_eq!(99.0, calculate_width(1.23, 100.0));
-        assert_eq!(99.0, calculate_width(-1.23, 100.0));
+        assert!((0.01 - calculate_width(0.0, 100.0)).abs() < ERROR);
+        assert!((50.0 - calculate_width(0.5, 100.0)).abs() < ERROR);
+        assert!((99.0 - calculate_width(1.0, 100.0)).abs() < ERROR);
+        assert!((99.0 - calculate_width(1.23, 100.0)).abs() < ERROR);
+        assert!((99.0 - calculate_width(-1.23, 100.0)).abs() < ERROR);
     }
 }

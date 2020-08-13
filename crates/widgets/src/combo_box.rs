@@ -9,8 +9,8 @@ use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
 
 // --- KEYS --
 
-static CONTAINER: &'static str = "container";
-static ITEMS_PANEL: &'static str = "items_panel";
+static CONTAINER: &str = "container";
+static ITEMS_PANEL: &str = "items_panel";
 
 // --- KEYS --
 

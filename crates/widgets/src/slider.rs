@@ -1,9 +1,9 @@
 use crate::{api::prelude::*, prelude::*, proc_macros::*};
 
 // --- KEYS --
-pub static STYLE_SLIDER: &'static str = "slider";
-static ID_THUMB: &'static str = "id_thumb";
-static ID_TRACK: &'static str = "id_track";
+pub static STYLE_SLIDER: &str = "slider";
+static ID_THUMB: &str = "id_thumb";
+static ID_TRACK: &str = "id_track";
 // --- KEYS --
 
 #[derive(Copy, Clone)]
@@ -31,8 +31,9 @@ impl SliderState {
     // adjust min, max and val
     fn adjust(&mut self, ctx: &mut Context) -> bool {
         let mut has_changes = false;
+        let error = f64::EPSILON;
 
-        if *ctx.widget().get::<f64>("min") != self.min {
+        if (*ctx.widget().get::<f64>("min") - self.min).abs() > error {
             let min = adjust_min(
                 *ctx.widget().get::<f64>("min"),
                 *ctx.widget().get::<f64>("max"),
@@ -42,7 +43,7 @@ impl SliderState {
             has_changes = true;
         }
 
-        if *ctx.widget().get::<f64>("max") != self.max {
+        if (*ctx.widget().get::<f64>("max") - self.max).abs() > error {
             let max = adjust_max(
                 *ctx.widget().get::<f64>("min"),
                 *ctx.widget().get::<f64>("max"),
@@ -52,7 +53,7 @@ impl SliderState {
             has_changes = true;
         }
 
-        if *ctx.widget().get::<f64>("val") != self.val {
+        if (*ctx.widget().get::<f64>("val") - self.val).abs() > error {
             let val = adjust_val(
                 *ctx.widget().get::<f64>("val"),
                 *ctx.widget().get::<f64>("min"),
@@ -277,60 +278,53 @@ fn calculate_thumb_x_from_val(
 mod tests {
     use super::*;
 
+    const ERROR: f64 = f64::EPSILON;
+
     #[test]
     fn test_calculate_thumb_x() {
-        assert_eq!(0.0, calculate_thumb_x(-1000.0, 32.0, 0.0, 100.0));
-        assert_eq!(0.0, calculate_thumb_x(0.0, 32.0, 0.0, 100.0));
-        assert_eq!(18.0, calculate_thumb_x(50.0, 32.0, 0.0, 100.0));
-        assert_eq!(36.0, calculate_thumb_x(68.0, 32.0, 0.0, 100.0));
-        assert_eq!(68.0, calculate_thumb_x(100.0, 32.0, 0.0, 100.0));
-        assert_eq!(68.0, calculate_thumb_x(1000.0, 32.0, 0.0, 100.0));
+        assert!((0.0 - calculate_thumb_x(-1000.0, 32.0, 0.0, 100.0)).abs() < ERROR);
+        assert!((0.0 - calculate_thumb_x(0.0, 32.0, 0.0, 100.0)).abs() < ERROR);
+        assert!((18.0 - calculate_thumb_x(50.0, 32.0, 0.0, 100.0)).abs() < ERROR);
+        assert!((36.0 - calculate_thumb_x(68.0, 32.0, 0.0, 100.0)).abs() < ERROR);
+        assert!((68.0 - calculate_thumb_x(100.0, 32.0, 0.0, 100.0)).abs() < ERROR);
+        assert!((68.0 - calculate_thumb_x(1000.0, 32.0, 0.0, 100.0)).abs() < ERROR);
     }
 
     #[test]
     fn test_calculate_val() {
-        assert_eq!(0.0, calculate_val(0.0, 0.0, 100.0, 32.0, 100.0));
-        assert_eq!(50.0, calculate_val(34.0, 0.0, 100.0, 32.0, 100.0));
-        assert_eq!(100.0, calculate_val(68.0, 0.0, 100.0, 32.0, 100.0));
-        assert_eq!(0.0, calculate_val(0.0, -50.0, 50.0, 32.0, 100.0));
-        assert_eq!(50.0, calculate_val(34.0, -50.0, 50.0, 32.0, 100.0));
-        assert_eq!(100.0, calculate_val(68.0, -50.0, 50.0, 32.0, 100.0));
+        assert!((0.0 - calculate_val(0.0, 0.0, 100.0, 32.0, 100.0)).abs() < ERROR);
+        assert!((50.0 - calculate_val(34.0, 0.0, 100.0, 32.0, 100.0)).abs() < ERROR);
+        assert!((100.0 - calculate_val(68.0, 0.0, 100.0, 32.0, 100.0)).abs() < ERROR);
+        assert!((0.0 - calculate_val(0.0, -50.0, 50.0, 32.0, 100.0)).abs() < ERROR);
+        assert!((50.0 - calculate_val(34.0, -50.0, 50.0, 32.0, 100.0)).abs() < ERROR);
+        assert!((100.0 - calculate_val(68.0, -50.0, 50.0, 32.0, 100.0)).abs() < ERROR);
     }
 
     #[test]
     fn test_adjust_val() {
-        assert_eq!(0.0, adjust_val(-10.0, 0.0, 100.0));
-        assert_eq!(10.0, adjust_val(10.0, 0.0, 100.0));
-        assert_eq!(100.0, adjust_val(500.0, 0.0, 100.0));
+        assert!((0.0 - adjust_val(-10.0, 0.0, 100.0)).abs() < ERROR);
+        assert!((10.0 - adjust_val(10.0, 0.0, 100.0)).abs() < ERROR);
+        assert!((100.0 - adjust_val(500.0, 0.0, 100.0)).abs() < ERROR);
     }
 
     #[test]
     fn test_adjust_min() {
-        assert_eq!(0.0, adjust_min(0.0, 100.0));
-        assert_eq!(5.0, adjust_min(5.0, 100.0));
-        assert_eq!(100.0, adjust_min(500.0, 100.0));
+        assert!((0.0 - adjust_min(0.0, 100.0)).abs() < ERROR);
+        assert!((5.0 - adjust_min(5.0, 100.0)).abs() < ERROR);
+        assert!((100.0 - adjust_min(500.0, 100.0)).abs() < ERROR);
     }
 
     #[test]
     fn test_adjust_max() {
-        assert_eq!(100.0, adjust_max(0.0, 100.0));
-        assert_eq!(100.0, adjust_max(100.0, 5.0));
-        assert_eq!(100.0, adjust_max(0.0, 100.0));
+        assert!((100.0 - adjust_max(0.0, 100.0)).abs() < ERROR);
+        assert!((100.0 - adjust_max(100.0, 5.0)).abs() < ERROR);
+        assert!((100.0 - adjust_max(0.0, 100.0)).abs() < ERROR);
     }
 
     #[test]
     fn test_calculate_thumb_x_from_val() {
-        assert_eq!(
-            0.0,
-            calculate_thumb_x_from_val(0.0, 0.0, 100.0, 100.0, 32.0)
-        );
-        assert_eq!(
-            34.0,
-            calculate_thumb_x_from_val(50.0, 0.0, 100.0, 100.0, 32.0)
-        );
-        assert_eq!(
-            68.0,
-            calculate_thumb_x_from_val(100.0, 0.0, 100.0, 100.0, 32.0)
-        );
+        assert!((0.0 - calculate_thumb_x_from_val(0.0, 0.0, 100.0, 100.0, 32.0)).abs() < ERROR);
+        assert!((34.0 - calculate_thumb_x_from_val(50.0, 0.0, 100.0, 100.0, 32.0)).abs() < ERROR);
+        assert!((68.0 - calculate_thumb_x_from_val(100.0, 0.0, 100.0, 100.0, 32.0)).abs() < ERROR);
     }
 }

@@ -6,7 +6,7 @@ use std::{
 use super::behaviors::MouseBehavior;
 use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
 
-static ITEMS_PANEL: &'static str = "items_panel";
+static ITEMS_PANEL: &str = "items_panel";
 
 /// The `ListViewState` generates the list box items and handles the selected indices.
 #[derive(Default, AsAny)]
@@ -182,7 +182,7 @@ impl State for ListViewItemState {
             .get::<SelectedIndices>("selected_indices")
             .0
             .iter()
-            .map(|i| *i)
+            .copied()
             .collect();
 
         ctx.push_event_strategy_by_entity(

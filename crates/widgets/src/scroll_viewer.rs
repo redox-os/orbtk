@@ -105,8 +105,8 @@ mod tests {
         let width = 100.;
         let child_width = 200.0;
 
-        assert_eq!(offset(width, child_width, 0., -10.), -10.);
-        assert_eq!(offset(width, child_width, 0., -200.), -100.);
-        assert_eq!(offset(width, child_width, 0., 200.), 0.);
+        assert!((offset(width, child_width, 0., -10.) + 10.).abs() < f64::EPSILON);
+        assert!((offset(width, child_width, 0., -200.) + 100.).abs() < f64::EPSILON);
+        assert!((offset(width, child_width, 0., 200.) + 0.).abs() < f64::EPSILON);
     }
 }

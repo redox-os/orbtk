@@ -1,8 +1,8 @@
 use crate::{api::prelude::*, prelude::*, proc_macros::*};
 
 // --- KEYS --
-static ID_SCROLL_BAR_HORIZONTAL: &'static str = "scroll_bar_horizontal";
-static ID_SCROLL_BAR_VERTICAL: &'static str = "scroll_bar_vertical";
+static ID_SCROLL_BAR_HORIZONTAL: &str = "scroll_bar_horizontal";
+static ID_SCROLL_BAR_VERTICAL: &str = "scroll_bar_vertical";
 // --- KEYS --
 
 /// The `ScrollIndicatorState` handles the `ScrollIndicator` widget.
@@ -168,9 +168,9 @@ mod tests {
         let view_port_size = 80.0;
         let padding = 8.;
 
-        assert_eq!(
-            scroll_bar_size(size, content_size, view_port_size, padding),
-            12.
+        assert!(
+            (scroll_bar_size(size, content_size, view_port_size, padding) - 12.).abs()
+                < f64::EPSILON
         );
     }
 
@@ -180,6 +180,6 @@ mod tests {
         let content_size = 200.;
         let offset_in = 8.;
 
-        assert_eq!(offset(size, content_size, offset_in), 2.);
+        assert!((offset(size, content_size, offset_in) - 2.).abs() < f64::EPSILON);
     }
 }

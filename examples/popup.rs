@@ -1,7 +1,7 @@
 use orbtk::prelude::*;
 
-static STACK_ID: &'static str = "STACK";
-static BTN_ID: &'static str = "BUTTON";
+static STACK_ID: &str = "STACK";
+static BTN_ID: &str = "BUTTON";
 
 #[derive(Copy, Clone)]
 enum PopUpAction {

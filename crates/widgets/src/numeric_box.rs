@@ -7,9 +7,9 @@ use crate::{api::prelude::*, prelude::*, proc_macros::*, shell::prelude::*, them
 
 // --- KEYS --
 
-pub static ID_INPUT: &'static str = "numeric_box_input";
-pub static STYLE_INPUT: &'static str = "numeric_box_input";
-pub static STYLE_BTN: &'static str = "numeric_box_button";
+pub static ID_INPUT: &str = "numeric_box_input";
+pub static STYLE_INPUT: &str = "numeric_box_input";
+pub static STYLE_BTN: &str = "numeric_box_button";
 
 // --- KEYS --
 
@@ -55,17 +55,17 @@ impl NumericBoxState {
     fn min(&self, d: Decimal) -> Decimal {
         if d <= self.min {
             return self.min;
-        } else {
-            return d;
         }
+
+        d
     }
 
     fn max(&self, d: Decimal) -> Decimal {
         if d >= self.max {
             return self.max;
-        } else {
-            return d;
         }
+
+        d
     }
 
     fn request_focus(&self, ctx: &mut Context) {

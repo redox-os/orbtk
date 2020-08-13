@@ -255,7 +255,7 @@ impl TabWidgetState {
         self.actions.push(TabWidgetAction::Add(header.into(), body));
 
         //At this point the tab has not been added yet, so we can check if len is == 0
-        if self.tabs.len() == 0 {
+        if self.tabs.is_empty() {
             self.select_by_index(0);
         }
     }
@@ -281,7 +281,8 @@ impl TabWidgetState {
                 return Some(i);
             }
         }
-        return None;
+
+        None
     }
 
     /**
@@ -301,7 +302,7 @@ impl TabWidgetState {
     */
     fn select_by_index_internal(&mut self, ctx: &mut Context, mut index: usize) {
         //No tabs could be selected if there are no one, so return immediately
-        if self.tabs.len() == 0 {
+        if self.tabs.is_empty() {
             return;
         }
 
@@ -362,32 +363,29 @@ impl TabWidgetState {
 
     ///Remove a tab from the widget. Unlike the public "remove_tab", this happen immediatly.
     fn remove_tab_internal(&mut self, ctx: &mut Context, body: Entity) {
-        match self.get_index(body) {
-            Some(index) => {
-                //Pop the index tab out of the stored tabs
-                let (header, body) = self.tabs.remove(index);
+        if let Some(index) = self.get_index(body) {
+            //Pop the index tab out of the stored tabs
+            let (header, body) = self.tabs.remove(index);
 
-                //Push button to the header container
-                ctx.remove_child_from(header, self.header_container);
+            //Push button to the header container
+            ctx.remove_child_from(header, self.header_container);
 
-                //Push the body to the body container
-                ctx.remove_child_from(body, self.body_container);
+            //Push the body to the body container
+            ctx.remove_child_from(body, self.body_container);
 
-                //If there is at least one tab
-                if self.tabs.len() != 0 {
-                    //If selected is greater than tab count, select the last one
-                    if self.selected >= self.tabs.len() {
-                        self.selected = self.tabs.len() - 1;
-                    }
+            //If there is at least one tab
+            if !self.tabs.is_empty() {
+                //If selected is greater than tab count, select the last one
+                if self.selected >= self.tabs.len() {
+                    self.selected = self.tabs.len() - 1;
+                }
 
-                    //Only update current selection if the removed tab is lesser than the selected.
-                    //If it is greater, there is no need to update, but simply remove the target tab
-                    if index <= self.selected {
-                        self.refresh_selected_tab(ctx);
-                    }
+                //Only update current selection if the removed tab is lesser than the selected.
+                //If it is greater, there is no need to update, but simply remove the target tab
+                if index <= self.selected {
+                    self.refresh_selected_tab(ctx);
                 }
             }
-            None => (),
         }
     }
 

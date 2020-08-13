@@ -3,8 +3,8 @@ use super::behaviors::TextBehavior;
 use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
 
 // --- KEYS --
-pub static STYLE_TEXT_BOX: &'static str = "text_box";
-static ID_CURSOR: &'static str = "id_cursor";
+pub static STYLE_TEXT_BOX: &str = "text_box";
+static ID_CURSOR: &str = "id_cursor";
 // --- KEYS --
 
 widget!(

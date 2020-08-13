@@ -4,7 +4,7 @@ use orbtk::{
     theming::config::ThemeConfig,
 };
 
-static DARK_EXT: &'static str = include_str!("../res/grid.ron");
+static DARK_EXT: &str = include_str!("../res/grid.ron");
 
 fn theme() -> Theme {
     Theme::from_config(

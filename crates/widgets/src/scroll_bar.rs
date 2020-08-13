@@ -2,7 +2,7 @@ use crate::{api::prelude::*, proc_macros::*};
 
 // --- KEYS --
 
-pub static STYLE_SCROLL_BAR: &'static str = "scroll_bar";
+pub static STYLE_SCROLL_BAR: &str = "scroll_bar";
 
 // --- KEYS --
 
