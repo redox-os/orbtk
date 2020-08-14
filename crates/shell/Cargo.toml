@@ -15,7 +15,7 @@ console_error_panic_hook = "0.1.6"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 spin_sleep = { version = "1.0", optional = true }
-image = "0.23.4"
+image = "0.23"
 minifb = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix", optional = true }
 gl = { version = "0.14", optional = true }
 glutin = { version = "0.24", optional = true }
