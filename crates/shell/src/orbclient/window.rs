@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc, sync::mpsc};
 
 use super::{KeyState, MouseState, WindowState};
 use crate::{
-    event::{ButtonState, KeyEvent, MouseButton, MouseEvent},
+    event::{ButtonState, Key, KeyEvent, MouseButton, MouseEvent},
     render::RenderContext2D,
     window_adapter::WindowAdapter,
     WindowRequest,
@@ -76,14 +76,59 @@ where
         });
     }
 
+    fn push_key_event(&mut self, key_event: orbclient::KeyEvent) {
+        let mut key = Key::from(key_event.character);
+        let state = {
+            if key_event.pressed {
+                ButtonState::Down
+            } else {
+                ButtonState::Up
+            }
+        };
+
+        println!("{:?}", key_event);
+
+        let text = {
+            if key_event.character != '\0' {
+                key_event.character.to_string()
+            } else {
+                match key_event.scancode {
+                    orbclient::K_BKSP => key = Key::Backspace,
+                    orbclient::K_LEFT => key = Key::Left,
+                    orbclient::K_RIGHT => key = Key::Right,
+                    orbclient::K_UP => key = Key::Up,
+                    orbclient::K_DOWN => key = Key::Down,
+                    orbclient::K_DEL => key = Key::Delete,
+                    orbclient::K_ENTER => key = Key::Enter,
+                    orbclient::K_CTRL => key = Key::Control,
+                    orbclient::K_LEFT_SHIFT => key = Key::ShiftL,
+                    orbclient::K_RIGHT_SHIFT => key = Key::ShiftR,
+                    orbclient::K_ALT => key = Key::Alt,
+                    orbclient::K_ESC => key = Key::Escape,
+                    orbclient::K_CAPS => key = Key::CapsLock,
+                    orbclient::K_HOME => {
+                        key = Key::Home;
+                        println!("home");
+                    }
+                    _ => key = Key::Unknown,
+                };
+                String::default()
+            }
+        };
+
+        self.adapter.key_event(KeyEvent { key, text, state });
+        self.update = true;
+    }
+
     /// Drain events and propagate the events to the adapter.
     pub fn drain_events(&mut self) {
         // self.window.update();
         for event in self.window.events() {
             match event.to_option() {
-                orbclient::EventOption::Key(_) => {}
+                orbclient::EventOption::Key(event) => {
+                    self.push_key_event(event);
+                }
                 orbclient::EventOption::Mouse(event) => {
-                    println!("mouse {:?}", event);
                     self.mouse.mouse_pos = (event.x as f32, event.y as f32);
                     self.adapter.mouse(event.x as f64, event.y as f64);
                     self.update = true;
