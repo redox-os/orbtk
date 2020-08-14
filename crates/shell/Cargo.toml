@@ -16,7 +16,7 @@ console_error_panic_hook = "0.1.6"
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 spin_sleep = { version = "1.0", optional = true }
 image = "0.23"
-minifb = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix", optional = true }
+# minifb = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix", optional = true }
 gl = { version = "0.14", optional = true }
 glutin = { version = "0.24", optional = true }
 euclid = { version = "0.20", optional = true }
@@ -33,9 +33,10 @@ orbtk-render = { path = "../render", version = "0.3.1-alpha4" }
 orbtk-utils = { path = "../utils", version = "0.3.1-alpha4" }
 lazy_static = "1.4.0"
 raw-window-handle = "0.3.3"
+orbclient = { git = "https://gitlab.redox-os.org/redox-os/orbclient.git", optional = true }
 
 [features]
-default = ["spin_sleep", "minifb"]
+default = ["spin_sleep", "orbclient"]
 pfinder = [
     "gl",
     "glutin",
