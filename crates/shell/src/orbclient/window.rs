@@ -62,10 +62,88 @@ where
         !self.close
     }
 
+    fn push_mouse_event(&mut self, pressed: bool, button: MouseButton) {
+        let state = if pressed {
+            ButtonState::Down
+        } else {
+            ButtonState::Up
+        };
+
+        self.adapter.mouse_event(MouseEvent {
+            position: Point::new(self.mouse.mouse_pos.0 as f64, self.mouse.mouse_pos.1 as f64),
+            button,
+            state,
+        });
+    }
+
     /// Drain events and propagate the events to the adapter.
     pub fn drain_events(&mut self) {
         // self.window.update();
-        for _event in self.window.events() {}
+        for event in self.window.events() {
+            match event.to_option() {
+                orbclient::EventOption::Key(_) => {}
+                orbclient::EventOption::Mouse(event) => {
+                    println!("mouse {:?}", event);
+                    self.mouse.mouse_pos = (event.x as f32, event.y as f32);
+                    self.adapter.mouse(event.x as f64, event.y as f64);
+                    self.update = true;
+                }
+                orbclient::EventOption::MouseRelative(_) => {}
+                orbclient::EventOption::Button(event) => {
+                    if event.left != self.mouse.button_left {
+                        if event.left {
+                            self.push_mouse_event(true, MouseButton::Left);
+                        } else {
+                            self.push_mouse_event(false, MouseButton::Left);
+                        }
+                        self.mouse.button_left = event.left;
+                        self.update = true;
+                    }
+
+                    if event.middle != self.mouse.button_middle {
+                        if event.middle {
+                            self.push_mouse_event(true, MouseButton::Middle);
+                        } else {
+                            self.push_mouse_event(false, MouseButton::Middle);
+                        }
+                        self.mouse.button_middle = event.middle;
+                        self.update = true;
+                    }
+
+                    if event.right != self.mouse.button_right {
+                        if event.right {
+                            self.push_mouse_event(true, MouseButton::Right);
+                        } else {
+                            self.push_mouse_event(false, MouseButton::Right);
+                        }
+                        self.mouse.button_right = event.right;
+                        self.update = true;
+                    }
+                }
+                orbclient::EventOption::Scroll(event) => {
+                    self.adapter.scroll(event.x as f64, event.y as f64);
+                    self.update = true;
+                }
+                orbclient::EventOption::Quit(_) => {
+                    self.close = true;
+                    self.update = true
+                }
+                orbclient::EventOption::Focus(_) => {}
+                orbclient::EventOption::Move(_) => {}
+                orbclient::EventOption::Resize(event) => {
+                    self.adapter.resize(event.width as f64, event.height as f64);
+                    self.render_context
+                        .resize(event.width as f64, event.height as f64);
+                    self.update = true;
+                    self.redraw = true;
+                }
+                orbclient::EventOption::Screen(_) => {}
+                orbclient::EventOption::Clipboard(_) => {}
+                orbclient::EventOption::Drop(_) => {}
+                orbclient::EventOption::Unknown(_) => {}
+                orbclient::EventOption::None => {}
+            }
+        }
     }
 
     /// Receives window request from the application and handles them.

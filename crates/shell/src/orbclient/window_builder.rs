@@ -105,20 +105,32 @@ where
     pub fn build(self) {
         let mut render_context = RenderContext2D::new(self.bounds.width(), self.bounds.height());
 
-        let window = orbclient::Window::new(
+        let mut flags = vec![];
+
+        if self.resizeable {
+            flags.push(orbclient::WindowFlag::Resizable);
+        }
+
+        if self.borderless {
+            flags.push(orbclient::WindowFlag::Borderless);
+        }
+
+        let mut window = orbclient::Window::new_flags(
             self.bounds.x() as i32,
             self.bounds.y() as i32,
             self.bounds.width() as u32,
             self.bounds.height() as u32,
             self.title.as_str(),
-        );
+            &flags,
+        )
+        .expect("WindowBuilder: Could no create an orblient window.");
 
         for (family, font) in self.fonts {
             render_context.register_font(&family, font);
         }
 
         self.shell.window_shells.push(Window::new(
-            window.expect("WindowBuilder: Could no create an orblient window."),
+            window,
             self.adapter,
             render_context,
             self.request_receiver,
