@@ -1223,7 +1223,7 @@ checksum = "0b631f7e854af39a1739f401cf34a8a013dfe09eac4fa4dba91e9768bd28168d"
 [[package]]
 name = "orbclient"
 version = "0.3.28"
-source = "git+https://gitlab.redox-os.org/redox-os/orbclient.git#526e1afc402e0f2bff03b7ecb369c4cb23095b21"
+source = "git+https://gitlab.redox-os.org/redox-os/orbclient.git#ca3ef9930f4ecb81a988b9230e0f8e49ab0051e3"
 dependencies = [
  "redox_syscall",
  "sdl2",

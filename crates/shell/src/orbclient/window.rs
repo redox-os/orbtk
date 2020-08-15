@@ -86,7 +86,7 @@ where
             }
         };
 
-        println!("{:?}", key_event);
+        println!("ab");
 
         let text = {
             if key_event.character != '\0' {
@@ -108,7 +108,6 @@ where
                     orbclient::K_CAPS => key = Key::CapsLock,
                     orbclient::K_HOME => {
                         key = Key::Home;
-                        println!("home");
                     }
                     _ => key = Key::Unknown,
                 };
