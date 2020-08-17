@@ -74,7 +74,7 @@ impl Template for ScrollViewer {
     fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("ScrollViewer")
             .padding(0)
-            .speed(2)
+            .speed(8)
             .clip(true)
             .mode(ScrollViewerMode::default())
             .on_scroll(move |states, p| {

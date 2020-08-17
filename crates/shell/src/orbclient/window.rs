@@ -86,8 +86,6 @@ where
             }
         };
 
-        println!("ab");
-
         let text = {
             if key_event.character != '\0' {
                 key_event.character.to_string()
@@ -115,8 +113,9 @@ where
             }
         };
 
+        println!("{:?}", key_event);
+
         self.adapter.key_event(KeyEvent { key, text, state });
-        self.update = true;
     }
 
     /// Drain events and propagate the events to the adapter.
@@ -126,6 +125,7 @@ where
             match event.to_option() {
                 orbclient::EventOption::Key(event) => {
                     self.push_key_event(event);
+                    self.update = true;
                 }
                 orbclient::EventOption::Mouse(event) => {
                     self.mouse.mouse_pos = (event.x as f32, event.y as f32);
