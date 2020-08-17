@@ -8,6 +8,7 @@
 * clear: interaction between widgets
 * grid: grid layout example
 * image: image widget
+* login: PasswordBox showcase with a login form
 * minimal: minimal example
 * multi_window: multi window example
 * overlay: draw widgets on the top
