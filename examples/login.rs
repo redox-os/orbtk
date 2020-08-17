@@ -23,7 +23,9 @@ struct LoginFormState {
 
 impl LoginFormState {
     fn authenticate(&mut self) {
-        self.action = Some(LoginAction::Authenticate);
+        if !self.show_popup {
+            self.action = Some(LoginAction::Authenticate);
+        }
     }
 
     fn show_popup(&mut self) {
