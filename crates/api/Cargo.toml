@@ -13,7 +13,10 @@ edition = "2018"
 serde = "1.0"
 serde_derive = "1.0"
 ron = "0.6"
-dirs = "2.0"
+dirs = "3.0"
+derive_more = { version = "0.99", default-features = false, features = ["constructor"] }
+
+# orbtk
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "develop" }
 orbtk-proc-macros = { path = "../proc-macros", version = "0.3.1-alpha4" }
 orbtk-utils = { path = "../utils", version = "0.3.1-alpha4" }
@@ -22,13 +25,12 @@ orbtk-render = { path = "../render", version = "0.3.1-alpha4" }
 orbtk-shell = { path = "../shell", version = "0.3.1-alpha4" }
 orbtk-theme = { path = "../theme", version = "0.3.1-alpha4" }
 orbtk-theming = { path = "../theming", version = "0.3.1-alpha4" }
-derive_more = "0.99"
 
 [target.'cfg(all(not(target_os = "redox")))'.dependencies]
 raw-window-handle = "0.3.3"
 
 [target.wasm32-unknown-unknown.dependencies]
-stdweb = "0.4.20"
+stdweb = "0.4"
 
 [features]
 debug = []
