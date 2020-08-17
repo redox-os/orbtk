@@ -1,12 +1,9 @@
-use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, time::Duration};
+use std::{collections::HashMap, sync::mpsc};
 
-use super::{KeyState, Shell, Window};
+use super::{Shell, Window};
 use crate::{
-    event::{ButtonState, Key, KeyEvent},
-    render::RenderContext2D,
-    utils::Rectangle,
-    window_adapter::WindowAdapter,
-    WindowRequest, WindowSettings,
+    render::RenderContext2D, utils::Rectangle, window_adapter::WindowAdapter, WindowRequest,
+    WindowSettings,
 };
 
 /// The `WindowBuilder` is used to construct a window shell for the minifb backend.
@@ -115,7 +112,7 @@ where
             flags.push(orbclient::WindowFlag::Borderless);
         }
 
-        let mut window = orbclient::Window::new_flags(
+        let window = orbclient::Window::new_flags(
             self.bounds.x() as i32,
             self.bounds.y() as i32,
             self.bounds.width() as u32,

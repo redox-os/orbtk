@@ -14,9 +14,14 @@ stdweb = "0.4.20"
 console_error_panic_hook = "0.1.6"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+orbclient = { git = "https://gitlab.redox-os.org/redox-os/orbclient.git", optional = true }
+image = { version = "0.23",  default-features = false, features = ["ico"] }
+
+# minifb dependencies
 spin_sleep = { version = "1.0", optional = true }
-image = "0.23"
-# minifb = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix", optional = true }
+minifb = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix", optional = true }
+
+# pathfinder dependencies
 gl = { version = "0.14", optional = true }
 glutin = { version = "0.24", optional = true }
 euclid = { version = "0.20", optional = true }
@@ -28,12 +33,14 @@ pathfinder_renderer =  { version = "0.5", optional = true }
 pathfinder_resources =  { version = "0.5", optional = true }
 
 [dependencies]
-derive_more = "0.99"
-orbtk-render = { path = "../render", version = "0.3.1-alpha4" }
-orbtk-utils = { path = "../utils", version = "0.3.1-alpha4" }
+derive_more = { version = "0.99", default-features = false, features = ["constructor"] }
 lazy_static = "1.4.0"
 raw-window-handle = "0.3.3"
-orbclient = { git = "https://gitlab.redox-os.org/redox-os/orbclient.git", optional = true }
+
+
+# orbtk
+orbtk-render = { path = "../render", version = "0.3.1-alpha4" }
+orbtk-utils = { path = "../utils", version = "0.3.1-alpha4" }
 
 [features]
 default = ["spin_sleep", "orbclient"]

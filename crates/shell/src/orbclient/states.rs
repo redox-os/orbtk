@@ -1,6 +1,3 @@
-use crate::event::Key;
-use derive_more::Constructor;
-
 /// Internal helper state to handle current minifb mouse state.
 #[derive(Copy, Clone, Default, Debug)]
 pub struct MouseState {
@@ -15,11 +12,4 @@ pub struct MouseState {
 pub struct WindowState {
     pub size: (usize, usize),
     pub active: bool,
-}
-
-/// Internal helper state to handle current minifb key states.
-#[derive(Constructor)]
-pub struct KeyState {
-    // pub minifb_key: minifb::Key,
-    pub key: Key,
 }

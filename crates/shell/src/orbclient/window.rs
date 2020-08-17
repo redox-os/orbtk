@@ -1,6 +1,6 @@
-use std::{cell::RefCell, rc::Rc, sync::mpsc};
+use std::sync::mpsc;
 
-use super::{KeyState, MouseState, WindowState};
+use super::MouseState;
 use crate::{
     event::{ButtonState, Key, KeyEvent, MouseButton, MouseEvent},
     render::RenderContext2D,
@@ -22,7 +22,7 @@ where
     adapter: A,
     render_context: RenderContext2D,
     request_receiver: Option<mpsc::Receiver<WindowRequest>>,
-    window_state: WindowState,
+    //window_state: WindowState,
     mouse: MouseState,
     update: bool,
     redraw: bool,
@@ -44,7 +44,7 @@ where
             adapter,
             render_context,
             request_receiver,
-            window_state: WindowState::default(),
+            // window_state: WindowState::default(),
             mouse: MouseState::default(),
             update: true,
             redraw: true,
