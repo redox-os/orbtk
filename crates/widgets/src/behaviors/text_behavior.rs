@@ -288,8 +288,8 @@ impl TextBehaviorState {
         }
 
         ctx.push_event_strategy_by_entity(
-            ActivateEvent(ctx.entity),
-            ctx.entity,
+            ActivateEvent(self.target),
+            self.target,
             EventStrategy::Direct,
         )
     }
