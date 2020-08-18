@@ -433,6 +433,7 @@ impl Template for ComboBox {
 
         self.name("ComboBox")
             .style("combo_box")
+            .on_changed_filter(vec!["selected_item"])
             .icon(material_icons_font::MD_ARROW_DROP_DOWN)
             .icon_font("MaterialIcons-Regular")
             .icon_size(fonts::ICON_FONT_SIZE_12)
