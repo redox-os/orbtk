@@ -309,6 +309,13 @@ impl Template for MainView {
                                     .val(0.123)
                                     .build(ctx),
                             )
+                            .child(
+                                PasswordBox::new()
+                                    .margin((0, 8, 0, 0))
+                                    .water_mark("Password")
+                                    .v_align("center")
+                                    .build(ctx),
+                            )
                             .build(ctx),
                     )
                     .child(
