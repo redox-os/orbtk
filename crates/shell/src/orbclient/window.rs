@@ -113,8 +113,6 @@ where
             }
         };
 
-        println!("{:?}", key_event);
-
         self.adapter.key_event(KeyEvent { key, text, state });
     }
 
@@ -239,11 +237,12 @@ where
                     .data_mut()
                     .clone_from_slice(color_data.as_slice());
 
-                self.window.sync();
                 // CONSOLE.time_end("render");
                 self.redraw = false;
                 //super::CONSOLE.time_end("complete");
             }
+
+            self.window.sync();
         }
     }
 }

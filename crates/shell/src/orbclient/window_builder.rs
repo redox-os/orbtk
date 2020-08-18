@@ -102,7 +102,7 @@ where
     pub fn build(self) {
         let mut render_context = RenderContext2D::new(self.bounds.width(), self.bounds.height());
 
-        let mut flags = vec![];
+        let mut flags = vec![orbclient::WindowFlag::Async];
 
         if self.resizeable {
             flags.push(orbclient::WindowFlag::Resizable);
