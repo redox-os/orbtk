@@ -106,9 +106,9 @@ where
             self.receive_requests();
 
             if let Some(fps) = self.loop_helper.report_rate() {
-                // if cfg!(feature = "debug") {
-                println!("fps: {}", fps);
-                // }
+                if cfg!(feature = "debug") {
+                    println!("fps: {}", fps);
+                }
             }
 
             self.loop_helper.loop_sleep();
