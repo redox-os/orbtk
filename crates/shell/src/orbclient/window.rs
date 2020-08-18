@@ -181,7 +181,15 @@ where
                 }
                 orbclient::EventOption::Screen(_) => {}
                 orbclient::EventOption::Clipboard(_) => {}
-                orbclient::EventOption::Drop(_) => {}
+                orbclient::EventOption::Drop(event) => {
+                    if let Some(text) = self.window.pop_drop_content() {
+                        if event.kind == orbclient::DROP_FILE {
+                            self.adapter.file_drop_event(text);
+                        } else {
+                            self.adapter.text_drop_event(text);
+                        }
+                    }
+                }
                 orbclient::EventOption::Unknown(_) => {}
                 orbclient::EventOption::None => {}
             }

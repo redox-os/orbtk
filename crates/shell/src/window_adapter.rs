@@ -30,6 +30,12 @@ pub trait WindowAdapter {
     /// Is called if active state of the window is changed.
     fn active(&mut self, active: bool);
 
+    /// This method is called when a file is dropped on the window.
+    fn file_drop_event(&mut self, file_name: String);
+
+    /// This method is called when a text string is dropped on the window.
+    fn text_drop_event(&mut self, text: String);
+
     /// Runs the inner logic of the shell adapter.
     fn run(&mut self, render_context: &mut RenderContext2D);
 }

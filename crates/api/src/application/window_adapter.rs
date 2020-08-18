@@ -150,6 +150,12 @@ impl shell::WindowAdapter for WindowAdapter {
     fn run(&mut self, render_context: &mut render::RenderContext2D) {
         self.world.run_with_context(render_context);
     }
+    fn file_drop_event(&mut self, file_name: String) {
+        println!("Drop file {}", file_name);
+    }
+    fn text_drop_event(&mut self, text: String) {
+        todo!()
+    }
 }
 
 /// Creates a `WindowAdapter` and a `WindowSettings` object from a window builder closure.
