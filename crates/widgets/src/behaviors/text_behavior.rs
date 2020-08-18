@@ -11,6 +11,7 @@ use super::MouseBehavior;
 enum TextAction {
     Key(KeyEvent),
     Mouse(Mouse),
+    Drop(String, Point),
 }
 
 /// The `TextBehaviorState` handles the text processing of the `TextBehavior` widget.
@@ -390,6 +391,12 @@ impl State for TextBehaviorState {
                 TextAction::Mouse(p) => {
                     self.request_focus(ctx, p);
                 }
+                TextAction::Drop(text, position) => {
+                    println!("text drop file {:?}", position);
+                    if check_mouse_condition(position, &ctx.get_widget(self.target)) {
+                        println!("Drop {}", text);
+                    }
+                }
             }
 
             self.action = None;
@@ -488,7 +495,7 @@ widget!(
     ///
     /// [`Entity`]: https://docs.rs/dces/0.2.0/dces/entity/struct.Entity.html
     /// [`Cursor`]: ../struct.Cursor.html
-    TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler {
+    TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler, DropHandler {
         /// Sets or shares the entity of the Cursor widget property.
         cursor: u32,
 
@@ -544,6 +551,18 @@ impl Template for TextBehavior {
                     .get_mut::<TextBehaviorState>(id)
                     .action(TextAction::Key(event));
                 false
+            })
+            .on_drop_file(move |states, file_name, position| {
+                states
+                    .get_mut::<TextBehaviorState>(id)
+                    .action(TextAction::Drop(file_name, position));
+                true
+            })
+            .on_drop_text(move |states, file_name, position| {
+                states
+                    .get_mut::<TextBehaviorState>(id)
+                    .action(TextAction::Drop(file_name, position));
+                true
             })
     }
 }

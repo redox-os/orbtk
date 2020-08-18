@@ -99,14 +99,9 @@ pub type PositionHandlerFunction = dyn Fn(&mut StatesContext, Point) -> bool + '
 pub type GlobalMouseHandlerFunction = dyn Fn(&mut StatesContext, Mouse) + 'static;
 
 /// Used to handle click events. Could be attached to a widget.
+#[derive(IntoHandler)]
 pub struct ClickEventHandler {
     handler: Rc<PositionHandlerFunction>,
-}
-
-impl Into<Rc<dyn EventHandler>> for ClickEventHandler {
-    fn into(self) -> Rc<dyn EventHandler> {
-        Rc::new(self)
-    }
 }
 
 impl EventHandler for ClickEventHandler {

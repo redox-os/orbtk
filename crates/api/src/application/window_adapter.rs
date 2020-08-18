@@ -150,11 +150,27 @@ impl shell::WindowAdapter for WindowAdapter {
     fn run(&mut self, render_context: &mut render::RenderContext2D) {
         self.world.run_with_context(render_context);
     }
+
     fn file_drop_event(&mut self, file_name: String) {
-        println!("Drop file {}", file_name);
+        let root = self.root();
+        self.ctx.event_queue.borrow_mut().register_event(
+            DropFileEvent {
+                file_name,
+                position: self.mouse_position(),
+            },
+            root,
+        );
     }
+
     fn text_drop_event(&mut self, text: String) {
-        todo!()
+        let root = self.root();
+        self.ctx.event_queue.borrow_mut().register_event(
+            DropTextEvent {
+                text,
+                position: self.ctx.mouse_position.get(),
+            },
+            root,
+        );
     }
 }
 
