@@ -205,7 +205,6 @@ impl Template for NumericBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("NumericBox")
             .style("numeric_box")
-            .on_changed_filter(vec!["val"])
             .background("transparent")
             .foreground(colors::LINK_WATER_COLOR)
             .border_brush("#647b91")

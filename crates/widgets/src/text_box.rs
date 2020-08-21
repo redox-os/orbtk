@@ -92,7 +92,6 @@ impl Template for TextBox {
         self.name("TextBox")
             .style(STYLE_TEXT_BOX)
             .text("")
-            .on_changed_filter(vec!["text"])
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto-Regular")

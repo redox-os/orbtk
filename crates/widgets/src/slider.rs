@@ -182,7 +182,6 @@ impl Template for Slider {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Slider")
             .style(STYLE_SLIDER)
-            .on_changed_filter(vec!["val"])
             .min(0.0)
             .max(100.0)
             .val(0.0)

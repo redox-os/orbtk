@@ -462,7 +462,7 @@ impl Template for MainView {
                             )
                             .child(
                                 Switch::new()
-                                    .on_changed(move |states, entity, _| {
+                                    .on_changed("selected", move |states, entity| {
                                         state(id, states).action(Action::ToggleTheme(entity));
                                     })
                                     .v_align("center")

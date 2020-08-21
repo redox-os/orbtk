@@ -155,7 +155,6 @@ impl Template for PasswordBox {
             .text("")
             .mask("")
             .water_mark("Password")
-            .on_changed_filter(vec!["text", "mask"])
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto-Regular")

@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::{rc::Rc, collections::HashMap, cell::RefCell};
 
 use dces::prelude::*;
 
@@ -55,17 +55,20 @@ pub trait SelectionChangedHandler: Sized + Widget {
 pub struct ChangedEvent(pub Entity, pub String);
 
 /// Used to define a property changed callback.
-pub type ChangedHandlerFn = dyn Fn(&mut StatesContext, Entity, &str) + 'static;
+pub type ChangedHandlerFn = dyn Fn(&mut StatesContext, Entity) + 'static;
 
-#[derive(IntoHandler)]
+#[derive(IntoHandler, Default)]
 pub struct ChangedEventHandler {
-    pub handler: Rc<ChangedHandlerFn>,
+    pub handlers: HashMap<String, Rc<ChangedHandlerFn>>
 }
 
 impl EventHandler for ChangedEventHandler {
     fn handle_event(&self, states: &mut StatesContext, event: &EventBox) -> bool {
         if let Ok(event) = event.downcast_ref::<ChangedEvent>() {
-            (self.handler)(states, event.0, event.1.as_str());
+            if let Some(handler) = self.handlers.get(&event.1) {
+                handler (states, event.0);
+            }
+           
             return true;
         }
 
@@ -73,15 +76,13 @@ impl EventHandler for ChangedEventHandler {
     }
 
     fn handles_event(&self, event: &EventBox) -> bool {
-        event.is_type::<ChangedEvent>()
+        event.is_type::<ChangedEvent>() && self.handlers.iter().any(|h| h.0 == &event.downcast_ref::<ChangedEvent>().unwrap().1)
     }
 }
 
-pub trait ChangedHandler: Sized + Widget {
+pub trait ChangedHandler: Sized + Widget + 'static {
     /// Register a on property changed handler.
-    fn on_changed<H: Fn(&mut StatesContext, Entity, &str) + 'static>(self, handler: H) -> Self {
-        self.insert_handler(ChangedEventHandler {
-            handler: Rc::new(handler),
-        })
+    fn on_changed<H: Fn(&mut StatesContext, Entity) + 'static>(self, key: &str, handler: H) -> Self {
+          self.insert_changed_handler(key, Rc::new(handler))
     }
 }
