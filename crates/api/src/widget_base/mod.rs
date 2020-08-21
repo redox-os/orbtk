@@ -2,7 +2,7 @@ use std::{fmt::Debug, rc::Rc};
 
 use dces::prelude::{Component, Entity};
 
-use crate::{event::EventHandler, properties::AttachedProperty, theming::Selector};
+use crate::{event::{EventHandler, ChangedHandlerFn}, properties::AttachedProperty, theming::Selector};
 
 pub use self::build_context::*;
 pub use self::context::*;
@@ -71,6 +71,9 @@ pub trait Widget: Template {
 
     /// Inerts a new event handler.
     fn insert_handler(self, handler: impl Into<Rc<dyn EventHandler>>) -> Self;
+
+    // Inserts a new changed handler.
+    fn insert_changed_handler<H: Fn(&mut StatesContext, Entity) + 'static>(self, key: impl Into<String>, handler: Rc<H>) -> Self;
 
     /// Appends a child to the widget.
     fn child(self, child: Entity) -> Self;

@@ -116,6 +116,7 @@ macro_rules! widget {
             selector: Selector,
             #[property(Filter)]
             on_changed_filter: Filter,
+            changed_handler: ChangedEventHandler,
             _empty: Option<RefCell<i32>>,
              $(
                 $(
@@ -173,11 +174,6 @@ macro_rules! widget {
             /// Sets or shares the constraint property.
             pub fn constraint(self, constraint: impl IntoPropertySource<Constraint>) -> Self {
                 self.set_property("constraint", constraint)
-            }
-
-             /// Sets or shares the filter for the on_changed property callback.
-             pub fn on_changed_filter(self, filter: impl IntoPropertySource<Filter>) -> Self {
-                self.set_property("on_changed_filter", filter)
             }
 
             /// Sets or shares the vertical alignment property.
@@ -409,6 +405,17 @@ macro_rules! widget {
                 self
             }
 
+            fn insert_changed_handler<H: Fn(&mut StatesContext, Entity) + 'static>(mut self, key: impl Into<String>, handler: Rc<H>) -> Self {
+                let key = key.into();
+                if let Filter::List(filter) = &mut self.on_changed_filter {
+                    filter.push(key.clone());
+                } else {
+                    self.on_changed_filter = Filter::List(vec![key.clone()]);
+                }
+                self.changed_handler.handlers.insert(key, handler);
+                self
+            }
+
             fn child(mut self, child: Entity) -> Self {
                 self.children.push(child);
                 self
@@ -417,7 +424,7 @@ macro_rules! widget {
             fn build(self, ctx: &mut BuildContext) -> Entity {
                 let entity = ctx.create_entity();
 
-                let this = self.template(entity, ctx);
+                let this = self.template(entity, ctx);           
 
                 ctx.register_render_object(entity, this.render_object());
                 ctx.register_layout(entity, this.layout());
@@ -512,6 +519,8 @@ macro_rules! widget {
                 for handler in this.event_handlers {
                     ctx.register_handler(entity, handler);
                 }
+
+                ctx.register_handler(entity, this.changed_handler.into());
 
                 // register name
                 if let Some(name) = this.name {

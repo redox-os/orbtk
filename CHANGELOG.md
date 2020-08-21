@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 0.3.1-alpha4 (wip)
 
 * PasswordBox widget
-* Add on_changed filter `selected_item` to `ComboBox`
+* Refactor on_changed callback, add key parameter
 
 ### 0.3.1-alpha3
 
