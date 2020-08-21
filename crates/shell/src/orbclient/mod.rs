@@ -89,6 +89,7 @@ where
                     window_shell.update();
                     window_shell.render();
 
+                    window_shell.update_clipboard();
                     window_shell.drain_events();
                     window_shell.receive_requests();
 

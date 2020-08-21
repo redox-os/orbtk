@@ -20,6 +20,8 @@ use crate::{
 pub struct WindowAdapter {
     world: World<Tree, StringComponentStore, render::RenderContext2D>,
     ctx: ContextProvider,
+    registry: Rc<RefCell<Registry>>,
+    old_clipboard_value: Option<String>,
 }
 
 impl WindowAdapter {
@@ -27,8 +29,14 @@ impl WindowAdapter {
     pub fn new(
         world: World<Tree, StringComponentStore, render::RenderContext2D>,
         ctx: ContextProvider,
+        registry: Rc<RefCell<Registry>>,
     ) -> Self {
-        WindowAdapter { world, ctx }
+        WindowAdapter {
+            world,
+            ctx,
+            registry,
+            old_clipboard_value: None,
+        }
     }
 }
 
@@ -43,6 +51,31 @@ impl WindowAdapter {
 }
 
 impl shell::WindowAdapter for WindowAdapter {
+    fn clipboard_update(&mut self, value: &mut Option<String>) {
+        // internal clipboard value is new => update system clipboard value.
+        if self.registry.borrow().get::<Clipboard>("clipboard").get() != self.old_clipboard_value {
+            *value = self
+                .registry
+                .borrow()
+                .get::<Clipboard>("clipboard")
+                .get()
+                .clone();
+
+            self.old_clipboard_value = value.clone();
+
+            return;
+        }
+
+        //  system clipboard value is newer => update internal clipboard
+        if let Some(value) = value.clone() {
+            self.registry
+                .borrow_mut()
+                .get_mut::<Clipboard>("clipboard")
+                .set(value.clone());
+            self.old_clipboard_value = Some(value);
+        }
+    }
+
     fn resize(&mut self, width: f64, height: f64) {
         let root = self.root();
         self.ctx
@@ -332,7 +365,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     world
         .create_system(PostLayoutStateSystem::new(
             context_provider.clone(),
-            registry,
+            registry.clone(),
         ))
         .with_priority(2)
         .build();
@@ -343,7 +376,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         .build();
 
     (
-        WindowAdapter::new(world, context_provider),
+        WindowAdapter::new(world, context_provider, registry),
         settings,
         receiver,
     )

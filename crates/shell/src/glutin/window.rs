@@ -43,6 +43,11 @@ where
         true
     }
 
+    /// Updates the clipboard.
+    pub fn update_clipboard(&mut self) {
+        // todo
+    }
+
     /// Drain events and propagate the events to the adapter.
     pub fn drain_events(&mut self, control_flow: &mut ControlFlow, event: &event::Event<()>) {
         match event {

@@ -46,6 +46,11 @@ where
         true
     }
 
+    /// Updates the clipboard.
+    pub fn update_clipboard(&mut self) {
+        // todo
+    }
+
     /// Drain events and propagate the events to the adapter.
     pub fn drain_events(&mut self) {
         while let Some(event) = self.event_state.mouse_move_events.borrow_mut().pop() {

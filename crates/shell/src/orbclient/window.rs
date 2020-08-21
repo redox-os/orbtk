@@ -116,9 +116,20 @@ where
         self.adapter.key_event(KeyEvent { key, text, state });
     }
 
+    /// Updates the clipboard.
+    pub fn update_clipboard(&mut self) {
+        // update clipboard
+        let mut clipboard_value = Some(self.window.clipboard());
+
+        self.adapter.clipboard_update(&mut clipboard_value);
+
+        if let Some(value) = clipboard_value {
+            self.window.set_clipboard(value.as_str());
+        }
+    }
+
     /// Drain events and propagate the events to the adapter.
     pub fn drain_events(&mut self) {
-        // self.window.update();
         for event in self.window.events() {
             match event.to_option() {
                 orbclient::EventOption::Key(event) => {

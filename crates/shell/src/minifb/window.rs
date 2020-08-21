@@ -120,6 +120,11 @@ where
         self.window.is_open() && !self.close
     }
 
+    /// Updates the clipboard.
+    pub fn update_clipboard(&mut self) {
+        // todo
+    }
+
     /// Drain events and propagate the events to the adapter.
     pub fn drain_events(&mut self) {
         self.window.update();

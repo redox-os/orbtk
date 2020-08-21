@@ -91,6 +91,7 @@ where
                         window_shell.update();
                         window_shell.render();
 
+                        window_shell.update_clipboard();
                         window_shell.drain_events(control_flow, &event);
                         window_shell.receive_requests();
 

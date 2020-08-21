@@ -6,6 +6,9 @@ use crate::{event::*, utils::Point};
 /// The `WindowAdapter` represents the bridge to the `Shell` backend.
 /// It receives events from the `Window` and runs it's own logic.  
 pub trait WindowAdapter {
+    /// Used to update the clipboard, could be used to read and set the current clipboard value.
+    fn clipboard_update(&mut self, value: &mut Option<String>);
+
     /// Is called after the window is resized.
     fn resize(&mut self, _width: f64, _height: f64) {}
 
