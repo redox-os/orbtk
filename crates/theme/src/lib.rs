@@ -33,7 +33,11 @@ pub const REDOX_COLORS_RON: &str = include_str!("../assets/redox/colors.ron");
 /// The redox theme resource file.
 pub const REDOX_THEME_RON: &str = include_str!("../assets/redox/redox.ron");
 
-#[cfg(all(not(feature = "light"), not(feature = "redox")))]
+#[cfg(all(
+    not(feature = "light"),
+    not(feature = "redox"),
+    not(target_os = "redox")
+))]
 pub fn default_theme() -> Theme {
     dark_theme()
 }
