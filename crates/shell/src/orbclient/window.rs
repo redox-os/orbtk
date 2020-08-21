@@ -253,13 +253,15 @@ where
                 let color_data: Vec<orbclient::Color> =
                     data.iter().map(|v| orbclient::Color { data: *v }).collect();
 
-                self.window
-                    .data_mut()
-                    .clone_from_slice(color_data.as_slice());
+                if color_data.len() == self.window.data().len() {
+                    self.window
+                        .data_mut()
+                        .clone_from_slice(color_data.as_slice());
 
-                // CONSOLE.time_end("render");
-                self.redraw = false;
-                //super::CONSOLE.time_end("complete");
+                    // CONSOLE.time_end("render");
+                    self.redraw = false;
+                    //super::CONSOLE.time_end("complete");
+                }
             }
 
             self.window.sync();
