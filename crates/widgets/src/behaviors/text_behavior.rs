@@ -71,7 +71,7 @@ impl TextBehaviorState {
         }
     }
 
-    fn paste(&mut self, registry: &mut Registry, ctx: &mut Context) {
+    fn insert_text(&mut self, insert_text: String, ctx: &mut Context) {
         self.clear_selection(ctx);
         let index = ctx
             .get_widget(self.target)
@@ -79,16 +79,20 @@ impl TextBehaviorState {
             .start_index;
 
         let mut text = ctx.widget().clone::<String16>("text");
-        let mut len = 0;
-        if let Some(value) = registry.get::<Clipboard>("clipboard").get() {
-            len = value.len();
-            text.insert_str(index, value.as_str());
-        }
+        let len = String16::from(insert_text.as_str()).len();
+
+        text.insert_str(index, insert_text.as_str());
 
         ctx.get_widget(self.target).set("text", text);
         ctx.get_widget(self.target)
             .get_mut::<TextSelection>("text_selection")
             .start_index = index + len;
+    }
+
+    fn paste(&mut self, registry: &mut Registry, ctx: &mut Context) {
+        if let Some(value) = registry.get::<Clipboard>("clipboard").get() {
+            self.insert_text(value, ctx);
+        }
     }
 
     fn request_focus(&self, ctx: &mut Context, p: Mouse) {
@@ -454,12 +458,7 @@ impl State for TextBehaviorState {
                 TextAction::Mouse(p) => {
                     self.request_focus(ctx, p);
                 }
-                TextAction::Drop(text, position) => {
-                    println!("text drop file {:?}", position);
-                    if check_mouse_condition(position, &ctx.get_widget(self.target)) {
-                        println!("Drop {}", text);
-                    }
-                }
+                TextAction::Drop(text, _) => self.insert_text(text, ctx),
             }
 
             self.action = None;

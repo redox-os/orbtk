@@ -1287,10 +1287,12 @@ dependencies = [
 [[package]]
 name = "orbclient"
 version = "0.3.28"
-source = "git+https://gitlab.redox-os.org/redox-os/orbclient.git#aa16d7774b24229152df8c1a2d067dca8e4e5949"
+source = "git+https://gitlab.redox-os.org/redox-os/orbclient.git#7873b9c177a04c9c1015a5baa29fd56e063e6880"
 dependencies = [
+ "libc",
  "redox_syscall",
  "sdl2 0.34.2",
+ "sdl2-sys 0.34.2",
 ]
 
 [[package]]
@@ -2249,9 +2251,9 @@ checksum = "a042aba3c316feb8b9624ba0369240b84ecdf1b2eff58b2c8987ba2dfa22ac4d"
 
 [[package]]
 name = "syn"
-version = "1.0.38"
+version = "1.0.39"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e69abc24912995b3038597a7a593be5053eb0fb44f3cc5beec0deb421790c1f4"
+checksum = "891d8d6567fe7c7f8835a3a98af4208f3846fba258c1bc3c31d6e506239f11f9"
 dependencies = [
  "proc-macro2 1.0.19",
  "quote 1.0.7",
