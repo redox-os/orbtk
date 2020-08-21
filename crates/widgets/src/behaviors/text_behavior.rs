@@ -38,7 +38,9 @@ impl TextBehaviorState {
                 .is_home_down()
         {
             return true;
-        } else if ctx
+        }
+
+        if ctx
             .window()
             .get::<Global>("global")
             .keyboard_state
