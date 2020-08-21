@@ -54,12 +54,7 @@ impl shell::WindowAdapter for WindowAdapter {
     fn clipboard_update(&mut self, value: &mut Option<String>) {
         // internal clipboard value is new => update system clipboard value.
         if self.registry.borrow().get::<Clipboard>("clipboard").get() != self.old_clipboard_value {
-            *value = self
-                .registry
-                .borrow()
-                .get::<Clipboard>("clipboard")
-                .get()
-                .clone();
+            *value = self.registry.borrow().get::<Clipboard>("clipboard").get();
 
             self.old_clipboard_value = value.clone();
 
