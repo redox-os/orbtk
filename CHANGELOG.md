@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * PasswordBox widget
 * Add on_changed filter `selected_item` to `ComboBox`
+* Clipboard service
+* Text input copy and paste
 
 ### 0.3.1-alpha3
 

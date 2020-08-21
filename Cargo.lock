@@ -1286,7 +1286,7 @@ dependencies = [
 [[package]]
 name = "orbclient"
 version = "0.3.28"
-source = "git+https://gitlab.redox-os.org/redox-os/orbclient.git#73fe52613f5be13a349045017c8a1114a0a0c5fc"
+source = "git+https://gitlab.redox-os.org/redox-os/orbclient.git#f99f2aac83121d9fe12b02c19f3e1947e9b72a4f"
 dependencies = [
  "redox_syscall",
  "sdl2 0.34.2",

@@ -29,6 +29,30 @@ impl TextBehaviorState {
         self.action = Some(action);
     }
 
+    fn is_ctlr_home_pressed(&self, ctx: &mut Context) -> bool {
+        if cfg!(target_os = "macos") {
+            if ctx
+                .window()
+                .get::<Global>("global")
+                .keyboard_state
+                .is_home_down()
+            {
+                return true;
+            }
+        } else {
+            if ctx
+                .window()
+                .get::<Global>("global")
+                .keyboard_state
+                .is_ctrl_down()
+            {
+                return true;
+            }
+        }
+
+        false
+    }
+
     fn copy(&self, registry: &mut Registry, ctx: &mut Context) {
         let text_selection: TextSelection = ctx.get_widget(self.target).clone("text_selection");
 
@@ -46,11 +70,27 @@ impl TextBehaviorState {
         {
             registry.get_mut::<Clipboard>("clipboard").set(text_part);
         }
-
-        println!("{:?}", registry.get::<Clipboard>("clipboard").get());
     }
 
-    fn paste(&self, registry: &mut Registry, ctx: &mut Context) {}
+    fn paste(&mut self, registry: &mut Registry, ctx: &mut Context) {
+        self.clear_selection(ctx);
+        let index = ctx
+            .get_widget(self.target)
+            .get::<TextSelection>("text_selection")
+            .start_index;
+
+        let mut text = ctx.widget().clone::<String16>("text");
+        let mut len = 0;
+        if let Some(value) = registry.get::<Clipboard>("clipboard").get() {
+            len = value.len();
+            text.insert_str(index, value.as_str());
+        }
+
+        ctx.get_widget(self.target).set("text", text);
+        ctx.get_widget(self.target)
+            .get_mut::<TextSelection>("text_selection")
+            .start_index = index + len;
+    }
 
     fn request_focus(&self, ctx: &mut Context, p: Mouse) {
         ctx.push_event_by_window(FocusEvent::RequestFocus(self.target));
@@ -162,54 +202,26 @@ impl TextBehaviorState {
                 self.activate(ctx);
             }
             Key::C(..) => {
-                if ctx
-                    .window()
-                    .get::<Global>("global")
-                    .keyboard_state
-                    .is_ctrl_down()
-                {
+                if self.is_ctlr_home_pressed(ctx) {
                     self.copy(registry, ctx);
                 } else {
                     self.insert_char(key_event, ctx);
                 }
             }
             Key::V(..) => {
-                if ctx
-                    .window()
-                    .get::<Global>("global")
-                    .keyboard_state
-                    .is_ctrl_down()
-                {
-                    self.copy(registry, ctx);
+                if self.is_ctlr_home_pressed(ctx) {
+                    self.paste(registry, ctx);
                 } else {
                     self.insert_char(key_event, ctx);
                 }
             }
             Key::A(..) => {
-                // if cfg!(mac_os) {
-                //     if ctx
-                //         .window()
-                //         .get::<Global>("global")
-                //         .keyboard_state
-                //         .is_home_down()
-                //     {
-                //         self.select_all(ctx);
-                //     } else {
-                //         self.insert_char(key_event, ctx);
-                //     }
-                // } else {
-                if ctx
-                    .window()
-                    .get::<Global>("global")
-                    .keyboard_state
-                    .is_ctrl_down()
-                {
+                if self.is_ctlr_home_pressed(ctx) {
                     self.select_all(ctx);
                 } else {
                     self.insert_char(key_event, ctx);
                 }
             }
-            // }
             _ => {
                 self.insert_char(key_event, ctx);
             }
