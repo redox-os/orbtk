@@ -182,6 +182,7 @@ where
                 orbclient::EventOption::Screen(_) => {}
                 orbclient::EventOption::Clipboard(_) => {}
                 orbclient::EventOption::Drop(event) => {
+                    self.window.sync_path();
                     if let Some(text) = self.window.pop_drop_content() {
                         if event.kind == orbclient::DROP_FILE {
                             self.adapter.file_drop_event(text);

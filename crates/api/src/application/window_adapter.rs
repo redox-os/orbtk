@@ -117,11 +117,12 @@ impl shell::WindowAdapter for WindowAdapter {
                 .event_queue
                 .borrow_mut()
                 .register_event(KeyUpEvent { event }, root),
-            shell::ButtonState::Down => self
-                .ctx
-                .event_queue
-                .borrow_mut()
-                .register_event(KeyDownEvent { event }, root),
+            shell::ButtonState::Down => {
+                self.ctx
+                    .event_queue
+                    .borrow_mut()
+                    .register_event(KeyDownEvent { event }, root);
+            }
         }
     }
 

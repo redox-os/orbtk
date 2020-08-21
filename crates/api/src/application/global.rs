@@ -10,7 +10,7 @@ pub struct Global {
     /// Contains the current focused widget.
     pub focused_widget: Option<Entity>,
 
-    /// Used to reference widgets by its css id.
+    /// Used to reference widgets by its id.
     pub id_map: HashMap<String, Entity>,
 
     /// Stores the state of the keyboard
@@ -38,6 +38,7 @@ impl KeyboardState {
     pub fn set_key_state(&mut self, key: Key, pressed: bool) {
         self.key_list.insert(key, pressed);
     }
+
     /// Returns whether or not the requested key is pressed
     pub fn is_key_down(&self, key: Key) -> bool {
         match self.key_list.get(&key) {
@@ -51,6 +52,7 @@ impl KeyboardState {
     pub fn is_shift_down(&self) -> bool {
         self.is_key_down(Key::ShiftL) || self.is_key_down(Key::ShiftR)
     }
+
     /// Returns whether or not any alt key is down.
     pub fn is_alt_down(&self) -> bool {
         self.is_key_down(Key::Alt)

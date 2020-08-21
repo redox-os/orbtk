@@ -31,6 +31,23 @@ impl TextBehaviorState {
 
     fn copy(&self, registry: &mut Registry, ctx: &mut Context) {
         let text_selection: TextSelection = ctx.get_widget(self.target).clone("text_selection");
+
+        if text_selection.length == 0 {
+            return;
+        }
+
+        if let Some(text_part) = ctx
+            .get_widget(self.target)
+            .clone::<String16>("text")
+            .get_string(
+                text_selection.start_index,
+                text_selection.start_index + text_selection.length,
+            )
+        {
+            registry.get_mut::<Clipboard>("clipboard").set(text_part);
+        }
+
+        println!("{:?}", registry.get::<Clipboard>("clipboard").get());
     }
 
     fn paste(&self, registry: &mut Registry, ctx: &mut Context) {}
@@ -191,8 +208,8 @@ impl TextBehaviorState {
                 } else {
                     self.insert_char(key_event, ctx);
                 }
-                // }
             }
+            // }
             _ => {
                 self.insert_char(key_event, ctx);
             }

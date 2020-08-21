@@ -33,3 +33,17 @@ impl Clipboard {
         self.value = Some(value.into());
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    /// A quick test to ensure that the items are properly set.
+    fn get_set() {
+        let mut clipboard = Clipboard::new();
+        let test = String::from("test");
+        clipboard.set(test.clone());
+        assert_eq!(test, clipboard.get().unwrap());
+    }
+}
