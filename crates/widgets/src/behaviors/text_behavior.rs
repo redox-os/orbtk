@@ -30,24 +30,21 @@ impl TextBehaviorState {
     }
 
     fn is_ctlr_home_pressed(&self, ctx: &mut Context) -> bool {
-        if cfg!(target_os = "macos") {
-            if ctx
+        if cfg!(target_os = "macos")
+            && ctx
                 .window()
                 .get::<Global>("global")
                 .keyboard_state
                 .is_home_down()
-            {
-                return true;
-            }
-        } else {
-            if ctx
-                .window()
-                .get::<Global>("global")
-                .keyboard_state
-                .is_ctrl_down()
-            {
-                return true;
-            }
+        {
+            return true;
+        } else if ctx
+            .window()
+            .get::<Global>("global")
+            .keyboard_state
+            .is_ctrl_down()
+        {
+            return true;
         }
 
         false
