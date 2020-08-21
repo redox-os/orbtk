@@ -43,7 +43,7 @@ pub fn default_theme() -> Theme {
     light_theme()
 }
 
-#[cfg(feature = "redox")]
+#[cfg(any(feature = "redox", target_os = "redox"))]
 pub fn default_theme() -> Theme {
     redox_theme()
 }

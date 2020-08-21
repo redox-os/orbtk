@@ -37,18 +37,15 @@ pub use orbtk_utils::prelude as utils;
 #[path = "glutin/mod.rs"]
 pub mod platform;
 
-// #[cfg(all(
-//     not(target_arch = "wasm32"),
-//     feature = "default",
-//     not(feature = "pfinder")
-// ))]
-// #[path = "minifb/mod.rs"]
-// pub mod platform;
+#[cfg(all(not(target_arch = "wasm32"), feature = "mini"))]
+#[path = "minifb/mod.rs"]
+pub mod platform;
 
 #[cfg(all(
     not(target_arch = "wasm32"),
     feature = "default",
-    not(feature = "pfinder")
+    not(feature = "pfinder"),
+    not(feature = "mini")
 ))]
 #[path = "orbclient/mod.rs"]
 pub mod platform;

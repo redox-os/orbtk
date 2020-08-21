@@ -424,7 +424,7 @@ macro_rules! widget {
             fn build(self, ctx: &mut BuildContext) -> Entity {
                 let entity = ctx.create_entity();
 
-                let this = self.template(entity, ctx);           
+                let this = self.template(entity, ctx);
 
                 ctx.register_render_object(entity, this.render_object());
                 ctx.register_layout(entity, this.layout());

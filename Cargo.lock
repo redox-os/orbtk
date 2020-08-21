@@ -1018,8 +1018,9 @@ dependencies = [
 
 [[package]]
 name = "minifb"
-version = "0.17.0"
-source = "git+https://github.com/FloVanGH/rust_minifb?branch=redox_unix#8a9d70d080e789887ea4b9ba0d8920cdf8676d32"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f55ed282e7f342aff95d5d43156b83c0456a80cbd731b8761cf0a3607f8c3158"
 dependencies = [
  "cast",
  "cc",
@@ -1286,7 +1287,7 @@ dependencies = [
 [[package]]
 name = "orbclient"
 version = "0.3.28"
-source = "git+https://gitlab.redox-os.org/redox-os/orbclient.git#f99f2aac83121d9fe12b02c19f3e1947e9b72a4f"
+source = "git+https://gitlab.redox-os.org/redox-os/orbclient.git#aa16d7774b24229152df8c1a2d067dca8e4e5949"
 dependencies = [
  "redox_syscall",
  "sdl2 0.34.2",
