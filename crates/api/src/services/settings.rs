@@ -20,6 +20,7 @@ use serde::{de::DeserializeOwned, Serialize};
 /// `Settings` represents a global settings service that could be use to serialize and deserialize
 /// data in the `ron` file format. Settings are stored in the user settings directory (depending on the operating system)
 /// under the a folder with the given application name.
+#[derive(Debug, Clone)]
 pub struct Settings {
     app_name: Box<str>,
 }

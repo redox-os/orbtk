@@ -29,6 +29,12 @@ impl TextBehaviorState {
         self.action = Some(action);
     }
 
+    fn copy(&self, registry: &mut Registry, ctx: &mut Context) {
+        let text_selection: TextSelection = ctx.get_widget(self.target).clone("text_selection");
+    }
+
+    fn paste(&self, registry: &mut Registry, ctx: &mut Context) {}
+
     fn request_focus(&self, ctx: &mut Context, p: Mouse) {
         ctx.push_event_by_window(FocusEvent::RequestFocus(self.target));
 
@@ -112,7 +118,12 @@ impl TextBehaviorState {
         }
     }
 
-    fn handle_key_event(&mut self, key_event: KeyEvent, ctx: &mut Context) {
+    fn handle_key_event(
+        &mut self,
+        key_event: KeyEvent,
+        registry: &mut Registry,
+        ctx: &mut Context,
+    ) {
         if !ctx.widget().get::<bool>("focused") {
             return;
         }
@@ -132,6 +143,30 @@ impl TextBehaviorState {
             }
             Key::Enter => {
                 self.activate(ctx);
+            }
+            Key::C(..) => {
+                if ctx
+                    .window()
+                    .get::<Global>("global")
+                    .keyboard_state
+                    .is_ctrl_down()
+                {
+                    self.copy(registry, ctx);
+                } else {
+                    self.insert_char(key_event, ctx);
+                }
+            }
+            Key::V(..) => {
+                if ctx
+                    .window()
+                    .get::<Global>("global")
+                    .keyboard_state
+                    .is_ctrl_down()
+                {
+                    self.copy(registry, ctx);
+                } else {
+                    self.insert_char(key_event, ctx);
+                }
             }
             Key::A(..) => {
                 // if cfg!(mac_os) {
@@ -354,7 +389,7 @@ impl State for TextBehaviorState {
         }
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, registry: &mut Registry, ctx: &mut Context) {
         self.check_outside_update(ctx);
 
         let focused = *ctx.widget().get::<bool>("focused");
@@ -386,7 +421,7 @@ impl State for TextBehaviorState {
         if let Some(action) = self.action.clone() {
             match action {
                 TextAction::Key(event) => {
-                    self.handle_key_event(event, ctx);
+                    self.handle_key_event(event, registry, ctx);
                 }
                 TextAction::Mouse(p) => {
                     self.request_focus(ctx, p);

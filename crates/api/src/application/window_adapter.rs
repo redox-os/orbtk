@@ -7,7 +7,7 @@ use crate::{
     event::*,
     properties::*,
     render,
-    services::Settings,
+    services::{Clipboard, Settings},
     shell,
     shell::{ShellRequest, WindowRequest, WindowSettings},
     systems::*,
@@ -198,6 +198,10 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             .borrow_mut()
             .register("settings", Settings::new(app_name.clone()));
     };
+
+    registry
+        .borrow_mut()
+        .register("clipboard", Clipboard::new());
 
     let context_provider = ContextProvider::new(sender, request_sender, app_name);
 
