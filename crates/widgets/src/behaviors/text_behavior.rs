@@ -359,7 +359,7 @@ impl TextBehaviorState {
             ActivateEvent(self.target),
             self.target,
             EventStrategy::Direct,
-        )
+        );
     }
 
     fn insert_char(&mut self, key_event: KeyEvent, ctx: &mut Context) {
