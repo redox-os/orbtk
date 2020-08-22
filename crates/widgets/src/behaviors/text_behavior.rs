@@ -458,7 +458,11 @@ impl State for TextBehaviorState {
                 TextAction::Mouse(p) => {
                     self.request_focus(ctx, p);
                 }
-                TextAction::Drop(text, _) => self.insert_text(text, ctx),
+                TextAction::Drop(text, position) => {
+                    if check_mouse_condition(position, &ctx.get_widget(self.target)) {
+                        self.insert_text(text, ctx);
+                    }
+                }
             }
 
             self.action = None;
@@ -476,6 +480,11 @@ impl State for TextBehaviorState {
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
                 .set_state("focused");
+            ctx.get_widget(self.target).update(false);
+        } else if self.len > 0 && !self.focused {
+            ctx.get_widget(self.target)
+                .get_mut::<Selector>("selector")
+                .clear_state();
             ctx.get_widget(self.target).update(false);
         }
     }
@@ -618,13 +627,13 @@ impl Template for TextBehavior {
                 states
                     .get_mut::<TextBehaviorState>(id)
                     .action(TextAction::Drop(file_name, position));
-                true
+                false
             })
             .on_drop_text(move |states, file_name, position| {
                 states
                     .get_mut::<TextBehaviorState>(id)
                     .action(TextAction::Drop(file_name, position));
-                true
+                false
             })
     }
 }
