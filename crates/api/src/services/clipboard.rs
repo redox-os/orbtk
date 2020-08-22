@@ -11,6 +11,7 @@
 ///         clipboard.set("paste");
 ///     }
 /// }
+/// ```
 #[derive(Clone, Default, Debug)]
 pub struct Clipboard {
     value: Option<String>,
