@@ -1,12 +1,10 @@
 use std::sync::mpsc;
 
 use super::MouseState;
-use crate::{
-    event::{ButtonState, Key, KeyEvent, MouseButton, MouseEvent},
-    render::RenderContext2D,
-    window_adapter::WindowAdapter,
-    WindowRequest,
-};
+
+use orbtk_render::RenderContext2D as RenderContext2DTrait;
+use orbtk_render_raqote::RenderContext2D;
+use orbtk_shell::prelude::*;
 
 use orbclient::Renderer;
 

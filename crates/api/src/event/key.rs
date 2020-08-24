@@ -1,12 +1,11 @@
 use std::rc::Rc;
 
-use crate::{
-    prelude::*,
-    proc_macros::*,
-    shell::{Key, KeyEvent},
-};
+use orbtk_proc_macros::*;
+use orbtk_shell::event::{Key, KeyEvent};
 
-use super::{EventBox, EventHandler};
+use crate::prelude::*;
+
+use super::*;
 
 #[derive(Event)]
 pub struct KeyDownEvent {

@@ -4,9 +4,12 @@ use std::sync::mpsc;
 
 use dces::prelude::Entity;
 
-use crate::{shell::ShellRequest, theming::Theme, widget_base::BuildContext};
+use orbtk_shell::ShellRequest;
+use orbtk_theming::Theme;
 
-use orbtk_orbclient_shell::Shell;
+use crate::widget_base::BuildContext;
+
+use orbtk_shell_orbclient::Shell;
 
 pub use self::context_provider::*;
 pub use self::global::*;
@@ -54,9 +57,9 @@ impl Application {
             name: name.into(),
             shell: Shell::new(receiver),
             #[cfg(all(not(feature = "light"), not(feature = "redox")))]
-            theme: crate::theme::default_theme(),
+            theme: orbtk_theme::default_theme(),
             #[cfg(feature = "light")]
-            theme: crate::theme::light_theme(),
+            theme: orbtk_theme::light_theme(),
         }
     }
 

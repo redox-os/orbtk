@@ -1,10 +1,11 @@
 use std::{collections::HashMap, rc::Rc};
 
 use dces::prelude::*;
+use orbtk_proc_macros::*;
 
 use super::*;
 
-use crate::{proc_macros::*, widget_base::*};
+use crate::widget_base::*;
 
 crate::trigger_event!(
     ActivateEvent,

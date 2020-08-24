@@ -1,0 +1,22 @@
+[package]
+name = "orbtk_render_raqote"
+version = "0.3.1-alpha4"
+authors = ["Florian Blasius <flovanpt@posteo.de>"]
+description = "2D Render library use by OrbTk based on raqote."
+repository = "https://github.com/redox-os/orbtk"
+readme = "README.md"
+license = "MIT"
+keywords = ["2D", "render", "canvas"]
+edition = "2018"
+
+[dependencies]
+image = { version = "0.23",  default-features = false, features = ["ico"] }
+raqote = { version = "0.8", default-features = false}
+rusttype = { version = "0.8.3" }
+orbtk_render = { path = "../orbtk_render", version = "0.3.1-alpha4"}
+orbtk-utils = { path = "../../utils", version = "0.3.1-alpha4" }
+#font-kit = { version = "0.6", optional = true }
+
+[features]
+defualt = []
+synchronous = []

@@ -1,56 +1,23 @@
 #![recursion_limit = "256"]
 
-use std::{any::Any, fmt};
-
 pub mod prelude;
 
-pub use orbtk_utils::prelude as utils;
-
-#[cfg(all(not(target_arch = "wasm32"), feature = "pfinder"))]
-#[path = "pathfinder/mod.rs"]
-pub mod platform;
-
-#[cfg(any(target_arch = "wasm32", feature = "pfinder"))]
-pub use self::platform::*;
-
-#[cfg(all(
-    not(target_arch = "wasm32"),
-    feature = "default",
-    not(feature = "pfinder")
-))]
-#[path = "raqote/mod.rs"]
-pub mod platform;
-
-#[cfg(all(
-    not(target_arch = "wasm32"),
-    feature = "default",
-    not(feature = "pfinder")
-))]
-pub mod concurrent;
-
-#[cfg(all(
-    not(target_arch = "wasm32"),
-    feature = "default",
-    not(feature = "pfinder")
-))]
-pub use self::concurrent::*;
-
-#[cfg(target_arch = "wasm32")]
-#[path = "web/mod.rs"]
-pub mod platform;
-
-#[cfg(target_arch = "wasm32")]
-pub use platform::RenderContext2D;
-
+pub use self::image::*;
+pub use self::render_context_2d::*;
 pub use self::render_target::*;
 
+mod image;
+mod render_context_2d;
 mod render_target;
+
+use orbtk_utils::Brush;
+use std::{any::Any, fmt};
 
 /// Defines the current configuration of the render ctx.
 #[derive(Debug, Clone)]
 pub struct RenderConfig {
-    pub fill_style: utils::Brush,
-    pub stroke_style: utils::Brush,
+    pub fill_style: Brush,
+    pub stroke_style: Brush,
     pub line_width: f64,
     pub font_config: FontConfig,
     pub alpha: f32,
@@ -59,8 +26,8 @@ pub struct RenderConfig {
 impl Default for RenderConfig {
     fn default() -> Self {
         RenderConfig {
-            fill_style: utils::Brush::default(),
-            stroke_style: utils::Brush::default(),
+            fill_style: Brush::default(),
+            stroke_style: Brush::default(),
             line_width: 1.,
             font_config: FontConfig::default(),
             alpha: 1.,

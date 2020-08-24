@@ -2,17 +2,16 @@ use std::{cell::RefCell, collections::HashMap, sync::mpsc};
 
 use dces::prelude::*;
 
+use orbtk_shell::{ShellRequest, WindowRequest, WindowSettings};
+use orbtk_tree::Tree;
+use orbtk_utils::{Point, Rectangle};
+
 use crate::{
     application::*,
     event::*,
     properties::*,
-    render,
     services::{Clipboard, Settings},
-    shell,
-    shell::{ShellRequest, WindowRequest, WindowSettings},
     systems::*,
-    tree::Tree,
-    utils::{Point, Rectangle},
     widget_base::*,
 };
 

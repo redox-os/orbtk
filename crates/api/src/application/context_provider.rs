@@ -9,14 +9,10 @@ use dces::prelude::*;
 
 use super::WindowAdapter;
 
-use crate::{
-    event::*,
-    layout::*,
-    render_object::*,
-    shell::{ShellRequest, WindowRequest},
-    utils::Point,
-    widget_base::*,
-};
+use orbtk_shell::{ShellRequest, WindowRequest};
+use orbtk_utils::Point;
+
+use crate::{event::*, layout::*, render_object::*, widget_base::*};
 
 /// Temporary solution to share dependencies. Will be refactored soon.
 #[derive(Clone)]

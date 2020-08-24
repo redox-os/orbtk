@@ -1,20 +1,21 @@
 //! This module contains a platform specific implementation of the window shell.
-
 use std::sync::mpsc;
+use stdweb::web::window;
 
-use spin_sleep::LoopHelper;
+use crate::{Window, WindowBuilder};
 
-pub use super::native::*;
+pub use orbtk_shell::{window_adapter::WindowAdapter, ShellRequest, WindowRequest, WindowSettings};
 
-use crate::prelude::*;
-
-use self::states::*;
-pub use self::window::*;
-pub use self::window_builder::*;
-
-mod states;
-mod window;
-mod window_builder;
+fn set_panic_hook() {
+    // When the `console_error_panic_hook` feature is enabled, we can call the
+    // `set_panic_hook` function at least once during initialization, and then
+    // we will get better error messages if our code ever panics.
+    //
+    // For more details see
+    // https://github.com/rustwasm/console_error_panic_hook#readme
+    #[cfg(feature = "console_error_panic_hook")]
+    console_error_panic_hook::set_once();
+}
 
 /// Represents an application shell that could handle multiple windows.
 pub struct Shell<A: 'static>
@@ -23,7 +24,6 @@ where
 {
     window_shells: Vec<Window<A>>,
     requests: mpsc::Receiver<ShellRequest<A>>,
-    loop_helper: LoopHelper,
 }
 
 impl<A> Shell<A>
@@ -32,12 +32,10 @@ where
 {
     /// Creates a new application shell.
     pub fn new(requests: mpsc::Receiver<ShellRequest<A>>) -> Self {
+        set_panic_hook();
         Shell {
             window_shells: vec![],
             requests,
-            loop_helper: LoopHelper::builder()
-                .report_interval_s(0.5) // report every half a second
-                .build_with_target_rate(70.0),
         }
     }
 
@@ -63,33 +61,32 @@ where
         }
 
         for request in requests {
-            if let ShellRequest::CreateWindow(adapter, settings, window_requests) = request {
-                self.create_window_from_settings(settings, adapter)
-                    .request_receiver(window_requests)
-                    .build();
+            match request {
+                ShellRequest::CreateWindow(adapter, settings, window_requests) => {
+                    self.create_window_from_settings(settings, adapter)
+                        .request_receiver(window_requests)
+                        .build();
+                }
+                _ => {}
             }
         }
     }
 
     /// Runs (starts) the application shell and its windows.
-    pub fn run(&mut self) {
-        loop {
+    pub fn run(mut self) {
+        window().request_animation_frame(move |_| {
             if self.window_shells.is_empty() {
                 return;
             }
 
-            let _delta = self.loop_helper.loop_start();
-
             for i in 0..self.window_shells.len() {
                 let mut remove = false;
                 if let Some(window_shell) = self.window_shells.get_mut(i) {
-                    window_shell.update();
                     window_shell.render();
-
+                    window_shell.update();
                     window_shell.update_clipboard();
                     window_shell.drain_events();
                     window_shell.receive_requests();
-
                     if !window_shell.is_open() {
                         remove = true;
                     }
@@ -102,14 +99,34 @@ where
             }
 
             self.receive_requests();
+            self.run();
+        });
+    }
+}
 
-            if let Some(fps) = self.loop_helper.report_rate() {
-                if cfg!(feature = "debug") {
-                    println!("fps: {}", fps);
-                }
-            }
+lazy_static! {
+    pub static ref CONSOLE: Console = Console;
+}
 
-            self.loop_helper.loop_sleep();
+pub struct Console;
+
+impl Console {
+    pub fn time(&self, _name: impl Into<String>) {
+        // js! {
+        //     console.time(@{&name.into()})
+        // }
+    }
+
+    pub fn time_end(&self, _name: impl Into<String>) {
+        // js! {
+        //     console.timeEnd(@{&name.into()})
+        // }
+    }
+
+    pub fn log(&self, message: impl Into<String>) {
+        #[cfg(feature = "log")]
+        js! {
+            console.log(@{&message.into()});
         }
     }
 }

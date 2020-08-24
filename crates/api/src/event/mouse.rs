@@ -1,11 +1,10 @@
 use std::rc::Rc;
 
-use crate::{
-    prelude::*,
-    proc_macros::{Event, IntoHandler},
-    shell::MouseButton,
-    utils::*,
-};
+use orbtk_proc_macros::*;
+use orbtk_shell::event::MouseButton;
+use orbtk_utils::*;
+
+use crate::prelude::*;
 
 /// Checks if the given point is inside of a widget.
 pub fn check_mouse_condition(mouse_position: Point, widget: &WidgetContainer<'_>) -> bool {

@@ -1,27 +1,6 @@
 /*!
 
-Window shell abstraction layer used by OrbTk. Provides support for desktop and web.
-
-# Example
-
-Basic usage of the shell:
-
-```rust,no_run
-
-use orbtk_shell::prelude::*;
-
-let shell = WindowBuilder::new(MyCustomWindowAdapter::new())
-                        .title("Window")
-                        .bounds((0.0, 0.0, 100.0, 100.0))
-                        .build();
-
-let runner = ShellRunner {
-    shell,
-    updater: Box::new(MyCustomUpdater::new())
-};
-
-runner.run()
-```
+Window shell abstraction layer used by OrbTk.
 
  */
 #[macro_use]
@@ -31,12 +10,8 @@ pub mod event;
 pub mod prelude;
 pub mod window_adapter;
 
-pub use orbtk_utils::prelude as utils;
-
 #[cfg(not(target_arch = "wasm32"))]
 pub mod native;
-
-pub use orbtk_render::prelude as render;
 
 use std::{collections::HashMap, sync::mpsc};
 

@@ -2,7 +2,8 @@ use std::collections::HashMap;
 
 use dces::prelude::Entity;
 
-use crate::{shell::Key, theming::Theme};
+use orbtk_shell::event::Key;
+use orbtk_theming::Theme;
 
 #[derive(Default, Clone, Debug, PartialEq)]
 /// The `Global` struct is used to define global `properties` that could be access application width.

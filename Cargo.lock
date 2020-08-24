@@ -218,8 +218,8 @@ checksum = "0c49e86fc36d5704151f5996b7b3795385f50ce09e3be0f47a0cfde869681cf8"
 dependencies = [
  "bitflags 1.2.1",
  "block",
- "core-foundation 0.7.0",
- "core-graphics 0.19.2",
+ "core-foundation",
+ "core-graphics",
  "foreign-types",
  "libc",
  "objc",
@@ -243,29 +243,13 @@ checksum = "245097e9a4535ee1e3e3931fcfcd55a796a44c643e8596ff6566d68f09b87bbc"
 
 [[package]]
 name = "core-foundation"
-version = "0.6.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "25b9e03f145fd4f2bf705e07b900cd41fc636598fe5dc452fd0db1441c3f496d"
-dependencies = [
- "core-foundation-sys 0.6.2",
- "libc",
-]
-
-[[package]]
-name = "core-foundation"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "57d24c7a13c43e870e37c1556b74555437870a04514f7685f5b354e090567171"
 dependencies = [
- "core-foundation-sys 0.7.0",
+ "core-foundation-sys",
  "libc",
 ]
-
-[[package]]
-name = "core-foundation-sys"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7ca8a5221364ef15ce201e8ed2f609fc312682a8f4e0e3d4aa5879764e0fa3b"
 
 [[package]]
 name = "core-foundation-sys"
@@ -275,36 +259,12 @@ checksum = "b3a71ab494c0b5b860bdc8407ae08978052417070c2ced38573a9157ad75b8ac"
 
 [[package]]
 name = "core-graphics"
-version = "0.17.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "56790968ab1c8a1202a102e6de05fc6e1ec87da99e4e93e9a7d13efbfc1e95a9"
-dependencies = [
- "bitflags 1.2.1",
- "core-foundation 0.6.4",
- "foreign-types",
- "libc",
-]
-
-[[package]]
-name = "core-graphics"
 version = "0.19.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b3889374e6ea6ab25dba90bb5d96202f61108058361f6dc72e8b03e6f8bbe923"
 dependencies = [
  "bitflags 1.2.1",
- "core-foundation 0.7.0",
- "foreign-types",
- "libc",
-]
-
-[[package]]
-name = "core-text"
-version = "13.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db84654ad95211c082cf9795f6f83dc17d0ae6c985ac1b906369dc7384ed346d"
-dependencies = [
- "core-foundation 0.6.4",
- "core-graphics 0.17.3",
+ "core-foundation",
  "foreign-types",
  "libc",
 ]
@@ -315,8 +275,8 @@ version = "15.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "131b3fd1f8bd5db9f2b398fa4fdb6008c64afc04d447c306ac2c7e98fba2a61d"
 dependencies = [
- "core-foundation 0.7.0",
- "core-graphics 0.19.2",
+ "core-foundation",
+ "core-graphics",
  "foreign-types",
  "libc",
 ]
@@ -328,8 +288,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "34ecad23610ad9757664d644e369246edde1803fcb43ed72876565098a5d3828"
 dependencies = [
  "cfg-if",
- "core-foundation-sys 0.7.0",
- "core-graphics 0.19.2",
+ "core-foundation-sys",
+ "core-graphics",
  "libc",
  "objc",
 ]
@@ -588,9 +548,9 @@ checksum = "8f953474ebbe3460775ed2da52435477cc029493284d6ceb635598586a2c6298"
 dependencies = [
  "bitflags 1.2.1",
  "byteorder",
- "core-foundation 0.7.0",
- "core-graphics 0.19.2",
- "core-text 15.0.0",
+ "core-foundation",
+ "core-graphics",
+ "core-text",
  "dirs 2.0.2",
  "dwrote",
  "float-ord",
@@ -692,8 +652,8 @@ dependencies = [
  "android_glue",
  "cgl",
  "cocoa",
- "core-foundation 0.7.0",
- "core-graphics 0.19.2",
+ "core-foundation",
+ "core-graphics",
  "glutin_egl_sys",
  "glutin_emscripten_sys",
  "glutin_gles2_sys",
@@ -760,29 +720,6 @@ name = "half"
 version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d36fab90f82edc3c747f9d438e06cf0a491055896f2a279638bb5beed6c40177"
-
-[[package]]
-name = "harfbuzz"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46f7426266a5ece3e49eae6f48e602c0f8c39917354a847eac9c06437dcde8da"
-dependencies = [
- "harfbuzz-sys",
-]
-
-[[package]]
-name = "harfbuzz-sys"
-version = "0.3.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "212d74cab8498b2d15700b694fb38f77562869d05e1f8b602dd05221a1ca2d63"
-dependencies = [
- "cc",
- "core-graphics 0.17.3",
- "core-text 13.3.2",
- "foreign-types",
- "freetype",
- "pkg-config",
-]
 
 [[package]]
 name = "hashbrown"
@@ -1292,14 +1229,14 @@ dependencies = [
  "euc",
  "orbtk-api",
  "orbtk-proc-macros",
- "orbtk-render",
  "orbtk-theme",
  "orbtk-theming",
  "orbtk-tree",
  "orbtk-utils",
  "orbtk-widgets",
- "orbtk_orbclient_shell",
+ "orbtk_render",
  "orbtk_shell",
+ "orbtk_shell_orbclient",
  "serde",
  "serde_derive",
  "vek",
@@ -1313,13 +1250,13 @@ dependencies = [
  "derive_more",
  "dirs 3.0.1",
  "orbtk-proc-macros",
- "orbtk-render",
  "orbtk-theme",
  "orbtk-theming",
  "orbtk-tree",
  "orbtk-utils",
- "orbtk_orbclient_shell",
+ "orbtk_render_raqote",
  "orbtk_shell",
+ "orbtk_shell_orbclient",
  "raw-window-handle",
  "ron",
  "serde",
@@ -1335,26 +1272,6 @@ dependencies = [
  "proc-macro2 1.0.19",
  "quote 1.0.7",
  "syn",
-]
-
-[[package]]
-name = "orbtk-render"
-version = "0.3.1-alpha4"
-dependencies = [
- "font-kit",
- "image",
- "orbtk-utils",
- "pathfinder_canvas",
- "pathfinder_color",
- "pathfinder_content",
- "pathfinder_geometry",
- "pathfinder_gl",
- "pathfinder_gpu",
- "pathfinder_renderer",
- "pathfinder_resources",
- "raqote",
- "rusttype 0.8.3",
- "stdweb",
 ]
 
 [[package]]
@@ -1398,28 +1315,29 @@ dependencies = [
  "lazy_static 1.4.0",
  "orbtk-api",
  "orbtk-proc-macros",
- "orbtk-render",
  "orbtk-theme",
  "orbtk-utils",
+ "orbtk_render_raqote",
  "orbtk_shell",
  "rust_decimal",
 ]
 
 [[package]]
-name = "orbtk_orbclient_shell"
+name = "orbtk_render"
 version = "0.3.1-alpha4"
 dependencies = [
- "console_error_panic_hook",
- "derive_more",
- "image",
- "lazy_static 1.4.0",
- "orbclient 0.3.28",
- "orbtk-render",
  "orbtk-utils",
- "orbtk_shell",
- "raw-window-handle",
- "spin_sleep",
- "stdweb",
+]
+
+[[package]]
+name = "orbtk_render_raqote"
+version = "0.3.1-alpha4"
+dependencies = [
+ "image",
+ "orbtk-utils",
+ "orbtk_render",
+ "raqote",
+ "rusttype 0.8.3",
 ]
 
 [[package]]
@@ -1436,8 +1354,8 @@ dependencies = [
  "lazy_static 1.4.0",
  "minifb",
  "orbclient 0.3.28",
- "orbtk-render",
  "orbtk-utils",
+ "orbtk_render_raqote",
  "pathfinder_color",
  "pathfinder_geometry",
  "pathfinder_gl",
@@ -1446,6 +1364,22 @@ dependencies = [
  "raw-window-handle",
  "spin_sleep",
  "stdweb",
+]
+
+[[package]]
+name = "orbtk_shell_orbclient"
+version = "0.3.1-alpha4"
+dependencies = [
+ "derive_more",
+ "image",
+ "lazy_static 1.4.0",
+ "orbclient 0.3.28",
+ "orbtk-utils",
+ "orbtk_render",
+ "orbtk_render_raqote",
+ "orbtk_shell",
+ "raw-window-handle",
+ "spin_sleep",
 ]
 
 [[package]]
@@ -1488,21 +1422,6 @@ dependencies = [
  "redox_syscall",
  "smallvec",
  "winapi 0.3.9",
-]
-
-[[package]]
-name = "pathfinder_canvas"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a566adea42766710762f021604453cc838444bc51780671ec3ec91ec4a4ff1c9"
-dependencies = [
- "font-kit",
- "pathfinder_color",
- "pathfinder_content",
- "pathfinder_geometry",
- "pathfinder_renderer",
- "pathfinder_text",
- "skribo",
 ]
 
 [[package]]
@@ -1609,19 +1528,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b451513912d6b3440e443aa75a73ab22203afedc4a90df8526d008c0f86f7cb3"
 dependencies = [
  "rustc_version",
-]
-
-[[package]]
-name = "pathfinder_text"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4bf6df0c225078dc56c565ff405f67fd55eb70f97e1b8cdf4189df552f30b8d1"
-dependencies = [
- "font-kit",
- "pathfinder_content",
- "pathfinder_geometry",
- "pathfinder_renderer",
- "skribo",
 ]
 
 [[package]]
@@ -2134,20 +2040,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "skribo"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6e9e713ecb4b6d3047428d060aa46cf4abd1109a961da245359e8f88a529d16"
-dependencies = [
- "font-kit",
- "harfbuzz",
- "harfbuzz-sys",
- "log",
- "pathfinder_geometry",
- "unicode-normalization",
-]
-
-[[package]]
 name = "slab"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2304,12 +2196,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tinyvec"
-version = "0.3.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "238ce071d267c5710f9d31451efec16c5ee22de34df17cc05e56cbc92e967117"
-
-[[package]]
 name = "toml"
 version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2323,15 +2209,6 @@ name = "typed-arena"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0685c84d5d54d1c26f7d3eb96cd41550adb97baed141a761cf335d3d33bcd0ae"
-
-[[package]]
-name = "unicode-normalization"
-version = "0.1.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6fb19cf769fa8c6a80a162df694621ebeb4dafb606470b2b2fce0be40a98a977"
-dependencies = [
- "tinyvec",
-]
 
 [[package]]
 name = "unicode-xid"
@@ -2656,8 +2533,8 @@ checksum = "1e4ccbf7ddb6627828eace16cacde80fc6bf4dbb3469f88487262a02cf8e7862"
 dependencies = [
  "bitflags 1.2.1",
  "cocoa",
- "core-foundation 0.7.0",
- "core-graphics 0.19.2",
+ "core-foundation",
+ "core-graphics",
  "core-video-sys",
  "dispatch",
  "instant",

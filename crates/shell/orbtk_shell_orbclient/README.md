@@ -1,6 +1,6 @@
-# orbtk_shell
+# orbtk-shell
 
-Window shell library base. It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
+Implementation of the OrbTk shell based on OrbClient. It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 
 [![Build and test](https://github.com/redox-os/orbtk/workflows/build/badge.svg)](https://github.com/redox-os/orbtk/actions)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](../../LICENSE)
@@ -12,14 +12,10 @@ Window shell library base. It's part of [OrbTk](https://gitlab.redox-os.org/redo
 * macOS
 * Windows
 * openBSD (not tested, but should work)
-* Web
-* Android (planned)
-* iOS (planned)
-* Ubuntu Touch (planned)
 
 ## Dependencies
 
-* [raw-window-handle](https://github.com/rust-windowing/raw-window-handle) (MIT): access to a window's platform-specific raw window handle
+* [OrbClient](https://gitlab.redox-os.org/redox-os/orbclient) (MIT): window and events
 
 ## License
 

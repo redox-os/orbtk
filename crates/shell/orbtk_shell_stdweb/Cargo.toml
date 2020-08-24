@@ -1,0 +1,25 @@
+[package]
+name = "orbtk_shell_stdweb"
+version = "0.3.1-alpha4"
+authors = ["Florian Blasius <flovanpt@posteo.de>"]
+description = "Window shell crate used by OrbTk based on stdweb."
+repository = "https://github.com/redox-os/orbtk"
+readme = "README.md"
+license = "MIT"
+keywords = ["shell", "window", "ui"]
+edition = "2018"
+
+[dependencies]
+stdweb = "0.4.20"
+console_error_panic_hook = "0.1.6"
+derive_more = { version = "0.99", default-features = false, features = ["constructor"] }
+lazy_static = "1.4.0"
+raw-window-handle = "0.3.3"
+
+# orbtk
+orbtk_render_stdweb = { path = "../render/orbtk_render_stdweb", version = "0.3.1-alpha4" }
+orbtk_shell = { path = "../orbtk_shell", version = "0.3.1-alpha4" }
+orbtk-utils = { path = "../../utils", version = "0.3.1-alpha4" }
+
+[features]
+log = []
