@@ -1293,12 +1293,13 @@ dependencies = [
  "orbtk-api",
  "orbtk-proc-macros",
  "orbtk-render",
- "orbtk-shell",
  "orbtk-theme",
  "orbtk-theming",
  "orbtk-tree",
  "orbtk-utils",
  "orbtk-widgets",
+ "orbtk_orbclient_shell",
+ "orbtk_shell",
  "serde",
  "serde_derive",
  "vek",
@@ -1313,11 +1314,12 @@ dependencies = [
  "dirs 3.0.1",
  "orbtk-proc-macros",
  "orbtk-render",
- "orbtk-shell",
  "orbtk-theme",
  "orbtk-theming",
  "orbtk-tree",
  "orbtk-utils",
+ "orbtk_orbclient_shell",
+ "orbtk_shell",
  "raw-window-handle",
  "ron",
  "serde",
@@ -1352,32 +1354,6 @@ dependencies = [
  "pathfinder_resources",
  "raqote",
  "rusttype 0.8.3",
- "stdweb",
-]
-
-[[package]]
-name = "orbtk-shell"
-version = "0.3.1-alpha4"
-dependencies = [
- "console_error_panic_hook",
- "derive_more",
- "euclid",
- "font-kit",
- "gl",
- "glutin",
- "image",
- "lazy_static 1.4.0",
- "minifb",
- "orbclient 0.3.28",
- "orbtk-render",
- "orbtk-utils",
- "pathfinder_color",
- "pathfinder_geometry",
- "pathfinder_gl",
- "pathfinder_renderer",
- "pathfinder_resources",
- "raw-window-handle",
- "spin_sleep",
  "stdweb",
 ]
 
@@ -1423,10 +1399,53 @@ dependencies = [
  "orbtk-api",
  "orbtk-proc-macros",
  "orbtk-render",
- "orbtk-shell",
  "orbtk-theme",
  "orbtk-utils",
+ "orbtk_shell",
  "rust_decimal",
+]
+
+[[package]]
+name = "orbtk_orbclient_shell"
+version = "0.3.1-alpha4"
+dependencies = [
+ "console_error_panic_hook",
+ "derive_more",
+ "image",
+ "lazy_static 1.4.0",
+ "orbclient 0.3.28",
+ "orbtk-render",
+ "orbtk-utils",
+ "orbtk_shell",
+ "raw-window-handle",
+ "spin_sleep",
+ "stdweb",
+]
+
+[[package]]
+name = "orbtk_shell"
+version = "0.3.1-alpha4"
+dependencies = [
+ "console_error_panic_hook",
+ "derive_more",
+ "euclid",
+ "font-kit",
+ "gl",
+ "glutin",
+ "image",
+ "lazy_static 1.4.0",
+ "minifb",
+ "orbclient 0.3.28",
+ "orbtk-render",
+ "orbtk-utils",
+ "pathfinder_color",
+ "pathfinder_geometry",
+ "pathfinder_gl",
+ "pathfinder_renderer",
+ "pathfinder_resources",
+ "raw-window-handle",
+ "spin_sleep",
+ "stdweb",
 ]
 
 [[package]]

@@ -10,7 +10,6 @@
 // pub use orbtk_tree as tree;
 // pub use orbtk_utils as utils;
 // pub use orbtk_widgets as widgets;
-pub use orbtk_shell::prelude::initialize;
 
 pub mod api {
     pub use orbtk_api::*;

@@ -1,31 +1,21 @@
-//! self module contains a platform specific implementation of the window shell.
+//! This module contains a platform specific implementation of the window shell.
 
 use std::sync::mpsc;
 
-pub use super::native::*;
+use spin_sleep::LoopHelper;
 
-use glutin::event_loop::{ControlFlow, EventLoop};
+use crate::{Window, WindowBuilder};
 
-use crate::prelude::*;
-
-pub use self::window::*;
-pub use self::window_builder::*;
-
-mod states;
-mod window;
-mod window_builder;
-
-/// Does nothing. self function is only use by the web backend.
-pub fn initialize() {}
+pub use orbtk_shell::{window_adapter::WindowAdapter, ShellRequest, WindowRequest, WindowSettings};
 
 /// Represents an application shell that could handle multiple windows.
 pub struct Shell<A: 'static>
 where
     A: WindowAdapter,
 {
-    window_shells: Vec<Window<A>>,
+    pub(crate) window_shells: Vec<Window<A>>,
     requests: mpsc::Receiver<ShellRequest<A>>,
-    event_loop: Vec<EventLoop<()>>,
+    loop_helper: LoopHelper,
 }
 
 impl<A> Shell<A>
@@ -37,7 +27,9 @@ where
         Shell {
             window_shells: vec![],
             requests,
-            event_loop: vec![EventLoop::new()],
+            loop_helper: LoopHelper::builder()
+                .report_interval_s(0.5) // report every half a second
+                .build_with_target_rate(70.0),
         }
     }
 
@@ -71,40 +63,45 @@ where
         }
     }
 
-    pub fn event_loop(&self) -> &EventLoop<()> {
-        self.event_loop.get(0).unwrap()
-    }
-
     /// Runs (starts) the application shell and its windows.
-    pub fn run(mut self) {
-        self.event_loop
-            .pop()
-            .unwrap()
-            .run(move |event, _, control_flow| {
-                if self.window_shells.is_empty() {
-                    *control_flow = ControlFlow::Exit;
-                }
+    pub fn run(&mut self) {
+        loop {
+            if self.window_shells.is_empty() {
+                return;
+            }
 
-                for i in 0..self.window_shells.len() {
-                    let mut remove = false;
-                    if let Some(window_shell) = self.window_shells.get_mut(i) {
-                        window_shell.update();
-                        window_shell.render();
+            let _delta = self.loop_helper.loop_start();
 
-                        window_shell.update_clipboard();
-                        window_shell.drain_events(control_flow, &event);
-                        window_shell.receive_requests();
+            for i in 0..self.window_shells.len() {
+                let mut remove = false;
+                if let Some(window_shell) = self.window_shells.get_mut(i) {
+                    window_shell.update();
+                    window_shell.render();
 
-                        if !window_shell.is_open() {
-                            remove = true;
-                        }
-                    }
+                    window_shell.update_clipboard();
+                    window_shell.drain_events();
+                    window_shell.receive_requests();
 
-                    if remove {
-                        self.window_shells.remove(i);
-                        break;
+                    if !window_shell.is_open() {
+                        remove = true;
                     }
                 }
-            });
+
+                if remove {
+                    self.window_shells.remove(i);
+                    break;
+                }
+            }
+
+            self.receive_requests();
+
+            if let Some(fps) = self.loop_helper.report_rate() {
+                if cfg!(feature = "debug") {
+                    println!("fps: {}", fps);
+                }
+            }
+
+            self.loop_helper.loop_sleep();
+        }
     }
 }

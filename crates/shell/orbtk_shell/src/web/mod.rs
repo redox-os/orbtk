@@ -23,12 +23,6 @@ fn set_panic_hook() {
     console_error_panic_hook::set_once();
 }
 
-/// Initializes web stuff.
-pub fn initialize() {
-    set_panic_hook();
-    stdweb::initialize();
-}
-
 /// Represents an application shell that could handle multiple windows.
 pub struct Shell<A: 'static>
 where
@@ -44,6 +38,7 @@ where
 {
     /// Creates a new application shell.
     pub fn new(requests: mpsc::Receiver<ShellRequest<A>>) -> Self {
+        set_panic_hook();
         Shell {
             window_shells: vec![],
             requests,
