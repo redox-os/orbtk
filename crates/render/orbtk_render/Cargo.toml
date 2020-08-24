@@ -32,7 +32,7 @@ font-kit = { version = "0.6", optional = true }
 
 
 [dependencies]
-orbtk-utils = { path = "../utils", version = "0.3.1-alpha4" }
+orbtk-utils = { path = "../../orbtk_utils", version = "0.3.1-alpha4" }
 
 [features]
 default = ["raqote", "rusttype"]

@@ -66,7 +66,7 @@ widget!(
     /// For an example how to use the PasswordBox, check the [`example`].
     ///
     /// [`TextBox`]: ./struct.TextBox.html
-    /// [`example`]: https://github.com/redox-os/orbtk/tree/develop/examples/login.rs
+    /// [`example`]: https://github.com/redox-os/orbtk/orbtk_tree/develop/examples/login.rs
     PasswordBox<PasswordBoxState>: KeyDownHandler {
         /// Sets or shares the echo character which used to mask the input
         echo: char,
