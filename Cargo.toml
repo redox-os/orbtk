@@ -25,15 +25,15 @@ path = "src/lib.rs"
 opt-level = 1
 
 [dependencies]
-orbtk-proc-macros = { version = "0.3.1-alpha4", path = "crates/orbtk_proc_macros" }
-orbtk-api = { version = "0.3.1-alpha4", path = "crates/orbtk_api" }
-orbtk-render = { version = "0.3.1-alpha4", path = "crates/render/orbtk_render" }
-orbtk-shell = { version = "0.3.1-alpha4", path = "crates/shell/orbtk_shell" }
-orbtk-theme = { version = "0.3.1-alpha4", path="crates/theme" }
-orbtk-theming = { version = "0.3.1-alpha4", path="crates/orbtk_theming" }
-orbtk-utils = { version = "0.3.1-alpha4", path = "crates/orbtk_utils" }
-orbtk-tree = { version = "0.3.1-alpha4", path="crates/orbtk_tree" }
-orbtk-widgets = { version = "0.3.1-alpha4", path="crates/orbtk_widgets" }
+orbtk_proc_macros = { version = "0.3.1-alpha4", path = "crates/orbtk_proc_macros" }
+orbtk_api = { version = "0.3.1-alpha4", path = "crates/orbtk_api" }
+orbtk_render = { version = "0.3.1-alpha4", path = "crates/render/orbtk_render" }
+orbtk_shell = { version = "0.3.1-alpha4", path = "crates/shell/orbtk_shell" }
+orbtk_theme = { version = "0.3.1-alpha4", path="crates/theme" }
+orbtk_theming = { version = "0.3.1-alpha4", path="crates/orbtk_theming" }
+orbtk_utils = { version = "0.3.1-alpha4", path = "crates/orbtk_utils" }
+orbtk_tree = { version = "0.3.1-alpha4", path="crates/orbtk_tree" }
+orbtk_widgets = { version = "0.3.1-alpha4", path="crates/orbtk_widgets" }
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git", branch = "develop" }
 
 [dev-dependencies]
@@ -46,12 +46,12 @@ serde_derive = "1.0.106"
 # wgpu = "0.5.0"
 
 [features]
-debug = ["orbtk-api/debug"]
-miniraq = ["orbtk-shell/mini"]
-pathfinder = ["orbtk-shell/pfinder", "orbtk-render/pfinder"]
-log = ["orbtk-shell/log"]
-light = ["orbtk-theme/light"]
-redox = ["orbtk-theme/redox"]
+debug = ["orbtk_api/debug"]
+miniraq = ["orbtk_shell/mini"]
+pathfinder = ["orbtk_shell/pfinder", "orbtk_render/pfinder"]
+log = ["orbtk_shell/log"]
+light = ["orbtk_theme/light"]
+redox = ["orbtk_theme/redox"]
  
 [workspace]
 members = [

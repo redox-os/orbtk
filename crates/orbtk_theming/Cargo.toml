@@ -1,5 +1,5 @@
 [package]
-name = "orbtk-theming"
+name = "orbtk_theming"
 version = "0.3.1-alpha4"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Theming engine of OrbTk."

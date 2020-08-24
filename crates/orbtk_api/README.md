@@ -1,4 +1,4 @@
-# orbtk-api
+# orbtk_api
 
 Provides base traits and structs for application, widgets and properties. It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 

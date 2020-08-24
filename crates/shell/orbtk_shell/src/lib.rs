@@ -41,15 +41,6 @@ pub mod platform;
 #[path = "minifb/mod.rs"]
 pub mod platform;
 
-#[cfg(all(
-    not(target_arch = "wasm32"),
-    feature = "default",
-    not(feature = "pfinder"),
-    not(feature = "mini")
-))]
-#[path = "orbclient/mod.rs"]
-pub mod platform;
-
 #[cfg(not(target_arch = "wasm32"))]
 pub mod native;
 

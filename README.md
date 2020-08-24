@@ -62,7 +62,7 @@ line to your `Cargo.toml` file:
 ```text
 orbtk = { git = "https://github.com/redox-os/orbtk.git", branch = "develop" }
 ```
-You can also check out the OrbTk template project to start a new project: https://github.com/redox-os/orbtk-template.
+You can also check out the OrbTk template project to start a new project: https://github.com/redox-os/orbtk_template.
 
 ## Minimal Example
 
@@ -277,14 +277,14 @@ To build and run the latest version of the OrbTk manual check: [Manual](https://
 
 ## Sub Crates
 
-* [api](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/orbtk_api): base api elements of OrbTk e.g. widget and application parts
-* [proc-macros](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/orbtk_proc_macros): procedural helper macros
-* [render](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/render/orbtk_render): cross platform 2D/3D render library
-* [shell](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/orbtk_api): cross platform window and event handling
-* [theming](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/theme): provide mechanism to style OrbTk UI's in rust and ron (replaces css-engine)
-* [tree](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/orbtk_tree): tree structure based on DCES
-* [utils](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/orbtk_utils): helper structs and traits
-* [widgets](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/orbtk_widgets): base widget library
+* [orbtk_api](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/orbtk_api): base api elements of OrbTk e.g. widget and application parts
+* [orbtk_proc_macros](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/orbtk_proc_macros): procedural helper macros
+* [orbtk_render](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/render/orbtk_render): 2D/3D render library
+* [orbtk_shell](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/orbtk_api): window and event handling
+* [orbtk_theming](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/theme): provide mechanism to style OrbTk UI's in rust and ron (replaces css-engine)
+* [orbtk_tree](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/orbtk_tree): tree structure based on DCES
+* [orbtk_utils](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/orbtk_utils): helper structs and traits
+* [orbtk_widgets](https://github.com/redox-os/orbtk/orbtk_tree/develop/crates/orbtk_widgets): base widget library
 
 ## Inspirations
 

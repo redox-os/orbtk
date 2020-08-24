@@ -28,7 +28,7 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Settings {
-            app_name: "orbtk-app".into(),
+            app_name: "orbtk_app".into(),
         }
     }
 }

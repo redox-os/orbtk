@@ -1,5 +1,5 @@
 [package]
-name = "orbtk-tree"
+name = "orbtk_tree"
 version = "0.3.1-alpha4"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Tree structure based on DCES."

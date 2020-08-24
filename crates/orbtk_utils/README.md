@@ -1,4 +1,4 @@
-# orbtk-utils
+# orbtk_utils
 
 Base structs like point, brush, border, ... . It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 

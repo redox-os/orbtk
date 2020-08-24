@@ -136,7 +136,7 @@ impl Template for MainView {
 }
 
 fn main() {
-    Application::from_name("orbtk-settings")
+    Application::from_name("orbtk_settings")
         .window(|ctx| {
             Window::new()
                 .title("OrbTk - settings example")

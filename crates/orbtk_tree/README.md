@@ -1,4 +1,4 @@
-# orbtk-tree
+# orbtk_tree
 
 Entity component system based tree entity container. It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 

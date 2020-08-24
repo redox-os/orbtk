@@ -1,5 +1,5 @@
 [package]
-name = "orbtk-render"
+name = "orbtk_render"
 version = "0.3.1-alpha4"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "2D Render library use by OrbTk."
@@ -32,7 +32,7 @@ font-kit = { version = "0.6", optional = true }
 
 
 [dependencies]
-orbtk-utils = { path = "../../orbtk_utils", version = "0.3.1-alpha4" }
+orbtk_utils = { path = "../../orbtk_utils", version = "0.3.1-alpha4" }
 
 [features]
 default = ["raqote", "rusttype"]
