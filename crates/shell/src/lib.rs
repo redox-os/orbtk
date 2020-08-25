@@ -43,7 +43,7 @@ pub mod platform;
 
 #[cfg(all(
     not(target_arch = "wasm32"),
-    feature = "default",
+    any(feature = "default", feature = "orbraq"),
     not(feature = "glupath"),
     not(feature = "miniraq")
 ))]
