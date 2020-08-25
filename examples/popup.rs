@@ -57,7 +57,7 @@ impl State for MainViewState {
 
 fn create_popup(target: Entity, text: &str, build_context: &mut BuildContext) -> Entity {
     Popup::new()
-        .target(target)
+        .target(target.0)
         .open(true)
         .width(250.0)
         .height(250.0)
