@@ -1,12 +1,9 @@
 use std::{cmp, collections::HashMap};
 
-use crate::{utils::*, PipelineTrait, RenderConfig, RenderTarget, TextMetrics};
+use orbtk_render::{Image, PipelineTrait, RenderConfig, RenderTarget, TextMetrics};
+use orbtk_utils::prelude::*;
 
-pub use self::font::*;
-pub use self::image::Image;
-
-mod font;
-mod image;
+use crate::Font;
 
 /// The RenderContext2D trait, provides the rendering ctx. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {

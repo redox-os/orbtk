@@ -1302,7 +1302,7 @@ dependencies = [
  "derive_more",
  "dirs 3.0.1",
  "orbtk_proc_macros",
- "orbtk_render",
+ "orbtk_render_raqote",
  "orbtk_shell",
  "orbtk_shell_glutin",
  "orbtk_shell_minifb",
@@ -1350,12 +1350,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "orbtk_render_raqote"
+version = "0.3.1-alpha4"
+dependencies = [
+ "image",
+ "orbtk_render",
+ "orbtk_utils",
+ "raqote",
+ "rusttype 0.8.3",
+]
+
+[[package]]
 name = "orbtk_shell"
 version = "0.3.1-alpha4"
 dependencies = [
  "derive_more",
  "lazy_static 1.4.0",
- "orbtk_render",
+ "orbtk_render_raqote",
  "orbtk_utils",
  "raw-window-handle",
  "stdweb",
@@ -1388,7 +1399,7 @@ dependencies = [
  "image",
  "lazy_static 1.4.0",
  "minifb",
- "orbtk_render",
+ "orbtk_render_raqote",
  "orbtk_shell",
  "orbtk_utils",
  "raw-window-handle",
@@ -1403,7 +1414,7 @@ dependencies = [
  "image",
  "lazy_static 1.4.0",
  "orbclient 0.3.28",
- "orbtk_render",
+ "orbtk_render_raqote",
  "orbtk_shell",
  "orbtk_utils",
  "raw-window-handle",

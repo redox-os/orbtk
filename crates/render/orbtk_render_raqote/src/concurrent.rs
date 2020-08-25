@@ -3,8 +3,10 @@ use std::{
     thread,
 };
 
-use crate::{platform, utils::*, PipelineTrait, RenderTarget, TextMetrics};
-use platform::Image;
+use orbtk_render::{Image, PipelineTrait, RenderTarget, TextMetrics};
+use orbtk_utils::prelude::*;
+
+use crate::render_context_2d;
 
 #[derive(Clone)]
 struct PipelineWrapper(pub Box<dyn PipelineTrait>);
@@ -183,7 +185,7 @@ impl RenderWorker {
         let render_thread = thread::spawn(move || {
             let mut tasks_collection = vec![];
 
-            let mut render_context_2_d = platform::RenderContext2D::new(width, height);
+            let mut render_context_2_d = render_context_2d::RenderContext2D::new(width, height);
 
             loop {
                 let mut tasks = receiver.lock().unwrap().recv().unwrap();
@@ -384,7 +386,7 @@ pub struct RenderContext2D {
     result_receiver: mpsc::Receiver<RenderResult>,
     finish_receiver: mpsc::Receiver<bool>,
     tasks: Vec<RenderTask>,
-    measure_context: platform::RenderContext2D,
+    measure_context: render_context_2d::RenderContext2D,
 }
 
 impl Drop for RenderContext2D {
@@ -418,7 +420,7 @@ impl RenderContext2D {
             result_receiver,
             finish_receiver,
             tasks: vec![],
-            measure_context: platform::RenderContext2D::new(width, height),
+            measure_context: render_context_2d::RenderContext2D::new(width, height),
         }
     }
 

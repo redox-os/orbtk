@@ -45,7 +45,9 @@ pub use self::web::*;
 #[cfg(target_arch = "wasm32")]
 pub mod web;
 
-pub use orbtk_render::prelude as render;
+#[cfg(all(feature = "default"))]
+pub use orbtk_render_raqote::prelude as render;
+ 
 pub use window_adapter::WindowAdapter;
 
 use std::{collections::HashMap, sync::mpsc};

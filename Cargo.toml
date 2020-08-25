@@ -26,7 +26,6 @@ opt-level = 1
 
 [dependencies]
 orbtk_proc_macros = { version = "0.3.1-alpha4", path = "crates/orbtk_proc_macros" }
-
 orbtk_render = { version = "0.3.1-alpha4", path = "crates/render/orbtk_render" }
 orbtk_shell = { version = "0.3.1-alpha4", path = "crates/shell/orbtk_shell" }
 orbtk_theme = { version = "0.3.1-alpha4", path="crates/theme" }
@@ -67,6 +66,7 @@ members = [
     "crates/orbtk_proc_macros",
     "crates/orbtk_api",
     "crates/render/orbtk_render",
+    "crates/render/orbtk_render_raqote",
     "crates/shell/orbtk_shell",
     "crates/shell/orbtk_shell_glutin",
     "crates/shell/orbtk_shell_minifb",

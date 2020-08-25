@@ -1,4 +1,4 @@
-use crate::utils::{Color, Rectangle};
+use orbtk_utils::prelude::*;
 
 #[derive(Debug, Clone)]
 pub struct Font {
