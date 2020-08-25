@@ -68,16 +68,16 @@ impl State for MainViewState {
                         match selected_index {
                             0 => ctx
                                 .get_widget(self.popup.unwrap())
-                                .set("relative_position", relative_position.to_bottom()),
+                                .set("relative_position", relative_position.into_bottom()),
                             1 => ctx
                                 .get_widget(self.popup.unwrap())
-                                .set("relative_position", relative_position.to_top()),
+                                .set("relative_position", relative_position.into_top()),
                             2 => ctx
                                 .get_widget(self.popup.unwrap())
-                                .set("relative_position", relative_position.to_left()),
+                                .set("relative_position", relative_position.into_left()),
                             3 => ctx
                                 .get_widget(self.popup.unwrap())
-                                .set("relative_position", relative_position.to_right()),
+                                .set("relative_position", relative_position.into_right()),
                             _ => panic!(),
                         }
                         println!("Relative position updated");

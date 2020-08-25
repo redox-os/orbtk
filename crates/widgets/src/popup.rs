@@ -146,7 +146,7 @@ impl PopupState {
         let open = widget.clone::<bool>("open");
         let visibility: &mut Visibility = widget.get_mut("visibility");
 
-        match (open, visibility.clone()) {
+        match (open, *visibility) {
             (true, Visibility::Visible) => {}
             (true, Visibility::Hidden) => *visibility = Visibility::Visible,
             (true, Visibility::Collapsed) => *visibility = Visibility::Visible,

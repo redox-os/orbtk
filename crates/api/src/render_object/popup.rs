@@ -63,16 +63,16 @@ impl RelativePosition {
             Self::Right(distance) => *distance,
         }
     }
-    pub fn to_top(self) -> Self {
+    pub fn into_top(self) -> Self {
         Self::Top(self.get_distance())
     }
-    pub fn to_bottom(self) -> Self {
+    pub fn into_bottom(self) -> Self {
         Self::Bottom(self.get_distance())
     }
-    pub fn to_left(self) -> Self {
+    pub fn into_left(self) -> Self {
         Self::Left(self.get_distance())
     }
-    pub fn to_right(self) -> Self {
+    pub fn into_right(self) -> Self {
         Self::Right(self.get_distance())
     }
 }
@@ -96,9 +96,15 @@ into_property_source!(RelativePosition);
 pub struct PopupRenderObject(RectangleRenderObject);
 impl PopupRenderObject {
     pub fn new() -> Self {
+        Self::default()
+    }
+}
+impl Default for PopupRenderObject {
+    fn default() -> Self {
         Self(RectangleRenderObject)
     }
 }
+
 
 impl Into<Box<dyn RenderObject>> for PopupRenderObject {
     fn into(self) -> Box<dyn RenderObject> {
