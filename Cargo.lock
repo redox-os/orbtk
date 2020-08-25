@@ -226,6 +226,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "console_error_panic_hook"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b8d976903543e0c48546a91908f21588a680a8c8f984df9a5d69feccb2b2a211"
+dependencies = [
+ "cfg-if",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "constant_time_eq"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1280,38 +1290,34 @@ version = "0.3.1-alpha4"
 dependencies = [
  "dces",
  "euc",
- "orbtk_api",
- "orbtk_proc_macros",
- "orbtk_render",
- "orbtk_shell",
- "orbtk_theme",
- "orbtk_theming",
- "orbtk_tree",
- "orbtk_utils",
- "orbtk_widgets",
+ "orbtk-api",
+ "orbtk-proc-macros",
+ "orbtk-render",
+ "orbtk-shell",
+ "orbtk-theme",
+ "orbtk-theming",
+ "orbtk-tree",
+ "orbtk-utils",
+ "orbtk-widgets",
  "serde",
  "serde_derive",
  "vek",
 ]
 
 [[package]]
-name = "orbtk_api"
+name = "orbtk-api"
 version = "0.3.1-alpha4"
 dependencies = [
  "dces",
  "derive_more",
  "dirs 3.0.1",
- "orbtk_proc_macros",
- "orbtk_render_raqote",
- "orbtk_shell",
- "orbtk_shell_glutin",
- "orbtk_shell_minifb",
- "orbtk_shell_orbclient",
- "orbtk_shell_stdweb",
- "orbtk_theme",
- "orbtk_theming",
- "orbtk_tree",
- "orbtk_utils",
+ "orbtk-proc-macros",
+ "orbtk-render",
+ "orbtk-shell",
+ "orbtk-theme",
+ "orbtk-theming",
+ "orbtk-tree",
+ "orbtk-utils",
  "raw-window-handle",
  "ron",
  "serde",
@@ -1320,7 +1326,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk_proc_macros"
+name = "orbtk-proc-macros"
 version = "0.3.1-alpha4"
 dependencies = [
  "case",
@@ -1330,12 +1336,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk_render"
+name = "orbtk-render"
 version = "0.3.1-alpha4"
 dependencies = [
  "font-kit",
  "image",
- "orbtk_utils",
+ "orbtk-utils",
  "pathfinder_canvas",
  "pathfinder_color",
  "pathfinder_content",
@@ -1350,97 +1356,41 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk_render_raqote"
+name = "orbtk-shell"
 version = "0.3.1-alpha4"
 dependencies = [
- "orbtk_render",
- "orbtk_utils",
- "raqote",
- "rusttype 0.8.3",
-]
-
-[[package]]
-name = "orbtk_shell"
-version = "0.3.1-alpha4"
-dependencies = [
- "derive_more",
- "lazy_static 1.4.0",
- "orbtk_render_raqote",
- "orbtk_utils",
- "raw-window-handle",
- "stdweb",
-]
-
-[[package]]
-name = "orbtk_shell_glutin"
-version = "0.3.1-alpha4"
-dependencies = [
+ "console_error_panic_hook",
  "derive_more",
  "euclid",
  "font-kit",
  "gl",
  "glutin",
- "orbtk_render",
- "orbtk_shell",
- "orbtk_utils",
+ "image",
+ "lazy_static 1.4.0",
+ "minifb",
+ "orbclient 0.3.28",
+ "orbtk-render",
+ "orbtk-utils",
  "pathfinder_color",
  "pathfinder_geometry",
  "pathfinder_gl",
  "pathfinder_renderer",
  "pathfinder_resources",
-]
-
-[[package]]
-name = "orbtk_shell_minifb"
-version = "0.3.1-alpha4"
-dependencies = [
- "derive_more",
- "image",
- "lazy_static 1.4.0",
- "minifb",
- "orbtk_render_raqote",
- "orbtk_shell",
- "orbtk_utils",
  "raw-window-handle",
  "spin_sleep",
-]
-
-[[package]]
-name = "orbtk_shell_orbclient"
-version = "0.3.1-alpha4"
-dependencies = [
- "derive_more",
- "image",
- "lazy_static 1.4.0",
- "orbclient 0.3.28",
- "orbtk_render_raqote",
- "orbtk_shell",
- "orbtk_utils",
- "raw-window-handle",
- "spin_sleep",
-]
-
-[[package]]
-name = "orbtk_shell_stdweb"
-version = "0.3.1-alpha4"
-dependencies = [
- "derive_more",
- "orbtk_render",
- "orbtk_shell",
- "orbtk_utils",
  "stdweb",
 ]
 
 [[package]]
-name = "orbtk_theme"
+name = "orbtk-theme"
 version = "0.3.1-alpha4"
 dependencies = [
  "lazy_static 1.4.0",
- "orbtk_theming",
+ "orbtk-theming",
 ]
 
 [[package]]
-name = "orbtk_theming"
+name = "orbtk-theming"
 version = "0.3.1-alpha4"
 dependencies = [
  "ron",
@@ -1449,14 +1399,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk_tree"
+name = "orbtk-tree"
 version = "0.3.1-alpha4"
 dependencies = [
  "dces",
 ]
 
 [[package]]
-name = "orbtk_utils"
+name = "orbtk-utils"
 version = "0.3.1-alpha4"
 dependencies = [
  "derive_more",
@@ -1465,17 +1415,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk_widgets"
+name = "orbtk-widgets"
 version = "0.3.1-alpha4"
 dependencies = [
  "dces",
  "lazy_static 1.4.0",
- "orbtk_api",
- "orbtk_proc_macros",
- "orbtk_render",
- "orbtk_shell",
- "orbtk_theme",
- "orbtk_utils",
+ "orbtk-api",
+ "orbtk-proc-macros",
+ "orbtk-render",
+ "orbtk-shell",
+ "orbtk-theme",
+ "orbtk-utils",
  "rust_decimal",
 ]
 

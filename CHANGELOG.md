@@ -58,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * api crate: base api elements of OrbTk e.g. widget and application parts
 * css-engine crate: parse and read values from a css file
-* proc_macros crate: procedural helper macros
+* proc-macros crate: procedural helper macros
 * render crate: cross platform 2D/3D render library
 * shell crate: cross platform window and event handling
 * theme crate: OrbTks default theme (light and dark)
