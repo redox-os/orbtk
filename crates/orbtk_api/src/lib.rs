@@ -12,8 +12,19 @@ pub(crate) use orbtk_theming as theming;
 pub(crate) use orbtk_tree::prelude as tree;
 pub(crate) use orbtk_utils::prelude as utils;
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "default"))]
+#[cfg(all(
+    not(target_arch = "wasm32"),
+    any(feature = "default", feature = "orbraq", not(feature = "miniraq"))
+))]
 pub(crate) use orbtk_shell_orbclient as shell;
+
+#[cfg(all(
+    not(target_arch = "wasm32"),
+    feature = "miniraq",
+    not(feature = "default"),
+    not(feature = "orbraq")
+))]
+pub(crate) use orbtk_shell_minifb as shell;
 
 #[cfg(target_arch = "wasm32")]
 pub(crate) use orbtk_shell as shell;

@@ -26,15 +26,21 @@ opt-level = 1
 
 [dependencies]
 orbtk_proc_macros = { version = "0.3.1-alpha4", path = "crates/orbtk_proc_macros" }
-orbtk_api = { version = "0.3.1-alpha4", path = "crates/orbtk_api" }
+
 orbtk_render = { version = "0.3.1-alpha4", path = "crates/render/orbtk_render" }
 orbtk_shell = { version = "0.3.1-alpha4", path = "crates/shell/orbtk_shell" }
 orbtk_theme = { version = "0.3.1-alpha4", path="crates/theme" }
 orbtk_theming = { version = "0.3.1-alpha4", path="crates/orbtk_theming" }
 orbtk_utils = { version = "0.3.1-alpha4", path = "crates/orbtk_utils" }
 orbtk_tree = { version = "0.3.1-alpha4", path="crates/orbtk_tree" }
-orbtk_widgets = { version = "0.3.1-alpha4", path="crates/orbtk_widgets" }
+orbtk_widgets = { version = "0.3.1-alpha4", path="crates/orbtk_widgets", default-features = false }
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git", branch = "develop" }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+orbtk_api = { version = "0.3.1-alpha4", path = "crates/orbtk_api", default-features = false }
+
+[target.wasm32-unknown-unknown.dependencies]
+orbtk_api = { version = "0.3.1-alpha4", path = "crates/orbtk_api", default-features = false }
 
 [dev-dependencies]
 euc = "0.5.0"
@@ -46,8 +52,9 @@ serde_derive = "1.0.106"
 # wgpu = "0.5.0"
 
 [features]
+default = ["orbtk_api/orbraq", "orbtk_widgets/orbraq"]
 debug = ["orbtk_api/debug"]
-#miniraq = ["orbtk_shell/mini"]
+miniraq = ["orbtk_api/miniraq", "orbtk_widgets/miniraq"]
 pathfinder = ["orbtk_shell/pfinder", "orbtk_render/pfinder"]
 log = ["orbtk_shell/log"]
 light = ["orbtk_theme/light"]
@@ -61,6 +68,7 @@ members = [
     "crates/orbtk_api",
     "crates/render/orbtk_render",
     "crates/shell/orbtk_shell",
+    "crates/shell/orbtk_shell_minifb",
     "crates/shell/orbtk_shell_orbclient",
     "crates/theme",
     "crates/orbtk_theming",

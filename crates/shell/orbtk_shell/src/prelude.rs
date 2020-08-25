@@ -1,3 +1,1 @@
-pub use crate::{
-    event::*, platform::*, window_adapter::*, ShellRequest, WindowRequest, WindowSettings,
-};
+pub use crate::{event::*, window_adapter::*, ShellRequest, WindowRequest, WindowSettings};

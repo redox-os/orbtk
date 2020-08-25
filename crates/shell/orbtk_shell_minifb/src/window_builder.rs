@@ -1,14 +1,12 @@
 use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, time::Duration};
 
 use super::{KeyState, Shell, Window};
-use crate::{
-    event::{ButtonState, Key, KeyEvent},
-    render::RenderContext2D,
-    utils::Rectangle,
-    window_adapter::WindowAdapter,
-    WindowRequest, WindowSettings,
-};
 
+use orbtk_render::prelude::*;
+use orbtk_shell::prelude::{
+    ButtonState, Key, KeyEvent, WindowAdapter, WindowRequest, WindowSettings,
+};
+use orbtk_utils::prelude::*;
 /// The `WindowBuilder` is used to construct a window shell for the minifb backend.
 pub struct WindowBuilder<'a, A: 'static>
 where

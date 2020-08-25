@@ -5,9 +5,6 @@ use spin_sleep::LoopHelper;
 
 use super::{Window, WindowBuilder};
 
-/// Does nothing. This function is only use by the web backend.
-pub fn initialize() {}
-
 /// Represents an application shell that could handle multiple windows.
 pub struct Shell<A: 'static>
 where

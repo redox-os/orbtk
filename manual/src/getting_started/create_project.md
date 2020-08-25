@@ -33,8 +33,8 @@ To start your first OrbTk project you can use [cargo](https://doc.rust-lang.org/
     use orbtk::prelude::*;
 
     fn main() {
-        // use this only if you want to run it as web application.
-        orbtk::initialize();
+        
+        
 
         Application::new()
             .window(|ctx| {

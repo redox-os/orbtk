@@ -1,5 +1,5 @@
-use crate::event::Key;
 use derive_more::Constructor;
+use orbtk_shell::event::Key;
 
 /// Internal helper state to handle current minifb mouse state.
 #[derive(Copy, Clone, Default, Debug)]

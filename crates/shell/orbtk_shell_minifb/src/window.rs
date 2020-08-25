@@ -1,13 +1,9 @@
 use std::{cell::RefCell, rc::Rc, sync::mpsc};
 
 use super::{KeyState, MouseState, WindowState};
-use crate::{
-    event::{ButtonState, KeyEvent, MouseButton, MouseEvent},
-    render::RenderContext2D,
-    window_adapter::WindowAdapter,
-    WindowRequest,
-};
 
+use orbtk_render::prelude::*;
+use orbtk_shell::prelude::*;
 use orbtk_utils::Point;
 
 /// Represents a wrapper for a minifb window. It handles events, propagate them to

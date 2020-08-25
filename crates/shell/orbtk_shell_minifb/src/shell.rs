@@ -1,28 +1,14 @@
-//! This module contains a platform specific implementation of the window shell.
-
 use std::sync::mpsc;
 
-pub use super::native::*;
+use orbtk_shell::prelude::{ShellRequest, WindowAdapter, WindowSettings};
 
-use crate::prelude::*;
-
-use self::states::*;
-pub use self::window::*;
-pub use self::window_builder::*;
-
-mod states;
-mod window;
-mod window_builder;
-
-/// Does nothing. This function is only use by the web backend.
-pub fn initialize() {}
-
+use super::{Window, WindowBuilder};
 /// Represents an application shell that could handle multiple windows.
 pub struct Shell<A: 'static>
 where
     A: WindowAdapter,
 {
-    window_shells: Vec<Window<A>>,
+    pub(crate) window_shells: Vec<Window<A>>,
     requests: mpsc::Receiver<ShellRequest<A>>,
 }
 
