@@ -47,7 +47,7 @@ serde_derive = "1.0.106"
 
 [features]
 debug = ["orbtk_api/debug"]
-miniraq = ["orbtk_shell/mini"]
+#miniraq = ["orbtk_shell/mini"]
 pathfinder = ["orbtk_shell/pfinder", "orbtk_render/pfinder"]
 log = ["orbtk_shell/log"]
 light = ["orbtk_theme/light"]
@@ -61,6 +61,7 @@ members = [
     "crates/orbtk_api",
     "crates/render/orbtk_render",
     "crates/shell/orbtk_shell",
+    "crates/shell/orbtk_shell_orbclient",
     "crates/theme",
     "crates/orbtk_theming",
     "crates/orbtk_widgets",

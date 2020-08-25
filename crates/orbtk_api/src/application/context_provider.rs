@@ -7,16 +7,11 @@ use std::{
 
 use dces::prelude::*;
 
+use orbtk_shell::{ShellRequest, WindowRequest};
+
 use super::WindowAdapter;
 
-use crate::{
-    event::*,
-    layout::*,
-    render_object::*,
-    shell::{ShellRequest, WindowRequest},
-    utils::Point,
-    widget_base::*,
-};
+use crate::{event::*, layout::*, render_object::*, utils::Point, widget_base::*};
 
 /// Temporary solution to share dependencies. Will be refactored soon.
 #[derive(Clone)]

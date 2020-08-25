@@ -43,11 +43,11 @@ impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
         let debug = false;
 
         if debug {
-            crate::shell::CONSOLE.log("\n------ Widget tree ------\n".to_string());
+            orbtk_shell::CONSOLE.log("\n------ Widget tree ------\n".to_string());
 
             print_tree(root, 0, ecm);
 
-            crate::shell::CONSOLE.log("\n------ Widget tree ------\n".to_string());
+            orbtk_shell::CONSOLE.log("\n------ Widget tree ------\n".to_string());
         }
 
         // init css ids
@@ -108,7 +108,7 @@ pub fn print_tree(
         Selector::default()
     };
 
-    crate::shell::CONSOLE.log(format!(
+    orbtk_shell::CONSOLE.log(format!(
         "{}{} (entity: {}{})",
         "| ".repeat(depth),
         name,

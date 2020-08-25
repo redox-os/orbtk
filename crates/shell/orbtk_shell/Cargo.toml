@@ -16,12 +16,7 @@ console_error_panic_hook = "0.1.6"
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 image = { version = "0.23",  default-features = false, features = ["ico"] }
 spin_sleep = { version = "1.0", optional = true }
-
-# orbclient
-orbclient = { git = "https://gitlab.redox-os.org/redox-os/orbclient.git", optional = true }
-
-# minifb dependencies
-minifb = { version = "0.18", optional = true }
+minifb = { version = "0.18" }
 
 # pathfinder dependencies
 gl = { version = "0.14", optional = true }
@@ -44,8 +39,7 @@ orbtk_render = { path = "../../render/orbtk_render", version = "0.3.1-alpha4" }
 orbtk_utils = { path = "../../orbtk_utils", version = "0.3.1-alpha4" }
 
 [features]
-default = ["spin_sleep", "orbclient"]
-mini = ["spin_sleep", "minifb"]
+default = ["spin_sleep"]
 pfinder = [
     "gl",
     "glutin",

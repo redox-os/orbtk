@@ -1,10 +1,10 @@
 use std::{collections::HashMap, sync::mpsc};
 
 use super::{Shell, Window};
-use crate::{
-    render::RenderContext2D, utils::Rectangle, window_adapter::WindowAdapter, WindowRequest,
-    WindowSettings,
-};
+
+use orbtk_render::prelude::*;
+use orbtk_shell::prelude::{WindowAdapter, WindowRequest, WindowSettings};
+use orbtk_utils::prelude::*;
 
 /// The `WindowBuilder` is used to construct a window shell for the minifb backend.
 pub struct WindowBuilder<'a, A: 'static>

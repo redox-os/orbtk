@@ -1314,6 +1314,7 @@ dependencies = [
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
+ "orbtk_shell_orbclient",
  "orbtk_theme",
  "orbtk_theming",
  "orbtk_tree",
@@ -1368,7 +1369,6 @@ dependencies = [
  "image",
  "lazy_static 1.4.0",
  "minifb",
- "orbclient 0.3.28",
  "orbtk_render",
  "orbtk_utils",
  "pathfinder_color",
@@ -1379,6 +1379,21 @@ dependencies = [
  "raw-window-handle",
  "spin_sleep",
  "stdweb",
+]
+
+[[package]]
+name = "orbtk_shell_orbclient"
+version = "0.3.1-alpha4"
+dependencies = [
+ "derive_more",
+ "image",
+ "lazy_static 1.4.0",
+ "orbclient 0.3.28",
+ "orbtk_render",
+ "orbtk_shell",
+ "orbtk_utils",
+ "raw-window-handle",
+ "spin_sleep",
 ]
 
 [[package]]

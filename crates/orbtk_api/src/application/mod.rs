@@ -4,11 +4,9 @@ use std::sync::mpsc;
 
 use dces::prelude::Entity;
 
-use crate::{
-    shell::{Shell, ShellRequest},
-    theming::Theme,
-    widget_base::BuildContext,
-};
+use orbtk_shell::ShellRequest;
+
+use crate::{shell::Shell, theming::Theme, widget_base::BuildContext};
 
 pub use self::context_provider::*;
 pub use self::global::*;

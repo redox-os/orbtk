@@ -1,9 +1,10 @@
 use std::rc::Rc;
 
+use orbtk_shell::event::MouseButton;
+
 use crate::{
     prelude::*,
     proc_macros::{Event, IntoHandler},
-    shell::MouseButton,
     utils::*,
 };
 

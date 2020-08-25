@@ -2,14 +2,14 @@ use std::{cell::RefCell, collections::HashMap, sync::mpsc};
 
 use dces::prelude::*;
 
+use orbtk_shell::{event, ShellRequest, WindowRequest, WindowSettings};
+
 use crate::{
     application::*,
     event::*,
     properties::*,
     render,
     services::{Clipboard, Settings},
-    shell,
-    shell::{ShellRequest, WindowRequest, WindowSettings},
     systems::*,
     tree::Tree,
     utils::{Point, Rectangle},
@@ -50,7 +50,7 @@ impl WindowAdapter {
     }
 }
 
-impl shell::WindowAdapter for WindowAdapter {
+impl orbtk_shell::WindowAdapter for WindowAdapter {
     fn clipboard_update(&mut self, value: &mut Option<String>) {
         // internal clipboard value is new => update system clipboard value.
         if self.registry.borrow().get::<Clipboard>("clipboard").get() != self.old_clipboard_value {
@@ -104,10 +104,10 @@ impl shell::WindowAdapter for WindowAdapter {
         )
     }
 
-    fn mouse_event(&mut self, event: shell::MouseEvent) {
+    fn mouse_event(&mut self, event: event::MouseEvent) {
         let root = self.root();
         match event.state {
-            shell::ButtonState::Up => {
+            event::ButtonState::Up => {
                 self.ctx.event_queue.borrow_mut().register_event(
                     MouseUpEvent {
                         position: event.position,
@@ -123,7 +123,7 @@ impl shell::WindowAdapter for WindowAdapter {
                     root,
                 );
             }
-            shell::ButtonState::Down => self.ctx.event_queue.borrow_mut().register_event(
+            event::ButtonState::Down => self.ctx.event_queue.borrow_mut().register_event(
                 MouseDownEvent {
                     position: event.position,
                     button: event.button,
@@ -137,15 +137,15 @@ impl shell::WindowAdapter for WindowAdapter {
         self.ctx.mouse_position.get()
     }
 
-    fn key_event(&mut self, event: shell::KeyEvent) {
+    fn key_event(&mut self, event: event::KeyEvent) {
         let root = self.root();
         match event.state {
-            shell::ButtonState::Up => self
+            event::ButtonState::Up => self
                 .ctx
                 .event_queue
                 .borrow_mut()
                 .register_event(KeyUpEvent { event }, root),
-            shell::ButtonState::Down => {
+            event::ButtonState::Down => {
                 self.ctx
                     .event_queue
                     .borrow_mut()

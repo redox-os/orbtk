@@ -1,20 +1,9 @@
-//! This module contains a platform specific implementation of the window shell.
-
 use std::sync::mpsc;
 
+use orbtk_shell::prelude::{ShellRequest, WindowAdapter, WindowSettings};
 use spin_sleep::LoopHelper;
 
-pub use super::native::*;
-
-use crate::prelude::*;
-
-use self::states::*;
-pub use self::window::*;
-pub use self::window_builder::*;
-
-mod states;
-mod window;
-mod window_builder;
+use super::{Window, WindowBuilder};
 
 /// Does nothing. This function is only use by the web backend.
 pub fn initialize() {}
@@ -24,7 +13,7 @@ pub struct Shell<A: 'static>
 where
     A: WindowAdapter,
 {
-    window_shells: Vec<Window<A>>,
+    pub(crate) window_shells: Vec<Window<A>>,
     requests: mpsc::Receiver<ShellRequest<A>>,
     loop_helper: LoopHelper,
 }

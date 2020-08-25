@@ -2,11 +2,12 @@ use std::{collections::BTreeMap, sync::mpsc};
 
 use dces::prelude::*;
 
+use orbtk_shell::{ShellRequest, WindowRequest};
+
 use crate::{
     application::{create_window, ContextProvider},
     prelude::*,
     render::RenderContext2D,
-    shell::{ShellRequest, WindowRequest},
     theming::prelude::*,
     tree::Tree,
 };

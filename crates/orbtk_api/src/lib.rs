@@ -7,11 +7,16 @@ extern crate derive_more;
 
 pub(crate) use orbtk_proc_macros as proc_macros;
 pub(crate) use orbtk_render::prelude as render;
-pub(crate) use orbtk_shell::prelude as shell;
 pub(crate) use orbtk_theme::prelude as theme;
 pub(crate) use orbtk_theming as theming;
 pub(crate) use orbtk_tree::prelude as tree;
 pub(crate) use orbtk_utils::prelude as utils;
+
+#[cfg(all(not(target_arch = "wasm32"), feature = "default"))]
+pub(crate) use orbtk_shell_orbclient as shell;
+
+#[cfg(target_arch = "wasm32")]
+pub(crate) use orbtk_shell as shell;
 
 pub mod application;
 #[macro_use]

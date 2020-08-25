@@ -37,18 +37,25 @@ pub use orbtk_utils::prelude as utils;
 #[path = "glutin/mod.rs"]
 pub mod platform;
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "mini"))]
+#[cfg(not(target_arch = "wasm32"))]
 #[path = "minifb/mod.rs"]
 pub mod platform;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod native;
 
+#[cfg(not(target_arch = "wasm32"))]
+pub use self::native::*;
+
 #[cfg(target_arch = "wasm32")]
 #[path = "web/mod.rs"]
 pub mod platform;
 
+#[cfg(target_arch = "wasm32")]
+pub use platform::{Shell, CONSOLE};
+
 pub use orbtk_render::prelude as render;
+pub use window_adapter::WindowAdapter;
 
 use std::{collections::HashMap, sync::mpsc};
 

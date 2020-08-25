@@ -9,29 +9,16 @@ license = "MIT"
 keywords = ["shell", "window", "ui"]
 edition = "2018"
 
-# minifb dependencies
-minifb = { version = "0.18", optional = true }
-
-# pathfinder dependencies
-gl = { version = "0.14", optional = true }
-glutin = { version = "0.24", optional = true }
-euclid = { version = "0.20", optional = true }
-font-kit = { version = "0.6", optional = true }
-pathfinder_color = { version = "0.5", optional = true }
-pathfinder_geometry = { version = "0.5.1", optional = true }
-pathfinder_gl =  { version = "0.5", optional = true }
-pathfinder_renderer =  { version = "0.5", optional = true }
-pathfinder_resources =  { version = "0.5", optional = true }
-
 [dependencies]
 image = { version = "0.23",  default-features = false, features = ["ico"] }
 spin_sleep = { version = "1.0" }
-orbclient = { git = "https://gitlab.redox-os.org/redox-os/orbclient.git", optional = true }
+orbclient = { git = "https://gitlab.redox-os.org/redox-os/orbclient.git" }
 derive_more = { version = "0.99", default-features = false, features = ["constructor"] }
 lazy_static = "1.4.0"
 raw-window-handle = "0.3.3"
 
 # orbtk
+orbtk_shell = { path = "../orbtk_shell", version = "0.3.1-alpha4" }
 orbtk_render = { path = "../../render/orbtk_render", version = "0.3.1-alpha4" }
 orbtk_utils = { path = "../../orbtk_utils", version = "0.3.1-alpha4" }
 

@@ -1,10 +1,8 @@
 use std::rc::Rc;
 
-use crate::{
-    prelude::*,
-    proc_macros::*,
-    shell::{Key, KeyEvent},
-};
+use orbtk_shell::event::{Key, KeyEvent};
+
+use crate::{prelude::*, proc_macros::*};
 
 use super::{EventBox, EventHandler};
 
