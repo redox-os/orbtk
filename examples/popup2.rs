@@ -143,8 +143,10 @@ impl Template for MainView {
                         .attach(Grid::column(0))
                         .h_align("center")
                         .width(250.0)
-                        .on_changed("selected_item",move |states, _entity| {
-                            states.get_mut::<MainViewState>(id).update_relative_position()
+                        .on_changed("selected_item", move |states, _entity| {
+                            states
+                                .get_mut::<MainViewState>(id)
+                                .update_relative_position()
                         })
                         .items_builder(|bc, index| match index {
                             0 => TextBlock::new().text("Bottom").build(bc),
