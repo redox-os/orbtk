@@ -1316,6 +1316,7 @@ dependencies = [
  "orbtk_shell",
  "orbtk_shell_minifb",
  "orbtk_shell_orbclient",
+ "orbtk_shell_stdweb",
  "orbtk_theme",
  "orbtk_theming",
  "orbtk_tree",
@@ -1410,6 +1411,17 @@ dependencies = [
  "orbtk_utils",
  "raw-window-handle",
  "spin_sleep",
+]
+
+[[package]]
+name = "orbtk_shell_stdweb"
+version = "0.3.1-alpha4"
+dependencies = [
+ "derive_more",
+ "orbtk_render",
+ "orbtk_shell",
+ "orbtk_utils",
+ "stdweb",
 ]
 
 [[package]]

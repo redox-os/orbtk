@@ -13,11 +13,13 @@ use stdweb::{
     web::{document, event, html_element::CanvasElement, window, CanvasRenderingContext2d},
 };
 
-use super::{EventState, Shell, Window};
-use crate::{
-    render::RenderContext2D, utils::Rectangle, window_adapter::WindowAdapter, WindowRequest,
-    WindowSettings,
-};
+use orbtk_render::prelude::*;
+use orbtk_shell::prelude::{WindowAdapter, WindowRequest, WindowSettings};
+use orbtk_utils::prelude::*;
+
+use crate::Shell;
+
+use super::{EventState, Window};
 
 /// The `WindowBuilder` is used to construct a window shell for the web backend.
 pub struct WindowBuilder<'a, A: 'static>

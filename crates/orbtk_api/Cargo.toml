@@ -35,6 +35,7 @@ raw-window-handle = "0.3.3"
 
 [target.wasm32-unknown-unknown.dependencies]
 stdweb = "0.4"
+orbtk_shell_stdweb = { path = "../shell/orbtk_shell_stdweb", version = "0.3.1-alpha4" }
 
 [features]
 default = ["orbtk_shell_orbclient"]

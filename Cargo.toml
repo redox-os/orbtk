@@ -70,6 +70,7 @@ members = [
     "crates/shell/orbtk_shell",
     "crates/shell/orbtk_shell_minifb",
     "crates/shell/orbtk_shell_orbclient",
+    "crates/shell/orbtk_shell_stdweb",
     "crates/theme",
     "crates/orbtk_theming",
     "crates/orbtk_widgets",

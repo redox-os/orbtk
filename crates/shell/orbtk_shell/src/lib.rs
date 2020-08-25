@@ -44,11 +44,10 @@ pub mod native;
 pub use self::native::*;
 
 #[cfg(target_arch = "wasm32")]
-#[path = "web/mod.rs"]
-pub mod platform;
+pub use self::web::*;
 
 #[cfg(target_arch = "wasm32")]
-pub use platform::{Shell, CONSOLE};
+pub mod web;
 
 pub use orbtk_render::prelude as render;
 pub use window_adapter::WindowAdapter;

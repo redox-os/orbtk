@@ -27,7 +27,7 @@ pub(crate) use orbtk_shell_orbclient as shell;
 pub(crate) use orbtk_shell_minifb as shell;
 
 #[cfg(target_arch = "wasm32")]
-pub(crate) use orbtk_shell as shell;
+pub(crate) use orbtk_shell_stdweb as shell;
 
 pub mod application;
 #[macro_use]
