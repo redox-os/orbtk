@@ -1,5 +1,5 @@
 [package]
-name = "orbtk-api"
+name = "orbtk_api"
 version = "0.3.1-alpha4"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "API crate that provides base api and elements for OrbTk like widgets basis."
@@ -18,13 +18,13 @@ derive_more = { version = "0.99", default-features = false, features = ["constru
 
 # orbtk
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "develop" }
-orbtk-proc-macros = { path = "../proc-macros", version = "0.3.1-alpha4" }
-orbtk-utils = { path = "../utils", version = "0.3.1-alpha4" }
-orbtk-tree = { path = "../tree", version = "0.3.1-alpha4" }
-orbtk-render = { path = "../render", version = "0.3.1-alpha4" }
-orbtk-shell = { path = "../shell", version = "0.3.1-alpha4" }
-orbtk-theme = { path = "../theme", version = "0.3.1-alpha4" }
-orbtk-theming = { path = "../theming", version = "0.3.1-alpha4" }
+orbtk_proc-macros = { path = "../proc-macros", version = "0.3.1-alpha4" }
+orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
+orbtk_tree = { path = "../tree", version = "0.3.1-alpha4" }
+orbtk_render = { path = "../render", version = "0.3.1-alpha4" }
+orbtk_shell = { path = "../shell", version = "0.3.1-alpha4", default-features = false }
+orbtk_theme = { path = "../theme", version = "0.3.1-alpha4" }
+orbtk_theming = { path = "../theming", version = "0.3.1-alpha4" }
 
 [target.'cfg(all(not(target_os = "redox")))'.dependencies]
 raw-window-handle = "0.3.3"
@@ -33,4 +33,8 @@ raw-window-handle = "0.3.3"
 stdweb = "0.4"
 
 [features]
+default = ["orbtk_shell/orbraq"]
+orbraq = ["orbtk_shell/orbraq"]
+miniraq = ["orbtk_shell/miniraq"]
+glupath = ["orbtk_shell/glupath", "orbtk_render/glupath"]
 debug = []

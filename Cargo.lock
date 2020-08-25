@@ -1290,34 +1290,34 @@ version = "0.3.1-alpha4"
 dependencies = [
  "dces",
  "euc",
- "orbtk-api",
- "orbtk-proc-macros",
- "orbtk-render",
- "orbtk-shell",
- "orbtk-theme",
- "orbtk-theming",
- "orbtk-tree",
- "orbtk-utils",
- "orbtk-widgets",
+ "orbtk_api",
+ "orbtk_proc-macros",
+ "orbtk_render",
+ "orbtk_shell",
+ "orbtk_theme",
+ "orbtk_theming",
+ "orbtk_tree",
+ "orbtk_utils",
+ "orbtk_widgets",
  "serde",
  "serde_derive",
  "vek",
 ]
 
 [[package]]
-name = "orbtk-api"
+name = "orbtk_api"
 version = "0.3.1-alpha4"
 dependencies = [
  "dces",
  "derive_more",
  "dirs 3.0.1",
- "orbtk-proc-macros",
- "orbtk-render",
- "orbtk-shell",
- "orbtk-theme",
- "orbtk-theming",
- "orbtk-tree",
- "orbtk-utils",
+ "orbtk_proc-macros",
+ "orbtk_render",
+ "orbtk_shell",
+ "orbtk_theme",
+ "orbtk_theming",
+ "orbtk_tree",
+ "orbtk_utils",
  "raw-window-handle",
  "ron",
  "serde",
@@ -1326,7 +1326,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk-proc-macros"
+name = "orbtk_proc-macros"
 version = "0.3.1-alpha4"
 dependencies = [
  "case",
@@ -1336,12 +1336,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk-render"
+name = "orbtk_render"
 version = "0.3.1-alpha4"
 dependencies = [
  "font-kit",
  "image",
- "orbtk-utils",
+ "orbtk_utils",
  "pathfinder_canvas",
  "pathfinder_color",
  "pathfinder_content",
@@ -1356,7 +1356,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk-shell"
+name = "orbtk_shell"
 version = "0.3.1-alpha4"
 dependencies = [
  "console_error_panic_hook",
@@ -1369,8 +1369,8 @@ dependencies = [
  "lazy_static 1.4.0",
  "minifb",
  "orbclient 0.3.28",
- "orbtk-render",
- "orbtk-utils",
+ "orbtk_render",
+ "orbtk_utils",
  "pathfinder_color",
  "pathfinder_geometry",
  "pathfinder_gl",
@@ -1382,15 +1382,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk-theme"
+name = "orbtk_theme"
 version = "0.3.1-alpha4"
 dependencies = [
  "lazy_static 1.4.0",
- "orbtk-theming",
+ "orbtk_theming",
 ]
 
 [[package]]
-name = "orbtk-theming"
+name = "orbtk_theming"
 version = "0.3.1-alpha4"
 dependencies = [
  "ron",
@@ -1399,14 +1399,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk-tree"
+name = "orbtk_tree"
 version = "0.3.1-alpha4"
 dependencies = [
  "dces",
 ]
 
 [[package]]
-name = "orbtk-utils"
+name = "orbtk_utils"
 version = "0.3.1-alpha4"
 dependencies = [
  "derive_more",
@@ -1415,17 +1415,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk-widgets"
+name = "orbtk_widgets"
 version = "0.3.1-alpha4"
 dependencies = [
  "dces",
  "lazy_static 1.4.0",
- "orbtk-api",
- "orbtk-proc-macros",
- "orbtk-render",
- "orbtk-shell",
- "orbtk-theme",
- "orbtk-utils",
+ "orbtk_api",
+ "orbtk_proc-macros",
+ "orbtk_render",
+ "orbtk_shell",
+ "orbtk_theme",
+ "orbtk_utils",
  "rust_decimal",
 ]
 
