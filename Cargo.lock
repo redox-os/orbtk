@@ -1291,7 +1291,7 @@ dependencies = [
  "dces",
  "euc",
  "orbtk_api",
- "orbtk_proc-macros",
+ "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
  "orbtk_theme",
@@ -1311,7 +1311,7 @@ dependencies = [
  "dces",
  "derive_more",
  "dirs 3.0.1",
- "orbtk_proc-macros",
+ "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
  "orbtk_theme",
@@ -1326,7 +1326,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk_proc-macros"
+name = "orbtk_proc_macros"
 version = "0.3.1-alpha4"
 dependencies = [
  "case",
@@ -1421,7 +1421,7 @@ dependencies = [
  "dces",
  "lazy_static 1.4.0",
  "orbtk_api",
- "orbtk_proc-macros",
+ "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
  "orbtk_theme",

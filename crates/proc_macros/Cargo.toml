@@ -1,5 +1,5 @@
 [package]
-name = "orbtk_proc-macros"
+name = "orbtk_proc_macros"
 version = "0.3.1-alpha4"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Procedural macros used by OrbTk."

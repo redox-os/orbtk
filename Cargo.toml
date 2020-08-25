@@ -25,7 +25,7 @@ path = "src/lib.rs"
 opt-level = 1
 
 [dependencies]
-orbtk_proc-macros = { version = "0.3.1-alpha4", path = "crates/proc-macros" }
+orbtk_proc_macros = { version = "0.3.1-alpha4", path = "crates/proc_macros" }
 orbtk_api = { version = "0.3.1-alpha4", path = "crates/api", default-features = false }
 orbtk_render = { version = "0.3.1-alpha4", path = "crates/render" }
 orbtk_shell = { version = "0.3.1-alpha4", path = "crates/shell", default-features = false }
@@ -58,7 +58,7 @@ debug = ["orbtk_api/debug"]
 members = [
     "crates/utils",
     "crates/tree",
-    "crates/proc-macros",
+    "crates/proc_macros",
     "crates/api",
     "crates/render",
     "crates/shell",
