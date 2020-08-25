@@ -14,7 +14,9 @@ pub(crate) use orbtk_utils::prelude as utils;
 
 #[cfg(all(
     not(target_arch = "wasm32"),
-    any(feature = "default", feature = "orbraq", not(feature = "miniraq"))
+    any(feature = "default", feature = "orbraq",),
+    not(feature = "miniraq"),
+    not(feature = "glupath")
 ))]
 pub(crate) use orbtk_shell_orbclient as shell;
 
@@ -22,9 +24,19 @@ pub(crate) use orbtk_shell_orbclient as shell;
     not(target_arch = "wasm32"),
     feature = "miniraq",
     not(feature = "default"),
+    not(feature = "glupath"),
     not(feature = "orbraq")
 ))]
 pub(crate) use orbtk_shell_minifb as shell;
+
+#[cfg(all(
+    not(target_arch = "wasm32"),
+    feature = "glupath",
+    not(feature = "default"),
+    not(feature = "miniraq"),
+    not(feature = "orbraq")
+))]
+pub(crate) use orbtk_shell_glutin as shell;
 
 #[cfg(target_arch = "wasm32")]
 pub(crate) use orbtk_shell_stdweb as shell;

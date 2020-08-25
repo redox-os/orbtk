@@ -4,12 +4,8 @@ use glutin::{event, event_loop::ControlFlow, window, ContextWrapper, PossiblyCur
 
 use derive_more::Constructor;
 
-use crate::{
-    event::{ButtonState, MouseButton, MouseEvent},
-    render::RenderContext2D,
-    window_adapter::WindowAdapter,
-    WindowRequest,
-};
+use orbtk_render::prelude::*;
+use orbtk_shell::prelude::{ButtonState, MouseButton, MouseEvent, WindowAdapter, WindowRequest};
 
 /// Represents a wrapper for a glutin window. It handles events, propagate them to
 /// the window adapter and handles the update and redraw pipeline.

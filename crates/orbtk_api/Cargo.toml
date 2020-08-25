@@ -27,6 +27,7 @@ orbtk_theme = { path = "../theme", version = "0.3.1-alpha4" }
 orbtk_theming = { path = "../orbtk_theming", version = "0.3.1-alpha4" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+orbtk_shell_glutin = { path = "../shell/orbtk_shell_glutin", version = "0.3.1-alpha4", optional = true }
 orbtk_shell_orbclient = { path = "../shell/orbtk_shell_orbclient", version = "0.3.1-alpha4", optional = true }
 orbtk_shell_minifb = { path = "../shell/orbtk_shell_minifb", version = "0.3.1-alpha4", optional = true }
 
@@ -39,6 +40,7 @@ orbtk_shell_stdweb = { path = "../shell/orbtk_shell_stdweb", version = "0.3.1-al
 
 [features]
 default = ["orbtk_shell_orbclient"]
+glupath = ["orbtk_shell_glutin"]
 orbraq = ["orbtk_shell_orbclient"]
 miniraq = ["orbtk_shell_minifb"]
 debug = []

@@ -33,10 +33,6 @@ pub mod window_adapter;
 
 pub use orbtk_utils::prelude as utils;
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "pfinder"))]
-#[path = "glutin/mod.rs"]
-pub mod platform;
-
 #[cfg(not(target_arch = "wasm32"))]
 pub mod native;
 

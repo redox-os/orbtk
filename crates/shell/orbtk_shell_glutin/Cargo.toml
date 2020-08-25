@@ -1,25 +1,30 @@
 [package]
-name = "orbtk_shell"
+name = "orbtk_shell_glutin"
 version = "0.3.1-alpha4"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
-description = "Window shell crate used by OrbTk."
+description = "Window shell crate used by OrbTk. Based on glutin."
 repository = "https://github.com/redox-os/orbtk"
 readme = "README.md"
 license = "MIT"
 keywords = ["shell", "window", "ui"]
 edition = "2018"
 
-[target.wasm32-unknown-unknown.dependencies]
-stdweb = "0.4.20"
-
 [dependencies]
 derive_more = { version = "0.99", default-features = false, features = ["constructor"] }
-lazy_static = "1.4.0"
-raw-window-handle = "0.3.3"
+gl = { version = "0.14" }
+glutin = { version = "0.24" }
+euclid = { version = "0.20" }
+font-kit = { version = "0.6" }
+pathfinder_color = { version = "0.5" }
+pathfinder_geometry = { version = "0.5.1" }
+pathfinder_gl =  { version = "0.5" }
+pathfinder_renderer =  { version = "0.5" }
+pathfinder_resources =  { version = "0.5" }
 
 # orbtk
+orbtk_shell = { path = "../orbtk_shell", version = "0.3.1-alpha4" }
 orbtk_render = { path = "../../render/orbtk_render", version = "0.3.1-alpha4" }
 orbtk_utils = { path = "../../orbtk_utils", version = "0.3.1-alpha4" }
 
-[features]
+[features] 
 log = []

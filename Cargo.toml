@@ -55,7 +55,7 @@ serde_derive = "1.0.106"
 default = ["orbtk_api/orbraq", "orbtk_widgets/orbraq"]
 debug = ["orbtk_api/debug"]
 miniraq = ["orbtk_api/miniraq", "orbtk_widgets/miniraq"]
-pathfinder = ["orbtk_shell/pfinder", "orbtk_render/pfinder"]
+glupath = ["orbtk_api/glupath", "orbtk_widgets/glupath", "orbtk_render/pfinder"]
 log = ["orbtk_shell/log"]
 light = ["orbtk_theme/light"]
 redox = ["orbtk_theme/redox"]
@@ -68,6 +68,7 @@ members = [
     "crates/orbtk_api",
     "crates/render/orbtk_render",
     "crates/shell/orbtk_shell",
+    "crates/shell/orbtk_shell_glutin",
     "crates/shell/orbtk_shell_minifb",
     "crates/shell/orbtk_shell_orbclient",
     "crates/shell/orbtk_shell_stdweb",

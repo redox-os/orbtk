@@ -7,6 +7,7 @@ use orbtk_shell::prelude::{
     ButtonState, Key, KeyEvent, WindowAdapter, WindowRequest, WindowSettings,
 };
 use orbtk_utils::prelude::*;
+
 /// The `WindowBuilder` is used to construct a window shell for the minifb backend.
 pub struct WindowBuilder<'a, A: 'static>
 where
