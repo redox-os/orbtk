@@ -214,14 +214,13 @@ impl Template for Popup {
             .border_brush("transparent")
             .on_mouse_down(|_, _| true)
             .open(false)
-            .on_changed_filter(vec![
-                "relative_position",
-                "target",
-                "visibility",
-                "v_align",
-                "h_align",
-                "open",
-            ])
+            .on_changed("visibility",move |states,entity|{
+                states.get_mut::<PopupState>(entity).update_visibility()
+            })
+            .on_changed("open",move |states,entity|{
+                states.get_mut::<PopupState>(entity).update_visibility()
+            })
+            /*
             .on_changed(move |states, entity, property| {
                 match property {
                     //"relative_position"|"target"|"v_align"|"h_align"=>states.get_mut::<PopupState>(entity).update_position(),
@@ -231,6 +230,7 @@ impl Template for Popup {
                     _ => (),
                 }
             })
+            */
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
