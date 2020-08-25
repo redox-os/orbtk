@@ -10,7 +10,6 @@ keywords = ["2D", "render", "canvas"]
 edition = "2018"
 
 [dependencies]
-image = { version = "0.23",  default-features = false, features = ["ico"] }
 raqote = { version = "0.8", default-features = false }
 rusttype = { version = "0.8.3" }
 orbtk_utils = { path = "../../orbtk_utils", version = "0.3.1-alpha4" }
