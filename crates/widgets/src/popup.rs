@@ -1,24 +1,23 @@
 use crate::{api::prelude::*, proc_macros::*};
 
 /// The `PopupAction` represent actions that can be sent to `PopupState`.
-pub enum PopupAction
-{
+pub enum PopupAction {
     //UpdatePosition,
-    UpdateVisibility
+    UpdateVisibility,
 }
 
 /// The `PopupState` handles the open and close behavior of the `Popup` widget.
 #[derive(Default, AsAny)]
-pub struct PopupState
-{
-    actions: Vec<PopupAction>
+pub struct PopupState {
+    actions: Vec<PopupAction>,
 }
 
-impl PopupState
-{
+impl PopupState {
     //pub fn update_position(&mut self) {self.actions.push(PopupAction::UpdatePosition);}
-    pub fn update_visibility(&mut self) {self.actions.push(PopupAction::UpdateVisibility);}
-/*
+    pub fn update_visibility(&mut self) {
+        self.actions.push(PopupAction::UpdateVisibility);
+    }
+    /*
     fn update_position_internal(&mut self, _registry: &mut Registry, ctx: &mut Context)
     {
         if let Some(target) = ctx.widget().try_clone::<PopupTarget>("target") {
@@ -142,42 +141,37 @@ impl PopupState
         else {println!("Target not found");}
     }
     */
-    fn update_visibility_internal(&mut self, _registry: &mut Registry, ctx: &mut Context)
-    {
+    fn update_visibility_internal(&mut self, _registry: &mut Registry, ctx: &mut Context) {
         let mut widget = ctx.widget();
         let open = widget.clone::<bool>("open");
         let visibility: &mut Visibility = widget.get_mut("visibility");
 
-        match (open,visibility.clone())
-        {
-            (true,Visibility::Visible)=>{}
-            (true,Visibility::Hidden)=>{*visibility = Visibility::Visible}
-            (true,Visibility::Collapsed)=>{*visibility = Visibility::Visible}
-            (false,Visibility::Visible)=>{*visibility = Visibility::Collapsed}
-            (false,Visibility::Hidden)=>{*visibility = Visibility::Collapsed}
-            (false,Visibility::Collapsed)=>{}
+        match (open, visibility.clone()) {
+            (true, Visibility::Visible) => {}
+            (true, Visibility::Hidden) => *visibility = Visibility::Visible,
+            (true, Visibility::Collapsed) => *visibility = Visibility::Visible,
+            (false, Visibility::Visible) => *visibility = Visibility::Collapsed,
+            (false, Visibility::Hidden) => *visibility = Visibility::Collapsed,
+            (false, Visibility::Collapsed) => {}
         }
-        println!("Updated visibility: {}",open);
+        println!("Updated visibility: {}", open);
     }
 }
 
 impl State for PopupState {
     fn init(&mut self, registry: &mut Registry, ctx: &mut Context) {
-        self.update_visibility_internal(registry,ctx);
+        self.update_visibility_internal(registry, ctx);
     }
 
     fn update(&mut self, registry: &mut Registry, ctx: &mut Context) {
         let actions: Vec<PopupAction> = self.actions.drain(..).collect();
         for action in actions {
-
             match action {
                 //PopupAction::UpdatePosition=>self.update_position_internal(registry,ctx),
-                PopupAction::UpdateVisibility=>self.update_visibility_internal(registry,ctx)
+                PopupAction::UpdateVisibility => self.update_visibility_internal(registry, ctx),
             }
-
         }
     }
-
 }
 
 widget!(
@@ -220,14 +214,22 @@ impl Template for Popup {
             .border_brush("transparent")
             .on_mouse_down(|_, _| true)
             .open(false)
-            .on_changed_filter(vec!["relative_position","target","visibility","v_align","h_align","open"])
+            .on_changed_filter(vec![
+                "relative_position",
+                "target",
+                "visibility",
+                "v_align",
+                "h_align",
+                "open",
+            ])
             .on_changed(move |states, entity, property| {
-                match property{
+                match property {
                     //"relative_position"|"target"|"v_align"|"h_align"=>states.get_mut::<PopupState>(entity).update_position(),
-                    "visibility"|"open"=>states.get_mut::<PopupState>(entity).update_visibility(),
-                    _=>()
+                    "visibility" | "open" => {
+                        states.get_mut::<PopupState>(entity).update_visibility()
+                    }
+                    _ => (),
                 }
-
             })
     }
 

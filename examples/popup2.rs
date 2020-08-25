@@ -8,7 +8,7 @@ static TARGET_ID: &'static str = "TARGET";
 #[derive(Copy, Clone)]
 enum PopUpAction {
     Toggle,
-    UpdateRelativePosition
+    UpdateRelativePosition,
 }
 
 #[derive(Default, AsAny)]
@@ -32,24 +32,27 @@ impl State for MainViewState {
         let target_entity = ctx.entity_of_child(TARGET_ID).unwrap();
 
         let popup = create_popup(target_entity, "Popup text", &mut ctx.build_context());
-        ctx.build_context().append_child_to_overlay(popup).expect("Failed to add popup to overlay");
+        ctx.build_context()
+            .append_child_to_overlay(popup)
+            .expect("Failed to add popup to overlay");
         self.popup = Some(popup);
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if let Some(action) = self.action {
             match action {
-                PopUpAction::Toggle=>{
+                PopUpAction::Toggle => {
                     if let Some(popup) = self.popup {
                         let open = ctx.get_widget(popup).clone::<bool>("open");
-                        println!("Current open: {}",open);
-                        println!("Current visibility: {:#?}",ctx.get_widget(popup).clone::<Visibility>("visibility"));
-                        if open
-                        {
+                        println!("Current open: {}", open);
+                        println!(
+                            "Current visibility: {:#?}",
+                            ctx.get_widget(popup).clone::<Visibility>("visibility")
+                        );
+                        if open {
                             ctx.get_widget(popup).set("open", false);
                             change_button_title("Click me to show popup", ctx);
-                        }
-                        else {
+                        } else {
                             ctx.get_widget(popup).set("open", true);
                             change_button_title("Click me to hide popup", ctx);
                         }
@@ -60,13 +63,22 @@ impl State for MainViewState {
                     if let Some(popup) = self.popup {
                         let cmb = ctx.entity_of_child(CMB_ID).unwrap();
                         let selected_index: i32 = ctx.get_widget(cmb).clone("selected_index");
-                        let relative_position: RelativePosition = ctx.get_widget(popup).clone_or_default("relative_position");
+                        let relative_position: RelativePosition =
+                            ctx.get_widget(popup).clone_or_default("relative_position");
                         match selected_index {
-                            0 => ctx.get_widget(self.popup.unwrap()).set("relative_position",relative_position.to_bottom()),
-                            1 => ctx.get_widget(self.popup.unwrap()).set("relative_position",relative_position.to_top()),
-                            2 => ctx.get_widget(self.popup.unwrap()).set("relative_position",relative_position.to_left()),
-                            3 => ctx.get_widget(self.popup.unwrap()).set("relative_position",relative_position.to_right()),
-                            _ => panic!()
+                            0 => ctx
+                                .get_widget(self.popup.unwrap())
+                                .set("relative_position", relative_position.to_bottom()),
+                            1 => ctx
+                                .get_widget(self.popup.unwrap())
+                                .set("relative_position", relative_position.to_top()),
+                            2 => ctx
+                                .get_widget(self.popup.unwrap())
+                                .set("relative_position", relative_position.to_left()),
+                            3 => ctx
+                                .get_widget(self.popup.unwrap())
+                                .set("relative_position", relative_position.to_right()),
+                            _ => panic!(),
                         }
                         println!("Relative position updated");
                     }
@@ -81,14 +93,11 @@ fn create_popup(target: Entity, text: &str, build_context: &mut BuildContext) ->
     Popup::new()
         // Entity as target
         .target(target.0)
-
         // Point as target
         //.target(Point::new(200.0,200.0))
-
         //Specify the popup position relative to the target (the button in this case)
         //This is also the default value if no one is specified
         .relative_position(RelativePosition::Bottom(1.0))
-
         .open(true)
         .width(150.0)
         .height(150.0)
@@ -134,21 +143,18 @@ impl Template for MainView {
                         .attach(Grid::column(0))
                         .h_align("center")
                         .width(250.0)
-                        .on_changed(move |states, _entity, property| {
-                            match property{
-                                "selected_item"=>states.get_mut::<MainViewState>(id).update_relative_position(),
-                                _=>()
-                            }
-
+                        .on_changed(move |states, _entity, property| match property {
+                            "selected_item" => states
+                                .get_mut::<MainViewState>(id)
+                                .update_relative_position(),
+                            _ => (),
                         })
-                        .items_builder(|bc,index|{
-                            match index {
-                                0 => TextBlock::new().text("Bottom").build(bc),
-                                1 => TextBlock::new().text("Top").build(bc),
-                                2 => TextBlock::new().text("Left").build(bc),
-                                3 => TextBlock::new().text("Right").build(bc),
-                                _ => panic!()
-                            }
+                        .items_builder(|bc, index| match index {
+                            0 => TextBlock::new().text("Bottom").build(bc),
+                            1 => TextBlock::new().text("Top").build(bc),
+                            2 => TextBlock::new().text("Left").build(bc),
+                            3 => TextBlock::new().text("Right").build(bc),
+                            _ => panic!(),
                         })
                         .count(4)
                         .selected_index(0)
@@ -177,10 +183,10 @@ impl Template for MainView {
                         .h_align("stretch")
                         .child(
                             TextBlock::new()
-                            .text("Target")
-                            .v_align("center")
-                            .h_align("center")
-                            .build(ctx)
+                                .text("Target")
+                                .v_align("center")
+                                .h_align("center")
+                                .build(ctx),
                         )
                         .build(ctx),
                 )
