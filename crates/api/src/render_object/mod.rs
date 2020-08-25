@@ -16,6 +16,7 @@ pub use self::image::*;
 pub use self::pipeline::*;
 pub use self::rectangle::*;
 pub use self::text::*;
+pub use self::popup::*;
 
 mod cursor;
 mod default;
@@ -24,6 +25,7 @@ mod image;
 mod pipeline;
 mod rectangle;
 mod text;
+mod popup;
 
 pub trait RenderObject: Any {
     fn render(
