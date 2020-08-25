@@ -49,7 +49,7 @@ impl LoginFormState {
 
         Popup::new()
             .style("popup")
-            .target(target)
+            .target(target.0)
             .open(true)
             .width(175.0)
             .height(125.0)
