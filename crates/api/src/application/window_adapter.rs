@@ -201,6 +201,10 @@ impl shell::WindowAdapter for WindowAdapter {
             root,
         );
     }
+
+    fn set_raw_window_handle(&mut self, raw_window_handle: raw_window_handle::RawWindowHandle) {
+        self.ctx.raw_window_handle = Some(raw_window_handle);
+    }
 }
 
 /// Creates a `WindowAdapter` and a `WindowSettings` object from a window builder closure.

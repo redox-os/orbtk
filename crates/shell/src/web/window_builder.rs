@@ -293,10 +293,6 @@ where
                 resize_events: resize,
             },
             canvas,
-            None,
-            true,
-            true,
-            false,
         ));
     }
 }

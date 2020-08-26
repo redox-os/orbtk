@@ -2,6 +2,8 @@ use std::{collections::BTreeMap, sync::mpsc};
 
 use dces::prelude::*;
 
+use raw_window_handle::RawWindowHandle;
+
 use crate::{
     application::{create_window, ContextProvider},
     prelude::*,
@@ -53,6 +55,15 @@ impl<'a> Context<'a> {
             remove_widget_list: vec![],
             render_context,
         }
+    }
+
+    /// Access the raw window handle. Could be `None` on unsupported raw-window-handle platforms like `Redox`.
+    pub fn raw_window_handle(&self) -> Option<RawWindowHandle> {
+        if let Some(handle) = self.provider.raw_window_handle {
+            return Some(handle);
+        }
+
+        None
     }
 
     // -- Widgets --

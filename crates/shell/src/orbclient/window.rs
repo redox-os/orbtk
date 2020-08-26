@@ -9,6 +9,7 @@ use crate::{
 };
 
 use orbclient::Renderer;
+use raw_window_handle::HasRawWindowHandle;
 
 use orbtk_utils::Point;
 
@@ -39,6 +40,9 @@ where
         render_context: RenderContext2D,
         request_receiver: Option<mpsc::Receiver<WindowRequest>>,
     ) -> Self {
+        let mut adapter = adapter;
+        adapter.set_raw_window_handle(window.raw_window_handle());
+
         Window {
             window,
             adapter,
@@ -50,6 +54,16 @@ where
             redraw: true,
             close: false,
         }
+    }
+}
+
+#[cfg(not(target_os = "redox"))]
+unsafe impl<A> raw_window_handle::HasRawWindowHandle for Window<A>
+where
+    A: WindowAdapter,
+{
+    fn raw_window_handle(&self) -> raw_window_handle::RawWindowHandle {
+        self.window.raw_window_handle()
     }
 }
 

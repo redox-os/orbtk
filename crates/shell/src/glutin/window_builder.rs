@@ -176,10 +176,6 @@ where
             self.adapter,
             render_context,
             self.request_receiver,
-            true,
-            true,
-            false,
-            (0.0, 0.0),
             scale_factor,
         ))
     }

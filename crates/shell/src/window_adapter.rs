@@ -6,6 +6,9 @@ use crate::{event::*, utils::Point};
 /// The `WindowAdapter` represents the bridge to the `Shell` backend.
 /// It receives events from the `Window` and runs it's own logic.  
 pub trait WindowAdapter {
+    /// Sets raw window handle.
+    fn set_raw_window_handle(&mut self, raw_window_handle: raw_window_handle::RawWindowHandle);
+
     /// Used to update the clipboard, could be used to read and set the current clipboard value.
     fn clipboard_update(&mut self, value: &mut Option<String>);
 
