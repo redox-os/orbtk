@@ -207,11 +207,15 @@ OrbTk will also provide a plain mechanism to style and theme widgets and UIs.
 
 ## Run Examples
 
-On Linux you first need to install
+To build and run the examples you *will* need an C compiler (like `gcc`, `clang`, or MS's own compiler).
+
+On Linux you also nee to install `cmake`. e.g.: 
 
 ```shell
-sudo apt install libxkbcommon-dev libwayland-cursor0 libwayland-dev
+sudo apt install cmake
 ```
+
+If you have trouble to build and run the examples or you don't want to use a C compiler check the backend section please? It contains alternatives.
 
 You can find examples in the `examples/` directory.
 
@@ -260,6 +264,39 @@ cargo node run --target electron --example widgets
 ```text
 cargo node run --target android --example widgets
 ```
+
+## OrbTk backends
+
+At the moment will evaluate different backends for OrbTk. A OrbTk backend consists of two different parts, window / events and rendering. OrbTk provides at the moment the following backends:
+
+### orbraq
+
+* default backend for Redox, Linux, macOS and Windows (default feature)
+* window and events based on [OrbClient](https://gitlab.redox-os.org/redox-os/orbclient)
+* 2D rendering based  on [raqote](https://github.com/jrmuizel/raqote)
+
+### miniraq
+
+* use with `miniraq` feature `cargo run --example widgets --features miniraq --no-default-features 
+* window and events based on [minifb](https://github.com/emoon/rust_minifb)
+* 2D rendering based on [raqote](https://github.com/jrmuizel/raqote)
+* Dependencies on Linux: libxkbcommon-dev, libwayland-cursor0, libwayland-dev
+* No C compiler needed
+* Does not support all features of `orbraq` e.g. DropEvents, Clipboard access 
+
+### glupath (experimental)
+
+* use with `glupath` feature `cargo run --example widgets --features glupath --no-default-features 
+* window and events based on [glutin](https://github.com/rust-windowing/glutin)
+* 2D rendering based on [pathfinder](https://github.com/servo/pathfinder)
+* Dependencies on Linux: libxkbcommon-dev, libwayland-cursor0, libwayland-dev
+* Does not yet support all features of `orbraq` e.g. DropEvents, Clipboard access 
+
+### stdweb
+
+* default backend for web (default feature)
+* window, events and 2D rendering based on [stdweb](https://github.com/koute/stdweb)
+* Does not yet support all features of `orbraq` e.g. DropEvents, Clipboard access 
 
 ## Documentation
 
