@@ -28,6 +28,7 @@ where
     update: bool,
     redraw: bool,
     close: bool,
+    has_clipboard_update: bool,
 }
 
 impl<A> Window<A>
@@ -40,7 +41,10 @@ where
         render_context: RenderContext2D,
         request_receiver: Option<mpsc::Receiver<WindowRequest>>,
     ) -> Self {
+        #[cfg(not(target_os = "redox"))]
         let mut adapter = adapter;
+
+        #[cfg(not(target_os = "redox"))]
         adapter.set_raw_window_handle(window.raw_window_handle());
 
         Window {
@@ -53,7 +57,19 @@ where
             update: true,
             redraw: true,
             close: false,
+            has_clipboard_update: true,
         }
+    }
+
+    #[cfg(not(target_os = "redox"))]
+    fn has_clipboard_update(&self) -> bool {
+        self.has_clipboard_update
+    }
+
+    // todo: workaround until clipboard update events available on orbital
+    #[cfg(target_os = "redox")]
+    fn has_clipboard_update(&self) -> bool {
+        true
     }
 }
 
@@ -132,8 +148,12 @@ where
 
     /// Updates the clipboard.
     pub fn update_clipboard(&mut self) {
-        // update clipboard
-        let mut clipboard_value = Some(self.window.clipboard());
+        let mut clipboard_value = if self.has_clipboard_update() {
+            self.has_clipboard_update = false;
+            Some(self.window.clipboard())
+        } else {
+            None
+        };
 
         self.adapter.clipboard_update(&mut clipboard_value);
 
@@ -156,6 +176,9 @@ where
                     self.update = true;
                 }
                 orbclient::EventOption::MouseRelative(_) => {}
+                orbclient::EventOption::ClipboardUpdate(_) => {
+                    self.has_clipboard_update = true;
+                }
                 orbclient::EventOption::Button(event) => {
                     if event.left != self.mouse.button_left {
                         if event.left {
