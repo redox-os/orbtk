@@ -7,8 +7,6 @@ use stdweb::{
     web::{document, event, html_element::CanvasElement, window, CanvasRenderingContext2d},
 };
 
-use derive_more::Constructor;
-
 use super::EventState;
 use crate::{
     event::{ButtonState, Key, KeyEvent, MouseButton, MouseEvent},
@@ -21,7 +19,6 @@ use orbtk_utils::Point;
 
 /// Represents a wrapper for a web window. It handles events, propagate them to
 /// the window adapter and handles the update and render pipeline.
-#[derive(Constructor)]
 pub struct Window<A>
 where
     A: WindowAdapter,
@@ -41,9 +38,62 @@ impl<A> Window<A>
 where
     A: WindowAdapter,
 {
+    pub fn new(
+        adapter: A,
+        render_context: RenderContext2D,
+        request_receiver: Option<mpsc::Receiver<WindowRequest>>,
+        event_state: EventState,
+        canvas: CanvasElement,
+    ) -> Self {
+        let mut adapter = adapter;
+
+        let web_handle = raw_window_handle::web::WebHandle {
+            id: 1,
+            ..raw_window_handle::web::WebHandle::empty()
+        };
+
+        adapter.set_raw_window_handle(raw_window_handle::RawWindowHandle::Web(web_handle));
+
+        Window {
+            adapter,
+            render_context,
+            request_receiver,
+            event_state,
+            canvas,
+            old_canvas: None,
+            update: true,
+            redraw: true,
+            close: false,
+        }
+    }
+}
+
+unsafe impl<A> raw_window_handle::HasRawWindowHandle for Window<A>
+where
+    A: WindowAdapter,
+{
+    fn raw_window_handle(&self) -> raw_window_handle::RawWindowHandle {
+        let web_handle = raw_window_handle::web::WebHandle {
+            id: 1,
+            ..raw_window_handle::web::WebHandle::empty()
+        };
+
+        raw_window_handle::RawWindowHandle::Web(web_handle)
+    }
+}
+
+impl<A> Window<A>
+where
+    A: WindowAdapter,
+{
     /// Check if the window is open.
     pub fn is_open(&self) -> bool {
         true
+    }
+
+    /// Updates the clipboard.
+    pub fn update_clipboard(&mut self) {
+        // todo
     }
 
     /// Drain events and propagate the events to the adapter.

@@ -9,6 +9,7 @@ use crate::{
 };
 
 use orbtk_utils::Point;
+use raw_window_handle::HasRawWindowHandle;
 
 /// Represents a wrapper for a minifb window. It handles events, propagate them to
 /// the window adapter and handles the update and render pipeline.
@@ -41,6 +42,9 @@ where
         key_states: Vec<KeyState>,
         key_events: Rc<RefCell<Vec<KeyEvent>>>,
     ) -> Self {
+        let mut adapter = adapter;
+        adapter.set_raw_window_handle(window.raw_window_handle());
+
         Window {
             window,
             adapter,
@@ -54,6 +58,15 @@ where
             key_states,
             key_events,
         }
+    }
+}
+
+unsafe impl<A> raw_window_handle::HasRawWindowHandle for Window<A>
+where
+    A: WindowAdapter,
+{
+    fn raw_window_handle(&self) -> raw_window_handle::RawWindowHandle {
+        self.window.raw_window_handle()
     }
 }
 
@@ -118,6 +131,11 @@ where
     /// Check if the window is open.
     pub fn is_open(&self) -> bool {
         self.window.is_open() && !self.close
+    }
+
+    /// Updates the clipboard.
+    pub fn update_clipboard(&mut self) {
+        // todo
     }
 
     /// Drain events and propagate the events to the adapter.

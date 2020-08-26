@@ -1,4 +1,4 @@
-# orbtk-widgets
+# orbtk_widgets
 
 OrbTks default widget library. It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 

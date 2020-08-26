@@ -7,7 +7,7 @@ use crate::{
     event::*,
     properties::*,
     render,
-    services::Settings,
+    services::{Clipboard, Settings},
     shell,
     shell::{ShellRequest, WindowRequest, WindowSettings},
     systems::*,
@@ -20,6 +20,8 @@ use crate::{
 pub struct WindowAdapter {
     world: World<Tree, StringComponentStore, render::RenderContext2D>,
     ctx: ContextProvider,
+    registry: Rc<RefCell<Registry>>,
+    old_clipboard_value: Option<String>,
 }
 
 impl WindowAdapter {
@@ -27,8 +29,14 @@ impl WindowAdapter {
     pub fn new(
         world: World<Tree, StringComponentStore, render::RenderContext2D>,
         ctx: ContextProvider,
+        registry: Rc<RefCell<Registry>>,
     ) -> Self {
-        WindowAdapter { world, ctx }
+        WindowAdapter {
+            world,
+            ctx,
+            registry,
+            old_clipboard_value: None,
+        }
     }
 }
 
@@ -43,6 +51,26 @@ impl WindowAdapter {
 }
 
 impl shell::WindowAdapter for WindowAdapter {
+    fn clipboard_update(&mut self, value: &mut Option<String>) {
+        // internal clipboard value is new => update system clipboard value.
+        if self.registry.borrow().get::<Clipboard>("clipboard").get() != self.old_clipboard_value {
+            *value = self.registry.borrow().get::<Clipboard>("clipboard").get();
+
+            self.old_clipboard_value = value.clone();
+
+            return;
+        }
+
+        //  system clipboard value is newer => update internal clipboard
+        if let Some(value) = value.clone() {
+            self.registry
+                .borrow_mut()
+                .get_mut::<Clipboard>("clipboard")
+                .set(value.clone());
+            self.old_clipboard_value = Some(value);
+        }
+    }
+
     fn resize(&mut self, width: f64, height: f64) {
         let root = self.root();
         self.ctx
@@ -117,11 +145,12 @@ impl shell::WindowAdapter for WindowAdapter {
                 .event_queue
                 .borrow_mut()
                 .register_event(KeyUpEvent { event }, root),
-            shell::ButtonState::Down => self
-                .ctx
-                .event_queue
-                .borrow_mut()
-                .register_event(KeyDownEvent { event }, root),
+            shell::ButtonState::Down => {
+                self.ctx
+                    .event_queue
+                    .borrow_mut()
+                    .register_event(KeyDownEvent { event }, root);
+            }
         }
     }
 
@@ -150,6 +179,32 @@ impl shell::WindowAdapter for WindowAdapter {
     fn run(&mut self, render_context: &mut render::RenderContext2D) {
         self.world.run_with_context(render_context);
     }
+
+    fn file_drop_event(&mut self, file_name: String) {
+        let root = self.root();
+        self.ctx.event_queue.borrow_mut().register_event(
+            DropFileEvent {
+                file_name,
+                position: self.mouse_position(),
+            },
+            root,
+        );
+    }
+
+    fn text_drop_event(&mut self, text: String) {
+        let root = self.root();
+        self.ctx.event_queue.borrow_mut().register_event(
+            DropTextEvent {
+                text,
+                position: self.ctx.mouse_position.get(),
+            },
+            root,
+        );
+    }
+
+    fn set_raw_window_handle(&mut self, raw_window_handle: raw_window_handle::RawWindowHandle) {
+        self.ctx.raw_window_handle = Some(raw_window_handle);
+    }
 }
 
 /// Creates a `WindowAdapter` and a `WindowSettings` object from a window builder closure.
@@ -176,6 +231,10 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             .borrow_mut()
             .register("settings", Settings::new(app_name.clone()));
     };
+
+    registry
+        .borrow_mut()
+        .register("clipboard", Clipboard::new());
 
     let context_provider = ContextProvider::new(sender, request_sender, app_name);
 
@@ -305,7 +364,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     world
         .create_system(PostLayoutStateSystem::new(
             context_provider.clone(),
-            registry,
+            registry.clone(),
         ))
         .with_priority(2)
         .build();
@@ -316,7 +375,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         .build();
 
     (
-        WindowAdapter::new(world, context_provider),
+        WindowAdapter::new(world, context_provider, registry),
         settings,
         receiver,
     )

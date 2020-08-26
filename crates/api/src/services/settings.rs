@@ -20,6 +20,7 @@ use serde::{de::DeserializeOwned, Serialize};
 /// `Settings` represents a global settings service that could be use to serialize and deserialize
 /// data in the `ron` file format. Settings are stored in the user settings directory (depending on the operating system)
 /// under the a folder with the given application name.
+#[derive(Debug, Clone)]
 pub struct Settings {
     app_name: Box<str>,
 }
@@ -27,7 +28,7 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Settings {
-            app_name: "orbtk-app".into(),
+            app_name: "orbtk_app".into(),
         }
     }
 }

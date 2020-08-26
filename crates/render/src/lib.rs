@@ -6,17 +6,17 @@ pub mod prelude;
 
 pub use orbtk_utils::prelude as utils;
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "pfinder"))]
+#[cfg(all(not(target_arch = "wasm32"), feature = "glupath"))]
 #[path = "pathfinder/mod.rs"]
 pub mod platform;
 
-#[cfg(any(target_arch = "wasm32", feature = "pfinder"))]
+#[cfg(any(target_arch = "wasm32", feature = "glupath"))]
 pub use self::platform::*;
 
 #[cfg(all(
     not(target_arch = "wasm32"),
     feature = "default",
-    not(feature = "pfinder")
+    not(feature = "glupath")
 ))]
 #[path = "raqote/mod.rs"]
 pub mod platform;
@@ -24,14 +24,14 @@ pub mod platform;
 #[cfg(all(
     not(target_arch = "wasm32"),
     feature = "default",
-    not(feature = "pfinder")
+    not(feature = "glupath")
 ))]
 pub mod concurrent;
 
 #[cfg(all(
     not(target_arch = "wasm32"),
     feature = "default",
-    not(feature = "pfinder")
+    not(feature = "glupath")
 ))]
 pub use self::concurrent::*;
 

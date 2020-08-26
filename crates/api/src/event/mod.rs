@@ -6,6 +6,7 @@ use dces::entity::Entity;
 
 use crate::widget_base::StatesContext;
 
+pub use self::drop::*;
 pub use self::editable::*;
 pub use self::event_handler::*;
 pub use self::event_queue::*;
@@ -15,6 +16,7 @@ pub use self::mouse::*;
 pub use self::system::*;
 pub use self::window::*;
 
+mod drop;
 mod editable;
 mod event_handler;
 mod event_queue;

@@ -33,16 +33,21 @@ pub mod window_adapter;
 
 pub use orbtk_utils::prelude as utils;
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "pfinder"))]
+#[cfg(all(not(target_arch = "wasm32"), feature = "glupath"))]
 #[path = "glutin/mod.rs"]
+pub mod platform;
+
+#[cfg(all(not(target_arch = "wasm32"), feature = "miniraq"))]
+#[path = "minifb/mod.rs"]
 pub mod platform;
 
 #[cfg(all(
     not(target_arch = "wasm32"),
-    feature = "default",
-    not(feature = "pfinder")
+    any(feature = "default", feature = "orbraq"),
+    not(feature = "glupath"),
+    not(feature = "miniraq")
 ))]
-#[path = "minifb/mod.rs"]
+#[path = "orbclient/mod.rs"]
 pub mod platform;
 
 #[cfg(not(target_arch = "wasm32"))]

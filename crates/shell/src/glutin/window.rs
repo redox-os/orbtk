@@ -2,7 +2,7 @@ use std::sync::mpsc;
 
 use glutin::{event, event_loop::ControlFlow, window, ContextWrapper, PossiblyCurrent};
 
-use derive_more::Constructor;
+use raw_window_handle::HasRawWindowHandle;
 
 use crate::{
     event::{ButtonState, MouseButton, MouseEvent},
@@ -13,7 +13,6 @@ use crate::{
 
 /// Represents a wrapper for a glutin window. It handles events, propagate them to
 /// the window adapter and handles the update and redraw pipeline.
-#[derive(Constructor)]
 pub struct Window<A>
 where
     A: WindowAdapter,
@@ -33,6 +32,43 @@ impl<A> Window<A>
 where
     A: WindowAdapter,
 {
+    pub fn new(
+        gl_context: ContextWrapper<PossiblyCurrent, window::Window>,
+        adapter: A,
+        render_context: RenderContext2D,
+        request_receiver: Option<mpsc::Receiver<WindowRequest>>,
+        scale_factor: f64,
+    ) -> Self {
+        let mut adapter = adapter;
+        adapter.set_raw_window_handle(gl_context.window().raw_window_handle());
+
+        Window {
+            gl_context,
+            adapter,
+            render_context,
+            request_receiver,
+            update: true,
+            redraw: true,
+            close: false,
+            mouse_pos: (0., 0.),
+            scale_factor,
+        }
+    }
+}
+
+unsafe impl<A> raw_window_handle::HasRawWindowHandle for Window<A>
+where
+    A: WindowAdapter,
+{
+    fn raw_window_handle(&self) -> raw_window_handle::RawWindowHandle {
+        self.gl_context.window().raw_window_handle()
+    }
+}
+
+impl<A> Window<A>
+where
+    A: WindowAdapter,
+{
     /// Returns an glutin specific window id.
     pub fn id(&self) -> window::WindowId {
         self.gl_context.window().id()
@@ -41,6 +77,11 @@ where
     /// Check if the window is open.
     pub fn is_open(&self) -> bool {
         true
+    }
+
+    /// Updates the clipboard.
+    pub fn update_clipboard(&mut self) {
+        // todo
     }
 
     /// Drain events and propagate the events to the adapter.

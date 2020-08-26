@@ -6,6 +6,12 @@ use crate::{event::*, utils::Point};
 /// The `WindowAdapter` represents the bridge to the `Shell` backend.
 /// It receives events from the `Window` and runs it's own logic.  
 pub trait WindowAdapter {
+    /// Sets raw window handle.
+    fn set_raw_window_handle(&mut self, raw_window_handle: raw_window_handle::RawWindowHandle);
+
+    /// Used to update the clipboard, could be used to read and set the current clipboard value.
+    fn clipboard_update(&mut self, value: &mut Option<String>);
+
     /// Is called after the window is resized.
     fn resize(&mut self, _width: f64, _height: f64) {}
 
@@ -29,6 +35,12 @@ pub trait WindowAdapter {
 
     /// Is called if active state of the window is changed.
     fn active(&mut self, active: bool);
+
+    /// This method is called when a file is dropped on the window.
+    fn file_drop_event(&mut self, file_name: String);
+
+    /// This method is called when a text string is dropped on the window.
+    fn text_drop_event(&mut self, text: String);
 
     /// Runs the inner logic of the shell adapter.
     fn run(&mut self, render_context: &mut RenderContext2D);

@@ -1,5 +1,5 @@
 [package]
-name = "orbtk-render"
+name = "orbtk_render"
 version = "0.3.1-alpha4"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "2D Render library use by OrbTk."
@@ -30,13 +30,12 @@ pathfinder_renderer = { version = "0.5", optional = true }
 pathfinder_resources =  { version = "0.5", optional = true }
 font-kit = { version = "0.6", optional = true }
 
-
 [dependencies]
-orbtk-utils = { path = "../utils", version = "0.3.1-alpha4" }
+orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 
 [features]
 default = ["raqote", "rusttype"]
-pfinder = [
+glupath = [
     "pathfinder_canvas",
     "pathfinder_color",
     "pathfinder_content",

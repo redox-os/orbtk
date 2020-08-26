@@ -11,6 +11,7 @@ use super::MouseBehavior;
 enum TextAction {
     Key(KeyEvent),
     Mouse(Mouse),
+    Drop(String, Point),
 }
 
 /// The `TextBehaviorState` handles the text processing of the `TextBehavior` widget.
@@ -26,6 +27,72 @@ pub struct TextBehaviorState {
 impl TextBehaviorState {
     fn action(&mut self, action: TextAction) {
         self.action = Some(action);
+    }
+
+    fn is_ctlr_home_pressed(&self, ctx: &mut Context) -> bool {
+        if cfg!(target_os = "macos")
+            && ctx
+                .window()
+                .get::<Global>("global")
+                .keyboard_state
+                .is_home_down()
+        {
+            return true;
+        }
+
+        if ctx
+            .window()
+            .get::<Global>("global")
+            .keyboard_state
+            .is_ctrl_down()
+        {
+            return true;
+        }
+
+        false
+    }
+
+    fn copy(&self, registry: &mut Registry, ctx: &mut Context) {
+        let text_selection: TextSelection = ctx.get_widget(self.target).clone("text_selection");
+
+        if text_selection.length == 0 {
+            return;
+        }
+
+        if let Some(text_part) = ctx
+            .get_widget(self.target)
+            .clone::<String16>("text")
+            .get_string(
+                text_selection.start_index,
+                text_selection.start_index + text_selection.length,
+            )
+        {
+            registry.get_mut::<Clipboard>("clipboard").set(text_part);
+        }
+    }
+
+    fn insert_text(&mut self, insert_text: String, ctx: &mut Context) {
+        self.clear_selection(ctx);
+        let index = ctx
+            .get_widget(self.target)
+            .get::<TextSelection>("text_selection")
+            .start_index;
+
+        let mut text = ctx.widget().clone::<String16>("text");
+        let len = String16::from(insert_text.as_str()).len();
+
+        text.insert_str(index, insert_text.as_str());
+
+        ctx.get_widget(self.target).set("text", text);
+        ctx.get_widget(self.target)
+            .get_mut::<TextSelection>("text_selection")
+            .start_index = index + len;
+    }
+
+    fn paste(&mut self, registry: &mut Registry, ctx: &mut Context) {
+        if let Some(value) = registry.get::<Clipboard>("clipboard").get() {
+            self.insert_text(value, ctx);
+        }
     }
 
     fn request_focus(&self, ctx: &mut Context, p: Mouse) {
@@ -111,7 +178,12 @@ impl TextBehaviorState {
         }
     }
 
-    fn handle_key_event(&mut self, key_event: KeyEvent, ctx: &mut Context) {
+    fn handle_key_event(
+        &mut self,
+        key_event: KeyEvent,
+        registry: &mut Registry,
+        ctx: &mut Context,
+    ) {
         if !ctx.widget().get::<bool>("focused") {
             return;
         }
@@ -132,30 +204,26 @@ impl TextBehaviorState {
             Key::Enter => {
                 self.activate(ctx);
             }
+            Key::C(..) => {
+                if self.is_ctlr_home_pressed(ctx) {
+                    self.copy(registry, ctx);
+                } else {
+                    self.insert_char(key_event, ctx);
+                }
+            }
+            Key::V(..) => {
+                if self.is_ctlr_home_pressed(ctx) {
+                    self.paste(registry, ctx);
+                } else {
+                    self.insert_char(key_event, ctx);
+                }
+            }
             Key::A(..) => {
-                // if cfg!(mac_os) {
-                //     if ctx
-                //         .window()
-                //         .get::<Global>("global")
-                //         .keyboard_state
-                //         .is_home_down()
-                //     {
-                //         self.select_all(ctx);
-                //     } else {
-                //         self.insert_char(key_event, ctx);
-                //     }
-                // } else {
-                if ctx
-                    .window()
-                    .get::<Global>("global")
-                    .keyboard_state
-                    .is_ctrl_down()
-                {
+                if self.is_ctlr_home_pressed(ctx) {
                     self.select_all(ctx);
                 } else {
                     self.insert_char(key_event, ctx);
                 }
-                // }
             }
             _ => {
                 self.insert_char(key_event, ctx);
@@ -291,7 +359,7 @@ impl TextBehaviorState {
             ActivateEvent(self.target),
             self.target,
             EventStrategy::Direct,
-        )
+        );
     }
 
     fn insert_char(&mut self, key_event: KeyEvent, ctx: &mut Context) {
@@ -353,7 +421,7 @@ impl State for TextBehaviorState {
         }
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, registry: &mut Registry, ctx: &mut Context) {
         self.check_outside_update(ctx);
 
         let focused = *ctx.widget().get::<bool>("focused");
@@ -385,10 +453,15 @@ impl State for TextBehaviorState {
         if let Some(action) = self.action.clone() {
             match action {
                 TextAction::Key(event) => {
-                    self.handle_key_event(event, ctx);
+                    self.handle_key_event(event, registry, ctx);
                 }
                 TextAction::Mouse(p) => {
                     self.request_focus(ctx, p);
+                }
+                TextAction::Drop(text, position) => {
+                    if check_mouse_condition(position, &ctx.get_widget(self.target)) {
+                        self.insert_text(text, ctx);
+                    }
                 }
             }
 
@@ -407,6 +480,11 @@ impl State for TextBehaviorState {
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
                 .set_state("focused");
+            ctx.get_widget(self.target).update(false);
+        } else if self.len > 0 && !self.focused {
+            ctx.get_widget(self.target)
+                .get_mut::<Selector>("selector")
+                .clear_state();
             ctx.get_widget(self.target).update(false);
         }
     }
@@ -488,7 +566,7 @@ widget!(
     ///
     /// [`Entity`]: https://docs.rs/dces/0.2.0/dces/entity/struct.Entity.html
     /// [`Cursor`]: ../struct.Cursor.html
-    TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler {
+    TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler, DropHandler {
         /// Sets or shares the entity of the Cursor widget property.
         cursor: u32,
 
@@ -543,6 +621,18 @@ impl Template for TextBehavior {
                 states
                     .get_mut::<TextBehaviorState>(id)
                     .action(TextAction::Key(event));
+                false
+            })
+            .on_drop_file(move |states, file_name, position| {
+                states
+                    .get_mut::<TextBehaviorState>(id)
+                    .action(TextAction::Drop(file_name, position));
+                false
+            })
+            .on_drop_text(move |states, file_name, position| {
+                states
+                    .get_mut::<TextBehaviorState>(id)
+                    .action(TextAction::Drop(file_name, position));
                 false
             })
     }

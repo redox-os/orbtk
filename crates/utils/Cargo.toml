@@ -1,5 +1,5 @@
 [package]
-name = "orbtk-utils"
+name = "orbtk_utils"
 version = "0.3.1-alpha4"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Helper utils and traits for OrbTk."

@@ -25,16 +25,16 @@ path = "src/lib.rs"
 opt-level = 1
 
 [dependencies]
-orbtk-proc-macros = { version = "0.3.1-alpha4", path = "crates/proc-macros" }
-orbtk-api = { version = "0.3.1-alpha4", path = "crates/api" }
-orbtk-render = { version = "0.3.1-alpha4", path = "crates/render" }
-orbtk-shell = { version = "0.3.1-alpha4", path = "crates/shell" }
-orbtk-theme = { version = "0.3.1-alpha4", path="crates/theme" }
-orbtk-theming = { version = "0.3.1-alpha4", path="crates/theming" }
-orbtk-utils = { version = "0.3.1-alpha4", path = "crates/utils" }
-orbtk-tree = { version = "0.3.1-alpha4", path="crates/tree" }
-orbtk-widgets = { version = "0.3.1-alpha4", path="crates/widgets" }
-dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "develop" }
+orbtk_proc_macros = { version = "0.3.1-alpha4", path = "crates/proc_macros" }
+orbtk_api = { version = "0.3.1-alpha4", path = "crates/api", default-features = false }
+orbtk_render = { version = "0.3.1-alpha4", path = "crates/render" }
+orbtk_shell = { version = "0.3.1-alpha4", path = "crates/shell", default-features = false }
+orbtk_theme = { version = "0.3.1-alpha4", path="crates/theme" }
+orbtk_theming = { version = "0.3.1-alpha4", path="crates/theming" }
+orbtk_utils = { version = "0.3.1-alpha4", path = "crates/utils" }
+orbtk_tree = { version = "0.3.1-alpha4", path="crates/tree" }
+orbtk_widgets = { version = "0.3.1-alpha4", path="crates/widgets", default-features = false }
+dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git", branch = "develop" }
 
 [dev-dependencies]
 euc = "0.5.0"
@@ -46,17 +46,19 @@ serde_derive = "1.0.106"
 # wgpu = "0.5.0"
 
 [features]
-debug = ["orbtk-api/debug"]
-pathfinder = ["orbtk-shell/pfinder", "orbtk-render/pfinder"]
-log = ["orbtk-shell/log"]
-light = ["orbtk-theme/light"]
-redox = ["orbtk-theme/redox"]
+default = ["orbtk_shell/orbraq", "orbtk_api/orbraq", "orbtk_widgets/orbraq"]
+miniraq = ["orbtk_shell/miniraq", "orbtk_api/miniraq", "orbtk_widgets/miniraq"]
+glupath = ["orbtk_shell/glupath", "orbtk_render/glupath", "orbtk_widgets/glupath"]
+log = ["orbtk_shell/log"]
+light = ["orbtk_theme/light"]
+redox = ["orbtk_theme/redox"]
+debug = ["orbtk_api/debug"]
  
 [workspace]
 members = [
     "crates/utils",
     "crates/tree",
-    "crates/proc-macros",
+    "crates/proc_macros",
     "crates/api",
     "crates/render",
     "crates/shell",

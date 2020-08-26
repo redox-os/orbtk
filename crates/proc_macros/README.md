@@ -1,4 +1,4 @@
-# orbtk-proc-macros
+# orbtk_proc_macros
 
 Provides procedural helper macros. It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 

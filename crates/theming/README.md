@@ -1,4 +1,4 @@
-# orbtk-theming
+# orbtk_theming
 
 Rust / Ron based theming. It replaces the css-engine crate. It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 

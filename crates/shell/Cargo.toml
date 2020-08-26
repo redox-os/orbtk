@@ -1,5 +1,5 @@
 [package]
-name = "orbtk-shell"
+name = "orbtk_shell"
 version = "0.3.1-alpha4"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Window shell crate used by OrbTk."
@@ -15,10 +15,13 @@ console_error_panic_hook = "0.1.6"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 image = { version = "0.23",  default-features = false, features = ["ico"] }
+spin_sleep = { version = "1.0", optional = true }
+
+# orbclient
+orbclient = { git = "https://gitlab.redox-os.org/redox-os/orbclient.git", optional = true }
 
 # minifb dependencies
-spin_sleep = { version = "1.0", optional = true }
-minifb = { git = "https://github.com/FloVanGH/rust_minifb", branch = "redox_unix", optional = true }
+minifb = { version = "0.18", optional = true }
 
 # pathfinder dependencies
 gl = { version = "0.14", optional = true }
@@ -32,17 +35,18 @@ pathfinder_renderer =  { version = "0.5", optional = true }
 pathfinder_resources =  { version = "0.5", optional = true }
 
 [dependencies]
-derive_more = { version = "0.99", default-features = false, features = ["constructor"] }
 lazy_static = "1.4.0"
-raw-window-handle = "0.3.3"
+raw-window-handle = "0.3"
 
 # orbtk
-orbtk-render = { path = "../render", version = "0.3.1-alpha4" }
-orbtk-utils = { path = "../utils", version = "0.3.1-alpha4" }
+orbtk_render = { path = "../render", version = "0.3.1-alpha4" }
+orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 
 [features]
-default = ["spin_sleep", "minifb"]
-pfinder = [
+default = ["spin_sleep", "orbclient"]
+orbraq = ["spin_sleep", "orbclient"]
+miniraq = ["spin_sleep", "minifb"]
+glupath = [
     "gl",
     "glutin",
     "euclid",
