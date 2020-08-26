@@ -33,11 +33,10 @@ pathfinder_geometry = { version = "0.5.1", optional = true }
 pathfinder_gl =  { version = "0.5", optional = true }
 pathfinder_renderer =  { version = "0.5", optional = true }
 pathfinder_resources =  { version = "0.5", optional = true }
-raw-window-handle = "0.3"
 
 [dependencies]
-derive_more = { version = "0.99", default-features = false, features = ["constructor"] }
 lazy_static = "1.4.0"
+raw-window-handle = "0.3"
 
 # orbtk
 orbtk_render = { path = "../render", version = "0.3.1-alpha4" }

@@ -7,8 +7,6 @@ use stdweb::{
     web::{document, event, html_element::CanvasElement, window, CanvasRenderingContext2d},
 };
 
-use derive_more::Constructor;
-
 use super::EventState;
 use crate::{
     event::{ButtonState, Key, KeyEvent, MouseButton, MouseEvent},
