@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Text input copy and paste
 * orbraq backend (Orbclient and raqote)
 * Refactor on_changed callback, add key parameter
+* Access RawWindowHandle from Context
 
 ### 0.3.1-alpha3
 
