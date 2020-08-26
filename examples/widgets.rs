@@ -43,12 +43,9 @@ impl State for MainViewState {
                         ctx.child("items").clone_or_default::<usize>("Item");
                         items_widget(ctx.child("items")).set_count(len + 1);
                         button(ctx.child("remove-item-button")).set_enabled(true);
-                        button(ctx.child("remove-item-button")).set_visibility(Visibility::Visible);
 
                         if len == 4 {
                             button(ctx.child("add-item-button")).set_enabled(false);
-                            button(ctx.child("add-item-button"))
-                                .set_visibility(Visibility::Collapsed);
                         }
                     }
                 }
@@ -58,12 +55,9 @@ impl State for MainViewState {
                         main_view(ctx.widget()).list_mut().remove(len - 1);
                         items_widget(ctx.child("items")).set_count(len - 1);
                         button(ctx.child("add-item-button")).set_enabled(true);
-                        button(ctx.child("add-item-button")).set_visibility(Visibility::Visible);
 
                         if len == 1 {
                             button(ctx.child("remove-item-button")).set_enabled(false);
-                            button(ctx.child("remove-item-button"))
-                                .set_visibility(Visibility::Collapsed);
                         }
                     }
                 }
