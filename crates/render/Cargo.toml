@@ -17,7 +17,7 @@ image = { version = "0.23",  default-features = false, features = ["ico"] }
 
 # raqote depenencies
 raqote = { version = "0.8", default-features = false, optional = true }
-rusttype = { version = "0.8.3", optional = true }
+rusttype = { version = "0.9", optional = true }
 
 # pathfinder dependencies
 pathfinder_canvas = { version = "0.5.0", features = ["pf-text"], optional = true }
