@@ -278,7 +278,7 @@ At the moment will evaluate different backends for OrbTk. A OrbTk backend consis
 
 ### miniraq
 
-* use with `miniraq` feature `cargo run --example widgets --features miniraq --no-default-features 
+* use with `miniraq` feature `cargo run --example widgets --features miniraq --no-default-features` 
 * window and events based on [minifb](https://github.com/emoon/rust_minifb)
 * 2D rendering based on [raqote](https://github.com/jrmuizel/raqote)
 * Dependencies on Linux: libxkbcommon-dev, libwayland-cursor0, libwayland-dev
@@ -286,7 +286,7 @@ At the moment will evaluate different backends for OrbTk. A OrbTk backend consis
 
 ### glupath (experimental)
 
-* use with `glupath` feature `cargo run --example widgets --features glupath --no-default-features 
+* use with `glupath` feature `cargo run --example widgets --features glupath --no-default-features`
 * window and events based on [glutin](https://github.com/rust-windowing/glutin)
 * 2D rendering based on [pathfinder](https://github.com/servo/pathfinder)
 * Does not yet support all features of `orbraq` e.g. DropEvents, Clipboard access 
