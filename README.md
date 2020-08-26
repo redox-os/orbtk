@@ -273,7 +273,7 @@ At the moment will evaluate different backends for OrbTk. A OrbTk backend consis
 
 * default backend for Redox, Linux, macOS and Windows (default feature)
 * window and events based on [OrbClient](https://gitlab.redox-os.org/redox-os/orbclient)
-* 2D rendering based  on [raqote](https://github.com/jrmuizel/raqote)
+* 2D rendering based on [raqote](https://github.com/jrmuizel/raqote)
 
 ### miniraq
 
