@@ -21,6 +21,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for LayoutSystem {
             .get::<Vec<Entity>>("dirty_widgets", root)
             .unwrap()
             .is_empty()
+            && !self.context_provider.first_run.get()
         {
             return;
         }
