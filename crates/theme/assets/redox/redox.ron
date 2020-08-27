@@ -3,9 +3,9 @@ Theme (
         "base": (
             properties: {
                 "font_size": "$FONT_SIZE_16",
-                "font_family": "$MEDIUM_FONT",
+                "font": "$MEDIUM_FONT",
                 "icon_size": "$ICON_SIZE_16",
-                "icon_family": "$ICON_FONT",
+                "icon_font": "$ICON_FONT",
             },
         ),
         "window": (
@@ -17,7 +17,7 @@ Theme (
             properties: {
                 "foreground": "$BRIGHT_GRAY",
                 "font_size": "$FONT_SIZE_16",
-                "font_family": "$MEDIUM_FONT",
+                "font": "$MEDIUM_FONT",
             },
         ),
         "header": (

@@ -432,7 +432,7 @@ impl<'a> WidgetContainer<'a> {
                     "padding_left" | "padding_top" | "padding_right" | "padding_bottom" => {
                         self.update_padding(key, Value(value.clone()));
                     }
-                    "font_family" | "icon_family" => {
+                    "font" | "icon_font" => {
                         self.update_value::<String, Value>(key, Value(value.clone()));
                     }
                     "opacity" => {
