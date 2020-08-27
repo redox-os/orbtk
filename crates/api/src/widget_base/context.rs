@@ -92,9 +92,16 @@ impl<'a> Context<'a> {
     /// Returns a child of the widget of the current state referenced by css `id`.
     /// If there is no id defined, it will panic.
     pub fn child<'b>(&mut self, id: impl Into<&'b str>) -> WidgetContainer<'_> {
-        self.entity_of_child(id)
-            .map(move |child| self.get_widget(child))
-            .unwrap()
+        let id = id.into();
+        let result = self
+            .entity_of_child(id)
+            .map(move |child| self.get_widget(child));
+
+        if let None = result {
+            panic!("Context::child: Could not find child with id: {}.", id);
+        }
+
+        result.unwrap()
     }
 
     /// Returns a child of the widget of the current state referenced by css `id`.
