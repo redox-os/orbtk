@@ -97,7 +97,7 @@ impl<'a> Context<'a> {
             .entity_of_child(id)
             .map(move |child| self.get_widget(child));
 
-        if let None = result {
+        if result.is_none() {
             panic!("Context::child: Could not find child with id: {}.", id);
         }
 
