@@ -71,7 +71,7 @@ impl Expression {
                     })
                 }
             }
-            Expression::Other(s) => color_from_name(s),
+            Expression::Other(s) => Color::from_name(s),
             _ => None,
         }
     }
