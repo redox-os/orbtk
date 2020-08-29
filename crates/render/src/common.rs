@@ -1,12 +1,16 @@
 use crate::utils::*;
 
+/// Calculates the AABB of a arc.
 pub fn arc_rect(x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) -> Rectangle {
+    // Lazy calculate the AABB of its ends.
     let (a_y, a_x) = f64::sin_cos(start_angle);
     let (b_y, b_x) = f64::sin_cos(end_angle);
     let mut start_x = a_x.min(b_x);
     let mut start_y = a_y.min(b_y);
     let mut end_x = a_x.max(b_x);
     let mut end_y = a_y.max(b_y);
+    // Moves in a circle through 90° steps, checking if that angle is part of the arc and
+    // if that is true, then expanding the AABB to cover that angle position too.
     let mut angle = 0.0;
     let min_angle = start_angle.min(end_angle);
     let max_angle = start_angle.max(end_angle);
@@ -18,7 +22,7 @@ pub fn arc_rect(x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) -
                 1 => (0.0, 1.0),
                 2 => (-1.0, 0.0),
                 3 => (0.0, -1.0),
-                _ => break,
+                _ => break, // Error with the comparison in the while head?, no matters, break the loop.
             };
             start_x = start_x.min(x);
             start_y = start_y.min(y);
@@ -28,6 +32,7 @@ pub fn arc_rect(x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) -
         angle += f64::to_radians(90.0);
         i += 1;
     }
+    // Maps the currently unit coords of the AABB to the position and radius of the arc.
     start_x = x + start_x * radius;
     start_y = y + start_y * radius;
     end_x = x + end_x * radius;
@@ -35,11 +40,13 @@ pub fn arc_rect(x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) -
     Rectangle::new((start_x, start_y), (end_x - start_x, end_y - start_y))
 }
 
+// Calculates the AABB of a quad bezier curve.
 pub fn quad_bezier_rect(p0: Point, p1: Point, p2: Point) -> Rectangle {
     let mut mi = p0.min(p2);
     let mut ma = p0.max(p2);
 
     if p1.x() < mi.x() || p1.x() > ma.x() || p1.y() < mi.y() || p1.y() > ma.y() {
+        // The control point is outside of the ends rectangle, possibly the AABB of the curve is larger
         let t = ((p0 - p1) / (p0 - 2.0 * p1 + p2)).clamp(0.0, 1.0);
         let s = Point::from(1.0) - t;
         let q = s * s * p0 + 2.0 * s * t * p1 + t * t * p2;
@@ -49,6 +56,7 @@ pub fn quad_bezier_rect(p0: Point, p1: Point, p2: Point) -> Rectangle {
     Rectangle::new(mi, Size::new(ma.x() - mi.x(), ma.y() - mi.y()))
 }
 
+// Calculates the AABB of a cubic bezier curve.
 pub fn cubic_bezier_rect(p0: Point, p1: Point, p2: Point, p3: Point) -> Rectangle {
     let mut mi = p0.min(p3);
     let mut ma = p0.max(p3);
@@ -59,6 +67,7 @@ pub fn cubic_bezier_rect(p0: Point, p1: Point, p2: Point, p3: Point) -> Rectangl
 
     let res = coefficient_b * coefficient_b - coefficient_a * coefficient_c;
     if res.x() > 0.0 || res.y() > 0.0 {
+        // The control point is outside of the ends rectangle, possibly the AABB of the curve is larger.
         let sqrt = res.abs().sqrt();
         let t1 = ((-coefficient_b - sqrt) / coefficient_a).clamp(0.0, 1.0);
         let t2 = ((-coefficient_b + sqrt) / coefficient_a).clamp(0.0, 1.0);
@@ -86,17 +95,20 @@ pub fn cubic_bezier_rect(p0: Point, p1: Point, p2: Point, p3: Point) -> Rectangl
     Rectangle::new(mi, Size::new(ma.x() - mi.x(), ma.y() - mi.y()))
 }
 
+/// A object used to keep a record of the AABB of a path.
 #[derive(Debug, Copy, Clone)]
-pub struct PathRectTrack {
+pub struct PathRect {
     path_rect: Option<Rectangle>,
     last_path_point: Point,
     first_path_point: Option<Point>,
     is_the_path_rect_fixed: bool,
 }
 
-impl PathRectTrack {
-    pub fn new(clip: Option<Rectangle>) -> PathRectTrack {
-        PathRectTrack {
+impl PathRect {
+    /// Creates a new `PathRect`, the clip parameter allows you to enclose it in 
+    /// a rectangle from the start, of course you can use `set_clip(false)` to release it after.
+    pub fn new(clip: Option<Rectangle>) -> PathRect {
+        PathRect {
             path_rect: clip, // If the path is areldy clipped, then we already know his size and position
             last_path_point: Point::new(0.0, 0.0),
             first_path_point: None,
@@ -104,12 +116,14 @@ impl PathRectTrack {
         }
     }
 
-    pub fn close_path(&mut self) {
+    /// Records the closing of the path.
+    pub fn record_path_close(&mut self) {
         self.last_path_point = self
             .first_path_point
             .unwrap_or_else(|| Point::new(0.0, 0.0));
     }
 
+    /// Records the drawing of a rectangle.
     pub fn record_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
         if !self.is_the_path_rect_fixed {
             let r = Rectangle::new((x, y), (width, height));
@@ -125,6 +139,7 @@ impl PathRectTrack {
         }
     }
 
+    /// Records the drawing of a arc
     pub fn record_arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
         if !self.is_the_path_rect_fixed {
             let r = arc_rect(x, y, radius, start_angle, end_angle);
@@ -143,7 +158,10 @@ impl PathRectTrack {
         }
     }
 
-    pub fn record_point_at(&mut self, x: f64, y: f64) {
+    /// Records the movement of the path drawing brush to a new location,
+    /// the unique difference with `record_line_to` is that if the path has 
+    /// not started, It does not assume the drawing of a line from (0.0, 0.0).
+    pub fn record_move_to(&mut self, x: f64, y: f64) {
         if !self.is_the_path_rect_fixed {
             if let Some(ref mut path_rect) = self.path_rect {
                 path_rect.join_with_point(&Point::new(x, y));
@@ -157,6 +175,22 @@ impl PathRectTrack {
         }
     }
 
+    /// Records the drawing of a line
+    pub fn record_line_to(&mut self, x: f64, y: f64) {
+        if !self.is_the_path_rect_fixed {
+            if let Some(ref mut path_rect) = self.path_rect {
+                path_rect.join_with_point(&Point::new(x, y));
+            } else {
+                self.path_rect = Some(Rectangle::new(Point::new(0.0, 0.0), (x, y)));
+            }
+            self.last_path_point = Point::new(x, y);
+            if self.first_path_point.is_none() {
+                self.first_path_point = Some(Point::new(0.0, 0.0));
+            }
+        }
+    }
+
+    /// Records the drawing of a quadratic bezier curve.
     pub fn record_quadratic_curve_to(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
         if !self.is_the_path_rect_fixed {
             let r = quad_bezier_rect(self.last_path_point, Point::new(cpx, cpy), Point::new(x, y));
@@ -172,6 +206,7 @@ impl PathRectTrack {
         }
     }
 
+    /// Records the drawing of a cubic bezier curve.
     pub fn record_bezier_curve_to(
         &mut self,
         cp1x: f64,
@@ -200,6 +235,7 @@ impl PathRectTrack {
         }
     }
 
+    /// Encloses or releases the current `PathRect`.
     pub fn set_clip(&mut self, clip: bool) {
         self.is_the_path_rect_fixed = clip;
     }
@@ -209,15 +245,17 @@ impl PathRectTrack {
         feature = "default",
         not(feature = "glupath")
     ))]
+    /// Check if the current instance is enclosed.
     pub fn get_clip(&self) -> bool {
         self.is_the_path_rect_fixed
     }
 
+    /// Gets the current path AABB, or nothing if the path is empty.
     pub fn get_rect(&self) -> Option<Rectangle> {
         self.path_rect
     }
 
-    /// Restores itself to a new life of service
+    /// Restores itself to a new life of service, if the the path is clipped that state is conserved.
     pub fn rebirth(&mut self) {
         if self.is_the_path_rect_fixed {
             *self = Self::new(self.path_rect);
@@ -227,6 +265,9 @@ impl PathRectTrack {
     }
 }
 
+/// Resolves every gradient stop in `stops`, calling for each one the function `f`,
+/// and giving it as parameters the position in a range from 0.0 to 1.0 and the 
+/// color of the stop.
 pub fn build_unit_percent_gradient<F, R>(stops: &[GradientStop], length: f64, f: F) -> Vec<R>
 where
     F: Fn(f64, Color) -> R,
@@ -279,4 +320,85 @@ where
         }
     }
     r_stops
+}
+
+#[cfg(test)]
+mod tests {
+    use super::PathRect;
+
+    #[test]
+    fn test_pathrect_lines() {
+        let mut rect = PathRect::new(None);
+        rect.record_line_to(100.0, 20.0);
+        rect.record_line_to(60.0, 10.0);
+        let urect = rect.get_rect().unwrap();
+        assert!(0.0 - urect.x().abs() < f64::EPSILON);
+        assert!(0.0 - urect.y().abs() < f64::EPSILON);
+        assert!(100.0 - urect.width().abs() < f64::EPSILON);
+        assert!(20.0 - urect.height().abs() < f64::EPSILON);
+        rect.rebirth();
+        rect.record_move_to(30.0, 900.0);
+        rect.record_line_to(-10.0, 859.0);
+        rect.record_line_to(24.0, 800.0);
+        let urect = rect.get_rect().unwrap();
+        assert!(-10.0 - urect.x().abs() < f64::EPSILON);
+        assert!(800.0 - urect.y().abs() < f64::EPSILON);
+        assert!(40.0 - urect.width().abs() < f64::EPSILON);
+        assert!(100.0 - urect.height().abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn test_pathrect_arcs() {
+        let mut rect = PathRect::new(None);
+        rect.record_arc(40.0, 20.0, 5.0, 0.0, f64::to_radians(320.0));
+        let urect = rect.get_rect().unwrap();
+        assert!(35.0 - urect.x().abs() < f64::EPSILON);
+        assert!(15.0 - urect.y().abs() < f64::EPSILON);
+        assert!(10.0 - urect.width().abs() < f64::EPSILON);
+        assert!(10.0 - urect.height().abs() < f64::EPSILON);
+        rect.rebirth();
+        rect.record_arc(40.0, 20.0, 5.0, 0.0, f64::to_radians(30.0));
+        let urect = rect.get_rect().unwrap();
+        assert!(44.33012701892219 - urect.x().abs() < f64::EPSILON);
+        assert!(20.0 - urect.y().abs() < f64::EPSILON);
+        assert!(0.669872981077809 - urect.width().abs() < f64::EPSILON);
+        assert!(2.5 - urect.height().abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn test_pathrect_rects() {
+        let mut rect = PathRect::new(None);
+        rect.record_rect(10.0, 10.0, 30.0, 30.0);
+        rect.record_rect(49.0, 23.0, 60.0, 1.0);
+        rect.record_rect(-1.0, -100.0, 20.0, 430.0);
+        let urect = rect.get_rect().unwrap();
+        assert!(-1.0 - urect.x().abs() < f64::EPSILON);
+        assert!(10.0 - urect.y().abs() < f64::EPSILON);
+        assert!(61.0 - urect.width().abs() < f64::EPSILON);
+        assert!(420.0 - urect.height().abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn test_pathrect_quad_beziers() {
+        let mut rect = PathRect::new(None);
+        rect.record_move_to(2.0, -1.0);
+        rect.record_quadratic_curve_to(50.0, 6.0, 0.76, 30.0);
+        let urect = rect.get_rect().unwrap();
+        assert!(0.76 - urect.x().abs() < f64::EPSILON);
+        assert!(-1.0 - urect.y().abs() < f64::EPSILON);
+        assert!(24.933953105717812 - urect.width().abs() < f64::EPSILON);
+        assert!(31.0 - urect.height().abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn test_pathrect_cubic_beziers() {
+        let mut rect = PathRect::new(None);
+        rect.record_move_to(98.0, -100.0);
+        rect.record_bezier_curve_to(20.0, 0.0, 15.0, 200.0, 0.0, 0.0);
+        let urect = rect.get_rect().unwrap();
+        assert!(0.0 - urect.x().abs() < f64::EPSILON);
+        assert!(-100.0 - urect.y().abs() < f64::EPSILON);
+        assert!(98.0 - urect.width().abs() < f64::EPSILON);
+        assert!(185.57550765359252 - urect.height().abs() < f64::EPSILON);
+    }
 }

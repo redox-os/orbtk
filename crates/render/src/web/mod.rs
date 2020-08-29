@@ -16,7 +16,7 @@ pub use self::image::*;
 
 mod image;
 
-type StatesOnStack = [(RenderConfig, PathRectTrack); 2];
+type StatesOnStack = [(RenderConfig, PathRect); 2];
 
 /// The RenderContext2D trait, provides the rendering ctx. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
@@ -24,7 +24,7 @@ pub struct RenderContext2D {
     font_config: FontConfig,
     config: RenderConfig,
     saved_state: SmallVec<StatesOnStack>,
-    path_rect: PathRectTrack,
+    path_rect: PathRect,
     export_data: Vec<u32>,
     background: Color,
 }
@@ -50,7 +50,7 @@ impl RenderContext2D {
             saved_state: SmallVec::<StatesOnStack>::new(),
             canvas_render_context_2_d: ctx,
             font_config: FontConfig::default(),
-            path_rect: PathRectTrack::new(None),
+            path_rect: PathRect::new(None),
             export_data,
             background: Color::default(),
         }
@@ -75,7 +75,7 @@ impl RenderContext2D {
             saved_state: SmallVec::<StatesOnStack>::new(),
             canvas_render_context_2_d,
             font_config: FontConfig::default(),
-            path_rect: PathRectTrack::new(None),
+            path_rect: PathRect::new(None),
             export_data,
             background: Color::default(),
         }
@@ -158,7 +158,7 @@ impl RenderContext2D {
     /// If the shape has already been closed or has only one point, this function does nothing.
     pub fn close_path(&mut self) {
         self.canvas_render_context_2_d.close_path();
-        self.path_rect.close_path();
+        self.path_rect.record_path_close();
     }
 
     /// Adds a rectangle to the current path.
@@ -179,13 +179,13 @@ impl RenderContext2D {
 
     pub fn move_to(&mut self, x: f64, y: f64) {
         self.canvas_render_context_2_d.move_to(x, y);
-        self.path_rect.record_point_at(x, y);
+        self.path_rect.record_move_to(x, y);
     }
 
     /// Adds a straight line to the current sub-path by connecting the sub-path's last point to the specified {x, y} coordinates.
     pub fn line_to(&mut self, x: f64, y: f64) {
         self.canvas_render_context_2_d.line_to(x, y);
-        self.path_rect.record_point_at(x, y);
+        self.path_rect.record_line_to(x, y);
     }
 
     /// Adds a quadratic Bézier curve to the current sub-path.

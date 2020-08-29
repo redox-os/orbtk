@@ -9,7 +9,7 @@ pub use self::image::Image;
 mod font;
 mod image;
 
-type StatesOnStack = [(RenderConfig, PathRectTrack); 2];
+type StatesOnStack = [(RenderConfig, PathRect); 2];
 
 /// The RenderContext2D trait, provides the rendering ctx. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
@@ -18,7 +18,7 @@ pub struct RenderContext2D {
     config: RenderConfig,
     saved_states: SmallVec<StatesOnStack>,
     fonts: HashMap<String, Font>,
-    path_rect: PathRectTrack,
+    path_rect: PathRect,
 
     background: Color,
 }
@@ -35,7 +35,7 @@ impl RenderContext2D {
             config: RenderConfig::default(),
             saved_states: SmallVec::<StatesOnStack>::new(),
             fonts: HashMap::new(),
-            path_rect: PathRectTrack::new(None),
+            path_rect: PathRect::new(None),
             background: Color::default(),
         }
     }
@@ -205,7 +205,7 @@ impl RenderContext2D {
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.close();
         self.path = path_builder.finish();
-        self.path_rect.close_path();
+        self.path_rect.record_path_close();
     }
 
     /// Adds a rectangle to the current path.
@@ -237,7 +237,7 @@ impl RenderContext2D {
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.move_to(x as f32, y as f32);
         self.path = path_builder.finish();
-        self.path_rect.record_point_at(x, y);
+        self.path_rect.record_move_to(x, y);
     }
 
     /// Adds a straight line to the current sub-path by connecting the sub-path's last point to the specified {x, y} coordinates.
@@ -245,7 +245,7 @@ impl RenderContext2D {
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.line_to(x as f32, y as f32);
         self.path = path_builder.finish();
-        self.path_rect.record_point_at(x, y);
+        self.path_rect.record_line_to(x, y);
     }
 
     /// Adds a quadratic Bézier curve to the current sub-path.
