@@ -373,8 +373,7 @@ impl RenderContext2D {
 
     /// Saves the entire state of the canvas by pushing the current state onto a stack.
     pub fn save(&mut self) {
-        self.saved_state
-            .push((self.config.clone(), self.path_rect.clone()));
+        self.saved_state.push((self.config.clone(), self.path_rect));
         self.canvas_render_context_2_d.save();
     }
 

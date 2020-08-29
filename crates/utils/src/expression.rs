@@ -102,18 +102,14 @@ impl Into<Number> for Expression {
 
 pub(crate) fn parse_expression_with_complex(chrs: &mut Peekable<Chars>) -> Option<Expression> {
     let mut v = Vec::new();
-    loop {
-        if let Some(c) = chrs.peek() {
-            let c = *c;
-            if c == ',' || c == ')' {
-                break;
-            } else if c.is_whitespace() {
-                // Ignore whitespaces
-                chrs.next().unwrap();
-                continue;
-            }
-        } else {
+    while let Some(c) = chrs.peek() {
+        let c = *c;
+        if c == ',' || c == ')' {
             break;
+        } else if c.is_whitespace() {
+            // Ignore whitespaces
+            chrs.next().unwrap();
+            continue;
         }
         let expr = parse_expression(chrs)?;
         v.push(expr);
@@ -186,10 +182,8 @@ fn parse_expression(chrs: &mut Peekable<Chars>) -> Option<Expression> {
                     if let Ok(v) = lexical_core::parse(text[..ofs].as_bytes()) {
                         return Some(Expression::Number(Number::Float(v), text[ofs..].to_owned()));
                     }
-                } else {
-                    if let Ok(v) = lexical_core::parse(text[..ofs].as_bytes()) {
-                        return Some(Expression::Number(Number::Real(v), text[ofs..].to_owned()));
-                    }
+                } else if let Ok(v) = lexical_core::parse(text[..ofs].as_bytes()) {
+                    return Some(Expression::Number(Number::Real(v), text[ofs..].to_owned()));
                 }
             }
         }

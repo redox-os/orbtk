@@ -53,15 +53,15 @@ pub fn cubic_bezier_rect(p0: Point, p1: Point, p2: Point, p3: Point) -> Rectangl
     let mut mi = p0.min(p3);
     let mut ma = p0.max(p3);
 
-    let c = -1.0 * p0 + 1.0 * p1;
-    let b = 1.0 * p0 - 2.0 * p1 + 1.0 * p2;
-    let a = -1.0 * p0 + 3.0 * p1 - 3.0 * p2 + 1.0 * p3;
+    let coefficient_c = -1.0 * p0 + 1.0 * p1;
+    let coefficient_b = 1.0 * p0 - 2.0 * p1 + 1.0 * p2;
+    let coefficient_a = -1.0 * p0 + 3.0 * p1 - 3.0 * p2 + 1.0 * p3;
 
-    let h = b * b - a * c;
-    if h.x() > 0.0 || h.y() > 0.0 {
-        let g = h.abs().sqrt();
-        let t1 = ((-b - g) / a).clamp(0.0, 1.0);
-        let t2 = ((-b + g) / a).clamp(0.0, 1.0);
+    let res = coefficient_b * coefficient_b - coefficient_a * coefficient_c;
+    if res.x() > 0.0 || res.y() > 0.0 {
+        let sqrt = res.abs().sqrt();
+        let t1 = ((-coefficient_b - sqrt) / coefficient_a).clamp(0.0, 1.0);
+        let t2 = ((-coefficient_b + sqrt) / coefficient_a).clamp(0.0, 1.0);
         let s1 = Point::from(1.0) - t1;
         let s2 = Point::from(1.0) - t2;
         let q1 = s1 * s1 * s1 * p0
@@ -73,12 +73,12 @@ pub fn cubic_bezier_rect(p0: Point, p1: Point, p2: Point, p3: Point) -> Rectangl
             + 3.0 * s2 * t2 * t2 * p2
             + t2 * t2 * t2 * p3;
 
-        if h.x() > 0.0 {
+        if res.x() > 0.0 {
             mi.set_x(mi.x().min(q1.x().min(q2.x())));
             ma.set_x(ma.x().max(q1.x().max(q2.x())));
         }
 
-        if h.y() > 0.0 {
+        if res.y() > 0.0 {
             mi.set_y(mi.y().min(q1.y().min(q2.y())));
             ma.set_y(ma.y().max(q1.y().max(q2.y())));
         }
@@ -105,7 +105,9 @@ impl PathRectTrack {
     }
 
     pub fn close_path(&mut self) {
-        self.last_path_point = self.first_path_point.unwrap_or(Point::new(0.0, 0.0));
+        self.last_path_point = self
+            .first_path_point
+            .unwrap_or_else(|| Point::new(0.0, 0.0));
     }
 
     pub fn record_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
@@ -243,12 +245,9 @@ where
             let mut second_cursor = cursor;
             let mut end = None;
             while second_cursor < stops.len() {
-                match stops[second_cursor].pos {
-                    Some(pos) => {
-                        end = Some(pos);
-                        break;
-                    }
-                    None => {}
+                if let Some(pos) = stops[second_cursor].pos {
+                    end = Some(pos);
+                    break;
                 }
                 second_cursor += 1;
             }
@@ -267,9 +266,9 @@ where
                     1.0
                 }
             };
-            for i in cursor..second_cursor {
+            for (i, stop) in stops.iter().enumerate().take(second_cursor).skip(cursor) {
                 let p = (from_pos + (to_pos - from_pos) / count * (i as f64)).min(1.0);
-                let c = stops[i].color;
+                let c = stop.color;
                 r_stops.push(f(p.max(last_pos), c));
                 last_pos = p;
             }

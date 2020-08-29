@@ -121,8 +121,8 @@ impl Mul<Point> for Point {
     type Output = Point;
 
     fn mul(mut self, rhs: Point) -> Self::Output {
-        self.x = self.x * rhs.x();
-        self.y = self.y * rhs.y();
+        self.x *= rhs.x();
+        self.y *= rhs.y();
         self
     }
 }
@@ -131,8 +131,8 @@ impl Div<Point> for Point {
     type Output = Point;
 
     fn div(mut self, rhs: Point) -> Self::Output {
-        self.x = self.x / rhs.x();
-        self.y = self.y / rhs.y();
+        self.x /= rhs.x();
+        self.y /= rhs.y();
         self
     }
 }

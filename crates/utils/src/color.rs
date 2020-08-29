@@ -34,44 +34,43 @@ impl Color {
     }
 
     /// Create a new color from HSV(0.0-360.0, 0.0-1.0, 0.0-1.0) and alpha values(0.0-1.0)
-    pub fn hsva(mut h: f64, mut s: f64, mut v: f64, a: f64) -> Self {
-        h = h % 360.0;
-        s = s.max(0.0).min(1.0);
-        v = v.max(0.0).min(1.0);
-        dbg!((h, s, v));
-        let hh = h / 60.0;
-        let i = hh.floor() as i32;
+    pub fn hsva(mut hue: f64, mut saturation: f64, mut value: f64, alpha: f64) -> Self {
+        hue %= 360.0;
+        saturation = saturation.max(0.0).min(1.0);
+        value = value.max(0.0).min(1.0);
+        let hh = hue / 60.0;
+        let idx = hh.floor() as i32;
         let ff = hh.fract();
-        let p = v * (1.0 - s);
-        let q = v * (1.0 - (s * ff));
-        let t = v * (1.0 - (s * (1.0 - ff)));
-        let (r, g, b) = match i {
-            0 => (v, t, p),
-            1 => (q, v, p),
-            2 => (p, v, t),
-            3 => (p, q, v),
-            4 => (t, p, v),
-            5 => (v, p, q),
+        let chroma = value * (1.0 - saturation);
+        let second_component = value * (1.0 - (saturation * ff));
+        let t = value * (1.0 - (saturation * (1.0 - ff)));
+        let (r, g, b) = match idx {
+            0 => (value, t, chroma),
+            1 => (second_component, value, chroma),
+            2 => (chroma, value, t),
+            3 => (chroma, second_component, value),
+            4 => (t, chroma, value),
+            5 => (value, chroma, second_component),
             _ => unreachable!(),
         };
         Self::rgba(
             (r * 255.0) as u8,
             (g * 255.0) as u8,
             (b * 255.0) as u8,
-            (a * 255.0) as u8,
+            (alpha * 255.0) as u8,
         )
     }
 
     /// Create a new color from HSL(0.0-360.0, 0.0-1.0, 0.0-1.0) and alpha values(0.0-1.0)
-    pub fn hsla(mut h: f64, mut s: f64, mut l: f64, a: f64) -> Self {
-        h = h % 360.0;
-        s = s.max(0.0).min(1.0);
-        l = l.max(0.0).min(1.0);
-        let hh = h / 60.0;
-        let i = hh.floor() as i32;
-        let chroma = (1.0 - ((2.0 * l) - 1.0).abs()) * s;
-        let second_component = chroma * (1.0 - (((i % 2) as f64) - 1.0).abs());
-        let (mut r, mut g, mut b) = match i {
+    pub fn hsla(mut hue: f64, mut saturation: f64, mut lightness: f64, alpha: f64) -> Self {
+        hue %= 360.0;
+        saturation = saturation.max(0.0).min(1.0);
+        lightness = lightness.max(0.0).min(1.0);
+        let hh = hue / 60.0;
+        let idx = hh.floor() as i32;
+        let chroma = (1.0 - ((2.0 * lightness) - 1.0).abs()) * saturation;
+        let second_component = chroma * (1.0 - (((idx % 2) as f64) - 1.0).abs());
+        let (mut r, mut g, mut b) = match idx {
             0 => (chroma, second_component, 0.0),
             1 => (second_component, chroma, 0.0),
             2 => (0.0, chroma, second_component),
@@ -80,7 +79,7 @@ impl Color {
             5 => (chroma, 0.0, second_component),
             _ => unreachable!(),
         };
-        let adjustment = l - chroma / 2.0;
+        let adjustment = lightness - chroma / 2.0;
         r += adjustment;
         g += adjustment;
         b += adjustment;
@@ -88,7 +87,7 @@ impl Color {
             (r.min(1.0) * 255.0) as u8,
             (g.min(1.0) * 255.0) as u8,
             (b.min(1.0) * 255.0) as u8,
-            (a * 255.0) as u8,
+            (alpha * 255.0) as u8,
         )
     }
 
@@ -146,24 +145,24 @@ impl From<&str> for Color {
         let clean_hex = s.trim_start_matches('#');
         match clean_hex.len() {
             3 | 4 => {
-                let d = match u32::from_str_radix(&clean_hex, 16) {
+                let num = match u32::from_str_radix(&clean_hex, 16) {
                     Ok(x) => x,
                     Err(_) => 0,
                 };
 
-                let mut b = (d & 0xF) << 4;
-                let mut g = ((d >> 4) & 0xF) << 4;
-                let mut r = ((d >> 8) & 0xF) << 4;
-                let mut a = match clean_hex.len() == 4 {
-                    true => ((d >> 12) & 0xF) << 4,
+                let mut blue = (num & 0xF) << 4;
+                let mut green = ((num >> 4) & 0xF) << 4;
+                let mut red = ((num >> 8) & 0xF) << 4;
+                let mut alpha = match clean_hex.len() == 4 {
+                    true => ((num >> 12) & 0xF) << 4,
                     false => 0xF,
                 };
-                r |= r >> 4;
-                g |= g >> 4;
-                b |= b >> 4;
-                a |= a >> 4;
+                red |= red >> 4;
+                green |= green >> 4;
+                blue |= blue >> 4;
+                alpha |= alpha >> 4;
 
-                Color::rgba(r as u8, g as u8, b as u8, a as u8)
+                Color::rgba(red as u8, green as u8, blue as u8, alpha as u8)
             }
             6 | 8 => {
                 let mut x = match u32::from_str_radix(&clean_hex, 16) {
