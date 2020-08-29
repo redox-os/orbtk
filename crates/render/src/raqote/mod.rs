@@ -109,14 +109,14 @@ impl RenderContext2D {
             let width = self.draw_target.width() as f64;
 
             if let Some(rect) = self.path_rect.get_clip() {
-                    font.render_text_clipped(
-                        text,
-                        self.draw_target.get_data_mut(),
-                        width,
-                        (self.config.font_config.font_size, color, self.config.alpha),
-                        (x, y),
-                        rect,
-                    );
+                font.render_text_clipped(
+                    text,
+                    self.draw_target.get_data_mut(),
+                    width,
+                    (self.config.font_config.font_size, color, self.config.alpha),
+                    (x, y),
+                    rect,
+                );
             } else {
                 font.render_text(
                     text,
