@@ -39,6 +39,28 @@ impl Size {
     }
 }
 
+// Operations
+
+impl Div<f64> for Size {
+    type Output = Size;
+
+    fn div(mut self, rhs: f64) -> Self::Output {
+        self.width /= rhs;
+        self.height /= rhs;
+        self
+    }
+}
+
+impl Div<Size> for f64 {
+    type Output = Size;
+
+    fn div(self, mut rhs: Size) -> Self::Output {
+        rhs.width /= self;
+        rhs.height /= self;
+        rhs
+    }
+}
+
 // --- Conversions ---
 
 impl From<f64> for Size {
