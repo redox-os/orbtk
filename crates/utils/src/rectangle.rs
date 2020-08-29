@@ -112,6 +112,43 @@ impl Rectangle {
             || rect.y() > (self.y() + self.height())
             || self.y() > (rect.y() + rect.height()))
     }
+
+    /// Joins this rectangle with another one, the result is
+    /// a rectangle in which the two parents fit.
+    pub fn join_with_rectangle(&mut self, other: &Rectangle) {
+        if other.x() < self.x() {
+            self.set_width(self.width() + self.x() - other.x());
+            self.set_x(other.x());
+        }
+        if other.y() < self.y() {
+            self.set_height(self.height() + self.y() - other.y());
+            self.set_y(other.y());
+        }
+        if other.x() + other.width() > self.x() + self.width() {
+            self.set_width(other.x() + other.width() - self.x());
+        }
+        if other.y() + other.height() > self.y() + self.height() {
+            self.set_height(other.y() + other.height() - self.y());
+        }
+    }
+
+    /// Extends this rectangle to cover the given point.
+    pub fn join_with_point(&mut self, point: &Point) {
+        if point.x() < self.x() {
+            self.set_width(self.width() + self.x() - point.x());
+            self.set_x(point.x());
+        }
+        if point.y() < self.y() {
+            self.set_height(self.height() + self.y() - point.y());
+            self.set_y(point.y());
+        }
+        if point.x() > self.x() + self.width() {
+            self.set_width(point.x() - self.x());
+        }
+        if point.y() > self.y() + self.height() {
+            self.set_height(point.y() - self.y());
+        }
+    }
 }
 
 // --- Conversions ---

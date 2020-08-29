@@ -6,6 +6,9 @@ pub mod prelude;
 
 pub use orbtk_utils::prelude as utils;
 
+#[cfg(all(feature = "default", not(feature = "glupath")))]
+mod common;
+
 #[cfg(all(not(target_arch = "wasm32"), feature = "glupath"))]
 #[path = "pathfinder/mod.rs"]
 pub mod platform;

@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * orbraq backend (Orbclient and raqote)
 * Refactor on_changed callback, add key parameter
 * Access RawWindowHandle from Context
+* Select colors in themes through of CSS-like functions
+* Create `Color` from HSV and HSL values
+* Gradient coordinates become relative to the path
 
 ### 0.3.1-alpha3
 

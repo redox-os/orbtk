@@ -13,3 +13,4 @@ edition = "2018"
 ron = "0.6"
 serde = "1.0"
 derive_more = { version = "0.99", default-features = false, features = ["add", "constructor", "from"] }
+lexical-core = "0.7"

@@ -1,4 +1,6 @@
+use crate::Size;
 use derive_more::{Add, Constructor, From, Sub};
+use std::ops::{Add, Div, Mul, Neg};
 
 /// A `Point` is specified by a x coordinate and an y coordinate.
 ///
@@ -41,6 +43,107 @@ impl Point {
     /// Sets the y position of the point.
     pub fn set_y(&mut self, y: impl Into<f64>) {
         self.y = y.into();
+    }
+
+    // Does a component-wise `min` operation between this point and another point
+    pub fn min(self, other: impl Into<Point>) -> Point {
+        let other = other.into();
+        Point {
+            x: self.x.min(other.x),
+            y: self.y.min(other.y),
+        }
+    }
+
+    // Does a component-wise `max` operation between this point and another point
+    pub fn max(self, other: impl Into<Point>) -> Point {
+        let other = other.into();
+        Point {
+            x: self.x.max(other.x),
+            y: self.y.max(other.y),
+        }
+    }
+
+    // Calculate the component-wise square root of this point
+    pub fn sqrt(mut self) -> Point {
+        self.x = self.x.sqrt();
+        self.y = self.y.sqrt();
+        self
+    }
+
+    // Calculate the component-wise absolute value of this point
+    pub fn abs(mut self) -> Point {
+        self.x = self.x.abs();
+        self.y = self.y.abs();
+        self
+    }
+
+    // Component-wise constraints this point between two values
+    pub fn clamp(mut self, min: f64, max: f64) -> Point {
+        self.x = self.x.max(min).min(max);
+        self.y = self.y.max(min).min(max);
+        self
+    }
+}
+
+// Component-wise operations
+
+impl Add<Size> for Point {
+    type Output = Point;
+
+    fn add(mut self, rhs: Size) -> Self::Output {
+        self.x += rhs.width();
+        self.y += rhs.height();
+        self
+    }
+}
+
+impl Mul<f64> for Point {
+    type Output = Point;
+
+    fn mul(mut self, rhs: f64) -> Self::Output {
+        self.x *= rhs;
+        self.y *= rhs;
+        self
+    }
+}
+
+impl Mul<Point> for f64 {
+    type Output = Point;
+
+    fn mul(self, mut rhs: Point) -> Self::Output {
+        rhs.x *= self;
+        rhs.y *= self;
+        rhs
+    }
+}
+
+impl Mul<Point> for Point {
+    type Output = Point;
+
+    fn mul(mut self, rhs: Point) -> Self::Output {
+        self.x *= rhs.x();
+        self.y *= rhs.y();
+        self
+    }
+}
+
+impl Div<Point> for Point {
+    type Output = Point;
+
+    fn div(mut self, rhs: Point) -> Self::Output {
+        self.x /= rhs.x();
+        self.y /= rhs.y();
+        self
+    }
+}
+
+impl Neg for Point {
+    type Output = Point;
+
+    fn neg(mut self) -> Self::Output {
+        self.x = -self.x();
+        self.y = -self.y();
+        self
     }
 }
 

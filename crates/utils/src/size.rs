@@ -1,4 +1,5 @@
 use derive_more::{Add, Constructor, From, Sub};
+use std::ops::Div;
 
 /// A `Size` specified by width and height.
 ///
@@ -36,6 +37,28 @@ impl Size {
     /// Sets the height of the size.
     pub fn set_height(&mut self, height: f64) {
         self.height = height;
+    }
+}
+
+// Operations
+
+impl Div<f64> for Size {
+    type Output = Size;
+
+    fn div(mut self, rhs: f64) -> Self::Output {
+        self.width /= rhs;
+        self.height /= rhs;
+        self
+    }
+}
+
+impl Div<Size> for f64 {
+    type Output = Size;
+
+    fn div(self, mut rhs: Size) -> Self::Output {
+        rhs.width /= self;
+        rhs.height /= self;
+        rhs
     }
 }
 

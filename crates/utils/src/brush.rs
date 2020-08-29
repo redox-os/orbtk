@@ -1,24 +1,13 @@
 use crate::prelude::*;
 
-/// Describes a position on a colorful gradient.
-#[derive(Copy, Clone, PartialEq, Debug)]
-pub struct LinearGradientStop {
-    pub position: f64,
-    pub color: Color,
-}
-
 /// A `Brush`describes how a shape is filled or stroked.
 #[derive(Clone, PartialEq, Debug)]
 pub enum Brush {
     /// Paints an area with a solid color.
     SolidColor(Color),
 
-    /// Paints an area with a linear gradient.
-    LinearGradient {
-        start: Point,
-        end: Point,
-        stops: Vec<LinearGradientStop>,
-    },
+    /// Paints an area with a gradient.
+    Gradient(Gradient),
 }
 
 impl Brush {
@@ -39,6 +28,15 @@ impl From<Brush> for Color {
     }
 }
 
+impl From<Brush> for Gradient {
+    fn from(b: Brush) -> Gradient {
+        match b {
+            Brush::Gradient(g) => g,
+            _ => Gradient::default(),
+        }
+    }
+}
+
 impl Default for Brush {
     fn default() -> Self {
         Brush::SolidColor(Color::rgba(0, 0, 0, 0))
@@ -51,15 +49,21 @@ impl From<Color> for Brush {
     }
 }
 
+impl From<Gradient> for Brush {
+    fn from(g: Gradient) -> Brush {
+        Brush::Gradient(g)
+    }
+}
+
 impl From<&str> for Brush {
     fn from(s: &str) -> Brush {
-        Brush::SolidColor(Color::from(s))
+        Expression::from(s).brush().unwrap_or_default()
     }
 }
 
 impl From<String> for Brush {
     fn from(s: String) -> Brush {
-        Brush::SolidColor(Color::from(s))
+        Self::from(&s[..])
     }
 }
 
@@ -69,12 +73,6 @@ impl From<Value> for Brush {
         Brush::from(value)
     }
 }
-
-// impl From<Vec<LinearGradientStop>> for Brush {
-//     fn from(gradient: Vec<LinearGradientStop>) -> Brush {
-//         Brush::LinearGradient(gradient)
-//     }
-// }
 
 #[cfg(test)]
 mod tests {

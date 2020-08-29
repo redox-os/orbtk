@@ -151,24 +151,27 @@ impl RenderPipeline for Graphic2DPipeline {
         let y = (render_target.height() - height) / 2.0;
         // render_context.set_fill_style(utils::Brush::SolidColor(Color::from("#000000")));
 
-        render_context.set_fill_style(utils::Brush::LinearGradient {
-            start: Point::new(x, y),
-            end: Point::new(x + width, y + height),
+        render_context.set_fill_style(utils::Brush::Gradient(Gradient {
+            kind: GradientKind::Linear(LinearGradientCoords::Ends {
+                start: Point::new(0.0, 0.0),
+                end: Point::new(width, height),
+            }),
             stops: vec![
-                LinearGradientStop {
-                    position: 0.0,
+                GradientStop {
                     color: Color::from("#0021EB"),
+                    ..Default::default()
                 },
-                LinearGradientStop {
-                    position: 0.5,
+                GradientStop {
                     color: Color::from("#CE2F24"),
+                    ..Default::default()
                 },
-                LinearGradientStop {
-                    position: 1.0,
+                GradientStop {
                     color: Color::from("#70EF49"),
+                    ..Default::default()
                 },
             ],
-        });
+            repeat: false,
+        }));
         render_context.fill_rect(x, y, width, height);
         // render_target.draw(render_context.data());
     }

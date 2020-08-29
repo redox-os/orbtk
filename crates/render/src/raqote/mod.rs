@@ -1,6 +1,7 @@
+use smallvec::SmallVec;
 use std::{cmp, collections::HashMap};
 
-use crate::{utils::*, PipelineTrait, RenderConfig, RenderTarget, TextMetrics};
+use crate::{common::*, utils::*, PipelineTrait, RenderConfig, RenderTarget, TextMetrics};
 
 pub use self::font::*;
 pub use self::image::Image;
@@ -8,18 +9,16 @@ pub use self::image::Image;
 mod font;
 mod image;
 
+type StatesOnStack = [(RenderConfig, PathRect); 2];
+
 /// The RenderContext2D trait, provides the rendering ctx. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
     draw_target: raqote::DrawTarget,
     path: raqote::Path,
     config: RenderConfig,
-    saved_config: Option<RenderConfig>,
+    saved_states: SmallVec<StatesOnStack>,
     fonts: HashMap<String, Font>,
-
-    // hack / work around for faster text clipping
-    clip: bool,
-    last_rect: Rectangle,
-    clip_rect: Option<Rectangle>,
+    path_rect: PathRect,
 
     background: Color,
 }
@@ -34,11 +33,9 @@ impl RenderContext2D {
                 winding: raqote::Winding::NonZero,
             },
             config: RenderConfig::default(),
-            saved_config: None,
+            saved_states: SmallVec::<StatesOnStack>::new(),
             fonts: HashMap::new(),
-            clip: false,
-            last_rect: Rectangle::new((0.0, 0.0), (width, height)),
-            clip_rect: None,
+            path_rect: PathRect::new(None),
             background: Color::default(),
         }
     }
@@ -72,7 +69,10 @@ impl RenderContext2D {
             y as f32,
             width as f32,
             height as f32,
-            &brush_to_source(&self.config.fill_style),
+            &brush_to_source(
+                &self.config.fill_style,
+                Rectangle::new((x, y), (width, height)),
+            ),
             &raqote::DrawOptions {
                 alpha: self.config.alpha,
                 ..Default::default()
@@ -106,8 +106,8 @@ impl RenderContext2D {
         if let Some(font) = self.fonts.get(&self.config.font_config.family) {
             let width = self.draw_target.width() as f64;
 
-            if self.clip {
-                if let Some(rect) = self.clip_rect {
+            if self.path_rect.get_clip() {
+                if let Some(rect) = self.path_rect.get_rect() {
                     font.render_text_clipped(
                         text,
                         self.draw_target.get_data_mut(),
@@ -157,9 +157,13 @@ impl RenderContext2D {
 
     /// Fills the current or given path with the current file style.
     pub fn fill(&mut self) {
+        let rect = match self.path_rect.get_rect() {
+            Some(rect) => rect,
+            None => return, // The path is empty, do nothing
+        };
         self.draw_target.fill(
             &self.path,
-            &brush_to_source(&self.config.fill_style),
+            &brush_to_source(&self.config.fill_style, rect),
             &raqote::DrawOptions {
                 alpha: self.config.alpha,
                 ..Default::default()
@@ -169,9 +173,13 @@ impl RenderContext2D {
 
     /// Strokes {outlines} the current or given path with the current stroke style.
     pub fn stroke(&mut self) {
+        let rect = match self.path_rect.get_rect() {
+            Some(rect) => rect,
+            None => return, // The path is empty, do nothing
+        };
         self.draw_target.stroke(
             &self.path,
-            &brush_to_source(&self.config.stroke_style),
+            &brush_to_source(&self.config.stroke_style, rect),
             &raqote::StrokeStyle {
                 width: self.config.line_width as f32,
                 ..Default::default()
@@ -189,6 +197,7 @@ impl RenderContext2D {
             ops: Vec::new(),
             winding: raqote::Winding::NonZero,
         };
+        self.path_rect.rebirth();
     }
 
     /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
@@ -196,14 +205,15 @@ impl RenderContext2D {
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.close();
         self.path = path_builder.finish();
+        self.path_rect.record_path_close();
     }
 
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.last_rect = Rectangle::new((x, y), (width, height));
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.rect(x as f32, y as f32, width as f32, height as f32);
         self.path = path_builder.finish();
+        self.path_rect.record_rect(x, y, width, height);
     }
 
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
@@ -217,6 +227,8 @@ impl RenderContext2D {
             end_angle as f32,
         );
         self.path = path_builder.finish();
+        self.path_rect
+            .record_arc(x, y, radius, start_angle, end_angle);
     }
 
     /// Begins a new sub-path at the point specified by the given {x, y} coordinates.
@@ -225,6 +237,7 @@ impl RenderContext2D {
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.move_to(x as f32, y as f32);
         self.path = path_builder.finish();
+        self.path_rect.record_move_to(x, y);
     }
 
     /// Adds a straight line to the current sub-path by connecting the sub-path's last point to the specified {x, y} coordinates.
@@ -232,6 +245,7 @@ impl RenderContext2D {
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.line_to(x as f32, y as f32);
         self.path = path_builder.finish();
+        self.path_rect.record_line_to(x, y);
     }
 
     /// Adds a quadratic Bézier curve to the current sub-path.
@@ -239,6 +253,7 @@ impl RenderContext2D {
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.quad_to(cpx as f32, cpy as f32, x as f32, y as f32);
         self.path = path_builder.finish();
+        self.path_rect.record_quadratic_curve_to(cpx, cpy, x, y);
     }
 
     /// Adds a cubic Bézier curve to the current sub-path.
@@ -254,6 +269,8 @@ impl RenderContext2D {
             x as f32,
             y as f32,
         );
+        self.path_rect
+            .record_bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y);
     }
 
     /// Draws a render target.
@@ -335,9 +352,8 @@ impl RenderContext2D {
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
     pub fn clip(&mut self) {
-        self.clip_rect = Some(self.last_rect);
-        self.clip = true;
         self.draw_target.push_clip(&self.path);
+        self.path_rect.set_clip(true);
     }
 
     // Line styles
@@ -401,20 +417,18 @@ impl RenderContext2D {
 
     /// Saves the entire state of the canvas by pushing the current state onto a stack.
     pub fn save(&mut self) {
-        self.saved_config = Some(self.config.clone());
+        self.saved_states
+            .push((self.config.clone(), self.path_rect));
     }
 
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack.
     /// If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
-        self.clip = false;
-        self.clip_rect = None;
         self.draw_target.pop_clip();
-        if let Some(config) = &self.saved_config {
-            self.config = config.clone();
+        if let Some((config, path_rect)) = self.saved_states.pop() {
+            self.config = config;
+            self.path_rect = path_rect;
         }
-
-        self.saved_config = None;
     }
 
     pub fn clear(&mut self, brush: &Brush) {
@@ -455,7 +469,7 @@ impl RenderContext2D {
     pub fn finish(&mut self) {}
 }
 
-fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
+fn brush_to_source<'a>(brush: &Brush, frame: Rectangle) -> raqote::Source<'a> {
     match brush {
         Brush::SolidColor(color) => raqote::Source::Solid(raqote::SolidSource {
             r: color.r(),
@@ -463,26 +477,34 @@ fn brush_to_source<'a>(brush: &Brush) -> raqote::Source<'a> {
             b: color.b(),
             a: color.a(),
         }),
-        Brush::LinearGradient { start, end, stops } => {
-            let g_stops = stops
-                .iter()
-                .map(|stop| raqote::GradientStop {
-                    position: stop.position as f32,
-                    color: raqote::Color::new(
-                        stop.color.a(),
-                        stop.color.r(),
-                        stop.color.g(),
-                        stop.color.b(),
-                    ),
-                })
-                .collect();
-
-            raqote::Source::new_linear_gradient(
-                raqote::Gradient { stops: g_stops },
-                raqote::Point::new(start.x() as f32, start.y() as f32),
-                raqote::Point::new(end.x() as f32, start.y() as f32),
-                raqote::Spread::Pad,
-            )
+        Brush::Gradient(Gradient {
+            kind: GradientKind::Linear(coords),
+            stops,
+            repeat,
+        }) => {
+            let spread = match repeat {
+                true => raqote::Spread::Repeat,
+                false => raqote::Spread::Pad,
+            };
+            match coords {
+                LinearGradientCoords::Ends { start, end } => {
+                    let g_stops =
+                        build_unit_percent_gradient(&stops, end.distance(*start), |p, c| {
+                            raqote::GradientStop {
+                                position: p as f32,
+                                color: raqote::Color::new(c.a(), c.r(), c.g(), c.b()),
+                            }
+                        });
+                    let start = frame.position() + *start;
+                    let end = frame.position() + *end;
+                    raqote::Source::new_linear_gradient(
+                        raqote::Gradient { stops: g_stops },
+                        raqote::Point::new(start.x() as f32, start.y() as f32),
+                        raqote::Point::new(end.x() as f32, end.y() as f32),
+                        spread,
+                    )
+                }
+            }
         }
     }
 }
