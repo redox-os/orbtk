@@ -105,7 +105,7 @@ pub struct PathRect {
 }
 
 impl PathRect {
-    /// Creates a new `PathRect`, the clip parameter allows you to enclose it in 
+    /// Creates a new `PathRect`, the clip parameter allows you to enclose it in
     /// a rectangle from the start, of course you can use `set_clip(false)` to release it after.
     pub fn new(clip: Option<Rectangle>) -> PathRect {
         PathRect {
@@ -159,7 +159,7 @@ impl PathRect {
     }
 
     /// Records the movement of the path drawing brush to a new location,
-    /// the unique difference with `record_line_to` is that if the path has 
+    /// the unique difference with `record_line_to` is that if the path has
     /// not started, It does not assume the drawing of a line from (0.0, 0.0).
     pub fn record_move_to(&mut self, x: f64, y: f64) {
         if !self.is_the_path_rect_fixed {
@@ -266,7 +266,7 @@ impl PathRect {
 }
 
 /// Resolves every gradient stop in `stops`, calling for each one the function `f`,
-/// and giving it as parameters the position in a range from 0.0 to 1.0 and the 
+/// and giving it as parameters the position in a range from 0.0 to 1.0 and the
 /// color of the stop.
 pub fn build_unit_percent_gradient<F, R>(stops: &[GradientStop], length: f64, f: F) -> Vec<R>
 where

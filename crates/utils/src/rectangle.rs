@@ -113,7 +113,7 @@ impl Rectangle {
             || self.y() > (rect.y() + rect.height()))
     }
 
-    /// Joins this rectangle with another one, the result is 
+    /// Joins this rectangle with another one, the result is
     /// a rectangle in which the two parents fit.
     pub fn join_with_rectangle(&mut self, other: &Rectangle) {
         if other.x() < self.x() {
