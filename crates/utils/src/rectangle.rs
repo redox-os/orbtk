@@ -149,6 +149,24 @@ impl Rectangle {
             self.set_height(point.y() - self.y());
         }
     }
+
+    /// Box itself inside another rectangle
+    pub fn box_into(&mut self, _box: Rectangle) {
+        if self.x() < _box.x() {
+            self.set_width(self.width() - (_box.x() - self.x()));
+            self.set_x(_box.x());
+        }
+        if self.y() < _box.y() {
+            self.set_height(self.height() - (_box.y() - self.y()));
+            self.set_y(_box.y());
+        }
+        if self.x() + self.width() > _box.x() + _box.width() {
+            self.set_width(_box.width() - _box.x() + self.x());
+        }
+        if self.y() + self.height() > _box.y() + _box.height() {
+            self.set_height(_box.height() - _box.y() + self.y());
+        }
+    }
 }
 
 // --- Conversions ---
