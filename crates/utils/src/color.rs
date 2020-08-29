@@ -1,3 +1,5 @@
+include!(concat!(env!("OUT_DIR"), "/colors.rs"));
+
 #[cfg(not(feature = "no_std"))]
 use std::fmt;
 
@@ -199,6 +201,10 @@ impl fmt::Debug for Color {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         write!(f, "{:#010X}", { self.data })
     }
+}
+
+pub fn color_from_name(id: &str) -> Option<Color> {
+    COLORS.get(id).cloned()
 }
 
 #[cfg(test)]
