@@ -134,10 +134,10 @@ impl Console {
         // }
     }
 
-    pub fn log(&self, message: impl Into<String>) {
+    pub fn log(&self, _message: impl Into<String>) {
         #[cfg(feature = "log")]
         js! {
-            console.log(@{&message.into()});
+            console.log(@{&_message.into()});
         }
     }
 }

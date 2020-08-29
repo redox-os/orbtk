@@ -45,6 +45,7 @@ impl Point {
         self.y = y.into();
     }
 
+    // Does a component-wise `min` operation between this point and another point
     pub fn min(self, other: impl Into<Point>) -> Point {
         let other = other.into();
         Point {
@@ -53,6 +54,7 @@ impl Point {
         }
     }
 
+    // Does a component-wise `max` operation between this point and another point
     pub fn max(self, other: impl Into<Point>) -> Point {
         let other = other.into();
         Point {
@@ -61,18 +63,21 @@ impl Point {
         }
     }
 
+    // Calculate the component-wise square root of this point
     pub fn sqrt(mut self) -> Point {
         self.x = self.x.sqrt();
         self.y = self.y.sqrt();
         self
     }
 
+    // Calculate the component-wise absolute value of this point
     pub fn abs(mut self) -> Point {
         self.x = self.x.abs();
         self.y = self.y.abs();
         self
     }
 
+    // Component-wise constraints this point between two values
     pub fn clamp(mut self, min: f64, max: f64) -> Point {
         self.x = self.x.max(min).min(max);
         self.y = self.y.max(min).min(max);
@@ -80,7 +85,7 @@ impl Point {
     }
 }
 
-// Operations
+// Component-wise operations
 
 impl Add<Size> for Point {
     type Output = Point;

@@ -1,4 +1,3 @@
-use crate::Property;
 use serde::de::DeserializeOwned;
 /// Wraps a ron value and is used to support conversion to different types.
 pub struct Value(pub ron::Value);
@@ -14,13 +13,6 @@ impl Value {
         }
 
         T::default()
-    }
-
-    pub fn property(&self) -> Property {
-        match &self.0 {
-            ron::Value::String(s) => Property::from(&s[..]),
-            _ => Property::default(),
-        }
     }
 }
 

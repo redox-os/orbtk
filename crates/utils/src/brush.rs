@@ -8,8 +8,6 @@ pub enum Brush {
 
     /// Paints an area with a gradient.
     Gradient(Gradient),
-
-    Stacked(Vec<Brush>),
 }
 
 impl Brush {
@@ -59,7 +57,7 @@ impl From<Gradient> for Brush {
 
 impl From<&str> for Brush {
     fn from(s: &str) -> Brush {
-        Property::from(s).brush().unwrap_or_default()
+        Expression::from(s).brush().unwrap_or_default()
     }
 }
 
@@ -75,12 +73,6 @@ impl From<Value> for Brush {
         Brush::from(value)
     }
 }
-
-// impl From<Vec<LinearGradientStop>> for Brush {
-//     fn from(gradient: Vec<LinearGradientStop>) -> Brush {
-//         Brush::LinearGradient(gradient)
-//     }
-// }
 
 #[cfg(test)]
 mod tests {

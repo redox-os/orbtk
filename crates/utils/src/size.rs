@@ -1,4 +1,5 @@
 use derive_more::{Add, Constructor, From, Sub};
+use std::ops::Div;
 
 /// A `Size` specified by width and height.
 ///

@@ -1,10 +1,19 @@
-use crate::{Color, Direction, OnLinePos, OnPlanePos, Point};
+use crate::{Color, OnLinePos, Point};
 
 /// Describes a position on a colorful gradient.
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct GradientStop {
     pub pos: Option<OnLinePos>,
     pub color: Color,
+}
+
+impl Default for GradientStop {
+    fn default() -> GradientStop {
+        GradientStop {
+            pos: None,
+            color: Color::default(),
+        }
+    }
 }
 
 /// Describes the coordinates of a colorful linear gradient.
@@ -16,9 +25,9 @@ pub enum LinearGradientCoords {
 
 impl Default for LinearGradientCoords {
     fn default() -> LinearGradientCoords {
-        LinearGradientCoords::Direction {
-            direction: Direction::ToTop,
-            displacement: OnPlanePos::default(),
+        LinearGradientCoords::Ends {
+            start: Point::default(),
+            end: Point::default(),
         }
     }
 }
@@ -29,12 +38,6 @@ pub struct Gradient {
     pub kind: GradientKind,
     pub stops: Vec<GradientStop>,
     pub repeat: bool,
-}
-
-#[derive(Copy, Clone, PartialEq, Debug)]
-pub enum GradientKind {
-    Linear(LinearGradientCoords),
-//    Radial(RadialGradient),
 }
 
 impl Default for Gradient {
@@ -53,5 +56,17 @@ impl Default for Gradient {
             ],
             repeat: false,
         }
+    }
+}
+
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub enum GradientKind {
+    Linear(LinearGradientCoords),
+    //    Radial(RadialGradient),
+}
+
+impl Default for GradientKind {
+    fn default() -> GradientKind {
+        GradientKind::Linear(LinearGradientCoords::default())
     }
 }

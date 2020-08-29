@@ -153,21 +153,21 @@ impl RenderPipeline for Graphic2DPipeline {
 
         render_context.set_fill_style(utils::Brush::Gradient(Gradient {
             kind: GradientKind::Linear(LinearGradientCoords::Ends {
-                start: Point::new(x, y),
-                end: Point::new(x + width, y + height),
+                start: Point::new(0.0, 0.0),
+                end: Point::new(width, height),
             }),
             stops: vec![
                 GradientStop {
-                    pos: OnLinePos::from_unit_percent(0.0),
                     color: Color::from("#0021EB"),
+                    ..Default::default()
                 },
                 GradientStop {
-                    pos: OnLinePos::from_unit_percent(0.5),
                     color: Color::from("#CE2F24"),
+                    ..Default::default()
                 },
                 GradientStop {
-                    pos: OnLinePos::from_unit_percent(1.0),
                     color: Color::from("#70EF49"),
+                    ..Default::default()
                 },
             ],
             repeat: false,

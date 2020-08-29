@@ -35,7 +35,7 @@ pub fn arc_rect(x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) -
     Rectangle::new((start_x, start_y), (end_x - start_x, end_y - start_y))
 }
 
-pub fn quad_rect(p0: Point, p1: Point, p2: Point) -> Rectangle {
+pub fn quad_bezier_rect(p0: Point, p1: Point, p2: Point) -> Rectangle {
     let mut mi = p0.min(p2);
     let mut ma = p0.max(p2);
 
@@ -49,7 +49,7 @@ pub fn quad_rect(p0: Point, p1: Point, p2: Point) -> Rectangle {
     Rectangle::new(mi, Size::new(ma.x() - mi.x(), ma.y() - mi.y()))
 }
 
-pub fn cubic_rect(p0: Point, p1: Point, p2: Point, p3: Point) -> Rectangle {
+pub fn cubic_bezier_rect(p0: Point, p1: Point, p2: Point, p3: Point) -> Rectangle {
     let mut mi = p0.min(p3);
     let mut ma = p0.max(p3);
 
@@ -95,12 +95,12 @@ pub struct PathRectTrack {
 }
 
 impl PathRectTrack {
-    pub fn new(clip: bool) -> PathRectTrack {
+    pub fn new(clip: Option<Rectangle>) -> PathRectTrack {
         PathRectTrack {
-            path_rect: None,
+            path_rect: clip, // If the path is areldy clipped, then we already know his size and position
             last_path_point: Point::new(0.0, 0.0),
             first_path_point: None,
-            is_the_path_rect_fixed: clip,
+            is_the_path_rect_fixed: clip.is_some(),
         }
     }
 
@@ -157,7 +157,7 @@ impl PathRectTrack {
 
     pub fn record_quadratic_curve_to(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
         if !self.is_the_path_rect_fixed {
-            let r = quad_rect(self.last_path_point, Point::new(cpx, cpy), Point::new(x, y));
+            let r = quad_bezier_rect(self.last_path_point, Point::new(cpx, cpy), Point::new(x, y));
             if let Some(ref mut path_rect) = self.path_rect {
                 path_rect.join_with_rectangle(&r);
             } else {
@@ -170,9 +170,17 @@ impl PathRectTrack {
         }
     }
 
-    pub fn record_bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
+    pub fn record_bezier_curve_to(
+        &mut self,
+        cp1x: f64,
+        cp1y: f64,
+        cp2x: f64,
+        cp2y: f64,
+        x: f64,
+        y: f64,
+    ) {
         if !self.is_the_path_rect_fixed {
-            let r = cubic_rect(
+            let r = cubic_bezier_rect(
                 self.last_path_point,
                 Point::new(cp1x, cp1y),
                 Point::new(cp2x, cp2y),
@@ -194,11 +202,82 @@ impl PathRectTrack {
         self.is_the_path_rect_fixed = clip;
     }
 
-    pub fn get_clip(&mut self) -> bool {
+    #[cfg(all(
+        not(target_arch = "wasm32"),
+        feature = "default",
+        not(feature = "glupath")
+    ))]
+    pub fn get_clip(&self) -> bool {
         self.is_the_path_rect_fixed
     }
 
     pub fn get_rect(&self) -> Option<Rectangle> {
         self.path_rect
     }
+
+    /// Restores itself to a new life of service
+    pub fn rebirth(&mut self) {
+        if self.is_the_path_rect_fixed {
+            *self = Self::new(self.path_rect);
+        } else {
+            *self = Self::new(None);
+        }
+    }
+}
+
+pub fn build_unit_percent_gradient<F, R>(stops: &[GradientStop], length: f64, f: F) -> Vec<R>
+where
+    F: Fn(f64, Color) -> R,
+{
+    let mut r_stops = Vec::with_capacity(stops.len());
+    let mut cursor = 0;
+    let mut last_pos = 0.0;
+    while cursor < stops.len() {
+        if let Some(pos) = stops[cursor].pos {
+            let pos = pos.unit_percent(length).min(1.0);
+            let c = stops[cursor].color;
+            r_stops.push(f(pos.max(last_pos), c));
+            last_pos = pos;
+            cursor += 1;
+        } else {
+            let mut second_cursor = cursor;
+            let mut end = None;
+            while second_cursor < stops.len() {
+                match stops[second_cursor].pos {
+                    Some(pos) => {
+                        end = Some(pos);
+                        break;
+                    }
+                    None => {}
+                }
+                second_cursor += 1;
+            }
+            let from_pos = match cursor == 0 {
+                true => 0.0,
+                false => match stops[cursor - 1].pos {
+                    Some(p) => p.unit_percent(length),
+                    None => unreachable!(),
+                },
+            };
+            let mut count = (second_cursor - cursor) as f64;
+            let to_pos = match end {
+                Some(tp) => tp.unit_percent(length),
+                None => {
+                    count -= 1.0;
+                    1.0
+                }
+            };
+            for i in cursor..second_cursor {
+                let p = (from_pos + (to_pos - from_pos) / count * (i as f64)).min(1.0);
+                let c = stops[i].color;
+                r_stops.push(f(p.max(last_pos), c));
+                last_pos = p;
+            }
+            if end.is_none() {
+                break;
+            }
+            cursor = second_cursor;
+        }
+    }
+    r_stops
 }

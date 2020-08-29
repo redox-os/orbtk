@@ -908,6 +908,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "830d08ce1d1d941e6b30645f1a0eb5643013d835ce3779a5fc208261dbe10f55"
 
 [[package]]
+name = "lexical-core"
+version = "0.7.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "db65c6da02e61f55dae90a0ae427b2a5f6b3e8db09f58d10efab23af92592616"
+dependencies = [
+ "arrayvec",
+ "bitflags 1.2.1",
+ "cfg-if",
+ "ryu",
+ "static_assertions",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.76"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1359,6 +1372,7 @@ dependencies = [
  "pathfinder_resources",
  "raqote",
  "rusttype 0.9.2",
+ "smallvec",
  "stdweb",
 ]
 
@@ -1416,6 +1430,7 @@ name = "orbtk_utils"
 version = "0.3.1-alpha4"
 dependencies = [
  "derive_more",
+ "lexical-core",
  "ron",
  "serde",
 ]
