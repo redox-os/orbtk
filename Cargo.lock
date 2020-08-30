@@ -1337,6 +1337,7 @@ version = "0.3.1-alpha4"
 dependencies = [
  "font-kit",
  "image",
+ "lazy_static 1.4.0",
  "orbtk_utils",
  "pathfinder_canvas",
  "pathfinder_color",

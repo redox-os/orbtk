@@ -149,6 +149,12 @@ impl Neg for Point {
 
 // --- Conversions ---
 
+impl From<Size> for Point {
+    fn from(s: Size) -> Self {
+        Self::new(s.width(), s.height())
+    }
+}
+
 impl From<f64> for Point {
     fn from(t: f64) -> Self {
         Point::new(t, t)
