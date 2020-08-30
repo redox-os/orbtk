@@ -45,7 +45,7 @@ impl Expression {
                         } else if v.floor() == 0.0 {
                             v = 255.0 * v.fract();
                         }
-                    } else if i != 0 && v > 1.0 {
+                    } else if i != 0 && p {
                         v /= 100.0;
                     }
                     values[i] = v;
@@ -76,9 +76,140 @@ impl Expression {
         }
     }
 
+    pub fn gradient_stop(&self) -> Option<GradientStop> {
+        if let Some(color) = self.color() {
+            return Some(GradientStop { pos: None, color });
+        }
+        match self {
+            Expression::Complex(v) if v.len() == 2 => {
+                let color = match v[0].color() {
+                    Some(color) => color,
+                    None => return None,
+                };
+                let pos = match v[1] {
+                    Expression::Number(n, ref m) => OnLinePos::try_from((n, &m[..])).ok()?,
+                    _ => return None,
+                };
+                Some(GradientStop {
+                    pos: Some(pos),
+                    color,
+                })
+            }
+            _ => None,
+        }
+    }
+
+    pub fn angle(&self) -> Option<Angle> {
+        match self {
+            Expression::Number(num, unit) => {
+                let num: f64 = (*num).into();
+                let angle = match &unit[..] {
+                    "rad" => Angle::from_radians(num),
+                    "turn" => Angle::from_turn(num),
+                    "deg" | "" => Angle::from_degrees(num),
+                    _ => {
+                        return None;
+                    }
+                };
+                Some(angle)
+            }
+            _ => None,
+        }
+    }
+
+    pub fn css_gradient(&self) -> Option<Gradient> {
+        let mut displacement = OnPlanePos::new(
+            OnLinePos::new(0.0, OnLinePosKind::Pixels),
+            OnLinePos::new(0.0, OnLinePosKind::Pixels),
+        );
+        let (name, args) = match self {
+            Expression::Method(name, args) => (name, args),
+            Expression::Complex(exprs) if exprs.len() <= 3 + 1 => {
+                let mut i = 0;
+                let (name, args) = match exprs.get(i) {
+                    Some(Expression::Method(name, args)) => {
+                        i += 1;
+                        (name, args)
+                    }
+                    _ => {
+                        return None;
+                    }
+                };
+                *displacement.x_mut() = match exprs.get(i) {
+                    Some(Expression::Number(n, u)) => {
+                        i += 1;
+                        OnLinePos::try_from((*n, &u[..])).ok()?
+                    },
+                    _ => {
+                        return None;
+                    }
+                };
+                *displacement.y_mut() = match exprs.get(i) {
+                    Some(Expression::Number(n, u)) => {
+                        OnLinePos::try_from((*n, &u[..])).ok()?
+                    },
+                    _ => {
+                        return None;
+                    }
+                };
+                (name, args)
+            }
+            _ => return None,
+        };
+        if args.is_empty() {
+            return None;
+        }
+        let (radial, repeat) = match &name[..] {
+            "repeating-linear-gradient" => (false, true),
+            "linear-gradient" => (false, false),
+            "radial-gradient" => (true, false),
+            "repeating-radial-gradient" => (true, true),
+            _ => {
+                return None;
+            }
+        };
+        let mut i = 0;
+        let kind;
+        if radial {
+            // TODO: Implement radial gradients
+            return None;
+        } else {
+            let mut coords = LinearGradientCoords::Angle {
+                displacement, angle: Angle::zero()
+            };
+            if let Some(angle) = args[0].angle() {
+                coords = LinearGradientCoords::Angle {
+                    angle,
+                    displacement,
+                };
+                i += 1;
+            }
+            kind = GradientKind::Linear(coords);
+        }
+        let mut stops = Vec::new();
+        for i in i..args.len() {
+            let stop = match args[i].gradient_stop() {
+                Some(stop) => stop,
+                None => continue,
+            };
+            stops.push(stop);
+        }
+        if stops.is_empty() {
+            return None;
+        }
+        Some(Gradient {
+            kind,
+            stops,
+            repeat,
+        })
+    }
+
     pub fn brush(&self) -> Option<Brush> {
         if let Some(color) = self.color() {
             return Some(Brush::from(color));
+        }
+        if let Some(g) = self.css_gradient() {
+            return Some(Brush::from(g));
         }
         None
     }
@@ -306,12 +437,13 @@ impl Default for OnLinePos {
     }
 }
 
-impl TryFrom<(f64, &str)> for OnLinePos {
+impl<N> TryFrom<(N, &str)> for OnLinePos
+where N: Into<f64> {
     type Error = ();
 
-    fn try_from(value: (f64, &str)) -> Result<Self, Self::Error> {
+    fn try_from(value: (N, &str)) -> Result<Self, Self::Error> {
         let kind = OnLinePosKind::try_from(value.1)?;
-        Ok(OnLinePos { pos: value.0, kind })
+        Ok(OnLinePos { pos: (value.0).into(), kind })
     }
 }
 
