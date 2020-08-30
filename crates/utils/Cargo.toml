@@ -12,7 +12,7 @@ edition = "2018"
 [dependencies]
 ron = "0.6"
 serde = "1.0"
-derive_more = { version = "0.99", default-features = false, features = ["add", "constructor", "from"] }
+derive_more = { version = "0.99", default-features = false, features = ["add", "constructor", "from", "mul"] }
 lexical-core = "0.7"
 phf = { version = "0.8", default-features = false }
 
