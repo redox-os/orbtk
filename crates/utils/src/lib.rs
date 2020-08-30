@@ -20,6 +20,7 @@ pub use self::text_baseline::*;
 pub use self::thickness::*;
 pub use self::value::*;
 pub use self::visibility::*;
+pub use self::angle::*;
 
 mod alignment;
 mod angle;
@@ -45,3 +46,4 @@ mod text_baseline;
 mod thickness;
 mod value;
 mod visibility;
+mod angle;

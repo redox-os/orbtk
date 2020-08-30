@@ -145,7 +145,9 @@ impl Expression {
                     }
                 };
                 *displacement.y_mut() = match exprs.get(i) {
-                    Some(Expression::Number(n, u)) => OnLinePos::try_from((*n, &u[..])).ok()?,
+                    Some(Expression::Number(n, u)) => {
+                        OnLinePos::try_from((*n, &u[..])).ok()?
+                    },
                     _ => {
                         return None;
                     }
@@ -185,14 +187,7 @@ impl Expression {
             }
             kind = GradientKind::Linear(coords);
         }
-        let mut stops = Vec::new();
-        for arg in args.iter().skip(i) {
-            let stop = match arg.gradient_stop() {
-                Some(stop) => stop,
-                None => continue,
-            };
-            stops.push(stop);
-        }
+        let stops: Vec<GradientStop> = args.iter().skip(i).filter_map(|stop| stop).collect();
         if stops.is_empty() {
             return None;
         }
