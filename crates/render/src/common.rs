@@ -98,10 +98,10 @@ pub fn cubic_bezier_rect(p0: Point, p1: Point, p2: Point, p3: Point) -> Rectangl
 /// A object used to keep a record of the AABB of a path.
 #[derive(Debug, Copy, Clone)]
 pub struct PathRect {
+    clip_rect: Option<Rectangle>,
     path_rect: Option<Rectangle>,
     last_path_point: Point,
     first_path_point: Option<Point>,
-    is_the_path_rect_fixed: bool,
 }
 
 impl PathRect {
@@ -109,10 +109,10 @@ impl PathRect {
     /// a rectangle from the start, of course you can use `set_clip(false)` to release it after.
     pub fn new(clip: Option<Rectangle>) -> PathRect {
         PathRect {
-            path_rect: clip, // If the path is areldy clipped, then we already know his size and position
+            clip_rect: clip,
+            path_rect: None,
             last_path_point: Point::new(0.0, 0.0),
             first_path_point: None,
-            is_the_path_rect_fixed: clip.is_some(),
         }
     }
 
@@ -125,36 +125,32 @@ impl PathRect {
 
     /// Records the drawing of a rectangle.
     pub fn record_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        if !self.is_the_path_rect_fixed {
-            let r = Rectangle::new((x, y), (width, height));
-            if let Some(ref mut path_rect) = self.path_rect {
-                path_rect.join_with_rectangle(&r);
-            } else {
-                self.path_rect = Some(r);
-            }
-            self.last_path_point = Point::new(x, y);
-            if self.first_path_point.is_none() {
-                self.first_path_point = Some(Point::new(x, y));
-            }
+        let r = Rectangle::new((x, y), (width, height));
+        if let Some(ref mut path_rect) = self.path_rect {
+            path_rect.join_with_rectangle(&r);
+        } else {
+            self.path_rect = Some(r);
+        }
+        self.last_path_point = Point::new(x, y);
+        if self.first_path_point.is_none() {
+            self.first_path_point = Some(Point::new(x, y));
         }
     }
 
     /// Records the drawing of a arc
     pub fn record_arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
-        if !self.is_the_path_rect_fixed {
-            let r = arc_rect(x, y, radius, start_angle, end_angle);
-            if let Some(ref mut path_rect) = self.path_rect {
-                path_rect.join_with_rectangle(&r);
-            } else {
-                self.path_rect = Some(r);
-            }
-            let (mut end_y, mut end_x) = f64::sin_cos(end_angle);
-            end_x = x + end_x * radius;
-            end_y = y + end_y * radius;
-            self.last_path_point = Point::new(end_x, end_y);
-            if self.first_path_point.is_none() {
-                self.first_path_point = Some(Point::new(end_x, end_y));
-            }
+        let r = arc_rect(x, y, radius, start_angle, end_angle);
+        if let Some(ref mut path_rect) = self.path_rect {
+            path_rect.join_with_rectangle(&r);
+        } else {
+            self.path_rect = Some(r);
+        }
+        let (mut end_y, mut end_x) = f64::sin_cos(end_angle);
+        end_x = x + end_x * radius;
+        end_y = y + end_y * radius;
+        self.last_path_point = Point::new(end_x, end_y);
+        if self.first_path_point.is_none() {
+            self.first_path_point = Some(Point::new(end_x, end_y));
         }
     }
 
@@ -162,47 +158,41 @@ impl PathRect {
     /// the unique difference with `record_line_to` is that if the path has
     /// not started, It does not assume the drawing of a line from (0.0, 0.0).
     pub fn record_move_to(&mut self, x: f64, y: f64) {
-        if !self.is_the_path_rect_fixed {
-            if let Some(ref mut path_rect) = self.path_rect {
-                path_rect.join_with_point(&Point::new(x, y));
-            } else {
-                self.path_rect = Some(Rectangle::new(Point::new(x, y), (0.0, 0.0)));
-            }
-            self.last_path_point = Point::new(x, y);
-            if self.first_path_point.is_none() {
-                self.first_path_point = Some(Point::new(x, y));
-            }
+        if let Some(ref mut path_rect) = self.path_rect {
+            path_rect.join_with_point(&Point::new(x, y));
+        } else {
+            self.path_rect = Some(Rectangle::new(Point::new(x, y), (0.0, 0.0)));
+        }
+        self.last_path_point = Point::new(x, y);
+        if self.first_path_point.is_none() {
+            self.first_path_point = Some(Point::new(x, y));
         }
     }
 
     /// Records the drawing of a line
     pub fn record_line_to(&mut self, x: f64, y: f64) {
-        if !self.is_the_path_rect_fixed {
-            if let Some(ref mut path_rect) = self.path_rect {
-                path_rect.join_with_point(&Point::new(x, y));
-            } else {
-                self.path_rect = Some(Rectangle::new(Point::new(0.0, 0.0), (x, y)));
-            }
-            self.last_path_point = Point::new(x, y);
-            if self.first_path_point.is_none() {
-                self.first_path_point = Some(Point::new(0.0, 0.0));
-            }
+        if let Some(ref mut path_rect) = self.path_rect {
+            path_rect.join_with_point(&Point::new(x, y));
+        } else {
+            self.path_rect = Some(Rectangle::new(Point::new(0.0, 0.0), (x, y)));
+        }
+        self.last_path_point = Point::new(x, y);
+        if self.first_path_point.is_none() {
+            self.first_path_point = Some(Point::new(0.0, 0.0));
         }
     }
 
     /// Records the drawing of a quadratic bezier curve.
     pub fn record_quadratic_curve_to(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
-        if !self.is_the_path_rect_fixed {
-            let r = quad_bezier_rect(self.last_path_point, Point::new(cpx, cpy), Point::new(x, y));
-            if let Some(ref mut path_rect) = self.path_rect {
-                path_rect.join_with_rectangle(&r);
-            } else {
-                self.path_rect = Some(r);
-            }
-            self.last_path_point = Point::new(x, y);
-            if self.first_path_point.is_none() {
-                self.first_path_point = Some(Point::new(x, y));
-            }
+        let r = quad_bezier_rect(self.last_path_point, Point::new(cpx, cpy), Point::new(x, y));
+        if let Some(ref mut path_rect) = self.path_rect {
+            path_rect.join_with_rectangle(&r);
+        } else {
+            self.path_rect = Some(r);
+        }
+        self.last_path_point = Point::new(x, y);
+        if self.first_path_point.is_none() {
+            self.first_path_point = Some(Point::new(x, y));
         }
     }
 
@@ -216,28 +206,33 @@ impl PathRect {
         x: f64,
         y: f64,
     ) {
-        if !self.is_the_path_rect_fixed {
-            let r = cubic_bezier_rect(
-                self.last_path_point,
-                Point::new(cp1x, cp1y),
-                Point::new(cp2x, cp2y),
-                Point::new(x, y),
-            );
-            if let Some(ref mut path_rect) = self.path_rect {
-                path_rect.join_with_rectangle(&r);
-            } else {
-                self.path_rect = Some(r);
-            }
-            self.last_path_point = Point::new(x, y);
-            if self.first_path_point.is_none() {
-                self.first_path_point = Some(Point::new(x, y));
-            }
+        let r = cubic_bezier_rect(
+            self.last_path_point,
+            Point::new(cp1x, cp1y),
+            Point::new(cp2x, cp2y),
+            Point::new(x, y),
+        );
+        if let Some(ref mut path_rect) = self.path_rect {
+            path_rect.join_with_rectangle(&r);
+        } else {
+            self.path_rect = Some(r);
+        }
+        self.last_path_point = Point::new(x, y);
+        if self.first_path_point.is_none() {
+            self.first_path_point = Some(Point::new(x, y));
         }
     }
 
-    /// Encloses or releases the current `PathRect`.
-    pub fn set_clip(&mut self, clip: bool) {
-        self.is_the_path_rect_fixed = clip;
+    /// Encloses the current `PathRect`.
+    pub fn record_clip(&mut self) {
+        let mut clip_rect = match self.path_rect {
+            Some(path_rect) => path_rect,
+            None => return,
+        };
+        if let Some(current_clip_rect) = self.clip_rect {
+            clip_rect.box_into(current_clip_rect);
+        }
+        self.clip_rect = Some(clip_rect);
     }
 
     #[cfg(all(
@@ -245,23 +240,24 @@ impl PathRect {
         feature = "default",
         not(feature = "glupath")
     ))]
-    /// Check if the current instance is enclosed.
-    pub fn get_clip(&self) -> bool {
-        self.is_the_path_rect_fixed
+    /// Checks if the current instance is enclosed.
+    pub fn get_clip(&self) -> Option<Rectangle> {
+        self.clip_rect
     }
 
     /// Gets the current path AABB, or nothing if the path is empty.
     pub fn get_rect(&self) -> Option<Rectangle> {
-        self.path_rect
+        self.path_rect.map(|mut r| {
+            if let Some(clip) = self.clip_rect {
+                r.box_into(clip);
+            }
+            r
+        })
     }
 
     /// Restores itself to a new life of service, if the the path is clipped that state is conserved.
     pub fn rebirth(&mut self) {
-        if self.is_the_path_rect_fixed {
-            *self = Self::new(self.path_rect);
-        } else {
-            *self = Self::new(None);
-        }
+        *self = Self::new(self.clip_rect);
     }
 }
 

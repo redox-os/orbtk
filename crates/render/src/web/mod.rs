@@ -309,7 +309,7 @@ impl RenderContext2D {
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
     pub fn clip(&mut self) {
         self.canvas_render_context_2_d.clip(FillRule::EvenOdd);
-        self.path_rect.set_clip(true);
+        self.path_rect.record_clip();
     }
 
     // Line styles

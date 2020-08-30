@@ -9,7 +9,7 @@ pub use self::image::Image;
 mod font;
 mod image;
 
-type StatesOnStack = [(RenderConfig, PathRect); 2];
+type StatesOnStack = [(RenderConfig, PathRect, usize); 2];
 
 /// The RenderContext2D trait, provides the rendering ctx. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
@@ -19,6 +19,7 @@ pub struct RenderContext2D {
     saved_states: SmallVec<StatesOnStack>,
     fonts: HashMap<String, Font>,
     path_rect: PathRect,
+    clips_count: usize,
 
     background: Color,
 }
@@ -36,6 +37,7 @@ impl RenderContext2D {
             saved_states: SmallVec::<StatesOnStack>::new(),
             fonts: HashMap::new(),
             path_rect: PathRect::new(None),
+            clips_count: 0,
             background: Color::default(),
         }
     }
@@ -106,25 +108,15 @@ impl RenderContext2D {
         if let Some(font) = self.fonts.get(&self.config.font_config.family) {
             let width = self.draw_target.width() as f64;
 
-            if self.path_rect.get_clip() {
-                if let Some(rect) = self.path_rect.get_rect() {
-                    font.render_text_clipped(
-                        text,
-                        self.draw_target.get_data_mut(),
-                        width,
-                        (self.config.font_config.font_size, color, self.config.alpha),
-                        (x, y),
-                        rect,
-                    );
-                } else {
-                    font.render_text(
-                        text,
-                        self.draw_target.get_data_mut(),
-                        width,
-                        (self.config.font_config.font_size, color, self.config.alpha),
-                        (x, y),
-                    );
-                }
+            if let Some(rect) = self.path_rect.get_clip() {
+                font.render_text_clipped(
+                    text,
+                    self.draw_target.get_data_mut(),
+                    width,
+                    (self.config.font_config.font_size, color, self.config.alpha),
+                    (x, y),
+                    rect,
+                );
             } else {
                 font.render_text(
                     text,
@@ -353,7 +345,8 @@ impl RenderContext2D {
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
     pub fn clip(&mut self) {
         self.draw_target.push_clip(&self.path);
-        self.path_rect.set_clip(true);
+        self.path_rect.record_clip();
+        self.clips_count += 1;
     }
 
     // Line styles
@@ -418,16 +411,19 @@ impl RenderContext2D {
     /// Saves the entire state of the canvas by pushing the current state onto a stack.
     pub fn save(&mut self) {
         self.saved_states
-            .push((self.config.clone(), self.path_rect));
+            .push((self.config.clone(), self.path_rect, self.clips_count));
     }
 
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack.
     /// If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
-        self.draw_target.pop_clip();
-        if let Some((config, path_rect)) = self.saved_states.pop() {
+        if let Some((config, path_rect, former_clips_count)) = self.saved_states.pop() {
             self.config = config;
             self.path_rect = path_rect;
+            for _ in former_clips_count..self.clips_count {
+                self.draw_target.pop_clip();
+            }
+            self.clips_count = former_clips_count;
         }
     }
 
