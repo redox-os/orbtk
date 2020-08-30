@@ -151,20 +151,20 @@ impl Rectangle {
     }
 
     /// Box itself inside another rectangle
-    pub fn box_into(&mut self, _box: Rectangle) {
-        if self.x() < _box.x() {
-            self.set_width(self.width() - (_box.x() - self.x()));
-            self.set_x(_box.x());
+    pub fn box_into(&mut self, container: Rectangle) {
+        if self.x() < container.x() {
+            self.set_width(self.width() - (container.x() - self.x()));
+            self.set_x(container.x());
         }
-        if self.y() < _box.y() {
-            self.set_height(self.height() - (_box.y() - self.y()));
-            self.set_y(_box.y());
+        if self.y() < container.y() {
+            self.set_height(self.height() - (container.y() - self.y()));
+            self.set_y(container.y());
         }
-        if self.x() + self.width() > _box.x() + _box.width() {
-            self.set_width(_box.width() - _box.x() + self.x());
+        if self.x() + self.width() > container.x() + container.width() {
+            self.set_width(container.width() - container.x() + self.x());
         }
-        if self.y() + self.height() > _box.y() + _box.height() {
-            self.set_height(_box.height() - _box.y() + self.y());
+        if self.y() + self.height() > container.y() + container.height() {
+            self.set_height(container.height() - container.y() + self.y());
         }
     }
 }
