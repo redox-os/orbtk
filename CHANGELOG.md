@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Access RawWindowHandle from Context
 * Select colors in themes through of CSS-like functions
 * Create `Color` from HSV and HSL values
+* Create a `Color` by its CSS name
 * Gradient coordinates become relative to the path
 
 ### 0.3.1-alpha3

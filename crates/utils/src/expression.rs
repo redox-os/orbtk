@@ -71,8 +71,7 @@ impl Expression {
                     })
                 }
             }
-            Expression::Other(s) if s == "transparent" => Some(Color::rgba(0, 0, 0, 0)),
-            //Expression::Other(s) => color_from_name(s),
+            Expression::Other(s) => Color::from_name(s),
             _ => None,
         }
     }

@@ -14,3 +14,7 @@ ron = "0.6"
 serde = "1.0"
 derive_more = { version = "0.99", default-features = false, features = ["add", "constructor", "from"] }
 lexical-core = "0.7"
+phf = { version = "0.8", default-features = false }
+
+[build-dependencies]
+phf_codegen = { version = "0.8", default-features = false }

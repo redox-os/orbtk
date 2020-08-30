@@ -1,3 +1,5 @@
+include!(concat!(env!("OUT_DIR"), "/colors.rs"));
+
 #[cfg(not(feature = "no_std"))]
 use std::fmt;
 
@@ -111,6 +113,11 @@ impl Color {
         ((self.data & 0xFF00_0000) >> 24) as u8
     }
 
+    /// Attempts to get a color from its name, all the CSS colors are avaible and some other ones also.
+    pub fn from_name(name: &str) -> Option<Color> {
+        COLORS.get(name).cloned()
+    }
+
     /// Interpolate between two colors
     pub fn interpolate(start_color: Color, end_color: Color, scale: f64) -> Color {
         let r = Color::interp(start_color.r(), end_color.r(), scale);
@@ -142,6 +149,11 @@ impl ToString for Color {
 
 impl From<&str> for Color {
     fn from(s: &str) -> Color {
+        if !s.starts_with('#') {
+            if let Some(color) = Color::from_name(s) {
+                return color;
+            }
+        }
         let clean_hex = s.trim_start_matches('#');
         match clean_hex.len() {
             3 | 4 => {
