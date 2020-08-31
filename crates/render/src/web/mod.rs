@@ -476,45 +476,45 @@ impl RenderContext2D {
     pub fn finish(&mut self) {}
 
     fn fill_style<'a>(&self, brush: &Brush) {
-        let frame = match self.path_rect.get_rect() {
-            Some(frame) => frame,
-            None => return, // There are no path to fill
-        };
         match brush {
             Brush::SolidColor(color) => {
                 self.canvas_render_context_2_d
                     .set_fill_style_color(&color.to_string());
             }
-            Brush::Gradient(Gradient {
-                kind: GradientKind::Linear(coords),
-                stops,
-                repeat: _,
-            }) => {
-                let web_gradient = self.linear_gradient(&coords, &stops, frame);
-                self.canvas_render_context_2_d
-                    .set_fill_style_gradient(&web_gradient);
+            Brush::Gradient(gradient) => {
+                let frame = match self.path_rect.get_rect() {
+                    Some(frame) => frame,
+                    None => return, // There are no path to fill
+                };
+                match gradient.kind {
+                    GradientKind::Linear(coords) => {
+                        let web_gradient = self.linear_gradient(&coords, &gradient.stops, frame);
+                        self.canvas_render_context_2_d
+                            .set_fill_style_gradient(&web_gradient);
+                    }
+                }
             }
         }
     }
 
     fn stroke_style<'a>(&self, brush: &Brush) {
-        let frame = match self.path_rect.get_rect() {
-            Some(frame) => frame,
-            None => return, // There are no path to stroke through
-        };
         match brush {
             Brush::SolidColor(color) => {
                 self.canvas_render_context_2_d
                     .set_stroke_style_color(&color.to_string());
             }
-            Brush::Gradient(Gradient {
-                kind: GradientKind::Linear(coords),
-                stops,
-                repeat: _,
-            }) => {
-                let web_gradient = self.linear_gradient(&coords, &stops, frame);
-                self.canvas_render_context_2_d
-                    .set_stroke_style_gradient(&web_gradient);
+            Brush::Gradient(gradient) => {
+                let frame = match self.path_rect.get_rect() {
+                    Some(frame) => frame,
+                    None => return, // There are no path to fill
+                };
+                match gradient.kind {
+                    GradientKind::Linear(coords) => {
+                        let web_gradient = self.linear_gradient(&coords, &gradient.stops, frame);
+                        self.canvas_render_context_2_d
+                            .set_stroke_style_gradient(&web_gradient);
+                    }
+                }
             }
         }
     }
