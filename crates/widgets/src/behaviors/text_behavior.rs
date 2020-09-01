@@ -190,10 +190,28 @@ impl TextBehaviorState {
 
         match key_event.key {
             Key::Left => {
-                self.move_cursor_left(ctx);
+                if ctx
+                    .window()
+                    .get::<Global>("global")
+                    .keyboard_state
+                    .is_shift_down()
+                {
+                    self.expand_selection_left(ctx);
+                } else {
+                    self.move_cursor_left(ctx);
+                }
             }
             Key::Right => {
-                self.move_cursor_right(ctx);
+                if ctx
+                    .window()
+                    .get::<Global>("global")
+                    .keyboard_state
+                    .is_shift_down()
+                {
+                    self.expand_selection_right(ctx);
+                } else {
+                    self.move_cursor_right(ctx);
+                }
             }
             Key::Backspace => {
                 self.back_space(ctx);
@@ -240,6 +258,44 @@ impl TextBehaviorState {
             .get_mut::<TextSelection>("text_selection")
             .length = len;
         ctx.get_widget(self.cursor).set("expanded", len > 0);
+    }
+
+    fn current_selection(&self, ctx: &mut Context) -> (usize, usize) {
+        let widget = ctx.widget();
+        let selection = widget.get::<TextSelection>("text_selection");
+        (selection.start_index, selection.length)
+    }
+
+    fn expand_selection_left(&mut self, ctx: &mut Context) {
+        let (start_index, length) = self.current_selection(ctx);
+
+        if start_index == 0 {
+            return;
+        }
+
+        ctx.widget()
+            .get_mut::<TextSelection>("text_selection")
+            .start_index = start_index - 1;
+
+        ctx.widget()
+            .get_mut::<TextSelection>("text_selection")
+            .length = length + 1;
+
+        ctx.get_widget(self.cursor).set("expanded", true);
+    }
+
+    fn expand_selection_right(&mut self, ctx: &mut Context) {
+        let (start_index, length) = self.current_selection(ctx);
+
+        if start_index + length >= ctx.widget().get::<String16>("text").len() {
+            return;
+        }
+
+        ctx.widget()
+            .get_mut::<TextSelection>("text_selection")
+            .length = length + 1;
+
+        ctx.get_widget(self.cursor).set("expanded", true);
     }
 
     fn move_cursor_left(&mut self, ctx: &mut Context) {
