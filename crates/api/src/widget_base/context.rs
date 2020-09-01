@@ -17,10 +17,10 @@ use super::WidgetContainer;
 
 /// The `Context` is provides access for the states to objects they could work with.
 pub struct Context<'a> {
-    ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
+    pub(crate) ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     pub entity: Entity,
     pub theme: Theme,
-    provider: &'a ContextProvider,
+    pub(crate) provider: &'a ContextProvider,
     new_states: BTreeMap<Entity, Box<dyn State>>,
     remove_widget_list: Vec<Entity>,
     render_context: &'a mut RenderContext2D,
