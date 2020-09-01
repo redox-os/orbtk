@@ -13,7 +13,7 @@ use super::{component, component_try_mut, try_component, Layout};
 #[derive(Default)]
 pub struct TextSelectionLayout {
     desired_size: RefCell<DirtySize>,
-    old_text_selection: Cell<TextSelection>,
+    old_selection: Cell<TextSelection>,
 }
 
 impl TextSelectionLayout {
@@ -46,13 +46,13 @@ impl Layout for TextSelectionLayout {
 
         if let Ok(selection) = ecm
             .component_store()
-            .get::<TextSelection>("text_selection", entity)
+            .get::<TextSelection>("selection", entity)
         {
-            if *selection != self.old_text_selection.get() {
+            if *selection != self.old_selection.get() {
                 self.desired_size.borrow_mut().set_dirty(true);
             }
 
-            self.old_text_selection.set(*selection);
+            self.old_selection.set(*selection);
         }
 
         for index in 0..ecm.entity_store().children[&entity].len() {
@@ -129,21 +129,17 @@ impl Layout for TextSelectionLayout {
                 let font_size: f64 = component(ecm, text_block, "font_size");
                 text_len = text.len();
 
-                if let Some(selection) =
-                    try_component::<TextSelection>(ecm, entity, "text_selection")
-                {
-                    selection_start = selection.start_index;
-                    if let Some(text_part) = text.get_string(0, selection.start_index) {
+                if let Some(selection) = try_component::<TextSelection>(ecm, entity, "selection") {
+                    selection_start = selection.start();
+                    if let Some(text_part) = text.get_string(0, selection.start()) {
                         pos = render_context_2_d
                             .measure(text_part.as_str(), font_size, font.as_str())
                             .width;
                     }
 
-                    if selection.length > 0 {
-                        if let Some(text_part) = text.get_string(
-                            selection.start_index,
-                            selection.start_index + selection.length,
-                        ) {
+                    if selection.len() > 0 {
+                        if let Some(text_part) = text.get_string(selection.start(), selection.end())
+                        {
                             size.0 = render_context_2_d
                                 .measure(text_part.as_str(), font_size, font.as_str())
                                 .width;

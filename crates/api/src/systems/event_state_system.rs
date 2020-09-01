@@ -105,16 +105,22 @@ impl EventStateSystem {
 
         // global key handling
         if let Ok(event) = event.downcast_ref::<KeyDownEvent>() {
-            if let Ok(global) = ecm.component_store_mut().get_mut::<Global>("global", root) {
+            if let Ok(keyboard_state) = ecm
+                .component_store_mut()
+                .get_mut::<KeyboardState>("keyboard_state", root)
+            {
                 // Set this value on the keyboard state
-                global.keyboard_state.set_key_state(event.event.key, true);
+                keyboard_state.set_key_state(event.event.key, true);
             }
         }
 
         if let Ok(event) = event.downcast_ref::<KeyUpEvent>() {
-            if let Ok(global) = ecm.component_store_mut().get_mut::<Global>("global", root) {
+            if let Ok(keyboard_state) = ecm
+                .component_store_mut()
+                .get_mut::<KeyboardState>("keyboard_state", root)
+            {
                 // Set this value on the keyboard state
-                global.keyboard_state.set_key_state(event.event.key, false);
+                keyboard_state.set_key_state(event.event.key, false);
             }
         }
 

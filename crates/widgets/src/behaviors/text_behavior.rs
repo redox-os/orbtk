@@ -9,9 +9,10 @@ use super::MouseBehavior;
 
 #[derive(Clone)]
 enum TextAction {
-    Key(KeyEvent),
-    Mouse(Mouse),
+    KeyDown(KeyEvent),
+    MouseDown(Mouse),
     Drop(String, Point),
+    FocusedChanged,
 }
 
 /// The `TextBehaviorState` handles the text processing of the `TextBehavior` widget.
@@ -29,28 +30,7 @@ impl TextBehaviorState {
         self.action = Some(action);
     }
 
-    fn is_ctlr_home_pressed(&self, ctx: &mut Context) -> bool {
-        if cfg!(target_os = "macos")
-            && ctx
-                .window()
-                .get::<Global>("global")
-                .keyboard_state
-                .is_home_down()
-        {
-            return true;
-        }
-
-        if ctx
-            .window()
-            .get::<Global>("global")
-            .keyboard_state
-            .is_ctrl_down()
-        {
-            return true;
-        }
-
-        false
-    }
+    // -- Text operations --
 
     fn cut(&mut self, registry: &mut Registry, ctx: &mut Context) {
         self.copy(registry, ctx);
@@ -58,40 +38,128 @@ impl TextBehaviorState {
     }
 
     fn copy(&self, registry: &mut Registry, ctx: &mut Context) {
-        let text_selection: TextSelection = ctx.get_widget(self.target).clone("text_selection");
+        // let selection: TextSelection = ctx.get_widget(self.target).clone("selection");
 
-        if text_selection.length == 0 {
-            return;
-        }
+        // if selection.length == 0 {
+        //     return;
+        // }
 
-        if let Some(text_part) = ctx
-            .get_widget(self.target)
-            .clone::<String16>("text")
-            .get_string(
-                text_selection.start_index,
-                text_selection.start_index + text_selection.length,
-            )
-        {
-            registry.get_mut::<Clipboard>("clipboard").set(text_part);
-        }
+        // if let Some(text_part) = ctx
+        //     .get_widget(self.target)
+        //     .clone::<String16>("text")
+        //     .get_string(
+        //         selection.start_index,
+        //         selection.start_index + selection.length,
+        //     )
+        // {
+        //     registry.get_mut::<Clipboard>("clipboard").set(text_part);
+        // }
     }
 
     fn insert_text(&mut self, insert_text: String, ctx: &mut Context) {
-        self.clear_selection(ctx);
-        let index = ctx
-            .get_widget(self.target)
-            .get::<TextSelection>("text_selection")
-            .start_index;
+        // self.clear_selection(ctx);
+        // let index = ctx
+        //     .get_widget(self.target)
+        //     .get::<TextSelection>("selection")
+        //     .start_index;
 
-        let mut text = ctx.widget().clone::<String16>("text");
-        let len = String16::from(insert_text.as_str()).len();
+        // let mut text = ctx.widget().clone::<String16>("text");
+        // let len = String16::from(insert_text.as_str()).len();
 
-        text.insert_str(index, insert_text.as_str());
+        // text.insert_str(index, insert_text.as_str());
 
-        ctx.get_widget(self.target).set("text", text);
-        ctx.get_widget(self.target)
-            .get_mut::<TextSelection>("text_selection")
-            .start_index = index + len;
+        // ctx.get_widget(self.target).set("text", text);
+        // ctx.get_widget(self.target)
+        //     .get_mut::<TextSelection>("selection")
+        //     .start_index = index + len;
+    }
+
+    fn back_space(&mut self, ctx: &mut Context) {
+        // if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
+        //     self.clear_selection(ctx);
+        // } else {
+        //     let index = ctx
+        //         .widget()
+        //         .clone::<TextSelection>("selection")
+        //         .start_index;
+        //     if index > 0 {
+        //         let mut text = ctx.widget().clone::<String16>("text");
+        //         text.remove(index - 1);
+        //         ctx.get_widget(self.target).set("text", text);
+        //         ctx.widget()
+        //             .get_mut::<TextSelection>("selection")
+        //             .start_index = index - 1;
+        //     }
+        // }
+    }
+
+    fn delete(&mut self, ctx: &mut Context) {
+        // if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
+        //     self.clear_selection(ctx);
+        // } else {
+        //     let index = ctx
+        //         .widget()
+        //         .clone::<TextSelection>("selection")
+        //         .start_index;
+        //     if index < ctx.widget().get::<String16>("text").len() {
+        //         let mut text = ctx.widget().clone::<String16>("text");
+        //         text.remove(index);
+        //         ctx.get_widget(self.target).set("text", text);
+
+        //         ctx.widget()
+        //             .get_mut::<TextSelection>("selection")
+        //             .start_index = index;
+        //     }
+        // }
+    }
+
+    fn insert_char(&mut self, key_event: KeyEvent, ctx: &mut Context) {
+        if key_event.text.is_empty() {
+            return;
+        }
+
+        let mut selection = *TextBehavior::selection_ref(&ctx.widget());
+        let mut text = TextBehavior::text_clone(&ctx.widget());
+
+        if selection.len() == 0 {
+            text.insert_str(selection.start(), key_event.text.as_str());
+            selection.set_start(selection.start() + 1)
+        }
+
+        TextBehavior::text_set(&mut ctx.widget(), text);
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
+
+        // if selection.len() > 0 {
+        //     ctx.get_widget(self.target)
+        //         .set("text", String16::from(key_event.text));
+
+        //     selection.set_start(1);
+
+        //     if let Some(selection) = ctx
+        //         .get_widget(self.cursor)
+        //         .try_get_mut::<TextSelection>("selection")
+        //     {
+        //         selection.start_index = 1;
+        //         selection.length = 0
+        //     }
+        //     ctx.get_widget(self.cursor).set("expanded", false);
+        // } else {
+        //     let current_selection = *ctx
+        //         .get_widget(self.cursor)
+        //         .get::<TextSelection>("selection");
+
+        //     let mut text = ctx.widget().clone::<String16>("text");
+        //     text.insert_str(current_selection.start_index, key_event.text.as_str());
+        //     ctx.get_widget(self.target).set("text", text);
+
+        //     if let Some(selection) = ctx
+        //         .get_widget(self.cursor)
+        //         .try_get_mut::<TextSelection>("selection")
+        //     {
+        //         selection.start_index =
+        //             current_selection.start_index + key_event.text.encode_utf16().count();
+        //     }
+        // }
     }
 
     fn paste(&mut self, registry: &mut Registry, ctx: &mut Context) {
@@ -100,30 +168,270 @@ impl TextBehaviorState {
         }
     }
 
-    fn request_focus(&self, ctx: &mut Context, p: Mouse) {
-        ctx.push_event_by_window(FocusEvent::RequestFocus(self.target));
+    // -- Text operations --
 
-        // select all text if there is text and the element is not focused yet.
-        if !ctx.widget().get::<String16>("text").is_empty()
-            && !(*ctx.widget().get::<bool>("focused"))
+    fn request_focus(&self, ctx: &mut Context) {
+        ctx.push_event_by_window(FocusEvent::RequestFocus(self.target));
+    }
+
+    // Reset selection and offset if text is changed from outside
+    fn reset(&self, ctx: &mut Context) {
+        ctx.widget().set("selection", TextSelection::default());
+    }
+
+    fn check_outside_update(&self, ctx: &mut Context) {
+        let len = ctx.widget().get::<String16>("text").len();
+        if self.len != len && self.len > len {
+            self.reset(ctx);
+        }
+    }
+
+    // -- Selection --
+
+    fn select_all(&self, ctx: &mut Context) {
+        if TextBehavior::text_ref(&ctx.widget()).is_empty()
+            || !*TextBehavior::focused_ref(&ctx.widget())
         {
-            self.select_all(ctx);
             return;
         }
 
-        // change only the caret position if the text is already selected or if the element is focused already
-        if *ctx.get_widget(self.cursor).get::<bool>("expanded")
-            || *ctx.widget().get::<bool>("focused")
-        {
-            ctx.widget()
-                .get_mut::<TextSelection>("text_selection")
-                .start_index = self.get_new_caret_position(ctx, p);
-            ctx.widget()
-                .get_mut::<TextSelection>("text_selection")
-                .length = 0;
+        let mut selection = self.selection(ctx);
+        selection.set_start(0);
+        selection.set_end(self.len(ctx) - 1);
 
-            ctx.get_widget(self.cursor).set("expanded", false);
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
+    }
+
+    fn expand_selection_left(&mut self, ctx: &mut Context) {
+        // let (start_index, length) = self.current_selection(ctx);
+
+        // if start_index == 0 {
+        //     return;
+        // }
+
+        // ctx.widget()
+        //     .get_mut::<TextSelection>("selection")
+        //     .start_index = start_index - 1;
+
+        // ctx.widget()
+        //     .get_mut::<TextSelection>("selection")
+        //     .length = length + 1;
+
+        // ctx.get_widget(self.cursor).set("expanded", true);
+    }
+
+    fn expand_selection_right(&mut self, ctx: &mut Context) {
+        // let (start_index, length) = self.current_selection(ctx);
+
+        // if start_index + length >= ctx.widget().get::<String16>("text").len() {
+        //     return;
+        // }
+
+        // ctx.widget()
+        //     .get_mut::<TextSelection>("selection")
+        //     .length = length + 1;
+
+        // ctx.get_widget(self.cursor).set("expanded", true);
+    }
+
+    fn move_cursor_left(&mut self, ctx: &mut Context) {
+        let mut selection = self.selection(ctx);
+
+        if selection.start() == selection.end() {
+            selection.set_start(selection.start() - 1);
+            selection.set_end(selection.start());
+        } else if selection.start() < selection.end() {
+            selection.set_end(selection.start());
+        } else {
+            selection.set_start(selection.end());
         }
+
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
+    }
+
+    fn move_cursor_right(&mut self, ctx: &mut Context) {
+        let mut selection = self.selection(ctx);
+
+        if selection.start() == selection.end() {
+            selection.set_start(selection.start() + 1);
+            selection.set_end(selection.start());
+        } else if selection.start() < selection.end() {
+            selection.set_start(selection.end());
+        } else {
+            selection.set_end(selection.start());
+        }
+
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
+    }
+
+    fn clear_selection(&mut self, ctx: &mut Context) {
+        //     let selection = ctx.widget().clone::<TextSelection>("selection");
+        //     let mut text = ctx.widget().clone::<String16>("text");
+
+        //     for i in (selection.start_index..(selection.start_index + selection.length)).rev() {
+        //         text.remove(i);
+        //     }
+
+        //     ctx.get_widget(self.target).set("text", text);
+
+        //     ctx.widget()
+        //         .get_mut::<TextSelection>("selection")
+        //         .length = 0;
+
+        //     ctx.get_widget(self.cursor).set("expanded", false);
+    }
+
+    // -- Selection --
+
+    fn activate(&self, ctx: &mut Context) {
+        if *ctx.widget().get::<bool>("lost_focus_on_activation") {
+            ctx.push_event_by_window(FocusEvent::RemoveFocus(ctx.entity));
+        }
+
+        ctx.push_event_strategy_by_entity(
+            ActivateEvent(self.target),
+            self.target,
+            EventStrategy::Direct,
+        );
+    }
+
+    // -- Event handling --
+
+    // handles the key down event
+    fn key_down(&mut self, registry: &mut Registry, ctx: &mut Context, key_event: KeyEvent) {
+        if !self.focused(ctx) {
+            return;
+        }
+
+        match key_event.key {
+            Key::Left => {
+                if self.is_shift_down(ctx) {
+                    self.expand_selection_left(ctx);
+                } else {
+                    self.move_cursor_left(ctx);
+                }
+            }
+
+            Key::Right => {
+                if self.is_shift_down(ctx) {
+                    self.expand_selection_right(ctx);
+                } else {
+                    self.move_cursor_right(ctx);
+                }
+            }
+            Key::Backspace => {
+                // self.back_space(ctx);
+            }
+            Key::Delete => {
+                // self.delete(ctx);
+            }
+            Key::Enter => {
+                // self.activate(ctx);
+            }
+            Key::X(..) => {
+                // if self.is_ctlr_home_pressed(ctx) {
+                //     self.cut(registry, ctx);
+                // } else {
+                //     self.insert_char(key_event, ctx);
+                // }
+            }
+            Key::C(..) => {
+                // if self.is_ctlr_home_pressed(ctx) {
+                //     self.copy(registry, ctx);
+                // } else {
+                //     self.insert_char(key_event, ctx);
+                // }
+            }
+            Key::V(..) => {
+                // if self.is_ctlr_home_pressed(ctx) {
+                //     self.paste(registry, ctx);
+                // } else {
+                //     self.insert_char(key_event, ctx);
+                // }
+            }
+            Key::A(..) => {
+                // println!("ass");
+                // if self.is_ctlr_home_pressed(ctx) {
+                //     self.select_all(ctx);
+                // } else {
+                //     self.insert_char(key_event, ctx);
+                // }
+            }
+            _ => {
+                self.insert_char(key_event, ctx);
+            }
+        }
+    }
+
+    // handles mouse down event
+    fn mouse_down(&self, ctx: &mut Context, p: Mouse) {
+        if !*TextBehavior::focused_ref(&ctx.widget()) {
+            self.request_focus(ctx);
+            return;
+        }
+
+        // todo set selection
+    }
+
+    // handles focus changed event
+    fn focused_changed(&self, ctx: &mut Context) {
+        self.select_all(ctx);
+    }
+
+    // -- Event handling --
+
+    // -- Helpers --
+
+    // gets the len of the text
+    fn len(&self, ctx: &mut Context) -> usize {
+        TextBehavior::text_ref(&ctx.widget()).len()
+    }
+
+    // gets the focused state
+    fn focused(&self, ctx: &mut Context) -> bool {
+        *TextBehavior::focused_ref(&ctx.widget())
+    }
+
+    fn selection(&self, ctx: &mut Context) -> TextSelection {
+        *TextBehavior::selection_ref(&ctx.widget())
+    }
+
+    // check if control is pressed or on macos home key
+    fn is_ctlr_home_down(&self, ctx: &mut Context) -> bool {
+        // todo move window to api
+        if cfg!(target_os = "macos")
+            && ctx
+                .window()
+                .get::<KeyboardState>("keyboard_state")
+                .is_home_down()
+        {
+            return true;
+        }
+
+        if !cfg!(target_os = "macos")
+            && ctx
+                .window()
+                .get::<KeyboardState>("keyboard_state")
+                .is_ctrl_down()
+        {
+            return true;
+        }
+
+        false
+    }
+
+    // check if the shift key is down
+    fn is_shift_down(&self, ctx: &mut Context) -> bool {
+        // todo move window to api
+        if ctx
+            .window()
+            .get::<KeyboardState>("keyboard_state")
+            .is_shift_down()
+        {
+            return true;
+        }
+
+        false
     }
 
     // Get new position for the caret based on current mouse position
@@ -171,301 +479,7 @@ impl TextBehaviorState {
         position_index
     }
 
-    // Reset selection and offset if text is changed from outside
-    fn reset(&self, ctx: &mut Context) {
-        ctx.widget().set("text_selection", TextSelection::default());
-    }
-
-    fn check_outside_update(&self, ctx: &mut Context) {
-        let len = ctx.widget().get::<String16>("text").len();
-        if self.len != len && self.len > len {
-            self.reset(ctx);
-        }
-    }
-
-    fn handle_key_event(
-        &mut self,
-        key_event: KeyEvent,
-        registry: &mut Registry,
-        ctx: &mut Context,
-    ) {
-        if !ctx.widget().get::<bool>("focused") {
-            return;
-        }
-        println!("Key");
-
-        match key_event.key {
-            Key::Left => {
-                if ctx
-                    .window()
-                    .get::<Global>("global")
-                    .keyboard_state
-                    .is_shift_down()
-                {
-                    self.expand_selection_left(ctx);
-                } else {
-                    self.move_cursor_left(ctx);
-                }
-            }
-            Key::Right => {
-                if ctx
-                    .window()
-                    .get::<Global>("global")
-                    .keyboard_state
-                    .is_shift_down()
-                {
-                    self.expand_selection_right(ctx);
-                } else {
-                    self.move_cursor_right(ctx);
-                }
-            }
-            Key::Backspace => {
-                self.back_space(ctx);
-            }
-            Key::Delete => {
-                self.delete(ctx);
-            }
-            Key::Enter => {
-                self.activate(ctx);
-            }
-            Key::X(..) => {
-                if self.is_ctlr_home_pressed(ctx) {
-                    self.cut(registry, ctx);
-                } else {
-                    self.insert_char(key_event, ctx);
-                }
-            }
-            Key::C(..) => {
-                if self.is_ctlr_home_pressed(ctx) {
-                    self.copy(registry, ctx);
-                } else {
-                    self.insert_char(key_event, ctx);
-                }
-            }
-            Key::V(..) => {
-                if self.is_ctlr_home_pressed(ctx) {
-                    self.paste(registry, ctx);
-                } else {
-                    self.insert_char(key_event, ctx);
-                }
-            }
-            Key::A(..) => {
-                println!("ass");
-                if self.is_ctlr_home_pressed(ctx) {
-                    self.select_all(ctx);
-                } else {
-                    self.insert_char(key_event, ctx);
-                }
-            }
-            _ => {
-                self.insert_char(key_event, ctx);
-            }
-        }
-    }
-
-    fn select_all(&self, ctx: &mut Context) {
-        let len = ctx.widget().get::<String16>("text").len();
-        ctx.widget()
-            .get_mut::<TextSelection>("text_selection")
-            .start_index = 0;
-        ctx.widget()
-            .get_mut::<TextSelection>("text_selection")
-            .length = len;
-        ctx.get_widget(self.cursor).set("expanded", len > 0);
-    }
-
-    fn current_selection(&self, ctx: &mut Context) -> (usize, usize) {
-        let widget = ctx.widget();
-        let selection = widget.get::<TextSelection>("text_selection");
-        (selection.start_index, selection.length)
-    }
-
-    fn expand_selection_left(&mut self, ctx: &mut Context) {
-        let (start_index, length) = self.current_selection(ctx);
-
-        if start_index == 0 {
-            return;
-        }
-
-        ctx.widget()
-            .get_mut::<TextSelection>("text_selection")
-            .start_index = start_index - 1;
-
-        ctx.widget()
-            .get_mut::<TextSelection>("text_selection")
-            .length = length + 1;
-
-        ctx.get_widget(self.cursor).set("expanded", true);
-    }
-
-    fn expand_selection_right(&mut self, ctx: &mut Context) {
-        let (start_index, length) = self.current_selection(ctx);
-
-        if start_index + length >= ctx.widget().get::<String16>("text").len() {
-            return;
-        }
-
-        ctx.widget()
-            .get_mut::<TextSelection>("text_selection")
-            .length = length + 1;
-
-        ctx.get_widget(self.cursor).set("expanded", true);
-    }
-
-    fn move_cursor_left(&mut self, ctx: &mut Context) {
-        if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
-            if let Some(selection) = ctx
-                .get_widget(self.cursor)
-                .try_get_mut::<TextSelection>("text_selection")
-            {
-                selection.start_index = 0;
-                selection.length = 0;
-            }
-        }
-
-        if let Some(selection) = ctx
-            .get_widget(self.cursor)
-            .try_get_mut::<TextSelection>("text_selection")
-        {
-            selection.start_index = (selection.start_index as i32 - 1).max(0) as usize;
-            selection.length = 0;
-        }
-
-        ctx.get_widget(self.cursor).set("expanded", false);
-    }
-
-    fn move_cursor_right(&mut self, ctx: &mut Context) {
-        let text_len = ctx.widget().get::<String16>("text").len();
-
-        if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
-            if let Some(selection) = ctx
-                .get_widget(self.cursor)
-                .try_get_mut::<TextSelection>("text_selection")
-            {
-                selection.start_index = text_len;
-                selection.length = 0;
-            }
-
-            ctx.get_widget(self.cursor).set("expanded", false);
-
-            return;
-        }
-
-        if let Some(selection) = ctx
-            .get_widget(self.cursor)
-            .try_get_mut::<TextSelection>("text_selection")
-        {
-            if selection.start_index < text_len {
-                selection.start_index = (selection.start_index + 1).min(text_len);
-            }
-            selection.length = 0;
-        }
-
-        ctx.get_widget(self.cursor).set("expanded", false);
-    }
-
-    fn clear_selection(&mut self, ctx: &mut Context) {
-        let selection = ctx.widget().clone::<TextSelection>("text_selection");
-        let mut text = ctx.widget().clone::<String16>("text");
-
-        for i in (selection.start_index..(selection.start_index + selection.length)).rev() {
-            text.remove(i);
-        }
-
-        ctx.get_widget(self.target).set("text", text);
-
-        ctx.widget()
-            .get_mut::<TextSelection>("text_selection")
-            .length = 0;
-
-        ctx.get_widget(self.cursor).set("expanded", false);
-    }
-
-    fn back_space(&mut self, ctx: &mut Context) {
-        if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
-            self.clear_selection(ctx);
-        } else {
-            let index = ctx
-                .widget()
-                .clone::<TextSelection>("text_selection")
-                .start_index;
-            if index > 0 {
-                let mut text = ctx.widget().clone::<String16>("text");
-                text.remove(index - 1);
-                ctx.get_widget(self.target).set("text", text);
-                ctx.widget()
-                    .get_mut::<TextSelection>("text_selection")
-                    .start_index = index - 1;
-            }
-        }
-    }
-
-    fn delete(&mut self, ctx: &mut Context) {
-        if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
-            self.clear_selection(ctx);
-        } else {
-            let index = ctx
-                .widget()
-                .clone::<TextSelection>("text_selection")
-                .start_index;
-            if index < ctx.widget().get::<String16>("text").len() {
-                let mut text = ctx.widget().clone::<String16>("text");
-                text.remove(index);
-                ctx.get_widget(self.target).set("text", text);
-
-                ctx.widget()
-                    .get_mut::<TextSelection>("text_selection")
-                    .start_index = index;
-            }
-        }
-    }
-
-    fn activate(&self, ctx: &mut Context) {
-        if *ctx.widget().get::<bool>("lost_focus_on_activation") {
-            ctx.push_event_by_window(FocusEvent::RemoveFocus(ctx.entity));
-        }
-
-        ctx.push_event_strategy_by_entity(
-            ActivateEvent(self.target),
-            self.target,
-            EventStrategy::Direct,
-        );
-    }
-
-    fn insert_char(&mut self, key_event: KeyEvent, ctx: &mut Context) {
-        if key_event.text.is_empty() {
-            return;
-        }
-
-        if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
-            ctx.get_widget(self.target)
-                .set("text", String16::from(key_event.text));
-            if let Some(selection) = ctx
-                .get_widget(self.cursor)
-                .try_get_mut::<TextSelection>("text_selection")
-            {
-                selection.start_index = 1;
-                selection.length = 0
-            }
-            ctx.get_widget(self.cursor).set("expanded", false);
-        } else {
-            let current_selection = *ctx
-                .get_widget(self.cursor)
-                .get::<TextSelection>("text_selection");
-
-            let mut text = ctx.widget().clone::<String16>("text");
-            text.insert_str(current_selection.start_index, key_event.text.as_str());
-            ctx.get_widget(self.target).set("text", text);
-
-            if let Some(selection) = ctx
-                .get_widget(self.cursor)
-                .try_get_mut::<TextSelection>("text_selection")
-            {
-                selection.start_index =
-                    current_selection.start_index + key_event.text.encode_utf16().count();
-            }
-        }
-    }
+    // -- Helpers --
 }
 
 impl State for TextBehaviorState {
@@ -494,69 +508,68 @@ impl State for TextBehaviorState {
     fn update(&mut self, registry: &mut Registry, ctx: &mut Context) {
         self.check_outside_update(ctx);
 
-        let focused = *ctx.widget().get::<bool>("focused");
-        let empty = ctx.widget().get::<String16>("text").is_empty();
+        // let focused = *ctx.widget().get::<bool>("focused");
+        // let empty = ctx.widget().get::<String16>("text").is_empty();
 
-        if !focused
-            && empty
-            && !ctx
-                .get_widget(self.target)
-                .get::<Selector>("selector")
-                .has_state("empty")
-        {
-            ctx.get_widget(self.target)
-                .get_mut::<Selector>("selector")
-                .set_state("empty");
-            ctx.get_widget(self.target).update(false);
-        }
+        // if !focused
+        //     && empty
+        //     && !ctx
+        //         .get_widget(self.target)
+        //         .get::<Selector>("selector")
+        //         .has_state("empty")
+        // {
+        //     ctx.get_widget(self.target)
+        //         .get_mut::<Selector>("selector")
+        //         .set_state("empty");
+        //     ctx.get_widget(self.target).update(false);
+        // }
 
-        if !focused && *ctx.widget().get::<bool>("request_focus") {
-            ctx.widget().set("request_focus", false);
-            ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
-            self.select_all(ctx);
-        }
+        // if !focused && *ctx.widget().get::<bool>("request_focus") {
+        //     ctx.widget().set("request_focus", false);
+        //     ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
+        //     self.select_all(ctx);
+        // }
 
-        if self.focused != *ctx.widget().get::<bool>("focused") {
-            self.focused = *ctx.widget().get::<bool>("focused");
-        }
+        // if self.focused != *ctx.widget().get::<bool>("focused") {
+        //     self.focused = *ctx.widget().get::<bool>("focused");
+        // }
 
         if let Some(action) = self.action.clone() {
             match action {
-                TextAction::Key(event) => {
-                    self.handle_key_event(event, registry, ctx);
+                TextAction::KeyDown(event) => {
+                    self.key_down(registry, ctx, event);
                 }
-                TextAction::Mouse(p) => {
-                    self.request_focus(ctx, p);
-                }
+                TextAction::MouseDown(p) => self.mouse_down(ctx, p),
                 TextAction::Drop(text, position) => {
                     if check_mouse_condition(position, &ctx.get_widget(self.target)) {
                         self.insert_text(text, ctx);
                     }
                 }
+                TextAction::FocusedChanged => self.focused_changed(ctx),
             }
 
             self.action = None;
-            ctx.get_widget(self.target).update(false);
+            // ctx.get_widget(self.target).update(false);
         }
 
-        self.len = ctx.widget().get::<String16>("text").len();
+        // self.len = ctx.widget().get::<String16>("text").len();
 
-        if self.len == 0 && self.focused {
-            ctx.get_widget(self.target)
-                .get_mut::<Selector>("selector")
-                .set_state("empty_focused");
-            ctx.get_widget(self.target).update(false);
-        } else if self.len > 0 && self.focused {
-            ctx.get_widget(self.target)
-                .get_mut::<Selector>("selector")
-                .set_state("focused");
-            ctx.get_widget(self.target).update(false);
-        } else if self.len > 0 && !self.focused {
-            ctx.get_widget(self.target)
-                .get_mut::<Selector>("selector")
-                .clear_state();
-            ctx.get_widget(self.target).update(false);
-        }
+        // if self.len == 0 && self.focused {
+        //     ctx.get_widget(self.target)
+        //         .get_mut::<Selector>("selector")
+        //         .set_state("empty_focused");
+        //     ctx.get_widget(self.target).update(false);
+        // } else if self.len > 0 && self.focused {
+        //     ctx.get_widget(self.target)
+        //         .get_mut::<Selector>("selector")
+        //         .set_state("focused");
+        //     ctx.get_widget(self.target).update(false);
+        // } else if self.len > 0 && !self.focused {
+        //     ctx.get_widget(self.target)
+        //         .get_mut::<Selector>("selector")
+        //         .clear_state();
+        //     ctx.get_widget(self.target).update(false);
+        // }
     }
 }
 
@@ -583,7 +596,7 @@ widget!(
     ///     * lost_focus_on_activation
     ///     * request_focus
     ///     * text
-    ///     * text_selection
+    ///     * selection
     ///
     /// # Example
     ///
@@ -597,7 +610,7 @@ widget!(
     ///     font_size: f64,
     ///     lost_focus_on_activation: bool,
     ///     request_focus: bool,
-    ///     text_selection: TextSelection
+    ///     selection: TextSelection
     /// });
     ///
     /// impl Template for MyInput {
@@ -614,7 +627,7 @@ widget!(
     ///            // use .0 because Entity wraps an u32
     ///            .text_block(text_block.0)
     ///            .focused(id)
-    ///            .text_selection(id)
+    ///            .selection(id)
     ///            .build(ctx);
     ///
     ///        let text_behavior = TextBehavior::new()
@@ -626,7 +639,7 @@ widget!(
     ///            .target(id.0)
     ///            .request_focus(id)
     ///            .text(id)
-    ///            .text_selection(id)
+    ///            .selection(id)
     ///            .build(ctx);
     ///
     ///        self.child(cursor)
@@ -662,7 +675,7 @@ widget!(
         text: String16,
 
         /// Sets or shares the text selection property.
-        text_selection: TextSelection
+        selection: TextSelection
     }
 );
 
@@ -672,7 +685,7 @@ impl Template for TextBehavior {
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto-Regular")
             .text("")
-            .text_selection(TextSelection::default())
+            .selection(TextSelection::default())
             .focused(false)
             .lost_focus_on_activation(true)
             .child(
@@ -682,7 +695,7 @@ impl Template for TextBehavior {
                     .on_mouse_down(move |states, m| {
                         states
                             .get_mut::<TextBehaviorState>(id)
-                            .action(TextAction::Mouse(m));
+                            .action(TextAction::MouseDown(m));
                         true
                     })
                     .build(ctx),
@@ -690,7 +703,7 @@ impl Template for TextBehavior {
             .on_key_down(move |states, event| -> bool {
                 states
                     .get_mut::<TextBehaviorState>(id)
-                    .action(TextAction::Key(event));
+                    .action(TextAction::KeyDown(event));
                 false
             })
             .on_drop_file(move |states, file_name, position| {
@@ -704,6 +717,11 @@ impl Template for TextBehavior {
                     .get_mut::<TextBehaviorState>(id)
                     .action(TextAction::Drop(file_name, position));
                 false
+            })
+            .on_changed("focused", |states, id| {
+                states
+                    .get_mut::<TextBehaviorState>(id)
+                    .action(TextAction::FocusedChanged);
             })
     }
 }

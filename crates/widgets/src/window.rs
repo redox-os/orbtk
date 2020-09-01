@@ -171,6 +171,9 @@ widget!(
         /// Sets or shares a value that describes if the current window is active.
         active: bool,
 
+        /// Access the current keyboard state e.g. to check modifiers.
+        keyboard_state: KeyboardState,
+
         /// Internal property to handle dirty widgets.
         dirty_widgets: DirtyWidgets
     }

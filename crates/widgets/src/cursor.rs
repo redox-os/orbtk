@@ -43,7 +43,7 @@ widget!(
     /// **style:** `cursor`
     Cursor<CursorState> {
         /// Sets or shares the text selection property.
-        text_selection: TextSelection,
+        selection: TextSelection,
 
         /// Sets or shares the background property.
         background: Brush,

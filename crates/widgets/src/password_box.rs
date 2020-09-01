@@ -81,7 +81,7 @@ widget!(
         water_mark: String16,
 
         /// Sets or shares the text selection property.
-        text_selection: TextSelection,
+        selection: TextSelection,
 
         /// Sets or shares the foreground property.
         foreground: Brush,
@@ -134,7 +134,7 @@ impl Template for PasswordBox {
             .h_align("start")
             .text_block(text_block.0)
             .focused(id)
-            .text_selection(id)
+            .selection(id)
             .build(ctx);
 
         let text_behavior = TextBehavior::new()
@@ -146,7 +146,7 @@ impl Template for PasswordBox {
             .target(id.0)
             .request_focus(id)
             .text(id)
-            .text_selection(id)
+            .selection(id)
             .build(ctx);
 
         self.name("PasswordBox")
@@ -158,7 +158,7 @@ impl Template for PasswordBox {
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto-Regular")
-            .text_selection(TextSelection::default())
+            .selection(TextSelection::default())
             .padding(4.0)
             .background(colors::LYNCH_COLOR)
             .border_brush("transparent")
