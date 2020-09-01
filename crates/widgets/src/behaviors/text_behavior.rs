@@ -52,6 +52,11 @@ impl TextBehaviorState {
         false
     }
 
+    fn cut(&mut self, registry: &mut Registry, ctx: &mut Context) {
+        self.copy(registry, ctx);
+        self.clear_selection(ctx);
+    }
+
     fn copy(&self, registry: &mut Registry, ctx: &mut Context) {
         let text_selection: TextSelection = ctx.get_widget(self.target).clone("text_selection");
 
@@ -187,6 +192,7 @@ impl TextBehaviorState {
         if !ctx.widget().get::<bool>("focused") {
             return;
         }
+        println!("Key");
 
         match key_event.key {
             Key::Left => {
@@ -222,6 +228,13 @@ impl TextBehaviorState {
             Key::Enter => {
                 self.activate(ctx);
             }
+            Key::X(..) => {
+                if self.is_ctlr_home_pressed(ctx) {
+                    self.cut(registry, ctx);
+                } else {
+                    self.insert_char(key_event, ctx);
+                }
+            }
             Key::C(..) => {
                 if self.is_ctlr_home_pressed(ctx) {
                     self.copy(registry, ctx);
@@ -237,6 +250,7 @@ impl TextBehaviorState {
                 }
             }
             Key::A(..) => {
+                println!("ass");
                 if self.is_ctlr_home_pressed(ctx) {
                     self.select_all(ctx);
                 } else {

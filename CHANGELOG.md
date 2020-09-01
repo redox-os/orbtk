@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * PasswordBox widget
 * Clipboard service
-* Text input copy and paste
+* TextBehavior: Copy Ctrl+C, Paste Ctrl+V, Cut Ctrl+X
 * orbraq backend (Orbclient and raqote)
 * Refactor on_changed callback, add key parameter
 * Access RawWindowHandle from Context
