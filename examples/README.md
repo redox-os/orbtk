@@ -1,6 +1,6 @@
 # OrbTk examples
 
-[![Build and test](https://github.com/redox-os/orbtk/workflows/build/badge.svg)](https://github.com/redox-os/orbtk/actions)
+[![Build and test](https://github.com/redox-os/orbtk/workflows/CI/badge.svg)](https://github.com/redox-os/orbtk/actions)
 ![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)
 
 * calculator: calculator example
