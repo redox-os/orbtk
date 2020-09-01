@@ -25,17 +25,17 @@ impl State for MainViewState {
         if let Some(action) = self.action {
             match action {
                 ProgressEvent::Advance(amount) => {
-                    let old_width = *progress_bar(ctx.child("pgbar")).val();
+                    let old_width = *ProgressBar::val_ref(&ctx.child("pgbar"));
                     let new_width = old_width + amount;
                     // Set the ProgressBar's val property to the calculated percentage
                     // (whereas 0.0 means 0 %, and 1.0 means 100 %) to advance the progress
-                    progress_bar(ctx.child("pgbar")).set_val(new_width);
+                    ProgressBar::val_set(&mut ctx.child("pgbar"), new_width);
                 }
                 ProgressEvent::Reset => {
-                    progress_bar(ctx.child("pgbar")).set_val(0.0);
+                    ProgressBar::val_set(&mut ctx.child("pgbar"), 0.0);
                 }
                 ProgressEvent::SetToFull => {
-                    progress_bar(ctx.child("pgbar")).set_val(1.0);
+                    ProgressBar::val_set(&mut ctx.child("pgbar"), 1.0);
                 }
             }
             self.action = None;

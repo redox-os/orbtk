@@ -1,6 +1,5 @@
 extern crate proc_macro;
 
-use case::CaseExt;
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
@@ -86,10 +85,6 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
 
     let ident = &input.ident;
 
-    let helper = ident.to_string().as_str().to_snake();
-    let helper = syn::Ident::new(helper.as_str(), Span::call_site());
-
-    let name = syn::Ident::new(format!("{}Ctx", ident).as_str(), Span::call_site());
     let mut generated = vec![];
 
     if let syn::Data::Struct(DataStruct { ref fields, .. }) = input.data {
@@ -134,13 +129,18 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
                             let ty = path.get_ident();
 
                             if let Some(ty) = ty {
+                                let getter = Ident::new(
+                                    format!("{}_ref", field_name).as_str(),
+                                    Span::call_site(),
+                                );
+
                                 let setter = Ident::new(
-                                    format!("set_{}", field_name).as_str(),
+                                    format!("{}_set", field_name).as_str(),
                                     Span::call_site(),
                                 );
 
                                 let clone = Ident::new(
-                                    format!("clone_{}", field_name).as_str(),
+                                    format!("{}_clone", field_name).as_str(),
                                     Span::call_site(),
                                 );
 
@@ -150,28 +150,31 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
                                 );
 
                                 let gen = quote! {
-                                    /// Gets a reference of the property value.
+                                    /// Gets a reference of the property value. Panics if it is the wrong widget type.
                                     #[inline(always)]
-                                    pub fn #field_name(&self) -> &#ty {
-                                        self.ctx.get::<#ty>(#field_name_str)
+                                    pub fn #getter<'a>(widget: &'a WidgetContainer<'a>) -> &'a #ty {
+                                        #ident::panics_on_wrong_type(widget);
+                                        widget.get(#field_name_str)
                                     }
 
-                                    /// Gets a mutable reference of the property value.
+                                    /// Gets a mutable reference of the property value. Panics if it is the wrong widget type.
                                     #[inline(always)]
-                                    pub fn #get_mut(&mut self) -> &mut #ty {
-                                        self.ctx.get_mut::<#ty>(#field_name_str)
+                                    pub fn #get_mut<'a>(widget: &'a mut WidgetContainer<'a>) -> &'a mut #ty {
+                                        #ident::panics_on_wrong_type(widget);
+                                        widget.get_mut(#field_name_str)
                                     }
 
-                                    /// Sets the property value.
+                                    /// Sets the property value. Panics if it is the wrong widget type.
                                     #[inline(always)]
-                                    pub fn #setter(&mut self, value: impl Into<#ty>) {
-                                        self.ctx.set(#field_name_str, value.into());
+                                    pub fn #setter(widget: &mut WidgetContainer, value: impl Into<#ty>) {
+                                        #ident::panics_on_wrong_type(widget);
+                                        widget.set(#field_name_str, value.into());
                                     }
 
-                                    /// Clones the property value.
+                                    /// Clones the property value. Panics if it is the wrong widget type.
                                     #[inline(always)]
-                                    pub fn #clone(&mut self) -> #ty {
-                                        self.ctx.clone(#field_name_str)
+                                    pub fn #clone(widget: &WidgetContainer) -> #ty {
+                                        widget.clone(#field_name_str)
                                     }
                                 };
 
@@ -188,39 +191,8 @@ pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
     }
 
     let gen = quote! {
-        /// Represents a widget context that provides methods to access the properties of a widget.
-        pub struct #name<'a> {
-            ctx: WidgetContainer<'a>
-        }
-
-        /// Gets a context wrapper to access the properties of the widget.
-        pub fn #helper(ctx: WidgetContainer<'_>) -> #name {
-            #ident::get(ctx)
-        }
-
-        impl<'a> #name<'a> {
-            #(#generated)*
-
-            /// Update all properties from theme for the current widget.
-            fn update(&mut self, force: bool) {
-                self.ctx.update(force);
-            }
-        }
-
         impl #ident {
-            /// Gets a widget context that wraps the given widgets an provides access to the its properties.
-            pub fn get<'a>(ctx: WidgetContainer<'a>) -> #name<'a> {
-                if *ctx.get::<TypeId>("type_id") != TypeId::of::<#ident>() {
-                    let type_name = ctx.clone::<String>("type_name");
-                    panic!("Wrong widget type {} for entity {:?} with type: {}.",
-                        std::any::type_name::<#ident>(), ctx.entity(),
-                        type_name);
-                }
-
-                #name {
-                    ctx
-                }
-            }
+            #(#generated)*
         }
     };
 

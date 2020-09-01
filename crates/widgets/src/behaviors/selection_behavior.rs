@@ -15,26 +15,26 @@ impl SelectionBehaviorState {
 
 impl State for SelectionBehaviorState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        self.selected = *selection_behavior(ctx.widget()).selected();
+        self.selected = *SelectionBehavior::selected_ref(&ctx.widget());
         let target = *ctx.widget().get::<u32>("target");
         toggle_flag("selected", &mut ctx.get_widget(Entity(target)));
         ctx.get_widget(Entity(target)).update(false);
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        let selected = *selection_behavior(ctx.widget()).selected();
-        let target: Entity = (*selection_behavior(ctx.widget()).target()).into();
+        let selected = *SelectionBehavior::selected_ref(&ctx.widget());
+        let target: Entity = (*SelectionBehavior::target_ref(&ctx.widget())).into();
 
         if self.selected == selected && !self.toggle_selection {
             return;
         }
 
-        if *selection_behavior(ctx.widget()).enabled() && self.toggle_selection {
+        if *SelectionBehavior::enabled_ref(&ctx.widget()) && self.toggle_selection {
             ctx.get_widget(target).set("selected", !selected);
         }
 
         self.toggle_selection = false;
-        self.selected = *selection_behavior(ctx.widget()).selected();
+        self.selected = *SelectionBehavior::selected_ref(&ctx.widget());
 
         toggle_flag("selected", &mut ctx.get_widget(target));
 

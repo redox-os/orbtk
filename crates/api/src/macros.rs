@@ -320,6 +320,16 @@ macro_rules! widget {
                 self
             }
 
+            /// Checks if the type of the given widget is the same as the associated type of struct otherwise this method will panic.
+            pub fn panics_on_wrong_type(widget: &WidgetContainer) {
+                if *widget.get::<TypeId>("type_id") != TypeId::of::<$widget>() {
+                    let struct_type_name = std::any::type_name::<$widget>().to_string();
+                    let widget_type_name = widget.clone::<String>("type_name");
+
+                    panic!("Wrong widget type: expected {}, found {}", struct_type_name, widget_type_name);
+                }
+            }
+
             $(
                 /// Gets a reference of the state.
                 fn state(&self) -> &Box<$state> {
@@ -332,6 +342,7 @@ macro_rules! widget {
                 }
             )*
 
+            // create properties of macros
             $(
                 $(
                     $(#[$prop_doc])*
@@ -358,6 +369,7 @@ macro_rules! widget {
             )*
         }
 
+        // event handlers
         $(
             $(
                 impl $handler for $widget {}

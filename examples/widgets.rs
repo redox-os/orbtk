@@ -34,50 +34,49 @@ impl State for MainViewState {
         if let Some(action) = self.action {
             match action {
                 Action::AddItem => {
-                    let len = main_view(ctx.widget()).list().len();
+                    let len = MainView::list_ref(&ctx.widget()).len();
 
                     if len < 5 {
-                        main_view(ctx.widget())
-                            .list_mut()
-                            .push(format!("Item {}", len + 1));
+                        MainView::list_mut(&mut ctx.widget()).push(format!("Item {}", len + 1));
                         ctx.child("items").clone_or_default::<usize>("Item");
-                        items_widget(ctx.child("items")).set_count(len + 1);
-                        button(ctx.child("remove-item-button")).set_enabled(true);
+                        ItemsWidget::count_set(&mut ctx.child("items"), len + 1);
+                        Button::enabled_set(&mut ctx.child("remove-item-button"), true);
 
                         if len == 4 {
-                            button(ctx.child("add-item-button")).set_enabled(false);
+                            Button::enabled_set(&mut ctx.child("add-item-button"), false);
                         }
                     }
                 }
                 Action::RemoveItem => {
-                    let len = main_view(ctx.widget()).list().len();
+                    let len = MainView::list_ref(&ctx.widget()).len();
                     if len > 0 {
-                        main_view(ctx.widget()).list_mut().remove(len - 1);
-                        items_widget(ctx.child("items")).set_count(len - 1);
-                        button(ctx.child("add-item-button")).set_enabled(true);
+                        MainView::list_mut(&mut ctx.widget()).remove(len - 1);
+                        ItemsWidget::count_set(&mut ctx.child("items"), len - 1);
+                        Button::enabled_set(&mut ctx.child("add-item-button"), true);
 
                         if len == 1 {
-                            button(ctx.child("remove-item-button")).set_enabled(false);
+                            Button::enabled_set(&mut ctx.child("remove-item-button"), false);
                         }
                     }
                 }
                 Action::IncrementCounter => {
-                    *main_view(ctx.widget()).counter_mut() += 1;
+                    *MainView::counter_mut(&mut ctx.widget()) += 1;
 
-                    let counter = *main_view(ctx.widget()).counter();
+                    let counter = *MainView::counter_ref(&ctx.widget());
 
-                    main_view(ctx.widget())
-                        .set_result(String16::from(format!("Button count: {}", counter)));
+                    MainView::result_set(
+                        &mut ctx.widget(),
+                        String16::from(format!("Button count: {}", counter)),
+                    );
                 }
                 Action::ClearText => {
-                    main_view(ctx.widget()).set_text_one(String16::default());
-                    main_view(ctx.widget()).set_text_two(String16::default());
+                    MainView::text_one_set(&mut ctx.widget(), String16::default());
+                    MainView::text_two_set(&mut ctx.widget(), String16::default());
                 }
                 Action::EntryActivated(entity) => {
-                    let mut text_box = text_box(ctx.get_widget(entity));
-                    let text = text_box.text_mut();
+                    let text = TextBox::text_clone(&ctx.get_widget(entity));
                     println!("submitting {}", text);
-                    text.clear();
+                    TextBox::text_mut(&mut ctx.get_widget(entity)).clear();
                 }
                 Action::ToggleTheme(entity) => {
                     let light = *ctx.get_widget(entity).get::<bool>("selected");
@@ -94,11 +93,11 @@ impl State for MainViewState {
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         let mut selection_string = "Selected:".to_string();
 
-        for index in &main_view(ctx.widget()).selected_indices().0 {
+        for index in &MainView::selected_indices_ref(&ctx.widget()).0 {
             selection_string = format!("{} {}", selection_string, index);
         }
 
-        text_block(ctx.child("selection")).set_text(selection_string);
+        TextBlock::text_set(&mut ctx.child("selection"), selection_string);
     }
 }
 

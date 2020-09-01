@@ -32,7 +32,7 @@ impl State for SwitchState {
             return;
         }
 
-        switch(ctx.widget()).set_selected(self.selected);
+        Switch::selected_set(&mut ctx.widget(), self.selected);
 
         let element = ctx.widget().clone::<Selector>("selector").style.unwrap();
 

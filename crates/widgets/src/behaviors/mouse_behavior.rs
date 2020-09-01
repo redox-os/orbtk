@@ -23,10 +23,10 @@ impl MouseBehaviorState {
 
 impl State for MouseBehaviorState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        self.target = (*mouse_behavior(ctx.widget()).target()).into();
+        self.target = (*MouseBehavior::target_ref(&ctx.widget())).into();
     }
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        if !mouse_behavior(ctx.widget()).enabled() {
+        if !*MouseBehavior::enabled_ref(&ctx.widget()) {
             return;
         }
 
@@ -37,7 +37,7 @@ impl State for MouseBehaviorState {
                     toggle_flag("pressed", &mut ctx.get_widget(self.target));
                 }
                 Action::Release(p) => {
-                    if !*mouse_behavior(ctx.widget()).pressed() {
+                    if !*MouseBehavior::pressed_ref(&ctx.widget()) {
                         self.action = None;
                         return;
                     }
@@ -56,7 +56,7 @@ impl State for MouseBehaviorState {
                     }
                 }
                 Action::Scroll(p) => {
-                    mouse_behavior(ctx.widget()).set_position(p);
+                    MouseBehavior::position_set(&mut ctx.widget(), p);
                     self.has_delta = true;
                 }
             };
@@ -69,7 +69,7 @@ impl State for MouseBehaviorState {
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         if self.has_delta {
-            mouse_behavior(ctx.widget()).set_delta(Point::default());
+            MouseBehavior::delta_set(&mut ctx.widget(), Point::default());
             self.has_delta = false;
         }
     }

@@ -29,14 +29,12 @@ impl WindowState {
     }
 
     fn resize(&self, width: f64, height: f64, ctx: &mut Context) {
-        window(ctx.widget()).bounds_mut().set_size(width, height);
-        window(ctx.widget())
-            .constraint_mut()
-            .set_size(width, height);
+        Window::bounds_mut(&mut ctx.window()).set_size(width, height);
+        Window::constraint_mut(&mut ctx.window()).set_size(width, height);
     }
 
     fn active_changed(&self, active: bool, ctx: &mut Context) {
-        window(ctx.widget()).set_active(active);
+        Window::active_set(&mut ctx.widget(), active);
 
         // if !active {
         //     // remove focus if the window is not active
@@ -114,12 +112,14 @@ impl State for WindowState {
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        if self.background != *window(ctx.widget()).background() {
+        if self.background != *Window::background_ref(&ctx.widget()) {
             self.set_background(ctx);
         }
 
-        if !self.title.eq(window(ctx.widget()).title()) {
-            self.title = window(ctx.widget()).clone_title();
+        let window = ctx.widget();
+
+        if !self.title.eq(Window::title_ref(&window)) {
+            self.title = Window::title_clone(&window);
             ctx.send_window_request(WindowRequest::ChangeTitle(self.title.clone()));
         }
 

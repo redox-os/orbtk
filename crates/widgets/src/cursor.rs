@@ -9,30 +9,31 @@ pub struct CursorState {
 
 impl State for CursorState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        let cursor = cursor(ctx.widget());
-        self.focused = *cursor.focused();
-        self.expanded = *cursor.expanded();
+        let cursor = ctx.widget();
+        self.focused = *Cursor::focused_ref(&cursor);
+        self.expanded = *Cursor::expanded_ref(&cursor);
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        let mut cursor = cursor(ctx.widget());
+        let focused = *Cursor::focused_ref(&ctx.widget());
+        let expanded = *Cursor::expanded_ref(&ctx.widget());
 
-        if self.focused == *cursor.focused() && self.expanded == *cursor.expanded() {
+        if self.focused == focused && self.expanded == expanded {
             return;
         }
 
-        self.focused = *cursor.focused();
-        self.expanded = *cursor.expanded();
+        self.focused = focused;
+        self.expanded = expanded;
 
-        cursor.selector_mut().clear_state();
+        Cursor::selector_mut(&mut ctx.widget()).clear_state();
 
         if self.expanded && self.focused {
-            cursor.selector_mut().set_state("expanded");
+            Cursor::selector_mut(&mut ctx.widget()).set_state("expanded");
         } else if self.focused {
-            cursor.selector_mut().set_state("focused");
+            Cursor::selector_mut(&mut ctx.widget()).set_state("focused");
         }
 
-        cursor.update(false);
+        ctx.widget().update(false);
     }
 }
 

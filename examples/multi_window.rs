@@ -15,7 +15,7 @@ impl MainState {
 impl State for MainState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         if self.show_window {
-            button(ctx.child("button")).set_enabled(false);
+            Button::enabled_set(&mut ctx.child("button"), false);
             ctx.show_window(|ctx| {
                 Window::new()
                     .title("Dialog")

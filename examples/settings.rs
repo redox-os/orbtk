@@ -35,11 +35,13 @@ impl State for MainViewState {
                         .get::<Settings>("settings")
                         .load::<Global>("global")
                     {
-                        main_view(ctx.widget()).set_text(String16::from(global.label));
+                        MainView::text_set(&mut ctx.widget(), String16::from(global.label));
                     }
 
-                    main_view(ctx.widget())
-                        .set_info_text(String16::from("Label loaded from settings file."));
+                    MainView::info_text_set(
+                        &mut ctx.widget(),
+                        String16::from("Label loaded from settings file."),
+                    );
                 }
                 Action::Save => {
                     // save label to settings file.
@@ -52,12 +54,15 @@ impl State for MainViewState {
                             },
                         )
                         .unwrap();
-                    main_view(ctx.widget())
-                        .set_info_text(String16::from("Label saved to settings file."));
+
+                    MainView::info_text_set(
+                        &mut ctx.widget(),
+                        String16::from("Label saved to settings file."),
+                    );
                 }
                 Action::Clear => {
-                    main_view(ctx.widget()).set_text(String16::default());
-                    main_view(ctx.widget()).set_info_text(String16::default());
+                    MainView::text_set(&mut ctx.widget(), String16::default());
+                    MainView::info_text_set(&mut ctx.widget(), String16::default());
                 }
             }
 

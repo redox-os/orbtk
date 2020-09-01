@@ -17,7 +17,7 @@ impl State for MainViewState {
         if self.clear {
             // Clears the text property of MainView and because
             // of the sharing also the text of the TextBox.
-            main_view(ctx.widget()).set_text(String16::default());
+            MainView::text_set(&mut ctx.widget(), String16::default());
             self.clear = false;
         }
     }

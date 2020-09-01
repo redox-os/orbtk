@@ -60,9 +60,9 @@ impl MainViewState {
         }
 
         if result % 1.0 == 0.0 {
-            main_view(ctx.widget()).set_text(format!("{}", result));
+            MainView::text_set(&mut ctx.widget(), format!("{}", result));
         } else {
-            main_view(ctx.widget()).set_text(format!("{:.8}", result));
+            MainView::text_set(&mut ctx.widget(), format!("{:.8}", result));
         }
 
         self.left_side = Some(result);
@@ -76,7 +76,7 @@ impl State for MainViewState {
             match action {
                 Action::Digit(digit) => {
                     self.input.push(digit);
-                    text_block(ctx.child("input")).text_mut().push(digit);
+                    TextBlock::text_mut(&mut ctx.child("input")).push(digit);
                 }
                 Action::Operator(operator) => match operator {
                     'C' => {
@@ -84,8 +84,8 @@ impl State for MainViewState {
                         self.left_side = None;
                         self.operator = None;
                         self.right_side = None;
-                        main_view(ctx.widget()).text_mut().clear();
-                        text_block(ctx.child("input")).text_mut().clear()
+                        MainView::text_mut(&mut ctx.widget()).clear();
+                        TextBlock::text_mut(&mut ctx.child("input")).clear();
                     }
                     '=' => {
                         self.right_side = Some(self.input.parse().unwrap_or(0.));
@@ -94,7 +94,7 @@ impl State for MainViewState {
                         self.left_side = None;
                         self.operator = None;
                         self.right_side = None;
-                        text_block(ctx.child("input")).text_mut().clear()
+                        TextBlock::text_mut(&mut ctx.child("input")).clear();
                     }
                     _ => {
                         if self.input.is_empty() {
@@ -107,7 +107,7 @@ impl State for MainViewState {
                             self.calculate(ctx);
                         }
 
-                        text_block(ctx.child("input")).text_mut().push(operator);
+                        TextBlock::text_mut(&mut ctx.child("input")).push(operator);
                         self.input.clear();
                         self.operator = Some(operator);
                     }
