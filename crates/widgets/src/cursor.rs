@@ -26,7 +26,13 @@ widget!(
         border_width: Thickness,
 
         // Defines the opacity of the background of the selection range.
-        background_opacity: f32
+        background_opacity: f32,
+
+        /// Defines the current width of the selection.
+        selection_width: f64,
+
+        /// Defines the x position of the current selection.
+        selection_x: f64
     }
 );
 

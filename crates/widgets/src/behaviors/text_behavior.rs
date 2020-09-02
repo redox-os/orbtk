@@ -1,6 +1,7 @@
 use crate::{
     api::prelude::*,
     proc_macros::*,
+    render::TextMetrics,
     shell::prelude::{Key, KeyEvent},
     theme::fonts,
     Cursor,
@@ -20,6 +21,7 @@ enum TextAction {
     MouseDown(Mouse),
     Drop(String, Point),
     FocusedChanged,
+    SelectionChanged,
 }
 
 /// The `TextBehaviorState` handles the text processing of the `TextBehavior` widget.
@@ -183,6 +185,32 @@ impl TextBehaviorState {
 
     // -- Selection --
 
+    fn update_cursor(&self, ctx: &mut Context) {
+        let selection = self.selection(ctx);
+        let (start, end) = {
+            if selection.start() <= selection.end() {
+                (selection.start(), selection.end())
+            } else {
+                (selection.end(), selection.start())
+            }
+        };
+
+        let cursor_width = Cursor::bounds_ref(&ctx.get_widget(self.cursor)).width();
+        let cursor_border_width = Cursor::border_width_ref(&ctx.get_widget(self.cursor)).right();
+
+        let start_measure = self.measure(ctx, 0, start);
+        Cursor::selection_x_set(&mut ctx.get_widget(self.cursor), start_measure.width);
+
+        let length_measure = self.measure(ctx, start, end);
+        Cursor::selection_width_set(
+            &mut ctx.get_widget(self.cursor),
+            length_measure
+                .width
+                .max(cursor_border_width)
+                .max(cursor_width - cursor_border_width),
+        );
+    }
+
     fn select_all(&self, ctx: &mut Context) {
         if TextBehavior::text_ref(&ctx.widget()).is_empty()
             || !*TextBehavior::focused_ref(&ctx.widget())
@@ -237,6 +265,7 @@ impl TextBehaviorState {
     fn move_selection_right(&mut self, ctx: &mut Context) {
         let selection = move_selection_right(self.selection(ctx), self.len(ctx));
         TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.update_cursor(ctx);
     }
 
     fn clear_selection(&mut self, ctx: &mut Context) {
@@ -483,6 +512,20 @@ impl TextBehaviorState {
         position_index
     }
 
+    // measure text part
+    fn measure(&self, ctx: &mut Context, start: usize, end: usize) -> TextMetrics {
+        let font = TextBehavior::font_clone(&ctx.widget());
+        let font_size = *TextBehavior::font_size_ref(&ctx.widget());
+
+        if let Some(text_part) = TextBehavior::text_ref(&ctx.widget()).get_string(start, end) {
+            return ctx
+                .render_context_2_d()
+                .measure(text_part.as_str(), font_size, font);
+        }
+
+        TextMetrics::default()
+    }
+
     // -- Helpers --
 }
 
@@ -525,6 +568,18 @@ impl State for TextBehaviorState {
                     }
                 }
                 TextAction::FocusedChanged => self.focused_changed(ctx),
+                TextAction::SelectionChanged => {}
+            }
+
+            self.action = None;
+        }
+    }
+
+    fn update_post_layout(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+        if let Some(action) = self.action.clone() {
+            match action {
+                TextAction::SelectionChanged => self.update_cursor(ctx),
+                _ => {}
             }
 
             self.action = None;
@@ -681,6 +736,11 @@ impl Template for TextBehavior {
                 states
                     .get_mut::<TextBehaviorState>(id)
                     .action(TextAction::FocusedChanged);
+            })
+            .on_changed("selection", |states, id| {
+                states
+                    .get_mut::<TextBehaviorState>(id)
+                    .action(TextAction::SelectionChanged);
             })
     }
 }
