@@ -18,7 +18,7 @@ impl RenderObject for CursorRenderObject {
             border_width,
             border_brush,
             background_opacity,
-            selection,
+            cursor_x,
             selection_width,
             selection_x,
             offset,
@@ -30,19 +30,11 @@ impl RenderObject for CursorRenderObject {
                 *widget.get::<Thickness>("border_width"),
                 widget.clone_or_default::<Brush>("border_brush"),
                 *widget.get::<f32>("background_opacity"),
-                *widget.get::<TextSelection>("selection"),
+                *widget.get::<f64>("cursor_x"),
                 *widget.get::<f64>("selection_width"),
                 *widget.get::<f64>("selection_x"),
                 *widget.get::<f64>("offset"),
             )
-        };
-
-        let x_position_indicator = {
-            if selection.start() <= selection.end() {
-                0.
-            } else {
-                bounds.width() - border_width.right()
-            }
         };
 
         let border_width = border_width.right();
@@ -61,8 +53,7 @@ impl RenderObject for CursorRenderObject {
         // border
         ctx.render_context_2_d().set_fill_style(border_brush);
         ctx.render_context_2_d().fill_rect(
-            global_position.x() + bounds.x() + offset + selection_x + x_position_indicator
-                - border_width / 2.,
+            global_position.x() + bounds.x() + offset + cursor_x - border_width / 2.,
             global_position.y() + bounds.y(),
             border_width,
             bounds.height(),

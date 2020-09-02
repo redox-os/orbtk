@@ -31,8 +31,11 @@ widget!(
         /// Defines the current width of the selection.
         selection_width: f64,
 
-        /// Defines the x position of the current selection.
+        /// Defines the start position of the current selection.
         selection_x: f64,
+
+        /// Defines the x position of the cursor.
+        cursor_x: f64,
 
         /// Defines the of the cursor.
         offset: f64

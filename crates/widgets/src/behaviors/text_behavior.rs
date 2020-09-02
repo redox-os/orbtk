@@ -210,9 +210,11 @@ impl TextBehaviorState {
             }
         };
 
+        let cursor_start_measure = self.measure(ctx, 0, selection.start());
+        Cursor::cursor_x_set(&mut ctx.get_widget(self.cursor), cursor_start_measure.width);
+
         let start_measure = self.measure(ctx, 0, start);
         Cursor::selection_x_set(&mut ctx.get_widget(self.cursor), start_measure.width);
-
         let length_measure = self.measure(ctx, start, end);
         Cursor::selection_width_set(&mut ctx.get_widget(self.cursor), length_measure.width);
 
@@ -221,14 +223,14 @@ impl TextBehaviorState {
         let width = Cursor::bounds_ref(&ctx.get_widget(self.cursor)).width();
         let delta = width - offset;
 
-        if self.direction == Direction::Right && start_measure.width > delta {
-            let offset_delta = delta - start_measure.width;
+        if self.direction == Direction::Right && cursor_start_measure.width > delta {
+            let offset_delta = delta - cursor_start_measure.width;
             Cursor::offset_set(&mut ctx.get_widget(self.cursor), offset + offset_delta);
             TextBlock::offset_set(&mut ctx.get_widget(self.text_block), offset + offset_delta);
         }
 
-        if self.direction == Direction::Left && start_measure.width + offset < 0. {
-            let offset_delta = start_measure.width + offset;
+        if self.direction == Direction::Left && cursor_start_measure.width + offset < 0. {
+            let offset_delta = cursor_start_measure.width + offset;
             Cursor::offset_set(&mut ctx.get_widget(self.cursor), offset - offset_delta);
             TextBlock::offset_set(&mut ctx.get_widget(self.text_block), offset - offset_delta);
         }
@@ -251,35 +253,21 @@ impl TextBehaviorState {
     }
 
     fn expand_selection_left(&mut self, ctx: &mut Context) {
-        // let (start_index, length) = self.current_selection(ctx);
-
-        // if start_index == 0 {
-        //     return;
-        // }
-
-        // ctx.widget()
-        //     .get_mut::<TextSelection>("selection")
-        //     .start_index = start_index - 1;
-
-        // ctx.widget()
-        //     .get_mut::<TextSelection>("selection")
-        //     .length = length + 1;
-
-        // ctx.get_widget(self.cursor).set("expanded", true);
+        self.direction = Direction::Left;
+        let mut selection = self.selection(ctx);
+        if selection.start() as i32 - 1 >= 0 {
+            selection.set_start(selection.start() - 1);
+        }
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
 
     fn expand_selection_right(&mut self, ctx: &mut Context) {
-        // let (start_index, length) = self.current_selection(ctx);
-
-        // if start_index + length >= ctx.widget().get::<String16>("text").len() {
-        //     return;
-        // }
-
-        // ctx.widget()
-        //     .get_mut::<TextSelection>("selection")
-        //     .length = length + 1;
-
-        // ctx.get_widget(self.cursor).set("expanded", true);
+        self.direction = Direction::Right;
+        let mut selection = self.selection(ctx);
+        if selection.start() + 1 <= self.len(ctx) {
+            selection.set_start(selection.start() + 1);
+        }
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
 
     fn move_selection_left(&mut self, ctx: &mut Context) {
