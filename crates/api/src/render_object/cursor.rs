@@ -49,9 +49,9 @@ impl RenderObject for CursorRenderObject {
         ctx.render_context_2_d().set_alpha(background_opacity);
         ctx.render_context_2_d().set_fill_style(background);
         ctx.render_context_2_d().fill_rect(
-            global_position.x() + bounds.x() + selection_x + border_width,
+            global_position.x() + bounds.x() + selection_x - border_width / 2.,
             global_position.y() + bounds.y(),
-            bounds.width(),
+            selection_width,
             bounds.height(),
         );
         ctx.render_context_2_d().set_alpha(1.);
@@ -59,7 +59,8 @@ impl RenderObject for CursorRenderObject {
         // border
         ctx.render_context_2_d().set_fill_style(border_brush);
         ctx.render_context_2_d().fill_rect(
-            global_position.x() + bounds.x() + selection_x + x_position_indicator,
+            global_position.x() + bounds.x() + selection_x + x_position_indicator
+                - border_width / 2.,
             global_position.y() + bounds.y(),
             border_width,
             bounds.height(),

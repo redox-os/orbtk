@@ -207,7 +207,7 @@ impl TextBehaviorState {
             length_measure
                 .width
                 .max(cursor_border_width)
-                .max(cursor_width - cursor_border_width),
+                .min(cursor_width - cursor_border_width),
         );
     }
 
