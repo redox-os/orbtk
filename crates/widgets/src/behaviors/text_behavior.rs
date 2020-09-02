@@ -202,13 +202,10 @@ impl TextBehaviorState {
         Cursor::selection_x_set(&mut ctx.get_widget(self.cursor), start_measure.width);
 
         let length_measure = self.measure(ctx, start, end);
-        Cursor::selection_width_set(
-            &mut ctx.get_widget(self.cursor),
-            length_measure
-                .width
-                .max(cursor_border_width)
-                .min(cursor_width - cursor_border_width),
-        );
+        let width = length_measure.width.max(0.).min(cursor_width);
+
+        println!("Selection width: {}", width);
+        Cursor::selection_width_set(&mut ctx.get_widget(self.cursor), length_measure.width);
     }
 
     fn select_all(&self, ctx: &mut Context) {
@@ -265,7 +262,6 @@ impl TextBehaviorState {
     fn move_selection_right(&mut self, ctx: &mut Context) {
         let selection = move_selection_right(self.selection(ctx), self.len(ctx));
         TextBehavior::selection_set(&mut ctx.widget(), selection);
-        self.update_cursor(ctx);
     }
 
     fn clear_selection(&mut self, ctx: &mut Context) {
@@ -764,7 +760,7 @@ fn move_selection_left(mut selection: TextSelection) -> TextSelection {
 
 fn move_selection_right(mut selection: TextSelection, len: usize) -> TextSelection {
     if selection.start() == selection.end() {
-        if selection.start() + 1 < len {
+        if selection.start() < len {
             selection.set_start(selection.start() + 1);
             selection.set_end(selection.start());
         }
@@ -816,8 +812,8 @@ mod tests {
         let selection = TextSelection::new(4, 4);
         let len = 5;
         let result = move_selection_right(selection, len);
-        assert_eq!(result.start(), 4);
-        assert_eq!(result.end(), 4);
+        assert_eq!(result.start(), 5);
+        assert_eq!(result.end(), 5);
 
         // start == end
         let selection = TextSelection::new(3, 3);

@@ -42,7 +42,7 @@ impl Template for Cursor {
             .style("cursor")
             .background_opacity(0.3)
             .background("transparent")
-            .h_align("start")
+            .h_align("stretch")
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
