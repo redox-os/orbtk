@@ -85,21 +85,23 @@ impl TextBehaviorState {
     }
 
     fn insert_text(&mut self, insert_text: String, ctx: &mut Context) {
-        // self.clear_selection(ctx);
-        // let index = ctx
-        //     .get_widget(self.target)
-        //     .get::<TextSelection>("selection")
-        //     .start_index;
+        if insert_text.is_empty() {
+            return;
+        }
 
-        // let mut text = ctx.widget().clone::<String>("text");
-        // let len = String::from(insert_text.as_str()).len();
+        let increment_selection = !self.clear_selection(ctx);
 
-        // text.insert_str(index, insert_text.as_str());
+        let mut selection = self.selection(ctx);
 
-        // ctx.get_widget(self.target).set("text", text);
-        // ctx.get_widget(self.target)
-        //     .get_mut::<TextSelection>("selection")
-        //     .start_index = index + len;
+        let mut text = TextBehavior::text_clone(&ctx.widget());
+        text.insert_str(selection.start(), insert_text.as_str());
+
+        ctx.get_widget(self.target).set("text", text);
+
+        if increment_selection {
+            selection.set(selection.start() + 1);
+            TextBehavior::selection_set(&mut ctx.widget(), selection);
+        }
     }
 
     // handle back space
@@ -114,8 +116,7 @@ impl TextBehaviorState {
             return;
         }
 
-        selection.set_start(selection.start() - 1);
-        selection.set_end(selection.start());
+        selection.set(selection.start() - 1);
 
         let mut text = String16::from(TextBehavior::text_clone(&ctx.widget()));
 
@@ -172,8 +173,7 @@ impl TextBehaviorState {
             text.remove(i);
         }
 
-        selection.set_start(start);
-        selection.set_end(start);
+        selection.set(start);
 
         ctx.get_widget(self.target).set("text", text.to_string());
         TextBehavior::selection_set(&mut ctx.widget(), selection);
@@ -312,38 +312,38 @@ impl TextBehaviorState {
                 self.delete(ctx);
             }
             Key::Enter => {
-                // self.activate(ctx);
+                self.activate(ctx);
             }
             Key::X(..) => {
-                // if self.is_ctlr_home_down(ctx) {
-                //     self.cut(registry, ctx);
-                // } else {
-                //     self.insert_char(key_event, ctx);
-                // }
+                if self.is_ctlr_home_down(ctx) {
+                    // self.cut(registry, ctx);
+                } else {
+                    self.insert_text(key_event.text, ctx);
+                }
             }
             Key::C(..) => {
-                // if self.is_ctlr_home_down(ctx) {
-                //     self.copy(registry, ctx);
-                // } else {
-                //     self.insert_char(key_event, ctx);
-                // }
+                if self.is_ctlr_home_down(ctx) {
+                    // self.copy(registry, ctx);
+                } else {
+                    self.insert_text(key_event.text, ctx);
+                }
             }
             Key::V(..) => {
-                // if self.is_ctlr_home_down(ctx) {
-                //     self.paste(registry, ctx);
-                // } else {
-                //     self.insert_char(key_event, ctx);
-                // }
+                if self.is_ctlr_home_down(ctx) {
+                    // self.paste(registry, ctx);
+                } else {
+                    self.insert_text(key_event.text, ctx);
+                }
             }
             Key::A(..) => {
                 if self.is_ctlr_home_down(ctx) {
                     self.select_all(ctx);
                 } else {
-                    // self.insert_char(key_event, ctx);
+                    self.insert_text(key_event.text, ctx);
                 }
             }
             _ => {
-                // self.insert_char(key_event, ctx);
+                self.insert_text(key_event.text, ctx);
             }
         }
     }
@@ -357,8 +357,7 @@ impl TextBehaviorState {
 
         let selection_start = self.get_new_selection_position(ctx, p);
         let mut selection = self.selection(ctx);
-        selection.set_start(selection_start);
-        selection.set_end(selection_start);
+        selection.set(selection_start);
 
         TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
@@ -730,8 +729,7 @@ impl Template for TextBehavior {
 fn move_selection_left(mut selection: TextSelection) -> TextSelection {
     if selection.start() == selection.end() {
         if selection.start() as i32 - 1 >= 0 {
-            selection.set_start(selection.start() - 1);
-            selection.set_end(selection.start());
+            selection.set(selection.start() - 1);
         }
     } else if selection.start() < selection.end() {
         selection.set_end(selection.start());
@@ -745,8 +743,7 @@ fn move_selection_left(mut selection: TextSelection) -> TextSelection {
 fn move_selection_right(mut selection: TextSelection, len: usize) -> TextSelection {
     if selection.start() == selection.end() {
         if selection.start() < len {
-            selection.set_start(selection.start() + 1);
-            selection.set_end(selection.start());
+            selection.set(selection.start() + 1);
         }
     } else if selection.start() < selection.end() {
         selection.set_start(selection.end());

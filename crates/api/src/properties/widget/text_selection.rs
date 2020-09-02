@@ -31,6 +31,12 @@ impl TextSelection {
         self.end = end;
     }
 
+    /// Sets start and end to the same value.
+    pub fn set(&mut self, value: usize) {
+        self.start = value;
+        self.end = value;
+    }
+
     /// Gets the length of the selection.
     pub fn len(&self) -> usize {
         (self.start as i32 - self.end as i32).abs() as usize
@@ -66,5 +72,14 @@ mod tests {
 
         let offset: TextSelection = (16, 14).into();
         assert_eq!(offset.len(), 2);
+    }
+
+    #[test]
+    fn test_set() {
+        let mut offset: TextSelection = (14, 16).into();
+        offset.set(5);
+
+        assert_eq!(offset.start(), 5);
+        assert_eq!(offset.end(), 5);
     }
 }
