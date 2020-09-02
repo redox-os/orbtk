@@ -21,6 +21,7 @@ impl RenderObject for CursorRenderObject {
             selection,
             selection_width,
             selection_x,
+            offset,
         ) = {
             let widget = ctx.widget();
             (
@@ -32,6 +33,7 @@ impl RenderObject for CursorRenderObject {
                 *widget.get::<TextSelection>("selection"),
                 *widget.get::<f64>("selection_width"),
                 *widget.get::<f64>("selection_x"),
+                *widget.get::<f64>("offset"),
             )
         };
 
@@ -49,7 +51,7 @@ impl RenderObject for CursorRenderObject {
         ctx.render_context_2_d().set_alpha(background_opacity);
         ctx.render_context_2_d().set_fill_style(background);
         ctx.render_context_2_d().fill_rect(
-            global_position.x() + bounds.x() + selection_x - border_width / 2.,
+            global_position.x() + bounds.x() + offset + selection_x - border_width / 2.,
             global_position.y() + bounds.y(),
             selection_width,
             bounds.height(),
@@ -59,7 +61,7 @@ impl RenderObject for CursorRenderObject {
         // border
         ctx.render_context_2_d().set_fill_style(border_brush);
         ctx.render_context_2_d().fill_rect(
-            global_position.x() + bounds.x() + selection_x + x_position_indicator
+            global_position.x() + bounds.x() + offset + selection_x + x_position_indicator
                 - border_width / 2.,
             global_position.y() + bounds.y(),
             border_width,

@@ -73,11 +73,12 @@ impl Template for TextBox {
 
         let text_behavior = TextBehavior::new()
             .cursor(cursor.0)
+            .target(id.0)
+            .text_block(text_block.0)
             .focused(id)
             .font(id)
             .font_size(id)
             .lost_focus_on_activation(id)
-            .target(id.0)
             .request_focus(id)
             .text(id)
             .selection(id)
@@ -110,10 +111,8 @@ impl Template for TextBox {
                     .child(
                         Grid::new()
                             .clip(true)
-                            // It is important that cursor is the first child
-                            // should be refactored in the future.
-                            .child(cursor)
                             .child(text_block)
+                            .child(cursor)
                             .build(ctx),
                     )
                     .build(ctx),

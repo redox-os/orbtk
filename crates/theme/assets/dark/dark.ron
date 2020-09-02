@@ -206,7 +206,6 @@ Theme (
         ),
         "cursor": (
             properties: {
-                "width": 1,
                 "background": "$ENERGY_YELLOW",
                 "border_brush": "$ENERGY_YELLOW",
                 "border_width": 1

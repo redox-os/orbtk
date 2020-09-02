@@ -15,6 +15,7 @@ pub static FOCUSED_STATE: &str = "focused";
 
 use super::MouseBehavior;
 
+// actions of TextBehaviorState
 #[derive(Clone)]
 enum TextAction {
     KeyDown(KeyEvent),
@@ -24,19 +25,37 @@ enum TextAction {
     SelectionChanged,
 }
 
+// helper enum
+#[derive(Debug, PartialEq)]
+enum Direction {
+    Left,
+    Right,
+    None,
+}
+
+impl Default for Direction {
+    fn default() -> Self {
+        Direction::None
+    }
+}
+
 /// The `TextBehaviorState` handles the text processing of the `TextBehavior` widget.
 #[derive(Default, AsAny)]
 pub struct TextBehaviorState {
     action: Option<TextAction>,
-    len: usize,
     cursor: Entity,
     target: Entity,
-    focused: bool,
+    text_block: Entity,
+    direction: Direction,
 }
 
 impl TextBehaviorState {
     fn action(&mut self, action: TextAction) {
         self.action = Some(action);
+    }
+
+    fn request_focus(&self, ctx: &mut Context) {
+        ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
     }
 
     // -- Text operations --
@@ -127,16 +146,16 @@ impl TextBehaviorState {
             return;
         }
 
-        let mut selection = *TextBehavior::selection_ref(&ctx.widget());
-        let mut text = TextBehavior::text_clone(&ctx.widget());
+        // let mut selection = *TextBehavior::selection_ref(&ctx.widget());
+        // let mut text = TextBehavior::text_clone(&ctx.widget());
 
-        if selection.len() == 0 {
-            text.insert_str(selection.start(), key_event.text.as_str());
-            selection.set_start(selection.start() + 1)
-        }
+        // if selection.len() == 0 {
+        //     text.insert_str(selection.start(), key_event.text.as_str());
+        //     selection.set_start(selection.start() + 1)
+        // }
 
-        TextBehavior::text_set(&mut ctx.widget(), text);
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        // TextBehavior::text_set(&mut ctx.widget(), text);
+        // TextBehavior::selection_set(&mut ctx.widget(), selection);
 
         // if selection.len() > 0 {
         //     ctx.get_widget(self.target)
@@ -179,13 +198,9 @@ impl TextBehaviorState {
 
     // -- Text operations --
 
-    fn request_focus(&self, ctx: &mut Context) {
-        ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
-    }
-
     // -- Selection --
 
-    fn update_cursor(&self, ctx: &mut Context) {
+    fn update_cursor(&mut self, ctx: &mut Context) {
         let selection = self.selection(ctx);
         let (start, end) = {
             if selection.start() <= selection.end() {
@@ -195,17 +210,26 @@ impl TextBehaviorState {
             }
         };
 
-        let cursor_width = Cursor::bounds_ref(&ctx.get_widget(self.cursor)).width();
-        let cursor_border_width = Cursor::border_width_ref(&ctx.get_widget(self.cursor)).right();
-
         let start_measure = self.measure(ctx, 0, start);
         Cursor::selection_x_set(&mut ctx.get_widget(self.cursor), start_measure.width);
 
         let length_measure = self.measure(ctx, start, end);
-        let width = length_measure.width.max(0.).min(cursor_width);
-
-        println!("Selection width: {}", width);
         Cursor::selection_width_set(&mut ctx.get_widget(self.cursor), length_measure.width);
+
+        // adjust position
+        let offset = *Cursor::offset_ref(&ctx.get_widget(self.cursor));
+        let width = Cursor::bounds_ref(&ctx.get_widget(self.cursor)).width();
+        let x = Cursor::bounds_ref(&ctx.get_widget(self.cursor)).x();
+        let delta = width - offset;
+
+        if self.direction == Direction::Right {
+            if start_measure.width > delta {
+                let offset_delta = delta - start_measure.width;
+                Cursor::offset_set(&mut ctx.get_widget(self.cursor), offset + offset_delta);
+            }
+        }
+
+        self.direction = Direction::None;
     }
 
     fn select_all(&self, ctx: &mut Context) {
@@ -217,7 +241,7 @@ impl TextBehaviorState {
 
         let mut selection = self.selection(ctx);
         selection.set_start(0);
-        selection.set_end(self.len(ctx) - 1);
+        selection.set_end(self.len(ctx));
 
         TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
@@ -255,11 +279,13 @@ impl TextBehaviorState {
     }
 
     fn move_selection_left(&mut self, ctx: &mut Context) {
+        self.direction = Direction::Left;
         let selection = move_selection_left(self.selection(ctx));
         TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
 
     fn move_selection_right(&mut self, ctx: &mut Context) {
+        self.direction = Direction::Right;
         let selection = move_selection_right(self.selection(ctx), self.len(ctx));
         TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
@@ -527,17 +553,11 @@ impl TextBehaviorState {
 
 impl State for TextBehaviorState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        self.cursor = Entity::from(
-            ctx.widget()
-                .try_clone::<u32>("cursor")
-                .expect("TextBehaviorState.init: cursor could not be found."),
-        );
+        self.cursor = Entity::from(*TextBehavior::cursor_ref(&ctx.widget()));
 
-        self.target = Entity::from(
-            ctx.widget()
-                .try_clone::<u32>("target")
-                .expect("TextBehaviorState.init: target could not be found."),
-        );
+        self.target = Entity::from(*TextBehavior::target_ref(&ctx.widget()));
+
+        self.text_block = Entity::from(*TextBehavior::text_block_ref(&ctx.widget()));
 
         // hide cursor
         Cursor::visibility_set(&mut ctx.get_widget(self.cursor), Visibility::Collapsed);
@@ -597,7 +617,8 @@ widget!(
     ///
     /// TextBehavior needs the following prerequisites to able to work:
     /// * a `cursor`: the [`Entity`] of a [`Cursor`] widget
-    /// * a target: the [`Entity`] of the target widget
+    /// * a `target`: the [`Entity`] of the target widget
+    /// * a `text_block`: the [`Entity`] of the [`TextBlock`] widget
     ///
     /// * and must inherit the following properties from its target:
     ///     * focused
@@ -660,8 +681,14 @@ widget!(
     /// [`Entity`]: https://docs.rs/dces/0.2.0/dces/entity/struct.Entity.html
     /// [`Cursor`]: ../struct.Cursor.html
     TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler, DropHandler {
-        /// Sets or shares the entity of the Cursor widget property.
+        /// Reference the target (parent) widget e.g. `TextBox` or `PasswordBox`.
+        target: u32,
+
+        /// Reference text selection `Cursor`.
         cursor: u32,
+
+        /// Reference `TextBlock` that is used to display the text.
+        text_block: u32,
 
         /// Sets or shares the focused property.
         focused: bool,
@@ -674,9 +701,6 @@ widget!(
 
         /// Sets or shares ta value that describes if the widget should lost focus on activation (when Enter pressed).
         lost_focus_on_activation: bool,
-
-        /// Sets or shares the entity of the target widget.
-        target: u32,
 
         /// Sets or shares the request_focus property. Used to request focus from outside.Set to `true` to request focus.
         request_focus: bool,
