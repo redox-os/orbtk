@@ -49,6 +49,40 @@ pub fn derive_as_any(input: TokenStream) -> TokenStream {
     TokenStream::from(gen)
 }
 
+#[proc_macro_derive(IntoRenderObject)]
+pub fn derive_into_render_object(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+
+    let ident = &input.ident;
+
+    let gen = quote! {
+        impl Into<Box<dyn RenderObject>> for #ident {
+            fn into(self) -> Box<dyn RenderObject> {
+                Box::new(self)
+            }
+        }
+    };
+
+    TokenStream::from(gen)
+}
+
+#[proc_macro_derive(IntoLayout)]
+pub fn derive_into_layout(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+
+    let ident = &input.ident;
+
+    let gen = quote! {
+        impl Into<Box<dyn Layout>> for #ident {
+            fn into(self) -> Box<dyn Layout> {
+                Box::new(self)
+            }
+        }
+    };
+
+    TokenStream::from(gen)
+}
+
 #[proc_macro_derive(Event)]
 pub fn derive_event(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);

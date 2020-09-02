@@ -32,10 +32,10 @@ impl Template for TextBlock {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(TextRenderObject)
+        TextRenderObject.into()
     }
 
     fn layout(&self) -> Box<dyn Layout> {
-        Box::new(FixedSizeLayout::new())
+        FixedSizeLayout::new().into()
     }
 }

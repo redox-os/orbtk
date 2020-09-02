@@ -96,10 +96,10 @@ impl Template for ItemsWidget {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(RectangleRenderObject)
+        RectangleRenderObject.into()
     }
 
     fn layout(&self) -> Box<dyn Layout> {
-        Box::new(PaddingLayout::new())
+        PaddingLayout::new().into()
     }
 }

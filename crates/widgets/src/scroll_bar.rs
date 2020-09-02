@@ -29,6 +29,6 @@ impl Template for ScrollBar {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(RectangleRenderObject)
+        RectangleRenderObject.into()
     }
 }

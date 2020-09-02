@@ -1,13 +1,8 @@
-use crate::{render::Image, render_object::*};
+use crate::{proc_macros::IntoRenderObject, render::Image, render_object::*};
 
 /// Used to render an image.
+#[derive(Debug, IntoRenderObject)]
 pub struct ImageRenderObject;
-
-impl Into<Box<dyn RenderObject>> for ImageRenderObject {
-    fn into(self) -> Box<dyn RenderObject> {
-        Box::new(self)
-    }
-}
 
 impl RenderObject for ImageRenderObject {
     fn render_self(&self, ctx: &mut Context, global_position: &Point) {

@@ -302,6 +302,6 @@ impl Template for NumericBox {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(RectangleRenderObject)
+        RectangleRenderObject.into()
     }
 }

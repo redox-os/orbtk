@@ -10,7 +10,6 @@ pub use self::grid::*;
 pub use self::padding::*;
 pub use self::popup::*;
 pub use self::stack::*;
-pub use self::text_selection::*;
 
 mod absolute;
 mod fixed_size;
@@ -18,7 +17,6 @@ mod grid;
 mod padding;
 mod popup;
 mod stack;
-mod text_selection;
 
 /// A layout is used to dynamic order the children of a widget.
 pub trait Layout: Any {

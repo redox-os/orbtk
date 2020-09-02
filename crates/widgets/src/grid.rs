@@ -59,10 +59,10 @@ impl Template for Grid {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(RectangleRenderObject)
+        RectangleRenderObject.into()
     }
 
     fn layout(&self) -> Box<dyn Layout> {
-        Box::new(GridLayout::new())
+        GridLayout::new().into()
     }
 }

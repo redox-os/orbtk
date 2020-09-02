@@ -1,16 +1,12 @@
 use crate::{
+    proc_macros::IntoRenderObject,
     render_object::*,
     utils::{Brush, Point, Rectangle, String16},
 };
 
 /// Used to render a text.
+#[derive(Debug, IntoRenderObject)]
 pub struct TextRenderObject;
-
-impl Into<Box<dyn RenderObject>> for TextRenderObject {
-    fn into(self) -> Box<dyn RenderObject> {
-        Box::new(self)
-    }
-}
 
 impl RenderObject for TextRenderObject {
     fn render_self(&self, ctx: &mut Context, global_position: &Point) {

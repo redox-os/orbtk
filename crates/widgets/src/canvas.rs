@@ -14,6 +14,6 @@ impl Template for Canvas {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(PipelineRenderObject)
+        PipelineRenderObject.into()
     }
 }

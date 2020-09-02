@@ -54,13 +54,13 @@ pub trait Template: Sized {
     /// which specifies how the widget should be drawn on the canvas.
     /// For the list of available render objects, see the [`render_object`] module.
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(DefaultRenderObject)
+        DefaultRenderObject.into()
     }
 
     /// Returns a pointer to a heap allocated object
     /// which specifies the way in which the widget are arranged or laid out on the canvas.
     /// For the list of available layout objects, see the [`layout`] module.
     fn layout(&self) -> Box<dyn Layout> {
-        Box::new(GridLayout::new())
+        GridLayout::new().into()
     }
 }

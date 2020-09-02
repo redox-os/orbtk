@@ -70,10 +70,6 @@ impl Template for Cursor {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(RectangleRenderObject)
-    }
-
-    fn layout(&self) -> Box<dyn Layout> {
-        Box::new(TextSelectionLayout::default())
+        CursorRenderObject.into()
     }
 }

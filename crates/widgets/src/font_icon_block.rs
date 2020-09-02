@@ -30,10 +30,10 @@ impl Template for FontIconBlock {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(FontIconRenderObject)
+        FontIconRenderObject.into()
     }
 
     fn layout(&self) -> Box<dyn Layout> {
-        Box::new(FixedSizeLayout::new())
+        FixedSizeLayout::new().into()
     }
 }

@@ -5,13 +5,16 @@ use std::{
 
 use dces::prelude::*;
 
-use crate::{prelude::*, render::RenderContext2D, theming::*, tree::Tree, utils::prelude::*};
+use crate::{
+    prelude::*, proc_macros::IntoLayout, render::RenderContext2D, theming::*, tree::Tree,
+    utils::prelude::*,
+};
 
 use super::{component, component_try_mut, Layout};
 
 /// Orders its children in a grid layout with columns and rows. If no columns and rows are defined
 /// the grid layout could also be used as an alignment layout.
-#[derive(Default)]
+#[derive(Default, IntoLayout)]
 pub struct GridLayout {
     desired_size: RefCell<DirtySize>,
     children_sizes: RefCell<BTreeMap<Entity, (f64, f64)>>,
@@ -517,11 +520,5 @@ impl Layout for GridLayout {
 
         self.desired_size.borrow_mut().set_dirty(false);
         size
-    }
-}
-
-impl Into<Box<dyn Layout>> for GridLayout {
-    fn into(self) -> Box<dyn Layout> {
-        Box::new(self)
     }
 }

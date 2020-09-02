@@ -195,7 +195,7 @@ impl Template for TabHeader {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(RectangleRenderObject)
+        RectangleRenderObject.into()
     }
 }
 
