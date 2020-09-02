@@ -234,33 +234,13 @@ impl TextBehaviorState {
         // ctx.get_widget(self.cursor).set("expanded", true);
     }
 
-    fn move_cursor_left(&mut self, ctx: &mut Context) {
-        let mut selection = self.selection(ctx);
-
-        if selection.start() == selection.end() {
-            selection.set_start(selection.start() - 1);
-            selection.set_end(selection.start());
-        } else if selection.start() < selection.end() {
-            selection.set_end(selection.start());
-        } else {
-            selection.set_start(selection.end());
-        }
-
+    fn move_selection_left(&mut self, ctx: &mut Context) {
+        let selection = move_selection_left(self.selection(ctx));
         TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
 
-    fn move_cursor_right(&mut self, ctx: &mut Context) {
-        let mut selection = self.selection(ctx);
-
-        if selection.start() == selection.end() {
-            selection.set_start(selection.start() + 1);
-            selection.set_end(selection.start());
-        } else if selection.start() < selection.end() {
-            selection.set_start(selection.end());
-        } else {
-            selection.set_end(selection.start());
-        }
-
+    fn move_selection_right(&mut self, ctx: &mut Context) {
+        let selection = move_selection_right(self.selection(ctx), self.len(ctx));
         TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
 
@@ -308,7 +288,7 @@ impl TextBehaviorState {
                 if self.is_shift_down(ctx) {
                     self.expand_selection_left(ctx);
                 } else {
-                    self.move_cursor_left(ctx);
+                    self.move_selection_left(ctx);
                 }
             }
 
@@ -316,7 +296,7 @@ impl TextBehaviorState {
                 if self.is_shift_down(ctx) {
                     self.expand_selection_right(ctx);
                 } else {
-                    self.move_cursor_right(ctx);
+                    self.move_selection_right(ctx);
                 }
             }
             Key::Backspace => {
@@ -723,5 +703,100 @@ impl Template for TextBehavior {
                     .get_mut::<TextBehaviorState>(id)
                     .action(TextAction::FocusedChanged);
             })
+    }
+}
+
+// --- Helpers --
+
+fn move_selection_left(mut selection: TextSelection) -> TextSelection {
+    if selection.start() == selection.end() {
+        if selection.start() as i32 - 1 >= 0 {
+            selection.set_start(selection.start() - 1);
+            selection.set_end(selection.start());
+        }
+    } else if selection.start() < selection.end() {
+        selection.set_end(selection.start());
+    } else {
+        selection.set_start(selection.end());
+    }
+
+    selection
+}
+
+fn move_selection_right(mut selection: TextSelection, len: usize) -> TextSelection {
+    if selection.start() == selection.end() {
+        if selection.start() + 1 < len {
+            selection.set_start(selection.start() + 1);
+            selection.set_end(selection.start());
+        }
+    } else if selection.start() < selection.end() {
+        selection.set_start(selection.end());
+    } else {
+        selection.set_end(selection.start());
+    }
+
+    selection
+}
+
+// --- Helpers --
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_move_selection_left() {
+        //  check left bounds
+        let selection = TextSelection::new(0, 0);
+        let result = move_selection_left(selection);
+        assert_eq!(result.start(), 0);
+        assert_eq!(result.end(), 0);
+
+        // start == end
+        let selection = TextSelection::new(1, 1);
+        let result = move_selection_left(selection);
+        assert_eq!(result.start(), 0);
+        assert_eq!(result.end(), 0);
+
+        // start < end
+        let selection = TextSelection::new(4, 6);
+        let result = move_selection_left(selection);
+        assert_eq!(result.start(), 4);
+        assert_eq!(result.end(), 4);
+
+        // start > end
+        let selection = TextSelection::new(6, 4);
+        let result = move_selection_left(selection);
+        assert_eq!(result.start(), 4);
+        assert_eq!(result.end(), 4);
+    }
+
+    #[test]
+    fn test_move_selection_right() {
+        //  check left bounds
+        let selection = TextSelection::new(4, 4);
+        let len = 5;
+        let result = move_selection_right(selection, len);
+        assert_eq!(result.start(), 4);
+        assert_eq!(result.end(), 4);
+
+        // start == end
+        let selection = TextSelection::new(3, 3);
+        let len = 5;
+        let result = move_selection_right(selection, len);
+        assert_eq!(result.start(), 4);
+        assert_eq!(result.end(), 4);
+
+        // start < end
+        let selection = TextSelection::new(4, 6);
+        let result = move_selection_right(selection, len);
+        assert_eq!(result.start(), 6);
+        assert_eq!(result.end(), 6);
+
+        // start > end
+        let selection = TextSelection::new(6, 4);
+        let result = move_selection_right(selection, len);
+        assert_eq!(result.start(), 6);
+        assert_eq!(result.end(), 6);
     }
 }
