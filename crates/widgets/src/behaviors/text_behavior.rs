@@ -387,7 +387,12 @@ impl TextBehaviorState {
             return;
         }
 
-        // todo set selection
+        let selection_start = self.get_new_selection_position(ctx, p);
+        let mut selection = self.selection(ctx);
+        selection.set_start(selection_start);
+        selection.set_end(selection_start);
+
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
 
     // handles focus changed event
@@ -480,8 +485,8 @@ impl TextBehaviorState {
         false
     }
 
-    // Get new position for the caret based on current mouse position
-    fn get_new_caret_position(&self, ctx: &mut Context, p: Mouse) -> usize {
+    // Get new position for the selection based on current mouse position
+    fn get_new_selection_position(&self, ctx: &mut Context, p: Mouse) -> usize {
         if let Some((index, _x)) = self
             .map_chars_index_to_position(ctx)
             .iter()
@@ -495,22 +500,20 @@ impl TextBehaviorState {
 
     // Returns a vector with a tuple of each char's starting index (usize) and position (f64)
     fn map_chars_index_to_position(&self, ctx: &mut Context) -> Vec<(usize, f64)> {
-        let text: String = ctx.widget().clone("text");
+        let len = self.len(ctx);
+
         // start x position of the cursor is start position of the text element + padding left
         let start_position: f64 = ctx.widget().get::<Point>("position").x()
-            + ctx.get_widget(self.target).get::<Thickness>("padding").left;
-        // array which will hold char index and it's x position
-        let mut position_index: Vec<(usize, f64)> = Vec::with_capacity(text.len());
-        position_index.push((0, start_position));
-        // current text font family and size
-        let font: String = ctx.widget().clone_or_default::<String>("font");
-        let font_size: f64 = ctx.widget().clone_or_default::<f64>("font_size");
+            + ctx.get_widget(self.target).get::<Thickness>("padding").left
+            + *TextBlock::offset_ref(&ctx.get_widget(self.text_block));
 
-        for i in 0..text.len() {
-            let bound_width: f64 = ctx
-                .render_context_2_d()
-                .measure(&text.as_str()[0..i + 1], font_size, &font)
-                .width;
+        // array which will hold char index and it's x position
+        let mut position_index: Vec<(usize, f64)> = Vec::with_capacity(len);
+        position_index.push((0, start_position));
+
+        for i in 0..len {
+            let bound_width: f64 = self.measure(ctx, 0, i + 1).width;
+
             let next_position: f64 = start_position + bound_width;
 
             position_index.push((i + 1, next_position));
