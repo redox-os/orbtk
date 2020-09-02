@@ -6,10 +6,10 @@ widget!(
     /// **style:** `text-block`
     TextBlock {
         /// Sets or shares the text property.
-        text: String16,
+        text: String,
 
         /// Sets or shares the water_mark text property.
-        water_mark: String16,
+        water_mark: String,
 
         /// Sets or shares the foreground property.
         foreground: Brush,

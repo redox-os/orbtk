@@ -12,7 +12,7 @@ fn main() {
                 .size(420.0, 730.0)
                 .child(
                     TextBox::new()
-                        .text("OrbTk with a very very very very very very very very very very very very very very very long text")
+                        .text("OrbTk with a very very very very very very vÄery very very very very very very very very long textÄ")
                         .margin(4.0)
                         .build(ctx),
                 )

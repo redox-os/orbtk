@@ -14,10 +14,10 @@ widget!(
     TextBox: ActivateHandler,
     KeyDownHandler {
         /// Sets or shares the text property.
-        text: String16,
+        text: String,
 
         /// Sets or shares the water_mark text property.
-        water_mark: String16,
+        water_mark: String,
 
         /// Sets or shares the text selection property.
         selection: TextSelection,

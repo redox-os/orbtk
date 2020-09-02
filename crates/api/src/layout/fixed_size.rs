@@ -60,13 +60,13 @@ impl Layout for FixedSizeLayout {
             .try_get::<Image>("image")
             .map(|image| (image.width(), image.height()))
             .or_else(|| {
-                widget.try_get::<String16>("text").and_then(|text| {
+                widget.try_get::<String>("text").and_then(|text| {
                     let font = widget.get::<String>("font");
                     let font_size = widget.get::<f64>("font_size");
 
                     if text.is_empty() {
                         widget
-                            .try_get::<String16>("water_mark")
+                            .try_get::<String>("water_mark")
                             .filter(|water_mark| !water_mark.is_empty())
                             .map(|water_mark| {
                                 let text_metrics = render_context_2_d.measure(

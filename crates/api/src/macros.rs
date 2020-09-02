@@ -61,7 +61,7 @@ macro_rules! into_property_source {
 /// a state struct called WidgetState.
 /// ```
 /// widget!(PersonWidget<WidgetState> {
-///     name: String16,
+///     name: String,
 ///     age: usize,
 ///     average: f64
 /// });

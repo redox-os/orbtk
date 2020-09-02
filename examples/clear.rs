@@ -17,14 +17,14 @@ impl State for MainViewState {
         if self.clear {
             // Clears the text property of MainView and because
             // of the sharing also the text of the TextBox.
-            MainView::text_set(&mut ctx.widget(), String16::default());
+            MainView::text_set(&mut ctx.widget(), String::default());
             self.clear = false;
         }
     }
 }
 
 widget!(MainView<MainViewState> {
-    text: String16
+    text: String
 });
 
 impl Template for MainView {
@@ -34,7 +34,7 @@ impl Template for MainView {
                 .orientation("horizontal")
                 // By injecting the id of the parent the text property
                 // is shared between the MainView and the TextBox. This
-                // means both references the same String16 object.
+                // means both references the same String object.
                 .child(TextBox::new().height(32.0).text(id).build(ctx))
                 .child(
                     Button::new()

@@ -19,13 +19,13 @@ impl PasswordBoxState {
     }
 
     fn mask(&mut self, ctx: &mut Context) {
-        let mut new_prompt = String16::new();
+        let mut new_prompt = String::new();
 
-        for _ in ctx.widget().get::<String16>("text").as_string().chars() {
+        for _ in ctx.widget().get::<String>("text").chars() {
             new_prompt.push(self.echo);
         }
 
-        ctx.widget().set::<String16>("mask", new_prompt);
+        ctx.widget().set::<String>("mask", new_prompt);
     }
 }
 
@@ -72,13 +72,13 @@ widget!(
         echo: char,
 
         /// Sets or shares the mask property.It contains the masked input.
-        mask: String16,
+        mask: String,
 
         /// Sets or shares the text property.It holds the password.
-        text: String16,
+        text: String,
 
         /// Sets or shares the water_mark text property.
-        water_mark: String16,
+        water_mark: String,
 
         /// Sets or shares the text selection property.
         selection: TextSelection,

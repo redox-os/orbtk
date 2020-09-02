@@ -74,7 +74,7 @@ impl TextBehaviorState {
 
         // if let Some(text_part) = ctx
         //     .get_widget(self.target)
-        //     .clone::<String16>("text")
+        //     .clone::<String>("text")
         //     .get_string(
         //         selection.start_index,
         //         selection.start_index + selection.length,
@@ -91,8 +91,8 @@ impl TextBehaviorState {
         //     .get::<TextSelection>("selection")
         //     .start_index;
 
-        // let mut text = ctx.widget().clone::<String16>("text");
-        // let len = String16::from(insert_text.as_str()).len();
+        // let mut text = ctx.widget().clone::<String>("text");
+        // let len = String::from(insert_text.as_str()).len();
 
         // text.insert_str(index, insert_text.as_str());
 
@@ -111,7 +111,7 @@ impl TextBehaviorState {
         //         .clone::<TextSelection>("selection")
         //         .start_index;
         //     if index > 0 {
-        //         let mut text = ctx.widget().clone::<String16>("text");
+        //         let mut text = ctx.widget().clone::<String>("text");
         //         text.remove(index - 1);
         //         ctx.get_widget(self.target).set("text", text);
         //         ctx.widget()
@@ -129,8 +129,8 @@ impl TextBehaviorState {
         //         .widget()
         //         .clone::<TextSelection>("selection")
         //         .start_index;
-        //     if index < ctx.widget().get::<String16>("text").len() {
-        //         let mut text = ctx.widget().clone::<String16>("text");
+        //     if index < ctx.widget().get::<String>("text").len() {
+        //         let mut text = ctx.widget().clone::<String>("text");
         //         text.remove(index);
         //         ctx.get_widget(self.target).set("text", text);
 
@@ -159,7 +159,7 @@ impl TextBehaviorState {
 
         // if selection.len() > 0 {
         //     ctx.get_widget(self.target)
-        //         .set("text", String16::from(key_event.text));
+        //         .set("text", String::from(key_event.text));
 
         //     selection.set_start(1);
 
@@ -176,7 +176,7 @@ impl TextBehaviorState {
         //         .get_widget(self.cursor)
         //         .get::<TextSelection>("selection");
 
-        //     let mut text = ctx.widget().clone::<String16>("text");
+        //     let mut text = ctx.widget().clone::<String>("text");
         //     text.insert_str(current_selection.start_index, key_event.text.as_str());
         //     ctx.get_widget(self.target).set("text", text);
 
@@ -284,7 +284,7 @@ impl TextBehaviorState {
 
     fn clear_selection(&mut self, ctx: &mut Context) {
         //     let selection = ctx.widget().clone::<TextSelection>("selection");
-        //     let mut text = ctx.widget().clone::<String16>("text");
+        //     let mut text = ctx.widget().clone::<String>("text");
 
         //     for i in (selection.start_index..(selection.start_index + selection.length)).rev() {
         //         text.remove(i);
@@ -430,7 +430,7 @@ impl TextBehaviorState {
 
     // gets the len of the text
     fn len(&self, ctx: &mut Context) -> usize {
-        TextBehavior::text_ref(&ctx.widget()).len()
+        TextBehavior::text_ref(&ctx.widget()).chars().count()
     }
 
     // gets the focused state
@@ -495,7 +495,7 @@ impl TextBehaviorState {
 
     // Returns a vector with a tuple of each char's starting index (usize) and position (f64)
     fn map_chars_index_to_position(&self, ctx: &mut Context) -> Vec<(usize, f64)> {
-        let text: String16 = ctx.widget().clone("text");
+        let text: String = ctx.widget().clone("text");
         // start x position of the cursor is start position of the text element + padding left
         let start_position: f64 = ctx.widget().get::<Point>("position").x()
             + ctx.get_widget(self.target).get::<Thickness>("padding").left;
@@ -509,11 +509,7 @@ impl TextBehaviorState {
         for i in 0..text.len() {
             let bound_width: f64 = ctx
                 .render_context_2_d()
-                .measure(
-                    &text.get_string(0, i + 1).unwrap().as_str(),
-                    font_size,
-                    &font,
-                )
+                .measure(&text.as_str()[0..i + 1], font_size, &font)
                 .width;
             let next_position: f64 = start_position + bound_width;
 
@@ -530,13 +526,15 @@ impl TextBehaviorState {
         let font = TextBehavior::font_clone(&ctx.widget());
         let font_size = *TextBehavior::font_size_ref(&ctx.widget());
 
-        if let Some(text_part) = TextBehavior::text_ref(&ctx.widget()).get_string(start, end) {
+        if let Some(text_part) =
+            String16::from(TextBehavior::text_ref(&ctx.widget()).as_str()).get_string(start, end)
+        {
             return ctx
                 .render_context_2_d()
                 .measure(text_part.as_str(), font_size, font);
         }
 
-        TextMetrics::default()
+        return TextMetrics::default();
     }
 
     // -- Helpers --
@@ -697,7 +695,7 @@ widget!(
         request_focus: bool,
 
         /// Sets or shares the text property.
-        text: String16,
+        text: String,
 
         /// Sets or shares the text selection property.
         selection: TextSelection

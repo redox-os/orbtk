@@ -84,7 +84,7 @@ fn create_popup(target: Entity, text: &str, build_context: &mut BuildContext) ->
 fn change_button_title(title: &str, ctx: &mut Context) {
     let btn = ctx.entity_of_child(BTN_ID).unwrap();
     ctx.get_widget(btn)
-        .set::<String16>("text", String16::from(title));
+        .set::<String>("text", String::from(title));
 }
 
 widget!(MainView<MainViewState>);

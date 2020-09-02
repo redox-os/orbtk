@@ -72,7 +72,7 @@ widget!(
         foreground: Brush,
 
         /// Sets or shares the text property.
-        text: String16,
+        text: String,
 
         /// Sets or share the font size property.
         font_size: f64,
@@ -416,7 +416,7 @@ impl TabWidgetState {
             } else {
                 Visibility::Collapsed
             })
-            .text(String16::from(text))
+            .text(String::from(text))
             .on_header_mouse_down(move |states, _| {
                 states
                     .get_mut::<TabWidgetState>(cloned_entity)
