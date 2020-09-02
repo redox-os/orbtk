@@ -18,7 +18,10 @@ widget!(
         font_size: f64,
 
         /// Sets or shares the font property.
-        font: String
+        font: String,
+
+        /// Defines an extra offset that can be used to the text on x axis.
+        offset: f64
     }
 );
 

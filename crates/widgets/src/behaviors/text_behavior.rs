@@ -4,7 +4,7 @@ use crate::{
     render::TextMetrics,
     shell::prelude::{Key, KeyEvent},
     theme::fonts,
-    Cursor,
+    Cursor, TextBlock,
 };
 
 // --- KEYS --
@@ -219,14 +219,18 @@ impl TextBehaviorState {
         // adjust position
         let offset = *Cursor::offset_ref(&ctx.get_widget(self.cursor));
         let width = Cursor::bounds_ref(&ctx.get_widget(self.cursor)).width();
-        let x = Cursor::bounds_ref(&ctx.get_widget(self.cursor)).x();
         let delta = width - offset;
 
-        if self.direction == Direction::Right {
-            if start_measure.width > delta {
-                let offset_delta = delta - start_measure.width;
-                Cursor::offset_set(&mut ctx.get_widget(self.cursor), offset + offset_delta);
-            }
+        if self.direction == Direction::Right && start_measure.width > delta {
+            let offset_delta = delta - start_measure.width;
+            Cursor::offset_set(&mut ctx.get_widget(self.cursor), offset + offset_delta);
+            TextBlock::offset_set(&mut ctx.get_widget(self.text_block), offset + offset_delta);
+        }
+
+        if self.direction == Direction::Left && start_measure.width + offset < 0. {
+            let offset_delta = start_measure.width + offset;
+            Cursor::offset_set(&mut ctx.get_widget(self.cursor), offset - offset_delta);
+            TextBlock::offset_set(&mut ctx.get_widget(self.text_block), offset - offset_delta);
         }
 
         self.direction = Direction::None;
@@ -355,33 +359,32 @@ impl TextBehaviorState {
                 // self.activate(ctx);
             }
             Key::X(..) => {
-                // if self.is_ctlr_home_pressed(ctx) {
+                // if self.is_ctlr_home_down(ctx) {
                 //     self.cut(registry, ctx);
                 // } else {
                 //     self.insert_char(key_event, ctx);
                 // }
             }
             Key::C(..) => {
-                // if self.is_ctlr_home_pressed(ctx) {
+                // if self.is_ctlr_home_down(ctx) {
                 //     self.copy(registry, ctx);
                 // } else {
                 //     self.insert_char(key_event, ctx);
                 // }
             }
             Key::V(..) => {
-                // if self.is_ctlr_home_pressed(ctx) {
+                // if self.is_ctlr_home_down(ctx) {
                 //     self.paste(registry, ctx);
                 // } else {
                 //     self.insert_char(key_event, ctx);
                 // }
             }
             Key::A(..) => {
-                // println!("ass");
-                // if self.is_ctlr_home_pressed(ctx) {
-                //     self.select_all(ctx);
-                // } else {
-                //     self.insert_char(key_event, ctx);
-                // }
+                if self.is_ctlr_home_down(ctx) {
+                    self.select_all(ctx);
+                } else {
+                    // self.insert_char(key_event, ctx);
+                }
             }
             _ => {
                 self.insert_char(key_event, ctx);

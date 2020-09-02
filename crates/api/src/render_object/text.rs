@@ -10,9 +10,10 @@ pub struct TextRenderObject;
 
 impl RenderObject for TextRenderObject {
     fn render_self(&self, ctx: &mut Context, global_position: &Point) {
-        let (bounds, text, foreground, font, font_size) = {
+        let (bounds, text, foreground, font, font_size, offset) = {
             let widget = ctx.widget();
             let text = widget.clone::<String16>("text");
+            let offset = *widget.get::<f64>("offset");
 
             let txt = {
                 if !text.is_empty() {
@@ -27,6 +28,7 @@ impl RenderObject for TextRenderObject {
                 widget.get::<Brush>("foreground").clone(),
                 widget.get::<String>("font").clone(),
                 *widget.get::<f64>("font_size"),
+                offset,
             )
         };
 
@@ -47,7 +49,7 @@ impl RenderObject for TextRenderObject {
 
             ctx.render_context_2_d().fill_text(
                 &text,
-                global_position.x() + bounds.x(),
+                global_position.x() + bounds.x() + offset,
                 global_position.y() + bounds.y(),
             );
             ctx.render_context_2_d().close_path();
