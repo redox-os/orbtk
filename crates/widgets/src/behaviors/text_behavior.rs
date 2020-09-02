@@ -66,22 +66,25 @@ impl TextBehaviorState {
     }
 
     fn copy(&self, registry: &mut Registry, ctx: &mut Context) {
-        // let selection: TextSelection = ctx.get_widget(self.target).clone("selection");
+        let selection = self.selection(ctx);
 
-        // if selection.length == 0 {
-        //     return;
-        // }
+        let (start, end) = self.selection_start_end(selection);
 
-        // if let Some(text_part) = ctx
-        //     .get_widget(self.target)
-        //     .clone::<String>("text")
-        //     .get_string(
-        //         selection.start_index,
-        //         selection.start_index + selection.length,
-        //     )
-        // {
-        //     registry.get_mut::<Clipboard>("clipboard").set(text_part);
-        // }
+        if selection.is_empty() {
+            return;
+        }
+
+        if let Some(copy_text) =
+            String16::from(TextBehavior::text_clone(&ctx.widget())).get_string(start, end)
+        {
+            registry.get_mut::<Clipboard>("clipboard").set(copy_text);
+        }
+    }
+
+    fn paste(&mut self, registry: &mut Registry, ctx: &mut Context) {
+        if let Some(value) = registry.get::<Clipboard>("clipboard").get() {
+            self.insert_text(value, ctx);
+        }
     }
 
     fn insert_text(&mut self, insert_text: String, ctx: &mut Context) {
@@ -89,19 +92,17 @@ impl TextBehaviorState {
             return;
         }
 
-        let increment_selection = !self.clear_selection(ctx);
+        let _ = self.clear_selection(ctx);
 
         let mut selection = self.selection(ctx);
 
         let mut text = TextBehavior::text_clone(&ctx.widget());
         text.insert_str(selection.start(), insert_text.as_str());
 
-        ctx.get_widget(self.target).set("text", text);
+        selection.set(selection.start() + insert_text.chars().count());
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
 
-        if increment_selection {
-            selection.set(selection.start() + 1);
-            TextBehavior::selection_set(&mut ctx.widget(), selection);
-        }
+        ctx.get_widget(self.target).set("text", text);
     }
 
     // handle back space
@@ -145,12 +146,6 @@ impl TextBehaviorState {
         ctx.get_widget(self.target).set("text", text.to_string());
     }
 
-    fn paste(&mut self, registry: &mut Registry, ctx: &mut Context) {
-        if let Some(value) = registry.get::<Clipboard>("clipboard").get() {
-            self.insert_text(value, ctx);
-        }
-    }
-
     // clear all chars from the selection.
     fn clear_selection(&mut self, ctx: &mut Context) -> bool {
         let mut selection = self.selection(ctx);
@@ -161,13 +156,7 @@ impl TextBehaviorState {
 
         let mut text = String16::from(TextBehavior::text_clone(&ctx.widget()));
 
-        let (start, end) = {
-            if selection.start() > selection.end() {
-                (selection.end(), selection.start())
-            } else {
-                (selection.start(), selection.end())
-            }
-        };
+        let (start, end) = self.selection_start_end(selection);
 
         for i in (start..end).rev() {
             text.remove(i);
@@ -187,13 +176,7 @@ impl TextBehaviorState {
 
     fn update_cursor(&mut self, ctx: &mut Context) {
         let selection = self.selection(ctx);
-        let (start, end) = {
-            if selection.start() <= selection.end() {
-                (selection.start(), selection.end())
-            } else {
-                (selection.end(), selection.start())
-            }
-        };
+        let (start, end) = self.selection_start_end(selection);
 
         let cursor_start_measure = self.measure(ctx, 0, selection.start());
         Cursor::cursor_x_set(&mut ctx.get_widget(self.cursor), cursor_start_measure.width);
@@ -316,21 +299,21 @@ impl TextBehaviorState {
             }
             Key::X(..) => {
                 if self.is_ctlr_home_down(ctx) {
-                    // self.cut(registry, ctx);
+                    self.cut(registry, ctx);
                 } else {
                     self.insert_text(key_event.text, ctx);
                 }
             }
             Key::C(..) => {
                 if self.is_ctlr_home_down(ctx) {
-                    // self.copy(registry, ctx);
+                    self.copy(registry, ctx);
                 } else {
                     self.insert_text(key_event.text, ctx);
                 }
             }
             Key::V(..) => {
                 if self.is_ctlr_home_down(ctx) {
-                    // self.paste(registry, ctx);
+                    self.paste(registry, ctx);
                 } else {
                     self.insert_text(key_event.text, ctx);
                 }
@@ -505,6 +488,13 @@ impl TextBehaviorState {
         }
 
         return TextMetrics::default();
+    }
+
+    fn selection_start_end(&self, selection: TextSelection) -> (usize, usize) {
+        if selection.start() > selection.end() {
+            return (selection.end(), selection.start());
+        }
+        (selection.start(), selection.end())
     }
 
     // -- Helpers --
