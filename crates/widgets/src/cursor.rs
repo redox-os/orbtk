@@ -40,6 +40,7 @@ impl Template for Cursor {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Cursor")
             .style("cursor")
+            .background_opacity(0.3)
             .background("transparent")
             .h_align("start")
     }

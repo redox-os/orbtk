@@ -568,7 +568,7 @@ impl State for TextBehaviorState {
                     }
                 }
                 TextAction::FocusedChanged => self.focused_changed(ctx),
-                TextAction::SelectionChanged => {}
+                TextAction::SelectionChanged => return,
             }
 
             self.action = None;

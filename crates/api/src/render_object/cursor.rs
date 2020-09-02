@@ -35,16 +35,6 @@ impl RenderObject for CursorRenderObject {
             )
         };
 
-        // background
-        ctx.render_context_2_d().set_fill_style(background);
-        ctx.render_context_2_d().fill_rect(
-            global_position.x() + bounds.x() + selection_x,
-            global_position.y() + bounds.y(),
-            bounds.width() + selection_width,
-            bounds.height(),
-        );
-
-        // border
         let x_position_indicator = {
             if selection.start() <= selection.end() {
                 0.
@@ -54,7 +44,19 @@ impl RenderObject for CursorRenderObject {
         };
 
         let border_width = border_width.right();
+
+        // background
         ctx.render_context_2_d().set_alpha(background_opacity);
+        ctx.render_context_2_d().set_fill_style(background);
+        ctx.render_context_2_d().fill_rect(
+            global_position.x() + bounds.x() + selection_x + border_width,
+            global_position.y() + bounds.y(),
+            bounds.width(),
+            bounds.height(),
+        );
+        ctx.render_context_2_d().set_alpha(1.);
+
+        // border
         ctx.render_context_2_d().set_fill_style(border_brush);
         ctx.render_context_2_d().fill_rect(
             global_position.x() + bounds.x() + selection_x + x_position_indicator,
@@ -62,6 +64,5 @@ impl RenderObject for CursorRenderObject {
             border_width,
             bounds.height(),
         );
-        ctx.render_context_2_d().set_alpha(1.);
     }
 }
