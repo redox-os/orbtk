@@ -102,98 +102,83 @@ impl TextBehaviorState {
         //     .start_index = index + len;
     }
 
+    // handle back space
     fn back_space(&mut self, ctx: &mut Context) {
-        // if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
-        //     self.clear_selection(ctx);
-        // } else {
-        //     let index = ctx
-        //         .widget()
-        //         .clone::<TextSelection>("selection")
-        //         .start_index;
-        //     if index > 0 {
-        //         let mut text = ctx.widget().clone::<String>("text");
-        //         text.remove(index - 1);
-        //         ctx.get_widget(self.target).set("text", text);
-        //         ctx.widget()
-        //             .get_mut::<TextSelection>("selection")
-        //             .start_index = index - 1;
-        //     }
-        // }
-    }
-
-    fn delete(&mut self, ctx: &mut Context) {
-        // if *ctx.get_widget(self.cursor).get::<bool>("expanded") {
-        //     self.clear_selection(ctx);
-        // } else {
-        //     let index = ctx
-        //         .widget()
-        //         .clone::<TextSelection>("selection")
-        //         .start_index;
-        //     if index < ctx.widget().get::<String>("text").len() {
-        //         let mut text = ctx.widget().clone::<String>("text");
-        //         text.remove(index);
-        //         ctx.get_widget(self.target).set("text", text);
-
-        //         ctx.widget()
-        //             .get_mut::<TextSelection>("selection")
-        //             .start_index = index;
-        //     }
-        // }
-    }
-
-    fn insert_char(&mut self, key_event: KeyEvent, ctx: &mut Context) {
-        if key_event.text.is_empty() {
+        if self.clear_selection(ctx) {
             return;
         }
 
-        // let mut selection = *TextBehavior::selection_ref(&ctx.widget());
-        // let mut text = TextBehavior::text_clone(&ctx.widget());
+        let mut selection = self.selection(ctx);
 
-        // if selection.len() == 0 {
-        //     text.insert_str(selection.start(), key_event.text.as_str());
-        //     selection.set_start(selection.start() + 1)
-        // }
+        if selection.start() == 0 {
+            return;
+        }
 
-        // TextBehavior::text_set(&mut ctx.widget(), text);
-        // TextBehavior::selection_set(&mut ctx.widget(), selection);
+        selection.set_start(selection.start() - 1);
+        selection.set_end(selection.start());
 
-        // if selection.len() > 0 {
-        //     ctx.get_widget(self.target)
-        //         .set("text", String::from(key_event.text));
+        let mut text = String16::from(TextBehavior::text_clone(&ctx.widget()));
 
-        //     selection.set_start(1);
+        text.remove(selection.start());
 
-        //     if let Some(selection) = ctx
-        //         .get_widget(self.cursor)
-        //         .try_get_mut::<TextSelection>("selection")
-        //     {
-        //         selection.start_index = 1;
-        //         selection.length = 0
-        //     }
-        //     ctx.get_widget(self.cursor).set("expanded", false);
-        // } else {
-        //     let current_selection = *ctx
-        //         .get_widget(self.cursor)
-        //         .get::<TextSelection>("selection");
+        ctx.get_widget(self.target).set("text", text.to_string());
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
+    }
 
-        //     let mut text = ctx.widget().clone::<String>("text");
-        //     text.insert_str(current_selection.start_index, key_event.text.as_str());
-        //     ctx.get_widget(self.target).set("text", text);
+    // handle delete
+    fn delete(&mut self, ctx: &mut Context) {
+        if self.clear_selection(ctx) {
+            return;
+        }
 
-        //     if let Some(selection) = ctx
-        //         .get_widget(self.cursor)
-        //         .try_get_mut::<TextSelection>("selection")
-        //     {
-        //         selection.start_index =
-        //             current_selection.start_index + key_event.text.encode_utf16().count();
-        //     }
-        // }
+        let selection = self.selection(ctx);
+
+        if selection.end() > self.len(ctx) {
+            return;
+        }
+
+        let mut text = String16::from(TextBehavior::text_clone(&ctx.widget()));
+
+        text.remove(selection.start() + 1);
+
+        ctx.get_widget(self.target).set("text", text.to_string());
     }
 
     fn paste(&mut self, registry: &mut Registry, ctx: &mut Context) {
         if let Some(value) = registry.get::<Clipboard>("clipboard").get() {
             self.insert_text(value, ctx);
         }
+    }
+
+    // clear all chars from the selection.
+    fn clear_selection(&mut self, ctx: &mut Context) -> bool {
+        let mut selection = self.selection(ctx);
+
+        if selection.is_empty() {
+            return false;
+        }
+
+        let mut text = String16::from(TextBehavior::text_clone(&ctx.widget()));
+
+        let (start, end) = {
+            if selection.start() > selection.end() {
+                (selection.end(), selection.start())
+            } else {
+                (selection.start(), selection.end())
+            }
+        };
+
+        for i in (start..end).rev() {
+            text.remove(i);
+        }
+
+        selection.set_start(start);
+        selection.set_end(start);
+
+        ctx.get_widget(self.target).set("text", text.to_string());
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
+
+        true
     }
 
     // -- Text operations --
@@ -282,23 +267,6 @@ impl TextBehaviorState {
         TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
 
-    fn clear_selection(&mut self, ctx: &mut Context) {
-        //     let selection = ctx.widget().clone::<TextSelection>("selection");
-        //     let mut text = ctx.widget().clone::<String>("text");
-
-        //     for i in (selection.start_index..(selection.start_index + selection.length)).rev() {
-        //         text.remove(i);
-        //     }
-
-        //     ctx.get_widget(self.target).set("text", text);
-
-        //     ctx.widget()
-        //         .get_mut::<TextSelection>("selection")
-        //         .length = 0;
-
-        //     ctx.get_widget(self.cursor).set("expanded", false);
-    }
-
     // -- Selection --
 
     fn activate(&self, ctx: &mut Context) {
@@ -338,10 +306,10 @@ impl TextBehaviorState {
                 }
             }
             Key::Backspace => {
-                // self.back_space(ctx);
+                self.back_space(ctx);
             }
             Key::Delete => {
-                // self.delete(ctx);
+                self.delete(ctx);
             }
             Key::Enter => {
                 // self.activate(ctx);
@@ -375,7 +343,7 @@ impl TextBehaviorState {
                 }
             }
             _ => {
-                self.insert_char(key_event, ctx);
+                // self.insert_char(key_event, ctx);
             }
         }
     }
