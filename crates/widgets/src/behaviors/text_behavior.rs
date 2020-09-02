@@ -3,7 +3,14 @@ use crate::{
     proc_macros::*,
     shell::prelude::{Key, KeyEvent},
     theme::fonts,
+    Cursor,
 };
+
+// --- KEYS --
+pub static EMPTY_STATE: &str = "empty";
+pub static EMPTY_FOCUSED_STATE: &str = "empty_focused";
+pub static FOCUSED_STATE: &str = "focused";
+// --- KEYS --
 
 use super::MouseBehavior;
 
@@ -171,19 +178,7 @@ impl TextBehaviorState {
     // -- Text operations --
 
     fn request_focus(&self, ctx: &mut Context) {
-        ctx.push_event_by_window(FocusEvent::RequestFocus(self.target));
-    }
-
-    // Reset selection and offset if text is changed from outside
-    fn reset(&self, ctx: &mut Context) {
-        ctx.widget().set("selection", TextSelection::default());
-    }
-
-    fn check_outside_update(&self, ctx: &mut Context) {
-        let len = ctx.widget().get::<String16>("text").len();
-        if self.len != len && self.len > len {
-            self.reset(ctx);
-        }
+        ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
     }
 
     // -- Selection --
@@ -356,6 +351,35 @@ impl TextBehaviorState {
     // handles focus changed event
     fn focused_changed(&self, ctx: &mut Context) {
         self.select_all(ctx);
+
+        if self.focused(ctx) {
+            Cursor::visibility_set(&mut ctx.get_widget(self.cursor), Visibility::Visible);
+
+            if self.len(ctx) == 0 {
+                ctx.get_widget(self.target)
+                    .get_mut::<Selector>("selector")
+                    .set_state(EMPTY_FOCUSED_STATE);
+            } else {
+                ctx.get_widget(self.target)
+                    .get_mut::<Selector>("selector")
+                    .set_state(FOCUSED_STATE);
+            }
+        } else {
+            Cursor::visibility_set(&mut ctx.get_widget(self.cursor), Visibility::Collapsed);
+
+            if self.len(ctx) == 0 {
+                ctx.get_widget(self.target)
+                    .get_mut::<Selector>("selector")
+                    .set_state(EMPTY_STATE);
+            } else {
+                ctx.get_widget(self.target)
+                    .get_mut::<Selector>("selector")
+                    .clear_state();
+            }
+        }
+
+        // update the visual state of the target
+        ctx.get_widget(self.target).update(false);
     }
 
     // -- Event handling --
@@ -469,15 +493,18 @@ impl State for TextBehaviorState {
                 .try_clone::<u32>("cursor")
                 .expect("TextBehaviorState.init: cursor could not be found."),
         );
+
         self.target = Entity::from(
             ctx.widget()
                 .try_clone::<u32>("target")
                 .expect("TextBehaviorState.init: target could not be found."),
         );
-        self.len = ctx.widget().get::<String16>("text").len();
-        self.focused = *ctx.widget().get::<bool>("focused");
 
-        if self.len == 0 {
+        // hide cursor
+        Cursor::visibility_set(&mut ctx.get_widget(self.cursor), Visibility::Collapsed);
+
+        // set initial empty state
+        if TextBehavior::text_ref(&ctx.widget()).len() == 0 {
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
                 .set_state("empty");
@@ -486,39 +513,11 @@ impl State for TextBehaviorState {
     }
 
     fn update(&mut self, registry: &mut Registry, ctx: &mut Context) {
-        self.check_outside_update(ctx);
-
-        // let focused = *ctx.widget().get::<bool>("focused");
-        // let empty = ctx.widget().get::<String16>("text").is_empty();
-
-        // if !focused
-        //     && empty
-        //     && !ctx
-        //         .get_widget(self.target)
-        //         .get::<Selector>("selector")
-        //         .has_state("empty")
-        // {
-        //     ctx.get_widget(self.target)
-        //         .get_mut::<Selector>("selector")
-        //         .set_state("empty");
-        //     ctx.get_widget(self.target).update(false);
-        // }
-
-        // if !focused && *ctx.widget().get::<bool>("request_focus") {
-        //     ctx.widget().set("request_focus", false);
-        //     ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
-        //     self.select_all(ctx);
-        // }
-
-        // if self.focused != *ctx.widget().get::<bool>("focused") {
-        //     self.focused = *ctx.widget().get::<bool>("focused");
-        // }
+        // todo reset selection on text changed from outside
 
         if let Some(action) = self.action.clone() {
             match action {
-                TextAction::KeyDown(event) => {
-                    self.key_down(registry, ctx, event);
-                }
+                TextAction::KeyDown(event) => self.key_down(registry, ctx, event),
                 TextAction::MouseDown(p) => self.mouse_down(ctx, p),
                 TextAction::Drop(text, position) => {
                     if check_mouse_condition(position, &ctx.get_widget(self.target)) {
@@ -529,27 +528,7 @@ impl State for TextBehaviorState {
             }
 
             self.action = None;
-            // ctx.get_widget(self.target).update(false);
         }
-
-        // self.len = ctx.widget().get::<String16>("text").len();
-
-        // if self.len == 0 && self.focused {
-        //     ctx.get_widget(self.target)
-        //         .get_mut::<Selector>("selector")
-        //         .set_state("empty_focused");
-        //     ctx.get_widget(self.target).update(false);
-        // } else if self.len > 0 && self.focused {
-        //     ctx.get_widget(self.target)
-        //         .get_mut::<Selector>("selector")
-        //         .set_state("focused");
-        //     ctx.get_widget(self.target).update(false);
-        // } else if self.len > 0 && !self.focused {
-        //     ctx.get_widget(self.target)
-        //         .get_mut::<Selector>("selector")
-        //         .clear_state();
-        //     ctx.get_widget(self.target).update(false);
-        // }
     }
 }
 

@@ -69,13 +69,7 @@ impl Template for TextBox {
             .font_size(id)
             .build(ctx);
 
-        let cursor = Cursor::new()
-            .id(ID_CURSOR)
-            .h_align("start")
-            .text_block(text_block.0)
-            .focused(id)
-            .selection(id)
-            .build(ctx);
+        let cursor = Cursor::new().id(ID_CURSOR).selection(id).build(ctx);
 
         let text_behavior = TextBehavior::new()
             .cursor(cursor.0)

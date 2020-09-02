@@ -35,6 +35,11 @@ impl TextSelection {
     pub fn len(&self) -> usize {
         (self.start as i32 - self.end as i32).abs() as usize
     }
+
+    /// Check if the selection is empty (start == end).
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
 impl From<(usize, usize)> for TextSelection {

@@ -189,18 +189,10 @@ Theme (
         ),
         "cursor": (
             properties: {
-                "opacity": 1,
-                "background": "transparent",
-            },
-            states: {
-                "focused": {
-                    "background": "$GOLD_TIPS",
-                },
-                "expanded": {
-                    "opacity": 0.3,
-                    "background": "$GOLD_TIPS",
-                },
-            },
+                "background": "$GOLD_TIPS",
+                "border_brush": "$GOLD_TIPS",
+                "border_width": 1
+            }
         ),
         "slider": (
             properties: {

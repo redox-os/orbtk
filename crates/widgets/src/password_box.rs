@@ -130,12 +130,7 @@ impl Template for PasswordBox {
             .font_size(id)
             .build(ctx);
 
-        let cursor = Cursor::new()
-            .h_align("start")
-            .text_block(text_block.0)
-            .focused(id)
-            .selection(id)
-            .build(ctx);
+        let cursor = Cursor::new().selection(id).build(ctx);
 
         let text_behavior = TextBehavior::new()
             .cursor(cursor.0)
