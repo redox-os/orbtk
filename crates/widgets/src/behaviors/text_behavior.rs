@@ -233,7 +233,7 @@ impl TextBehaviorState {
     fn expand_selection_left(&mut self, ctx: &mut Context) {
         self.direction = Direction::Left;
         let mut selection = self.selection(ctx);
-        if selection.start() as i32 - 1 >= 0 {
+        if selection.start() as i32 > 0 {
             selection.set_start(selection.start() - 1);
         }
         TextBehavior::selection_set(&mut ctx.widget(), selection);
@@ -242,7 +242,7 @@ impl TextBehaviorState {
     fn expand_selection_right(&mut self, ctx: &mut Context) {
         self.direction = Direction::Right;
         let mut selection = self.selection(ctx);
-        if selection.start() + 1 <= self.len(ctx) {
+        if selection.start() < self.len(ctx) {
             selection.set_start(selection.start() + 1);
         }
         TextBehavior::selection_set(&mut ctx.widget(), selection);
@@ -472,8 +472,6 @@ impl TextBehaviorState {
             position_index.push((i + 1, next_position));
         }
 
-        // for (index, _) in text.chars().u.enumerate() {}
-
         position_index
     }
 
@@ -483,14 +481,15 @@ impl TextBehaviorState {
         let font_size = *TextBehavior::font_size_ref(&ctx.widget());
 
         if let Some(text_part) =
-            String16::from(TextBehavior::text_ref(&ctx.widget()).as_str()).get_string(start, end)
+            String16::from(TextBlock::text_ref(&ctx.get_widget(self.text_block)).as_str())
+                .get_string(start, end)
         {
             return ctx
                 .render_context_2_d()
                 .measure(text_part.as_str(), font_size, font);
         }
 
-        return TextMetrics::default();
+        TextMetrics::default()
     }
 
     fn selection_start_end(&self, selection: TextSelection) -> (usize, usize) {
@@ -738,7 +737,7 @@ impl Template for TextBehavior {
 
 fn move_selection_left(mut selection: TextSelection) -> TextSelection {
     if selection.start() == selection.end() {
-        if selection.start() as i32 - 1 >= 0 {
+        if selection.start() as i32 > 0 {
             selection.set(selection.start() - 1);
         }
     } else if selection.start() < selection.end() {
