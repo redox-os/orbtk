@@ -42,7 +42,7 @@ impl Default for Direction {
 /// The `TextBehaviorState` handles the text processing of the `TextBehavior` widget.
 #[derive(Default, AsAny)]
 pub struct TextBehaviorState {
-    action: Option<TextAction>,
+    action: Option<TextAction>, 
     cursor: Entity,
     target: Entity,
     text_block: Entity,
@@ -130,13 +130,18 @@ impl TextBehaviorState {
 
         let mut text = String16::from(TextBehavior::text_clone(&ctx.widget()));
 
+        let removed_width = self.measure(ctx, selection.start(), selection.start() + 1).width;
+
+        let mut offset = *Cursor::offset_ref(&ctx.get_widget(self.cursor));
+        offset = (offset + removed_width).min(0.);
+
+        Cursor::offset_set(&mut ctx.get_widget(self.cursor), offset);
+        TextBlock::offset_set(&mut ctx.get_widget(self.text_block), offset);
+
         text.remove(selection.start());
 
         ctx.get_widget(self.target).set("text", text.to_string());
         TextBehavior::selection_set(&mut ctx.widget(), selection);
-
-        // used to trigger bounds adjustments
-        self.direction = Direction::Left;
 
         if self.len(ctx) == 0 {
             self.update_focused_state(ctx);
@@ -201,6 +206,10 @@ impl TextBehaviorState {
         Cursor::selection_x_set(&mut ctx.get_widget(self.cursor), start_measure.width);
         let length_measure = self.measure(ctx, start, end);
         Cursor::selection_width_set(&mut ctx.get_widget(self.cursor), length_measure.width);
+
+        if self.direction == Direction::None {
+            return;
+        }
 
         // adjust position
         let offset = *Cursor::offset_ref(&ctx.get_widget(self.cursor));
