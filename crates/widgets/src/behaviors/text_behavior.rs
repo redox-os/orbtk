@@ -384,7 +384,6 @@ impl TextBehaviorState {
             return;
         }
 
-        let len = self.len(ctx);
         let mut selection = self.selection(ctx);
         let new_start = self.get_new_selection_position(ctx, position);
 
