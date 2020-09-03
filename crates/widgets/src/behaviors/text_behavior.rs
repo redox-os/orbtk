@@ -50,7 +50,7 @@ pub struct TextBehaviorState {
     text_block: Entity,
     direction: Direction,
     pressed: bool,
-    mouse_position: Point
+    mouse_position: Point,
 }
 
 impl TextBehaviorState {
@@ -378,7 +378,7 @@ impl TextBehaviorState {
         TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
 
-    // handles mouse move 
+    // handles mouse move
     fn mouse_move(&self, ctx: &mut Context, position: Point) {
         if !self.pressed && *TextBehavior::focused_ref(&ctx.widget()) {
             return;
@@ -388,7 +388,6 @@ impl TextBehaviorState {
         if (self.mouse_position.x() - position.x()).abs() < 0. {
             return;
         }
-
     }
 
     // handles focus changed event
@@ -586,7 +585,7 @@ impl State for TextBehaviorState {
                 TextAction::FocusedChanged => self.focused_changed(ctx),
                 TextAction::SelectionChanged => return,
                 TextAction::MouseUp => self.pressed = false,
-                TextAction::MouseMove(_) => todo!()
+                TextAction::MouseMove(_) => todo!(),
             }
 
             self.action = None;
