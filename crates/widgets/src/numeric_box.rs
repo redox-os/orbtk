@@ -49,7 +49,7 @@ impl NumericBoxState {
         }
 
         ctx.get_widget(self.input)
-            .set::<String>("text", String::from(self.current_value.to_string()));
+            .set::<String>("text", self.current_value.to_string());
     }
 
     fn min(&self, d: Decimal) -> Decimal {
@@ -96,7 +96,7 @@ impl State for NumericBoxState {
         self.step = default_or("step", 1.0, ctx);
         self.current_value = default_or("val", 0.0, ctx);
 
-        let init_value = String::from(self.current_value.to_string());
+        let init_value = self.current_value.to_string();
         ctx.get_widget(self.input).set::<String>("text", init_value);
     }
 

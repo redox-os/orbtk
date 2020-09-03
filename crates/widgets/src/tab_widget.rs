@@ -416,7 +416,7 @@ impl TabWidgetState {
             } else {
                 Visibility::Collapsed
             })
-            .text(String::from(text))
+            .text(text)
             .on_header_mouse_down(move |states, _| {
                 states
                     .get_mut::<TabWidgetState>(cloned_entity)

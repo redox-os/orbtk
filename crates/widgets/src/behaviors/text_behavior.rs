@@ -535,7 +535,7 @@ impl State for TextBehaviorState {
         Cursor::visibility_set(&mut ctx.get_widget(self.cursor), Visibility::Collapsed);
 
         // set initial empty state
-        if TextBehavior::text_ref(&ctx.widget()).len() == 0 {
+        if TextBehavior::text_ref(&ctx.widget()).is_empty() {
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
                 .set_state("empty");
@@ -563,9 +563,8 @@ impl State for TextBehaviorState {
 
     fn update_post_layout(&mut self, _registry: &mut Registry, ctx: &mut Context) {
         if let Some(action) = self.action.clone() {
-            match action {
-                TextAction::SelectionChanged => self.update_cursor(ctx),
-                _ => {}
+            if let TextAction::SelectionChanged = action {
+                self.update_cursor(ctx);
             }
 
             self.action = None;
@@ -742,28 +741,28 @@ impl Template for TextBehavior {
 // --- Helpers --
 
 fn move_selection_left(mut selection: TextSelection) -> TextSelection {
-    if selection.start() == selection.end() {
-        if selection.start() as i32 > 0 {
-            selection.set(selection.start() - 1);
+    match selection.start().cmp(&selection.end()) {
+        std::cmp::Ordering::Less => selection.set_end(selection.start()),
+        std::cmp::Ordering::Equal => {
+            if selection.start() as i32 > 0 {
+                selection.set(selection.start() - 1);
+            }
         }
-    } else if selection.start() < selection.end() {
-        selection.set_end(selection.start());
-    } else {
-        selection.set_start(selection.end());
+        std::cmp::Ordering::Greater => selection.set_start(selection.end()),
     }
 
     selection
 }
 
 fn move_selection_right(mut selection: TextSelection, len: usize) -> TextSelection {
-    if selection.start() == selection.end() {
-        if selection.start() < len {
-            selection.set(selection.start() + 1);
+    match selection.start().cmp(&selection.end()) {
+        std::cmp::Ordering::Less => selection.set_start(selection.end()),
+        std::cmp::Ordering::Equal => {
+            if selection.start() < len {
+                selection.set(selection.start() + 1);
+            }
         }
-    } else if selection.start() < selection.end() {
-        selection.set_start(selection.end());
-    } else {
-        selection.set_end(selection.start());
+        std::cmp::Ordering::Greater => selection.set_end(selection.start()),
     }
 
     selection
