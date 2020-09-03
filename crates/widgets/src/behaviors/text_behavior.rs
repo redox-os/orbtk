@@ -20,6 +20,8 @@ use super::MouseBehavior;
 enum TextAction {
     KeyDown(KeyEvent),
     MouseDown(Mouse),
+    MouseMove(Point),
+    MouseUp,
     Drop(String, Point),
     FocusedChanged,
     SelectionChanged,
@@ -47,6 +49,7 @@ pub struct TextBehaviorState {
     target: Entity,
     text_block: Entity,
     direction: Direction,
+    pressed: bool
 }
 
 impl TextBehaviorState {
@@ -359,7 +362,8 @@ impl TextBehaviorState {
     }
 
     // handles mouse down event
-    fn mouse_down(&self, ctx: &mut Context, p: Mouse) {
+    fn mouse_down(&mut self, ctx: &mut Context, p: Mouse) {
+        self.pressed = true;
         if !*TextBehavior::focused_ref(&ctx.widget()) {
             self.request_focus(ctx);
             return;
@@ -566,6 +570,8 @@ impl State for TextBehaviorState {
                 }
                 TextAction::FocusedChanged => self.focused_changed(ctx),
                 TextAction::SelectionChanged => return,
+                TextAction::MouseUp => self.pressed = false,
+                TextAction::MouseMove(_) => todo!()
             }
 
             self.action = None;
@@ -714,6 +720,18 @@ impl Template for TextBehavior {
                         states
                             .get_mut::<TextBehaviorState>(id)
                             .action(TextAction::MouseDown(m));
+                        true
+                    })
+                    .on_mouse_up(move |states, _| {
+                        states
+                            .get_mut::<TextBehaviorState>(id)
+                            .action(TextAction::MouseUp);
+                        true
+                    })
+                    .on_mouse_move(move |states, p| {
+                        states
+                            .get_mut::<TextBehaviorState>(id)
+                            .action(TextAction::MouseMove(p));
                         true
                     })
                     .build(ctx),
