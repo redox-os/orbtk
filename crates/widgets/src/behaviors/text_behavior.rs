@@ -21,7 +21,6 @@ enum TextAction {
     KeyDown(KeyEvent),
     MouseDown(Mouse),
     MouseMove(Point),
-    MouseUp,
     Drop(String, Point),
     FocusedChanged,
     SelectionChanged,
@@ -49,8 +48,6 @@ pub struct TextBehaviorState {
     target: Entity,
     text_block: Entity,
     direction: Direction,
-    pressed: bool,
-    mouse_position: Point,
 }
 
 impl TextBehaviorState {
@@ -364,8 +361,6 @@ impl TextBehaviorState {
 
     // handles mouse down event
     fn mouse_down(&mut self, ctx: &mut Context, mouse: Mouse) {
-        self.pressed = true;
-        self.mouse_position = mouse.position;
         if !*TextBehavior::focused_ref(&ctx.widget()) {
             self.request_focus(ctx);
             return;
@@ -380,7 +375,8 @@ impl TextBehaviorState {
 
     // handles mouse move
     fn mouse_move(&mut self, ctx: &mut Context, position: Point) {
-        if !self.pressed || !*TextBehavior::focused_ref(&ctx.widget()) {
+        if !*TextBehavior::pressed_ref(&ctx.widget()) || !*TextBehavior::focused_ref(&ctx.widget())
+        {
             return;
         }
 
@@ -596,7 +592,6 @@ impl State for TextBehaviorState {
                 }
                 TextAction::FocusedChanged => self.focused_changed(ctx),
                 TextAction::SelectionChanged => return,
-                TextAction::MouseUp => self.pressed = false,
                 TextAction::MouseMove(position) => self.mouse_move(ctx, position),
             }
 
@@ -724,7 +719,10 @@ widget!(
         selection: TextSelection,
 
         /// If set to `true` all character will be focused when the widget gets focus. Default is `true`
-        select_all_on_focus: bool
+        select_all_on_focus: bool,
+
+        /// Check if the behavior is pressed.
+        pressed: bool
     }
 );
 
@@ -742,16 +740,11 @@ impl Template for TextBehavior {
                 MouseBehavior::new()
                     .visibility(id)
                     .enabled(id)
+                    .pressed(id)
                     .on_mouse_down(move |states, m| {
                         states
                             .get_mut::<TextBehaviorState>(id)
                             .action(TextAction::MouseDown(m));
-                        true
-                    })
-                    .on_mouse_up(move |states, _| {
-                        states
-                            .get_mut::<TextBehaviorState>(id)
-                            .action(TextAction::MouseUp);
                         true
                     })
                     .on_mouse_move(move |states, p| {
