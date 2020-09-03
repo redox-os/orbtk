@@ -64,10 +64,7 @@ impl State for MainViewState {
 
                     let counter = *MainView::counter_ref(&ctx.widget());
 
-                    MainView::result_set(
-                        &mut ctx.widget(),
-                        format!("Button count: {}", counter),
-                    );
+                    MainView::result_set(&mut ctx.widget(), format!("Button count: {}", counter));
                 }
                 Action::ClearText => {
                     MainView::text_one_set(&mut ctx.widget(), String::default());

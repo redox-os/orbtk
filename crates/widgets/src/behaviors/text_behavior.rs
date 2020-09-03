@@ -42,7 +42,7 @@ impl Default for Direction {
 /// The `TextBehaviorState` handles the text processing of the `TextBehavior` widget.
 #[derive(Default, AsAny)]
 pub struct TextBehaviorState {
-    action: Option<TextAction>, 
+    action: Option<TextAction>,
     cursor: Entity,
     target: Entity,
     text_block: Entity,
@@ -130,7 +130,9 @@ impl TextBehaviorState {
 
         let mut text = String16::from(TextBehavior::text_clone(&ctx.widget()));
 
-        let removed_width = self.measure(ctx, selection.start(), selection.start() + 1).width;
+        let removed_width = self
+            .measure(ctx, selection.start(), selection.start() + 1)
+            .width;
 
         let mut offset = *Cursor::offset_ref(&ctx.get_widget(self.cursor));
         offset = (offset + removed_width).min(0.);
