@@ -98,13 +98,13 @@ impl TextBehaviorState {
 
         let mut selection = self.selection(ctx);
 
-        let mut text = TextBehavior::text_clone(&ctx.widget());
+        let mut text = String16::from(TextBehavior::text_clone(&ctx.widget()));
         text.insert_str(selection.start(), insert_text.as_str());
 
         selection.set(selection.start() + insert_text.chars().count());
         TextBehavior::selection_set(&mut ctx.widget(), selection);
 
-        ctx.get_widget(self.target).set("text", text);
+        ctx.get_widget(self.target).set("text", text.to_string());
 
         // used to trigger bounds adjustments
         self.direction = Direction::Right;
