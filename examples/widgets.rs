@@ -66,7 +66,7 @@ impl State for MainViewState {
 
                     MainView::result_set(
                         &mut ctx.widget(),
-                        String::from(format!("Button count: {}", counter)),
+                        format!("Button count: {}", counter),
                     );
                 }
                 Action::ClearText => {
