@@ -49,7 +49,8 @@ pub struct TextBehaviorState {
     target: Entity,
     text_block: Entity,
     direction: Direction,
-    pressed: bool
+    pressed: bool,
+    mouse_position: Point
 }
 
 impl TextBehaviorState {
@@ -362,18 +363,32 @@ impl TextBehaviorState {
     }
 
     // handles mouse down event
-    fn mouse_down(&mut self, ctx: &mut Context, p: Mouse) {
+    fn mouse_down(&mut self, ctx: &mut Context, mouse: Mouse) {
         self.pressed = true;
+        self.mouse_position = mouse.position;
         if !*TextBehavior::focused_ref(&ctx.widget()) {
             self.request_focus(ctx);
             return;
         }
 
-        let selection_start = self.get_new_selection_position(ctx, p);
+        let selection_start = self.get_new_selection_position(ctx, mouse);
         let mut selection = self.selection(ctx);
         selection.set(selection_start);
 
         TextBehavior::selection_set(&mut ctx.widget(), selection);
+    }
+
+    // handles mouse move 
+    fn mouse_move(&self, ctx: &mut Context, position: Point) {
+        if !self.pressed && *TextBehavior::focused_ref(&ctx.widget()) {
+            return;
+        }
+
+        // todo epsilon check
+        if (self.mouse_position.x() - position.x()).abs() < 0. {
+            return;
+        }
+
     }
 
     // handles focus changed event
