@@ -371,7 +371,7 @@ impl TextBehaviorState {
             return;
         }
 
-        let selection_start = self.get_new_selection_position(ctx, mouse);
+        let selection_start = self.get_new_selection_position(ctx, mouse.position);
         let mut selection = self.selection(ctx);
         selection.set(selection_start);
 
@@ -379,15 +379,28 @@ impl TextBehaviorState {
     }
 
     // handles mouse move
-    fn mouse_move(&self, ctx: &mut Context, position: Point) {
-        if !self.pressed && *TextBehavior::focused_ref(&ctx.widget()) {
+    fn mouse_move(&mut self, ctx: &mut Context, position: Point) {
+        if !self.pressed || !*TextBehavior::focused_ref(&ctx.widget()) {
             return;
         }
 
-        // todo epsilon check
-        if (self.mouse_position.x() - position.x()).abs() < 0. {
+        let len = self.len(ctx);
+        let mut selection = self.selection(ctx);
+        let new_start = self.get_new_selection_position(ctx, position);
+
+        if selection.start() == new_start {
             return;
         }
+
+        if selection.start() < new_start {
+            self.direction = Direction::Right;
+        } else {
+            self.direction = Direction::Left;
+        }
+
+        selection.set_start(new_start);
+
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
 
     // handles focus changed event
@@ -474,11 +487,11 @@ impl TextBehaviorState {
     }
 
     // Get new position for the selection based on current mouse position
-    fn get_new_selection_position(&self, ctx: &mut Context, p: Mouse) -> usize {
+    fn get_new_selection_position(&self, ctx: &mut Context, position: Point) -> usize {
         if let Some((index, _x)) = self
             .map_chars_index_to_position(ctx)
             .iter()
-            .min_by_key(|(_index, x)| (p.position.x() - x).abs() as u64)
+            .min_by_key(|(_index, x)| (position.x() - x).abs() as u64)
         {
             return *index;
         }
@@ -585,7 +598,7 @@ impl State for TextBehaviorState {
                 TextAction::FocusedChanged => self.focused_changed(ctx),
                 TextAction::SelectionChanged => return,
                 TextAction::MouseUp => self.pressed = false,
-                TextAction::MouseMove(_) => todo!(),
+                TextAction::MouseMove(position) => self.mouse_move(ctx, position),
             }
 
             self.action = None;

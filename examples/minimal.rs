@@ -10,12 +10,7 @@ fn main() {
                 .title("OrbTk - minimal example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
-                .child(
-                    TextBox::new()
-                        .text("OrbTk with a very very very very very very vÄery very very very very very very very very long textÄ")
-                        .margin(4.0)
-                        .build(ctx),
-                )
+                .child(TextBlock::new().text("OrbTk").margin(4.0).build(ctx))
                 .build(ctx)
         })
         .run();
