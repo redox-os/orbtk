@@ -106,6 +106,9 @@ impl TextBehaviorState {
 
         ctx.get_widget(self.target).set("text", text);
 
+        // used to trigger bounds adjustments
+        self.direction = Direction::Right;
+
         if text_was_empty {
             self.update_focused_state(ctx);
         }
@@ -131,6 +134,9 @@ impl TextBehaviorState {
 
         ctx.get_widget(self.target).set("text", text.to_string());
         TextBehavior::selection_set(&mut ctx.widget(), selection);
+
+        // used to trigger bounds adjustments
+        self.direction = Direction::Left;
 
         if self.len(ctx) == 0 {
             self.update_focused_state(ctx);
