@@ -114,7 +114,10 @@ widget!(
         lost_focus_on_activation: bool,
 
         /// Used to request focus from outside. Set to `true` tor request focus.
-        request_focus: bool
+        request_focus: bool,
+
+        /// If set to `true` all character will be focused when the widget gets focus. Default is `true`
+        select_all_on_focus: bool
     }
 );
 
@@ -140,6 +143,7 @@ impl Template for PasswordBox {
             .font(id)
             .font_size(id)
             .lost_focus_on_activation(id)
+            .select_all_on_focus(id)
             .request_focus(id)
             .text(id)
             .selection(id)
@@ -164,6 +168,7 @@ impl Template for PasswordBox {
             .height(32.0)
             .focused(false)
             .lost_focus_on_activation(true)
+            .select_all_on_focus(true)
             .child(text_behavior)
             .child(
                 Container::new()

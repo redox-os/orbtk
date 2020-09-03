@@ -92,6 +92,8 @@ impl TextBehaviorState {
             return;
         }
 
+        let text_was_empty = self.len(ctx) == 0;
+
         let _ = self.clear_selection(ctx);
 
         let mut selection = self.selection(ctx);
@@ -103,6 +105,10 @@ impl TextBehaviorState {
         TextBehavior::selection_set(&mut ctx.widget(), selection);
 
         ctx.get_widget(self.target).set("text", text);
+
+        if text_was_empty {
+            self.update_focused_state(ctx);
+        }
     }
 
     // handle back space
@@ -125,6 +131,10 @@ impl TextBehaviorState {
 
         ctx.get_widget(self.target).set("text", text.to_string());
         TextBehavior::selection_set(&mut ctx.widget(), selection);
+
+        if self.len(ctx) == 0 {
+            self.update_focused_state(ctx);
+        }
     }
 
     // handle delete
@@ -347,20 +357,13 @@ impl TextBehaviorState {
 
     // handles focus changed event
     fn focused_changed(&self, ctx: &mut Context) {
-        self.select_all(ctx);
+        if *TextBehavior::select_all_on_focus_ref(&ctx.widget()) {
+            self.select_all(ctx);
+        }
 
         if self.focused(ctx) {
             Cursor::visibility_set(&mut ctx.get_widget(self.cursor), Visibility::Visible);
-
-            if self.len(ctx) == 0 {
-                ctx.get_widget(self.target)
-                    .get_mut::<Selector>("selector")
-                    .set_state(EMPTY_FOCUSED_STATE);
-            } else {
-                ctx.get_widget(self.target)
-                    .get_mut::<Selector>("selector")
-                    .set_state(FOCUSED_STATE);
-            }
+            self.update_focused_state(ctx);
         } else {
             Cursor::visibility_set(&mut ctx.get_widget(self.cursor), Visibility::Collapsed);
 
@@ -373,10 +376,10 @@ impl TextBehaviorState {
                     .get_mut::<Selector>("selector")
                     .clear_state();
             }
-        }
 
-        // update the visual state of the target
-        ctx.get_widget(self.target).update(false);
+            // update the visual state of the target
+            ctx.get_widget(self.target).update(false);
+        }
     }
 
     // -- Event handling --
@@ -497,6 +500,21 @@ impl TextBehaviorState {
         (selection.start(), selection.end())
     }
 
+    fn update_focused_state(&self, ctx: &mut Context) {
+        if self.len(ctx) == 0 {
+            ctx.get_widget(self.target)
+                .get_mut::<Selector>("selector")
+                .set_state(EMPTY_FOCUSED_STATE);
+        } else {
+            ctx.get_widget(self.target)
+                .get_mut::<Selector>("selector")
+                .set_state(FOCUSED_STATE);
+        }
+
+        // update the visual state of the target
+        ctx.get_widget(self.target).update(false);
+    }
+
     // -- Helpers --
 }
 
@@ -521,8 +539,6 @@ impl State for TextBehaviorState {
     }
 
     fn update(&mut self, registry: &mut Registry, ctx: &mut Context) {
-        // todo reset selection on text changed from outside
-
         if let Some(action) = self.action.clone() {
             match action {
                 TextAction::KeyDown(event) => self.key_down(registry, ctx, event),
@@ -658,7 +674,10 @@ widget!(
         text: String,
 
         /// Sets or shares the text selection property.
-        selection: TextSelection
+        selection: TextSelection,
+
+        /// If set to `true` all character will be focused when the widget gets focus. Default is `true`
+        select_all_on_focus: bool
     }
 );
 
@@ -671,6 +690,7 @@ impl Template for TextBehavior {
             .selection(TextSelection::default())
             .focused(false)
             .lost_focus_on_activation(true)
+            .select_all_on_focus(false)
             .child(
                 MouseBehavior::new()
                     .visibility(id)
