@@ -92,6 +92,9 @@ pub struct GlobalMouseUpEvent {
 /// Defines the mouse handler function.
 pub type MouseHandlerFunction = dyn Fn(&mut StatesContext, Mouse) -> bool + 'static;
 
+/// Defines the mouse up handler function.
+pub type MouseUpHandlerFunction = dyn Fn(&mut StatesContext, Mouse) + 'static;
+
 //// Defines a position based event handler.
 pub type PositionHandlerFunction = dyn Fn(&mut StatesContext, Point) -> bool + 'static;
 
@@ -175,23 +178,22 @@ impl EventHandler for GlobalMouseUpEventHandler {
 /// Used to handle mouse down events. Could be attached to a widget.
 #[derive(IntoHandler)]
 pub struct MouseUpEventHandler {
-    handler: Rc<MouseHandlerFunction>,
+    handler: Rc<MouseUpHandlerFunction>,
 }
 
 impl EventHandler for MouseUpEventHandler {
     fn handle_event(&self, state_context: &mut StatesContext, event: &EventBox) -> bool {
-        event
-            .downcast_ref::<MouseUpEvent>()
-            .ok()
-            .map_or(false, |event| {
-                (self.handler)(
-                    state_context,
-                    Mouse {
-                        button: event.button,
-                        position: event.position,
-                    },
-                )
-            })
+        if let Ok(event) = event.downcast_ref::<MouseUpEvent>() {
+            (self.handler)(
+                state_context,
+                Mouse {
+                    button: event.button,
+                    position: event.position,
+                },
+            );
+        }
+
+        false
     }
 
     fn handles_event(&self, event: &EventBox) -> bool {
@@ -253,7 +255,7 @@ pub trait MouseHandler: Sized + Widget {
     }
 
     /// Insert a mouse up handler.
-    fn on_mouse_up<H: Fn(&mut StatesContext, Mouse) -> bool + 'static>(self, handler: H) -> Self {
+    fn on_mouse_up<H: Fn(&mut StatesContext, Mouse) + 'static>(self, handler: H) -> Self {
         self.insert_handler(MouseUpEventHandler {
             handler: Rc::new(handler),
         })

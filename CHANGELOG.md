@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Text mark with Shift + Left | Shift + Right
 * Select text my mouse (experimental)
 * Replace String16 with std::string::String
+* Raise on_changed callback also on shared widgets
 
 ### 0.3.1-alpha3
 

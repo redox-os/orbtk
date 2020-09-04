@@ -270,7 +270,7 @@ impl Template for MainView {
                             .child(
                                 TextBox::new()
                                     .water_mark("TextBox...")
-                                    .text(("text_two", id))
+                                    .text(("text_one", id))
                                     .margin((0, 8, 0, 0))
                                     .attach(Grid::column(2))
                                     .attach(Grid::row(2))

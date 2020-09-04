@@ -35,7 +35,7 @@ impl State for MainViewState {
                         .get::<Settings>("settings")
                         .load::<Global>("global")
                     {
-                        MainView::text_set(&mut ctx.widget(), String::from(global.label));
+                        MainView::text_set(&mut ctx.widget(), global.label);
                     }
 
                     MainView::info_text_set(
