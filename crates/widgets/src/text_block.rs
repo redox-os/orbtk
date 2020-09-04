@@ -6,10 +6,10 @@ widget!(
     /// **style:** `text-block`
     TextBlock {
         /// Sets or shares the text property.
-        text: String16,
+        text: String,
 
         /// Sets or shares the water_mark text property.
-        water_mark: String16,
+        water_mark: String,
 
         /// Sets or shares the foreground property.
         foreground: Brush,
@@ -18,7 +18,10 @@ widget!(
         font_size: f64,
 
         /// Sets or shares the font property.
-        font: String
+        font: String,
+
+        /// Defines an extra offset that can be used to the text on x axis.
+        offset: f64
     }
 );
 
@@ -32,10 +35,10 @@ impl Template for TextBlock {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(TextRenderObject)
+        TextRenderObject.into()
     }
 
     fn layout(&self) -> Box<dyn Layout> {
-        Box::new(FixedSizeLayout::new())
+        FixedSizeLayout::new().into()
     }
 }

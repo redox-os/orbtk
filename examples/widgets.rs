@@ -64,14 +64,11 @@ impl State for MainViewState {
 
                     let counter = *MainView::counter_ref(&ctx.widget());
 
-                    MainView::result_set(
-                        &mut ctx.widget(),
-                        String16::from(format!("Button count: {}", counter)),
-                    );
+                    MainView::result_set(&mut ctx.widget(), format!("Button count: {}", counter));
                 }
                 Action::ClearText => {
-                    MainView::text_one_set(&mut ctx.widget(), String16::default());
-                    MainView::text_two_set(&mut ctx.widget(), String16::default());
+                    MainView::text_one_set(&mut ctx.widget(), String::default());
+                    MainView::text_two_set(&mut ctx.widget(), String::default());
                 }
                 Action::EntryActivated(entity) => {
                     let text = TextBox::text_clone(&ctx.get_widget(entity));
@@ -117,9 +114,9 @@ widget!(
         selection_list: List,
         combo_box_list: List,
         selection_list_count: usize,
-        text_one: String16,
-        text_two: String16,
-        result: String16
+        text_one: String,
+        text_two: String,
+        result: String
     }
 );
 

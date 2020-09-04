@@ -206,18 +206,10 @@ Theme (
         ),
         "cursor": (
             properties: {
-                "opacity": 1,
-                "background": "transparent",
-            },
-            states: {
-                "focused": {
-                    "background": "$ENERGY_YELLOW",
-                },
-                "expanded": {
-                    "opacity": 0.3,
-                    "background": "$ENERGY_YELLOW",
-                },
-            },
+                "background": "$ENERGY_YELLOW",
+                "border_brush": "$ENERGY_YELLOW",
+                "border_width": 1
+            }
         ),
         "slider": (
             properties: {

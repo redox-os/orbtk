@@ -5,12 +5,15 @@ use std::{
 
 use dces::prelude::*;
 
-use crate::{prelude::*, render::RenderContext2D, theming::*, tree::Tree, utils::prelude::*};
+use crate::{
+    prelude::*, proc_macros::IntoLayout, render::RenderContext2D, theming::*, tree::Tree,
+    utils::prelude::*,
+};
 
 use super::{component, component_try_mut, Layout};
 
 /// Add padding to the widget.
-#[derive(Default)]
+#[derive(Default, IntoLayout)]
 pub struct PaddingLayout {
     desired_size: RefCell<DirtySize>,
     old_alignment: Cell<(Alignment, Alignment)>,
@@ -202,11 +205,5 @@ impl Layout for PaddingLayout {
         self.old_parent_size.set(parent_size);
         self.desired_size.borrow_mut().set_dirty(false);
         size
-    }
-}
-
-impl Into<Box<dyn Layout>> for PaddingLayout {
-    fn into(self) -> Box<dyn Layout> {
-        Box::new(self)
     }
 }

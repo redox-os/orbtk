@@ -1,36 +1,34 @@
 use crate::{
+    proc_macros::IntoRenderObject,
     render_object::*,
-    utils::{Brush, Point, Rectangle, String16},
+    utils::{Brush, Point, Rectangle},
 };
 
 /// Used to render a text.
+#[derive(Debug, IntoRenderObject)]
 pub struct TextRenderObject;
-
-impl Into<Box<dyn RenderObject>> for TextRenderObject {
-    fn into(self) -> Box<dyn RenderObject> {
-        Box::new(self)
-    }
-}
 
 impl RenderObject for TextRenderObject {
     fn render_self(&self, ctx: &mut Context, global_position: &Point) {
-        let (bounds, text, foreground, font, font_size) = {
+        let (bounds, text, foreground, font, font_size, offset) = {
             let widget = ctx.widget();
-            let text = widget.clone::<String16>("text");
+            let text = widget.clone::<String>("text");
+            let offset = *widget.get::<f64>("offset");
 
             let txt = {
                 if !text.is_empty() {
                     text
                 } else {
-                    widget.clone_or_default::<String16>("water_mark")
+                    widget.clone_or_default::<String>("water_mark")
                 }
             };
             (
                 *widget.get::<Rectangle>("bounds"),
-                txt.to_string(),
+                txt,
                 widget.get::<Brush>("foreground").clone(),
                 widget.get::<String>("font").clone(),
                 *widget.get::<f64>("font_size"),
+                offset,
             )
         };
 
@@ -51,7 +49,7 @@ impl RenderObject for TextRenderObject {
 
             ctx.render_context_2_d().fill_text(
                 &text,
-                global_position.x() + bounds.x(),
+                global_position.x() + bounds.x() + offset,
                 global_position.y() + bounds.y(),
             );
             ctx.render_context_2_d().close_path();

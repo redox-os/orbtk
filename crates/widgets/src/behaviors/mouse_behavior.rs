@@ -106,7 +106,6 @@ impl Template for MouseBehavior {
                 states
                     .get_mut::<MouseBehaviorState>(id)
                     .action(Action::Release(m));
-                false
             })
             .on_scroll(move |states, p| {
                 states

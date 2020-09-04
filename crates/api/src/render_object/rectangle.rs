@@ -1,12 +1,14 @@
 use std::f64::consts::PI;
 
 use crate::{
+    proc_macros::IntoRenderObject,
     render::RenderContext2D,
     render_object::*,
     utils,
     utils::{Brush, Point, Rectangle, Thickness},
 };
 
+#[derive(Debug, IntoRenderObject)]
 pub struct RectangleRenderObject;
 
 impl RectangleRenderObject {
@@ -125,12 +127,6 @@ impl RectangleRenderObject {
             render_context_2_d.set_stroke_style(border_brush);
             render_context_2_d.stroke();
         }
-    }
-}
-
-impl Into<Box<dyn RenderObject>> for RectangleRenderObject {
-    fn into(self) -> Box<dyn RenderObject> {
-        Box::new(self)
     }
 }
 

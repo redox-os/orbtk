@@ -31,6 +31,28 @@ pub fn mark_as_dirty(
     }
 }
 
+/// Mark the widget dirty.
+pub fn mark_as_dirty_self(
+    entity: Entity,
+    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+) {
+    let root = ecm.entity_store().root();
+
+    *ecm.component_store_mut()
+        .get_mut::<bool>("dirty", entity)
+        .unwrap() = true;
+
+    if let Ok(dirty_widgets) = ecm
+        .component_store_mut()
+        .get_mut::<Vec<Entity>>("dirty_widgets", root)
+    {
+        // don't add the same widget twice in a row
+        if dirty_widgets.is_empty() || *dirty_widgets.last().unwrap() != entity {
+            dirty_widgets.push(entity);
+        }
+    }
+}
+
 /// The `WidgetContainer` wraps the entity of a widget and provides access to its properties, its children properties and its parent properties.
 pub struct WidgetContainer<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
@@ -55,8 +77,12 @@ impl<'a> WidgetContainer<'a> {
         }
     }
 
-    fn mark_as_dirty(&mut self, key: &str) {
-        mark_as_dirty(key, self.current_node, self.ecm);
+    fn mark_as_dirty(&mut self, key: &str, entity: Entity) {
+        mark_as_dirty(key, entity, self.ecm);
+    }
+
+    fn mark_as_dirty_self(&mut self, entity: Entity) {
+        mark_as_dirty_self(entity, self.ecm);
     }
 
     /// Gets the entity of the widget.
@@ -124,7 +150,7 @@ impl<'a> WidgetContainer<'a> {
     where
         P: Clone + Component,
     {
-        self.mark_as_dirty(key);
+        self.mark_as_dirty(key, self.current_node);
 
         if let Ok(property) = self
             .ecm
@@ -223,34 +249,60 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
-        self.mark_as_dirty(key);
-
         let mut on_changed = false;
 
-        // each widget has this filter therefore unwrap.
-        match self
-            .ecm
-            .component_store()
-            .get::<Filter>("on_changed_filter", self.current_node)
-            .unwrap()
-        {
-            // nothing to do, every key is inactive.
-            Filter::Complete => {}
-            Filter::Nothing => on_changed = true,
-            Filter::List(list) => {
-                if list.contains(&key.to_string()) {
-                    on_changed = true;
-                }
-            }
+        let mut source = self.current_node;
+        let mut source_key = key.to_string();
+
+        if let Ok((src, key)) = self.ecm.component_store().source(self.current_node, key) {
+            source = src;
+            source_key = key;
         }
 
-        if on_changed {
-            if let Some(event_queue) = self.event_queue {
-                event_queue.borrow_mut().register_event_with_strategy(
-                    ChangedEvent(self.current_node, String::from(key)),
-                    EventStrategy::Direct,
-                    self.current_node,
-                );
+        for entity in self
+            .ecm
+            .component_store()
+            .entities_of_component(key, self.current_node)
+        {
+            let mut target_key = source_key.clone();
+
+            if entity != source {
+                let result = self
+                    .ecm
+                    .component_store()
+                    .target_key(source, entity, source_key.as_str())
+                    .expect("WidgetContainer::set: dces error could not find shared entity.");
+
+                target_key = result;
+            }
+
+            self.mark_as_dirty_self(entity);
+
+            // each widget has this filter therefore unwrap.
+            match self
+                .ecm
+                .component_store()
+                .get::<Filter>("on_changed_filter", entity)
+                .unwrap()
+            {
+                // nothing to do, every key is inactive.
+                Filter::Complete => {}
+                Filter::Nothing => on_changed = true,
+                Filter::List(list) => {
+                    if list.contains(&target_key) {
+                        on_changed = true;
+                    }
+                }
+            }
+
+            if on_changed {
+                if let Some(event_queue) = self.event_queue {
+                    event_queue.borrow_mut().register_event_with_strategy(
+                        ChangedEvent(self.current_node, target_key),
+                        EventStrategy::Direct,
+                        entity,
+                    );
+                }
             }
         }
 

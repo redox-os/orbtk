@@ -1,4 +1,4 @@
-use super::behaviors::TextBehavior;
+use super::behaviors::{TextAction, TextBehavior, TextBehaviorState};
 use crate::prelude::*;
 use crate::shell::prelude::KeyEvent;
 use crate::{api::prelude::*, proc_macros::*, theme::prelude::*};
@@ -19,13 +19,13 @@ impl PasswordBoxState {
     }
 
     fn mask(&mut self, ctx: &mut Context) {
-        let mut new_prompt = String16::new();
+        let mut new_prompt = String::new();
 
-        for _ in ctx.widget().get::<String16>("text").as_string().chars() {
+        for _ in ctx.widget().get::<String>("text").chars() {
             new_prompt.push(self.echo);
         }
 
-        ctx.widget().set::<String16>("mask", new_prompt);
+        ctx.widget().set::<String>("mask", new_prompt);
     }
 }
 
@@ -72,16 +72,16 @@ widget!(
         echo: char,
 
         /// Sets or shares the mask property.It contains the masked input.
-        mask: String16,
+        mask: String,
 
         /// Sets or shares the text property.It holds the password.
-        text: String16,
+        text: String,
 
         /// Sets or shares the water_mark text property.
-        water_mark: String16,
+        water_mark: String,
 
         /// Sets or shares the text selection property.
-        text_selection: TextSelection,
+        selection: TextSelection,
 
         /// Sets or shares the foreground property.
         foreground: Brush,
@@ -114,7 +114,10 @@ widget!(
         lost_focus_on_activation: bool,
 
         /// Used to request focus from outside. Set to `true` tor request focus.
-        request_focus: bool
+        request_focus: bool,
+
+        /// If set to `true` all character will be focused when the widget gets focus. Default is `true`
+        select_all_on_focus: bool
     }
 );
 
@@ -130,23 +133,20 @@ impl Template for PasswordBox {
             .font_size(id)
             .build(ctx);
 
-        let cursor = Cursor::new()
-            .h_align("start")
-            .text_block(text_block.0)
-            .focused(id)
-            .text_selection(id)
-            .build(ctx);
+        let cursor = Cursor::new().selection(id).build(ctx);
 
         let text_behavior = TextBehavior::new()
             .cursor(cursor.0)
+            .target(id.0)
+            .text_block(text_block.0)
             .focused(id)
             .font(id)
             .font_size(id)
             .lost_focus_on_activation(id)
-            .target(id.0)
+            .select_all_on_focus(id)
             .request_focus(id)
             .text(id)
-            .text_selection(id)
+            .selection(id)
             .build(ctx);
 
         self.name("PasswordBox")
@@ -158,7 +158,7 @@ impl Template for PasswordBox {
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto-Regular")
-            .text_selection(TextSelection::default())
+            .selection(TextSelection::default())
             .padding(4.0)
             .background(colors::LYNCH_COLOR)
             .border_brush("transparent")
@@ -168,6 +168,7 @@ impl Template for PasswordBox {
             .height(32.0)
             .focused(false)
             .lost_focus_on_activation(true)
+            .select_all_on_focus(true)
             .child(text_behavior)
             .child(
                 Container::new()
@@ -192,6 +193,16 @@ impl Template for PasswordBox {
                     .get_mut::<PasswordBoxState>(id)
                     .action(PasswordAction::Key(event));
                 false
+            })
+            .on_changed("text", move |states, _| {
+                states
+                    .get_mut::<TextBehaviorState>(text_behavior)
+                    .action(TextAction::ForceUpdate);
+            })
+            .on_changed("mask", move |states, _| {
+                states
+                    .get_mut::<TextBehaviorState>(text_behavior)
+                    .action(TextAction::ForceUpdate);
             })
     }
 }

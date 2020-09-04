@@ -6,6 +6,7 @@ use std::{
 use dces::prelude::*;
 
 use crate::{
+    proc_macros::IntoLayout,
     properties::Constraint,
     render::Image,
     render::RenderContext2D,
@@ -18,7 +19,7 @@ use crate::{
 use super::{component, component_try_mut, Layout};
 
 /// Fixed size layout is defined by fixed bounds like the size of an image or the size of a text.
-#[derive(Default)]
+#[derive(Default, IntoLayout)]
 pub struct FixedSizeLayout {
     desired_size: RefCell<DirtySize>,
     old_alignment: Cell<(Alignment, Alignment)>,
@@ -59,13 +60,13 @@ impl Layout for FixedSizeLayout {
             .try_get::<Image>("image")
             .map(|image| (image.width(), image.height()))
             .or_else(|| {
-                widget.try_get::<String16>("text").and_then(|text| {
+                widget.try_get::<String>("text").and_then(|text| {
                     let font = widget.get::<String>("font");
                     let font_size = widget.get::<f64>("font_size");
 
                     if text.is_empty() {
                         widget
-                            .try_get::<String16>("water_mark")
+                            .try_get::<String>("water_mark")
                             .filter(|water_mark| !water_mark.is_empty())
                             .map(|water_mark| {
                                 let text_metrics = render_context_2_d.measure(
@@ -175,11 +176,5 @@ impl Layout for FixedSizeLayout {
 
         self.desired_size.borrow_mut().set_dirty(false);
         self.desired_size.borrow().size()
-    }
-}
-
-impl Into<Box<dyn Layout>> for FixedSizeLayout {
-    fn into(self) -> Box<dyn Layout> {
-        Box::new(self)
     }
 }

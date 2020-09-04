@@ -107,7 +107,6 @@ into_property_source!(
     (f64, f64, f64, f64),
     utils::Value
 );
-into_property_source!(utils::String16: &str, String);
 into_property_source!(utils::SelectionMode: &str);
 into_property_source!(utils::Visibility: &str);
 into_property_source!(Vec<String>);
@@ -129,3 +128,4 @@ into_property_source!(ScrollViewerMode: (&str, &str));
 into_property_source!(SelectedEntities: HashSet<Entity>);
 into_property_source!(SelectedIndices: HashSet<usize>);
 into_property_source!(TextSelection: (usize, usize));
+into_property_source!(KeyboardState);

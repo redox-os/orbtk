@@ -49,7 +49,7 @@ impl NumericBoxState {
         }
 
         ctx.get_widget(self.input)
-            .set::<String16>("text", String16::from(self.current_value.to_string()));
+            .set::<String>("text", self.current_value.to_string());
     }
 
     fn min(&self, d: Decimal) -> Decimal {
@@ -96,9 +96,8 @@ impl State for NumericBoxState {
         self.step = default_or("step", 1.0, ctx);
         self.current_value = default_or("val", 0.0, ctx);
 
-        let init_value = String16::from(self.current_value.to_string());
-        ctx.get_widget(self.input)
-            .set::<String16>("text", init_value);
+        let init_value = self.current_value.to_string();
+        ctx.get_widget(self.input).set::<String>("text", init_value);
     }
 
     // TODO: let the user type the value, or select it for cut, copy, paste operations
@@ -302,6 +301,6 @@ impl Template for NumericBox {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(RectangleRenderObject)
+        RectangleRenderObject.into()
     }
 }

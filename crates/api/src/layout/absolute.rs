@@ -3,13 +3,14 @@ use std::{cell::RefCell, collections::BTreeMap};
 use dces::prelude::*;
 
 use crate::{
-    render::RenderContext2D, theming::*, tree::Tree, utils::prelude::*, widget_base::mark_as_dirty,
+    proc_macros::IntoLayout, render::RenderContext2D, theming::*, tree::Tree, utils::prelude::*,
+    widget_base::mark_as_dirty,
 };
 
 use super::{component, component_try_mut, Layout};
 
 /// Place widgets absolute on the screen.
-#[derive(Default)]
+#[derive(Default, IntoLayout)]
 pub struct AbsoluteLayout {
     desired_size: RefCell<DirtySize>,
 }
@@ -92,11 +93,5 @@ impl Layout for AbsoluteLayout {
 
         self.desired_size.borrow_mut().set_dirty(false);
         self.desired_size.borrow().size()
-    }
-}
-
-impl Into<Box<dyn Layout>> for AbsoluteLayout {
-    fn into(self) -> Box<dyn Layout> {
-        Box::new(self)
     }
 }

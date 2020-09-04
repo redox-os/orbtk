@@ -1,4 +1,4 @@
-use super::behaviors::TextBehavior;
+use super::behaviors::{TextAction, TextBehavior, TextBehaviorState};
 
 use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
 
@@ -14,13 +14,13 @@ widget!(
     TextBox: ActivateHandler,
     KeyDownHandler {
         /// Sets or shares the text property.
-        text: String16,
+        text: String,
 
         /// Sets or shares the water_mark text property.
-        water_mark: String16,
+        water_mark: String,
 
         /// Sets or shares the text selection property.
-        text_selection: TextSelection,
+        selection: TextSelection,
 
         /// Sets or shares the foreground property.
         foreground: Brush,
@@ -53,7 +53,10 @@ widget!(
         lost_focus_on_activation: bool,
 
         /// Used to request focus from outside. Set to `true` tor request focus.
-        request_focus: bool
+        request_focus: bool,
+
+        /// If set to `true` all character will be focused when the widget gets focus. Default is `true`
+        select_all_on_focus: bool
     }
 );
 
@@ -69,24 +72,20 @@ impl Template for TextBox {
             .font_size(id)
             .build(ctx);
 
-        let cursor = Cursor::new()
-            .id(ID_CURSOR)
-            .h_align("start")
-            .text_block(text_block.0)
-            .focused(id)
-            .text_selection(id)
-            .build(ctx);
+        let cursor = Cursor::new().id(ID_CURSOR).selection(id).build(ctx);
 
         let text_behavior = TextBehavior::new()
             .cursor(cursor.0)
+            .target(id.0)
+            .text_block(text_block.0)
             .focused(id)
             .font(id)
             .font_size(id)
             .lost_focus_on_activation(id)
-            .target(id.0)
+            .select_all_on_focus(id)
             .request_focus(id)
             .text(id)
-            .text_selection(id)
+            .selection(id)
             .build(ctx);
 
         self.name("TextBox")
@@ -95,7 +94,7 @@ impl Template for TextBox {
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto-Regular")
-            .text_selection(TextSelection::default())
+            .selection(TextSelection::default())
             .padding(4.0)
             .background(colors::LYNCH_COLOR)
             .border_brush("transparent")
@@ -105,6 +104,7 @@ impl Template for TextBox {
             .height(32.0)
             .focused(false)
             .lost_focus_on_activation(true)
+            .select_all_on_focus(true)
             .child(text_behavior)
             .child(
                 Container::new()
@@ -116,13 +116,16 @@ impl Template for TextBox {
                     .child(
                         Grid::new()
                             .clip(true)
-                            // It is important that cursor is the first child
-                            // should be refactored in the future.
-                            .child(cursor)
                             .child(text_block)
+                            .child(cursor)
                             .build(ctx),
                     )
                     .build(ctx),
             )
+            .on_changed("text", move |states, _| {
+                states
+                    .get_mut::<TextBehaviorState>(text_behavior)
+                    .action(TextAction::ForceUpdate);
+            })
     }
 }

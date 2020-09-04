@@ -1,15 +1,11 @@
 use crate::{
+    proc_macros::IntoRenderObject,
     render_object::*,
     utils::{Brush, Point, Rectangle},
 };
 
+#[derive(Debug, IntoRenderObject)]
 pub struct FontIconRenderObject;
-
-impl Into<Box<dyn RenderObject>> for FontIconRenderObject {
-    fn into(self) -> Box<dyn RenderObject> {
-        Box::new(self)
-    }
-}
 
 impl RenderObject for FontIconRenderObject {
     fn render_self(&self, ctx: &mut Context, global_position: &Point) {

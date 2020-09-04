@@ -171,6 +171,9 @@ widget!(
         /// Sets or shares a value that describes if the current window is active.
         active: bool,
 
+        /// Access the current keyboard state e.g. to check modifiers.
+        keyboard_state: KeyboardState,
+
         /// Internal property to handle dirty widgets.
         dirty_widgets: DirtyWidgets
     }
@@ -218,10 +221,10 @@ impl Template for Window {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(RectangleRenderObject)
+        RectangleRenderObject.into()
     }
 
     fn layout(&self) -> Box<dyn Layout> {
-        Box::new(GridLayout::new())
+        GridLayout::new().into()
     }
 }

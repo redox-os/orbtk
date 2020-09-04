@@ -1,12 +1,7 @@
-use crate::render_object::*;
+use crate::{proc_macros::IntoRenderObject, render_object::*};
 
+#[derive(Debug, IntoRenderObject)]
 pub struct PipelineRenderObject;
-
-impl Into<Box<dyn RenderObject>> for PipelineRenderObject {
-    fn into(self) -> Box<dyn RenderObject> {
-        Box::new(self)
-    }
-}
 
 impl RenderObject for PipelineRenderObject {
     fn render_self(&self, ctx: &mut Context, _: &Point) {

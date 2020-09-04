@@ -9,6 +9,7 @@ use crate::{
     utils::*,
 };
 
+pub use self::cursor::*;
 pub use self::default::*;
 pub use self::font_icon::*;
 pub use self::image::*;
@@ -16,6 +17,7 @@ pub use self::pipeline::*;
 pub use self::rectangle::*;
 pub use self::text::*;
 
+mod cursor;
 mod default;
 mod font_icon;
 mod image;

@@ -5,12 +5,15 @@ use std::{
 
 use dces::prelude::*;
 
-use crate::{prelude::*, render::RenderContext2D, theming::*, tree::Tree, utils::prelude::*};
+use crate::{
+    prelude::*, proc_macros::IntoLayout, render::RenderContext2D, theming::*, tree::Tree,
+    utils::prelude::*,
+};
 
 use super::{component, component_or_default, component_try_mut, Layout};
 
 /// Stacks visual the children widgets vertical or horizontal.
-#[derive(Default)]
+#[derive(Default, IntoLayout)]
 pub struct StackLayout {
     desired_size: RefCell<DirtySize>,
     old_alignment: Cell<(Alignment, Alignment)>,
@@ -210,12 +213,6 @@ impl Layout for StackLayout {
         mark_as_dirty("bounds", entity, ecm);
 
         size
-    }
-}
-
-impl From<StackLayout> for Box<dyn Layout> {
-    fn from(layout: StackLayout) -> Self {
-        Box::new(layout)
     }
 }
 

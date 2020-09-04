@@ -35,12 +35,12 @@ impl State for MainViewState {
                         .get::<Settings>("settings")
                         .load::<Global>("global")
                     {
-                        MainView::text_set(&mut ctx.widget(), String16::from(global.label));
+                        MainView::text_set(&mut ctx.widget(), global.label);
                     }
 
                     MainView::info_text_set(
                         &mut ctx.widget(),
-                        String16::from("Label loaded from settings file."),
+                        String::from("Label loaded from settings file."),
                     );
                 }
                 Action::Save => {
@@ -50,19 +50,19 @@ impl State for MainViewState {
                         .save(
                             "global",
                             &Global {
-                                label: ctx.widget().get::<String16>("text").to_string(),
+                                label: ctx.widget().get::<String>("text").to_string(),
                             },
                         )
                         .unwrap();
 
                     MainView::info_text_set(
                         &mut ctx.widget(),
-                        String16::from("Label saved to settings file."),
+                        String::from("Label saved to settings file."),
                     );
                 }
                 Action::Clear => {
-                    MainView::text_set(&mut ctx.widget(), String16::default());
-                    MainView::info_text_set(&mut ctx.widget(), String16::default());
+                    MainView::text_set(&mut ctx.widget(), String::default());
+                    MainView::info_text_set(&mut ctx.widget(), String::default());
                 }
             }
 
@@ -72,8 +72,8 @@ impl State for MainViewState {
 }
 
 widget!(MainView<MainViewState> {
-    text: String16,
-    info_text: String16
+    text: String,
+    info_text: String
 });
 
 impl Template for MainView {

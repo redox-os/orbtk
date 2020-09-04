@@ -1,79 +1,57 @@
 use crate::{api::prelude::*, proc_macros::*};
 
-// Default state of the `Cursor` widget.
-#[derive(Default, AsAny)]
-pub struct CursorState {
-    focused: bool,
-    expanded: bool,
-}
-
-impl State for CursorState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        let cursor = ctx.widget();
-        self.focused = *Cursor::focused_ref(&cursor);
-        self.expanded = *Cursor::expanded_ref(&cursor);
-    }
-
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        let focused = *Cursor::focused_ref(&ctx.widget());
-        let expanded = *Cursor::expanded_ref(&ctx.widget());
-
-        if self.focused == focused && self.expanded == expanded {
-            return;
-        }
-
-        self.focused = focused;
-        self.expanded = expanded;
-
-        Cursor::selector_mut(&mut ctx.widget()).clear_state();
-
-        if self.expanded && self.focused {
-            Cursor::selector_mut(&mut ctx.widget()).set_state("expanded");
-        } else if self.focused {
-            Cursor::selector_mut(&mut ctx.widget()).set_state("focused");
-        }
-
-        ctx.widget().update(false);
-    }
-}
-
 widget!(
-    /// The `Cursor` widget represents a text cursor used to mark text.
+    /// The `Cursor` widget represents a text cursor that is used to mark text.
     ///
     /// **style:** `cursor`
-    Cursor<CursorState> {
-        /// Sets or shares the text selection property.
-        text_selection: TextSelection,
+    ///
+    /// # Example
+    ///
+    /// Create a cursor and share its text selection.
+    ///
+    /// ```rust
+    /// Cursor::new().selection(id).build(ctx)
+    /// ```
+    Cursor {
+        /// Defines the selection of that cursor that is shared with the `TextBehavior`.
+        selection: TextSelection,
 
-        /// Sets or shares the background property.
+        /// Defines the background of the whole selection range.
         background: Brush,
 
-        /// Sets or shares the id of the text block reference.
-        text_block: u32,
+        /// Defines the brush of the text selection indicator.
+        border_brush: Brush,
 
-        /// Sets or shares the focused property.
-        focused: bool,
+        /// Defines the with of the text selection indicator.
+        border_width: Thickness,
 
-        /// Sets or shares the expanded property.
-        expanded: bool
+        // Defines the opacity of the background of the selection range.
+        background_opacity: f32,
+
+        /// Defines the current width of the selection.
+        selection_width: f64,
+
+        /// Defines the start position of the current selection.
+        selection_x: f64,
+
+        /// Defines the x position of the cursor.
+        cursor_x: f64,
+
+        /// Defines the of the cursor.
+        offset: f64
     }
 );
 
 impl Template for Cursor {
     fn template(self, _: Entity, _: &mut BuildContext) -> Self {
         self.name("Cursor")
-            .width(1.0)
             .style("cursor")
+            .background_opacity(0.3)
             .background("transparent")
-            .h_align("start")
-            .focused(false)
+            .h_align("stretch")
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        Box::new(RectangleRenderObject)
-    }
-
-    fn layout(&self) -> Box<dyn Layout> {
-        Box::new(TextSelectionLayout::default())
+        CursorRenderObject.into()
     }
 }

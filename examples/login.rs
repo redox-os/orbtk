@@ -105,16 +105,10 @@ impl State for LoginFormState {
             match action {
                 // read both textbox and passwordbox values to compare then show a popup
                 LoginAction::Authenticate => {
-                    let username = ctx
-                        .get_widget(self.username_input)
-                        .get::<String16>("text")
-                        .as_string();
-                    let password = ctx
-                        .get_widget(self.password_input)
-                        .get::<String16>("text")
-                        .as_string();
+                    let username = ctx.get_widget(self.username_input).clone::<String>("text");
+                    let password = ctx.get_widget(self.password_input).clone::<String>("text");
 
-                    if USERNAME.eq(&username) && PASSWORD.eq(&password) {
+                    if USERNAME.eq(username.as_str()) && PASSWORD.eq(password.as_str()) {
                         self.authenticated = true;
                     } else {
                         self.authenticated = false;
