@@ -53,13 +53,14 @@ impl Image {
     }
 
     /// Load an image from file path. Supports BMP and PNG
-    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Self, String> {
-        let img = image::open(path);
+    pub fn from_path<P: AsRef<Path> + std::fmt::Debug + Clone>(path: P) -> Result<Self, String> {
+        let img = image::open(path.clone());
+
         if let Ok(img) = img {
             return Self::from_rgba_image(img.to_rgba());
         }
 
-        Err("Could not load image.".to_string())
+        Err(format!("Could not load image width path: {:?}", path))
     }
 
     /// Gets the width.
