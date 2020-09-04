@@ -395,6 +395,11 @@ impl TextBehaviorState {
 
         selection.set_start(new_start);
 
+        if selection.start() > 0 || selection.start() < self.len(ctx) {
+            self.action(TextAction::MouseMove(position));
+            ctx.widget().set("dirty", true);
+        }
+
         TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
 

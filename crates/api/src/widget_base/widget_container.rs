@@ -82,7 +82,7 @@ impl<'a> WidgetContainer<'a> {
     }
 
     fn mark_as_dirty_self(&mut self, entity: Entity) {
-        mark_as_dirty_self( entity, self.ecm);
+        mark_as_dirty_self(entity, self.ecm);
     }
 
     /// Gets the entity of the widget.
@@ -276,7 +276,7 @@ impl<'a> WidgetContainer<'a> {
                 target_key = result;
             }
 
-            self.mark_as_dirty_self( entity);
+            self.mark_as_dirty_self(entity);
 
             // each widget has this filter therefore unwrap.
             match self
