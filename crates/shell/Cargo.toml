@@ -43,8 +43,8 @@ orbtk_render = { path = "../render", version = "0.3.1-alpha4" }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 
 [features]
-default = ["spin_sleep", "orbclient"]
-orbraq = ["spin_sleep", "orbclient"]
+default = ["orbclient"]
+orbraq = ["orbclient"]
 miniraq = ["spin_sleep", "minifb"]
 glupath = [
     "gl",

@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Select text my mouse (experimental)
 * Replace String16 with std::string::String
 * Raise on_changed callback also on shared widgets
+* Fix memory leak on x11
 
 ### 0.3.1-alpha3
 
