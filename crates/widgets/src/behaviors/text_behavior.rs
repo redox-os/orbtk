@@ -105,10 +105,7 @@ impl TextBehaviorState {
         selection.set(selection.start() + insert_text.chars().count());
         TextBehavior::selection_set(&mut ctx.widget(), selection);
 
-        println!("tar: {:?}", self.target);
-        println!("ent: {:?}", ctx.widget().entity());
-        TextBehavior::text_set(&mut ctx.widget(), text.to_string());
-        //ctx.get_widget(self.target).set("text", text.to_string());
+        ctx.get_widget(self.target).set("text", text.to_string());
 
         // used to trigger bounds adjustments
         self.direction = Direction::Right;
@@ -771,9 +768,6 @@ impl Template for TextBehavior {
                     .get_mut::<TextBehaviorState>(id)
                     .action(TextAction::MouseMove(p));
                 true
-            })
-            .on_changed("text", |states, id| {
-                println!("text changed");
             })
             .on_changed("focused", |states, id| {
                 states

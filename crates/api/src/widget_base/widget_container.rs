@@ -31,6 +31,28 @@ pub fn mark_as_dirty(
     }
 }
 
+/// Mark the widget dirty.
+pub fn mark_as_dirty_self(
+    entity: Entity,
+    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+) {
+    let root = ecm.entity_store().root();
+
+    *ecm.component_store_mut()
+        .get_mut::<bool>("dirty", entity)
+        .unwrap() = true;
+
+    if let Ok(dirty_widgets) = ecm
+        .component_store_mut()
+        .get_mut::<Vec<Entity>>("dirty_widgets", root)
+    {
+        // don't add the same widget twice in a row
+        if dirty_widgets.is_empty() || *dirty_widgets.last().unwrap() != entity {
+            dirty_widgets.push(entity);
+        }
+    }
+}
+
 /// The `WidgetContainer` wraps the entity of a widget and provides access to its properties, its children properties and its parent properties.
 pub struct WidgetContainer<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
@@ -57,6 +79,10 @@ impl<'a> WidgetContainer<'a> {
 
     fn mark_as_dirty(&mut self, key: &str, entity: Entity) {
         mark_as_dirty(key, entity, self.ecm);
+    }
+
+    fn mark_as_dirty_self(&mut self, entity: Entity) {
+        mark_as_dirty_self( entity, self.ecm);
     }
 
     /// Gets the entity of the widget.
@@ -233,14 +259,6 @@ impl<'a> WidgetContainer<'a> {
             source_key = key;
         }
 
-        println!(
-            "{}",
-            self.ecm
-                .component_store()
-                .entities_of_component(key, self.current_node)
-                .len()
-        );
-
         for entity in self
             .ecm
             .component_store()
@@ -258,11 +276,7 @@ impl<'a> WidgetContainer<'a> {
                 target_key = result;
             }
 
-            if key == "text" {
-                println!("{:?} {}", entity, target_key);
-            }
-
-            self.mark_as_dirty(target_key.as_str(), entity);
+            self.mark_as_dirty_self( entity);
 
             // each widget has this filter therefore unwrap.
             match self
