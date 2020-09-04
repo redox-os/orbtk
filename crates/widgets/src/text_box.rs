@@ -1,4 +1,4 @@
-use super::behaviors::TextBehavior;
+use super::behaviors::{TextAction, TextBehavior, TextBehaviorState};
 
 use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
 
@@ -122,5 +122,10 @@ impl Template for TextBox {
                     )
                     .build(ctx),
             )
+            .on_changed("text", move |states, _| {
+                states
+                    .get_mut::<TextBehaviorState>(text_behavior)
+                    .action(TextAction::ForceUpdate);
+            })
     }
 }

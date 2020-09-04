@@ -1,4 +1,4 @@
-use super::behaviors::TextBehavior;
+use super::behaviors::{TextAction, TextBehavior, TextBehaviorState};
 use crate::prelude::*;
 use crate::shell::prelude::KeyEvent;
 use crate::{api::prelude::*, proc_macros::*, theme::prelude::*};
@@ -193,6 +193,16 @@ impl Template for PasswordBox {
                     .get_mut::<PasswordBoxState>(id)
                     .action(PasswordAction::Key(event));
                 false
+            })
+            .on_changed("text", move |states, _| {
+                states
+                    .get_mut::<TextBehaviorState>(text_behavior)
+                    .action(TextAction::ForceUpdate);
+            })
+            .on_changed("mask", move |states, _| {
+                states
+                    .get_mut::<TextBehaviorState>(text_behavior)
+                    .action(TextAction::ForceUpdate);
             })
     }
 }

@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use crate::{
     api::prelude::*,
     proc_macros::*,
@@ -13,9 +15,9 @@ pub static EMPTY_FOCUSED_STATE: &str = "empty_focused";
 pub static FOCUSED_STATE: &str = "focused";
 // --- KEYS --
 
-// actions of TextBehaviorState
+/// Actions of TextBehaviorState
 #[derive(Clone)]
-enum TextAction {
+pub enum TextAction {
     KeyDown(KeyEvent),
     MouseDown(Mouse),
     MouseUp,
@@ -23,6 +25,8 @@ enum TextAction {
     Drop(String, Point),
     FocusedChanged,
     SelectionChanged,
+    /// Used to force an update on visual state and offset.
+    ForceUpdate,
 }
 
 // helper enum
@@ -42,17 +46,20 @@ impl Default for Direction {
 /// The `TextBehaviorState` handles the text processing of the `TextBehavior` widget.
 #[derive(Default, AsAny)]
 pub struct TextBehaviorState {
-    action: Option<TextAction>,
+    action: VecDeque<TextAction>,
     cursor: Entity,
     target: Entity,
     text_block: Entity,
     direction: Direction,
     pressed: bool,
+    self_update: bool,
+    update_selection: bool,
 }
 
 impl TextBehaviorState {
-    fn action(&mut self, action: TextAction) {
-        self.action = Some(action);
+    /// Sets an action the the state.
+    pub fn action(&mut self, action: TextAction) {
+        self.action.push_back(action);
     }
 
     fn request_focus(&self, ctx: &mut Context) {
@@ -75,8 +82,8 @@ impl TextBehaviorState {
             return;
         }
 
-        if let Some(copy_text) =
-            String16::from(TextBehavior::text_clone(&ctx.widget())).get_string(start, end)
+        if let Some(copy_text) = String16::from(ctx.get_widget(self.target).clone::<String>("text"))
+            .get_string(start, end)
         {
             registry.get_mut::<Clipboard>("clipboard").set(copy_text);
         }
@@ -99,13 +106,13 @@ impl TextBehaviorState {
 
         let mut selection = self.selection(ctx);
 
-        let mut text = String16::from(TextBehavior::text_clone(&ctx.widget()));
+        let mut text = String16::from(ctx.get_widget(self.target).clone::<String>("text"));
         text.insert_str(selection.start(), insert_text.as_str());
 
         selection.set(selection.start() + insert_text.chars().count());
         TextBehavior::selection_set(&mut ctx.widget(), selection);
 
-        ctx.get_widget(self.target).set("text", text.to_string());
+        self.set_text(ctx, text.to_string());
 
         // used to trigger bounds adjustments
         self.direction = Direction::Right;
@@ -129,7 +136,7 @@ impl TextBehaviorState {
 
         selection.set(selection.start() - 1);
 
-        let mut text = String16::from(TextBehavior::text_clone(&ctx.widget()));
+        let mut text = String16::from(ctx.get_widget(self.target).clone::<String>("text"));
 
         let removed_width = self
             .measure(ctx, selection.start(), selection.start() + 1)
@@ -143,7 +150,7 @@ impl TextBehaviorState {
 
         text.remove(selection.start());
 
-        ctx.get_widget(self.target).set("text", text.to_string());
+        self.set_text(ctx, text.to_string());
         TextBehavior::selection_set(&mut ctx.widget(), selection);
 
         if self.len(ctx) == 0 {
@@ -163,11 +170,11 @@ impl TextBehaviorState {
             return;
         }
 
-        let mut text = String16::from(TextBehavior::text_clone(&ctx.widget()));
+        let mut text = String16::from(ctx.get_widget(self.target).clone::<String>("text"));
 
         text.remove(selection.start() + 1);
 
-        ctx.get_widget(self.target).set("text", text.to_string());
+        self.set_text(ctx, text.to_string());
     }
 
     // clear all chars from the selection.
@@ -178,7 +185,7 @@ impl TextBehaviorState {
             return false;
         }
 
-        let mut text = String16::from(TextBehavior::text_clone(&ctx.widget()));
+        let mut text = String16::from(ctx.get_widget(self.target).clone::<String>("text"));
 
         let (start, end) = self.selection_start_end(selection);
 
@@ -188,7 +195,7 @@ impl TextBehaviorState {
 
         selection.set(start);
 
-        ctx.get_widget(self.target).set("text", text.to_string());
+        self.set_text(ctx, text.to_string());
         TextBehavior::selection_set(&mut ctx.widget(), selection);
 
         true
@@ -434,6 +441,12 @@ impl TextBehaviorState {
 
     // -- Helpers --
 
+    // sets new text
+    fn set_text(&mut self, ctx: &mut Context, text: String) {
+        ctx.get_widget(self.target).set("text", text.to_string());
+        self.self_update = true;
+    }
+
     // gets the len of the text
     fn len(&self, ctx: &mut Context) -> usize {
         TextBehavior::text_ref(&ctx.widget()).chars().count()
@@ -562,6 +575,39 @@ impl TextBehaviorState {
         ctx.get_widget(self.target).update(false);
     }
 
+    fn force_update(&mut self, ctx: &mut Context) {
+        let self_update = self.self_update;
+        self.self_update = false;
+
+        if self_update {
+            return;
+        }
+
+        let mut selection = self.selection(ctx);
+        let len = self.len(ctx);
+
+        if selection.start() > len || selection.end() > len {
+            selection.set(len);
+        }
+
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
+
+        if *TextBehavior::focused_ref(&ctx.widget()) {
+            self.update_focused_state(ctx);
+            return;
+        }
+
+        if self.len(ctx) == 0 {
+            ctx.get_widget(self.target)
+                .get_mut::<Selector>("selector")
+                .set_state(EMPTY_STATE);
+        } else {
+            ctx.get_widget(self.target)
+                .get_mut::<Selector>("selector")
+                .clear_state();
+        }
+    }
+
     // -- Helpers --
 }
 
@@ -586,7 +632,7 @@ impl State for TextBehaviorState {
     }
 
     fn update(&mut self, registry: &mut Registry, ctx: &mut Context) {
-        if let Some(action) = self.action.clone() {
+        if let Some(action) = self.action.pop_front() {
             match action {
                 TextAction::KeyDown(event) => self.key_down(registry, ctx, event),
                 TextAction::MouseDown(p) => self.mouse_down(ctx, p),
@@ -596,22 +642,19 @@ impl State for TextBehaviorState {
                     }
                 }
                 TextAction::FocusedChanged => self.focused_changed(ctx),
-                TextAction::SelectionChanged => return,
+                TextAction::SelectionChanged => self.update_selection = true,
                 TextAction::MouseMove(position) => self.mouse_move(ctx, position),
                 TextAction::MouseUp => self.pressed = false,
+                TextAction::ForceUpdate => self.force_update(ctx),
             }
-
-            self.action = None;
         }
     }
 
     fn update_post_layout(&mut self, _registry: &mut Registry, ctx: &mut Context) {
-        if let Some(action) = self.action.clone() {
-            if let TextAction::SelectionChanged = action {
-                self.update_cursor(ctx);
-            }
+        if self.update_selection {
+            self.update_cursor(ctx);
 
-            self.action = None;
+            self.update_selection = false;
         }
     }
 }
