@@ -443,7 +443,7 @@ impl TextBehaviorState {
 
     // sets new text
     fn set_text(&mut self, ctx: &mut Context, text: String) {
-        ctx.get_widget(self.target).set("text", text.to_string());
+        ctx.get_widget(self.target).set("text", text);
         self.self_update = true;
     }
 
