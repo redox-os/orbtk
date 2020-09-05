@@ -3,6 +3,7 @@
 [![Build and test](https://github.com/redox-os/orbtk/workflows/CI/badge.svg)](https://github.com/redox-os/orbtk/actions)
 ![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)
 
+* showcase: an overview of all widgets provided by OrbTk
 * calculator: calculator example
 * canvas: use third party render library in canvas
 * clear: interaction between widgets

@@ -218,14 +218,13 @@ impl RenderObject for RectangleRenderObject {
                 border_thickness,
             );
         } else {
-            ctx.render_context_2_d().rect(
+            ctx.render_context_2_d().set_fill_style(background);
+            ctx.render_context_2_d().fill_rect(
                 global_position.x() + bounds.x(),
                 global_position.y() + bounds.y(),
                 bounds.width(),
                 bounds.height(),
             );
-            ctx.render_context_2_d().set_fill_style(background);
-            ctx.render_context_2_d().fill();
         }
     }
 }
