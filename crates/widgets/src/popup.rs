@@ -241,4 +241,7 @@ impl Template for Popup {
         PopupLayout::new().into()
         Box::new(PopupRenderObject::new())
     }
+    fn layout(&self) -> Box<dyn Layout> {
+        Box::new(PopupLayout::new())
+    }
 }

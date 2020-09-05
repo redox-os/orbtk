@@ -10,7 +10,7 @@ use crate::{
     utils::prelude::*,
 };
 
-use super::{component, component_try_mut, try_component, Layout};
+use super::{component, component_try_mut, try_component, component_or_default, Layout};
 
 /// Add padding to the widget.
 #[derive(Default, IntoLayout)]
@@ -38,7 +38,7 @@ impl Layout for PopupLayout {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return *self.desired_size.borrow();
         }
-
+/*
         if let Some(target) = try_component::<u32>(ecm, entity, "target") {
             let target_bounds = component::<Rectangle>(ecm, target.into(), "bounds");
             component_try_mut::<Constraint>(ecm, entity, "constraint")
@@ -67,43 +67,135 @@ impl Layout for PopupLayout {
         }
 
         let padding: Thickness = component(ecm, entity, "padding");
+*/
 
-        for index in 0..ecm.entity_store().children[&entity].len() {
-            let child = ecm.entity_store().children[&entity][index];
+        if let Some(target) = try_component::<PopupTarget>(ecm, entity,"target") {
+            let current_bounds: Rectangle = component(ecm, entity,"bounds");
+            let current_constraint: Constraint = component(ecm, entity,"constraint");
 
-            if let Some(child_layout) = layouts.get(&child) {
-                let child_desired_size =
-                    child_layout.measure(render_context_2_d, child, ecm, layouts, theme);
-                let mut desired_size = self.desired_size.borrow().size();
+            let real_target_bounds = match target {
+                PopupTarget::Entity(entity) => {
+                    let target_position: Point = component(ecm, entity.into(),"position");
 
-                let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
-                self.desired_size.borrow_mut().set_dirty(dirty);
+                    //WARNING: this is true only if called during post_layout_update, otherwise the bounds will refere to space available to the widget, not the effective size
+                    let mut target_bounds: Rectangle =
+                        component(ecm, entity.into(),"bounds");
+                    target_bounds.set_position(target_position);
+                    target_bounds
+                }
+                PopupTarget::Point(mut point) => {
+                    point.set_x(point.x() + current_bounds.width() / 2.0);
+                    point.set_y(point.y() + current_bounds.height() / 2.0);
+                    Rectangle::new(point, (0.0, 0.0))
+                }
+            };
 
-                let child_margin = *ecm
-                    .component_store()
-                    .get::<Thickness>("margin", child)
-                    .unwrap();
+            let relative_position: RelativePosition =
+                component_or_default(ecm, entity,"relative_position");
 
-                desired_size.0 = desired_size.0.max(
-                    child_desired_size.width()
-                        + padding.left()
-                        + padding.right()
-                        + child_margin.left()
-                        + child_margin.right(),
-                );
-                desired_size.1 = desired_size.1.max(
-                    child_desired_size.height()
-                        + padding.top()
-                        + padding.bottom()
-                        + child_margin.top()
-                        + child_margin.left(),
-                );
+            let new_popup_size = match relative_position {
+                RelativePosition::Left(distance) => {
+                    let current_v_align: Alignment = component(ecm, entity,"v_align");
 
-                self.desired_size
-                    .borrow_mut()
-                    .set_size(desired_size.0, desired_size.1);
+                    let width = current_bounds.width();
+                    let height = current_v_align.align_measure(
+                        real_target_bounds.height(),
+                        current_bounds.height(),
+                        0.0,
+                        0.0,
+                    );
+
+                    current_constraint.perform((width, height))
+                }
+                RelativePosition::Right(distance) => {
+                    let current_v_align: Alignment = component(ecm, entity,"v_align");
+
+                    let width = current_bounds.width();
+                    let height = current_v_align.align_measure(
+                        real_target_bounds.height(),
+                        current_bounds.height(),
+                        0.0,
+                        0.0,
+                    );
+
+                    current_constraint.perform((width, height))
+                }
+                RelativePosition::Top(distance) => {
+                    let current_h_align: Alignment = component(ecm, entity,"h_align");
+
+                    let width = current_h_align.align_measure(
+                        real_target_bounds.width(),
+                        current_bounds.width(),
+                        0.0,
+                        0.0,
+                    );
+                    let height = current_bounds.height();
+
+                    current_constraint.perform((width, height))
+                }
+                RelativePosition::Bottom(distance) => {
+                    let current_h_align: Alignment = component(ecm, entity,"h_align");
+
+                    let width = current_h_align.align_measure(
+                        real_target_bounds.width(),
+                        current_bounds.width(),
+                        0.0,
+                        0.0,
+                    );
+                    let height = current_bounds.height();
+
+                    current_constraint.perform((width, height))
+                }
+            };
+
+            {
+            let mut desired_size = self.desired_size.borrow_mut();
+            desired_size.set_width(new_popup_size.0);
+            desired_size.set_height(new_popup_size.1);
             }
+
+
+            let padding: Thickness = component(ecm, entity, "padding");
+            for index in 0..ecm.entity_store().children[&entity].len() {
+                let child = ecm.entity_store().children[&entity][index];
+
+                if let Some(child_layout) = layouts.get(&child) {
+                    let child_desired_size =
+                        child_layout.measure(render_context_2_d, child, ecm, layouts, theme);
+                    let mut desired_size = self.desired_size.borrow().size();
+
+                    let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
+                    self.desired_size.borrow_mut().set_dirty(dirty);
+
+                    let child_margin = *ecm
+                        .component_store()
+                        .get::<Thickness>("margin", child)
+                        .unwrap();
+
+                    desired_size.0 = desired_size.0.max(
+                        child_desired_size.width()
+                            + padding.left()
+                            + padding.right()
+                            + child_margin.left()
+                            + child_margin.right(),
+                    );
+                    desired_size.1 = desired_size.1.max(
+                        child_desired_size.height()
+                            + padding.top()
+                            + padding.bottom()
+                            + child_margin.top()
+                            + child_margin.left(),
+                    );
+
+                    self.desired_size
+                        .borrow_mut()
+                        .set_size(desired_size.0, desired_size.1);
+                }
+            }
+        } else {
+            println!("Target not found");
         }
+
 
         *self.desired_size.borrow()
     }
