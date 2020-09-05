@@ -3,6 +3,8 @@ use crate::{
     render_object::*,
     utils::{Brush, Point, Rectangle},
 };
+use memchr::memchr_iter;
+use std::iter;
 
 /// Used to render a text.
 #[derive(Debug, IntoRenderObject)]
@@ -40,19 +42,27 @@ impl RenderObject for TextRenderObject {
         {
             return;
         }
-
-        if !text.is_empty() {
-            ctx.render_context_2_d().begin_path();
-            ctx.render_context_2_d().set_font_family(font);
-            ctx.render_context_2_d().set_font_size(font_size);
-            ctx.render_context_2_d().set_fill_style(foreground);
-
-            ctx.render_context_2_d().fill_text(
-                &text,
-                global_position.x() + bounds.x() + offset,
-                global_position.y() + bounds.y(),
-            );
-            ctx.render_context_2_d().close_path();
+        if text.is_empty() {
+            return;
         }
+
+        ctx.render_context_2_d().begin_path();
+        ctx.render_context_2_d().set_font_family(font);
+        ctx.render_context_2_d().set_font_size(font_size);
+        ctx.render_context_2_d().set_fill_style(foreground);
+
+        let mut y_disp = 0.0;
+        let mut last_ofs = 0;
+        for i in memchr_iter(b'\n', text.as_bytes()).chain(iter::once(text.len())) {
+            ctx.render_context_2_d().fill_text(
+                &text[last_ofs..i],
+                global_position.x() + bounds.x() + offset,
+                global_position.y() + bounds.y() + y_disp,
+            );
+            y_disp += font_size * 1.15; // TODO: Make the space between lines customizable
+            last_ofs = i + 1; // + 1 to skip the end of line character
+        }
+
+        ctx.render_context_2_d().close_path();
     }
 }

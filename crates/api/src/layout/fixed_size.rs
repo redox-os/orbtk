@@ -4,6 +4,7 @@ use std::{
 };
 
 use dces::prelude::*;
+use memchr::memchr_iter;
 
 use crate::{
     proc_macros::IntoLayout,
@@ -70,20 +71,29 @@ impl Layout for FixedSizeLayout {
                             .filter(|water_mark| !water_mark.is_empty())
                             .map(|water_mark| {
                                 let text_metrics = render_context_2_d.measure(
-                                    water_mark.to_string().as_str(),
+                                    &water_mark,
                                     *font_size,
                                     font.as_str(),
                                 );
-                                (text_metrics.width, text_metrics.height)
+                                (
+                                    text_metrics.width,
+                                    text_metrics.height
+                                        * ((memchr_iter(b'\n', water_mark.as_bytes()).count()
+                                            as f64)
+                                            * 1.15
+                                            + 1.0),
+                                )
                             })
                     } else {
-                        let text_metrics = render_context_2_d.measure(
-                            text.to_string().as_str(),
-                            *font_size,
-                            font.as_str(),
-                        );
+                        let text_metrics =
+                            render_context_2_d.measure(&text, *font_size, font.as_str());
 
-                        Some((text_metrics.width, text_metrics.height))
+                        Some((
+                            text_metrics.width,
+                            text_metrics.height
+                                * ((memchr_iter(b'\n', text.as_bytes()).count() as f64) * 1.15
+                                    + 1.0),
+                        ))
                     }
                 })
             })
@@ -98,7 +108,13 @@ impl Layout for FixedSizeLayout {
                             *icon_size,
                             widget.get::<String>("icon_font").as_str(),
                         );
-                        (text_metrics.width, text_metrics.height)
+                        (
+                            text_metrics.width,
+                            text_metrics.height
+                                * ((memchr_iter(b'\n', font_icon.as_bytes()).count() as f64)
+                                    * 1.15
+                                    + 1.0),
+                        )
                     })
             });
 
