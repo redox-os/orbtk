@@ -64,7 +64,7 @@
       "type": "lldb",
       "request": "launch",
       "name": "Widgets debug",
-      "program": "${workspaceFolder}/target/debug/examples/widgetss",
+      "program": "${workspaceFolder}/target/debug/examples/widgets",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build debug",
       "sourceLanguages": [

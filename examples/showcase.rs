@@ -106,7 +106,7 @@ impl Template for TextView {
 widget!(ItemsView {});
 
 impl Template for ItemsView {
-    fn template(self, _id: Entity, ctx: &mut BuildContext) -> Self {
+    fn template(self, _id: Entity, _ctx: &mut BuildContext) -> Self {
         self
     }
 }
@@ -114,7 +114,7 @@ impl Template for ItemsView {
 widget!(LayoutView {});
 
 impl Template for LayoutView {
-    fn template(self, _id: Entity, ctx: &mut BuildContext) -> Self {
+    fn template(self, _id: Entity, _ctx: &mut BuildContext) -> Self {
         self
     }
 }
@@ -126,7 +126,7 @@ impl Template for ImageView {
         self.child(
             ImageWidget::new()
                 .margin(16)
-                .image("res/orbtk_space.png")
+                .image("res/orbtk_logo.png")
                 .build(ctx),
         )
     }
