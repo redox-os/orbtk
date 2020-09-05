@@ -1270,7 +1270,7 @@ dependencies = [
 [[package]]
 name = "orbclient"
 version = "0.3.28"
-source = "git+https://gitlab.redox-os.org/redox-os/orbclient.git#eba5783d93ad5b1a7815006f8620153a55b53d30"
+source = "git+https://gitlab.redox-os.org/redox-os/orbclient.git#19145119e4ccb82153e29414b11d5c69b2216ba1"
 dependencies = [
  "libc",
  "raw-window-handle",
@@ -1372,6 +1372,7 @@ dependencies = [
  "pathfinder_renderer",
  "pathfinder_resources",
  "raw-window-handle",
+ "sdl2 0.34.3",
  "spin_sleep",
  "stdweb",
 ]

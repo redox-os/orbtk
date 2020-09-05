@@ -60,6 +60,7 @@ impl State for MainViewState {
                     }
                 }
                 Action::IncrementCounter => {
+                    ctx.send_window_request(orbtk::shell::WindowRequest::Redraw);
                     *MainView::counter_mut(&mut ctx.widget()) += 1;
 
                     let counter = *MainView::counter_ref(&ctx.widget());

@@ -13,6 +13,20 @@ height = 730
     src = "crates/theme/src/fonts/Roboto-Medium.ttf"
 
 [[apps]]
+name = "showcase"
+width = 468
+height = 730
+    [[apps.fonts]]
+    font_family = "MaterialIcons-Regular"
+    src = "crates/theme/src/fonts/MaterialIcons.ttf"
+    [[apps.fonts]]
+    font_family = "Roboto-Regular"
+    src = "crates/theme/src/fonts/Roboto-Regular.ttf"
+    [[apps.fonts]]
+    font_family = "Roboto-Medium"
+    src = "crates/theme/src/fonts/Roboto-Medium.ttf"
+
+[[apps]]
 name = "calculator"
 width = 212
 height = 360

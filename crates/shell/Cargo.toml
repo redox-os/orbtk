@@ -34,6 +34,9 @@ pathfinder_gl =  { version = "0.5", optional = true }
 pathfinder_renderer =  { version = "0.5", optional = true }
 pathfinder_resources =  { version = "0.5", optional = true }
 
+[target.'cfg(not(target_os = "redox"))'.dependencies]
+sdl2 = { version = "0.34", features = ["bundled", "static-link", "raw-window-handle"], optional = true }
+
 [dependencies]
 lazy_static = "1.4.0"
 raw-window-handle = "0.3"
@@ -43,8 +46,8 @@ orbtk_render = { path = "../render", version = "0.3.1-alpha4" }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 
 [features]
-default = ["orbclient"]
-orbraq = ["orbclient"]
+default = ["orbclient", "sdl2"]
+orbraq = ["orbclient", "sdl2"]
 miniraq = ["spin_sleep", "minifb"]
 glupath = [
     "gl",
