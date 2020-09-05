@@ -13,7 +13,7 @@ mod common;
 #[path = "pathfinder/mod.rs"]
 pub mod platform;
 
-#[cfg(any(target_arch = "wasm32", feature = "glupath"))]
+#[cfg(any(target_arch = "wasm32", feature = "default", feature = "glupath"))]
 pub use self::platform::*;
 
 #[cfg(all(
@@ -31,12 +31,12 @@ pub mod platform;
 ))]
 pub mod concurrent;
 
-#[cfg(all(
-    not(target_arch = "wasm32"),
-    feature = "default",
-    not(feature = "glupath")
-))]
-pub use self::concurrent::*;
+// #[cfg(all(
+//     not(target_arch = "wasm32"),
+//     feature = "default",
+//     not(feature = "glupath")
+// ))]
+// pub use self::concurrent::*;
 
 #[cfg(target_arch = "wasm32")]
 #[path = "web/mod.rs"]

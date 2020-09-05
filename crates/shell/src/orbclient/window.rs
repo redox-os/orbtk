@@ -304,11 +304,6 @@ where
 
     /// Receives window request from the application and handles them.
     pub fn receive_requests(&mut self) {
-        if let Ok(result) = self.render_context.finish_receiver().try_recv() {
-            if result {
-                self.redraw = true;
-            }
-        }
         if let Some(request_receiver) = &self.request_receiver {
             for request in request_receiver.try_iter() {
                 match request {
@@ -343,22 +338,24 @@ where
     /// Swaps the current frame buffer.
     pub fn render(&mut self) {
         if self.redraw {
-            if let Some(data) = self.render_context.data() {
-                let color_data: Vec<orbclient::Color> =
-                    data.iter().map(|v| orbclient::Color { data: *v }).collect();
+            let color_data: Vec<orbclient::Color> = self
+                .render_context
+                .data()
+                .iter()
+                .map(|v| orbclient::Color { data: *v })
+                .collect();
 
-                if color_data.len() == self.window.data().len() {
-                    self.window
-                        .data_mut()
-                        .clone_from_slice(color_data.as_slice());
+            if color_data.len() == self.window.data().len() {
+                self.window
+                    .data_mut()
+                    .clone_from_slice(color_data.as_slice());
 
-                    // CONSOLE.time_end("render");
-                    self.redraw = false;
-                    //super::CONSOLE.time_end("complete");
-                }
+                // CONSOLE.time_end("render");
+                self.redraw = false;
+                //super::CONSOLE.time_end("complete");
             }
-
-            self.window.sync();
         }
+
+        self.window.sync();
     }
 }

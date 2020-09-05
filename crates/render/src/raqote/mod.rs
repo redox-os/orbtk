@@ -129,6 +129,17 @@ impl RenderContext2D {
         }
     }
 
+    pub fn measure(
+        &mut self,
+        text: &str,
+        font_size: f64,
+        family: impl Into<String>,
+    ) -> TextMetrics {
+        self.set_font_family(family);
+        self.set_font_size(font_size);
+        self.measure_text(text)
+    }
+
     /// Returns a TextMetrics object.
     pub fn measure_text(&mut self, text: &str) -> TextMetrics {
         let mut text_metrics = TextMetrics::default();
