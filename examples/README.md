@@ -6,9 +6,6 @@
 * showcase: an overview of all widgets provided by OrbTk
 * calculator: calculator example
 * canvas: use third party render library in canvas
-* clear: interaction between widgets
-* grid: grid layout example
-* image: image widget
 * login: PasswordBox showcase with a login form
 * minimal: minimal example
 * multi_window: multi window example
@@ -17,7 +14,6 @@
 * settings: use registry and settings service (load / save)
 * stack: stack layout example
 * widgets: widget overview
-* tab_widget: tab widget example
 
 ## License
 
