@@ -96,41 +96,8 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Image",
-      "program": "${workspaceFolder}/target/debug/examples/image",
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build",
-      "sourceLanguages": [
-        "rust"
-      ]
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "name": "Messages",
-      "program": "${workspaceFolder}/target/debug/examples/messages",
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build",
-      "sourceLanguages": [
-        "rust"
-      ]
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
       "name": "Settings",
       "program": "${workspaceFolder}/target/debug/examples/settings",
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build",
-      "sourceLanguages": [
-        "rust"
-      ]
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "name": "Grid",
-      "program": "${workspaceFolder}/target/debug/examples/grid",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
       "sourceLanguages": [
@@ -186,17 +153,6 @@
       "request": "launch",
       "name": "Numeric Box",
       "program": "${workspaceFolder}/target/debug/examples/numeric_box",
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build",
-      "sourceLanguages": [
-        "rust"
-      ]
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "name": "TabWidget",
-      "program": "${workspaceFolder}/target/debug/examples/tab_widget",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
       "sourceLanguages": [
