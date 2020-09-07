@@ -18,12 +18,12 @@ dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "
 orbtk_api = { path = "../api", version = "0.3.1-alpha4" }
 orbtk_shell = { path = "../shell", version = "0.3.1-alpha4", default-features = false }
 orbtk_theme = { path = "../theme", version = "0.3.1-alpha4" }
-orbtk_render = { path = "../render", version = "0.3.1-alpha4" }
+orbtk_render = { path = "../render", version = "0.3.1-alpha4", default-features = false }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 orbtk_proc_macros = { version = "0.3.1-alpha4", path = "../proc_macros" }
 
 [features]
-default = ["orbtk_shell/orbraq"]
-orbraq = ["orbtk_shell/orbraq"]
-miniraq = ["orbtk_shell/miniraq"]
+default = ["orbtk_shell/orbraq", "orbtk_render/orbraq"]
+orbraq = ["orbtk_shell/orbraq", "orbtk_render/orbraq"]
+miniraq = ["orbtk_shell/miniraq", "orbtk_render/miniraq"]
 glupath = ["orbtk_shell/glupath", "orbtk_render/glupath"]

@@ -237,7 +237,7 @@ impl PathRect {
 
     #[cfg(all(
         not(target_arch = "wasm32"),
-        feature = "default",
+        any(feature = "default", feature = "orbraq", feature = "miniraq"),
         not(feature = "glupath")
     ))]
     /// Checks if the current instance is enclosed.
