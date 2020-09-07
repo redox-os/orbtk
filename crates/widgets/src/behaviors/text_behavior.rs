@@ -360,6 +360,7 @@ impl TextBehaviorState {
                     self.insert_text(key_event.text, ctx);
                 }
             }
+            Key::Escape => {}
             _ => {
                 self.insert_text(key_event.text, ctx);
             }
