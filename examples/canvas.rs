@@ -173,7 +173,7 @@ impl RenderPipeline for Graphic2DPipeline {
             repeat: false,
         }));
         render_context.fill_rect(x, y, width, height);
-        // render_target.draw(render_context.data());
+        render_target.draw(render_context.data());
     }
 }
 
