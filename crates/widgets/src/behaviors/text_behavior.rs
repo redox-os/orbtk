@@ -412,6 +412,8 @@ impl TextBehaviorState {
 
     // handles focus changed event
     fn focused_changed(&self, ctx: &mut Context) {
+        self.adjust_selection(ctx);
+
         if *TextBehavior::select_all_on_focus_ref(&ctx.widget()) {
             self.select_all(ctx);
         }
@@ -575,6 +577,24 @@ impl TextBehaviorState {
         ctx.get_widget(self.target).update(false);
     }
 
+    fn adjust_selection(&self, ctx: &mut Context) {
+        let mut selection = self.selection(ctx);
+        let len = self.len(ctx);
+
+        if selection.start() <= len || selection.end() <= len {
+            return;
+        }
+
+        selection.set(len);
+
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
+
+        if *TextBehavior::focused_ref(&ctx.widget()) {
+            self.update_focused_state(ctx);
+            return;
+        }
+    }
+
     fn force_update(&mut self, ctx: &mut Context) {
         let self_update = self.self_update;
         self.self_update = false;
@@ -583,19 +603,7 @@ impl TextBehaviorState {
             return;
         }
 
-        let mut selection = self.selection(ctx);
-        let len = self.len(ctx);
-
-        if selection.start() > len || selection.end() > len {
-            selection.set(len);
-        }
-
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
-
-        if *TextBehavior::focused_ref(&ctx.widget()) {
-            self.update_focused_state(ctx);
-            return;
-        }
+        self.adjust_selection(ctx);
 
         if self.len(ctx) == 0 {
             ctx.get_widget(self.target)
