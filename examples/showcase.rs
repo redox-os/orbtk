@@ -7,7 +7,7 @@ fn main() {
     Application::new()
         .window(|ctx| {
             Window::new()
-                .title("OrbTk - widgets example")
+                .title("OrbTk - showcase example")
                 .position((100, 100))
                 .size(468, 730)
                 .resizeable(true)
