@@ -54,6 +54,7 @@ pub struct TextBehaviorState {
     pressed: bool,
     self_update: bool,
     update_selection: bool,
+    mouse_up_count: usize,
 }
 
 impl TextBehaviorState {
@@ -411,6 +412,21 @@ impl TextBehaviorState {
         TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
 
+    fn mouse_up(&mut self, ctx: &mut Context) {
+        self.pressed = false;
+
+        if !self.focused(ctx) {
+            return;
+        }
+
+        if self.mouse_up_count == 1 {
+            self.mouse_up_count = 0;
+            self.select_all(ctx);
+        }
+
+        self.mouse_up_count += 1;
+    }
+
     // handles focus changed event
     fn focused_changed(&self, ctx: &mut Context) {
         self.adjust_selection(ctx);
@@ -653,7 +669,7 @@ impl State for TextBehaviorState {
                 TextAction::FocusedChanged => self.focused_changed(ctx),
                 TextAction::SelectionChanged => self.update_selection = true,
                 TextAction::MouseMove(position) => self.mouse_move(ctx, position),
-                TextAction::MouseUp => self.pressed = false,
+                TextAction::MouseUp => self.mouse_up(ctx),
                 TextAction::ForceUpdate => self.force_update(ctx),
             }
         }
