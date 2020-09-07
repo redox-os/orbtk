@@ -84,7 +84,7 @@ Theme (
                 "spacing": 0,
             },
         ),
-         "button_icon_only": (
+        "button_icon_only": (
             base: "button",
             properties: {
                 "icon_size": "$ICON_SIZE_12",
@@ -373,6 +373,16 @@ Theme (
                 "background": "$GOLD_TIPS",
                 "height": 2
             }
-        )
+        ),
+        "tab_icon_only": (
+            properties: {
+                "icon_size": "$ICON_SIZE_12",
+                "icon_brush": "$LINK_WATER",
+                "background": "transparent",
+                "spacing": 0,
+                "width": 16,
+                "height": 16
+            }
+        ),
     },
 )

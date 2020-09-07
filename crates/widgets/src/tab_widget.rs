@@ -3,6 +3,7 @@ use super::behaviors::MouseBehavior;
 use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
 
 // --- KEYS --
+const TAB_HEADER_CONTAINER: &str = "tab_header_container";
 const HEADER_CONTAINER: &str = "header_container";
 const HEADER_BAR: &str = "header_bar";
 const BODY_CONTAINER: &str = "body_container";
@@ -20,11 +21,14 @@ pub struct TabHeaderState {
     on_close_click_callback: Option<Box<dyn 'static + Fn(&mut StatesContext, Point) -> bool>>,
 
     header_bar: Entity,
+
+    tab_header_container: Entity,
 }
 
 impl State for TabHeaderState {
     fn init(&mut self, registry: &mut Registry, ctx: &mut Context) {
         self.header_bar = ctx.child(HEADER_BAR).entity();
+        self.tab_header_container = ctx.child(TAB_HEADER_CONTAINER).entity();
         self.update(registry, ctx);
     }
 
@@ -36,6 +40,11 @@ impl State for TabHeaderState {
         //    if sel Visibility::Visible else Visibility::Collapsed
         // }))
         // ```
+
+        if *TabHeader::close_button_ref(&ctx.widget()) == Visibility::Collapsed {
+            TabHeader::spacing_set(&mut ctx.widget(), 0.);
+        }
+
         let selected = *ctx.widget().get::<bool>("selected");
         let vis = *ctx
             .get_widget(self.header_bar)
@@ -129,7 +138,7 @@ impl TabHeader {
 impl Template for TabHeader {
     fn template(mut self, id: Entity, ctx: &mut BuildContext) -> Self {
         let mut button = Button::new()
-            .style("button_icon_only")
+            .style("tab_icon_only")
             .icon(material_icons_font::MD_CLOSE)
             .visibility(("close_button", id));
 
@@ -147,8 +156,8 @@ impl Template for TabHeader {
         self.name("TabHeader")
             .style("tab_header")
             .selected(false)
-            .height(36)
             .min_width(64)
+            .height(36)
             .background(colors::LYNCH_COLOR)
             .border_radius(4)
             .border_width(0)
@@ -162,18 +171,22 @@ impl Template for TabHeader {
             .icon_font("MaterialIcons-Regular")
             .icon_size(fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
-            .spacing(8)
+            .spacing(4)
             .close_button(Visibility::Visible)
+            .child(mouse_behavior.build(ctx))
             .child(
-                mouse_behavior
+                Container::new()
+                    .padding(id)
                     .child(
                         Stack::new()
-                            .margin(("padding", id))
+                            .id(TAB_HEADER_CONTAINER)
+                            .spacing(id)
                             .orientation("horizontal")
                             .child(
                                 TextBlock::new()
                                     .text(id)
                                     .v_align("center")
+                                    .h_align("start")
                                     .font(id)
                                     .font_size(id)
                                     .foreground(id)
@@ -182,14 +195,14 @@ impl Template for TabHeader {
                             .child(button.v_align("center").build(ctx))
                             .build(ctx),
                     )
-                    .child(
-                        Container::new()
-                            .id(HEADER_BAR)
-                            .v_align("start")
-                            .visibility("collapsed")
-                            .style("tab_header_bar")
-                            .build(ctx),
-                    )
+                    .build(ctx),
+            )
+            .child(
+                Container::new()
+                    .id(HEADER_BAR)
+                    .v_align("start")
+                    .visibility("collapsed")
+                    .style("tab_header_bar")
                     .build(ctx),
             )
     }
@@ -197,6 +210,10 @@ impl Template for TabHeader {
     fn render_object(&self) -> Box<dyn RenderObject> {
         RectangleRenderObject.into()
     }
+
+    // fn layout(&self) -> Box<dyn Layout> {
+    //     PaddingLayout::new().into()
+    // }
 }
 
 ///Used to internally
