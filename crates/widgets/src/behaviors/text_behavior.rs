@@ -54,6 +54,7 @@ pub struct TextBehaviorState {
     pressed: bool,
     self_update: bool,
     update_selection: bool,
+    mouse_up_count: usize,
 }
 
 impl TextBehaviorState {
@@ -360,6 +361,7 @@ impl TextBehaviorState {
                     self.insert_text(key_event.text, ctx);
                 }
             }
+            Key::Escape => {}
             _ => {
                 self.insert_text(key_event.text, ctx);
             }
@@ -410,8 +412,25 @@ impl TextBehaviorState {
         TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
 
+    fn mouse_up(&mut self, ctx: &mut Context) {
+        self.pressed = false;
+
+        if !self.focused(ctx) {
+            return;
+        }
+
+        if self.mouse_up_count == 1 {
+            self.mouse_up_count = 0;
+            self.select_all(ctx);
+        }
+
+        self.mouse_up_count += 1;
+    }
+
     // handles focus changed event
     fn focused_changed(&self, ctx: &mut Context) {
+        self.adjust_selection(ctx);
+
         if *TextBehavior::select_all_on_focus_ref(&ctx.widget()) {
             self.select_all(ctx);
         }
@@ -575,6 +594,24 @@ impl TextBehaviorState {
         ctx.get_widget(self.target).update(false);
     }
 
+    fn adjust_selection(&self, ctx: &mut Context) {
+        let mut selection = self.selection(ctx);
+        let len = self.len(ctx);
+
+        if selection.start() <= len || selection.end() <= len {
+            return;
+        }
+
+        selection.set(len);
+
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
+
+        if *TextBehavior::focused_ref(&ctx.widget()) {
+            self.update_focused_state(ctx);
+            return;
+        }
+    }
+
     fn force_update(&mut self, ctx: &mut Context) {
         let self_update = self.self_update;
         self.self_update = false;
@@ -583,19 +620,7 @@ impl TextBehaviorState {
             return;
         }
 
-        let mut selection = self.selection(ctx);
-        let len = self.len(ctx);
-
-        if selection.start() > len || selection.end() > len {
-            selection.set(len);
-        }
-
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
-
-        if *TextBehavior::focused_ref(&ctx.widget()) {
-            self.update_focused_state(ctx);
-            return;
-        }
+        self.adjust_selection(ctx);
 
         if self.len(ctx) == 0 {
             ctx.get_widget(self.target)
@@ -644,7 +669,7 @@ impl State for TextBehaviorState {
                 TextAction::FocusedChanged => self.focused_changed(ctx),
                 TextAction::SelectionChanged => self.update_selection = true,
                 TextAction::MouseMove(position) => self.mouse_move(ctx, position),
-                TextAction::MouseUp => self.pressed = false,
+                TextAction::MouseUp => self.mouse_up(ctx),
                 TextAction::ForceUpdate => self.force_update(ctx),
             }
         }

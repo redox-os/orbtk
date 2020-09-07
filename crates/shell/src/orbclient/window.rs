@@ -1,4 +1,4 @@
-use std::sync::mpsc;
+use std::{sync::mpsc, thread};
 
 use super::MouseState;
 use crate::{
@@ -7,6 +7,9 @@ use crate::{
     window_adapter::WindowAdapter,
     WindowRequest,
 };
+
+#[cfg(not(target_os = "redox"))]
+use sdl2::event;
 
 use orbclient::Renderer;
 use raw_window_handle::HasRawWindowHandle;
@@ -29,28 +32,82 @@ where
     redraw: bool,
     close: bool,
     has_clipboard_update: bool,
+    #[cfg(not(target_os = "redox"))]
+    _sdl2_sync_thread: Option<thread::JoinHandle<()>>,
+}
+
+// internal method to sync if OrbClient backend is sdl2
+#[cfg(not(target_os = "redox"))]
+fn init_sync(
+    window: &orbclient::Window,
+    receiver: mpsc::Receiver<WindowRequest>,
+) -> (mpsc::Receiver<WindowRequest>, thread::JoinHandle<()>) {
+    let (internal_sender, internal_receiver) = mpsc::channel();
+
+    let event_sender = window.event_sender();
+
+    let _sdl2_sync_thread = thread::spawn(move || loop {
+        if let Ok(request) = receiver.recv() {
+            let _ = internal_sender.send(request.clone());
+            if request == WindowRequest::Redraw {
+                let _ = event_sender.push_event(event::Event::RenderTargetsReset { timestamp: 0 });
+            }
+        }
+    });
+
+    (internal_receiver, _sdl2_sync_thread)
 }
 
 impl<A> Window<A>
 where
     A: WindowAdapter,
 {
+    #[cfg(target_os = "redox")]
     pub fn new(
         window: orbclient::Window,
         adapter: A,
         render_context: RenderContext2D,
         request_receiver: Option<mpsc::Receiver<WindowRequest>>,
     ) -> Self {
-        #[cfg(not(target_os = "redox"))]
+        Window {
+            window,
+            adapter,
+            render_context,
+            request_receiver,
+            // window_state: WindowState::default(),
+            mouse: MouseState::default(),
+            update: true,
+            redraw: true,
+            close: false,
+            has_clipboard_update: true,
+        }
+    }
+
+    #[cfg(not(target_os = "redox"))]
+    pub fn new(
+        window: orbclient::Window,
+        adapter: A,
+        render_context: RenderContext2D,
+        request_receiver: Option<mpsc::Receiver<WindowRequest>>,
+    ) -> Self {
         let mut adapter = adapter;
 
-        #[cfg(not(target_os = "redox"))]
         adapter.set_raw_window_handle(window.raw_window_handle());
+
+        let (request_receiver, _sdl2_sync_thread) = {
+            if let Some(receiver) = request_receiver {
+                let (rec, sync) = init_sync(&window, receiver);
+                (Some(rec), Some(sync))
+            } else {
+                (None, None)
+            }
+        };
 
         Window {
             window,
             adapter,
             render_context,
+            _sdl2_sync_thread,
             request_receiver,
             // window_state: WindowState::default(),
             mouse: MouseState::default(),
@@ -247,11 +304,6 @@ where
 
     /// Receives window request from the application and handles them.
     pub fn receive_requests(&mut self) {
-        if let Ok(result) = self.render_context.finish_receiver().try_recv() {
-            if result {
-                self.redraw = true;
-            }
-        }
         if let Some(request_receiver) = &self.request_receiver {
             for request in request_receiver.try_iter() {
                 match request {
@@ -286,22 +338,24 @@ where
     /// Swaps the current frame buffer.
     pub fn render(&mut self) {
         if self.redraw {
-            if let Some(data) = self.render_context.data() {
-                let color_data: Vec<orbclient::Color> =
-                    data.iter().map(|v| orbclient::Color { data: *v }).collect();
+            let color_data: Vec<orbclient::Color> = self
+                .render_context
+                .data()
+                .iter()
+                .map(|v| orbclient::Color { data: *v })
+                .collect();
 
-                if color_data.len() == self.window.data().len() {
-                    self.window
-                        .data_mut()
-                        .clone_from_slice(color_data.as_slice());
+            if color_data.len() == self.window.data().len() {
+                self.window
+                    .data_mut()
+                    .clone_from_slice(color_data.as_slice());
 
-                    // CONSOLE.time_end("render");
-                    self.redraw = false;
-                    //super::CONSOLE.time_end("complete");
-                }
+                // CONSOLE.time_end("render");
+                self.redraw = false;
+                //super::CONSOLE.time_end("complete");
             }
-
-            self.window.sync();
         }
+
+        self.window.sync();
     }
 }

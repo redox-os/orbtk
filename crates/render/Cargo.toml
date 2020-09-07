@@ -37,6 +37,8 @@ orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 
 [features]
 default = ["raqote", "rusttype"]
+orbraq = ["raqote", "rusttype"]
+miniraq = ["raqote", "rusttype"]
 glupath = [
     "pathfinder_canvas",
     "pathfinder_color",

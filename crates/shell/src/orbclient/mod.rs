@@ -2,8 +2,6 @@
 
 use std::sync::mpsc;
 
-use spin_sleep::LoopHelper;
-
 pub use super::native::*;
 
 use crate::prelude::*;
@@ -26,7 +24,6 @@ where
 {
     window_shells: Vec<Window<A>>,
     requests: mpsc::Receiver<ShellRequest<A>>,
-    loop_helper: LoopHelper,
 }
 
 impl<A> Shell<A>
@@ -38,9 +35,6 @@ where
         Shell {
             window_shells: vec![],
             requests,
-            loop_helper: LoopHelper::builder()
-                .report_interval_s(0.5) // report every half a second
-                .build_with_target_rate(70.0),
         }
     }
 
@@ -81,8 +75,6 @@ where
                 return;
             }
 
-            let _delta = self.loop_helper.loop_start();
-
             for i in 0..self.window_shells.len() {
                 let mut remove = false;
                 if let Some(window_shell) = self.window_shells.get_mut(i) {
@@ -105,14 +97,6 @@ where
             }
 
             self.receive_requests();
-
-            if let Some(fps) = self.loop_helper.report_rate() {
-                if cfg!(feature = "debug") {
-                    println!("fps: {}", fps);
-                }
-            }
-
-            self.loop_helper.loop_sleep();
         }
     }
 }

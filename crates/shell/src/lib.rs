@@ -62,7 +62,7 @@ pub use orbtk_render::prelude as render;
 use std::{collections::HashMap, sync::mpsc};
 
 /// Used to send a request to the window.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum WindowRequest {
     /// Request redraw of the `Windows`s content.
     Redraw,

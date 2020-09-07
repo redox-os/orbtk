@@ -27,7 +27,7 @@ opt-level = 1
 [dependencies]
 orbtk_proc_macros = { version = "0.3.1-alpha4", path = "crates/proc_macros" }
 orbtk_api = { version = "0.3.1-alpha4", path = "crates/api", default-features = false }
-orbtk_render = { version = "0.3.1-alpha4", path = "crates/render" }
+orbtk_render = { version = "0.3.1-alpha4", path = "crates/render", default-features = false }
 orbtk_shell = { version = "0.3.1-alpha4", path = "crates/shell", default-features = false }
 orbtk_theme = { version = "0.3.1-alpha4", path="crates/theme" }
 orbtk_theming = { version = "0.3.1-alpha4", path="crates/theming" }
@@ -46,8 +46,8 @@ serde_derive = "1.0.106"
 # wgpu = "0.5.0"
 
 [features]
-default = ["orbtk_shell/orbraq", "orbtk_api/orbraq", "orbtk_widgets/orbraq"]
-miniraq = ["orbtk_shell/miniraq", "orbtk_api/miniraq", "orbtk_widgets/miniraq"]
+default = ["orbtk_shell/orbraq", "orbtk_api/orbraq", "orbtk_render/orbraq", "orbtk_widgets/orbraq"]
+miniraq = ["orbtk_shell/miniraq", "orbtk_api/miniraq", "orbtk_widgets/miniraq", "orbtk_widgets/miniraq"]
 glupath = ["orbtk_shell/glupath", "orbtk_render/glupath", "orbtk_widgets/glupath"]
 log = ["orbtk_shell/log"]
 light = ["orbtk_theme/light"]
