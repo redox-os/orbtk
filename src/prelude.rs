@@ -10,6 +10,7 @@ pub use dces::prelude::*;
 
 pub use crate::{
     api::prelude::*,
+    localization::prelude::*,
     proc_macros::*,
     render::prelude::*,
     theme::{

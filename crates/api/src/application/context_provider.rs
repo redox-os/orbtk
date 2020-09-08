@@ -12,6 +12,7 @@ use super::WindowAdapter;
 use crate::{
     event::*,
     layout::*,
+    localization::Localization,
     render_object::*,
     shell::{ShellRequest, WindowRequest},
     utils::Point,
@@ -32,6 +33,8 @@ pub struct ContextProvider {
     pub application_name: String,
     pub first_run: Rc<Cell<bool>>,
     pub raw_window_handle: Option<raw_window_handle::RawWindowHandle>,
+    // todo thread save
+    pub localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
 }
 
 impl ContextProvider {
@@ -40,6 +43,7 @@ impl ContextProvider {
         window_sender: mpsc::Sender<WindowRequest>,
         shell_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
         application_name: impl Into<String>,
+        localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
     ) -> Self {
         ContextProvider {
             render_objects: Rc::new(RefCell::new(BTreeMap::new())),
@@ -53,6 +57,7 @@ impl ContextProvider {
             application_name: application_name.into(),
             first_run: Rc::new(Cell::new(true)),
             raw_window_handle: None,
+            localization,
         }
     }
 }

@@ -5,6 +5,7 @@
 #[macro_use]
 extern crate derive_more;
 
+pub(crate) use orbtk_localization::prelude as localization;
 pub(crate) use orbtk_proc_macros as proc_macros;
 pub(crate) use orbtk_render::prelude as render;
 pub(crate) use orbtk_shell::prelude as shell;

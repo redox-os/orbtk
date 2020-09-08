@@ -1308,6 +1308,7 @@ dependencies = [
  "derive_more",
  "dirs 3.0.1",
  "memchr",
+ "orbtk_localization",
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",

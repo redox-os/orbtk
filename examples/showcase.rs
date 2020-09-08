@@ -4,7 +4,10 @@ fn main() {
     // use this only if you want to run it as web application.
     orbtk::initialize();
 
+    let localization = RonLocalization::create().build();
+
     Application::new()
+        .localization(localization)
         .window(|ctx| {
             Window::new()
                 .title("OrbTk - showcase example")

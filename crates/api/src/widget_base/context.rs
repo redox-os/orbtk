@@ -454,6 +454,7 @@ impl<'a> Context<'a> {
             self.theme.clone(),
             self.provider.shell_sender.clone(),
             create_fn,
+            self.provider.localization.clone(),
         );
         self.provider
             .shell_sender
