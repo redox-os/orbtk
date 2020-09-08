@@ -1325,6 +1325,11 @@ dependencies = [
 [[package]]
 name = "orbtk_localization"
 version = "0.3.1-alpha4"
+dependencies = [
+ "ron",
+ "serde",
+ "serde_derive",
+]
 
 [[package]]
 name = "orbtk_proc_macros"

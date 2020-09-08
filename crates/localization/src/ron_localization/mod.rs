@@ -10,36 +10,48 @@ mod dictionary;
 #[derive(Debug, Default, Clone)]
 pub struct RonLocalizationBuilder {
     language: String,
-    path: String,
+    dictionaries: HashMap<String, Dictionary>,
 }
 
 impl RonLocalizationBuilder {
-    /// Sets path of the language files.
-    pub fn path(mut self, path: String) -> Self {
-        self.path = path;
+    /// Adds a new dictionary.
+    pub fn dictionary(mut self, key: impl Into<String>, dictionary: &str) -> Self {
+        self.dictionaries
+            .insert(key.into(), Dictionary::from(dictionary));
         self
     }
 
     /// Sets the initial language.
-    pub fn language(mut self, path: String) -> Self {
-        self.language = language;
+    pub fn language(mut self, language: impl Into<String>) -> Self {
+        self.language = language.into();
         self
     }
 
+    /// Builds a new ron localization service.
     pub fn build(self) -> RonLocalization {
-        // todo load file and set properties
-        RonLocalization::default()
+        RonLocalization {
+            language: self.language,
+            dictionaries: self.dictionaries,
+        }
     }
 }
 
 /// `RonLocalization` represents the default implementation of a localization service based on `ron`.
 ///
 /// # Example
-/// tbd
+///
+/// ```rust
+/// pub const EN_US: &str = include_str!("../assets/dictionary_en_US.ron");
+///
+/// let localization = RonLocalization::create().language("en_US").dictionary("en_US", EN_US).build();
+/// if let Some(text) = localization.text("hello") {
+///     println!("{}", text);
+/// }
+/// ```
 #[derive(Debug, Default, Clone)]
 pub struct RonLocalization {
     language: String,
-    dictionary: Option<Dictionary>,
+    dictionaries: HashMap<String, Dictionary>,
 }
 
 impl RonLocalization {
@@ -58,11 +70,39 @@ impl Localization for RonLocalization {
         self.language = key.to_string();
     }
 
-    fn text(&self, key: &str) -> String {
-        if let Some(word) = self.dictionary[key] {
-            return word.clone();
+    fn text(&self, key: &str) -> Option<String> {
+        if let Some(dictionary) = self.dictionaries.get(&self.language) {
+            if let Some(word) = dictionary.words.get(key) {
+                return Some(word.clone());
+            }
         }
 
-        key.to_string()
+        None
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_text() {
+        let de_de = r#"
+        Dictionary( 
+            words: {
+                "hello": "Hallo",
+                "world": "Welt",
+            }
+        )
+        "#;
+
+        let localization = RonLocalization::create()
+            .language("de_DE")
+            .dictionary("de_DE", de_de)
+            .build();
+
+        assert_eq!(localization.text("hello"), Some("Hallo".to_string()));
+        assert_eq!(localization.text("world"), Some("Welt".to_string()));
+        assert_eq!(localization.text("test"), None);
     }
 }

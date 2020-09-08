@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
-use ron::{de::from_str, Value};
-use serde_derive::{Deserialize, Serialize};
+use ron::de::from_str;
+use serde_derive::Deserialize;
 
 /// Internal struct used by the `RonLocalization` to parse as language file.
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Dictionary {
     pub words: HashMap<String, String>,
 }

@@ -1,5 +1,5 @@
 mod localization;
 pub mod prelude;
 
-#[cfg(feature = "base")]
+#[cfg(feature = "local_ron")]
 mod ron_localization;
