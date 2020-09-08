@@ -16,6 +16,10 @@ pub mod api {
     pub use orbtk_api::*;
 }
 
+pub mod localization {
+    pub use orbtk_localization::*;
+}
+
 pub mod proc_macros {
     pub use orbtk_proc_macros::*;
 }

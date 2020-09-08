@@ -1286,6 +1286,7 @@ dependencies = [
  "dces",
  "euc",
  "orbtk_api",
+ "orbtk_localization",
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
@@ -1320,6 +1321,10 @@ dependencies = [
  "serde_derive",
  "stdweb",
 ]
+
+[[package]]
+name = "orbtk_localization"
+version = "0.3.1-alpha4"
 
 [[package]]
 name = "orbtk_proc_macros"
