@@ -42,7 +42,8 @@ impl Image {
         })
     }
 
-    fn from_rgba_image(image: image::RgbaImage) -> Result<Self, String> {
+    /// Creates a new image from an `RgbaImage`.
+    pub fn from_rgba_image(image: image::RgbaImage) -> Result<Self, String> {
         let data: Vec<u32> = image
             .pixels()
             .map(|p| {
