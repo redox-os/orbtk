@@ -117,6 +117,14 @@ impl<'a> WidgetContainer<'a> {
         }
     }
 
+    /// Check if the given type is the type of the property. If the property is not part of the widget `None` will be returned.
+    pub fn is<P: 'static>(&self, key: &str) -> Option<bool> {
+        self.ecm
+            .component_store()
+            .is::<P>(key, self.current_node)
+            .ok()
+    }
+
     /// Gets the property.
     ///
     /// # Panics
@@ -472,27 +480,44 @@ impl<'a> WidgetContainer<'a> {
         if let Some(props) = self.theme.properties(&selector) {
             for (key, value) in props {
                 match key.as_str() {
-                    "foreground" | "background" | "icon_brush" | "border_brush" => {
-                        self.update_value::<Brush, Value>(key, Value(value.clone()));
-                    }
-                    "font_size" | "icon_size" | "spacing" | "border_radius" => {
-                        self.update_value::<f64, Value>(key, Value(value.clone()));
-                    }
-                    "padding" | "border_width" => {
-                        self.update_value::<Thickness, Value>(key, Value(value.clone()));
-                    }
+                    // special mapping
                     "padding_left" | "padding_top" | "padding_right" | "padding_bottom" => {
                         self.update_padding(key, Value(value.clone()));
                     }
-                    "font" | "icon_font" => {
-                        self.update_value::<String, Value>(key, Value(value.clone()));
-                    }
-                    "opacity" => {
-                        self.update_value::<f32, Value>(key, Value(value.clone()));
-                    }
                     "width" | "height" | "min_width" | "min_height" | "max_width"
                     | "max_height" => self.update_constraint(key, Value(value.clone())),
-                    _ => {}
+                    _ => {
+                        // common mapping
+                        if let Some(is_type) = self.is::<Brush>(key) {
+                            if is_type {
+                                self.update_value::<Brush, Value>(key, Value(value.clone()));
+                            }
+                        }
+
+                        if let Some(is_type) = self.is::<f32>(key) {
+                            if is_type {
+                                self.update_value::<f32, Value>(key, Value(value.clone()));
+                            }
+                        }
+
+                        if let Some(is_type) = self.is::<f64>(key) {
+                            if is_type {
+                                self.update_value::<f64, Value>(key, Value(value.clone()));
+                            }
+                        }
+
+                        if let Some(is_type) = self.is::<Thickness>(key) {
+                            if is_type {
+                                self.update_value::<Thickness, Value>(key, Value(value.clone()));
+                            }
+                        }
+
+                        if let Some(is_type) = self.is::<String>(key) {
+                            if is_type {
+                                self.update_value::<String, Value>(key, Value(value.clone()));
+                            }
+                        }
+                    }
                 }
             }
         }
