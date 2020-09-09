@@ -348,7 +348,7 @@ If you want to help improve OrbTk you submit your feedback in the issue tracker,
 * For widget development check ProgressBar or Slider as example
 * Add changes to changelog
 * Expand examples or create a new one if needed
-* `cargo fmt` add the end
+* `cargo fmt` at the end
 * Create PR
 
 ## License
