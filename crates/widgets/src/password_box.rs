@@ -131,6 +131,7 @@ impl Template for PasswordBox {
             .water_mark(id)
             .font(id)
             .font_size(id)
+            .localizable(false)
             .build(ctx);
 
         let cursor = Cursor::new().selection(id).build(ctx);

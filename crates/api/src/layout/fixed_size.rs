@@ -61,7 +61,7 @@ impl Layout for FixedSizeLayout {
             .try_get::<Image>("image")
             .map(|image| (image.width(), image.height()))
             .or_else(|| {
-                widget.try_get::<String>("text").and_then(|text| {
+                text(&widget).and_then(|text| {
                     let font = widget.get::<String>("font");
                     let font_size = widget.get::<f64>("font_size");
 
@@ -193,4 +193,22 @@ impl Layout for FixedSizeLayout {
         self.desired_size.borrow_mut().set_dirty(false);
         self.desired_size.borrow().size()
     }
+}
+
+fn text(widget: &WidgetContainer) -> Option<String> {
+    if let Some(localizable) = widget.try_get::<bool>("localizable") {
+        if *localizable {
+            if let Some(localized_text) = widget.try_get::<String>("localized_text") {
+                if !localized_text.is_empty() {
+                    return Some(localized_text.clone());
+                }
+            }
+        }
+    }
+
+    if let Some(text) = widget.try_get::<String>("text") {
+        return Some(text.clone());
+    }
+
+    None
 }

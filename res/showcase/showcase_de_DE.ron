@@ -1,0 +1,9 @@
+Dictionary (
+    words: {
+        "Hello": "Hallo",
+        "world": "Welt",
+        "I": "ich",
+        "love": "liebe",
+        "localization": "Lokalisierung",
+    }
+)

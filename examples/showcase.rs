@@ -1,10 +1,17 @@
 use orbtk::prelude::*;
 
+// German localization file.
+static SHOWCASE_DE_DE: &str = include_str!("../res/showcase/showcase_de_DE.ron");
+
 fn main() {
     // use this only if you want to run it as web application.
     orbtk::initialize();
 
-    let localization = RonLocalization::create().build();
+    // if no dictionary is set for the default language e.g. english the content of the text property will drawn.
+    let localization = RonLocalization::create()
+        .language("de_DE")
+        .dictionary("de_DE", SHOWCASE_DE_DE)
+        .build();
 
     Application::new()
         .localization(localization)
@@ -12,7 +19,7 @@ fn main() {
             Window::new()
                 .title("OrbTk - showcase example")
                 .position((100, 100))
-                .size(468, 730)
+                .size(600, 730)
                 .resizeable(true)
                 .child(MainView::new().build(ctx))
                 .build(ctx)
@@ -32,6 +39,7 @@ impl Template for MainView {
                 .tab("Items", ItemsView::new().build(ctx))
                 .tab("Layouts", LayoutView::new().build(ctx))
                 .tab("Image", ImageView::new().build(ctx))
+                .tab("Localization", LocalizationView::new().build(ctx))
                 .build(ctx),
         )
     }
@@ -302,7 +310,27 @@ impl Template for ImageView {
         self.child(
             ImageWidget::new()
                 .margin(16)
-                .image("res/orbtk_logo.png")
+                .image("res/showcase/orbtk_logo.png")
+                .build(ctx),
+        )
+    }
+}
+
+widget!(LocalizationView {});
+
+impl Template for LocalizationView {
+    fn template(self, _id: Entity, ctx: &mut BuildContext) -> Self {
+        self.child(
+            Stack::new()
+                .width(400)
+                .margin(16)
+                .spacing(8)
+                .child(TextBlock::new().text("Hello").build(ctx))
+                .child(TextBlock::new().text("world").build(ctx))
+                .child(TextBlock::new().text("I").build(ctx))
+                .child(TextBlock::new().text("love").build(ctx))
+                .child(TextBlock::new().text("localization").build(ctx))
+                .child(TextBlock::new().text("!").build(ctx))
                 .build(ctx),
         )
     }

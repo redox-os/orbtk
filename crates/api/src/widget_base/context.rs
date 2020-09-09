@@ -494,6 +494,15 @@ impl<'a> Context<'a> {
         // update on window to update all widgets in the tree
         self.window().update_dirty(true);
     }
+
+    /// Used to localize a text. If there is no localized text for the given key or no localization service `None` will be returned.
+    pub fn localize_text(&self, key: &str) -> Option<String> {
+        if let Some(localization) = &self.provider.localization {
+            return localization.borrow().text(key);
+        }
+
+        None
+    }
 }
 
 // -- Helpers --
