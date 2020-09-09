@@ -20,6 +20,7 @@ image = { version = "0.23",  default-features = false, features = ["ico"] }
 raqote = { git = "https://github.com/jrmuizel/raqote.git", default-features = false, optional = true }
 rusttype = { version = "0.9", optional = true }
 smallvec = "1"
+lazy_static = "1"
 
 # pathfinder dependencies
 pathfinder_canvas = { version = "0.5.0", features = ["pf-text"], optional = true }
