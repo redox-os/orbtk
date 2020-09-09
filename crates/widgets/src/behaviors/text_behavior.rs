@@ -54,7 +54,7 @@ pub struct TextBehaviorState {
     pressed: bool,
     self_update: bool,
     update_selection: bool,
-    mouse_up_count: usize,
+    //mouse_up_count: usize,
 }
 
 impl TextBehaviorState {
@@ -412,7 +412,7 @@ impl TextBehaviorState {
         TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
 
-    fn mouse_up(&mut self, ctx: &mut Context) {
+    fn mouse_up(&mut self, _ctx: &mut Context) {
         self.pressed = false;
 
         // todo need timer
