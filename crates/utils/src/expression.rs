@@ -139,15 +139,13 @@ impl Expression {
                     Some(Expression::Number(n, u)) => {
                         i += 1;
                         OnLinePos::try_from((*n, &u[..])).ok()?
-                    },
+                    }
                     _ => {
                         return None;
                     }
                 };
                 *displacement.y_mut() = match exprs.get(i) {
-                    Some(Expression::Number(n, u)) => {
-                        OnLinePos::try_from((*n, &u[..])).ok()?
-                    },
+                    Some(Expression::Number(n, u)) => OnLinePos::try_from((*n, &u[..])).ok()?,
                     _ => {
                         return None;
                     }
@@ -175,7 +173,8 @@ impl Expression {
             return None;
         } else {
             let mut coords = LinearGradientCoords::Angle {
-                displacement, angle: Angle::zero()
+                displacement,
+                angle: Angle::zero(),
             };
             if let Some(angle) = args[0].angle() {
                 coords = LinearGradientCoords::Angle {
@@ -187,8 +186,8 @@ impl Expression {
             kind = GradientKind::Linear(coords);
         }
         let mut stops = Vec::new();
-        for i in i..args.len() {
-            let stop = match args[i].gradient_stop() {
+        for arg in args.iter().skip(i) {
+            let stop = match arg.gradient_stop() {
                 Some(stop) => stop,
                 None => continue,
             };
@@ -438,12 +437,17 @@ impl Default for OnLinePos {
 }
 
 impl<N> TryFrom<(N, &str)> for OnLinePos
-where N: Into<f64> {
+where
+    N: Into<f64>,
+{
     type Error = ();
 
     fn try_from(value: (N, &str)) -> Result<Self, Self::Error> {
         let kind = OnLinePosKind::try_from(value.1)?;
-        Ok(OnLinePos { pos: (value.0).into(), kind })
+        Ok(OnLinePos {
+            pos: (value.0).into(),
+            kind,
+        })
     }
 }
 

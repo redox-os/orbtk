@@ -1,5 +1,5 @@
+use derive_more::{Add, Div, From, Mul, Sub};
 use std::f64::consts::PI;
-use derive_more::{Add, From, Sub, Mul, Div};
 
 /// The OrbTk way to manage angles
 #[derive(Add, Sub, Copy, From, Clone, Debug, PartialEq, Mul, Div)]

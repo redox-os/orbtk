@@ -1,4 +1,5 @@
 pub use self::alignment::*;
+pub use self::angle::*;
 pub use self::border::*;
 pub use self::brush::*;
 pub use self::color::*;
@@ -18,9 +19,9 @@ pub use self::text_baseline::*;
 pub use self::thickness::*;
 pub use self::value::*;
 pub use self::visibility::*;
-pub use self::angle::*;
 
 mod alignment;
+mod angle;
 mod border;
 mod brush;
 mod color;
@@ -42,4 +43,3 @@ mod text_baseline;
 mod thickness;
 mod value;
 mod visibility;
-mod angle;

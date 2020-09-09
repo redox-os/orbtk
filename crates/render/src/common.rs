@@ -1,5 +1,5 @@
-use std::f64::consts::PI;
 use crate::utils::*;
+use std::f64::consts::PI;
 
 /// Calculates the AABB of a arc.
 pub fn arc_rect(x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) -> Rectangle {

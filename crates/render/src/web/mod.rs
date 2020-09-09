@@ -544,8 +544,11 @@ impl RenderContext2D {
                 });
 
                 web_gradient
-            },
-            LinearGradientCoords::Angle { angle, displacement } => {
+            }
+            LinearGradientCoords::Angle {
+                angle,
+                displacement,
+            } => {
                 let z = linear_gradient_ends_from_angle(*angle, frame.size());
                 let disp = displacement.pixels(frame.size());
                 let start = frame.position() + frame.size() / 2.0 + -z + disp;

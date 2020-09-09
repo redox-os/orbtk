@@ -1,4 +1,4 @@
-use crate::{Color, OnLinePos, OnPlanePos, Point, Angle};
+use crate::{Angle, Color, OnLinePos, OnPlanePos, Point};
 
 /// Describes a position on a colorful gradient.
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -15,13 +15,19 @@ impl GradientStop {
 
 impl From<(OnLinePos, Color)> for GradientStop {
     fn from(d: (OnLinePos, Color)) -> Self {
-        Self { pos: Some(d.0), color: d.1 }
+        Self {
+            pos: Some(d.0),
+            color: d.1,
+        }
     }
 }
 
 impl From<(f64, Color)> for GradientStop {
     fn from(d: (f64, Color)) -> Self {
-        Self { pos: Some(OnLinePos::from_unit_percent(d.0)), color: d.1 }
+        Self {
+            pos: Some(OnLinePos::from_unit_percent(d.0)),
+            color: d.1,
+        }
     }
 }
 
@@ -55,17 +61,27 @@ pub enum LinearGradientCoords {
 impl LinearGradientCoords {
     /// Creates a `LinearGradientCoords` from its ends.
     pub fn from_ends(start: impl Into<Point>, end: impl Into<Point>) -> LinearGradientCoords {
-        LinearGradientCoords::Ends { start: start.into(), end: end.into() }
+        LinearGradientCoords::Ends {
+            start: start.into(),
+            end: end.into(),
+        }
     }
 
     /// Creates a `LinearGradientCoords` from its angle.
     pub fn from_angle(angle: Angle) -> LinearGradientCoords {
-        LinearGradientCoords::Angle { angle, displacement: OnPlanePos::default() }
+        LinearGradientCoords::Angle {
+            angle,
+            displacement: OnPlanePos::default(),
+        }
     }
 
     /// Sets the displacement if `self` is defined by its angle, otherwise, this does nothing.
     pub fn with_displacement(&mut self, displacement: impl Into<OnPlanePos>) -> Self {
-        if let LinearGradientCoords::Angle { angle: _, displacement: disp } = self {
+        if let LinearGradientCoords::Angle {
+            angle: _,
+            displacement: disp,
+        } = self
+        {
             *disp = displacement.into();
         }
         *self
