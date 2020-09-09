@@ -143,7 +143,7 @@ impl Template for ItemsView {
                         .count(count)
                         .items_builder(move |bc, index| {
                             let text = bc.get_widget(id).get::<Vec<String>>("items")[index].clone();
-                            TextBlock::new().margin((0, 0, 0, 2)).text(text).build(bc)
+                            TextBlock::new().v_align("center").text(text).build(bc)
                         })
                         .build(ctx),
                 )
@@ -153,7 +153,7 @@ impl Template for ItemsView {
                         .count(count)
                         .items_builder(move |bc, index| {
                             let text = bc.get_widget(id).get::<Vec<String>>("items")[index].clone();
-                            TextBlock::new().margin((0, 0, 0, 2)).text(text).build(bc)
+                            TextBlock::new().v_align("center").text(text).build(bc)
                         })
                         .build(ctx),
                 )
@@ -163,7 +163,7 @@ impl Template for ItemsView {
                         .count(count)
                         .items_builder(move |bc, index| {
                             let text = bc.get_widget(id).get::<Vec<String>>("items")[index].clone();
-                            TextBlock::new().margin((0, 0, 0, 2)).text(text).build(bc)
+                            TextBlock::new().v_align("center").text(text).build(bc)
                         })
                         .selected_index(0)
                         .build(ctx),
@@ -340,7 +340,7 @@ impl Template for LocalizationView {
                         .items_builder(move |bc, index| {
                             let text =
                                 bc.get_widget(id).get::<Vec<String>>("languages")[index].clone();
-                            TextBlock::new().margin((0, 0, 0, 2)).text(text).build(bc)
+                            TextBlock::new().v_align("center").text(text).build(bc)
                         })
                         .on_changed("selected_index", move |states, _| {
                             states.get_mut::<LocalizationState>(id).change_language();

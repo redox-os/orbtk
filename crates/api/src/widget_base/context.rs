@@ -505,13 +505,13 @@ impl<'a> Context<'a> {
         self.get_widget(root).update_dirty(true);
     }
 
-    /// Used to localize a text. If there is no localized text for the given key or no localization service `None` will be returned.
-    pub fn localize_text(&self, key: &str) -> Option<String> {
+    /// Used to localize a text. If there is no localized text for the given key or no localization service the key will be returned as result.
+    pub fn localize_text(&self, key: String) -> String {
         if let Some(localization) = &self.provider.localization {
             return localization.borrow().text(key);
         }
 
-        None
+        key
     }
 }
 

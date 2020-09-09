@@ -1,6 +1,6 @@
 use crate::{api::prelude::*, proc_macros::*, theme::prelude::*};
 
-/// Handles the translation of the text
+/// Handles the localization of the text.
 #[derive(Debug, Clone, Default, AsAny)]
 pub struct TextBlockState;
 
@@ -11,12 +11,9 @@ impl TextBlockState {
         }
 
         let text = TextBlock::text_clone(&ctx.widget());
+        let localized_text = ctx.localize_text(text);
 
-        if let Some(localized_text) = ctx.localize_text(text.as_str()) {
-            TextBlock::localized_text_set(&mut ctx.widget(), localized_text);
-        } else {
-            TextBlock::localized_text_set(&mut ctx.widget(), String::default());
-        }
+        TextBlock::localized_text_set(&mut ctx.widget(), localized_text);
     }
 }
 

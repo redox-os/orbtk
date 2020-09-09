@@ -70,14 +70,14 @@ impl Localization for RonLocalization {
         self.language = key.to_string();
     }
 
-    fn text(&self, key: &str) -> Option<String> {
+    fn text(&self, key: String) -> String {
         if let Some(dictionary) = self.dictionaries.get(&self.language) {
-            if let Some(word) = dictionary.words.get(key) {
-                return Some(word.clone());
+            if let Some(word) = dictionary.words.get(&key) {
+                return word.clone();
             }
         }
 
-        None
+        key
     }
 }
 
@@ -101,8 +101,8 @@ mod tests {
             .dictionary("de_DE", de_de)
             .build();
 
-        assert_eq!(localization.text("hello"), Some("Hallo".to_string()));
-        assert_eq!(localization.text("world"), Some("Welt".to_string()));
-        assert_eq!(localization.text("test"), None);
+        assert_eq!(localization.text("hello".to_string()), "Hallo".to_string());
+        assert_eq!(localization.text("world".to_string()), "Welt".to_string());
+        assert_eq!(localization.text("test".to_string()), "test".to_string());
     }
 }

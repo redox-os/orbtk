@@ -199,9 +199,7 @@ fn text(widget: &WidgetContainer) -> Option<String> {
     if let Some(localizable) = widget.try_get::<bool>("localizable") {
         if *localizable {
             if let Some(localized_text) = widget.try_get::<String>("localized_text") {
-                if !localized_text.is_empty() {
-                    return Some(localized_text.clone());
-                }
+                return Some(localized_text.clone());
             }
         }
     }
