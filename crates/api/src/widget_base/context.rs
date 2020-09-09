@@ -454,6 +454,7 @@ impl<'a> Context<'a> {
             self.theme.clone(),
             self.provider.shell_sender.clone(),
             create_fn,
+            self.provider.localization.clone(),
         );
         self.provider
             .shell_sender
@@ -492,6 +493,25 @@ impl<'a> Context<'a> {
 
         // update on window to update all widgets in the tree
         self.window().update_dirty(true);
+    }
+
+    /// Sets the current language.
+    pub fn set_language(&mut self, key: &str) {
+        if let Some(localization) = &self.provider.localization {
+            localization.borrow_mut().set_language(key);
+        }
+
+        let root = self.ecm.entity_store().root.unwrap();
+        self.get_widget(root).update_dirty(true);
+    }
+
+    /// Used to localize a text. If there is no localized text for the given key or no localization service the key will be returned as result.
+    pub fn localize_text(&self, key: String) -> String {
+        if let Some(localization) = &self.provider.localization {
+            return localization.borrow().text(key);
+        }
+
+        key
     }
 }
 

@@ -14,7 +14,7 @@ impl RenderObject for TextRenderObject {
     fn render_self(&self, ctx: &mut Context, global_position: &Point) {
         let (bounds, text, foreground, font, font_size, offset) = {
             let widget = ctx.widget();
-            let text = widget.clone::<String>("text");
+            let text = text(&widget);
             let offset = *widget.get::<f64>("offset");
 
             let txt = {
@@ -65,4 +65,22 @@ impl RenderObject for TextRenderObject {
 
         ctx.render_context_2_d().close_path();
     }
+}
+
+fn text(widget: &WidgetContainer) -> String {
+    if let Some(localizable) = widget.try_get::<bool>("localizable") {
+        if *localizable {
+            if let Some(localized_text) = widget.try_get::<String>("localized_text") {
+                if !localized_text.is_empty() {
+                    return localized_text.clone();
+                }
+            }
+        }
+    }
+
+    if let Some(text) = widget.try_get::<String>("text") {
+        return text.clone();
+    }
+
+    String::default()
 }

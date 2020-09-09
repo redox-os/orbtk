@@ -1,15 +1,25 @@
 use orbtk::prelude::*;
 
+// German localization file.
+static SHOWCASE_DE_DE: &str = include_str!("../res/showcase/showcase_de_DE.ron");
+
 fn main() {
     // use this only if you want to run it as web application.
     orbtk::initialize();
 
+    // if no dictionary is set for the default language e.g. english the content of the text property will drawn.
+    let localization = RonLocalization::create()
+        .language("en_US")
+        .dictionary("de_DE", SHOWCASE_DE_DE)
+        .build();
+
     Application::new()
+        .localization(localization)
         .window(|ctx| {
             Window::new()
                 .title("OrbTk - showcase example")
                 .position((100, 100))
-                .size(468, 730)
+                .size(600, 730)
                 .resizeable(true)
                 .child(MainView::new().build(ctx))
                 .build(ctx)
@@ -29,6 +39,7 @@ impl Template for MainView {
                 .tab("Items", ItemsView::new().build(ctx))
                 .tab("Layouts", LayoutView::new().build(ctx))
                 .tab("Image", ImageView::new().build(ctx))
+                .tab("Localization", LocalizationView::new().build(ctx))
                 .build(ctx),
         )
     }
@@ -132,7 +143,7 @@ impl Template for ItemsView {
                         .count(count)
                         .items_builder(move |bc, index| {
                             let text = bc.get_widget(id).get::<Vec<String>>("items")[index].clone();
-                            TextBlock::new().margin((0, 0, 0, 2)).text(text).build(bc)
+                            TextBlock::new().v_align("center").text(text).build(bc)
                         })
                         .build(ctx),
                 )
@@ -142,7 +153,7 @@ impl Template for ItemsView {
                         .count(count)
                         .items_builder(move |bc, index| {
                             let text = bc.get_widget(id).get::<Vec<String>>("items")[index].clone();
-                            TextBlock::new().margin((0, 0, 0, 2)).text(text).build(bc)
+                            TextBlock::new().v_align("center").text(text).build(bc)
                         })
                         .build(ctx),
                 )
@@ -152,7 +163,7 @@ impl Template for ItemsView {
                         .count(count)
                         .items_builder(move |bc, index| {
                             let text = bc.get_widget(id).get::<Vec<String>>("items")[index].clone();
-                            TextBlock::new().margin((0, 0, 0, 2)).text(text).build(bc)
+                            TextBlock::new().v_align("center").text(text).build(bc)
                         })
                         .selected_index(0)
                         .build(ctx),
@@ -299,10 +310,81 @@ impl Template for ImageView {
         self.child(
             ImageWidget::new()
                 .margin(16)
-                .image("res/orbtk_logo.png")
+                .image("res/showcase/orbtk_logo.png")
+                .build(ctx),
+        )
+    }
+}
+
+widget!(LocalizationView<LocalizationState> { languages: List, selected_index: i32 });
+
+impl Template for LocalizationView {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+        let languages = vec!["English".to_string(), "German".to_string()];
+        let count = languages.len();
+
+        self.languages(languages).selected_index(0).child(
+            Stack::new()
+                .width(120)
+                .margin(16)
+                .spacing(8)
+                .child(TextBlock::new().text("Hello").build(ctx))
+                .child(TextBlock::new().text("world").build(ctx))
+                .child(TextBlock::new().text("I").build(ctx))
+                .child(TextBlock::new().text("love").build(ctx))
+                .child(TextBlock::new().text("localization").build(ctx))
+                .child(TextBlock::new().text("!").build(ctx))
+                .child(
+                    ComboBox::new()
+                        .count(count)
+                        .items_builder(move |bc, index| {
+                            let text =
+                                bc.get_widget(id).get::<Vec<String>>("languages")[index].clone();
+                            TextBlock::new().v_align("center").text(text).build(bc)
+                        })
+                        .on_changed("selected_index", move |states, _| {
+                            states.get_mut::<LocalizationState>(id).change_language();
+                        })
+                        .selected_index(id)
+                        .build(ctx),
+                )
                 .build(ctx),
         )
     }
 }
 
 // [END] views
+
+// [START] states
+
+#[derive(Debug, Default, AsAny)]
+struct LocalizationState {
+    change_language: bool,
+}
+
+impl LocalizationState {
+    fn change_language(&mut self) {
+        self.change_language = true;
+    }
+}
+
+impl State for LocalizationState {
+    fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+        if !self.change_language {
+            return;
+        }
+
+        let index = *LocalizationView::selected_index_ref(&ctx.widget()) as usize;
+        let selected_language = LocalizationView::languages_ref(&ctx.widget())[index].clone();
+
+        match selected_language.as_str() {
+            "English" => ctx.set_language("en_US"),
+            "German" => ctx.set_language("de_DE"),
+            _ => {}
+        }
+
+        self.change_language = false;
+    }
+}
+
+// [END] states

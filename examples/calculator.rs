@@ -4,7 +4,7 @@ use orbtk::{
     theming::config::ThemeConfig,
 };
 
-static DARK_EXT: &str = include_str!("../res/calculator_dark.ron");
+static DARK_EXT: &str = include_str!("../res/calculator/calculator_dark.ron");
 
 fn theme() -> Theme {
     Theme::from_config(

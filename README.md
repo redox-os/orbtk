@@ -24,6 +24,7 @@ The main goals of OrbTk are speed, ease of use, and cross-platform compatibility
 * Custom theming engine
 * Dynamic theme switching
 * Integrated debugging tools
+* Localization
 
 ## Platforms
 
@@ -204,6 +205,74 @@ Theme (
 ```
 
 OrbTk will also provide a plain mechanism to style and theme widgets and UIs. 
+
+### Localization
+
+OrbTk provides the possibility to register a application wide localization service. A localization service has to 
+implement the [Localization](https://github.com/redox-os/orbtk/blob/develop/crates/localization/src/localization.rs) trait.
+
+*Example*
+
+```rust
+pub struct MyLocalization {
+    ...
+}
+
+impl Localization for MyLocalization {
+    /// Gets the current language by language key e.g. `en_US` or `de_DE`.
+    fn language(&self) -> &String {
+        ...
+    }
+
+    /// Sets the current language by key e.g. `en_US` or `de_DE`.
+    fn set_language(&mut self, key: &str) {
+        ...
+    }
+
+    /// Gets the translated text for the given key. If there is no given translation the `key` will be returned as result.
+    fn text(&self, key: String) -> String {
+        ...
+    }
+}
+```
+
+It is possible to register a localization service on an application. There is also a ready to use [RonLocalization](https://github.com/redox-os/orbtk/blob/develop/crates/localization/src/ron_localization/mod.rs) service, that can read localization dictionaries in the [RON](https://github.com/ron-rs/ron) format.
+
+*Example*
+
+```rust
+let de_de = r#"
+    Dictionary( 
+        words: {
+            "hello": "Hallo",
+            "world": "Welt",
+        }
+    )
+    "#;
+
+Application::new()
+    .localization(
+        RonLocalization::create()
+            // sets the initial language
+            .language("en_US")
+            // adds an language dictionary to the localization service. 
+            .dictionary("de_DE", de_de)
+            .build()
+    )
+    .window(|ctx| {
+        Window::new()
+            .title("OrbTk - showcase example")
+            .position((100, 100))
+            .size(600, 730)
+            .resizeable(true)
+            .child(TextBlock::new().text("hello").build(ctx))
+            .build(ctx)
+    })
+    .run();
+```
+In this example the text property with the value `hello` is the key of the localization service. If there is no localization service or no given dictionary for the current language the value of the property will drawn. It is possible to start the development of an complete without localization and add it later.
+
+To switch the language on runtime the `set_language` method of the [Context](https://github.com/redox-os/orbtk/blob/develop/crates/api/src/widget_base/context) struct can be used.
 
 ## Run Examples
 

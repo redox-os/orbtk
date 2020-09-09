@@ -5,6 +5,7 @@ use std::sync::mpsc;
 use dces::prelude::Entity;
 
 use crate::{
+    localization::Localization,
     shell::{Shell, ShellRequest},
     theming::Theme,
     widget_base::BuildContext,
@@ -27,6 +28,7 @@ pub struct Application {
     shell: Shell<WindowAdapter>,
     name: Box<str>,
     theme: Theme,
+    localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
 }
 
 impl Default for Application {
@@ -47,6 +49,14 @@ impl Application {
         self
     }
 
+    pub fn localization<L>(mut self, localization: L) -> Self
+    where
+        L: Localization + 'static,
+    {
+        self.localization = Some(Rc::new(RefCell::new(Box::new(localization))));
+        self
+    }
+
     /// Create a new application with the given name.
     pub fn from_name(name: impl Into<Box<str>>) -> Self {
         let (sender, receiver) = mpsc::channel();
@@ -59,6 +69,7 @@ impl Application {
             theme: crate::theme::default_theme(),
             #[cfg(feature = "light")]
             theme: crate::theme::light_theme(),
+            localization: None,
         }
     }
 
@@ -69,6 +80,7 @@ impl Application {
             self.theme.clone(),
             self.request_sender.clone(),
             create_fn,
+            self.localization.clone(),
         );
 
         self.shell

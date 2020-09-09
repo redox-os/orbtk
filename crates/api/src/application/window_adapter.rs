@@ -5,6 +5,7 @@ use dces::prelude::*;
 use crate::{
     application::*,
     event::*,
+    localization::Localization,
     properties::*,
     render,
     services::{Clipboard, Settings},
@@ -213,6 +214,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     theme: Theme,
     request_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
     create_fn: F,
+    localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
 ) -> (WindowAdapter, WindowSettings, mpsc::Receiver<WindowRequest>) {
     let app_name = app_name.into();
     let mut world: World<Tree, StringComponentStore, render::RenderContext2D> =
@@ -236,7 +238,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         .borrow_mut()
         .register("clipboard", Clipboard::new());
 
-    let context_provider = ContextProvider::new(sender, request_sender, app_name);
+    let context_provider = ContextProvider::new(sender, request_sender, app_name, localization);
 
     let window = {
         let overlay = Overlay::new().build(&mut BuildContext::new(

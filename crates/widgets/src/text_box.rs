@@ -70,6 +70,7 @@ impl Template for TextBox {
             .water_mark(id)
             .font(id)
             .font_size(id)
+            .localizable(false)
             .build(ctx);
 
         let cursor = Cursor::new().id(ID_CURSOR).selection(id).build(ctx);
