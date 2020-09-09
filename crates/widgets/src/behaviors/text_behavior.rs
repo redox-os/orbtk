@@ -415,17 +415,18 @@ impl TextBehaviorState {
     fn mouse_up(&mut self, ctx: &mut Context) {
         self.pressed = false;
 
-        if !self.focused(ctx) {
-            return;
-        }
+        // todo need timer
+        // if !self.focused(ctx) {
+        //     return;
+        // }
 
-        if self.mouse_up_count == 1 {
-            self.mouse_up_count = 0;
-            self.select_all(ctx);
-            return;
-        }
+        // if self.mouse_up_count == 1 {
+        //     self.mouse_up_count = 0;
+        //     self.select_all(ctx);
+        //     return;
+        // }
 
-        self.mouse_up_count += 1;
+        // self.mouse_up_count += 1;
     }
 
     // handles focus changed event
