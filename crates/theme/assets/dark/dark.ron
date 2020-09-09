@@ -33,8 +33,7 @@ Theme (
                 "height": 36,
                 "foreground": "$LINK_WATER",
                 "icon_brush": "$LINK_WATER",
-                //"background": "$LYNCH",
-                "background": "linear-gradient(red, blue)",
+                "background": "$LYNCH",
                 "border_radius": 4,
             }, 
             states: {

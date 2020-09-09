@@ -1,3 +1,4 @@
+use std::f64::consts::PI;
 use crate::utils::*;
 
 /// Calculates the AABB of a arc.
@@ -316,6 +317,38 @@ where
         }
     }
     r_stops
+}
+
+// Given an angle and a `Size` this function returns the ends of that gradient in the frame size gived
+pub fn linear_gradient_ends_from_angle(angle: Angle, size: Size) -> Point {
+    let mut angle = angle.to_radians();
+    angle += PI / 2.0; // Rotate 90° to make angle 0° point to top
+    let a = size.width();
+    let b = size.height();
+    let c = (b / a).atan();
+    let mut z;
+    // - = FALSE
+    // X------X X = T
+    // XX----XX     R
+    // XXX--XXX     U
+    // XXXXXXXX     E
+    // XXX--XXX
+    // XX----XX
+    // X------X
+    if (angle >= PI * 2.0 - c || angle <= c) || (angle >= PI - c && angle <= PI + c) {
+        // X: True
+        z = Point::new(a / 2.0, (a * angle.sin()) / (2.0 * angle.cos()));
+        if angle >= PI * 2.0 - c || angle <= c {
+            z = -z;
+        }
+    } else {
+        // -: False
+        z = Point::new((b * angle.cos()) / (2.0 * angle.sin()), b / 2.0);
+        if angle > c || angle < PI - c {
+            z = -z;
+        }
+    }
+    z
 }
 
 #[cfg(test)]
