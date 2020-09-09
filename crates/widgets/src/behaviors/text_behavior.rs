@@ -422,6 +422,7 @@ impl TextBehaviorState {
         if self.mouse_up_count == 1 {
             self.mouse_up_count = 0;
             self.select_all(ctx);
+            return;
         }
 
         self.mouse_up_count += 1;
