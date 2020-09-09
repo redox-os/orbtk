@@ -24,6 +24,7 @@ The main goals of OrbTk are speed, ease of use, and cross-platform compatibility
 * Custom theming engine
 * Dynamic theme switching
 * Integrated debugging tools
+* Localization
 
 ## Platforms
 
@@ -204,6 +205,32 @@ Theme (
 ```
 
 OrbTk will also provide a plain mechanism to style and theme widgets and UIs. 
+
+### Localization
+
+OrbTk provides different possibilities to deliver an UI in different languages. There is a build in localizer `RonLocalization` that can be used:
+
+```rust
+let localization = RonLocalization::create()
+        .language("en_US")
+        .dictionary("de_DE", MY_APP_DE_DE)
+        .build();
+
+Application::new()
+    .localization(localization)
+    .window(|ctx| {
+        Window::new()
+            .title("OrbTk - showcase example")
+            .position((100, 100))
+            .size(600, 730)
+            .resizeable(true)
+            .child(MainView::new().build(ctx))
+            .build(ctx)
+    })
+    .run();
+```
+
+Languages 
 
 ## Run Examples
 

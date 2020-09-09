@@ -495,6 +495,16 @@ impl<'a> Context<'a> {
         self.window().update_dirty(true);
     }
 
+    /// Sets the current language.
+    pub fn set_language(&mut self, key: &str) {
+        if let Some(localization) = &self.provider.localization {
+            localization.borrow_mut().set_language(key);
+        }
+
+        let root = self.ecm.entity_store().root.unwrap();
+        self.get_widget(root).update_dirty(true);
+    }
+
     /// Used to localize a text. If there is no localized text for the given key or no localization service `None` will be returned.
     pub fn localize_text(&self, key: &str) -> Option<String> {
         if let Some(localization) = &self.provider.localization {

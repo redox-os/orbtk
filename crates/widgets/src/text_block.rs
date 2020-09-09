@@ -14,12 +14,18 @@ impl TextBlockState {
 
         if let Some(localized_text) = ctx.localize_text(text.as_str()) {
             TextBlock::localized_text_set(&mut ctx.widget(), localized_text);
+        } else {
+            TextBlock::localized_text_set(&mut ctx.widget(), String::default());
         }
     }
 }
 
 impl State for TextBlockState {
     fn init(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+        self.localize(ctx);
+    }
+
+    fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
         self.localize(ctx);
     }
 }

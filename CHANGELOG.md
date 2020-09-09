@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Select all character on text input by mouse double click
 * Replace String16 with std::string::String
 * Raise on_changed callback also on shared widgets
+* Localization
 
 ### 0.3.1-alpha3
 
