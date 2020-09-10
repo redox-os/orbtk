@@ -225,7 +225,7 @@ impl RenderContext2D {
                     }
                 )
             } else {
-                //  @{&self.canvas_render_context_2_d}.drawImage(img, @{&x}, @{&y});
+                @{&self.canvas_render_context_2_d}.drawImage(img, @{&x}, @{&y});
             }
         );
     }

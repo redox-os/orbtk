@@ -16,6 +16,7 @@ height = 730
 name = "showcase"
 width = 468
 height = 730
+assets = "res/showcase/"
     [[apps.fonts]]
     font_family = "MaterialIcons-Regular"
     src = "crates/theme/src/fonts/MaterialIcons.ttf"
@@ -30,12 +31,6 @@ height = 730
 name = "calculator"
 width = 212
 height = 360
-
-[[apps]]
-name = "image"
-width = 800
-height = 420
-assets = "res/"
 
 [[apps]]
 name = "canvas"
