@@ -242,10 +242,14 @@ impl Pager {
             ctx.remove_child_from(child, entity);
         }
 
-        if current_index >= index && current_index > 0 {
-            // callback will handle the rest like navigation
-            Pager::current_index_set(&mut ctx.get_widget(entity), current_index - 1);
+        if let Some(count) = ctx.widget().children_count() {
+            if (index == current_index && index == count - 1) || index < current_index {
+                Pager::navigate(ctx, entity, current_index - 1);
+                return;
+            }
         }
+
+        Pager::navigate(ctx, entity, current_index);
     }
 
     /// Pushes the given entity on the end of the pagers children.
