@@ -13,7 +13,6 @@ enum PagerAction {
 
 #[derive(Default, Clone, Debug, AsAny)]
 pub struct PagerState {
-    stack: Vec<Entity>,
     current_index: usize,
     actions: VecDeque<PagerAction>,
 }
@@ -47,9 +46,28 @@ impl PagerState {
 
 impl State for PagerState {
     fn init(&mut self, _registry: &mut Registry, ctx: &mut Context) {
-        for child in self.stack.pop() {
-            ctx.append_child_entity(child);
+        // todo check if current_index out of bounds and correct
+
+        if let Some(count) = ctx.widget().children_count() {
+            for i in 0..count {
+                // make child on the current index always visible (todo: use current_index)
+                if i == 0 {
+                    if let Some(child) = &mut ctx.try_child_from_index(i) {
+                        child.set("visibility", Visibility::Visible);
+                    }
+
+                    continue;
+                }
+
+                // collapse all other children
+                if let Some(child) = &mut ctx.try_child_from_index(i) {
+                    child.set("visibility", Visibility::Collapsed);
+                }
+            }
         }
+       
+
+            // todo initial next previous enabled
     }
 
     fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
@@ -69,32 +87,35 @@ impl State for PagerState {
 
 widget!(
     Pager<PagerState> {
-        cached: bool,
         current_index: usize
     }
 );
 
 impl Pager {
-    /// Appends an widget as entity to the navigation stack.
-    pub fn push<W: Widget>(mut self, child: Entity) -> Self {
-        self.state_mut().stack.push(child);
-        self
-    }
-
     /// Navigates to the next child. If the current child is the last in the list nothing will happen.
-
-    // todo use Context as parameter and entity!!!
     pub fn next(ctx: &mut Context, entity: Entity) {
         Pager::panics_on_wrong_type(&ctx.get_widget(entity));
 
         let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
+        let next_index = current_index + 1;
        
         if let Some(count) = ctx.get_widget(entity).children_count() {
-            if current_index + 1 >= count {
+            if next_index >= count {
                 return;
             }
 
-            Pager::current_index_set(&mut ctx.get_widget(entity), current_index + 1);
+            // todo next, previous enabled flags or methods
+            if let Some(child) = &mut ctx.try_child_from_index(current_index) {
+                child.set("visibility", Visibility::Collapsed);
+            }
+
+            if let Some(child) = &mut ctx.try_child_from_index(next_index) {
+                child.set("visibility", Visibility::Visible);
+            }
+
+            Pager::current_index_set(&mut ctx.get_widget(entity), next_index);
+
+            // next index add end set next enabled to false
         }
     }
 
@@ -113,22 +134,27 @@ impl Pager {
 
     /// Navigates to the given index. Is the index out of bounds nothing will happen.
     pub fn navigate(ctx: &mut Context, entity: Entity, index: usize) {
+        // update enabled next / previous
         Pager::panics_on_wrong_type(&ctx.get_widget(entity));
     }
 
     /// Removes the child on the given index. If the index is out of bounds nothing will happen.
     pub fn remove(ctx: &mut Context, entity: Entity, index: usize) {
+        // update enabled next / previous
         Pager::panics_on_wrong_type(&ctx.get_widget(entity));
     }
 
     /// Inserts a child on the given position.
     pub fn insert(ctx: &mut Context, entity: Entity, index: usize, child: Entity) {
+        // update enabled next / previous
         Pager::panics_on_wrong_type(&ctx.get_widget(entity));
     }
 }
 
 impl Template for Pager {
     fn template(self, _id: Entity, _context: &mut BuildContext) -> Self {
-        self.name("Pager").cached(true)
+        self.name("Pager")
+
+        // todo current index changed => 
     }
 }
