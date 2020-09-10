@@ -194,6 +194,8 @@ impl Pager {
         // update enabled next / previous
         Pager::panics_on_wrong_type(&ctx.get_widget(entity));
     }
+
+    // todo add push method
 }
 
 impl Template for Pager {
