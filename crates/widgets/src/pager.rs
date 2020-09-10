@@ -203,6 +203,29 @@ impl Pager {
     pub fn remove(ctx: &mut Context, entity: Entity, index: usize) {
         // update enabled next / previous
         Pager::panics_on_wrong_type(&ctx.get_widget(entity));
+
+        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
+
+        let child_entity = {
+            if let Some(child) = ctx.try_child_from_index(index) {
+                Some(child.entity())
+            } else {
+                None
+            }
+        };
+
+        if let Some(child) = child_entity {
+            ctx.remove_child_from(child, entity);
+        }
+
+        if let Some(count) = ctx.widget().children_count() {
+            if (index == current_index && index == count - 1) || index < current_index {
+                Pager::navigate(ctx, entity, current_index - 1);
+                return;
+            }
+        }
+
+        Pager::navigate(ctx, entity, current_index);
     }
 
     /// Inserts a child on the given position.
