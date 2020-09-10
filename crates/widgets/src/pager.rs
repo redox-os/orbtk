@@ -162,17 +162,24 @@ impl Pager {
         // update enabled next / previous
         Pager::panics_on_wrong_type(&ctx.get_widget(entity));
 
-        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
-
         if let Some(count) = ctx.get_widget(entity).children_count() {
             if index >= count {
                 return;
             }
 
-            if let Some(child) = &mut ctx.try_child_from_index(current_index) {
-                child.set("visibility", Visibility::Collapsed);
+            // hide the last visible child
+            if let Some(count) = ctx.widget().children_count() {
+                for i in 0..count {
+                    if let Some(child) = &mut ctx.try_child_from_index(i) {
+                        if *child.get::<Visibility>("visibility") != Visibility::Visible {
+                            continue;
+                        }
+    
+                        child.set("visibility", Visibility::Collapsed);
+                    }
+                }
             }
-
+           
             if let Some(child) = &mut ctx.try_child_from_index(index) {
                 child.set("visibility", Visibility::Visible);
             }
