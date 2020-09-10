@@ -155,6 +155,6 @@ impl Template for Pager {
     fn template(self, _id: Entity, _context: &mut BuildContext) -> Self {
         self.name("Pager")
 
-        // todo current index changed => 
+        // todo current index changed => navigate
     }
 }
