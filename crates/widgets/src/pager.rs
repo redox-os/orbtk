@@ -147,13 +147,13 @@ impl Pager {
 
     /// Navigates to the next child. If the current child is the last in the list nothing will happen.
     pub fn next(ctx: &mut Context, entity: Entity) {
-        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity)); 
+        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
         Pager::navigate(ctx, entity, current_index + 1);
     }
 
     /// Navigates to the previous child. If the current child is the first in the list nothing will happen.
     pub fn previous(ctx: &mut Context, entity: Entity) {
-        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity)); 
+        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
         Pager::navigate(ctx, entity, current_index - 1);
     }
 
@@ -161,6 +161,15 @@ impl Pager {
     pub fn navigate(ctx: &mut Context, entity: Entity, index: usize) {
         // update enabled next / previous
         Pager::panics_on_wrong_type(&ctx.get_widget(entity));
+
+        // if the index is the index of the current visible items it returns
+        if let Some(child) = ctx.try_child_from_index(index) {
+            if *child.get::<Visibility>("visibility") == Visibility::Visible {
+                return;
+            }
+        }
+
+        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
 
         if let Some(count) = ctx.get_widget(entity).children_count() {
             if index >= count {
@@ -207,8 +216,13 @@ impl Pager {
 
 impl Template for Pager {
     fn template(self, _id: Entity, _context: &mut BuildContext) -> Self {
-        self.name("Pager").on_changed("current_index", |states, id| {
-            states.get_mut::<PagerState>(id).navigate_to_current_index();
-        })
+        self.name("Pager")
+            .on_changed("current_index", |states, id| {
+                states.get_mut::<PagerState>(id).navigate_to_current_index();
+            })
     }
 }
+
+// todo crash on previous
+// next_enabled does not work
+// maybe check in state if internal change of current index
