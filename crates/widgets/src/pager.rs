@@ -55,12 +55,12 @@ impl State for PagerState {
     fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
         if let Some(action) = self.actions.pop_front() {
             match action {
-                PagerAction::Next => Pager::next(&mut ctx.widget()),
-                PagerAction::Previous => Pager::previous(&mut ctx.widget()),
-                PagerAction::Navigate(index) => Pager::navigate(&mut ctx.widget(), index),
-                PagerAction::Remove(index) => Pager::remove(&mut ctx.widget(), index),
+                PagerAction::Next => Pager::next(ctx, ctx.entity),
+                PagerAction::Previous => Pager::previous(ctx, ctx.entity),
+                PagerAction::Navigate(index) => Pager::navigate(ctx, ctx.entity, index),
+                PagerAction::Remove(index) => Pager::remove(ctx, ctx.entity, index),
                 PagerAction::Insert(index, entity) => {
-                    Pager::insert(&mut ctx.widget(), index, entity)
+                    Pager::insert(ctx, ctx.entity, index, entity)
                 }
             }
         }
@@ -82,30 +82,48 @@ impl Pager {
     }
 
     /// Navigates to the next child. If the current child is the last in the list nothing will happen.
-    pub fn next(ctx: &mut WidgetContainer) {
-        Pager::panics_on_wrong_type(ctx);
 
-        let current_index = *Pager::current_index_ref(ctx);
+    // todo use Context as parameter and entity!!!
+    pub fn next(ctx: &mut Context, entity: Entity) {
+        Pager::panics_on_wrong_type(&ctx.get_widget(entity));
+
+        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
+       
+        if let Some(count) = ctx.get_widget(entity).children_count() {
+            if current_index + 1 >= count {
+                return;
+            }
+
+            Pager::current_index_set(&mut ctx.get_widget(entity), current_index + 1);
+        }
     }
 
     /// Navigates to the previous child. If the current child is the first in the list nothing will happen.
-    pub fn previous(ctx: &mut WidgetContainer) {
-        Pager::panics_on_wrong_type(ctx);
+    pub fn previous(ctx: &mut Context, entity: Entity) {
+        Pager::panics_on_wrong_type(&ctx.get_widget(entity));
+
+        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
+
+        if current_index == 0 {
+            return;
+        }
+
+        Pager::current_index_set(&mut ctx.get_widget(entity), current_index - 1);
     }
 
     /// Navigates to the given index. Is the index out of bounds nothing will happen.
-    pub fn navigate(ctx: &mut WidgetContainer, index: usize) {
-        Pager::panics_on_wrong_type(ctx);
+    pub fn navigate(ctx: &mut Context, entity: Entity, index: usize) {
+        Pager::panics_on_wrong_type(&ctx.get_widget(entity));
     }
 
     /// Removes the child on the given index. If the index is out of bounds nothing will happen.
-    pub fn remove(ctx: &mut WidgetContainer, index: usize) {
-        Pager::panics_on_wrong_type(ctx);
+    pub fn remove(ctx: &mut Context, entity: Entity, index: usize) {
+        Pager::panics_on_wrong_type(&ctx.get_widget(entity));
     }
 
     /// Inserts a child on the given position.
-    pub fn insert(ctx: &mut WidgetContainer, index: usize, entity: Entity) {
-        Pager::panics_on_wrong_type(ctx);
+    pub fn insert(ctx: &mut Context, entity: Entity, index: usize, child: Entity) {
+        Pager::panics_on_wrong_type(&ctx.get_widget(entity));
     }
 }
 
