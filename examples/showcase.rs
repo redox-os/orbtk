@@ -19,7 +19,7 @@ fn main() {
             Window::new()
                 .title("OrbTk - showcase example")
                 .position((100, 100))
-                .size(600, 730)
+                .size(640, 730)
                 .resizeable(true)
                 .child(MainView::new().build(ctx))
                 .build(ctx)
@@ -40,6 +40,7 @@ impl Template for MainView {
                 .tab("Layouts", LayoutView::new().build(ctx))
                 .tab("Image", ImageView::new().build(ctx))
                 .tab("Localization", LocalizationView::new().build(ctx))
+                .tab("Navigation", NavigationView::new().build(ctx))
                 .build(ctx),
         )
     }
@@ -346,6 +347,77 @@ impl Template for LocalizationView {
                             states.get_mut::<LocalizationState>(id).change_language();
                         })
                         .selected_index(id)
+                        .build(ctx),
+                )
+                .build(ctx),
+        )
+    }
+}
+
+widget!(NavigationView {});
+
+impl Template for NavigationView {
+    fn template(self, _id: Entity, ctx: &mut BuildContext) -> Self {
+        let pager = Pager::new()
+            .child(
+                Container::new()
+                    .padding(8)
+                    .background("lynch")
+                    .child(TextBlock::new().text("Page 1").build(ctx))
+                    .build(ctx),
+            )
+            .child(
+                Container::new()
+                    .padding(8)
+                    .background("goldendream")
+                    .child(
+                        TextBlock::new()
+                            .foreground("black")
+                            .text("Page 2")
+                            .build(ctx),
+                    )
+                    .build(ctx),
+            )
+            .child(
+                Container::new()
+                    .background("linkwater")
+                    .child(
+                        TextBlock::new()
+                            .foreground("black")
+                            .text("Page 3")
+                            .build(ctx),
+                    )
+                    .build(ctx),
+            )
+            .build(ctx);
+
+        self.child(
+            Grid::new()
+                .margin(16)
+                .rows(Rows::create().push("*").push(8).push("auto").build())
+                .child(pager)
+                .child(
+                    Button::new()
+                        .style("button_single_content")
+                        .icon(material_icons_font::MD_KEYBOARD_ARROW_LEFT)
+                        .h_align("start")
+                        .attach(Grid::row(2))
+                        .on_click(move |states, _| {
+                            states.get_mut::<PagerState>(pager).previous();
+                            true
+                        })
+                        .build(ctx),
+                )
+                .child(
+                    Button::new()
+                        .style("button_single_content")
+                        .icon(material_icons_font::MD_KEYBOARD_ARROW_RIGHT)
+                        .h_align("end")
+                        .attach(Grid::row(2))
+                        .on_click(move |states, _| {
+                            states.get_mut::<PagerState>(pager).next();
+                            true
+                        })
                         .build(ctx),
                 )
                 .build(ctx),

@@ -10,7 +10,7 @@ enum PagerAction {
     Navigate(usize),
     NavigateToCurrent,
     Remove(usize),
-    Insert(usize, Entity),
+    Push(Entity),
 }
 
 #[derive(Default, Clone, Debug, AsAny)]
@@ -45,9 +45,9 @@ impl PagerState {
         self.actions.push_front(PagerAction::Remove(index));
     }
 
-    /// Inserts a child on the given position.
-    pub fn insert(&mut self, index: usize, entity: Entity) {
-        self.actions.push_front(PagerAction::Insert(index, entity));
+    /// Pushes the given entity on the end of the pagers children.
+    pub fn push(&mut self, entity: Entity) {
+        self.actions.push_front(PagerAction::Push(entity));
     }
 }
 
@@ -83,7 +83,7 @@ impl State for PagerState {
                 PagerAction::Previous => Pager::previous(ctx, ctx.entity),
                 PagerAction::Navigate(index) => Pager::navigate(ctx, ctx.entity, index),
                 PagerAction::Remove(index) => Pager::remove(ctx, ctx.entity, index),
-                PagerAction::Insert(index, entity) => Pager::insert(ctx, ctx.entity, index, entity),
+                PagerAction::Push(entity) => Pager::push(ctx, ctx.entity, entity),
                 PagerAction::NavigateToCurrent => {
                     let current_index = Pager::correct_current_index(ctx);
                     Pager::navigate(ctx, ctx.entity, current_index);
@@ -96,10 +96,34 @@ impl State for PagerState {
 widget!(
     /// `Pager` is a navigation widget that provides a stack based navigation.
     ///
+    /// There are two way to interact with the `Pager`. By using the `PagerState` and by using the associated functions of `Pager`.
+    /// It is suggested to use the state methods on callbacks and the associated functions inside of states of other widgets.
+    ///
     /// # Example
     ///
     /// ```rust
-    /// tbd
+    /// let pager = Pager::new()
+    ///     .child(TextBlock::new().text("Page 1").build(ctx))
+    ///     .child(TextBlock::new().text("Page 2").build(ctx))
+    ///     .build(ctx);
+    ///
+    /// let next_button = Button::new()
+    ///     .enabled(("next_enabled", pager))
+    ///     .text("next")
+    ///     .on_click(move |states, _| {
+    ///         states.get_mut::<PagerState>(pager).next();
+    ///         true
+    ///     })
+    ///     .build(ctx);
+    ///
+    /// let previous_button = Button::new()
+    ///     .enabled(("previous_enabled", pager))
+    ///     .text("previous")
+    ///     .on_click(move |states, _| {
+    ///         states.get_mut::<PagerState>(pager).previous();
+    ///         true
+    ///     })
+    ///     .build(ctx);
     /// ```
     Pager<PagerState> {
         /// Defines the index of the current shown child.
@@ -117,16 +141,16 @@ impl Pager {
     // checks and updates if next and previous can be executed.
     fn update_next_previous_enabled(ctx: &mut Context, current_index: usize) {
         if current_index == 0 {
-            Pager::next_enabled_set(&mut ctx.widget(), false);
+            Pager::previous_enabled_set(&mut ctx.widget(), false);
         } else {
-            Pager::next_enabled_set(&mut ctx.widget(), true);
+            Pager::previous_enabled_set(&mut ctx.widget(), true);
         }
 
         if let Some(count) = ctx.widget().children_count() {
             if current_index == count - 1 {
-                Pager::previous_enabled_set(&mut ctx.widget(), false);
+                Pager::next_enabled_set(&mut ctx.widget(), false);
             } else {
-                Pager::previous_enabled_set(&mut ctx.widget(), true);
+                Pager::next_enabled_set(&mut ctx.widget(), true);
             }
         }
     }
@@ -147,13 +171,16 @@ impl Pager {
 
     /// Navigates to the next child. If the current child is the last in the list nothing will happen.
     pub fn next(ctx: &mut Context, entity: Entity) {
-        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity)); 
+        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
         Pager::navigate(ctx, entity, current_index + 1);
     }
 
     /// Navigates to the previous child. If the current child is the first in the list nothing will happen.
     pub fn previous(ctx: &mut Context, entity: Entity) {
-        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity)); 
+        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
+        if current_index == 0 {
+            return;
+        }
         Pager::navigate(ctx, entity, current_index - 1);
     }
 
@@ -161,6 +188,13 @@ impl Pager {
     pub fn navigate(ctx: &mut Context, entity: Entity, index: usize) {
         // update enabled next / previous
         Pager::panics_on_wrong_type(&ctx.get_widget(entity));
+
+        // if the index is the index of the current visible items it returns
+        if let Some(child) = ctx.try_child_from_index(index) {
+            if *child.get::<Visibility>("visibility") == Visibility::Visible {
+                return;
+            }
+        }
 
         if let Some(count) = ctx.get_widget(entity).children_count() {
             if index >= count {
@@ -174,12 +208,12 @@ impl Pager {
                         if *child.get::<Visibility>("visibility") != Visibility::Visible {
                             continue;
                         }
-    
+
                         child.set("visibility", Visibility::Collapsed);
                     }
                 }
             }
-           
+
             if let Some(child) = &mut ctx.try_child_from_index(index) {
                 child.set("visibility", Visibility::Visible);
             }
@@ -192,23 +226,43 @@ impl Pager {
 
     /// Removes the child on the given index. If the index is out of bounds nothing will happen.
     pub fn remove(ctx: &mut Context, entity: Entity, index: usize) {
-        // update enabled next / previous
         Pager::panics_on_wrong_type(&ctx.get_widget(entity));
+
+        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
+
+        let child_entity = {
+            if let Some(child) = ctx.try_child_from_index(index) {
+                Some(child.entity())
+            } else {
+                None
+            }
+        };
+
+        if let Some(child) = child_entity {
+            ctx.remove_child_from(child, entity);
+        }
+
+        if current_index >= index && current_index > 0 {
+            // callback will handle the rest like navigation
+            Pager::current_index_set(&mut ctx.get_widget(entity), current_index - 1);
+        }
     }
 
-    /// Inserts a child on the given position.
-    pub fn insert(ctx: &mut Context, entity: Entity, index: usize, child: Entity) {
-        // update enabled next / previous
+    /// Pushes the given entity on the end of the pagers children.
+    pub fn push(ctx: &mut Context, entity: Entity, child: Entity) {
         Pager::panics_on_wrong_type(&ctx.get_widget(entity));
-    }
 
-    // todo add push method
+        ctx.append_child_entity_to(child, entity);
+        let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
+        Pager::update_next_previous_enabled(ctx, current_index);
+    }
 }
 
 impl Template for Pager {
     fn template(self, _id: Entity, _context: &mut BuildContext) -> Self {
-        self.name("Pager").on_changed("current_index", |states, id| {
-            states.get_mut::<PagerState>(id).navigate_to_current_index();
-        })
+        self.name("Pager")
+            .on_changed("current_index", |states, id| {
+                states.get_mut::<PagerState>(id).navigate_to_current_index();
+            })
     }
 }
