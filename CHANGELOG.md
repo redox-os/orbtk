@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Raise on_changed callback also on shared widgets
 * Localization
 * Pager navigation widget
+* Custom theme names for types Brush, String, Thickness, f32, f64
 
 ### 0.3.1-alpha3
 

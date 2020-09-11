@@ -5,13 +5,28 @@
 
 * showcase: an overview of all widgets provided by OrbTk
 * calculator: calculator example
+
+    ![calculator](https://gitlab.redox-os.org/redox-os/assets/-/raw/master/screenshots/Calculator.png)
+
 * canvas: use third party render library in canvas
+
+    ![canvas](https://gitlab.redox-os.org/redox-os/assets/-/raw/master/screenshots/orbtk_examples/canvas_example.jpg)
+
 * login: PasswordBox showcase with a login form
 * minimal: minimal example
 * multi_window: multi window example
+
+    ![multi_window](https://gitlab.redox-os.org/redox-os/assets/-/raw/master/screenshots/orbtk_examples/multi_window.jpg)
+
 * overlay: draw widgets on the top
+
+    ![overlay](https://gitlab.redox-os.org/redox-os/assets/-/raw/master/screenshots/orbtk_examples/overlay_example.jpg)
+
 * popup: show how to open and use a popup
 * settings: use registry and settings service (load / save)
+
+    ![settings](https://gitlab.redox-os.org/redox-os/assets/-/raw/master/screenshots/orbtk_examples/settings_example.jpg)
+
 * stack: stack layout example
 * widgets: widget overview
 
