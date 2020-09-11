@@ -380,6 +380,7 @@ impl Template for NavigationView {
             )
             .child(
                 Container::new()
+                    .padding(8)
                     .background("linkwater")
                     .child(
                         TextBlock::new()
