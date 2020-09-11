@@ -553,6 +553,20 @@ impl<'a> WidgetContainer<'a> {
             String::from("unknown")
         }
     }
+
+    /// Returns the count of the children.
+    pub fn children_count(&mut self) -> Option<usize> {
+        if let Some(children) = self.ecm.entity_store().children.get(&self.current_node) {
+            return Some(children.len());
+        }
+
+        None
+    }
+
+    /// Mutable access to the children entities of the widget.
+    pub fn children_mut(&mut self) -> Option<&mut Vec<Entity>> {
+        self.ecm.entity_store().children.get_mut(&self.current_node)
+    }
 }
 
 impl<'a> From<&'a mut super::Context<'_>> for WidgetContainer<'a> {
