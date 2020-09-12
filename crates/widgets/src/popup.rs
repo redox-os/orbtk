@@ -223,7 +223,7 @@ impl Template for Popup {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-        RectangleRenderObject.into()
+        Box::new(PopupRenderObject::new())
     }
 
     fn layout(&self) -> Box<dyn Layout> {

@@ -16,7 +16,7 @@ use super::{component, component_or_default, component_try_mut, try_component, L
 #[derive(Default, IntoLayout)]
 pub struct PopupLayout {
     desired_size: RefCell<DirtySize>,
-    old_alignment: Cell<(Alignment, Alignment)>,
+    //old_alignment: Cell<(Alignment, Alignment)>,
 }
 
 impl PopupLayout {
@@ -93,7 +93,7 @@ impl Layout for PopupLayout {
                 component_or_default(ecm, entity, "relative_position");
 
             let new_popup_size = match relative_position {
-                RelativePosition::Left(distance) => {
+                RelativePosition::Left(_distance) => {
                     let current_v_align: Alignment = component(ecm, entity, "v_align");
 
                     let width = current_bounds.width();
@@ -106,7 +106,7 @@ impl Layout for PopupLayout {
 
                     current_constraint.perform((width, height))
                 }
-                RelativePosition::Right(distance) => {
+                RelativePosition::Right(_distance) => {
                     let current_v_align: Alignment = component(ecm, entity, "v_align");
 
                     let width = current_bounds.width();
@@ -119,7 +119,7 @@ impl Layout for PopupLayout {
 
                     current_constraint.perform((width, height))
                 }
-                RelativePosition::Top(distance) => {
+                RelativePosition::Top(_distance) => {
                     let current_h_align: Alignment = component(ecm, entity, "h_align");
 
                     let width = current_h_align.align_measure(
@@ -132,7 +132,7 @@ impl Layout for PopupLayout {
 
                     current_constraint.perform((width, height))
                 }
-                RelativePosition::Bottom(distance) => {
+                RelativePosition::Bottom(_distance) => {
                     let current_h_align: Alignment = component(ecm, entity, "h_align");
 
                     let width = current_h_align.align_measure(
