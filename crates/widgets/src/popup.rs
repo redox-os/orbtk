@@ -220,17 +220,6 @@ impl Template for Popup {
             .on_changed("open", move |states, _| {
                 states.get_mut::<PopupState>(id).update_visibility()
             })
-        /*
-        .on_changed(move |states, entity, property| {
-            match property {
-                //"relative_position"|"target"|"v_align"|"h_align"=>states.get_mut::<PopupState>(entity).update_position(),
-                "visibility" | "open" => {
-                    states.get_mut::<PopupState>(entity).update_visibility()
-                }
-                _ => (),
-            }
-        })
-        */
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

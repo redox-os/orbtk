@@ -10,7 +10,7 @@ use crate::{
     utils::prelude::*,
 };
 
-use super::{component, component_try_mut, try_component, component_or_default, Layout};
+use super::{component, component_or_default, component_try_mut, try_component, Layout};
 
 /// Add padding to the widget.
 #[derive(Default, IntoLayout)]
@@ -38,48 +38,47 @@ impl Layout for PopupLayout {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return *self.desired_size.borrow();
         }
-/*
-        if let Some(target) = try_component::<u32>(ecm, entity, "target") {
-            let target_bounds = component::<Rectangle>(ecm, target.into(), "bounds");
-            component_try_mut::<Constraint>(ecm, entity, "constraint")
-                .unwrap()
-                .set_width(target_bounds.width());
-        }
+        /*
+                if let Some(target) = try_component::<u32>(ecm, entity, "target") {
+                    let target_bounds = component::<Rectangle>(ecm, target.into(), "bounds");
+                    component_try_mut::<Constraint>(ecm, entity, "constraint")
+                        .unwrap()
+                        .set_width(target_bounds.width());
+                }
 
-        let horizontal_alignment: Alignment = component(ecm, entity, "h_align");
-        let vertical_alignment: Alignment = component(ecm, entity, "v_align");
+                let horizontal_alignment: Alignment = component(ecm, entity, "h_align");
+                let vertical_alignment: Alignment = component(ecm, entity, "v_align");
 
-        if horizontal_alignment != self.old_alignment.get().1
-            || vertical_alignment != self.old_alignment.get().0
-        {
-            self.desired_size.borrow_mut().set_dirty(true);
-        }
+                if horizontal_alignment != self.old_alignment.get().1
+                    || vertical_alignment != self.old_alignment.get().0
+                {
+                    self.desired_size.borrow_mut().set_dirty(true);
+                }
 
-        let constraint: Constraint = component(ecm, entity, "constraint");
-        if constraint.width() > 0.0 {
-            self.desired_size.borrow_mut().set_width(constraint.width());
-        }
+                let constraint: Constraint = component(ecm, entity, "constraint");
+                if constraint.width() > 0.0 {
+                    self.desired_size.borrow_mut().set_width(constraint.width());
+                }
 
-        if constraint.height() > 0.0 {
-            self.desired_size
-                .borrow_mut()
-                .set_height(constraint.height());
-        }
+                if constraint.height() > 0.0 {
+                    self.desired_size
+                        .borrow_mut()
+                        .set_height(constraint.height());
+                }
 
-        let padding: Thickness = component(ecm, entity, "padding");
-*/
+                let padding: Thickness = component(ecm, entity, "padding");
+        */
 
-        if let Some(target) = try_component::<PopupTarget>(ecm, entity,"target") {
-            let current_bounds: Rectangle = component(ecm, entity,"bounds");
-            let current_constraint: Constraint = component(ecm, entity,"constraint");
+        if let Some(target) = try_component::<PopupTarget>(ecm, entity, "target") {
+            let current_bounds: Rectangle = component(ecm, entity, "bounds");
+            let current_constraint: Constraint = component(ecm, entity, "constraint");
 
             let real_target_bounds = match target {
                 PopupTarget::Entity(entity) => {
-                    let target_position: Point = component(ecm, entity.into(),"position");
+                    let target_position: Point = component(ecm, entity.into(), "position");
 
                     //WARNING: this is true only if called during post_layout_update, otherwise the bounds will refere to space available to the widget, not the effective size
-                    let mut target_bounds: Rectangle =
-                        component(ecm, entity.into(),"bounds");
+                    let mut target_bounds: Rectangle = component(ecm, entity.into(), "bounds");
                     target_bounds.set_position(target_position);
                     target_bounds
                 }
@@ -91,11 +90,11 @@ impl Layout for PopupLayout {
             };
 
             let relative_position: RelativePosition =
-                component_or_default(ecm, entity,"relative_position");
+                component_or_default(ecm, entity, "relative_position");
 
             let new_popup_size = match relative_position {
                 RelativePosition::Left(distance) => {
-                    let current_v_align: Alignment = component(ecm, entity,"v_align");
+                    let current_v_align: Alignment = component(ecm, entity, "v_align");
 
                     let width = current_bounds.width();
                     let height = current_v_align.align_measure(
@@ -108,7 +107,7 @@ impl Layout for PopupLayout {
                     current_constraint.perform((width, height))
                 }
                 RelativePosition::Right(distance) => {
-                    let current_v_align: Alignment = component(ecm, entity,"v_align");
+                    let current_v_align: Alignment = component(ecm, entity, "v_align");
 
                     let width = current_bounds.width();
                     let height = current_v_align.align_measure(
@@ -121,7 +120,7 @@ impl Layout for PopupLayout {
                     current_constraint.perform((width, height))
                 }
                 RelativePosition::Top(distance) => {
-                    let current_h_align: Alignment = component(ecm, entity,"h_align");
+                    let current_h_align: Alignment = component(ecm, entity, "h_align");
 
                     let width = current_h_align.align_measure(
                         real_target_bounds.width(),
@@ -134,7 +133,7 @@ impl Layout for PopupLayout {
                     current_constraint.perform((width, height))
                 }
                 RelativePosition::Bottom(distance) => {
-                    let current_h_align: Alignment = component(ecm, entity,"h_align");
+                    let current_h_align: Alignment = component(ecm, entity, "h_align");
 
                     let width = current_h_align.align_measure(
                         real_target_bounds.width(),
@@ -149,11 +148,10 @@ impl Layout for PopupLayout {
             };
 
             {
-            let mut desired_size = self.desired_size.borrow_mut();
-            desired_size.set_width(new_popup_size.0);
-            desired_size.set_height(new_popup_size.1);
+                let mut desired_size = self.desired_size.borrow_mut();
+                desired_size.set_width(new_popup_size.0);
+                desired_size.set_height(new_popup_size.1);
             }
-
 
             let padding: Thickness = component(ecm, entity, "padding");
             for index in 0..ecm.entity_store().children[&entity].len() {
@@ -195,7 +193,6 @@ impl Layout for PopupLayout {
         } else {
             println!("Target not found");
         }
-
 
         *self.desired_size.borrow()
     }
