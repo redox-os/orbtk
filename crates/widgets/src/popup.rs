@@ -204,7 +204,7 @@ widget!(
 );
 
 impl Template for Popup {
-    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("Popup")
             .style("popup")
             .padding(0.0)
@@ -214,11 +214,11 @@ impl Template for Popup {
             .border_brush("transparent")
             .on_mouse_down(|_, _| true)
             .open(false)
-            .on_changed("visibility", move |states, entity| {
-                states.get_mut::<PopupState>(entity).update_visibility()
+            .on_changed("visibility", move |states, _| {
+                states.get_mut::<PopupState>(id).update_visibility()
             })
-            .on_changed("open", move |states, entity| {
-                states.get_mut::<PopupState>(entity).update_visibility()
+            .on_changed("open", move |states, _| {
+                states.get_mut::<PopupState>(id).update_visibility()
             })
         /*
         .on_changed(move |states, entity, property| {
