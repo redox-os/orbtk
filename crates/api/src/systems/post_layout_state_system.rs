@@ -4,11 +4,13 @@ use dces::prelude::*;
 
 use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree};
 
+use std::sync::{Arc, RwLock};
+
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 #[derive(Constructor)]
 pub struct PostLayoutStateSystem {
     context_provider: ContextProvider,
-    registry: Rc<RefCell<Registry>>,
+    registry: Arc<RwLock<Registry>>,
 }
 
 impl PostLayoutStateSystem {
@@ -28,7 +30,7 @@ impl PostLayoutStateSystem {
             );
 
             if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
-                state.cleanup(&mut self.registry.borrow_mut(), &mut ctx);
+                state.cleanup(&mut self.registry.write().unwrap(), &mut ctx);
             }
 
             drop(ctx);
@@ -91,7 +93,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for PostLayoutStateSyst
                         .borrow_mut()
                         .get_mut(&key)
                         .unwrap()
-                        .update_post_layout(&mut *self.registry.borrow_mut(), &mut ctx);
+                        .update_post_layout(&mut *self.registry.write().unwrap(), &mut ctx);
                 }
 
                 while let Some(remove_widget) = remove_widget_list.pop() {

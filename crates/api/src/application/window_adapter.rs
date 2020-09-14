@@ -1,5 +1,7 @@
 use std::{cell::RefCell, collections::HashMap, sync::mpsc};
 
+use std::sync::{Arc, RwLock};
+
 use dces::prelude::*;
 
 use crate::{
@@ -21,7 +23,7 @@ use crate::{
 pub struct WindowAdapter {
     world: World<Tree, StringComponentStore, render::RenderContext2D>,
     ctx: ContextProvider,
-    registry: Rc<RefCell<Registry>>,
+    registry: Arc<RwLock<Registry>>,
     old_clipboard_value: Option<String>,
 }
 
@@ -30,7 +32,7 @@ impl WindowAdapter {
     pub fn new(
         world: World<Tree, StringComponentStore, render::RenderContext2D>,
         ctx: ContextProvider,
-        registry: Rc<RefCell<Registry>>,
+        registry: Arc<RwLock<Registry>>,
     ) -> Self {
         WindowAdapter {
             world,
@@ -54,8 +56,20 @@ impl WindowAdapter {
 impl shell::WindowAdapter for WindowAdapter {
     fn clipboard_update(&mut self, value: &mut Option<String>) {
         // internal clipboard value is new => update system clipboard value.
-        if self.registry.borrow().get::<Clipboard>("clipboard").get() != self.old_clipboard_value {
-            *value = self.registry.borrow().get::<Clipboard>("clipboard").get();
+        if self
+            .registry
+            .read()
+            .unwrap()
+            .get::<Clipboard>("clipboard")
+            .get()
+            != self.old_clipboard_value
+        {
+            *value = self
+                .registry
+                .read()
+                .unwrap()
+                .get::<Clipboard>("clipboard")
+                .get();
 
             self.old_clipboard_value = value.clone();
 
@@ -65,7 +79,8 @@ impl shell::WindowAdapter for WindowAdapter {
         //  system clipboard value is newer => update internal clipboard
         if let Some(value) = value.clone() {
             self.registry
-                .borrow_mut()
+                .write()
+                .unwrap()
                 .get_mut::<Clipboard>("clipboard")
                 .set(value.clone());
             self.old_clipboard_value = Some(value);
@@ -222,20 +237,23 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
 
     let (sender, receiver) = mpsc::channel();
 
-    let registry = Rc::new(RefCell::new(Registry::new()));
+    let registry = Arc::new(RwLock::new(Registry::new()));
 
     if app_name.is_empty() {
         registry
-            .borrow_mut()
+            .write()
+            .unwrap()
             .register("settings", Settings::default());
     } else {
         registry
-            .borrow_mut()
+            .write()
+            .unwrap()
             .register("settings", Settings::new(app_name.clone()));
     };
 
     registry
-        .borrow_mut()
+        .write()
+        .unwrap()
         .register("clipboard", Clipboard::new());
 
     let context_provider = ContextProvider::new(sender, request_sender, app_name, localization);

@@ -1,6 +1,6 @@
 //! This module contains a platform specific implementation of the window shell.
 
-use std::sync::mpsc;
+use std::{sync::mpsc, thread};
 
 pub use super::native::*;
 
@@ -18,17 +18,20 @@ mod window_builder;
 pub fn initialize() {}
 
 /// Represents an application shell that could handle multiple windows.
+#[derive(Debug)]
 pub struct Shell<A: 'static>
 where
     A: WindowAdapter,
 {
-    window_shells: Vec<Window<A>>,
+    window_shells: Vec<thread::JoinHandle<()>>,
     requests: mpsc::Receiver<ShellRequest<A>>,
 }
 
+unsafe impl<A> Send for Shell<A> where A: WindowAdapter {}
+
 impl<A> Shell<A>
 where
-    A: WindowAdapter,
+    A: WindowAdapter + std::marker::Send,
 {
     /// Creates a new application shell.
     pub fn new(requests: mpsc::Receiver<ShellRequest<A>>) -> Self {
@@ -75,26 +78,26 @@ where
                 return;
             }
 
-            for i in 0..self.window_shells.len() {
-                let mut remove = false;
-                if let Some(window_shell) = self.window_shells.get_mut(i) {
-                    window_shell.update();
-                    window_shell.render();
+            // for i in 0..self.window_shells.len() {
+            //     let mut remove = false;
+            //     if let Some(window_shell) = self.window_shells.get_mut(i) {
+            //         window_shell.update();
+            //         window_shell.render();
 
-                    window_shell.update_clipboard();
-                    window_shell.drain_events();
-                    window_shell.receive_requests();
+            //         window_shell.update_clipboard();
+            //         window_shell.drain_events();
+            //         window_shell.receive_requests();
 
-                    if !window_shell.is_open() {
-                        remove = true;
-                    }
-                }
+            //         if !window_shell.is_open() {
+            //             remove = true;
+            //         }
+            //     }
 
-                if remove {
-                    self.window_shells.remove(i);
-                    break;
-                }
-            }
+            //     if remove {
+            //         self.window_shells.remove(i);
+            //         break;
+            //     }
+            // }
 
             self.receive_requests();
         }

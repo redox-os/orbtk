@@ -1,5 +1,7 @@
 use std::{cell::RefCell, rc::Rc};
 
+use std::sync::{Arc, RwLock};
+
 use dces::prelude::*;
 
 use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree};
@@ -8,7 +10,7 @@ use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree};
 #[derive(Constructor)]
 pub struct CleanupSystem {
     context_provider: ContextProvider,
-    registry: Rc<RefCell<Registry>>,
+    registry: Arc<RwLock<Registry>>,
 }
 
 impl System<Tree, StringComponentStore, RenderContext2D> for CleanupSystem {
@@ -50,7 +52,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for CleanupSystem {
             let mut keys = vec![];
 
             if !skip {
-                let registry = &mut self.registry.borrow_mut();
+                let registry = &mut self.registry.write().unwrap();
 
                 let mut ctx = Context::new(
                     (widget, ecm),
@@ -59,7 +61,13 @@ impl System<Tree, StringComponentStore, RenderContext2D> for CleanupSystem {
                     render_context,
                 );
 
-                if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&widget) {
+                if let Some(state) = self
+                    .context_provider
+                    .states
+                    .write()
+                    .unwrap()
+                    .get_mut(&widget)
+                {
                     state.cleanup(registry, &mut ctx);
                 }
 

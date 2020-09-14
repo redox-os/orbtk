@@ -4,11 +4,13 @@ use dces::prelude::*;
 
 use crate::{prelude::*, render::RenderContext2D, theming::Selector, tree::Tree};
 
+use std::sync::{Arc, RwLock};
+
 /// This system is used to initializes the widgets.
 #[derive(Constructor)]
 pub struct InitSystem {
     context_provider: ContextProvider,
-    registry: Rc<RefCell<Registry>>,
+    registry: Arc<RwLock<Registry>>,
 }
 
 impl InitSystem {
@@ -77,7 +79,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
                     .borrow_mut()
                     .get_mut(&current_node)
                 {
-                    state.init(&mut *self.registry.borrow_mut(), &mut ctx);
+                    state.init(&mut *self.registry.write().unwrap(), &mut ctx);
                 }
 
                 drop(ctx);

@@ -1,4 +1,6 @@
-use std::{collections::HashMap, sync::mpsc};
+use std::{sync::mpsc, thread};
+
+use std::collections::HashMap;
 
 use super::{Shell, Window};
 use crate::{
@@ -100,37 +102,52 @@ where
 
     /// Builds the window shell and add it to the application `Shell`.
     pub fn build(self) {
-        let mut render_context = RenderContext2D::new(self.bounds.width(), self.bounds.height());
+        let bounds = self.bounds.clone();
+        let borderless = self.borderless;
+        let resizeable = self.resizeable;
+        let fonts = self.fonts;
+        let adapter = self.adapter;
 
-        let mut flags = vec![];
+        let title = self.title.clone();
+        let request_receiver = self.request_receiver;
 
-        if self.resizeable {
-            flags.push(orbclient::WindowFlag::Resizable);
-        }
+        let window_thread = thread::spawn(move || {
+            let mut render_context = RenderContext2D::new(bounds.width(), bounds.height());
 
-        if self.borderless {
-            flags.push(orbclient::WindowFlag::Borderless);
-        }
+            let mut flags = vec![];
 
-        let window = orbclient::Window::new_flags(
-            self.bounds.x() as i32,
-            self.bounds.y() as i32,
-            self.bounds.width() as u32,
-            self.bounds.height() as u32,
-            self.title.as_str(),
-            &flags,
-        )
-        .expect("WindowBuilder: Could no create an orblient window.");
+            if resizeable {
+                flags.push(orbclient::WindowFlag::Resizable);
+            }
 
-        for (family, font) in self.fonts {
-            render_context.register_font(&family, font);
-        }
+            if borderless {
+                flags.push(orbclient::WindowFlag::Borderless);
+            }
 
-        self.shell.window_shells.push(Window::new(
-            window,
-            self.adapter,
-            render_context,
-            self.request_receiver,
-        ));
+            let window = orbclient::Window::new_flags(
+                bounds.x() as i32,
+                bounds.y() as i32,
+                bounds.width() as u32,
+                bounds.height() as u32,
+                title.as_str(),
+                &flags,
+            )
+            .expect("WindowBuilder: Could no create an orblient window.");
+
+            for (family, font) in fonts {
+                render_context.register_font(&family, font);
+            }
+
+            //let window = Window::new(window, adapter, render_context, request_receiver);
+        });
+
+        self.shell.window_shells.push(window_thread);
+
+        // self.shell.window_shells.push(Window::new(
+        //     window,
+        //     self.adapter,
+        //     render_context,
+        //     self.request_receiver,
+        // ));
     }
 }

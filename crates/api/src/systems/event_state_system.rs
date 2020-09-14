@@ -4,11 +4,13 @@ use dces::prelude::*;
 
 use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree, utils::*};
 
+use std::sync::{Arc, RwLock};
+
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
 #[derive(Constructor)]
 pub struct EventStateSystem {
     context_provider: ContextProvider,
-    registry: Rc<RefCell<Registry>>,
+    registry: Arc<RwLock<Registry>>,
 }
 
 impl EventStateSystem {
@@ -21,7 +23,7 @@ impl EventStateSystem {
         render_context: &mut RenderContext2D,
     ) {
         {
-            let registry = &mut self.registry.borrow_mut();
+            let registry = &mut self.registry.write().unwrap();
 
             let mut ctx = Context::new(
                 (entity, ecm),
@@ -30,7 +32,13 @@ impl EventStateSystem {
                 render_context,
             );
 
-            if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
+            if let Some(state) = self
+                .context_provider
+                .states
+                .write()
+                .unwrap()
+                .get_mut(&entity)
+            {
                 state.cleanup(registry, &mut ctx);
             }
 
@@ -425,7 +433,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
 
                 if !skip {
                     {
-                        let registry = &mut self.registry.borrow_mut();
+                        let registry = &mut self.registry.write().unwrap();
 
                         let mut ctx = Context::new(
                             (widget, ecm),

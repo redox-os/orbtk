@@ -5,6 +5,8 @@ use std::{
     sync::mpsc,
 };
 
+use std::sync::{Arc, RwLock};
+
 use dces::prelude::*;
 
 use super::WindowAdapter;
@@ -22,11 +24,11 @@ use crate::{
 /// Temporary solution to share dependencies. Will be refactored soon.
 #[derive(Clone)]
 pub struct ContextProvider {
-    pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
-    pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
-    pub handler_map: Rc<RefCell<EventHandlerMap>>,
-    pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
-    pub event_queue: Rc<RefCell<EventQueue>>,
+    pub render_objects: Arc<RwLock<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+    pub layouts: Arc<RwLock<BTreeMap<Entity, Box<dyn Layout>>>>,
+    pub handler_map: Arc<RwLock<EventHandlerMap>>,
+    pub states: Arc<RwLock<BTreeMap<Entity, Box<dyn State>>>>,
+    pub event_queue: Arc<RwLock<EventQueue>>,
     pub mouse_position: Rc<Cell<Point>>,
     pub window_sender: mpsc::Sender<WindowRequest>,
     pub shell_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
@@ -34,7 +36,7 @@ pub struct ContextProvider {
     pub first_run: Rc<Cell<bool>>,
     pub raw_window_handle: Option<raw_window_handle::RawWindowHandle>,
     // todo thread save
-    pub localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
+    pub localization: Option<Arc<RwLock<Box<dyn Localization>>>>,
 }
 
 impl ContextProvider {
@@ -43,14 +45,14 @@ impl ContextProvider {
         window_sender: mpsc::Sender<WindowRequest>,
         shell_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
         application_name: impl Into<String>,
-        localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
+        localization: Option<Arc<RwLock<Box<dyn Localization>>>>,
     ) -> Self {
         ContextProvider {
-            render_objects: Rc::new(RefCell::new(BTreeMap::new())),
-            layouts: Rc::new(RefCell::new(BTreeMap::new())),
-            handler_map: Rc::new(RefCell::new(EventHandlerMap::new())),
-            states: Rc::new(RefCell::new(BTreeMap::new())),
-            event_queue: Rc::new(RefCell::new(EventQueue::new())),
+            render_objects: Arc::new(RwLock::new(BTreeMap::new())),
+            layouts: Arc::new(RwLock::new(BTreeMap::new())),
+            handler_map: Arc::new(RwLock::new(EventHandlerMap::new())),
+            states: Arc::new(RwLock::new(BTreeMap::new())),
+            event_queue: Arc::new(RwLock::new(EventQueue::new())),
             mouse_position: Rc::new(Cell::new(Point::new(0.0, 0.0))),
             window_sender,
             shell_sender,
