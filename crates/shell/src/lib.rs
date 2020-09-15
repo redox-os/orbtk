@@ -37,13 +37,19 @@ pub use orbtk_utils::prelude as utils;
 #[path = "glutin/mod.rs"]
 pub mod platform;
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "miniraq"))]
+#[cfg(all(
+    not(target_arch = "wasm32"),
+    feature = "miniraq",
+    not(feature = "orbraq"),
+    not(feature = "glupath"),
+    not(feature = "default")
+))]
 #[path = "minifb/mod.rs"]
 pub mod platform;
 
 #[cfg(all(
-    not(target_arch = "wasm32"),
     any(feature = "default", feature = "orbraq"),
+    not(target_arch = "wasm32"),
     not(feature = "glupath"),
     not(feature = "miniraq")
 ))]

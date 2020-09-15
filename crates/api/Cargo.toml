@@ -33,7 +33,8 @@ raw-window-handle = "0.3"
 stdweb = "0.4"
 
 [features]
-default = ["orbtk_shell/orbraq"]
+default = ["orbtk_shell/orbraq", "bundled"]
+bundled = ["orbtk_shell/bundled"]
 orbraq = ["orbtk_shell/orbraq"]
 miniraq = ["orbtk_shell/miniraq", "orbtk_render/miniraq"]
 glupath = ["orbtk_shell/glupath", "orbtk_render/glupath"]

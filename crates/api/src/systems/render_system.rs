@@ -24,7 +24,12 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
             .unwrap()
             .clone();
 
-        if dirty_widgets.is_empty() && !self.context_provider.first_run.get() {
+        if dirty_widgets.is_empty()
+            && !self
+                .context_provider
+                .first_run
+                .load(std::sync::atomic::Ordering::Relaxed)
+        {
             return;
         }
 
@@ -72,8 +77,14 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
         );
         render_context.finish();
 
-        if self.context_provider.first_run.get() {
-            self.context_provider.first_run.set(false);
+        if self
+            .context_provider
+            .first_run
+            .load(std::sync::atomic::Ordering::Relaxed)
+        {
+            self.context_provider
+                .first_run
+                .store(false, std::sync::atomic::Ordering::Relaxed);
         }
     }
 }

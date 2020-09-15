@@ -23,7 +23,8 @@ orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 orbtk_proc_macros = { version = "0.3.1-alpha4", path = "../proc_macros" }
 
 [features]
-default = ["orbtk_shell/orbraq", "orbtk_render/orbraq"]
+default = ["orbtk_shell/orbraq", "orbtk_render/orbraq", "bundled"]
+bundled = ["orbtk_shell/bundled"]
 orbraq = ["orbtk_shell/orbraq", "orbtk_render/orbraq"]
 miniraq = ["orbtk_shell/miniraq", "orbtk_render/miniraq"]
 glupath = ["orbtk_shell/glupath", "orbtk_render/glupath"]

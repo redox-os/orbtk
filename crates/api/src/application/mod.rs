@@ -2,6 +2,8 @@
 
 use std::sync::mpsc;
 
+use std::sync::{Arc, RwLock};
+
 use dces::prelude::Entity;
 
 use crate::{
@@ -28,7 +30,7 @@ pub struct Application {
     shell: Shell<WindowAdapter>,
     name: Box<str>,
     theme: Theme,
-    localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
+    localization: Option<Arc<RwLock<Box<dyn Localization>>>>,
 }
 
 impl Default for Application {
@@ -53,7 +55,7 @@ impl Application {
     where
         L: Localization + 'static,
     {
-        self.localization = Some(Rc::new(RefCell::new(Box::new(localization))));
+        self.localization = Some(Arc::new(RwLock::new(Box::new(localization))));
         self
     }
 

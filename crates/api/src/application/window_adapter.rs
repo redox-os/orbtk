@@ -27,6 +27,8 @@ pub struct WindowAdapter {
     old_clipboard_value: Option<String>,
 }
 
+unsafe impl Send for WindowAdapter {}
+
 impl WindowAdapter {
     /// Creates a new WindowAdapter.
     pub fn new(
@@ -91,7 +93,8 @@ impl shell::WindowAdapter for WindowAdapter {
         let root = self.root();
         self.ctx
             .event_queue
-            .borrow_mut()
+            .write()
+            .unwrap()
             .register_event_with_strategy(
                 WindowEvent::Resize { width, height },
                 EventStrategy::Direct,
@@ -101,8 +104,8 @@ impl shell::WindowAdapter for WindowAdapter {
 
     fn mouse(&mut self, x: f64, y: f64) {
         let root = self.root();
-        self.ctx.mouse_position.set(Point::new(x, y));
-        self.ctx.event_queue.borrow_mut().register_event(
+        *self.ctx.mouse_position.write().unwrap() = Point::new(x, y);
+        self.ctx.event_queue.write().unwrap().register_event(
             MouseMoveEvent {
                 position: Point::new(x, y),
             },
@@ -112,7 +115,7 @@ impl shell::WindowAdapter for WindowAdapter {
 
     fn scroll(&mut self, delta_x: f64, delta_y: f64) {
         let root = self.root();
-        self.ctx.event_queue.borrow_mut().register_event(
+        self.ctx.event_queue.write().unwrap().register_event(
             ScrollEvent {
                 delta: Point::new(delta_x, delta_y),
             },
@@ -124,14 +127,14 @@ impl shell::WindowAdapter for WindowAdapter {
         let root = self.root();
         match event.state {
             shell::ButtonState::Up => {
-                self.ctx.event_queue.borrow_mut().register_event(
+                self.ctx.event_queue.write().unwrap().register_event(
                     MouseUpEvent {
                         position: event.position,
                         button: event.button,
                     },
                     root,
                 );
-                self.ctx.event_queue.borrow_mut().register_event(
+                self.ctx.event_queue.write().unwrap().register_event(
                     GlobalMouseUpEvent {
                         position: event.position,
                         button: event.button,
@@ -139,7 +142,7 @@ impl shell::WindowAdapter for WindowAdapter {
                     root,
                 );
             }
-            shell::ButtonState::Down => self.ctx.event_queue.borrow_mut().register_event(
+            shell::ButtonState::Down => self.ctx.event_queue.write().unwrap().register_event(
                 MouseDownEvent {
                     position: event.position,
                     button: event.button,
@@ -150,7 +153,7 @@ impl shell::WindowAdapter for WindowAdapter {
     }
 
     fn mouse_position(&self) -> Point {
-        self.ctx.mouse_position.get()
+        *self.ctx.mouse_position.read().unwrap()
     }
 
     fn key_event(&mut self, event: shell::KeyEvent) {
@@ -159,12 +162,14 @@ impl shell::WindowAdapter for WindowAdapter {
             shell::ButtonState::Up => self
                 .ctx
                 .event_queue
-                .borrow_mut()
+                .write()
+                .unwrap()
                 .register_event(KeyUpEvent { event }, root),
             shell::ButtonState::Down => {
                 self.ctx
                     .event_queue
-                    .borrow_mut()
+                    .write()
+                    .unwrap()
                     .register_event(KeyDownEvent { event }, root);
             }
         }
@@ -175,7 +180,8 @@ impl shell::WindowAdapter for WindowAdapter {
 
         self.ctx
             .event_queue
-            .borrow_mut()
+            .write()
+            .unwrap()
             .register_event(SystemEvent::Quit, root);
     }
 
@@ -184,7 +190,8 @@ impl shell::WindowAdapter for WindowAdapter {
 
         self.ctx
             .event_queue
-            .borrow_mut()
+            .write()
+            .unwrap()
             .register_event_with_strategy(
                 WindowEvent::ActiveChanged(active),
                 EventStrategy::Direct,
@@ -198,7 +205,7 @@ impl shell::WindowAdapter for WindowAdapter {
 
     fn file_drop_event(&mut self, file_name: String) {
         let root = self.root();
-        self.ctx.event_queue.borrow_mut().register_event(
+        self.ctx.event_queue.write().unwrap().register_event(
             DropFileEvent {
                 file_name,
                 position: self.mouse_position(),
@@ -209,10 +216,10 @@ impl shell::WindowAdapter for WindowAdapter {
 
     fn text_drop_event(&mut self, text: String) {
         let root = self.root();
-        self.ctx.event_queue.borrow_mut().register_event(
+        self.ctx.event_queue.write().unwrap().register_event(
             DropTextEvent {
                 text,
-                position: self.ctx.mouse_position.get(),
+                position: *self.ctx.mouse_position.read().unwrap(),
             },
             root,
         );
@@ -229,7 +236,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     theme: Theme,
     request_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
     create_fn: F,
-    localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
+    localization: Option<Arc<RwLock<Box<dyn Localization>>>>,
 ) -> (WindowAdapter, WindowSettings, mpsc::Receiver<WindowRequest>) {
     let app_name = app_name.into();
     let mut world: World<Tree, StringComponentStore, render::RenderContext2D> =
@@ -264,7 +271,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             &context_provider.render_objects,
             &context_provider.layouts,
             &context_provider.handler_map,
-            &mut *context_provider.states.borrow_mut(),
+            &mut *context_provider.states.write().unwrap(),
             &theme,
             &context_provider.event_queue,
         ));
@@ -279,7 +286,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             &context_provider.render_objects,
             &context_provider.layouts,
             &context_provider.handler_map,
-            &mut *context_provider.states.borrow_mut(),
+            &mut *context_provider.states.write().unwrap(),
             &theme,
             &context_provider.event_queue,
         ));

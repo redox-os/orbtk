@@ -32,7 +32,8 @@ impl<'a> Drop for Context<'a> {
     fn drop(&mut self) {
         self.provider
             .states
-            .borrow_mut()
+            .write()
+            .unwrap()
             .append(&mut self.new_states);
     }
 }
@@ -505,7 +506,7 @@ impl<'a> Context<'a> {
     /// Sets the current language.
     pub fn set_language(&mut self, key: &str) {
         if let Some(localization) = &self.provider.localization {
-            localization.borrow_mut().set_language(key);
+            localization.write().unwrap().set_language(key);
         }
 
         let root = self.ecm.entity_store().root.unwrap();
@@ -515,7 +516,7 @@ impl<'a> Context<'a> {
     /// Used to localize a text. If there is no localized text for the given key or no localization service the key will be returned as result.
     pub fn localize_text(&self, key: String) -> String {
         if let Some(localization) = &self.provider.localization {
-            return localization.borrow().text(key);
+            return localization.read().unwrap().text(key);
         }
 
         key

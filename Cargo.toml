@@ -47,7 +47,9 @@ serde_derive = "1.0.106"
 # wgpu = "0.5.0"
 
 [features]
-default = ["orbtk_shell/orbraq", "orbtk_api/orbraq", "orbtk_render/orbraq", "orbtk_widgets/orbraq", "orbtk_localization/ron"]
+default = ["orbtk_shell/orbraq", "orbtk_api/orbraq", "orbtk_render/orbraq", "orbtk_widgets/orbraq", "orbtk_localization/ron", "bundled"]
+bundled = ["orbtk_shell/bundled"]
+orbraq = ["orbtk_shell/orbraq", "orbtk_api/orbraq", "orbtk_widgets/orbraq", "orbtk_widgets/miniraq"]
 miniraq = ["orbtk_shell/miniraq", "orbtk_api/miniraq", "orbtk_widgets/miniraq", "orbtk_widgets/miniraq"]
 glupath = ["orbtk_shell/glupath", "orbtk_render/glupath", "orbtk_widgets/glupath"]
 log = ["orbtk_shell/log"]

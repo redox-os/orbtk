@@ -74,7 +74,11 @@ impl EventStateSystem {
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
     ) -> bool {
         // skip all direct events on first run
-        if self.context_provider.first_run.get() {
+        if self
+            .context_provider
+            .first_run
+            .load(std::sync::atomic::Ordering::Relaxed)
+        {
             return false;
         }
 
@@ -371,7 +375,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
 
         loop {
             {
-                let mouse_position = self.context_provider.mouse_position.get();
+                let mouse_position = *self.context_provider.mouse_position.read().unwrap();
                 for event in self
                     .context_provider
                     .event_queue

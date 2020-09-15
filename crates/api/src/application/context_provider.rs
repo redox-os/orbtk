@@ -5,7 +5,7 @@ use std::{
     sync::mpsc,
 };
 
-use std::sync::{Arc, RwLock};
+use std::sync::{atomic::AtomicBool, Arc, RwLock};
 
 use dces::prelude::*;
 
@@ -29,11 +29,11 @@ pub struct ContextProvider {
     pub handler_map: Arc<RwLock<EventHandlerMap>>,
     pub states: Arc<RwLock<BTreeMap<Entity, Box<dyn State>>>>,
     pub event_queue: Arc<RwLock<EventQueue>>,
-    pub mouse_position: Rc<Cell<Point>>,
+    pub mouse_position: Arc<RwLock<Point>>,
     pub window_sender: mpsc::Sender<WindowRequest>,
     pub shell_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
     pub application_name: String,
-    pub first_run: Rc<Cell<bool>>,
+    pub first_run: Arc<AtomicBool>,
     pub raw_window_handle: Option<raw_window_handle::RawWindowHandle>,
     // todo thread save
     pub localization: Option<Arc<RwLock<Box<dyn Localization>>>>,
@@ -53,11 +53,11 @@ impl ContextProvider {
             handler_map: Arc::new(RwLock::new(EventHandlerMap::new())),
             states: Arc::new(RwLock::new(BTreeMap::new())),
             event_queue: Arc::new(RwLock::new(EventQueue::new())),
-            mouse_position: Rc::new(Cell::new(Point::new(0.0, 0.0))),
+            mouse_position: Arc::new(RwLock::new(Point::new(0.0, 0.0))),
             window_sender,
             shell_sender,
             application_name: application_name.into(),
-            first_run: Rc::new(Cell::new(true)),
+            first_run: Arc::new(AtomicBool::new(true)),
             raw_window_handle: None,
             localization,
         }
