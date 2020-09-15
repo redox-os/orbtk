@@ -1,5 +1,7 @@
 use std::{collections::BTreeMap, sync::mpsc};
 
+use std::sync::{Arc, RwLock};
+
 use dces::prelude::*;
 
 use raw_window_handle::RawWindowHandle;
@@ -406,7 +408,8 @@ impl<'a> Context<'a> {
     pub fn push_event_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
         self.provider
             .event_queue
-            .borrow_mut()
+            .write()
+            .unwrap()
             .register_event_with_strategy(event, strategy, self.entity);
     }
 
@@ -414,7 +417,8 @@ impl<'a> Context<'a> {
     pub fn push_event<E: Event>(&mut self, event: E) {
         self.provider
             .event_queue
-            .borrow_mut()
+            .write()
+            .unwrap()
             .register_event(event, self.entity);
     }
 
@@ -422,7 +426,8 @@ impl<'a> Context<'a> {
     pub fn push_event_by_entity<E: Event>(&mut self, event: E, entity: Entity) {
         self.provider
             .event_queue
-            .borrow_mut()
+            .write()
+            .unwrap()
             .register_event(event, entity);
     }
 
@@ -430,7 +435,8 @@ impl<'a> Context<'a> {
     pub fn push_event_by_window<E: Event>(&mut self, event: E) {
         self.provider
             .event_queue
-            .borrow_mut()
+            .write()
+            .unwrap()
             .register_event(event, self.ecm.entity_store().root());
     }
 
@@ -443,7 +449,8 @@ impl<'a> Context<'a> {
     ) {
         self.provider
             .event_queue
-            .borrow_mut()
+            .write()
+            .unwrap()
             .register_event_with_strategy(event, strategy, entity);
     }
 

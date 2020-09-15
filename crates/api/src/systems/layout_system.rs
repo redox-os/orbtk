@@ -41,20 +41,20 @@ impl System<Tree, StringComponentStore, RenderContext2D> for LayoutSystem {
             .theme
             .clone();
 
-        self.context_provider.layouts.borrow()[&root].measure(
+        self.context_provider.layouts.read().unwrap()[&root].measure(
             render_context,
             root,
             ecm,
-            &self.context_provider.layouts.borrow(),
+            &self.context_provider.layouts.read().unwrap(),
             &theme,
         );
 
-        self.context_provider.layouts.borrow()[&root].arrange(
+        self.context_provider.layouts.read().unwrap()[&root].arrange(
             render_context,
             window_size,
             root,
             ecm,
-            &self.context_provider.layouts.borrow(),
+            &self.context_provider.layouts.read().unwrap(),
             &theme,
         );
 

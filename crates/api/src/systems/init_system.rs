@@ -76,7 +76,8 @@ impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
                 if let Some(state) = self
                     .context_provider
                     .states
-                    .borrow_mut()
+                    .write()
+                    .unwrap()
                     .get_mut(&current_node)
                 {
                     state.init(&mut *self.registry.write().unwrap(), &mut ctx);

@@ -1,5 +1,7 @@
 use std::{any::type_name, cell::RefCell, rc::Rc};
 
+use std::sync::{Arc, RwLock};
+
 use dces::prelude::*;
 
 use crate::{
@@ -58,7 +60,7 @@ pub struct WidgetContainer<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     current_node: Entity,
     theme: &'a Theme,
-    event_queue: Option<&'a Rc<RefCell<EventQueue>>>,
+    event_queue: Option<&'a Arc<RwLock<EventQueue>>>,
 }
 
 impl<'a> WidgetContainer<'a> {
@@ -67,7 +69,7 @@ impl<'a> WidgetContainer<'a> {
         root: Entity,
         ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
         theme: &'a Theme,
-        event_queue: Option<&'a Rc<RefCell<EventQueue>>>,
+        event_queue: Option<&'a Arc<RwLock<EventQueue>>>,
     ) -> Self {
         WidgetContainer {
             ecm,
@@ -305,7 +307,7 @@ impl<'a> WidgetContainer<'a> {
 
             if on_changed {
                 if let Some(event_queue) = self.event_queue {
-                    event_queue.borrow_mut().register_event_with_strategy(
+                    event_queue.write().unwrap().register_event_with_strategy(
                         ChangedEvent(self.current_node, target_key),
                         EventStrategy::Direct,
                         entity,

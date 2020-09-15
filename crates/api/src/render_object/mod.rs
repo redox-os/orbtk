@@ -147,7 +147,8 @@ pub trait RenderObject: Any {
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
 
-            if let Some(render_object) = context_provider.render_objects.borrow().get(&child) {
+            if let Some(render_object) = context_provider.render_objects.read().unwrap().get(&child)
+            {
                 render_object.render(
                     render_context,
                     child,

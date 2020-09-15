@@ -1,8 +1,10 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{collections::BTreeMap, rc::Rc};
 
 use dces::prelude::*;
 
 use crate::{prelude::*, render_object::RenderObject, theming::Theme, tree::Tree};
+
+use std::sync::{Arc, RwLock};
 
 use super::State;
 
@@ -12,12 +14,12 @@ pub type WidgetBuildContext = Option<Box<dyn Fn(&mut BuildContext, usize) -> Ent
 #[derive(Constructor)]
 pub struct BuildContext<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
-    render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
-    layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
-    handlers: &'a RefCell<EventHandlerMap>,
+    render_objects: &'a RwLock<BTreeMap<Entity, Box<dyn RenderObject>>>,
+    layouts: &'a RwLock<BTreeMap<Entity, Box<dyn Layout>>>,
+    handlers: &'a RwLock<EventHandlerMap>,
     states: &'a mut BTreeMap<Entity, Box<dyn State>>,
     theme: &'a Theme,
-    event_queue: &'a Rc<RefCell<EventQueue>>,
+    event_queue: &'a Arc<RwLock<EventQueue>>,
 }
 
 impl<'a> BuildContext<'a> {
@@ -123,18 +125,20 @@ impl<'a> BuildContext<'a> {
     /// Registers a render object with a widget.
     pub fn register_render_object(&mut self, widget: Entity, render_object: Box<dyn RenderObject>) {
         self.render_objects
-            .borrow_mut()
+            .write()
+            .unwrap()
             .insert(widget, render_object);
     }
 
     /// Registers an event handler with a widget.
     pub fn register_handler(&mut self, widget: Entity, handler: Rc<dyn EventHandler>) {
-        if !self.handlers.borrow().contains_key(&widget) {
-            self.handlers.borrow_mut().insert(widget, vec![]);
+        if !self.handlers.read().unwrap().contains_key(&widget) {
+            self.handlers.write().unwrap().insert(widget, vec![]);
         }
 
         self.handlers
-            .borrow_mut()
+            .write()
+            .unwrap()
             .get_mut(&widget)
             .unwrap()
             .push(handler);
@@ -142,7 +146,7 @@ impl<'a> BuildContext<'a> {
 
     /// Registers a layout object with a widget.
     pub fn register_layout(&mut self, widget: Entity, layout: Box<dyn Layout>) {
-        self.layouts.borrow_mut().insert(widget, layout);
+        self.layouts.write().unwrap().insert(widget, layout);
     }
 }
 

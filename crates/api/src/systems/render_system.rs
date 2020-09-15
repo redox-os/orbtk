@@ -61,7 +61,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
 
         render_context.start();
         render_context.begin_path();
-        self.context_provider.render_objects.borrow()[&root].render(
+        self.context_provider.render_objects.read().unwrap()[&root].render(
             render_context,
             root,
             ecm,

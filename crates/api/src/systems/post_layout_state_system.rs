@@ -29,23 +29,39 @@ impl PostLayoutStateSystem {
                 render_context,
             );
 
-            if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
+            if let Some(state) = self
+                .context_provider
+                .states
+                .write()
+                .unwrap()
+                .get_mut(&entity)
+            {
                 state.cleanup(&mut self.registry.write().unwrap(), &mut ctx);
             }
 
             drop(ctx);
         }
-        self.context_provider.states.borrow_mut().remove(&entity);
+        self.context_provider
+            .states
+            .write()
+            .unwrap()
+            .remove(&entity);
 
         ecm.remove_entity(entity);
-        self.context_provider.layouts.borrow_mut().remove(&entity);
+        self.context_provider
+            .layouts
+            .write()
+            .unwrap()
+            .remove(&entity);
         self.context_provider
             .render_objects
-            .borrow_mut()
+            .write()
+            .unwrap()
             .remove(&entity);
         self.context_provider
             .handler_map
-            .borrow_mut()
+            .write()
+            .unwrap()
             .remove(&entity);
     }
 }
@@ -75,7 +91,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for PostLayoutStateSyst
         {
             let mut keys = vec![];
 
-            for key in self.context_provider.states.borrow().keys() {
+            for key in self.context_provider.states.read().unwrap().keys() {
                 keys.push(*key);
             }
 
@@ -90,7 +106,8 @@ impl System<Tree, StringComponentStore, RenderContext2D> for PostLayoutStateSyst
 
                     self.context_provider
                         .states
-                        .borrow_mut()
+                        .write()
+                        .unwrap()
                         .get_mut(&key)
                         .unwrap()
                         .update_post_layout(&mut *self.registry.write().unwrap(), &mut ctx);
