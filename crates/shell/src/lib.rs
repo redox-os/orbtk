@@ -88,6 +88,8 @@ where
     /// Request redraw of the `Windows`s content.
     CreateWindow(W, WindowSettings, mpsc::Receiver<WindowRequest>),
 
+    CloseWindow(usize),
+
     None,
 }
 

@@ -11,7 +11,7 @@ use crate::{
 /// The `WindowBuilder` is used to construct a window shell for the minifb backend.
 pub struct WindowBuilder<'a, A: 'static>
 where
-    A: WindowAdapter,
+    A: WindowAdapter + Send,
 {
     shell: &'a mut Shell<A>,
     adapter: A,
@@ -26,7 +26,7 @@ where
 
 impl<'a, A> WindowBuilder<'a, A>
 where
-    A: WindowAdapter,
+    A: WindowAdapter + Send,
 {
     /// Creates a new window builder.
     pub fn new(shell: &'a mut Shell<A>, adapter: A) -> Self {
@@ -138,7 +138,20 @@ where
                 render_context.register_font(&family, font);
             }
 
-            //let window = Window::new(window, adapter, render_context, request_receiver);
+            let mut window = Window::new(window, adapter, render_context, request_receiver);
+
+            loop {
+                window.update();
+                window.render();
+                window.update_clipboard();
+                window.drain_events();
+                window.receive_requests();
+
+                if window.close() {
+                    break;
+                    // todo remove from shell
+                }
+            }
         });
 
         self.shell.window_shells.push(window_thread);

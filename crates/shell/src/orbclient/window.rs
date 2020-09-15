@@ -358,4 +358,8 @@ where
 
         self.window.sync();
     }
+
+    pub fn close(&self) -> bool {
+        self.close
+    }
 }

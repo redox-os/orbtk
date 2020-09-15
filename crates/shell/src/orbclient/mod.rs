@@ -58,15 +58,21 @@ where
     /// Receives window request from the application and handles them.
     pub fn receive_requests(&mut self) {
         let mut requests = vec![];
-        for request in self.requests.try_iter() {
+        for request in self.requests.iter() {
             requests.push(request);
         }
 
         for request in requests {
-            if let ShellRequest::CreateWindow(adapter, settings, window_requests) = request {
-                self.create_window_from_settings(settings, adapter)
-                    .request_receiver(window_requests)
-                    .build();
+            match request {
+                ShellRequest::CreateWindow(adapter, settings, window_requests) => {
+                    self.create_window_from_settings(settings, adapter)
+                        .request_receiver(window_requests)
+                        .build();
+                }
+                ShellRequest::CloseWindow(_) => {
+                    self.window_shells.clear();
+                }
+                ShellRequest::None => {}
             }
         }
     }
@@ -98,6 +104,8 @@ where
             //         break;
             //     }
             // }
+
+            println!("shell");
 
             self.receive_requests();
         }
