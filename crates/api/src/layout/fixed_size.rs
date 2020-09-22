@@ -8,7 +8,6 @@ use memchr::memchr_iter;
 
 use crate::{
     proc_macros::IntoLayout,
-    properties::Constraint,
     render::Image,
     render::RenderContext2D,
     theming::*,

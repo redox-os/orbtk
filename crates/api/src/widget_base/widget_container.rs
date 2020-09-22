@@ -2,9 +2,7 @@ use std::{any::type_name, cell::RefCell, rc::Rc};
 
 use dces::prelude::*;
 
-use crate::{
-    event::ChangedEvent, event::*, properties::Constraint, theming::*, tree::*, utils::prelude::*,
-};
+use crate::{event::ChangedEvent, event::*, theming::*, tree::*, utils::prelude::*};
 
 /// Mark the widget and shared widgets as dirty.
 pub fn mark_as_dirty(

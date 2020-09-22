@@ -6,14 +6,13 @@ use crate::{
     application::*,
     event::*,
     localization::Localization,
-    properties::*,
     render,
     services::{Clipboard, Settings},
     shell,
     shell::{ShellRequest, WindowRequest, WindowSettings},
     systems::*,
     tree::Tree,
-    utils::{Point, Rectangle},
+    utils::{Constraint, Point, Rectangle},
     widget_base::*,
 };
 
