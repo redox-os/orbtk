@@ -845,12 +845,12 @@ impl Template for TextBehavior {
                     .action(TextAction::MouseMove(p));
                 true
             })
-            .on_changed("focused", |states, id| {
+            .on_changed("focused", move |states, _| {
                 states
                     .get_mut::<TextBehaviorState>(id)
                     .action(TextAction::FocusedChanged);
             })
-            .on_changed("selection", |states, id| {
+            .on_changed("selection", move |states, _| {
                 states
                     .get_mut::<TextBehaviorState>(id)
                     .action(TextAction::SelectionChanged);
