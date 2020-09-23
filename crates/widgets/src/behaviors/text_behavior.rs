@@ -174,7 +174,7 @@ impl TextBehaviorState {
 
         let mut text = String16::from(ctx.get_widget(self.target).clone::<String>("text"));
 
-        text.remove(selection.start() );
+        text.remove(selection.start());
 
         self.set_text(ctx, text.to_string());
     }
