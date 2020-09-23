@@ -166,8 +166,9 @@ impl TextBehaviorState {
         }
 
         let selection = self.selection(ctx);
+        let len = self.len(ctx);
 
-        if selection.end() > self.len(ctx) {
+        if len == 0 || selection.end() > self.len(ctx) {
             return;
         }
 
