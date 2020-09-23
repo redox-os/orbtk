@@ -101,9 +101,9 @@ impl TextBehaviorState {
             return;
         }
 
-        let text_was_empty = self.len(ctx) == 0;
+        let mut update_focus_state = self.len(ctx) == 0;
 
-        let _ = self.clear_selection(ctx);
+        update_focus_state = update_focus_state || self.clear_selection(ctx);
 
         let mut selection = self.selection(ctx);
 
@@ -118,7 +118,7 @@ impl TextBehaviorState {
         // used to trigger bounds adjustments
         self.direction = Direction::Right;
 
-        if text_was_empty {
+        if update_focus_state {
             self.update_focused_state(ctx);
         }
     }
