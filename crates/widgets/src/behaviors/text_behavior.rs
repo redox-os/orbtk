@@ -645,6 +645,9 @@ impl TextBehaviorState {
         self.adjust_selection(ctx);
 
         if self.len(ctx) == 0 {
+            Cursor::offset_set(&mut ctx.get_widget(self.cursor), 0.);
+            TextBlock::offset_set(&mut ctx.get_widget(self.text_block), 0.);
+
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
                 .set_state(EMPTY_STATE);
