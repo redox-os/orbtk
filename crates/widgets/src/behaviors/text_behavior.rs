@@ -362,7 +362,7 @@ impl TextBehaviorState {
                     self.insert_text(key_event.text, ctx);
                 }
             }
-            Key::Escape => {}
+            Key::Escape => self.collapse_selection(ctx),
             _ => {
                 self.insert_text(key_event.text, ctx);
             }
@@ -409,6 +409,13 @@ impl TextBehaviorState {
             self.action(TextAction::MouseMove(position));
             ctx.widget().set("dirty", true);
         }
+
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
+    }
+
+    fn collapse_selection(&self, ctx: &mut Context) {
+        let mut selection = self.selection(ctx);
+        selection.set_end(selection.start());
 
         TextBehavior::selection_set(&mut ctx.widget(), selection);
     }
