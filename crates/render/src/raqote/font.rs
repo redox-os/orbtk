@@ -39,7 +39,7 @@ impl Font {
         text: &str,
         data: &mut [u32],
         width: f64,
-        // size, color, alpha
+        height: f64,
         config: (f64, Color, f32),
         position: (f64, f64),
     ) {
@@ -47,6 +47,7 @@ impl Font {
             text,
             data,
             width,
+            height,
             config,
             position,
             Rectangle::new((0.0, 0.0), (width, std::f64::MAX)),
@@ -58,7 +59,7 @@ impl Font {
         text: &str,
         data: &mut [u32],
         width: f64,
-        // size, color, alpha
+        height: f64,
         config: (f64, Color, f32),
         position: (f64, f64),
         clip: Rectangle,
@@ -100,6 +101,8 @@ impl Font {
                         && position.0 + off_x as f64 <= clip.x() + clip.width()
                         && position.1 + off_y as f64 >= clip.y()
                         && position.1 + off_y as f64 <= clip.y() + clip.height()
+                        && position.0 + (off_x as f64) < width
+                        && position.0 + (off_y as f64) < height
                     {
                         // Alpha blending from orbclient
                         let alpha = (config.2 * v * 255.0) as u32;
