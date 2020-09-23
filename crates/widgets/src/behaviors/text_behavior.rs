@@ -291,7 +291,7 @@ impl TextBehaviorState {
 
     fn activate(&self, ctx: &mut Context) {
         if *ctx.widget().get::<bool>("lost_focus_on_activation") {
-            ctx.push_event_by_window(FocusEvent::RemoveFocus(ctx.entity));
+            ctx.push_event_by_window(FocusEvent::RemoveFocus(self.target));
         }
 
         ctx.push_event_strategy_by_entity(
