@@ -10,6 +10,7 @@ enum Action {
     IncrementCounter,
     RemoveItem,
     ToggleTheme(Entity),
+    SelectionChanged,
 }
 
 #[derive(AsAny)]
@@ -82,20 +83,19 @@ impl State for MainViewState {
                     let theme = if light { light_theme() } else { dark_theme() };
                     ctx.switch_theme(theme);
                 }
+                Action::SelectionChanged => {
+                    let mut selection_string = "Selected:".to_string();
+
+                    for index in &MainView::selected_indices_ref(&ctx.widget()).0 {
+                        selection_string = format!("{} {}", selection_string, index);
+                    }
+
+                    TextBlock::text_set(&mut ctx.child("selection"), selection_string);
+                }
             }
 
             self.action = None;
         }
-    }
-
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
-        let mut selection_string = "Selected:".to_string();
-
-        for index in &MainView::selected_indices_ref(&ctx.widget()).0 {
-            selection_string = format!("{} {}", selection_string, index);
-        }
-
-        TextBlock::text_set(&mut ctx.child("selection"), selection_string);
     }
 }
 
@@ -420,7 +420,11 @@ impl Template for MainView {
                                             .text(text)
                                             .build(bc)
                                     })
-                                    .on_selection_changed(|_, _, _| println!("Selection changed"))
+                                    .on_selection_changed(move |states, _, _| {
+                                        states
+                                            .get_mut::<MainViewState>(id)
+                                            .action(Action::SelectionChanged)
+                                    })
                                     .count(("selection_list_count", id))
                                     .build(ctx),
                             )
