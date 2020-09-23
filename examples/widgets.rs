@@ -87,7 +87,7 @@ impl State for MainViewState {
                     let mut selection_string = "Selected:".to_string();
 
                     for index in &MainView::selected_indices_ref(&ctx.widget()).0 {
-                        selection_string = format!("{} {}", selection_string, index);
+                        selection_string = format!("{} {}", selection_string, index + 1);
                     }
 
                     TextBlock::text_set(&mut ctx.child("selection"), selection_string);
