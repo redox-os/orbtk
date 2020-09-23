@@ -195,10 +195,22 @@ impl TextBehaviorState {
             text.remove(i);
         }
 
+        let removed_width = self.measure(ctx, start, end).width;
+
+        let mut offset = *Cursor::offset_ref(&ctx.get_widget(self.cursor));
+        offset = (offset + removed_width).min(0.);
+
+        Cursor::offset_set(&mut ctx.get_widget(self.cursor), offset);
+        TextBlock::offset_set(&mut ctx.get_widget(self.text_block), offset);
+
         selection.set(start);
 
         self.set_text(ctx, text.to_string());
         TextBehavior::selection_set(&mut ctx.widget(), selection);
+
+        if self.len(ctx) == 0 {
+            self.update_focused_state(ctx);
+        }
 
         true
     }
