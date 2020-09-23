@@ -168,13 +168,13 @@ impl TextBehaviorState {
         let selection = self.selection(ctx);
         let len = self.len(ctx);
 
-        if len == 0 || selection.end() > self.len(ctx) {
+        if len == 0 || selection.end() > self.len(ctx) || selection.start() >= self.len(ctx) {
             return;
         }
 
         let mut text = String16::from(ctx.get_widget(self.target).clone::<String>("text"));
 
-        text.remove(selection.start() + 1);
+        text.remove(selection.start());
 
         self.set_text(ctx, text.to_string());
     }
@@ -297,6 +297,12 @@ impl TextBehaviorState {
         ctx.push_event_strategy_by_entity(
             ActivateEvent(self.target),
             self.target,
+            EventStrategy::Direct,
+        );
+
+        ctx.push_event_strategy_by_entity(
+            ActivateEvent(ctx.entity),
+            ctx.entity,
             EventStrategy::Direct,
         );
     }
@@ -810,6 +816,11 @@ impl Template for TextBehavior {
             .focused(false)
             .lost_focus_on_activation(true)
             .select_all_on_focus(false)
+            .on_activate(|states, entity| {
+                states
+                    .get_mut::<TextBehaviorState>(entity)
+                    .action(TextAction::ForceUpdate)
+            })
             .on_key_down(move |states, event| -> bool {
                 states
                     .get_mut::<TextBehaviorState>(id)
