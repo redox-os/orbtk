@@ -64,7 +64,7 @@ impl TextBehaviorState {
     }
 
     fn request_focus(&self, ctx: &mut Context) {
-        ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
+        ctx.push_event_by_window(FocusEvent::RequestFocus(self.target));
     }
 
     // -- Text operations --
