@@ -299,12 +299,6 @@ impl TextBehaviorState {
             self.target,
             EventStrategy::Direct,
         );
-
-        ctx.push_event_strategy_by_entity(
-            ActivateEvent(ctx.entity),
-            ctx.entity,
-            EventStrategy::Direct,
-        );
     }
 
     // -- Event handling --
@@ -816,11 +810,6 @@ impl Template for TextBehavior {
             .focused(false)
             .lost_focus_on_activation(true)
             .select_all_on_focus(false)
-            .on_activate(|states, entity| {
-                states
-                    .get_mut::<TextBehaviorState>(entity)
-                    .action(TextAction::ForceUpdate)
-            })
             .on_key_down(move |states, event| -> bool {
                 states
                     .get_mut::<TextBehaviorState>(id)
