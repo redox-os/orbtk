@@ -168,13 +168,13 @@ impl TextBehaviorState {
         let selection = self.selection(ctx);
         let len = self.len(ctx);
 
-        if len == 0 || selection.end() > self.len(ctx) {
+        if len == 0 || selection.end() > self.len(ctx) || selection.start() >= self.len(ctx) {
             return;
         }
 
         let mut text = String16::from(ctx.get_widget(self.target).clone::<String>("text"));
 
-        text.remove(selection.start() + 1);
+        text.remove(selection.start() );
 
         self.set_text(ctx, text.to_string());
     }
