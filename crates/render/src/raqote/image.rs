@@ -89,17 +89,25 @@ impl From<(u32, u32, Vec<u32>)> for Image {
     }
 }
 
+pub fn os_path(path: String) -> String {
+    if cfg!(windows) {
+        return path.replace("/", "\\");
+    } else {
+        return path.replace("\\", "/");
+    }
+}
+
 // --- Conversions ---
 
 impl From<&str> for Image {
     fn from(s: &str) -> Image {
-        Image::from_path(s).unwrap()
+        Image::from_path(os_path(s.to_string())).unwrap()
     }
 }
 
 impl From<String> for Image {
     fn from(s: String) -> Image {
-        Image::from_path(s).unwrap()
+        Image::from_path(os_path(s)).unwrap()
     }
 }
 
