@@ -174,7 +174,10 @@ where
         };
 
         let text = {
-            if key_event.character != '\0' && key_event.character != '\n' {
+            if key_event.character != '\0'
+                && key_event.character != '\n'
+                && key_event.character != '\u{1b}'
+            {
                 key_event.character.to_string()
             } else {
                 match key_event.scancode {
