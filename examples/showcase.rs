@@ -432,7 +432,7 @@ impl Template for NavigationView {
                 .child(
                     MasterDetail::new()
                         .responsive(true)
-                        .break_point(64)
+                        .break_point(540)
                         .attach(Grid::row(4))
                         .master(
                             Container::new()
