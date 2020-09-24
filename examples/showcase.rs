@@ -430,11 +430,26 @@ impl Template for NavigationView {
                 )
                 .child(
                     MasterDetail::new()
+                        .responsive(true)
+                        .break_point(64)
                         .attach(Grid::row(4))
                         .master(
                             Container::new()
                                 .background("lynch")
-                                .child(TextBlock::new().text("Master").build(ctx))
+                                .child(TextBlock::new().margin(8).text("master").build(ctx))
+                                .build(ctx),
+                        )
+                        .detail(
+                            Container::new()
+                                .padding(8)
+                                .background("goldendream")
+                                .child(
+                                    TextBlock::new()
+                                        .foreground("black")
+                                        .margin(8)
+                                        .text("detail")
+                                        .build(ctx),
+                                )
                                 .build(ctx),
                         )
                         .build(ctx),
