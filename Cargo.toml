@@ -1,6 +1,6 @@
 [package]
 name = "orbtk"
-version = "0.2.31"
+version = "0.2.32"
 authors = ["Jeremy Soller <jackpot51@gmail.com>"]
 description = "The Orbital Widget Toolkit"
 documentation = "https://docs.rs/orbtk"
@@ -18,8 +18,8 @@ name = "orbtk"
 path = "src/lib.rs"
 
 [dependencies]
-orbclient = "0.3.27"
-orbfont = "0.1.8"
-orbimage = "0.1.17"
+orbclient = { git = "https://gitlab.redox-os.org/redox-os/orbclient.git" }
+orbfont = { git = "https://gitlab.redox-os.org/redox-os/orbfont.git", branch = "develop" }
+orbimage = { git = "https://gitlab.redox-os.org/redox-os/orbimage.git", branch = "develop" }
 cssparser = "0.16.1"
 lazy_static = "1.4.0"
