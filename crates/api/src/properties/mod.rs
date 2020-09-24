@@ -128,4 +128,5 @@ into_property_source!(ScrollViewerMode: (&str, &str));
 into_property_source!(SelectedEntities: HashSet<Entity>);
 into_property_source!(SelectedIndices: HashSet<usize>);
 into_property_source!(TextSelection: (usize, usize));
+into_property_source!(FocusState);
 into_property_source!(KeyboardState);

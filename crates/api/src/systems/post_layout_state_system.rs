@@ -63,9 +63,8 @@ impl System<Tree, StringComponentStore, RenderContext2D> for PostLayoutStateSyst
 
         let theme = ecm
             .component_store()
-            .get::<Global>("global", root)
+            .get::<Theme>("theme", root)
             .unwrap()
-            .theme
             .clone();
 
         let mut remove_widget_list: Vec<Entity> = vec![];

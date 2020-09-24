@@ -49,51 +49,15 @@ impl WindowState {
     }
 
     fn request_focus(&self, entity: Entity, ctx: &mut Context) {
-        let focused_widget = ctx.widget().get::<Global>("global").focused_widget;
-
-        if (focused_widget.is_some() && focused_widget.unwrap() == entity)
-            || !*ctx.get_widget(entity).get::<bool>("enabled")
-        {
-            return;
-        }
-
-        if let Some(old_focused_element) = ctx.window().get::<Global>("global").focused_widget {
-            let mut old_focused_element = ctx.get_widget(old_focused_element);
-
-            old_focused_element.set("focused", false);
-            old_focused_element
-                .get_mut::<Selector>("selector")
-                .clear_state();
-            old_focused_element.update(false);
-        }
-
-        ctx.window().get_mut::<Global>("global").focused_widget = Some(entity);
-
-        if ctx.get_widget(entity).has::<bool>("focused") {
-            let mut focused_element = ctx.get_widget(entity);
-
-            focused_element.set("focused", true);
-            focused_element
-                .get_mut::<Selector>("selector")
-                .set_state("focused");
-            focused_element.update(false);
-        }
+        let mut focus_state: FocusState = Window::focus_state_clone(&ctx.widget());
+        focus_state.request_focus(entity, ctx);
+        Window::focus_state_set(&mut ctx.widget(), focus_state);
     }
 
     fn remove_focus(&self, entity: Entity, ctx: &mut Context) {
-        if let Some(old_focused_element) = ctx.window().get::<Global>("global").focused_widget {
-            if old_focused_element != entity {
-                return;
-            }
-            let mut old_focused_element = ctx.get_widget(old_focused_element);
-            old_focused_element.set("focused", false);
-            old_focused_element
-                .get_mut::<Selector>("selector")
-                .clear_state();
-            old_focused_element.update(false);
-        }
-
-        ctx.widget().get_mut::<Global>("global").focused_widget = None;
+        let mut focus_state: FocusState = Window::focus_state_clone(&ctx.widget());
+        focus_state.remove_focus(entity, ctx);
+        Window::focus_state_set(&mut ctx.widget(), focus_state);
     }
 
     fn set_background(&mut self, ctx: &mut Context) {
@@ -173,6 +137,12 @@ widget!(
 
         /// Access the current keyboard state e.g. to check modifiers.
         keyboard_state: KeyboardState,
+
+        /// Access the current window theme.
+        theme: Theme,
+
+        /// Access the current focus state.
+        focus_state: FocusState,
 
         /// Internal property to handle dirty widgets.
         dirty_widgets: DirtyWidgets
