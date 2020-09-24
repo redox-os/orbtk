@@ -6,6 +6,11 @@ Dictionary (
         "love": "liebe",
         "localization": "Lokalisierung",
         "German": "Deutsch",
-        "English": "Englisch"
+        "English": "Englisch",
+        "Localization": "Lokalisierung",
+        "Navigation": "Navigation",
+        "show details": "zeige Details",
+        "back": "zurück",
+        "MasterDetail (resize the window)": "MasterDetail (Ändere Festergröße)"
     }
 )
