@@ -28,10 +28,12 @@ impl State for MasterDetailState {
 
         if let Some(master) = self.master {
             ctx.append_child_entity_to(master, self.content_container);
+            self.master = None;
         }
 
         if let Some(detail) = self.detail {
             ctx.append_child_entity_to(detail, self.content_container);
+            self.detail = None;
         }
     }
 
