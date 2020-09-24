@@ -19,7 +19,7 @@ fn main() {
             Window::new()
                 .title("OrbTk - showcase example")
                 .position((100, 100))
-                .size(640, 730)
+                .size(1000, 730)
                 .resizeable(true)
                 .child(MainView::new().build(ctx))
                 .build(ctx)
@@ -354,11 +354,16 @@ impl Template for LocalizationView {
     }
 }
 
-widget!(NavigationView {});
+widget!(
+    NavigationView<NavigationState> {
+        md_navigation_visibility: Visibility
+    }
+);
 
 impl Template for NavigationView {
-    fn template(self, _id: Entity, ctx: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let pager = Pager::new()
+            .attach(Grid::row(1))
             .child(
                 Container::new()
                     .padding(8)
@@ -397,20 +402,23 @@ impl Template for NavigationView {
                 .margin(16)
                 .rows(
                     Rows::create()
+                        .push(32)
                         .push("*")
                         .push(8)
                         .push("auto")
                         .push(8)
+                        .push(32)
                         .push("*")
                         .build(),
                 )
+                .child(TextBlock::new().text("Pager").style("header").build(ctx))
                 .child(pager)
                 .child(
                     Button::new()
                         .style("button_single_content")
                         .icon(material_icons_font::MD_KEYBOARD_ARROW_LEFT)
                         .h_align("start")
-                        .attach(Grid::row(2))
+                        .attach(Grid::row(3))
                         .on_click(move |states, _| {
                             states.get_mut::<PagerState>(pager).previous();
                             true
@@ -422,7 +430,7 @@ impl Template for NavigationView {
                         .style("button_single_content")
                         .icon(material_icons_font::MD_KEYBOARD_ARROW_RIGHT)
                         .h_align("end")
-                        .attach(Grid::row(2))
+                        .attach(Grid::row(3))
                         .on_click(move |states, _| {
                             states.get_mut::<PagerState>(pager).next();
                             true
@@ -430,24 +438,58 @@ impl Template for NavigationView {
                         .build(ctx),
                 )
                 .child(
+                    TextBlock::new()
+                        .text("MasterDetail (resize the window)")
+                        .attach(Grid::row(5))
+                        .style("header")
+                        .build(ctx),
+                )
+                .child(
                     MasterDetail::new()
+                        .id(ID_NAVIGATION_MASTER_DETAIL)
                         .responsive(true)
                         .break_point(800)
-                        .attach(Grid::row(4))
+                        .navigation_visibility(("md_navigation_visibility", id))
+                        .attach(Grid::row(6))
                         .master_detail(
                             Container::new()
                                 .padding(8)
                                 .background("lynch")
-                                .child(TextBlock::new().text("master").build(ctx))
+                                .child(TextBlock::new().text("master").v_align("end").build(ctx))
+                                .child(
+                                    Button::new()
+                                        .style("button_primary_single_content")
+                                        .visibility(("md_navigation_visibility", id))
+                                        .h_align("start")
+                                        .text("show details")
+                                        .on_click(move |states, _| {
+                                            states.get_mut::<NavigationState>(id).show_detail();
+                                            true
+                                        })
+                                        .build(ctx),
+                                )
                                 .build(ctx),
                             Container::new()
                                 .padding(8)
                                 .background("goldendream")
                                 .child(
                                     TextBlock::new()
+                                        .text("detail")
+                                        .v_align("end")
                                         .foreground("black")
                                         .margin(8)
-                                        .text("detail")
+                                        .build(ctx),
+                                )
+                                .child(
+                                    Button::new()
+                                        .text("back")
+                                        .style("button_single_content")
+                                        .visibility(("md_navigation_visibility", id))
+                                        .h_align("start")
+                                        .on_click(move |states, _| {
+                                            states.get_mut::<NavigationState>(id).show_master();
+                                            true
+                                        })
                                         .build(ctx),
                                 )
                                 .build(ctx),
@@ -462,6 +504,47 @@ impl Template for NavigationView {
 // [END] views
 
 // [START] states
+
+static ID_NAVIGATION_MASTER_DETAIL: &str = "id_navigation_master_detail";
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+enum NavigationAction {
+    ShowMaster,
+    ShowDetail,
+}
+
+#[derive(Debug, Default, AsAny)]
+struct NavigationState {
+    master_detail: Entity,
+    action: Option<NavigationAction>,
+}
+
+impl NavigationState {
+    fn show_master(&mut self) {
+        self.action = Some(NavigationAction::ShowMaster);
+    }
+
+    fn show_detail(&mut self) {
+        self.action = Some(NavigationAction::ShowDetail);
+    }
+}
+
+impl State for NavigationState {
+    fn init(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+        self.master_detail = ctx.child(ID_NAVIGATION_MASTER_DETAIL).entity();
+    }
+
+    fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+        if let Some(action) = self.action {
+            match action {
+                NavigationAction::ShowMaster => MasterDetail::show_master(ctx, self.master_detail),
+                NavigationAction::ShowDetail => MasterDetail::show_detail(ctx, self.master_detail),
+            }
+
+            self.action = None;
+        }
+    }
+}
 
 #[derive(Debug, Default, AsAny)]
 struct LocalizationState {
