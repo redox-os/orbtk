@@ -9,7 +9,7 @@ pub trait Localization {
     /// `de_DE` or `fr_FR`.
     fn language(&self) -> &String;
 
-    /// Sets the current language by key e.g. `en_US` or `de_DE`.
+    /// Sets the current language identified by its language key (e.g. `en_US`, `de_DE`).
     fn set_language(&mut self, key: &str);
 
     /// Gets the translated text for the given key. If there is no
