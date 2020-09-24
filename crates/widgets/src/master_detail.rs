@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use crate::{api::prelude::*, proc_macros::*, shell::WindowRequest, Grid};
 
 // --- KEYS --
-static CONTENT_CONTAINER: &str = "id_content_container";
+static CONTENT_GRID: &str = "id_content_grid";
 // --- KEYS --
 
 // Describes operations on the master detail state.
@@ -16,9 +16,10 @@ enum MasterDetailAction {
     Collapse,
 }
 
+/// Handles request and layout changed of the `MasterDetail` widget.
 #[derive(Default, Clone, Debug, AsAny)]
 pub struct MasterDetailState {
-    content_container: Entity,
+    CONTENT_GRID: Entity,
     master: Option<Entity>,
     detail: Option<Entity>,
     actions: VecDeque<MasterDetailAction>,
@@ -39,12 +40,12 @@ impl MasterDetailState {
 
     // sets the master and detail widget (entity)
     fn set_master_detail(&mut self, ctx: &mut Context, master: Entity, detail: Entity) {
-        ctx.clear_children_of(self.content_container);
-        ctx.append_child_entity_to(master, self.content_container);
+        ctx.clear_children_of(self.CONTENT_GRID);
+        ctx.append_child_entity_to(master, self.CONTENT_GRID);
         ctx.build_context()
             .register_property::<usize>("column", master, 0);
 
-        ctx.append_child_entity_to(detail, self.content_container);
+        ctx.append_child_entity_to(detail, self.CONTENT_GRID);
         ctx.build_context()
             .register_property::<usize>("column", detail, 0);
 
@@ -66,9 +67,11 @@ impl MasterDetailState {
             ctx.get_widget(detail).set::<usize>("column", 1);
         }
 
+        let master_width = *MasterDetail::master_width_ref(&ctx.widget());
+
         Grid::columns_set(
-            &mut ctx.get_widget(self.content_container),
-            Columns::create().push(300).push("*").build(),
+            &mut ctx.get_widget(self.CONTENT_GRID),
+            Columns::create().push(master_width).push("*").build(),
         );
     }
 
@@ -87,16 +90,40 @@ impl MasterDetailState {
             ctx.get_widget(detail).set::<usize>("column", 0);
         }
         Grid::columns_set(
-            &mut ctx.get_widget(self.content_container),
+            &mut ctx.get_widget(self.CONTENT_GRID),
             Columns::create().push("*").build(),
         );
+    }
+
+    fn int_show_master(&self, ctx: &mut Context) {
+        if let Some(master) = self.master {
+            ctx.get_widget(master)
+                .set("visibility", Visibility::Visible);
+        }
+
+        if let Some(detail) = self.detail {
+            ctx.get_widget(detail)
+                .set("visibility", Visibility::Collapsed);
+        }
+    }
+
+    fn int_show_detail(&self, ctx: &mut Context) {
+        if let Some(master) = self.master {
+            ctx.get_widget(master)
+                .set("visibility", Visibility::Collapsed);
+        }
+
+        if let Some(detail) = self.detail {
+            ctx.get_widget(detail)
+                .set("visibility", Visibility::Visible);
+        }
     }
 }
 
 impl State for MasterDetailState {
     fn init(&mut self, registry: &mut Registry, ctx: &mut Context) {
         self.update = true;
-        self.content_container = ctx.child(CONTENT_CONTAINER).entity();
+        self.CONTENT_GRID = ctx.child(CONTENT_GRID).entity();
         self.update(registry, ctx);
     }
 
@@ -109,9 +136,19 @@ impl State for MasterDetailState {
 
         // handle state actions
         if let Some(action) = self.actions.pop_front() {
+            let responsive = !*MasterDetail::responsive_ref(&ctx.widget());
+
             match action {
-                MasterDetailAction::ShowMaster => if !self.expanded {},
-                MasterDetailAction::ShowDetail => if !self.expanded {},
+                MasterDetailAction::ShowMaster => {
+                    if !self.expanded || !responsive {
+                        self.int_show_master(ctx);
+                    }
+                }
+                MasterDetailAction::ShowDetail => {
+                    if !self.expanded || !responsive {
+                        self.int_show_detail(ctx);
+                    }
+                }
                 MasterDetailAction::SetMasterDetail(master, detail) => {
                     self.set_master_detail(ctx, master, detail)
                 }
@@ -123,7 +160,7 @@ impl State for MasterDetailState {
 
     fn update_post_layout(&mut self, _registry: &mut Registry, ctx: &mut Context) {
         let width = ctx
-            .get_widget(self.content_container)
+            .get_widget(self.CONTENT_GRID)
             .get::<Rectangle>("bounds")
             .width();
         let break_point: f64 = *MasterDetail::break_point_ref(&ctx.widget());
@@ -154,9 +191,14 @@ impl State for MasterDetailState {
 
 widget!(
     MasterDetail<MasterDetailState>: ActivateHandler {
+        /// Describes if the change between a one and two column layout on the `break_point`.
         responsive: bool,
 
-        break_point: f64
+        /// Describes the switch point between the one and two column layout.
+        break_point: f64,
+
+        /// Describes the width of the master widget on `expanded` state.
+        master_width: f64
     }
 );
 
@@ -173,7 +215,9 @@ impl MasterDetail {
 impl Template for MasterDetail {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MasterDetails")
-            .child(Grid::new().id(CONTENT_CONTAINER).build(ctx))
+            .master_width(374)
+            .child(Grid::new().id(CONTENT_GRID).build(ctx))
+            // used to force an update on the next iteration after post layout
             .on_activate(move |states, _| states.get_mut::<MasterDetailState>(id).update = true)
     }
 }
