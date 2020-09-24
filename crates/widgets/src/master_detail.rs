@@ -11,6 +11,9 @@ static CONTENT_CONTAINER: &str = "id_content_container";
 enum MasterDetailAction {
     ShowMaster,
     ShowDetail,
+    SetMasterDetail(Entity, Entity),
+    Expand,
+    Collapse,
 }
 
 #[derive(Default, Clone, Debug, AsAny)]
@@ -20,6 +23,7 @@ pub struct MasterDetailState {
     detail: Option<Entity>,
     actions: VecDeque<MasterDetailAction>,
     expanded: bool,
+    update: bool,
 }
 
 impl MasterDetailState {
@@ -32,35 +36,87 @@ impl MasterDetailState {
     pub fn show_detail(&mut self) {
         self.actions.push_front(MasterDetailAction::ShowDetail);
     }
+
+    // sets the master and detail widget (entity)
+    fn set_master_detail(&mut self, ctx: &mut Context, master: Entity, detail: Entity) {
+        ctx.clear_children_of(self.content_container);
+        ctx.append_child_entity_to(master, self.content_container);
+        ctx.build_context()
+            .register_property::<usize>("column", master, 0);
+
+        ctx.append_child_entity_to(detail, self.content_container);
+        ctx.build_context()
+            .register_property::<usize>("column", detail, 0);
+
+        self.master = Some(master);
+        self.detail = Some(detail);
+    }
+
+    // expands the widget (two column layout)
+    fn expand(&mut self, ctx: &mut Context) {
+        self.expanded = true;
+        if let Some(master) = self.master {
+            ctx.get_widget(master)
+                .set("visibility", Visibility::Visible);
+        }
+
+        if let Some(detail) = self.detail {
+            ctx.get_widget(detail)
+                .set("visibility", Visibility::Visible);
+            ctx.get_widget(detail).set::<usize>("column", 1);
+        }
+
+        Grid::columns_set(
+            &mut ctx.get_widget(self.content_container),
+            Columns::create().push(300).push("*").build(),
+        );
+    }
+
+    // collapse the widget (one column layout)
+    fn collapse(&mut self, ctx: &mut Context) {
+        self.expanded = false;
+
+        if let Some(master) = self.master {
+            ctx.get_widget(master)
+                .set("visibility", Visibility::Visible);
+        }
+
+        if let Some(detail) = self.detail {
+            ctx.get_widget(detail)
+                .set("visibility", Visibility::Collapsed);
+            ctx.get_widget(detail).set::<usize>("column", 0);
+        }
+        Grid::columns_set(
+            &mut ctx.get_widget(self.content_container),
+            Columns::create().push("*").build(),
+        );
+    }
 }
 
 impl State for MasterDetailState {
     fn init(&mut self, registry: &mut Registry, ctx: &mut Context) {
+        self.update = true;
         self.content_container = ctx.child(CONTENT_CONTAINER).entity();
         self.update(registry, ctx);
     }
 
     fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
-        // register new master and detail widget
-        if self.master.is_some() || self.detail.is_some() {
-            ctx.clear_children_of(self.content_container);
-
-            if let Some(master) = self.master {
-                ctx.append_child_entity_to(master, self.content_container);
-                self.master = None;
-            }
-
-            if let Some(detail) = self.detail {
-                ctx.append_child_entity_to(detail, self.content_container);
-                self.detail = None;
-            }
+        if !self.update {
+            return;
         }
+
+        self.update = false;
 
         // handle state actions
         if let Some(action) = self.actions.pop_front() {
             match action {
                 MasterDetailAction::ShowMaster => if !self.expanded {},
                 MasterDetailAction::ShowDetail => if !self.expanded {},
+                MasterDetailAction::SetMasterDetail(master, detail) => {
+                    self.set_master_detail(ctx, master, detail)
+                }
+                MasterDetailAction::Expand => self.expand(ctx),
+                MasterDetailAction::Collapse => self.collapse(ctx),
             }
         }
     }
@@ -72,24 +128,32 @@ impl State for MasterDetailState {
             .width();
         let break_point: f64 = *MasterDetail::break_point_ref(&ctx.widget());
 
-        if self.expanded && width < break_point {
-            // todo collapse
-            // set master to visible and detail to collapsed
-            println!("collapse");
-            self.expanded = false;
+        if self.expanded && width <= break_point {
+            self.actions.push_front(MasterDetailAction::Collapse);
+
+            // force update on next iteration
             ctx.send_window_request(WindowRequest::Redraw);
+            ctx.push_event_strategy_by_entity(
+                ActivateEvent(ctx.entity),
+                ctx.entity,
+                EventStrategy::Direct,
+            );
         } else if !self.expanded && width > break_point {
-            // todo expand
-            // todo set both to visible
-            println!("expand");
-            self.expanded = true;
+            self.actions.push_front(MasterDetailAction::Expand);
+
+            // force update on next iteration
             ctx.send_window_request(WindowRequest::Redraw);
+            ctx.push_event_strategy_by_entity(
+                ActivateEvent(ctx.entity),
+                ctx.entity,
+                EventStrategy::Direct,
+            );
         }
     }
 }
 
 widget!(
-    MasterDetail<MasterDetailState> {
+    MasterDetail<MasterDetailState>: ActivateHandler {
         responsive: bool,
 
         break_point: f64
@@ -97,26 +161,19 @@ widget!(
 );
 
 impl MasterDetail {
-    /// Register a master widget (entity) on the master detail widget.
-    /// Only one master widget can be set. Only the last set widget will
-    /// be the master widget on the master detail widget.
-    pub fn master(mut self, master: Entity) -> Self {
-        self.state_mut().master = Some(master);
-        self
-    }
-
-    /// Register a detail widget (entity) on the master detail widget.
-    /// Only one detail widget can be set. Only the last set widget will
-    /// be the detail widget on the master detail widget.
-    pub fn detail(mut self, detail: Entity) -> Self {
-        self.state_mut().detail = Some(detail);
+    /// Register a master and a detail widget (entity).
+    pub fn master_detail(mut self, master: Entity, detail: Entity) -> Self {
+        self.state_mut()
+            .actions
+            .push_front(MasterDetailAction::SetMasterDetail(master, detail));
         self
     }
 }
 
 impl Template for MasterDetail {
-    fn template(self, _id: Entity, ctx: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MasterDetails")
             .child(Grid::new().id(CONTENT_CONTAINER).build(ctx))
+            .on_activate(move |states, _| states.get_mut::<MasterDetailState>(id).update = true)
     }
 }
