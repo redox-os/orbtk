@@ -395,7 +395,15 @@ impl Template for NavigationView {
         self.child(
             Grid::new()
                 .margin(16)
-                .rows(Rows::create().push("*").push(8).push("auto").build())
+                .rows(
+                    Rows::create()
+                        .push("*")
+                        .push(8)
+                        .push("auto")
+                        .push(8)
+                        .push("*")
+                        .build(),
+                )
                 .child(pager)
                 .child(
                     Button::new()
@@ -419,6 +427,17 @@ impl Template for NavigationView {
                             states.get_mut::<PagerState>(pager).next();
                             true
                         })
+                        .build(ctx),
+                )
+                .child(
+                    MasterDetail::new()
+                        .attach(Grid::row(4))
+                        .master(
+                            Container::new()
+                                .background("lynch")
+                                .child(TextBlock::new().text("Master").build(ctx))
+                                .build(ctx),
+                        )
                         .build(ctx),
                 )
                 .build(ctx),
