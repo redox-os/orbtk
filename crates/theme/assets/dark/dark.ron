@@ -56,6 +56,23 @@ Theme (
                 "icon_brush": "$BRIGHT_GRAY",
             },
         ),
+        "button_primary_single_content": (
+            base: "button_primary",
+            properties: {
+                "spacing": 0
+            },
+            states: {
+                "pressed": {
+                    "background": "$BLUE_BAYOUX",
+                },
+                "selected": {
+                    "background": "$BLUE_BAYOUX",
+                },
+                "disabled": {
+                    "opacity": 0.5,
+                }
+            },
+        ),
         "button_small": (
             properties: {
                 "border_radius": 0,

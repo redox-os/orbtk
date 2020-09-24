@@ -46,7 +46,7 @@ pub trait Template: Sized {
     ///     }
     /// }
     /// ```
-    fn template(self, _id: Entity, _context: &mut BuildContext) -> Self {
+    fn template(self, _id: Entity, _ctx: &mut BuildContext) -> Self {
         self
     }
 

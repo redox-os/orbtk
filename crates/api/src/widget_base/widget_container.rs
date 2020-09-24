@@ -565,6 +565,15 @@ impl<'a> WidgetContainer<'a> {
     pub fn children_mut(&mut self) -> Option<&mut Vec<Entity>> {
         self.ecm.entity_store().children.get_mut(&self.current_node)
     }
+
+    /// Check if the given widget (entity) is child of the current widget.
+    pub fn is_child(&mut self, entity: Entity) -> bool {
+        if let Some(children) = self.ecm.entity_store().children.get(&self.current_node) {
+            return children.contains(&entity);
+        }
+
+        false
+    }
 }
 
 impl<'a> From<&'a mut super::Context<'_>> for WidgetContainer<'a> {
