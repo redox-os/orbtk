@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Localization
 * Pager navigation widget
 * Custom theme names for types Brush, String, Thickness, f32, f64
+* Add focus_state property to Window
+* Add theme property to Window
 
 ### 0.3.1-alpha3
 

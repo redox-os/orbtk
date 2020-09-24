@@ -36,9 +36,8 @@ impl System<Tree, StringComponentStore, RenderContext2D> for LayoutSystem {
 
         let theme = ecm
             .component_store()
-            .get::<Global>("global", root)
+            .get::<Theme>("theme", root)
             .unwrap()
-            .theme
             .clone();
 
         self.context_provider.layouts.borrow()[&root].measure(

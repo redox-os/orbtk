@@ -12,12 +12,10 @@ use crate::{
 };
 
 pub use self::context_provider::*;
-pub use self::global::*;
 pub use self::overlay::*;
 pub use self::window_adapter::*;
 
 mod context_provider;
-mod global;
 mod overlay;
 mod window_adapter;
 

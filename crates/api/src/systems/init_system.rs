@@ -11,24 +11,6 @@ pub struct InitSystem {
     registry: Rc<RefCell<Registry>>,
 }
 
-impl InitSystem {
-    // init css ids.
-    fn init_id(&self, node: Entity, store: &mut StringComponentStore, root: Entity) {
-        // Add css id to global id map.
-        let id = if let Ok(id) = store.get::<String>("id", node) {
-            Some((node, id.clone()))
-        } else {
-            None
-        };
-
-        if let Some((entity, id)) = id {
-            if let Ok(global) = store.get_mut::<Global>("global", root) {
-                global.id_map.insert(id, entity);
-            }
-        }
-    }
-}
-
 impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
     fn run_with_context(
         &self,
@@ -53,16 +35,13 @@ impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
         // init css ids
         let theme = ecm
             .component_store()
-            .get::<Global>("global", root)
+            .get::<Theme>("theme", root)
             .unwrap()
-            .theme
             .clone();
 
         let mut current_node = root;
 
         loop {
-            self.init_id(current_node, ecm.component_store_mut(), root);
-
             {
                 let mut ctx = Context::new(
                     (current_node, ecm),

@@ -46,12 +46,10 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
         let debug = false;
 
         let root = ecm.entity_store().root();
-
         let theme = ecm
             .component_store()
-            .get::<Global>("global", root)
+            .get::<Theme>("theme", root)
             .unwrap()
-            .theme
             .clone();
 
         let mut offsets = BTreeMap::new();

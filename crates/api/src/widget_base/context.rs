@@ -489,7 +489,7 @@ impl<'a> Context<'a> {
     pub fn switch_theme(&mut self, theme: Theme) {
         self.theme = theme.clone();
 
-        self.window().get_mut::<Global>("global").theme = theme;
+        *self.window().get_mut::<Theme>("theme") = theme;
 
         // update on window to update all widgets in the tree
         self.window().update_dirty(true);
