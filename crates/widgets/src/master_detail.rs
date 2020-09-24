@@ -48,6 +48,8 @@ impl MasterDetailState {
         ctx.append_child_entity_to(detail, self.CONTENT_GRID);
         ctx.build_context()
             .register_property::<usize>("column", detail, 0);
+        ctx.get_widget(detail)
+            .set("visibility", Visibility::Collapsed);
 
         self.master = Some(master);
         self.detail = Some(detail);
@@ -159,6 +161,10 @@ impl State for MasterDetailState {
     }
 
     fn update_post_layout(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+        if !*MasterDetail::responsive_ref(&ctx.widget()) {
+            return;
+        }
+
         let width = ctx
             .get_widget(self.CONTENT_GRID)
             .get::<Rectangle>("bounds")
