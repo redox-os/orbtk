@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Custom theme names for types Brush, String, Thickness, f32, f64
 * Add focus_state property to Window
 * Add theme property to Window
+* MasterDetail responsive navigation widget
 
 ### 0.3.1-alpha3
 
