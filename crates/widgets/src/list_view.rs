@@ -74,6 +74,10 @@ impl State for ListViewState {
         self.generate_items(ctx);
     }
 
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.generate_items(ctx);
+    }
+
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         for index in ctx
             .widget()
