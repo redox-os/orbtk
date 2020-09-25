@@ -102,7 +102,7 @@ impl Font {
                         && position.1 + off_y as f64 >= clip.y()
                         && position.1 + off_y as f64 <= clip.y() + clip.height()
                         && position.0 + (off_x as f64) < width
-                        && position.0 + (off_y as f64) < height
+                        && position.1 + (off_y as f64) < height
                     {
                         // Alpha blending from orbclient
                         let alpha = (config.2 * v * 255.0) as u32;
