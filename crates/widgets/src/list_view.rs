@@ -51,6 +51,7 @@ impl ListViewState {
                         build_context.register_shared_property::<f32>("opacity", item, entity);
                         build_context.register_shared_property::<f32>("opacity", child, entity);
                         build_context.register_shared_property::<f64>("font_size", child, item);
+                        build_context.register_shared_property::<f64>("font", child, item);
                         build_context.append_child(self.items_panel, item);
                         build_context.append_child(mouse_behavior, child);
 
