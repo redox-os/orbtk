@@ -8,6 +8,7 @@ use crate::widget_base::StatesContext;
 
 pub use self::drop::*;
 pub use self::editable::*;
+pub use self::event_adapter::*;
 pub use self::event_handler::*;
 pub use self::event_queue::*;
 pub use self::focus::*;
@@ -18,6 +19,7 @@ pub use self::window::*;
 
 mod drop;
 mod editable;
+mod event_adapter;
 mod event_handler;
 mod event_queue;
 mod focus;
