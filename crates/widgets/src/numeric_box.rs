@@ -118,7 +118,7 @@ impl State for NumericBoxState {
                         self.change_val(self.current_value - self.step, ctx);
                     }
                     Key::Enter => {
-                        if *ctx.widget().get::<bool>("lost_focus_on_activation") {
+                        if *ctx.widget().get::<bool>("lose_focus_on_activation") {
                             ctx.push_event_by_window(FocusEvent::RemoveFocus(ctx.entity));
                         }
 
@@ -184,7 +184,7 @@ widget!(
         foreground: Brush,
 
         /// Sets or shares the value that describes if the NumericBox should lost focus on activation (when enter pressed).
-        lost_focus_on_activation: bool,
+        lose_focus_on_activation: bool,
 
         /// Sets or shares the minimum allowed value property
         min: f64,
@@ -211,7 +211,7 @@ impl Template for NumericBox {
             .border_radius(3.0)
             .focused(false)
             .height(32.0)
-            .lost_focus_on_activation(true)
+            .lose_focus_on_activation(true)
             .min(0.0)
             .max(200.0)
             .step(1.0)
@@ -252,7 +252,7 @@ impl Template for NumericBox {
                             .enabled(false)
                             .max_width(96.)
                             .text("0")
-                            .lost_focus_on_activation(id)
+                            .lose_focus_on_activation(id)
                             .build(ctx),
                     )
                     .child(

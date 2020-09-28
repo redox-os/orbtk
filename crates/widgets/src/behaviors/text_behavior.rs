@@ -302,7 +302,7 @@ impl TextBehaviorState {
     // -- Selection --
 
     fn activate(&self, ctx: &mut Context) {
-        if *ctx.widget().get::<bool>("lost_focus_on_activation") {
+        if *ctx.widget().get::<bool>("lose_focus_on_activation") {
             ctx.push_event_by_window(FocusEvent::RemoveFocus(self.target));
         }
 
@@ -730,7 +730,7 @@ widget!(
     ///     * focused
     ///     * font
     ///     * font_size
-    ///     * lost_focus_on_activation
+    ///     * lose_focus_on_activation
     ///     * request_focus
     ///     * text
     ///     * selection
@@ -745,7 +745,7 @@ widget!(
     ///     focused: bool,
     ///     font: String,
     ///     font_size: f64,
-    ///     lost_focus_on_activation: bool,
+    ///     lose_focus_on_activation: bool,
     ///     request_focus: bool,
     ///     selection: TextSelection
     /// });
@@ -772,7 +772,7 @@ widget!(
     ///            .focused(id)
     ///            .font(id)
     ///            .font_size(id)
-    ///            .lost_focus_on_activation(id)
+    ///            .lose_focus_on_activation(id)
     ///            .target(id.0)
     ///            .request_focus(id)
     ///            .text(id)
@@ -806,7 +806,7 @@ widget!(
         font_size: f64,
 
         /// Sets or shares ta value that describes if the widget should lost focus on activation (when Enter pressed).
-        lost_focus_on_activation: bool,
+        lose_focus_on_activation: bool,
 
         /// Sets or shares the request_focus property. Used to request focus from outside.Set to `true` to request focus.
         request_focus: bool,
@@ -830,7 +830,7 @@ impl Template for TextBehavior {
             .text("")
             .selection(TextSelection::default())
             .focused(false)
-            .lost_focus_on_activation(true)
+            .lose_focus_on_activation(true)
             .select_all_on_focus(false)
             .on_key_down(move |states, event| -> bool {
                 states
