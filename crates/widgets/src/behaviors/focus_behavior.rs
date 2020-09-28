@@ -20,7 +20,8 @@ impl State for FocusBehaviorState {
 
         let target: Entity = (*FocusBehavior::target_ref(&ctx.widget())).into();
 
-        ctx.push_event_by_window(FocusEvent::RequestFocus(target));
+        ctx.event_adapter()
+            .push_event_direct(ctx.entity_of_window(), FocusEvent::RequestFocus(target));
 
         self.request_focus = false;
     }

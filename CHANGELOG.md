@@ -8,10 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 0.3.1-alpha4 (wip)
 
-* PasswordBox widget
-* Clipboard service
+* `PasswordBox` widget
+* `Pager `navigation widget
+* `Clipboard` service
+* `MasterDetail `responsive navigation widget
 * TextBehavior: Copy Ctrl+C, Paste Ctrl+V, Cut Ctrl+X
-* orbraq backend (Orbclient and raqote)
+* `orbraq` backend (Orbclient and raqote)
 * Refactor on_changed callback, add key parameter
 * Access RawWindowHandle from Context
 * Select colors in themes through of CSS-like functions
@@ -24,12 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Replace String16 with std::string::String
 * Raise on_changed callback also on shared widgets
 * Localization
-* Pager navigation widget
 * Custom theme names for types Brush, String, Thickness, f32, f64
 * Add focus_state property to Window
 * Add theme property to Window
 * MasterDetail responsive navigation widget
 * Rename `lost_focus_on_activation` to `lose_focus_on_activation`
+* Thread save `EventAdapter`
 
 ### 0.3.1-alpha3
 

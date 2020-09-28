@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::{api::prelude::*, proc_macros::*, shell::WindowRequest, Grid};
+use crate::{api::prelude::*, proc_macros::*, Grid};
 
 // --- KEYS --
 static CONTENT_GRID: &str = "id_content_grid";
@@ -25,6 +25,7 @@ pub struct MasterDetailState {
     actions: VecDeque<MasterDetailAction>,
     expanded: bool,
     update: bool,
+    event_adapter: EventAdapter,
 }
 
 impl MasterDetailState {
@@ -125,12 +126,8 @@ impl MasterDetailState {
 
     // force update on next iteration.
     fn force_next_update(&self, ctx: &mut Context) {
-        ctx.send_window_request(WindowRequest::Redraw);
-        ctx.push_event_strategy_by_entity(
-            ActivateEvent(ctx.entity),
-            ctx.entity,
-            EventStrategy::Direct,
-        );
+        self.event_adapter
+            .push_event_direct(ctx.entity, ActivateEvent(ctx.entity));
     }
 }
 
@@ -138,6 +135,7 @@ impl State for MasterDetailState {
     fn init(&mut self, registry: &mut Registry, ctx: &mut Context) {
         self.update = true;
         self.content_grid = ctx.child(CONTENT_GRID).entity();
+        self.event_adapter = ctx.event_adapter();
         self.update(registry, ctx);
     }
 
@@ -237,13 +235,15 @@ impl MasterDetail {
     /// Shows the master widget. If the master widget is visible nothing will happen.
     pub fn show_master(ctx: &mut Context, entity: Entity) {
         MasterDetail::panics_on_wrong_type(&ctx.get_widget(entity));
-        ctx.push_event_strategy_by_entity(ShowMasterEvent(entity), entity, EventStrategy::Direct);
+        ctx.event_adapter()
+            .push_event_direct(entity, ShowMasterEvent(entity));
     }
 
     /// Shows the detail widget. If the detail widget is visible nothing will happen.
     pub fn show_detail(ctx: &mut Context, entity: Entity) {
         MasterDetail::panics_on_wrong_type(&ctx.get_widget(entity));
-        ctx.push_event_strategy_by_entity(ShowDetailEvent(entity), entity, EventStrategy::Direct);
+        ctx.event_adapter()
+            .push_event_direct(entity, ShowDetailEvent(entity));
     }
 }
 

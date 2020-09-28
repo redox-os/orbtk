@@ -1,4 +1,4 @@
-use std::{any::type_name, cell::RefCell, rc::Rc};
+use std::any::type_name;
 
 use dces::prelude::*;
 
@@ -56,7 +56,7 @@ pub struct WidgetContainer<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     current_node: Entity,
     theme: &'a Theme,
-    event_queue: Option<&'a Rc<RefCell<EventQueue>>>,
+    event_adapter: Option<EventAdapter>,
 }
 
 impl<'a> WidgetContainer<'a> {
@@ -65,13 +65,13 @@ impl<'a> WidgetContainer<'a> {
         root: Entity,
         ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
         theme: &'a Theme,
-        event_queue: Option<&'a Rc<RefCell<EventQueue>>>,
+        event_adapter: Option<EventAdapter>,
     ) -> Self {
         WidgetContainer {
             ecm,
             current_node: root,
             theme,
-            event_queue,
+            event_adapter,
         }
     }
 
@@ -302,12 +302,9 @@ impl<'a> WidgetContainer<'a> {
             }
 
             if on_changed {
-                if let Some(event_queue) = self.event_queue {
-                    event_queue.borrow_mut().register_event_with_strategy(
-                        ChangedEvent(self.current_node, target_key),
-                        EventStrategy::Direct,
-                        entity,
-                    );
+                if let Some(event_adapter) = &self.event_adapter {
+                    event_adapter
+                        .push_event_direct(entity, ChangedEvent(self.current_node, target_key));
                 }
             }
         }
@@ -582,7 +579,7 @@ impl<'a> From<&'a mut super::Context<'_>> for WidgetContainer<'a> {
             ctx.entity,
             ctx.ecm,
             &ctx.theme,
-            Some(&ctx.provider.event_queue),
+            Some(ctx.provider.event_adapter.clone()),
         )
     }
 }
