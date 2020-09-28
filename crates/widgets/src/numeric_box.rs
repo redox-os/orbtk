@@ -29,6 +29,8 @@ pub struct NumericBoxState {
     pub max: Decimal,
     pub step: Decimal,
     pub current_value: Decimal,
+    event_adapter: EventAdapter,
+    window: Entity,
 }
 
 impl NumericBoxState {
@@ -71,7 +73,8 @@ impl NumericBoxState {
     fn request_focus(&self, ctx: &mut Context) {
         if !ctx.widget().get::<bool>("focused") {
             ctx.widget().set::<bool>("focused", true);
-            ctx.push_event_by_window(FocusEvent::RequestFocus(ctx.entity));
+            self.event_adapter
+                .push_event_direct(self.window, FocusEvent::RequestFocus(ctx.entity));
         }
     }
 }
@@ -91,6 +94,7 @@ impl State for NumericBoxState {
             "NumericBoxState
         .init(): the child input could not be found!",
         );
+        self.event_adapter = ctx.event_adapter();
         self.min = default_or("min", 0.0, ctx);
         self.max = default_or("max", MAX, ctx);
         self.step = default_or("step", 1.0, ctx);
@@ -119,14 +123,14 @@ impl State for NumericBoxState {
                     }
                     Key::Enter => {
                         if *ctx.widget().get::<bool>("lose_focus_on_activation") {
-                            ctx.push_event_by_window(FocusEvent::RemoveFocus(ctx.entity));
+                            self.event_adapter.push_event_direct(
+                                self.window,
+                                FocusEvent::RequestFocus(ctx.entity),
+                            );
                         }
 
-                        ctx.push_event_strategy_by_entity(
-                            ActivateEvent(ctx.entity),
-                            ctx.entity,
-                            EventStrategy::Direct,
-                        )
+                        self.event_adapter
+                            .push_event_direct(ctx.entity, ActivateEvent(ctx.entity));
                     }
                     _ => {}
                 },

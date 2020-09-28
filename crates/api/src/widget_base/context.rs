@@ -74,7 +74,7 @@ impl<'a> Context<'a> {
             entity,
             self.ecm,
             &self.theme,
-            Some(&self.provider.event_queue),
+            Some(self.provider.event_adapter.clone()),
         )
     }
 
@@ -85,8 +85,13 @@ impl<'a> Context<'a> {
 
     /// Returns the window widget.
     pub fn window(&mut self) -> WidgetContainer<'_> {
-        let root = self.ecm.entity_store().root();
+        let root = self.entity_of_window();
         self.get_widget(root)
+    }
+
+    /// Returns the entity of the window.
+    pub fn entity_of_window(&mut self) -> Entity {
+        self.ecm.entity_store().root()
     }
 
     /// Returns a child of the widget of the current state referenced by css `id`.
@@ -206,7 +211,7 @@ impl<'a> Context<'a> {
             &self.provider.handler_map,
             &mut self.new_states,
             &self.theme,
-            &self.provider.event_queue,
+            self.provider.event_adapter.clone(),
         )
     }
 
@@ -456,58 +461,12 @@ impl<'a> Context<'a> {
         key
     }
 
-    /// Pushes an event to the event queue with the given `strategy`.
-    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
-    pub fn push_event_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
-        self.provider
-            .event_queue
-            .borrow_mut()
-            .register_event_with_strategy(event, strategy, self.entity);
-    }
-
-    /// Pushes an event to the event queue.
-    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
-    pub fn push_event<E: Event>(&mut self, event: E) {
-        self.provider
-            .event_queue
-            .borrow_mut()
-            .register_event(event, self.entity);
-    }
-
-    /// Pushes an event to the event queue.
-    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
-    pub fn push_event_by_entity<E: Event>(&mut self, event: E, entity: Entity) {
-        self.provider
-            .event_queue
-            .borrow_mut()
-            .register_event(event, entity);
-    }
-
-    /// Pushes an event to the event queue.
-    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
-    pub fn push_event_by_window<E: Event>(&mut self, event: E) {
-        self.provider
-            .event_queue
-            .borrow_mut()
-            .register_event(event, self.ecm.entity_store().root());
-    }
-
-    /// Pushes an event to the event queue.
-    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
-    pub fn push_event_strategy_by_entity<E: Event>(
-        &mut self,
-        event: E,
-        entity: Entity,
-        strategy: EventStrategy,
-    ) {
-        self.provider
-            .event_queue
-            .borrow_mut()
-            .register_event_with_strategy(event, strategy, entity);
+    /// Returns a cloned event adapter.
+    pub fn event_adapter(&self) -> EventAdapter {
+        self.provider.event_adapter.clone()
     }
 
     /// Gets a new sender that allows to communicate with the window shell.
-    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
     pub fn send_window_request(&self, request: WindowRequest) {
         self.provider
             .window_sender
@@ -515,8 +474,28 @@ impl<'a> Context<'a> {
             .expect("Context::send_window_request: could not send request to window.");
     }
 
-    /// Gets a window request sender.
+    /// Pushes an event to the event queue.
     #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
+    pub fn push_event<E: Event + Send>(&mut self, event: E) {
+        self.provider.event_adapter.push_event(self.entity, event);
+    }
+
+    /// Pushes an event to the event queue.
+    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
+    pub fn push_event_by_entity<E: Event + Send>(&mut self, event: E, entity: Entity) {
+        self.provider.event_adapter.push_event(entity, event);
+    }
+
+    /// Pushes an event to the event queue.
+    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
+    pub fn push_event_by_window<E: Event + Send>(&mut self, event: E) {
+        self.provider
+            .event_adapter
+            .push_event(self.entity_of_window(), event);
+    }
+
+    /// Gets a window request sender.
+    #[deprecated = "Will be removed on 0.3.1-alpha5. Use send_window_request instead"]
     pub fn window_sender(&self) -> mpsc::Sender<WindowRequest> {
         self.provider.window_sender.clone()
     }

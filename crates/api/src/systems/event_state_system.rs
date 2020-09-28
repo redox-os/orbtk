@@ -179,7 +179,7 @@ impl EventStateSystem {
                             current_node,
                             ecm,
                             &theme,
-                            Some(&self.context_provider.event_queue),
+                            Some(self.context_provider.event_adapter.clone()),
                         ),
                     ) && has_handler
                     {
@@ -195,7 +195,7 @@ impl EventStateSystem {
                             current_node,
                             ecm,
                             &theme,
-                            Some(&self.context_provider.event_queue),
+                            Some(self.context_provider.event_adapter.clone()),
                         ),
                     ) {
                         let mut add = true;
@@ -206,7 +206,7 @@ impl EventStateSystem {
                                     *op,
                                     ecm,
                                     &theme,
-                                    Some(&self.context_provider.event_queue),
+                                    Some(self.context_provider.event_adapter.clone()),
                                 ),
                             ) {
                                 add = false;
@@ -226,7 +226,7 @@ impl EventStateSystem {
                             current_node,
                             ecm,
                             &theme,
-                            Some(&self.context_provider.event_queue),
+                            Some(self.context_provider.event_adapter.clone()),
                         ),
                     ) {
                         let mut add = true;
@@ -238,7 +238,7 @@ impl EventStateSystem {
                                     *op,
                                     ecm,
                                     &theme,
-                                    Some(&self.context_provider.event_queue),
+                                    Some(self.context_provider.event_adapter.clone()),
                                 ),
                             ) && has_handler
                             {
@@ -259,7 +259,7 @@ impl EventStateSystem {
                             current_node,
                             ecm,
                             &theme,
-                            Some(&self.context_provider.event_queue),
+                            Some(self.context_provider.event_adapter.clone()),
                         ),
                     ) {
                         let mut add = true;
@@ -271,7 +271,7 @@ impl EventStateSystem {
                                     *op,
                                     ecm,
                                     &theme,
-                                    Some(&self.context_provider.event_queue),
+                                    Some(self.context_provider.event_adapter.clone()),
                                 ),
                             ) {
                                 add = false;
@@ -289,7 +289,7 @@ impl EventStateSystem {
                         current_node,
                         ecm,
                         &theme,
-                        Some(&self.context_provider.event_queue),
+                        Some(self.context_provider.event_adapter.clone()),
                     )
                     .get::<bool>("enabled")
                     && has_handler
@@ -351,7 +351,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
         loop {
             {
                 let mouse_position = self.context_provider.mouse_position.get();
-                for event in self.context_provider.event_queue.borrow_mut().into_iter() {
+                for event in self.context_provider.event_adapter.dequeue() {
                     if let Ok(event) = event.downcast_ref::<SystemEvent>() {
                         match event {
                             SystemEvent::Quit => {
@@ -479,7 +479,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
 
             // crate::shell::CONSOLE.time_end("update-time:");
 
-            if self.context_provider.event_queue.borrow().is_empty() {
+            if self.context_provider.event_adapter.is_empty() {
                 break;
             }
         }
