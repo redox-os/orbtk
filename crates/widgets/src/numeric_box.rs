@@ -183,7 +183,7 @@ widget!(
         /// Sets or shares the foreground color property
         foreground: Brush,
 
-        /// Sets or shares the value that describes if the NumericBox should lost focus on activation (when enter pressed).
+        /// Sets or shares the value that describes if the NumericBox should lose focus on activation (when enter pressed).
         lose_focus_on_activation: bool,
 
         /// Sets or shares the minimum allowed value property

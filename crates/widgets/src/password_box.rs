@@ -110,7 +110,7 @@ widget!(
         /// Sets or shares the focused property.
         focused: bool,
 
-        /// Sets or shares ta value that describes if the PasswordBox should lost focus on activation (when Enter pressed).
+        /// Sets or shares ta value that describes if the PasswordBox should lose focus on activation (when Enter pressed).
         lose_focus_on_activation: bool,
 
         /// Used to request focus from outside. Set to `true` tor request focus.

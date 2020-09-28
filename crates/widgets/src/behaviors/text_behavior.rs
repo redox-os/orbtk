@@ -805,7 +805,7 @@ widget!(
         /// Sets or shares the font size property.
         font_size: f64,
 
-        /// Sets or shares ta value that describes if the widget should lost focus on activation (when Enter pressed).
+        /// Sets or shares ta value that describes if the widget should lose focus on activation (when Enter pressed).
         lose_focus_on_activation: bool,
 
         /// Sets or shares the request_focus property. Used to request focus from outside.Set to `true` to request focus.

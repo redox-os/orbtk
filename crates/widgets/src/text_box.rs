@@ -49,7 +49,7 @@ widget!(
         /// Sets or shares the focused property.
         focused: bool,
 
-        /// Sets or shares ta value that describes if the TextBox should lost focus on activation (enter).
+        /// Sets or shares ta value that describes if the TextBox should lose focus on activation (enter).
         lose_focus_on_activation: bool,
 
         /// Used to request focus from outside. Set to `true` tor request focus.
