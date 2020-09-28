@@ -12,7 +12,7 @@ pub enum EventError {
 /// Internal wrapper for an event, including the strategy and source entity.
 #[derive(Debug)]
 pub struct EventBox {
-    event: Box<dyn Any>,
+    event: Box<dyn Any + Send>,
     event_type: TypeId,
     pub source: Entity,
     pub strategy: EventStrategy,
@@ -20,7 +20,7 @@ pub struct EventBox {
 
 impl EventBox {
     /// Creates a new `EventBox`.
-    pub fn new<E: Event>(event: E, strategy: EventStrategy, source: Entity) -> Self {
+    pub fn new<E: Event + Send>(event: E, strategy: EventStrategy, source: Entity) -> Self {
         EventBox {
             event: Box::new(event),
             source,
@@ -76,7 +76,7 @@ impl EventQueue {
     }
 
     /// Registers an event with a given event strategy and a source (Entity of a widget) where the event should start.
-    pub fn register_event_with_strategy<E: Event>(
+    pub fn register_event_with_strategy<E: Event + Send>(
         &mut self,
         event: E,
         strategy: EventStrategy,
@@ -87,7 +87,7 @@ impl EventQueue {
     }
 
     // todo rename to enqueue event
-    pub fn register_event<E: Event>(&mut self, event: E, source: Entity) {
+    pub fn register_event<E: Event + Send>(&mut self, event: E, source: Entity) {
         self.event_queue
             .push(EventBox::new::<E>(event, EventStrategy::BottomUp, source));
     }

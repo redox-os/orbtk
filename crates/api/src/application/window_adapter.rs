@@ -74,61 +74,56 @@ impl shell::WindowAdapter for WindowAdapter {
     fn resize(&mut self, width: f64, height: f64) {
         let root = self.root();
         self.ctx
-            .event_queue
-            .borrow_mut()
-            .register_event_with_strategy(
-                WindowEvent::Resize { width, height },
-                EventStrategy::Direct,
-                root,
-            );
+            .event_adapter
+            .push_event_direct(root, WindowEvent::Resize { width, height });
     }
 
     fn mouse(&mut self, x: f64, y: f64) {
         let root = self.root();
         self.ctx.mouse_position.set(Point::new(x, y));
-        self.ctx.event_queue.borrow_mut().register_event(
+        self.ctx.event_adapter.push_event(
+            root,
             MouseMoveEvent {
                 position: Point::new(x, y),
             },
-            root,
-        )
+        );
     }
 
     fn scroll(&mut self, delta_x: f64, delta_y: f64) {
         let root = self.root();
-        self.ctx.event_queue.borrow_mut().register_event(
+        self.ctx.event_adapter.push_event(
+            root,
             ScrollEvent {
                 delta: Point::new(delta_x, delta_y),
             },
-            root,
-        )
+        );
     }
 
     fn mouse_event(&mut self, event: shell::MouseEvent) {
         let root = self.root();
         match event.state {
             shell::ButtonState::Up => {
-                self.ctx.event_queue.borrow_mut().register_event(
+                self.ctx.event_adapter.push_event(
+                    root,
                     MouseUpEvent {
                         position: event.position,
                         button: event.button,
                     },
-                    root,
                 );
-                self.ctx.event_queue.borrow_mut().register_event(
+                self.ctx.event_adapter.push_event(
+                    root,
                     GlobalMouseUpEvent {
                         position: event.position,
                         button: event.button,
                     },
-                    root,
                 );
             }
-            shell::ButtonState::Down => self.ctx.event_queue.borrow_mut().register_event(
+            shell::ButtonState::Down => self.ctx.event_adapter.push_event(
+                root,
                 MouseDownEvent {
                     position: event.position,
                     button: event.button,
                 },
-                root,
             ),
         }
     }
@@ -142,14 +137,12 @@ impl shell::WindowAdapter for WindowAdapter {
         match event.state {
             shell::ButtonState::Up => self
                 .ctx
-                .event_queue
-                .borrow_mut()
-                .register_event(KeyUpEvent { event }, root),
+                .event_adapter
+                .push_event(root, KeyUpEvent { event }),
             shell::ButtonState::Down => {
                 self.ctx
-                    .event_queue
-                    .borrow_mut()
-                    .register_event(KeyDownEvent { event }, root);
+                    .event_adapter
+                    .push_event(root, KeyDownEvent { event });
             }
         }
     }
@@ -158,22 +151,16 @@ impl shell::WindowAdapter for WindowAdapter {
         let root = self.root();
 
         self.ctx
-            .event_queue
-            .borrow_mut()
-            .register_event(SystemEvent::Quit, root);
+            .event_adapter
+            .push_event_direct(root, SystemEvent::Quit);
     }
 
     fn active(&mut self, active: bool) {
         let root = self.root();
 
         self.ctx
-            .event_queue
-            .borrow_mut()
-            .register_event_with_strategy(
-                WindowEvent::ActiveChanged(active),
-                EventStrategy::Direct,
-                root,
-            );
+            .event_adapter
+            .push_event_direct(root, WindowEvent::ActiveChanged(active));
     }
 
     fn run(&mut self, render_context: &mut render::RenderContext2D) {
@@ -182,23 +169,23 @@ impl shell::WindowAdapter for WindowAdapter {
 
     fn file_drop_event(&mut self, file_name: String) {
         let root = self.root();
-        self.ctx.event_queue.borrow_mut().register_event(
+        self.ctx.event_adapter.push_event(
+            root,
             DropFileEvent {
                 file_name,
                 position: self.mouse_position(),
             },
-            root,
         );
     }
 
     fn text_drop_event(&mut self, text: String) {
         let root = self.root();
-        self.ctx.event_queue.borrow_mut().register_event(
+        self.ctx.event_adapter.push_event(
+            root,
             DropTextEvent {
                 text,
                 position: self.ctx.mouse_position.get(),
             },
-            root,
         );
     }
 
@@ -247,7 +234,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             &context_provider.handler_map,
             &mut *context_provider.states.borrow_mut(),
             &theme,
-            &context_provider.event_queue,
+            context_provider.event_adapter.clone(),
         ));
 
         {
@@ -262,7 +249,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             &context_provider.handler_map,
             &mut *context_provider.states.borrow_mut(),
             &theme,
-            &context_provider.event_queue,
+            context_provider.event_adapter.clone(),
         ));
 
         {

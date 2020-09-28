@@ -46,13 +46,12 @@ impl State for MouseBehaviorState {
                     toggle_flag("pressed", &mut ctx.get_widget(self.target));
 
                     if check_mouse_condition(p.position, &ctx.widget()) {
-                        let parent = ctx.entity_of_parent().unwrap();
-                        ctx.push_event_by_entity(
+                        ctx.event_adapter().push_event(
+                            self.target,
                             ClickEvent {
                                 position: p.position,
                             },
-                            parent,
-                        )
+                        );
                     }
                 }
                 Action::Scroll(p) => {

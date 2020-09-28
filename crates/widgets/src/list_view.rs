@@ -191,10 +191,9 @@ impl State for ListViewItemState {
             .copied()
             .collect();
 
-        ctx.push_event_strategy_by_entity(
-            SelectionChangedEvent(parent_entity, selected_indices),
+        ctx.event_adapter().push_event_direct(
             parent_entity,
-            EventStrategy::Direct,
+            SelectionChangedEvent(parent_entity, selected_indices),
         );
     }
 }

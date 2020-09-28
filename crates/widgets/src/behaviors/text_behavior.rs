@@ -54,7 +54,8 @@ pub struct TextBehaviorState {
     pressed: bool,
     self_update: bool,
     update_selection: bool,
-    //mouse_up_count: usize,
+    event_adapter: EventAdapter,
+    window: Entity, //mouse_up_count: usize,
 }
 
 impl TextBehaviorState {
@@ -63,8 +64,9 @@ impl TextBehaviorState {
         self.action.push_back(action);
     }
 
-    fn request_focus(&self, ctx: &mut Context) {
-        ctx.push_event_by_window(FocusEvent::RequestFocus(self.target));
+    fn request_focus(&self) {
+        self.event_adapter
+            .push_event_direct(self.window, FocusEvent::RequestFocus(self.target));
     }
 
     // -- Text operations --
@@ -303,14 +305,12 @@ impl TextBehaviorState {
 
     fn activate(&self, ctx: &mut Context) {
         if *ctx.widget().get::<bool>("lose_focus_on_activation") {
-            ctx.push_event_by_window(FocusEvent::RemoveFocus(self.target));
+            self.event_adapter
+                .push_event_direct(self.window, FocusEvent::RemoveFocus(self.target));
         }
 
-        ctx.push_event_strategy_by_entity(
-            ActivateEvent(self.target),
-            self.target,
-            EventStrategy::Direct,
-        );
+        self.event_adapter
+            .push_event_direct(self.target, ActivateEvent(self.target));
     }
 
     // -- Event handling --
@@ -385,7 +385,7 @@ impl TextBehaviorState {
     fn mouse_down(&mut self, ctx: &mut Context, mouse: Mouse) {
         self.pressed = true;
         if !*TextBehavior::focused_ref(&ctx.widget()) {
-            self.request_focus(ctx);
+            self.request_focus();
             return;
         }
 
@@ -664,10 +664,11 @@ impl TextBehaviorState {
 impl State for TextBehaviorState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.cursor = Entity::from(*TextBehavior::cursor_ref(&ctx.widget()));
-
         self.target = Entity::from(*TextBehavior::target_ref(&ctx.widget()));
-
         self.text_block = Entity::from(*TextBehavior::text_block_ref(&ctx.widget()));
+
+        self.event_adapter = ctx.event_adapter();
+        self.window = ctx.entity_of_window();
 
         // hide cursor
         Cursor::visibility_set(&mut ctx.get_widget(self.cursor), Visibility::Collapsed);
