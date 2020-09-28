@@ -50,7 +50,7 @@ widget!(
         focused: bool,
 
         /// Sets or shares ta value that describes if the TextBox should lost focus on activation (enter).
-        lost_focus_on_activation: bool,
+        lose_focus_on_activation: bool,
 
         /// Used to request focus from outside. Set to `true` tor request focus.
         request_focus: bool,
@@ -82,7 +82,7 @@ impl Template for TextBox {
             .focused(id)
             .font(id)
             .font_size(id)
-            .lost_focus_on_activation(id)
+            .lose_focus_on_activation(id)
             .select_all_on_focus(id)
             .request_focus(id)
             .text(id)
@@ -104,7 +104,7 @@ impl Template for TextBox {
             .min_width(128.0)
             .height(32.0)
             .focused(false)
-            .lost_focus_on_activation(true)
+            .lose_focus_on_activation(true)
             .select_all_on_focus(true)
             .child(text_behavior)
             .child(
