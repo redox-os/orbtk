@@ -402,51 +402,6 @@ impl<'a> Context<'a> {
         None
     }
 
-    /// Pushes an event to the event queue with the given `strategy`.
-    pub fn push_event_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
-        self.provider
-            .event_queue
-            .borrow_mut()
-            .register_event_with_strategy(event, strategy, self.entity);
-    }
-
-    /// Pushes an event to the event queue.
-    pub fn push_event<E: Event>(&mut self, event: E) {
-        self.provider
-            .event_queue
-            .borrow_mut()
-            .register_event(event, self.entity);
-    }
-
-    /// Pushes an event to the event queue.
-    pub fn push_event_by_entity<E: Event>(&mut self, event: E, entity: Entity) {
-        self.provider
-            .event_queue
-            .borrow_mut()
-            .register_event(event, entity);
-    }
-
-    /// Pushes an event to the event queue.
-    pub fn push_event_by_window<E: Event>(&mut self, event: E) {
-        self.provider
-            .event_queue
-            .borrow_mut()
-            .register_event(event, self.ecm.entity_store().root());
-    }
-
-    /// Pushes an event to the event queue.
-    pub fn push_event_strategy_by_entity<E: Event>(
-        &mut self,
-        event: E,
-        entity: Entity,
-        strategy: EventStrategy,
-    ) {
-        self.provider
-            .event_queue
-            .borrow_mut()
-            .register_event_with_strategy(event, strategy, entity);
-    }
-
     /// Creates and show a new window.
     pub fn show_window<F: Fn(&mut BuildContext) -> Entity + 'static>(&mut self, create_fn: F) {
         let (adapter, settings, receiver) = create_window(
@@ -465,19 +420,6 @@ impl<'a> Context<'a> {
     /// Returns a mutable reference of the 2d render ctx.
     pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
         self.render_context
-    }
-
-    /// Gets a new sender that allows to communicate with the window shell.
-    pub fn send_window_request(&self, request: WindowRequest) {
-        self.provider
-            .window_sender
-            .send(request)
-            .expect("Context::send_window_request: could not send request to window.");
-    }
-
-    /// Gets a window request sender.
-    pub fn window_sender(&self) -> mpsc::Sender<WindowRequest> {
-        self.provider.window_sender.clone()
     }
 
     /// Returns a keys collection of new added states.
@@ -512,6 +454,71 @@ impl<'a> Context<'a> {
         }
 
         key
+    }
+
+    /// Pushes an event to the event queue with the given `strategy`.
+    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
+    pub fn push_event_strategy<E: Event>(&mut self, event: E, strategy: EventStrategy) {
+        self.provider
+            .event_queue
+            .borrow_mut()
+            .register_event_with_strategy(event, strategy, self.entity);
+    }
+
+    /// Pushes an event to the event queue.
+    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
+    pub fn push_event<E: Event>(&mut self, event: E) {
+        self.provider
+            .event_queue
+            .borrow_mut()
+            .register_event(event, self.entity);
+    }
+
+    /// Pushes an event to the event queue.
+    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
+    pub fn push_event_by_entity<E: Event>(&mut self, event: E, entity: Entity) {
+        self.provider
+            .event_queue
+            .borrow_mut()
+            .register_event(event, entity);
+    }
+
+    /// Pushes an event to the event queue.
+    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
+    pub fn push_event_by_window<E: Event>(&mut self, event: E) {
+        self.provider
+            .event_queue
+            .borrow_mut()
+            .register_event(event, self.ecm.entity_store().root());
+    }
+
+    /// Pushes an event to the event queue.
+    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
+    pub fn push_event_strategy_by_entity<E: Event>(
+        &mut self,
+        event: E,
+        entity: Entity,
+        strategy: EventStrategy,
+    ) {
+        self.provider
+            .event_queue
+            .borrow_mut()
+            .register_event_with_strategy(event, strategy, entity);
+    }
+
+    /// Gets a new sender that allows to communicate with the window shell.
+    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
+    pub fn send_window_request(&self, request: WindowRequest) {
+        self.provider
+            .window_sender
+            .send(request)
+            .expect("Context::send_window_request: could not send request to window.");
+    }
+
+    /// Gets a window request sender.
+    #[deprecated = "Will be removed on 0.3.1-alpha5. Use EventAdapter instead"]
+    pub fn window_sender(&self) -> mpsc::Sender<WindowRequest> {
+        self.provider.window_sender.clone()
     }
 }
 

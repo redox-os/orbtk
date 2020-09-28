@@ -125,6 +125,12 @@ pub struct EventQueueIterator<'a> {
     event_queue: &'a mut EventQueue,
 }
 
+impl<'a> EventQueueIterator<'a> {
+    pub fn new(event_queue: &'a mut EventQueue) -> Self {
+        EventQueueIterator { event_queue }
+    }
+}
+
 impl<'a> Iterator for EventQueueIterator<'a> {
     type Item = EventBox;
 
