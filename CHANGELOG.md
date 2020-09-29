@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add focus_state property to Window
 * Add theme property to Window
 * MasterDetail responsive navigation widget
+* Rename `lost_focus_on_activation` to `lose_focus_on_activation`
 
 ### 0.3.1-alpha3
 
