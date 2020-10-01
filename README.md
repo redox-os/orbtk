@@ -353,13 +353,6 @@ At the moment will evaluate different backends for OrbTk. A OrbTk backend consis
 * Dependencies on Linux: libxkbcommon-dev, libwayland-cursor0, libwayland-dev
 * Does not support all features of `orbraq` e.g. DropEvents, Clipboard access 
 
-### glupath (experimental)
-
-* use with `glupath` feature `cargo run --example widgets --features glupath --no-default-features`
-* window and events based on [glutin](https://github.com/rust-windowing/glutin)
-* 2D rendering based on [pathfinder](https://github.com/servo/pathfinder)
-* Does not yet support all features of `orbraq` e.g. DropEvents, Clipboard access 
-
 ### stdweb
 
 * default backend for web (default feature)

@@ -26,4 +26,3 @@ orbtk_proc_macros = { version = "0.3.1-alpha4", path = "../proc_macros" }
 default = ["orbtk_shell/orbraq", "orbtk_render/orbraq"]
 orbraq = ["orbtk_shell/orbraq", "orbtk_render/orbraq"]
 miniraq = ["orbtk_shell/miniraq", "orbtk_render/miniraq"]
-glupath = ["orbtk_shell/glupath", "orbtk_render/glupath"]
