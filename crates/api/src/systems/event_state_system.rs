@@ -351,7 +351,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
         loop {
             {
                 let mouse_position = self.context_provider.mouse_position.get();
-                for event in self.context_provider.event_adapter.read() {
+                for event in self.context_provider.event_adapter.event_reader() {
                     if let Ok(event) = event.downcast_ref::<SystemEvent>() {
                         match event {
                             SystemEvent::Quit => {

@@ -1,8 +1,8 @@
-use std::sync::{Arc, Mutex};
+use std::sync::{mpsc, Arc, Mutex};
 
 use dces::entity::Entity;
 
-use crate::event::*;
+use crate::{event::*, shell::WindowRequest};
 
 /// The `EventAdapter` provides a thread save way to push events to the widget tree of a window.
 ///
@@ -27,12 +27,16 @@ use crate::event::*;
 #[derive(Clone, Default, Debug)]
 pub struct EventAdapter {
     event_queue: Arc<Mutex<EventQueue>>,
+    window_sender: Option<mpsc::Sender<WindowRequest>>,
 }
 
 impl EventAdapter {
     /// Creates a new event adapter.
-    pub fn new() -> Self {
-        EventAdapter::default()
+    pub fn new(window_sender: mpsc::Sender<WindowRequest>) -> Self {
+        EventAdapter {
+            event_queue: Arc::new(Mutex::new(EventQueue::new())),
+            window_sender: Some(window_sender),
+        }
     }
 
     /// Push an event to the tree starting by the given entity. The event bubbles through the tree until it is handled.
@@ -41,6 +45,8 @@ impl EventAdapter {
             .lock()
             .expect("EventAdapter::push_event: Cannot lock event queue.")
             .register_event(event, entity);
+
+        self.redraw();
     }
 
     /// Pushes an event that is direct send to the given entity (widget). I occurs only by the given entity and will not bubble through the tree.
@@ -49,6 +55,14 @@ impl EventAdapter {
             .lock()
             .expect("EventAdapter::push_event_direct: Cannot lock event queue")
             .register_event_with_strategy(event, EventStrategy::Direct, entity);
+
+        self.redraw();
+    }
+
+    fn redraw(&self) {
+        if let Some(window_sender) = &self.window_sender {
+            window_sender.send(WindowRequest::Redraw).unwrap();
+        }
     }
 
     /// Returns the number of events in the queue.
@@ -68,18 +82,19 @@ impl EventAdapter {
     }
 
     /// Returns an dequeue iterator, that dequeue events from the event queue.
-    pub(crate) fn read(&self) -> DequeueIterator {
-        DequeueIterator {
+    pub(crate) fn event_reader(&self) -> EventReader {
+        EventReader {
             event_adapter: self.clone(),
         }
     }
 }
 
-pub struct DequeueIterator {
+/// Reader is a thread save iterator that dequeue events from the event adapter.
+pub struct EventReader {
     event_adapter: EventAdapter,
 }
 
-impl Iterator for DequeueIterator {
+impl Iterator for EventReader {
     type Item = EventBox;
 
     fn next(&mut self) -> Option<EventBox> {
