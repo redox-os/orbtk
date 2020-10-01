@@ -4,7 +4,7 @@ use dces::entity::Entity;
 
 use crate::event::*;
 
-/// The `EventAdapter` provides a thread save way to push event to the widget tree of a window.
+/// The `EventAdapter` provides a thread save way to push events to the widget tree of a window.
 ///
 /// # Example
 ///
@@ -68,7 +68,7 @@ impl EventAdapter {
     }
 
     /// Returns an dequeue iterator, that dequeue events from the event queue.
-    pub(crate) fn dequeue(&self) -> DequeueIterator {
+    pub(crate) fn read(&self) -> DequeueIterator {
         DequeueIterator {
             event_adapter: self.clone(),
         }
