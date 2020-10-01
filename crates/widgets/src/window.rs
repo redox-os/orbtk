@@ -116,7 +116,7 @@ widget!(
     /// It also contains global properties like keyboard modifier and focused widget.
     ///
     /// **style:** `window`
-    Window<WindowState> {
+    Window<WindowState>: ActivateHandler {
         /// Sets or shares the background property.
         background: Brush,
 
@@ -188,6 +188,7 @@ impl Template for Window {
                     .push_action(Action::FocusEvent(event));
                 true
             })
+            .on_activate(|_, _| println!("Activate"))
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

@@ -2,9 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::*;
 
-use crate::{
-    prelude::*, render::RenderContext2D, shell::WindowRequest, theming::Theme, tree::Tree,
-};
+use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree};
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 #[derive(Constructor)]
@@ -108,14 +106,6 @@ impl System<Tree, StringComponentStore, RenderContext2D> for PostLayoutStateSyst
                     self.remove_widget(remove_widget, &theme, ecm, render_context);
                 }
             }
-        }
-
-        // if the event queue is not empty a next run is needed
-        if !self.context_provider.event_adapter.is_empty() {
-            self.context_provider
-                .window_sender
-                .send(WindowRequest::Redraw)
-                .unwrap();
         }
     }
 }
