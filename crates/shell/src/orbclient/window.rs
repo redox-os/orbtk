@@ -98,7 +98,7 @@ where
             // window_state: WindowState::default(),
             mouse: MouseState::default(),
             update: true,
-            redraw: AtomicBool::new(true),
+            redraw: Arc::new(AtomicBool::new(true)),
             close: false,
             has_clipboard_update: true,
         }
