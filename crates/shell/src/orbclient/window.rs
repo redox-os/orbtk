@@ -1,10 +1,10 @@
-use std::{
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        mpsc, Arc,
-    },
-    thread,
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    mpsc, Arc,
 };
+
+#[cfg(not(target_os = "redox"))]
+use std::thread;
 
 use super::MouseState;
 use crate::{
@@ -18,6 +18,8 @@ use crate::{
 use sdl2::event;
 
 use orbclient::Renderer;
+
+#[cfg(not(target_os = "redox"))]
 use raw_window_handle::HasRawWindowHandle;
 
 use orbtk_utils::Point;
@@ -96,7 +98,7 @@ where
             // window_state: WindowState::default(),
             mouse: MouseState::default(),
             update: true,
-            redraw: true,
+            redraw: AtomicBool::new(true),
             close: false,
             has_clipboard_update: true,
         }
