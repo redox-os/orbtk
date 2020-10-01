@@ -188,7 +188,6 @@ impl Template for Window {
                     .push_action(Action::FocusEvent(event));
                 true
             })
-            .on_activate(|_, _| println!("Activate"))
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

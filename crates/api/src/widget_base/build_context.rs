@@ -23,12 +23,7 @@ pub struct BuildContext<'a> {
 impl<'a> BuildContext<'a> {
     /// Returns a specific widget.
     pub fn get_widget(&mut self, entity: Entity) -> WidgetContainer {
-        WidgetContainer::new(
-            entity,
-            self.ecm,
-            self.theme,
-            Some(self.event_adapter.clone()),
-        )
+        WidgetContainer::new(entity, self.ecm, self.theme, Some(&self.event_adapter))
     }
 
     /// Creates a new entity.
@@ -150,7 +145,7 @@ impl<'a> BuildContext<'a> {
         self.layouts.borrow_mut().insert(widget, layout);
     }
 
-    /// Returns a cloned thread save event adapter.
+    /// Returns a cloned thread safe event adapter.
     pub fn event_adapter(&self) -> EventAdapter {
         self.event_adapter.clone()
     }

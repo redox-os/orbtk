@@ -179,7 +179,7 @@ impl EventStateSystem {
                             current_node,
                             ecm,
                             &theme,
-                            Some(self.context_provider.event_adapter.clone()),
+                            Some(&self.context_provider.event_adapter),
                         ),
                     ) && has_handler
                     {
@@ -195,7 +195,7 @@ impl EventStateSystem {
                             current_node,
                             ecm,
                             &theme,
-                            Some(self.context_provider.event_adapter.clone()),
+                            Some(&self.context_provider.event_adapter),
                         ),
                     ) {
                         let mut add = true;
@@ -206,7 +206,7 @@ impl EventStateSystem {
                                     *op,
                                     ecm,
                                     &theme,
-                                    Some(self.context_provider.event_adapter.clone()),
+                                    Some(&self.context_provider.event_adapter),
                                 ),
                             ) {
                                 add = false;
@@ -226,7 +226,7 @@ impl EventStateSystem {
                             current_node,
                             ecm,
                             &theme,
-                            Some(self.context_provider.event_adapter.clone()),
+                            Some(&self.context_provider.event_adapter),
                         ),
                     ) {
                         let mut add = true;
@@ -238,7 +238,7 @@ impl EventStateSystem {
                                     *op,
                                     ecm,
                                     &theme,
-                                    Some(self.context_provider.event_adapter.clone()),
+                                    Some(&self.context_provider.event_adapter),
                                 ),
                             ) && has_handler
                             {
@@ -259,7 +259,7 @@ impl EventStateSystem {
                             current_node,
                             ecm,
                             &theme,
-                            Some(self.context_provider.event_adapter.clone()),
+                            Some(&self.context_provider.event_adapter),
                         ),
                     ) {
                         let mut add = true;
@@ -271,7 +271,7 @@ impl EventStateSystem {
                                     *op,
                                     ecm,
                                     &theme,
-                                    Some(self.context_provider.event_adapter.clone()),
+                                    Some(&self.context_provider.event_adapter),
                                 ),
                             ) {
                                 add = false;
@@ -289,7 +289,7 @@ impl EventStateSystem {
                         current_node,
                         ecm,
                         &theme,
-                        Some(self.context_provider.event_adapter.clone()),
+                        Some(&self.context_provider.event_adapter),
                     )
                     .get::<bool>("enabled")
                     && has_handler

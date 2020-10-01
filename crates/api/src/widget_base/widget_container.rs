@@ -56,7 +56,7 @@ pub struct WidgetContainer<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     current_node: Entity,
     theme: &'a Theme,
-    event_adapter: Option<EventAdapter>,
+    event_adapter: Option<&'a EventAdapter>,
 }
 
 impl<'a> WidgetContainer<'a> {
@@ -65,7 +65,7 @@ impl<'a> WidgetContainer<'a> {
         root: Entity,
         ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
         theme: &'a Theme,
-        event_adapter: Option<EventAdapter>,
+        event_adapter: Option<&'a EventAdapter>,
     ) -> Self {
         WidgetContainer {
             ecm,
@@ -579,7 +579,7 @@ impl<'a> From<&'a mut super::Context<'_>> for WidgetContainer<'a> {
             ctx.entity,
             ctx.ecm,
             &ctx.theme,
-            Some(ctx.provider.event_adapter.clone()),
+            Some(&ctx.provider.event_adapter),
         )
     }
 }
