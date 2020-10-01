@@ -33,7 +33,7 @@ pub struct ContextProvider {
     pub application_name: String,
     pub first_run: Rc<Cell<bool>>,
     pub raw_window_handle: Option<raw_window_handle::RawWindowHandle>,
-    // todo thread save
+    // todo thread safe
     pub localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
 }
 

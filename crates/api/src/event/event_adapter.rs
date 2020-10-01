@@ -4,7 +4,7 @@ use dces::entity::Entity;
 
 use crate::{event::*, shell::WindowRequest};
 
-/// The `EventAdapter` provides a thread save way to push events to the widget tree of a window.
+/// The `EventAdapter` provides a thread safe way to push events to the widget tree of a window.
 ///
 /// # Example
 ///
@@ -49,7 +49,7 @@ impl EventAdapter {
         self.redraw();
     }
 
-    /// Pushes an event that is direct send to the given entity (widget). I occurs only by the given entity and will not bubble through the tree.
+    /// Pushes an event that is directly sent to the given entity (widget). It occurs only by the given entity and will not bubble through the tree.
     pub fn push_event_direct<E: Event + Send>(&self, entity: Entity, event: E) {
         self.event_queue
             .lock()
@@ -89,7 +89,7 @@ impl EventAdapter {
     }
 }
 
-/// Reader is a thread save iterator that dequeue events from the event adapter.
+/// Reader is a thread safe iterator that dequeue events from the event adapter.
 pub struct EventReader {
     event_adapter: EventAdapter,
 }

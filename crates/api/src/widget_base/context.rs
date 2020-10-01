@@ -74,7 +74,7 @@ impl<'a> Context<'a> {
             entity,
             self.ecm,
             &self.theme,
-            Some(self.provider.event_adapter.clone()),
+            Some(&self.provider.event_adapter),
         )
     }
 
