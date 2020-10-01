@@ -1,4 +1,10 @@
-use std::{sync::mpsc, thread};
+use std::{
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        mpsc, Arc,
+    },
+    thread,
+};
 
 use super::MouseState;
 use crate::{
@@ -29,7 +35,7 @@ where
     //window_state: WindowState,
     mouse: MouseState,
     update: bool,
-    redraw: bool,
+    redraw: Arc<AtomicBool>,
     close: bool,
     has_clipboard_update: bool,
     #[cfg(not(target_os = "redox"))]
@@ -41,18 +47,31 @@ where
 fn init_sync(
     window: &orbclient::Window,
     receiver: mpsc::Receiver<WindowRequest>,
+    redraw: Arc<AtomicBool>,
 ) -> (mpsc::Receiver<WindowRequest>, thread::JoinHandle<()>) {
     let (internal_sender, internal_receiver) = mpsc::channel();
 
     let event_sender = window.event_sender();
 
+    // prevent multiple redraw a the same time
+    let mut should_redraw = false;
+
     let _sdl2_sync_thread = thread::spawn(move || loop {
-        if let Ok(request) = receiver.recv() {
+        for request in receiver.try_iter() {
             let _ = internal_sender.send(request.clone());
-            if request == WindowRequest::Redraw {
-                let _ = event_sender.push_event(event::Event::RenderTargetsReset { timestamp: 0 });
+            if request == WindowRequest::Redraw && !should_redraw && !redraw.load(Ordering::Relaxed)
+            {
+                let _ = event_sender.push_event(event::Event::Window {
+                    window_id: 0,
+                    timestamp: 0,
+                    win_event: event::WindowEvent::None,
+                });
+
+                should_redraw = true;
             }
         }
+
+        should_redraw = false;
     });
 
     (internal_receiver, _sdl2_sync_thread)
@@ -91,12 +110,13 @@ where
         request_receiver: Option<mpsc::Receiver<WindowRequest>>,
     ) -> Self {
         let mut adapter = adapter;
+        let redraw: Arc<AtomicBool> = Arc::new(AtomicBool::new(true));
 
         adapter.set_raw_window_handle(window.raw_window_handle());
 
         let (request_receiver, _sdl2_sync_thread) = {
             if let Some(receiver) = request_receiver {
-                let (rec, sync) = init_sync(&window, receiver);
+                let (rec, sync) = init_sync(&window, receiver, redraw.clone());
                 (Some(rec), Some(sync))
             } else {
                 (None, None)
@@ -112,7 +132,7 @@ where
             // window_state: WindowState::default(),
             mouse: MouseState::default(),
             update: true,
-            redraw: true,
+            redraw,
             close: false,
             has_clipboard_update: true,
         }
@@ -285,7 +305,7 @@ where
                     self.render_context
                         .resize(event.width as f64, event.height as f64);
                     self.update = true;
-                    self.redraw = true;
+                    self.redraw.store(true, Ordering::Relaxed);
                 }
                 orbclient::EventOption::Screen(_) => {}
                 orbclient::EventOption::Clipboard(_) => {}
@@ -299,8 +319,8 @@ where
                         }
                     }
                 }
-                orbclient::EventOption::Unknown(_) => {}
-                orbclient::EventOption::None => {}
+                orbclient::EventOption::Unknown(_) => println!("unkown"),
+                orbclient::EventOption::None => println!("None"),
             }
         }
     }
@@ -311,13 +331,15 @@ where
             for request in request_receiver.try_iter() {
                 match request {
                     WindowRequest::Redraw => {
-                        self.update = true;
-                        self.redraw = true;
+                        if !self.update && !self.redraw.load(Ordering::Relaxed) {
+                            self.update = true;
+                            self.redraw.store(true, Ordering::Relaxed)
+                        }
                     }
                     WindowRequest::ChangeTitle(title) => {
                         self.window.set_title(title.as_str());
                         self.update = true;
-                        self.redraw = true;
+                        self.redraw.store(true, Ordering::Relaxed)
                     }
                     WindowRequest::Close => {
                         self.close = true;
@@ -335,12 +357,12 @@ where
         }
         self.adapter.run(&mut self.render_context);
         self.update = false;
-        self.redraw = true;
+        self.redraw.store(true, Ordering::Relaxed)
     }
 
     /// Swaps the current frame buffer.
     pub fn render(&mut self) {
-        if self.redraw {
+        if self.redraw.load(Ordering::Relaxed) {
             let color_data: Vec<orbclient::Color> = self
                 .render_context
                 .data()
@@ -354,7 +376,7 @@ where
                     .clone_from_slice(color_data.as_slice());
 
                 // CONSOLE.time_end("render");
-                self.redraw = false;
+                self.redraw.store(false, Ordering::Relaxed)
                 //super::CONSOLE.time_end("complete");
             }
         }
