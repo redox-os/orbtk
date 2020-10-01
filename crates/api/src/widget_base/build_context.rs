@@ -149,6 +149,11 @@ impl<'a> BuildContext<'a> {
     pub fn register_layout(&mut self, widget: Entity, layout: Box<dyn Layout>) {
         self.layouts.borrow_mut().insert(widget, layout);
     }
+
+    /// Returns a cloned thread save event adapter.
+    pub fn event_adapter(&self) -> EventAdapter {
+        self.event_adapter.clone()
+    }
 }
 
 pub fn register_property<P: Component>(

@@ -16,24 +16,13 @@ console_error_panic_hook = "0.1.6"
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 image = { version = "0.23",  default-features = false, features = ["ico"] }
 spin_sleep = { version = "1.0", optional = true }
+derive_more = { version = "0.99", optional = true, features = ["constructor"], default-features = false }
 
 # orbclient
 orbclient = { git = "https://gitlab.redox-os.org/redox-os/orbclient.git", optional = true }
 
 # minifb dependencies
-minifb = { version = "0.18", optional = true }
-
-# pathfinder dependencies
-gl = { version = "0.14", optional = true }
-glutin = { version = "0.24", optional = true }
-euclid = { version = "0.20", optional = true }
-font-kit = { version = "0.6", optional = true }
-pathfinder_color = { version = "0.5", optional = true }
-pathfinder_geometry = { version = "0.5.1", optional = true }
-pathfinder_gl =  { version = "0.5", optional = true }
-pathfinder_renderer =  { version = "0.5", optional = true }
-pathfinder_resources =  { version = "0.5", optional = true }
-derive_more = { version = "0.99", optional = true, features = ["constructor"], default-features = false }
+minifb = { version = "0.19", optional = true }
 
 [target.'cfg(all(not(target_os = "redox"), not(target_arch = "wasm32")))'.dependencies]
 sdl2 = { version = "0.34", features = ["bundled", "static-link", "raw-window-handle"], optional = true }
@@ -50,15 +39,4 @@ orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 default = ["orbclient", "sdl2"]
 orbraq = ["orbclient", "sdl2"]
 miniraq = ["spin_sleep", "minifb", "orbtk_render/miniraq", "derive_more"]
-glupath = [
-    "gl",
-    "glutin",
-    "euclid",
-    "pathfinder_color",
-    "pathfinder_geometry",
-    "pathfinder_gl",
-    "pathfinder_renderer",
-    "pathfinder_resources",
-    "font-kit"
-]
 log = []
