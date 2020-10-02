@@ -225,9 +225,9 @@ impl GridLayout {
             let mut row_sum = 0.0;
 
             rows_cache.reserve(rows.len());
-            for col in rows.iter() {
-                rows_cache.push((row_sum, col.current_height()));
-                row_sum += col.current_height();
+            for row in rows.iter() {
+                rows_cache.push((row_sum, row.current_height()));
+                row_sum += row.current_height();
             }
 
             // fix rounding gab
@@ -268,7 +268,10 @@ impl Layout for GridLayout {
         }
 
         self.children_sizes.borrow_mut().clear();
-        let mut desired_size: (f64, f64) = (0.0, 0.0);
+
+        let mut sum_row:BTreeMap<usize, f64> = BTreeMap::new();
+        let mut sum_col:BTreeMap<usize, f64> = BTreeMap::new();
+
 
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
@@ -279,25 +282,47 @@ impl Layout for GridLayout {
                 let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
 
                 self.desired_size.borrow_mut().set_dirty(dirty);
-                desired_size.0 = desired_size.0.max(child_desired_size.width());
-                desired_size.1 = desired_size.1.max(child_desired_size.height());
+
+                // Add the greatest height per row into sum_row.
+                if let Ok(grid_row) = ecm.component_store().get::<usize>("row", child) {
+                    if let Some(current_height) = sum_row.get( grid_row){
+                        if current_height < &child_desired_size.height() {
+                            sum_row.insert(*grid_row, child_desired_size.height());
+                        }
+                    }else{
+                        sum_row.insert(*grid_row, child_desired_size.height());
+                    }
+                }
+                // Add the greatest width per column into sum_col.
+                if let Ok(grid_col) = ecm.component_store().get::<usize>("column", child) {
+                    if let Some(current_height) = sum_col.get(grid_col){
+                        if current_height < &child_desired_size.height() {
+                            sum_col.insert(*grid_col, child_desired_size.height());
+                        }
+                    }else{
+                        sum_col.insert(*grid_col, child_desired_size.height());
+                    }
+                }
 
                 self.children_sizes.borrow_mut().insert(
                     child,
                     (child_desired_size.width(), child_desired_size.height()),
                 );
+
             }
         }
-
+        // Set desired size to sum of widest columns and highest rows.
         self.desired_size
             .borrow_mut()
-            .set_size(desired_size.0, desired_size.1);
+            .set_size(sum_col.iter().map(|x|{x.1}).sum(), sum_row.iter().map(|x|{x.1}).sum());
 
         let size = ecm
             .component_store()
             .get::<Constraint>("constraint", entity)
             .unwrap()
             .perform(self.desired_size.borrow().size());
+
+
         self.desired_size.borrow_mut().set_size(size.0, size.1);
 
         *self.desired_size.borrow()
@@ -370,14 +395,15 @@ impl Layout for GridLayout {
             if let Ok(grid_row) = ecm.component_store().get::<usize>("row", child) {
                 let grid_row = *grid_row;
 
+                // calculate row_height for each row and insert into row_heights
                 if let Ok(rows) = ecm.component_store().get::<Rows>("rows", entity) {
                     if let Some(row) = rows.get(grid_row) {
                         self.calculate_row_height(child, *row, grid_row, &mut row_heights, margin);
                     }
                 }
+
             }
         }
-
         if let Ok(columns) = ecm
             .component_store_mut()
             .get_mut::<Columns>("columns", entity)
@@ -385,6 +411,7 @@ impl Layout for GridLayout {
             self.calculate_columns(size, &mut columns_cache, columns, &column_widths);
         }
 
+        // take row_heights and calculate rows_cache
         if let Ok(rows) = ecm.component_store_mut().get_mut::<Rows>("rows", entity) {
             self.calculate_rows(size, &mut rows_cache, rows, &row_heights);
         }
