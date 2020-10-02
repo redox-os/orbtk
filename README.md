@@ -12,10 +12,12 @@ The main goals of OrbTk are speed, ease of use, and cross-platform compatibility
 
 ## Screenshots
 
+<p float="left">
 <img alt="showcase" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-showcase-macos.png">
-<div style="margin: 0 0 8px 0;"><img alt="calculator-macos" height="300" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-calculator-macos.png"></div>
-<div><img alt="calculator-macos-light" height="300" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-calculator-light-macos.png"></div>
-<div><img alt="calculator-redox" height="300" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-calculator-redox.png"></div>
+<img alt="calculator-macos" height="300" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-calculator-macos.png">
+<img alt="calculator-macos-light" height="300" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-calculator-light-macos.png">
+<img alt="calculator-redox" height="300" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-calculator-redox.png">
+</p>
 
 ## Features:
 
