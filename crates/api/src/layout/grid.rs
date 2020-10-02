@@ -271,6 +271,7 @@ impl Layout for GridLayout {
 
         let mut sum_row:BTreeMap<usize, f64> = BTreeMap::new();
         let mut sum_col:BTreeMap<usize, f64> = BTreeMap::new();
+        let mut desired_size: (f64, f64) = (0.0, 0.0);
 
 
         for index in 0..ecm.entity_store().children[&entity].len() {
@@ -283,17 +284,7 @@ impl Layout for GridLayout {
 
                 self.desired_size.borrow_mut().set_dirty(dirty);
 
-                // Add the greatest height per row into sum_row.
-                if let Ok(grid_row) = ecm.component_store().get::<usize>("row", child) {
-                    if let Some(current_height) = sum_row.get( grid_row){
-                        if current_height < &child_desired_size.height() {
-                            sum_row.insert(*grid_row, child_desired_size.height());
-                        }
-                    }else{
-                        sum_row.insert(*grid_row, child_desired_size.height());
-                    }
-                }
-                // Add the greatest width per column into sum_col.
+                // If the child is a grid, add the greatest width per column into sum_col.
                 if let Ok(grid_col) = ecm.component_store().get::<usize>("column", child) {
                     if let Some(current_width) = sum_col.get(grid_col){
                         if current_width < &child_desired_size.width() {
@@ -302,6 +293,20 @@ impl Layout for GridLayout {
                     }else{
                         sum_col.insert(*grid_col, child_desired_size.width());
                     }
+                } else {
+                    desired_size.0 = desired_size.0.max(child_desired_size.width());
+                }
+                // If the child is a grid, add the greatest height per row into sum_row.
+                if let Ok(grid_row) = ecm.component_store().get::<usize>("row", child) {
+                    if let Some(current_height) = sum_row.get( grid_row){
+                        if current_height < &child_desired_size.height() {
+                            sum_row.insert(*grid_row, child_desired_size.height());
+                        }
+                    }else{
+                        sum_row.insert(*grid_row, child_desired_size.height());
+                    }
+                } else {
+                    desired_size.1 = desired_size.1.max(child_desired_size.height());
                 }
 
                 self.children_sizes.borrow_mut().insert(
@@ -311,10 +316,16 @@ impl Layout for GridLayout {
 
             }
         }
+
+        desired_size.0 = desired_size.0.max(sum_col.iter().map(|x|{x.1}).sum());
+        desired_size.1 = desired_size.1.max(sum_row.iter().map(|x|{x.1}).sum());
         // Set desired size to sum of widest columns and highest rows.
         self.desired_size
             .borrow_mut()
-            .set_size(sum_col.iter().map(|x|{x.1}).sum(), sum_row.iter().map(|x|{x.1}).sum());
+            .set_size(desired_size.0, desired_size.1);
+            //self.desired_size
+            //    .borrow_mut()
+        //    .set_size(desired_size.0, desired_size.1);
 
         let size = ecm
             .component_store()
