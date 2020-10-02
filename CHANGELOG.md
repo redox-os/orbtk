@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Rename `lost_focus_on_activation` to `lose_focus_on_activation`
 * Thread save `EventAdapter`
 * Temporary remove `glupath` backend
+* Fix "auto" width of grid layout
 
 ### 0.3.1-alpha3
 
