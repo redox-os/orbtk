@@ -262,22 +262,8 @@ impl EventStateSystem {
                             Some(&self.context_provider.event_adapter),
                         ),
                     ) {
-                        let mut add = true;
-                        if let Some(op) = clipped_parent.get(0) {
-                            // todo: improve check path if exists
-                            if !check_mouse_condition(
-                                event.position,
-                                &WidgetContainer::new(
-                                    *op,
-                                    ecm,
-                                    &theme,
-                                    Some(&self.context_provider.event_adapter),
-                                ),
-                            ) {
-                                add = false;
-                            }
-                        }
-                        if add && has_handler {
+                        // todo add check to block mouse move inside of clipped areas of a widget
+                        if has_handler {
                             matching_nodes.push(current_node);
                         }
                     }
