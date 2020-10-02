@@ -1,8 +1,8 @@
-use std::collections::BTreeMap;
+use std::{any::Any, collections::BTreeMap};
 
 use dces::prelude::{Component, Entity, EntityComponentManager, StringComponentStore};
 
-use crate::tree::Tree;
+use crate::{tree::Tree, widget_base::MessageAdapter};
 
 use super::State;
 
@@ -10,6 +10,7 @@ use super::State;
 pub struct StatesContext<'a> {
     states: &'a mut BTreeMap<Entity, Box<dyn State>>,
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
+    message_adapter: &'a MessageAdapter,
 }
 
 impl<'a> StatesContext<'a> {
@@ -17,8 +18,13 @@ impl<'a> StatesContext<'a> {
     pub fn new(
         states: &'a mut BTreeMap<Entity, Box<dyn State>>,
         ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
+        message_adapter: &'a MessageAdapter,
     ) -> Self {
-        StatesContext { states, ecm }
+        StatesContext {
+            states,
+            ecm,
+            message_adapter,
+        }
     }
 
     // Mark the widget as dirty.
@@ -113,5 +119,10 @@ impl<'a> StatesContext<'a> {
         }
 
         None
+    }
+
+    /// Send a message to the given target widget.
+    pub fn send_message<M: Any + Send>(&self, message: M, target: Entity) {
+        self.message_adapter.push_message(target, message);
     }
 }
