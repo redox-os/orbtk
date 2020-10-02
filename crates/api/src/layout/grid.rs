@@ -295,12 +295,12 @@ impl Layout for GridLayout {
                 }
                 // Add the greatest width per column into sum_col.
                 if let Ok(grid_col) = ecm.component_store().get::<usize>("column", child) {
-                    if let Some(current_height) = sum_col.get(grid_col){
-                        if current_height < &child_desired_size.height() {
-                            sum_col.insert(*grid_col, child_desired_size.height());
+                    if let Some(current_width) = sum_col.get(grid_col){
+                        if current_width < &child_desired_size.width() {
+                            sum_col.insert(*grid_col, child_desired_size.width());
                         }
                     }else{
-                        sum_col.insert(*grid_col, child_desired_size.height());
+                        sum_col.insert(*grid_col, child_desired_size.width());
                     }
                 }
 
