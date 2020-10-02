@@ -10,7 +10,12 @@ on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity_co
 
 The main goals of OrbTk are speed, ease of use, and cross-platform compatibility.
 
-<img alt="Calculator" width="350" src="https://gitlab.redox-os.org/redox-os/assets/raw/master/screenshots/Calculator.png">
+## Screenshots
+
+<img alt="showcase" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-showcase-macos.png">
+<img alt="calculator-macos" width="200" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-calculator-macos.png">
+<img alt="calculator-macos-light" width="200" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-calculator-light-macos.png">
+<img alt="calculator-redox" width="200" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-calculator-redox.png">
 
 ## Features:
 
