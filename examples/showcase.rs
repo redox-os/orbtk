@@ -419,6 +419,7 @@ impl Template for NavigationView {
                         .h_align("start")
                         .attach(Grid::row(3))
                         .on_click(move |states, _| {
+                            states.send_message(String::from("Hello you"), id);
                             states.get_mut::<PagerState>(pager).previous();
                             true
                         })
@@ -541,6 +542,17 @@ impl State for NavigationState {
             }
 
             self.action = None;
+        }
+    }
+
+    fn messages(
+        &mut self,
+        messages: &MessageAdapter,
+        _registry: &mut Registry,
+        _ctx: &mut Context,
+    ) {
+        for message in messages.read::<String>(_ctx.entity) {
+            println!("{}", message);
         }
     }
 }

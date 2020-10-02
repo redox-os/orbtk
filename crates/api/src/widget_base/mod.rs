@@ -6,6 +6,7 @@ use crate::{event::EventHandler, properties::AttachedProperty, theming::Selector
 
 pub use self::build_context::*;
 pub use self::context::*;
+pub use self::message_adapter::*;
 pub use self::registry::*;
 pub use self::state::*;
 pub use self::states_context::*;
@@ -14,6 +15,7 @@ pub use self::widget_container::*;
 
 mod build_context;
 mod context;
+mod message_adapter;
 mod registry;
 mod state;
 mod states_context;

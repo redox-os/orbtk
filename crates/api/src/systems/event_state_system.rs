@@ -60,6 +60,8 @@ impl EventStateSystem {
             return false;
         }
 
+        let message_adapter = self.context_provider.message_adapter.clone();
+
         if event.strategy == EventStrategy::Direct {
             if let Some(handlers) = self
                 .context_provider
@@ -72,6 +74,7 @@ impl EventStateSystem {
                         &mut StatesContext::new(
                             &mut *self.context_provider.states.borrow_mut(),
                             ecm,
+                            &message_adapter,
                         ),
                         &event,
                     )
@@ -95,6 +98,7 @@ impl EventStateSystem {
         let mut current_node = event.source;
         let root = ecm.entity_store().root();
         let mut disabled_parents = vec![];
+        let message_adapter = self.context_provider.message_adapter.clone();
 
         let theme = ecm
             .component_store()
@@ -309,6 +313,7 @@ impl EventStateSystem {
                         &mut StatesContext::new(
                             &mut *self.context_provider.states.borrow_mut(),
                             ecm,
+                            &message_adapter,
                         ),
                         event,
                     )
