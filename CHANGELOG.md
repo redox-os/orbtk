@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Temporary remove `glupath` backend
 * Fix "auto" width of grid layout
 * Add thread safe `EventAdapter`
-* Add thread save `MessageAdapter`, `MessageReader`
+* Add thread safe `MessageAdapter`, `MessageReader`
 
 
 ### 0.3.1-alpha3
