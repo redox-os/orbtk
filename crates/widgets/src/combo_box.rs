@@ -54,7 +54,7 @@ impl State for ComboBoxItemState {
         }
         self.request_selection_toggle.set(false);
 
-        let entity = ctx.entity;
+        let entity = ctx.entity();
 
         // unselect previous selected item.
         if let Some(item) = ctx
@@ -227,7 +227,7 @@ impl ComboBoxState {
 impl State for ComboBoxState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         let count = ctx.widget().clone_or_default::<usize>("count");
-        let entity = ctx.entity;
+        let entity = ctx.entity();
 
         // build the combobox items
         if count != self.count {

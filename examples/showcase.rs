@@ -548,11 +548,13 @@ impl State for NavigationState {
 
     fn messages(
         &mut self,
-        messages: &MessageAdapter,
+        mut messages: MessageReader,
         _registry: &mut Registry,
         _ctx: &mut Context,
     ) {
-        for message in messages.read::<String>(_ctx.entity) {
+        println!("empty {}", messages.is_empty());
+        println!("has type {}", messages.contains_type::<String>());
+        for message in messages.read::<String>() {
             println!("{}", message);
         }
     }

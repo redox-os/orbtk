@@ -426,7 +426,7 @@ impl TabWidgetState {
 
     //Create a new TabHeader entity and return it. For internal use.
     fn create_tab_header(&self, ctx: &mut Context, text: String, body: Entity) -> Entity {
-        let cloned_entity = ctx.entity;
+        let cloned_entity = ctx.entity();
         TabHeader::new()
             .close_button(if self.close_button_visibility {
                 Visibility::Visible

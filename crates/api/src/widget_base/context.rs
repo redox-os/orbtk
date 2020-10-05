@@ -18,7 +18,7 @@ use super::WidgetContainer;
 /// The `Context` is provides access for the states to objects they could work with.
 pub struct Context<'a> {
     pub(crate) ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
-    pub entity: Entity,
+    entity: Entity,
     pub theme: Theme,
     pub(crate) provider: &'a ContextProvider,
     new_states: BTreeMap<Entity, Box<dyn State>>,
@@ -55,6 +55,11 @@ impl<'a> Context<'a> {
             remove_widget_list: vec![],
             render_context,
         }
+    }
+
+    /// Gets the current entity.
+    pub fn entity(&self) -> Entity {
+        self.entity
     }
 
     /// Access the raw window handle. Could be `None` on unsupported raw-window-handle platforms like `Redox`.

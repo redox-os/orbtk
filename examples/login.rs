@@ -119,7 +119,7 @@ impl State for LoginFormState {
                 }
                 // creates a popup then attach it to the overlay
                 LoginAction::ShowPopup => {
-                    let current_entity = ctx.entity;
+                    let current_entity = ctx.entity();
                     let build_context = &mut ctx.build_context();
                     let popup = self.create_popup(current_entity, build_context);
                     build_context.append_child(current_entity, popup);

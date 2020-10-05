@@ -74,7 +74,7 @@ impl NumericBoxState {
         if !ctx.widget().get::<bool>("focused") {
             ctx.widget().set::<bool>("focused", true);
             self.event_adapter
-                .push_event_direct(self.window, FocusEvent::RequestFocus(ctx.entity));
+                .push_event_direct(self.window, FocusEvent::RequestFocus(ctx.entity()));
         }
     }
 }
@@ -125,12 +125,12 @@ impl State for NumericBoxState {
                         if *ctx.widget().get::<bool>("lose_focus_on_activation") {
                             self.event_adapter.push_event_direct(
                                 self.window,
-                                FocusEvent::RequestFocus(ctx.entity),
+                                FocusEvent::RequestFocus(ctx.entity()),
                             );
                         }
 
                         self.event_adapter
-                            .push_event_direct(ctx.entity, ActivateEvent(ctx.entity));
+                            .push_event_direct(ctx.entity(), ActivateEvent(ctx.entity()));
                     }
                     _ => {}
                 },
