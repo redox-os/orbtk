@@ -4,6 +4,9 @@ use std::{
     io::Write,
 };
 
+#[cfg(not(target_arch = "wasm32"))]
+use threadpool::*;
+
 #[cfg(target_arch = "wasm32")]
 use stdweb::web::window;
 
@@ -17,33 +20,61 @@ use ron::ser::{to_string_pretty, PrettyConfig};
 
 use serde::{de::DeserializeOwned, Serialize};
 
+use dces::entity::Entity;
+
+use crate::widget_base::MessageAdapter;
+
+pub enum SettingsMessage<D>
+where
+    D: DeserializeOwned,
+{
+    Saved,
+    Loaded(D),
+}
+
 /// `Settings` represents a global settings service that could be use to serialize and deserialize
 /// data in the `ron` file format. Settings are stored in the user settings directory (depending on the operating system)
 /// under the a folder with the given application name.
 #[derive(Debug, Clone)]
 pub struct Settings {
     app_name: Box<str>,
-}
+    message_adapter: MessageAdapter,
 
-impl Default for Settings {
-    fn default() -> Self {
-        Settings {
-            app_name: "orbtk_app".into(),
-        }
-    }
+    #[cfg(not(target_arch = "wasm32"))]
+    pool: ThreadPool,
 }
 
 impl Settings {
+    /// Creates a new `Settings` service with an default name.
+    pub fn new(message_adapter: MessageAdapter) -> Self {
+        Settings {
+            app_name: "orbtk_app".into(),
+            message_adapter,
+
+            #[cfg(not(target_arch = "wasm32"))]
+            pool: ThreadPool::new(4),
+        }
+    }
     /// Creates a new `Settings` service with the given app name.
-    pub fn new(app_name: impl Into<Box<str>>) -> Self {
+    pub fn from_name(app_name: impl Into<Box<str>>, message_adapter: MessageAdapter) -> Self {
         Settings {
             app_name: app_name.into(),
+            message_adapter,
+
+            #[cfg(not(target_arch = "wasm32"))]
+            pool: ThreadPool::new(4),
         }
     }
 
     /// Gets the app name of the setting service.
     pub fn app_name(&self) -> &str {
         &*self.app_name
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    /// Serialize the given data object from user's config dir. Sends a saved message to the given entity.
+    pub fn save_async<S: Serialize>(&self, key: &str, data: &S, entity: Entity) {
+        self.pool.execute(move || {})
     }
 
     #[cfg(not(target_arch = "wasm32"))]
