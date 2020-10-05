@@ -2,8 +2,10 @@ use std::{
     any::{Any, TypeId},
     collections::{BTreeMap, HashMap},
     marker::PhantomData,
-    sync::{Arc, RwLock},
+    sync::{mpsc, Arc, RwLock},
 };
+
+use crate::shell::WindowRequest;
 
 use dces::entity::Entity;
 
@@ -75,15 +77,19 @@ impl MessageBox {
 ///         }
 /// }
 /// ```
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Debug)]
 pub struct MessageAdapter {
     messages: Arc<RwLock<BTreeMap<Entity, HashMap<TypeId, Vec<MessageBox>>>>>,
+    window_sender: mpsc::Sender<WindowRequest>,
 }
 
 impl MessageAdapter {
     /// Creates a new message adapter
-    pub fn new() -> Self {
-        MessageAdapter::default()
+    pub fn new(window_sender: mpsc::Sender<WindowRequest>) -> Self {
+        MessageAdapter {
+            messages: Arc::new(RwLock::new(BTreeMap::new())),
+            window_sender,
+        }
     }
 
     /// Pushes / sent a new message to the message pipeline.
@@ -121,6 +127,10 @@ impl MessageAdapter {
             .get_mut(&type_id)
             .unwrap()
             .push(MessageBox::new(message, target));
+
+        self.window_sender
+            .send(WindowRequest::Redraw)
+            .expect("MessageAdapter::push_message: Cannot send redraw request.");
     }
 
     /// Returns a list of entities that has messages.
