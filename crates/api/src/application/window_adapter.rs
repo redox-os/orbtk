@@ -210,21 +210,24 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
 
     let registry = Rc::new(RefCell::new(Registry::new()));
 
+    let context_provider =
+        ContextProvider::new(sender, request_sender, app_name.clone(), localization);
+
     if app_name.is_empty() {
-        registry
-            .borrow_mut()
-            .register("settings", Settings::default());
+        registry.borrow_mut().register(
+            "settings",
+            Settings::new(context_provider.message_adapter.clone()),
+        );
     } else {
-        registry
-            .borrow_mut()
-            .register("settings", Settings::new(app_name.clone()));
+        registry.borrow_mut().register(
+            "settings",
+            Settings::from_name(app_name.clone(), context_provider.message_adapter.clone()),
+        );
     };
 
     registry
         .borrow_mut()
         .register("clipboard", Clipboard::new());
-
-    let context_provider = ContextProvider::new(sender, request_sender, app_name, localization);
 
     let window = {
         let overlay = Overlay::new().build(&mut BuildContext::new(
