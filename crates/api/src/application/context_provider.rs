@@ -52,7 +52,7 @@ impl ContextProvider {
             handler_map: Rc::new(RefCell::new(EventHandlerMap::new())),
             states: Rc::new(RefCell::new(BTreeMap::new())),
             event_adapter: EventAdapter::new(window_sender.clone()),
-            message_adapter: MessageAdapter::new(),
+            message_adapter: MessageAdapter::new(window_sender.clone()),
             mouse_position: Rc::new(Cell::new(Point::new(0.0, 0.0))),
             window_sender,
             shell_sender,

@@ -19,7 +19,7 @@ fn main() {
             Window::new()
                 .title("OrbTk - showcase example")
                 .position((100, 100))
-                .size(300, 730)
+                .size(1000, 730)
                 .resizeable(true)
                 .child(MainView::new().build(ctx))
                 .build(ctx)
