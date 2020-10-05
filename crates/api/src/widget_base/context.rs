@@ -471,6 +471,11 @@ impl<'a> Context<'a> {
         self.provider.event_adapter.clone()
     }
 
+    /// Sends a message to the given entity.
+    pub fn send_message<M: Any + Send>(&self, entity: Entity, message: M) {
+        self.provider.message_adapter.push_message(entity, message);
+    }
+
     /// Gets a new sender that allows to communicate with the window shell.
     pub fn send_window_request(&self, request: WindowRequest) {
         self.provider
