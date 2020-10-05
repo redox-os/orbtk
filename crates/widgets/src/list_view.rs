@@ -20,7 +20,7 @@ pub struct ListViewState {
 impl ListViewState {
     fn generate_items(&mut self, ctx: &mut Context) {
         let count = ctx.widget().clone_or_default::<usize>("count");
-        let entity = ctx.entity;
+        let entity = ctx.entity();
 
         if count != self.count || *ctx.widget().get::<bool>("request_update") {
             ctx.widget().set("request_update", false);
@@ -134,7 +134,7 @@ impl State for ListViewItemState {
 
         let selected = *ctx.widget().get::<bool>("selected");
 
-        let entity = ctx.entity;
+        let entity = ctx.entity();
         let index = ctx.index_as_child(entity).unwrap();
 
         let parent_entity: Entity = (*ctx.widget().get::<u32>("parent")).into();

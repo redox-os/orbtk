@@ -127,7 +127,7 @@ impl MasterDetailState {
     // force update on next iteration.
     fn force_next_update(&self, ctx: &mut Context) {
         self.event_adapter
-            .push_event_direct(ctx.entity, ActivateEvent(ctx.entity));
+            .push_event_direct(ctx.entity(), ActivateEvent(ctx.entity()));
     }
 }
 

@@ -576,7 +576,7 @@ impl<'a> WidgetContainer<'a> {
 impl<'a> From<&'a mut super::Context<'_>> for WidgetContainer<'a> {
     fn from(ctx: &'a mut super::Context<'_>) -> Self {
         WidgetContainer::new(
-            ctx.entity,
+            ctx.entity(),
             ctx.ecm,
             &ctx.theme,
             Some(&ctx.provider.event_adapter),

@@ -1,12 +1,13 @@
 use std::{
     any::{Any, TypeId},
-    collections::BTreeMap,
+    collections::{BTreeMap, HashMap},
     marker::PhantomData,
     sync::{Arc, RwLock},
 };
 
 use dces::entity::Entity;
 
+/// Internal wrapper that stores a message inside a box.
 #[derive(Debug)]
 pub struct MessageBox {
     message: Box<dyn Any + Send>,
@@ -53,98 +54,200 @@ impl MessageBox {
     }
 }
 
+/// The `MessageAdapter` is the thread save entry point to sent and read widget messages that are handled by the `message``
+/// method of a widget `State`,
+///
+/// # Example
+///
+/// ```rust
+/// fn say_hello(entity: Entity, message_adapter: MessageAdapter) {
+///     message_adapter.push_message(entity, String::from("Hello"));
+///     message_adapter.push_message(entity, String::from("Hello 2"));
+/// }
+///
+/// impl State for MyState {
+///     fn message(&mut self, mut messages: MessageReader, _registry: &mut Registry, _ctx: &mut Context) {
+///         for message in messages.read::<String>() {
+///             // prints:
+///             // Hello
+///             // Hello 2
+///             println!("{}", message);
+///         }
+/// }
+/// ```
 #[derive(Clone, Default, Debug)]
 pub struct MessageAdapter {
-    messages: Arc<RwLock<BTreeMap<Entity, Vec<MessageBox>>>>,
+    messages: Arc<RwLock<BTreeMap<Entity, HashMap<TypeId, Vec<MessageBox>>>>>,
 }
 
 impl MessageAdapter {
+    /// Creates a new message adapter
     pub fn new() -> Self {
         MessageAdapter::default()
     }
 
+    /// Pushes / sent a new message to the message pipeline.
     pub fn push_message<M: Any + Send>(&self, target: Entity, message: M) {
         if !self.messages.read().unwrap().contains_key(&target) {
-            self.messages.write().unwrap().insert(target, vec![]);
+            self.messages
+                .write()
+                .expect("MessageAdapter::push_message: Cannot lock messages.")
+                .insert(target, HashMap::new());
+        }
+
+        let type_id = TypeId::of::<M>();
+
+        if !self
+            .messages
+            .read()
+            .expect("MessageAdapter::push_message: Cannot lock messages.")
+            .get(&target)
+            .unwrap()
+            .contains_key(&type_id)
+        {
+            self.messages
+                .write()
+                .expect("MessageAdapter::push_message: Cannot lock messages.")
+                .get_mut(&target)
+                .unwrap()
+                .insert(type_id, vec![]);
         }
 
         self.messages
             .write()
-            .unwrap()
+            .expect("MessageAdapter::push_message: Cannot lock messages.")
             .get_mut(&target)
+            .unwrap()
+            .get_mut(&type_id)
             .unwrap()
             .push(MessageBox::new(message, target));
     }
 
+    /// Returns a list of entities that has messages.
     pub(crate) fn entities(&self) -> Vec<Entity> {
-        self.messages.read().unwrap().keys().cloned().collect()
+        self.messages
+            .read()
+            .expect("MessageAdapter::entities: Cannot lock messages.")
+            .keys()
+            .cloned()
+            .collect()
     }
 
     /// Removes all messages for the given target entity. This is used to remove messages for
     /// entities that does not have a `State` to read the messages.
     pub(crate) fn remove_message_for_entity(&self, target: Entity) {
-        self.messages.write().unwrap().remove(&target);
+        self.messages
+            .write()
+            .expect("MessageAdapter::remove_message_for_entity: Cannot lock messages.")
+            .remove(&target);
     }
 
     /// Returns the number of messages in the queue.
     pub fn len(&self) -> usize {
-        self.messages.read().unwrap().len()
+        self.messages
+            .read()
+            .expect("MessageAdapter::len: Cannot lock messages.")
+            .len()
     }
 
     /// Returns `true` if the event message contains no events.
     pub fn is_empty(&self) -> bool {
-        self.messages.read().unwrap().is_empty()
+        self.messages
+            .read()
+            .expect("MessageAdapter::is_empty: Cannot lock messages.")
+            .is_empty()
     }
 
-    pub fn read<M: Any + Send>(&self, target: Entity) -> MessageReader<M> {
-        if let Some(messages) = self.messages.write().unwrap().remove(&target) {
-            return MessageReader::new(messages, target);
-        }
+    /// Returns a message reader for the given entity. Moves all messages for the entity from the adapter to the reader.
+    pub fn message_reader(&self, entity: Entity) -> MessageReader {
+        let messages = if let Some(messages) = self
+            .messages
+            .write()
+            .expect("MessageAdapter::message_reader: Cannot lock messages.")
+            .remove(&entity)
+        {
+            messages
+        } else {
+            HashMap::new()
+        };
 
-        MessageReader::new(vec![], target)
+        MessageReader::new(messages, entity)
     }
 }
 
-// todo split in MessageReader with all messages of an entity and generate a messageiteratior
+/// The `MessageReader` is used to access the messages of a widget.
+pub struct MessageReader {
+    messages: HashMap<TypeId, Vec<MessageBox>>,
+    target: Entity,
+}
 
+impl MessageReader {
+    /// Creates a new message reader.
+    pub fn new(messages: HashMap<TypeId, Vec<MessageBox>>, target: Entity) -> Self {
+        MessageReader { messages, target }
+    }
+
+    /// Returns the target entity of the reader.
+    pub fn entity(&self) -> Entity {
+        self.target
+    }
+
+    /// Returns `true` if the reader contains message for the specified type.
+    pub fn contains_type<M: Any>(&self) -> bool {
+        self.messages.contains_key(&TypeId::of::<M>())
+    }
+
+    /// Returns `true` if the reader contains no messages.
+    pub fn is_empty(&self) -> bool {
+        self.messages.is_empty()
+    }
+
+    /// Returns a message iterator for the given message type.
+    pub fn read<M: Any + Send>(&mut self) -> MessageIterator<M> {
+        let messages = if let Some(messages) = self.messages.remove(&TypeId::of::<M>()) {
+            messages
+        } else {
+            vec![]
+        };
+
+        MessageIterator::new(messages)
+    }
+}
+
+/// Iterator of messages.
 #[derive(Debug)]
-pub struct MessageReader<M>
+pub struct MessageIterator<M>
 where
     M: Any + Send,
 {
     messages: Vec<MessageBox>,
-    target: Entity,
     _phantom: PhantomData<M>,
 }
 
-impl<M> MessageReader<M>
+impl<M> MessageIterator<M>
 where
     M: Any + Send,
 {
-    pub(crate) fn new(messages: Vec<MessageBox>, target: Entity) -> Self {
-        MessageReader {
+    pub(crate) fn new(messages: Vec<MessageBox>) -> Self {
+        MessageIterator {
             messages,
-            target,
             _phantom: PhantomData::default(),
         }
     }
 }
 
-impl<M> Iterator for MessageReader<M>
+impl<M> Iterator for MessageIterator<M>
 where
     M: Any + Send,
 {
     type Item = M;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if let Some(index) = self
-            .messages
-            .iter()
-            .position(|m| m.target == self.target && m.type_id() == TypeId::of::<M>())
-        {
-            return Some(self.messages.remove(index).downcast::<M>().unwrap());
+        if self.messages.is_empty() {
+            return None;
         }
 
-        None
+        // unwrap is ok because only messages of the same type should be stored in the vec
+        Some(self.messages.remove(0).downcast::<M>().unwrap())
     }
 }

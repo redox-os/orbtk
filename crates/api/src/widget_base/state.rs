@@ -1,4 +1,4 @@
-use crate::widget_base::{Context, MessageAdapter, Registry};
+use crate::widget_base::{Context, MessageReader, Registry};
 use std::any::Any;
 
 pub trait AsAny: Any {
@@ -79,12 +79,7 @@ pub trait State: AsAny {
     /// * `_messages`: Provides access to messages of the widget.
     /// * `_registry`: Provides access to the global Service Registry.
     /// * `_ctx`: Represents the context of the current widget.Allows manipulation of the widget tree.
-    fn messages(
-        &mut self,
-        _messages: &MessageAdapter,
-        _registry: &mut Registry,
-        _ctx: &mut Context,
-    ) {
+    fn messages(&mut self, _messages: MessageReader, _registry: &mut Registry, _ctx: &mut Context) {
     }
 
     /// Updates the state **after layout is calculated and before rendering**

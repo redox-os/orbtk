@@ -79,14 +79,14 @@ impl State for PagerState {
     fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
         if let Some(action) = self.actions.pop_front() {
             match action {
-                PagerAction::Next => Pager::next(ctx, ctx.entity),
-                PagerAction::Previous => Pager::previous(ctx, ctx.entity),
-                PagerAction::Navigate(index) => Pager::navigate(ctx, ctx.entity, index),
-                PagerAction::Remove(index) => Pager::remove(ctx, ctx.entity, index),
-                PagerAction::Insert(index, entity) => Pager::insert(ctx, ctx.entity, index, entity),
+                PagerAction::Next => Pager::next(ctx, ctx.entity()),
+                PagerAction::Previous => Pager::previous(ctx, ctx.entity()),
+                PagerAction::Navigate(index) => Pager::navigate(ctx, ctx.entity(), index),
+                PagerAction::Remove(index) => Pager::remove(ctx, ctx.entity(), index),
+                PagerAction::Push(entity) => Pager::push(ctx, ctx.entity(), entity),
                 PagerAction::NavigateToCurrent => {
                     let current_index = Pager::correct_current_index(ctx);
-                    Pager::navigate(ctx, ctx.entity, current_index);
+                    Pager::navigate(ctx, ctx.entity(), current_index);
                 }
             }
         }

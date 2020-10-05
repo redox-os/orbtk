@@ -34,7 +34,11 @@ impl System<Tree, StringComponentStore, RenderContext2D> for MessageSystem {
             );
 
             if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
-                state.messages(&message_adapter, &mut self.registry.borrow_mut(), &mut ctx);
+                state.messages(
+                    message_adapter.message_reader(entity),
+                    &mut self.registry.borrow_mut(),
+                    &mut ctx,
+                );
             } else {
                 message_adapter.remove_message_for_entity(entity);
             }
