@@ -472,7 +472,7 @@ impl<'a> Context<'a> {
     }
 
     /// Sends a message to the given entity.
-    pub fn send_message<M: Any + Send>(&self, entity: Entity, message: M) {
+    pub fn send_message<M: Any + Send>(&self, message: M, entity: Entity) {
         self.provider.message_adapter.push_message(entity, message);
     }
 
