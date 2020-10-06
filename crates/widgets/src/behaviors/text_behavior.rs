@@ -787,7 +787,7 @@ widget!(
     ///
     /// [`Entity`]: https://docs.rs/dces/0.2.0/dces/entity/struct.Entity.html
     /// [`Cursor`]: ../struct.Cursor.html
-    TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler, DropHandler, MouseHandler {
+    TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler, TextInputHandler, DropHandler, MouseHandler {
         /// Reference the target (parent) widget e.g. `TextBox` or `PasswordBox`.
         target: u32,
 
@@ -837,6 +837,10 @@ impl Template for TextBehavior {
                 states
                     .get_mut::<TextBehaviorState>(id)
                     .action(TextAction::KeyDown(event));
+                false
+            })
+            .on_text_input(|_ctx, text| {
+                println!("{}", text);
                 false
             })
             .on_drop_file(move |states, file_name, position| {

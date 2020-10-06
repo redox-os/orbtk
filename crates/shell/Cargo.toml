@@ -19,7 +19,7 @@ spin_sleep = { version = "1.0", optional = true }
 derive_more = { version = "0.99", optional = true, features = ["constructor"], default-features = false }
 
 # orbclient
-orbclient = { git = "https://gitlab.redox-os.org/redox-os/orbclient.git", optional = true }
+orbclient = { git = "https://gitlab.redox-os.org/redox-os/orbclient.git", branch = "text-input", optional = true }
 
 # minifb dependencies
 minifb = { version = "0.19", optional = true }

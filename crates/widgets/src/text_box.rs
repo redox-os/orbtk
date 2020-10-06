@@ -12,7 +12,8 @@ widget!(
     ///
     /// * style: `text_box`
     TextBox: ActivateHandler,
-    KeyDownHandler {
+    KeyDownHandler,
+    TextInputHandler {
         /// Sets or shares the text property.
         text: String,
 
