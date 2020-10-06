@@ -41,6 +41,7 @@ impl Template for MainView {
                 .tab("Image", ImageView::new().build(ctx))
                 .tab("Localization", LocalizationView::new().build(ctx))
                 .tab("Navigation", NavigationView::new().build(ctx))
+                .tab("Interactive", InteractiveView::new().build(ctx))
                 .build(ctx),
         )
     }
@@ -420,7 +421,7 @@ impl Template for NavigationView {
                         .h_align("start")
                         .attach(Grid::row(3))
                         .on_click(move |states, _| {
-                            states.get_mut::<PagerState>(pager).previous();
+                            states.send_message(PagerAction::Previous, pager);
                             true
                         })
                         .build(ctx),
@@ -432,7 +433,7 @@ impl Template for NavigationView {
                         .h_align("end")
                         .attach(Grid::row(3))
                         .on_click(move |states, _| {
-                            states.get_mut::<PagerState>(pager).next();
+                            states.send_message(PagerAction::Next, pager);
                             true
                         })
                         .build(ctx),
@@ -462,8 +463,8 @@ impl Template for NavigationView {
                                         .visibility(("md_navigation_visibility", id))
                                         .h_align("start")
                                         .text("show details")
-                                        .on_click(move |states, _| {
-                                            states.get_mut::<NavigationState>(id).show_detail();
+                                        .on_click(move |ctx, _| {
+                                            ctx.send_message(MasterDetailAction::ShowDetail, id);
                                             true
                                         })
                                         .build(ctx),
@@ -486,8 +487,8 @@ impl Template for NavigationView {
                                         .style("button_single_content")
                                         .visibility(("md_navigation_visibility", id))
                                         .h_align("start")
-                                        .on_click(move |states, _| {
-                                            states.get_mut::<NavigationState>(id).show_master();
+                                        .on_click(move |ctx, _| {
+                                            ctx.send_message(MasterDetailAction::ShowMaster, id);
                                             true
                                         })
                                         .build(ctx),
@@ -501,32 +502,82 @@ impl Template for NavigationView {
     }
 }
 
+widget!(
+    InteractiveView<InteractiveState> {
+        settings_text: String
+    }
+);
+
+impl Template for InteractiveView {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+        self.child(
+            Grid::new()
+                .margin(8)
+                .rows(Rows::create().push("auto").push(4).push(32))
+                .columns(
+                    Columns::create()
+                        .push("auto")
+                        .push(4)
+                        .push("auto")
+                        .push(4)
+                        .push("auto"),
+                )
+                .child(
+                    TextBlock::new()
+                        .h_align("start")
+                        .attach(Grid::row(0))
+                        .attach(Grid::column(0))
+                        .attach(Grid::column_span(5))
+                        .text("Settings")
+                        .style("header")
+                        .build(ctx),
+                )
+                .child(
+                    TextBox::new()
+                        .text(("settings_text", id))
+                        .attach(Grid::row(2))
+                        .attach(Grid::column(0))
+                        .water_mark("Insert text...")
+                        .build(ctx),
+                )
+                .child(
+                    Button::new()
+                        .text("load")
+                        .style("button_single_content")
+                        .attach(Grid::row(2))
+                        .attach(Grid::column(2))
+                        .on_click(move |ctx, _| {
+                            ctx.send_message(InteractiveAction::LoadSettings, id);
+                            true
+                        })
+                        .build(ctx),
+                )
+                .child(
+                    Button::new()
+                        .text("save")
+                        .style("button_single_content")
+                        .attach(Grid::row(2))
+                        .attach(Grid::column(4))
+                        .on_click(move |ctx, _| {
+                            ctx.send_message(InteractiveAction::SaveSettings, id);
+                            true
+                        })
+                        .build(ctx),
+                )
+                .build(ctx),
+        )
+    }
+}
+
 // [END] views
 
 // [START] states
 
 static ID_NAVIGATION_MASTER_DETAIL: &str = "id_navigation_master_detail";
 
-#[derive(Copy, Clone, Debug, PartialEq)]
-enum NavigationAction {
-    ShowMaster,
-    ShowDetail,
-}
-
 #[derive(Debug, Default, AsAny)]
 struct NavigationState {
     master_detail: Entity,
-    action: Option<NavigationAction>,
-}
-
-impl NavigationState {
-    fn show_master(&mut self) {
-        self.action = Some(NavigationAction::ShowMaster);
-    }
-
-    fn show_detail(&mut self) {
-        self.action = Some(NavigationAction::ShowDetail);
-    }
 }
 
 impl State for NavigationState {
@@ -534,14 +585,14 @@ impl State for NavigationState {
         self.master_detail = ctx.child(ID_NAVIGATION_MASTER_DETAIL).entity();
     }
 
-    fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
-        if let Some(action) = self.action {
-            match action {
-                NavigationAction::ShowMaster => MasterDetail::show_master(ctx, self.master_detail),
-                NavigationAction::ShowDetail => MasterDetail::show_detail(ctx, self.master_detail),
-            }
-
-            self.action = None;
+    fn messages(
+        &mut self,
+        mut messages: MessageReader,
+        _registry: &mut Registry,
+        ctx: &mut Context,
+    ) {
+        for message in messages.read::<MasterDetailAction>() {
+            ctx.send_message(self.master_detail, message);
         }
     }
 }
@@ -576,4 +627,59 @@ impl State for LocalizationState {
     }
 }
 
+#[derive(Debug, Default, AsAny)]
+struct InteractiveState {}
+
+impl State for InteractiveState {
+    fn messages(
+        &mut self,
+        mut messages: MessageReader,
+        registry: &mut Registry,
+        ctx: &mut Context,
+    ) {
+        for message in messages.read::<InteractiveAction>() {
+            match message {
+                InteractiveAction::LoadSettings => registry
+                    .get::<Settings>("settings")
+                    .load_async::<SettingsData>("settings_data".to_string(), ctx.entity()),
+                InteractiveAction::SaveSettings => {
+                    let text: String = InteractiveView::settings_text_clone(&ctx.widget());
+                    registry.get::<Settings>("settings").save_async(
+                        "settings_data".to_string(),
+                        SettingsData(text),
+                        ctx.entity(),
+                    );
+                }
+            }
+        }
+
+        // save result
+        for message in messages.read::<SettingsResult<()>>() {
+            println!("Result {:?}", message);
+        }
+
+        // load result
+        for message in messages.read::<SettingsResult<SettingsData>>() {
+            if let Ok(data) = message {
+                InteractiveView::settings_text_set(&mut ctx.widget(), data.0);
+            }
+        }
+    }
+}
+
 // [END] states
+
+// [START] Dummy data
+
+#[derive(Clone, Debug)]
+enum InteractiveAction {
+    SaveSettings,
+    LoadSettings,
+}
+
+use serde_derive::{Deserialize, Serialize};
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub struct SettingsData(pub String);
+
+// [END] Dummy data

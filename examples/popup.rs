@@ -33,7 +33,7 @@ impl State for MainViewState {
             match action {
                 PopUpAction::Show => {
                     let stack = ctx.entity_of_child(STACK_ID).unwrap();
-                    let current_entity = ctx.entity;
+                    let current_entity = ctx.entity();
                     let build_context = &mut ctx.build_context();
 
                     let popup = create_popup(current_entity, "Popup text", build_context);

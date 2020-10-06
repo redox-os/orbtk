@@ -1,4 +1,4 @@
-use super::{Context, Registry};
+use crate::widget_base::{Context, MessageReader, Registry};
 use std::any::Any;
 
 pub trait AsAny: Any {
@@ -72,6 +72,15 @@ pub trait State: AsAny {
     ///
     /// [`event`]: ../trait.Event.html
     fn update(&mut self, _registry: &mut Registry, _ctx: &mut Context) {}
+
+    /// Used to read messages that are sent to the widget. This will be called after `update` and before `update_post_layout`.
+    ///
+    /// # Arguments
+    /// * `_messages`: Provides access to messages of the widget.
+    /// * `_registry`: Provides access to the global Service Registry.
+    /// * `_ctx`: Represents the context of the current widget.Allows manipulation of the widget tree.
+    fn messages(&mut self, _messages: MessageReader, _registry: &mut Registry, _ctx: &mut Context) {
+    }
 
     /// Updates the state **after layout is calculated and before rendering**
     /// for the given context when the widget becomes "dirty",

@@ -1,54 +1,30 @@
-use std::collections::VecDeque;
-
 use crate::{api::prelude::*, proc_macros::*};
 
-/// This state can be used to operate on the `Pager` widget inside of callbacks.
+/// Use this enum to trigger navigation actions on a pager.
 #[derive(Debug, Clone, PartialEq)]
-enum PagerAction {
+pub enum PagerAction {
+    /// Navigates to the next child. If the current child is the last in the list nothing will happen.
     Next,
+
+    /// Navigates to the previous child. If the current child is the first in the list nothing will happen.
     Previous,
+
+    /// Navigates to the given index. Is the index out of bounds nothing will happen.
     Navigate(usize),
+
+    /// Navigates to the current given index.
     NavigateToCurrent,
+
+    /// Removes the child on the given index. If the index is out of bounds nothing will happen.
     Remove(usize),
+
+    /// Pushes the given entity on the end of the pagers children.
     Push(Entity),
 }
 
 #[derive(Default, Clone, Debug, AsAny)]
 pub struct PagerState {
     current_index: usize,
-    actions: VecDeque<PagerAction>,
-}
-
-impl PagerState {
-    // used internal to navigate to the current index.
-    fn navigate_to_current_index(&mut self) {
-        self.actions.push_front(PagerAction::NavigateToCurrent);
-    }
-
-    /// Navigates to the next child. If the current child is the last in the list nothing will happen.
-    pub fn next(&mut self) {
-        self.actions.push_front(PagerAction::Next);
-    }
-
-    /// Navigates to the previous child. If the current child is the first in the list nothing will happen.
-    pub fn previous(&mut self) {
-        self.actions.push_front(PagerAction::Previous);
-    }
-
-    /// Navigates to the given index. Is the index out of bounds nothing will happen.
-    pub fn navigate(&mut self, index: usize) {
-        self.actions.push_front(PagerAction::Navigate(index));
-    }
-
-    /// Removes the child on the given index. If the index is out of bounds nothing will happen.
-    pub fn remove(&mut self, index: usize) {
-        self.actions.push_front(PagerAction::Remove(index));
-    }
-
-    /// Pushes the given entity on the end of the pagers children.
-    pub fn push(&mut self, entity: Entity) {
-        self.actions.push_front(PagerAction::Push(entity));
-    }
 }
 
 impl State for PagerState {
@@ -76,17 +52,22 @@ impl State for PagerState {
         Pager::update_next_previous_enabled(ctx, current_index);
     }
 
-    fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
-        if let Some(action) = self.actions.pop_front() {
+    fn messages(
+        &mut self,
+        mut messages: MessageReader,
+        _registry: &mut Registry,
+        ctx: &mut Context,
+    ) {
+        for action in messages.read::<PagerAction>() {
             match action {
-                PagerAction::Next => Pager::next(ctx, ctx.entity),
-                PagerAction::Previous => Pager::previous(ctx, ctx.entity),
-                PagerAction::Navigate(index) => Pager::navigate(ctx, ctx.entity, index),
-                PagerAction::Remove(index) => Pager::remove(ctx, ctx.entity, index),
-                PagerAction::Push(entity) => Pager::push(ctx, ctx.entity, entity),
+                PagerAction::Next => Pager::next(ctx, ctx.entity()),
+                PagerAction::Previous => Pager::previous(ctx, ctx.entity()),
+                PagerAction::Navigate(index) => Pager::navigate(ctx, ctx.entity(), index),
+                PagerAction::Remove(index) => Pager::remove(ctx, ctx.entity(), index),
+                PagerAction::Push(entity) => Pager::push(ctx, ctx.entity(), entity),
                 PagerAction::NavigateToCurrent => {
                     let current_index = Pager::correct_current_index(ctx);
-                    Pager::navigate(ctx, ctx.entity, current_index);
+                    Pager::navigate(ctx, ctx.entity(), current_index);
                 }
             }
         }
@@ -264,9 +245,8 @@ impl Pager {
 
 impl Template for Pager {
     fn template(self, _id: Entity, _context: &mut BuildContext) -> Self {
-        self.name("Pager")
-            .on_changed("current_index", |states, id| {
-                states.get_mut::<PagerState>(id).navigate_to_current_index();
-            })
+        self.name("Pager").on_changed("current_index", |ctx, id| {
+            ctx.send_message(PagerAction::NavigateToCurrent, id);
+        })
     }
 }

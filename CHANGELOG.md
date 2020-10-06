@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `MasterDetail `responsive navigation widget
 * TextBehavior: Copy Ctrl+C, Paste Ctrl+V, Cut Ctrl+X
 * `orbraq` backend (Orbclient and raqote)
+* Temporary remove `glupath` backend
 * Refactor on_changed callback, add key parameter
 * Access RawWindowHandle from Context
 * Select colors in themes through of CSS-like functions
@@ -31,9 +32,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add theme property to Window
 * MasterDetail responsive navigation widget
 * Rename `lost_focus_on_activation` to `lose_focus_on_activation`
-* Thread save `EventAdapter`
 * Temporary remove `glupath` backend
 * Fix "auto" width of grid layout
+* Add thread safe `EventAdapter`
+* Add thread safe `MessageAdapter`, `MessageReader`
+* Add `load_async` and `save_async` to `Settings` service
+
 
 ### 0.3.1-alpha3
 

@@ -12,7 +12,7 @@ use crate::{event::*, shell::WindowRequest};
 /// impl State for MayState {
 ///     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
 ///         let event_adapter = ctx.event_adapter();
-///         let entity = ctx.entity;
+///         let entity = ctx.entity();
 ///         
 ///         let _ = std::thread::spawn(move|| {
 ///             loop {

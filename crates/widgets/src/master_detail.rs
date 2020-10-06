@@ -1,17 +1,21 @@
-use std::collections::VecDeque;
-
 use crate::{api::prelude::*, proc_macros::*, Grid};
 
 // --- KEYS --
 static CONTENT_GRID: &str = "id_content_grid";
 // --- KEYS --
 
-// Describes operations on the master detail state.
+/// Use this enum to trigger navigation actions on a master detail widget.
 #[derive(Debug, Clone, PartialEq)]
-enum MasterDetailAction {
+pub enum MasterDetailAction {
+    /// Shows the master. If the master is shown nothing will happen.
     ShowMaster,
+
+    // Shows the detail. If the detail is shown nothing will happen
     ShowDetail,
-    SetMasterDetail(Entity, Entity),
+}
+
+// Internal actions.
+enum InternalAction {
     Expand,
     Collapse,
 }
@@ -22,40 +26,32 @@ pub struct MasterDetailState {
     content_grid: Entity,
     master: Option<Entity>,
     detail: Option<Entity>,
-    actions: VecDeque<MasterDetailAction>,
     expanded: bool,
-    update: bool,
     event_adapter: EventAdapter,
 }
 
 impl MasterDetailState {
-    /// Shows the master widget. If the master widget is visible nothing will happen.
-    pub fn show_master(&mut self) {
-        self.update = true;
-        self.actions.push_front(MasterDetailAction::ShowMaster);
-    }
-
-    /// Shows the detail widget. If the detail widget is visible nothing will happen.
-    pub fn show_detail(&mut self) {
-        self.update = true;
-        self.actions.push_front(MasterDetailAction::ShowDetail);
-    }
-
     // sets the master and detail widget (entity)
-    fn set_master_detail(&mut self, ctx: &mut Context, master: Entity, detail: Entity) {
+    fn init_master_detail(&mut self, ctx: &mut Context) {
+        if self.master.is_none() && self.detail.is_none() {
+            return;
+        }
+
         ctx.clear_children_of(self.content_grid);
-        ctx.append_child_entity_to(master, self.content_grid);
-        ctx.build_context()
-            .register_property::<usize>("column", master, 0);
 
-        ctx.append_child_entity_to(detail, self.content_grid);
-        ctx.build_context()
-            .register_property::<usize>("column", detail, 0);
-        ctx.get_widget(detail)
-            .set("visibility", Visibility::Collapsed);
+        if let Some(master) = self.master {
+            ctx.append_child_entity_to(master, self.content_grid);
+            ctx.build_context()
+                .register_property::<usize>("column", master, 0);
+        }
 
-        self.master = Some(master);
-        self.detail = Some(detail);
+        if let Some(detail) = self.detail {
+            ctx.append_child_entity_to(detail, self.content_grid);
+            ctx.build_context()
+                .register_property::<usize>("column", detail, 0);
+            ctx.get_widget(detail)
+                .set("visibility", Visibility::Collapsed);
+        }
     }
 
     // expands the widget (two column layout)
@@ -123,31 +119,22 @@ impl MasterDetailState {
                 .set("visibility", Visibility::Visible);
         }
     }
-
-    // force update on next iteration.
-    fn force_next_update(&self, ctx: &mut Context) {
-        self.event_adapter
-            .push_event_direct(ctx.entity, ActivateEvent(ctx.entity));
-    }
 }
 
 impl State for MasterDetailState {
-    fn init(&mut self, registry: &mut Registry, ctx: &mut Context) {
-        self.update = true;
+    fn init(&mut self, _registry: &mut Registry, ctx: &mut Context) {
         self.content_grid = ctx.child(CONTENT_GRID).entity();
         self.event_adapter = ctx.event_adapter();
-        self.update(registry, ctx);
+        self.init_master_detail(ctx)
     }
 
-    fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
-        if !self.update {
-            return;
-        }
-
-        self.update = false;
-
-        // handle state actions
-        if let Some(action) = self.actions.pop_front() {
+    fn messages(
+        &mut self,
+        mut messages: MessageReader,
+        _registry: &mut Registry,
+        ctx: &mut Context,
+    ) {
+        for action in messages.read::<MasterDetailAction>() {
             let responsive = *MasterDetail::responsive_ref(&ctx.widget());
 
             match action {
@@ -161,11 +148,13 @@ impl State for MasterDetailState {
                         self.int_show_detail(ctx);
                     }
                 }
-                MasterDetailAction::SetMasterDetail(master, detail) => {
-                    self.set_master_detail(ctx, master, detail)
-                }
-                MasterDetailAction::Expand => self.expand(ctx),
-                MasterDetailAction::Collapse => self.collapse(ctx),
+            }
+        }
+
+        for action in messages.read::<InternalAction>() {
+            match action {
+                InternalAction::Expand => self.expand(ctx),
+                InternalAction::Collapse => self.collapse(ctx),
             }
         }
     }
@@ -182,13 +171,11 @@ impl State for MasterDetailState {
         let break_point: f64 = *MasterDetail::break_point_ref(&ctx.widget());
 
         if self.expanded && width <= break_point {
-            self.actions.push_front(MasterDetailAction::Collapse);
+            ctx.send_message(ctx.entity(), InternalAction::Collapse);
             MasterDetail::navigation_visibility_set(&mut ctx.widget(), Visibility::Visible);
-            self.force_next_update(ctx);
         } else if !self.expanded && width > break_point {
-            self.actions.push_front(MasterDetailAction::Expand);
+            ctx.send_message(ctx.entity(), InternalAction::Expand);
             MasterDetail::navigation_visibility_set(&mut ctx.widget(), Visibility::Hidden);
-            self.force_next_update(ctx);
         }
     }
 }
@@ -208,7 +195,7 @@ widget!(
     ///     .master_detail(TextBlock::new().text("Master").build(ctx), TextBlock::new().text("Detail").build(ctx))
     ///     .build(ctx);
     /// ```
-    MasterDetail<MasterDetailState>: ActivateHandler, ShowMasterHandler, ShowDetailHandler {
+    MasterDetail<MasterDetailState> {
         /// Describes if the change between a one and two column layout on the `break_point`.
         responsive: bool,
 
@@ -226,49 +213,28 @@ widget!(
 impl MasterDetail {
     /// Register a master and a detail widget (entity).
     pub fn master_detail(mut self, master: Entity, detail: Entity) -> Self {
-        self.state_mut()
-            .actions
-            .push_front(MasterDetailAction::SetMasterDetail(master, detail));
+        self.state_mut().master = Some(master);
+        self.state_mut().detail = Some(detail);
         self
     }
 
     /// Shows the master widget. If the master widget is visible nothing will happen.
     pub fn show_master(ctx: &mut Context, entity: Entity) {
         MasterDetail::panics_on_wrong_type(&ctx.get_widget(entity));
-        ctx.event_adapter()
-            .push_event_direct(entity, ShowMasterEvent(entity));
+        ctx.send_message(entity, MasterDetailAction::ShowMaster);
     }
 
     /// Shows the detail widget. If the detail widget is visible nothing will happen.
     pub fn show_detail(ctx: &mut Context, entity: Entity) {
         MasterDetail::panics_on_wrong_type(&ctx.get_widget(entity));
-        ctx.event_adapter()
-            .push_event_direct(entity, ShowDetailEvent(entity));
+        ctx.send_message(entity, MasterDetailAction::ShowDetail);
     }
 }
 
 impl Template for MasterDetail {
-    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+    fn template(self, _: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MasterDetails")
             .master_width(374)
             .child(Grid::new().id(CONTENT_GRID).build(ctx))
-            // used to force an update on the next iteration after post layout
-            .on_activate(move |states, _| states.get_mut::<MasterDetailState>(id).update = true)
-            .on_show_master(move |states, _| states.get_mut::<MasterDetailState>(id).show_master())
-            .on_show_detail(move |states, _| states.get_mut::<MasterDetailState>(id).show_detail())
     }
 }
-
-orbtk_api::trigger_event!(
-    ShowMasterEvent,
-    ShowMasterEventHandler,
-    ShowMasterHandler,
-    on_show_master
-);
-
-orbtk_api::trigger_event!(
-    ShowDetailEvent,
-    ShowDetailEventHandler,
-    ShowDetailHandler,
-    on_show_detail
-);
