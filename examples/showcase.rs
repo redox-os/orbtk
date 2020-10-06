@@ -41,6 +41,7 @@ impl Template for MainView {
                 .tab("Image", ImageView::new().build(ctx))
                 .tab("Localization", LocalizationView::new().build(ctx))
                 .tab("Navigation", NavigationView::new().build(ctx))
+                .tab("Interactive", InteractiveView::new().build(ctx))
                 .build(ctx),
         )
     }
@@ -501,6 +502,73 @@ impl Template for NavigationView {
     }
 }
 
+widget!(
+    InteractiveView<InteractiveState> {
+        settings_text: String
+    }
+);
+
+impl Template for InteractiveView {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+        self.child(
+            Grid::new()
+                .margin(8)
+                .rows(Rows::create().push("auto").push(4).push(32))
+                .columns(
+                    Columns::create()
+                        .push("auto")
+                        .push(4)
+                        .push("auto")
+                        .push(4)
+                        .push("auto"),
+                )
+                .child(
+                    TextBlock::new()
+                        .h_align("start")
+                        .attach(Grid::row(0))
+                        .attach(Grid::column(0))
+                        .attach(Grid::column_span(5))
+                        .text("Settings")
+                        .style("header")
+                        .build(ctx),
+                )
+                .child(
+                    TextBox::new()
+                        .text(("settings_text", id))
+                        .attach(Grid::row(2))
+                        .attach(Grid::column(0))
+                        .water_mark("Insert text...")
+                        .build(ctx),
+                )
+                .child(
+                    Button::new()
+                        .text("load")
+                        .style("button_single_content")
+                        .attach(Grid::row(2))
+                        .attach(Grid::column(2))
+                        .on_click(move |ctx, _| {
+                            ctx.send_message(InteractiveAction::LoadSettings, id);
+                            true
+                        })
+                        .build(ctx),
+                )
+                .child(
+                    Button::new()
+                        .text("save")
+                        .style("button_single_content")
+                        .attach(Grid::row(2))
+                        .attach(Grid::column(4))
+                        .on_click(move |ctx, _| {
+                            ctx.send_message(InteractiveAction::SaveSettings, id);
+                            true
+                        })
+                        .build(ctx),
+                )
+                .build(ctx),
+        )
+    }
+}
+
 // [END] views
 
 // [START] states
@@ -559,4 +627,59 @@ impl State for LocalizationState {
     }
 }
 
+#[derive(Debug, Default, AsAny)]
+struct InteractiveState {}
+
+impl State for InteractiveState {
+    fn messages(
+        &mut self,
+        mut messages: MessageReader,
+        registry: &mut Registry,
+        ctx: &mut Context,
+    ) {
+        for message in messages.read::<InteractiveAction>() {
+            match message {
+                InteractiveAction::LoadSettings => registry
+                    .get::<Settings>("settings")
+                    .load_async::<SettingsData>("settings_data".to_string(), ctx.entity()),
+                InteractiveAction::SaveSettings => {
+                    let text: String = InteractiveView::settings_text_clone(&ctx.widget());
+                    registry.get::<Settings>("settings").save_async(
+                        "settings_data".to_string(),
+                        SettingsData(text),
+                        ctx.entity(),
+                    );
+                }
+            }
+        }
+
+        // save result
+        for message in messages.read::<SettingsResult<()>>() {
+            println!("Result {:?}", message);
+        }
+
+        // load result
+        for message in messages.read::<SettingsResult<SettingsData>>() {
+            if let Ok(data) = message {
+                InteractiveView::settings_text_set(&mut ctx.widget(), data.0);
+            }
+        }
+    }
+}
+
 // [END] states
+
+// [START] Dummy data
+
+#[derive(Clone, Debug)]
+enum InteractiveAction {
+    SaveSettings,
+    LoadSettings,
+}
+
+use serde_derive::{Deserialize, Serialize};
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub struct SettingsData(pub String);
+
+// [END] Dummy data

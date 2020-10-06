@@ -107,17 +107,6 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Settings",
-      "program": "${workspaceFolder}/target/debug/examples/settings",
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build",
-      "sourceLanguages": [
-        "rust"
-      ]
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
       "name": "Stack",
       "program": "${workspaceFolder}/target/debug/examples/stack",
       "cwd": "${workspaceFolder}",

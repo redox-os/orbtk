@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fix "auto" width of grid layout
 * Add thread safe `EventAdapter`
 * Add thread safe `MessageAdapter`, `MessageReader`
+* Add `load_async` and `save_async` to `Settings` service
 
 
 ### 0.3.1-alpha3
