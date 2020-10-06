@@ -592,7 +592,7 @@ impl State for NavigationState {
         ctx: &mut Context,
     ) {
         for message in messages.read::<MasterDetailAction>() {
-            ctx.send_message(self.master_detail, message);
+            ctx.send_message(message, self.master_detail);
         }
     }
 }
