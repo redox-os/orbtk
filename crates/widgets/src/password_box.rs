@@ -67,7 +67,7 @@ widget!(
     ///
     /// [`TextBox`]: ./struct.TextBox.html
     /// [`example`]: https://github.com/redox-os/orbtk/tree/develop/examples/login.rs
-    PasswordBox<PasswordBoxState>: KeyDownHandler {
+    PasswordBox<PasswordBoxState>: KeyDownHandler, TextInputHandler {
         /// Sets or shares the echo character which used to mask the input
         echo: char,
 
