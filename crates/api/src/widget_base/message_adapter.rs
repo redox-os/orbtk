@@ -2,7 +2,7 @@ use std::{
     any::{Any, TypeId},
     collections::{BTreeMap, HashMap},
     marker::PhantomData,
-    sync::{mpsc, Arc, RwLock},
+    sync::{mpsc, Arc, Mutex},
 };
 
 use crate::shell::WindowRequest;
@@ -79,7 +79,7 @@ impl MessageBox {
 /// ```
 #[derive(Clone, Debug)]
 pub struct MessageAdapter {
-    messages: Arc<RwLock<BTreeMap<Entity, HashMap<TypeId, Vec<MessageBox>>>>>,
+    messages: Arc<Mutex<BTreeMap<Entity, HashMap<TypeId, Vec<MessageBox>>>>>,
     window_sender: mpsc::Sender<WindowRequest>,
 }
 
@@ -87,16 +87,16 @@ impl MessageAdapter {
     /// Creates a new message adapter
     pub fn new(window_sender: mpsc::Sender<WindowRequest>) -> Self {
         MessageAdapter {
-            messages: Arc::new(RwLock::new(BTreeMap::new())),
+            messages: Arc::new(Mutex::new(BTreeMap::new())),
             window_sender,
         }
     }
 
     /// Pushes / sent a new message to the message pipeline.
     pub fn push_message<M: Any + Send>(&self, target: Entity, message: M) {
-        if !self.messages.read().unwrap().contains_key(&target) {
+        if !self.messages.lock().unwrap().contains_key(&target) {
             self.messages
-                .write()
+                .lock()
                 .expect("MessageAdapter::push_message: Cannot lock messages.")
                 .insert(target, HashMap::new());
         }
@@ -105,14 +105,14 @@ impl MessageAdapter {
 
         if !self
             .messages
-            .read()
+            .lock()
             .expect("MessageAdapter::push_message: Cannot lock messages.")
             .get(&target)
             .unwrap()
             .contains_key(&type_id)
         {
             self.messages
-                .write()
+                .lock()
                 .expect("MessageAdapter::push_message: Cannot lock messages.")
                 .get_mut(&target)
                 .unwrap()
@@ -120,7 +120,7 @@ impl MessageAdapter {
         }
 
         self.messages
-            .write()
+            .lock()
             .expect("MessageAdapter::push_message: Cannot lock messages.")
             .get_mut(&target)
             .unwrap()
@@ -136,7 +136,7 @@ impl MessageAdapter {
     /// Returns a list of entities that has messages.
     pub(crate) fn entities(&self) -> Vec<Entity> {
         self.messages
-            .read()
+            .lock()
             .expect("MessageAdapter::entities: Cannot lock messages.")
             .keys()
             .cloned()
@@ -147,7 +147,7 @@ impl MessageAdapter {
     /// entities that does not have a `State` to read the messages.
     pub(crate) fn remove_message_for_entity(&self, target: Entity) {
         self.messages
-            .write()
+            .lock()
             .expect("MessageAdapter::remove_message_for_entity: Cannot lock messages.")
             .remove(&target);
     }
@@ -155,7 +155,7 @@ impl MessageAdapter {
     /// Returns the number of messages in the queue.
     pub fn len(&self) -> usize {
         self.messages
-            .read()
+            .lock()
             .expect("MessageAdapter::len: Cannot lock messages.")
             .len()
     }
@@ -163,7 +163,7 @@ impl MessageAdapter {
     /// Returns `true` if the event message contains no events.
     pub fn is_empty(&self) -> bool {
         self.messages
-            .read()
+            .lock()
             .expect("MessageAdapter::is_empty: Cannot lock messages.")
             .is_empty()
     }
@@ -172,7 +172,7 @@ impl MessageAdapter {
     pub fn message_reader(&self, entity: Entity) -> MessageReader {
         let messages = if let Some(messages) = self
             .messages
-            .write()
+            .lock()
             .expect("MessageAdapter::message_reader: Cannot lock messages.")
             .remove(&entity)
         {

@@ -24,20 +24,20 @@ use dces::entity::Entity;
 
 use crate::widget_base::MessageAdapter;
 
-pub enum SettingsMessage<D>
-where
-    D: DeserializeOwned,
-{
-    Saved,
-    Loaded(D),
+#[derive(Debug)]
+pub enum SettingsError {
+    Saved(String),
+    Loaded(String),
 }
+
+pub type SettingsResult<T> = Result<T, SettingsError>;
 
 /// `Settings` represents a global settings service that could be use to serialize and deserialize
 /// data in the `ron` file format. Settings are stored in the user settings directory (depending on the operating system)
 /// under the a folder with the given application name.
 #[derive(Debug, Clone)]
 pub struct Settings {
-    app_name: Box<str>,
+    app_name: String,
     message_adapter: MessageAdapter,
 
     #[cfg(not(target_arch = "wasm32"))]
@@ -56,9 +56,9 @@ impl Settings {
         }
     }
     /// Creates a new `Settings` service with the given app name.
-    pub fn from_name(app_name: impl Into<Box<str>>, message_adapter: MessageAdapter) -> Self {
+    pub fn from_name(app_name: String, message_adapter: MessageAdapter) -> Self {
         Settings {
-            app_name: app_name.into(),
+            app_name: app_name,
             message_adapter,
 
             #[cfg(not(target_arch = "wasm32"))]
@@ -71,117 +71,174 @@ impl Settings {
         &*self.app_name
     }
 
+    /// Serialize the given data object from user's config dir. Sends the result `Result<(), String>` as message to the given entity.
     #[cfg(not(target_arch = "wasm32"))]
-    /// Serialize the given data object from user's config dir. Sends a saved message to the given entity.
-    pub fn save_async<S: Serialize>(&self, key: &str, data: &S, entity: Entity) {
-        self.pool.execute(move || {})
+    pub fn save_async<S: Serialize + Send + Sync + 'static>(
+        &self,
+        key: String,
+        data: S,
+        entity: Entity,
+    ) {
+        let app_name = self.app_name.clone();
+        let message_adapter = self.message_adapter.clone();
+
+        self.pool.execute(move || {
+            message_adapter.push_message(entity, save(app_name.as_str(), key.as_str(), &data));
+        })
     }
 
+    /// Loads and deserialize data from user's config dir. Send the result `Result<D, String>` as message to the given entity.
     #[cfg(not(target_arch = "wasm32"))]
+    pub fn load_async<D: DeserializeOwned + Send + Sync + 'static>(
+        &self,
+        key: String,
+        entity: Entity,
+    ) {
+        let app_name = self.app_name.clone();
+        let message_adapter = self.message_adapter.clone();
+
+        self.pool.execute(move || {
+            message_adapter.push_message(entity, load::<D>(app_name.as_str(), key.as_str()));
+        })
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    pub fn save_async<S: Serialize + Send + Sync + 'static>(
+        &self,
+        key: String,
+        data: S,
+        entity: Entity,
+    ) {
+        self.message_adapter
+            .push_message(entity, save(self.app_name.as_str(), key.as_str(), &data));
+    }
+
+    /// Loads and deserialize data from user's config dir. Send the result `Result<D, String>` as message to the given entity.
+    #[cfg(target_arch = "wasm32")]
+    pub fn load_async<D: DeserializeOwned + Send + Sync + 'static>(
+        &self,
+        key: String,
+        entity: Entity,
+    ) {
+        self.message_adapter
+            .push_message(entity, load::<D>(self.app_name.as_str(), key.as_str()));
+    }
+
     /// Serialize the given data object from user's config dir.
-    pub fn save<S: Serialize>(&self, key: &str, data: &S) -> Result<(), String> {
-        let content = to_string_pretty(data, PrettyConfig::default());
-
-        if let Some(config_path) = &mut dirs::config_dir() {
-            config_path.push(&*self.app_name);
-
-            if !config_path.exists() {
-                let result = create_dir_all(&config_path);
-
-                if result.is_err() {
-                    return Err(format!(
-                        "Settings.save: Could not create settings dir {:?}",
-                        config_path
-                    ));
-                }
-            }
-
-            config_path.push(format!("{}.ron", key));
-
-            if let Ok(file) = &mut File::create(&config_path) {
-                let result = file.write_all(content.unwrap().as_bytes());
-                if result.is_err() {
-                    return Err(format!(
-                        "Settings.save: Could not write to config file {:?}",
-                        config_path
-                    ));
-                }
-            } else {
-                return Err(format!(
-                    "Settings.save: Could not create config file {:?}",
-                    config_path
-                ));
-            }
-        }
-
-        Ok(())
+    pub fn save<S: Serialize>(&self, key: &str, data: &S) -> SettingsResult<()> {
+        save(self.app_name.as_str(), key, data)
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     /// Loads and deserialize data from user's config dir.
-    pub fn load<D: DeserializeOwned>(&self, key: &str) -> Result<D, String> {
-        if let Some(config_path) = &mut dirs::config_dir() {
-            config_path.push(&*self.app_name);
-            config_path.push(format!("{}.ron", key));
-
-            if let Ok(file) = &mut File::open(&config_path) {
-                if let Ok(data) = from_reader(file) {
-                    return Ok(data);
-                } else {
-                    return Err(format!(
-                        "Settings.load: Could not read data from config file {:?}",
-                        config_path
-                    ));
-                }
-            } else {
-                return Err(format!(
-                    "Settings.load: Could not open config file {:?}",
-                    config_path
-                ));
-            }
-        }
-
-        Err(format!(
-            "Settings.load: Could not load settings with key: {}",
-            key
-        ))
-    }
-
-    #[cfg(target_arch = "wasm32")]
-    /// Serialize the given data object from the browser storage.
-    pub fn save<S: Serialize>(&self, key: &str, data: &S) -> Result<(), String> {
-        let content = to_string_pretty(data, PrettyConfig::default());
-        if window()
-            .local_storage()
-            .insert(key, content.unwrap().as_str())
-            .is_ok()
-        {
-            return Ok(());
-        }
-
-        Err(format!(
-            "Settings.save: Could not write settings with key {} to local browser storage.",
-            key
-        ))
-    }
-
-    #[cfg(target_arch = "wasm32")]
-    /// Loads and deserialize data from the browser storage.
-    pub fn load<D: DeserializeOwned>(&self, key: &str) -> Result<D, String> {
-        if let Some(data) = window().local_storage().get(key) {
-            if let Ok(data) = from_str(data.as_str()) {
-                return Ok(data);
-            } else {
-                return Err(format!(
-                    "Settings.load: Could not read data from local browser storage with key: {}",
-                    key
-                ));
-            }
-        }
-
-        Err(format!(
-            "Settings.load: Could not read data from local browser storage with key: {}",
-            key
-        ))
+    pub fn load<D: DeserializeOwned>(&self, key: &str) -> SettingsResult<D> {
+        load(self.app_name.as_str(), key)
     }
 }
+
+// --- Helper --
+
+#[cfg(not(target_arch = "wasm32"))]
+fn save<S: Serialize>(app_name: &str, key: &str, data: &S) -> SettingsResult<()> {
+    let content = to_string_pretty(data, PrettyConfig::default());
+
+    if let Some(config_path) = &mut dirs::config_dir() {
+        config_path.push(app_name);
+
+        if !config_path.exists() {
+            let result = create_dir_all(&config_path);
+
+            if result.is_err() {
+                return Err(SettingsError::Saved(format!(
+                    "Settings.save: Could not create settings dir {:?}",
+                    config_path
+                )));
+            }
+        }
+
+        config_path.push(format!("{}.ron", key));
+
+        if let Ok(file) = &mut File::create(&config_path) {
+            let result = file.write_all(content.unwrap().as_bytes());
+            if result.is_err() {
+                return Err(SettingsError::Saved(format!(
+                    "Settings.save: Could not write to config file {:?}",
+                    config_path
+                )));
+            }
+        } else {
+            return Err(SettingsError::Saved(format!(
+                "Settings.save: Could not create config file {:?}",
+                config_path
+            )));
+        }
+    }
+
+    Ok(())
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn load<D: DeserializeOwned>(app_name: &str, key: &str) -> SettingsResult<D> {
+    if let Some(config_path) = &mut dirs::config_dir() {
+        config_path.push(app_name);
+        config_path.push(format!("{}.ron", key));
+
+        if let Ok(file) = &mut File::open(&config_path) {
+            if let Ok(data) = from_reader(file) {
+                return Ok(data);
+            } else {
+                return Err(SettingsError::Loaded(format!(
+                    "Settings.load: Could not read data from config file {:?}",
+                    config_path
+                )));
+            }
+        } else {
+            return Err(SettingsError::Loaded(format!(
+                "Settings.load: Could not open config file {:?}",
+                config_path
+            )));
+        }
+    }
+
+    Err(SettingsError::Loaded(format!(
+        "Settings.load: Could not load settings with key: {}",
+        key
+    )))
+}
+
+#[cfg(target_arch = "wasm32")]
+fn save<S: Serialize>(_app_name: &str, key: &str, data: &S) -> SettingsResult<()> {
+    let content = to_string_pretty(data, PrettyConfig::default());
+    if window()
+        .local_storage()
+        .insert(key, content.unwrap().as_str())
+        .is_ok()
+    {
+        return Ok(());
+    }
+
+    Err(SettingsError::Saved(format!(
+        "Settings.save: Could not write settings with key {} to local browser storage.",
+        key
+    )))
+}
+
+#[cfg(target_arch = "wasm32")]
+fn load<D: DeserializeOwned>(_app_name: &str, key: &str) -> SettingsResult<D> {
+    if let Some(data) = window().local_storage().get(key) {
+        if let Ok(data) = from_str(data.as_str()) {
+            return Ok(data);
+        } else {
+            return Err(SettingsError::Loaded(format!(
+                "Settings.load: Could not read data from local browser storage with key: {}",
+                key
+            )));
+        }
+    }
+
+    Err(SettingsError::Loaded(format!(
+        "Settings.load: Could not read data from local browser storage with key: {}",
+        key
+    )))
+}
+
+// --- Helper --
