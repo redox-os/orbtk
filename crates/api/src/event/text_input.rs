@@ -46,6 +46,7 @@ impl EventHandler for TextInputEventHandler {
 ///     }).build(ctx)
 /// ```
 pub trait TextInputHandler: Sized + Widget {
+    /// Callback that is called when a text input event reaches the widget.
     fn on_text_input<H: Fn(&mut StatesContext, &str) -> bool + 'static>(self, handler: H) -> Self {
         self.insert_handler(TextInputEventHandler {
             handler: Rc::new(handler),
