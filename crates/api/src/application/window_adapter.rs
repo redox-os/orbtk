@@ -221,7 +221,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     } else {
         registry.borrow_mut().register(
             "settings",
-            Settings::from_name(app_name.clone(), context_provider.message_adapter.clone()),
+            Settings::from_name(app_name, context_provider.message_adapter.clone()),
         );
     };
 

@@ -58,7 +58,7 @@ impl Settings {
     /// Creates a new `Settings` service with the given app name.
     pub fn from_name(app_name: String, message_adapter: MessageAdapter) -> Self {
         Settings {
-            app_name: app_name,
+            app_name,
             message_adapter,
 
             #[cfg(not(target_arch = "wasm32"))]
