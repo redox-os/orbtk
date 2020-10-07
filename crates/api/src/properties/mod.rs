@@ -1,6 +1,6 @@
 //! This sub module contains extra structs used as widget properties.
 
-use std::{collections::HashSet, fmt::Debug};
+use std::{collections::HashSet, fmt::Debug, path::PathBuf};
 
 use dces::prelude::{Component, Entity, StringComponentStore};
 
@@ -86,6 +86,8 @@ into_property_source!(f32: utils::Value);
 into_property_source!(f64: i32, f32, utils::Value);
 into_property_source!(i32);
 into_property_source!(i64);
+
+into_property_source!(PathBuf);
 
 // Implementation of PropertySource for utils types
 into_property_source!(utils::Alignment: &str);
