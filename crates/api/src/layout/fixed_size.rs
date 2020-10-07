@@ -1,10 +1,13 @@
 use std::{
     cell::{Cell, RefCell},
     collections::BTreeMap,
+    iter,
 };
 
 use dces::prelude::*;
 use memchr::memchr_iter;
+use smallvec::SmallVec;
+use unicode_width::UnicodeWidthStr;
 
 use crate::{
     proc_macros::IntoLayout,
@@ -58,7 +61,7 @@ impl Layout for FixedSizeLayout {
 
         let size = widget
             .try_get::<Image>("image")
-            .map(|image| (image.width(), image.height()))
+            .map(|image| (Size::new(image.width(), image.height())))
             .or_else(|| {
                 text(&widget).and_then(|text| {
                     let font = widget.get::<String>("font");
@@ -69,29 +72,19 @@ impl Layout for FixedSizeLayout {
                             .try_get::<String>("water_mark")
                             .filter(|water_mark| !water_mark.is_empty())
                             .map(|water_mark| {
-                                let text_metrics = render_context_2_d.measure(
+                                measure_text(
+                                    render_context_2_d,
                                     &water_mark,
-                                    *font_size,
                                     font.as_str(),
-                                );
-                                (
-                                    text_metrics.width,
-                                    text_metrics.height
-                                        * ((memchr_iter(b'\n', water_mark.as_bytes()).count()
-                                            as f64)
-                                            * 1.15
-                                            + 1.0),
+                                    *font_size,
                                 )
                             })
                     } else {
-                        let text_metrics =
-                            render_context_2_d.measure(&text, *font_size, font.as_str());
-
-                        Some((
-                            text_metrics.width,
-                            text_metrics.height
-                                * ((memchr_iter(b'\n', text.as_bytes()).count() as f64) * 1.15
-                                    + 1.0),
+                        Some(measure_text(
+                            render_context_2_d,
+                            &text,
+                            font.as_str(),
+                            *font_size,
                         ))
                     }
                 })
@@ -102,25 +95,19 @@ impl Layout for FixedSizeLayout {
                     .filter(|font_icon| !font_icon.is_empty())
                     .map(|font_icon| {
                         let icon_size = widget.get::<f64>("icon_size");
-                        let text_metrics = render_context_2_d.measure(
+                        measure_text(
+                            render_context_2_d,
                             &font_icon,
-                            *icon_size,
                             widget.get::<String>("icon_font").as_str(),
-                        );
-                        (
-                            text_metrics.width,
-                            text_metrics.height
-                                * ((memchr_iter(b'\n', font_icon.as_bytes()).count() as f64)
-                                    * 1.15
-                                    + 1.0),
+                            *icon_size,
                         )
                     })
             });
 
         if let Some(size) = size {
             if let Some(constraint) = component_try_mut::<Constraint>(ecm, entity, "constraint") {
-                constraint.set_width(size.0 as f64);
-                constraint.set_height(size.1 as f64);
+                constraint.set_width(size.width());
+                constraint.set_height(size.height());
             }
         }
 
@@ -208,4 +195,33 @@ fn text(widget: &WidgetContainer) -> Option<String> {
     }
 
     None
+}
+
+fn measure_text(
+    render_context_2_d: &mut RenderContext2D,
+    text: &str,
+    font_family: &str,
+    font_size: f64,
+) -> Size {
+    let mut text_metrics = render_context_2_d.measure(text, font_size, font_family);
+    let mut lines = SmallVec::<[(&str, usize); 2]>::new();
+    let mut last_hit = 0;
+    for hit in memchr_iter(b'\n', text.as_bytes()).chain(iter::once(text.len())) {
+        let line = &text[last_hit..hit];
+        lines.push((line, UnicodeWidthStr::width(line)));
+        last_hit = hit;
+    }
+    let max_unicode_width = lines.iter().fold(0, |r, x| r.max(x.1));
+    text_metrics.width = 0.0;
+    for (line, width) in lines.iter() {
+        if *width != max_unicode_width {
+            continue;
+        }
+        let line_text_metrics = render_context_2_d.measure(line, font_size, font_family);
+        text_metrics.width = text_metrics.width.max(line_text_metrics.width);
+    }
+    Size::new(
+        text_metrics.width,
+        text_metrics.height * (((lines.len() - 1) as f64) * 1.15 + 1.0),
+    )
 }
