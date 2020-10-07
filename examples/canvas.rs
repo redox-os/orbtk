@@ -144,17 +144,17 @@ impl RenderPipeline for Graphic2DPipeline {
         let mut render_context =
             RenderContext2D::new(render_target.width(), render_target.height());
 
-        let width = 120.0;
-        let height = 120.0;
+        let rect_width = 120.0;
+        let rect_height = 120.0;
 
-        let x = (render_target.width() - width) / 2.0;
-        let y = (render_target.height() - height) / 2.0;
+        let rect_x = (render_target.width() - rect_width) / 2.0;
+        let rect_y = (render_target.height() - rect_height) / 2.0;
         // render_context.set_fill_style(utils::Brush::SolidColor(Color::from("#000000")));
 
         render_context.set_fill_style(utils::Brush::Gradient(Gradient {
             kind: GradientKind::Linear(LinearGradientCoords::Ends {
                 start: Point::new(0.0, 0.0),
-                end: Point::new(width, height),
+                end: Point::new(rect_width, rect_height),
             }),
             stops: vec![
                 GradientStop {
@@ -172,7 +172,22 @@ impl RenderPipeline for Graphic2DPipeline {
             ],
             repeat: false,
         }));
-        render_context.fill_rect(x, y, width, height);
+        render_context.fill_rect(rect_x, rect_y, rect_width, rect_height);
+        render_context.begin_path();
+        render_context.set_font_size(60.0);
+        render_context.set_font_family("Roboto-Regular");
+        render_context.set_fill_style("lynch".into());
+        let orb_metrics = render_context.measure_text("Orb");
+        render_context.fill_text("Orb", rect_x + rect_width - orb_metrics.width, rect_y);
+        render_context.close_path();
+        render_context.set_fill_style("goldendream".into());
+        render_context.save();
+        let rotation = 90.0f64;
+        render_context.begin_path();
+        render_context.set_transform(rotation.cos(), -rotation.sin(), rotation.sin(), rotation.cos(), 0.0, 0.0);
+        render_context.fill_text("Tk", rect_x + rect_width, rect_y);
+        render_context.close_path();
+        render_context.restore();
         render_target.draw(render_context.data());
     }
 }
