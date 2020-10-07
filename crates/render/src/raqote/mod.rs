@@ -105,6 +105,8 @@ impl RenderContext2D {
             return;
         }
 
+        // The borrow-checker forces the clone
+        let text_transform = self.draw_target.get_transform().to_owned();
         if let Some(font) = self.fonts.get(&self.config.font_config.family) {
             let width = self.draw_target.width() as f64;
             let height = self.draw_target.height() as f64;
@@ -113,6 +115,7 @@ impl RenderContext2D {
                 font.render_text_clipped(
                     text,
                     self.draw_target.get_data_mut(),
+                    &text_transform,
                     width,
                     height,
                     (self.config.font_config.font_size, color, self.config.alpha),
@@ -123,6 +126,7 @@ impl RenderContext2D {
                 font.render_text(
                     text,
                     self.draw_target.get_data_mut(),
+                    &text_transform,
                     width,
                     height,
                     (self.config.font_config.font_size, color, self.config.alpha),

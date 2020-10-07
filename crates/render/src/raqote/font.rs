@@ -38,6 +38,7 @@ impl Font {
         &self,
         text: &str,
         data: &mut [u32],
+        transform: &raqote::Transform,
         width: f64,
         height: f64,
         config: (f64, Color, f32),
@@ -46,6 +47,7 @@ impl Font {
         self.render_text_clipped(
             text,
             data,
+            transform,
             width,
             height,
             config,
@@ -58,6 +60,7 @@ impl Font {
         &self,
         text: &str,
         data: &mut [u32],
+        transform: &raqote::Transform,
         width: f64,
         height: f64,
         config: (f64, Color, f32),
@@ -108,9 +111,13 @@ impl Font {
                         let alpha = (config.2 * v * 255.0) as u32;
                         let new = (alpha << 24) | (config.1.data & 0x00FF_FFFF);
 
-                        let index = ((position.1 as i32 + off_y) * width as i32
-                            + position.0 as i32
-                            + off_x) as usize;
+                        let absolute_position = transform.transform_point(raqote::Point::new(
+                            (position.0 + off_x as f64) as f32,
+                            (position.1 + off_y as f64) as f32,
+                        ));
+                        let index = (absolute_position.y as i32 * width as i32
+                            + absolute_position.x as i32)
+                            as usize;
                         if index >= data.len() {
                             return;
                         }
