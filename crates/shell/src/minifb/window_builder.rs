@@ -2,10 +2,7 @@ use std::{cell::RefCell, char, collections::HashMap, rc::Rc, sync::mpsc, time::D
 
 use super::{KeyState, Shell, Window};
 use crate::{
-    event::{ButtonState, Key, KeyEvent},
-    render::RenderContext2D,
-    utils::Rectangle,
-    window_adapter::WindowAdapter,
+    event::Key, render::RenderContext2D, utils::Rectangle, window_adapter::WindowAdapter,
     WindowRequest, WindowSettings,
 };
 
@@ -125,10 +122,10 @@ where
         // Limit to max ~60 fps update rate
         window.limit_update_rate(Some(Duration::from_micros(16600)));
 
-        let key_events = Rc::new(RefCell::new(vec![]));
+        let text_input = Rc::new(RefCell::new(vec![]));
 
         window.set_input_callback(Box::new(KeyInputCallBack {
-            key_events: key_events.clone(),
+            text_input: text_input.clone(),
         }));
 
         window.set_position(self.bounds.x() as isize, self.bounds.y() as isize);
@@ -181,7 +178,7 @@ where
                 KeyState::new(minifb::Key::V, Key::V(false)),
                 KeyState::new(minifb::Key::X, Key::X(false)),
             ],
-            key_events,
+            text_input,
         ));
     }
 }
@@ -190,43 +187,17 @@ where
 
 // minifb key input helper
 struct KeyInputCallBack {
-    key_events: Rc<RefCell<Vec<KeyEvent>>>,
-}
-
-impl KeyInputCallBack {
-    fn uni_char_to_key_event(&mut self, uni_char: u32) {
-        let mut text = String::new();
-
-        let key = if let Some(character) = char::from_u32(uni_char) {
-            text = character.to_string();
-            Key::from(character)
-        } else {
-            Key::Unknown
-        };
-        if key == Key::Up
-            || key == Key::Down
-            || key == Key::Left
-            || key == Key::Right
-            || key == Key::Backspace
-            || key == Key::Control
-            || key == Key::Home
-            || key == Key::Escape
-            || key == Key::Delete
-        {
-            return;
-        }
-
-        self.key_events.borrow_mut().push(KeyEvent {
-            key,
-            state: ButtonState::Down,
-            text,
-        });
-    }
+    text_input: Rc<RefCell<Vec<String>>>,
 }
 
 impl minifb::InputCallback for KeyInputCallBack {
     fn add_char(&mut self, uni_char: u32) {
-        self.uni_char_to_key_event(uni_char);
+        if let Some(character) = char::from_u32(uni_char) {
+            // check for left and right arrow key
+            if uni_char != 63235 && uni_char != 63234 {
+                self.text_input.borrow_mut().push(String::from(character));
+            }
+        }
     }
 }
 
