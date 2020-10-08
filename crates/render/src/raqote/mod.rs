@@ -105,6 +105,8 @@ impl RenderContext2D {
             return;
         }
 
+        // The borrow-checker forces the clone
+        let text_transform = self.draw_target.get_transform().to_owned();
         if let Some(font) = self.fonts.get(&self.config.font_config.family) {
             let width = self.draw_target.width() as f64;
             let height = self.draw_target.height() as f64;
@@ -113,6 +115,7 @@ impl RenderContext2D {
                 font.render_text_clipped(
                     text,
                     self.draw_target.get_data_mut(),
+                    &text_transform,
                     width,
                     height,
                     (self.config.font_config.font_size, color, self.config.alpha),
@@ -123,6 +126,7 @@ impl RenderContext2D {
                 font.render_text(
                     text,
                     self.draw_target.get_data_mut(),
+                    &text_transform,
                     width,
                     height,
                     (self.config.font_config.font_size, color, self.config.alpha),
@@ -388,13 +392,13 @@ impl RenderContext2D {
     // Fill and stroke style
 
     /// Specifies the fill color to use inside shapes.
-    pub fn set_fill_style(&mut self, fill_style: Brush) {
-        self.config.fill_style = fill_style;
+    pub fn set_fill_style(&mut self, fill_style: impl Into<Brush>) {
+        self.config.fill_style = fill_style.into();
     }
 
     /// Specifies the fill stroke to use inside shapes.
-    pub fn set_stroke_style(&mut self, stroke_style: Brush) {
-        self.config.stroke_style = stroke_style;
+    pub fn set_stroke_style(&mut self, stroke_style: impl Into<Brush>) {
+        self.config.stroke_style = stroke_style.into();
     }
 
     // Transformations
