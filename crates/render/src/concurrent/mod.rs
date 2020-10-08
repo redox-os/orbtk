@@ -687,12 +687,16 @@ impl RenderContext2D {
 
     /// Specifies the fill color to use inside shapes.
     pub fn set_fill_style(&mut self, fill_style: impl Into<Brush>) {
-        self.tasks.push(RenderTask::SetFillStyle { fill_style: fill_style.into() });
+        self.tasks.push(RenderTask::SetFillStyle {
+            fill_style: fill_style.into(),
+        });
     }
 
     /// Specifies the fill stroke to use inside shapes.
     pub fn set_stroke_style(&mut self, stroke_style: impl Into<Brush>) {
-        self.tasks.push(RenderTask::SetStrokeStyle { stroke_style: stroke_style.into() });
+        self.tasks.push(RenderTask::SetStrokeStyle {
+            stroke_style: stroke_style.into(),
+        });
     }
 
     // Transformations
