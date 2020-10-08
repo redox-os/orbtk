@@ -343,13 +343,13 @@ impl RenderContext2D {
     // Fill and stroke style
 
     /// Specifies the fill color to use inside shapes.
-    pub fn set_fill_style(&mut self, fill_style: Brush) {
-        self.config.fill_style = fill_style;
+    pub fn set_fill_style(&mut self, fill_style: impl Into<Brush>) {
+        self.config.fill_style = fill_style.into();
     }
 
     /// Specifies the fill stroke to use inside shapes.
-    pub fn set_stroke_style(&mut self, stroke_style: Brush) {
-        self.config.stroke_style = stroke_style;
+    pub fn set_stroke_style(&mut self, stroke_style: impl Into<Brush>) {
+        self.config.stroke_style = stroke_style.into();
     }
 
     // Transformations

@@ -686,13 +686,13 @@ impl RenderContext2D {
     // Fill and stroke style
 
     /// Specifies the fill color to use inside shapes.
-    pub fn set_fill_style(&mut self, fill_style: Brush) {
-        self.tasks.push(RenderTask::SetFillStyle { fill_style });
+    pub fn set_fill_style(&mut self, fill_style: impl Into<Brush>) {
+        self.tasks.push(RenderTask::SetFillStyle { fill_style: fill_style.into() });
     }
 
     /// Specifies the fill stroke to use inside shapes.
-    pub fn set_stroke_style(&mut self, stroke_style: Brush) {
-        self.tasks.push(RenderTask::SetStrokeStyle { stroke_style });
+    pub fn set_stroke_style(&mut self, stroke_style: impl Into<Brush>) {
+        self.tasks.push(RenderTask::SetStrokeStyle { stroke_style: stroke_style.into() });
     }
 
     // Transformations
@@ -736,7 +736,7 @@ impl RenderContext2D {
     }
 
     pub fn data(&mut self) -> Option<&[u32]> {
-        if let Ok(RenderResult::Finish { data }) = self.result_receiver.try_recv() {
+        if let Ok(RenderResult::Finish { data }) = self.result_receiver.recv() {
             self.output = data;
             Some(&self.output)
         } else {
