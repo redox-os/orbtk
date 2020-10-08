@@ -173,20 +173,18 @@ impl RenderPipeline for Graphic2DPipeline {
             repeat: false,
         }));
         render_context.fill_rect(rect_x, rect_y, rect_width, rect_height);
-        render_context.begin_path();
+        render_context.register_font("Roboto-Regular", include_bytes!("../crates/theme/src/fonts/Roboto-Regular.ttf"));
         render_context.set_font_size(60.0);
         render_context.set_font_family("Roboto-Regular");
-        render_context.set_fill_style("lynch".into());
+        render_context.set_fill_style("lynch");
         let orb_metrics = render_context.measure_text("Orb");
-        render_context.fill_text("Orb", rect_x + rect_width - orb_metrics.width, rect_y);
-        render_context.close_path();
-        render_context.set_fill_style("goldendream".into());
+        render_context.fill_text("Orb", rect_x + rect_width - orb_metrics.width, rect_y - orb_metrics.height);
+        render_context.set_fill_style("goldendream");
         render_context.save();
-        let rotation = 90.0f64;
-        render_context.begin_path();
-        render_context.set_transform(rotation.cos(), -rotation.sin(), rotation.sin(), rotation.cos(), 0.0, 0.0);
-        render_context.fill_text("Tk", rect_x + rect_width, rect_y);
-        render_context.close_path();
+        let rotation = (270.0f64).to_radians();
+        let tk_metrics = render_context.measure_text("Tk");
+        render_context.set_transform(rotation.cos(), -rotation.sin(), rotation.sin(), rotation.cos(), rect_x + rect_width + tk_metrics.height, rect_y);
+        render_context.fill_text("Tk", 0.0, 0.0);
         render_context.restore();
         render_target.draw(render_context.data());
     }
