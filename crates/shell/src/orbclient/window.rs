@@ -323,6 +323,7 @@ where
                 }
                 orbclient::EventOption::Unknown(_) => println!("unkown"),
                 orbclient::EventOption::None => println!("None"),
+                orbclient::EventOption::TextInput(_) => { /* todo */ }
             }
         }
     }
