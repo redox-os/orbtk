@@ -58,6 +58,11 @@ Theme (
                     "background": "$ACCENT_COLOR",
                     "border_width": 0,
                 },
+                "disabled": {
+                    "background": "$BUTTON_BACKGROUND_DISABLED_DARK",
+                    "foreground": "$CONTENT_FOREGROUND_DISABLED_DARK",
+                    "icon_brush": "$CONTENT_FOREGROUND_DISABLED_DARK",
+                }
             },
         ),
     },
