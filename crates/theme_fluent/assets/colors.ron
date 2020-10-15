@@ -1,7 +1,7 @@
 Theme (
     resources: {
         "WHITE": "#ffffff",
-        "BACKGROUND_DARK": "#404040",
+        "BACKGROUND_DARK": "#3B3B3E",
         "BUTTON_BACKGROUND_DARK": "#656565",
         "BUTTON_BACKGROUND_DISABLED_DARK": "#666668",
         "CONTENT_FOREGROUND_DISABLED_DARK": "#9B9B9D",
