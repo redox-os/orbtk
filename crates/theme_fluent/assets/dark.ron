@@ -20,7 +20,7 @@ Theme (
                     "background": "$BUTTON_BACKGROUND_PRESSED_DARK",
                 },
                 "selected": {
-                    "background": "$ACCENT_COLOR",
+                    "background": "$ACCENT_COLOR_DARK",
                 },
                 "disabled": {
                     "background": "$BUTTON_BACKGROUND_DISABLED_DARK",
@@ -38,7 +38,7 @@ Theme (
         "button_primary": (
             base: "button",
             properties: {
-                "background": "$ACCENT_COLOR",
+                "background": "$ACCENT_COLOR_DARK",
             },
         ),
         "check_box": (
@@ -55,7 +55,7 @@ Theme (
             states: {
                 "selected": {
                     "icon_brush": "$CONTENT_FOREGROUND",
-                    "background": "$ACCENT_COLOR",
+                    "background": "$ACCENT_COLOR_DARK",
                     "border_width": 0,
                 },
                 "disabled": {
@@ -64,6 +64,42 @@ Theme (
                     "icon_brush": "$CONTENT_FOREGROUND_DISABLED_DARK",
                 }
             },
+        ),
+         "tab_header_bar": (
+            properties: {
+                "height": 42,
+                "background": "$ACCENT_COLOR_DARK",
+                "height": 2
+            },
+        ),
+        "tab_header": (
+            properties: {
+                "background": "transparent",
+                "font_size": "$FONT_SIZE_15",
+                "icon_brush": "transparent",
+                "foreground": "$DECENT_COLOR_DARK",
+                "icon_brush": "$DECENT_COLOR_DARK"
+            },
+            states: {
+                "selected": {
+                    "foreground": "$WHITE",
+                },
+            }
+        ),
+        "tab_icon_only": (
+            properties: {
+                "icon_size": "$ICON_SIZE_13",
+                "icon_brush": "$DECENT_COLOR_DARK",
+                "background": "transparent",
+                "spacing": 0,
+                "width": 14,
+                "height": 14
+            },
+            states: {
+                "pressed": {
+                    "icon_brush": "$WHITE",
+                },
+            }
         ),
     },
 )

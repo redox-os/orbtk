@@ -61,7 +61,7 @@ impl Template for ButtonView {
                 .columns(Columns::create().push(140).push(32).push(140))
                 .child(
                     Stack::new()
-                        .spacing(8)
+                        .spacing(12)
                         .child(
                             Button::new()
                                 .text("Button")
@@ -100,7 +100,8 @@ impl Template for ButtonView {
                                 .icon(material_icons_font::MD_ALARM_ON)
                                 .build(ctx),
                         )
-                        .child(CheckBox::new().text("CheckBox").build(ctx))
+                        .child(CheckBox::new().text("UnChecked").build(ctx))
+                        .child(CheckBox::new().selected(true).text("Checked").build(ctx))
                         .child(CheckBox::new().enabled(false).text("Disabled").build(ctx))
                         .child(Switch::new().build(ctx))
                         .child(slider)

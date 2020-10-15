@@ -2,5 +2,7 @@ Theme (
     resources: {
         "FONT_SIZE_13": 13,
         "FONT_SIZE_14": 14,
+        "FONT_SIZE_15": 15,
+        "ICON_SIZE_14": 14
     },
 ) 
