@@ -76,6 +76,13 @@ impl Template for ButtonView {
                         )
                         .child(
                             Button::new()
+                                .enabled(false)
+                                .text("Disabled")
+                                .icon(material_icons_font::MD_CHECK)
+                                .build(ctx),
+                        )
+                        .child(
+                            Button::new()
                                 .text("Primary")
                                 .style("button_primary")
                                 .icon(material_icons_font::MD_360)

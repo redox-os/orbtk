@@ -1,5 +1,6 @@
 Theme (
     resources: {
-      
+        "FONT_SIZE_13": 13,
+        "FONT_SIZE_14": 14,
     },
 ) 

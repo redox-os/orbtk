@@ -2,5 +2,11 @@ Theme (
     resources: {
         "BACKGROUND_DARK": "#404040",
         "BUTTON_BACKGROUND_DARK": "#656565",
+        "BUTTON_BACKGROUND_DISABLED_DARK": "#666668",
+        "CONTENT_FOREGROUND_DISABLED_DARK": "#9B9B9D",
+        "BUTTON_BACKGROUND_PRESSED_DARK": "#8B8B8B",
+        "ACCENT_COLOR": "#0078D7",  
+        "CONTENT_FOREGROUND": "#D5D5D5",
+        "BORDER_DARK": "#D9D9D9",
     },
 ) 

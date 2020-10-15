@@ -8,9 +8,57 @@ Theme (
         "button": (
             properties: {
                 "border_radius": 3,
+                "foreground": "$CONTENT_FOREGROUND",
+                "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BUTTON_BACKGROUND_DARK",
                 "height": 28,
+                "font_size": "$FONT_SIZE_14",
+            },
+            states: {
+                "pressed": {
+                    "font_size": "$FONT_SIZE_13",
+                    "background": "$BUTTON_BACKGROUND_PRESSED_DARK",
+                },
+                "selected": {
+                    "background": "$ACCENT_COLOR",
+                },
+                "disabled": {
+                    "background": "$BUTTON_BACKGROUND_DISABLED_DARK",
+                    "foreground": "$CONTENT_FOREGROUND_DISABLED_DARK",
+                    "icon_brush": "$CONTENT_FOREGROUND_DISABLED_DARK",
+                }
             }
-        )
+        ),
+        "button_single_content": (
+            base: "button",
+            properties: {
+                "spacing": 0,
+            },
+        ),
+        "button_primary": (
+            base: "button",
+            properties: {
+                "background": "$ACCENT_COLOR",
+            },
+        ),
+        "check_box": (
+            properties: {
+                "border_radius": 3,
+                "border_width": 1,
+                "border_brush": "$BORDER_DARK",
+                "foreground": "$CONTENT_FOREGROUND",
+                "icon_brush": "transparent",
+                "background": "transparent",
+                "height": 20,
+                "font_size": "$FONT_SIZE_14",
+            },
+            states: {
+                "selected": {
+                    "icon_brush": "$CONTENT_FOREGROUND",
+                    "background": "$ACCENT_COLOR",
+                    "border_width": 0,
+                },
+            },
+        ),
     },
 )
