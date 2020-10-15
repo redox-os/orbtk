@@ -551,6 +551,7 @@ dependencies = [
  "orbtk_render",
  "orbtk_shell",
  "orbtk_theme",
+ "orbtk_theme_fluent",
  "orbtk_theming",
  "orbtk_tree",
  "orbtk_utils",
@@ -637,6 +638,14 @@ dependencies = [
 
 [[package]]
 name = "orbtk_theme"
+version = "0.3.1-alpha4"
+dependencies = [
+ "lazy_static 1.4.0",
+ "orbtk_theming",
+]
+
+[[package]]
+name = "orbtk_theme_fluent"
 version = "0.3.1-alpha4"
 dependencies = [
  "lazy_static 1.4.0",

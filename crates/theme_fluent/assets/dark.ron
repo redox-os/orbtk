@@ -1,0 +1,16 @@
+Theme (
+    styles: {
+        "window": (
+            properties: {
+                "background": "$BACKGROUND_DARK",
+            },
+        ),
+        "button": (
+            properties: {
+                "border_radius": 3,
+                "background": "$BUTTON_BACKGROUND_DARK",
+                "height": 28,
+            }
+        )
+    },
+)

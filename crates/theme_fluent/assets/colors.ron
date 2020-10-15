@@ -1,0 +1,6 @@
+Theme (
+    resources: {
+        "BACKGROUND_DARK": "#404040",
+        "BUTTON_BACKGROUND_DARK": "#656565",
+    },
+) 

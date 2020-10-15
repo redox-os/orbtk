@@ -40,6 +40,11 @@ pub mod theme {
     pub use orbtk_theme::*;
 }
 
+#[cfg(feature = "fluent")]
+pub mod theme_fluent {
+    pub use orbtk_theme_fluent::*;
+}
+
 pub mod tree {
     pub use orbtk_tree::*;
 }

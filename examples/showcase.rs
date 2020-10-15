@@ -1,5 +1,7 @@
 use orbtk::prelude::*;
 
+use orbtk_theme_fluent::prelude::*;
+
 // German localization file.
 static SHOWCASE_DE_DE: &str = include_str!("../res/showcase/showcase_de_DE.ron");
 
@@ -14,6 +16,7 @@ fn main() {
         .build();
 
     Application::new()
+        .theme(fluent_dark())
         .localization(localization)
         .window(|ctx| {
             Window::new()
