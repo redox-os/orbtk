@@ -164,6 +164,8 @@ where
         while let Some(event) = self.event_state.key_down_events.borrow_mut().pop() {
             let key = get_key(event.code().as_str(), event.key());
 
+            self.adapter.text_input(key.1.clone());
+
             self.adapter.key_event(KeyEvent {
                 key: key.0,
                 state: ButtonState::Down,
