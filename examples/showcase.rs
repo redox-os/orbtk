@@ -100,7 +100,7 @@ impl Template for ButtonView {
                                 .icon(material_icons_font::MD_ALARM_ON)
                                 .build(ctx),
                         )
-                        .child(CheckBox::new().text("UnChecked").build(ctx))
+                        .child(CheckBox::new().text("Unchecked").build(ctx))
                         .child(CheckBox::new().selected(true).text("Checked").build(ctx))
                         .child(CheckBox::new().enabled(false).text("Disabled").build(ctx))
                         .child(Switch::new().build(ctx))

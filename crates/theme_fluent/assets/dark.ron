@@ -65,7 +65,79 @@ Theme (
                 }
             },
         ),
-         "tab_header_bar": (
+        "switch": (
+            properties: {
+                "width": 46,
+                "height": 20,
+            },
+        ),
+        "switch_track": (
+            properties: {
+                "height": 20,
+                "border_radius": 10,
+                "background": "transparent",
+                "border_width": 2,
+                "border_brush": "$DECENT_COLOR_DARK"
+            },
+            states: {
+                "selected": {
+                    "background": "$ACCENT_COLOR_DARK",
+                    "border_brush": "$ACCENT_COLOR_DARK"
+                },
+            },
+        ),
+        "switch_toggle": (
+            properties: {
+                "width": 10,
+                "height": 10,
+                "border_radius": 5,
+                "background": "$DECENT_COLOR_DARK",
+                "margin": 6
+            },
+            states: {
+                "selected": {
+                    "background": "$WHITE",
+                },
+            },
+        ),
+        "slider": (
+            properties: {
+                "height": 24,
+                "border_radius": 2,
+                "background": "$DECENT_COLOR_DARK",
+            }
+        ),
+        "thumb": (
+            properties: {
+                "width": 24,
+                "height": 24,
+                "border_radius": 12,
+                "background": "$ACCENT_COLOR_DARK",
+            },
+            states: {
+                "pressed": {
+                    "background": "$DECENT_COLOR_DARK",
+                },
+            },
+        ),
+        "progress_bar": (
+             properties: {
+                "background": "$DECENT_COLOR_DARK",
+                "border_radius": 2,
+                "border_width": 0,
+                "border_width": 1,
+                "height": 4,
+                "padding": 0 
+             },
+        ),
+        "progress_bar_indicator": (
+            properties: {
+                "background": "$ACCENT_COLOR_DARK",
+                "height": 4,
+                "width": 0,
+            }
+        ),
+        "tab_header_bar": (
             properties: {
                 "height": 42,
                 "background": "$ACCENT_COLOR_DARK",
