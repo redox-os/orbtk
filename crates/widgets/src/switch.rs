@@ -12,6 +12,7 @@ static ID_SWITCH_TOGGLE: &str = "switch_toggle";
 pub struct SwitchState {
     selected: bool,
     switch_toggle: Entity,
+    switch_track: Entity,
 }
 
 impl SwitchState {
@@ -22,9 +23,8 @@ impl SwitchState {
 
 impl State for SwitchState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        self.switch_toggle = ctx
-            .entity_of_child(ID_SWITCH_TOGGLE)
-            .expect("SwitchState.init: Switch toggle child could not be found.");
+        self.switch_track = ctx.child(ID_SWITCH_TRACK).entity();
+        self.switch_toggle = ctx.child(ID_SWITCH_TOGGLE).entity();
     }
 
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
@@ -58,7 +58,22 @@ impl State for SwitchState {
             switch_toggle.update(true);
         }
 
+        {
+            let mut switch_track = ctx.get_widget(self.switch_track);
+
+            if self.selected {
+                switch_track
+                    .get_mut::<Selector>("selector")
+                    .set_state("selected");
+            } else {
+                switch_track.get_mut::<Selector>("selector").clear_state();
+            }
+
+            switch_track.update(true);
+        }
+
         ctx.get_widget(self.switch_toggle).update(false);
+        ctx.get_widget(self.switch_track).update(false);
     }
 }
 
@@ -114,6 +129,7 @@ impl Template for Switch {
                         Grid::new()
                             .child(
                                 Container::new()
+                                    .id(ID_SWITCH_TRACK)
                                     .style(ID_SWITCH_TRACK)
                                     .margin((2, 0))
                                     .v_align("center")
