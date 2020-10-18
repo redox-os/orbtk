@@ -4,7 +4,7 @@ use orbtk_theming::{config::ThemeConfig, prelude::*};
 pub const FLUENT_DARK_RON: &str = include_str!("../assets/dark.ron");
 
 /// The fluent light theme resource file.
-pub const FLUENT_LIGHT_RON: &str = include_str!("../assets/dark.ron");
+pub const FLUENT_LIGHT_RON: &str = include_str!("../assets/light.ron");
 
 /// The fluent theme colors resource file.
 pub const FLUENT_COLORS_RON: &str = include_str!("../assets/colors.ron");
