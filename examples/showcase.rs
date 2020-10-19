@@ -67,6 +67,10 @@ impl Template for ButtonView {
                                     println!("Enter");
                                     true
                                 })
+                                .on_leave(|_, _| {
+                                    println!("Leave");
+                                    true
+                                })
                                 .build(ctx),
                         )
                         .child(

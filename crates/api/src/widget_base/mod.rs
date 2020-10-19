@@ -39,6 +39,36 @@ pub fn toggle_flag(flag: &str, widget: &mut WidgetContainer) {
     }
 }
 
+/// Sets the given property flag to  `true` and set the flags name as state of the widgets selector.
+pub fn set_flag(flag: &str, widget: &mut WidgetContainer) {
+    if !widget.has::<bool>(flag) {
+        return;
+    }
+
+    widget.set(flag, true);
+
+    if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
+        selector.set_state(flag);
+    }
+
+    widget.update(false);
+}
+
+/// Sets the given property flag to  `false` and clears the state of the widgets selector.
+pub fn remove_flag(flag: &str, widget: &mut WidgetContainer) {
+    if !widget.has::<bool>(flag) {
+        return;
+    }
+
+    widget.set(flag, false);
+
+    if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
+        selector.clear_state();
+    }
+
+    widget.update(false);
+}
+
 /// Used to define the `parent_type`of a widget.
 pub enum ParentType {
     /// No children could be added to the widget.

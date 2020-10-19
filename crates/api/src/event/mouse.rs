@@ -336,7 +336,7 @@ pub trait MouseHandler: Sized + Widget {
 
     /// Insert a mouse leave handler.
     fn on_leave<H: Fn(&mut StatesContext, Point) -> bool + 'static>(self, handler: H) -> Self {
-        self.insert_handler(EnterEventHandler {
+        self.insert_handler(LeaveEventHandler {
             handler: Rc::new(handler),
         })
     }
