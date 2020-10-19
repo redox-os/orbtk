@@ -26,7 +26,7 @@ Theme (
                 "font_size": "$FONT_SIZE_24",
             }
         ),
-        "button": ( 
+        "button": (
             base: "base",
             properties: {
                 "height": 36,
@@ -34,7 +34,7 @@ Theme (
                 "icon_brush": "$LINK_WATER",
                 "background": "$LYNCH",
                 "border_radius": 4,
-            }, 
+            },
             states: {
                 "pressed": {
                     "background": "$BLUE_BAYOUX",
@@ -96,11 +96,11 @@ Theme (
                 },
             },
         ),
-        "button_square": ( 
+        "button_square": (
             base: "button",
             properties: {
                 "border_radius": 1,
-            }, 
+            },
         ),
         "button_single_content": (
             base: "button",
@@ -288,7 +288,7 @@ Theme (
                 },
             },
         ),
-        "popup": ( 
+        "popup": (
             properties: {
                 "background": "$RIVER_BAD",
                 "border_brush": "$LYNCH",

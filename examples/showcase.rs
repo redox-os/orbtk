@@ -72,6 +72,10 @@ impl Template for ButtonView {
                                 .on_leave(|_, _| {
                                     println!("Leave Button boundries");
                                 })
+                                .on_leave(|_, _| {
+                                    println!("Leave");
+                                    true
+                                })
                                 .build(ctx),
                         )
                         .child(
