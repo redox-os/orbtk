@@ -1,4 +1,7 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{
+    cell::{Cell, RefCell},
+    rc::Rc,
+};
 
 use dces::prelude::*;
 
@@ -9,9 +12,25 @@ use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree, uti
 pub struct EventStateSystem {
     context_provider: ContextProvider,
     registry: Rc<RefCell<Registry>>,
+    hovered_widget: Cell<Option<Entity>>,
 }
 
 impl EventStateSystem {
+    fn handles_enter_event(&self, entity: Entity) -> bool {
+        if let Some(handlers) = self.context_provider.handler_map.borrow().get(&entity) {
+            return handlers.iter().any(|handler| {
+                handler.handles_event(&EventBox::new(
+                    EnterEvent {
+                        position: Point::default(),
+                    },
+                    EventStrategy::Direct,
+                    entity,
+                ))
+            });
+        }
+
+        false
+    }
     // Remove all objects of a widget.
     fn remove_widget(
         &self,
@@ -266,6 +285,20 @@ impl EventStateSystem {
                             Some(&self.context_provider.event_adapter),
                         ),
                     ) {
+                        if self.handles_enter_event(current_node)
+                            && (self.hovered_widget.get().is_none()
+                                || self.hovered_widget.get().unwrap() != current_node)
+                        {
+                            self.hovered_widget.set(Some(current_node));
+
+                            self.context_provider.event_adapter.push_event_direct(
+                                current_node,
+                                EnterEvent {
+                                    position: event.position,
+                                },
+                            );
+                        }
+
                         // todo add check to block mouse move inside of clipped areas of a widget
                         if has_handler {
                             matching_nodes.push(current_node);

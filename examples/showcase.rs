@@ -63,6 +63,10 @@ impl Template for ButtonView {
                             Button::new()
                                 .text("Button")
                                 .icon(material_icons_font::MD_CHECK)
+                                .on_enter(|_, _| {
+                                    println!("Enter");
+                                    true
+                                })
                                 .build(ctx),
                         )
                         .child(
