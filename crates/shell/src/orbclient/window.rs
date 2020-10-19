@@ -253,7 +253,7 @@ where
                     self.update = true;
                 }
                 orbclient::EventOption::TextInput(event) => {
-                    self.adapter.text_input(String::from(event.character));
+                    self.adapter.text_input(event.character.to_string());
                     self.update = true;
                 }
                 orbclient::EventOption::Mouse(event) => {
