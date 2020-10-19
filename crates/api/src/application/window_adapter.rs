@@ -1,4 +1,8 @@
-use std::{cell::RefCell, collections::HashMap, sync::mpsc};
+use std::{
+    cell::{Cell, RefCell},
+    collections::HashMap,
+    sync::mpsc,
+};
 
 use dces::prelude::*;
 
@@ -350,6 +354,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         .create_system(EventStateSystem::new(
             context_provider.clone(),
             registry.clone(),
+            Cell::new(None),
         ))
         .with_priority(0)
         .build();
