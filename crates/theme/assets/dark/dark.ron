@@ -5,8 +5,7 @@ Theme (
                 "font_size": "$FONT_SIZE_16",
                 "font": "$MEDIUM_FONT",
                 "icon_size": "$ICON_SIZE_16",
-                "icon_font": "$ICON_FONT",
-                 "opacity": 1.0,
+                "icon_font": "$ICON_FONT"
             },
         ),
         "window": (
