@@ -45,6 +45,9 @@ Theme (
                 },
                 "disabled": {
                     "opacity": 0.5,
+                },
+                "hover": {
+                    "background": "green"
                 }
             },
         ),
