@@ -1,5 +1,3 @@
-use std::collections::VecDeque;
-
 use crate::{
     api::prelude::*,
     proc_macros::*,
@@ -19,6 +17,7 @@ pub static FOCUSED_STATE: &str = "focused";
 #[derive(Clone)]
 pub enum TextAction {
     KeyDown(KeyEvent),
+    TextInput(String),
     MouseDown(Mouse),
     MouseUp,
     MouseMove(Point),
@@ -46,7 +45,6 @@ impl Default for Direction {
 /// The `TextBehaviorState` handles the text processing of the `TextBehavior` widget.
 #[derive(Default, AsAny)]
 pub struct TextBehaviorState {
-    action: VecDeque<TextAction>,
     cursor: Entity,
     target: Entity,
     text_block: Entity,
@@ -59,11 +57,6 @@ pub struct TextBehaviorState {
 }
 
 impl TextBehaviorState {
-    /// Sets an action the the state.
-    pub fn action(&mut self, action: TextAction) {
-        self.action.push_back(action);
-    }
-
     fn request_focus(&self) {
         self.event_adapter
             .push_event_direct(self.window, FocusEvent::RequestFocus(self.target));
@@ -99,7 +92,7 @@ impl TextBehaviorState {
     }
 
     fn insert_text(&mut self, insert_text: String, ctx: &mut Context) {
-        if insert_text.is_empty() {
+        if insert_text.is_empty() || !self.focused(ctx) {
             return;
         }
 
@@ -113,7 +106,9 @@ impl TextBehaviorState {
         text.insert_str(selection.start(), insert_text.as_str());
 
         selection.set(selection.start() + insert_text.chars().count());
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.set_selection(ctx, selection);
+
+        self.update_selection = true;
 
         self.set_text(ctx, text.to_string());
 
@@ -154,7 +149,7 @@ impl TextBehaviorState {
         text.remove(selection.start());
 
         self.set_text(ctx, text.to_string());
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.set_selection(ctx, selection);
 
         if self.len(ctx) == 0 {
             self.update_focused_state(ctx);
@@ -208,7 +203,7 @@ impl TextBehaviorState {
         selection.set(start);
 
         self.set_text(ctx, text.to_string());
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.set_selection(ctx, selection);
 
         if self.len(ctx) == 0 {
             self.update_focused_state(ctx);
@@ -257,7 +252,7 @@ impl TextBehaviorState {
         self.direction = Direction::None;
     }
 
-    fn select_all(&self, ctx: &mut Context) {
+    fn select_all(&mut self, ctx: &mut Context) {
         if TextBehavior::text_ref(&ctx.widget()).is_empty()
             || !*TextBehavior::focused_ref(&ctx.widget())
         {
@@ -268,7 +263,7 @@ impl TextBehaviorState {
         selection.set_start(0);
         selection.set_end(self.len(ctx));
 
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.set_selection(ctx, selection);
     }
 
     fn expand_selection_left(&mut self, ctx: &mut Context) {
@@ -277,7 +272,7 @@ impl TextBehaviorState {
         if selection.start() as i32 > 0 {
             selection.set_start(selection.start() - 1);
         }
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.set_selection(ctx, selection);
     }
 
     fn expand_selection_right(&mut self, ctx: &mut Context) {
@@ -286,19 +281,19 @@ impl TextBehaviorState {
         if selection.start() < self.len(ctx) {
             selection.set_start(selection.start() + 1);
         }
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.set_selection(ctx, selection);
     }
 
     fn move_selection_left(&mut self, ctx: &mut Context) {
         self.direction = Direction::Left;
         let selection = move_selection_left(self.selection(ctx));
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.set_selection(ctx, selection);
     }
 
     fn move_selection_right(&mut self, ctx: &mut Context) {
         self.direction = Direction::Right;
         let selection = move_selection_right(self.selection(ctx), self.len(ctx));
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.set_selection(ctx, selection);
     }
 
     // -- Selection --
@@ -349,35 +344,25 @@ impl TextBehaviorState {
             Key::X(..) => {
                 if self.is_ctlr_home_down(ctx) {
                     self.cut(registry, ctx);
-                } else {
-                    self.insert_text(key_event.text, ctx);
                 }
             }
             Key::C(..) => {
                 if self.is_ctlr_home_down(ctx) {
                     self.copy(registry, ctx);
-                } else {
-                    self.insert_text(key_event.text, ctx);
                 }
             }
             Key::V(..) => {
                 if self.is_ctlr_home_down(ctx) {
                     self.paste(registry, ctx);
-                } else {
-                    self.insert_text(key_event.text, ctx);
                 }
             }
             Key::A(..) => {
                 if self.is_ctlr_home_down(ctx) {
                     self.select_all(ctx);
-                } else {
-                    self.insert_text(key_event.text, ctx);
                 }
             }
             Key::Escape => self.collapse_selection(ctx),
-            _ => {
-                self.insert_text(key_event.text, ctx);
-            }
+            _ => {}
         }
     }
 
@@ -393,7 +378,7 @@ impl TextBehaviorState {
         let mut selection = self.selection(ctx);
         selection.set(selection_start);
 
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.set_selection(ctx, selection);
     }
 
     // handles mouse move
@@ -418,18 +403,18 @@ impl TextBehaviorState {
         selection.set_start(new_start);
 
         if selection.start() > 0 || selection.start() < self.len(ctx) {
-            self.action(TextAction::MouseMove(position));
+            ctx.send_message(TextAction::MouseMove(position), ctx.entity());
             ctx.widget().set("dirty", true);
         }
 
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.set_selection(ctx, selection);
     }
 
-    fn collapse_selection(&self, ctx: &mut Context) {
+    fn collapse_selection(&mut self, ctx: &mut Context) {
         let mut selection = self.selection(ctx);
         selection.set_end(selection.start());
 
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.set_selection(ctx, selection);
     }
 
     fn mouse_up(&mut self, _ctx: &mut Context) {
@@ -450,7 +435,7 @@ impl TextBehaviorState {
     }
 
     // handles focus changed event
-    fn focused_changed(&self, ctx: &mut Context) {
+    fn focused_changed(&mut self, ctx: &mut Context) {
         self.adjust_selection(ctx);
 
         if *TextBehavior::select_all_on_focus_ref(&ctx.widget()) {
@@ -486,6 +471,11 @@ impl TextBehaviorState {
     fn set_text(&mut self, ctx: &mut Context, text: String) {
         ctx.get_widget(self.target).set("text", text);
         self.self_update = true;
+    }
+
+    fn set_selection(&mut self, ctx: &mut Context, selection: TextSelection) {
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.update_selection = true;
     }
 
     // gets the len of the text
@@ -616,7 +606,7 @@ impl TextBehaviorState {
         ctx.get_widget(self.target).update(false);
     }
 
-    fn adjust_selection(&self, ctx: &mut Context) {
+    fn adjust_selection(&mut self, ctx: &mut Context) {
         let mut selection = self.selection(ctx);
         let len = self.len(ctx);
 
@@ -626,7 +616,7 @@ impl TextBehaviorState {
 
         selection.set(len);
 
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.set_selection(ctx, selection);
 
         if *TextBehavior::focused_ref(&ctx.widget()) {
             self.update_focused_state(ctx);
@@ -682,8 +672,13 @@ impl State for TextBehaviorState {
         }
     }
 
-    fn update(&mut self, registry: &mut Registry, ctx: &mut Context) {
-        if let Some(action) = self.action.pop_front() {
+    fn messages(
+        &mut self,
+        mut messages: MessageReader,
+        registry: &mut Registry,
+        ctx: &mut Context,
+    ) {
+        for action in messages.read::<TextAction>() {
             match action {
                 TextAction::KeyDown(event) => self.key_down(registry, ctx, event),
                 TextAction::MouseDown(p) => self.mouse_down(ctx, p),
@@ -697,6 +692,7 @@ impl State for TextBehaviorState {
                 TextAction::MouseMove(position) => self.mouse_move(ctx, position),
                 TextAction::MouseUp => self.mouse_up(ctx),
                 TextAction::ForceUpdate => self.force_update(ctx),
+                TextAction::TextInput(text) => self.insert_text(text, ctx),
             }
         }
     }
@@ -787,7 +783,7 @@ widget!(
     ///
     /// [`Entity`]: https://docs.rs/dces/0.2.0/dces/entity/struct.Entity.html
     /// [`Cursor`]: ../struct.Cursor.html
-    TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler, DropHandler, MouseHandler {
+    TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler, TextInputHandler, DropHandler, MouseHandler {
         /// Reference the target (parent) widget e.g. `TextBox` or `PasswordBox`.
         target: u32,
 
@@ -833,50 +829,38 @@ impl Template for TextBehavior {
             .focused(false)
             .lose_focus_on_activation(true)
             .select_all_on_focus(false)
-            .on_key_down(move |states, event| -> bool {
-                states
-                    .get_mut::<TextBehaviorState>(id)
-                    .action(TextAction::KeyDown(event));
+            .on_key_down(move |ctx, event| -> bool {
+                ctx.send_message(TextAction::KeyDown(event), id);
                 false
             })
-            .on_drop_file(move |states, file_name, position| {
-                states
-                    .get_mut::<TextBehaviorState>(id)
-                    .action(TextAction::Drop(file_name, position));
+            .on_text_input(move |ctx, text| {
+                ctx.send_message(TextAction::TextInput(text.to_string()), id);
                 false
             })
-            .on_drop_text(move |states, file_name, position| {
-                states
-                    .get_mut::<TextBehaviorState>(id)
-                    .action(TextAction::Drop(file_name, position));
+            .on_drop_file(move |ctx, file_name, position| {
+                ctx.send_message(TextAction::Drop(file_name, position), id);
                 false
             })
-            .on_mouse_down(move |states, m| {
-                states
-                    .get_mut::<TextBehaviorState>(id)
-                    .action(TextAction::MouseDown(m));
+            .on_drop_text(move |ctx, file_name, position| {
+                ctx.send_message(TextAction::Drop(file_name, position), id);
+                false
+            })
+            .on_mouse_down(move |ctx, m| {
+                ctx.send_message(TextAction::MouseDown(m), id);
                 true
             })
-            .on_mouse_up(move |states, _| {
-                states
-                    .get_mut::<TextBehaviorState>(id)
-                    .action(TextAction::MouseUp);
+            .on_mouse_up(move |ctx, _| {
+                ctx.send_message(TextAction::MouseUp, id);
             })
-            .on_mouse_move(move |states, p| {
-                states
-                    .get_mut::<TextBehaviorState>(id)
-                    .action(TextAction::MouseMove(p));
+            .on_mouse_move(move |ctx, p| {
+                ctx.send_message(TextAction::MouseMove(p), id);
                 true
             })
-            .on_changed("focused", move |states, _| {
-                states
-                    .get_mut::<TextBehaviorState>(id)
-                    .action(TextAction::FocusedChanged);
+            .on_changed("focused", move |ctx, _| {
+                ctx.send_message(TextAction::FocusedChanged, id);
             })
-            .on_changed("selection", move |states, _| {
-                states
-                    .get_mut::<TextBehaviorState>(id)
-                    .action(TextAction::SelectionChanged);
+            .on_changed("selection", move |ctx, _| {
+                ctx.send_message(TextAction::SelectionChanged, id);
             })
     }
 }

@@ -252,6 +252,10 @@ where
                     self.push_key_event(event);
                     self.update = true;
                 }
+                orbclient::EventOption::TextInput(event) => {
+                    self.adapter.text_input(String::from(event.character));
+                    self.update = true;
+                }
                 orbclient::EventOption::Mouse(event) => {
                     self.mouse.mouse_pos = (event.x as f32, event.y as f32);
                     self.adapter.mouse(event.x as f64, event.y as f64);
@@ -323,7 +327,6 @@ where
                 }
                 orbclient::EventOption::Unknown(_) => println!("unkown"),
                 orbclient::EventOption::None => println!("None"),
-                orbclient::EventOption::TextInput(_) => { /* todo */ }
             }
         }
     }

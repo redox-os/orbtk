@@ -171,10 +171,10 @@ impl State for MasterDetailState {
         let break_point: f64 = *MasterDetail::break_point_ref(&ctx.widget());
 
         if self.expanded && width <= break_point {
-            ctx.send_message(ctx.entity(), InternalAction::Collapse);
+            ctx.send_message(InternalAction::Collapse, ctx.entity());
             MasterDetail::navigation_visibility_set(&mut ctx.widget(), Visibility::Visible);
         } else if !self.expanded && width > break_point {
-            ctx.send_message(ctx.entity(), InternalAction::Expand);
+            ctx.send_message(InternalAction::Expand, ctx.entity());
             MasterDetail::navigation_visibility_set(&mut ctx.widget(), Visibility::Hidden);
         }
     }
@@ -221,13 +221,13 @@ impl MasterDetail {
     /// Shows the master widget. If the master widget is visible nothing will happen.
     pub fn show_master(ctx: &mut Context, entity: Entity) {
         MasterDetail::panics_on_wrong_type(&ctx.get_widget(entity));
-        ctx.send_message(entity, MasterDetailAction::ShowMaster);
+        ctx.send_message(MasterDetailAction::ShowMaster, entity);
     }
 
     /// Shows the detail widget. If the detail widget is visible nothing will happen.
     pub fn show_detail(ctx: &mut Context, entity: Entity) {
         MasterDetail::panics_on_wrong_type(&ctx.get_widget(entity));
-        ctx.send_message(entity, MasterDetailAction::ShowDetail);
+        ctx.send_message(MasterDetailAction::ShowDetail, entity);
     }
 }
 

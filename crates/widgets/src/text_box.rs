@@ -1,4 +1,4 @@
-use super::behaviors::{TextAction, TextBehavior, TextBehaviorState};
+use super::behaviors::{TextAction, TextBehavior};
 
 use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
 
@@ -12,7 +12,8 @@ widget!(
     ///
     /// * style: `text_box`
     TextBox: ActivateHandler,
-    KeyDownHandler {
+    KeyDownHandler,
+    TextInputHandler {
         /// Sets or shares the text property.
         text: String,
 
@@ -123,10 +124,8 @@ impl Template for TextBox {
                     )
                     .build(ctx),
             )
-            .on_changed("text", move |states, _| {
-                states
-                    .get_mut::<TextBehaviorState>(text_behavior)
-                    .action(TextAction::ForceUpdate);
+            .on_changed("text", move |ctx, _| {
+                ctx.send_message(TextAction::ForceUpdate, text_behavior);
             })
     }
 }

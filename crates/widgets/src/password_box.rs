@@ -1,4 +1,4 @@
-use super::behaviors::{TextAction, TextBehavior, TextBehaviorState};
+use super::behaviors::{TextAction, TextBehavior};
 use crate::prelude::*;
 use crate::shell::prelude::KeyEvent;
 use crate::{api::prelude::*, proc_macros::*, theme::prelude::*};
@@ -9,15 +9,10 @@ enum PasswordAction {
 
 #[derive(Default, AsAny)]
 struct PasswordBoxState {
-    action: Option<PasswordAction>,
     echo: char,
 }
 
 impl PasswordBoxState {
-    fn action(&mut self, action: PasswordAction) {
-        self.action = Some(action);
-    }
-
     fn mask(&mut self, ctx: &mut Context) {
         let mut new_prompt = String::new();
 
@@ -34,15 +29,18 @@ impl State for PasswordBoxState {
         self.echo = ctx.widget().clone("echo");
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        if let Some(action) = &self.action {
+    fn messages(
+        &mut self,
+        mut messages: MessageReader,
+        _registry: &mut Registry,
+        ctx: &mut Context,
+    ) {
+        for action in messages.read::<PasswordAction>() {
             match action {
                 PasswordAction::Key(_key_event) => {
                     self.mask(ctx);
                 }
             }
-
-            self.action = None;
         }
     }
 }
@@ -67,7 +65,7 @@ widget!(
     ///
     /// [`TextBox`]: ./struct.TextBox.html
     /// [`example`]: https://github.com/redox-os/orbtk/tree/develop/examples/login.rs
-    PasswordBox<PasswordBoxState>: KeyDownHandler {
+    PasswordBox<PasswordBoxState>: KeyDownHandler, TextInputHandler {
         /// Sets or shares the echo character which used to mask the input
         echo: char,
 
@@ -189,21 +187,15 @@ impl Template for PasswordBox {
                     )
                     .build(ctx),
             )
-            .on_key_down(move |states, event| -> bool {
-                states
-                    .get_mut::<PasswordBoxState>(id)
-                    .action(PasswordAction::Key(event));
+            .on_key_down(move |ctx, event| -> bool {
+                ctx.send_message(PasswordAction::Key(event), id);
                 false
             })
-            .on_changed("text", move |states, _| {
-                states
-                    .get_mut::<TextBehaviorState>(text_behavior)
-                    .action(TextAction::ForceUpdate);
+            .on_changed("text", move |ctx, _| {
+                ctx.send_message(TextAction::ForceUpdate, text_behavior);
             })
-            .on_changed("mask", move |states, _| {
-                states
-                    .get_mut::<TextBehaviorState>(text_behavior)
-                    .action(TextAction::ForceUpdate);
+            .on_changed("mask", move |ctx, _| {
+                ctx.send_message(TextAction::ForceUpdate, text_behavior);
             })
     }
 }

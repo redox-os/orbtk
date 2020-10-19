@@ -27,7 +27,7 @@ where
     redraw: bool,
     close: bool,
     key_states: Vec<KeyState>,
-    key_events: Rc<RefCell<Vec<KeyEvent>>>,
+    text_input: Rc<RefCell<Vec<String>>>,
 }
 
 impl<A> Window<A>
@@ -40,7 +40,7 @@ where
         render_context: RenderContext2D,
         request_receiver: Option<mpsc::Receiver<WindowRequest>>,
         key_states: Vec<KeyState>,
-        key_events: Rc<RefCell<Vec<KeyEvent>>>,
+        text_input: Rc<RefCell<Vec<String>>>,
     ) -> Self {
         let mut adapter = adapter;
         adapter.set_raw_window_handle(window.raw_window_handle());
@@ -56,7 +56,7 @@ where
             redraw: true,
             close: false,
             key_states,
-            key_events,
+            text_input,
         }
     }
 }
@@ -212,8 +212,8 @@ where
         }
 
         // keys
-        while let Some(event) = self.key_events.borrow_mut().pop() {
-            self.adapter.key_event(event);
+        while let Some(text) = self.text_input.borrow_mut().pop() {
+            self.adapter.text_input(text);
             self.update = true;
         }
 

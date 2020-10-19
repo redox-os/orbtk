@@ -147,6 +147,13 @@ impl shell::WindowAdapter for WindowAdapter {
         }
     }
 
+    fn text_input(&mut self, text: String) {
+        let root = self.root();
+        self.ctx
+            .event_adapter
+            .push_event(root, TextInputEvent { text });
+    }
+
     fn quit_event(&mut self) {
         let root = self.root();
 

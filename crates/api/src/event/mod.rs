@@ -15,6 +15,7 @@ pub use self::focus::*;
 pub use self::key::*;
 pub use self::mouse::*;
 pub use self::system::*;
+pub use self::text_input::*;
 pub use self::window::*;
 
 mod drop;
@@ -26,6 +27,7 @@ mod focus;
 mod key;
 mod mouse;
 mod system;
+mod text_input;
 mod window;
 
 /// Defines the strategy of an event how it moves through the tree.
