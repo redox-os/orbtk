@@ -610,7 +610,6 @@ name = "orbtk_render"
 version = "0.3.1-alpha4"
 dependencies = [
  "image",
- "lazy_static 1.4.0",
  "orbtk_utils",
  "raqote",
  "rusttype",

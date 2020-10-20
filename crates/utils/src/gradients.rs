@@ -77,7 +77,11 @@ impl LinearGradientCoords {
 
     /// Sets the displacement if `self` is defined by its angle, otherwise, this does nothing.
     pub fn with_displacement(&mut self, displacement: impl Into<OnPlanePos>) -> Self {
-        if let LinearGradientCoords::Angle { angle: _, displacement: disp } = self {
+        if let LinearGradientCoords::Angle {
+            angle: _,
+            displacement: disp,
+        } = self
+        {
             *disp = displacement.into();
         }
         *self
