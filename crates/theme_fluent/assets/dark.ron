@@ -191,6 +191,10 @@ Theme (
                 "background": "$CONTENT_BACKGROUND",
             },
             states: {
+                "focused": {
+                    "background": "$CONTENT_BACKGROUND_FOCUSED",
+                    "border_brush": "$ACCENT_COLOR_DARK",
+                },
                 "hover": {
                     "background": "$CONTENT_BACKGROUND_HOVER"
                 }

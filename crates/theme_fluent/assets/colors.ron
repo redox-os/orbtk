@@ -15,6 +15,7 @@ Theme (
         "DECENT_COLOR_DARK": "#9A9A9A",
         "CONTENT_BACKGROUND": "#272728",
         "CONTENT_BACKGROUND_HOVER": "#19191A",
+        "CONTENT_BACKGROUND_FOCUSED": "#000000",
         "CONTENT_BORDER": "#A5A5A5"
     },
 ) 
