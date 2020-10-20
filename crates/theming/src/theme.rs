@@ -60,7 +60,7 @@ impl Theme {
                 properties.insert(key.clone(), value.clone());
             }
 
-            if let Some(state) = &selector.state {
+            if let Some(state) = selector.active_state() {
                 if let Some(state_properties) = self.styles.get(style)?.states.get(state) {
                     for (key, value) in state_properties {
                         properties.insert(key.clone(), value.clone());

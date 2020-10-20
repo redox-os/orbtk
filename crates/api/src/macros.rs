@@ -461,7 +461,6 @@ macro_rules! widget {
                 ctx.register_property("type_id", entity, TypeId::of::<$widget>());
                 ctx.register_property("type_name", entity, std::any::type_name::<$widget>().to_string());
                 ctx.register_property("dirty", entity, false);
-                ctx.register_property("hover", entity, false);
 
                 let mut constraint = this.constraint;
 
@@ -528,7 +527,7 @@ macro_rules! widget {
 
                 // initial set disabled
                 if ctx.get_widget(entity).has::<bool>("enabled") && !*ctx.get_widget(entity).get::<bool>("enabled") {
-                    selector.set_state("disabled");
+                    selector.push_state("disabled");
                 }
 
                 ctx.register_property("selector", entity, selector);

@@ -9,6 +9,7 @@ Theme (
         "ENERGY_YELLOW": "#f8de4c",
         "LINK_WATER": "#dfebf5",
         "GOLDEN_DREAM": "#efd035",
+        "GOLDEN_TIPS": "#ebbf13",
         "BLUE_BAYOUX": "#516475",
         "BOMBAY": "#afb1b8",
         "SLATE_GRAY": "#6c7a90",
@@ -24,6 +25,7 @@ Theme (
         "MANATEE": "#949ca5",
         "GRAY_NURSE": "#edeeed",
         "GORDUROY": "#586864",
-        "ATHS_SPECIAL": "#efead5"
+        "ATHS_SPECIAL": "#efead5",
+        "FIORD": "#475b6e"
     },
 )
