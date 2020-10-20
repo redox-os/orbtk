@@ -40,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add `TextInputEvent`
 * Add `EnterEvent` and `LeaveEvent`
 * Add `hover` property and selector state to all widgets
-* Add `on_enter` and `on_leave` callback to 
+* Add `on_enter` and `on_leave` callback to `MouseHandler`
 
 ### 0.3.1-alpha3
 
