@@ -391,20 +391,19 @@ impl EventStateSystem {
                         }
                     }
                     // trigger mouse leave event when cursor leaves the current_node
-                    else {
-                        if self.hovered_widgets.borrow().contains(&current_node) {
-                            if self.handles_enter_leave(current_node) {
-                                self.context_provider.event_adapter.push_event_direct(
-                                    current_node,
-                                    LeaveEvent {
-                                        position: event.position,
-                                    },
-                                );
-                            }
-
-                            self.remove_hover(current_node, ecm, &theme);
+                    else if self.hovered_widgets.borrow().contains(&current_node) {
+                        if self.handles_enter_leave(current_node) {
+                            self.context_provider.event_adapter.push_event_direct(
+                                current_node,
+                                LeaveEvent {
+                                    position: event.position,
+                                },
+                            );
                         }
+
+                        self.remove_hover(current_node, ecm, &theme);
                     }
+
                     unknown_event = false;
                 }
 
