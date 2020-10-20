@@ -116,11 +116,12 @@ impl<'a> WidgetContainer<'a> {
     }
 
     /// Check if the given type is the type of the property. If the property is not part of the widget `None` will be returned.
-    pub fn is<P: 'static>(&self, key: &str) -> Option<bool> {
-        self.ecm
-            .component_store()
-            .is::<P>(key, self.current_node)
-            .ok()
+    pub fn is<P: 'static>(&self, key: &str) -> bool {
+        if let Ok(is_type) = self.ecm.component_store().is::<P>(key, self.current_node) {
+            return is_type;
+        }
+
+        false
     }
 
     /// Gets the property.
@@ -226,12 +227,13 @@ impl<'a> WidgetContainer<'a> {
 
     fn toggle_enabled_state(&mut self) {
         if *self.get::<bool>("enabled") && self.get::<Selector>("selector").has_state("disabled") {
-            self.get_mut::<Selector>("selector").clear_state();
+            self.get_mut::<Selector>("selector")
+                .remove_state("disabled");
             self.update(false);
         } else if !*self.get::<bool>("enabled")
             && !self.get::<Selector>("selector").has_state("disabled")
         {
-            self.get_mut::<Selector>("selector").set_state("disabled");
+            self.get_mut::<Selector>("selector").push_state("disabled");
             self.update(false);
         }
     }
@@ -472,45 +474,27 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
-        if let Some(props) = self.theme.properties(&selector) {
-            for (key, value) in props {
+        if let Some(props) = &mut self.theme.properties(&selector) {
+            for (key, value) in props.drain() {
                 match key.as_str() {
                     // special mapping
                     "padding_left" | "padding_top" | "padding_right" | "padding_bottom" => {
-                        self.update_padding(key, Value(value.clone()));
+                        self.update_padding(&key, Value(value));
                     }
                     "width" | "height" | "min_width" | "min_height" | "max_width"
-                    | "max_height" => self.update_constraint(key, Value(value.clone())),
+                    | "max_height" => self.update_constraint(&key, Value(value)),
                     _ => {
                         // common mapping
-                        if let Some(is_type) = self.is::<Brush>(key) {
-                            if is_type {
-                                self.update_value::<Brush, Value>(key, Value(value.clone()));
-                            }
-                        }
-
-                        if let Some(is_type) = self.is::<f32>(key) {
-                            if is_type {
-                                self.update_value::<f32, Value>(key, Value(value.clone()));
-                            }
-                        }
-
-                        if let Some(is_type) = self.is::<f64>(key) {
-                            if is_type {
-                                self.update_value::<f64, Value>(key, Value(value.clone()));
-                            }
-                        }
-
-                        if let Some(is_type) = self.is::<Thickness>(key) {
-                            if is_type {
-                                self.update_value::<Thickness, Value>(key, Value(value.clone()));
-                            }
-                        }
-
-                        if let Some(is_type) = self.is::<String>(key) {
-                            if is_type {
-                                self.update_value::<String, Value>(key, Value(value.clone()));
-                            }
+                        if self.is::<Brush>(&key) {
+                            self.update_value::<Brush, Value>(&key, Value(value));
+                        } else if self.is::<f32>(&key) {
+                            self.update_value::<f32, Value>(&key, Value(value));
+                        } else if self.is::<f64>(&key) {
+                            self.update_value::<f64, Value>(&key, Value(value));
+                        } else if self.is::<Thickness>(&key) {
+                            self.update_value::<Thickness, Value>(&key, Value(value));
+                        } else if self.is::<String>(&key) {
+                            self.update_value::<String, Value>(&key, Value(value));
                         }
                     }
                 }

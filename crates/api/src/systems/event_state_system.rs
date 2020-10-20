@@ -9,9 +9,75 @@ use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree, uti
 pub struct EventStateSystem {
     context_provider: ContextProvider,
     registry: Rc<RefCell<Registry>>,
+    hovered_widgets: RefCell<Vec<Entity>>,
 }
 
 impl EventStateSystem {
+    fn handles_enter_event(&self, entity: Entity) -> bool {
+        if let Some(handlers) = self.context_provider.handler_map.borrow().get(&entity) {
+            return handlers.iter().any(|handler| {
+                handler.handles_event(&EventBox::new(
+                    EnterEvent {
+                        position: Point::default(),
+                    },
+                    EventStrategy::Direct,
+                    entity,
+                ))
+            });
+        }
+
+        false
+    }
+
+    fn handles_enter_leave(&self, entity: Entity) -> bool {
+        if let Some(handlers) = self.context_provider.handler_map.borrow().get(&entity) {
+            return handlers.iter().any(|handler| {
+                handler.handles_event(&EventBox::new(
+                    LeaveEvent {
+                        position: Point::default(),
+                    },
+                    EventStrategy::Direct,
+                    entity,
+                ))
+            });
+        }
+
+        false
+    }
+
+    fn remove_hover(
+        &self,
+        entity: Entity,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        theme: &Theme,
+    ) {
+        if self.hovered_widgets.borrow().is_empty()
+            || !self.hovered_widgets.borrow().contains(&entity)
+        {
+            return;
+        }
+
+        let pos = self
+            .hovered_widgets
+            .borrow()
+            .iter()
+            .position(|x| *x == entity);
+
+        if let Some(pos) = pos {
+            let removed = self.hovered_widgets.borrow_mut().remove(pos);
+
+            remove_flag(
+                "hover",
+                &mut WidgetContainer::new(
+                    removed,
+                    ecm,
+                    &theme,
+                    Some(&self.context_provider.event_adapter),
+                ),
+            );
+        }
+    }
+
     // Remove all objects of a widget.
     fn remove_widget(
         &self,
@@ -266,11 +332,78 @@ impl EventStateSystem {
                             Some(&self.context_provider.event_adapter),
                         ),
                     ) {
+                        // trigger mouse enter event if mouse cursor is first time over the current_node
+                        if !self.hovered_widgets.borrow().contains(&current_node) {
+                            // remove hover flag from last hovered node
+                            if ecm
+                                .component_store()
+                                .get::<bool>("hover", current_node)
+                                .is_ok()
+                                && !self.hovered_widgets.borrow().is_empty()
+                            {
+                                let last = *self.hovered_widgets.borrow().last().unwrap();
+
+                                remove_flag(
+                                    "hover",
+                                    &mut WidgetContainer::new(
+                                        last,
+                                        ecm,
+                                        &theme,
+                                        Some(&self.context_provider.event_adapter),
+                                    ),
+                                );
+
+                                self.remove_hover(last, ecm, &theme);
+                            }
+
+                            // set hover flag to now hovered node
+                            if ecm
+                                .component_store()
+                                .get::<bool>("hover", current_node)
+                                .is_ok()
+                            {
+                                set_flag(
+                                    "hover",
+                                    &mut WidgetContainer::new(
+                                        current_node,
+                                        ecm,
+                                        &theme,
+                                        Some(&self.context_provider.event_adapter),
+                                    ),
+                                );
+
+                                self.hovered_widgets.borrow_mut().push(current_node);
+                            }
+
+                            if self.handles_enter_event(current_node) {
+                                self.context_provider.event_adapter.push_event_direct(
+                                    current_node,
+                                    EnterEvent {
+                                        position: event.position,
+                                    },
+                                );
+                            }
+                        }
+
                         // todo add check to block mouse move inside of clipped areas of a widget
                         if has_handler {
                             matching_nodes.push(current_node);
                         }
                     }
+                    // trigger mouse leave event when cursor leaves the current_node
+                    else if self.hovered_widgets.borrow().contains(&current_node) {
+                        if self.handles_enter_leave(current_node) {
+                            self.context_provider.event_adapter.push_event_direct(
+                                current_node,
+                                LeaveEvent {
+                                    position: event.position,
+                                },
+                            );
+                        }
+
+                        self.remove_hover(current_node, ecm, &theme);
+                    }
+
                     unknown_event = false;
                 }
 

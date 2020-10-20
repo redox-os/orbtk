@@ -48,17 +48,27 @@ impl Theme {
         self.styles.get(key)
     }
 
-    pub fn properties<'a>(&'a self, selector: &Selector) -> Option<&'a HashMap<String, Value>> {
+    pub fn properties<'a>(&'a self, selector: &Selector) -> Option<HashMap<String, Value>> {
         if !selector.dirty() {
             return None;
         }
 
         if let Some(style) = &selector.style {
-            if let Some(state) = &selector.state {
-                return self.styles.get(style)?.states.get(state);
+            let mut properties = HashMap::new();
+
+            for (key, value) in &self.styles.get(style)?.properties {
+                properties.insert(key.clone(), value.clone());
             }
 
-            return Some(&self.styles.get(style)?.properties);
+            if let Some(state) = selector.active_state() {
+                if let Some(state_properties) = self.styles.get(style)?.states.get(state) {
+                    for (key, value) in state_properties {
+                        properties.insert(key.clone(), value.clone());
+                    }
+                }
+            }
+
+            return Some(properties);
         }
 
         None

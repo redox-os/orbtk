@@ -97,9 +97,13 @@ impl State for ListViewState {
             widget.set("selected", selected);
 
             if selected {
-                widget.get_mut::<Selector>("selector").set_state("selected");
+                widget
+                    .get_mut::<Selector>("selector")
+                    .push_state("selected");
             } else {
-                widget.get_mut::<Selector>("selector").clear_state();
+                widget
+                    .get_mut::<Selector>("selector")
+                    .remove_state("selected");
             }
 
             widget.update(false);

@@ -462,16 +462,6 @@ macro_rules! widget {
                 ctx.register_property("type_name", entity, std::any::type_name::<$widget>().to_string());
                 ctx.register_property("dirty", entity, false);
 
-                if let Some(id) = this.id {
-                    ctx.register_property("id", entity, id);
-                }
-
-                if let Some(style) = this.style {
-                    ctx.register_property("selector", entity, Selector::new(style));
-                } else {
-                    ctx.register_property("selector", entity, this.selector);
-                }
-
                 let mut constraint = this.constraint;
 
                 if let Some(width) = this.width {
@@ -524,6 +514,23 @@ macro_rules! widget {
                         }
                     )*
                 )*
+
+                if let Some(id) = this.id {
+                    ctx.register_property("id", entity, id);
+                }
+
+                let mut selector = if let Some(style) = this.style {
+                    Selector::new(style)
+                } else {
+                    this.selector
+                };
+
+                // initial set disabled
+                if ctx.get_widget(entity).has::<bool>("enabled") && !*ctx.get_widget(entity).get::<bool>("enabled") {
+                    selector.push_state("disabled");
+                }
+
+                ctx.register_property("selector", entity, selector);
 
                 ctx.update_theme_by_state(entity);
 

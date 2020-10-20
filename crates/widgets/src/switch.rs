@@ -47,10 +47,12 @@ impl State for SwitchState {
                 switch_toggle.set("h_align", Alignment::from("end"));
                 switch_toggle
                     .get_mut::<Selector>("selector")
-                    .set_state("selected");
+                    .push_state("selected");
             } else {
                 switch_toggle.set("h_align", Alignment::from("start"));
-                switch_toggle.get_mut::<Selector>("selector").clear_state();
+                switch_toggle
+                    .get_mut::<Selector>("selector")
+                    .remove_state("selected");
             }
 
             switch_toggle.update(true);

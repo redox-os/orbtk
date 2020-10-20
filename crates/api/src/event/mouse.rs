@@ -33,6 +33,20 @@ pub struct MouseMoveEvent {
     pub position: Point,
 }
 
+/// `EnterEvent` indicates when the mouse pointer enters a widget.
+#[derive(Event)]
+pub struct EnterEvent {
+    /// Indicates position of the mouse on the window.
+    pub position: Point,
+}
+
+/// `EnterEvent` indicates when the mouse pointer leaves a widget.
+#[derive(Event)]
+pub struct LeaveEvent {
+    /// Indicates position of the mouse on the window.
+    pub position: Point,
+}
+
 /// `ScrollEvent` occurs when the mouse wheel is moved.
 #[derive(Event)]
 pub struct ScrollEvent {
@@ -97,6 +111,9 @@ pub type MouseUpHandlerFunction = dyn Fn(&mut StatesContext, Mouse) + 'static;
 
 //// Defines a position based event handler.
 pub type PositionHandlerFunction = dyn Fn(&mut StatesContext, Point) -> bool + 'static;
+
+//// Defines a position based event handler that will be always handled.
+pub type PositionDirectHandlerFunction = dyn Fn(&mut StatesContext, Point) + 'static;
 
 /// Defines the global bouse handler function.
 pub type GlobalMouseHandlerFunction = dyn Fn(&mut StatesContext, Mouse) + 'static;
@@ -220,6 +237,46 @@ impl EventHandler for MouseMoveEventHandler {
     }
 }
 
+/// Used to handle mouse enter event on a widget.
+#[derive(IntoHandler)]
+pub struct EnterEventHandler {
+    handler: Rc<PositionDirectHandlerFunction>,
+}
+
+impl EventHandler for EnterEventHandler {
+    fn handle_event(&self, state_context: &mut StatesContext, event: &EventBox) -> bool {
+        if let Ok(event) = event.downcast_ref::<EnterEvent>() {
+            (self.handler)(state_context, event.position);
+        }
+
+        false
+    }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<EnterEvent>()
+    }
+}
+
+/// Used to handle mouse leave event on a widget.
+#[derive(IntoHandler)]
+pub struct LeaveEventHandler {
+    handler: Rc<PositionDirectHandlerFunction>,
+}
+
+impl EventHandler for LeaveEventHandler {
+    fn handle_event(&self, state_context: &mut StatesContext, event: &EventBox) -> bool {
+        if let Ok(event) = event.downcast_ref::<LeaveEvent>() {
+            (self.handler)(state_context, event.position);
+        }
+
+        false
+    }
+
+    fn handles_event(&self, event: &EventBox) -> bool {
+        event.is_type::<LeaveEvent>()
+    }
+}
+
 /// Used to handle scroll events. Could be attached to a widget.
 #[derive(IntoHandler)]
 pub struct ScrollEventHandler {
@@ -271,6 +328,20 @@ pub trait MouseHandler: Sized + Widget {
     /// Insert a mouse move handler.
     fn on_mouse_move<H: Fn(&mut StatesContext, Point) -> bool + 'static>(self, handler: H) -> Self {
         self.insert_handler(MouseMoveEventHandler {
+            handler: Rc::new(handler),
+        })
+    }
+
+    /// Insert a mouse enter handler.
+    fn on_enter<H: Fn(&mut StatesContext, Point) + 'static>(self, handler: H) -> Self {
+        self.insert_handler(EnterEventHandler {
+            handler: Rc::new(handler),
+        })
+    }
+
+    /// Insert a mouse leave handler.
+    fn on_leave<H: Fn(&mut StatesContext, Point) + 'static>(self, handler: H) -> Self {
+        self.insert_handler(LeaveEventHandler {
             handler: Rc::new(handler),
         })
     }

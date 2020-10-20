@@ -58,7 +58,7 @@ impl<'a> ThemeConfig {
         selector: &Selector,
     ) -> Option<Value> {
         // state properties has the most priority
-        if let Some(state) = &selector.state {
+        if let Some(state) = selector.active_state() {
             if let Some(properties) = style.states.get(state) {
                 return self.get_property_value(property, properties);
             }

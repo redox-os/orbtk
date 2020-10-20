@@ -350,6 +350,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         .create_system(EventStateSystem::new(
             context_provider.clone(),
             registry.clone(),
+            RefCell::new(vec![]),
         ))
         .with_priority(0)
         .build();
