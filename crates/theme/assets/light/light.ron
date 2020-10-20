@@ -47,6 +47,9 @@ Theme (
                     "foreground": "$BRIGHT_GRAY",
                     "icon_brush": "$BRIGHT_GRAY",
                 },
+                "hover": {
+                    "background": "$GREEN_SPRING"
+                }
             },
         ),
         "button_primary": (
@@ -54,6 +57,11 @@ Theme (
             properties: {
                 "background": "$GOLDEN_DREAM",
             },
+            states: {
+                "hover": {
+                    "background": "$GOLD_TIPS"
+                }
+            }
         ),
         "button_small": (
             properties: {
