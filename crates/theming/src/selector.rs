@@ -38,7 +38,7 @@ impl Selector {
         self.dirty = true;
     }
 
-    /// Removes all instances of the the give state from the vector and returns it.
+    /// Removes all instances of the give state from the vector and returns it.
     pub fn remove_state(&mut self, state: impl Into<String>) -> Option<String> {
         let state: String = state.into();
 
