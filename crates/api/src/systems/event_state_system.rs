@@ -357,13 +357,11 @@ impl EventStateSystem {
                             }
 
                             // set hover flag to now hovered node
-
                             if ecm
                                 .component_store()
                                 .get::<bool>("hover", current_node)
                                 .is_ok()
                             {
-                                println!("{:?}", current_node);
                                 set_flag(
                                     "hover",
                                     &mut WidgetContainer::new(
