@@ -29,7 +29,7 @@ impl Selector {
             return None;
         }
 
-        self.states.get(self.states.len() - 1)
+        self.states.last()
     }
 
     /// Pushes a state to the states vector.
