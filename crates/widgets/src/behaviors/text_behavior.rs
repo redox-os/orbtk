@@ -600,6 +600,10 @@ impl TextBehaviorState {
             .get_mut::<Selector>("selector")
             .remove_state("focused");
 
+        ctx.get_widget(self.target)
+            .get_mut::<Selector>("selector")
+            .remove_state("hover");
+
         if self.len(ctx) == 0 {
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
