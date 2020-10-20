@@ -545,6 +545,52 @@ impl RenderContext2D {
 
                 web_gradient
             }
+            LinearGradientCoords::Angle {
+                angle,
+                displacement,
+            } => {
+                let z = linear_gradient_ends_from_angle(*angle, frame.size());
+                let disp = displacement.pixels(frame.size());
+                let start = frame.position() + frame.size() / 2.0 + -z + disp;
+                let end = frame.position() + frame.size() / 2.0 + z + disp;
+                let web_gradient = self.canvas_render_context_2_d.create_linear_gradient(
+                    start.x(),
+                    start.y(),
+                    end.x(),
+                    end.y(),
+                );
+
+                build_unit_percent_gradient(stops, end.distance(start), |p, c| {
+                    web_gradient
+                        .add_color_stop(p, c.to_string().as_str())
+                        .unwrap();
+                });
+
+                web_gradient
+            }
+            LinearGradientCoords::Angle {
+                angle,
+                displacement,
+            } => {
+                let z = linear_gradient_ends_from_angle(*angle, frame.size());
+                let disp = displacement.pixels(frame.size());
+                let start = frame.position() + frame.size() / 2.0 + -z + disp;
+                let end = frame.position() + frame.size() / 2.0 + z + disp;
+                let web_gradient = self.canvas_render_context_2_d.create_linear_gradient(
+                    start.x(),
+                    start.y(),
+                    end.x(),
+                    end.y(),
+                );
+
+                build_unit_percent_gradient(stops, end.distance(start), |p, c| {
+                    web_gradient
+                        .add_color_stop(p, c.to_string().as_str())
+                        .unwrap();
+                });
+
+                web_gradient
+            }
         }
     }
 }

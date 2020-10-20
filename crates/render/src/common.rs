@@ -1,4 +1,5 @@
 use crate::utils::*;
+use std::f64::consts::{FRAC_PI_2, PI, TAU};
 
 /// Calculates the AABB of a arc.
 pub fn arc_rect(x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) -> Rectangle {
@@ -315,6 +316,27 @@ where
         }
     }
     r_stops
+}
+
+// Given an angle and a `Size` this function returns the ends of that gradient in the frame size gived
+pub fn linear_gradient_ends_from_angle(angle: Angle, size: Size) -> Point {
+    let angle = TAU - ((angle.to_radians() + FRAC_PI_2) % TAU);
+    let a = size.width();
+    let b = size.height();
+    let c = (b / a).atan();
+    let mut z;
+    if angle > TAU - c || angle <= c || (angle > PI - c && angle < PI + c) {
+        z = Point::new(a / 2.0, a / 2.0 * -angle.tan());
+        if angle > FRAC_PI_2 && angle < PI + FRAC_PI_2 {
+            z = -z;
+        }
+    } else {
+        z = Point::new(b / (2.0 * -angle.tan()), b / 2.0);
+        if angle < PI {
+            z = -z;
+        }
+    }
+    z
 }
 
 #[cfg(test)]
