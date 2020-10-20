@@ -137,7 +137,7 @@ Theme (
                 "border_width": 0,
                 "border_width": 1,
                 "height": 4,
-                "padding": 0 
+                "padding": 0
              },
         ),
         "progress_bar_indicator": (

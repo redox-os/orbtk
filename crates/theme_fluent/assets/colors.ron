@@ -1,7 +1,7 @@
 Theme (
     resources: {
-        "ACCENT_COLOR": "#0078D7",  
-        "ACCENT_COLOR_DARK": "#2259A1",  
+        "ACCENT_COLOR": "#0078D7",
+        "ACCENT_COLOR_DARK": "#2259A1",
         "WHITE": "#ffffff",
         "BACKGROUND_DARK": "#3B3B3E",
         "BUTTON_BACKGROUND_DARK": "#656565",
@@ -18,4 +18,4 @@ Theme (
         "CONTENT_BACKGROUND_FOCUSED": "#000000",
         "CONTENT_BORDER": "#A5A5A5"
     },
-) 
+)
