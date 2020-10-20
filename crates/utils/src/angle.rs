@@ -1,7 +1,7 @@
 use derive_more::{Add, Div, From, Mul, Sub};
 use std::f64::consts::PI;
 
-/// The OrbTk way to manage angles
+/// The OrbTk way to handle angles
 #[derive(Add, Sub, Copy, From, Clone, Debug, PartialEq, Mul, Div)]
 pub struct Angle(f64);
 
