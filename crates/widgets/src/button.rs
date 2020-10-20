@@ -22,6 +22,9 @@ widget!(
         /// Sets or shares the padding property.
         padding: Thickness,
 
+        /// This property is used to add an extra margin around the inner border container.
+        container_margin: Thickness,
+
         /// Sets or shares the foreground property.
         foreground: Brush,
 
@@ -85,6 +88,7 @@ impl Template for Button {
                     .target(id.0)
                     .child(
                         Container::new()
+                            .margin(("container_margin", id))
                             .background(id)
                             .border_radius(id)
                             .border_width(id)

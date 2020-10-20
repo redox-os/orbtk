@@ -64,9 +64,11 @@ impl State for SwitchState {
             if self.selected {
                 switch_track
                     .get_mut::<Selector>("selector")
-                    .set_state("selected");
+                    .push_state("selected");
             } else {
-                switch_track.get_mut::<Selector>("selector").clear_state();
+                switch_track
+                    .get_mut::<Selector>("selector")
+                    .remove_state("selected");
             }
 
             switch_track.update(true);

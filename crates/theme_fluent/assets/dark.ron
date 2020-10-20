@@ -13,19 +13,24 @@ Theme (
                 "background": "$BUTTON_BACKGROUND_DARK",
                 "height": 28,
                 "font_size": "$FONT_SIZE_14",
+                "container_margin": 0
             },
             states: {
                 "pressed": {
                     "font_size": "$FONT_SIZE_13",
                     "background": "$BUTTON_BACKGROUND_PRESSED_DARK",
+                    "container_margin": 1,
                 },
                 "selected": {
-                    "background": "$ACCENT_COLOR_DARK",
+                    "background": "$ACCENT_COLOR",
                 },
                 "disabled": {
                     "background": "$BUTTON_BACKGROUND_DISABLED_DARK",
                     "foreground": "$CONTENT_FOREGROUND_DISABLED_DARK",
                     "icon_brush": "$CONTENT_FOREGROUND_DISABLED_DARK",
+                },
+                "hover": {
+                    "background": "$BUTTON_BACKGROUND_HOVER_DARK"
                 }
             }
         ),
@@ -33,13 +38,18 @@ Theme (
             base: "button",
             properties: {
                 "spacing": 0,
-            },
+            }
         ),
         "button_primary": (
             base: "button",
             properties: {
-                "background": "$ACCENT_COLOR_DARK",
+                "background": "$ACCENT_COLOR",
             },
+            states: {
+                "hover": {
+                    "background": "$ACCENT_COLOR_DARK"
+                }
+            }
         ),
         "check_box": (
             properties: {
@@ -55,7 +65,7 @@ Theme (
             states: {
                 "selected": {
                     "icon_brush": "$CONTENT_FOREGROUND",
-                    "background": "$ACCENT_COLOR_DARK",
+                    "background": "$ACCENT_COLOR",
                     "border_width": 0,
                 },
                 "disabled": {
@@ -81,8 +91,8 @@ Theme (
             },
             states: {
                 "selected": {
-                    "background": "$ACCENT_COLOR_DARK",
-                    "border_brush": "$ACCENT_COLOR_DARK"
+                    "background": "$ACCENT_COLOR",
+                    "border_brush": "$ACCENT_COLOR"
                 },
             },
         ),
@@ -112,7 +122,7 @@ Theme (
                 "width": 24,
                 "height": 24,
                 "border_radius": 12,
-                "background": "$ACCENT_COLOR_DARK",
+                "background": "$ACCENT_COLOR",
             },
             states: {
                 "pressed": {
@@ -132,7 +142,7 @@ Theme (
         ),
         "progress_bar_indicator": (
             properties: {
-                "background": "$ACCENT_COLOR_DARK",
+                "background": "$ACCENT_COLOR",
                 "height": 4,
                 "width": 0,
             }
@@ -140,7 +150,7 @@ Theme (
         "tab_header_bar": (
             properties: {
                 "height": 42,
-                "background": "$ACCENT_COLOR_DARK",
+                "background": "$ACCENT_COLOR",
                 "height": 2
             },
         ),
@@ -173,5 +183,18 @@ Theme (
                 },
             }
         ),
+        "text_box": (
+            properties: {
+                "height": 34,
+                "border_width": 2,
+                "border_brush": "$CONTENT_BORDER",
+                "background": "$CONTENT_BACKGROUND",
+            },
+            states: {
+                "hover": {
+                    "background": "$CONTENT_BACKGROUND_HOVER"
+                }
+            }
+        )
     },
 )
