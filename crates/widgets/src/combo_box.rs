@@ -64,14 +64,14 @@ impl State for ComboBoxItemState {
             ctx.get_widget(item).set("selected", false);
             ctx.get_widget(item)
                 .get_mut::<Selector>("selector")
-                .clear_state();
+                .remove_state("selected");
             ctx.get_widget(item).update(false);
         }
 
         ctx.widget().set("selected", true);
         ctx.widget()
             .get_mut::<Selector>("selector")
-            .set_state("selected");
+            .push_state("selected");
         ctx.widget().update(false);
         ctx.get_widget(self.combo_box)
             .set("selected_index", self.index as i32);
@@ -215,7 +215,9 @@ impl ComboBoxState {
 
         if !combo_box_global_bounds.contains(p) {
             ctx.widget().set("selected", false);
-            ctx.widget().get_mut::<Selector>("selector").clear_state();
+            ctx.widget()
+                .get_mut::<Selector>("selector")
+                .remove_state("selected");
             ctx.get_widget(self.popup)
                 .set("visibility", Visibility::Collapsed);
             ctx.get_widget(self.popup).update(false);

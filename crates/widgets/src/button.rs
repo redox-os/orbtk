@@ -50,7 +50,10 @@ widget!(
         pressed: bool,
 
         /// Sets or shares the spacing between icon and text.
-        spacing: f64
+        spacing: f64,
+
+        /// Indicates if the widget is hovered by the mouse cursor.
+        hover: bool
     }
 );
 

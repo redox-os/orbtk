@@ -63,14 +63,6 @@ impl Template for ButtonView {
                             Button::new()
                                 .text("Button")
                                 .icon(material_icons_font::MD_CHECK)
-                                .on_enter(|_, _| {
-                                    println!("Enter");
-                                    true
-                                })
-                                .on_leave(|_, _| {
-                                    println!("Leave");
-                                    true
-                                })
                                 .build(ctx),
                         )
                         .child(

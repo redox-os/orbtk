@@ -45,6 +45,39 @@ impl EventStateSystem {
         false
     }
 
+    fn remove_hover(
+        &self,
+        entity: Entity,
+        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        theme: &Theme,
+    ) {
+        if self.hovered_widgets.borrow().is_empty()
+            || !self.hovered_widgets.borrow().contains(&entity)
+        {
+            return;
+        }
+
+        let pos = self
+            .hovered_widgets
+            .borrow()
+            .iter()
+            .position(|x| *x == entity);
+
+        if let Some(pos) = pos {
+            let removed = self.hovered_widgets.borrow_mut().remove(pos);
+
+            remove_flag(
+                "hover",
+                &mut WidgetContainer::new(
+                    removed,
+                    ecm,
+                    &theme,
+                    Some(&self.context_provider.event_adapter),
+                ),
+            );
+        }
+    }
+
     // Remove all objects of a widget.
     fn remove_widget(
         &self,
@@ -300,41 +333,58 @@ impl EventStateSystem {
                         ),
                     ) {
                         // trigger mouse enter event if mouse cursor is first time over the current_node
-                        if self.handles_enter_event(current_node)
-                            && !self.hovered_widgets.borrow().contains(&current_node)
-                        {
+                        if !self.hovered_widgets.borrow().contains(&current_node) {
                             // remove hover flag from last hovered node
-                            if let Some(last) = self.hovered_widgets.borrow().last() {
+                            if ecm
+                                .component_store()
+                                .get::<bool>("hover", current_node)
+                                .is_ok()
+                                && !self.hovered_widgets.borrow().is_empty()
+                            {
+                                let last = *self.hovered_widgets.borrow().last().unwrap();
+
                                 remove_flag(
                                     "hover",
                                     &mut WidgetContainer::new(
-                                        *last,
+                                        last,
                                         ecm,
                                         &theme,
                                         Some(&self.context_provider.event_adapter),
                                     ),
                                 );
+
+                                self.remove_hover(last, ecm, &theme);
                             }
 
                             // set hover flag to now hovered node
-                            set_flag(
-                                "hover",
-                                &mut WidgetContainer::new(
+
+                            if ecm
+                                .component_store()
+                                .get::<bool>("hover", current_node)
+                                .is_ok()
+                            {
+                                println!("{:?}", current_node);
+                                set_flag(
+                                    "hover",
+                                    &mut WidgetContainer::new(
+                                        current_node,
+                                        ecm,
+                                        &theme,
+                                        Some(&self.context_provider.event_adapter),
+                                    ),
+                                );
+
+                                self.hovered_widgets.borrow_mut().push(current_node);
+                            }
+
+                            if self.handles_enter_event(current_node) {
+                                self.context_provider.event_adapter.push_event_direct(
                                     current_node,
-                                    ecm,
-                                    &theme,
-                                    Some(&self.context_provider.event_adapter),
-                                ),
-                            );
-
-                            self.hovered_widgets.borrow_mut().push(current_node);
-
-                            self.context_provider.event_adapter.push_event_direct(
-                                current_node,
-                                EnterEvent {
-                                    position: event.position,
-                                },
-                            );
+                                    EnterEvent {
+                                        position: event.position,
+                                    },
+                                );
+                            }
                         }
 
                         // todo add check to block mouse move inside of clipped areas of a widget
@@ -354,25 +404,7 @@ impl EventStateSystem {
                                 );
                             }
 
-                            let pos = self
-                                .hovered_widgets
-                                .borrow()
-                                .iter()
-                                .position(|x| *x == current_node);
-
-                            if let Some(pos) = pos {
-                                let removed = self.hovered_widgets.borrow_mut().remove(pos);
-
-                                remove_flag(
-                                    "hover",
-                                    &mut WidgetContainer::new(
-                                        removed,
-                                        ecm,
-                                        &theme,
-                                        Some(&self.context_provider.event_adapter),
-                                    ),
-                                );
-                            }
+                            self.remove_hover(current_node, ecm, &theme);
                         }
                     }
                     unknown_event = false;

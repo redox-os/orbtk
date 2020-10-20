@@ -227,12 +227,13 @@ impl<'a> WidgetContainer<'a> {
 
     fn toggle_enabled_state(&mut self) {
         if *self.get::<bool>("enabled") && self.get::<Selector>("selector").has_state("disabled") {
-            self.get_mut::<Selector>("selector").clear_state();
+            self.get_mut::<Selector>("selector")
+                .remove_state("disabled");
             self.update(false);
         } else if !*self.get::<bool>("enabled")
             && !self.get::<Selector>("selector").has_state("disabled")
         {
-            self.get_mut::<Selector>("selector").set_state("disabled");
+            self.get_mut::<Selector>("selector").push_state("disabled");
             self.update(false);
         }
     }

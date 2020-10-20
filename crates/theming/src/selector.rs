@@ -6,8 +6,8 @@ pub struct Selector {
     /// Represents the key of a style.
     pub style: Option<String>,
 
-    /// Used to reference the state property list of the given style.
-    pub state: Option<String>,
+    // Used to reference the state property list of the given style. The state on the top of the vector is the active one.
+    states: Vec<String>,
 
     /// Check if the selector is dirty.
     dirty: bool,
@@ -18,21 +18,46 @@ impl Selector {
     pub fn new(style: impl Into<String>) -> Self {
         Selector {
             style: Some(style.into()),
-            state: None,
+            states: vec![],
             dirty: true,
         }
     }
 
-    /// Set the current state of the selector.
-    pub fn set_state(&mut self, state: impl Into<String>) {
-        self.state = Some(state.into());
+    /// Returns a reference to an active state.
+    pub fn active_state(&self) -> Option<&String> {
+        if self.states.is_empty() {
+            return None;
+        }
+
+        self.states.get(self.states.len() - 1)
+    }
+
+    /// Pushes a state to the states vector.
+    pub fn push_state(&mut self, state: impl Into<String>) {
+        self.states.push(state.into());
         self.dirty = true;
     }
 
-    /// Clears the current state and reset to default.
-    pub fn clear_state(&mut self) {
-        self.state = None;
+    /// Removes all instances of the the give state from the vector and returns it.
+    pub fn remove_state(&mut self, state: impl Into<String>) -> Option<String> {
+        let state: String = state.into();
+
+        if !state.is_empty() && self.states.contains(&state) {
+            while let Some(pos) = self.states.iter().position(|x| *x == state) {
+                self.states.remove(pos);
+            }
+
+            self.dirty = true;
+            return Some(state);
+        }
+
+        None
+    }
+
+    /// Removes the last state from a vector and returns it, or None if it is empty. If there is a new last vector it will be the new active state.
+    pub fn pop_state(&mut self) -> Option<String> {
         self.dirty = true;
+        self.states.pop()
     }
 
     /// Gets the dirty flag.
@@ -47,13 +72,7 @@ impl Selector {
 
     /// Check if the selector has the given state.
     pub fn has_state(&self, state: &str) -> bool {
-        if let Some(st) = &self.state {
-            if st.as_str() == state {
-                return true;
-            }
-        }
-
-        false
+        self.states.contains(&state.to_string())
     }
 }
 

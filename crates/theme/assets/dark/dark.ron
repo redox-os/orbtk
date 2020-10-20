@@ -46,7 +46,7 @@ Theme (
                     "opacity": 0.5,
                 },
                 "hover": {
-                    "background": "green"
+                    "background": "$FIORD"
                 }
             },
         ),
@@ -57,6 +57,11 @@ Theme (
                 "foreground": "$BRIGHT_GRAY",
                 "icon_brush": "$BRIGHT_GRAY",
             },
+            states: {
+                "hover": {
+                    "background": "$GOLD_TIPS"
+                }
+            }
         ),
         "button_primary_single_content": (
             base: "button_primary",

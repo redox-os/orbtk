@@ -32,9 +32,9 @@ pub fn toggle_flag(flag: &str, widget: &mut WidgetContainer) {
 
     if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
         if value {
-            selector.set_state(flag);
+            selector.push_state(flag);
         } else {
-            selector.clear_state();
+            selector.remove_state(flag);
         }
     }
 }
@@ -48,7 +48,7 @@ pub fn set_flag(flag: &str, widget: &mut WidgetContainer) {
     widget.set(flag, true);
 
     if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
-        selector.set_state(flag);
+        selector.push_state(flag);
     }
 
     widget.update(false);
@@ -63,7 +63,7 @@ pub fn remove_flag(flag: &str, widget: &mut WidgetContainer) {
     widget.set(flag, false);
 
     if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
-        selector.clear_state();
+        selector.remove_state(flag);
     }
 
     widget.update(false);
