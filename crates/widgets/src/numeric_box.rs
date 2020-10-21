@@ -189,6 +189,12 @@ widget!(
         /// Sets or shares the foreground color property
         foreground: Brush,
 
+        /// Sets or shares the font size property.
+        font_size: f64,
+
+        /// Sets or shares the font property.
+        font: String,
+
         /// Sets or shares the value that describes if the NumericBox should lose focus on activation (when enter pressed).
         lose_focus_on_activation: bool,
 
@@ -253,6 +259,7 @@ impl Template for NumericBox {
                             .foreground(id)
                             .border_brush("transparent")
                             .border_width(0)
+                            .font_size(id)
                             .background("transparent")
                             .h_align("stretch")
                             .enabled(false)

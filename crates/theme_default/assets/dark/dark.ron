@@ -233,8 +233,8 @@ Theme (
             properties: {
                 "height": 32,
                 "foreground": "$SILVER_CHALICE",
-                "background": "$BRIGHT_GRAY",
-                "border_brush": "$LYNCH",
+                "background": "#444e55",
+                "border_brush": "#adb3b8",
                 "border_width": 1,
                 "border_radius": 3,
                 "padding": 6,
@@ -293,6 +293,41 @@ Theme (
                 "border_radius": 2,
                 "padding": 4,
             }
+        ),
+         "list_view": (
+            base: "base",
+            properties: {
+                "foreground": "$LINK_WATER",
+                "background": "transparent",
+                "border_brush": "$LYNCH",
+                "border_width": 1,
+                "border_radius": 3,
+            },
+        ),
+        "list_view_item": (
+            properties: {
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "#ccdeed",
+                "background": "transparent",
+                "padding_left": 8,
+                "padding_right": 8,
+            },
+            states: [
+                (
+                    key: "selected",
+                    properties: {
+                        "foreground": "$BRIGHT_GRAY",
+                        "background": "$SUNFLOWER",
+                    }
+                ),
+                (
+                    key: "pressed",
+                    properties: {
+                        "foreground": "$BRIGHT_GRAY",
+                        "background": "$SUNFLOWER",
+                    }
+                )
+            ]
         ),
         "combo_box": (
             base: "base",
