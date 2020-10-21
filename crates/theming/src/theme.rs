@@ -14,6 +14,7 @@ pub struct Theme {
 }
 
 impl Theme {
+    /// Creates a theme from the given config.
     pub fn from_config(config: ThemeConfig) -> Self {
         let mut styles = HashMap::new();
 

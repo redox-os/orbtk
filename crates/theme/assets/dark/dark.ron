@@ -26,6 +26,8 @@ Theme (
                 "font_size": "$FONT_SIZE_24",
             }
         ),
+
+        // -- [START] Buttons --
         "button": ( 
             base: "base",
             properties: {
@@ -64,7 +66,13 @@ Theme (
                 ),
             ],
         ),
-         "button_primary": (
+        "button_single_content": (
+            base: "button",
+            properties: {
+                "spacing": 0,
+            },
+        ),
+        "button_primary": (
             base: "button",
             properties: {
                 "background": "$GOLDEN_DREAM",
@@ -86,6 +94,42 @@ Theme (
                 ),
             ]
         ),
+        "button_primary_single_content": (
+            base: "button_primary",
+            properties: {
+                "spacing": 0
+            },
+        ),
+        "button_icon_only": (
+            base: "button",
+            properties: {
+                "icon_size": "$ICON_SIZE_12",
+                "icon_brush": "$LINK_WATER",
+                "background": "transparent",
+                "spacing": 0,
+                "min_width": 24,
+                "height": 24
+            },
+        ),
+        "button_square": ( 
+            base: "button",
+            properties: {
+                "border_radius": 1,
+            }, 
+        ),
+        "button_small": (
+            properties: {
+                "border_radius": 0,
+                "icon_brush": "$LINK_WATER",
+                "font_size": "$ICON_SIZE_12",
+                "background": "transparent",
+                "height": 14,
+                "spacing": 0,
+                "padding": 0,
+            },
+        ),
+        // -- [END] Buttons --
+
         "container": (
             base: "base",
             properties: {
@@ -102,7 +146,7 @@ Theme (
             base: "base",
             properties: {
                 "height": 32,
-                "foreground": "$PERIWINKLE_GRAY",
+                "foreground": "$SILVER_CHALICE",
                 "background": "$BRIGHT_GRAY",
                 "border_brush": "$LYNCH",
                 "border_width": 1,
@@ -111,9 +155,15 @@ Theme (
             },
             states: [
                 (
-                    key: "empty",
+                    key: "not_empty",
                     properties: {
-                        "foreground": "$SILVER_CHALICE",
+                        "foreground": "$PERIWINKLE_GRAY",
+                    }
+                ),
+                (
+                    key: "hover",
+                    properties: {
+                         "background": "$BLACK"
                     }
                 ),
                 (
@@ -123,13 +173,20 @@ Theme (
                     }
                 ),
                 (
-                    key: "empty_focused",
+                    key: "not_empty_focused",
                     properties: {
-                        "foreground": "$SILVER_CHALICE",
+                        "foreground": "$PERIWINKLE_GRAY",
                         "border_brush": "$GOLDEN_DREAM",
                     }
                 )
             ]
+        ),
+        "cursor": (
+            properties: {
+                "background": "$ENERGY_YELLOW",
+                "border_brush": "$ENERGY_YELLOW",
+                "border_width": 1
+            }
         ),
     },
 )

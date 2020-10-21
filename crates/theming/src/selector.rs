@@ -30,8 +30,22 @@ impl Selector {
 
     /// Pushes a state to the states vector.
     pub fn push_state(&mut self, state: impl Into<String>) {
-        self.states.push(state.into());
+        let state = state.into();
+
+        if self.states.contains(&state) {
+            return;
+        }
+
+        self.states.push(state);
         self.dirty = true;
+    }
+
+    /// Removes all states with a similar name compared to the given pattern.
+    pub fn remove_all_similar_states(&mut self, pattern: &str) {
+        while let Some(pos) = self.states.iter().position(|x| x.contains(pattern)) {
+            self.states.remove(pos);
+            self.dirty = true;
+        }
     }
 
     /// Removes all instances of the give state from the vector and returns it.

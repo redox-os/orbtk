@@ -8,8 +8,8 @@ use crate::{
 };
 
 // --- KEYS --
-pub static EMPTY_STATE: &str = "empty";
-pub static EMPTY_FOCUSED_STATE: &str = "empty_focused";
+pub static NOT_EMPTY_STATE: &str = "not_empty";
+pub static NOT_EMPTY_FOCUSED_STATE: &str = "not_empty_focused";
 pub static FOCUSED_STATE: &str = "focused";
 // --- KEYS --
 
@@ -451,11 +451,11 @@ impl TextBehaviorState {
             if self.len(ctx) == 0 {
                 ctx.get_widget(self.target)
                     .get_mut::<Selector>("selector")
-                    .push_state(EMPTY_STATE);
+                    .remove_state(NOT_EMPTY_STATE);
             } else {
                 ctx.get_widget(self.target)
                     .get_mut::<Selector>("selector")
-                    .remove_state(EMPTY_STATE);
+                    .push_state(NOT_EMPTY_STATE);
             }
 
             // update the visual state of the target
@@ -592,32 +592,28 @@ impl TextBehaviorState {
     }
 
     fn update_focused_state(&self, ctx: &mut Context) {
+        ctx.get_widget(self.target)
+            .get_mut::<Selector>("selector")
+            .remove_state(FOCUSED_STATE);
+
         if !self.focused(ctx) {
             return;
         }
 
-        ctx.get_widget(self.target)
-            .get_mut::<Selector>("selector")
-            .remove_state("focused");
-
-        ctx.get_widget(self.target)
-            .get_mut::<Selector>("selector")
-            .remove_state("hover");
-
         if self.len(ctx) == 0 {
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
-                .remove_state(FOCUSED_STATE);
+                .push_state(FOCUSED_STATE);
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
-                .push_state(EMPTY_FOCUSED_STATE);
+                .remove_state(NOT_EMPTY_FOCUSED_STATE);
         } else {
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
-                .remove_state(EMPTY_FOCUSED_STATE);
+                .push_state(NOT_EMPTY_FOCUSED_STATE);
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
-                .push_state(FOCUSED_STATE);
+                .remove_state(FOCUSED_STATE);
         }
 
         // update the visual state of the target
@@ -658,11 +654,11 @@ impl TextBehaviorState {
 
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
-                .push_state(EMPTY_STATE);
+                .remove_state(NOT_EMPTY_STATE);
         } else {
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
-                .remove_state(EMPTY_STATE);
+                .push_state(NOT_EMPTY_STATE);
         }
     }
 
@@ -685,7 +681,7 @@ impl State for TextBehaviorState {
         if TextBehavior::text_ref(&ctx.widget()).is_empty() {
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
-                .push_state("empty");
+                .remove_state(NOT_EMPTY_STATE);
             ctx.get_widget(self.target).update(false);
         }
     }
