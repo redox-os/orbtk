@@ -13,7 +13,7 @@ pub use crate::{
     localization::prelude::*,
     proc_macros::*,
     render::prelude::*,
-    theme::{
+    theme_default::{
         colors, dark_theme, default_theme, fonts, light_theme, vector_graphics::material_icons_font,
     },
     theming::prelude::*,

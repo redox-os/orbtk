@@ -1,7 +1,7 @@
 use super::behaviors::{TextAction, TextBehavior};
 use crate::prelude::*;
 use crate::shell::prelude::KeyEvent;
-use crate::{api::prelude::*, proc_macros::*, theme::prelude::*};
+use crate::{api::prelude::*, proc_macros::*, theme_default::prelude::*};
 
 enum PasswordAction {
     Key(KeyEvent),

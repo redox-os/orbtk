@@ -3,7 +3,9 @@ use rust_decimal::prelude::*;
 
 use super::behaviors::MouseBehavior;
 
-use crate::{api::prelude::*, prelude::*, proc_macros::*, shell::prelude::*, theme::prelude::*};
+use crate::{
+    api::prelude::*, prelude::*, proc_macros::*, shell::prelude::*, theme_default::prelude::*,
+};
 
 // --- KEYS --
 

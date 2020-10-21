@@ -1,4 +1,4 @@
-use crate::{api::prelude::*, proc_macros::*, theme::prelude::*};
+use crate::{api::prelude::*, proc_macros::*, theme_default::prelude::*};
 
 widget!(
     /// The `FontIconBlock` widget is used to draw text. It is not interactive.

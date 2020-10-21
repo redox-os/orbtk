@@ -4,7 +4,7 @@ use std::{
 };
 
 use super::behaviors::MouseBehavior;
-use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
+use crate::{api::prelude::*, prelude::*, proc_macros::*, theme_default::prelude::*};
 
 static ITEMS_PANEL: &str = "items_panel";
 

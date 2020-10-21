@@ -1,6 +1,6 @@
 use super::behaviors::{TextAction, TextBehavior};
 
-use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
+use crate::{api::prelude::*, prelude::*, proc_macros::*, theme_default::prelude::*};
 
 // --- KEYS --
 pub static STYLE_TEXT_BOX: &str = "text_box";

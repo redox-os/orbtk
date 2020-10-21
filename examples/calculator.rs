@@ -1,6 +1,6 @@
 use orbtk::{
     prelude::*,
-    theme::{COLORS_RON, DARK_THEME_RON, FONTS_RON},
+    theme_default::{COLORS_RON, DARK_THEME_RON, FONTS_RON},
     theming::config::ThemeConfig,
 };
 

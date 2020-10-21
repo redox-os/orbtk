@@ -1,4 +1,4 @@
-use crate::{api::prelude::*, proc_macros::*, theme::prelude::*};
+use crate::{api::prelude::*, proc_macros::*, theme_default::prelude::*};
 
 /// Handles the localization of the text.
 #[derive(Debug, Clone, Default, AsAny)]

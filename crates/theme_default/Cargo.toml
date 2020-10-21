@@ -1,5 +1,5 @@
 [package]
-name = "orbtk_theme"
+name = "orbtk_theme_default"
 version = "0.3.1-alpha4"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Default theme of OrbTk."
