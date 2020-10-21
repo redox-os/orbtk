@@ -23,13 +23,9 @@ impl Selector {
         }
     }
 
-    /// Returns a reference to an active state.
-    pub fn active_state(&self) -> Option<&String> {
-        if self.states.is_empty() {
-            return None;
-        }
-
-        self.states.last()
+    /// Returns a reference to list of active states.
+    pub fn states(&self) -> &Vec<String> {
+        &self.states
     }
 
     /// Pushes a state to the states vector.

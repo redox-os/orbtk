@@ -17,7 +17,6 @@ Theme (
         "SILVER_CHALICE": "#9e9e9e",
         "RIVER_BAD": "#444e55",
         "SILVER": "#bababa",
-        "GOLD_TIPS": "#ebbf13",
         "ALABASTER": "#fafafa",
         "ALTO": "#dadada",
         "CADET_BLUE": "#9dafbf",
@@ -28,5 +27,8 @@ Theme (
         "ATHS_SPECIAL": "#efead5",
         "FIORD": "#475b6e",
         "GREEN_SPRING": "#b2b3b1",
+        "MERCURY": "#e5e5e5",
+        "CONFETTI": "#f0d860",
+        "ROLLING_STONE": "#808386"
     },
 )

@@ -61,6 +61,7 @@ impl Template for ButtonView {
                         .spacing(8)
                         .child(
                             Button::new()
+                                .enabled(false)
                                 .text("Button")
                                 .icon(material_icons_font::MD_CHECK)
                                 .on_enter(|_, _| {
@@ -73,6 +74,7 @@ impl Template for ButtonView {
                         )
                         .child(
                             Button::new()
+                                .enabled(false)
                                 .text("Primary")
                                 .style("button_primary")
                                 .icon(material_icons_font::MD_360)
