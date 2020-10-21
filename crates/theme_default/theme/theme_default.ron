@@ -13,7 +13,7 @@ Theme (
         ),
         "window": (
              properties: {
-                "background": "$BACKGROUND",
+                "background": "$BACKGROUND_SECONDARY",
              },
         ),
         "grid": (
@@ -56,7 +56,7 @@ Theme (
             base: "body",
              properties: {
                 "font_size": "$FONT_SIZE_12",
-                "foreground": "$PERIWINKLE_GRAY",
+                "foreground": "$CONTENT_FOREGROUND",
             },
         ),
 
@@ -121,13 +121,13 @@ Theme (
                 (
                     key: "hover",
                     properties: {
-                         "background": "$GOLDEN_TIPS"
+                         "background": "$ACCENT_COLOR_DARK"
                     }
                 ),
                   (
                     key: "pressed",
                     properties: {
-                        "background": "$CONFETTI",
+                        "background": "$ACCENT_COLOR_LIGHTER",
                     }
                 ),
             ]
@@ -173,9 +173,9 @@ Theme (
                 "foreground": "$CONTENT_FOREGROUND",
                 "icon_size": "$ICON_SIZE_18",
                 "background": "transparent",
-                "border_radius": 2,
+                "border_radius": 1,
                 "border_width": 1,
-                "border_brush": "$BOMBAY",
+                "border_brush": "$CONTAINER_BORDER",
                 "icon_brush": "transparent",
             },
             states: [
@@ -199,7 +199,7 @@ Theme (
             properties: {
                 "height": 14,
                 "border_radius": 7,
-                "background": "$SLATE_GRAY",
+                "background": "$BUTTON_BACKGORUND_PRESSED",
             }
         ),
         "switch_toggle": (
@@ -207,7 +207,7 @@ Theme (
                 "width": 20,
                 "height": 20,
                 "border_radius": 10,
-                "background": "$WHITE",
+                "background": "$CONTENT_FOREGROUND",
             },
             states: [
                 (
@@ -234,18 +234,18 @@ Theme (
             base: "base",
             properties: {
                 "height": 32,
-                "foreground": "$SILVER_CHALICE",
-                "background": "#444e55",
-                "border_brush": "#adb3b8",
+                "foreground": "$CONTENT_FOREGROUND_SECONDARY",
+                "background": "$CONTAINER_BACKGROUND",
+                "border_brush": "$CONTAINER_BORDER",
                 "border_width": 1,
-                "border_radius": 3,
+                "border_radius": 2,
                 "padding": 6,
             },
             states: [
                 (
                     key: "not_empty",
                     properties: {
-                        "foreground": "$PERIWINKLE_GRAY",
+                        "foreground": "$CONTENT_FOREGROUND",
                     }
                 ),
                 (
@@ -263,7 +263,7 @@ Theme (
                 (
                     key: "not_empty_focused",
                     properties: {
-                        "foreground": "$PERIWINKLE_GRAY",
+                        "foreground": "$CONTENT_FOREGROUND",
                         "border_brush": "$ACCENT_COLOR",
                     }
                 )
@@ -272,13 +272,13 @@ Theme (
         "numeric_box": (
             base: "text_box",
             properties: {
-                "foreground": "$PERIWINKLE_GRAY",
+                "foreground": "$CONTENT_FOREGROUND",
             }
         ),
         "cursor": (
             properties: {
-                "background": "$ENERGY_YELLOW",
-                "border_brush": "$ENERGY_YELLOW",
+                "background": "$ACCENT_COLOR_LIGHTER",
+                "border_brush": "$ACCENT_COLOR_LIGHTER",
                 "border_width": 1
             }
         ),
@@ -289,8 +289,8 @@ Theme (
 
         "items_widget": (
             properties: {
-                "background": "transparent",
-                "border_brush": "$LYNCH",
+                "background": "$CONTAINER_BACKGROUND",
+                "border_brush": "$CONTAINER_BORDER",
                 "border_width": 1,
                 "border_radius": 2,
                 "padding": 4,
@@ -300,16 +300,16 @@ Theme (
             base: "base",
             properties: {
                 "foreground": "$CONTENT_FOREGROUND",
-                "background": "transparent",
-                "border_brush": "$LYNCH",
+                "background": "$CONTAINER_BACKGROUND",
+                "border_brush": "$CONTAINER_BORDER",
                 "border_width": 1,
-                "border_radius": 3,
+                "border_radius": 2,
             },
         ),
         "list_view_item": (
             properties: {
                 "font_size": "$FONT_SIZE_12",
-                "foreground": "#ccdeed",
+                "foreground": "$CONTENT_FOREGROUND",
                 "background": "transparent",
                 "padding_left": 8,
                 "padding_right": 8,
@@ -319,14 +319,14 @@ Theme (
                     key: "selected",
                     properties: {
                         "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "background": "$SUNFLOWER",
+                        "background": "$ACCENT_COLOR",
                     }
                 ),
                 (
                     key: "pressed",
                     properties: {
                         "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "background": "$SUNFLOWER",
+                        "background": "$ACCENT_COLOR",
                     }
                 )
             ]
@@ -369,14 +369,14 @@ Theme (
                     key: "selected",
                     properties: {
                         "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "background": "$SUNFLOWER",
+                        "background": "$ACCENT_COLOR",
                     }
                 ),
                 (
                     key: "pressed",
                     properties: {
                         "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "background": "$SUNFLOWER",
+                        "background": "$ACCENT_COLOR_DARK",
                     }
                 )
             ]
@@ -388,9 +388,9 @@ Theme (
         
         "tab_widget": (
             properties: {
-                "border_brush": "$BLUE_BAYOUX",
+                "border_brush": "transparent",
                 "border_width": 1,
-                "background": "transparent",
+                "background": "$BACKGROUND",
             },
         ),
         "tab_header": (
@@ -398,8 +398,9 @@ Theme (
             properties: {
                 "height": 32,
                 "font_sze": "$FONT_SIZE_12",
-                "foreground": "$WHITE",
-                "background": "$FIORD",
+                "foreground": "$CONTENT_FOREGROUND_SECONDARY",
+                "font": "$REGULAR_FONT",
+                "background": "transparent",
                 "padding_left": 8,
                 "padding_right": 8,
                 "border_radius": 0
@@ -408,26 +409,35 @@ Theme (
                 (
                     key: "selected",
                     properties: {
-                        "background": "$GORDUROY"
+                        "background": "$ACCENT_COLOR_LIGHT",
+                        "foreground": "$CONTENT_FOREGROUND",
                     }
                 )
             ]
         ),
         "tab_header_bar": (
              properties: {
-                "background": "$GOLDEN_TIPS",
+                "background": "$ACCENT_COLOR",
                 "height": 2
             }
         ),
         "tab_icon_only": (
             properties: {
                 "icon_size": "$ICON_SIZE_12",
-                "icon_brush": "$CONTENT_FOREGROUND",
+                "icon_brush": "$CONTENT_FOREGROUND_SECONDARY",
                 "background": "transparent",
                 "spacing": 0,
                 "width": 16,
                 "height": 16
-            }
+            },
+            states: [
+                (
+                    key: "pressed",
+                    properties: {
+                        "background": "$BUTTON_BACKGORUND_PRESSED",
+                    }
+                )
+            ]
         ),
 
         // -- [END] TabWidget --
@@ -438,7 +448,7 @@ Theme (
             properties: {
                 "height": 24,
                 "border_radius": 2,
-                "background": "$MINE_SHAFT",
+                "background": "$BLACK",
             }
         ),
         "thumb": (
@@ -446,7 +456,7 @@ Theme (
                 "width": 24,
                 "height": 24,
                 "border_radius": 12,
-                "background": "$LYNCH",
+                "background": "$CONTENT_FOREGROUND",
             },
             states: [
                 (
@@ -475,7 +485,7 @@ Theme (
         ),
         "scroll_bar": (
             properties: {
-                "background": "$LYNCH",
+                "background": "$BUTTON_BACKGORUND_PRESSED",
                 "border_radius": 2,
             },
         ),

@@ -4,11 +4,16 @@ Theme (
         "BLACK": "#000000",
         "WHITE": "#ffffff",
         "ACCENT_COLOR": "#efd035",
+        "ACCENT_COLOR_LIGHTER": "#f0d860",
+        "ACCENT_COLOR_LIGHT": "#5B6764",
+        "ACCENT_COLOR_DARK": "#ebbf13",
         "BACKGROUND": "#3b434a",
+        "BACKGROUND_SECONDARY": "#475b6e",
 
         // content
         "CONTENT_FOREGROUND": "#dfebf5",
         "CONTENT_FOREGROUND_INVERTED": "#3b434a",
+        "CONTENT_FOREGROUND_SECONDARY": "#9dafbf",
 
         // button
         "BUTTON_BACKGROUND": "linear-gradient(to top, #7a8fa3, #647b91)",
@@ -24,38 +29,10 @@ Theme (
         // combobox
         "COMBO_BOX_BACKGROUND": "#647b91",
         "POPUP_BACKGROUND": "#444e55",
-        "POPUP_BORDER": "#212121",
+        "POPUP_BORDER": "#adb3b8",
 
-        // old colors
-       
-        "WHITE": "#ffffff",
-        "BRIGHT_GRAY": "#3b434a",
-        "LYNCH": "#647b91",
-        "PERIWINKLE_GRAY": "#ccdeed",
-        "SUNFLOWER": "#e1bc21",
-        "ENERGY_YELLOW": "#f8de4c",
-        "LINK_WATER": "#dfebf5",
-        "GOLDEN_DREAM": "#efd035",
-        "GOLDEN_TIPS": "#ebbf13",
-        "BLUE_BAYOUX": "#516475",
-        "BOMBAY": "#afb1b8",
-        "SLATE_GRAY": "#6c7a90",
-        "MINE_SHAFT": "#212121",
-        "SILVER_CHALICE": "#9e9e9e",
-        "RIVER_BAD": "#444e55",
-        "SILVER": "#bababa",
-        "ALABASTER": "#fafafa",
-        "ALTO": "#dadada",
-        "CADET_BLUE": "#9dafbf",
-        "FIORD": "#475b6e",
-        "MANATEE": "#949ca5",
-        "GRAY_NURSE": "#edeeed",
-        "GORDUROY": "#586864",
-        "ATHS_SPECIAL": "#efead5",
-        "FIORD": "#475b6e",
-        "GREEN_SPRING": "#b2b3b1",
-        "MERCURY": "#e5e5e5",
-        "CONFETTI": "#f0d860",
-        "ROLLING_STONE": "#808386"
+        // containers such es lists and text box
+        "CONTAINER_BACKGROUND": "#2B2D2F",
+        "CONTAINER_BORDER": "#dfebf5",
     },
 )
