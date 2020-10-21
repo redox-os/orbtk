@@ -52,6 +52,13 @@ Theme (
                 "font_size": "$FONT_SIZE_24",
             },
         ),
+        "small_text": (
+            base: "body",
+             properties: {
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "$PERIWINKLE_GRAY",
+            },
+        ),
 
         // -- [END] TextBlock --
 
@@ -276,6 +283,113 @@ Theme (
 
         // -- [END] (Numeric)TextBox --
 
+        // -- [START] Lists --
+
+        "items_widget": (
+            properties: {
+                "background": "transparent",
+                "border_brush": "$LYNCH",
+                "border_width": 1,
+                "border_radius": 2,
+                "padding": 4,
+            }
+        ),
+        "combo_box": (
+            base: "base",
+            properties: {
+                "foreground": "$LINK_WATER",
+                "icon_brush": "$LINK_WATER",
+                "background": "$BRIGHT_GRAY",
+                "border_brush": "$LYNCH",
+                "border_width": 1,
+                "border_radius": 3,
+                "padding": 6,
+            },
+            states: [
+                (
+                    key: "selected",
+                    properties: {
+                        "border_brush": "$ENERGY_YELLOW",
+                    }
+                )
+            ]
+        ),
+        "combo_box_item": (
+            properties: {
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "$PERIWINKLE_GRAY",
+                "background": "transparent",
+                "padding_left": 8,
+                "padding_right": 8,
+            },
+            states: [
+                (
+                    key: "selected",
+                    properties: {
+                        "foreground": "$BRIGHT_GRAY",
+                        "background": "$SUNFLOWER",
+                    }
+                ),
+                (
+                    key: "pressed",
+                    properties: {
+                        "foreground": "$BRIGHT_GRAY",
+                        "background": "$SUNFLOWER",
+                    }
+                )
+            ]
+        ),
+
+        // -- [END] Lists --
+
+        // -- [START] TabWidget --
+        
+        "tab_widget": (
+            properties: {
+                "border_brush": "$BLUE_BAYOUX",
+                "border_width": 1,
+                "background": "transparent",
+            },
+        ),
+        "tab_header": (
+            base: "base",
+            properties: {
+                "height": 32,
+                "font_sze": "$FONT_SIZE_12",
+                "foreground": "$WHITE",
+                "background": "$FIORD",
+                "padding_left": 8,
+                "padding_right": 8,
+                "border_radius": 0
+            },
+            states: [
+                (
+                    key: "selected",
+                    properties: {
+                        "background": "$GORDUROY"
+                    }
+                )
+            ]
+        ),
+        "tab_header_bar": (
+             properties: {
+                "background": "$GOLDEN_TIPS",
+                "height": 2
+            }
+        ),
+        "tab_icon_only": (
+            properties: {
+                "icon_size": "$ICON_SIZE_12",
+                "icon_brush": "$LINK_WATER",
+                "background": "transparent",
+                "spacing": 0,
+                "width": 16,
+                "height": 16
+            }
+        ),
+
+        // -- [END] TabWidget --
+
         // -- [START] Other widgets --
 
         "slider": (
@@ -318,6 +432,20 @@ Theme (
                 "height": 12,
                 "width": 0,
             }
+        ),
+        "scroll_bar": (
+            properties: {
+                "background": "$LYNCH",
+                "border_radius": 2,
+            },
+        ),
+        "popup": ( 
+            properties: {
+                "background": "$RIVER_BAD",
+                "border_brush": "$LYNCH",
+                "border_width": 1,
+                "border_radius": 2,
+            },
         ),
 
         // -- [END] Other widgets --
