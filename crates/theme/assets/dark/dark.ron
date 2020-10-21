@@ -1,5 +1,8 @@
+// Default theme of Orbtk.
 Theme (
     styles: {
+        // -- [START] Base --
+
         "base": (
             properties: {
                 "font_size": "$FONT_SIZE_16",
@@ -13,6 +16,23 @@ Theme (
                 "background": "$BRIGHT_GRAY",
              },
         ),
+        "grid": (
+            base: "base",
+            properties: {
+                "background": "transparent",
+            },
+        ),
+        "container": (
+            base: "base",
+            properties: {
+                "padding": 4,
+            },
+        ),
+
+        // -- [END] Base --
+
+        // -- [START] TextBlock --
+
         "body": (
             properties: {
                 "foreground": "$LINK_WATER",
@@ -26,8 +46,17 @@ Theme (
                 "font_size": "$FONT_SIZE_24",
             }
         ),
+        "text_block_header": (
+            base: "base",
+            properties: {
+                "font_size": "$FONT_SIZE_24",
+            },
+        ),
 
-        // -- [START] Buttons --
+        // -- [END] TextBlock --
+
+        // -- [START] Button --
+
         "button": ( 
             base: "base",
             properties: {
@@ -118,6 +147,7 @@ Theme (
             }, 
         ),
         "button_small": (
+            base: "button",
             properties: {
                 "border_radius": 0,
                 "icon_brush": "$LINK_WATER",
@@ -128,7 +158,59 @@ Theme (
                 "padding": 0,
             },
         ),
-        // -- [END] Buttons --
+        "check_box": (
+            base: "base",
+            properties: {
+                "foreground": "$LINK_WATER",
+                "icon_size": "$ICON_SIZE_18",
+                "background": "transparent",
+                "border_radius": 2,
+                "border_width": 1,
+                "border_brush": "$BOMBAY",
+                "icon_brush": "transparent",
+            },
+            states: [
+                (
+                    key: "selected",
+                    properties: {
+                        "background": "$GOLDEN_DREAM",
+                        "border_brush": "$GOLDEN_DREAM",
+                        "icon_brush": "$BRIGHT_GRAY",
+                    }
+                )
+            ]
+        ),
+        "switch": (
+            properties: {
+                "width": 36,
+                "height": 32,
+            },
+        ),
+        "switch_track": (
+            properties: {
+                "height": 14,
+                "border_radius": 7,
+                "background": "$SLATE_GRAY",
+            }
+        ),
+        "switch_toggle": (
+            properties: {
+                "width": 20,
+                "height": 20,
+                "border_radius": 10,
+                "background": "$WHITE",
+            },
+            states: [
+                (
+                    key: "selected",
+                    properties: {
+                        "background": "$GOLDEN_DREAM",
+                    }
+                )
+            ]
+        ),
+        
+        // -- [END] Button --
 
         "container": (
             base: "base",
@@ -136,12 +218,9 @@ Theme (
                 "padding": 4,
             },
         ),
-        "text_block_header": (
-            base: "base",
-            properties: {
-                "font_size": "$FONT_SIZE_24",
-            },
-        ),
+
+        // -- [START] (Numeric)TextBox --
+       
         "text_box": (
             base: "base",
             properties: {
@@ -181,6 +260,12 @@ Theme (
                 )
             ]
         ),
+        "numeric_box": (
+            base: "text_box",
+            properties: {
+                "foreground": "$PERIWINKLE_GRAY",
+            }
+        ),
         "cursor": (
             properties: {
                 "background": "$ENERGY_YELLOW",
@@ -188,5 +273,53 @@ Theme (
                 "border_width": 1
             }
         ),
+
+        // -- [END] (Numeric)TextBox --
+
+        // -- [START] Other widgets --
+
+        "slider": (
+            properties: {
+                "height": 24,
+                "border_radius": 2,
+                "background": "$MINE_SHAFT",
+            }
+        ),
+        "thumb": (
+            properties: {
+                "width": 24,
+                "height": 24,
+                "border_radius": 12,
+                "background": "$LYNCH",
+            },
+            states: [
+                (
+                    key: "pressed",
+                    properties: {
+                         "background": "$GOLDEN_DREAM",
+                    }
+                )
+            ],
+        ),
+        "progress_bar": (
+             properties: {
+                "background": "$MINE_SHAFT",
+                "border_color": "$SILVER",
+                "border_radius": 4,
+                "border_width": 1,
+                "height": 16,
+                "padding": 2,
+             },
+        ),
+        "progress_bar_indicator": (
+            properties: {
+                "background": "$GOLDEN_DREAM",
+                "border_radius": 1,
+                "height": 12,
+                "width": 0,
+            }
+        ),
+
+        // -- [END] Other widgets --
     },
 )
