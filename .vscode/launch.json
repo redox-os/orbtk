@@ -7,79 +7,12 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Widgets native",
-      "program": "${workspaceFolder}/target/debug/examples/widgets",
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build",
-      "sourceLanguages": [
-        "rust"
-      ]
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
       "name": "showcase",
       "program": "${workspaceFolder}/target/debug/examples/showcase",
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "build",
       "sourceLanguages": [
         "rust"
-      ]
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "name": "Widgets pathfinder",
-      "program": "${workspaceFolder}/target/debug/examples/widgets",
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build pathfinder",
-      "sourceLanguages": [
-        "rust"
-      ]
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "name": "Widgets browser",
-      "program": "cargo-node",
-      "cwd": "${workspaceFolder}",
-      "args": [
-        "run",
-        "--target",
-        "browser",
-        "--example",
-        "widgets"
-      ],
-      "sourceLanguages": [
-        "rust"
-      ]
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "name": "Widgets electron",
-      "program": "cargo-node",
-      "cwd": "${workspaceFolder}",
-      "args": [
-        "run",
-        "--target",
-        "electron",
-        "--example",
-        "widgets"
-      ],
-      "sourceLanguages": [
-        "rust"
-      ]
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "name": "Widgets debug",
-      "program": "${workspaceFolder}/target/debug/examples/widgets",
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build debug",
-      "sourceLanguages": [
-        "rust",
       ]
     },
     {

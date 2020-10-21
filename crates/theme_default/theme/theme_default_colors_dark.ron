@@ -2,6 +2,7 @@ Theme (
     resources: {
         // common
         "BLACK": "#000000",
+        "WHITE": "#ffffff",
         "ACCENT_COLOR": "#efd035",
         "BACKGROUND": "#3b434a",
 
@@ -19,6 +20,11 @@ Theme (
         "BUTTON_BACKGROUND_PRIMARY_SELECTED": "#ebbf13",
         "BUTTON_BACKGROUND_PRIMARY_HOVER": "linear-gradient(to top, #f0d860, #efd035)",
         "BUTTON_BACKGORUND_PRIMARY_PRESSED": "#ebbf13", 
+
+        // combobox
+        "COMBO_BOX_BACKGROUND": "#647b91",
+        "POPUP_BACKGROUND": "#444e55",
+        "POPUP_BORDER": "#212121",
 
         // old colors
        

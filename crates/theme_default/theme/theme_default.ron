@@ -5,7 +5,7 @@ Theme (
 
         "base": (
             properties: {
-                "font_size": "$FONT_SIZE_16",
+                "font_size": "$FONT_SIZE_12",
                 "font": "$MEDIUM_FONT",
                 "icon_size": "$ICON_SIZE_16",
                 "icon_font": "$ICON_FONT"
@@ -336,17 +336,22 @@ Theme (
             properties: {
                 "foreground": "$CONTENT_FOREGROUND",
                 "icon_brush": "$CONTENT_FOREGROUND",
-                "background": "$BRIGHT_GRAY",
-                "border_brush": "$LYNCH",
-                "border_width": 1,
-                "border_radius": 3,
+                "background": "$BUTTON_BACKGROUND",
+                "height": 32,
                 "padding": 6,
             },
             states: [
                 (
+                    key: "hover",
+                    properties: {
+                        "background": "$BUTTON_BACKGROUND_HOVER",
+                    }
+                ),
+                (
                     key: "selected",
                     properties: {
-                        "border_brush": "$ENERGY_YELLOW",
+                        "selection_indicator": "$ACCENT_COLOR",
+                        "background": "$BUTTON_BACKGORUND_PRESSED",
                     }
                 )
             ]
@@ -354,7 +359,7 @@ Theme (
         "combo_box_item": (
             properties: {
                 "font_size": "$FONT_SIZE_12",
-                "foreground": "$PERIWINKLE_GRAY",
+                "foreground": "$CONTENT_FOREGROUND",
                 "background": "transparent",
                 "padding_left": 8,
                 "padding_right": 8,
@@ -476,10 +481,9 @@ Theme (
         ),
         "popup": ( 
             properties: {
-                "background": "$RIVER_BAD",
-                "border_brush": "$LYNCH",
+                "background": "$POPUP_BACKGROUND",
+                "border_brush": "$POPUP_BORDER",
                 "border_width": 1,
-                "border_radius": 2,
             },
         ),
 

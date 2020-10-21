@@ -15,67 +15,35 @@ pub mod prelude;
 /// provides information processed by the `graphic render` (e.g. glyphs, icons).
 pub mod vector_graphics;
 
-/// The dark theme resource file.
-pub const DARK_THEME_RON: &str = include_str!("../assets/dark/dark.ron");
+/// Resource file of default theme
+pub const THEME_DEFAULT: &str = include_str!("../theme/theme_default.ron");
 
 /// The default theme colors resource file.
-pub const COLORS_RON: &str = include_str!("../assets/common/colors.ron");
+pub const THEME_DEFAULT_COLORS_DARK: &str = include_str!("../theme/theme_default_colors_dark.ron");
 
-/// The common fonts resource file.
-pub const FONTS_RON: &str = include_str!("../assets/common/fonts.ron");
+/// The font resources of the default theme
+pub const THEME_DEFAULT_FONTS: &str = include_str!("../theme/theme_default_fonts.ron");
 
-/// The light theme resource file.
-pub const LIGHT_THEME_RON: &str = include_str!("../assets/light/light.ron");
-
-/// The redox theme colors resource file.
-pub const REDOX_COLORS_RON: &str = include_str!("../assets/redox/colors.ron");
-
-/// The redox theme resource file.
-pub const REDOX_THEME_RON: &str = include_str!("../assets/redox/redox.ron");
-
-#[cfg(all(
-    not(feature = "light"),
-    not(feature = "redox"),
-    not(target_os = "redox")
-))]
-pub fn default_theme() -> Theme {
-    dark_theme()
-}
-
-#[cfg(feature = "light")]
-pub fn default_theme() -> Theme {
-    light_theme()
-}
-
-#[cfg(any(feature = "redox", target_os = "redox"))]
-pub fn default_theme() -> Theme {
-    redox_theme()
+/// Returns the default OrbTk theme.
+pub fn theme_default() -> Theme {
+    theme_default_dark()
 }
 
 /// Creates OrbTks default dark theme.
-pub fn dark_theme() -> Theme {
+pub fn theme_default_dark() -> Theme {
     Theme::from_config(
-        ThemeConfig::from(DARK_THEME_RON)
-            .extend(ThemeConfig::from(COLORS_RON))
-            .extend(ThemeConfig::from(FONTS_RON)),
+        ThemeConfig::from(THEME_DEFAULT)
+            .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_DARK))
+            .extend(ThemeConfig::from(THEME_DEFAULT_FONTS)),
     )
 }
 
 /// Creates OrbTks default light theme.
-pub fn light_theme() -> Theme {
+pub fn theme_default_light() -> Theme {
     Theme::from_config(
-        ThemeConfig::from(LIGHT_THEME_RON)
-            .extend(ThemeConfig::from(COLORS_RON))
-            .extend(ThemeConfig::from(FONTS_RON)),
-    )
-}
-
-/// Creates OrbTks redox theme.
-pub fn redox_theme() -> Theme {
-    Theme::from_config(
-        ThemeConfig::from(REDOX_THEME_RON)
-            .extend(ThemeConfig::from(COLORS_RON))
-            .extend(ThemeConfig::from(REDOX_COLORS_RON))
-            .extend(ThemeConfig::from(FONTS_RON)),
+        ThemeConfig::from(THEME_DEFAULT)
+            // todo: colors
+            // .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_DARK))
+            .extend(ThemeConfig::from(THEME_DEFAULT_FONTS)),
     )
 }

@@ -63,10 +63,7 @@ impl Application {
             request_sender: sender,
             name: name.into(),
             shell: Shell::new(receiver),
-            #[cfg(all(not(feature = "light"), not(feature = "redox")))]
-            theme: crate::theme_default::default_theme(),
-            #[cfg(feature = "light")]
-            theme: crate::theme_default::light_theme(),
+            theme: crate::theme_default::theme_default(),
             localization: None,
         }
     }
