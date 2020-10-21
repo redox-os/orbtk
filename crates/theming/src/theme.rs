@@ -48,7 +48,7 @@ impl Theme {
         self.styles.get(key)
     }
 
-    pub fn properties<'a>(&'a self, selector: &Selector) -> Option<HashMap<String, Value>> {
+    pub fn properties(&self, selector: &Selector) -> Option<HashMap<String, Value>> {
         if !selector.dirty() {
             return None;
         }

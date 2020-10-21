@@ -7,7 +7,6 @@ use std::{
 use dces::prelude::*;
 use memchr::memchr_iter;
 use smallvec::SmallVec;
-use unicode_width::UnicodeWidthStr;
 
 use crate::{
     proc_macros::IntoLayout,
@@ -204,19 +203,15 @@ fn measure_text(
     font_size: f64,
 ) -> Size {
     let mut text_metrics = render_context_2_d.measure(text, font_size, font_family);
-    let mut lines = SmallVec::<[(&str, usize); 2]>::new();
+    let mut lines = SmallVec::<[&str; 2]>::new();
     let mut last_hit = 0;
     for hit in memchr_iter(b'\n', text.as_bytes()).chain(iter::once(text.len())) {
         let line = &text[last_hit..hit];
-        lines.push((line, UnicodeWidthStr::width(line)));
+        lines.push(line);
         last_hit = hit;
     }
-    let max_unicode_width = lines.iter().fold(0, |r, x| r.max(x.1));
     text_metrics.width = 0.0;
-    for (line, width) in lines.iter() {
-        if *width != max_unicode_width {
-            continue;
-        }
+    for line in lines.iter() {
         let line_text_metrics = render_context_2_d.measure(line, font_size, font_family);
         text_metrics.width = text_metrics.width.max(line_text_metrics.width);
     }

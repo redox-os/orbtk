@@ -518,6 +518,28 @@ fn brush_to_source<'a>(brush: &Brush, frame: Rectangle) -> raqote::Source<'a> {
                         spread,
                     )
                 }
+                LinearGradientCoords::Angle {
+                    angle,
+                    displacement,
+                } => {
+                    let z = linear_gradient_ends_from_angle(*angle, frame.size());
+                    let disp = displacement.pixels(frame.size());
+                    let start = frame.position() + frame.size() / 2.0 + -z + disp;
+                    let end = frame.position() + frame.size() / 2.0 + z + disp;
+                    let g_stops =
+                        build_unit_percent_gradient(&stops, end.distance(start), |p, c| {
+                            raqote::GradientStop {
+                                position: p as f32,
+                                color: raqote::Color::new(c.a(), c.r(), c.g(), c.b()),
+                            }
+                        });
+                    raqote::Source::new_linear_gradient(
+                        raqote::Gradient { stops: g_stops },
+                        raqote::Point::new(start.x() as f32, start.y() as f32),
+                        raqote::Point::new(end.x() as f32, end.y() as f32),
+                        spread,
+                    )
+                }
             }
         }
     }

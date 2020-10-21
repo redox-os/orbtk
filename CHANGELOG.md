@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Create `Color` from HSV and HSL values
 * Create a `Color` by its CSS name
 * Gradient coordinates become relative to the path
+* Add gradients defined by angle
+* The possibility of using gradients in themes is being introduced
 * Text mark with Shift + Left | Shift + Right
 * Select text my mouse (experimental)
 * Select all character on text input by mouse double click

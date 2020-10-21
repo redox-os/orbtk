@@ -1,4 +1,5 @@
 pub use self::alignment::*;
+pub use self::angle::*;
 pub use self::border::*;
 pub use self::brush::*;
 pub use self::color::*;
@@ -21,6 +22,7 @@ pub use self::value::*;
 pub use self::visibility::*;
 
 mod alignment;
+mod angle;
 mod border;
 mod brush;
 mod color;
