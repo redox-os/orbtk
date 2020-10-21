@@ -14,6 +14,7 @@ fn main() {
         .build();
 
     Application::new()
+        .theme(theme_default_light())
         .localization(localization)
         .window(|ctx| {
             Window::new()

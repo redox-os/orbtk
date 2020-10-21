@@ -18,8 +18,12 @@ pub mod vector_graphics;
 /// Resource file of default theme
 pub const THEME_DEFAULT: &str = include_str!("../theme/theme_default.ron");
 
-/// The default theme colors resource file.
+/// The default dark theme colors resource file.
 pub const THEME_DEFAULT_COLORS_DARK: &str = include_str!("../theme/theme_default_colors_dark.ron");
+
+/// The default light theme colors resource file.
+pub const THEME_DEFAULT_COLORS_LIGHT: &str =
+    include_str!("../theme/theme_default_colors_light.ron");
 
 /// The font resources of the default theme
 pub const THEME_DEFAULT_FONTS: &str = include_str!("../theme/theme_default_fonts.ron");
@@ -42,8 +46,7 @@ pub fn theme_default_dark() -> Theme {
 pub fn theme_default_light() -> Theme {
     Theme::from_config(
         ThemeConfig::from(THEME_DEFAULT)
-            // todo: colors
-            // .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_DARK))
+            .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_LIGHT))
             .extend(ThemeConfig::from(THEME_DEFAULT_FONTS)),
     )
 }

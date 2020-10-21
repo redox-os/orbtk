@@ -291,6 +291,7 @@ Theme (
             properties: {
                 "background": "$CONTAINER_BACKGROUND",
                 "border_brush": "$CONTAINER_BORDER",
+                "foreground": "$CONTENT_FOREGROUND",
                 "border_width": 1,
                 "border_radius": 2,
                 "padding": 4,
