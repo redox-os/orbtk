@@ -1,6 +1,27 @@
 Theme (
     resources: {
+        // common
         "BLACK": "#000000",
+        "ACCENT_COLOR": "#efd035",
+        "BACKGROUND": "#3b434a",
+
+        // content
+        "CONTENT_FOREGROUND": "#dfebf5",
+        "CONTENT_FOREGROUND_INVERTED": "#3b434a",
+
+        // button
+        "BUTTON_BACKGROUND": "linear-gradient(to top, #7a8fa3, #647b91)",
+        "BUTTON_BACKGROUND_SELECTED": "#516475",
+        "BUTTON_BACKGROUND_HOVER": "linear-gradient(to top, #647b91, #475b6e)",
+        "BUTTON_BACKGORUND_PRESSED": "#516475",
+        "BUTTON_BACKGROUND_DISABLED": "linear-gradient(to top, #e5e5e5, #d2d2d2)",
+        "BUTTON_BACKGROUND_PRIMARY": "linear-gradient(to top, #f7e899, #ebbf13)",
+        "BUTTON_BACKGROUND_PRIMARY_SELECTED": "#ebbf13",
+        "BUTTON_BACKGROUND_PRIMARY_HOVER": "linear-gradient(to top, #f0d860, #efd035)",
+        "BUTTON_BACKGORUND_PRIMARY_PRESSED": "#ebbf13", 
+
+        // old colors
+       
         "WHITE": "#ffffff",
         "BRIGHT_GRAY": "#3b434a",
         "LYNCH": "#647b91",

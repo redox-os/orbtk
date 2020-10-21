@@ -13,7 +13,7 @@ Theme (
         ),
         "window": (
              properties: {
-                "background": "$BRIGHT_GRAY",
+                "background": "$BACKGROUND",
              },
         ),
         "grid": (
@@ -35,7 +35,7 @@ Theme (
 
         "body": (
             properties: {
-                "foreground": "$LINK_WATER",
+                "foreground": "$CONTENT_FOREGROUND",
                 "font_size": "$FONT_SIZE_16",
                 "font": "$MEDIUM_FONT",
             },
@@ -67,37 +67,39 @@ Theme (
         "button": ( 
             base: "base",
             properties: {
-                "height": 36,
-                "foreground": "$LINK_WATER",
-                "icon_brush": "$LINK_WATER",
-                "background": "$LYNCH",
-                "border_radius": 4,
+                "height": 32,
+                "foreground": "$CONTENT_FOREGROUND",
+                "icon_brush": "$CONTENT_FOREGROUND",
+                "background": "$BUTTON_BACKGROUND",
+                "border_radius": 1,
+                "font_size": "$FONT_SIZE_12",
+                "icon_size": "$ICON_SIZE_16"
             }, 
             states: [
                 (
                     key: "selected",
                     properties: {
-                        "background": "$BLUE_BAYOUX",
+                        "background": "$BUTTON_BACKGROUND_SELECTED",
                     }
                 ),
                 (
                     key: "hover",
                     properties: {
-                        "background": "$FIORD"
+                        "background": "$BUTTON_BACKGROUND_HOVER",
                     }
                 ),
                 (
                     key: "pressed",
                     properties: {
-                        "background": "$BLUE_BAYOUX",
+                        "background": "$BUTTON_BACKGORUND_PRESSED",
                     }
                 ),
                 (
                     key: "disabled",
                     properties: {
-                        "background": "$ROLLING_STONE",
-                        "foreground": "$BRIGHT_GRAY",
-                        "icon_brush": "$BRIGHT_GRAY"
+                        "background": "$BUTTON_BACKGROUND_DISABLED",
+                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
+                        "icon_brush": "$CONTENT_FOREGROUND_INVERTED"
                     }
                 ),
             ],
@@ -111,9 +113,9 @@ Theme (
         "button_primary": (
             base: "button",
             properties: {
-                "background": "$GOLDEN_DREAM",
-                "foreground": "$BRIGHT_GRAY",
-                "icon_brush": "$BRIGHT_GRAY",
+                "background": "$ACCENT_COLOR",
+                "foreground": "$CONTENT_FOREGROUND_INVERTED",
+                "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
             },
             states: [
                 (
@@ -140,7 +142,7 @@ Theme (
             base: "button",
             properties: {
                 "icon_size": "$ICON_SIZE_12",
-                "icon_brush": "$LINK_WATER",
+                "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "transparent",
                 "spacing": 0,
                 "min_width": 24,
@@ -157,7 +159,7 @@ Theme (
             base: "button",
             properties: {
                 "border_radius": 0,
-                "icon_brush": "$LINK_WATER",
+                "icon_brush": "$CONTENT_FOREGROUND",
                 "font_size": "$ICON_SIZE_12",
                 "background": "transparent",
                 "height": 14,
@@ -168,7 +170,7 @@ Theme (
         "check_box": (
             base: "base",
             properties: {
-                "foreground": "$LINK_WATER",
+                "foreground": "$CONTENT_FOREGROUND",
                 "icon_size": "$ICON_SIZE_18",
                 "background": "transparent",
                 "border_radius": 2,
@@ -180,9 +182,9 @@ Theme (
                 (
                     key: "selected",
                     properties: {
-                        "background": "$GOLDEN_DREAM",
-                        "border_brush": "$GOLDEN_DREAM",
-                        "icon_brush": "$BRIGHT_GRAY",
+                        "background": "$ACCENT_COLOR",
+                        "border_brush": "$ACCENT_COLOR",
+                        "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
                     }
                 )
             ]
@@ -211,7 +213,7 @@ Theme (
                 (
                     key: "selected",
                     properties: {
-                        "background": "$GOLDEN_DREAM",
+                        "background": "$ACCENT_COLOR",
                     }
                 )
             ]
@@ -255,14 +257,14 @@ Theme (
                 (
                     key: "focused",
                     properties: {
-                         "border_brush": "$GOLDEN_DREAM",
+                         "border_brush": "$ACCENT_COLOR",
                     }
                 ),
                 (
                     key: "not_empty_focused",
                     properties: {
                         "foreground": "$PERIWINKLE_GRAY",
-                        "border_brush": "$GOLDEN_DREAM",
+                        "border_brush": "$ACCENT_COLOR",
                     }
                 )
             ]
@@ -297,7 +299,7 @@ Theme (
          "list_view": (
             base: "base",
             properties: {
-                "foreground": "$LINK_WATER",
+                "foreground": "$CONTENT_FOREGROUND",
                 "background": "transparent",
                 "border_brush": "$LYNCH",
                 "border_width": 1,
@@ -316,14 +318,14 @@ Theme (
                 (
                     key: "selected",
                     properties: {
-                        "foreground": "$BRIGHT_GRAY",
+                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
                         "background": "$SUNFLOWER",
                     }
                 ),
                 (
                     key: "pressed",
                     properties: {
-                        "foreground": "$BRIGHT_GRAY",
+                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
                         "background": "$SUNFLOWER",
                     }
                 )
@@ -332,8 +334,8 @@ Theme (
         "combo_box": (
             base: "base",
             properties: {
-                "foreground": "$LINK_WATER",
-                "icon_brush": "$LINK_WATER",
+                "foreground": "$CONTENT_FOREGROUND",
+                "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BRIGHT_GRAY",
                 "border_brush": "$LYNCH",
                 "border_width": 1,
@@ -361,14 +363,14 @@ Theme (
                 (
                     key: "selected",
                     properties: {
-                        "foreground": "$BRIGHT_GRAY",
+                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
                         "background": "$SUNFLOWER",
                     }
                 ),
                 (
                     key: "pressed",
                     properties: {
-                        "foreground": "$BRIGHT_GRAY",
+                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
                         "background": "$SUNFLOWER",
                     }
                 )
@@ -415,7 +417,7 @@ Theme (
         "tab_icon_only": (
             properties: {
                 "icon_size": "$ICON_SIZE_12",
-                "icon_brush": "$LINK_WATER",
+                "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "transparent",
                 "spacing": 0,
                 "width": 16,
@@ -445,25 +447,23 @@ Theme (
                 (
                     key: "pressed",
                     properties: {
-                         "background": "$GOLDEN_DREAM",
+                         "background": "$ACCENT_COLOR",
                     }
                 )
             ],
         ),
         "progress_bar": (
              properties: {
-                "background": "$MINE_SHAFT",
-                "border_color": "$SILVER",
-                "border_radius": 4,
-                "border_width": 1,
-                "height": 16,
-                "padding": 2,
+                "background": "$BLACK",
+                "border_radius": 0,
+                "border_width": 0,
+                "height": 12,
+                "padding": 0,
              },
         ),
         "progress_bar_indicator": (
             properties: {
-                "background": "$GOLDEN_DREAM",
-                "border_radius": 1,
+                "background": "$ACCENT_COLOR",
                 "height": 12,
                 "width": 0,
             }

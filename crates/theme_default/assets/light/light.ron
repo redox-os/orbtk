@@ -330,7 +330,6 @@ Theme (
         "progress_bar_indicator": (
             properties: {
                 "background": "$GOLDEN_DREAM",
-                "border_radius": 1,
                 "height": 12,
                 "width": 0,
             }
