@@ -28,7 +28,18 @@ jobs:
         with:
           command: clippy
           args: --all-targets -- -D warnings
-     
+
+  audit:
+     name: Audit
+     runs-on: ubuntu-latest
+     steps:
+      - name: install cargo-audit
+      - run: cargo install cargo-audit
+      - name: runt cargo-audit
+      - uses: actions-rs/cargo@v1
+        with:
+          command: audit
+          
   build_and_test:
     name: Test
     strategy:

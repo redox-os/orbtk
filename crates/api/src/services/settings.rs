@@ -141,7 +141,7 @@ impl Settings {
 fn save<S: Serialize>(app_name: &str, key: &str, data: &S) -> SettingsResult<()> {
     let content = to_string_pretty(data, PrettyConfig::default());
 
-    if let Some(config_path) = &mut dirs::config_dir() {
+    if let Some(config_path) = &mut dirs_next::config_dir() {
         config_path.push(app_name);
 
         if !config_path.exists() {
@@ -178,7 +178,7 @@ fn save<S: Serialize>(app_name: &str, key: &str, data: &S) -> SettingsResult<()>
 
 #[cfg(not(target_arch = "wasm32"))]
 fn load<D: DeserializeOwned>(app_name: &str, key: &str) -> SettingsResult<D> {
-    if let Some(config_path) = &mut dirs::config_dir() {
+    if let Some(config_path) = &mut dirs_next::config_dir() {
         config_path.push(app_name);
         config_path.push(format!("{}.ron", key));
 
