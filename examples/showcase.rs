@@ -136,6 +136,7 @@ impl Template for ButtonView {
 
 type List = Vec<String>;
 
+// Represents an overview of list widgets like ListView, ItemsWidget and ComboBox.
 widget!(ItemsView { items: List });
 
 impl Template for ItemsView {
@@ -192,11 +193,23 @@ impl Template for ItemsView {
                         .selected_index(0)
                         .build(ctx),
                 )
+                .child(
+                    ComboBox::new()
+                        .enabled(false)
+                        .count(count)
+                        .items_builder(move |bc, index| {
+                            let text = ItemsView::items_ref(&bc.get_widget(id))[index].clone();
+                            TextBlock::new().v_align("center").text(text).build(bc)
+                        })
+                        .selected_index(0)
+                        .build(ctx),
+                )
                 .build(ctx),
         )
     }
 }
 
+// Represents an overview of layout widgets.
 widget!(LayoutView {});
 
 impl Template for LayoutView {
@@ -327,6 +340,7 @@ impl Template for LayoutView {
     }
 }
 
+// Represents an overview of the image widget.
 widget!(ImageView {});
 
 impl Template for ImageView {
@@ -340,6 +354,7 @@ impl Template for ImageView {
     }
 }
 
+// Contains an example how to use localization in OrbTk.
 widget!(LocalizationView<LocalizationState> { languages: List, selected_index: i32 });
 
 impl Template for LocalizationView {
@@ -392,6 +407,7 @@ impl Template for LocalizationView {
     }
 }
 
+// Represents an overview of navigation widgets.
 widget!(
     NavigationView<NavigationState> {
         md_navigation_visibility: Visibility
@@ -539,6 +555,7 @@ impl Template for NavigationView {
     }
 }
 
+// Contains examples how interactions work in OrbTk.
 widget!(
     InteractiveView<InteractiveState> {
         settings_text: String,

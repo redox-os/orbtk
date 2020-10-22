@@ -277,7 +277,7 @@ Theme (
                         "foreground": "$CONTENT_FOREGROUND",
                         "border_brush": "$TEXT_BOX_FOCUSED_BORDER",
                     }
-                )
+                ),
             ]
         ),
         "numeric_box": (

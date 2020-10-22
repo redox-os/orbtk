@@ -47,7 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fix theming related bugs
 * Register fonts on `Theme` struct
 * Update OrbTks default themes
-* New redox theme crate
 
 ### 0.3.1-alpha3
 
