@@ -30,6 +30,7 @@ fn main() {
 
 // [START] views
 
+// Represents the main wrapper view with main navigation.
 widget!(MainView {});
 
 impl Template for MainView {
@@ -48,6 +49,7 @@ impl Template for MainView {
     }
 }
 
+// Represents an overview with button and text widgets.
 widget!(ButtonView {});
 
 impl Template for ButtonView {
@@ -70,6 +72,13 @@ impl Template for ButtonView {
                                 .on_leave(|_, _| {
                                     println!("Leave Button boundries");
                                 })
+                                .build(ctx),
+                        )
+                        .child(
+                            Button::new()
+                                .enabled(false)
+                                .text("disabled")
+                                .icon(material_icons_font::MD_CHECK)
                                 .build(ctx),
                         )
                         .child(
@@ -98,7 +107,9 @@ impl Template for ButtonView {
                                 .build(ctx),
                         )
                         .child(CheckBox::new().text("CheckBox").build(ctx))
+                        .child(CheckBox::new().enabled(false).text("disabled").build(ctx))
                         .child(Switch::new().build(ctx))
+                        .child(Switch::new().enabled(false).build(ctx))
                         .child(slider)
                         .child(ProgressBar::new().val(slider).build(ctx))
                         .build(ctx),

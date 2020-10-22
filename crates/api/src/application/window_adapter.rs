@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::HashMap, sync::mpsc};
+use std::{cell::RefCell, sync::mpsc};
 
 use dces::prelude::*;
 
@@ -282,19 +282,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         .get::<Point>("position", window)
         .unwrap();
 
-    let mut fonts = HashMap::new();
-    fonts.insert(
-        "Roboto-Regular".to_string(),
-        crate::theme_default::fonts::ROBOTO_REGULAR_FONT,
-    );
-    fonts.insert(
-        "Roboto-Medium".to_string(),
-        crate::theme_default::fonts::ROBOTO_MEDIUM_FONT,
-    );
-    fonts.insert(
-        "MaterialIcons-Regular".to_string(),
-        crate::theme_default::fonts::MATERIAL_ICONS_FONT,
-    );
+    let fonts = theme.fonts().clone();
 
     let settings = WindowSettings {
         title: world

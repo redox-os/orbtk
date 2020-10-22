@@ -10,6 +10,14 @@ Theme (
                 "icon_size": "$ICON_SIZE_16",
                 "icon_font": "$ICON_FONT"
             },
+            states: [
+                (
+                    key: "disabled",
+                    properties: {
+                        "opacity": 0.5
+                    }
+                )
+            ]
         ),
         "window": (
              properties: {
@@ -98,8 +106,8 @@ Theme (
                     key: "disabled",
                     properties: {
                         "background": "$BUTTON_BACKGROUND_DISABLED",
-                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "icon_brush": "$CONTENT_FOREGROUND_INVERTED"
+                        "foreground": "$BUTTON_FOREGROUND_DISABLED",
+                        "icon_brush": "$BUTTON_FOREGROUND_DISABLED"
                     }
                 ),
             ],

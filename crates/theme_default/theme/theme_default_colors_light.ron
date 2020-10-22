@@ -20,11 +20,12 @@ Theme (
         "BUTTON_BACKGROUND_SELECTED": "#a1a1a1",
         "BUTTON_BACKGROUND_HOVER": "linear-gradient(to top, #c7c7c7, #b2b3b1)",
         "BUTTON_BACKGORUND_PRESSED": "#a1a1a1",
-        "BUTTON_BACKGROUND_DISABLED": "linear-gradient(to top, #e5e5e5, #d2d2d2)",
+        "BUTTON_BACKGROUND_DISABLED": "linear-gradient(to top, #e9e9e8, #F2F1F1)",
         "BUTTON_BACKGROUND_PRIMARY": "linear-gradient(to top, #f7e899, #efd035)",
         "BUTTON_BACKGROUND_PRIMARY_SELECTED": "#f0d860",
         "BUTTON_BACKGROUND_PRIMARY_HOVER": "linear-gradient(to top, #ebbf13, #ebbf14)",
         "BUTTON_BACKGORUND_PRIMARY_PRESSED": "#f0d860", 
+        "BUTTON_FOREGROUND_DISABLED": "#BEC1C2",
 
         // text box
         "TEXT_BOX_FOCUSED_BORDER": "#ebbf13",

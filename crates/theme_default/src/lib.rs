@@ -40,6 +40,9 @@ pub fn theme_default_dark() -> Theme {
             .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_DARK))
             .extend(ThemeConfig::from(THEME_DEFAULT_FONTS)),
     )
+    .register_font("Roboto-Regular", crate::fonts::ROBOTO_REGULAR_FONT)
+    .register_font("Roboto-Medium", crate::fonts::ROBOTO_MEDIUM_FONT)
+    .register_font("MaterialIcons-Regular", crate::fonts::MATERIAL_ICONS_FONT)
 }
 
 /// Creates OrbTks default light theme.
@@ -49,4 +52,7 @@ pub fn theme_default_light() -> Theme {
             .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_LIGHT))
             .extend(ThemeConfig::from(THEME_DEFAULT_FONTS)),
     )
+    .register_font("Roboto-Regular", crate::fonts::ROBOTO_REGULAR_FONT)
+    .register_font("Roboto-Medium", crate::fonts::ROBOTO_MEDIUM_FONT)
+    .register_font("MaterialIcons-Regular", crate::fonts::MATERIAL_ICONS_FONT)
 }

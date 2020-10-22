@@ -11,6 +11,7 @@ use crate::{
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Theme {
     styles: HashMap<String, Style>,
+    fonts: HashMap<String, &'static [u8]>,
 }
 
 impl Theme {
@@ -22,7 +23,21 @@ impl Theme {
             Theme::read_config(style_key, style_key, &config, &mut styles)
         }
 
-        Theme { styles }
+        Theme {
+            styles,
+            fonts: HashMap::new(),
+        }
+    }
+
+    /// Registers a new font file as binary.
+    pub fn register_font(mut self, key: &str, font: &'static [u8]) -> Self {
+        self.fonts.insert(key.to_string(), font);
+        self
+    }
+
+    /// Returns the map of registered fonts.
+    pub fn fonts(&self) -> &HashMap<String, &'static [u8]> {
+        &self.fonts
     }
 
     /// Returns a reference to the style corresponding to the key.
