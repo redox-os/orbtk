@@ -493,7 +493,7 @@ impl Template for NavigationView {
                 )
                 .child(
                     TextBlock::new()
-                        .text("MasterDetail (resize the window)")
+                        .text("MasterDetail")
                         .attach(Grid::row(5))
                         .style("header")
                         .build(ctx),
@@ -502,20 +502,32 @@ impl Template for NavigationView {
                     MasterDetail::new()
                         .id(ID_NAVIGATION_MASTER_DETAIL)
                         .responsive(true)
-                        .break_point(800)
+                        .break_point(1000)
                         .navigation_visibility(("md_navigation_visibility", id))
                         .attach(Grid::row(6))
                         .master_detail(
                             Container::new()
                                 .padding(8)
                                 .background("lynch")
-                                .child(TextBlock::new().text("master").v_align("end").build(ctx))
+                                .child(
+                                    Stack::new()
+                                        .orientation("vertical")
+                                        .h_align("center")
+                                        .v_align("center")
+                                        .child(TextBlock::new().text("Content inside the master pane")
+                                               .font_size(16)
+                                               .build(ctx))
+                                        .child(TextBlock::new().text("Resize the window: Pane brake is set to 800 pixel")
+                                               .font_size(14)
+                                               .build(ctx))
+                                        .build(ctx))
+                                .child(TextBlock::new().text("Master Pane").v_align("end").build(ctx))
                                 .child(
                                     Button::new()
                                         .style("button_primary_single_content")
                                         .visibility(("md_navigation_visibility", id))
                                         .h_align("start")
-                                        .text("show details")
+                                        .text("show detail pane")
                                         .on_click(move |ctx, _| {
                                             ctx.send_message(MasterDetailAction::ShowDetail, id);
                                             true
@@ -526,9 +538,15 @@ impl Template for NavigationView {
                             Container::new()
                                 .padding(8)
                                 .background("goldendream")
+                                .child(TextBlock::new().text("Content inside the detail pane")
+                                       .h_align("center")
+                                       .v_align("center")
+                                       .foreground("black")
+                                       .font_size(14)
+                                       .build(ctx))
                                 .child(
                                     TextBlock::new()
-                                        .text("detail")
+                                        .text("Detail Pane")
                                         .v_align("end")
                                         .foreground("black")
                                         .margin(8)
