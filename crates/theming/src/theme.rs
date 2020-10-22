@@ -79,8 +79,8 @@ impl Theme {
 
     // reads the given config and copy it's data in the given styles map
     fn read_config(
-        style_key: &String,
-        base_key: &String,
+        style_key: &str,
+        base_key: &str,
         config: &ThemeConfig,
         styles: &mut HashMap<String, Style>,
     ) {
@@ -89,7 +89,7 @@ impl Theme {
         }
 
         if !styles.contains_key(style_key) {
-            styles.insert(style_key.clone(), Style::new());
+            styles.insert(style_key.to_string(), Style::new());
         }
 
         // start from topmost base
