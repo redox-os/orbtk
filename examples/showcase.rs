@@ -555,7 +555,7 @@ impl Template for NavigationView {
     }
 }
 
-// Contains examples how interactions work in OrbTk.
+// Contains examples how interaction works in OrbTk.
 widget!(
     InteractiveView<InteractiveState> {
         settings_text: String,
