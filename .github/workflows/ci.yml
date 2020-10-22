@@ -33,9 +33,9 @@ jobs:
      runs-on: ubuntu-latest
      steps:
       - name: install cargo-audit
-      - run: cargo install cargo-audit
+        run: cargo install cargo-audit
       - name: runt cargo-audit
-      - uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1
         with:
           command: audit
           
