@@ -31,6 +31,7 @@ orbtk_localization = { version = "0.3.1-alpha4", path = "crates/localization", d
 orbtk_render = { version = "0.3.1-alpha4", path = "crates/render", default-features = false }
 orbtk_shell = { version = "0.3.1-alpha4", path = "crates/shell", default-features = false }
 orbtk_theme_default = { version = "0.3.1-alpha4", path="crates/theme_default" }
+orbtk_theme_redox = { version = "0.3.1-alpha4", path="crates/theme_redox", optional = true }
 orbtk_theming = { version = "0.3.1-alpha4", path="crates/theming" }
 orbtk_utils = { version = "0.3.1-alpha4", path = "crates/utils" }
 orbtk_tree = { version = "0.3.1-alpha4", path="crates/tree" }
@@ -42,13 +43,17 @@ euc = "0.5.0"
 vek = "0.10.2"
 serde = "1.0.106"
 serde_derive = "1.0.106"
+orbtk_theme_redox = { version = "0.3.1-alpha4", path="crates/theme_redox" }
 
 [features]
 default = ["orbtk_shell/orbraq", "orbtk_api/orbraq", "orbtk_render/orbraq", "orbtk_widgets/orbraq", "orbtk_localization/ron"]
 miniraq = ["orbtk_shell/miniraq", "orbtk_api/miniraq", "orbtk_widgets/miniraq", "orbtk_widgets/miniraq"]
 log = ["orbtk_shell/log"]
 debug = ["orbtk_api/debug"]
- 
+
+# enable optional themes
+redox = ["orbtk_theme_redox"]
+
 [workspace]
 members = [
     "crates/localization",
@@ -59,6 +64,8 @@ members = [
     "crates/render",
     "crates/shell",
     "crates/theme_default",
+    "crates/theme_redox",
     "crates/theming",
     "crates/widgets",
+    "examples"
 ]

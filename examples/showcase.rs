@@ -584,7 +584,11 @@ widget!(
 
 impl Template for InteractiveView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let themes = vec!["default_dark".to_string(), "default_light".to_string()];
+        let themes = vec![
+            "default_dark".to_string(),
+            "default_light".to_string(),
+            "redox".to_string(),
+        ];
         let themes_count = themes.len();
 
         self.themes(themes).child(
@@ -768,6 +772,7 @@ impl State for InteractiveState {
                     match theme_index {
                         0 => ctx.switch_theme(theme_default_dark()),
                         1 => ctx.switch_theme(theme_default_light()),
+                        2 => ctx.switch_theme(theme_redox()),
                         _ => {}
                     }
                 }

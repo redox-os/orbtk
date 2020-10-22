@@ -229,6 +229,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "examples"
+version = "0.1.0"
+dependencies = [
+ "euc",
+ "orbtk",
+ "serde",
+ "serde_derive",
+ "vek",
+]
+
+[[package]]
 name = "filetime"
 version = "0.2.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -517,20 +528,17 @@ name = "orbtk"
 version = "0.3.1-alpha4"
 dependencies = [
  "dces",
- "euc",
  "orbtk_api",
  "orbtk_localization",
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
  "orbtk_theme_default",
+ "orbtk_theme_redox",
  "orbtk_theming",
  "orbtk_tree",
  "orbtk_utils",
  "orbtk_widgets",
- "serde",
- "serde_derive",
- "vek",
 ]
 
 [[package]]
@@ -609,6 +617,14 @@ dependencies = [
 
 [[package]]
 name = "orbtk_theme_default"
+version = "0.3.1-alpha4"
+dependencies = [
+ "lazy_static 1.4.0",
+ "orbtk_theming",
+]
+
+[[package]]
+name = "orbtk_theme_redox"
 version = "0.3.1-alpha4"
 dependencies = [
  "lazy_static 1.4.0",
