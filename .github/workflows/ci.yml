@@ -34,7 +34,11 @@ jobs:
      steps:
       - name: install cargo-audit
         run: cargo install cargo-audit
-      - name: runt cargo-audit
+      - name: run cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build 
+      - name: run cargo-audit
         uses: actions-rs/cargo@v1
         with:
           command: audit
