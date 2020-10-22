@@ -26,10 +26,25 @@ Theme (
         "BUTTON_BACKGROUND_PRIMARY_HOVER": "linear-gradient(to top, #f0d860, #efd035)",
         "BUTTON_BACKGORUND_PRIMARY_PRESSED": "#ebbf13", 
 
+        // text box
+        "TEXT_BOX_FOCUSED_BORDER": "#efd035",
+        "TEXT_BOX_HOVER_BACKGROUND": "#000000",
+
         // combobox
         "COMBO_BOX_BACKGROUND": "#647b91",
         "POPUP_BACKGROUND": "#444e55",
         "POPUP_BORDER": "#adb3b8",
+
+        // switch
+        "SWITCH_TOGGLE_BACKGROUND": "#dfebf5",
+        "SWITCH_TOGGLE_BORDER": "#dfebf5",
+
+        // slider
+        "SLIDER_THUMB_BACKGROUND": "#dfebf5",
+        "SLIDER_THUMB_BORDER": "#dfebf5",
+
+        // progress bar
+        "PROGRESS_BAR_BACKGROUND": "#000000",
 
         // containers such es lists and text box
         "CONTAINER_BACKGROUND": "#2B2D2F",

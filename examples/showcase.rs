@@ -14,7 +14,7 @@ fn main() {
         .build();
 
     Application::new()
-        .theme(theme_default_light())
+        // .theme(theme_default_light())
         .localization(localization)
         .window(|ctx| {
             Window::new()
@@ -152,7 +152,11 @@ impl Template for ItemsView {
                         .count(count)
                         .items_builder(move |bc, index| {
                             let text = bc.get_widget(id).get::<Vec<String>>("items")[index].clone();
-                            TextBlock::new().v_align("center").text(text).build(bc)
+                            TextBlock::new()
+                                .style("body")
+                                .v_align("center")
+                                .text(text)
+                                .build(bc)
                         })
                         .build(ctx),
                 )
@@ -172,7 +176,11 @@ impl Template for ItemsView {
                         .count(count)
                         .items_builder(move |bc, index| {
                             let text = bc.get_widget(id).get::<Vec<String>>("items")[index].clone();
-                            TextBlock::new().v_align("center").text(text).build(bc)
+                            TextBlock::new()
+                                .style("combo_box_item")
+                                .v_align("center")
+                                .text(text)
+                                .build(bc)
                         })
                         .selected_index(0)
                         .build(ctx),
@@ -337,19 +345,38 @@ impl Template for LocalizationView {
                 .width(120)
                 .margin(16)
                 .spacing(8)
-                .child(TextBlock::new().text("Hello").build(ctx))
-                .child(TextBlock::new().text("world").build(ctx))
-                .child(TextBlock::new().text("I").build(ctx))
-                .child(TextBlock::new().text("love").build(ctx))
-                .child(TextBlock::new().text("localization").build(ctx))
-                .child(TextBlock::new().text("!").build(ctx))
+                .child(
+                    TextBlock::new()
+                        .style("small_text")
+                        .text("Hello")
+                        .build(ctx),
+                )
+                .child(
+                    TextBlock::new()
+                        .style("small_text")
+                        .text("world")
+                        .build(ctx),
+                )
+                .child(TextBlock::new().style("small_text").text("I").build(ctx))
+                .child(TextBlock::new().style("small_text").text("love").build(ctx))
+                .child(
+                    TextBlock::new()
+                        .style("small_text")
+                        .text("localization")
+                        .build(ctx),
+                )
+                .child(TextBlock::new().style("small_text").text("!").build(ctx))
                 .child(
                     ComboBox::new()
                         .count(count)
                         .items_builder(move |bc, index| {
                             let text =
                                 bc.get_widget(id).get::<Vec<String>>("languages")[index].clone();
-                            TextBlock::new().v_align("center").text(text).build(bc)
+                            TextBlock::new()
+                                .style("combo_box_item")
+                                .v_align("center")
+                                .text(text)
+                                .build(bc)
                         })
                         .on_changed("selected_index", move |states, _| {
                             states.get_mut::<LocalizationState>(id).change_language();

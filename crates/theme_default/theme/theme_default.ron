@@ -207,12 +207,15 @@ Theme (
                 "width": 20,
                 "height": 20,
                 "border_radius": 10,
-                "background": "$CONTENT_FOREGROUND",
+                "background": "$SWITCH_TOGGLE_BACKGROUND",
+                "border_brush": "$SWITCH_TOGGLE_BORDER",
+                "border_width": 1
             },
             states: [
                 (
                     key: "selected",
                     properties: {
+                        "border_width": 0,
                         "background": "$ACCENT_COLOR",
                     }
                 )
@@ -251,20 +254,20 @@ Theme (
                 (
                     key: "hover",
                     properties: {
-                         "background": "$BLACK"
+                         "background": "$TEXT_BOX_HOVER_BACKGROUND"
                     }
                 ),
                 (
                     key: "focused",
                     properties: {
-                         "border_brush": "$ACCENT_COLOR",
+                         "border_brush": "$TEXT_BOX_FOCUSED_BORDER",
                     }
                 ),
                 (
                     key: "not_empty_focused",
                     properties: {
                         "foreground": "$CONTENT_FOREGROUND",
-                        "border_brush": "$ACCENT_COLOR",
+                        "border_brush": "$TEXT_BOX_FOCUSED_BORDER",
                     }
                 )
             ]
@@ -457,20 +460,23 @@ Theme (
                 "width": 24,
                 "height": 24,
                 "border_radius": 12,
-                "background": "$CONTENT_FOREGROUND",
+                "background": "$SLIDER_THUMB_BACKGROUND",
+                "border_brush": "$SLIDER_THUMB_BORDER",
+                "border_width": 1
             },
             states: [
                 (
                     key: "pressed",
                     properties: {
                          "background": "$ACCENT_COLOR",
+                         "border_width": 0
                     }
                 )
             ],
         ),
         "progress_bar": (
              properties: {
-                "background": "$BLACK",
+                "background": "$PROGRESS_BAR_BACKGROUND",
                 "border_radius": 0,
                 "border_width": 0,
                 "height": 12,
