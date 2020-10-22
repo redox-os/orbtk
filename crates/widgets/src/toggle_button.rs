@@ -1,6 +1,6 @@
 use super::behaviors::{MouseBehavior, SelectionBehavior};
 
-use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
+use crate::{api::prelude::*, prelude::*, proc_macros::*, theme_default::prelude::*};
 
 widget!(
     /// The `ToggleButton` widget can be clicked by user and could switch between selected / not selected.

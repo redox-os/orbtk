@@ -475,6 +475,9 @@ impl RenderContext2D {
     }
     pub fn finish(&mut self) {}
 
+    /// Dummy implementation to be compatible to other platforms.
+    pub fn register_font(&mut self, _family: &str, _font_file: &'static [u8]) {}
+
     fn fill_style<'a>(&self, brush: &Brush) {
         match brush {
             Brush::SolidColor(color) => {

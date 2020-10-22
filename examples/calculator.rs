@@ -1,6 +1,6 @@
 use orbtk::{
     prelude::*,
-    theme::{COLORS_RON, DARK_THEME_RON, FONTS_RON},
+    theme_default::{THEME_DEFAULT, THEME_DEFAULT_COLORS_DARK, THEME_DEFAULT_FONTS},
     theming::config::ThemeConfig,
 };
 
@@ -8,10 +8,10 @@ static DARK_EXT: &str = include_str!("../res/calculator/calculator_dark.ron");
 
 fn theme() -> Theme {
     Theme::from_config(
-        ThemeConfig::from(DARK_THEME_RON)
+        ThemeConfig::from(THEME_DEFAULT)
             .extend(ThemeConfig::from(DARK_EXT))
-            .extend(ThemeConfig::from(COLORS_RON))
-            .extend(ThemeConfig::from(FONTS_RON)),
+            .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_DARK))
+            .extend(ThemeConfig::from(THEME_DEFAULT_FONTS)),
     )
 }
 

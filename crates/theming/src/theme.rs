@@ -4,46 +4,43 @@ use ron::Value;
 
 use crate::{
     config::{ThemeConfig, RESOURCE_KEY},
-    Selector, Style,
+    Selector, State, Style,
 };
 
+/// Theme is used to read properties for a given selector with a internal state.
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Theme {
     styles: HashMap<String, Style>,
+    fonts: HashMap<String, &'static [u8]>,
 }
 
 impl Theme {
-    pub fn from_config(theme: ThemeConfig) -> Self {
+    /// Creates a theme from the given config.
+    pub fn from_config(config: ThemeConfig) -> Self {
         let mut styles = HashMap::new();
 
-        for style_key in theme.styles.keys() {
-            let mut properties = HashMap::new();
-            Theme::read_properties(style_key, &theme, &mut properties);
-
-            let mut states = HashMap::new();
-
-            let base_key = theme.styles.get(style_key).unwrap().base.clone();
-
-            if let Some(base) = theme.styles.get(&base_key) {
-                for state_key in base.states.keys() {
-                    let mut state = HashMap::new();
-                    Theme::read_states(&base_key, state_key, &theme, &mut state);
-                    states.insert(state_key.clone(), state);
-                }
-            }
-
-            for state_key in theme.styles.get(style_key).unwrap().states.keys() {
-                let mut state = HashMap::new();
-                Theme::read_states(style_key, state_key, &theme, &mut state);
-                states.insert(state_key.clone(), state);
-            }
-
-            styles.insert(style_key.clone(), Style { properties, states });
+        for style_key in config.styles.keys() {
+            Theme::read_config(style_key, style_key, &config, &mut styles)
         }
 
-        Theme { styles }
+        Theme {
+            styles,
+            fonts: HashMap::new(),
+        }
     }
 
+    /// Registers a new font file as binary.
+    pub fn register_font(mut self, key: &str, font: &'static [u8]) -> Self {
+        self.fonts.insert(key.to_string(), font);
+        self
+    }
+
+    /// Returns the map of registered fonts.
+    pub fn fonts(&self) -> &HashMap<String, &'static [u8]> {
+        &self.fonts
+    }
+
+    /// Returns a reference to the style corresponding to the key.
     pub fn style(&self, key: &str) -> Option<&Style> {
         self.styles.get(key)
     }
@@ -56,14 +53,20 @@ impl Theme {
         if let Some(style) = &selector.style {
             let mut properties = HashMap::new();
 
-            for (key, value) in &self.styles.get(style)?.properties {
-                properties.insert(key.clone(), value.clone());
-            }
+            if let Some(style) = self.styles.get(style) {
+                for (key, value) in &style.properties {
+                    properties.insert(key.clone(), value.clone());
+                }
 
-            if let Some(state) = selector.active_state() {
-                if let Some(state_properties) = self.styles.get(style)?.states.get(state) {
-                    for (key, value) in state_properties {
-                        properties.insert(key.clone(), value.clone());
+                // reverse order because last active state has highest priority
+                for state in style.states.iter().rev() {
+                    if selector.states().contains(&state.key) {
+                        for (key, value) in &state.properties {
+                            // properties of the selected state overrides default properties
+                            properties.insert(key.clone(), value.clone());
+                        }
+
+                        break;
                     }
                 }
             }
@@ -74,59 +77,69 @@ impl Theme {
         None
     }
 
-    fn read_properties(key: &str, theme: &ThemeConfig, properties: &mut HashMap<String, Value>) {
-        if key.is_empty() {
-            return;
-        }
-
-        if let Some(style) = theme.styles.get(key) {
-            Theme::read_properties(&style.base, theme, properties);
-
-            for (key, value) in &style.properties {
-                Theme::read_property(key, value, theme, properties);
-            }
-        }
-    }
-
-    fn read_states(
+    // reads the given config and copy it's data in the given styles map
+    fn read_config(
         style_key: &str,
-        state_key: &str,
-        theme: &ThemeConfig,
-        states: &mut HashMap<String, Value>,
+        base_key: &str,
+        config: &ThemeConfig,
+        styles: &mut HashMap<String, Style>,
     ) {
-        if style_key.is_empty() || state_key.is_empty() {
+        if style_key.is_empty() {
             return;
         }
 
-        if let Some(style) = theme.styles.get(style_key) {
-            for (key, value) in &style.properties {
-                Theme::read_property(key, value, theme, states);
-            }
+        if !styles.contains_key(style_key) {
+            styles.insert(style_key.to_string(), Style::new());
+        }
 
-            if let Some(state) = style.states.get(state_key) {
-                for (key, value) in state {
-                    Theme::read_property(key, value, theme, states);
+        // start from topmost base
+        if let Some(style) = config.styles.get(base_key) {
+            if !style.base.is_empty() && style.base != *style_key {
+                Theme::read_config(style_key, &style.base, config, styles);
+            }
+        }
+
+        if let Some(style_config) = config.styles.get(base_key) {
+            if let Some(style) = styles.get_mut(style_key) {
+                // reads the properties
+                for (property_key, property_value) in &style_config.properties {
+                    style.properties.insert(
+                        property_key.clone(),
+                        Theme::read_value(property_value, &config.resources),
+                    );
+                }
+
+                // reads the states
+                for state in &style_config.states {
+                    let mut new_state = State::new(state.key.clone());
+
+                    for (property_key, property_value) in &state.properties {
+                        new_state.properties.insert(
+                            property_key.clone(),
+                            Theme::read_value(property_value, &config.resources),
+                        );
+                    }
+
+                    // a state with the same name on a lower base style or the indented style overrides the state of a higher base
+                    if let Some(pos) = style.states.iter().position(|s| s.key == new_state.key) {
+                        style.states.remove(pos);
+                        style.states.insert(pos, new_state)
+                    } else {
+                        style.states.push(new_state);
+                    }
                 }
             }
         }
     }
 
-    fn read_property(
-        key: &str,
-        value: &Value,
-        theme: &ThemeConfig,
-        map: &mut HashMap<String, Value>,
-    ) {
-        if let Ok(value) = value.clone().into_rust::<String>() {
-            if value.starts_with(RESOURCE_KEY) {
-                if let Some(value) = theme.resources.get(&value.replace(RESOURCE_KEY, "")) {
-                    map.insert(key.to_string(), value.clone());
-                }
-            } else {
-                map.insert(key.to_string(), Value::String(value));
+    // if the property value is a place holder replace it with the corresponding value of the resources
+    fn read_value(property_value: &Value, resources: &HashMap<String, Value>) -> Value {
+        if let Ok(value) = property_value.clone().into_rust::<String>() {
+            if let Some(replace_value) = resources.get(&value.replace(RESOURCE_KEY, "")) {
+                return replace_value.clone();
             }
-        } else {
-            map.insert(key.to_string(), value.clone());
         }
+
+        property_value.clone()
     }
 }

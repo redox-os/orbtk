@@ -5,7 +5,7 @@ use std::{
 
 use super::behaviors::{MouseBehavior, SelectionBehavior};
 
-use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
+use crate::{api::prelude::*, prelude::*, proc_macros::*, theme_default::prelude::*};
 
 // --- KEYS --
 
@@ -85,6 +85,26 @@ impl State for ComboBoxItemState {
             ctx.clear_children_of(selected_container);
             let build_context = &mut ctx.build_context();
             let selected_content = builder.borrow()(build_context, index);
+            build_context.register_shared_property::<Brush>(
+                "foreground",
+                selected_content,
+                self.combo_box,
+            );
+            build_context.register_shared_property::<f32>(
+                "opacity",
+                selected_content,
+                self.combo_box,
+            );
+            build_context.register_shared_property::<f32>(
+                "opacity",
+                selected_content,
+                self.combo_box,
+            );
+            build_context.register_shared_property::<f64>(
+                "font_size",
+                selected_content,
+                self.combo_box,
+            );
             build_context.append_child(selected_container, selected_content);
         }
     }

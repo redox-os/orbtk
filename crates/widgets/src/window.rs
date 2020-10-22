@@ -1,6 +1,8 @@
 use std::{collections::VecDeque, rc::Rc};
 
-use crate::{api::prelude::*, proc_macros::*, shell::prelude::WindowRequest, theme::prelude::*};
+use crate::{
+    api::prelude::*, proc_macros::*, shell::prelude::WindowRequest, theme_default::prelude::*,
+};
 
 // --- KEYS --
 pub static STYLE_WINDOW: &str = "window";

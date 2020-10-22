@@ -27,7 +27,7 @@ impl FocusState {
             old_focused_element.set("focused", false);
             old_focused_element
                 .get_mut::<Selector>("selector")
-                .remove_state("focused");
+                .remove_all_similar_states("focused");
             old_focused_element.update(false);
         }
 
@@ -56,7 +56,7 @@ impl FocusState {
             old_focused_element.set("focused", false);
             old_focused_element
                 .get_mut::<Selector>("selector")
-                .remove_state("focused");
+                .remove_all_similar_states("focused");
             old_focused_element.update(false);
         }
 

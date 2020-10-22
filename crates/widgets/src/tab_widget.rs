@@ -1,6 +1,6 @@
 use super::behaviors::MouseBehavior;
 
-use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
+use crate::{api::prelude::*, prelude::*, proc_macros::*, theme_default::prelude::*};
 
 // --- KEYS --
 const TAB_HEADER_CONTAINER: &str = "tab_header_container";

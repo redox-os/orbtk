@@ -8,7 +8,7 @@ pub(crate) use orbtk_api as api;
 pub(crate) use orbtk_proc_macros as proc_macros;
 pub(crate) use orbtk_render as render;
 pub(crate) use orbtk_shell as shell;
-pub(crate) use orbtk_theme as theme;
+pub(crate) use orbtk_theme_default as theme_default;
 
 pub use self::button::*;
 pub use self::canvas::*;

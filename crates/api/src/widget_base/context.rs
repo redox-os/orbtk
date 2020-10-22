@@ -443,6 +443,10 @@ impl<'a> Context<'a> {
 
         *self.window().get_mut::<Theme>("theme") = theme;
 
+        for (key, font) in self.theme.fonts() {
+            self.render_context.register_font(key, *font);
+        }
+
         // update on window to update all widgets in the tree
         self.window().update_dirty(true);
     }

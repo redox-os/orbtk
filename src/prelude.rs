@@ -13,8 +13,9 @@ pub use crate::{
     localization::prelude::*,
     proc_macros::*,
     render::prelude::*,
-    theme::{
-        colors, dark_theme, default_theme, fonts, light_theme, vector_graphics::material_icons_font,
+    theme_default::{
+        colors, fonts, theme_default, theme_default_dark, theme_default_light,
+        vector_graphics::material_icons_font,
     },
     theming::prelude::*,
     tree::prelude::*,

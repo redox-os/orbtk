@@ -175,7 +175,7 @@ impl RenderPipeline for Graphic2DPipeline {
         render_context.fill_rect(rect_x, rect_y, rect_width, rect_height);
         render_context.register_font(
             "Roboto-Regular",
-            include_bytes!("../crates/theme/src/fonts/Roboto-Regular.ttf"),
+            include_bytes!("../crates/theme_default/assets/fonts/Roboto-Regular.ttf"),
         );
         render_context.set_font_size(60.0);
         render_context.set_font_family("Roboto-Regular");

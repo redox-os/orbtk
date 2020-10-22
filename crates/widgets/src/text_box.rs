@@ -1,6 +1,6 @@
 use super::behaviors::{TextAction, TextBehavior};
 
-use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
+use crate::{api::prelude::*, prelude::*, proc_macros::*, theme_default::prelude::*};
 
 // --- KEYS --
 pub static STYLE_TEXT_BOX: &str = "text_box";
@@ -57,7 +57,10 @@ widget!(
         request_focus: bool,
 
         /// If set to `true` all character will be focused when the widget gets focus. Default is `true`
-        select_all_on_focus: bool
+        select_all_on_focus: bool,
+
+        /// Indicates if the widget is hovered by the mouse cursor.
+        hover: bool
     }
 );
 

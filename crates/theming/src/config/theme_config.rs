@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use ron::{de::from_str, Value};
 use serde_derive::{Deserialize, Serialize};
 
-use crate::{config::StyleConfig, Selector};
+use crate::config::StyleConfig;
 
 pub static BASE_STYLE: &str = "base";
 pub static RESOURCE_KEY: &str = "$";
@@ -33,81 +33,6 @@ impl<'a> ThemeConfig {
         }
 
         self
-    }
-
-    /// Gets a property by the given name and a selector.
-    pub fn property(&'a self, property: &str, selector: &Selector) -> Option<Value> {
-        if let Some(style) = &selector.style {
-            if let Some(style) = self.styles.get(style) {
-                return self.get_property(property, style, selector);
-            }
-        }
-
-        // if there is no style read value from base style.
-        if let Some(base_style) = self.styles.get(BASE_STYLE) {
-            return self.get_property(property, base_style, selector);
-        }
-
-        None
-    }
-
-    fn get_property(
-        &'a self,
-        property: &str,
-        style: &'a StyleConfig,
-        selector: &Selector,
-    ) -> Option<Value> {
-        // state properties has the most priority
-        if let Some(state) = selector.active_state() {
-            if let Some(properties) = style.states.get(state) {
-                return self.get_property_value(property, properties);
-            }
-
-            // load state properties from based style if there are no other states (recursive through base style).
-            if style.base.is_empty() {
-                return None;
-            }
-
-            if let Some(base_style) = self.styles.get(&style.base) {
-                if let Some(properties) = base_style.states.get(state) {
-                    return self.get_property_value(property, properties);
-                }
-            }
-        }
-
-        let value = self.get_property_value(property, &style.properties);
-
-        if value.is_some() {
-            return value;
-        }
-
-        // load properties from based style if there are no other states (recursive through base style).
-        if style.base.is_empty() {
-            return None;
-        }
-
-        if let Some(base_style) = self.styles.get(&style.base) {
-            return self.get_property(property, base_style, selector);
-        }
-
-        None
-    }
-
-    fn get_property_value(
-        &self,
-        property: &str,
-        properties: &'a HashMap<String, Value>,
-    ) -> Option<Value> {
-        let property = properties.get(property)?;
-
-        // load from resources if the value is a key.
-        if let Ok(key) = property.clone().into_rust::<String>() {
-            if key.starts_with(RESOURCE_KEY) {
-                return Some(self.resources.get(&key.replace(RESOURCE_KEY, ""))?.clone());
-            }
-        }
-
-        Some(property.clone())
     }
 }
 

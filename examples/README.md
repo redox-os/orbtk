@@ -28,7 +28,6 @@
     ![settings](https://gitlab.redox-os.org/redox-os/assets/-/raw/master/screenshots/orbtk_examples/settings_example.jpg)
 
 * stack: stack layout example
-* widgets: widget overview
 
 ## License
 

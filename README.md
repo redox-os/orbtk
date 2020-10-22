@@ -195,11 +195,14 @@ Theme (
             properties: {
                 "background": "$BLACK",
             },
-            states: {
-                "pressed": {
-                    "background": "$WHITE",
-                }
-            }
+            states: [
+                (
+                    key: "pressed",
+                    properties: {
+                        "background": "$WHITE",
+                    }
+                )
+            ]
         )
     },
     resource: {

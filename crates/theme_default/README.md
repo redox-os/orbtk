@@ -1,6 +1,6 @@
-# orbtk_theme
+# orbtk_theme_default
 
-Base resources and css styles of OrbTks default theme (dark and light). It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
+Default theme of OrbTk (dark and light). It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 
 [![Build and test](https://github.com/redox-os/orbtk/workflows/CI/badge.svg)](https://github.com/redox-os/orbtk/actions)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](../../LICENSE)

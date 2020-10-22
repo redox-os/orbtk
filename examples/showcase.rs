@@ -14,6 +14,7 @@ fn main() {
         .build();
 
     Application::new()
+        // .theme(theme_default_light())
         .localization(localization)
         .window(|ctx| {
             Window::new()
@@ -29,6 +30,7 @@ fn main() {
 
 // [START] views
 
+// Represents the main wrapper view with main navigation.
 widget!(MainView {});
 
 impl Template for MainView {
@@ -47,6 +49,7 @@ impl Template for MainView {
     }
 }
 
+// Represents an overview with button and text widgets.
 widget!(ButtonView {});
 
 impl Template for ButtonView {
@@ -69,6 +72,13 @@ impl Template for ButtonView {
                                 .on_leave(|_, _| {
                                     println!("Leave Button boundries");
                                 })
+                                .build(ctx),
+                        )
+                        .child(
+                            Button::new()
+                                .enabled(false)
+                                .text("disabled")
+                                .icon(material_icons_font::MD_CHECK)
                                 .build(ctx),
                         )
                         .child(
@@ -97,7 +107,9 @@ impl Template for ButtonView {
                                 .build(ctx),
                         )
                         .child(CheckBox::new().text("CheckBox").build(ctx))
+                        .child(CheckBox::new().enabled(false).text("disabled").build(ctx))
                         .child(Switch::new().build(ctx))
+                        .child(Switch::new().enabled(false).build(ctx))
                         .child(slider)
                         .child(ProgressBar::new().val(slider).build(ctx))
                         .build(ctx),
@@ -124,6 +136,7 @@ impl Template for ButtonView {
 
 type List = Vec<String>;
 
+// Represents an overview of list widgets like ListView, ItemsWidget and ComboBox.
 widget!(ItemsView { items: List });
 
 impl Template for ItemsView {
@@ -151,7 +164,11 @@ impl Template for ItemsView {
                         .count(count)
                         .items_builder(move |bc, index| {
                             let text = bc.get_widget(id).get::<Vec<String>>("items")[index].clone();
-                            TextBlock::new().v_align("center").text(text).build(bc)
+                            TextBlock::new()
+                                .style("body")
+                                .v_align("center")
+                                .text(text)
+                                .build(bc)
                         })
                         .build(ctx),
                 )
@@ -170,7 +187,18 @@ impl Template for ItemsView {
                     ComboBox::new()
                         .count(count)
                         .items_builder(move |bc, index| {
-                            let text = bc.get_widget(id).get::<Vec<String>>("items")[index].clone();
+                            let text = ItemsView::items_ref(&bc.get_widget(id))[index].clone();
+                            TextBlock::new().v_align("center").text(text).build(bc)
+                        })
+                        .selected_index(0)
+                        .build(ctx),
+                )
+                .child(
+                    ComboBox::new()
+                        .enabled(false)
+                        .count(count)
+                        .items_builder(move |bc, index| {
+                            let text = ItemsView::items_ref(&bc.get_widget(id))[index].clone();
                             TextBlock::new().v_align("center").text(text).build(bc)
                         })
                         .selected_index(0)
@@ -181,6 +209,7 @@ impl Template for ItemsView {
     }
 }
 
+// Represents an overview of layout widgets.
 widget!(LayoutView {});
 
 impl Template for LayoutView {
@@ -311,6 +340,7 @@ impl Template for LayoutView {
     }
 }
 
+// Represents an overview of the image widget.
 widget!(ImageView {});
 
 impl Template for ImageView {
@@ -324,6 +354,7 @@ impl Template for ImageView {
     }
 }
 
+// Contains an example how to use localization in OrbTk.
 widget!(LocalizationView<LocalizationState> { languages: List, selected_index: i32 });
 
 impl Template for LocalizationView {
@@ -336,18 +367,33 @@ impl Template for LocalizationView {
                 .width(120)
                 .margin(16)
                 .spacing(8)
-                .child(TextBlock::new().text("Hello").build(ctx))
-                .child(TextBlock::new().text("world").build(ctx))
-                .child(TextBlock::new().text("I").build(ctx))
-                .child(TextBlock::new().text("love").build(ctx))
-                .child(TextBlock::new().text("localization").build(ctx))
-                .child(TextBlock::new().text("!").build(ctx))
+                .child(
+                    TextBlock::new()
+                        .style("small_text")
+                        .text("Hello")
+                        .build(ctx),
+                )
+                .child(
+                    TextBlock::new()
+                        .style("small_text")
+                        .text("world")
+                        .build(ctx),
+                )
+                .child(TextBlock::new().style("small_text").text("I").build(ctx))
+                .child(TextBlock::new().style("small_text").text("love").build(ctx))
+                .child(
+                    TextBlock::new()
+                        .style("small_text")
+                        .text("localization")
+                        .build(ctx),
+                )
+                .child(TextBlock::new().style("small_text").text("!").build(ctx))
                 .child(
                     ComboBox::new()
                         .count(count)
                         .items_builder(move |bc, index| {
                             let text =
-                                bc.get_widget(id).get::<Vec<String>>("languages")[index].clone();
+                                LocalizationView::languages_ref(&bc.get_widget(id))[index].clone();
                             TextBlock::new().v_align("center").text(text).build(bc)
                         })
                         .on_changed("selected_index", move |states, _| {
@@ -361,6 +407,7 @@ impl Template for LocalizationView {
     }
 }
 
+// Represents an overview of navigation widgets.
 widget!(
     NavigationView<NavigationState> {
         md_navigation_visibility: Visibility
@@ -446,7 +493,7 @@ impl Template for NavigationView {
                 )
                 .child(
                     TextBlock::new()
-                        .text("MasterDetail (resize the window)")
+                        .text("MasterDetail")
                         .attach(Grid::row(5))
                         .style("header")
                         .build(ctx),
@@ -455,20 +502,32 @@ impl Template for NavigationView {
                     MasterDetail::new()
                         .id(ID_NAVIGATION_MASTER_DETAIL)
                         .responsive(true)
-                        .break_point(800)
+                        .break_point(1000)
                         .navigation_visibility(("md_navigation_visibility", id))
                         .attach(Grid::row(6))
                         .master_detail(
                             Container::new()
                                 .padding(8)
                                 .background("lynch")
-                                .child(TextBlock::new().text("master").v_align("end").build(ctx))
+                                .child(
+                                    Stack::new()
+                                        .orientation("vertical")
+                                        .h_align("center")
+                                        .v_align("center")
+                                        .child(TextBlock::new().text("Content inside the master pane")
+                                               .font_size(16)
+                                               .build(ctx))
+                                        .child(TextBlock::new().text("Resize the window: Pane brake is set to 800 pixel")
+                                               .font_size(14)
+                                               .build(ctx))
+                                        .build(ctx))
+                                .child(TextBlock::new().text("Master Pane").v_align("end").build(ctx))
                                 .child(
                                     Button::new()
                                         .style("button_primary_single_content")
                                         .visibility(("md_navigation_visibility", id))
                                         .h_align("start")
-                                        .text("show details")
+                                        .text("show detail pane")
                                         .on_click(move |ctx, _| {
                                             ctx.send_message(MasterDetailAction::ShowDetail, id);
                                             true
@@ -479,9 +538,15 @@ impl Template for NavigationView {
                             Container::new()
                                 .padding(8)
                                 .background("goldendream")
+                                .child(TextBlock::new().text("Content inside the detail pane")
+                                       .h_align("center")
+                                       .v_align("center")
+                                       .foreground("black")
+                                       .font_size(14)
+                                       .build(ctx))
                                 .child(
                                     TextBlock::new()
-                                        .text("detail")
+                                        .text("Detail Pane")
                                         .v_align("end")
                                         .foreground("black")
                                         .margin(8)
@@ -508,25 +573,41 @@ impl Template for NavigationView {
     }
 }
 
+// Contains examples how interaction works in OrbTk.
 widget!(
     InteractiveView<InteractiveState> {
-        settings_text: String
+        settings_text: String,
+        themes: List,
+        selected_index: i32
     }
 );
 
 impl Template for InteractiveView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        self.child(
+        let themes = vec!["default_dark".to_string(), "default_light".to_string()];
+        let themes_count = themes.len();
+
+        self.themes(themes).child(
             Grid::new()
                 .margin(8)
-                .rows(Rows::create().push("auto").push(4).push(32))
+                .rows(
+                    Rows::create()
+                        .push("auto")
+                        .push(4)
+                        .push(32)
+                        .push(8)
+                        .push("auto")
+                        .push(4)
+                        .push(32),
+                )
                 .columns(
                     Columns::create()
                         .push("auto")
                         .push(4)
                         .push("auto")
                         .push(4)
-                        .push("auto"),
+                        .push("auto")
+                        .push("*"),
                 )
                 .child(
                     TextBlock::new()
@@ -568,6 +649,31 @@ impl Template for InteractiveView {
                             ctx.send_message(InteractiveAction::SaveSettings, id);
                             true
                         })
+                        .build(ctx),
+                )
+                .child(
+                    TextBlock::new()
+                        .style("header")
+                        .attach(Grid::row(4))
+                        .attach(Grid::column(0))
+                        .style("small_text")
+                        .text("Select theme")
+                        .build(ctx),
+                )
+                .child(
+                    ComboBox::new()
+                        .attach(Grid::row(6))
+                        .attach(Grid::column(0))
+                        .count(themes_count)
+                        .items_builder(move |bc, index| {
+                            let text =
+                                InteractiveView::themes_ref(&bc.get_widget(id))[index].clone();
+                            TextBlock::new().v_align("center").text(text).build(bc)
+                        })
+                        .on_changed("selected_index", move |ctx, _| {
+                            ctx.send_message(InteractiveAction::ChangeTheme, id);
+                        })
+                        .selected_index(id)
                         .build(ctx),
                 )
                 .build(ctx),
@@ -626,7 +732,7 @@ impl State for LocalizationState {
         match selected_language.as_str() {
             "English" => ctx.set_language("en_US"),
             "German" => ctx.set_language("de_DE"),
-            _ => {}
+            _ => (),
         }
 
         self.change_language = false;
@@ -656,6 +762,15 @@ impl State for InteractiveState {
                         ctx.entity(),
                     );
                 }
+                InteractiveAction::ChangeTheme => {
+                    let theme_index = *InteractiveView::selected_index_ref(&ctx.widget());
+
+                    match theme_index {
+                        0 => ctx.switch_theme(theme_default_dark()),
+                        1 => ctx.switch_theme(theme_default_light()),
+                        _ => {}
+                    }
+                }
             }
         }
 
@@ -681,6 +796,7 @@ impl State for InteractiveState {
 enum InteractiveAction {
     SaveSettings,
     LoadSettings,
+    ChangeTheme,
 }
 
 use serde_derive::{Deserialize, Serialize};

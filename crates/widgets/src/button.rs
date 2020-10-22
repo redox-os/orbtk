@@ -1,6 +1,6 @@
 use super::behaviors::MouseBehavior;
 
-use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
+use crate::{api::prelude::*, prelude::*, proc_macros::*, theme_default::prelude::*};
 
 widget!(
     /// The `Button` widget can be clicked by user. It's used to perform an action.

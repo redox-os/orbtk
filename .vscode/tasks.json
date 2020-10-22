@@ -24,26 +24,6 @@
       "problemMatcher": []
     },
     {
-      "label": "build pathfinder",
-      "command": "cargo",
-      "type": "shell",
-      "args": [
-        "build",
-        "--examples=minimal",
-        "--features",
-        "pathfinder"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "new"
-      },
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
       "label": "build release",
       "command": "cargo",
       "type": "shell",
@@ -106,22 +86,21 @@
       "command": "cargo",
       "type": "shell",
       "args": [
-          "web",
-          "start",
-          "--target=wasm32-unknown-unknown",
-          "--auto-reload",
-          "--example",
-          "widgets"
+        "web",
+        "start",
+        "--target=wasm32-unknown-unknown",
+        "--auto-reload",
+        "--example",
+        "widgets"
       ],
       "presentation": {
-          "reveal": "always",
-          "panel": "new"
+        "reveal": "always",
+        "panel": "new"
       },
       "group": {
-          "kind": "build",
-          "isDefault": true
+        "kind": "build",
+        "isDefault": true
       }
-  },
-
+    },
   ]
 }
