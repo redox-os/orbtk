@@ -25,36 +25,21 @@ Theme (
             }
         ),
          "button_calculator": ( 
-            base: "base",
+            base: "button",
             properties: {
                 "min_width": 48,
                 "height": 48,
-                "foreground": "$LINK_WATER",
-                "icon_brush": "$LINK_WATER",
-                "background": "$LYNCH",
                 "border_radius": 1,
                 "spacing": 0,
-            }, 
-            states: {
-                "pressed": {
-                    "background": "$BLUE_BAYOUX",
-                },
-                "selected": {
-                    "background": "$BLUE_BAYOUX",
-                },
-                "disabled": {
-                    "background": "$ROLLING_STONE",
-                    "foreground": "$BRIGHT_GRAY",
-                    "icon_brush": "$BRIGHT_GRAY",
-                },
             },
         ),
         "button_calculator_primary": (
-            base: "button_calculator",
+            base: "button_primary",
             properties: {
-                "background": "$GOLDEN_DREAM",
-                "foreground": "$BRIGHT_GRAY",
-                "icon_brush": "$BRIGHT_GRAY",
+                "min_width": 48,
+                "height": 48,
+                "border_radius": 1,
+                "spacing": 0,
             },
         ),
     }

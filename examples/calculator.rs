@@ -8,8 +8,8 @@ static DARK_EXT: &str = include_str!("../res/calculator/calculator_dark.ron");
 
 fn theme() -> Theme {
     Theme::from_config(
-        ThemeConfig::from(THEME_DEFAULT)
-            .extend(ThemeConfig::from(DARK_EXT))
+        ThemeConfig::from(DARK_EXT)
+            .extend(ThemeConfig::from(THEME_DEFAULT))
             .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_DARK))
             .extend(ThemeConfig::from(THEME_DEFAULT_FONTS)),
     )
