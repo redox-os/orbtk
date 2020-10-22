@@ -175,7 +175,7 @@ impl Template for ItemsView {
                     ComboBox::new()
                         .count(count)
                         .items_builder(move |bc, index| {
-                            let text = bc.get_widget(id).get::<Vec<String>>("items")[index].clone();
+                            let text = ItemsView::items_ref(&bc.get_widget(id))[index].clone();
                             TextBlock::new()
                                 .style("combo_box_item")
                                 .v_align("center")
@@ -371,7 +371,7 @@ impl Template for LocalizationView {
                         .count(count)
                         .items_builder(move |bc, index| {
                             let text =
-                                bc.get_widget(id).get::<Vec<String>>("languages")[index].clone();
+                                LocalizationView::languages_ref(&bc.get_widget(id))[index].clone();
                             TextBlock::new()
                                 .style("combo_box_item")
                                 .v_align("center")
@@ -538,23 +538,38 @@ impl Template for NavigationView {
 
 widget!(
     InteractiveView<InteractiveState> {
-        settings_text: String
+        settings_text: String,
+        themes: List,
+        selected_index: i32
     }
 );
 
 impl Template for InteractiveView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        self.child(
+        let themes = vec!["default_dark".to_string(), "default_light".to_string()];
+        let themes_count = themes.len();
+
+        self.themes(themes).child(
             Grid::new()
                 .margin(8)
-                .rows(Rows::create().push("auto").push(4).push(32))
+                .rows(
+                    Rows::create()
+                        .push("auto")
+                        .push(4)
+                        .push(32)
+                        .push(8)
+                        .push("auto")
+                        .push(4)
+                        .push(32),
+                )
                 .columns(
                     Columns::create()
                         .push("auto")
                         .push(4)
                         .push("auto")
                         .push(4)
-                        .push("auto"),
+                        .push("auto")
+                        .push("*"),
                 )
                 .child(
                     TextBlock::new()
@@ -596,6 +611,35 @@ impl Template for InteractiveView {
                             ctx.send_message(InteractiveAction::SaveSettings, id);
                             true
                         })
+                        .build(ctx),
+                )
+                .child(
+                    TextBlock::new()
+                        .style("header")
+                        .attach(Grid::row(4))
+                        .attach(Grid::column(0))
+                        .style("small_text")
+                        .text("Select theme")
+                        .build(ctx),
+                )
+                .child(
+                    ComboBox::new()
+                        .attach(Grid::row(6))
+                        .attach(Grid::column(0))
+                        .count(themes_count)
+                        .items_builder(move |bc, index| {
+                            let text =
+                                InteractiveView::themes_ref(&bc.get_widget(id))[index].clone();
+                            TextBlock::new()
+                                .style("combo_box_item")
+                                .v_align("center")
+                                .text(text)
+                                .build(bc)
+                        })
+                        .on_changed("selected_index", move |ctx, _| {
+                            ctx.send_message(InteractiveAction::ChangeTheme, id);
+                        })
+                        .selected_index(id)
                         .build(ctx),
                 )
                 .build(ctx),
@@ -654,7 +698,7 @@ impl State for LocalizationState {
         match selected_language.as_str() {
             "English" => ctx.set_language("en_US"),
             "German" => ctx.set_language("de_DE"),
-            _ => {}
+            _ => (),
         }
 
         self.change_language = false;
@@ -684,6 +728,15 @@ impl State for InteractiveState {
                         ctx.entity(),
                     );
                 }
+                InteractiveAction::ChangeTheme => {
+                    let theme_index = *InteractiveView::selected_index_ref(&ctx.widget());
+
+                    match theme_index {
+                        0 => ctx.switch_theme(theme_default_dark()),
+                        1 => ctx.switch_theme(theme_default_light()),
+                        _ => {}
+                    }
+                }
             }
         }
 
@@ -709,6 +762,7 @@ impl State for InteractiveState {
 enum InteractiveAction {
     SaveSettings,
     LoadSettings,
+    ChangeTheme,
 }
 
 use serde_derive::{Deserialize, Serialize};
