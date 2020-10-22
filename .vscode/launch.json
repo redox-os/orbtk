@@ -18,6 +18,17 @@
     {
       "type": "lldb",
       "request": "launch",
+      "name": "showcase release",
+      "program": "${workspaceFolder}/target/release/examples/showcase",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build release",
+      "sourceLanguages": [
+        "rust"
+      ]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
       "name": "Calculator",
       "program": "${workspaceFolder}/target/debug/examples/calculator",
       "cwd": "${workspaceFolder}",

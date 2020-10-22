@@ -43,6 +43,9 @@ Theme (
         "SLIDER_THUMB_BACKGROUND": "#dfebf5",
         "SLIDER_THUMB_BORDER": "#dfebf5",
 
+        // combobox
+        "COMBO_BOX_ITEM_SELECTED": "#3b434a",
+
         // progress bar
         "PROGRESS_BAR_BACKGROUND": "#000000",
 

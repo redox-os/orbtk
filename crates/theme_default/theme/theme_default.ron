@@ -338,6 +338,7 @@ Theme (
         "combo_box": (
             base: "base",
             properties: {
+                "font_size": "$FONT_SIZE_12",
                 "foreground": "$CONTENT_FOREGROUND",
                 "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BUTTON_BACKGROUND",
@@ -372,7 +373,7 @@ Theme (
                 (
                     key: "selected",
                     properties: {
-                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
+                        "foreground": "$COMBO_BOX_ITEM_SELECTED",
                         "background": "$ACCENT_COLOR",
                     }
                 ),

@@ -176,11 +176,7 @@ impl Template for ItemsView {
                         .count(count)
                         .items_builder(move |bc, index| {
                             let text = ItemsView::items_ref(&bc.get_widget(id))[index].clone();
-                            TextBlock::new()
-                                .style("combo_box_item")
-                                .v_align("center")
-                                .text(text)
-                                .build(bc)
+                            TextBlock::new().v_align("center").text(text).build(bc)
                         })
                         .selected_index(0)
                         .build(ctx),
@@ -372,11 +368,7 @@ impl Template for LocalizationView {
                         .items_builder(move |bc, index| {
                             let text =
                                 LocalizationView::languages_ref(&bc.get_widget(id))[index].clone();
-                            TextBlock::new()
-                                .style("combo_box_item")
-                                .v_align("center")
-                                .text(text)
-                                .build(bc)
+                            TextBlock::new().v_align("center").text(text).build(bc)
                         })
                         .on_changed("selected_index", move |states, _| {
                             states.get_mut::<LocalizationState>(id).change_language();
@@ -630,11 +622,7 @@ impl Template for InteractiveView {
                         .items_builder(move |bc, index| {
                             let text =
                                 InteractiveView::themes_ref(&bc.get_widget(id))[index].clone();
-                            TextBlock::new()
-                                .style("combo_box_item")
-                                .v_align("center")
-                                .text(text)
-                                .build(bc)
+                            TextBlock::new().v_align("center").text(text).build(bc)
                         })
                         .on_changed("selected_index", move |ctx, _| {
                             ctx.send_message(InteractiveAction::ChangeTheme, id);
