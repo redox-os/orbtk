@@ -15,7 +15,7 @@ serde_derive = "1.0"
 smallvec = { version = "1", default-features = false }
 ron = "0.6"
 memchr = "2"
-dirs-next = "1"
+dirs-next = "2.0"
 derive_more = { version = "0.99", default-features = false, features = ["constructor"] }
 
 # orbtk

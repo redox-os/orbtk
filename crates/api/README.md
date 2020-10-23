@@ -10,7 +10,7 @@ Provides base traits and structs for application, widgets and properties. It's p
 * [dces](https://gitlab.redox-os.org/redox-os/dces-rust) (MIT): Entity Component System
 * [ron](https://github.com/ron-rs/ron) (Apache 2.0, MIT): Save settings to ron file
 * [serde](https://github.com/serde-rs/serde) (Apache 2.0, MIT): serialize, deserialize setting objects
-* [dirs](https://github.com/soc/dirs-rs) (Apache 2.0, MIT): Read user settings dir
+* [dirs](https://github.com/xdg-rs/dirs.git) (Apache 2.0, MIT): platform-specific, user-accessible locations
 * [raw-window-handle](https://github.com/rust-windowing/raw-window-handle) (MIT): access to a window's platform-specific raw window handle
 
 ## License
