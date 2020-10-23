@@ -5,6 +5,9 @@ use std::ops::Neg;
 use std::{convert::TryFrom, str::Chars};
 
 // Describes a String declared expression either be a method, a color, a number or anything.
+/// This object represents a `expression` used to define something(currently is only use to define
+/// brushes in themes but that can change in the future.
+
 #[derive(Clone, PartialEq, PartialOrd, Debug)]
 pub enum Expression {
     Method(String, Vec<Expression>),
@@ -42,7 +45,7 @@ impl Expression {
                     if name == "rgb" || name == "rgba" {
                         if p {
                             v = v * 100.0 / 255.0;
-                        } else if v.floor() == 0.0 {
+                        } else if v <= 1.0 {
                             v = 255.0 * v.fract();
                         }
                     } else if i != 0 && p {
@@ -76,7 +79,7 @@ impl Expression {
         }
     }
 
-    pub fn gradient_stop(&self) -> Option<GradientStop> {
+    fn gradient_stop(&self) -> Option<GradientStop> {
         if let Some(color) = self.color() {
             return Some(GradientStop { pos: None, color });
         }
