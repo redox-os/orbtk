@@ -7,11 +7,15 @@ use crate::{
     Cursor, TextBlock,
 };
 
-// --- KEYS --
+// --- KEYS ---
 pub static NOT_EMPTY_STATE: &str = "not_empty";
 pub static NOT_EMPTY_FOCUSED_STATE: &str = "not_empty_focused";
 pub static FOCUSED_STATE: &str = "focused";
-// --- KEYS --
+// --- KEYS ---
+
+// --- CONSTANTS ---
+pub static CONDITIONAL_LINE_BRAKE: &str = "\n";
+// --- CONSTANTS ---
 
 /// Actions of TextBehaviorState
 #[derive(Clone, Debug)]
@@ -218,6 +222,36 @@ impl TextBehaviorState {
         true
     }
 
+    fn insert_conditional_line_brake(&mut self, ctx: &mut Context) {
+            if !self.focused(ctx) {
+            return;
+        }
+
+        let mut update_focus_state = self.len(ctx) == 0;
+
+        update_focus_state = update_focus_state || self.clear_selection(ctx);
+
+        let mut selection = self.selection(ctx);
+
+        let mut text = String::from(ctx.get_widget(self.target).clone::<String>("text"));
+        text.push_str(CONDITIONAL_LINE_BRAKE);
+        //text.insert_str(selection.start(), insert_conditional_line_break.as_str());
+
+        selection.set(selection.start() + CONDITIONAL_LINE_BRAKE.len());
+        self.set_selection(ctx, selection);
+
+        self.update_selection = true;
+
+        self.set_text(ctx, text.to_string());
+
+        // used to trigger bounds adjustments
+        self.direction = Direction::Right;
+
+        if update_focus_state {
+            self.update_focused_state(ctx);
+        }
+    }
+
     // -- Text operations --
 
     // -- Selection --
@@ -345,25 +379,31 @@ impl TextBehaviorState {
                 self.delete(ctx);
             }
             Key::Enter => {
-                self.activate(ctx);
+                if self.is_ctrl_enter_down(ctx) {
+                    println!("is_ctrl_enter_down: true.");
+                    self.insert_conditional_line_brake(ctx);
+                } else {
+                    self.activate(ctx);
+                }
             }
             Key::X(..) => {
-                if self.is_ctlr_home_down(ctx) {
+                if self.is_ctrl_home_down(ctx) {
                     self.cut(registry, ctx);
                 }
             }
             Key::C(..) => {
-                if self.is_ctlr_home_down(ctx) {
+                if self.is_ctrl_home_down(ctx) {
+                    println!("is_ctrl_home_down: true.");
                     self.copy(registry, ctx);
                 }
             }
             Key::V(..) => {
-                if self.is_ctlr_home_down(ctx) {
+                if self.is_ctrl_home_down(ctx) {
                     self.paste(registry, ctx);
                 }
             }
             Key::A(..) => {
-                if self.is_ctlr_home_down(ctx) {
+                if self.is_ctrl_home_down(ctx) {
                     self.select_all(ctx);
                 }
             }
@@ -502,7 +542,31 @@ impl TextBehaviorState {
     }
 
     // check if control is pressed or on macos home key
-    fn is_ctlr_home_down(&self, ctx: &mut Context) -> bool {
+    fn is_ctrl_enter_down(&self, ctx: &mut Context) -> bool {
+        // todo move window to api
+        if cfg!(target_os = "macos")
+            && ctx
+                .window()
+                .get::<KeyboardState>("keyboard_state")
+                .is_home_down()
+        {
+            return true;
+        }
+
+        if !cfg!(target_os = "macos")
+            && ctx
+                .window()
+                .get::<KeyboardState>("keyboard_state")
+                .is_ctrl_down()
+        {
+            return true;
+        }
+
+        false
+    }
+
+   // check if control is pressed or on macos home key
+    fn is_ctrl_home_down(&self, ctx: &mut Context) -> bool {
         // todo move window to api
         if cfg!(target_os = "macos")
             && ctx
@@ -977,5 +1041,16 @@ mod tests {
         let result = move_selection_right(selection, len);
         assert_eq!(result.start(), 6);
         assert_eq!(result.end(), 6);
+    }
+
+    #[test]
+    fn test_insert_conditional_line_break() {
+        let mut text = String::from("First line");
+        let second_line = String::from("Second line");
+
+        text.push_str(CONDITIONAL_LINE_BRAKE);
+        text.push_str(second_line.as_str());
+
+        assert_eq!("First line\nSecond line", text.as_str());
     }
 }
