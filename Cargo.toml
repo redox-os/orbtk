@@ -43,7 +43,6 @@ euc = "0.5.0"
 vek = "0.10.2"
 serde = "1.0.106"
 serde_derive = "1.0.106"
-orbtk_theme_redox = { version = "0.3.1-alpha4", path="crates/theme_redox" }
 
 [features]
 default = ["orbtk_shell/orbraq", "orbtk_api/orbraq", "orbtk_render/orbraq", "orbtk_widgets/orbraq", "orbtk_localization/ron"]

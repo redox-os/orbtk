@@ -1,0 +1,13 @@
+[package]
+name = "orbtk_examples"
+version = "0.1.0"
+authors = ["Florian Blasius <flovanpt@posteo.de>"]
+edition = "2018"
+publish = false
+
+[dev-dependencies]
+orbtk = { path = "../", features = ["redox"] }
+
+[[example]]
+name = "showcase"
+path = "showcase.rs"

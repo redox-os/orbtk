@@ -1,1 +1,1 @@
-pub use crate::{fonts, vector_graphics::*, *};
+pub use crate::{vector_graphics::*, *};

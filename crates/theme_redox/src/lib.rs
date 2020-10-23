@@ -7,11 +7,9 @@ It provides fonts, icons and colors.
 
 use orbtk_theming::{config::ThemeConfig, prelude::*};
 
-/// provides `constants` associated to fonts.
-pub mod fonts;
 pub mod prelude;
-/// provides information processed by the `graphic render` (e.g. glyphs, icons).
-pub mod vector_graphics;
+
+use orbtk_theme_default::prelude::register_fonts;
 
 /// Resource file of redox theme
 pub const THEME_REDOX: &str = include_str!("../theme/theme_redox.ron");
@@ -29,17 +27,4 @@ pub fn theme_redox() -> Theme {
             .extend(ThemeConfig::from(THEME_REDOX_COLORS_DARK))
             .extend(ThemeConfig::from(THEME_REDOX_FONTS)),
     ))
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-fn register_fonts(theme: Theme) -> Theme {
-    theme
-        .register_font("Roboto-Regular", crate::fonts::ROBOTO_REGULAR_FONT)
-        .register_font("Roboto-Medium", crate::fonts::ROBOTO_MEDIUM_FONT)
-        .register_font("MaterialIcons-Regular", crate::fonts::MATERIAL_ICONS_FONT)
-}
-
-#[cfg(target_arch = "wasm32")]
-fn register_fonts(theme: Theme) -> Theme {
-    theme
 }
