@@ -348,7 +348,7 @@ impl Template for ImageView {
         self.child(
             ImageWidget::new()
                 .margin(16)
-                .image("res/showcase/orbtk_logo.png")
+                .image("assets/showcase/orbtk_logo.png")
                 .build(ctx),
         )
     }

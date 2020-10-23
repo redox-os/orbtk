@@ -560,13 +560,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk_examples"
-version = "0.1.0"
-dependencies = [
- "orbtk",
-]
-
-[[package]]
 name = "orbtk_localization"
 version = "0.3.1-alpha4"
 dependencies = [
