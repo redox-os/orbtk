@@ -23,9 +23,6 @@
     ![overlay](https://gitlab.redox-os.org/redox-os/assets/-/raw/master/screenshots/orbtk_examples/overlay_example.jpg)
 
 * popup: show how to open and use a popup
-* settings: use registry and settings service (load / save)
-
-    ![settings](https://gitlab.redox-os.org/redox-os/assets/-/raw/master/screenshots/orbtk_examples/settings_example.jpg)
 
 * stack: stack layout example
 

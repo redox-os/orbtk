@@ -75,12 +75,13 @@ Theme (
         "button": ( 
             base: "base",
             properties: {
-                "height": 32,
+                "height": 30,
                 "foreground": "$CONTENT_FOREGROUND",
                 "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BUTTON_BACKGROUND",
-                "border_radius": 1,
-                "border_width": 0,
+                "border_radius": 2,
+                "border_width": 1,
+                "border_brush": "$BORDER_DFAULT",
                 "font_size": "$FONT_SIZE_12",
                 "icon_size": "$ICON_SIZE_16"
             }, 
@@ -88,6 +89,8 @@ Theme (
                 (
                     key: "selected",
                     properties: {
+                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
+                        "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
                         "background": "$BUTTON_BACKGROUND_SELECTED",
                     }
                 ),
@@ -100,16 +103,15 @@ Theme (
                 (
                     key: "pressed",
                     properties: {
+                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
+                        "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
                         "background": "$BUTTON_BACKGORUND_PRESSED",
                     }
                 ),
                 (
                     key: "disabled",
                     properties: {
-                        "opacity": 1,
-                        "background": "$BUTTON_BACKGROUND_DISABLED",
-                        "foreground": "$BUTTON_FOREGROUND_DISABLED",
-                        "icon_brush": "$BUTTON_FOREGROUND_DISABLED"
+                        "opacity": 0.5
                     }
                 ),
             ],
@@ -200,28 +202,33 @@ Theme (
             ]
         ),
         "switch": (
-            base: "base",
             properties: {
                 "width": 36,
                 "height": 32,
             },
+            states: [
+                (
+                    key: "disabled",
+                    properties: {
+                        "opacity": 0.5
+                    }
+                )
+            ]
         ),
         "switch_track": (
-            base: "base",
             properties: {
                 "height": 14,
                 "border_radius": 7,
-                "background": "$BUTTON_BACKGORUND_PRESSED",
+                "background": "$BORDER_DFAULT",
             }
         ),
         "switch_toggle": (
-            base: "base",
             properties: {
                 "width": 20,
                 "height": 20,
                 "border_radius": 10,
-                "background": "$SWITCH_TOGGLE_BACKGROUND",
-                "border_brush": "$SWITCH_TOGGLE_BORDER",
+                "background": "$WHITE",
+                "border_brush": "$BORDER_DFAULT",
                 "border_width": 1
             },
             states: [
@@ -251,8 +258,8 @@ Theme (
             properties: {
                 "height": 32,
                 "foreground": "$CONTENT_FOREGROUND_SECONDARY",
-                "background": "$CONTAINER_BACKGROUND",
-                "border_brush": "$CONTAINER_BORDER",
+                "background": "$WHITE",
+                "border_brush": "$BORDER_DFAULT",
                 "border_width": 1,
                 "border_radius": 2,
                 "padding": 6,
@@ -262,12 +269,6 @@ Theme (
                     key: "not_empty",
                     properties: {
                         "foreground": "$CONTENT_FOREGROUND",
-                    }
-                ),
-                (
-                    key: "hover",
-                    properties: {
-                         "background": "$TEXT_BOX_HOVER_BACKGROUND"
                     }
                 ),
                 (
@@ -355,20 +356,18 @@ Theme (
                 "foreground": "$CONTENT_FOREGROUND",
                 "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BUTTON_BACKGROUND",
-                "border_width": 0,
+                "border_brush": "$BORDER_DFAULT",
+                "border_width": 1,
+                "border_radius": 2,
                 "height": 32,
                 "padding": 6,
             },
             states: [
                 (
-                    key: "hover",
-                    properties: {
-                        "background": "$BUTTON_BACKGROUND_HOVER",
-                    }
-                ),
-                (
                     key: "selected",
                     properties: {
+                         "foreground": "$WHITE",
+                        "icon_brush": "$WHITE",
                         "selection_indicator": "$ACCENT_COLOR",
                         "background": "$BUTTON_BACKGORUND_PRESSED",
                     }
@@ -428,7 +427,6 @@ Theme (
                 (
                     key: "selected",
                     properties: {
-                        "background": "$ACCENT_COLOR_LIGHT",
                         "foreground": "$CONTENT_FOREGROUND",
                     }
                 )
@@ -437,7 +435,7 @@ Theme (
         "tab_header_bar": (
              properties: {
                 "background": "$ACCENT_COLOR",
-                "height": 2
+                "height": 4
             }
         ),
         "tab_icon_only": (
@@ -492,16 +490,17 @@ Theme (
         "progress_bar": (
              properties: {
                 "background": "$PROGRESS_BAR_BACKGROUND",
-                "border_radius": 0,
-                "border_width": 0,
-                "height": 12,
+                "border_brush": "$BORDER_DFAULT",
+                "border_radius": 4,
+                "border_width": 1,
+                "height": 16,
                 "padding": 0,
              },
         ),
         "progress_bar_indicator": (
             properties: {
                 "background": "$ACCENT_COLOR",
-                "height": 12,
+                "height": 16,
                 "width": 0,
             }
         ),

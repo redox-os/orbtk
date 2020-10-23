@@ -109,7 +109,6 @@ impl Template for ButtonView {
                         .child(CheckBox::new().text("CheckBox").build(ctx))
                         .child(CheckBox::new().enabled(false).text("disabled").build(ctx))
                         .child(Switch::new().build(ctx))
-                        .child(Switch::new().enabled(false).build(ctx))
                         .child(slider)
                         .child(ProgressBar::new().val(slider).build(ctx))
                         .build(ctx),
@@ -348,7 +347,7 @@ impl Template for ImageView {
         self.child(
             ImageWidget::new()
                 .margin(16)
-                .image("res/showcase/orbtk_logo.png")
+                .image("assets/showcase/orbtk_logo.png")
                 .build(ctx),
         )
     }
@@ -584,7 +583,11 @@ widget!(
 
 impl Template for InteractiveView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        let themes = vec!["default_dark".to_string(), "default_light".to_string()];
+        let themes = vec![
+            "default_dark".to_string(),
+            "default_light".to_string(),
+            "redox".to_string(),
+        ];
         let themes_count = themes.len();
 
         self.themes(themes).child(
@@ -768,6 +771,7 @@ impl State for InteractiveState {
                     match theme_index {
                         0 => ctx.switch_theme(theme_default_dark()),
                         1 => ctx.switch_theme(theme_default_light()),
+                        2 => ctx.switch_theme(theme_redox()),
                         _ => {}
                     }
                 }
