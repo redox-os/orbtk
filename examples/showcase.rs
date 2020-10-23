@@ -16,6 +16,7 @@ fn main() {
     Application::new()
         // .theme(theme_default_light())
         .localization(localization)
+        .theme(theme_redox())
         .window(|ctx| {
             Window::new()
                 .title("OrbTk - showcase example")

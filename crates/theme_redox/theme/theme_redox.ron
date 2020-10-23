@@ -75,11 +75,13 @@ Theme (
         "button": ( 
             base: "base",
             properties: {
-                "height": 32,
+                "height": 30,
                 "foreground": "$CONTENT_FOREGROUND",
                 "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BUTTON_BACKGROUND",
-                "border_radius": 1,
+                "border_radius": 4,
+                "border_width": 1,
+                "border_brush": "$BORDER_DFAULT",
                 "font_size": "$FONT_SIZE_12",
                 "icon_size": "$ICON_SIZE_16"
             }, 
@@ -87,6 +89,8 @@ Theme (
                 (
                     key: "selected",
                     properties: {
+                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
+                        "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
                         "background": "$BUTTON_BACKGROUND_SELECTED",
                     }
                 ),
@@ -99,15 +103,15 @@ Theme (
                 (
                     key: "pressed",
                     properties: {
+                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
+                        "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
                         "background": "$BUTTON_BACKGORUND_PRESSED",
                     }
                 ),
                 (
                     key: "disabled",
                     properties: {
-                        "background": "$BUTTON_BACKGROUND_DISABLED",
-                        "foreground": "$BUTTON_FOREGROUND_DISABLED",
-                        "icon_brush": "$BUTTON_FOREGROUND_DISABLED"
+                        "opacity": 0.5
                     }
                 ),
             ],
