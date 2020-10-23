@@ -1,7 +1,7 @@
 use orbtk::prelude::*;
 
 // German localization file.
-static SHOWCASE_DE_DE: &str = include_str!("../res/showcase/showcase_de_DE.ron");
+static SHOWCASE_DE_DE: &str = include_str!("../assets/showcase/showcase_de_DE.ron");
 
 fn main() {
     // use this only if you want to run it as web application.

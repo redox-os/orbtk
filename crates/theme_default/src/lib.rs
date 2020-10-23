@@ -35,7 +35,7 @@ pub fn theme_default() -> Theme {
 
 /// Creates OrbTks default dark theme.
 pub fn theme_default_dark() -> Theme {
-    register_fonts(Theme::from_config(
+    register_default_fonts(Theme::from_config(
         ThemeConfig::from(THEME_DEFAULT)
             .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_DARK))
             .extend(ThemeConfig::from(THEME_DEFAULT_FONTS)),
@@ -44,22 +44,24 @@ pub fn theme_default_dark() -> Theme {
 
 /// Creates OrbTks default light theme.
 pub fn theme_default_light() -> Theme {
-    register_fonts(Theme::from_config(
+    register_default_fonts(Theme::from_config(
         ThemeConfig::from(THEME_DEFAULT)
             .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_LIGHT))
             .extend(ThemeConfig::from(THEME_DEFAULT_FONTS)),
     ))
 }
 
+/// Register roboto and material icon fonts to the given theme.
 #[cfg(not(target_arch = "wasm32"))]
-fn register_fonts(theme: Theme) -> Theme {
+pub fn register_default_fonts(theme: Theme) -> Theme {
     theme
         .register_font("Roboto-Regular", crate::fonts::ROBOTO_REGULAR_FONT)
         .register_font("Roboto-Medium", crate::fonts::ROBOTO_MEDIUM_FONT)
         .register_font("MaterialIcons-Regular", crate::fonts::MATERIAL_ICONS_FONT)
 }
 
+/// Dummy implementation for web to be compatible to other platforms.
 #[cfg(target_arch = "wasm32")]
-fn register_fonts(theme: Theme) -> Theme {
+pub fn register_default_fonts(theme: Theme) -> Theme {
     theme
 }

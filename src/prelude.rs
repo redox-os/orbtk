@@ -14,8 +14,8 @@ pub use crate::{
     proc_macros::*,
     render::prelude::*,
     theme_default::{
-        colors, fonts, theme_default, theme_default_dark, theme_default_light,
-        vector_graphics::material_icons_font,
+        colors, fonts, register_default_fonts, theme_default, theme_default_dark,
+        theme_default_light, vector_graphics::material_icons_font,
     },
     theming::prelude::*,
     tree::prelude::*,

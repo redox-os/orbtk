@@ -403,11 +403,10 @@ To build and run the latest version of the OrbTk manual check: [Manual](https://
 
 ## Showcases
 
-* [Space Editor](https://codeberg.org/flovanco/space-editor): 2D Tile Map Editor compatible with OrbGame
-* [PluralPlanner](https://github.com/PluralTools/PluralPlanner): Task app
-* [OrbCalculator](https://gitlab.redox-os.org/redox-os/orbcalculator): Calculator based on OrbTk
+* [PluralPlanner](https://codeberg.org/PluralTools/PluralPlanner): Task app
 * [Kanter](https://github.com/lukors/kanter): Node based texture editor 
 * [twin-commander](https://github.com/kivimango/twin-commander): A twin-panel file manager specifically for the Redox OS 
+* [Space Editor](https://codeberg.org/flovanco/space-editor): 2D Tile Map Editor compatible with OrbGame
 
 ## Contribution
 
