@@ -1,5 +1,5 @@
 use derive_more::{Add, Div, From, Mul, Sub};
-use std::f64::consts::PI;
+use std::f64::consts::{PI, TAU};
 
 /// The OrbTk way to handle angles
 #[derive(Add, Sub, Copy, From, Clone, Debug, PartialEq, Mul, Div)]
@@ -17,7 +17,7 @@ impl Angle {
 
     /// Takes a number between 0.0 and 1.0 where 0.0 represents 0 degrees and 1.0 360 degrees
     pub fn from_turn(turn: f64) -> Angle {
-        Angle(turn * PI * 2.0)
+        Angle(turn * TAU)
     }
 
     pub fn to_radians(&self) -> f64 {
@@ -30,7 +30,7 @@ impl Angle {
 
     /// Gives a number between 0.0 and 1.0 where 0.0 represents 0 degrees and 1.0 360 degrees
     pub fn to_turn(&self) -> f64 {
-        self.0 / PI / 2.0
+        self.0 / TAU
     }
 
     /// Creates a `Angle` with a value of 0.0
