@@ -4,9 +4,9 @@ Theme (
         "BLACK": "#000000",
         "WHITE": "#ffffff",
         "ACCENT_COLOR": "#3C95DF",
-        "ACCENT_COLOR_LIGHTER": "#f0d860",
+        "ACCENT_COLOR_LIGHTER": "#5ba2de",
         "ACCENT_COLOR_LIGHT": "#5B6764",
-        "ACCENT_COLOR_DARK": "#ebbf13",
+        "ACCENT_COLOR_DARK": "#1986e0",
         "BACKGROUND": "#F5F6F7",
         "BACKGROUND_SECONDARY": "#F5F6F7",
         "BORDER_DFAULT": "#CED6E5",
@@ -34,8 +34,8 @@ Theme (
 
         // combobox
         "COMBO_BOX_BACKGROUND": "#647b91",
-        "POPUP_BACKGROUND": "#444e55",
-        "POPUP_BORDER": "#adb3b8",
+        "POPUP_BACKGROUND": "#ffffff",
+        "POPUP_BORDER": "#CED6E5",
 
         // switch
         "SWITCH_TOGGLE_BACKGROUND": "#dfebf5",
@@ -46,13 +46,13 @@ Theme (
         "SLIDER_THUMB_BORDER": "#dfebf5",
 
         // combobox
-        "COMBO_BOX_ITEM_SELECTED": "#3b434a",
+        "COMBO_BOX_ITEM_SELECTED": "#ffffff",
 
         // progress bar
-        "PROGRESS_BAR_BACKGROUND": "#000000",
+        "PROGRESS_BAR_BACKGROUND": "#ffffff",
 
         // containers such es lists and text box
-        "CONTAINER_BACKGROUND": "#2B2D2F",
-        "CONTAINER_BORDER": "#dfebf5",
+        "CONTAINER_BACKGROUND": "#ffffff",
+        "CONTAINER_BORDER": "#CED6E5",
     },
 )

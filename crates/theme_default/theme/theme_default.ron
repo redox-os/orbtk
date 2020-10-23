@@ -80,6 +80,7 @@ Theme (
                 "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BUTTON_BACKGROUND",
                 "border_radius": 1,
+                "border_width": 0,
                 "font_size": "$FONT_SIZE_12",
                 "icon_size": "$ICON_SIZE_16"
             }, 
@@ -105,6 +106,7 @@ Theme (
                 (
                     key: "disabled",
                     properties: {
+                        "opacity": 1,
                         "background": "$BUTTON_BACKGROUND_DISABLED",
                         "foreground": "$BUTTON_FOREGROUND_DISABLED",
                         "icon_brush": "$BUTTON_FOREGROUND_DISABLED"
@@ -198,12 +200,14 @@ Theme (
             ]
         ),
         "switch": (
+            base: "base",
             properties: {
                 "width": 36,
                 "height": 32,
             },
         ),
         "switch_track": (
+            base: "base",
             properties: {
                 "height": 14,
                 "border_radius": 7,
@@ -211,6 +215,7 @@ Theme (
             }
         ),
         "switch_toggle": (
+            base: "base",
             properties: {
                 "width": 20,
                 "height": 20,
@@ -350,6 +355,7 @@ Theme (
                 "foreground": "$CONTENT_FOREGROUND",
                 "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BUTTON_BACKGROUND",
+                "border_width": 0,
                 "height": 32,
                 "padding": 6,
             },
