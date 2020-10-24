@@ -1,4 +1,4 @@
-use crate::{Angle, Color, OnLinePos, OnPlanePos, Point};
+use crate::{Angle, Color, OnLinePos, OnPlanePos, Point, RelativeDir};
 
 /// Describes a position on a colorful gradient.
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -51,9 +51,15 @@ impl Default for GradientStop {
 pub enum LinearGradientCoords {
     /// Defines the linear gradient by point A to point B.
     Ends { start: Point, end: Point },
+    /// Defines the linear gradient using an angle and a displacement from the center of the target figure.
     Angle {
         angle: Angle,
         // Defines a displacement from the center of the target shape.
+        displacement: OnPlanePos,
+    },
+    // Defines a gradient as one that crosses the figure in a given direction.
+    Direction {
+        direction: RelativeDir,
         displacement: OnPlanePos,
     },
 }
@@ -90,8 +96,8 @@ impl LinearGradientCoords {
 
 impl Default for LinearGradientCoords {
     fn default() -> LinearGradientCoords {
-        LinearGradientCoords::Angle {
-            angle: Angle::default(),
+        LinearGradientCoords::Direction {
+            direction: RelativeDir::Top,
             displacement: OnPlanePos::default(),
         }
     }
@@ -127,7 +133,7 @@ impl Default for Gradient {
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum GradientKind {
     Linear(LinearGradientCoords),
-    //    Radial(RadialGradient),
+    // Radial(RadialGradient),
 }
 
 impl Default for GradientKind {
