@@ -200,8 +200,7 @@ impl Expression {
                     direction,
                     displacement,
                 };
-            }
-            else if let Some(angle) = args[0].angle() {
+            } else if let Some(angle) = args[0].angle() {
                 coords = LinearGradientCoords::Angle {
                     angle,
                     displacement,

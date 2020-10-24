@@ -539,7 +539,7 @@ fn brush_to_source<'a>(brush: &Brush, frame: Rectangle) -> raqote::Source<'a> {
                         raqote::Point::new(end.x() as f32, end.y() as f32),
                         spread,
                     )
-                },
+                }
                 LinearGradientCoords::Direction {
                     direction,
                     displacement,
@@ -547,12 +547,13 @@ fn brush_to_source<'a>(brush: &Brush, frame: Rectangle) -> raqote::Source<'a> {
                     let width = frame.width();
                     let height = frame.height();
                     let (mut start, mut end) = direction.cross(width, height);
-                    let g_stops = build_unit_percent_gradient(&stops, end.distance(start), |p, c| {
-                        raqote::GradientStop {
-                            position: p as f32,
-                            color: raqote::Color::new(c.a(), c.r(), c.g(), c.b()),
-                        }
-                    });
+                    let g_stops =
+                        build_unit_percent_gradient(&stops, end.distance(start), |p, c| {
+                            raqote::GradientStop {
+                                position: p as f32,
+                                color: raqote::Color::new(c.a(), c.r(), c.g(), c.b()),
+                            }
+                        });
                     let displacement = displacement.pixels(frame.size());
                     start = start + frame.position() + displacement;
                     end = end + frame.position() + displacement;
