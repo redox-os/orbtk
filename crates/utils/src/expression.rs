@@ -7,7 +7,6 @@ use std::{convert::TryFrom, str::Chars};
 // Describes a String declared expression either be a method, a color, a number or anything.
 /// This object represents a `expression` used to define something(currently is only use to define
 /// brushes in themes but that can change in the future.
-
 #[derive(Clone, PartialEq, PartialOrd, Debug)]
 pub enum Expression {
     Method(String, Vec<Expression>),
@@ -102,6 +101,23 @@ impl Expression {
         }
     }
 
+    pub fn relative_dir(&self) -> Option<RelativeDir> {
+        match self {
+            Expression::Other(label) => match &label[..] {
+                "to top" => Some(RelativeDir::Top),
+                "to top right" => Some(RelativeDir::TopRight),
+                "to right" => Some(RelativeDir::Right),
+                "to bottom right" => Some(RelativeDir::BottomRight),
+                "to bottom" => Some(RelativeDir::Bottom),
+                "to bottom left" => Some(RelativeDir::BottomLeft),
+                "to left" => Some(RelativeDir::Left),
+                "to top left" => Some(RelativeDir::TopLeft),
+                _ => None,
+            },
+            _ => None,
+        }
+    }
+
     pub fn angle(&self) -> Option<Angle> {
         match self {
             Expression::Number(num, unit) => {
@@ -179,7 +195,13 @@ impl Expression {
                 displacement,
                 angle: Angle::zero(),
             };
-            if let Some(angle) = args[0].angle() {
+            if let Some(direction) = args[0].relative_dir() {
+                coords = LinearGradientCoords::Direction {
+                    direction,
+                    displacement,
+                };
+            }
+            else if let Some(angle) = args[0].angle() {
                 coords = LinearGradientCoords::Angle {
                     angle,
                     displacement,

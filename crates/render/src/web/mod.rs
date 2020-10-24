@@ -594,6 +594,29 @@ impl RenderContext2D {
 
                 web_gradient
             }
+            LinearGradientCoords::Direction {
+                direction,
+                displacement,
+            } => {
+                let disp = displacement.pixels(frame.size());
+                let (mut start, mut end) = direction.cross(frame.width(), frame.height());
+                start = start + frame.position() + disp;
+                end = end + frame.position() + disp;
+                let web_gradient = self.canvas_render_context_2_d.create_linear_gradient(
+                    start.x(),
+                    start.y(),
+                    end.x(),
+                    end.y(),
+                );
+
+                build_unit_percent_gradient(stops, end.distance(start), |p, c| {
+                    web_gradient
+                        .add_color_stop(p, c.to_string().as_str())
+                        .unwrap();
+                });
+
+                web_gradient
+            }
         }
     }
 }
