@@ -26,6 +26,7 @@ mod angle;
 mod border;
 mod brush;
 mod color;
+mod const_colors;
 mod constraint;
 mod dirty_size;
 mod expression;
