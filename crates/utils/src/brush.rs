@@ -1,21 +1,56 @@
 use crate::prelude::*;
 
-/// A `Brush` describes how a shape is filled or stroked.  A `Brush`
-/// can be parse from a string (themes are parsing brushes that way).
+/// A `Brush` defines the fill pattern of shapes.
+/// The syntax allows to express fill patterns in several ways:
+///
+/// * solid colors
+/// * colors with alpha channel
+/// * gradients of colors
+/// * gradients with directions
+/// * gradients with angles
+///
+/// The string declaration of a `Brush` is composed combining the following
+/// syntax elements:
+///
+/// 1. The `color name`
+/// 2. The `gradient` string
+///    * the gradient type (linear, repeating-linear)
+///    * gradient attributes (direction-identifier, angles, color names )
+///
+/// ## Examples
+/// Here are some implementations with declarations of colors, degrees, orientations and directions.
+///
+/// ```text
+/// .foreground("white")
+/// .background("black")
+/// .background("linear-gradient(0deg, #4b6cb7, #182848)")
+/// .background("repeating-linear-gradient(0.25turn, rgba(255, 255, 0, 0.6), dodgerblue, deepskyblue)")
+/// .background("linear-gradient(-90deg, hsv(201, 94%, 80.5%), steelblue)")
+/// .background("linear-gradient(to top right, white, skyblue 60%, lightskyblue 80%, yellow 83%, yellow)")
+/// ```
+/// Read on to see how the syntax is composed.
+///
+/// ## Definition of a color name
 /// With the given implementation you can choose between three methods
-/// to define a solid color:
+/// to define a color.
 ///
-/// A. Use `color codes`
+/// A. `color codes`
 ///
-/// Define the value with a symbol "#" followed by 6 letters or numbers.
-/// These numbers are in hexadecimal numeral system.
-/// For example `#f00` will give you red. If you write `#00ff00`, you will
-/// get blue and you also included an alpha channel.
+/// You can define the value of a color with a symbol "#" followed
+/// by letters or numbers. These numbers are in hexadecimal numeral system.
+/// The short variant will use 3 numbers , the long variant will use 6
+/// numbers.
+/// For example `#f00` will give you red. If you write `#0000ff`, you will
+/// get blue.
+/// To include an alpha channel, the short variant takes 4 numbers.
+/// If you need a yellow with 50.2% opaque, you use `#ff08`.
+/// In the long form you need 8 numbers. `#0000ff80` represents 50.2% opaque
+/// (non-premultiplied) blue.
 ///
-/// B. Use `a function`
+/// B. `color function`
 ///
-/// Currently the unique available functions that interprete a color are
-/// destincted with the keywords `rgb`, `hsv`, `hsb`, `hsl`. There are
+/// Currently the unique available functions that interpret a color are
+/// distincted with the keywords `rgb`, `hsv`, `hsb`, `hsl`. There are
 /// `alpha variants` as well. `hsb` is an alias to `hsv`.
 /// Alpha variants are coded with the keywords `rgba`, `abgr`  or `argb`.
 /// Here is an example to define a color via the function method:
@@ -31,46 +66,46 @@ use crate::prelude::*;
 /// the percent sign to the first parameter. If you append `%` to the following
 /// parameters, OrbTk will interpret the values in a range between `0.0-100.0`.
 ///
-/// C. Use the `color name`
+/// C. `color name`
 ///
-/// OrbTK maintains a color name map (crates/utils/colors.txt). It enables
-/// you, to directly choose from the listed color names. The toolkit will
-/// decode the value with the corresponding color code.
+/// **WIP: The given implementation is using (utils/colors.txt). This has to be adopted!!!**
+///
+/// OrbTK maintains color names as constants [`utils::const_colors`]. It enables
+/// you, to directly choose their string value inside the code.
 /// Example color names are:
-///  * white
-///  * red
-///  * olive,
-///  * bombay
 ///
-/// You can also define a gradient with an expression. Its syntax is
-/// structured as follows:
-/// ```
-/// [repeating-]linear-gradient({Gradient-angle}{deg|rad|turn}, ...) [{X Displacement}px {Y Displacement}px]
-/// ```
+///  * COLOR_WHITE
+///  * COLOR_RED
+///  * COLOR_OLIVE
+///  * COLOR_LINK_WATER
+///  * COLOR_SLATE_GRAY
 ///
-/// Within the braces (`{}`) you define the customized parameters.
-/// The pipe (`|`) is offering mutual exclusive variants (e.g: degrees(deg),
-/// radians(rad) or turns(turn)).
-/// The syntax offers optional paramters inside brackets (`[]`).
-/// The three points (`...`) refer to multiple stops. They are respected when
-/// a gradient is rendered. Use the following syntax:
+/// ## Definition of a gradient
+/// The syntax of a gradient definition is structured as follows:
 ///
-/// ```
-/// {Color} [{Stop /// position}{%|px}]
-/// ```
+/// * Optional parameters are inside brackets (`[]`).
+/// * Within braces (`{}`) you define the appropriate parameter value.
+/// * The pipe (`|`) is offering mutual exclusive variants
+///   e.g: degrees(deg), radians(rad) or turns(turn).
+/// * Three points (`...`) refer to multiple stops.
+///   They are respected when a gradient is rendered.
 ///
-/// Quite a bit of theory. Lets see some examples:
+/// The next example shows the structure of an angled gradient
 ///
 /// ```
-/// * linear-gradient(0deg, #4b6cb7, #182848)
-/// * repeating-linear-gradient(0.25turn, rgba(255, 255, 0, 0.6), dodgerblue, deepskyblue)
-/// * linear-gradient(-90deg, hsv(201, 94%, 80.5%), steelblue)
+/// [repeating-]linear-gradient({Gradient-angle}{deg|rad|turn}, ...) [{X Displacement}px {Y Displacement}px], {Color} [{Stop  position}{%|px}]
+
 /// ```
 ///
-/// Oh yes, I do like blue (smile)! Anyway, these examples should
-/// introduce the concept and provide some nice implementations using
-/// degrees and orientations.
-/// You are free to adopt it as appropriate.
+/// This example shows the structure of a gradient that will be rendered in a given direction
+///
+/// ```
+/// [repeating-]linear-gradient({direction-identifier}, {initial color-name}, {terminating color-name}
+/// ```
+///
+//#[cfg(feature = "nightly")]
+//#[doc(include = "../colors.md")]
+
 #[derive(Clone, PartialEq, Debug)]
 pub enum Brush {
     /// Paints an area with a solid color.
