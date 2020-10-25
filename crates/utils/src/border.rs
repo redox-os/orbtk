@@ -1,5 +1,8 @@
 use super::{Brush, Thickness};
 
+/// provide `constants`to reference colors.
+pub mod const_colors;
+
 /// Used to build a border, specifying additional details.
 #[derive(Default)]
 pub struct BorderBuilder {
