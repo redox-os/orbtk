@@ -5,27 +5,25 @@ Theme (
         "WHITE": "#ffffff",
         "ACCENT_COLOR": "#0078D7",
         "ACCENT_COLOR_LIGHTER": "#f0d860",
-        "ACCENT_COLOR_LIGHT": "#5B6764",
+        "ACCENT_COLOR_LIGHT": "#589BE6",
         "ACCENT_COLOR_DARK": "#2259A1",
-        "BACKGROUND": "#3B3B3E",
+        "BACKGROUND": "#000000",
         "BACKGROUND_SECONDARY": "#475b6e",
 
         // content
-        "CONTENT_FOREGROUND": "#D5D5D5",
+        "CONTENT_FOREGROUND": "#ffffff",
         "CONTENT_FOREGROUND_INVERTED": "#3b434a",
         "CONTENT_FOREGROUND_SECONDARY": "#9dafbf",
 
         // button
-        "BUTTON_BACKGROUND": "#656565",
+        "BUTTON_BACKGROUND": "#333333",
         "BUTTON_BACKGROUND_SELECTED": "#516475",
-        "BUTTON_BACKGROUND_HOVER": "#525253",
-        "BUTTON_BACKGORUND_PRESSED": "#8B8B8B",
-        "BUTTON_BACKGROUND_DISABLED": "#666668",
-        "BUTTON_BACKGROUND_PRIMARY": "linear-gradient(to top, #f7e899, #ebbf13)",
+        "BUTTON_BACKGROUND_HOVER": "#191919",
+        "BUTTON_BACKGORUND_PRESSED": "#666666",
         "BUTTON_BACKGROUND_PRIMARY_SELECTED": "#ebbf13",
         "BUTTON_BACKGROUND_PRIMARY_HOVER": "linear-gradient(to top, #f0d860, #efd035)",
         "BUTTON_BACKGORUND_PRIMARY_PRESSED": "#ebbf13", 
-        "BUTTON_FOREGROUND_DISABLED": "#9B9B9D",
+        "BUTTON_FOREGROUND_DISABLED": "#6A6A6A",
 
         // text box
         "TEXT_BOX_FOCUSED_BORDER": "#efd035",

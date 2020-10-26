@@ -6,7 +6,7 @@ Theme (
         "base": (
             properties: {
                 "font_size": "$FONT_SIZE_12",
-                "font": "$REGULAR_FONT",
+                "font": "$SEMI_BOLD_FONT",
                 "icon_size": "$ICON_SIZE_16",
                 "icon_font": "$ICON_FONT"
             },
@@ -80,7 +80,7 @@ Theme (
                 "foreground": "$CONTENT_FOREGROUND",
                 "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BUTTON_BACKGROUND",
-                "border_radius": 1,
+                "border_radius": 2,
                 "border_width": 0,
                 "font_size": "$FONT_SIZE_14",
                 "icon_size": "$ICON_SIZE_16",
@@ -88,15 +88,15 @@ Theme (
             }, 
             states: [
                 (
-                    key: "selected",
-                    properties: {
-                        "background": "$BUTTON_BACKGROUND_SELECTED",
-                    }
-                ),
-                (
                     key: "hover",
                     properties: {
                         "background": "$BUTTON_BACKGROUND_HOVER",
+                    }
+                ),
+                (
+                    key: "selected",
+                    properties: {
+                        "background": "$ACCENT_COLOR",
                     }
                 ),
                 (
@@ -111,7 +111,6 @@ Theme (
                     key: "disabled",
                     properties: {
                         "opacity": 1,
-                        "background": "$BUTTON_BACKGROUND_DISABLED",
                         "foreground": "$BUTTON_FOREGROUND_DISABLED",
                         "icon_brush": "$BUTTON_FOREGROUND_DISABLED"
                     }
@@ -128,20 +127,22 @@ Theme (
             base: "button",
             properties: {
                 "background": "$ACCENT_COLOR",
-                "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
+                "foreground": "$CONTENT_FOREGROUND",
+                "icon_brush": "$CONTENT_FOREGROUND",
             },
             states: [
                 (
                     key: "hover",
                     properties: {
-                         "background": "$ACCENT_COLOR_DARK"
+                         "background": "$ACCENT_COLOR_LIGHT"
                     }
                 ),
                   (
                     key: "pressed",
                     properties: {
-                        "background": "$ACCENT_COLOR_LIGHTER",
+                        "font_size": "$FONT_SIZE_13",
+                        "background": "$ACCENT_COLOR_DARK",
+                        "container_margin": 1,
                     }
                 ),
             ]
