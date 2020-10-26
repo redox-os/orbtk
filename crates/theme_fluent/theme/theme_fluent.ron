@@ -6,7 +6,7 @@ Theme (
         "base": (
             properties: {
                 "font_size": "$FONT_SIZE_12",
-                "font": "$MEDIUM_FONT",
+                "font": "$REGULAR_FONT",
                 "icon_size": "$ICON_SIZE_16",
                 "icon_font": "$ICON_FONT"
             },
@@ -45,7 +45,7 @@ Theme (
             properties: {
                 "foreground": "$CONTENT_FOREGROUND",
                 "font_size": "$FONT_SIZE_16",
-                "font": "$MEDIUM_FONT",
+                "font": "$REGULAR_FONT",
             },
         ),
         "header": (
@@ -75,14 +75,16 @@ Theme (
         "button": ( 
             base: "base",
             properties: {
-                "height": 32,
+                "font": "$REGULAR_FONT",
+                "height": 28,
                 "foreground": "$CONTENT_FOREGROUND",
                 "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BUTTON_BACKGROUND",
                 "border_radius": 1,
                 "border_width": 0,
-                "font_size": "$FONT_SIZE_12",
-                "icon_size": "$ICON_SIZE_16"
+                "font_size": "$FONT_SIZE_14",
+                "icon_size": "$ICON_SIZE_16",
+                "container_margin": 0,
             }, 
             states: [
                 (
@@ -100,7 +102,9 @@ Theme (
                 (
                     key: "pressed",
                     properties: {
+                        "font_size": "$FONT_SIZE_13",
                         "background": "$BUTTON_BACKGORUND_PRESSED",
+                        "container_margin": 1,
                     }
                 ),
                 (

@@ -25,12 +25,12 @@ pub const THEME_FLUENT_COLORS_LIGHT: &str = include_str!("../theme/theme_fluent_
 /// The font resources of the default theme
 pub const THEME_FLUENT_FONTS: &str = include_str!("../theme/theme_fluent_fonts.ron");
 
-/// Returns the default OrbTk theme.
+/// Returns the fluent OrbTk theme.
 pub fn theme_fluent() -> Theme {
     theme_fluent_dark()
 }
 
-/// Creates OrbTks default dark theme.
+/// Creates OrbTks fluent dark theme.
 pub fn theme_fluent_dark() -> Theme {
     register_fluent_fonts(Theme::from_config(
         ThemeConfig::from(THEME_FLUENT)
@@ -39,7 +39,7 @@ pub fn theme_fluent_dark() -> Theme {
     ))
 }
 
-/// Creates OrbTks default light theme.
+/// Creates OrbTks fluent light theme.
 pub fn theme_fluent_light() -> Theme {
     register_fluent_fonts(Theme::from_config(
         ThemeConfig::from(THEME_FLUENT)
@@ -52,10 +52,20 @@ pub fn theme_fluent_light() -> Theme {
 #[cfg(not(target_arch = "wasm32"))]
 pub fn register_fluent_fonts(theme: Theme) -> Theme {
     theme
-    // theme
-    //     .register_font("Roboto-Regular", crate::fonts::ROBOTO_REGULAR_FONT)
-    //     .register_font("Roboto-Medium", crate::fonts::ROBOTO_MEDIUM_FONT)
-    //     .register_font("MaterialIcons-Regular", crate::fonts::MATERIAL_ICONS_FONT)
+        .register_font("Sego-UI-Regular", crate::fonts::SEGOE_UI_REGULAR_FONT)
+        .register_font("Sego-UI-Bold", crate::fonts::SEGOE_UI_BOLD_FONT)
+        .register_font("Sego-UI-Light", crate::fonts::SEGOE_UI_LIGHT_FONT)
+        .register_font("Sego-UI-Semilight", crate::fonts::SEGOE_UI_SEMI_LIGHT_FONT)
+        .register_font("Sego-UI-Semibold", crate::fonts::SEGOE_UI_SEMI_BOLD_FONT)
+        .register_font(
+            "Segoe-MDL2-Assets-Regular",
+            crate::fonts::SEG_MDL_ICONS_FONT,
+        )
+        // register also material icon fonts because it is based used in OrbTk default widget library.
+        .register_font(
+            "MaterialIcons-Regular",
+            orbtk_theme_default::fonts::MATERIAL_ICONS_FONT,
+        )
 }
 
 /// Dummy implementation for web to be compatible to other platforms.
