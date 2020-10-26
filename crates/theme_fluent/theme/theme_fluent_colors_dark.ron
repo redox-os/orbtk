@@ -25,6 +25,11 @@ Theme (
         "BUTTON_BACKGORUND_PRIMARY_PRESSED": "#ebbf13", 
         "BUTTON_FOREGROUND_DISABLED": "#6A6A6A",
 
+        // CheckBox
+        "CHECK_BOX_BORDER": "#999999",
+        "CHECK_BOX_BORDER_HOVER": "#CBCBCB",
+        "CHECK_BOX_BACKGROUND_PRESSED": "#666666",
+        
         // text box
         "TEXT_BOX_FOCUSED_BORDER": "#efd035",
         "TEXT_BOX_HOVER_BACKGROUND": "#000000",
@@ -35,8 +40,10 @@ Theme (
         "POPUP_BORDER": "#adb3b8",
 
         // switch
-        "SWITCH_TOGGLE_BACKGROUND": "#dfebf5",
-        "SWITCH_TOGGLE_BORDER": "#dfebf5",
+        "SWITCH_BORDER": "#999999",
+        "SWITCH_BOX_BORDER_HOVER": "#CBCBCB",
+        "SWITCH_BOX_BACKGROUND_PRESSED": "#666666",
+        "SWITCH_TOGGLE_BACKGROUND": "#ffffff",
 
         // slider
         "SLIDER_THUMB_BACKGROUND": "#dfebf5",

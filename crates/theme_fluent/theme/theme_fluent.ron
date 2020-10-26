@@ -186,20 +186,33 @@ Theme (
             base: "base",
             properties: {
                 "foreground": "$CONTENT_FOREGROUND",
-                "icon_size": "$ICON_SIZE_18",
+                "icon_size": "$ICON_SIZE_14",
                 "background": "transparent",
-                "border_radius": 1,
+                "border_radius": 2,
                 "border_width": 1,
-                "border_brush": "$CONTAINER_BORDER",
+                "border_brush": "$CHECK_BOX_BORDER",
                 "icon_brush": "transparent",
             },
             states: [
+                 (
+                    key: "hover",
+                    properties: {
+                         "border_brush": "$CHECK_BOX_BORDER_HOVER"
+                    }
+                ),
                 (
                     key: "selected",
                     properties: {
                         "background": "$ACCENT_COLOR",
                         "border_brush": "$ACCENT_COLOR",
-                        "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
+                        "icon_brush": "$CONTENT_FOREGROUND",
+                    }
+                ),
+                (
+                    key: "pressed",
+                    properties: {
+                        "background": "$CHECK_BOX_BACKGROUND_PRESSED",
+                        "border_brush": "$CHECK_BOX_BORDER_HOVER"
                     }
                 )
             ]
@@ -207,27 +220,22 @@ Theme (
         "switch": (
             base: "base",
             properties: {
-                "width": 36,
-                "height": 32,
+                "width": 40,
+                "height": 20,
+                "border_radius": 14,
+                "border_width": 1,
+                "border_brush": "$SWITCH_BORDER",
+                "background": "transparent",
             },
         ),
         "switch_track": (
             base: "base",
             properties: {
-                "height": 14,
-                "border_radius": 7,
-                "background": "$BUTTON_BACKGORUND_PRESSED",
-            }
-        ),
-        "switch_toggle": (
-            base: "base",
-            properties: {
-                "width": 20,
                 "height": 20,
-                "border_radius": 10,
-                "background": "$SWITCH_TOGGLE_BACKGROUND",
-                "border_brush": "$SWITCH_TOGGLE_BORDER",
-                "border_width": 1
+                "border_radius": 14,
+                "border_width": 1,
+                "border_brush": "$SWITCH_BORDER",
+                "background": "transparent",
             },
             states: [
                 (
@@ -235,9 +243,21 @@ Theme (
                     properties: {
                         "border_width": 0,
                         "background": "$ACCENT_COLOR",
+                        "border_brush": "$ACCENT_COLOR"
                     }
                 )
             ]
+        ),
+        "switch_toggle": (
+            base: "base",
+            properties: {
+                "width": 10,
+                "height": 10,
+                "border_radius": 5,
+                "margin": 4,
+                "background": "$SWITCH_TOGGLE_BACKGROUND",
+                "border_width": 0
+            }
         ),
         
         // -- [END] Button --
