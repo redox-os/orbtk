@@ -1,67 +1,111 @@
 use crate::prelude::*;
 
-/// A `Brush` describes how a shape is filled or stroked.
-/// A `Brush` can be parse from a string(as that is how the brushes are parsed in the themes)
-/// For example by an expression you have three methods to define a solid color:
+/// A `Brush` defines the fill pattern of shapes.
+/// The syntax allows to express fill patterns in several ways:
 ///
-/// A. Use color codes, for example `#f00` will give you red or if you write #00ff00 you will got blue
-/// also you can use alpha.
+/// * solid colors
+/// * colors with alpha channel
+/// * gradients of colors
+/// * gradients with directions
+/// * gradients with angles
 ///
-/// B. Use a function, currently the unique available functions to interpret a color are `rgb`, `hsv`, `hsb`
-/// (which is the same as `hsv`), `hsl` and its respective alpha variants(rgba by example). So you can define
-/// a color as `hsl(197, 71%, 73%)` and you will get a pretty skyblue color. For `rgb` and `rgba` the
-/// range of the values are 0-255 but from all others the values are as follows: hsva(0.0-360.0, 0.0-1.0, 0.0-1.0, 0.0-1.0)
-/// but the % sign can change that, it can be added to individual parameters and change its range depending on the function,
-/// for `rgb` and `rgba` you can write an % after a parameter and it will be mapped from 0.0-100.0, or if the number that you write
-/// is between 0.0 and 1.0 you value will be mapped from that range. But if you function is not rgb or rgba, you can not use a
-/// percent sign in the first parameters but in the following parameters the sign will make OrbTk interpret it in the 0.0-100.0 range.
+/// The string declaration of a `Brush` is composed combining the following
+/// syntax elements:
 ///
-/// C. Use the color name! so you want to write a colour and do you code work lazily?, no problem! you can directly write the name.
-/// For example white, red, olive, ivory, linen or any of the CSS color names!, also the next extra colors are supported:
-/// * alabaster
-/// * alto
-/// * bluebayoux
-/// * bombay
-/// * brightgrey
-/// * dolly
-/// * energyellow
-/// * fiord
-/// * goldendream
-/// * goldenfizz
-/// * goldtips
-/// * gorduroy
-/// * governorbay
-/// * linkwater
-/// * lynch
-/// * manatee
-/// * manz
-/// * mineshaft
-/// * periwinklegrey
-/// * portage
-/// * sandwisp
-/// * silverchalice
-/// * sunflower
-/// You also can define a gradient with an expression, the syntax is as follows:
+/// 1. The `color name`
+/// 2. The `gradient` string
+///    * the gradient type (linear, repeating-linear)
+///    * gradient attributes (direction-identifier, angles, color names )
+///
+/// ## Examples
+/// Here are some implementations with declarations of colors, degrees, orientations and directions.
+///
+/// ```text
+/// .foreground("white")
+/// .background("black")
+/// .background("linear-gradient(0deg, #4b6cb7, #182848)")
+/// .background("repeating-linear-gradient(0.25turn, rgba(255, 255, 0, 0.6), dodgerblue, deepskyblue)")
+/// .background("linear-gradient(-90deg, hsv(201, 94%, 80.5%), steelblue)")
+/// .background("linear-gradient(to top right, white, skyblue 60%, lightskyblue 80%, yellow 83%, yellow)")
 /// ```
-/// [repeating-]linear-gradient({Gradient angle}{deg|rad|turn}, ...) [{X Displacement}px {Y Displacement}px]
+/// Read on to see how the syntax is composed.
+///
+/// ## Definition of a color name
+/// With the given implementation you can choose between three methods
+/// to define a color.
+///
+/// A. `color codes`
+///
+/// You can define the value of a color with a symbol "#" followed
+/// by letters or numbers. These numbers are in hexadecimal numeral system.
+/// The short variant will use 3 numbers , the long variant will use 6
+/// numbers.
+/// For example `#f00` will give you red. If you write `#0000ff`, you will
+/// get blue.
+/// To include an alpha channel, the short variant takes 4 numbers.
+/// If you need a yellow with 50.2% opaque, you use `#ff08`.
+/// In the long form you need 8 numbers. `#0000ff80` represents 50.2% opaque
+/// (non-premultiplied) blue.
+///
+/// B. `color function`
+///
+/// Currently the unique available functions that interpret a color are
+/// distincted with the keywords `rgb`, `hsv`, `hsb`, `hsl`. There are
+/// `alpha variants` as well. `hsb` is an alias to `hsv`.
+/// Alpha variants are coded with the keywords `rgba`, `abgr`  or `argb`.
+/// Here is an example to define a color via the function method:
+/// `hsl(197, 71%, 73%)` will provide you a pretty skyblue color.
+/// For `rgb` and `rgba` the range of the values are 0-255.
+/// Any other keyword will use floating point integers to define the color
+/// value. `hsva(0.0-360.0, 0.0-1.0, 0.0-1.0, 0.0-1.0)` is such an example.
+/// In addition you can choose to use percent values (`%` sign) for the given
+/// parameters.
+/// When appending the `%` sign to the range parameters of the `rgb` function
+/// call, the values are mapped to 0.0-100.0 (percent) or 0.0-1.0 (min/max).
+/// For all other keywords (`hsv`, `hsb`, `hsl`) you are not allowed to append
+/// the percent sign to the first parameter. If you append `%` to the following
+/// parameters, OrbTk will interpret the values in a range between `0.0-100.0`.
+///
+/// C. `color name`
+///
+/// **WIP: The given implementation is using (utils/colors.txt). This has to be adopted!!!**
+///
+/// OrbTK maintains color names as constants [`utils::const_colors`]. It enables
+/// you, to directly choose their string value inside the code.
+/// Example color names are:
+///
+///  * COLOR_WHITE
+///  * COLOR_RED
+///  * COLOR_OLIVE
+///  * COLOR_LINK_WATER
+///  * COLOR_SLATE_GRAY
+///
+/// ## Definition of a gradient
+/// The syntax of a gradient definition is structured as follows:
+///
+/// * Optional parameters are inside brackets (`[]`).
+/// * Within braces (`{}`) you define the appropriate parameter value.
+/// * The pipe (`|`) is offering mutual exclusive variants
+///   e.g: degrees(deg), radians(rad) or turns(turn).
+/// * Three points (`...`) refer to multiple stops.
+///   They are respected when a gradient is rendered.
+///
+/// The next example shows the structure of an angled gradient
+///
 /// ```
-/// Where {} speaks of a customizable parameter except if it has a | in middle then is only
-/// a multiple choice question(so you have to choice between degrees(deg), radians(rad) or
-/// turns(turn)) and [] means and optional part(but with a meaning!), now the ... are only
-/// referring to the multiples stops that you can define in your gradient, the syntax for a
-/// stop is as follows:
+/// [repeating-]linear-gradient({Gradient-angle}{deg|rad|turn}, ...) [{X Displacement}px {Y Displacement}px], {Color} [{Stop  position}{%|px}]
+
 /// ```
-/// {Color} [{Stop position}{%|px}]
+///
+/// This example shows the structure of a gradient that will be rendered in a given direction
+///
 /// ```
-/// But enough theory, here are some examples:
+/// [repeating-]linear-gradient({direction-identifier}, {initial color-name}, {terminating color-name}
 /// ```
-/// linear-gradient(0deg, #4b6cb7, #182848)
-/// repeating-linear-gradient(0.25turn, rgba(255, 255, 0, 0.6), dodgerblue, deepskyblue)
-/// linear-gradient(-90deg, hsv(201, 94%, 80.5%), steelblue)
-/// ```
-/// Yes sir, I like the blue but that examples works and give you some nice degrees and orientation
-/// about how to use it.
-/// I expected this quick explain will help you, thanks for reading!
+///
+//#[cfg(feature = "nightly")]
+//#[doc(include = "../colors.md")]
+
 #[derive(Clone, PartialEq, Debug)]
 pub enum Brush {
     /// Paints an area with a solid color.

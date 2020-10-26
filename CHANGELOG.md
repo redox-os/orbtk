@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Register fonts on `Theme` struct
 * Update OrbTks default themes
 * Add redox theme
+* Add `Brush` handling gradients (respecting angles, directions, color codes)
 
 ### 0.3.1-alpha3
 
