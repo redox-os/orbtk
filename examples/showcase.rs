@@ -587,6 +587,8 @@ impl Template for InteractiveView {
             "default_dark".to_string(),
             "default_light".to_string(),
             "redox".to_string(),
+            "fluent_dark".to_string(),
+            "fluent_light".to_string(),
         ];
         let themes_count = themes.len();
 
@@ -772,6 +774,8 @@ impl State for InteractiveState {
                         0 => ctx.switch_theme(theme_default_dark()),
                         1 => ctx.switch_theme(theme_default_light()),
                         2 => ctx.switch_theme(theme_redox()),
+                        3 => ctx.switch_theme(theme_fluent_dark()),
+                        4 => ctx.switch_theme(theme_fluent_light()),
                         _ => {}
                     }
                 }

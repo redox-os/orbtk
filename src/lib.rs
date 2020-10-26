@@ -31,6 +31,11 @@ pub mod theme_default {
     pub use orbtk_theme_default::*;
 }
 
+#[cfg(feature = "fluent")]
+pub mod theme_fluent {
+    pub use orbtk_theme_fluent::*;
+}
+
 #[cfg(feature = "redox")]
 pub mod theme_redox {
     pub use orbtk_theme_redox::*;

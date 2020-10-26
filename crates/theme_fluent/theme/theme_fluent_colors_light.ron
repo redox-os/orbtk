@@ -1,0 +1,57 @@
+Theme (
+    resources: {
+        // common
+        "BLACK": "#000000",
+        "WHITE": "#ffffff",
+        "ACCENT_COLOR": "#efd035",
+        "ACCENT_COLOR_LIGHTER": "#f0d860",
+        "ACCENT_COLOR_LIGHT": "#eeead8",
+        "ACCENT_COLOR_DARK": "#ebbf13",
+        "BACKGROUND": "#fafafa",
+        "BACKGROUND_SECONDARY": "#d1d1d1",
+
+        // content
+        "CONTENT_FOREGROUND": "#3b434a",
+        "CONTENT_FOREGROUND_INVERTED": "#3b434a",
+        "CONTENT_FOREGROUND_SECONDARY": "#71757A",
+
+        // button
+        "BUTTON_BACKGROUND": "linear-gradient(to top, #e5e5e5, #d2d2d2)",
+        "BUTTON_BACKGROUND_SELECTED": "#a1a1a1",
+        "BUTTON_BACKGROUND_HOVER": "linear-gradient(to top, #c7c7c7, #b2b3b1)",
+        "BUTTON_BACKGORUND_PRESSED": "#a1a1a1",
+        "BUTTON_BACKGROUND_DISABLED": "linear-gradient(to top, #e9e9e8, #F2F1F1)",
+        "BUTTON_BACKGROUND_PRIMARY": "linear-gradient(to top, #f7e899, #efd035)",
+        "BUTTON_BACKGROUND_PRIMARY_SELECTED": "#f0d860",
+        "BUTTON_BACKGROUND_PRIMARY_HOVER": "linear-gradient(to top, #ebbf13, #ebbf14)",
+        "BUTTON_BACKGORUND_PRIMARY_PRESSED": "#f0d860", 
+        "BUTTON_FOREGROUND_DISABLED": "#BEC1C2",
+
+        // text box
+        "TEXT_BOX_FOCUSED_BORDER": "#ebbf13",
+        "TEXT_BOX_HOVER_BACKGROUND": "#a1a1a1",
+
+        // combobox
+        "COMBO_BOX_BACKGROUND": "#647b91",
+        "POPUP_BACKGROUND": "#ffffff",
+        "POPUP_BORDER": "#000000",
+
+        // switch
+        "SWITCH_TOGGLE_BACKGROUND": "#ffffff",
+        "SWITCH_TOGGLE_BORDER": "#3b434a",
+
+        // slider
+        "SLIDER_THUMB_BACKGROUND": "#ffffff",
+        "SLIDER_THUMB_BORDER": "#3b434a",
+
+        // combobox
+        "COMBO_BOX_ITEM_SELECTED": "#3b434a",
+
+        // progress bar
+        "PROGRESS_BAR_BACKGROUND": "#ffffff",
+
+        // containers such es lists and text box
+        "CONTAINER_BACKGROUND": "#ffffff",
+        "CONTAINER_BORDER": "#000000",
+    },
+)
