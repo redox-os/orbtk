@@ -299,16 +299,16 @@ If you have trouble to build and run the examples or you don't want to use a C c
 
 You can find examples in the `examples/` directory.
 
-You can start the widgets example by executing the following command:
+You can start the showcase example by executing the following command:
 
 ```text
-cargo run --example widgets --release
+cargo run --example showcase --release
 ```
 
 OrbTk has integrated `debug` tools. If you want to show the bounds of all widgets (even invisible ones) and want to see a debug print of the whole widget tree, you can run the examples with `--features debug`, like this:
 
 ```text
-cargo run --example widgets --release --features debug
+cargo run --example showcase --release --features debug
 ```
 
 ## Run Examples with cargo-node
@@ -325,24 +325,24 @@ Rust's `cargo` is also required. The rest of cargo-node's dependencies are insta
 
 ### Start examples
 
-You can run the "widgets" example by executing one of the following commands:
+You can run the "showcase" example by executing one of the following commands:
 
 * Run as browser app:
 
 ```text
-cargo node run --target browser --example widgets
+cargo node run --target browser --example showcase
 ```
 
 * Run as electron app:
 
 ```text
-cargo node run --target electron --example widgets
+cargo node run --target electron --example showcase
 ```
 
 * Run as cordova app on android:
 
 ```text
-cargo node run --target android --example widgets
+cargo node run --target android --example showcase
 ```
 
 ## OrbTk backends
