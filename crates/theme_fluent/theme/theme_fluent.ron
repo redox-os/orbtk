@@ -288,8 +288,8 @@ Theme (
                 "border_brush": "$BOX_BORDER",
                 "border_width": 1,
                 "border_radius": 2,
-                "padding-left": 12,
-                "padding-right": 12,
+                "padding_left": 12,
+                "padding_right": 12,
             },
             states: [
                 (
@@ -390,26 +390,30 @@ Theme (
         "combo_box": (
             base: "base",
             properties: {
+                "height": 32,
                 "font_size": "$FONT_SIZE_12",
                 "foreground": "$CONTENT_FOREGROUND",
                 "icon_brush": "$CONTENT_FOREGROUND",
-                "background": "$BUTTON_BACKGROUND",
-                "border_width": 0,
+                "background": "$BOX_BACKGROUND",
+                "border_brush": "$BOX_BORDER",
+                "border_radius": 2,
+                "padding_left": 12,
+                "padding_right": 12,
+                "border_width": 1,
                 "height": 32,
-                "padding": 6,
             },
             states: [
-                (
+                 (
                     key: "hover",
                     properties: {
-                        "background": "$BUTTON_BACKGROUND_HOVER",
+                         "border_brush": "$BOX_BORDER_HOVER"
                     }
                 ),
                 (
-                    key: "selected",
+                    key: "pressed",
                     properties: {
-                        "selection_indicator": "$ACCENT_COLOR",
-                        "background": "$BUTTON_BACKGORUND_PRESSED",
+                        "background": "$BOX_BACKGROUND_PRESSED",
+                        "border_brush": "$BOX_BORDER_HOVER"
                     }
                 )
             ]

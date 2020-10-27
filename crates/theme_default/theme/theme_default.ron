@@ -266,8 +266,8 @@ Theme (
                 "border_width": 1,
                 "border_radius": 2,
                 "padding": 6,
-                "padding-left": 6,
-                "padding-right": 6,
+                "padding_left": 6,
+                "padding_right": 6,
             },
             states: [
                 (
@@ -372,7 +372,8 @@ Theme (
                 "background": "$BUTTON_BACKGROUND",
                 "border_width": 0,
                 "height": 32,
-                "padding": 6,
+                "padding_left": 6,
+                "padding_right": 6,
             },
             states: [
                 (

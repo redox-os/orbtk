@@ -265,8 +265,8 @@ Theme (
                 "border_brush": "$BORDER_DFAULT",
                 "border_width": 1,
                 "border_radius": 2,
-                "padding-left": 6,
-                "padding-right": 6,
+                "padding_left": 6,
+                "padding_right": 6,
             },
             states: [
                 (
@@ -367,7 +367,8 @@ Theme (
                 "border_width": 1,
                 "border_radius": 2,
                 "height": 32,
-                "padding": 6,
+                "padding_left": 6,
+                "padding_right": 6,
             },
             states: [
                 (
