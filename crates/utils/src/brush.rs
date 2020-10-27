@@ -90,14 +90,34 @@ use crate::prelude::*;
 /// * Three points (`...`) refer to multiple stops.
 ///   They are respected when a gradient is rendered.
 ///
-/// The next example shows the structure of an angled gradient
+/// To understand gradient directions, imagine a line or vector that
+/// starts at a given point inside the entity and points to an
+/// imaginary target point within the same entity. Gradients will be
+/// rendered along the choosen direction to reach its target
+/// poing. Supported directions are:
+///
+///  * "to bottom"
+///  * "to bottom left"
+///  * "to bottom right"
+///  * "to left"
+///  * "to right"
+///  * "to top
+///  * "to top left"
+///  * "to top right"
+///
+/// Displacement points tell the gradient algorithm to add
+/// (`positive`) or or substract (`negative`) the given pixel numbers
+/// from the original starting point.
+///
+/// Lets look at some examples. The first one shows the
+/// structure of an angled gradient
 ///
 /// ```
 /// [repeating-]linear-gradient({Gradient-angle}{deg|rad|turn}, ...) [{X Displacement}px {Y Displacement}px], {Color} [{Stop  position}{%|px}]
-
 /// ```
 ///
-/// This example shows the structure of a gradient that will be rendered in a given direction
+/// The next example shows the structure of a gradient that will be
+/// rendered in a given direction
 ///
 /// ```
 /// [repeating-]linear-gradient({direction-identifier}, {initial color-name}, {terminating color-name}
