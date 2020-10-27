@@ -238,7 +238,10 @@ widget!(
         selected: bool,
 
         /// Sets or shares the parent id.
-        parent: u32
+        parent: u32,
+
+        /// Indicates if the widget is hovered by the mouse cursor.
+        hover: bool
     }
 );
 

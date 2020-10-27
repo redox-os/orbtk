@@ -40,15 +40,11 @@ Theme (
 
         // combobox
         "COMBO_BOX_BACKGROUND": "#647b91",
-        "POPUP_BACKGROUND": "#444e55",
-        "POPUP_BORDER": "#adb3b8",
+        "POPUP_BACKGROUND": "#2B2B2B",
 
         // slider
         "SLIDER_BACKGROUND": "#666666",
         "SLIDER_BACKGROUND_HOVER": "#999999",
-
-        // combobox
-        "COMBO_BOX_ITEM_SELECTED": "#3b434a",
 
         // progress bar
         "PROGRESS_BAR_BACKGROUND": "#333334",
@@ -56,5 +52,9 @@ Theme (
         // containers such es lists and text box
         "CONTAINER_BACKGROUND": "#2B2D2F",
         "CONTAINER_BORDER": "#A5A5A5",
+
+        // items (combobox item listview item)
+        "ITEM_BACKGROUND_HOVER": "#404040",
+        "ITEM_BACKGROUND_PRESSED": "#555555",
     },
 )

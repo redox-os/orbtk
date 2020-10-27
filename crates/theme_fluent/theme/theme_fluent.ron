@@ -176,8 +176,10 @@ Theme (
                 "icon_font": "$SEGEO_ICON_FONT",
                 "border_radius": 0,
                 "icon_brush": "$CONTENT_FOREGROUND",
-                "icon_size": "$ICON_SIZE_10",
+                "icon_size": "$ICON_SIZE_4",
                 "background": "transparent",
+                "border_width": 1,
+                "border_brush": "$BOX_BORDER",
                 "height": 14,
                 "spacing": 0,
                 "padding": 0,
@@ -344,10 +346,10 @@ Theme (
 
         "items_widget": (
             properties: {
-                "background": "$CONTAINER_BACKGROUND",
-                "border_brush": "$CONTAINER_BORDER",
+                "background": "transparent",
+                "border_brush": "transparent",
                 "foreground": "$CONTENT_FOREGROUND",
-                "border_width": 1,
+                "border_width": 0,
                 "border_radius": 2,
                 "padding": 4,
             }
@@ -356,8 +358,8 @@ Theme (
             base: "base",
             properties: {
                 "foreground": "$CONTENT_FOREGROUND",
-                "background": "$CONTAINER_BACKGROUND",
-                "border_brush": "$CONTAINER_BORDER",
+                "background": "$POPUP_BACKGROUND",
+                "border_brush": "transparent",
                 "border_width": 1,
                 "border_radius": 2,
             },
@@ -372,17 +374,21 @@ Theme (
             },
             states: [
                 (
+                    key: "hover",
+                    properties: {
+                        "background": "$ITEM_BACKGROUND_HOVER",
+                    }
+                ),
+                 (
                     key: "selected",
                     properties: {
-                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
                         "background": "$ACCENT_COLOR",
                     }
                 ),
                 (
                     key: "pressed",
                     properties: {
-                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "background": "$ACCENT_COLOR",
+                        "background": "$ITEM_BACKGROUND_PRESSED",
                     }
                 )
             ]
@@ -393,7 +399,7 @@ Theme (
                 "height": 32,
                 "font_size": "$FONT_SIZE_12",
                 "foreground": "$CONTENT_FOREGROUND",
-                "icon_brush": "$CONTENT_FOREGROUND",
+                "icon_brush": "$BOX_BORDER",
                 "background": "$BOX_BACKGROUND",
                 "border_brush": "$BOX_BORDER",
                 "border_radius": 2,
@@ -401,6 +407,9 @@ Theme (
                 "padding_right": 12,
                 "border_width": 1,
                 "height": 32,
+                "icon_size": "$ICON_SIZE_8",
+                "icon": "$SEG_CHEVRONDOWN",
+                "icon_font": "$SEGEO_ICON_FONT"
             },
             states: [
                  (
@@ -428,17 +437,21 @@ Theme (
             },
             states: [
                 (
+                    key: "hover",
+                    properties: {
+                        "background": "$ITEM_BACKGROUND_HOVER",
+                    }
+                ),
+                (
                     key: "selected",
                     properties: {
-                        "foreground": "$COMBO_BOX_ITEM_SELECTED",
                         "background": "$ACCENT_COLOR",
                     }
                 ),
                 (
                     key: "pressed",
                     properties: {
-                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "background": "$ACCENT_COLOR_DARK",
+                        "background": "$ITEM_BACKGROUND_PRESSED",
                     }
                 )
             ]
@@ -565,7 +578,8 @@ Theme (
             properties: {
                 "background": "$POPUP_BACKGROUND",
                 "border_brush": "$POPUP_BORDER",
-                "border_width": 1,
+                "border_width": 0,
+                "border_radius": 2
             },
         ),
 

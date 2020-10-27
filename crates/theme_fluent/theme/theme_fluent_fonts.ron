@@ -1,5 +1,6 @@
 Theme (
     resources: {      
+        // fonts
         "REGULAR_FONT": "Sego-UI-Regular",
         "BOLD_FONT": "Sego-UI-Bold",
         "LIGHT_FONT": "Sego-UI-Light",
@@ -8,6 +9,8 @@ Theme (
         // material icon fonts is used as default because it is based used in OrbTk default widget library.
         "ICON_FONT": "MaterialIcons-Regular",
         "SEGEO_ICON_FONT": "Segoe-MDL2-Assets-Regular",
+
+        // font sizes
         "FONT_SIZE_12": 12,
         "FONT_SIZE_13": 13,
         "FONT_SIZE_14": 14,
@@ -15,6 +18,11 @@ Theme (
         "FONT_SIZE_24": 24,
         "FONT_SIZE_32": 32,
         "FONT_SIZE_36": 36,
+
+        // icon sizes
+        "ICON_SIZE_4": 4,
+        "ICON_SIZE_6": 6,
+        "ICON_SIZE_8": 8,
         "ICON_SIZE_10": 10,
         "ICON_SIZE_12": 12,
         "ICON_SIZE_14": 14,

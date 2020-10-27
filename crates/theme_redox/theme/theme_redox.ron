@@ -369,6 +369,7 @@ Theme (
                 "height": 32,
                 "padding_left": 6,
                 "padding_right": 6,
+                "icon": "$MD_KEYBOARD_ARROW_DOWN",
             },
             states: [
                 (
