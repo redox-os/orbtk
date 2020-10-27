@@ -1,6 +1,6 @@
 /// Segoe MDL2 Assets Icons: definition of supported glyph constants
 
-//*
+// *
 // * CSS Definiton:
 // */
 // CSS-url:     https://aka.ms/SegoeFonts
