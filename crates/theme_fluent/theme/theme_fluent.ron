@@ -508,7 +508,13 @@ Theme (
                     "right": 0,
                     "bottom": 10,
                 },
-                "accent_brush": "$SLIDER_THUMB_BACKGROUND"
+                "accent_margin": {
+                    "left": 0,
+                    "top": 10,
+                    "right": 0,
+                    "bottom": 10,
+                },
+                "accent_brush": "$ACCENT_COLOR"
             },
         ),
         "thumb": (
@@ -516,35 +522,29 @@ Theme (
                 "width": 22,
                 "height": 22,
                 "border_radius": 11,
-                "background": "$SLIDER_THUMB_BACKGROUND",
+                "background": "$ACCENT_COLOR",
                 "border_width": 0
             },
             states: [
                 (
                     key: "pressed",
                     properties: {
-                         "background": "$SLIDER_THUMB_BACKGROUND_PRESSED",
+                         "background": "$ACCENT_COLOR_DARK",
                          "border_width": 0
                     }
                 )
             ],
         ),
-        // todo indicator
         "progress_bar": (
              properties: {
                 "background": "$PROGRESS_BAR_BACKGROUND",
-                "border_radius": 0,
+                "indicator_background": "$ACCENT_COLOR",
+                "indicator_border_radius": 2,
+                "border_radius": 2,
                 "border_width": 0,
-                "height": 12,
+                "height": 4,
                 "padding": 0,
              },
-        ),
-        "progress_bar_indicator": (
-            properties: {
-                "background": "$ACCENT_COLOR",
-                "height": 12,
-                "width": 0,
-            }
         ),
         "scroll_bar": (
             properties: {

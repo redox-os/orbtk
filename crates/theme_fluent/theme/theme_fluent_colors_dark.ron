@@ -49,14 +49,12 @@ Theme (
         // slider
         "SLIDER_BACKGROUND": "#666666",
         "SLIDER_BACKGROUND_HOVER": "#999999",
-        "SLIDER_THUMB_BACKGROUND": "#0078D7",
-        "SLIDER_THUMB_BACKGROUND_PRESSED": "#2259A1",
 
         // combobox
         "COMBO_BOX_ITEM_SELECTED": "#3b434a",
 
         // progress bar
-        "PROGRESS_BAR_BACKGROUND": "#000000",
+        "PROGRESS_BAR_BACKGROUND": "#333334",
 
         // containers such es lists and text box
         "CONTAINER_BACKGROUND": "#2B2D2F",

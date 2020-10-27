@@ -208,9 +208,9 @@ Theme (
                 "width": 36,
                 "height": 32,
                 "container_margin": {
-                    "left": 2,
+                    "left": 4,
                     "top": 10,
-                    "right": 2,
+                    "right": 4,
                     "bottom": 10,
                 },
                 "border_radius": 7,
@@ -475,6 +475,12 @@ Theme (
                     "right": 0,
                     "bottom": 11,
                 },
+                "accent_margin": {
+                    "left": 0,
+                    "top": 11,
+                    "right": 0,
+                    "bottom": 11,
+                },
                 "accent_brush": "$ACCENT_COLOR"
             },
         ),
@@ -500,19 +506,14 @@ Theme (
         "progress_bar": (
              properties: {
                 "background": "$PROGRESS_BAR_BACKGROUND",
+                "indicator_background": "$ACCENT_COLOR",
+                "indicator_border_radius": 0,
                 "border_brush": "$BORDER_DFAULT",
                 "border_radius": 4,
                 "border_width": 1,
                 "height": 16,
-                "padding": 0,
+                "padding": 2,
              },
-        ),
-        "progress_bar_indicator": (
-            properties: {
-                "background": "$ACCENT_COLOR",
-                "height": 16,
-                "width": 0,
-            }
         ),
         "scroll_bar": (
             properties: {

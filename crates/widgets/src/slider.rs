@@ -87,15 +87,9 @@ impl SliderState {
 
         let thumb_x = calculate_thumb_x_from_val(val, min, max, track_width, thumb_width);
 
-        let mut container_margin: Thickness = Slider::container_margin_clone(&ctx.widget());
-        container_margin.set_left(0.);
-        container_margin.set_right(0.);
         ctx.get_widget(self.accent_track)
             .get_mut::<Constraint>("constraint")
             .set_width(thumb_x + 2.);
-
-        ctx.get_widget(self.accent_track)
-            .set("margin", container_margin);
 
         ctx.get_widget(self.thumb)
             .get_mut::<Thickness>("margin")
@@ -130,13 +124,6 @@ impl State for SliderState {
                         let thumb_x =
                             calculate_thumb_x(mouse_x, thumb_width, slider_x, track_width);
 
-                        let mut container_margin: Thickness =
-                            Slider::container_margin_clone(&ctx.widget());
-                        container_margin.set_left(0.);
-                        container_margin.set_right(0.);
-
-                        ctx.get_widget(self.accent_track)
-                            .set("margin", container_margin);
                         ctx.get_widget(self.accent_track)
                             .get_mut::<Constraint>("constraint")
                             .set_width(thumb_x + 2.);
@@ -206,6 +193,9 @@ widget!(
         /// Defines the margin around the inner border.
         container_margin: Thickness,
 
+         /// Defines the margin around the accent border.
+        accent_margin: Thickness,
+
         /// Defines the accent_brush
         accent_brush: Brush
     }
@@ -221,30 +211,36 @@ impl Template for Slider {
             .height(24.0)
             .border_radius(2.0)
             .container_margin((0, 11, 0, 11))
+            .accent_margin((0, 11, 0, 11))
             .child(
                 Grid::new()
-                    .margin((8, 0))
                     .id(ID_TRACK)
                     .child(
-                        // background border
-                        Container::new()
-                            .margin(("container_margin", id))
-                            .opacity(id)
-                            .border_radius(id)
-                            .background(id)
-                            .border_brush(id)
-                            .border_width(id)
-                            .build(ctx),
-                    )
-                    .child(
-                        // accent border
-                        Container::new()
-                            .id(ID_ACCENT_TRACK)
-                            .h_align("start")
-                            .width(0)
-                            .opacity(id)
-                            .border_radius(id)
-                            .background(("accent_brush", id))
+                        Grid::new()
+                            .margin((8, 0))
+                            .child(
+                                // background border
+                                Container::new()
+                                    .margin(("container_margin", id))
+                                    .opacity(id)
+                                    .border_radius(id)
+                                    .background(id)
+                                    .border_brush(id)
+                                    .border_width(id)
+                                    .build(ctx),
+                            )
+                            .child(
+                                // accent border
+                                Container::new()
+                                    .id(ID_ACCENT_TRACK)
+                                    .margin(("accent_margin", id))
+                                    .h_align("start")
+                                    .width(0)
+                                    .opacity(id)
+                                    .border_radius(id)
+                                    .background(("accent_brush", id))
+                                    .build(ctx),
+                            )
                             .build(ctx),
                     )
                     .child(
