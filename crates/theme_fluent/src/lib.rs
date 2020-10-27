@@ -25,6 +25,9 @@ pub const THEME_FLUENT_COLORS_LIGHT: &str = include_str!("../theme/theme_fluent_
 /// The font resources of the default theme
 pub const THEME_FLUENT_FONTS: &str = include_str!("../theme/theme_fluent_fonts.ron");
 
+/// Segeo Icon Font map.
+pub const SEG_MDL2_ASSETS_ICONS: &str = include_str!("vector_graphics/segmdl2_assets_font.ron");
+
 /// Returns the fluent OrbTk theme.
 pub fn theme_fluent() -> Theme {
     theme_fluent_dark()
@@ -35,7 +38,8 @@ pub fn theme_fluent_dark() -> Theme {
     register_fluent_fonts(Theme::from_config(
         ThemeConfig::from(THEME_FLUENT)
             .extend(ThemeConfig::from(THEME_FLUENT_COLORS_DARK))
-            .extend(ThemeConfig::from(THEME_FLUENT_FONTS)),
+            .extend(ThemeConfig::from(THEME_FLUENT_FONTS))
+            .extend(ThemeConfig::from(SEG_MDL2_ASSETS_ICONS)),
     ))
 }
 
@@ -44,7 +48,8 @@ pub fn theme_fluent_light() -> Theme {
     register_fluent_fonts(Theme::from_config(
         ThemeConfig::from(THEME_FLUENT)
             .extend(ThemeConfig::from(THEME_FLUENT_COLORS_LIGHT))
-            .extend(ThemeConfig::from(THEME_FLUENT_FONTS)),
+            .extend(ThemeConfig::from(THEME_FLUENT_FONTS))
+            .extend(ThemeConfig::from(SEG_MDL2_ASSETS_ICONS)),
     ))
 }
 

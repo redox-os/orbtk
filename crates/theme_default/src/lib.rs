@@ -28,6 +28,9 @@ pub const THEME_DEFAULT_COLORS_LIGHT: &str =
 /// The font resources of the default theme
 pub const THEME_DEFAULT_FONTS: &str = include_str!("../theme/theme_default_fonts.ron");
 
+/// Segeo Icon Font map.
+pub const MATERIAL_ICONS: &str = include_str!("vector_graphics/material_icons_font.ron");
+
 /// Returns the default OrbTk theme.
 pub fn theme_default() -> Theme {
     theme_default_dark()
@@ -38,7 +41,8 @@ pub fn theme_default_dark() -> Theme {
     register_default_fonts(Theme::from_config(
         ThemeConfig::from(THEME_DEFAULT)
             .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_DARK))
-            .extend(ThemeConfig::from(THEME_DEFAULT_FONTS)),
+            .extend(ThemeConfig::from(THEME_DEFAULT_FONTS))
+            .extend(ThemeConfig::from(MATERIAL_ICONS)),
     ))
 }
 
@@ -47,7 +51,8 @@ pub fn theme_default_light() -> Theme {
     register_default_fonts(Theme::from_config(
         ThemeConfig::from(THEME_DEFAULT)
             .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_LIGHT))
-            .extend(ThemeConfig::from(THEME_DEFAULT_FONTS)),
+            .extend(ThemeConfig::from(THEME_DEFAULT_FONTS))
+            .extend(ThemeConfig::from(MATERIAL_ICONS)),
     ))
 }
 

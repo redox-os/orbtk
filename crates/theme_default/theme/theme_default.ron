@@ -188,7 +188,7 @@ Theme (
                 "border_brush": "$CONTAINER_BORDER",
                 "icon_brush": "transparent",
                 "icon_font": "$ICON_FONT",
-                "icon": "\u{e137}"
+                "icon": "$MD_CHECK"
             },
             states: [
                 (

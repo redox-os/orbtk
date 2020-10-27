@@ -9,7 +9,7 @@ use orbtk_theming::{config::ThemeConfig, prelude::*};
 
 pub mod prelude;
 
-use orbtk_theme_default::register_default_fonts;
+use orbtk_theme_default::{register_default_fonts, MATERIAL_ICONS};
 
 /// Resource file of redox theme
 pub const THEME_REDOX: &str = include_str!("../theme/theme_redox.ron");
@@ -25,6 +25,7 @@ pub fn theme_redox() -> Theme {
     register_default_fonts(Theme::from_config(
         ThemeConfig::from(THEME_REDOX)
             .extend(ThemeConfig::from(THEME_REDOX_COLORS_DARK))
-            .extend(ThemeConfig::from(THEME_REDOX_FONTS)),
+            .extend(ThemeConfig::from(THEME_REDOX_FONTS))
+            .extend(ThemeConfig::from(MATERIAL_ICONS)),
     ))
 }
