@@ -42,6 +42,9 @@ pub const ROBOTO_REGULAR_FONT: &[u8] = include_bytes!("Roboto-Regular.ttf");
 /// The `medium` variant of the `Roboto` font family.
 pub const ROBOTO_MEDIUM_FONT: &[u8] = include_bytes!("Roboto-Medium.ttf");
 
+/// The `regular` variant of the  `SegMDL2` font family.
+pub const SEGMDL2_REGULAR_FONT: &[u8] = include_bytes!("SegMDL2.ttf");
+
 /// Use fixed `font size` of 12pt.
 pub const FONT_SIZE_12: f64 = 12.0;
 
