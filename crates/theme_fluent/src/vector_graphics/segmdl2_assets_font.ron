@@ -9,6 +9,7 @@
 // font-style:  regular,
 // font-format: ttf
 // font-src:    SegMdl2.ttf
+// cheet-sheet: http://modernicons.io/segoe-mdl2/cheatsheet/
 Theme (
     resources: {
         "SEG_GLOBALNAVIGATIONBUTTON": "\u{e700}",
