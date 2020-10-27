@@ -1,4 +1,4 @@
-# orbtk_theme_redox
+# orbtk_theme_fluent
 
 [Fluent Design](https://www.microsoft.com/design/fluent/) inspired theme for OrbTk. (dark and light). It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 

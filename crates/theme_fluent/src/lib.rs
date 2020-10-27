@@ -1,6 +1,6 @@
 /*!
 
-This crate provides the default theme resources of OrbTks default theme dark and light.
+This crate provides the default theme resources of OrbTks fluent theme dark and light.
 It provides fonts, icons and colors.
 
  */
@@ -61,7 +61,7 @@ pub fn register_fluent_fonts(theme: Theme) -> Theme {
             "Segoe-MDL2-Assets-Regular",
             crate::fonts::SEG_MDL_ICONS_FONT,
         )
-        // register also material icon fonts because it is based used in OrbTk default widget library.
+        // register also material icon fonts because OrbTk's default widget library relies on its availability.
         .register_font(
             "MaterialIcons-Regular",
             orbtk_theme_default::fonts::MATERIAL_ICONS_FONT,
