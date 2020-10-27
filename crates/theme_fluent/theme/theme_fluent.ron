@@ -174,6 +174,8 @@ Theme (
             base: "button",
             properties: {
                 "border_radius": 0,
+                "border_width": 1,
+                "border_brush": "$BOX_BORDER",
                 "icon_brush": "$CONTENT_FOREGROUND",
                 "font_size": "$ICON_SIZE_12",
                 "background": "transparent",
@@ -307,6 +309,7 @@ Theme (
                     key: "focused",
                     properties: {
                          "border_brush": "$ACCENT_COLOR",
+                         "border_width": 2
                     }
                 ),
                 (
@@ -314,6 +317,7 @@ Theme (
                     properties: {
                         "foreground": "$CONTENT_FOREGROUND",
                         "border_brush": "$ACCENT_COLOR",
+                        "border_width": 2
                     }
                 ),
             ]
@@ -326,7 +330,8 @@ Theme (
         ),
         "cursor": (
             properties: {
-                "background": "$ACCENT_COLOR",
+                "background_opacity": 1,
+                "background": "#0078D7",
                 "border_brush": "$WHITE",
                 "border_width": 1
             }

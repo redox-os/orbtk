@@ -121,8 +121,8 @@ impl Template for TextBox {
                     .child(
                         Grid::new()
                             .clip(true)
-                            .child(text_block)
                             .child(cursor)
+                            .child(text_block)
                             .build(ctx),
                     )
                     .build(ctx),

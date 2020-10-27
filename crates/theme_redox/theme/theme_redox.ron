@@ -297,6 +297,7 @@ Theme (
         ),
         "cursor": (
             properties: {
+                "background_opacity": 0.3,
                 "background": "$ACCENT_COLOR_LIGHTER",
                 "border_brush": "$ACCENT_COLOR_LIGHTER",
                 "border_width": 1
