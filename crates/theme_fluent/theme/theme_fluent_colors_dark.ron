@@ -47,8 +47,10 @@ Theme (
         "SWITCH_BOX_BORDER_HOVER": "#CBCBCB",
 
         // slider
-        "SLIDER_THUMB_BACKGROUND": "#ffffff",
-        "SLIDER_THUMB_BORDER": "#dfebf5",
+        "SLIDER_BACKGROUND": "#666666",
+        "SLIDER_BACKGROUND_HOVER": "#999999",
+        "SLIDER_THUMB_BACKGROUND": "#0078D7",
+        "SLIDER_THUMB_BACKGROUND_PRESSED": "#2259A1",
 
         // combobox
         "COMBO_BOX_ITEM_SELECTED": "#3b434a",
