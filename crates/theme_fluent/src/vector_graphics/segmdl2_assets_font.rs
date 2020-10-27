@@ -9,6 +9,7 @@
 // font-style:  regular;
 // font-format: ttf
 // font-src:    SegMdl2.ttf
+// cheet-sheet: http://modernicons.io/segoe-mdl2/cheatsheet/
 
 pub const SEG_GLOBALNAVIGATIONBUTTON: &str = "\u{e700}";
 pub const SEG_WIFI: &str = "\u{e701}";
