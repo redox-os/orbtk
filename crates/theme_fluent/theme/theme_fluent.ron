@@ -127,8 +127,8 @@ Theme (
             base: "button",
             properties: {
                 "background": "$ACCENT_COLOR",
-                "foreground": "$CONTENT_FOREGROUND",
-                "icon_brush": "$CONTENT_FOREGROUND",
+                "foreground": "$CONRENT_FOREGROUND_ACCENT",
+                "icon_brush": "$CONRENT_FOREGROUND_ACCENT",
             },
             states: [
                 (
@@ -471,48 +471,54 @@ Theme (
         "tab_header": (
             base: "base",
             properties: {
-                "height": 32,
+                "height": 28,
                 "font_sze": "$FONT_SIZE_12",
-                "foreground": "$CONTENT_FOREGROUND_SECONDARY",
+                "foreground": "$CONTENT_FOREGROUND",
                 "font": "$REGULAR_FONT",
                 "background": "transparent",
-                "padding_left": 8,
+                "padding_left": 16,
                 "padding_right": 8,
-                "border_radius": 0
+                "border_radius": 0,
+                "margin": {
+                    "left": 0,
+                    "top": 6,
+                    "right": 0,
+                    "bottom": 0
+                }
             },
             states: [
                 (
+                    key: "hover",
+                    properties: {
+                        "background": "$TAB_HEADER_HOVER",
+                    }
+                ),
+                (
                     key: "selected",
                     properties: {
-                        "background": "$ACCENT_COLOR_LIGHT",
-                        "foreground": "$CONTENT_FOREGROUND",
+                        "background": "$BACKGROUND",
                     }
                 )
             ]
         ),
         "tab_header_bar": (
              properties: {
-                "background": "$ACCENT_COLOR",
-                "height": 2
+                "background": "transparent",
+                "height": 0
             }
         ),
         "tab_icon_only": (
+            base: "button",
             properties: {
-                "icon_size": "$ICON_SIZE_12",
+                "icon_size": "$ICON_SIZE_4",
                 "icon_brush": "$CONTENT_FOREGROUND_SECONDARY",
                 "background": "transparent",
+                "icon": "$SEG_CHROMECLOSE",
+                "icon_font": "$SEGEO_ICON_FONT",
                 "spacing": 0,
                 "width": 16,
                 "height": 16
-            },
-            states: [
-                (
-                    key: "pressed",
-                    properties: {
-                        "background": "$BUTTON_BACKGORUND_PRESSED",
-                    }
-                )
-            ]
+            }
         ),
 
         // -- [END] TabWidget --

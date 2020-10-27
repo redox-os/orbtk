@@ -8,7 +8,7 @@ Theme (
         "ACCENT_COLOR_LIGHT": "#589BE6",
         "ACCENT_COLOR_DARK": "#2259A1",
         "BACKGROUND": "#000000",
-        "BACKGROUND_SECONDARY": "#475b6e",
+        "BACKGROUND_SECONDARY": "#333333",
 
         // box colors (TextBox, CheckBox, ComboBox, ...)
         "BOX_BACKGROUND": "tranparent",
@@ -20,6 +20,7 @@ Theme (
         "CONTENT_FOREGROUND": "#ffffff",
         "CONTENT_FOREGROUND_INVERTED": "#3b434a",
         "CONTENT_FOREGROUND_SECONDARY": "#9dafbf",
+        "CONRENT_FOREGROUND_ACCENT": "#ffffff",
 
         // button
         "BUTTON_BACKGROUND": "#333333",
@@ -56,5 +57,8 @@ Theme (
         // items (combobox item listview item)
         "ITEM_BACKGROUND_HOVER": "#404040",
         "ITEM_BACKGROUND_PRESSED": "#555555",
+
+        // tab header
+        "TAB_HEADER_HOVER": "#1F1F1F"
     },
 )

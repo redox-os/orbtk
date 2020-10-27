@@ -111,7 +111,10 @@ widget!(
         spacing: f64,
 
         /// Sets or shares the close button visibility.
-        close_button: Visibility
+        close_button: Visibility,
+
+        /// Indicates if the widget is hovered by the mouse cursor.
+        hover: bool
     }
 );
 
@@ -539,7 +542,7 @@ impl Template for TabWidget {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("TabWidget").style("tab_widget").child(
             Grid::new()
-                .rows(Rows::create().push(32).push("*"))
+                .rows(Rows::create().push(34).push("*"))
                 .child(
                     Stack::new()
                         .id(HEADER_CONTAINER)
