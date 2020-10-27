@@ -76,7 +76,7 @@ Theme (
             base: "base",
             properties: {
                 "font": "$REGULAR_FONT",
-                "height": 28,
+                "height": 32,
                 "foreground": "$CONTENT_FOREGROUND",
                 "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BUTTON_BACKGROUND",
@@ -173,11 +173,10 @@ Theme (
         "button_small": (
             base: "button",
             properties: {
+                "icon_font": "$SEGEO_ICON_FONT",
                 "border_radius": 0,
-                "border_width": 1,
-                "border_brush": "$BOX_BORDER",
                 "icon_brush": "$CONTENT_FOREGROUND",
-                "font_size": "$ICON_SIZE_12",
+                "icon_size": "$ICON_SIZE_10",
                 "background": "transparent",
                 "height": 14,
                 "spacing": 0,
@@ -326,6 +325,8 @@ Theme (
             base: "text_box",
             properties: {
                 "foreground": "$CONTENT_FOREGROUND",
+                "icon_up": "$SEG_CHEVRONUP",
+                "icon_down": "$SEG_CHEVRONDOWN"
             }
         ),
         "cursor": (

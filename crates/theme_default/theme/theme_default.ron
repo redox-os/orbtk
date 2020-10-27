@@ -266,6 +266,8 @@ Theme (
                 "border_width": 1,
                 "border_radius": 2,
                 "padding": 6,
+                "padding-left": 6,
+                "padding-right": 6,
             },
             states: [
                 (
@@ -299,6 +301,8 @@ Theme (
             base: "text_box",
             properties: {
                 "foreground": "$CONTENT_FOREGROUND",
+                "icon_up": "$MD_KEYBOARD_ARROW_UP",
+                "icon_down": "$MD_KEYBOARD_ARROW_DOWN",
             }
         ),
         "cursor": (
