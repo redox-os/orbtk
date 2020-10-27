@@ -475,6 +475,7 @@ Theme (
                     "right": 0,
                     "bottom": 11,
                 },
+                "accent_brush": "$ACCENT_COLOR"
             },
         ),
         "thumb": (

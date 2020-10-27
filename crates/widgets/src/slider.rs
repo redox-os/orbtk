@@ -89,7 +89,10 @@ impl SliderState {
 
         let mut container_margin: Thickness = Slider::container_margin_clone(&ctx.widget());
         container_margin.set_left(0.);
-        container_margin.set_right(track_width - thumb_x);
+        container_margin.set_right(0.);
+        ctx.get_widget(self.accent_track)
+            .get_mut::<Constraint>("constraint")
+            .set_width(thumb_x + 2.);
 
         ctx.get_widget(self.accent_track)
             .set("margin", container_margin);
@@ -130,10 +133,13 @@ impl State for SliderState {
                         let mut container_margin: Thickness =
                             Slider::container_margin_clone(&ctx.widget());
                         container_margin.set_left(0.);
-                        container_margin.set_right(track_width - thumb_x - 1.);
+                        container_margin.set_right(0.);
 
                         ctx.get_widget(self.accent_track)
                             .set("margin", container_margin);
+                        ctx.get_widget(self.accent_track)
+                            .get_mut::<Constraint>("constraint")
+                            .set_width(thumb_x + 2.);
 
                         ctx.get_widget(self.thumb)
                             .get_mut::<Thickness>("margin")
@@ -234,6 +240,8 @@ impl Template for Slider {
                         // accent border
                         Container::new()
                             .id(ID_ACCENT_TRACK)
+                            .h_align("start")
+                            .width(0)
                             .opacity(id)
                             .border_radius(id)
                             .background(("accent_brush", id))
