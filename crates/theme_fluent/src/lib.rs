@@ -11,7 +11,7 @@ use orbtk_theming::{config::ThemeConfig, prelude::*};
 pub mod fonts;
 pub mod prelude;
 /// provides information processed by the `graphic render` (e.g. glyphs, icons).
-//  pub mod vector_graphics;
+pub mod vector_graphics;
 
 /// Resource file of default theme
 pub const THEME_FLUENT: &str = include_str!("../theme/theme_fluent.ron");

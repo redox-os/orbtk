@@ -109,6 +109,7 @@ impl Template for ButtonView {
                         .child(CheckBox::new().text("CheckBox").build(ctx))
                         .child(CheckBox::new().enabled(false).text("disabled").build(ctx))
                         .child(Switch::new().build(ctx))
+                        .child(Switch::new().enabled(false).build(ctx))
                         .child(slider)
                         .child(ProgressBar::new().val(slider).build(ctx))
                         .build(ctx),

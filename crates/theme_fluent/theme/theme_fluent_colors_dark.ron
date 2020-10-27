@@ -26,7 +26,7 @@ Theme (
         "BUTTON_FOREGROUND_DISABLED": "#6A6A6A",
 
         // CheckBox
-        "CHECK_BOX_BORDER": "#999999",
+        "CHECK_BOX_BORDER": "#ffffff",
         "CHECK_BOX_BORDER_HOVER": "#CBCBCB",
         "CHECK_BOX_BACKGROUND_PRESSED": "#666666",
         
@@ -44,9 +44,10 @@ Theme (
         "SWITCH_BOX_BORDER_HOVER": "#CBCBCB",
         "SWITCH_BOX_BACKGROUND_PRESSED": "#666666",
         "SWITCH_TOGGLE_BACKGROUND": "#ffffff",
+        "SWITCH_BOX_BORDER_HOVER": "#CBCBCB",
 
         // slider
-        "SLIDER_THUMB_BACKGROUND": "#dfebf5",
+        "SLIDER_THUMB_BACKGROUND": "#ffffff",
         "SLIDER_THUMB_BORDER": "#dfebf5",
 
         // combobox

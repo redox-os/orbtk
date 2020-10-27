@@ -7,7 +7,7 @@ Theme (
         "SEMI_BOLD_FONT": "Sego-UI-Semibold",
         // material icon fonts is used as default because it is based used in OrbTk default widget library.
         "ICON_FONT": "MaterialIcons-Regular",
-        "SEGEO_ICON_FONT": "MaterialIcons-Regular",
+        "SEGEO_ICON_FONT": "Segoe-MDL2-Assets-Regular",
         "FONT_SIZE_12": 12,
         "FONT_SIZE_13": 13,
         "FONT_SIZE_14": 14,

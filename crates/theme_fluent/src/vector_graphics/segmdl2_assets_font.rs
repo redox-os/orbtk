@@ -10,7 +10,6 @@
 // font-format: ttf
 // font-src:    SegMdl2.ttf
 
-
 pub const SEG_GLOBALNAVIGATIONBUTTON: &str = "\u{e700}";
 pub const SEG_WIFI: &str = "\u{e701}";
 pub const SEG_BLUETOOTH: &str = "\u{e702}";
@@ -1312,12 +1311,6 @@ pub const SEG_NOISECANCELATIONOFF: &str = "\u{f620}";
 pub const SEG_MUSICSHARING: &str = "\u{f623}";
 pub const SEG_MUSICSHARINGOFF: &str = "\u{f624}";
 pub const SEG_CIRCLESHAPESOLID: &str = "\u{f63c}";
-pub const SEG_WIFICALLBARS: &str = "\u{f657}";
-pub const SEG_WIFICALL0: &str = "\u{f658}";
-pub const SEG_WIFICALL1: &str = "\u{f659}";
-pub const SEG_WIFICALL2: &str = "\u{f65a}";
-pub const SEG_WIFICALL3: &str = "\u{f65b}";
-pub const SEG_WIFICALL4: &str = "\u{f65c}";
 pub const SEG_CHTLANGUAGEBAR: &str = "\u{f69e}";
 pub const SEG_EMOJITABMORESYMBOLS: &str = "\u{f6ba}";
 pub const SEG_WEBSEARCH: &str = "\u{f6fa}";
