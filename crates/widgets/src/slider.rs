@@ -4,6 +4,7 @@ use crate::{api::prelude::*, prelude::*, proc_macros::*};
 pub static STYLE_SLIDER: &str = "slider";
 static ID_THUMB: &str = "id_thumb";
 static ID_TRACK: &str = "id_track";
+static ID_ACCENT_TRACK: &str = "id_accent_track";
 // --- KEYS --
 
 #[derive(Copy, Clone)]
@@ -20,6 +21,7 @@ pub struct SliderState {
     max: f64,
     thumb: Entity,
     track: Entity,
+    accent_track: Entity,
 }
 
 impl SliderState {
@@ -83,26 +85,28 @@ impl SliderState {
             .get::<Rectangle>("bounds")
             .width();
 
+        let thumb_x = calculate_thumb_x_from_val(val, min, max, track_width, thumb_width);
+
+        let mut container_margin: Thickness = Slider::container_margin_clone(&ctx.widget());
+        container_margin.set_left(0.);
+        container_margin.set_right(track_width - thumb_x);
+
+        ctx.get_widget(self.accent_track)
+            .set("margin", container_margin);
+
         ctx.get_widget(self.thumb)
             .get_mut::<Thickness>("margin")
-            .set_left(calculate_thumb_x_from_val(
-                val,
-                min,
-                max,
-                track_width,
-                thumb_width,
-            ));
+            .set_left(thumb_x);
     }
 }
 
 impl State for SliderState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        self.thumb = ctx
-            .entity_of_child(ID_THUMB)
-            .expect("SliderState.init: Thumb child could not be found.");
-        self.track = ctx
-            .entity_of_child(ID_TRACK)
-            .expect("SliderState.init: Track child could not be found.");
+        self.thumb = ctx.child(ID_THUMB).entity();
+        self.track = ctx.child(ID_TRACK).entity();
+        self.accent_track = ctx.child(ID_ACCENT_TRACK).entity();
+
+        // todo call update
     }
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
@@ -122,6 +126,14 @@ impl State for SliderState {
 
                         let thumb_x =
                             calculate_thumb_x(mouse_x, thumb_width, slider_x, track_width);
+
+                        let mut container_margin: Thickness =
+                            Slider::container_margin_clone(&ctx.widget());
+                        container_margin.set_left(0.);
+                        container_margin.set_right(track_width - thumb_x - 1.);
+
+                        ctx.get_widget(self.accent_track)
+                            .set("margin", container_margin);
 
                         ctx.get_widget(self.thumb)
                             .get_mut::<Thickness>("margin")
@@ -154,6 +166,12 @@ widget!(
     /// The `Slider` allows to use a val in a range of values.
     ///
     /// **style:** `slider`
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// Slider::new().min(0).max(100).val(50).build(ctx)
+    /// ```
     Slider<SliderState>: MouseHandler {
         /// Sets or shares the min val of the range.
         min: f64,
@@ -174,7 +192,16 @@ widget!(
         border_width: Thickness,
 
         /// Sets or shares the border brush property.
-        border_brush: Brush
+        border_brush: Brush,
+
+        /// Indicates if the widget is hovered by the mouse cursor.
+        hover: bool,
+
+        /// Defines the margin around the inner border.
+        container_margin: Thickness,
+
+        /// Defines the accent_brush
+        accent_brush: Brush
     }
 );
 
@@ -187,21 +214,35 @@ impl Template for Slider {
             .val(0.0)
             .height(24.0)
             .border_radius(2.0)
+            .container_margin((0, 11, 0, 11))
             .child(
                 Grid::new()
                     .margin((8, 0))
                     .id(ID_TRACK)
                     .child(
+                        // background border
                         Container::new()
+                            .margin(("container_margin", id))
+                            .opacity(id)
                             .border_radius(id)
                             .background(id)
-                            .v_align("center")
-                            .height(2.0)
+                            .border_brush(id)
+                            .border_width(id)
+                            .build(ctx),
+                    )
+                    .child(
+                        // accent border
+                        Container::new()
+                            .id(ID_ACCENT_TRACK)
+                            .opacity(id)
+                            .border_radius(id)
+                            .background(("accent_brush", id))
                             .build(ctx),
                     )
                     .child(
                         Button::new()
                             .style("thumb")
+                            .opacity(id)
                             .id(ID_THUMB)
                             .v_align("center")
                             .h_align("start")

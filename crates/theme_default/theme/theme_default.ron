@@ -478,6 +478,13 @@ Theme (
                 "height": 24,
                 "border_radius": 2,
                 "background": "$BLACK",
+                "container_margin": {
+                    "left": 0,
+                    "top": 11,
+                    "right": 0,
+                    "bottom": 11,
+                },
+                "accent_brush": "$ACCENT_COLOR",
             }
         ),
         "thumb": (
