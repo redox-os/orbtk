@@ -187,10 +187,10 @@ Theme (
             properties: {
                 "foreground": "$CONTENT_FOREGROUND",
                 "icon_size": "$ICON_SIZE_14",
-                "background": "transparent",
+                "background": "$BOX_BACKGROUND",
                 "border_radius": 2,
                 "border_width": 1,
-                "border_brush": "$CHECK_BOX_BORDER",
+                "border_brush": "$BOX_BORDER",
                 "icon_brush": "transparent",
                 "icon_font": "$SEGEO_ICON_FONT",
                 "icon": "$SEG_CHECKMARK"
@@ -199,7 +199,7 @@ Theme (
                  (
                     key: "hover",
                     properties: {
-                         "border_brush": "$CHECK_BOX_BORDER_HOVER"
+                         "border_brush": "$BOX_BORDER_HOVER"
                     }
                 ),
                 (
@@ -213,8 +213,8 @@ Theme (
                 (
                     key: "pressed",
                     properties: {
-                        "background": "$CHECK_BOX_BACKGROUND_PRESSED",
-                        "border_brush": "$CHECK_BOX_BORDER_HOVER"
+                        "background": "$BOX_BACKGROUND_PRESSED",
+                        "border_brush": "$BOX_BORDER_HOVER"
                     }
                 )
             ]
@@ -226,19 +226,17 @@ Theme (
                 "height": 20,
                 "border_radius": 14,
                 "border_width": 1,
-                "border_brush": "$SWITCH_BORDER",
-                "background": "transparent",
+                "border_brush": "$BOX_BORDER",
+                "background": "$BOX_BACKGROUND",
                 "container_margin": 0,
                 "border_radius": 10,
                 "border_width": 1,
-                "border_brush": "$SWITCH_BORDER",
-                "background": "transparent",
             },
             states: [
                  (
                     key: "hover",
                     properties: {
-                         "border_brush": "$SWITCH_BOX_BORDER_HOVER"
+                         "border_brush": "$BOX_BORDER_HOVER"
                     }
                 ),
                 (
@@ -251,8 +249,8 @@ Theme (
                 (
                     key: "pressed",
                     properties: {
-                        "background": "$CHECK_BOX_BACKGROUND_PRESSED",
-                        "border_brush": "$CHECK_BOX_BORDER_HOVER"
+                        "background": "$BOX_BACKGROUND_PRESSED",
+                        "border_brush": "$BOX_BORDER_HOVER"
                     }
                 )
             ]
@@ -285,11 +283,12 @@ Theme (
             properties: {
                 "height": 32,
                 "foreground": "$CONTENT_FOREGROUND_SECONDARY",
-                "background": "$CONTAINER_BACKGROUND",
-                "border_brush": "$CONTAINER_BORDER",
+                "background": "BOX_BACKGROUND",
+                "border_brush": "$BOX_BORDER",
                 "border_width": 1,
                 "border_radius": 2,
-                "padding": 6,
+                "padding-left": 12,
+                "padding-right": 12,
             },
             states: [
                 (
@@ -301,20 +300,20 @@ Theme (
                 (
                     key: "hover",
                     properties: {
-                         "background": "$TEXT_BOX_HOVER_BACKGROUND"
+                         "border_brush": "$BOX_BORDER_HOVER"
                     }
                 ),
                 (
                     key: "focused",
                     properties: {
-                         "border_brush": "$TEXT_BOX_FOCUSED_BORDER",
+                         "border_brush": "$ACCENT_COLOR",
                     }
                 ),
                 (
                     key: "not_empty_focused",
                     properties: {
                         "foreground": "$CONTENT_FOREGROUND",
-                        "border_brush": "$TEXT_BOX_FOCUSED_BORDER",
+                        "border_brush": "$ACCENT_COLOR",
                     }
                 ),
             ]
@@ -327,8 +326,8 @@ Theme (
         ),
         "cursor": (
             properties: {
-                "background": "$ACCENT_COLOR_LIGHTER",
-                "border_brush": "$ACCENT_COLOR_LIGHTER",
+                "background": "$ACCENT_COLOR",
+                "border_brush": "$WHITE",
                 "border_width": 1
             }
         ),

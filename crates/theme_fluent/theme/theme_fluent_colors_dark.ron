@@ -10,6 +10,12 @@ Theme (
         "BACKGROUND": "#000000",
         "BACKGROUND_SECONDARY": "#475b6e",
 
+        // box colors (TextBox, CheckBox, ComboBox, ...)
+        "BOX_BACKGROUND": "tranparent",
+        "BOX_BORDER": "#CBCBCB",
+        "BOX_BORDER_HOVER": "#ffffff",
+        "BOX_BACKGROUND_PRESSED": "#666666",
+
         // content
         "CONTENT_FOREGROUND": "#ffffff",
         "CONTENT_FOREGROUND_INVERTED": "#3b434a",
@@ -24,11 +30,6 @@ Theme (
         "BUTTON_BACKGROUND_PRIMARY_HOVER": "linear-gradient(to top, #f0d860, #efd035)",
         "BUTTON_BACKGORUND_PRIMARY_PRESSED": "#ebbf13", 
         "BUTTON_FOREGROUND_DISABLED": "#6A6A6A",
-
-        // CheckBox
-        "CHECK_BOX_BORDER": "#ffffff",
-        "CHECK_BOX_BORDER_HOVER": "#CBCBCB",
-        "CHECK_BOX_BACKGROUND_PRESSED": "#666666",
         
         // text box
         "TEXT_BOX_FOCUSED_BORDER": "#efd035",
@@ -38,13 +39,6 @@ Theme (
         "COMBO_BOX_BACKGROUND": "#647b91",
         "POPUP_BACKGROUND": "#444e55",
         "POPUP_BORDER": "#adb3b8",
-
-        // switch
-        "SWITCH_BORDER": "#999999",
-        "SWITCH_BOX_BORDER_HOVER": "#CBCBCB",
-        "SWITCH_BOX_BACKGROUND_PRESSED": "#666666",
-        "SWITCH_TOGGLE_BACKGROUND": "#ffffff",
-        "SWITCH_BOX_BORDER_HOVER": "#CBCBCB",
 
         // slider
         "SLIDER_BACKGROUND": "#666666",
