@@ -295,6 +295,7 @@ Theme (
             base: "base",
             properties: {
                 "height": 32,
+                "font_size": "$FONT_SIZE_14",
                 "foreground": "$CONTENT_FOREGROUND_SECONDARY",
                 "background": "BOX_BACKGROUND",
                 "border_brush": "$BOX_BORDER",
@@ -482,7 +483,7 @@ Theme (
             base: "base",
             properties: {
                 "height": 28,
-                "font_sze": "$FONT_SIZE_12",
+                "font_sze": "$FONT_SIZE_14",
                 "foreground": "$CONTENT_FOREGROUND",
                 "background": "transparent",
                 "padding_left": 16,
