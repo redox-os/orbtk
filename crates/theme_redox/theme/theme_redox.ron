@@ -430,7 +430,8 @@ Theme (
                 "background": "transparent",
                 "padding_left": 8,
                 "padding_right": 8,
-                "border_radius": 0
+                "border_radius": 0,
+                "margin": 0
             },
             states: [
                 (

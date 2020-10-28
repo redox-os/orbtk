@@ -97,6 +97,8 @@ Theme (
                     key: "selected",
                     properties: {
                         "background": "$ACCENT_COLOR",
+                        "foreground": "$BUTTON_FOREGROUND_SELECTED",
+                        "icon_brush": "$BUTTON_FOREGROUND_SELECTED",
                     }
                 ),
                 (

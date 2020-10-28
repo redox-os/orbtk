@@ -18,7 +18,7 @@ Theme (
 
         // CheckBox
         "CHECKBOX_ICON_BRUSH": "#ffffff",
-        
+
         // cursor
         "CURSOR_BORDER_BRUSH": "#ffffff",
         "CURSOR_BACKGROUND": "#0078D7",
@@ -36,6 +36,7 @@ Theme (
         "BUTTON_BACKGROUND_PRIMARY_SELECTED": "#ebbf13",
         "BUTTON_BACKGORUND_PRIMARY_PRESSED": "#ebbf13", 
         "BUTTON_FOREGROUND_DISABLED": "#6A6A6A",
+        "BUTTON_FOREGROUND_SELECTED": "#ffffff",
 
         // switch toggle
         "SWITCH_TOGGLE_BACKGROUND": "#ffffff",
