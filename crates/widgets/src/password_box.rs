@@ -1,10 +1,9 @@
 use super::behaviors::{TextAction, TextBehavior};
 use crate::prelude::*;
-use crate::shell::prelude::KeyEvent;
 use crate::{api::prelude::*, proc_macros::*, theme_default::prelude::*};
 
 enum PasswordAction {
-    Key(KeyEvent),
+    TextChange,
 }
 
 #[derive(Default, AsAny)]
@@ -37,7 +36,7 @@ impl State for PasswordBoxState {
     ) {
         for action in messages.read::<PasswordAction>() {
             match action {
-                PasswordAction::Key(_key_event) => {
+                PasswordAction::TextChange => {
                     self.mask(ctx);
                 }
             }
@@ -138,6 +137,9 @@ impl Template for PasswordBox {
         let cursor = Cursor::new().selection(id).build(ctx);
 
         let text_behavior = TextBehavior::new()
+            .on_changed("text", move |ctx, _| {
+                ctx.send_message(PasswordAction::TextChange, id);
+            })
             .cursor(cursor.0)
             .target(id.0)
             .text_block(text_block.0)
@@ -182,18 +184,12 @@ impl Template for PasswordBox {
                     .child(
                         Grid::new()
                             .clip(true)
-                            // It is important that cursor is the first child
-                            // should be refactored in the future.
                             .child(cursor)
                             .child(text_block)
                             .build(ctx),
                     )
                     .build(ctx),
             )
-            .on_key_down(move |ctx, event| -> bool {
-                ctx.send_message(PasswordAction::Key(event), id);
-                false
-            })
             .on_changed("text", move |ctx, _| {
                 ctx.send_message(TextAction::ForceUpdate, text_behavior);
             })

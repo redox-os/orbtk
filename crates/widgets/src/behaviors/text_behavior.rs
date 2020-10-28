@@ -253,7 +253,7 @@ impl TextBehaviorState {
     }
 
     fn select_all(&mut self, ctx: &mut Context) {
-        if TextBehavior::text_ref(&ctx.widget()).is_empty()
+        if TextBlock::text_ref(&ctx.get_widget(self.text_block)).is_empty()
             || !*TextBehavior::focused_ref(&ctx.widget())
         {
             return;
@@ -480,7 +480,9 @@ impl TextBehaviorState {
 
     // gets the len of the text
     fn len(&self, ctx: &mut Context) -> usize {
-        TextBehavior::text_ref(&ctx.widget()).chars().count()
+        TextBlock::text_ref(&ctx.get_widget(self.text_block))
+            .chars()
+            .count()
     }
 
     // gets the focused state
@@ -678,7 +680,7 @@ impl State for TextBehaviorState {
         Cursor::visibility_set(&mut ctx.get_widget(self.cursor), Visibility::Collapsed);
 
         // set initial empty state
-        if TextBehavior::text_ref(&ctx.widget()).is_empty() {
+        if TextBlock::text_ref(&ctx.get_widget(self.text_block)).is_empty() {
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
                 .remove_state(NOT_EMPTY_STATE);
