@@ -342,7 +342,7 @@ impl TabWidgetState {
 
             //Hide current body
             ctx.get_widget(current_tab.1)
-                .set("visibility", Visibility::Hidden);
+                .set("visibility", Visibility::Collapsed);
 
             ctx.get_widget(new_tab.0).set("selected", true);
             toggle_flag("selected", &mut ctx.get_widget(new_tab.0));
@@ -361,8 +361,9 @@ impl TabWidgetState {
         //Create the new tab
         let header = self.create_tab_header(ctx, header_text, body);
 
-        //Set tab body hidden
-        ctx.get_widget(body).set("visibility", Visibility::Hidden);
+        //Set tab body collapsed
+        ctx.get_widget(body)
+            .set("visibility", Visibility::Collapsed);
 
         //Push button to the header container
         ctx.append_child_entity_to(header, self.header_container);
