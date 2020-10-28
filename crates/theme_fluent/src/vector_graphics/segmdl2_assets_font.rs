@@ -10,6 +10,7 @@
 // font-format: ttf
 // font-src:    SegMdl2.ttf
 // cheet-sheet: http://modernicons.io/segoe-mdl2/cheatsheet/
+// import-tool: https://github.com/rzerres/parse_segoe_mdl2.git
 
 pub const SEG_GLOBALNAVIGATIONBUTTON: &str = "\u{e700}";
 pub const SEG_WIFI: &str = "\u{e701}";
