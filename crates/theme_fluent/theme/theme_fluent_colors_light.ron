@@ -12,9 +12,16 @@ Theme (
 
         // box colors (TextBox, CheckBox, ComboBox, ...)
         "BOX_BACKGROUND": "tranparent",
-        "BOX_BORDER": "#CBCBCB",
-        "BOX_BORDER_HOVER": "#ffffff",
-        "BOX_BACKGROUND_PRESSED": "#666666",
+        "BOX_BORDER": "#666666",
+        "BOX_BORDER_HOVER": "#4C4C4C",
+        "BOX_BACKGROUND_PRESSED": "#999999",
+
+        // CheckBox
+        "CHECKBOX_ICON_BRUSH": "#ffffff",
+
+        // cursor
+        "CURSOR_BORDER_BRUSH": "#000000",
+        "CURSOR_BACKGROUND": "#0078D7",
 
         // content
         "CONTENT_FOREGROUND": "#242424",
@@ -24,16 +31,15 @@ Theme (
 
         // button
         "BUTTON_BACKGROUND": "#CCCCCC",
-        "BUTTON_BACKGROUND_SELECTED": "#516475",
-        "BUTTON_BACKGROUND_HOVER": "#191919",
-        "BUTTON_BACKGORUND_PRESSED": "#666666",
+        "BUTTON_BACKGROUND_HOVER": "#E6E6E6",
+        "BUTTON_BACKGORUND_PRESSED": "#999999",
         "BUTTON_BACKGROUND_PRIMARY_SELECTED": "#ebbf13",
-        "BUTTON_BACKGROUND_PRIMARY_HOVER": "linear-gradient(to top, #f0d860, #efd035)",
         "BUTTON_BACKGORUND_PRIMARY_PRESSED": "#ebbf13", 
-        "BUTTON_FOREGROUND_DISABLED": "#6A6A6A",
+        "BUTTON_FOREGROUND_DISABLED": "#7A7A7A",
 
         // switch toggle
-        "SWITCH_TOGGLE_BACKGROUND": "#ffffff",
+        "SWITCH_TOGGLE_BACKGROUND": "#000000",
+        "SWITCH_TOGGLE_BACKGROUND_SELECTED": "#ffffff",
         
         // text box
         "TEXT_BOX_FOCUSED_BORDER": "#efd035",
@@ -41,24 +47,24 @@ Theme (
 
         // combobox
         "COMBO_BOX_BACKGROUND": "#647b91",
-        "POPUP_BACKGROUND": "#2B2B2B",
+        "POPUP_BACKGROUND": "#E1E1E1",
 
         // slider
-        "SLIDER_BACKGROUND": "#666666",
-        "SLIDER_BACKGROUND_HOVER": "#999999",
+        "SLIDER_BACKGROUND": "#999999",
+        "SLIDER_BACKGROUND_HOVER": "#666666",
 
         // progress bar
-        "PROGRESS_BAR_BACKGROUND": "#333334",
+        "PROGRESS_BAR_BACKGROUND": "#CCCCCC",
 
         // containers such es lists and text box
         "CONTAINER_BACKGROUND": "#2B2D2F",
         "CONTAINER_BORDER": "#A5A5A5",
 
         // items (combobox item listview item)
-        "ITEM_BACKGROUND_HOVER": "#404040",
-        "ITEM_BACKGROUND_PRESSED": "#555555",
+        "ITEM_BACKGROUND_HOVER": "#DADADA",
+        "ITEM_BACKGROUND_PRESSED": "#C2C2C2",
 
         // tab header
-        "TAB_HEADER_HOVER": "#1F1F1F"
+        "TAB_HEADER_HOVER": "#EDEDED"
     },
 )

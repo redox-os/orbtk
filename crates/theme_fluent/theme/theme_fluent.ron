@@ -210,7 +210,7 @@ Theme (
                     properties: {
                         "background": "$ACCENT_COLOR",
                         "border_brush": "$ACCENT_COLOR",
-                        "icon_brush": "$CONTENT_FOREGROUND",
+                        "icon_brush": "$CHECKBOX_ICON_BRUSH",
                     }
                 ),
                 (
@@ -267,7 +267,15 @@ Theme (
                 "margin": 4,
                 "background": "$SWITCH_TOGGLE_BACKGROUND",
                 "border_width": 0
-            }
+            },
+            states: [
+                (
+                    key: "selected",
+                    properties: {
+                        "background": "$SWITCH_TOGGLE_BACKGROUND_SELECTED",
+                    }
+                )
+            ]
         ),
         
         // -- [END] Button --
@@ -334,8 +342,8 @@ Theme (
         "cursor": (
             properties: {
                 "background_opacity": 1,
-                "background": "#0078D7",
-                "border_brush": "$WHITE",
+                "background": "$CURSOR_BACKGROUND",
+                "border_brush": "$CURSOR_BORDER_BRUSH",
                 "border_width": 1
             }
         ),
@@ -474,7 +482,6 @@ Theme (
                 "height": 28,
                 "font_sze": "$FONT_SIZE_12",
                 "foreground": "$CONTENT_FOREGROUND",
-                "font": "$REGULAR_FONT",
                 "background": "transparent",
                 "padding_left": 16,
                 "padding_right": 8,
