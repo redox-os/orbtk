@@ -14,7 +14,7 @@ pub static FOCUSED_STATE: &str = "focused";
 // --- KEYS --
 
 /// Actions of TextBehaviorState
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum TextAction {
     KeyDown(KeyEvent),
     TextInput(String),
@@ -25,7 +25,13 @@ pub enum TextAction {
     FocusedChanged,
     SelectionChanged,
     /// Used to force an update on visual state and offset.
-    ForceUpdate,
+    ForceUpdate(bool),
+}
+
+/// Message that the behavior can sent to its target.
+pub enum TextResult {
+    /// Text was manipulated. Contains the new text string.
+    TextManipulated(String),
 }
 
 // helper enum
@@ -253,7 +259,7 @@ impl TextBehaviorState {
     }
 
     fn select_all(&mut self, ctx: &mut Context) {
-        if TextBehavior::text_ref(&ctx.widget()).is_empty()
+        if TextBlock::text_ref(&ctx.get_widget(self.text_block)).is_empty()
             || !*TextBehavior::focused_ref(&ctx.widget())
         {
             return;
@@ -469,7 +475,8 @@ impl TextBehaviorState {
 
     // sets new text
     fn set_text(&mut self, ctx: &mut Context, text: String) {
-        ctx.get_widget(self.target).set("text", text);
+        ctx.get_widget(self.target).set("text", text.clone());
+        ctx.send_message(TextResult::TextManipulated(text), self.target);
         self.self_update = true;
     }
 
@@ -480,7 +487,9 @@ impl TextBehaviorState {
 
     // gets the len of the text
     fn len(&self, ctx: &mut Context) -> usize {
-        TextBehavior::text_ref(&ctx.widget()).chars().count()
+        TextBlock::text_ref(&ctx.get_widget(self.text_block))
+            .chars()
+            .count()
     }
 
     // gets the focused state
@@ -638,11 +647,11 @@ impl TextBehaviorState {
         }
     }
 
-    fn force_update(&mut self, ctx: &mut Context) {
+    fn force_update(&mut self, ctx: &mut Context, force: bool) {
         let self_update = self.self_update;
         self.self_update = false;
 
-        if self_update {
+        if self_update && !force {
             return;
         }
 
@@ -678,7 +687,7 @@ impl State for TextBehaviorState {
         Cursor::visibility_set(&mut ctx.get_widget(self.cursor), Visibility::Collapsed);
 
         // set initial empty state
-        if TextBehavior::text_ref(&ctx.widget()).is_empty() {
+        if TextBlock::text_ref(&ctx.get_widget(self.text_block)).is_empty() {
             ctx.get_widget(self.target)
                 .get_mut::<Selector>("selector")
                 .remove_state(NOT_EMPTY_STATE);
@@ -705,7 +714,7 @@ impl State for TextBehaviorState {
                 TextAction::SelectionChanged => self.update_selection = true,
                 TextAction::MouseMove(position) => self.mouse_move(ctx, position),
                 TextAction::MouseUp => self.mouse_up(ctx),
-                TextAction::ForceUpdate => self.force_update(ctx),
+                TextAction::ForceUpdate(force) => self.force_update(ctx, force),
                 TextAction::TextInput(text) => self.insert_text(text, ctx),
             }
         }

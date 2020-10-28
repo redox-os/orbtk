@@ -109,6 +109,7 @@ impl Template for ButtonView {
                         .child(CheckBox::new().text("CheckBox").build(ctx))
                         .child(CheckBox::new().enabled(false).text("disabled").build(ctx))
                         .child(Switch::new().build(ctx))
+                        .child(Switch::new().enabled(false).build(ctx))
                         .child(slider)
                         .child(ProgressBar::new().val(slider).build(ctx))
                         .build(ctx),
@@ -587,6 +588,8 @@ impl Template for InteractiveView {
             "default_dark".to_string(),
             "default_light".to_string(),
             "redox".to_string(),
+            "fluent_dark".to_string(),
+            "fluent_light".to_string(),
         ];
         let themes_count = themes.len();
 
@@ -614,50 +617,8 @@ impl Template for InteractiveView {
                 )
                 .child(
                     TextBlock::new()
-                        .h_align("start")
+                        .style("header")
                         .attach(Grid::row(0))
-                        .attach(Grid::column(0))
-                        .attach(Grid::column_span(5))
-                        .text("Settings")
-                        .style("header")
-                        .build(ctx),
-                )
-                .child(
-                    TextBox::new()
-                        .text(("settings_text", id))
-                        .attach(Grid::row(2))
-                        .attach(Grid::column(0))
-                        .water_mark("Insert text...")
-                        .build(ctx),
-                )
-                .child(
-                    Button::new()
-                        .text("load")
-                        .style("button_single_content")
-                        .attach(Grid::row(2))
-                        .attach(Grid::column(2))
-                        .on_click(move |ctx, _| {
-                            ctx.send_message(InteractiveAction::LoadSettings, id);
-                            true
-                        })
-                        .build(ctx),
-                )
-                .child(
-                    Button::new()
-                        .text("save")
-                        .style("button_single_content")
-                        .attach(Grid::row(2))
-                        .attach(Grid::column(4))
-                        .on_click(move |ctx, _| {
-                            ctx.send_message(InteractiveAction::SaveSettings, id);
-                            true
-                        })
-                        .build(ctx),
-                )
-                .child(
-                    TextBlock::new()
-                        .style("header")
-                        .attach(Grid::row(4))
                         .attach(Grid::column(0))
                         .style("small_text")
                         .text("Select theme")
@@ -665,7 +626,7 @@ impl Template for InteractiveView {
                 )
                 .child(
                     ComboBox::new()
-                        .attach(Grid::row(6))
+                        .attach(Grid::row(2))
                         .attach(Grid::column(0))
                         .count(themes_count)
                         .items_builder(move |bc, index| {
@@ -677,6 +638,48 @@ impl Template for InteractiveView {
                             ctx.send_message(InteractiveAction::ChangeTheme, id);
                         })
                         .selected_index(id)
+                        .build(ctx),
+                )
+                .child(
+                    TextBlock::new()
+                        .h_align("start")
+                        .attach(Grid::row(4))
+                        .attach(Grid::column(0))
+                        .attach(Grid::column_span(5))
+                        .text("Settings")
+                        .style("header")
+                        .build(ctx),
+                )
+                .child(
+                    TextBox::new()
+                        .text(("settings_text", id))
+                        .attach(Grid::row(6))
+                        .attach(Grid::column(0))
+                        .water_mark("Insert text...")
+                        .build(ctx),
+                )
+                .child(
+                    Button::new()
+                        .text("load")
+                        .style("button_single_content")
+                        .attach(Grid::row(6))
+                        .attach(Grid::column(2))
+                        .on_click(move |ctx, _| {
+                            ctx.send_message(InteractiveAction::LoadSettings, id);
+                            true
+                        })
+                        .build(ctx),
+                )
+                .child(
+                    Button::new()
+                        .text("save")
+                        .style("button_single_content")
+                        .attach(Grid::row(6))
+                        .attach(Grid::column(4))
+                        .on_click(move |ctx, _| {
+                            ctx.send_message(InteractiveAction::SaveSettings, id);
+                            true
+                        })
                         .build(ctx),
                 )
                 .build(ctx),
@@ -772,6 +775,8 @@ impl State for InteractiveState {
                         0 => ctx.switch_theme(theme_default_dark()),
                         1 => ctx.switch_theme(theme_default_light()),
                         2 => ctx.switch_theme(theme_redox()),
+                        3 => ctx.switch_theme(theme_fluent_dark()),
+                        4 => ctx.switch_theme(theme_fluent_light()),
                         _ => {}
                     }
                 }

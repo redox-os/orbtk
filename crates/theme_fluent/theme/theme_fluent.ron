@@ -6,7 +6,7 @@ Theme (
         "base": (
             properties: {
                 "font_size": "$FONT_SIZE_12",
-                "font": "$MEDIUM_FONT",
+                "font": "$SEMI_BOLD_FONT",
                 "icon_size": "$ICON_SIZE_16",
                 "icon_font": "$ICON_FONT"
             },
@@ -45,7 +45,7 @@ Theme (
             properties: {
                 "foreground": "$CONTENT_FOREGROUND",
                 "font_size": "$FONT_SIZE_16",
-                "font": "$MEDIUM_FONT",
+                "font": "$REGULAR_FONT",
             },
         ),
         "header": (
@@ -75,25 +75,18 @@ Theme (
         "button": ( 
             base: "base",
             properties: {
-                "height": 30,
+                "font": "$REGULAR_FONT",
+                "height": 32,
                 "foreground": "$CONTENT_FOREGROUND",
                 "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BUTTON_BACKGROUND",
                 "border_radius": 2,
-                "border_width": 1,
-                "border_brush": "$BORDER_DFAULT",
-                "font_size": "$FONT_SIZE_12",
-                "icon_size": "$ICON_SIZE_16"
+                "border_width": 0,
+                "font_size": "$FONT_SIZE_14",
+                "icon_size": "$ICON_SIZE_16",
+                "container_margin": 0,
             }, 
             states: [
-                (
-                    key: "selected",
-                    properties: {
-                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
-                        "background": "$BUTTON_BACKGROUND_SELECTED",
-                    }
-                ),
                 (
                     key: "hover",
                     properties: {
@@ -101,17 +94,27 @@ Theme (
                     }
                 ),
                 (
+                    key: "selected",
+                    properties: {
+                        "background": "$ACCENT_COLOR",
+                        "foreground": "$BUTTON_FOREGROUND_SELECTED",
+                        "icon_brush": "$BUTTON_FOREGROUND_SELECTED",
+                    }
+                ),
+                (
                     key: "pressed",
                     properties: {
-                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
+                        "font_size": "$FONT_SIZE_13",
                         "background": "$BUTTON_BACKGORUND_PRESSED",
+                        "container_margin": 1,
                     }
                 ),
                 (
                     key: "disabled",
                     properties: {
-                        "opacity": 0.5
+                        "opacity": 1,
+                        "foreground": "$BUTTON_FOREGROUND_DISABLED",
+                        "icon_brush": "$BUTTON_FOREGROUND_DISABLED"
                     }
                 ),
             ],
@@ -126,20 +129,22 @@ Theme (
             base: "button",
             properties: {
                 "background": "$ACCENT_COLOR",
-                "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
+                "foreground": "$CONRENT_FOREGROUND_ACCENT",
+                "icon_brush": "$CONRENT_FOREGROUND_ACCENT",
             },
             states: [
                 (
                     key: "hover",
                     properties: {
-                         "background": "$ACCENT_COLOR_DARK"
+                         "background": "$ACCENT_COLOR_LIGHT"
                     }
                 ),
                   (
                     key: "pressed",
                     properties: {
-                        "background": "$ACCENT_COLOR_LIGHTER",
+                        "font_size": "$FONT_SIZE_13",
+                        "background": "$ACCENT_COLOR_DARK",
+                        "container_margin": 1,
                     }
                 ),
             ]
@@ -170,10 +175,13 @@ Theme (
         "button_small": (
             base: "button",
             properties: {
+                "icon_font": "$SEGEO_ICON_FONT",
                 "border_radius": 0,
                 "icon_brush": "$CONTENT_FOREGROUND",
-                "font_size": "$ICON_SIZE_12",
+                "icon_size": "$ICON_SIZE_4",
                 "background": "transparent",
+                "border_width": 1,
+                "border_brush": "$BOX_BORDER",
                 "height": 14,
                 "spacing": 0,
                 "padding": 0,
@@ -183,63 +191,90 @@ Theme (
             base: "base",
             properties: {
                 "foreground": "$CONTENT_FOREGROUND",
-                "icon_size": "$ICON_SIZE_18",
-                "background": "transparent",
-                "border_radius": 1,
+                "icon_size": "$ICON_SIZE_14",
+                "background": "$BOX_BACKGROUND",
+                "border_radius": 2,
                 "border_width": 1,
-                "border_brush": "$CONTAINER_BORDER",
+                "border_brush": "$BOX_BORDER",
                 "icon_brush": "transparent",
-                "icon_font": "$ICON_FONT",
-                "icon": "$MD_CHECK"
+                "icon_font": "$SEGEO_ICON_FONT",
+                "icon": "$SEG_CHECKMARK"
             },
             states: [
+                 (
+                    key: "hover",
+                    properties: {
+                         "border_brush": "$BOX_BORDER_HOVER"
+                    }
+                ),
                 (
                     key: "selected",
                     properties: {
                         "background": "$ACCENT_COLOR",
                         "border_brush": "$ACCENT_COLOR",
-                        "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
+                        "icon_brush": "$CHECKBOX_ICON_BRUSH",
+                    }
+                ),
+                (
+                    key: "pressed",
+                    properties: {
+                        "background": "$BOX_BACKGROUND_PRESSED",
+                        "border_brush": "$BOX_BORDER_HOVER"
                     }
                 )
             ]
         ),
         "switch": (
+            base: "base",
             properties: {
-                "width": 36,
-                "height": 32,
-                "container_margin": {
-                    "left": 4,
-                    "top": 10,
-                    "right": 4,
-                    "bottom": 10,
-                },
-                "border_radius": 7,
-                "background": "$BORDER_DFAULT",
+                "width": 40,
+                "height": 20,
+                "border_radius": 14,
+                "border_width": 1,
+                "border_brush": "$BOX_BORDER",
+                "background": "$BOX_BACKGROUND",
+                "container_margin": 0,
+                "border_radius": 10,
+                "border_width": 1,
             },
             states: [
-                (
-                    key: "disabled",
+                 (
+                    key: "hover",
                     properties: {
-                        "opacity": 0.5
+                         "border_brush": "$BOX_BORDER_HOVER"
+                    }
+                ),
+                (
+                    key: "selected",
+                    properties: {
+                        "border_width": 0,
+                        "background": "$ACCENT_COLOR"
+                    }
+                ),
+                (
+                    key: "pressed",
+                    properties: {
+                        "background": "$BOX_BACKGROUND_PRESSED",
+                        "border_brush": "$BOX_BORDER_HOVER"
                     }
                 )
             ]
         ),
         "switch_toggle": (
+            base: "base",
             properties: {
-                "width": 20,
-                "height": 20,
-                "border_radius": 10,
-                "background": "$WHITE",
-                "border_brush": "$BORDER_DFAULT",
-                "border_width": 1
+                "width": 10,
+                "height": 10,
+                "border_radius": 5,
+                "margin": 4,
+                "background": "$SWITCH_TOGGLE_BACKGROUND",
+                "border_width": 0
             },
             states: [
                 (
                     key: "selected",
                     properties: {
-                        "border_width": 0,
-                        "background": "$ACCENT_COLOR",
+                        "background": "$SWITCH_TOGGLE_BACKGROUND_SELECTED",
                     }
                 )
             ]
@@ -260,13 +295,14 @@ Theme (
             base: "base",
             properties: {
                 "height": 32,
+                "font_size": "$FONT_SIZE_14",
                 "foreground": "$CONTENT_FOREGROUND_SECONDARY",
-                "background": "$WHITE",
-                "border_brush": "$BORDER_DFAULT",
+                "background": "BOX_BACKGROUND",
+                "border_brush": "$BOX_BORDER",
                 "border_width": 1,
                 "border_radius": 2,
-                "padding_left": 6,
-                "padding_right": 6,
+                "padding_left": 12,
+                "padding_right": 12,
             },
             states: [
                 (
@@ -276,16 +312,24 @@ Theme (
                     }
                 ),
                 (
+                    key: "hover",
+                    properties: {
+                         "border_brush": "$BOX_BORDER_HOVER"
+                    }
+                ),
+                (
                     key: "focused",
                     properties: {
-                         "border_brush": "$TEXT_BOX_FOCUSED_BORDER",
+                         "border_brush": "$ACCENT_COLOR",
+                         "border_width": 2
                     }
                 ),
                 (
                     key: "not_empty_focused",
                     properties: {
                         "foreground": "$CONTENT_FOREGROUND",
-                        "border_brush": "$TEXT_BOX_FOCUSED_BORDER",
+                        "border_brush": "$ACCENT_COLOR",
+                        "border_width": 2
                     }
                 ),
             ]
@@ -294,15 +338,15 @@ Theme (
             base: "text_box",
             properties: {
                 "foreground": "$CONTENT_FOREGROUND",
-                "icon_up": "$MD_KEYBOARD_ARROW_UP",
-                "icon_down": "$MD_KEYBOARD_ARROW_DOWN",
+                "icon_up": "$SEG_CHEVRONUP",
+                "icon_down": "$SEG_CHEVRONDOWN"
             }
         ),
         "cursor": (
             properties: {
-                "background_opacity": 0.3,
-                "background": "$ACCENT_COLOR_LIGHTER",
-                "border_brush": "$ACCENT_COLOR_LIGHTER",
+                "background_opacity": 1,
+                "background": "$CURSOR_BACKGROUND",
+                "border_brush": "$CURSOR_BORDER_BRUSH",
                 "border_width": 1
             }
         ),
@@ -313,10 +357,10 @@ Theme (
 
         "items_widget": (
             properties: {
-                "background": "$CONTAINER_BACKGROUND",
-                "border_brush": "$CONTAINER_BORDER",
+                "background": "transparent",
+                "border_brush": "transparent",
                 "foreground": "$CONTENT_FOREGROUND",
-                "border_width": 1,
+                "border_width": 0,
                 "border_radius": 2,
                 "padding": 4,
             }
@@ -325,8 +369,8 @@ Theme (
             base: "base",
             properties: {
                 "foreground": "$CONTENT_FOREGROUND",
-                "background": "$CONTAINER_BACKGROUND",
-                "border_brush": "$CONTAINER_BORDER",
+                "background": "$POPUP_BACKGROUND",
+                "border_brush": "transparent",
                 "border_width": 1,
                 "border_radius": 2,
             },
@@ -341,17 +385,21 @@ Theme (
             },
             states: [
                 (
+                    key: "hover",
+                    properties: {
+                        "background": "$ITEM_BACKGROUND_HOVER",
+                    }
+                ),
+                 (
                     key: "selected",
                     properties: {
-                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
                         "background": "$ACCENT_COLOR",
                     }
                 ),
                 (
                     key: "pressed",
                     properties: {
-                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "background": "$ACCENT_COLOR",
+                        "background": "$ITEM_BACKGROUND_PRESSED",
                     }
                 )
             ]
@@ -359,26 +407,33 @@ Theme (
         "combo_box": (
             base: "base",
             properties: {
+                "height": 32,
                 "font_size": "$FONT_SIZE_12",
                 "foreground": "$CONTENT_FOREGROUND",
-                "icon_brush": "$CONTENT_FOREGROUND",
-                "background": "$BUTTON_BACKGROUND",
-                "border_brush": "$BORDER_DFAULT",
-                "border_width": 1,
+                "icon_brush": "$BOX_BORDER",
+                "background": "$BOX_BACKGROUND",
+                "border_brush": "$BOX_BORDER",
                 "border_radius": 2,
+                "padding_left": 12,
+                "padding_right": 12,
+                "border_width": 1,
                 "height": 32,
-                "padding_left": 6,
-                "padding_right": 6,
-                "icon": "$MD_KEYBOARD_ARROW_DOWN",
+                "icon_size": "$ICON_SIZE_8",
+                "icon": "$SEG_CHEVRONDOWN",
+                "icon_font": "$SEGEO_ICON_FONT"
             },
             states: [
-                (
-                    key: "selected",
+                 (
+                    key: "hover",
                     properties: {
-                         "foreground": "$WHITE",
-                        "icon_brush": "$WHITE",
-                        "selection_indicator": "$ACCENT_COLOR",
-                        "background": "$BUTTON_BACKGORUND_PRESSED",
+                         "border_brush": "$BOX_BORDER_HOVER"
+                    }
+                ),
+                (
+                    key: "pressed",
+                    properties: {
+                        "background": "$BOX_BACKGROUND_PRESSED",
+                        "border_brush": "$BOX_BORDER_HOVER"
                     }
                 )
             ]
@@ -393,17 +448,21 @@ Theme (
             },
             states: [
                 (
+                    key: "hover",
+                    properties: {
+                        "background": "$ITEM_BACKGROUND_HOVER",
+                    }
+                ),
+                (
                     key: "selected",
                     properties: {
-                        "foreground": "$COMBO_BOX_ITEM_SELECTED",
                         "background": "$ACCENT_COLOR",
                     }
                 ),
                 (
                     key: "pressed",
                     properties: {
-                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "background": "$ACCENT_COLOR_DARK",
+                        "background": "$ITEM_BACKGROUND_PRESSED",
                     }
                 )
             ]
@@ -423,50 +482,53 @@ Theme (
         "tab_header": (
             base: "base",
             properties: {
-                "height": 34,
-                "font_sze": "$FONT_SIZE_12",
-                "foreground": "$CONTENT_FOREGROUND_SECONDARY",
-                "font": "$REGULAR_FONT",
+                "height": 28,
+                "font_sze": "$FONT_SIZE_14",
+                "foreground": "$CONTENT_FOREGROUND",
                 "background": "transparent",
-                "padding_left": 8,
+                "padding_left": 16,
                 "padding_right": 8,
                 "border_radius": 0,
-                "margin": 0
+                "margin": {
+                    "left": 0,
+                    "top": 6,
+                    "right": 0,
+                    "bottom": 0
+                }
             },
             states: [
                 (
+                    key: "hover",
+                    properties: {
+                        "background": "$TAB_HEADER_HOVER",
+                    }
+                ),
+                (
                     key: "selected",
                     properties: {
-                        "foreground": "$CONTENT_FOREGROUND",
+                        "background": "$BACKGROUND",
                     }
                 )
             ]
         ),
         "tab_header_bar": (
              properties: {
-                "background": "$ACCENT_COLOR",
-                "height": 4
+                "background": "transparent",
+                "height": 0
             }
         ),
         "tab_icon_only": (
-            base: "base",
+            base: "button",
             properties: {
-                "icon_size": "$ICON_SIZE_12",
+                "icon_size": "$ICON_SIZE_4",
                 "icon_brush": "$CONTENT_FOREGROUND_SECONDARY",
-                "icon": "$MD_CLOSE",
                 "background": "transparent",
+                "icon": "$SEG_CHROMECLOSE",
+                "icon_font": "$SEGEO_ICON_FONT",
                 "spacing": 0,
                 "width": 16,
                 "height": 16
-            },
-            states: [
-                (
-                    key: "pressed",
-                    properties: {
-                        "background": "$BUTTON_BACKGORUND_PRESSED",
-                    }
-                )
-            ]
+            }
         ),
 
         // -- [END] TabWidget --
@@ -475,38 +537,37 @@ Theme (
 
         "slider": (
             properties: {
-                "height": 24,
+                "height": 22,
                 "border_radius": 2,
-                "background": "$BLACK",
+                "background": "$SLIDER_BACKGROUND",
                 "container_margin": {
                     "left": 0,
-                    "top": 11,
+                    "top": 10,
                     "right": 0,
-                    "bottom": 11,
+                    "bottom": 10,
                 },
                 "accent_margin": {
                     "left": 0,
-                    "top": 11,
+                    "top": 10,
                     "right": 0,
-                    "bottom": 11,
+                    "bottom": 10,
                 },
                 "accent_brush": "$ACCENT_COLOR"
             },
         ),
         "thumb": (
             properties: {
-                "width": 24,
-                "height": 24,
-                "border_radius": 12,
-                "background": "$SLIDER_THUMB_BACKGROUND",
-                "border_brush": "$SLIDER_THUMB_BORDER",
-                "border_width": 1
+                "width": 22,
+                "height": 22,
+                "border_radius": 11,
+                "background": "$ACCENT_COLOR",
+                "border_width": 0
             },
             states: [
                 (
                     key: "pressed",
                     properties: {
-                         "background": "$ACCENT_COLOR",
+                         "background": "$ACCENT_COLOR_DARK",
                          "border_width": 0
                     }
                 )
@@ -516,12 +577,11 @@ Theme (
              properties: {
                 "background": "$PROGRESS_BAR_BACKGROUND",
                 "indicator_background": "$ACCENT_COLOR",
-                "indicator_border_radius": 0,
-                "border_brush": "$BORDER_DFAULT",
-                "border_radius": 4,
-                "border_width": 1,
-                "height": 16,
-                "padding": 2,
+                "indicator_border_radius": 2,
+                "border_radius": 2,
+                "border_width": 0,
+                "height": 4,
+                "padding": 0,
              },
         ),
         "scroll_bar": (
@@ -534,7 +594,8 @@ Theme (
             properties: {
                 "background": "$POPUP_BACKGROUND",
                 "border_brush": "$POPUP_BORDER",
-                "border_width": 1,
+                "border_width": 0,
+                "border_radius": 2
             },
         ),
 

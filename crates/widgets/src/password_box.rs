@@ -1,26 +1,24 @@
-use super::behaviors::{TextAction, TextBehavior};
+use super::behaviors::{TextAction, TextBehavior, TextResult};
 use crate::prelude::*;
-use crate::shell::prelude::KeyEvent;
 use crate::{api::prelude::*, proc_macros::*, theme_default::prelude::*};
-
-enum PasswordAction {
-    Key(KeyEvent),
-}
 
 #[derive(Default, AsAny)]
 struct PasswordBoxState {
     echo: char,
+    text_behavior: Entity,
+    text_block: Entity,
 }
 
 impl PasswordBoxState {
-    fn mask(&mut self, ctx: &mut Context) {
+    fn mask(&mut self, ctx: &mut Context, text: String) {
         let mut new_prompt = String::new();
 
-        for _ in ctx.widget().get::<String>("text").chars() {
+        for _ in text.chars() {
             new_prompt.push(self.echo);
         }
 
-        ctx.widget().set::<String>("mask", new_prompt);
+        TextBlock::text_set(&mut ctx.get_widget(self.text_block), new_prompt);
+        ctx.send_message(TextAction::ForceUpdate(true), self.text_behavior);
     }
 }
 
@@ -35,11 +33,9 @@ impl State for PasswordBoxState {
         _registry: &mut Registry,
         ctx: &mut Context,
     ) {
-        for action in messages.read::<PasswordAction>() {
-            match action {
-                PasswordAction::Key(_key_event) => {
-                    self.mask(ctx);
-                }
+        for message in messages.read::<TextResult>() {
+            match message {
+                TextResult::TextManipulated(text) => self.mask(ctx, text),
             }
         }
     }
@@ -68,9 +64,6 @@ widget!(
     PasswordBox<PasswordBoxState>: KeyDownHandler, TextInputHandler {
         /// Sets or shares the echo character which used to mask the input
         echo: char,
-
-        /// Sets or shares the mask property.It contains the masked input.
-        mask: String,
 
         /// Sets or shares the text property.It holds the password.
         text: String,
@@ -123,17 +116,18 @@ widget!(
 );
 
 impl Template for PasswordBox {
-    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+    fn template(mut self, id: Entity, ctx: &mut BuildContext) -> Self {
         let text_block = TextBlock::new()
             .v_align("center")
             .h_align("start")
             .foreground(id)
-            .text(("mask", id))
             .water_mark(id)
             .font(id)
             .font_size(id)
             .localizable(false)
             .build(ctx);
+
+        self.state_mut().text_block = text_block;
 
         let cursor = Cursor::new().selection(id).build(ctx);
 
@@ -151,11 +145,12 @@ impl Template for PasswordBox {
             .selection(id)
             .build(ctx);
 
+        self.state_mut().text_behavior = text_behavior;
+
         self.name("PasswordBox")
             .style(STYLE_TEXT_BOX)
             .echo('*')
             .text("")
-            .mask("")
             .water_mark("Password")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
@@ -182,23 +177,11 @@ impl Template for PasswordBox {
                     .child(
                         Grid::new()
                             .clip(true)
-                            // It is important that cursor is the first child
-                            // should be refactored in the future.
                             .child(cursor)
                             .child(text_block)
                             .build(ctx),
                     )
                     .build(ctx),
             )
-            .on_key_down(move |ctx, event| -> bool {
-                ctx.send_message(PasswordAction::Key(event), id);
-                false
-            })
-            .on_changed("text", move |ctx, _| {
-                ctx.send_message(TextAction::ForceUpdate, text_behavior);
-            })
-            .on_changed("mask", move |ctx, _| {
-                ctx.send_message(TextAction::ForceUpdate, text_behavior);
-            })
     }
 }

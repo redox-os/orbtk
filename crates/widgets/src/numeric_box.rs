@@ -208,7 +208,18 @@ widget!(
         step: f64,
 
         /// Sets or shares the current value property
-        val: f64
+        val: f64,
+
+        /// Indicates if the widget is hovered by the mouse cursor.
+        hover: bool,
+
+        /// Represents the up icon of the up button.
+        icon_up: String,
+
+        /// Represents the up icon of the down button
+        icon_down: String,
+
+        padding: Thickness
     }
 );
 
@@ -228,6 +239,8 @@ impl Template for NumericBox {
             .max(200.0)
             .step(1.0)
             .val(0.0)
+            .icon_up(material_icons_font::MD_KEYBOARD_ARROW_UP)
+            .icon_down(material_icons_font::MD_KEYBOARD_ARROW_DOWN)
             .min_width(128.0)
             .child(
                 MouseBehavior::new()
@@ -251,6 +264,7 @@ impl Template for NumericBox {
                     .rows(Rows::create().push(16.0).push(16.0))
                     .child(
                         TextBox::new()
+                            .margin(("padding", id))
                             .id(ID_INPUT)
                             .style("")
                             .attach(Grid::column(0))
@@ -263,7 +277,7 @@ impl Template for NumericBox {
                             .background("transparent")
                             .h_align("stretch")
                             .enabled(false)
-                            .max_width(96.)
+                            .v_align("center")
                             .text("0")
                             .lose_focus_on_activation(id)
                             .build(ctx),
@@ -275,7 +289,7 @@ impl Template for NumericBox {
                             .attach(Grid::row(0))
                             .min_width(14)
                             .height(15)
-                            .icon(material_icons_font::MD_KEYBOARD_ARROW_UP)
+                            .icon(("icon_up", id))
                             .margin(1)
                             .on_click(move |states, _| {
                                 states
@@ -294,7 +308,7 @@ impl Template for NumericBox {
                             .height(15)
                             .padding(0.0)
                             .margin(1)
-                            .icon(material_icons_font::MD_KEYBOARD_ARROW_DOWN)
+                            .icon(("icon_down", id))
                             .on_click(move |states, _| {
                                 states
                                     .get_mut::<NumericBoxState>(id)

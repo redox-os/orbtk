@@ -30,6 +30,11 @@ impl Layout for AbsoluteLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &Theme,
     ) -> DirtySize {
+        if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
+            self.desired_size.borrow_mut().set_size(0.0, 0.0);
+            return *self.desired_size.borrow();
+        }
+
         let window = ecm.entity_store().root();
 
         if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", window) {

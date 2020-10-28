@@ -6,7 +6,6 @@ static RANGE_MAX: f64 = 1.0;
 // --- KEYS --
 
 pub static STYLE_PROGRESS_BAR: &str = "progress_bar";
-pub static STYLE_PROGRESS_BAR_INDICATOR: &str = "progress_bar_indicator";
 static ID_INDICATOR: &str = "PGBAR_INDICATOR";
 
 // --- KEYS --
@@ -26,6 +25,14 @@ impl State for BarState {
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         let val = ctx.widget().clone_or_default::<f64>("val");
+
+        if val <= 0. {
+            ctx.get_widget(self.indicator)
+                .set("visibility", Visibility::Collapsed);
+        } else {
+            ctx.get_widget(self.indicator)
+                .set("visibility", Visibility::Visible);
+        }
         let max_width = ctx.widget().get::<Rectangle>("bounds").width()
             - ctx.widget().get::<Thickness>("padding").left()
             - ctx.widget().get::<Thickness>("padding").right();
@@ -38,14 +45,14 @@ impl State for BarState {
 }
 
 fn calculate_width(current_progress: f64, max_width: f64) -> f64 {
-    if (current_progress - RANGE_MIN).abs() < f64::EPSILON {
-        return 0.01;
+    if (current_progress - RANGE_MIN).abs() <= f64::EPSILON {
+        return 0.;
     } else if (current_progress - RANGE_MAX).abs() < f64::EPSILON {
-        return max_width * 0.99;
+        return max_width * 1.;
     } else if current_progress > RANGE_MIN && current_progress < RANGE_MAX {
         return max_width * current_progress;
     }
-    max_width * 0.99
+    max_width * 1.
 }
 
 widget!(
@@ -73,40 +80,51 @@ widget!(
     ProgressBar<BarState> {
         /// Sets or shares the background color property
         background: Brush,
+
+        /// Defines the background brush of the indicator.
+        indicator_background: Brush,
+
+        /// Defines the border radius of the indicator.
+        indicator_border_radius: f64,
+
         /// Sets or shares the border color property
         border_brush: Brush,
+
         /// Sets or shares the border radius property
         border_radius: f64,
+
         /// Sets or shares the border width property
         border_width: Thickness,
+
         /// Sets or shares the padding property
         padding: Thickness,
+
         /// Sets or shares the current progress property
         val: f64
     }
 );
 
 impl Template for ProgressBar {
-    fn template(self, _: Entity, ctx: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ProgressBar")
             .style(STYLE_PROGRESS_BAR)
             .val(0.0)
             .background("#000000")
+            .indicator_background("#EFD035")
             .border_brush("#BABABA")
             .border_radius(4)
+            .indicator_border_radius(4)
             .border_width(1)
             .height(34)
             .min_width(100.0)
             .padding((2, 4, 2, 4))
+            .clip(true)
             .child(
                 Container::new()
                     .id(ID_INDICATOR)
-                    .style(STYLE_PROGRESS_BAR_INDICATOR)
-                    .background("#EFD035")
-                    .border_radius(1.0)
+                    .background(("indicator_background", id))
+                    .border_radius(("indicator_border_radius", id))
                     .width(0.0)
-                    .height(24.0)
-                    .v_align("center")
                     .h_align("start")
                     .build(ctx),
             )
@@ -129,10 +147,10 @@ mod tests {
 
     #[test]
     fn test_calculate_width() {
-        assert!((0.01 - calculate_width(0.0, 100.0)).abs() < ERROR);
+        assert!((0.0 - calculate_width(0.0, 100.0)).abs() < ERROR);
         assert!((50.0 - calculate_width(0.5, 100.0)).abs() < ERROR);
-        assert!((99.0 - calculate_width(1.0, 100.0)).abs() < ERROR);
-        assert!((99.0 - calculate_width(1.23, 100.0)).abs() < ERROR);
-        assert!((99.0 - calculate_width(-1.23, 100.0)).abs() < ERROR);
+        assert!((100.0 - calculate_width(1.0, 100.0)).abs() < ERROR);
+        assert!((100.0 - calculate_width(1.23, 100.0)).abs() < ERROR);
+        assert!((100.0 - calculate_width(-1.23, 100.0)).abs() < ERROR);
     }
 }

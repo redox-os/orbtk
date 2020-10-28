@@ -29,7 +29,7 @@ Theme (
         "BUTTON_FOREGROUND_DISABLED": "#3b434a",
 
         // text box
-        "TEXT_BOX_FOCUSED_BORDER": "#efd035",
+        "TEXT_BOX_FOCUSED_BORDER": "#3C95DF",
         "TEXT_BOX_HOVER_BACKGROUND": "#000000",
 
         // combobox

@@ -143,7 +143,10 @@ widget!(
         pressed: bool,
 
         /// Sets or shares the selected property.
-        selected: bool
+        selected: bool,
+
+        /// Indicates if the widget is hovered by the mouse cursor.
+        hover: bool
     }
 );
 
@@ -376,7 +379,10 @@ widget!(
         icon_size: f64,
 
         /// Sets or shares the icon font property.
-        icon_font: String
+        icon_font: String,
+
+        /// Indicates if the widget is hovered by the mouse cursor.
+        hover: bool
     }
 );
 

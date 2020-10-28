@@ -49,7 +49,10 @@ widget!(
         pressed: bool,
 
         /// Sets or shares the selected property.
-        selected: bool
+        selected: bool,
+
+        /// Indicates if the widget is hovered by the mouse cursor.
+        hover: bool
     }
 );
 

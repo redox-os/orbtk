@@ -53,7 +53,10 @@ widget!(
         spacing: f64,
 
         /// Indicates if the widget is hovered by the mouse cursor.
-        hover: bool
+        hover: bool,
+
+        /// Defines the margin around the inner border.
+        container_margin: Thickness
     }
 );
 
@@ -78,6 +81,7 @@ impl Template for Button {
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
             .spacing(8.0)
+            .container_margin(0)
             .child(
                 MouseBehavior::new()
                     .pressed(id)
@@ -91,6 +95,7 @@ impl Template for Button {
                             .border_brush(id)
                             .padding(id)
                             .opacity(id)
+                            .margin(("container_margin", id))
                             .child(
                                 Stack::new()
                                     .orientation("horizontal")

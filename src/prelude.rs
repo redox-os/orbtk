@@ -25,5 +25,8 @@ pub use crate::{
 
 // optional uses
 
+#[cfg(feature = "fluent")]
+pub use crate::theme_fluent::prelude::*;
+
 #[cfg(feature = "redox")]
 pub use crate::theme_redox::prelude::*;
