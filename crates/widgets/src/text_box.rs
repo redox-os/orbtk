@@ -128,7 +128,7 @@ impl Template for TextBox {
                     .build(ctx),
             )
             .on_changed("text", move |ctx, _| {
-                ctx.send_message(TextAction::ForceUpdate, text_behavior);
+                ctx.send_message(TextAction::ForceUpdate(false), text_behavior);
             })
     }
 }

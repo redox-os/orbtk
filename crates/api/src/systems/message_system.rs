@@ -25,25 +25,31 @@ impl System<Tree, StringComponentStore, RenderContext2D> for MessageSystem {
 
         let message_adapter = self.context_provider.message_adapter.clone();
 
-        for entity in self.context_provider.message_adapter.entities() {
-            let mut ctx = Context::new(
-                (entity, ecm),
-                &theme,
-                &self.context_provider,
-                render_context,
-            );
-
-            if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
-                state.messages(
-                    message_adapter.message_reader(entity),
-                    &mut self.registry.borrow_mut(),
-                    &mut ctx,
-                );
-            } else {
-                message_adapter.remove_message_for_entity(entity);
+        loop {
+            if self.context_provider.message_adapter.entities().is_empty() {
+                break;
             }
 
-            drop(ctx);
+            for entity in self.context_provider.message_adapter.entities() {
+                let mut ctx = Context::new(
+                    (entity, ecm),
+                    &theme,
+                    &self.context_provider,
+                    render_context,
+                );
+
+                if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
+                    state.messages(
+                        message_adapter.message_reader(entity),
+                        &mut self.registry.borrow_mut(),
+                        &mut ctx,
+                    );
+                } else {
+                    message_adapter.remove_message_for_entity(entity);
+                }
+
+                drop(ctx);
+            }
         }
     }
 }
