@@ -10,6 +10,7 @@ use orbtk_theming::{config::ThemeConfig, prelude::*};
 /// provides `constants` associated to fonts.
 pub mod fonts;
 pub mod prelude;
+
 /// provides information processed by the `graphic render` (e.g. glyphs, icons).
 pub mod vector_graphics;
 
