@@ -97,7 +97,7 @@ impl MessageAdapter {
         if !self.messages.lock().unwrap().contains_key(&target) {
             self.messages
                 .lock()
-                .expect("MessageAdapter::push_message: Cannot lock messages.")
+                .expect("MessageAdapter::send_message: Cannot lock messages.")
                 .insert(target, HashMap::new());
         }
 
@@ -106,14 +106,14 @@ impl MessageAdapter {
         if !self
             .messages
             .lock()
-            .expect("MessageAdapter::push_message: Cannot lock messages.")
+            .expect("MessageAdapter::send_message: Cannot lock messages.")
             .get(&target)
             .unwrap()
             .contains_key(&type_id)
         {
             self.messages
                 .lock()
-                .expect("MessageAdapter::push_message: Cannot lock messages.")
+                .expect("MessageAdapter::send_message: Cannot lock messages.")
                 .get_mut(&target)
                 .unwrap()
                 .insert(type_id, vec![]);
@@ -121,7 +121,7 @@ impl MessageAdapter {
 
         self.messages
             .lock()
-            .expect("MessageAdapter::push_message: Cannot lock messages.")
+            .expect("MessageAdapter::send_message: Cannot lock messages.")
             .get_mut(&target)
             .unwrap()
             .get_mut(&type_id)
@@ -130,7 +130,7 @@ impl MessageAdapter {
 
         self.window_sender
             .send(WindowRequest::Redraw)
-            .expect("MessageAdapter::push_message: Cannot send redraw request.");
+            .expect("MessageAdapter::send_message: Cannot send redraw request.");
     }
 
     /// Returns a list of entities that has messages.

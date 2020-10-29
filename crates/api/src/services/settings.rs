@@ -110,7 +110,7 @@ impl Settings {
         entity: Entity,
     ) {
         self.message_adapter
-            .push_message(entity, save(self.app_name.as_str(), key.as_str(), &data));
+            .send_message(save(self.app_name.as_str(), key.as_str(), &data), entity);
     }
 
     /// Loads and deserialize data from user's config dir. Send the result `Result<D, String>` as message to the given entity.
@@ -121,7 +121,7 @@ impl Settings {
         entity: Entity,
     ) {
         self.message_adapter
-            .push_message(entity, load::<D>(self.app_name.as_str(), key.as_str()));
+            .send_message(load::<D>(self.app_name.as_str(), key.as_str()), entity);
     }
 
     /// Serialize the given data object from user's config dir.
