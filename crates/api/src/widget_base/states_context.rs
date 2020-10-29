@@ -123,6 +123,6 @@ impl<'a> StatesContext<'a> {
 
     /// Send a message to the given target widget.
     pub fn send_message<M: Any + Send>(&self, message: M, target: Entity) {
-        self.message_adapter.push_message(target, message);
+        self.message_adapter.send_message(message, target);
     }
 }

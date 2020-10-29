@@ -56,15 +56,15 @@ impl MessageBox {
     }
 }
 
-/// The `MessageAdapter` is the thread save entry point to sent and read widget messages that are handled by the `message``
+/// The `MessageAdapter` is the thread save entry point to sent and read widget messages that are handled by the `message`
 /// method of a widget `State`,
 ///
 /// # Example
 ///
 /// ```rust
 /// fn say_hello(entity: Entity, message_adapter: MessageAdapter) {
-///     message_adapter.push_message(entity, String::from("Hello"));
-///     message_adapter.push_message(entity, String::from("Hello 2"));
+///     message_adapter.send_message(String::from("Hello"), entity);
+///     message_adapter.send_message(String::from("Hello 2"), entity);
 /// }
 ///
 /// impl State for MyState {
@@ -92,8 +92,8 @@ impl MessageAdapter {
         }
     }
 
-    /// Pushes / sent a new message to the message pipeline.
-    pub fn push_message<M: Any + Send>(&self, target: Entity, message: M) {
+    /// Send a new message to the message pipeline.
+    pub fn send_message<M: Any + Send>(&self, message: M, target: Entity) {
         if !self.messages.lock().unwrap().contains_key(&target) {
             self.messages
                 .lock()
@@ -169,7 +169,7 @@ impl MessageAdapter {
     }
 
     /// Returns a message reader for the given entity. Moves all messages for the entity from the adapter to the reader.
-    pub fn message_reader(&self, entity: Entity) -> MessageReader {
+    pub(crate) fn message_reader(&self, entity: Entity) -> MessageReader {
         let messages = if let Some(messages) = self
             .messages
             .lock()

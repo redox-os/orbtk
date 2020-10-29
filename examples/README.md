@@ -13,6 +13,7 @@
     ![canvas](https://gitlab.redox-os.org/redox-os/assets/-/raw/master/screenshots/orbtk_examples/canvas_example.jpg)
 
 * login: PasswordBox showcase with a login form
+* message: send a message from an other thread
 * minimal: minimal example
 * multi_window: multi window example
 

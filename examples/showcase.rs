@@ -578,7 +578,8 @@ widget!(
     InteractiveView<InteractiveState> {
         settings_text: String,
         themes: List,
-        selected_index: i32
+        selected_index: i32,
+        count_text: String
     }
 );
 
@@ -593,7 +594,7 @@ impl Template for InteractiveView {
         ];
         let themes_count = themes.len();
 
-        self.themes(themes).child(
+        self.count_text("0").themes(themes).child(
             Grid::new()
                 .margin(8)
                 .rows(
@@ -602,6 +603,14 @@ impl Template for InteractiveView {
                         .push(4)
                         .push(32)
                         .push(8)
+                        .push("auto")
+                        .push(4)
+                        .push(32)
+                        .push(8)
+                        .push("auto")
+                        .push(4)
+                        .push(32)
+                        .push(4)
                         .push("auto")
                         .push(4)
                         .push(32),
@@ -615,6 +624,7 @@ impl Template for InteractiveView {
                         .push("auto")
                         .push("*"),
                 )
+                // theme selection
                 .child(
                     TextBlock::new()
                         .style("header")
@@ -640,6 +650,7 @@ impl Template for InteractiveView {
                         .selected_index(id)
                         .build(ctx),
                 )
+                // Settings
                 .child(
                     TextBlock::new()
                         .h_align("start")
@@ -678,6 +689,51 @@ impl Template for InteractiveView {
                         .attach(Grid::column(4))
                         .on_click(move |ctx, _| {
                             ctx.send_message(InteractiveAction::SaveSettings, id);
+                            true
+                        })
+                        .build(ctx),
+                )
+                // Counter
+                .child(
+                    TextBlock::new()
+                        .h_align("start")
+                        .attach(Grid::row(8))
+                        .attach(Grid::column(0))
+                        .attach(Grid::column_span(5))
+                        .text("Counter")
+                        .style("header")
+                        .build(ctx),
+                )
+                .child(
+                    Button::new()
+                        .style("button_single_content")
+                        .attach(Grid::row(10))
+                        .attach(Grid::column(0))
+                        .icon(material_icons_font::MD_PLUS)
+                        .on_click(move |ctx, _| {
+                            ctx.send_message(InteractiveAction::Increment, id);
+                            true
+                        })
+                        .build(ctx),
+                )
+                .child(
+                    TextBlock::new()
+                        .style("body")
+                        .h_align("center")
+                        .v_align("center")
+                        .attach(Grid::row(12))
+                        .attach(Grid::column(0))
+                        .text(("count_text", id))
+                        .build(ctx),
+                )
+                .child(
+                    Button::new()
+                        .style("button_single_content")
+                        .attach(Grid::row(14))
+                        .attach(Grid::column(0))
+                        .icon(material_icons_font::MD_MINUS)
+                        .on_click(move |ctx, _| {
+                            ctx.send_message(InteractiveAction::Decrement, id);
                             true
                         })
                         .build(ctx),
@@ -746,7 +802,9 @@ impl State for LocalizationState {
 }
 
 #[derive(Debug, Default, AsAny)]
-struct InteractiveState {}
+struct InteractiveState {
+    count: i32,
+}
 
 impl State for InteractiveState {
     fn messages(
@@ -780,6 +838,14 @@ impl State for InteractiveState {
                         _ => {}
                     }
                 }
+                InteractiveAction::Increment => {
+                    self.count += 1;
+                    InteractiveView::count_text_set(&mut ctx.widget(), self.count.to_string());
+                }
+                InteractiveAction::Decrement => {
+                    self.count -= 1;
+                    InteractiveView::count_text_set(&mut ctx.widget(), self.count.to_string());
+                }
             }
         }
 
@@ -806,6 +872,8 @@ enum InteractiveAction {
     SaveSettings,
     LoadSettings,
     ChangeTheme,
+    Increment,
+    Decrement,
 }
 
 use serde_derive::{Deserialize, Serialize};

@@ -83,7 +83,7 @@ impl Settings {
         let message_adapter = self.message_adapter.clone();
 
         self.pool.execute(move || {
-            message_adapter.push_message(entity, save(app_name.as_str(), key.as_str(), &data));
+            message_adapter.send_message(save(app_name.as_str(), key.as_str(), &data), entity);
         })
     }
 
@@ -98,7 +98,7 @@ impl Settings {
         let message_adapter = self.message_adapter.clone();
 
         self.pool.execute(move || {
-            message_adapter.push_message(entity, load::<D>(app_name.as_str(), key.as_str()));
+            message_adapter.send_message(load::<D>(app_name.as_str(), key.as_str()), entity);
         })
     }
 

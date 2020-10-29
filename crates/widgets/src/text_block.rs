@@ -1,5 +1,9 @@
 use crate::{api::prelude::*, proc_macros::*, theme_default::prelude::*};
 
+enum TextAction {
+    Localize,
+}
+
 /// Handles the localization of the text.
 #[derive(Debug, Clone, Default, AsAny)]
 pub struct TextBlockState;
@@ -24,6 +28,19 @@ impl State for TextBlockState {
 
     fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
         self.localize(ctx);
+    }
+
+    fn messages(
+        &mut self,
+        mut messages: MessageReader,
+        _registry: &mut Registry,
+        ctx: &mut Context,
+    ) {
+        for message in messages.read::<TextAction>() {
+            match message {
+                TextAction::Localize => self.localize(ctx),
+            }
+        }
     }
 }
 
@@ -59,13 +76,16 @@ widget!(
 );
 
 impl Template for TextBlock {
-    fn template(self, _: Entity, _: &mut BuildContext) -> Self {
+    fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("TextBlock")
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(fonts::FONT_SIZE_12)
             .font("Roboto-Regular")
             .localizable(true)
+            .on_changed("text", move |ctx, _| {
+                ctx.send_message(TextAction::Localize, id)
+            })
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
