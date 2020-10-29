@@ -1275,7 +1275,6 @@ dependencies = [
 [[package]]
 name = "tiny-skia"
 version = "0.2.0"
-source = "git+https://github.com/RazrFalcon/tiny-skia.git#5f54d7a1b878722e556c2d63c8a3820a54aad4f7"
 dependencies = [
  "arrayref",
  "arrayvec",

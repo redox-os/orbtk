@@ -70,7 +70,6 @@ impl RenderContext2D {
                         end = end + frame.position() + displacement;
                         (start, end)
                     }
-                    _ => todo!(),
                 };
                 let g_stops = build_unit_percent_gradient(&stops, end.distance(start), |p, c| {
                     tiny_skia::GradientStop::new(
@@ -170,14 +169,9 @@ impl RenderContext2D {
             return;
         }
 
-        let color = match self.config.fill_style {
-            Brush::SolidColor(color) => color,
-            _ => Color::from("#000000"),
-        };
-
-        if color.a() == 0 || self.config.alpha == 0.0 {
-            return;
-        }
+        let tm = self.measure_text(text);
+        let rect = Rectangle::new(Point::new(x, y), Size::new(tm.width, tm.height));
+        self.fill_paint = Self::paint_from_brush(&self.config.fill_style, rect);
 
         if let Some(font) = self.fonts.get(&self.config.font_config.family) {
             let width = self.canvas.pixmap.width() as f64;
@@ -189,7 +183,8 @@ impl RenderContext2D {
                     &mut self.canvas,
                     width,
                     height,
-                    (self.config.font_config.font_size, color, self.config.alpha),
+                    self.config.font_config.font_size,
+                    &self.fill_paint,
                     (x, y),
                     rect,
                 );
@@ -199,7 +194,8 @@ impl RenderContext2D {
                     &mut self.canvas,
                     width,
                     height,
-                    (self.config.font_config.font_size, color, self.config.alpha),
+                    self.config.font_config.font_size,
+                    &self.fill_paint,
                     (x, y),
                 );
             }
@@ -281,8 +277,16 @@ impl RenderContext2D {
 
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        // TODO
         self.path_rect.record_rect(x, y, width, height);
+        let x = x as f32;
+        let y = y as f32;
+        let cx = x + width as f32;
+        let cy = y + height as f32;
+        self.path_builder.move_to(x, y);
+        self.path_builder.line_to(cx, y);
+        self.path_builder.line_to(cx, cy);
+        self.path_builder.line_to(x, cy);
+        self.path_builder.line_to(x, y);
     }
 
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
@@ -369,6 +373,9 @@ impl RenderContext2D {
 
     /// Sets the alpha value,
     pub fn set_alpha(&mut self, alpha: f32) {
+        if alpha != 1.0 {
+            dbg!(alpha);
+        }
         self.config.alpha = alpha;
     }
 
