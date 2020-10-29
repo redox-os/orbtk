@@ -242,7 +242,6 @@ impl RenderContext2D {
     }
 
     /// Begins a new sub-path at the point specified by the given {x, y} coordinates.
-
     pub fn move_to(&mut self, x: f64, y: f64) {
         let mut path_builder = raqote::PathBuilder::from(self.path.clone());
         path_builder.move_to(x as f32, y as f32);

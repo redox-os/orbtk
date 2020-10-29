@@ -39,4 +39,5 @@ stdweb = "0.4"
 [features]
 default = ["orbtk_shell/orbraq"]
 orbraq = ["orbtk_shell/orbraq"]
+orbskia = ["orbtk_shell/orbskia"]
 debug = []

@@ -25,3 +25,4 @@ orbtk_proc_macros = { version = "0.3.1-alpha4", path = "../proc_macros" }
 [features]
 default = ["orbtk_shell/orbraq", "orbtk_render/orbraq"]
 orbraq = ["orbtk_shell/orbraq", "orbtk_render/orbraq"]
+orbskia = ["orbtk_shell/orbskia", "orbtk_render/orbskia"]

@@ -35,7 +35,7 @@ pub use orbtk_utils::prelude as utils;
 
 #[cfg(all(
     not(target_arch = "wasm32"),
-    any(feature = "default", feature = "orbraq")
+    any(feature = "default", feature = "orbraq", feature = "orbskia"),
 ))]
 #[path = "orbclient/mod.rs"]
 pub mod platform;
