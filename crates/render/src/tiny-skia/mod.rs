@@ -27,11 +27,12 @@ pub struct RenderContext2D {
 }
 
 impl RenderContext2D {
-    fn paint_from_brush(brush: &Brush, frame: Rectangle) -> Paint<'static> {
+    fn paint_from_brush(brush: &Brush, frame: Rectangle, global_alpha: f32) -> Paint<'static> {
         let shader = match brush {
             Brush::SolidColor(color) => {
-                let color =
+                let mut color =
                     tiny_skia::Color::from_rgba8(color.b(), color.g(), color.r(), color.a());
+                color.set_alpha(color.alpha() * global_alpha);
                 Shader::SolidColor(color)
             }
             Brush::Gradient(Gradient {
@@ -71,7 +72,8 @@ impl RenderContext2D {
                     }
                 };
                 let g_stops = build_unit_percent_gradient(&stops, end.distance(start), |p, c| {
-                    let color = tiny_skia::Color::from_rgba8(c.b(), c.g(), c.r(), c.a());
+                    let mut color = tiny_skia::Color::from_rgba8(c.b(), c.g(), c.r(), c.a());
+                    color.set_alpha(color.alpha() * global_alpha);
                     tiny_skia::GradientStop::new(p as f32, color)
                 });
                 let tstart = tiny_skia::Point::from_xy(start.x() as f32, start.y() as f32);
@@ -109,10 +111,12 @@ impl RenderContext2D {
             fill_paint: Self::paint_from_brush(
                 &Brush::default(),
                 Rectangle::new(Point::new(0.0, 0.0), Size::new(0.0, 0.0)),
+                1.0
             ),
             stroke_paint: Self::paint_from_brush(
                 &Brush::default(),
                 Rectangle::new(Point::new(0.0, 0.0), Size::new(0.0, 0.0)),
+                1.0
             ),
         }
     }
@@ -147,7 +151,7 @@ impl RenderContext2D {
             Some(rect) => rect,
             None => return, // The path is empty, do nothing
         };
-        self.fill_paint = Self::paint_from_brush(&self.config.fill_style, rect);
+        self.fill_paint = Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
         self.canvas.fill_rect(
             tiny_skia::Rect::from_xywh(x as f32, y as f32, width as f32, height as f32).unwrap(),
             &self.fill_paint,
@@ -170,7 +174,7 @@ impl RenderContext2D {
 
         let tm = self.measure_text(text);
         let rect = Rectangle::new(Point::new(x, y), Size::new(tm.width, tm.height));
-        self.fill_paint = Self::paint_from_brush(&self.config.fill_style, rect);
+        self.fill_paint = Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
 
         if let Some(font) = self.fonts.get(&self.config.font_config.family) {
             let width = self.canvas.pixmap.width() as f64;
@@ -236,7 +240,7 @@ impl RenderContext2D {
             Some(rect) => rect,
             None => return, // The path is empty, do nothing
         };
-        self.fill_paint = Self::paint_from_brush(&self.config.fill_style, rect);
+        self.fill_paint = Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
         if let Some(path) = self.path_builder.clone().finish() {
             self.canvas
                 .fill_path(&path, &self.fill_paint, FillRule::EvenOdd);
@@ -249,7 +253,7 @@ impl RenderContext2D {
             Some(rect) => rect,
             None => return, // The path is empty, do nothing
         };
-        self.stroke_paint = Self::paint_from_brush(&self.config.stroke_style, rect);
+        self.stroke_paint = Self::paint_from_brush(&self.config.stroke_style, rect, self.config.alpha as f32);
         if let Some(path) = self.path_builder.clone().finish() {
             self.canvas.stroke_path(
                 &path,
@@ -372,9 +376,6 @@ impl RenderContext2D {
 
     /// Sets the alpha value,
     pub fn set_alpha(&mut self, alpha: f32) {
-        if alpha != 1.0 {
-            dbg!(alpha);
-        }
         self.config.alpha = alpha;
     }
 
@@ -431,6 +432,7 @@ impl RenderContext2D {
                     self.canvas.pixmap.height() as f64,
                 ),
             ),
+            1.0
         );
         self.canvas.fill_rect(
             tiny_skia::Rect::from_xywh(
