@@ -62,6 +62,12 @@ impl<'a> Context<'a> {
         self.entity
     }
 
+    /// Changes the current `Context` into `another` widget's context.
+    /// Don't forget to change back to the original context after done using the altered context.
+    pub fn change_into(&mut self, another: Entity) {
+        self.entity = another;
+    }
+
     /// Access the raw window handle. Could be `None` on unsupported raw-window-handle platforms like `Redox`.
     pub fn raw_window_handle(&self) -> Option<RawWindowHandle> {
         if let Some(handle) = self.provider.raw_window_handle {
