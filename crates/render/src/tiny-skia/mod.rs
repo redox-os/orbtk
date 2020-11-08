@@ -323,13 +323,13 @@ impl RenderContext2D {
     pub fn arc(&mut self, x: f64, y: f64, radius: f64, mut start_angle: f64, mut end_angle: f64) {
         self.path_rect
             .record_arc(x, y, radius, start_angle, end_angle);
-        if start_angle < 0.0 {
-            start_angle = TAU - start_angle;
+        if start_angle.is_negative() {
+            start_angle = TAU - -start_angle;
         }
-        if end_angle < 0.0 {
-            end_angle = TAU - end_angle;
+        if end_angle.is_negative() {
+            end_angle = TAU - -end_angle;
         }
-        let number = 0.552284749831 * radius;
+        let premult_k = 0.552284749831 * radius;
         let (start_sin, start_cos) = start_angle.sin_cos();
         if end_angle - start_angle < TAU {
             self.path_builder.move_to(x as f32, y as f32);
@@ -346,11 +346,12 @@ impl RenderContext2D {
         else if start_angle % FRAC_PI_2 > f64::EPSILON {
             self.arc_fragment(x, y, radius, start_angle, start_angle + FRAC_PI_2 - start_angle % FRAC_PI_2);
         }
+        // Build the four arc quadrants if they are in the range between start_angle and end_angle
         if start_angle <= 0.0 && end_angle >= FRAC_PI_2 {
             self.path_builder.cubic_to(
                 (x + radius) as f32,
-                (y + number) as f32,
-                (x + number) as f32,
+                (y + premult_k) as f32,
+                (x + premult_k) as f32,
                 (y + radius) as f32,
                 x as f32,
                 (y + radius) as f32,
@@ -358,10 +359,10 @@ impl RenderContext2D {
         }
         if start_angle <= FRAC_PI_2 && end_angle >= PI {
             self.path_builder.cubic_to(
-                (x - number) as f32,
+                (x - premult_k) as f32,
                 (y + radius) as f32,
                 (x - radius) as f32,
-                (y + number) as f32,
+                (y + premult_k) as f32,
                 (x - radius) as f32,
                 y as f32,
             );
@@ -369,8 +370,8 @@ impl RenderContext2D {
         if start_angle <= PI && end_angle >= PI + FRAC_PI_2 {
             self.path_builder.cubic_to(
                 (x - radius) as f32,
-                (y - number) as f32,
-                (x - number) as f32,
+                (y - premult_k) as f32,
+                (x - premult_k) as f32,
                 (y - radius) as f32,
                 x as f32,
                 (y - radius) as f32,
@@ -378,10 +379,10 @@ impl RenderContext2D {
         }
         if start_angle <= PI + FRAC_PI_2 && end_angle >= TAU {
             self.path_builder.cubic_to(
-                (x + number) as f32,
+                (x + premult_k) as f32,
                 (y - radius) as f32,
                 (x + radius) as f32,
-                (y - number) as f32,
+                (y - premult_k) as f32,
                 (x + radius) as f32,
                 y as f32,
             );
