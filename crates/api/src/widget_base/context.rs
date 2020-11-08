@@ -344,7 +344,8 @@ impl<'a> Context<'a> {
 
     // -- Manipulation --
 
-    /// Returns the entity id of an child by the given name.
+    /// Returns the entity of a child, identified by its id.
+    /// If there is no matching id string, `None` will be returned.
     pub fn entity_of_child<'b>(&mut self, id: impl Into<&'b str>) -> Option<Entity> {
         let id = id.into();
 
