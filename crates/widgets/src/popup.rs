@@ -47,7 +47,7 @@ impl State for PopupState {
 
 widget!(
     /// The `Popup` is used to display content that floats over the main content.
-    Popup<PopupState> : MouseHandler {
+    Popup<PopupState> : KeyDownHandler, MouseHandler {
         /// Sets or shares the background property.
         background: Brush,
 
