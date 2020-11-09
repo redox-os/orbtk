@@ -181,10 +181,24 @@ impl State for MasterDetailState {
 }
 
 widget!(
-    /// `MasterDetail` is a responsive navigation widget with a master child and a detail child.
+    /// `MasterDetail` is a responsive navigation widget. The
+    /// rendering and navigation logic of the available panes
+    /// (referenced as `master` and `detail` pane) will respect the
+    /// following flags:
     ///
-    /// If `responsive` property is set to `true` if the width of the `MasterDetail` widget crosses the given `break_point` the widget switch between a one column
-    /// and two column layout. On on column layout or if `responsive` is set to `false` navigation between master and details is possible.
+    /// * the `responsive` component
+    /// * the `break_point` component
+    ///
+    /// If `responsive` is set to `false`, a `one` column
+    /// layout is choosen and either the master, or the detail pane
+    /// is rendered at a given time.
+
+    /// If `responsive` is set to `true`, and the value of the active
+    /// window width is greater than the value of `brake_point`, a
+    /// `two` column layout is choosen. Both panes are rendered inside
+    /// the active view. If your resize the active view to a value,
+    /// and its window width will get smaller than the value of
+    /// `brake_point`, rendering will fall back to a `one` column layout.
     ///
     /// # Example
     ///
@@ -196,16 +210,19 @@ widget!(
     ///     .build(ctx);
     /// ```
     MasterDetail<MasterDetailState> {
-        /// Describes if the change between a one and two column layout on the `break_point`.
+        /// Toggle column layout on behave of the value of `break_point`.
         responsive: bool,
 
-        /// Describes the switch point between the one and two column layout.
+        /// Configures a pane brake (in pixel), that toggles the layout to present one or two columns.
         break_point: f64,
 
-        /// Describes the width of the master widget on `expanded` state.
+        /// Configures the minimum width of the master pane (respected in `expanded` state).
         master_width: f64,
 
-        /// Read the visibility of navigation. If `expanded` is `false` or `responsive` is false it's `Visible` otherwise `Hidden`.
+        /// Read the visibility of navigation. If values of `expanded`
+        /// or `responsive` is set to `false`, the navigation is set
+        /// to `Visible`. Otherwise naviation state is set to
+        /// `Hidden`.
         navigation_visibility: Visibility
     }
 );
