@@ -1,18 +1,4 @@
 [[apps]]
-name = "widgets"
-width = 468
-height = 730
-    [[apps.fonts]]
-    font_family = "MaterialIcons-Regular"
-    src = "crates/theme_default/assets/fonts/MaterialIcons.ttf"
-    [[apps.fonts]]
-    font_family = "Roboto-Regular"
-    src = "crates/theme_default/assets/fonts/Roboto-Regular.ttf"
-    [[apps.fonts]]
-    font_family = "Roboto-Medium"
-    src = "crates/theme_default/assets/fonts/Roboto-Medium.ttf"
-
-[[apps]]
 name = "showcase"
 width = 468
 height = 730
@@ -26,6 +12,25 @@ assets = "assets/showcase/"
     [[apps.fonts]]
     font_family = "Roboto-Medium"
     src = "crates/theme_default/assets/fonts/Roboto-Medium.ttf"
+    
+    [[apps.fonts]]
+    font_family = "Sego-UI-Regular"
+    src = "crates/theme_fluent/assets/fonts/segoeui.ttf"
+    [[apps.fonts]]
+    font_family = "Sego-UI-Bold"
+    src = "crates/theme_fluent/assets/fonts/segoeuib.ttf"
+    [[apps.fonts]]
+    font_family = "Sego-UI-Light"
+    src = "crates/theme_fluent/assets/fonts/segoeuil.ttf"
+    [[apps.fonts]]
+    font_family = "SEMI_LIGHT_FONT"
+    src = "crates/theme_fluent/assets/fonts/segoeuisl.ttf"
+    [[apps.fonts]]
+    font_family = "SEMI_BOLD_FONT"
+    src = "crates/theme_fluent/assets/fonts/seguisb.ttf"
+    [[apps.fonts]]
+    font_family = "Segoe-MDL2-Assets-Regular"
+    src = "crates/theme_fluent/assets/fonts/SegMDL2.ttf"
 
 [[apps]]
 name = "calculator"
