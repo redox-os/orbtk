@@ -15,7 +15,11 @@ use crate::{
 
 use super::WidgetContainer;
 
-/// The `Context` is provides access for the states to objects they could work with.
+/// The `Context` structure provides access to widget entities handled
+/// via the underlying EntityComponentSystem. Functions are offered to
+/// handle the position of an entity in the tree, its associated
+/// render context and theme. You can emit adaptions to the state of
+/// an entity.
 pub struct Context<'a> {
     pub(crate) ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     entity: Entity,
@@ -346,7 +350,8 @@ impl<'a> Context<'a> {
 
     // -- Manipulation --
 
-    /// Returns the entity id of an child by the given name.
+    /// Returns the entity of a child, identified by its id.
+    /// If there is no matching id string, `None` will be returned.
     pub fn entity_of_child<'b>(&mut self, id: impl Into<&'b str>) -> Option<Entity> {
         let id = id.into();
 
@@ -528,8 +533,9 @@ impl<'a> Context<'a> {
 
 // -- Helpers --
 
-/// Finds th parent of the `target_child`. The parent of the `target_child` must be the given `parent` or
-/// a child of the given parent.
+/// Finds the parent of the `target_child`. The parent of the
+/// `target_child` must be the given `parent` or a child of the given
+/// parent.
 pub fn find_parent(tree: &Tree, target_child: Entity, parent: Entity) -> Option<Entity> {
     if tree.children[&parent].contains(&target_child) {
         return Some(parent);
