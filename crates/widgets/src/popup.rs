@@ -228,9 +228,5 @@ impl Template for Popup {
 
     fn layout(&self) -> Box<dyn Layout> {
         PopupLayout::new().into()
-        Box::new(PopupRenderObject::new())
-    }
-    fn layout(&self) -> Box<dyn Layout> {
-        Box::new(PopupLayout::new())
     }
 }
