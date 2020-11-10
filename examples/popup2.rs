@@ -1,9 +1,25 @@
-use orbtk::prelude::*;
+use orbtk::{
+    prelude::*,
+    theme_default::{THEME_DEFAULT, THEME_DEFAULT_COLORS_DARK, THEME_DEFAULT_FONTS},
+    theming::config::ThemeConfig,
+};
 
-static STACK_ID: &str = "STACK";
-static BTN_ID: &str = "BUTTON";
-static CMB_ID: &str = "COMBO BOX";
-static TARGET_ID: &str = "TARGET";
+static DARK_EXT: &str = include_str!("../assets/popup/default_dark.ron");
+
+fn theme() -> Theme {
+    register_default_fonts(Theme::from_config(
+        ThemeConfig::from(DARK_EXT)
+            .extend(ThemeConfig::from(THEME_DEFAULT))
+            .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_DARK))
+            .extend(ThemeConfig::from(THEME_DEFAULT_FONTS)),
+    ))
+}
+
+static ID_GRID: &str = "GRID";
+static ID_BUTTON: &str = "BUTTON";
+static ID_COMBO_BOX: &str = "COMBO BOX";
+static ID_TARGET: &str = "TARGET";
+
 
 #[derive(Copy, Clone)]
 enum PopUpAction {
@@ -29,7 +45,7 @@ impl MainViewState {
 
 impl State for MainViewState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        let target_entity = ctx.entity_of_child(TARGET_ID).unwrap();
+        let target_entity = ctx.entity_of_child(ID_TARGET).unwrap();
 
         let popup = create_popup(target_entity, "Popup text", &mut ctx.build_context());
         ctx.build_context()
@@ -61,7 +77,7 @@ impl State for MainViewState {
                 }
                 PopUpAction::UpdateRelativePosition => {
                     if let Some(popup) = self.popup {
-                        let cmb = ctx.entity_of_child(CMB_ID).unwrap();
+                        let cmb = ctx.entity_of_child(ID_COMBO_BOX).unwrap();
                         let selected_index: i32 = ctx.get_widget(cmb).clone("selected_index");
                         let relative_position: RelativePosition =
                             ctx.get_widget(popup).clone_or_default("relative_position");
@@ -89,42 +105,36 @@ impl State for MainViewState {
     }
 }
 
-fn create_popup(target: Entity, text: &str, build_context: &mut BuildContext) -> Entity {
+fn create_popup(target: Entity, text: &str, ctx: &mut BuildContext) -> Entity {
     Popup::new()
         // Entity as target
         .target(target.0)
         // Point as target
-        //.target(Point::new(200.0,200.0))
-        //Specify the popup position relative to the target (the button in this case)
-        //This is also the default value if no one is specified
-        .relative_position(RelativePosition::Bottom(1.0))
+        // .target(Point::new(200.0,200.0))
+        // Specify the popup position relative to the target (the button in this case)
+        // This is also the default value if no one is specified
+        .relative_position(RelativePosition::Bottom(5.0))
         .open(true)
+        .style("popup_form")
         .width(150.0)
         .height(150.0)
         .child(
             Container::new()
-                .background("#FFFFFF")
-                .border_radius(3.0)
-                .border_width(2.0)
-                .border_brush("#000000")
-                .padding(8.0)
                 .child(
                     TextBlock::new()
+                        .style("popup_text_block")
                         .h_align("center")
-                        .v_align("top")
-                        .foreground("#000000")
+                        //.v_align("top")
                         .text(text)
-                        .build(build_context),
+                        .build(ctx),
                 )
-                .build(build_context),
+                .build(ctx),
         )
-        .build(build_context)
+        .build(ctx)
 }
 
 fn change_button_title(title: &str, ctx: &mut Context) {
-    let btn = ctx.entity_of_child(BTN_ID).unwrap();
-    ctx.get_widget(btn)
-        .set::<String16>("text", String16::from(title));
+    Button::text_set(&mut ctx.child(ID_BUTTON), String::from(title));
 }
 
 widget!(MainView<MainViewState>);
@@ -135,24 +145,26 @@ impl Template for MainView {
             Grid::new()
                 .rows(Rows::create().push(50).push(200).push(200).push(200))
                 .columns(Columns::create().push(200).push(200).push(200))
-                .id(STACK_ID)
+                .id(ID_GRID)
                 .child(
                     ComboBox::new()
-                        .id(CMB_ID)
+                        .id(ID_COMBO_BOX)
                         .attach(Grid::row(0))
                         .attach(Grid::column(0))
+                        .style("combo_box_form")
                         .h_align("center")
-                        .width(250.0)
+                        //.v_align("center")
+                        //.width(100.0)
                         .on_changed("selected_item", move |states, _entity| {
                             states
                                 .get_mut::<MainViewState>(id)
                                 .update_relative_position()
                         })
-                        .items_builder(|bc, index| match index {
-                            0 => TextBlock::new().text("Bottom").build(bc),
-                            1 => TextBlock::new().text("Top").build(bc),
-                            2 => TextBlock::new().text("Left").build(bc),
-                            3 => TextBlock::new().text("Right").build(bc),
+                        .items_builder(|ictx, index| match index {
+                            0 => TextBlock::new().text("Bottom").v_align("center").build(ictx),
+                            1 => TextBlock::new().text("Top").v_align("center").build(ictx),
+                            2 => TextBlock::new().text("Left").v_align("center").build(ictx),
+                            3 => TextBlock::new().text("Right").v_align("center").build(ictx),
                             _ => panic!(),
                         })
                         .count(4)
@@ -161,27 +173,27 @@ impl Template for MainView {
                 )
                 .child(
                     Button::new()
-                        .id(BTN_ID)
+                        .id(ID_BUTTON)
                         .attach(Grid::row(0))
                         .attach(Grid::column(1))
-                        .h_align("center")
+                        .style("button")
+                        //.h_align("center")
                         .text("Click me to hide popup")
-                        .on_click(move |states, _| -> bool {
-                            states.get_mut::<MainViewState>(id).toggle_popup();
+                        .on_click(move |ctx, _| -> bool {
+                            ctx.get_mut::<MainViewState>(id).toggle_popup();
                             true
                         })
                         .build(ctx),
                 )
                 .child(
                     Container::new()
-                        .id(TARGET_ID)
+                        .id(ID_TARGET)
                         .attach(Grid::row(2))
                         .attach(Grid::column(1))
-                        .background("#0000FF")
-                        .v_align("stretch")
-                        .h_align("stretch")
+                        .style("container_form")
                         .child(
                             TextBlock::new()
+                                .style("target_text_block")
                                 .text("Target")
                                 .v_align("center")
                                 .h_align("center")
@@ -196,6 +208,7 @@ impl Template for MainView {
 
 fn main() {
     Application::new()
+        .theme(theme())
         .window(|ctx| {
             Window::new()
                 .title("OrbTk - Popup example")
