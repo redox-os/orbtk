@@ -20,7 +20,6 @@ static ID_BUTTON: &str = "BUTTON";
 static ID_COMBO_BOX: &str = "COMBO BOX";
 static ID_TARGET: &str = "TARGET";
 
-
 #[derive(Copy, Clone)]
 enum PopUpAction {
     Toggle,
@@ -161,7 +160,10 @@ impl Template for MainView {
                                 .update_relative_position()
                         })
                         .items_builder(|ictx, index| match index {
-                            0 => TextBlock::new().text("Bottom").v_align("center").build(ictx),
+                            0 => TextBlock::new()
+                                .text("Bottom")
+                                .v_align("center")
+                                .build(ictx),
                             1 => TextBlock::new().text("Top").v_align("center").build(ictx),
                             2 => TextBlock::new().text("Left").v_align("center").build(ictx),
                             3 => TextBlock::new().text("Right").v_align("center").build(ictx),
