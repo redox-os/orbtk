@@ -13,7 +13,6 @@
 
 * [Material Icons](https://github.com/material-icons/material-icons-font) (Apache 2.0): Default icon font
 * [Roboto](https://github.com/google/roboto) (Apache 2.0): Default font
-* [Segoe MDL2 Assets](https://aka.ms/SegoeFonts) (Apache 2.0): Segoe MDL2 Asset font
 
 ## License
 
