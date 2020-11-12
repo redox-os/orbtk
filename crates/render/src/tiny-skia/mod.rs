@@ -1,6 +1,12 @@
 use smallvec::SmallVec;
-use std::{collections::HashMap, ptr, slice, f64::consts::{PI, FRAC_PI_2}};
-use tiny_skia::{Canvas, FillRule, Paint, PathBuilder, Pixmap, PixmapPaint, Shader, Stroke};
+use std::{
+    collections::HashMap,
+    f64::consts::{FRAC_PI_2, PI},
+    ptr, slice,
+};
+use tiny_skia::{
+    Canvas, FillRule, Paint, PathBuilder, Pixmap, PixmapPaint, Shader, Stroke, Transform,
+};
 
 use crate::{common::*, utils::*, PipelineTrait, RenderConfig, RenderTarget, TextMetrics};
 
@@ -10,7 +16,15 @@ pub use self::image::Image;
 mod font;
 mod image;
 
-type StatesOnStack = [(RenderConfig, PathRect, usize); 2];
+#[derive(Debug)]
+struct State {
+    config: RenderConfig,
+    path_rect: PathRect,
+    clips_count: usize,
+    transform: Transform,
+}
+
+type StatesOnStack = [State; 2];
 
 pub struct RenderContext2D {
     canvas: Canvas,
@@ -111,12 +125,12 @@ impl RenderContext2D {
             fill_paint: Self::paint_from_brush(
                 &Brush::default(),
                 Rectangle::new(Point::new(0.0, 0.0), Size::new(0.0, 0.0)),
-                1.0
+                1.0,
             ),
             stroke_paint: Self::paint_from_brush(
                 &Brush::default(),
                 Rectangle::new(Point::new(0.0, 0.0), Size::new(0.0, 0.0)),
-                1.0
+                1.0,
             ),
         }
     }
@@ -151,7 +165,8 @@ impl RenderContext2D {
             Some(rect) => rect,
             None => return, // The path is empty, do nothing
         };
-        self.fill_paint = Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
+        self.fill_paint =
+            Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
         self.canvas.fill_rect(
             tiny_skia::Rect::from_xywh(x as f32, y as f32, width as f32, height as f32).unwrap(),
             &self.fill_paint,
@@ -174,7 +189,8 @@ impl RenderContext2D {
 
         let tm = self.measure_text(text);
         let rect = Rectangle::new(Point::new(x, y), Size::new(tm.width, tm.height));
-        self.fill_paint = Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
+        self.fill_paint =
+            Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
 
         if let Some(font) = self.fonts.get(&self.config.font_config.family) {
             let width = self.canvas.pixmap.width() as f64;
@@ -240,7 +256,8 @@ impl RenderContext2D {
             Some(rect) => rect,
             None => return, // The path is empty, do nothing
         };
-        self.fill_paint = Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
+        self.fill_paint =
+            Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
         if let Some(path) = self.path_builder.clone().finish() {
             self.canvas
                 .fill_path(&path, &self.fill_paint, FillRule::EvenOdd);
@@ -253,7 +270,8 @@ impl RenderContext2D {
             Some(rect) => rect,
             None => return, // The path is empty, do nothing
         };
-        self.stroke_paint = Self::paint_from_brush(&self.config.stroke_style, rect, self.config.alpha as f32);
+        self.stroke_paint =
+            Self::paint_from_brush(&self.config.stroke_style, rect, self.config.alpha as f32);
         if let Some(path) = self.path_builder.clone().finish() {
             self.canvas.stroke_path(
                 &path,
@@ -315,7 +333,14 @@ impl RenderContext2D {
         let d = b * b - a * c;
         if d > 0.0 {
             let k = (d.sqrt() - b) / a;
-            self.path_builder.cubic_to((start_x + k * t1x) as f32, (start_y + k * t1y) as f32, (end_x + k * t2x) as f32, (end_y + k * t2y) as f32, (x + end_cos * radius) as f32, (y + end_sin * radius) as f32);
+            self.path_builder.cubic_to(
+                (start_x + k * t1x) as f32,
+                (start_y + k * t1y) as f32,
+                (end_x + k * t2x) as f32,
+                (end_y + k * t2y) as f32,
+                (x + end_cos * radius) as f32,
+                (y + end_sin * radius) as f32,
+            );
         }
     }
 
@@ -333,18 +358,28 @@ impl RenderContext2D {
         let (start_sin, start_cos) = start_angle.sin_cos();
         if end_angle - start_angle < TAU {
             self.path_builder.move_to(x as f32, y as f32);
-            self.path_builder.line_to((x + start_cos * radius) as f32, (y + start_sin * radius) as f32);
-        }
-        else {
-            self.path_builder.move_to((x + start_cos * radius) as f32, (y + start_sin * radius) as f32);
+            self.path_builder.line_to(
+                (x + start_cos * radius) as f32,
+                (y + start_sin * radius) as f32,
+            );
+        } else {
+            self.path_builder.move_to(
+                (x + start_cos * radius) as f32,
+                (y + start_sin * radius) as f32,
+            );
         }
         if end_angle - start_angle < FRAC_PI_2 {
             self.arc_fragment(x, y, radius, start_angle, end_angle);
             self.path_builder.line_to(x as f32, y as f32);
             return;
-        }
-        else if start_angle % FRAC_PI_2 > f64::EPSILON {
-            self.arc_fragment(x, y, radius, start_angle, start_angle + FRAC_PI_2 - start_angle % FRAC_PI_2);
+        } else if start_angle % FRAC_PI_2 > f64::EPSILON {
+            self.arc_fragment(
+                x,
+                y,
+                radius,
+                start_angle,
+                start_angle + FRAC_PI_2 - start_angle % FRAC_PI_2,
+            );
         }
         // Build the four arc quadrants if they are in the range between start_angle and end_angle
         if start_angle <= 0.0 && end_angle >= FRAC_PI_2 {
@@ -456,7 +491,10 @@ impl RenderContext2D {
 
     /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
     pub fn clip(&mut self) {
-        // TODO
+        // FIXME
+        if let Some(path) = self.path_builder.clone().finish() {
+            self.canvas.set_clip_path(&path, FillRule::EvenOdd, true);
+        }
         self.path_rect.record_clip();
         self.clips_count += 1;
     }
@@ -499,19 +537,32 @@ impl RenderContext2D {
 
     /// Saves the entire state of the canvas by pushing the current state onto a stack.
     pub fn save(&mut self) {
-        self.saved_states
-            .push((self.config.clone(), self.path_rect, self.clips_count));
+        self.saved_states.push(State {
+            config: self.config.clone(),
+            path_rect: self.path_rect,
+            clips_count: self.clips_count,
+            transform: self.canvas.get_transform(),
+        });
     }
 
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack.
     /// If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
-        if let Some((config, path_rect, former_clips_count)) = self.saved_states.pop() {
+        if let Some(State {
+            config,
+            path_rect,
+            clips_count: former_clips_count,
+            transform,
+        }) = self.saved_states.pop()
+        {
             self.config = config;
             self.path_rect = path_rect;
-            for _ in former_clips_count..self.clips_count {
-                // self.canvas.pop_clip();
-            }
+            // FIXME
+            /*for _ in former_clips_count..self.clips_count {
+                self.canvas.pop_clip();
+            }*/
+            self.canvas.reset_clip();
+            self.canvas.set_transform(transform);
             self.clips_count = former_clips_count;
         }
     }
@@ -526,7 +577,7 @@ impl RenderContext2D {
                     self.canvas.pixmap.height() as f64,
                 ),
             ),
-            1.0
+            1.0,
         );
         self.canvas.fill_rect(
             tiny_skia::Rect::from_xywh(
@@ -550,7 +601,12 @@ impl RenderContext2D {
     }
 
     pub fn start(&mut self) {
-        self.clear(&Brush::from(self.background));
+        self.canvas.pixmap.fill(tiny_skia::Color::from_rgba8(
+            self.background.b(),
+            self.background.g(),
+            self.background.r(),
+            self.background.a(),
+        ));
     }
 
     pub fn finish(&mut self) {}

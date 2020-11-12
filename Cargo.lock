@@ -1264,7 +1264,7 @@ dependencies = [
 [[package]]
 name = "tiny-skia"
 version = "0.2.0"
-source = "git+https://github.com/RazrFalcon/tiny-skia.git#5a09bbd0451de38ce6f73eae5453a1ec496050f9"
+source = "git+https://github.com/RazrFalcon/tiny-skia.git#65d9b8e96257d0c66451b1dc44bd2efbb66d414d"
 dependencies = [
  "arrayref",
  "arrayvec",
@@ -1466,9 +1466,9 @@ dependencies = [
 
 [[package]]
 name = "wide"
-version = "0.6.2"
+version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "931c8fea6b2685ae9b5b316da019b0f86f62229f7d72009f83017a8b32b536cc"
+checksum = "82f080666520472f63e0fe65225f0a0fadcb5b57f557d5630266f05999912f68"
 dependencies = [
  "bytemuck",
  "safe_arch",
