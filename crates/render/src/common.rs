@@ -238,15 +238,6 @@ impl PathRect {
         self.clip_rect = Some(clip_rect);
     }
 
-    #[cfg(all(
-        not(target_arch = "wasm32"),
-        any(feature = "default", feature = "orbraq", feature = "miniraq"),
-    ))]
-    /// Checks if the current instance is enclosed.
-    pub fn get_clip(&self) -> Option<Rectangle> {
-        self.clip_rect
-    }
-
     /// Gets the current path AABB, or nothing if the path is empty.
     pub fn get_rect(&self) -> Option<Rectangle> {
         self.path_rect.map(|mut r| {

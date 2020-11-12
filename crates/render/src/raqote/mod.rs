@@ -9,7 +9,15 @@ pub use self::image::Image;
 mod font;
 mod image;
 
-type StatesOnStack = [(RenderConfig, PathRect, usize); 2];
+#[derive(Debug)]
+struct State {
+    config: RenderConfig,
+    path_rect: PathRect,
+    clips_count: usize,
+    transform: raqote::Transform,
+}
+
+type StatesOnStack = [State; 2];
 
 /// The RenderContext2D trait, provides the rendering ctx. It is used for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
@@ -96,43 +104,15 @@ impl RenderContext2D {
             return;
         }
 
-        let color = match self.config.fill_style {
-            Brush::SolidColor(color) => color,
-            _ => Color::from("#000000"),
-        };
-
-        if color.a() == 0 || self.config.alpha == 0.0 {
-            return;
-        }
-
-        // The borrow-checker forces the clone
-        let text_transform = self.draw_target.get_transform().to_owned();
         if let Some(font) = self.fonts.get(&self.config.font_config.family) {
-            let width = self.draw_target.width() as f64;
-            let height = self.draw_target.height() as f64;
-
-            if let Some(rect) = self.path_rect.get_clip() {
-                font.render_text_clipped(
-                    text,
-                    self.draw_target.get_data_mut(),
-                    &text_transform,
-                    width,
-                    height,
-                    (self.config.font_config.font_size, color, self.config.alpha),
-                    (x, y),
-                    rect,
-                );
-            } else {
-                font.render_text(
-                    text,
-                    self.draw_target.get_data_mut(),
-                    &text_transform,
-                    width,
-                    height,
-                    (self.config.font_config.font_size, color, self.config.alpha),
-                    (x, y),
-                );
-            }
+            font.render_text(
+                text,
+                &mut self.draw_target,
+                self.config.font_config.font_size,
+                &self.config.fill_style,
+                self.config.alpha,
+                (x, y),
+            );
         }
     }
 
@@ -428,20 +408,31 @@ impl RenderContext2D {
 
     /// Saves the entire state of the canvas by pushing the current state onto a stack.
     pub fn save(&mut self) {
-        self.saved_states
-            .push((self.config.clone(), self.path_rect, self.clips_count));
+        self.saved_states.push(State {
+            config: self.config.clone(),
+            path_rect: self.path_rect,
+            clips_count: self.clips_count,
+            transform: *self.draw_target.get_transform(),
+        });
     }
 
     /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack.
     /// If there is no saved state, this method does nothing.
     pub fn restore(&mut self) {
-        if let Some((config, path_rect, former_clips_count)) = self.saved_states.pop() {
+        if let Some(State {
+            config,
+            path_rect,
+            clips_count: former_clips_count,
+            transform,
+        }) = self.saved_states.pop()
+        {
             self.config = config;
             self.path_rect = path_rect;
             for _ in former_clips_count..self.clips_count {
                 self.draw_target.pop_clip();
             }
             self.clips_count = former_clips_count;
+            self.draw_target.set_transform(&transform);
         }
     }
 
