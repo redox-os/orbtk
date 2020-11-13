@@ -49,31 +49,23 @@ where
 fn init_sync(
     window: &orbclient::Window,
     receiver: mpsc::Receiver<WindowRequest>,
-    redraw: Arc<AtomicBool>,
 ) -> (mpsc::Receiver<WindowRequest>, thread::JoinHandle<()>) {
     let (internal_sender, internal_receiver) = mpsc::channel();
 
     let event_sender = window.event_sender();
-
-    // prevent multiple redraw a the same time
-    let mut should_redraw = false;
+    let id = window.id();
 
     let _sdl2_sync_thread = thread::spawn(move || loop {
-        for request in receiver.try_iter() {
+        for request in receiver.iter() {
             let _ = internal_sender.send(request.clone());
-            if request == WindowRequest::Redraw && !should_redraw && !redraw.load(Ordering::Relaxed)
-            {
+            if request == WindowRequest::Redraw {
                 let _ = event_sender.push_event(event::Event::Window {
-                    window_id: 0,
+                    window_id: id,
                     timestamp: 0,
                     win_event: event::WindowEvent::None,
                 });
-
-                should_redraw = true;
             }
         }
-
-        should_redraw = false;
     });
 
     (internal_receiver, _sdl2_sync_thread)
@@ -118,7 +110,7 @@ where
 
         let (request_receiver, _sdl2_sync_thread) = {
             if let Some(receiver) = request_receiver {
-                let (rec, sync) = init_sync(&window, receiver, redraw.clone());
+                let (rec, sync) = init_sync(&window, receiver);
                 (Some(rec), Some(sync))
             } else {
                 (None, None)
@@ -325,8 +317,8 @@ where
                         }
                     }
                 }
-                orbclient::EventOption::Unknown(_) => println!("unkown"),
-                orbclient::EventOption::None => println!("None"),
+                orbclient::EventOption::Unknown(_) => {}
+                orbclient::EventOption::None => {}
             }
         }
     }
