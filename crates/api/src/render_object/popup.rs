@@ -113,8 +113,6 @@ impl Into<Box<dyn RenderObject>> for PopupRenderObject {
 
 impl RenderObject for PopupRenderObject {
     fn render_self(&self, ctx: &mut Context, global_position: &Point) {
-        println!("Rendering popup");
-
         if let Some(target) = ctx.widget().try_clone::<PopupTarget>("target") {
             let current_bounds: Rectangle = ctx.widget().clone("bounds");
             let current_constraint: Constraint = ctx.widget().clone("constraint");

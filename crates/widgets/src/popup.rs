@@ -154,7 +154,6 @@ impl PopupState {
             (false, Visibility::Hidden) => *visibility = Visibility::Collapsed,
             (false, Visibility::Collapsed) => {}
         }
-        println!("Updated visibility: {}", open);
     }
 }
 
