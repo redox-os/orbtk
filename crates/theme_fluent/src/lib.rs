@@ -63,7 +63,10 @@ pub fn register_fluent_fonts(theme: Theme) -> Theme {
         .register_font("Selawik-UI-Light", crate::fonts::SELAWIK_LIGHT_FONT)
         .register_font("MDL2-Assets-Regular", crate::fonts::MDL_ICONS_FONT)
         // register also material icon fonts because OrbTk's default widget library relies on its availability.
-        .register_font("MaterialIcons-Regular", orbtk_theme_default::fonts::MATERIAL_ICONS_FONT)
+        .register_font(
+            "MaterialIcons-Regular",
+            orbtk_theme_default::fonts::MATERIAL_ICONS_FONT,
+        )
 }
 
 /// Dummy implementation for web to be compatible to other platforms.
