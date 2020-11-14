@@ -1,11 +1,9 @@
 Theme (
     resources: {
         // fonts
-        // "REGULAR_FONT": "Selawik-UI-Regular",
-        // "BOLD_FONT": "Selawik-UI-Bold",
-        // "LIGHT_FONT": "Selawik-UI-Light",
-        // "SEMI_LIGHT_FONT": "Selawik-UI-Semilight",
-        // "SEMI_BOLD_FONT": "Selawik-UI-Semibold",
+        "REGULAR_FONT": "Selawik-Regular",
+        "BOLD_FONT": "Selawik-Bold",
+        "LIGHT_FONT": "Selawik-Light",
         // material icon fonts is used as default:
         // OrbTk's default widget library reference it, thus resolution is needed.
         "ICON_FONT": "MaterialIcons-Regular",

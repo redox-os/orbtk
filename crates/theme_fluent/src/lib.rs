@@ -58,10 +58,10 @@ pub fn theme_fluent_light() -> Theme {
 #[cfg(not(target_arch = "wasm32"))]
 pub fn register_fluent_fonts(theme: Theme) -> Theme {
     theme
-        .register_font("Selawik-UI-Regular", crate::fonts::SELAWIK_REGULAR_FONT)
-        .register_font("Selawik-UI-Bold", crate::fonts::SELAWIK_BOLD_FONT)
-        .register_font("Selawik-UI-Light", crate::fonts::SELAWIK_LIGHT_FONT)
-        .register_font("MDL2-Assets-Regular", crate::fonts::MDL_ICONS_FONT)
+        .register_font("Selawik-Regular", crate::fonts::SELAWIK_REGULAR_FONT)
+        .register_font("Selawik-Bold", crate::fonts::SELAWIK_BOLD_FONT)
+        .register_font("Selawik-Light", crate::fonts::SELAWIK_LIGHT_FONT)
+        .register_font("MDL2-Assets-Regular", crate::fonts::MDL2_ICONS_FONT)
         // register also material icon fonts because OrbTk's default widget library relies on its availability.
         .register_font(
             "MaterialIcons-Regular",
