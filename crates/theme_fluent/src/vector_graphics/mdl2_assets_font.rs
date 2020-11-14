@@ -12,7 +12,6 @@
 // cheet-sheet: https://github.com/scottdorman/mdl2-icons/icons.html
 // import-tool: https://github.com/rzerres/parse_segoe_mdl2.git
 
-
 pub const MDL2_ACCEPT: &str = "\u{e8fb}";
 pub const MDL2_ACCOUNTS: &str = "\u{e910}";
 pub const MDL2_ADD: &str = "\u{e710}";
