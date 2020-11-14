@@ -8,7 +8,7 @@ Theme (
                 "font_size": "$FONT_SIZE_12",
                 "font": "$REGULAR_FONT",
                 "icon_size": "$ICON_SIZE_16",
-                "icon_font": "$ICON_FONT"
+                "icon_font": "$MDL2_ICON_FONT"
             },
             states: [
                 (
@@ -72,7 +72,7 @@ Theme (
 
         // -- [START] Button --
 
-        "button": ( 
+        "button": (
             base: "base",
             properties: {
                 "font": "$REGULAR_FONT",
@@ -85,7 +85,7 @@ Theme (
                 "font_size": "$FONT_SIZE_14",
                 "icon_size": "$ICON_SIZE_16",
                 "container_margin": 0,
-            }, 
+            },
             states: [
                 (
                     key: "hover",
@@ -166,16 +166,16 @@ Theme (
                 "height": 24
             },
         ),
-        "button_square": ( 
+        "button_square": (
             base: "button",
             properties: {
                 "border_radius": 1,
-            }, 
+            },
         ),
         "button_small": (
             base: "button",
             properties: {
-                "icon_font": "$ICON_FONT",
+                "icon_font": "$MDL2_ICON_FONT",
                 "border_radius": 0,
                 "icon_brush": "$CONTENT_FOREGROUND",
                 "icon_size": "$ICON_SIZE_8",
@@ -197,7 +197,7 @@ Theme (
                 "border_width": 1,
                 "border_brush": "$BOX_BORDER",
                 "icon_brush": "transparent",
-                "icon_font": "$ICON_FONT",
+                "icon_font": "$MDL2_ICON_FONT",
                 "icon": "$MD_CHECK"
             },
             states: [
@@ -279,7 +279,7 @@ Theme (
                 )
             ]
         ),
-        
+
         // -- [END] Button --
 
         "container": (
@@ -290,7 +290,7 @@ Theme (
         ),
 
         // -- [START] (Numeric)TextBox --
-       
+
         "text_box": (
             base: "base",
             properties: {
@@ -420,7 +420,7 @@ Theme (
                 "height": 32,
                 "icon_size": "$ICON_SIZE_12",
                 "icon": "$MD_KEYBOARD_ARROW_DOWN",
-                "icon_font": "$ICON_FONT"
+                "icon_font": "$MDL2_ICON_FONT"
             },
             states: [
                  (
@@ -471,7 +471,7 @@ Theme (
         // -- [END] Lists --
 
         // -- [START] TabWidget --
-        
+
         "tab_widget": (
             properties: {
                 "border_brush": "transparent",
@@ -524,7 +524,7 @@ Theme (
                 "icon_brush": "$CONTENT_FOREGROUND_SECONDARY",
                 "background": "transparent",
                 "icon": "$MD_CLOSE",
-                "icon_font": "$ICON_FONT",
+                "icon_font": "$MDL2_ICON_FONT",
                 "spacing": 0,
                 "width": 16,
                 "height": 16
@@ -590,7 +590,7 @@ Theme (
                 "border_radius": 2,
             },
         ),
-        "popup": ( 
+        "popup": (
             properties: {
                 "background": "$POPUP_BACKGROUND",
                 "border_brush": "$POPUP_BORDER",
