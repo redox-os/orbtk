@@ -47,8 +47,7 @@ impl Layout for FixedSizeLayout {
             return *self.desired_size.borrow();
         }
 
-        if !component::<bool>(ecm, entity, "layout_dirty") {
-            self.desired_size.borrow_mut().set_dirty(false);
+        if !component::<bool>(ecm, entity, "layout_dirty") && !self.desired_size.borrow().dirty() {
             return *self.desired_size.borrow();
         }
 
@@ -151,13 +150,13 @@ impl Layout for FixedSizeLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &Theme,
     ) -> (f64, f64) {
-        if !self.desired_size.borrow().dirty() {
-            return self.desired_size.borrow().size();
-        }
-
         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return (0.0, 0.0);
+        }
+
+        if !self.desired_size.borrow().dirty() {
+            return self.desired_size.borrow().size();
         }
 
         if let Some(bounds) = component_try_mut::<Rectangle>(ecm, entity, "bounds") {
