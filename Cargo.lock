@@ -510,7 +510,7 @@ dependencies = [
 [[package]]
 name = "orbclient"
 version = "0.3.28"
-source = "git+https://gitlab.redox-os.org/redox-os/orbclient.git?branch=master#fdff45e77693995d636a1e07a3a05052bb287a88"
+source = "git+https://gitlab.redox-os.org/redox-os/orbclient.git#fdff45e77693995d636a1e07a3a05052bb287a88"
 dependencies = [
  "libc",
  "raw-window-handle",
