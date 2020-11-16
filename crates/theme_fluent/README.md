@@ -11,8 +11,10 @@
 
 ## Resources
 
-* [Material Icons](https://github.com/material-icons/material-icons-font) (Apache 2.0): Default icon font
-* [Roboto](https://github.com/google/roboto) (Apache 2.0): Default font
+* [Material Icons](https://github.com/material-icons/material-icons-font) (Apache 2.0): Official icon set from Google
+* [MDL2 Icons](https://github.com/scottdorman/mdl2-icons)] (MIT): OpenSource MDL2 replacement for Segoe MDL2 assets font
+* [Roboto](https://github.com/googlefonts/roboto) (Apache 2.0): Android/Chrome-OS default font
+* [Selawik](https://github.com/Microsoft/Selawik) (MIT): OpenSource replacement for Segoe UI font from Microsoft
 
 ## License
 

@@ -1,11 +1,15 @@
 Theme (
     resources: {
         // fonts
-        "MEDIUM_FONT": "Roboto-Medium",
-        "REGULAR_FONT": "Roboto-Regular",
+        "REGULAR_FONT": "Selawik-Regular",
+        "BOLD_FONT": "Selawik-Bold",
+        "LIGHT_FONT": "Selawik-Light",
+        // material icon fonts is used as default:
+        // OrbTk's default widget library reference it, thus resolution is needed.
         "ICON_FONT": "MaterialIcons-Regular",
+        "MDL2_ICON_FONT": "MDL2-Assets-Regular",
 
-       // font sizes
+        // font sizes
         "FONT_SIZE_12": 12,
         "FONT_SIZE_13": 13,
         "FONT_SIZE_14": 14,
