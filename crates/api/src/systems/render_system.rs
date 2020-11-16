@@ -33,6 +33,13 @@ impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
             if let Ok(dirty) = ecm.component_store_mut().get_mut::<bool>("dirty", widget) {
                 *dirty = false;
             }
+
+            if let Ok(layout_dirty) = ecm
+                .component_store_mut()
+                .get_mut::<bool>("layout_dirty", widget)
+            {
+                *layout_dirty = false;
+            }
         }
 
         ecm.component_store_mut()

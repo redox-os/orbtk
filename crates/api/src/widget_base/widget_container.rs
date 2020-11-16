@@ -29,6 +29,32 @@ pub fn mark_as_dirty(
     }
 }
 
+/// Mark a widget as layout dirty if the given key is the key of a layout property.
+pub fn mark_as_layout_dirty(
+    key: &str,
+    entity: Entity,
+    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+) {
+    if key != "bounds"
+        && key != "constraint"
+        && key != "padding"
+        && key != "text"
+        && key != "icon"
+        && key != "margin"
+        && key != "font_size"
+        && key != "font"
+        && key != "icon_size"
+        && key != "icon_font"
+        && key != "visibility"
+    {
+        return;
+    }
+
+    *ecm.component_store_mut()
+        .get_mut::<bool>("layout_dirty", entity)
+        .unwrap() = true;
+}
+
 /// Mark the widget dirty.
 pub fn mark_as_dirty_self(
     entity: Entity,
@@ -158,6 +184,7 @@ impl<'a> WidgetContainer<'a> {
         P: Clone + Component,
     {
         self.mark_as_dirty(key, self.current_node);
+        mark_as_layout_dirty(key, self.current_node, self.ecm);
 
         if let Ok(property) = self
             .ecm
@@ -285,6 +312,7 @@ impl<'a> WidgetContainer<'a> {
             }
 
             self.mark_as_dirty_self(entity);
+            mark_as_layout_dirty(key, entity, self.ecm);
 
             // each widget has this filter therefore unwrap.
             match self

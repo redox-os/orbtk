@@ -14,6 +14,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for LayoutSystem {
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         render_context: &mut RenderContext2D,
     ) {
+        crate::shell::CONSOLE.time("layout");
         let root = ecm.entity_store().root();
 
         if ecm
@@ -56,6 +57,8 @@ impl System<Tree, StringComponentStore, RenderContext2D> for LayoutSystem {
             &self.context_provider.layouts.borrow(),
             &theme,
         );
+
+        crate::shell::CONSOLE.time_end("layout");
 
         // if self.debug_flag.get() {
         //     println!("\n------ End layout update   ------\n");
