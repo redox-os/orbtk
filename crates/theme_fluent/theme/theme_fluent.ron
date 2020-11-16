@@ -520,10 +520,10 @@ Theme (
         "tab_icon_only": (
             base: "button",
             properties: {
-                "icon_size": "$ICON_SIZE_8",
+                "icon_size": "$ICON_SIZE_4",
                 "icon_brush": "$CONTENT_FOREGROUND_SECONDARY",
                 "background": "transparent",
-                "icon": "$MD_CLOSE",
+                "icon": "$MDL2_CLEAR",
                 "icon_font": "$MDL2_ICON_FONT",
                 "spacing": 0,
                 "width": 16,
