@@ -198,7 +198,7 @@ Theme (
                 "border_brush": "$BOX_BORDER",
                 "icon_brush": "transparent",
                 "icon_font": "$MDL2_ICON_FONT",
-                "icon": "$MDL2_CHECKMARK"
+                "icon": "$MDL2_CHECK_MARK"
             },
             states: [
                  (
@@ -338,8 +338,8 @@ Theme (
             base: "text_box",
             properties: {
                 "foreground": "$CONTENT_FOREGROUND",
-                "icon_up": "$MDL2_SCROLLCHEVRONUPBOLDLEGACY",
-                "icon_down": "$MDL2_SCROLLCHEVRONDOWNBOLDLEGACY",
+                "icon_up": "$MDL2_SCROLL_CHEVRON_UP_BOLD_LEGACY",
+                "icon_down": "$MDL2_SCROLL_CHEVRON_DOWN_BOLD_LEGACY",
             }
         ),
         "cursor": (
@@ -419,7 +419,7 @@ Theme (
                 "border_width": 1,
                 "height": 32,
                 "icon_size": "$ICON_SIZE_12",
-                "icon": "$MDL2_SCROLLCHEVRONDOWNBOLDLEGACY",
+                "icon": "$MDL2_SCROLL_CHEVRON_DOWN_BOLD_LEGACY",
                 "icon_font": "$MDL2_ICON_FONT"
             },
             states: [
