@@ -5,6 +5,9 @@ use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 
 fn main() -> Result<(), Box<dyn Error>> {
+    // WIP:
+    // this should be obsolet, now that we maintain ./src/const_colors.rs
+    // shall we keep it to extend the given color phf map?
     println!("cargo:rerun-if-changed=colors.csv");
     let path = Path::new(&env::var("OUT_DIR").unwrap()).join("colors.rs");
     let mut file = BufWriter::new(File::create(&path).unwrap());

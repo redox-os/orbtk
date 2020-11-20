@@ -1,3 +1,4 @@
+// WIP: is that needed anymore, if we maintain const_colors.rs?
 include!(concat!(env!("OUT_DIR"), "/colors.rs"));
 
 #[cfg(not(feature = "no_std"))]
@@ -130,6 +131,12 @@ impl Color {
     fn interp(start_color: u8, end_color: u8, scale: f64) -> u8 {
         (end_color as f64 - start_color as f64).mul_add(scale, start_color as f64) as u8
     }
+
+    /// Find given name string in the hash map
+    pub fn find_color(name: &str) -> Option<Color> {
+        COLORS.get(name.to_uppercase().as_str()).cloned()
+    }
+
 }
 
 impl ToString for Color {
@@ -216,10 +223,17 @@ impl fmt::Debug for Color {
 #[cfg(test)]
 mod tests {
     use super::*;
+    //use test::Bencher;
+
     #[test]
     fn partial_eq() {
         assert_eq!(true, Color::rgb(1, 2, 3) == Color::rgba(1, 2, 3, 200));
         assert_eq!(false, Color::rgb(1, 2, 3) == Color::rgba(11, 2, 3, 200));
         assert_eq!(true, Color::rgba(1, 2, 3, 200) == Color::rgba(1, 2, 3, 200));
     }
+
+    // #[bench]
+    // fn bench_phf_map(b: &mut Bencher) {
+    //     b.iter(|| COLOR::find_color("COLOR_WHITE"))
+    // }
 }
