@@ -41,7 +41,7 @@ dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git", branch = "d
 
 [dev-dependencies]
 euc = "0.5.0"
-vek = "0.10.2"
+vek = { version = "0.12.1", default-features = false, features = ["rgb", "rgba"] }
 serde = "1.0.106"
 serde_derive = "1.0.106"
 
