@@ -91,8 +91,8 @@ widget!(
     /// let next_button = Button::new()
     ///     .enabled(("next_enabled", pager))
     ///     .text("next")
-    ///     .on_click(move |states, _| {
-    ///         states.get_mut::<PagerState>(pager).next();
+    ///     .on_click(move |ctx, _| {
+    ///         ctx.send_message(PagerAction::Next, pager);
     ///         true
     ///     })
     ///     .build(ctx);
@@ -101,7 +101,7 @@ widget!(
     ///     .enabled(("previous_enabled", pager))
     ///     .text("previous")
     ///     .on_click(move |states, _| {
-    ///         states.get_mut::<PagerState>(pager).previous();
+    ///         ctx.send_message(PagerAction::Next, pager);
     ///         true
     ///     })
     ///     .build(ctx);
