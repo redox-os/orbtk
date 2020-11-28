@@ -14,6 +14,8 @@ struct TableState {
     actions: Vec<TableAction>,
     column_count: usize,
     data_grid: Entity,
+    data_column_widths: HashMap<usize, f64>,
+    header_column_widths: HashMap<usize, f64>,
     header_grid: Entity,
     row_builder: RowBuilder,
     row_count: usize,
@@ -29,6 +31,70 @@ impl TableState {
         ctx.get_widget(self.data_grid)
             .set::<Columns>("columns", cloned_columns);
         ctx.widget().set::<usize>("column_count", self.column_count);
+    }
+
+    fn adjust_column_widths(&mut self, ctx: &mut Context) {
+        let table_view = ctx.entity();
+
+        // measure header column widths
+        let mut index = 0;
+        ctx.change_into(self.header_grid);
+        while let Some(header) = ctx.try_child_from_index(index) {
+            // TODO: querying constraint always returns 0.0
+            // Using the bounds of the header instead of
+            let bounds = header.get::<Rectangle>("bounds");
+            let header_width = bounds.width();
+            let column_index = header.get::<usize>("column");
+            self.header_column_widths
+                .insert(*column_index, header_width);
+            index += 1;
+        }
+
+        ctx.change_into(table_view);
+
+        // get data grid wildest width by columns: values already computed by the GridLayout since its ColumnWidth is auto.
+        let data_grid = ctx.get_widget(self.data_grid);
+        let data_columns_widths = data_grid.get::<Columns>("columns");
+        for i in 0..data_columns_widths.len() {
+            if let Some(column) = data_columns_widths.get(i) {
+                let data_w = column.current_width();
+                self.data_column_widths.insert(i, data_w);
+            }
+        }
+
+        // comparing header and data grid column widths
+        for i in 0..self.header_column_widths.len() {
+            let header_width = *self.header_column_widths.get(&i).unwrap();
+            let data_width = *self.data_column_widths.get(&i).unwrap();
+
+            if header_width < data_width {
+                ctx.change_into(self.header_grid);
+                if let Some(mut header) = ctx.try_child_from_index(i) {
+                    if let Some(new_width) = self.data_column_widths.get(&i) {
+                        header
+                            .get_mut::<Constraint>("constraint")
+                            .set_width(*new_width);
+                    }
+                }
+            } else if header_width > data_width {
+                // change data grid children column widths to match the column header width
+                ctx.change_into(self.data_grid);
+                let mut idx = 0;
+                while let Some(mut child) = ctx.try_child_from_index(idx) {
+                    if *child.get::<usize>("column") == i {
+                        if let Some(new_width) = self.header_column_widths.get(&i) {
+                            child
+                                .get_mut::<Constraint>("constraint")
+                                .set_width(*new_width);
+                        }
+                    }
+                    idx += 1;
+                }
+            }
+        }
+
+        self.header_column_widths.clear();
+        self.data_column_widths.clear();
     }
 
     fn adjust_rows(&self, row_count: usize, ctx: &mut Context) {
@@ -97,11 +163,18 @@ impl State for TableState {
 
         // must be come first because it is explicitly sets the column_count property
         self.generate_column_headers(ctx);
+
+        self.data_column_widths = HashMap::new();
+        self.header_column_widths = HashMap::with_capacity(self.column_count);
         self.generate_cells(ctx);
     }
 
     fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
-        self.generate_cells(ctx)
+        self.generate_cells(ctx);
+    }
+
+    fn update_post_layout(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+        self.adjust_column_widths(ctx);
     }
 }
 
@@ -126,6 +199,7 @@ widget!(
         request_update: bool,
 
         /// Sets or shares the row count property.
+        /// Changing the value of this property will trigger a redraw.
         row_count: usize
     }
 );
