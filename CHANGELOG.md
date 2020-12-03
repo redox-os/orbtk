@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 0.3.1-alpha4 (wip)
 
+* Introduce a wip tiny-skia backend
 * `PasswordBox` widget
 * `Pager `navigation widget
 * `Clipboard` service
