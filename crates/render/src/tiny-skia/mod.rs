@@ -1,5 +1,5 @@
 use smallvec::SmallVec;
-use std::{collections::HashMap, ptr, slice};
+use std::{collections::HashMap, ptr, slice, f64::consts::{PI, FRAC_PI_2}};
 use tiny_skia::{Canvas, FillRule, Paint, PathBuilder, Pixmap, PixmapPaint, Shader, Stroke};
 
 use crate::{common::*, utils::*, PipelineTrait, RenderConfig, RenderTarget, TextMetrics};
@@ -292,11 +292,104 @@ impl RenderContext2D {
         self.path_builder.line_to(x, y);
     }
 
+    /// Intern function to draw an arc segment minor or equal to 90°
+    fn arc_fragment(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
+        let (end_sin, end_cos) = end_angle.sin_cos();
+        let end_x = x + end_cos * radius;
+        let end_y = y + end_sin * radius;
+        let (start_sin, start_cos) = start_angle.sin_cos();
+        let start_x = x + start_cos * radius;
+        let start_y = y + start_sin * radius;
+
+        let t1x = y - start_y;
+        let t1y = start_x - x;
+        let t2x = end_y - y;
+        let t2y = x - end_x;
+        let dx = (start_x + end_x) / 2.0 - x;
+        let dy = (start_y + end_y) / 2.0 - y;
+        let tx = 3.0 / 8.0 * (t1x + t2x);
+        let ty = 3.0 / 8.0 * (t1y + t2y);
+        let a = tx * tx + ty * ty;
+        let b = dx * tx + dy * ty;
+        let c = dx * dx + dy * dy - radius * radius;
+        let d = b * b - a * c;
+        if d > 0.0 {
+            let k = (d.sqrt() - b) / a;
+            self.path_builder.cubic_to((start_x + k * t1x) as f32, (start_y + k * t1y) as f32, (end_x + k * t2x) as f32, (end_y + k * t2y) as f32, (x + end_cos * radius) as f32, (y + end_sin * radius) as f32);
+        }
+    }
+
     /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
-    pub fn arc(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
-        // TODO
+    pub fn arc(&mut self, x: f64, y: f64, radius: f64, mut start_angle: f64, mut end_angle: f64) {
         self.path_rect
             .record_arc(x, y, radius, start_angle, end_angle);
+        if start_angle < 0.0 {
+            start_angle = TAU - start_angle;
+        }
+        if end_angle < 0.0 {
+            end_angle = TAU - end_angle;
+        }
+        let number = 0.552284749831 * radius;
+        let (start_sin, start_cos) = start_angle.sin_cos();
+        if end_angle - start_angle < TAU {
+            self.path_builder.move_to(x as f32, y as f32);
+            self.path_builder.line_to((x + start_cos * radius) as f32, (y + start_sin * radius) as f32);
+        }
+        else {
+            self.path_builder.move_to((x + start_cos * radius) as f32, (y + start_sin * radius) as f32);
+        }
+        if end_angle - start_angle < FRAC_PI_2 {
+            self.arc_fragment(x, y, radius, start_angle, end_angle);
+            self.path_builder.line_to(x as f32, y as f32);
+            return;
+        }
+        else if start_angle % FRAC_PI_2 > f64::EPSILON {
+            self.arc_fragment(x, y, radius, start_angle, start_angle + FRAC_PI_2 - start_angle % FRAC_PI_2);
+        }
+        if start_angle <= 0.0 && end_angle >= FRAC_PI_2 {
+            self.path_builder.cubic_to(
+                (x + radius) as f32,
+                (y + number) as f32,
+                (x + number) as f32,
+                (y + radius) as f32,
+                x as f32,
+                (y + radius) as f32,
+            );
+        }
+        if start_angle <= FRAC_PI_2 && end_angle >= PI {
+            self.path_builder.cubic_to(
+                (x - number) as f32,
+                (y + radius) as f32,
+                (x - radius) as f32,
+                (y + number) as f32,
+                (x - radius) as f32,
+                y as f32,
+            );
+        }
+        if start_angle <= PI && end_angle >= PI + FRAC_PI_2 {
+            self.path_builder.cubic_to(
+                (x - radius) as f32,
+                (y - number) as f32,
+                (x - number) as f32,
+                (y - radius) as f32,
+                x as f32,
+                (y - radius) as f32,
+            );
+        }
+        if start_angle <= PI + FRAC_PI_2 && end_angle >= TAU {
+            self.path_builder.cubic_to(
+                (x + number) as f32,
+                (y - radius) as f32,
+                (x + radius) as f32,
+                (y - number) as f32,
+                (x + radius) as f32,
+                y as f32,
+            );
+        }
+        self.arc_fragment(x, y, radius, end_angle - end_angle % FRAC_PI_2, end_angle);
+        if end_angle - start_angle < TAU {
+            self.path_builder.line_to(x as f32, y as f32);
+        }
     }
 
     /// Begins a new sub-path at the point specified by the given {x, y} coordinates.
