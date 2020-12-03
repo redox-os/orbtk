@@ -5,7 +5,7 @@ use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 
 fn main() -> Result<(), Box<dyn Error>> {
-    println!("cargo:rerun-if-changed=colors.csv");
+    println!("cargo:rerun-if-changed=colors.txt");
     let path = Path::new(&env::var("OUT_DIR").unwrap()).join("colors.rs");
     let mut file = BufWriter::new(File::create(&path).unwrap());
 
