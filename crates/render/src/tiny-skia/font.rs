@@ -1,15 +1,16 @@
 use rusttype::OutlineBuilder;
-use tiny_skia::{Canvas, PathBuilder, FillRule, Paint};
+use tiny_skia::{Canvas, FillRule, Paint, PathBuilder};
 
 use crate::utils::Rectangle;
 
 #[derive(Debug)]
 struct GlyphTracer {
     path_builder: PathBuilder,
-    position: rusttype::Point<f32>
+    position: rusttype::Point<f32>,
 }
 
 impl GlyphTracer {
+    #[inline(always)]
     fn map_point(&self, x: f32, y: f32) -> (f32, f32) {
         (self.position.x + x, self.position.y + y)
     }
@@ -124,6 +125,10 @@ impl Font {
         let glyphs: Vec<rusttype::PositionedGlyph> =
             self.inner.layout(text, scale, offset).collect();
 
+        let mut glyph_tracer = GlyphTracer {
+            path_builder: PathBuilder::new(),
+            position: rusttype::point(0.0, 0.0),
+        };
         for g in glyphs.iter() {
             let mut gpos = match g.pixel_bounding_box() {
                 Some(bbox) => rusttype::point(bbox.min.x as f32, bbox.min.y as f32),
@@ -133,14 +138,11 @@ impl Font {
             };
             gpos.x += position.0 as f32;
             gpos.y += position.1 as f32;
-            let mut glyph_tracer = GlyphTracer {
-                path_builder: PathBuilder::new(),
-                position: gpos
-            };
+            glyph_tracer.position = gpos;
             g.build_outline(&mut glyph_tracer);
-            if let Some(path) = glyph_tracer.path_builder.finish() {
-                canvas.fill_path(&path, paint, FillRule::Winding);
-            }
+        }
+        if let Some(path) = glyph_tracer.path_builder.finish() {
+            canvas.fill_path(&path, paint, FillRule::Winding);
         }
     }
 }

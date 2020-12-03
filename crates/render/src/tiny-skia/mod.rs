@@ -29,12 +29,11 @@ pub struct RenderContext2D {
 impl RenderContext2D {
     fn paint_from_brush(brush: &Brush, frame: Rectangle) -> Paint<'static> {
         let shader = match brush {
-            Brush::SolidColor(color) => Shader::SolidColor(tiny_skia::Color::from_rgba8(
-                color.r(),
-                color.g(),
-                color.b(),
-                color.a(),
-            )),
+            Brush::SolidColor(color) => {
+                let color =
+                    tiny_skia::Color::from_rgba8(color.b(), color.g(), color.r(), color.a());
+                Shader::SolidColor(color)
+            }
             Brush::Gradient(Gradient {
                 kind: GradientKind::Linear(coords),
                 stops,
@@ -72,19 +71,19 @@ impl RenderContext2D {
                     }
                 };
                 let g_stops = build_unit_percent_gradient(&stops, end.distance(start), |p, c| {
-                    tiny_skia::GradientStop::new(
-                        p as f32,
-                        tiny_skia::Color::from_rgba8(c.r(), c.g(), c.b(), c.a()),
-                    )
+                    let color = tiny_skia::Color::from_rgba8(c.b(), c.g(), c.r(), c.a());
+                    tiny_skia::GradientStop::new(p as f32, color)
                 });
+                let tstart = tiny_skia::Point::from_xy(start.x() as f32, start.y() as f32);
+                let tend = tiny_skia::Point::from_xy(end.x() as f32, end.y() as f32);
                 tiny_skia::LinearGradient::new(
-                    tiny_skia::Point::from_xy(start.x() as f32, start.y() as f32),
-                    tiny_skia::Point::from_xy(end.x() as f32, end.y() as f32),
+                    tstart,
+                    tend,
                     g_stops,
                     spread,
                     tiny_skia::Transform::identity(),
                 )
-                .unwrap_or(Shader::SolidColor(tiny_skia::Color::BLACK))
+                .unwrap_or(Shader::SolidColor(tiny_skia::Color::WHITE))
             }
         };
         Paint {
@@ -423,6 +422,16 @@ impl RenderContext2D {
     }
 
     pub fn clear(&mut self, brush: &Brush) {
+        let paint = Self::paint_from_brush(
+            brush,
+            Rectangle::new(
+                Point::new(0., 0.),
+                Size::new(
+                    self.canvas.pixmap.width() as f64,
+                    self.canvas.pixmap.height() as f64,
+                ),
+            ),
+        );
         self.canvas.fill_rect(
             tiny_skia::Rect::from_xywh(
                 0.,
@@ -431,21 +440,17 @@ impl RenderContext2D {
                 self.canvas.pixmap.height() as f32,
             )
             .unwrap(),
-            &Self::paint_from_brush(
-                brush,
-                Rectangle::new(
-                    Point::new(0., 0.),
-                    Size::new(
-                        self.canvas.pixmap.width() as f64,
-                        self.canvas.pixmap.height() as f64,
-                    ),
-                ),
-            ),
+            &paint,
         );
     }
 
     pub fn data(&self) -> &[u32] {
-        unsafe { slice::from_raw_parts(self.canvas.pixmap.data().as_ptr() as *const u32, self.canvas.pixmap.data().len() / 4) }
+        unsafe {
+            slice::from_raw_parts(
+                self.canvas.pixmap.data().as_ptr() as *const u32,
+                self.canvas.pixmap.data().len() / 4,
+            )
+        }
     }
 
     pub fn start(&mut self) {
