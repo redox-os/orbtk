@@ -1,8 +1,6 @@
 use rusttype::OutlineBuilder;
 use tiny_skia::{Canvas, FillRule, Paint, PathBuilder};
 
-use crate::utils::Rectangle;
-
 #[derive(Debug)]
 struct GlyphTracer {
     path_builder: PathBuilder,
@@ -83,34 +81,9 @@ impl Font {
         &self,
         text: &str,
         canvas: &mut Canvas,
-        width: f64,
-        height: f64,
         font_size: f64,
         paint: &Paint,
         position: (f64, f64),
-    ) {
-        self.render_text_clipped(
-            text,
-            canvas,
-            width,
-            height,
-            font_size,
-            paint,
-            position,
-            Rectangle::new((0.0, 0.0), (width, std::f64::MAX)),
-        );
-    }
-
-    pub fn render_text_clipped(
-        &self,
-        text: &str,
-        canvas: &mut Canvas,
-        width: f64,
-        height: f64,
-        font_size: f64,
-        paint: &Paint,
-        position: (f64, f64),
-        clip: Rectangle,
     ) {
         let scale = rusttype::Scale::uniform(font_size as f32);
 
@@ -121,7 +94,6 @@ impl Font {
         let v_metrics = self.inner.v_metrics(scale);
         let offset = rusttype::point(0.0, v_metrics.ascent);
 
-        // Glyphs to draw for "RustType". Feel free to try other strings.
         let glyphs: Vec<rusttype::PositionedGlyph> =
             self.inner.layout(text, scale, offset).collect();
 

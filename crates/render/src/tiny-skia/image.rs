@@ -58,7 +58,7 @@ impl Image {
         let img = image::open(path.clone());
 
         if let Ok(img) = img {
-            return Self::from_rgba_image(img.to_rgba());
+            return Self::from_rgba_image(img.to_rgba8());
         }
 
         Err(format!("Could not load image width path: {:?}", path))

@@ -161,10 +161,8 @@ impl RenderContext2D {
 
     /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        let rect = match self.path_rect.get_rect() {
-            Some(rect) => rect,
-            None => return, // The path is empty, do nothing
-        };
+        self.path_rect.record_rect(x, y, width, height);
+        let rect = self.path_rect.get_rect().unwrap();
         self.fill_paint =
             Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
         self.canvas.fill_rect(
@@ -193,31 +191,13 @@ impl RenderContext2D {
             Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
 
         if let Some(font) = self.fonts.get(&self.config.font_config.family) {
-            let width = self.canvas.pixmap.width() as f64;
-            let height = self.canvas.pixmap.height() as f64;
-
-            if let Some(rect) = self.path_rect.get_clip() {
-                font.render_text_clipped(
-                    text,
-                    &mut self.canvas,
-                    width,
-                    height,
-                    self.config.font_config.font_size,
-                    &self.fill_paint,
-                    (x, y),
-                    rect,
-                );
-            } else {
-                font.render_text(
-                    text,
-                    &mut self.canvas,
-                    width,
-                    height,
-                    self.config.font_config.font_size,
-                    &self.fill_paint,
-                    (x, y),
-                );
-            }
+            font.render_text(
+                text,
+                &mut self.canvas,
+                self.config.font_config.font_size,
+                &self.fill_paint,
+                (x, y),
+            );
         }
     }
 
@@ -298,19 +278,13 @@ impl RenderContext2D {
 
     /// Adds a rectangle to the current path.
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.path_builder
+            .push_rect(x as f32, y as f32, width as f32, height as f32);
         self.path_rect.record_rect(x, y, width, height);
-        let x = x as f32;
-        let y = y as f32;
-        let cx = x + width as f32;
-        let cy = y + height as f32;
-        self.path_builder.move_to(x, y);
-        self.path_builder.line_to(cx, y);
-        self.path_builder.line_to(cx, cy);
-        self.path_builder.line_to(x, cy);
-        self.path_builder.line_to(x, y);
     }
 
     /// Intern function to draw an arc segment minor or equal to 90°
+    #[allow(clippy::many_single_char_names)]
     fn arc_fragment(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
         let (end_sin, end_cos) = end_angle.sin_cos();
         let end_x = x + end_cos * radius;
@@ -348,10 +322,10 @@ impl RenderContext2D {
     pub fn arc(&mut self, x: f64, y: f64, radius: f64, mut start_angle: f64, mut end_angle: f64) {
         self.path_rect
             .record_arc(x, y, radius, start_angle, end_angle);
-        if start_angle.is_negative() {
+        if start_angle.is_sign_negative() {
             start_angle = TAU - -start_angle;
         }
-        if end_angle.is_negative() {
+        if end_angle.is_sign_negative() {
             end_angle = TAU - -end_angle;
         }
         let premult_k = 0.552284749831 * radius;
@@ -445,6 +419,22 @@ impl RenderContext2D {
         self.path_builder
             .quad_to(cpx as f32, cpy as f32, x as f32, y as f32);
         self.path_rect.record_quadratic_curve_to(cpx, cpy, x, y);
+    }
+
+    /// Adds a cubic Bézier curve to the current sub-path.
+    /// It requires three points: the first two are control points and the third one is the end point.
+    /// The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
+    pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
+        self.path_builder.cubic_to(
+            cp1x as f32,
+            cp1y as f32,
+            cp2x as f32,
+            cp2y as f32,
+            x as f32,
+            y as f32,
+        );
+        self.path_rect
+            .record_bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y);
     }
 
     /// Draws a render target.
@@ -568,6 +558,15 @@ impl RenderContext2D {
     }
 
     pub fn clear(&mut self, brush: &Brush) {
+        if let Brush::SolidColor(color) = brush {
+            self.canvas.pixmap.fill(tiny_skia::Color::from_rgba8(
+                color.b(),
+                color.g(),
+                color.r(),
+                color.a(),
+            ));
+            return;
+        }
         let paint = Self::paint_from_brush(
             brush,
             Rectangle::new(
