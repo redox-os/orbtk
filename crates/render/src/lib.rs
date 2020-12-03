@@ -24,7 +24,7 @@ pub mod platform;
     not(target_arch = "wasm32"),
     not(feature = "orbraq"),
     not(feature = "miniraq"),
-    any(feature = "default", feature = "tiny-skia"),
+    any(feature = "tiny-skia"),
 ))]
 #[path = "tiny-skia/mod.rs"]
 pub mod platform;
