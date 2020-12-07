@@ -28,11 +28,17 @@ impl Default for TableSortPredicate {
 /// Default is TableSortDirection::Ascending.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum TableSortDirection {
-    /// From lower values to higher.Lowest value will be placed on the top of the table,
-    /// and the highest on the bottom of the table.
+    /// Values are arranged from the `smallest` to the `largest`
+    /// value. The lowest value will be placed on the top of the
+    /// table. Sorting will continue and place the next increasing
+    /// value in the row unit it reaches the largest value that is
+    /// placed on the bottom of the table.
     Ascending,
-    /// From higher values to lower.The highest value will be placed on the top of the table,
-    /// and the lowest on the bottom of the table.
+    /// Values are arranged from the `largest` to the `smallest`
+    /// value. The highest value will be placed on the top of the
+    /// table. Sorting will continue and place the next decreasing
+    /// value in the row unit it reaches the lowest value that is
+    /// placed on the bottom of the table.
     Descending,
 }
 
@@ -366,8 +372,9 @@ impl Template for TableView {
 }
 
 impl TableView {
-    /// Adds a new column to the header of the TableView.
-    /// The widget will be a Button with an on_click callback triggering a sorting of rows.
+    /// Adds a new column to the header of the TableView. The widget
+    /// will create a `Button` that handeles an on_click callback. The
+    /// callback will trigger row sorting of the given column_id.
     /// The style is **table_column_header**.
     ///
     /// # Arguments:
@@ -383,9 +390,10 @@ impl TableView {
         self
     }
 
-    /// Defines the template build function for a row of the `TableView`.
-    /// TableView will call this function when redrawing is triggered by
-    /// changing the `row_count` or `request_update` property.
+    /// A template that triggers the build of a row inside the
+    /// `TableView`. If any of its properties (`row_count` or `request_update`)
+    /// is changed, row state is set `dirty` and a redraw is
+    /// triggered.
     pub fn row_builder<F: Fn(&mut BuildContext, usize, &mut Vec<Entity>) + 'static>(
         mut self,
         builder: F,
@@ -401,8 +409,9 @@ impl TableView {
     /// # Arguments:
     /// * `&str:` the sorting predicate, e.g. the id of the column the TableView is sorted by.
     /// * `TableSortDirection`: the current order of the sorting.
-    /// * `Entity`: The entitiy of the widget which contains the data to display.The value of the `data_source` property.
-    ///  It could be used together with the `Context` to query properties.
+    /// * `Entity`: The entitiy of the widget containint the data that will be displayed.
+    ///   The value of the `data_source` property. Using the `context` in combination with the
+    ///   entity id will enable the query of other properties as well.
     pub fn on_sort<F: Fn(&str, TableSortDirection, Entity, &mut Context) + 'static>(
         mut self,
         sorter: F,
