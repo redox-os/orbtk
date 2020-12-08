@@ -1,8 +1,6 @@
 use crate::utils::*;
 use std::f64::consts::{FRAC_PI_2, PI};
 
-pub const TAU: f64 = 6.283_185_307_179_586_f64;
-
 /// Calculates the AABB of a arc.
 pub fn arc_rect(x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) -> Rectangle {
     // Lazy calculate the AABB of its ends.
