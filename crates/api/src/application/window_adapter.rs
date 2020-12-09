@@ -344,14 +344,6 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         .build();
 
     world
-        .create_system(MessageSystem::new(
-            context_provider.clone(),
-            registry.clone(),
-        ))
-        .with_priority(0)
-        .build();
-
-    world
         .create_system(LayoutSystem::new(context_provider.clone()))
         .with_priority(1)
         .build();
