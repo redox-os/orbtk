@@ -58,7 +58,7 @@ impl Template for ButtonView {
         self.child(
             Grid::new()
                 .margin(16)
-                .columns(Columns::create().push(140).push(32).push(140))
+                .columns("140, 32, 140")
                 .child(
                     Stack::new()
                         .spacing(8)
@@ -227,8 +227,8 @@ impl Template for LayoutView {
                         .background("black")
                         .child(
                             Grid::new()
-                                .columns(Columns::create().push("*").push("auto").push(50))
-                                .rows(Rows::create().push("*").push("*"))
+                                .columns("*, auto, 50")
+                                .rows("*, *")
                                 .child(
                                     Container::new()
                                         .background("lynch")
@@ -454,17 +454,7 @@ impl Template for NavigationView {
         self.child(
             Grid::new()
                 .margin(16)
-                .rows(
-                    Rows::create()
-                        .push(32)
-                        .push("*")
-                        .push(8)
-                        .push("auto")
-                        .push(8)
-                        .push(32)
-                        .push("*")
-                        .build(),
-                )
+                .rows("32, *, 8, auto, 8, 32, *")
                 .child(TextBlock::new().text("Pager").style("header").build(ctx))
                 .child(pager)
                 .child(
@@ -597,33 +587,8 @@ impl Template for InteractiveView {
         self.count_text("0").themes(themes).child(
             Grid::new()
                 .margin(8)
-                .rows(
-                    Rows::create()
-                        .push("auto")
-                        .push(4)
-                        .push(32)
-                        .push(8)
-                        .push("auto")
-                        .push(4)
-                        .push(32)
-                        .push(8)
-                        .push("auto")
-                        .push(4)
-                        .push(32)
-                        .push(4)
-                        .push("auto")
-                        .push(4)
-                        .push(32),
-                )
-                .columns(
-                    Columns::create()
-                        .push("auto")
-                        .push(4)
-                        .push("auto")
-                        .push(4)
-                        .push("auto")
-                        .push("*"),
-                )
+                .rows("auto, 4, 32, 8, auto, 3, 32, 8, auto, 4, 32, 4, auto, 4, 32")
+                .columns("auto, 4, auto, 4, auto, *")
                 // theme selection
                 .child(
                     TextBlock::new()

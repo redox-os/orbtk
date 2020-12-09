@@ -9,10 +9,10 @@ widget!(
         background: Brush,
 
         /// Sets or shares the columns property.
-        columns: Columns,
+        columns: Blocks,
 
         /// Sets or shares the rows property.
-        rows: Rows,
+        rows: Blocks,
 
         /// Sets or shares the border radius property.
         border_radius: f64
@@ -54,8 +54,8 @@ impl Template for Grid {
             .style("grid")
             .border_radius(0.0)
             .background("transparent")
-            .rows(Rows::default())
-            .columns(Columns::default())
+            .rows(Blocks::default())
+            .columns(Blocks::default())
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {

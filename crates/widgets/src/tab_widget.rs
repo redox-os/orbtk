@@ -543,7 +543,7 @@ impl Template for TabWidget {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("TabWidget").style("tab_widget").child(
             Grid::new()
-                .rows(Rows::create().push(34).push("*"))
+                .rows("34, *")
                 .child(
                     Stack::new()
                         .id(HEADER_CONTAINER)
