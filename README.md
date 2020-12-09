@@ -358,7 +358,7 @@ At the moment will evaluate different backends for OrbTk. A OrbTk backend consis
 
 ### miniraq
 
-* use with `miniraq` feature `cargo run --example widgets --features miniraq --no-default-features` 
+* use with `miniraq` feature `cargo run --example showcase --features miniraq --no-default-features` 
 * window and events based on [minifb](https://github.com/emoon/rust_minifb)
 * 2D rendering based on [raqote](https://github.com/jrmuizel/raqote)
 * Dependencies on Linux: libxkbcommon-dev, libwayland-cursor0, libwayland-dev
