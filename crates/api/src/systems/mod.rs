@@ -5,7 +5,6 @@ pub use self::cleanup_system::*;
 pub use self::event_state_system::*;
 pub use self::init_system::*;
 pub use self::layout_system::*;
-pub use self::message_system::*;
 pub use self::post_layout_state_system::*;
 pub use self::render_system::*;
 
@@ -13,6 +12,5 @@ mod cleanup_system;
 mod event_state_system;
 mod init_system;
 mod layout_system;
-mod message_system;
 mod post_layout_state_system;
 mod render_system;

@@ -197,7 +197,6 @@ impl Template for MainView {
                                         .mode(("custom", "disabled"))
                                         .child(
                                             TextBlock::new()
-                                                .localizable(false)
                                                 .width(0)
                                                 .height(14)
                                                 .text("")
@@ -210,7 +209,6 @@ impl Template for MainView {
                                 )
                                 .child(
                                     TextBlock::new()
-                                        .localizable(false)
                                         .style("result")
                                         .text(id)
                                         .v_align("end")
