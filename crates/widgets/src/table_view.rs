@@ -31,13 +31,13 @@ pub enum TableSortDirection {
     /// Values are arranged from the `smallest` to the `largest`
     /// value. The lowest value will be placed on the top of the
     /// table. Sorting will continue and place the next increasing
-    /// value in the row unit it reaches the largest value that is
+    /// value in the row unit until it reaches the largest value that is
     /// placed on the bottom of the table.
     Ascending,
     /// Values are arranged from the `largest` to the `smallest`
     /// value. The highest value will be placed on the top of the
     /// table. Sorting will continue and place the next decreasing
-    /// value in the row unit it reaches the lowest value that is
+    /// value in the row unit until it reaches the lowest value that is
     /// placed on the bottom of the table.
     Descending,
 }
@@ -304,6 +304,30 @@ impl State for TableState {
 }
 
 widget!(
+    /// The TableView is designed to visualise collection of data broken into columns and rows.
+    /// 
+    /// The columns are the fields of a struct, and the rows is the instances of that struct.
+    /// A TableView is therefore very similar to the [`ListView`] widget, with the addition of support for columns and sorting.
+    /// 
+    /// The TableView has the features of:
+    /// * Automatically adjust column widths based on the width of the cell
+    /// * Sorting rows by column
+    /// 
+    /// # Examples
+    /// To create a TableView, you must define at least one column with a unique ID, and implement the `row_builder` closure.
+    /// Please see the table_view example, or the showcase.
+    /// 
+    /// # Ownership
+    /// Due to the current architecture of orbtk,
+    /// the TableView does not own the data that is displayed nor does not know about.
+    /// Most of its features implemented and relies on using callbacks (closures).
+    /// 
+    /// # Panics
+    /// The TableView will panics at runtime in the following cases:
+    /// * the developer does not define at least one column
+    /// * the defined column's `id` property is empty.
+    /// 
+    /// [`ListView`]: ./struct.ListView.html
     TableView<TableState> {
         /// Sets or shares the background property.
         background: Brush,
@@ -373,7 +397,7 @@ impl Template for TableView {
 
 impl TableView {
     /// Adds a new column to the header of the TableView. The widget
-    /// will create a `Button` that handeles an on_click callback. The
+    /// will create a `Button` that handles an on_click callback. The
     /// callback will trigger row sorting of the given column_id.
     /// The style is **table_column_header**.
     ///
@@ -394,6 +418,14 @@ impl TableView {
     /// `TableView`. If any of its properties (`row_count` or `request_update`)
     /// is changed, row state is set `dirty` and a redraw is
     /// triggered.
+    /// TableView will draw entities pushed into the Vec, and maps its index to column index
+    /// (e.g.: Entity pushed to Vec with index 0 will be mapped to column 0).
+    /// 
+    /// # Arguments
+    /// * `&mut BuildContext`: query widgets by its Entity.
+    /// * `usize`: the current row index when TableView draws the rows.TableView will
+    /// loop starting from 0 until it reaches the value `row_count`.You can use this index
+    /// to query the container holding the data to be displayed.
     pub fn row_builder<F: Fn(&mut BuildContext, usize, &mut Vec<Entity>) + 'static>(
         mut self,
         builder: F,
@@ -409,7 +441,7 @@ impl TableView {
     /// # Arguments:
     /// * `&str:` the sorting predicate, e.g. the id of the column the TableView is sorted by.
     /// * `TableSortDirection`: the current order of the sorting.
-    /// * `Entity`: The entitiy of the widget containint the data that will be displayed.
+    /// * `Entity`: The entitiy of the widget containing the data that will be displayed.
     ///   The value of the `data_source` property. Using the `context` in combination with the
     ///   entity id will enable the query of other properties as well.
     pub fn on_sort<F: Fn(&str, TableSortDirection, Entity, &mut Context) + 'static>(
