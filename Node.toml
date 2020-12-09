@@ -2,7 +2,7 @@
 name = "showcase"
 width = 468
 height = 730
-assets = "assets/showcase/"
+assets = "assets/showcase"
     [[apps.fonts]]
     font_family = "MaterialIcons-Regular"
     src = "crates/theme_default/assets/fonts/MaterialIcons.ttf"
