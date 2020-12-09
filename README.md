@@ -384,6 +384,10 @@ cargo doc --no-deps --open
 
 To build and run the latest version of the OrbTk manual check: [Manual](https://github.com/redox-os/orbtk/tree/develop/manual)
 
+### OrbTk book
+
+There is a (wip) OrbTk book check [OrbTk book](https://github.com/redox-os/orbtk-book)
+
 ## Sub Crates
 
 * [api](https://github.com/redox-os/orbtk/tree/develop/crates/api): base api elements of OrbTk e.g. widget and application parts
