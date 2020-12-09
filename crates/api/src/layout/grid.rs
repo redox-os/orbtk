@@ -81,24 +81,38 @@ impl GridLayout {
         grid_block: usize,
         block_sizes: &mut BTreeMap<usize, f64>,
         margin: Thickness,
+        vertical: bool,
     ) {
         if block.size != BlockSize::Auto {
             return;
         }
-        let child_size = self.children_sizes.borrow().get(&child).unwrap().0;
 
-        if let Some(size) = block_sizes.get(&grid_block) {
-            if *size < child_size + margin.left() + margin.right() {
-                block_sizes.insert(grid_block, child_size + margin.left() + margin.right());
+        if vertical {
+            let child_size = self.children_sizes.borrow().get(&child).unwrap().1;
+
+            if let Some(size) = block_sizes.get(&grid_block) {
+                if *size < child_size + margin.left() + margin.right() {
+                    block_sizes.insert(grid_block, child_size + margin.top() + margin.bottom());
+                }
+            } else {
+                block_sizes.insert(grid_block, child_size + margin.top() + margin.bottom());
             }
         } else {
-            block_sizes.insert(grid_block, child_size + margin.left() + margin.right());
-        }
+            let child_size = self.children_sizes.borrow().get(&child).unwrap().0;
+
+            if let Some(size) = block_sizes.get(&grid_block) {
+                if *size < child_size + margin.left() + margin.right() {
+                    block_sizes.insert(grid_block, child_size + margin.left() + margin.right());
+                }
+            } else {
+                block_sizes.insert(grid_block, child_size + margin.left() + margin.right());
+            }
+        };
     }
 
     fn calculate_blocks(
         &self,
-        size: (f64, f64),
+        size: f64,
         blocks_cache: &mut Vec<(f64, f64)>,
         blocks: &mut Blocks,
         block_sizes: &BTreeMap<usize, f64>,
@@ -125,7 +139,7 @@ impl GridLayout {
                 .map(|block| block.current_size())
                 .sum();
 
-            let stretch_size = ((size.0 - used_size)
+            let stretch_size = ((size - used_size)
                 / blocks
                     .iter()
                     .filter(|block| block.size == BlockSize::Stretch)
@@ -146,13 +160,13 @@ impl GridLayout {
             }
 
             // fix rounding gab
-            if size.0 - block_sum > 0.0 {
+            if size - block_sum > 0.0 {
                 if let Some(last_block) = blocks
                     .iter_mut()
                     .rev()
                     .find(|block| block.size == BlockSize::Stretch)
                 {
-                    last_block.set_current_size(last_block.current_size() + size.0 - block_sum);
+                    last_block.set_current_size(last_block.current_size() + size - block_sum);
                 }
             }
         }
@@ -307,6 +321,7 @@ impl Layout for GridLayout {
                             *grid_column,
                             &mut column_widths,
                             margin,
+                            false,
                         );
                     }
                 }
@@ -318,7 +333,14 @@ impl Layout for GridLayout {
                 // calculate row_height for each row and insert into row_heights
                 if let Ok(rows) = ecm.component_store().get::<Blocks>("rows", entity) {
                     if let Some(row) = rows.get(grid_row) {
-                        self.calculate_block_size(child, *row, grid_row, &mut row_heights, margin);
+                        self.calculate_block_size(
+                            child,
+                            *row,
+                            grid_row,
+                            &mut row_heights,
+                            margin,
+                            true,
+                        );
                     }
                 }
             }
@@ -327,12 +349,12 @@ impl Layout for GridLayout {
             .component_store_mut()
             .get_mut::<Blocks>("columns", entity)
         {
-            self.calculate_blocks(size, &mut columns_cache, columns, &column_widths);
+            self.calculate_blocks(size.0, &mut columns_cache, columns, &column_widths);
         }
 
         // take row_heights and calculate rows_cache
         if let Ok(rows) = ecm.component_store_mut().get_mut::<Blocks>("rows", entity) {
-            self.calculate_blocks(size, &mut rows_cache, rows, &row_heights);
+            self.calculate_blocks(size.1, &mut rows_cache, rows, &row_heights);
         }
 
         if let Some(bounds) = component_try_mut::<Rectangle>(ecm, entity, "bounds") {
