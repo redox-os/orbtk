@@ -62,8 +62,8 @@ struct TableState {
     actions: Vec<TableAction>,
     column_count: usize,
     data_grid: Entity,
-    data_column_widths: HashMap<usize, f64>,
-    header_column_widths: HashMap<usize, f64>,
+    data_column_width: HashMap<usize, f64>,
+    header_column_width: HashMap<usize, f64>,
     header_grid: Entity,
     request_update: bool,
     row_builder: RowBuilder,
@@ -84,10 +84,10 @@ impl TableState {
         ctx.widget().set::<usize>("column_count", self.column_count);
     }
 
-    fn adjust_column_widths(&mut self, ctx: &mut Context) {
+    fn adjust_column_width(&mut self, ctx: &mut Context) {
         let table_view = ctx.entity();
 
-        // measure header column widths
+        // measure header column width
         let mut index = 0;
         ctx.change_into(self.header_grid);
         while let Some(header) = ctx.try_child_from_index(index) {
@@ -96,7 +96,7 @@ impl TableState {
             let bounds = header.get::<Rectangle>("bounds");
             let header_width = bounds.width();
             let column_index = header.get::<usize>("column");
-            self.header_column_widths
+            self.header_column_width
                 .insert(*column_index, header_width);
             index += 1;
         }
@@ -105,35 +105,35 @@ impl TableState {
 
         // get data grid wildest width by columns: values already computed by the GridLayout since its ColumnWidth is auto.
         let data_grid = ctx.get_widget(self.data_grid);
-        let data_columns_widths = data_grid.get::<Columns>("columns");
-        for i in 0..data_columns_widths.len() {
-            if let Some(column) = data_columns_widths.get(i) {
+        let data_columns_width = data_grid.get::<Columns>("columns");
+        for i in 0..data_columns_width.len() {
+            if let Some(column) = data_columns_width.get(i) {
                 let data_w = column.current_width();
-                self.data_column_widths.insert(i, data_w);
+                self.data_column_width.insert(i, data_w);
             }
         }
 
-        // comparing header and data grid column widths
-        for i in 0..self.header_column_widths.len() {
-            let header_width = *self.header_column_widths.get(&i).unwrap();
-            let data_width = *self.data_column_widths.get(&i).unwrap();
+        // comparing header and data grid column width
+        for i in 0..self.header_column_width.len() {
+            let header_width = *self.header_column_width.get(&i).unwrap();
+            let data_width = *self.data_column_width.get(&i).unwrap();
 
             if header_width < data_width {
                 ctx.change_into(self.header_grid);
                 if let Some(mut header) = ctx.try_child_from_index(i) {
-                    if let Some(new_width) = self.data_column_widths.get(&i) {
+                    if let Some(new_width) = self.data_column_width.get(&i) {
                         header
                             .get_mut::<Constraint>("constraint")
                             .set_width(*new_width);
                     }
                 }
             } else if header_width > data_width {
-                // change data grid children column widths to match the column header width
+                // change data grid children column width to match the column header width
                 ctx.change_into(self.data_grid);
                 let mut idx = 0;
                 while let Some(mut child) = ctx.try_child_from_index(idx) {
                     if *child.get::<usize>("column") == i {
-                        if let Some(new_width) = self.header_column_widths.get(&i) {
+                        if let Some(new_width) = self.header_column_width.get(&i) {
                             child
                                 .get_mut::<Constraint>("constraint")
                                 .set_width(*new_width);
@@ -144,8 +144,8 @@ impl TableState {
             }
         }
 
-        self.header_column_widths.clear();
-        self.data_column_widths.clear();
+        self.header_column_width.clear();
+        self.data_column_width.clear();
     }
 
     fn adjust_rows(&self, row_count: usize, ctx: &mut Context) {
@@ -283,8 +283,8 @@ impl State for TableState {
         // must be come first because it is explicitly sets the column_count property
         self.generate_column_headers(ctx);
 
-        self.data_column_widths = HashMap::new();
-        self.header_column_widths = HashMap::with_capacity(self.column_count);
+        self.data_column_width = HashMap::new();
+        self.header_column_width = HashMap::with_capacity(self.column_count);
         self.generate_cells(ctx);
     }
 
@@ -299,7 +299,7 @@ impl State for TableState {
     }
 
     fn update_post_layout(&mut self, _registry: &mut Registry, ctx: &mut Context) {
-        self.adjust_column_widths(ctx);
+        self.adjust_column_width(ctx);
     }
 }
 
