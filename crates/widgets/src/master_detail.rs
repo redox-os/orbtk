@@ -72,7 +72,7 @@ impl MasterDetailState {
 
         Grid::columns_set(
             &mut ctx.get_widget(self.content_grid),
-            Columns::create().push(master_width).push("*").build(),
+            Blocks::create().push(master_width).push("*").build(),
         );
     }
 
@@ -92,7 +92,7 @@ impl MasterDetailState {
         }
         Grid::columns_set(
             &mut ctx.get_widget(self.content_grid),
-            Columns::create().push("*").build(),
+            Blocks::create().push("*").build(),
         );
     }
 

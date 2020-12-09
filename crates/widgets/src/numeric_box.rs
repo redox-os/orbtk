@@ -260,8 +260,8 @@ impl Template for NumericBox {
             )
             .child(
                 Grid::new()
-                    .columns(Columns::create().push("*").push(32.))
-                    .rows(Rows::create().push(16.0).push(16.0))
+                    .columns("*, 32")
+                    .rows("16, 16")
                     .child(
                         TextBox::new()
                             .margin(("padding", id))

@@ -1,9 +1,7 @@
 // Layout specific properties.
 
-pub use self::column::*;
-pub use self::row::*;
+pub use self::block::*;
 pub use self::scroll_viewer_mode::*;
 
-mod column;
-mod row;
+mod block;
 mod scroll_viewer_mode;

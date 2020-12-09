@@ -186,7 +186,7 @@ impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("MainView").width(212).height(336).text("").child(
             Grid::new()
-                .rows(Rows::create().push(72).push("*"))
+                .rows("72, *")
                 .child(
                     Container::new()
                         .padding(8)
@@ -223,33 +223,13 @@ impl Template for MainView {
                 )
                 .child(
                     Container::new()
-                        .style("content_area")
+                        .background("green")
                         .padding(4)
                         .attach(Grid::row(1))
                         .child(
                             Grid::new()
-                                .columns(
-                                    Columns::create()
-                                        .push(48)
-                                        .push(4)
-                                        .push(48)
-                                        .push(4)
-                                        .push(48)
-                                        .push(4)
-                                        .push(48),
-                                )
-                                .rows(
-                                    Rows::create()
-                                        .push(48)
-                                        .push(4)
-                                        .push(48)
-                                        .push(4)
-                                        .push(48)
-                                        .push(4)
-                                        .push(48)
-                                        .push(4)
-                                        .push(48),
-                                )
+                                .columns("48, 4, 48, 4, 48, 3, 48")
+                                .rows("48, 4, 48, 4, 48, 4, 48, 4, 48")
                                 // row 0
                                 .child(generate_operation_button(ctx, id, 'C', false, 0, 5, 0))
                                 .child(generate_operation_button(ctx, id, '/', true, 6, 3, 0))

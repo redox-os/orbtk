@@ -146,8 +146,8 @@ impl Template for LoginForm {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("LoginForm").child(
             Grid::new()
-                .columns(Columns::create().push(64.0).push(64.0))
-                .rows(Rows::create().push(48.0).push(48.0).push(48.0).push(48.0))
+                .columns("64, 64")
+                .rows("48, 48, 48, 48")
                 .v_align("start")
                 .h_align("center")
                 .child(
