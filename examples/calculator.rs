@@ -27,14 +27,9 @@ pub struct MainViewState {
     operator: Option<char>,
     left_side: Option<f64>,
     right_side: Option<f64>,
-    action: Option<Action>,
 }
 
 impl MainViewState {
-    fn action(&mut self, action: impl Into<Option<Action>>) {
-        self.action = action.into();
-    }
-
     fn calculate(&mut self, ctx: &mut Context) {
         let mut result = 0.0;
         if let Some(operator) = self.operator {
@@ -71,9 +66,14 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        if let Some(action) = self.action {
-            match action {
+    fn messages(
+        &mut self,
+        mut messages: MessageReader,
+        _registry: &mut Registry,
+        ctx: &mut Context,
+    ) {
+        for message in messages.read::<Action>() {
+            match message {
                 Action::Digit(digit) => {
                     self.input.push(digit);
                     TextBlock::text_mut(&mut ctx.child("input")).push(digit);
@@ -113,8 +113,6 @@ impl State for MainViewState {
                     }
                 },
             }
-
-            self.action = None;
         }
     }
 }
@@ -139,7 +137,7 @@ fn generate_digit_button(
         .min_size(48.0, 48)
         .text(sight.to_string())
         .on_click(move |states, _| -> bool {
-            state(id, states).action(Action::Digit(sight));
+            states.send_message(Action::Digit(sight), id);
             true
         })
         .attach(Grid::column(column))
@@ -169,7 +167,7 @@ fn generate_operation_button(
         .min_size(48.0, 48)
         .text(sight.to_string())
         .on_click(move |states, _| -> bool {
-            state(id, states).action(Action::Operator(sight));
+            states.send_message(Action::Operator(sight), id);
             true
         })
         .attach(Grid::column(column))
@@ -199,6 +197,7 @@ impl Template for MainView {
                                         .mode(("custom", "disabled"))
                                         .child(
                                             TextBlock::new()
+                                                .localizable(false)
                                                 .width(0)
                                                 .height(14)
                                                 .text("")
@@ -211,6 +210,7 @@ impl Template for MainView {
                                 )
                                 .child(
                                     TextBlock::new()
+                                        .localizable(false)
                                         .style("result")
                                         .text(id)
                                         .v_align("end")
@@ -273,9 +273,4 @@ fn main() {
                 .build(ctx)
         })
         .run();
-}
-
-// helper to request MainViewState
-fn state<'a>(id: Entity, states: &'a mut StatesContext) -> &'a mut MainViewState {
-    states.get_mut(id)
 }
