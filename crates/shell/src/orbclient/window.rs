@@ -361,17 +361,16 @@ where
     /// Swaps the current frame buffer.
     pub fn render(&mut self) {
         if self.redraw.load(Ordering::Relaxed) {
-            let color_data: Vec<orbclient::Color> = self
-                .render_context
-                .data()
-                .iter()
-                .map(|v| orbclient::Color { data: *v })
-                .collect();
+            let bytes = self.render_context.data_u8_mut();
+            let color_data = unsafe {
+                std::slice::from_raw_parts_mut(
+                    bytes.as_mut_ptr() as *mut orbclient::Color,
+                    bytes.len() / std::mem::size_of::<orbclient::Color>(),
+                )
+            };
 
             if color_data.len() == self.window.data().len() {
-                self.window
-                    .data_mut()
-                    .clone_from_slice(color_data.as_slice());
+                self.window.data_mut().clone_from_slice(color_data);
 
                 // CONSOLE.time_end("render");
                 self.redraw.store(false, Ordering::Relaxed)
