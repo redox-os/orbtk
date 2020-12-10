@@ -10,35 +10,29 @@ enum Action {
 /// The `MouseBehaviorState` handles the `MouseBehavior` widget.
 #[derive(Default, AsAny)]
 pub struct MouseBehaviorState {
-    action: Option<Action>,
     has_delta: bool,
     target: Entity,
-}
-
-impl MouseBehaviorState {
-    fn action(&mut self, action: Action) {
-        self.action = Some(action);
-    }
 }
 
 impl State for MouseBehaviorState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.target = (*MouseBehavior::target_ref(&ctx.widget())).into();
     }
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        if !*MouseBehavior::enabled_ref(&ctx.widget()) {
-            return;
-        }
 
-        if let Some(action) = self.action {
-            match action {
+    fn messages(
+        &mut self,
+        mut messages: MessageReader,
+        _registry: &mut Registry,
+        ctx: &mut Context,
+    ) {
+        for message in messages.read::<Action>() {
+            match message {
                 Action::Press(_) => {
                     ctx.get_widget(self.target).set("pressed", true);
                     toggle_flag("pressed", &mut ctx.get_widget(self.target));
                 }
                 Action::Release(p) => {
                     if !*MouseBehavior::pressed_ref(&ctx.widget()) {
-                        self.action = None;
                         return;
                     }
 
@@ -58,11 +52,9 @@ impl State for MouseBehaviorState {
                     MouseBehavior::position_set(&mut ctx.widget(), p);
                     self.has_delta = true;
                 }
-            };
+            }
 
             ctx.get_widget(self.target).update(false);
-
-            self.action = None;
         }
     }
 
@@ -95,21 +87,15 @@ impl Template for MouseBehavior {
         self.name("MouseBehavior")
             .delta(0.0)
             .pressed(false)
-            .on_mouse_down(move |states, m| {
-                states
-                    .get_mut::<MouseBehaviorState>(id)
-                    .action(Action::Press(m));
+            .on_mouse_down(move |ctx, m| {
+                ctx.send_message(Action::Press(m), id);
                 false
             })
-            .on_mouse_up(move |states, m| {
-                states
-                    .get_mut::<MouseBehaviorState>(id)
-                    .action(Action::Release(m));
+            .on_mouse_up(move |ctx, m| {
+                ctx.send_message(Action::Release(m), id);
             })
-            .on_scroll(move |states, p| {
-                states
-                    .get_mut::<MouseBehaviorState>(id)
-                    .action(Action::Scroll(p));
+            .on_scroll(move |ctx, p| {
+                ctx.send_message(Action::Scroll(p), id);
                 false
             })
     }

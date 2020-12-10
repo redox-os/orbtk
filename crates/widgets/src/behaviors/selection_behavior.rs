@@ -1,44 +1,38 @@
 use crate::{api::prelude::*, proc_macros::*};
 
+enum Action {
+    ToggleSelection,
+}
+
 /// The `SelectionBehaviorState` handles the `SelectionBehavior` widget.
 #[derive(Default, AsAny)]
 pub struct SelectionBehaviorState {
-    toggle_selection: bool,
-    selected: bool,
-}
-
-impl SelectionBehaviorState {
-    fn toggle_selection(&mut self) {
-        self.toggle_selection = true;
-    }
+    target: Entity,
 }
 
 impl State for SelectionBehaviorState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        self.selected = *SelectionBehavior::selected_ref(&ctx.widget());
-        let target = *ctx.widget().get::<u32>("target");
-        toggle_flag("selected", &mut ctx.get_widget(Entity(target)));
-        ctx.get_widget(Entity(target)).update(false);
+        self.target = (*ctx.widget().get::<u32>("target")).into();
+        toggle_flag("selected", &mut ctx.get_widget(self.target));
+        ctx.get_widget(self.target).update(false);
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        let selected = *SelectionBehavior::selected_ref(&ctx.widget());
-        let target: Entity = (*SelectionBehavior::target_ref(&ctx.widget())).into();
-
-        if self.selected == selected && !self.toggle_selection {
-            return;
+    fn messages(
+        &mut self,
+        mut messages: MessageReader,
+        _registry: &mut Registry,
+        ctx: &mut Context,
+    ) {
+        for message in messages.read::<Action>() {
+            match message {
+                Action::ToggleSelection => {
+                    let selected = *ctx.get_widget(self.target).get::<bool>("selected");
+                    ctx.get_widget(self.target).set("selected", !selected);
+                    toggle_flag("selected", &mut ctx.get_widget(self.target));
+                    ctx.get_widget(self.target).update(false);
+                }
+            };
         }
-
-        if *SelectionBehavior::enabled_ref(&ctx.widget()) && self.toggle_selection {
-            ctx.get_widget(target).set("selected", !selected);
-        }
-
-        self.toggle_selection = false;
-        self.selected = *SelectionBehavior::selected_ref(&ctx.widget());
-
-        toggle_flag("selected", &mut ctx.get_widget(target));
-
-        ctx.get_widget(target).update(false);
     }
 }
 
@@ -62,10 +56,8 @@ impl Template for SelectionBehavior {
     fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("SelectionBehavior")
             .selected(true)
-            .on_click(move |states, _| {
-                states
-                    .get_mut::<SelectionBehaviorState>(id)
-                    .toggle_selection();
+            .on_click(move |ctx, _| {
+                ctx.send_message(Action::ToggleSelection, id);
                 false
             })
     }
