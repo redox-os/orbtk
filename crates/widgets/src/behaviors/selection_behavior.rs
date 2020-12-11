@@ -1,6 +1,7 @@
 use crate::{api::prelude::*, proc_macros::*};
 
-enum Action {
+/// Used for selection.
+pub enum SelectionAction {
     ToggleSelection,
 }
 
@@ -23,9 +24,9 @@ impl State for SelectionBehaviorState {
         _registry: &mut Registry,
         ctx: &mut Context,
     ) {
-        for message in messages.read::<Action>() {
+        for message in messages.read::<SelectionAction>() {
             match message {
-                Action::ToggleSelection => {
+                SelectionAction::ToggleSelection => {
                     let selected = *ctx.get_widget(self.target).get::<bool>("selected");
                     ctx.get_widget(self.target).set("selected", !selected);
                     toggle_flag("selected", &mut ctx.get_widget(self.target));
@@ -57,7 +58,7 @@ impl Template for SelectionBehavior {
         self.name("SelectionBehavior")
             .selected(true)
             .on_click(move |ctx, _| {
-                ctx.send_message(Action::ToggleSelection, id);
+                ctx.send_message(SelectionAction::ToggleSelection, id);
                 false
             })
     }
