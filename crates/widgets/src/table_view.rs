@@ -1,4 +1,9 @@
+use super::behaviors::MouseBehavior;
 use crate::{api::prelude::*, prelude::*, proc_macros::*};
+use std::{
+    cell::Cell,
+    collections::{HashMap, HashSet},
+};
 
 const HEADER_GRID: &str = "__COLUMNS_HEADER__";
 const DATA_GRID: &str = "__DATA_GRID__";
@@ -7,7 +12,7 @@ const ORDER_DESC_ICON: &str = "\u{e068}";
 
 type RowBuilder = Option<Box<dyn Fn(&mut BuildContext, usize, &mut Vec<Entity>)>>;
 type RowSorter = Option<Box<dyn Fn(&str, TableSortDirection, Entity, &mut Context)>>;
-enum TableAction {
+pub enum TableAction {
     AddDefaultColumn(String, String),
     Sort(String),
 }
@@ -68,6 +73,7 @@ struct TableState {
     request_update: bool,
     row_builder: RowBuilder,
     row_count: usize,
+    selected_entities: RefCell<HashSet<Entity>>,
     sorted_column_header: Option<Entity>,
     sorter: RowSorter,
 }
@@ -143,6 +149,7 @@ impl TableState {
                 }
             }
         }
+        ctx.change_into(table_view);
 
         self.header_column_widths.clear();
         self.data_column_widths.clear();
@@ -191,6 +198,7 @@ impl TableState {
     fn generate_cells(&mut self, ctx: &mut Context) {
         let actual_row_count = ctx.widget().clone::<usize>("row_count");
         let should_update = ctx.widget().clone::<bool>("request_update");
+        let table_view = ctx.entity();
 
         if actual_row_count != self.row_count || self.request_update || should_update {
             if let Some(row_builder) = &self.row_builder {
@@ -208,9 +216,51 @@ impl TableState {
                     row_builder(build_context, i, &mut cells_of_row);
 
                     for (j, child) in cells_of_row.iter().enumerate().rev() {
-                        build_context.register_property::<usize>("row", *child, i);
-                        build_context.register_property::<usize>("column", *child, j);
-                        build_context.append_child(self.data_grid, *child);
+                        // TableCell wraps the entity from the row_builder
+                        let cell = {
+                            let cell = TableCell::new()
+                                .column_index(j)
+                                .parent(table_view.0)
+                                .row_index(i)
+                                .build(build_context);
+
+                            let mouse_behavior =
+                                MouseBehavior::new().target(cell.0).build(build_context);
+                            build_context.register_shared_property::<Selector>(
+                                "selector",
+                                mouse_behavior,
+                                cell,
+                            );
+                            build_context.register_shared_property::<bool>(
+                                "pressed",
+                                mouse_behavior,
+                                cell,
+                            );
+                            build_context.append_child(cell, mouse_behavior);
+
+                            build_context.register_shared_property::<Brush>(
+                                "foreground",
+                                *child,
+                                cell,
+                            );
+                            build_context
+                                .register_shared_property::<f32>("opacity", cell, table_view);
+                            build_context
+                                .register_shared_property::<f32>("opacity", *child, table_view);
+                            build_context.register_shared_property::<f64>(
+                                "font_size",
+                                *child,
+                                cell,
+                            );
+                            build_context.register_shared_property::<f64>("font", *child, cell);
+                            build_context.append_child(cell, *child);
+                            //build_context.append_child(mouse_behavior, *child);
+                            cell
+                        };
+
+                        build_context.register_property::<usize>("row", cell, i);
+                        build_context.register_property::<usize>("column", cell, j);
+                        build_context.append_child(self.data_grid, cell);
                     }
 
                     cells_of_row.clear();
@@ -219,6 +269,30 @@ impl TableState {
                 self.row_count = actual_row_count;
             }
         }
+    }
+
+    fn remove_selection(&mut self, clear_selected: bool, ctx: &mut Context) {
+        if clear_selected {
+            for index in ctx
+                .widget()
+                .get::<SelectedEntities>("selected_entities")
+                .0
+                .clone()
+                .symmetric_difference(&self.selected_entities.borrow())
+            {
+                let mut cell = ctx.get_widget(*index);
+                cell.set::<bool>("selected", false);
+                cell.get_mut::<Selector>("selector")
+                    .remove_state("selected");
+                cell.update(false);
+            }
+        }
+
+        self.selected_entities.borrow_mut().clear();
+        ctx.widget()
+            .get_mut::<SelectedEntities>("selected_entities")
+            .0
+            .clear();
     }
 
     fn set_sort_direction_icon(
@@ -249,6 +323,10 @@ impl TableState {
     }
 
     fn sort_rows(&mut self, column_id: String, ctx: &mut Context) {
+        // removing selected entities before sorting,
+        // since the entities in this list will be invalidated after sorting
+        self.remove_selection(true, ctx);
+
         if let Some(sorter) = &self.sorter {
             let column_str = column_id.as_str();
             let new_sort_predicate = TableSortPredicate::ColumnHeaderId(column_id.clone());
@@ -299,34 +377,65 @@ impl State for TableState {
     }
 
     fn update_post_layout(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+        for index in ctx
+            .widget()
+            .get::<SelectedEntities>("selected_entities")
+            .0
+            .clone()
+            .symmetric_difference(&self.selected_entities.borrow())
+        {
+            let mut cell = ctx.get_widget(*index);
+
+            if !cell.get::<bool>("selected") {
+                continue;
+            }
+
+            let selected = !cell.get::<bool>("selected");
+            cell.set::<bool>("selected", selected);
+
+            if selected {
+                cell.get_mut::<Selector>("selector").push_state("selected");
+            } else {
+                cell.get_mut::<Selector>("selector")
+                    .remove_state("selected");
+            }
+            cell.update(false);
+
+            *self.selected_entities.borrow_mut() = ctx
+                .widget()
+                .get::<SelectedEntities>("selected_entities")
+                .0
+                .clone();
+        }
+
         self.adjust_column_widths(ctx);
     }
 }
 
 widget!(
     /// The TableView is designed to visualise collection of data broken into columns and rows.
-    /// 
+    ///
     /// The columns are the fields of a struct, and the rows is the instances of that struct.
     /// A TableView is therefore very similar to the [`ListView`] widget, with the addition of support for columns and sorting.
-    /// 
+    ///
     /// The TableView has the features of:
     /// * Automatically adjust column widths based on the width of the cell
     /// * Sorting rows by column
-    /// 
+    ///
     /// # Examples
     /// To create a TableView, you must define at least one column with a unique ID, and implement the `row_builder` closure.
     /// Please see the table_view example, or the showcase.
-    /// 
+    ///
     /// # Ownership
     /// Due to the current architecture of orbtk,
     /// the TableView does not own the data that is displayed nor does not know about.
     /// Most of its features implemented and relies on using callbacks (closures).
-    /// 
+    ///
     /// # Panics
     /// The TableView will panics at runtime in the following cases:
     /// * the developer does not define at least one column
     /// * the defined column's `id` property is empty.
-    /// 
+    ///
     /// [`ListView`]: ./struct.ListView.html
     TableView<TableState> {
         /// Sets or shares the background property.
@@ -354,6 +463,15 @@ widget!(
         /// Changing the value of this property will trigger a redraw.
         row_count: usize,
 
+        /// Sets or shares the selection mode property.
+        selection_mode: SelectionMode,
+
+        /// Sets or shares the selected indices.
+        selected_indices: SelectedIndices,
+
+        /// Sets or shares the list of selected entities.
+        selected_entities: SelectedEntities,
+
         /// Sets or shares the order of the sorting property.
         sort_direction: TableSortDirection,
 
@@ -373,6 +491,9 @@ impl Template for TableView {
             .column_count(0)
             .request_update(false)
             .row_count(0)
+            .selection_mode(SelectionMode::Single)
+            .selected_indices(HashSet::new())
+            .selected_entities(HashSet::new())
             .child(
                 Stack::new()
                     .orientation("vertical")
@@ -420,7 +541,7 @@ impl TableView {
     /// triggered.
     /// TableView will draw entities pushed into the Vec, and maps its index to column index
     /// (e.g.: Entity pushed to Vec with index 0 will be mapped to column 0).
-    /// 
+    ///
     /// # Arguments
     /// * `&mut BuildContext`: query widgets by its Entity.
     /// * `usize`: the current row index when TableView draws the rows.TableView will
@@ -450,5 +571,182 @@ impl TableView {
     ) -> Self {
         self.state_mut().sorter = Some(Box::new(sorter));
         self
+    }
+}
+
+// +-----------------------------------------------------------------+
+// | ___________     ___.   .__         _________        .__  .__    |
+// | \__    ___/____ \_ |__ |  |   ____ \_   ___ \  ____ |  | |  |   |
+// |   |    |  \__  \ | __ \|  | _/ __ \/    \  \/_/ __ \|  | |  |   |
+// |   |    |   / __ \| \_\ \  |_\  ___/\     \___\  ___/|  |_|  |__ |
+// |   |____|  (____  /___  /____/\___  >\______  /\___  >____/____/ |
+// |                \/    \/          \/        \/     \/            |
+// +-----------------------------------------------------------------+
+
+#[derive(Default, AsAny)]
+struct TableCellState {
+    request_selection_toggle: Cell<bool>,
+}
+
+impl TableCellState {
+    fn toggle_selection(&self) {
+        self.request_selection_toggle.set(true);
+    }
+}
+
+impl State for TableCellState {
+    fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+        if !ctx.widget().get::<bool>("enabled") || self.request_selection_toggle.get() {
+            self.request_selection_toggle.set(false);
+
+            let selected = *ctx.widget().get::<bool>("selected");
+            let cell = ctx.entity();
+            let index = ctx.index_as_child(cell).unwrap();
+            let table_view = Entity::from(ctx.widget().clone::<u32>("parent"));
+            // do not confuse with the real parent: cells are attached to the DATA_GRID, not the TableView
+            let mut parent = ctx.get_widget(table_view);
+            let selection_mode = *parent.get::<SelectionMode>("selection_mode");
+
+            // deselect currently selected cell
+            if selected {
+                parent
+                    .get_mut::<SelectedEntities>("selected_entities")
+                    .0
+                    .remove(&cell);
+                parent
+                    .get_mut::<SelectedIndices>("selected_indices")
+                    .0
+                    .remove(&index);
+                return;
+            }
+
+            if parent
+                .get::<SelectedEntities>("selected_entities")
+                .0
+                .contains(&cell)
+                || selection_mode == SelectionMode::None
+            {
+                return;
+            }
+
+            if selection_mode == SelectionMode::Single {
+                parent
+                    .get_mut::<SelectedEntities>("selected_entities")
+                    .0
+                    .clear();
+                parent
+                    .get_mut::<SelectedIndices>("selected_indices")
+                    .0
+                    .clear();
+            }
+
+            // update TableView list of selected entities and indices
+            parent
+                .get_mut::<SelectedEntities>("selected_entities")
+                .0
+                .insert(cell);
+            parent
+                .get_mut::<SelectedIndices>("selected_indices")
+                .0
+                .insert(index);
+
+            let selected_indices: Vec<usize> = parent
+                .get::<SelectedIndices>("selected_indices")
+                .0
+                .iter()
+                .copied()
+                .collect();
+
+            ctx.event_adapter().push_event_direct(
+                table_view,
+                SelectionChangedEvent(table_view, selected_indices),
+            );
+        }
+    }
+}
+
+widget!(
+    /// Used to represent a cell with its position in the matrix of a `TableView`.
+    /// Wraps a widget during building rows from `TableView::row_builder` callback.
+    TableCell<TableCellState>: MouseHandler {
+        /// Sets or shares the background property.
+        background: Brush,
+
+        /// Sets or shares the border radius property.
+        border_radius: f64,
+
+        /// Sets or shares the border thickness property.
+        border_width: Thickness,
+
+        /// Sets or shares the border brush property.
+        border_brush: Brush,
+
+        /// Sets or shares the index of the column this cell belongs to in the TableView.
+        column_index: usize,
+
+        /// Sets or shares the font property.
+        font: String,
+
+        /// Sets or share the font size property.
+        font_size: f64,
+
+        /// Sets or shares the foreground property.
+        foreground: Brush,
+
+        /// Indicates if the widget is hovered by the mouse cursor.
+        hover: bool,
+
+        /// Sets or shares the padding property.
+        padding: Thickness,
+
+        /// Sets or shares the entity of the parent TableView this cell belongs to.
+        parent: u32,
+
+        /// Sets or shares the pressed property.
+        /// Indicates that the widget was clicked by the mouse.
+        pressed: bool,
+
+        /// Sets or shares the index of the row this cell belongs to in the TableView.
+        row_index: usize,
+
+        /// Sets or shares the selected property.
+        selected: bool
+    }
+);
+
+impl Template for TableCell {
+    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+        self.name("TableCell")
+            .style("table_cell")
+            .background("transparent")
+            .border_radius(0.0)
+            .border_width(0.0)
+            .border_brush("transparent")
+            .font("Roboto-Regular")
+            .font_size(32.0)
+            .foreground("transparent")
+            .hover(false)
+            .padding(0.0)
+            .pressed(false)
+            .selected(false)
+            .on_click(move |states, _| {
+                states.get::<TableCellState>(id).toggle_selection();
+                false
+            })
+            .child(
+                MouseBehavior::new()
+                    .pressed(id)
+                    .enabled(id)
+                    .target(id.0)
+                    .build(ctx),
+            )
+    }
+
+    fn render_object(&self) -> Box<dyn RenderObject> {
+        RectangleRenderObject.into()
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        PaddingLayout::new().into()
     }
 }
