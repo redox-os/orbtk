@@ -96,7 +96,8 @@ impl TableState {
             let bounds = header.get::<Rectangle>("bounds");
             let header_width = bounds.width();
             let column_index = header.get::<usize>("column");
-            self.header_column_width.insert(*column_index, header_width);
+            self.header_column_width
+                .insert(*column_index, header_width);
             index += 1;
         }
 
