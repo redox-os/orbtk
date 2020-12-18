@@ -113,7 +113,7 @@ impl TableState {
         let data_columns_width = data_grid.get::<Columns>("columns");
         for i in 0..data_columns_width.len() {
             if let Some(column) = data_columns_width.get(i) {
-                let data_w = column.current_width();
+                let data_w = column.current_size();
                 self.data_column_width.insert(i, data_w);
             }
         }
