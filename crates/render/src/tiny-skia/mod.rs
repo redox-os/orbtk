@@ -26,6 +26,8 @@ struct State {
 
 type StatesOnStack = [State; 2];
 
+/// The RenderContext2D trait, provides the rendering context (`ctx`). It is used
+/// for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
     canvas: Canvas,
     config: RenderConfig,
@@ -109,7 +111,7 @@ impl RenderContext2D {
         }
     }
 
-    /// Creates a new render ctx 2d.
+    /// Creates a new 2d render context.
     pub fn new(width: f64, height: f64) -> Self {
         let pixmap = Pixmap::new(width as u32, height as u32).unwrap();
         let canvas = Canvas::from(pixmap);
@@ -159,7 +161,9 @@ impl RenderContext2D {
 
     // Rectangles
 
-    /// Draws a filled rectangle whose starting point is at the coordinates {x, y} with the specified width and height and whose style is determined by the fillStyle attribute.
+    /// Draws a filled rectangle whose starting point is at the
+    /// coordinates {x, y} with the specified width and height and
+    /// whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
         self.path_rect.record_rect(x, y, width, height);
         let rect = self.path_rect.get_rect().unwrap();
@@ -171,7 +175,8 @@ impl RenderContext2D {
         );
     }
 
-    /// Draws a rectangle that is stroked (outlined) according to the current strokeStyle and other ctx settings.
+    /// Draws a rectangle that is stroked (outlined) according to the
+    /// current strokeStyle and other ctx settings.
     pub fn stroke_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
         self.rect(x, y, width, height);
         self.stroke();
@@ -264,13 +269,17 @@ impl RenderContext2D {
         }
     }
 
-    /// Starts a new path by emptying the list of sub-paths. Call this when you want to create a new path.
+    /// Starts a new path by emptying the list of sub-paths. You should call this
+    /// method, if you want to create a new path.
     pub fn begin_path(&mut self) {
         self.path_builder = PathBuilder::new();
         self.path_rect.rebirth();
     }
 
-    /// Attempts to add a straight line from the current point to the start of the current sub-path. If the shape has already been closed or has only one point, this function does nothing.
+    /// When closing a path, the method attempts to add a straight
+    /// line starting from the current point to the start point of the
+    /// current sub-path. Nothing will happen, if the shape has
+    /// already been closed or only a single point is referenced.
     pub fn close_path(&mut self) {
         self.path_builder.close();
         self.path_rect.record_path_close();
@@ -318,7 +327,9 @@ impl RenderContext2D {
         }
     }
 
-    /// Creates a circular arc centered at (x, y) with a radius of radius. The path starts at startAngle and ends at endAngle.
+    /// Creates a circular arc centered at (x, y) with a radius of
+    /// given `radius` value. The path starts at value `startAngle`
+    /// and ends at value `endAngle`.
     pub fn arc(&mut self, x: f64, y: f64, radius: f64, mut start_angle: f64, mut end_angle: f64) {
         self.path_rect
             .record_arc(x, y, radius, start_angle, end_angle);
@@ -402,13 +413,15 @@ impl RenderContext2D {
         }
     }
 
-    /// Begins a new sub-path at the point specified by the given {x, y} coordinates.
+    /// Begins a new sub-path at given `point`. The point is specified
+    /// by given {x, y} coordinates.
     pub fn move_to(&mut self, x: f64, y: f64) {
         self.path_builder.move_to(x as f32, y as f32);
         self.path_rect.record_move_to(x, y);
     }
 
-    /// Adds a straight line to the current sub-path by connecting the sub-path's last point to the specified {x, y} coordinates.
+    /// Adds a straight line to the current sub-path by connecting the
+    /// sub-path's last point to the specified {x, y} coordinates.
     pub fn line_to(&mut self, x: f64, y: f64) {
         self.path_builder.line_to(x as f32, y as f32);
         self.path_rect.record_line_to(x, y);
@@ -422,8 +435,10 @@ impl RenderContext2D {
     }
 
     /// Adds a cubic Bézier curve to the current sub-path.
-    /// It requires three points: the first two are control points and the third one is the end point.
-    /// The starting point is the latest point in the current path, which can be changed using MoveTo{} before creating the Bézier curve.
+    /// It requires three points: the first two are control points and
+    /// the third one is the end point. The starting point is the
+    /// latest point in the current path, which can be changed using
+    /// MoveTo{} before creating the Bézier curve.
     pub fn bezier_curve_to(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
         self.path_builder.cubic_to(
             cp1x as f32,
@@ -466,6 +481,7 @@ impl RenderContext2D {
             .draw_pixmap(x as i32, y as i32, &pixmap, &PixmapPaint::default());
     }
 
+    /// Draws the pipeline.
     pub fn draw_pipeline(
         &mut self,
         x: f64,
@@ -479,7 +495,9 @@ impl RenderContext2D {
         self.draw_render_target(&render_target, x, y);
     }
 
-    /// Creates a clipping path from the current sub-paths. Everything drawn after clip() is called appears inside the clipping path only.
+    /// Creates a clipping path from the current sub-paths. Everything
+    /// drawn after clip() is called appears inside the clipping path
+    /// only.
     pub fn clip(&mut self) {
         // FIXME
         if let Some(path) = self.path_builder.clone().finish() {
@@ -525,7 +543,8 @@ impl RenderContext2D {
 
     // Canvas states
 
-    /// Saves the entire state of the canvas by pushing the current state onto a stack.
+    /// Saves the entire state of the canvas by pushing the current
+    /// state onto a stack.
     pub fn save(&mut self) {
         self.saved_states.push(State {
             config: self.config.clone(),
@@ -535,8 +554,9 @@ impl RenderContext2D {
         });
     }
 
-    /// Restores the most recently saved canvas state by popping the top entry in the drawing state stack.
-    /// If there is no saved state, this method does nothing.
+    /// Restores the most recently saved canvas state by popping the
+    /// top entry in the drawing state stack. If there is no saved
+    /// state, this method does nothing.
     pub fn restore(&mut self) {
         if let Some(State {
             config,
@@ -557,6 +577,7 @@ impl RenderContext2D {
         }
     }
 
+    /// Clear the given `brush`.
     pub fn clear(&mut self, brush: &Brush) {
         if let Brush::SolidColor(color) = brush {
             self.canvas.pixmap.fill(tiny_skia::Color::from_rgba8(
@@ -590,6 +611,7 @@ impl RenderContext2D {
         );
     }
 
+    /// Return the pixmap data lenght as an [u32] reference value.
     pub fn data(&self) -> &[u32] {
         unsafe {
             slice::from_raw_parts(
@@ -599,6 +621,15 @@ impl RenderContext2D {
         }
     }
 
+    // //pub fn data_mut(&mut self) -> &mut [u32] {
+    //    self.draw_target.get_data_mut()
+    //}
+
+    //pub fn data_u8_mut(&mut self) -> &mut [u8] {
+    //    self.draw_target.get_data_u8_mut()
+    //}
+
+    /// Fill the background pixmap colors using their rgba8 values.
     pub fn start(&mut self) {
         self.canvas.pixmap.fill(tiny_skia::Color::from_rgba8(
             self.background.b(),
@@ -608,5 +639,6 @@ impl RenderContext2D {
         ));
     }
 
+    /// Cleanup, once we are finished.
     pub fn finish(&mut self) {}
 }
