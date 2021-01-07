@@ -14,6 +14,7 @@ type RowBuilder = Option<Box<dyn Fn(&mut BuildContext, usize, &mut Vec<Entity>)>
 type RowSorter = Option<Box<dyn Fn(&str, TableSortDirection, Entity, &mut Context)>>;
 pub enum TableAction {
     AddDefaultColumn(String, String),
+    AddCustomColumn(Entity),
     Sort(String),
 }
 
@@ -162,29 +163,38 @@ impl TableState {
 
     fn generate_column_headers(&mut self, ctx: &mut Context) {
         for action in &self.actions {
-            if let TableAction::AddDefaultColumn(title, column_id) = action {
-                let table_view = ctx.entity();
-                let c_id = column_id.clone();
-                let build_context = &mut ctx.build_context();
-                let header = Button::new()
-                    .id(column_id.clone())
-                    .icon_brush("#000000")
-                    .style("table_column_header")
-                    .text(title.clone())
-                    .on_click(move |states, _| -> bool {
-                        states
-                            .get_mut::<TableState>(table_view)
-                            .actions
-                            .push(TableAction::Sort(c_id.clone()));
-                        false
-                    })
-                    .build(build_context);
+            match action {
+                TableAction::AddDefaultColumn(title, column_id) => {
+                    let table_view = ctx.entity();
+                    let c_id = column_id.clone();
+                    let build_context = &mut ctx.build_context();
+                    let header = Button::new()
+                        .id(column_id.clone())
+                        .icon_brush("#000000")
+                        .style("table_column_header")
+                        .text(title.clone())
+                        .on_click(move |states, _| -> bool {
+                            states
+                                .get_mut::<TableState>(table_view)
+                                .actions
+                                .push(TableAction::Sort(c_id.clone()));
+                            false
+                        })
+                        .build(build_context);
 
-                build_context.register_property::<usize>("column", header, self.column_count);
-                build_context.register_property::<usize>("row", header, 0);
-                build_context.append_child(self.header_grid, header);
-                self.column_count += 1;
+                    build_context.register_property::<usize>("column", header, self.column_count);
+                    build_context.register_property::<usize>("row", header, 0);
+                    build_context.append_child(self.header_grid, header);
+                }
+                TableAction::AddCustomColumn(header) => {
+                    let build_context = &mut ctx.build_context();
+                    build_context.register_property::<usize>("column", *header, self.column_count);
+                    build_context.register_property::<usize>("row", *header, 0);
+                    build_context.append_child(self.header_grid, *header);
+                }
+                _ => {}
             }
+            self.column_count += 1;
         }
         assert!(
             self.column_count > 0,
@@ -534,6 +544,13 @@ impl TableView {
         self
     }
 
+    pub fn custom_column(mut self, header: Entity) -> Self {
+        self.state
+            .actions
+            .push(TableAction::AddCustomColumn(header));
+        self
+    }
+
     /// A template that triggers the build of a row inside the
     /// `TableView`. If any of its properties (`row_count` or `request_update`)
     /// is changed, row state is set `dirty` and a redraw is
@@ -747,5 +764,61 @@ impl Template for TableCell {
 
     fn layout(&self) -> Box<dyn Layout> {
         PaddingLayout::new().into()
+    }
+}
+
+// +------------------------------------------------------------------------------------------------------------------------------+
+// | ___________     ___.   .__         _________        .__                         ___ ___                     .___             |
+// | \__    ___/____ \_ |__ |  |   ____ \_   ___ \  ____ |  |  __ __  _____   ____  /   |   \   ____ _____     __| _/___________  |
+// |   |    |  \__  \ | __ \|  | _/ __ \/    \  \/ /  _ \|  | |  |  \/     \ /    \/    ~    \_/ __ \\__  \   / __ |/ __ \_  __ \ |
+// |   |    |   / __ \| \_\ \  |_\  ___/\     \___(  <_> )  |_|  |  /  Y Y  \   |  \    Y    /\  ___/ / __ \_/ /_/ \  ___/|  | \/ |
+// |   |____|  (____  /___  /____/\___  >\______  /\____/|____/____/|__|_|  /___|  /\___|_  /  \___  >____  /\____ |\___  >__|    |
+// |                \/    \/          \/        \/                        \/     \/       \/       \/     \/      \/    \/        |
+// +------------------------------------------------------------------------------------------------------------------------------+
+
+enum TableColumnHeaderAction {
+    OnClick,
+}
+
+#[derive(Default, AsAny)]
+struct TableColumnHeaderState {
+    actions: Vec<TableColumnHeaderAction>,
+}
+
+impl State for TableColumnHeaderState {
+    fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+        for _ in &self.actions {
+            // sends a message to the TableView to sort the table by the custom header's ID
+            let table_view = Entity::from(ctx.widget().clone::<u32>("parent"));
+            if let Some(header_widget) = ctx.try_child_from_index(0) {
+                let column_id = header_widget.get::<String>("id");
+                let message = TableAction::Sort(column_id.to_owned());
+                ctx.send_message(message, table_view);
+            }
+        }
+    }
+}
+
+impl TableColumnHeaderState {
+    fn on_click(&mut self) {
+        self.actions.push(TableColumnHeaderAction::OnClick);
+    }
+}
+
+widget!(
+    /// Represents a custom column header in a TableView.
+    /// Wraps a widget by its Entity to preserve the custom header's on_click callback (if it is has any)
+    /// and able to send a sorting message to the TableView at the same time.
+    TableColumnHeader: MouseHandler {
+        /// Sets or shares the entity of the TableView this column header is attached to.
+        parent: u32
+});
+
+impl Template for TableColumnHeader {
+    fn template(self, id: Entity, _ctx: &mut BuildContext) -> Self {
+        self.name("TableColumnHeader").on_click(move |states, _| {
+            states.get_mut::<TableColumnHeaderState>(id).on_click();
+            false
+        })
     }
 }
