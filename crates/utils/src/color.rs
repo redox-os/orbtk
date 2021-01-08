@@ -183,7 +183,7 @@ impl From<&str> for Color {
                 };
 
                 if clean_hex.len() == 6 {
-                    x |= 0xFF_000_000;
+                    x |= 0xFF00_0000;
                 }
 
                 Color { data: x }
