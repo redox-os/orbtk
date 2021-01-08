@@ -319,6 +319,7 @@ where
                 }
                 orbclient::EventOption::Unknown(_) => {}
                 orbclient::EventOption::None => {}
+                orbclient::EventOption::Hover(_) => {}
             }
         }
     }
