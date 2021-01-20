@@ -10,10 +10,10 @@ pub struct RenderSystem {
     context_provider: ContextProvider,
 }
 
-impl System<Tree, StringComponentStore, RenderContext2D> for RenderSystem {
+impl System<Tree, RenderContext2D> for RenderSystem {
     fn run_with_context(
         &self,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
         render_context: &mut RenderContext2D,
     ) {
         let root = ecm.entity_store().root();

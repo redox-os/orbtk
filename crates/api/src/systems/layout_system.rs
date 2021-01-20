@@ -8,10 +8,10 @@ pub struct LayoutSystem {
     context_provider: ContextProvider,
 }
 
-impl System<Tree, StringComponentStore, RenderContext2D> for LayoutSystem {
+impl System<Tree, RenderContext2D> for LayoutSystem {
     fn run_with_context(
         &self,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
         render_context: &mut RenderContext2D,
     ) {
         let root = ecm.entity_store().root();

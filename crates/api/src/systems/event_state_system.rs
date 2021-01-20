@@ -45,12 +45,7 @@ impl EventStateSystem {
         false
     }
 
-    fn remove_hover(
-        &self,
-        entity: Entity,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-        theme: &Theme,
-    ) {
+    fn remove_hover(&self, entity: Entity, ecm: &mut EntityComponentManager<Tree>, theme: &Theme) {
         if self.hovered_widgets.borrow().is_empty()
             || !self.hovered_widgets.borrow().contains(&entity)
         {
@@ -83,7 +78,7 @@ impl EventStateSystem {
         &self,
         entity: Entity,
         theme: &Theme,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
         render_context: &mut RenderContext2D,
     ) {
         {
@@ -116,11 +111,7 @@ impl EventStateSystem {
             .remove(&entity);
     }
 
-    fn process_direct(
-        &self,
-        event: &EventBox,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-    ) -> bool {
+    fn process_direct(&self, event: &EventBox, ecm: &mut EntityComponentManager<Tree>) -> bool {
         // skip all direct events on first run
         if self.context_provider.first_run.get() {
             return false;
@@ -156,7 +147,7 @@ impl EventStateSystem {
         &self,
         mouse_position: Point,
         event: &EventBox,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
     ) -> bool {
         let mut matching_nodes = vec![];
         let mut update = false;
@@ -464,10 +455,10 @@ impl EventStateSystem {
     }
 }
 
-impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
+impl System<Tree, RenderContext2D> for EventStateSystem {
     fn run_with_context(
         &self,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
         render_context: &mut RenderContext2D,
     ) {
         let mut update = false;

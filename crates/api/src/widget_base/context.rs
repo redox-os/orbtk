@@ -21,7 +21,7 @@ use super::WidgetContainer;
 /// render context and theme. You can emit adaptions to the state of
 /// an entity.
 pub struct Context<'a> {
-    pub(crate) ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
+    pub(crate) ecm: &'a mut EntityComponentManager<Tree>,
     entity: Entity,
     pub theme: Theme,
     pub(crate) provider: &'a ContextProvider,
@@ -42,10 +42,7 @@ impl<'a> Drop for Context<'a> {
 impl<'a> Context<'a> {
     /// Creates a new container.
     pub fn new(
-        ecs: (
-            Entity,
-            &'a mut EntityComponentManager<Tree, StringComponentStore>,
-        ),
+        ecs: (Entity, &'a mut EntityComponentManager<Tree>),
         theme: &Theme,
         provider: &'a ContextProvider,
         render_context: &'a mut RenderContext2D,

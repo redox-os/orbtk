@@ -11,10 +11,10 @@ pub struct InitSystem {
     registry: Rc<RefCell<Registry>>,
 }
 
-impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
+impl System<Tree, RenderContext2D> for InitSystem {
     fn run_with_context(
         &self,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
         render_context: &mut RenderContext2D,
     ) {
         let root = ecm.entity_store().root();
@@ -74,11 +74,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for InitSystem {
     }
 }
 
-pub fn print_tree(
-    entity: Entity,
-    depth: usize,
-    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-) {
+pub fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager<Tree>) {
     let name = ecm.component_store().get::<String>("name", entity).unwrap();
 
     let selector = if let Ok(selector) = ecm.component_store().get::<Selector>("selector", entity) {
