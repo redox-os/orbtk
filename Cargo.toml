@@ -47,7 +47,6 @@ serde_derive = "1.0.106"
 
 [features]
 default = ["orbtk_shell/orbraq", "orbtk_api/orbraq", "orbtk_render/orbraq", "orbtk_widgets/orbraq", "orbtk_localization/ron", "fluent", "redox"]
-miniraq = ["orbtk_shell/miniraq", "orbtk_api/miniraq", "orbtk_widgets/miniraq", "orbtk_widgets/miniraq"]
 log = ["orbtk_shell/log"]
 debug = ["orbtk_api/debug"]
 

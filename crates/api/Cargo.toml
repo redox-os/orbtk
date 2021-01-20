@@ -39,5 +39,4 @@ stdweb = "0.4"
 [features]
 default = ["orbtk_shell/orbraq"]
 orbraq = ["orbtk_shell/orbraq"]
-miniraq = ["orbtk_shell/miniraq", "orbtk_render/miniraq"]
 debug = []
