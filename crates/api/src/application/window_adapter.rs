@@ -18,7 +18,7 @@ use crate::{
 
 /// Represents a window. Each window has its own tree, event pipeline and shell.
 pub struct WindowAdapter {
-    world: World<Tree, StringComponentStore, render::RenderContext2D>,
+    world: World<Tree, render::RenderContext2D>,
     ctx: ContextProvider,
     registry: Rc<RefCell<Registry>>,
     old_clipboard_value: Option<String>,
@@ -27,7 +27,7 @@ pub struct WindowAdapter {
 impl WindowAdapter {
     /// Creates a new WindowAdapter.
     pub fn new(
-        world: World<Tree, StringComponentStore, render::RenderContext2D>,
+        world: World<Tree, render::RenderContext2D>,
         ctx: ContextProvider,
         registry: Rc<RefCell<Registry>>,
     ) -> Self {
@@ -210,8 +210,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
 ) -> (WindowAdapter, WindowSettings, mpsc::Receiver<WindowRequest>) {
     let app_name = app_name.into();
-    let mut world: World<Tree, StringComponentStore, render::RenderContext2D> =
-        World::from_stores(Tree::default(), StringComponentStore::default());
+    let mut world: World<Tree, render::RenderContext2D> = World::from_entity_store(Tree::default());
 
     let (sender, receiver) = mpsc::channel();
 

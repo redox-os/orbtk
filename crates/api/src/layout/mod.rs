@@ -25,7 +25,7 @@ pub trait Layout: Any {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &Theme,
     ) -> DirtySize;
@@ -36,14 +36,14 @@ pub trait Layout: Any {
         render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &Theme,
     ) -> (f64, f64);
 }
 
 fn component<C: Component + Clone>(
-    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+    ecm: &mut EntityComponentManager<Tree>,
     entity: Entity,
     component: &str,
 ) -> C {
@@ -54,7 +54,7 @@ fn component<C: Component + Clone>(
 }
 
 fn try_component<C: Component + Clone>(
-    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+    ecm: &mut EntityComponentManager<Tree>,
     entity: Entity,
     component: &str,
 ) -> Option<C> {
@@ -66,7 +66,7 @@ fn try_component<C: Component + Clone>(
 }
 
 fn component_or_default<C: Component + Clone + Default>(
-    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+    ecm: &mut EntityComponentManager<Tree>,
     entity: Entity,
     component: &str,
 ) -> C {
@@ -77,7 +77,7 @@ fn component_or_default<C: Component + Clone + Default>(
 }
 
 fn component_try_mut<'a, C: Component>(
-    ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
+    ecm: &'a mut EntityComponentManager<Tree>,
     entity: Entity,
     component: &str,
 ) -> Option<&'a mut C> {

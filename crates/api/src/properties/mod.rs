@@ -2,7 +2,7 @@
 
 use std::{collections::HashSet, fmt::Debug, path::PathBuf};
 
-use dces::prelude::{Component, Entity, StringComponentStore};
+use dces::prelude::{Component, ComponentStore, Entity};
 
 pub use self::layout::*;
 pub use self::widget::*;
@@ -12,7 +12,7 @@ mod layout;
 mod widget;
 
 /// Get the property of a widget.
-pub fn get_property<T>(key: &str, entity: Entity, store: &StringComponentStore) -> T
+pub fn get_property<T>(key: &str, entity: Entity, store: &ComponentStore) -> T
 where
     T: Clone + Component,
 {
@@ -20,12 +20,7 @@ where
 }
 
 /// Returns the value of a property of a widget if it exists otherwise the given value.
-pub fn get_property_or_value<T>(
-    key: &str,
-    entity: Entity,
-    store: &StringComponentStore,
-    value: T,
-) -> T
+pub fn get_property_or_value<T>(key: &str, entity: Entity, store: &ComponentStore, value: T) -> T
 where
     T: Clone + Component,
 {

@@ -31,7 +31,7 @@ impl Layout for PaddingLayout {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &Theme,
     ) -> DirtySize {
@@ -107,7 +107,7 @@ impl Layout for PaddingLayout {
         render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &Theme,
     ) -> (f64, f64) {
