@@ -112,14 +112,14 @@ use crate::prelude::*;
 /// Lets look at some examples. The first one shows the
 /// structure of an angled gradient
 ///
-/// ```
+/// ```text
 /// [repeating-]linear-gradient({Gradient-angle}{deg|rad|turn}, ...) [{X Displacement}px {Y Displacement}px], {Color} [{Stop  position}{%|px}]
 /// ```
 ///
 /// The next example shows the structure of a gradient that will be
 /// rendered in a given direction
 ///
-/// ```
+/// ```text
 /// [repeating-]linear-gradient({direction-identifier}, {initial color-name}, {terminating color-name}
 /// ```
 ///
