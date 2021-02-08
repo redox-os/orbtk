@@ -4,10 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.3.1 (OrbTk next) wip
+### 0.4.0-alpha4 (wip)
 
-### 0.3.1-alpha4 (wip)
-
+* Complete reworked crates structure (orbtk, orbtk_api, orbtk_shell, orbtk_widget, orbtk_orbclient)
+* New state parameters (ctx: &mut Context, res: &Resources)
+* Replaces Registry with Resources from DCES
+* Remove old backend, use OrbClient as only backend also for web
+* Move theme and localization to resources
+* Refactored Application struct
 * `PasswordBox` widget
 * `Pager `navigation widget
 * `Clipboard` service

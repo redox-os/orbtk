@@ -1,11 +1,10 @@
 [package]
-name = "orbtk_api"
-version = "0.4.0-alpha1"
+name = "orbtk_base"
+version = "0.4.0"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Base crate of OrbTk with all mandatory stuff."
 edition = "2018"
-keywords = ["gui", "ui", "ecs", "immediate"]
+keywords = ["gui", "ui", "ecs"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "develop" }

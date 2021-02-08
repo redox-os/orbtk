@@ -2,8 +2,8 @@
 
 [![Build and test](https://github.com/redox-os/orbtk/workflows/CI/badge.svg)](https://github.com/redox-os/orbtk/actions)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![crates.io](https://img.shields.io/badge/crates.io-0.3.1alpha3-orange.svg)](https://crates.io/crates/orbtk/0.3.1-alpha3)
-[![docs.rs](https://img.shields.io/badge/docs-0.3.1alpha3-blue.svg)](https://docs.rs/crate/orbtk/0.3.1-alpha3)
+[![crates.io](https://img.shields.io/badge/crates.io-0.4.0-orange.svg)](https://crates.io/crates/orbtk/0.4.0)
+[![docs.rs](https://img.shields.io/badge/docs-0.4.0-blue.svg)](https://docs.rs/crate/orbtk/0.4.0)
 
 The Orbital Widget Toolkit is a cross-platform (G)UI toolkit for building scalable user interfaces with the programming language Rust. It's based
 on the [Entity Component System Pattern](https://en.wikipedia.org/wiki/Entity_component_system) and provides a [functional Reactive](https://en.wikipedia.org/wiki/Functional_reactive_programming)-like API.
@@ -33,6 +33,7 @@ The main goals of OrbTk are speed, ease of use, and cross-platform compatibility
 * Dynamic theme switching
 * Integrated debugging tools
 * Localization
+* Book (wip)
 
 ## Platforms
 
@@ -50,11 +51,11 @@ The main goals of OrbTk are speed, ease of use, and cross-platform compatibility
 
 * Conformable use of async
 * More default widgets
-* Book
 * Animations
 * Split application in modules
 * 3D context
 * More integrated debugging tools
+* Hardware accelerated rendering
 
 ## Usage
 
@@ -62,7 +63,7 @@ To include OrbTk in your project, add this dependency
 line to your `Cargo.toml` file:
 
 ```text
-orbtk = "0.3.1-alpha3"
+orbtk = "0.4.0"
 ```
 
 To use the latest development version of OrbTk, add this dependency
@@ -345,23 +346,6 @@ cargo node run --target electron --example showcase
 cargo node run --target android --example showcase
 ```
 
-## OrbTk backends
-
-At the moment will evaluate different backends for OrbTk. A OrbTk backend consists of two different parts, window / events and rendering. OrbTk provides at the moment the following backends:
-
-### orbraq (default)
-
-* default backend for Redox, Linux, macOS and Windows (default feature)
-* window and events based on [OrbClient](https://gitlab.redox-os.org/redox-os/orbclient)
-* 2D rendering based on [raqote](https://github.com/jrmuizel/raqote)
-* Known issues: window does not redraw while resizing
-
-### stdweb
-
-* default backend for web (default feature)
-* window, events and 2D rendering based on [stdweb](https://github.com/koute/stdweb)
-* Does not yet support all features of `orbraq` e.g. DropEvents, Clipboard access 
-
 ## Documentation
 
 ### Build and open documentation
@@ -380,17 +364,13 @@ To build and run the latest version of the OrbTk manual check: [Manual](https://
 
 There is a (wip) OrbTk book check [OrbTk book](https://github.com/redox-os/orbtk-book)
 
-## Sub Crates
+## Crates
 
-* [api](https://github.com/redox-os/orbtk/tree/develop/crates/api): base api elements of OrbTk e.g. widget and application parts
-* [proc_macros](https://github.com/redox-os/orbtk/tree/develop/crates/proc_macros): procedural helper macros
-* [render](https://github.com/redox-os/orbtk/tree/develop/crates/render): cross platform 2D/3D render library
-* [shell](https://github.com/redox-os/orbtk/tree/develop/crates/shell): cross platform window and event handling
-* [theming](https://github.com/redox-os/orbtk/tree/develop/crates/theming): provide mechanism to style OrbTk UI's in rust and ron (replaces css-engine)
-* [tree](https://github.com/redox-os/orbtk/tree/develop/crates/tree): tree structure based on DCES
-* [utils](https://github.com/redox-os/orbtk/tree/develop/crates/utils): helper structs and traits
-* [widgets](https://github.com/redox-os/orbtk/tree/develop/crates/widgets): base widget library
-
+[orbtk](https://github.com/redox-os/orbtk/tree/develop/orbtk): main crate that provides everything that is part of OrbTk
+[orbtk_base](https://github.com/redox-os/orbtk/tree/develop/orbtk_base): shared base stuff that is use by the other crates
+[orbtk_shell](https://github.com/redox-os/orbtk/tree/develop/orbtk_base): immediate mode user interface (ui) shell for OrbTk
+[orbtk_widgets](https://github.com/redox-os/orbtk/tree/develop/orbtk_base): integrated default OrbTk widget library with different themes
+[orbtk_orbclient](https://github.com/redox-os/orbtk/tree/develop/orbtk_base): app and window implementation for OrbTk based on OrbClient.
 ## Inspirations
 
 * [Flutter](https://flutter.io/)

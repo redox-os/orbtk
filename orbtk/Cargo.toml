@@ -20,3 +20,14 @@ edition = "2018"
 [lib]
 name = "orbtk"
 path = "src/lib.rs"
+
+[dependencies]
+orbtk_base = { version = "0.4.0", path = "../orbtk_base" }
+orbtk_orbclient = { version = "0.4.0", path = "../orbtk_orbclient", optional = true }
+orbtk_shell = { version = "0.4.0", path = "../orbtk_shell" }
+orbtk_widgets = { version = "0.4.0", path = "../orbtk_widgets" }
+
+[features]
+default = ["orbtk_orbclient"]
+# immediate mode (blank shell no App)
+im = []

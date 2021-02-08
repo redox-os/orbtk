@@ -1,8 +1,8 @@
 [package]
-name = "orbtk_orbclient"
+name = "orbtk_shell"
 version = "0.4.0"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
-description = "App and window implementation for OrbTk based on OrbClient."
+description = "Immediate mode user interface (ui) shell for OrbTk."
 edition = "2018"
 keywords = ["gui", "ui", "ecs"]
 
