@@ -19,12 +19,7 @@ impl PostLayoutStateSystem {
         res: &mut Resources,
     ) {
         {
-            let mut ctx = Context::new(
-                (entity, ecm),
-                &theme,
-                &self.context_provider,
-                render_context,
-            );
+            let mut ctx = Context::new((entity, ecm), &theme, &self.context_provider);
 
             if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
                 state.cleanup(&mut self.res.borrow_mut(), &mut ctx);
@@ -48,7 +43,7 @@ impl PostLayoutStateSystem {
 }
 
 impl System<Tree> for PostLayoutStateSystem {
-    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
         // todo fix
         // if !self.shell.borrow().update() || !self.shell.borrow().running() {
         //     return;
@@ -77,8 +72,7 @@ impl System<Tree> for PostLayoutStateSystem {
                 }
 
                 {
-                    let mut ctx =
-                        Context::new((key, ecm), &theme, &self.context_provider, render_context);
+                    let mut ctx = Context::new((key, ecm), &theme, &self.context_provider);
 
                     self.context_provider
                         .states

@@ -8,7 +8,7 @@ use crate::{
 pub struct FontIconRenderObject;
 
 impl RenderObject for FontIconRenderObject {
-    fn render_self(&self, ctx: &mut Context, global_position: &Point) {
+    fn render_self(&self, ctx: &mut Context, global_position: &Point, rtx: &mut RenderContext2D) {
         let (bounds, icon, icon_brush, icon_font, icon_size) = {
             let widget = ctx.widget();
             (
@@ -30,17 +30,17 @@ impl RenderObject for FontIconRenderObject {
         }
 
         if !icon.is_empty() {
-            ctx.render_context_2_d().begin_path();
-            ctx.render_context_2_d().set_font_family(icon_font);
-            ctx.render_context_2_d().set_font_size(icon_size);
-            ctx.render_context_2_d().set_fill_style(icon_brush);
+            rtx.begin_path();
+            rtx.set_font_family(icon_font);
+            rtx.set_font_size(icon_size);
+            rtx.set_fill_style(icon_brush);
 
-            ctx.render_context_2_d().fill_text(
+            rtx.fill_text(
                 &icon,
                 global_position.x() + bounds.x(),
                 global_position.y() + bounds.y(),
             );
-            ctx.render_context_2_d().close_path();
+            rtx.close_path();
         }
     }
 }

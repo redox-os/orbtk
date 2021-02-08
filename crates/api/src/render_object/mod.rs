@@ -28,7 +28,7 @@ mod text;
 pub trait RenderObject: Any {
     fn render(
         &self,
-        res: &mut Resources
+        rtx: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree>,
         context_provider: &ContextProvider,
@@ -55,8 +55,8 @@ pub trait RenderObject: Any {
             return;
         }
 
-        render_context.begin_path();
-        render_context.set_alpha(
+        rtx.begin_path();
+        rtx.set_alpha(
             *ecm.component_store()
                 .get::<f32>("opacity", entity)
                 .unwrap_or(&1.0),
@@ -66,19 +66,19 @@ pub trait RenderObject: Any {
         let clip = *ecm.component_store().get::<bool>("clip", entity).unwrap();
         if clip {
             if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
-                render_context.save();
-                render_context.rect(
+                rtx.save();
+                rtx.rect(
                     global_position.x() + bounds.x(),
                     global_position.y() + bounds.y(),
                     bounds.width(),
                     bounds.height(),
                 );
-                render_context.clip();
+                rtx.clip();
             }
         }
 
         self.render_self(
-            &mut Context::new((entity, ecm), &theme, context_provider, render_context),
+            &mut Context::new((entity, ecm), &theme, context_provider, rtx),
             &global_position,
         );
 
@@ -100,43 +100,35 @@ pub trait RenderObject: Any {
             g_pos.set_y(global_pos.1);
         }
 
-        self.render_children(
-            render_context,
-            entity,
-            ecm,
-            context_provider,
-            theme,
-            offsets,
-            debug,
-        );
+        self.render_children(rtx, entity, ecm, context_provider, theme, offsets, debug);
 
-        render_context.close_path();
+        rtx.close_path();
 
         if clip {
-            render_context.restore();
+            rtx.restore();
         }
 
         // render debug border for each widget
         if debug {
             if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
-                render_context.begin_path();
-                render_context.set_stroke_style(Brush::from("#0033cc"));
-                render_context.stroke_rect(
+                rtx.begin_path();
+                rtx.set_stroke_style(Brush::from("#0033cc"));
+                rtx.stroke_rect(
                     global_position.x() + bounds.x(),
                     global_position.y() + bounds.y(),
                     bounds.width(),
                     bounds.height(),
                 );
-                render_context.close_path();
+                rtx.close_path();
             }
         }
     }
 
-    fn render_self(&self, _: &mut Context, _: &Point) {}
+    fn render_self(&self, _: &mut Context, rtx: &mut RenderContext2D, _: &Point) {}
 
     fn render_children(
         &self,
-        res: &mut Resources,
+        rtx: &mut RenderContext2D,
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree>,
         context_provider: &ContextProvider,
@@ -148,15 +140,7 @@ pub trait RenderObject: Any {
             let child = ecm.entity_store().children[&entity][index];
 
             if let Some(render_object) = context_provider.render_objects.borrow().get(&child) {
-                render_object.render(
-                    render_context,
-                    child,
-                    ecm,
-                    context_provider,
-                    theme,
-                    offsets,
-                    debug,
-                );
+                render_object.render(rtx, child, ecm, context_provider, theme, offsets, debug);
             }
         }
     }

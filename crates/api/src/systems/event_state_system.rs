@@ -82,17 +82,10 @@ impl EventStateSystem {
         res: &mut Resources,
     ) {
         {
-            let registry = &mut self.res.borrow_mut();
-
-            let mut ctx = Context::new(
-                (entity, ecm),
-                &theme,
-                &self.context_provider,
-                render_context,
-            );
+            let mut ctx = Context::new((entity, ecm), &theme, &self.context_provider);
 
             if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
-                state.cleanup(registry, &mut ctx);
+                state.cleanup(&mut ctx, res);
             }
 
             drop(ctx);
@@ -456,7 +449,7 @@ impl EventStateSystem {
 }
 
 impl System<Tree> for EventStateSystem {
-    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
         let mut update = false;
 
         loop {
@@ -510,20 +503,11 @@ impl System<Tree> for EventStateSystem {
                 }
 
                 for entity in self.context_provider.message_adapter.entities() {
-                    let mut ctx = Context::new(
-                        (entity, ecm),
-                        &theme,
-                        &self.context_provider,
-                        render_context,
-                    );
+                    let mut ctx = Context::new((entity, ecm), &theme, &self.context_provider);
 
                     if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity)
                     {
-                        state.messages(
-                            message_adapter.message_reader(entity),
-                            &mut self.res.borrow_mut(),
-                            &mut ctx,
-                        );
+                        state.messages(message_adapter.message_reader(entity), &mut ctx, res);
                     } else {
                         message_adapter.remove_message_for_entity(entity);
                     }
@@ -564,19 +548,12 @@ impl System<Tree> for EventStateSystem {
 
                 if !skip {
                     {
-                        let registry = &mut self.res.borrow_mut();
-
-                        let mut ctx = Context::new(
-                            (widget, ecm),
-                            &theme,
-                            &self.context_provider,
-                            render_context,
-                        );
+                        let mut ctx = Context::new((widget, ecm), &theme, &self.context_provider);
 
                         if let Some(state) =
                             self.context_provider.states.borrow_mut().get_mut(&widget)
                         {
-                            state.update(registry, &mut ctx);
+                            state.update(&mut ctx, res);
                         }
 
                         keys.append(&mut ctx.new_states_keys());
@@ -585,16 +562,11 @@ impl System<Tree> for EventStateSystem {
                         drop(ctx);
 
                         for key in keys {
-                            let mut ctx = Context::new(
-                                (key, ecm),
-                                &theme,
-                                &self.context_provider,
-                                render_context,
-                            );
+                            let mut ctx = Context::new((key, ecm), &theme, &self.context_provider);
                             if let Some(state) =
                                 self.context_provider.states.borrow_mut().get_mut(&key)
                             {
-                                state.init(registry, &mut ctx);
+                                state.init(&mut ctx, res);
                             }
 
                             drop(ctx);
@@ -607,11 +579,11 @@ impl System<Tree> for EventStateSystem {
 
                         // remove children of target widget.
                         for entity in children.iter().rev() {
-                            self.remove_widget(*entity, &theme, ecm, render_context);
+                            self.remove_widget(*entity, &theme, ecm, res);
                         }
 
                         // remove target widget
-                        self.remove_widget(remove_widget, &theme, ecm, render_context);
+                        self.remove_widget(remove_widget, &theme, ecm, res);
                     }
                 }
 

@@ -11,7 +11,7 @@ use crate::{
 pub struct CursorRenderObject;
 
 impl RenderObject for CursorRenderObject {
-    fn render_self(&self, ctx: &mut Context, global_position: &Point) {
+    fn render_self(&self, ctx: &mut Context, global_position: &Point, rtx: &mut RenderContext2D) {
         let (
             bounds,
             background,
@@ -40,19 +40,19 @@ impl RenderObject for CursorRenderObject {
         let border_width = border_width.right();
 
         // background
-        ctx.render_context_2_d().set_alpha(background_opacity);
-        ctx.render_context_2_d().set_fill_style(background);
-        ctx.render_context_2_d().fill_rect(
+        rtx.set_alpha(background_opacity);
+        rtx.set_fill_style(background);
+        rtx.fill_rect(
             global_position.x() + bounds.x() + offset + selection_x - border_width / 2.,
             global_position.y() + bounds.y(),
             selection_width,
             bounds.height(),
         );
-        ctx.render_context_2_d().set_alpha(1.);
+        rtx.set_alpha(1.);
 
         // border
-        ctx.render_context_2_d().set_fill_style(border_brush);
-        ctx.render_context_2_d().fill_rect(
+        rtx.set_fill_style(border_brush);
+        rtx.fill_rect(
             global_position.x() + bounds.x() + offset + cursor_x - border_width / 2.,
             global_position.y() + bounds.y(),
             border_width,

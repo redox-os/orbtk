@@ -11,7 +11,7 @@ use std::iter;
 pub struct TextRenderObject;
 
 impl RenderObject for TextRenderObject {
-    fn render_self(&self, ctx: &mut Context, global_position: &Point) {
+    fn render_self(&self, ctx: &mut Context, global_position: &Point, rtx: &mut RenderContext2D) {
         let (bounds, text, foreground, font, font_size, offset) = {
             let widget = ctx.widget();
             let text = text(&widget);
@@ -46,15 +46,15 @@ impl RenderObject for TextRenderObject {
             return;
         }
 
-        ctx.render_context_2_d().begin_path();
-        ctx.render_context_2_d().set_font_family(font);
-        ctx.render_context_2_d().set_font_size(font_size);
-        ctx.render_context_2_d().set_fill_style(foreground);
+        rtx.begin_path();
+        rtx.set_font_family(font);
+        rtx.set_font_size(font_size);
+        rtx.set_fill_style(foreground);
 
         let mut y_disp = 0.0;
         let mut last_ofs = 0;
         for i in memchr_iter(b'\n', text.as_bytes()).chain(iter::once(text.len())) {
-            ctx.render_context_2_d().fill_text(
+            rtx.fill_text(
                 &text[last_ofs..i],
                 global_position.x() + bounds.x() + offset,
                 global_position.y() + bounds.y() + y_disp,
@@ -63,7 +63,7 @@ impl RenderObject for TextRenderObject {
             last_ofs = i + 1; // + 1 to skip the end of line character
         }
 
-        ctx.render_context_2_d().close_path();
+        rtx.close_path();
     }
 }
 

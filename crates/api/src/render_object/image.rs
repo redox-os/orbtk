@@ -5,7 +5,7 @@ use crate::{proc_macros::IntoRenderObject, render::Image, render_object::*};
 pub struct ImageRenderObject;
 
 impl RenderObject for ImageRenderObject {
-    fn render_self(&self, ctx: &mut Context, global_position: &Point) {
+    fn render_self(&self, ctx: &mut Context, global_position: &Point, rtx: &mut RenderContext2D) {
         let (bounds, mut image) = {
             let widget = ctx.widget();
             (
@@ -15,7 +15,7 @@ impl RenderObject for ImageRenderObject {
         };
 
         if let Some(image) = &mut image {
-            ctx.render_context_2_d().draw_image(
+            rtx.draw_image(
                 image,
                 bounds.x() + global_position.x(),
                 bounds.y() + global_position.y(),

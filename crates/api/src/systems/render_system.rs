@@ -11,7 +11,7 @@ pub struct RenderSystem {
 }
 
 impl System<Tree> for RenderSystem {
-    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
         let root = ecm.entity_store().root();
 
         let dirty_widgets = ecm

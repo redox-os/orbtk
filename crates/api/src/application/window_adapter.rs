@@ -18,14 +18,14 @@ use crate::{
 
 /// Represents a window. Each window has its own tree, event pipeline and shell.
 pub struct WindowAdapter {
-    world: World<Tree, render::RenderContext2D>,
+    world: World<Tree>,
     ctx: ContextProvider,
     old_clipboard_value: Option<String>,
 }
 
 impl WindowAdapter {
     /// Creates a new WindowAdapter.
-    pub fn new(world: World<Tree, render::RenderContext2D>, ctx: ContextProvider) -> Self {
+    pub fn new(world: World<Tree>, ctx: ContextProvider) -> Self {
         WindowAdapter {
             world,
             ctx,
@@ -204,7 +204,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
 ) -> (WindowAdapter, WindowSettings, mpsc::Receiver<WindowRequest>) {
     let app_name = app_name.into();
-    let mut world: World<Tree, render::RenderContext2D> = World::from_entity_store(Tree::default());
+    let mut world: World<Tree> = World::from_entity_store(Tree::default());
 
     let (sender, receiver) = mpsc::channel();
 
@@ -315,14 +315,13 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             Rectangle::from((0.0, 0.0, constraint.width(), constraint.height())),
         );
 
-    world.register_init_system(InitSystem::new(context_provider.clone(), res.clone()));
+    world.register_init_system(InitSystem::new(context_provider.clone()));
 
-    world.register_cleanup_system(CleanupSystem::new(context_provider.clone(), res.clone()));
+    world.register_cleanup_system(CleanupSystem::new(context_provider.clone()));
 
     world
         .create_system(EventStateSystem::new(
             context_provider.clone(),
-            res.clone(),
             RefCell::new(vec![]),
         ))
         .with_priority(0)
@@ -334,10 +333,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         .build();
 
     world
-        .create_system(PostLayoutStateSystem::new(
-            context_provider.clone(),
-            res.clone(),
-        ))
+        .create_system(PostLayoutStateSystem::new(context_provider.clone()))
         .with_priority(2)
         .build();
 

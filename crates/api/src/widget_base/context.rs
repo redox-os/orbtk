@@ -27,7 +27,6 @@ pub struct Context<'a> {
     pub(crate) provider: &'a ContextProvider,
     new_states: BTreeMap<Entity, Box<dyn State>>,
     remove_widget_list: Vec<Entity>,
-    render_context: &'a mut RenderContext2D,
 }
 
 impl<'a> Drop for Context<'a> {
@@ -45,7 +44,6 @@ impl<'a> Context<'a> {
         ecs: (Entity, &'a mut EntityComponentManager<Tree>),
         theme: &Theme,
         provider: &'a ContextProvider,
-        render_context: &'a mut RenderContext2D,
     ) -> Self {
         Context {
             entity: ecs.0,
@@ -54,7 +52,6 @@ impl<'a> Context<'a> {
             provider,
             new_states: BTreeMap::new(),
             remove_widget_list: vec![],
-            render_context,
         }
     }
 
@@ -435,11 +432,6 @@ impl<'a> Context<'a> {
             .expect("Context.show_window: Could not send shell request.");
     }
 
-    /// Returns a mutable reference of the 2d render ctx.
-    pub fn render_context_2_d(&mut self) -> &mut RenderContext2D {
-        self.render_context
-    }
-
     /// Returns a keys collection of new added states.
     pub fn new_states_keys(&self) -> Vec<Entity> {
         self.new_states.keys().cloned().collect()
@@ -451,9 +443,10 @@ impl<'a> Context<'a> {
 
         *self.window().get_mut::<Theme>("theme") = theme;
 
-        for (key, font) in self.theme.fonts() {
-            self.render_context.register_font(key, *font);
-        }
+        // todo: handle this on an over way
+        // for (key, font) in self.theme.fonts() {
+        //     self.render_context.register_font(key, *font);
+        // }
 
         // update on window to update all widgets in the tree
         self.window().update_dirty(true);

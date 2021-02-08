@@ -1,4 +1,4 @@
-use crate::widget_base::{Context, MessageReader, Registry};
+use crate::widget_base::{Context, MessageReader, Resources};
 use std::any::Any;
 
 pub trait AsAny: Any {

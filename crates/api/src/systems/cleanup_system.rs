@@ -1,5 +1,3 @@
-use std::{cell::RefCell, rc::Rc};
-
 use dces::prelude::*;
 
 use crate::{prelude::*, theming::Theme, tree::Tree};
@@ -11,7 +9,7 @@ pub struct CleanupSystem {
 }
 
 impl System<Tree> for CleanupSystem {
-    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
         // let mut shell = self.shell.borrow_mut();
         let root = ecm.entity_store().root();
         let theme = ecm
@@ -45,17 +43,10 @@ impl System<Tree> for CleanupSystem {
             let mut keys = vec![];
 
             if !skip {
-                let registry = &mut self.res.borrow_mut();
-
-                let mut ctx = Context::new(
-                    (widget, ecm),
-                    &theme,
-                    &self.context_provider,
-                    render_context,
-                );
+                let mut ctx = Context::new((widget, ecm), &theme, &self.context_provider);
 
                 if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&widget) {
-                    state.cleanup(registry, &mut ctx);
+                    state.cleanup(&mut ctx, res);
                 }
 
                 keys.append(&mut ctx.new_states_keys());

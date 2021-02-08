@@ -2,7 +2,7 @@ use std::{fmt::Debug, rc::Rc};
 
 use dces::prelude::{Component, Entity};
 
-pub use dces::Resources;
+pub use dces::prelude::Resources;
 
 use crate::{event::EventHandler, properties::AttachedProperty, theming::Selector};
 

@@ -11,7 +11,7 @@ pub struct InitSystem {
 }
 
 impl System<Tree> for InitSystem {
-    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
+    fn run(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
         let root = ecm.entity_store().root();
 
         #[cfg(feature = "debug")]
@@ -38,12 +38,7 @@ impl System<Tree> for InitSystem {
 
         loop {
             {
-                let mut ctx = Context::new(
-                    (current_node, ecm),
-                    &theme,
-                    &self.context_provider,
-                    render_context,
-                );
+                let mut ctx = Context::new((current_node, ecm), &theme, &self.context_provider);
 
                 if let Some(state) = self
                     .context_provider
@@ -51,7 +46,7 @@ impl System<Tree> for InitSystem {
                     .borrow_mut()
                     .get_mut(&current_node)
                 {
-                    state.init(&mut *self.res.borrow_mut(), &mut ctx);
+                    state.init(&mut ctx, res);
                 }
 
                 drop(ctx);
