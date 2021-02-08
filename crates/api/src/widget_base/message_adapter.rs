@@ -68,7 +68,7 @@ impl MessageBox {
 /// }
 ///
 /// impl State for MyState {
-///     fn message(&mut self, mut messages: MessageReader, _registry: &mut Registry, _ctx: &mut Context) {
+///     fn message(&mut self, mut messages: MessageReader, _ctx: &mut Context, _res: &mut Resources) {
 ///         for message in messages.read::<String>() {
 ///             // prints:
 ///             // Hello

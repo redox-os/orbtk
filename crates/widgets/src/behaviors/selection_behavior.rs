@@ -18,12 +18,7 @@ impl State for SelectionBehaviorState {
         ctx.get_widget(self.target).update(false);
     }
 
-    fn messages(
-        &mut self,
-        mut messages: MessageReader,
-        _registry: &mut Registry,
-        ctx: &mut Context,
-    ) {
+    fn messages(&mut self, mut messages: MessageReader, _res: &mut Resources, ctx: &mut Context) {
         for message in messages.read::<SelectionAction>() {
             match message {
                 SelectionAction::ToggleSelection => {

@@ -8,7 +8,7 @@ use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree, uti
 #[derive(Constructor)]
 pub struct EventStateSystem {
     context_provider: ContextProvider,
-    registry: Rc<RefCell<Registry>>,
+
     hovered_widgets: RefCell<Vec<Entity>>,
 }
 
@@ -79,10 +79,10 @@ impl EventStateSystem {
         entity: Entity,
         theme: &Theme,
         ecm: &mut EntityComponentManager<Tree>,
-        render_context: &mut RenderContext2D,
+        res: &mut Resources,
     ) {
         {
-            let registry = &mut self.registry.borrow_mut();
+            let registry = &mut self.res.borrow_mut();
 
             let mut ctx = Context::new(
                 (entity, ecm),
@@ -455,12 +455,8 @@ impl EventStateSystem {
     }
 }
 
-impl System<Tree, RenderContext2D> for EventStateSystem {
-    fn run_with_context(
-        &self,
-        ecm: &mut EntityComponentManager<Tree>,
-        render_context: &mut RenderContext2D,
-    ) {
+impl System<Tree> for EventStateSystem {
+    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
         let mut update = false;
 
         loop {
@@ -525,7 +521,7 @@ impl System<Tree, RenderContext2D> for EventStateSystem {
                     {
                         state.messages(
                             message_adapter.message_reader(entity),
-                            &mut self.registry.borrow_mut(),
+                            &mut self.res.borrow_mut(),
                             &mut ctx,
                         );
                     } else {
@@ -568,7 +564,7 @@ impl System<Tree, RenderContext2D> for EventStateSystem {
 
                 if !skip {
                     {
-                        let registry = &mut self.registry.borrow_mut();
+                        let registry = &mut self.res.borrow_mut();
 
                         let mut ctx = Context::new(
                             (widget, ecm),

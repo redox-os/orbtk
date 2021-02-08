@@ -5,8 +5,8 @@
 /// # Examples
 /// ```
 /// impl State for MyState {
-///     fn update(&mut self, registry: &mut Registry, _: &mut Context) {
-///         let mut clipboard = registry.get_mut;:<Clipboard>("clipboard");
+///     fn update(&mut self, res: &mut Resources, _: &mut Context) {
+///         let mut clipboard = res.get_mut;:<Clipboard>("clipboard");
 ///         println!("{:?}", clipboard.get());
 ///         clipboard.set("paste");
 ///     }

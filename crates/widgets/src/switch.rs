@@ -58,12 +58,7 @@ impl State for SwitchState {
         self.update_visual(ctx);
     }
 
-    fn messages(
-        &mut self,
-        mut messages: MessageReader,
-        _registry: &mut Registry,
-        ctx: &mut Context,
-    ) {
+    fn messages(&mut self, mut messages: MessageReader, _res: &mut Resources, ctx: &mut Context) {
         for message in messages.read::<SwitchAction>() {
             match message {
                 SwitchAction::ToggleSelection => self.toggle_selection(ctx),

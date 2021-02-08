@@ -10,12 +10,8 @@ pub struct RenderSystem {
     context_provider: ContextProvider,
 }
 
-impl System<Tree, RenderContext2D> for RenderSystem {
-    fn run_with_context(
-        &self,
-        ecm: &mut EntityComponentManager<Tree>,
-        render_context: &mut RenderContext2D,
-    ) {
+impl System<Tree> for RenderSystem {
+    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
         let root = ecm.entity_store().root();
 
         let dirty_widgets = ecm

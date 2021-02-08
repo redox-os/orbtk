@@ -70,12 +70,12 @@ impl TextBehaviorState {
 
     // -- Text operations --
 
-    fn cut(&mut self, registry: &mut Registry, ctx: &mut Context) {
+    fn cut(&mut self, res: &mut Resources, ctx: &mut Context) {
         self.copy(registry, ctx);
         self.clear_selection(ctx);
     }
 
-    fn copy(&self, registry: &mut Registry, ctx: &mut Context) {
+    fn copy(&self, res: &mut Resources, ctx: &mut Context) {
         let selection = self.selection(ctx);
 
         let (start, end) = self.selection_start_end(selection);
@@ -87,12 +87,12 @@ impl TextBehaviorState {
         if let Some(copy_text) = String16::from(ctx.get_widget(self.target).clone::<String>("text"))
             .get_string(start, end)
         {
-            registry.get_mut::<Clipboard>("clipboard").set(copy_text);
+            res.get_mut::<Clipboard>("clipboard").set(copy_text);
         }
     }
 
-    fn paste(&mut self, registry: &mut Registry, ctx: &mut Context) {
-        if let Some(value) = registry.get::<Clipboard>("clipboard").get() {
+    fn paste(&mut self, res: &mut Resources, ctx: &mut Context) {
+        if let Some(value) = res.get::<Clipboard>("clipboard").get() {
             self.insert_text(value, ctx);
         }
     }
@@ -317,7 +317,7 @@ impl TextBehaviorState {
     // -- Event handling --
 
     // handles the key down event
-    fn key_down(&mut self, registry: &mut Registry, ctx: &mut Context, key_event: KeyEvent) {
+    fn key_down(&mut self, res: &mut Resources, ctx: &mut Context, key_event: KeyEvent) {
         if !self.focused(ctx) {
             return;
         }
@@ -695,12 +695,7 @@ impl State for TextBehaviorState {
         }
     }
 
-    fn messages(
-        &mut self,
-        mut messages: MessageReader,
-        registry: &mut Registry,
-        ctx: &mut Context,
-    ) {
+    fn messages(&mut self, mut messages: MessageReader, res: &mut Resources, ctx: &mut Context) {
         for action in messages.read::<TextAction>() {
             match action {
                 TextAction::KeyDown(event) => self.key_down(registry, ctx, event),
@@ -720,7 +715,7 @@ impl State for TextBehaviorState {
         }
     }
 
-    fn update_post_layout(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+    fn update_post_layout(&mut self, _res: &mut Resources, ctx: &mut Context) {
         if self.update_selection {
             self.update_cursor(ctx);
 

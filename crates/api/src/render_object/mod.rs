@@ -28,7 +28,7 @@ mod text;
 pub trait RenderObject: Any {
     fn render(
         &self,
-        render_context: &mut RenderContext2D,
+        res: &mut Resources
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree>,
         context_provider: &ContextProvider,
@@ -136,7 +136,7 @@ pub trait RenderObject: Any {
 
     fn render_children(
         &self,
-        render_context: &mut RenderContext2D,
+        res: &mut Resources,
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree>,
         context_provider: &ContextProvider,

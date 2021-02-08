@@ -28,7 +28,7 @@ pub struct PagerState {
 }
 
 impl State for PagerState {
-    fn init(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, _res: &mut Resources, ctx: &mut Context) {
         let current_index = Pager::correct_current_index(ctx);
 
         if let Some(count) = ctx.widget().children_count() {
@@ -52,12 +52,7 @@ impl State for PagerState {
         Pager::update_next_previous_enabled(ctx, current_index);
     }
 
-    fn messages(
-        &mut self,
-        mut messages: MessageReader,
-        _registry: &mut Registry,
-        ctx: &mut Context,
-    ) {
+    fn messages(&mut self, mut messages: MessageReader, _res: &mut Resources, ctx: &mut Context) {
         for action in messages.read::<PagerAction>() {
             match action {
                 PagerAction::Next => Pager::next(ctx, ctx.entity()),

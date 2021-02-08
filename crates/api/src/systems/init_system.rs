@@ -8,15 +8,10 @@ use crate::{prelude::*, render::RenderContext2D, theming::Selector, tree::Tree};
 #[derive(Constructor)]
 pub struct InitSystem {
     context_provider: ContextProvider,
-    registry: Rc<RefCell<Registry>>,
 }
 
-impl System<Tree, RenderContext2D> for InitSystem {
-    fn run_with_context(
-        &self,
-        ecm: &mut EntityComponentManager<Tree>,
-        render_context: &mut RenderContext2D,
-    ) {
+impl System<Tree> for InitSystem {
+    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
         let root = ecm.entity_store().root();
 
         #[cfg(feature = "debug")]
@@ -56,7 +51,7 @@ impl System<Tree, RenderContext2D> for InitSystem {
                     .borrow_mut()
                     .get_mut(&current_node)
                 {
-                    state.init(&mut *self.registry.borrow_mut(), &mut ctx);
+                    state.init(&mut *self.res.borrow_mut(), &mut ctx);
                 }
 
                 drop(ctx);

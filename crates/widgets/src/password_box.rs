@@ -27,12 +27,7 @@ impl State for PasswordBoxState {
         self.echo = ctx.widget().clone("echo");
     }
 
-    fn messages(
-        &mut self,
-        mut messages: MessageReader,
-        _registry: &mut Registry,
-        ctx: &mut Context,
-    ) {
+    fn messages(&mut self, mut messages: MessageReader, _res: &mut Resources, ctx: &mut Context) {
         for message in messages.read::<TextResult>() {
             match message {
                 TextResult::TextManipulated(text) => self.mask(ctx, text),

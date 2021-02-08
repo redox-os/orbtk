@@ -8,7 +8,6 @@ use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree};
 #[derive(Constructor)]
 pub struct PostLayoutStateSystem {
     context_provider: ContextProvider,
-    registry: Rc<RefCell<Registry>>,
 }
 
 impl PostLayoutStateSystem {
@@ -17,7 +16,7 @@ impl PostLayoutStateSystem {
         entity: Entity,
         theme: &Theme,
         ecm: &mut EntityComponentManager<Tree>,
-        render_context: &mut RenderContext2D,
+        res: &mut Resources,
     ) {
         {
             let mut ctx = Context::new(
@@ -28,7 +27,7 @@ impl PostLayoutStateSystem {
             );
 
             if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
-                state.cleanup(&mut self.registry.borrow_mut(), &mut ctx);
+                state.cleanup(&mut self.res.borrow_mut(), &mut ctx);
             }
 
             drop(ctx);
@@ -48,12 +47,8 @@ impl PostLayoutStateSystem {
     }
 }
 
-impl System<Tree, RenderContext2D> for PostLayoutStateSystem {
-    fn run_with_context(
-        &self,
-        ecm: &mut EntityComponentManager<Tree>,
-        render_context: &mut RenderContext2D,
-    ) {
+impl System<Tree> for PostLayoutStateSystem {
+    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
         // todo fix
         // if !self.shell.borrow().update() || !self.shell.borrow().running() {
         //     return;
@@ -90,7 +85,7 @@ impl System<Tree, RenderContext2D> for PostLayoutStateSystem {
                         .borrow_mut()
                         .get_mut(&key)
                         .unwrap()
-                        .update_post_layout(&mut *self.registry.borrow_mut(), &mut ctx);
+                        .update_post_layout(&mut *self.res.borrow_mut(), &mut ctx);
                 }
 
                 while let Some(remove_widget) = remove_widget_list.pop() {

@@ -2,21 +2,16 @@ use std::{cell::RefCell, rc::Rc};
 
 use dces::prelude::*;
 
-use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree};
+use crate::{prelude::*, theming::Theme, tree::Tree};
 
 /// Handles the inner cleanup while window is closing.
 #[derive(Constructor)]
 pub struct CleanupSystem {
     context_provider: ContextProvider,
-    registry: Rc<RefCell<Registry>>,
 }
 
-impl System<Tree, RenderContext2D> for CleanupSystem {
-    fn run_with_context(
-        &self,
-        ecm: &mut EntityComponentManager<Tree>,
-        render_context: &mut RenderContext2D,
-    ) {
+impl System<Tree> for CleanupSystem {
+    fn run_with_context(&self, ecm: &mut EntityComponentManager<Tree>, res: &mut Resources) {
         // let mut shell = self.shell.borrow_mut();
         let root = ecm.entity_store().root();
         let theme = ecm
@@ -50,7 +45,7 @@ impl System<Tree, RenderContext2D> for CleanupSystem {
             let mut keys = vec![];
 
             if !skip {
-                let registry = &mut self.registry.borrow_mut();
+                let registry = &mut self.res.borrow_mut();
 
                 let mut ctx = Context::new(
                     (widget, ecm),

@@ -27,17 +27,17 @@ pub trait AsAny: Any {
 /// }
 ///
 /// impl State for MyState {
-///     fn init(&mut self, _registry: &mut Registry, _ctx: &mut Context) {
+///     fn init(&mut self, _ctx: &mut Context, _res: &mut Resources) {
 ///         self.count = 42;
 ///         println!("MyState initialized.");
 ///     }
 ///
-///     fn update(&mut self, _registry: &mut Registry, _ctx: &mut Context) {
+///     fn update(&mut self, _ctx: &mut Context, _res: &mut Resources) {
 ///         self.count += 1;
 ///         println("MyState updated.");
 ///     }
 ///
-///     fn update_post_layout(&mut self, _registry: &mut Registry, _ctx: &mut Context) {
+///     fn update_post_layout(&mut self, _ctx: &mut Context, _res: &mut Resources) {
 ///         println("MyState updated after layout is calculated.");
 ///     }
 /// }
@@ -53,43 +53,43 @@ pub trait State: AsAny {
     /// It is called after the widget is created.
     ///
     /// # Arguments
-    /// * `_registry`: Provides access to the global Service Registry.
     /// * `_ctx`: Represents the context of the current widget.Lets you manipulate the widget tree.
-    fn init(&mut self, _registry: &mut Registry, _ctx: &mut Context) {}
+    /// * `_res`: Provides access to the global resources Storage.
+    fn init(&mut self, _ctx: &mut Context, _res: &mut Resources) {}
 
     /// Used to cleanup the state and is called after window close is requested.
+    ///
     /// # Arguments
-    /// * `_registry`: Provides access to the global Service Registry.
     /// * `_ctx`: Represents the context of the current widget.Allows manipulation of the widget tree.
-    fn cleanup(&mut self, _registry: &mut Registry, _ctx: &mut Context) {}
+    /// * `_res`: Provides access to the global resources Storage.
+    fn cleanup(&mut self, _ctx: &mut Context, _res: &mut Resources) {}
 
     /// Updates the state of a widget **before layout is calculated** for the given context when the widget becomes "dirty",
     /// (e.g.: a property of a widget is changed or an [`event`] is fired)
     ///
     /// # Arguments
-    /// * `_registry`: Provides access to the global Service Registry.
     /// * `_ctx`: Represents the context of the current widget.Allows manipulation of the widget tree.
+    /// * `_res`: Provides access to the global resources Storage.
     ///
     /// [`event`]: ../trait.Event.html
-    fn update(&mut self, _registry: &mut Registry, _ctx: &mut Context) {}
+    fn update(&mut self, _ctx: &mut Context, _res: &mut Resources) {}
 
     /// Used to read messages that are sent to the widget. This will be called after `update` and before `update_post_layout`.
     ///
     /// # Arguments
     /// * `_messages`: Provides access to messages of the widget.
-    /// * `_registry`: Provides access to the global Service Registry.
     /// * `_ctx`: Represents the context of the current widget.Allows manipulation of the widget tree.
-    fn messages(&mut self, _messages: MessageReader, _registry: &mut Registry, _ctx: &mut Context) {
-    }
+    /// * `_res`: Provides access to the global resources Storage.
+    fn messages(&mut self, _messages: MessageReader, _ctx: &mut Context, _res: &mut Resources) {}
 
     /// Updates the state **after layout is calculated and before rendering**
     /// for the given context when the widget becomes "dirty",
     /// (e.g.: a property of a widget is changed, or an [`event`] is fired)
     ///
     /// # Arguments
-    /// * `_registry`: Provides access to the global Service Registry.
     /// * `_ctx`: Represents the context of the current widget.Allows manipulation of the widget tree.
+    /// * `_res`: Provides access to the global resources Storage.
     ///
     /// [`event`]: ../trait.Event.html
-    fn update_post_layout(&mut self, _registry: &mut Registry, _ctx: &mut Context) {}
+    fn update_post_layout(&mut self, _ctx: &mut Context, _res: &mut Resources) {}
 }

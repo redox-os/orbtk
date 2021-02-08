@@ -20,21 +20,15 @@ use crate::{
 pub struct WindowAdapter {
     world: World<Tree, render::RenderContext2D>,
     ctx: ContextProvider,
-    registry: Rc<RefCell<Registry>>,
     old_clipboard_value: Option<String>,
 }
 
 impl WindowAdapter {
     /// Creates a new WindowAdapter.
-    pub fn new(
-        world: World<Tree, render::RenderContext2D>,
-        ctx: ContextProvider,
-        registry: Rc<RefCell<Registry>>,
-    ) -> Self {
+    pub fn new(world: World<Tree, render::RenderContext2D>, ctx: ContextProvider) -> Self {
         WindowAdapter {
             world,
             ctx,
-            registry,
             old_clipboard_value: None,
         }
     }
@@ -53,8 +47,8 @@ impl WindowAdapter {
 impl shell::WindowAdapter for WindowAdapter {
     fn clipboard_update(&mut self, value: &mut Option<String>) {
         // internal clipboard value is new => update system clipboard value.
-        if self.registry.borrow().get::<Clipboard>("clipboard").get() != self.old_clipboard_value {
-            *value = self.registry.borrow().get::<Clipboard>("clipboard").get();
+        if self.res.borrow().get::<Clipboard>("clipboard").get() != self.old_clipboard_value {
+            *value = self.res.borrow().get::<Clipboard>("clipboard").get();
 
             self.old_clipboard_value = value.clone();
 
@@ -214,26 +208,21 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
 
     let (sender, receiver) = mpsc::channel();
 
-    let registry = Rc::new(RefCell::new(Registry::new()));
-
     let context_provider =
         ContextProvider::new(sender, request_sender, app_name.clone(), localization);
 
     if app_name.is_empty() {
-        registry.borrow_mut().register(
-            "settings",
-            Settings::new(context_provider.message_adapter.clone()),
-        );
+        world
+            .resources_mut()
+            .insert(Settings::new(context_provider.message_adapter.clone()));
     } else {
-        registry.borrow_mut().register(
-            "settings",
-            Settings::from_name(app_name, context_provider.message_adapter.clone()),
-        );
+        world.resources_mut().insert(Settings::from_name(
+            app_name,
+            context_provider.message_adapter.clone(),
+        ));
     };
 
-    registry
-        .borrow_mut()
-        .register("clipboard", Clipboard::new());
+    world.resources_mut().insert(Clipboard::new());
 
     let window = {
         let overlay = Overlay::new().build(&mut BuildContext::new(
@@ -326,17 +315,14 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             Rectangle::from((0.0, 0.0, constraint.width(), constraint.height())),
         );
 
-    world.register_init_system(InitSystem::new(context_provider.clone(), registry.clone()));
+    world.register_init_system(InitSystem::new(context_provider.clone(), res.clone()));
 
-    world.register_cleanup_system(CleanupSystem::new(
-        context_provider.clone(),
-        registry.clone(),
-    ));
+    world.register_cleanup_system(CleanupSystem::new(context_provider.clone(), res.clone()));
 
     world
         .create_system(EventStateSystem::new(
             context_provider.clone(),
-            registry.clone(),
+            res.clone(),
             RefCell::new(vec![]),
         ))
         .with_priority(0)
@@ -350,7 +336,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     world
         .create_system(PostLayoutStateSystem::new(
             context_provider.clone(),
-            registry.clone(),
+            res.clone(),
         ))
         .with_priority(2)
         .build();
@@ -361,7 +347,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         .build();
 
     (
-        WindowAdapter::new(world, context_provider, registry),
+        WindowAdapter::new(world, context_provider),
         settings,
         receiver,
     )

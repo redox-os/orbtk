@@ -16,7 +16,7 @@ struct BarState {
 }
 
 impl State for BarState {
-    fn init(&mut self, registry: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, res: &mut Resources, ctx: &mut Context) {
         self.indicator = ctx
             .entity_of_child(ID_INDICATOR)
             .expect("BarState.init(): Child could not be found!");

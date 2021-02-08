@@ -19,12 +19,7 @@ impl State for MouseBehaviorState {
         self.target = (*MouseBehavior::target_ref(&ctx.widget())).into();
     }
 
-    fn messages(
-        &mut self,
-        mut messages: MessageReader,
-        _registry: &mut Registry,
-        ctx: &mut Context,
-    ) {
+    fn messages(&mut self, mut messages: MessageReader, _res: &mut Resources, ctx: &mut Context) {
         for message in messages.read::<Action>() {
             match message {
                 Action::Press(_) => {

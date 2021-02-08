@@ -720,16 +720,11 @@ struct NavigationState {
 }
 
 impl State for NavigationState {
-    fn init(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, _res: &mut Resources, ctx: &mut Context) {
         self.master_detail = ctx.child(ID_NAVIGATION_MASTER_DETAIL).entity();
     }
 
-    fn messages(
-        &mut self,
-        mut messages: MessageReader,
-        _registry: &mut Registry,
-        ctx: &mut Context,
-    ) {
+    fn messages(&mut self, mut messages: MessageReader, _res: &mut Resources, ctx: &mut Context) {
         for message in messages.read::<MasterDetailAction>() {
             ctx.send_message(message, self.master_detail);
         }
@@ -748,7 +743,7 @@ impl LocalizationState {
 }
 
 impl State for LocalizationState {
-    fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, _res: &mut Resources, ctx: &mut Context) {
         if !self.change_language {
             return;
         }
@@ -772,20 +767,15 @@ struct InteractiveState {
 }
 
 impl State for InteractiveState {
-    fn messages(
-        &mut self,
-        mut messages: MessageReader,
-        registry: &mut Registry,
-        ctx: &mut Context,
-    ) {
+    fn messages(&mut self, mut messages: MessageReader, res: &mut Resources, ctx: &mut Context) {
         for message in messages.read::<InteractiveAction>() {
             match message {
                 InteractiveAction::LoadSettings => registry
-                    .get::<Settings>("settings")
+                    .get::<Settings>()
                     .load_async::<SettingsData>("settings_data".to_string(), ctx.entity()),
                 InteractiveAction::SaveSettings => {
                     let text: String = InteractiveView::settings_text_clone(&ctx.widget());
-                    registry.get::<Settings>("settings").save_async(
+                    res.get::<Settings>().save_async(
                         "settings_data".to_string(),
                         SettingsData(text),
                         ctx.entity(),

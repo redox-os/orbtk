@@ -13,7 +13,7 @@ struct MainState {
 }
 
 impl State for MainState {
-    fn init(&mut self, _registry: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, _res: &mut Resources, ctx: &mut Context) {
         let entity = ctx.widget().entity();
         let message_adapter = ctx.message_adapter();
 
@@ -26,12 +26,7 @@ impl State for MainState {
             }
         }));
     }
-    fn messages(
-        &mut self,
-        mut messages: MessageReader,
-        _registry: &mut Registry,
-        ctx: &mut Context,
-    ) {
+    fn messages(&mut self, mut messages: MessageReader, _res: &mut Resources, ctx: &mut Context) {
         for message in messages.read::<Message>() {
             match message {
                 Message::Increment => {
