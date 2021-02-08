@@ -1,12 +1,14 @@
-use crate::Size;
-use derive_more::{Add, Constructor, From, Sub};
-use std::ops::{Add, Div, Mul, Neg};
+use super::Size;
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 /// A `Point` is specified by a x coordinate and an y coordinate.
 ///
 /// # Examples
+///
 /// ```rust
-/// use orbtk::utils::Point;
+/// use orbtk_base::utils::Point;
+/// // use orbtk::base::utils::Point;
+///
 /// let point = Point::new(10., 10.);
 /// let other_point = Point::new(5., 7.);
 /// let result = point - other_point;
@@ -14,13 +16,18 @@ use std::ops::{Add, Div, Mul, Neg};
 /// assert_eq!(result.x(), 5.);
 /// assert_eq!(result.y(), 3.);
 /// ```
-#[derive(Constructor, Add, Sub, Copy, From, Clone, Default, Debug, PartialEq)]
+#[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct Point {
     x: f64,
     y: f64,
 }
 
 impl Point {
+    /// Constructs a new point.
+    pub fn new(x: f64, y: f64) -> Self {
+        Point { x, y }
+    }
+
     /// Returns the distance between this `Point` and the given `Point`.
     pub fn distance(&self, other: Self) -> f64 {
         ((self.x - other.x).powf(2.) + (self.y - other.y).powf(2.)).sqrt()
@@ -88,6 +95,26 @@ impl Point {
 
 // Component-wise operations
 
+impl Add<Point> for Point {
+    type Output = Point;
+
+    fn add(mut self, rhs: Point) -> Self::Output {
+        self.x += rhs.x;
+        self.y += rhs.y;
+        self
+    }
+}
+
+impl Sub<Point> for Point {
+    type Output = Point;
+
+    fn sub(mut self, rhs: Point) -> Self::Output {
+        self.x -= rhs.x;
+        self.y -= rhs.y;
+        self
+    }
+}
+
 impl Add<Size> for Point {
     type Output = Point;
 
@@ -149,6 +176,12 @@ impl Neg for Point {
 }
 
 // --- Conversions ---
+
+impl From<(f64, f64)> for Point {
+    fn from(s: (f64, f64)) -> Point {
+        Point::from((s.0, s.1))
+    }
+}
 
 impl From<Size> for Point {
     fn from(s: Size) -> Self {

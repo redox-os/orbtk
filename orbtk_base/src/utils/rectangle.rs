@@ -1,10 +1,12 @@
-use crate::{Point, Size};
+use super::{Point, Size};
 
 /// A `Rectangle` is normally expressed as a top-left corner and a size
 ///
 /// # Examples
+///
 /// ```rust
 /// use orbtk::utils::Rectangle;
+///
 /// let rectangle = Rectangle::new((0., 5.),(10., 7.));
 ///
 /// assert_eq!(rectangle.x(), 0.);
@@ -192,7 +194,7 @@ impl From<(f64, f64, f64, f64)> for Rectangle {
 
 #[cfg(test)]
 mod tests {
-    use crate::prelude::*;
+    use super::*;
 
     #[test]
     fn test_new() {

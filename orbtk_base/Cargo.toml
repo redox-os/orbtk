@@ -8,3 +8,10 @@ keywords = ["gui", "ui", "ecs"]
 
 [dependencies]
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "develop" }
+ron = "0.6"
+serde = "1.0"
+lexical-core = "0.7"
+phf = { version = "0.8", default-features = false }
+
+[build-dependencies]
+phf_codegen = { version = "0.8", default-features = false }

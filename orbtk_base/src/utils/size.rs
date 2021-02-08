@@ -1,11 +1,13 @@
-use derive_more::{Add, Constructor, From, Sub};
-use std::ops::Div;
+use std::ops::{Add, Div, Sub};
 
 /// A `Size` specified by width and height.
 ///
 /// # Examples
+///
 /// ```rust
 /// use orbtk::utils::Size;
+/// // use orbtk::utils::Size;
+///
 /// let size = Size::new(10., 10.);
 /// let other_size = Size::new(5., 7.);
 /// let result = size - other_size;
@@ -13,13 +15,18 @@ use std::ops::Div;
 /// assert_eq!(result.width(), 5.);
 /// assert_eq!(result.height(), 3.);
 /// ```
-#[derive(Constructor, Add, Sub, Copy, From, Clone, Default, Debug, PartialEq)]
+#[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct Size {
     width: f64,
     height: f64,
 }
 
 impl Size {
+    /// Constructs a new size.
+    pub fn new(width: f64, height: f64) -> Self {
+        Size { width, height }
+    }
+
     /// Gets the width of the size.
     pub fn width(&self) -> f64 {
         self.width
@@ -65,6 +72,12 @@ impl Div<Size> for f64 {
 
 // --- Conversions ---
 
+impl From<(f64, f64)> for Size {
+    fn from(s: (f64, f64)) -> Size {
+        Size::from((s.0, s.1))
+    }
+}
+
 impl From<f64> for Size {
     fn from(t: f64) -> Self {
         Size::new(t, t)
@@ -84,6 +97,26 @@ impl From<(i32, i32)> for Size {
 }
 
 // --- Conversions ---
+
+impl Add<Size> for Size {
+    type Output = Size;
+
+    fn add(mut self, rhs: Size) -> Self::Output {
+        self.width += rhs.width;
+        self.height += rhs.height;
+        self
+    }
+}
+
+impl Sub<Size> for Size {
+    type Output = Size;
+
+    fn sub(mut self, rhs: Size) -> Self::Output {
+        self.width -= rhs.width;
+        self.height -= rhs.height;
+        self
+    }
+}
 
 #[cfg(test)]
 mod tests {
