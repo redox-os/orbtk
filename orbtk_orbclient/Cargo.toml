@@ -1,0 +1,13 @@
+[package]
+name = "orbtk_orbclient"
+version = "0.4.0-alpha1"
+authors = ["Florian Blasius <flovanpt@posteo.de>"]
+description = "App and window implementation for OrbTk based on OrbClient."
+edition = "2018"
+keywords = ["gui", "ui", "window"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+orbtk_shell = { path = "../orbtk_shell" }
+orbclient = "0.3.30"
