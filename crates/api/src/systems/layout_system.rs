@@ -36,8 +36,10 @@ impl System<Tree> for LayoutSystem {
             .unwrap()
             .clone();
 
+        let mut rtx = res.get_mut::<RenderContext2D>();
+
         self.context_provider.layouts.borrow()[&root].measure(
-            render_context,
+            rtx,
             root,
             ecm,
             &self.context_provider.layouts.borrow(),
@@ -45,7 +47,7 @@ impl System<Tree> for LayoutSystem {
         );
 
         self.context_provider.layouts.borrow()[&root].arrange(
-            render_context,
+            rtx,
             window_size,
             root,
             ecm,

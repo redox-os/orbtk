@@ -22,7 +22,7 @@ impl PostLayoutStateSystem {
             let mut ctx = Context::new((entity, ecm), &theme, &self.context_provider);
 
             if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
-                state.cleanup(&mut self.res.borrow_mut(), &mut ctx);
+                state.cleanup(&mut ctx, res);
             }
 
             drop(ctx);
@@ -79,7 +79,7 @@ impl System<Tree> for PostLayoutStateSystem {
                         .borrow_mut()
                         .get_mut(&key)
                         .unwrap()
-                        .update_post_layout(&mut *self.res.borrow_mut(), &mut ctx);
+                        .update_post_layout(&mut ctx, res);
                 }
 
                 while let Some(remove_widget) = remove_widget_list.pop() {
@@ -88,11 +88,11 @@ impl System<Tree> for PostLayoutStateSystem {
 
                     // remove children of target widget.
                     for entity in children.iter().rev() {
-                        self.remove_widget(*entity, &theme, ecm, render_context);
+                        self.remove_widget(*entity, &theme, ecm, res);
                     }
 
                     // remove target widget
-                    self.remove_widget(remove_widget, &theme, ecm, render_context);
+                    self.remove_widget(remove_widget, &theme, ecm, res);
                 }
             }
         }
