@@ -53,12 +53,12 @@ impl SwitchState {
 }
 
 impl State for SwitchState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
         self.switch_toggle = ctx.child(ID_SWITCH_TOGGLE).entity();
         self.update_visual(ctx);
     }
 
-    fn messages(&mut self, mut messages: MessageReader, _res: &mut Resources, ctx: &mut Context) {
+    fn messages(&mut self, mut messages: MessageReader, ctx: &mut Context, res: &mut Resources) {
         for message in messages.read::<SwitchAction>() {
             match message {
                 SwitchAction::ToggleSelection => self.toggle_selection(ctx),

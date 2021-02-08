@@ -13,7 +13,7 @@ pub struct ScrollIndicatorState {
 }
 
 impl State for ScrollIndicatorState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
         self.horizontal_scroll_bar = ctx
             .entity_of_child(ID_SCROLL_BAR_HORIZONTAL)
             .expect("ScrollIndicatorState.init: scroll_bar_horizontal child could not be found.");
@@ -22,7 +22,7 @@ impl State for ScrollIndicatorState {
             .expect("ScrollIndicatorState.init: scroll_bar_vertical child could not be found.");
     }
 
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update_post_layout(&mut self, ctx: &mut Context, res: &mut Resources) {
         let mode = *ctx.widget().get::<ScrollViewerMode>("mode");
 
         if mode.vertical != ScrollMode::Auto && mode.horizontal != ScrollMode::Auto {

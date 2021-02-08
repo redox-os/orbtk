@@ -213,7 +213,7 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
         if let Some(cube) = ctx
             .widget()
             .get_mut::<DefaultRenderPipeline>("render_pipeline")

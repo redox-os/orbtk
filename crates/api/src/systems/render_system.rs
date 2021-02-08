@@ -52,11 +52,12 @@ impl System<Tree> for RenderSystem {
         offsets.insert(root, (0.0, 0.0));
 
         // CONSOLE.time("render");
+        let mut rtx = res.get_mut::<RenderContext2D>();
 
-        render_context.start();
-        render_context.begin_path();
+        rtx.start();
+        rtx.begin_path();
         self.context_provider.render_objects.borrow()[&root].render(
-            render_context,
+            rtx,
             root,
             ecm,
             &self.context_provider,
@@ -64,7 +65,7 @@ impl System<Tree> for RenderSystem {
             &mut offsets,
             debug,
         );
-        render_context.finish();
+        rtx.finish();
 
         if self.context_provider.first_run.get() {
             self.context_provider.first_run.set(false);

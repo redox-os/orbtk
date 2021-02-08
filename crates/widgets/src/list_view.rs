@@ -67,7 +67,7 @@ impl ListViewState {
 }
 
 impl State for ListViewState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
         self.items_panel = ctx
             .entity_of_child(ITEMS_PANEL)
             .expect("ListViewState.init: ItemsPanel child could not be found.");
@@ -75,11 +75,11 @@ impl State for ListViewState {
         self.generate_items(ctx);
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
         self.generate_items(ctx);
     }
 
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update_post_layout(&mut self, ctx: &mut Context, res: &mut Resources) {
         for index in ctx
             .widget()
             .get::<SelectedEntities>("selected_entities")
@@ -130,7 +130,7 @@ impl ListViewItemState {
 }
 
 impl State for ListViewItemState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
         if !ctx.widget().get::<bool>("enabled") || !self.request_selection_toggle.get() {
             return;
         }

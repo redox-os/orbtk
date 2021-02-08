@@ -98,7 +98,7 @@ impl SliderState {
 }
 
 impl State for SliderState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
         self.thumb = ctx.child(ID_THUMB).entity();
         self.track = ctx.child(ID_TRACK).entity();
         self.accent_track = ctx.child(ID_ACCENT_TRACK).entity();
@@ -106,7 +106,7 @@ impl State for SliderState {
         // todo call update
     }
 
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update_post_layout(&mut self, ctx: &mut Context, res: &mut Resources) {
         if let Some(action) = self.action {
             match action {
                 SliderAction::Move { mouse_x } => {

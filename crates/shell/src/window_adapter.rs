@@ -46,5 +46,5 @@ pub trait WindowAdapter {
     fn text_drop_event(&mut self, text: String);
 
     /// Runs the inner logic of the shell adapter.
-    fn run(&mut self, render_context: &mut RenderContext2D);
+    fn run(&mut self);
 }

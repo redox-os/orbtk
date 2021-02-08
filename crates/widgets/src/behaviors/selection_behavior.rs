@@ -12,13 +12,13 @@ pub struct SelectionBehaviorState {
 }
 
 impl State for SelectionBehaviorState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, _res: &mut Resources) {
         self.target = (*ctx.widget().get::<u32>("target")).into();
         toggle_flag("selected", &mut ctx.get_widget(self.target));
         ctx.get_widget(self.target).update(false);
     }
 
-    fn messages(&mut self, mut messages: MessageReader, _res: &mut Resources, ctx: &mut Context) {
+    fn messages(&mut self, mut messages: MessageReader, ctx: &mut Context, _res: &mut Resources) {
         for message in messages.read::<SelectionAction>() {
             match message {
                 SelectionAction::ToggleSelection => {

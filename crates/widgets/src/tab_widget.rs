@@ -26,13 +26,13 @@ pub struct TabHeaderState {
 }
 
 impl State for TabHeaderState {
-    fn init(&mut self, res: &mut Resources, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
         self.header_bar = ctx.child(HEADER_BAR).entity();
         self.tab_header_container = ctx.child(TAB_HEADER_CONTAINER).entity();
-        self.update(registry, ctx);
+        self.update(ctx, res);
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
         // set visibility of selection indicator bar
         // should be refactored after property converter are implemented
         // ```rust
@@ -455,14 +455,14 @@ impl TabWidgetState {
 }
 
 impl State for TabWidgetState {
-    fn init(&mut self, res: &mut Resources, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
         self.header_container = ctx.child(HEADER_CONTAINER).entity();
         self.body_container = ctx.child(BODY_CONTAINER).entity();
         self.close_button_visibility = true;
-        self.update(registry, ctx);
+        self.update(ctx, res);
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
         let actions: Vec<TabWidgetAction> = self.actions.drain(..).collect();
         for action in actions {
             match action {

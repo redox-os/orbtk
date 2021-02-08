@@ -78,8 +78,9 @@ pub trait RenderObject: Any {
         }
 
         self.render_self(
-            &mut Context::new((entity, ecm), &theme, context_provider, rtx),
+            &mut Context::new((entity, ecm), &theme, context_provider),
             &global_position,
+            rtx,
         );
 
         let mut global_pos = (0.0, 0.0);
@@ -124,7 +125,7 @@ pub trait RenderObject: Any {
         }
     }
 
-    fn render_self(&self, _: &mut Context, rtx: &mut RenderContext2D, _: &Point) {}
+    fn render_self(&self, _: &mut Context, _: &Point, rtx: &mut RenderContext2D) {}
 
     fn render_children(
         &self,

@@ -88,7 +88,7 @@ impl LoginFormState {
 }
 
 impl State for LoginFormState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
         self.authenticated = false;
         self.username_input = ctx
             .entity_of_child(USERNAME_INPUT_ID)

@@ -47,8 +47,8 @@ impl WindowAdapter {
 impl shell::WindowAdapter for WindowAdapter {
     fn clipboard_update(&mut self, value: &mut Option<String>) {
         // internal clipboard value is new => update system clipboard value.
-        if self.res.borrow().get::<Clipboard>("clipboard").get() != self.old_clipboard_value {
-            *value = self.res.borrow().get::<Clipboard>("clipboard").get();
+        if self.world.resources().get::<Clipboard>().get() != self.old_clipboard_value {
+            *value = self.world.resources().get::<Clipboard>().get();
 
             self.old_clipboard_value = value.clone();
 
@@ -57,9 +57,9 @@ impl shell::WindowAdapter for WindowAdapter {
 
         //  system clipboard value is newer => update internal clipboard
         if let Some(value) = value.clone() {
-            self.registry
-                .borrow_mut()
-                .get_mut::<Clipboard>("clipboard")
+            self.world
+                .resources_mut()
+                .get_mut::<Clipboard>()
                 .set(value.clone());
             self.old_clipboard_value = Some(value);
         }
@@ -164,8 +164,8 @@ impl shell::WindowAdapter for WindowAdapter {
             .push_event_direct(root, WindowEvent::ActiveChanged(active));
     }
 
-    fn run(&mut self, render_context: &mut render::RenderContext2D) {
-        self.world.run_with_context(render_context);
+    fn run(&mut self) {
+        self.world.run();
     }
 
     fn file_drop_event(&mut self, file_name: String) {

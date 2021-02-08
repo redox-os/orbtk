@@ -66,7 +66,7 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn messages(&mut self, mut messages: MessageReader, _res: &mut Resources, ctx: &mut Context) {
+    fn messages(&mut self, mut messages: MessageReader, _ctx: &mut Context, res: &mut Resources) {
         for message in messages.read::<Action>() {
             match message {
                 Action::Digit(digit) => {

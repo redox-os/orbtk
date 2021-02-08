@@ -15,11 +15,11 @@ pub struct MouseBehaviorState {
 }
 
 impl State for MouseBehaviorState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, _res: &mut Resources) {
         self.target = (*MouseBehavior::target_ref(&ctx.widget())).into();
     }
 
-    fn messages(&mut self, mut messages: MessageReader, _res: &mut Resources, ctx: &mut Context) {
+    fn messages(&mut self, mut messages: MessageReader, ctx: &mut Context, _res: &mut Resources) {
         for message in messages.read::<Action>() {
             match message {
                 Action::Press(_) => {
@@ -53,7 +53,7 @@ impl State for MouseBehaviorState {
         }
     }
 
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update_post_layout(&mut self, ctx: &mut Context, res: &mut Resources) {
         if self.has_delta {
             MouseBehavior::delta_set(&mut ctx.widget(), Point::default());
             self.has_delta = false;

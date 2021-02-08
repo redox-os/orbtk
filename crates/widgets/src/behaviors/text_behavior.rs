@@ -1,7 +1,7 @@
 use crate::{
     api::prelude::*,
     proc_macros::*,
-    render::TextMetrics,
+    render::{RenderContext2D, TextMetrics},
     shell::prelude::{Key, KeyEvent},
     theme_default::fonts,
     Cursor, TextBlock,
@@ -70,12 +70,12 @@ impl TextBehaviorState {
 
     // -- Text operations --
 
-    fn cut(&mut self, res: &mut Resources, ctx: &mut Context) {
-        self.copy(registry, ctx);
-        self.clear_selection(ctx);
+    fn cut(&mut self, ctx: &mut Context, res: &mut Resources) {
+        self.copy(ctx, res);
+        self.clear_selection(ctx, res.get_mut::<RenderContext2D>());
     }
 
-    fn copy(&self, res: &mut Resources, ctx: &mut Context) {
+    fn copy(&self, ctx: &mut Context, res: &mut Resources) {
         let selection = self.selection(ctx);
 
         let (start, end) = self.selection_start_end(selection);
@@ -87,24 +87,24 @@ impl TextBehaviorState {
         if let Some(copy_text) = String16::from(ctx.get_widget(self.target).clone::<String>("text"))
             .get_string(start, end)
         {
-            res.get_mut::<Clipboard>("clipboard").set(copy_text);
+            res.get_mut::<Clipboard>().set(copy_text);
         }
     }
 
-    fn paste(&mut self, res: &mut Resources, ctx: &mut Context) {
-        if let Some(value) = res.get::<Clipboard>("clipboard").get() {
-            self.insert_text(value, ctx);
+    fn paste(&mut self, ctx: &mut Context, res: &mut Resources) {
+        if let Some(value) = res.get::<Clipboard>().get() {
+            self.insert_text(value, ctx, res.get_mut::<RenderContext2D>());
         }
     }
 
-    fn insert_text(&mut self, insert_text: String, ctx: &mut Context) {
+    fn insert_text(&mut self, insert_text: String, ctx: &mut Context, rtx: &mut RenderContext2D) {
         if insert_text.is_empty() || !self.focused(ctx) {
             return;
         }
 
         let mut update_focus_state = self.len(ctx) == 0;
 
-        update_focus_state = update_focus_state || self.clear_selection(ctx);
+        update_focus_state = update_focus_state || self.clear_selection(ctx, rtx);
 
         let mut selection = self.selection(ctx);
 
@@ -127,8 +127,8 @@ impl TextBehaviorState {
     }
 
     // handle back space
-    fn back_space(&mut self, ctx: &mut Context) {
-        if self.clear_selection(ctx) {
+    fn back_space(&mut self, ctx: &mut Context, rtx: &mut RenderContext2D) {
+        if self.clear_selection(ctx, rtx) {
             return;
         }
 
@@ -143,7 +143,7 @@ impl TextBehaviorState {
         let mut text = String16::from(ctx.get_widget(self.target).clone::<String>("text"));
 
         let removed_width = self
-            .measure(ctx, selection.start(), selection.start() + 1)
+            .measure(ctx, selection.start(), selection.start() + 1, rtx)
             .width;
 
         let mut offset = *Cursor::offset_ref(&ctx.get_widget(self.cursor));
@@ -163,8 +163,8 @@ impl TextBehaviorState {
     }
 
     // handle delete
-    fn delete(&mut self, ctx: &mut Context) {
-        if self.clear_selection(ctx) {
+    fn delete(&mut self, ctx: &mut Context, rtx: &mut RenderContext2D) {
+        if self.clear_selection(ctx, rtx) {
             return;
         }
 
@@ -183,7 +183,7 @@ impl TextBehaviorState {
     }
 
     // clear all chars from the selection.
-    fn clear_selection(&mut self, ctx: &mut Context) -> bool {
+    fn clear_selection(&mut self, ctx: &mut Context, rtx: &mut RenderContext2D) -> bool {
         let mut selection = self.selection(ctx);
 
         if selection.is_empty() {
@@ -198,7 +198,7 @@ impl TextBehaviorState {
             text.remove(i);
         }
 
-        let removed_width = self.measure(ctx, start, end).width;
+        let removed_width = self.measure(ctx, start, end, rtx).width;
 
         let mut offset = *Cursor::offset_ref(&ctx.get_widget(self.cursor));
         offset = (offset + removed_width).min(0.);
@@ -222,16 +222,16 @@ impl TextBehaviorState {
 
     // -- Selection --
 
-    fn update_cursor(&mut self, ctx: &mut Context) {
+    fn update_cursor(&mut self, ctx: &mut Context, rtx: &mut RenderContext2D) {
         let selection = self.selection(ctx);
         let (start, end) = self.selection_start_end(selection);
 
-        let cursor_start_measure = self.measure(ctx, 0, selection.start());
+        let cursor_start_measure = self.measure(ctx, 0, selection.start(), rtx);
         Cursor::cursor_x_set(&mut ctx.get_widget(self.cursor), cursor_start_measure.width);
 
-        let start_measure = self.measure(ctx, 0, start);
+        let start_measure = self.measure(ctx, 0, start, rtx);
         Cursor::selection_x_set(&mut ctx.get_widget(self.cursor), start_measure.width);
-        let length_measure = self.measure(ctx, start, end);
+        let length_measure = self.measure(ctx, start, end, rtx);
         Cursor::selection_width_set(&mut ctx.get_widget(self.cursor), length_measure.width);
 
         if self.direction == Direction::None {
@@ -317,7 +317,7 @@ impl TextBehaviorState {
     // -- Event handling --
 
     // handles the key down event
-    fn key_down(&mut self, res: &mut Resources, ctx: &mut Context, key_event: KeyEvent) {
+    fn key_down(&mut self, ctx: &mut Context, res: &mut Resources, key_event: KeyEvent) {
         if !self.focused(ctx) {
             return;
         }
@@ -339,27 +339,27 @@ impl TextBehaviorState {
                 }
             }
             Key::Backspace => {
-                self.back_space(ctx);
+                self.back_space(ctx, res.get_mut::<RenderContext2D>());
             }
             Key::Delete => {
-                self.delete(ctx);
+                self.delete(ctx, res.get_mut::<RenderContext2D>());
             }
             Key::Enter => {
                 self.activate(ctx);
             }
             Key::X(..) => {
                 if self.is_ctlr_home_down(ctx) {
-                    self.cut(registry, ctx);
+                    self.cut(ctx, res);
                 }
             }
             Key::C(..) => {
                 if self.is_ctlr_home_down(ctx) {
-                    self.copy(registry, ctx);
+                    self.copy(ctx, res);
                 }
             }
             Key::V(..) => {
                 if self.is_ctlr_home_down(ctx) {
-                    self.paste(registry, ctx);
+                    self.paste(ctx, res);
                 }
             }
             Key::A(..) => {
@@ -540,9 +540,14 @@ impl TextBehaviorState {
     }
 
     // Get new position for the selection based on current mouse position
-    fn get_new_selection_position(&self, ctx: &mut Context, position: Point) -> usize {
+    fn get_new_selection_position(
+        &self,
+        ctx: &mut Context,
+        rtx: &mut RenderContext2D,
+        position: Point,
+    ) -> usize {
         if let Some((index, _x)) = self
-            .map_chars_index_to_position(ctx)
+            .map_chars_index_to_position(ctx, rtx)
             .iter()
             .min_by_key(|(_index, x)| (position.x() - x).abs() as u64)
         {
@@ -553,7 +558,11 @@ impl TextBehaviorState {
     }
 
     // Returns a vector with a tuple of each char's starting index (usize) and position (f64)
-    fn map_chars_index_to_position(&self, ctx: &mut Context) -> Vec<(usize, f64)> {
+    fn map_chars_index_to_position(
+        &self,
+        ctx: &mut Context,
+        rtx: &mut RenderContext2D,
+    ) -> Vec<(usize, f64)> {
         let len = self.len(ctx);
 
         // start x position of the cursor is start position of the text element + padding left
@@ -566,7 +575,7 @@ impl TextBehaviorState {
         position_index.push((0, start_position));
 
         for i in 0..len {
-            let bound_width: f64 = self.measure(ctx, 0, i + 1).width;
+            let bound_width: f64 = self.measure(ctx, 0, i + 1, rtx).width;
 
             let next_position: f64 = start_position + bound_width;
 
@@ -577,7 +586,13 @@ impl TextBehaviorState {
     }
 
     // measure text part
-    fn measure(&self, ctx: &mut Context, start: usize, end: usize) -> TextMetrics {
+    fn measure(
+        &self,
+        ctx: &mut Context,
+        start: usize,
+        end: usize,
+        rtx: &mut RenderContext2D,
+    ) -> TextMetrics {
         let font = TextBehavior::font_clone(&ctx.widget());
         let font_size = *TextBehavior::font_size_ref(&ctx.widget());
 
@@ -585,9 +600,7 @@ impl TextBehaviorState {
             String16::from(TextBlock::text_ref(&ctx.get_widget(self.text_block)).as_str())
                 .get_string(start, end)
         {
-            return ctx
-                .render_context_2_d()
-                .measure(text_part.as_str(), font_size, font);
+            return rtx.measure(text_part.as_str(), font_size, font);
         }
 
         TextMetrics::default()
@@ -675,7 +688,7 @@ impl TextBehaviorState {
 }
 
 impl State for TextBehaviorState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
         self.cursor = Entity::from(*TextBehavior::cursor_ref(&ctx.widget()));
         self.target = Entity::from(*TextBehavior::target_ref(&ctx.widget()));
         self.text_block = Entity::from(*TextBehavior::text_block_ref(&ctx.widget()));
@@ -695,14 +708,14 @@ impl State for TextBehaviorState {
         }
     }
 
-    fn messages(&mut self, mut messages: MessageReader, res: &mut Resources, ctx: &mut Context) {
+    fn messages(&mut self, mut messages: MessageReader, ctx: &mut Context, res: &mut Resources) {
         for action in messages.read::<TextAction>() {
             match action {
-                TextAction::KeyDown(event) => self.key_down(registry, ctx, event),
+                TextAction::KeyDown(event) => self.key_down(ctx, res, event),
                 TextAction::MouseDown(p) => self.mouse_down(ctx, p),
                 TextAction::Drop(text, position) => {
                     if check_mouse_condition(position, &ctx.get_widget(self.target)) {
-                        self.insert_text(text, ctx);
+                        self.insert_text(text, ctx, res.get_mut::<RenderContext2D>());
                     }
                 }
                 TextAction::FocusedChanged => self.focused_changed(ctx),
@@ -710,14 +723,16 @@ impl State for TextBehaviorState {
                 TextAction::MouseMove(position) => self.mouse_move(ctx, position),
                 TextAction::MouseUp => self.mouse_up(ctx),
                 TextAction::ForceUpdate(force) => self.force_update(ctx, force),
-                TextAction::TextInput(text) => self.insert_text(text, ctx),
+                TextAction::TextInput(text) => {
+                    self.insert_text(text, ctx, res.get_mut::<RenderContext2D>())
+                }
             }
         }
     }
 
-    fn update_post_layout(&mut self, _res: &mut Resources, ctx: &mut Context) {
+    fn update_post_layout(&mut self, ctx: &mut Context, res: &mut Resources) {
         if self.update_selection {
-            self.update_cursor(ctx);
+            self.update_cursor(ctx, res.get_mut::<RenderContext2D>());
 
             self.update_selection = false;
         }

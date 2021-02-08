@@ -32,11 +32,11 @@ impl ItemsWidgetState {
 }
 
 impl State for ItemsWidgetState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
         self.generate_items(ctx);
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
         self.generate_items(ctx);
     }
 }

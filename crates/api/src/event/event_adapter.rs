@@ -10,7 +10,7 @@ use crate::{event::*, shell::WindowRequest};
 ///
 /// ```rust
 /// impl State for MayState {
-///     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+///     fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
 ///         let event_adapter = ctx.event_adapter();
 ///         let entity = ctx.entity();
 ///         

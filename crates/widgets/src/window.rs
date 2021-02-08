@@ -72,12 +72,12 @@ impl WindowState {
 }
 
 impl State for WindowState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
         self.set_background(ctx);
         self.title = ctx.widget().clone("title");
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
         if self.background != *Window::background_ref(&ctx.widget()) {
             self.set_background(ctx);
         }

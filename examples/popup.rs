@@ -28,7 +28,7 @@ impl MainViewState {
 }
 
 impl State for MainViewState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
         if let Some(action) = self.action {
             match action {
                 PopUpAction::Show => {

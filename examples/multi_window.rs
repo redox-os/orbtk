@@ -13,7 +13,7 @@ impl MainState {
 }
 
 impl State for MainState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
         if self.show_window {
             Button::enabled_set(&mut ctx.child("button"), false);
             ctx.show_window(|ctx| {

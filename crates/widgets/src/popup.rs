@@ -5,11 +5,11 @@ use crate::{api::prelude::*, proc_macros::*};
 pub struct PopupState {}
 
 impl State for PopupState {
-    fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
         ctx.widget().set("visibility", Visibility::Hidden)
     }
 
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
         let visibility = ctx.widget().clone::<Visibility>("visibility");
         let open = *ctx.widget().get::<bool>("open");
 
@@ -26,7 +26,7 @@ impl State for PopupState {
         }
     }
 
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update_post_layout(&mut self, ctx: &mut Context, res: &mut Resources) {
         if *ctx.widget().get::<Visibility>("visibility") != Visibility::Visible {
             return;
         }

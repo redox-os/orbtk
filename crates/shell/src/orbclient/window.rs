@@ -354,7 +354,7 @@ where
         if !self.update {
             return;
         }
-        self.adapter.run(&mut self.render_context);
+        self.adapter.run();
         self.update = false;
         self.redraw.store(true, Ordering::Relaxed)
     }

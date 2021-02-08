@@ -16,14 +16,14 @@ struct BarState {
 }
 
 impl State for BarState {
-    fn init(&mut self, res: &mut Resources, ctx: &mut Context) {
+    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
         self.indicator = ctx
             .entity_of_child(ID_INDICATOR)
             .expect("BarState.init(): Child could not be found!");
-        self.update_post_layout(registry, ctx);
+        self.update_post_layout(ctx, res);
     }
 
-    fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
+    fn update_post_layout(&mut self, ctx: &mut Context, res: &mut Resources) {
         let val = ctx.widget().clone_or_default::<f64>("val");
 
         if val <= 0. {
