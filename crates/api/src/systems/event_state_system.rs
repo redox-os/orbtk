@@ -1,8 +1,8 @@
-use std::{cell::RefCell, rc::Rc};
+use std::cell::RefCell;
 
 use dces::prelude::*;
 
-use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree, utils::*};
+use crate::{prelude::*, theming::Theme, tree::Tree, utils::*};
 
 /// The `EventStateSystem` pops events from the event queue and delegates the events to the corresponding event handlers of the widgets and updates the states.
 #[derive(Constructor)]

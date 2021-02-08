@@ -1,8 +1,6 @@
-use std::{cell::RefCell, rc::Rc};
-
 use dces::prelude::*;
 
-use crate::{prelude::*, render::RenderContext2D, theming::Selector, tree::Tree};
+use crate::{prelude::*, theming::Selector, tree::Tree};
 
 /// This system is used to initializes the widgets.
 #[derive(Constructor)]

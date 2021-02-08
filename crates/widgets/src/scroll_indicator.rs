@@ -13,7 +13,7 @@ pub struct ScrollIndicatorState {
 }
 
 impl State for ScrollIndicatorState {
-    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
+    fn init(&mut self, ctx: &mut Context, _res: &mut Resources) {
         self.horizontal_scroll_bar = ctx
             .entity_of_child(ID_SCROLL_BAR_HORIZONTAL)
             .expect("ScrollIndicatorState.init: scroll_bar_horizontal child could not be found.");

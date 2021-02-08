@@ -23,11 +23,11 @@ impl PasswordBoxState {
 }
 
 impl State for PasswordBoxState {
-    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
+    fn init(&mut self, ctx: &mut Context, _res: &mut Resources) {
         self.echo = ctx.widget().clone("echo");
     }
 
-    fn messages(&mut self, mut messages: MessageReader, ctx: &mut Context, res: &mut Resources) {
+    fn messages(&mut self, mut messages: MessageReader, ctx: &mut Context, _res: &mut Resources) {
         for message in messages.read::<TextResult>() {
             match message {
                 TextResult::TextManipulated(text) => self.mask(ctx, text),

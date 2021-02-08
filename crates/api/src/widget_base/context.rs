@@ -7,7 +7,6 @@ use raw_window_handle::RawWindowHandle;
 use crate::{
     application::{create_window, ContextProvider},
     prelude::*,
-    render::RenderContext2D,
     shell::{ShellRequest, WindowRequest},
     theming::prelude::*,
     tree::Tree,

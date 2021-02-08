@@ -13,7 +13,7 @@ impl ScrollViewerState {
 }
 
 impl State for ScrollViewerState {
-    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
+    fn update(&mut self, ctx: &mut Context, _res: &mut Resources) {
         if let Some(delta) = self.delta {
             self.delta = None;
             let mode = *ctx.widget().get::<ScrollViewerMode>("mode");

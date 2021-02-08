@@ -53,7 +53,7 @@ impl State for MouseBehaviorState {
         }
     }
 
-    fn update_post_layout(&mut self, ctx: &mut Context, res: &mut Resources) {
+    fn update_post_layout(&mut self, ctx: &mut Context, _res: &mut Resources) {
         if self.has_delta {
             MouseBehavior::delta_set(&mut ctx.widget(), Point::default());
             self.has_delta = false;

@@ -100,7 +100,7 @@ impl State for LoginFormState {
         self.popup = None;
     }
 
-    fn update(&mut self, reg: &mut Registry, ctx: &mut Context) {
+    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
         if let Some(action) = &self.action {
             match action {
                 // read both textbox and passwordbox values to compare then show a popup
@@ -115,7 +115,7 @@ impl State for LoginFormState {
                     }
 
                     self.show_popup();
-                    self.update(reg, ctx);
+                    self.update(ctx, res);
                 }
                 // creates a popup then attach it to the overlay
                 LoginAction::ShowPopup => {

@@ -125,7 +125,7 @@ pub trait RenderObject: Any {
         }
     }
 
-    fn render_self(&self, _: &mut Context, _: &Point, rtx: &mut RenderContext2D) {}
+    fn render_self(&self, _: &mut Context, _: &Point, _rtx: &mut RenderContext2D) {}
 
     fn render_children(
         &self,

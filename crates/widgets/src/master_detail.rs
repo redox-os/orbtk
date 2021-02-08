@@ -122,13 +122,13 @@ impl MasterDetailState {
 }
 
 impl State for MasterDetailState {
-    fn init(&mut self, _ctx: &mut Context, res: &mut Resources) {
+    fn init(&mut self, ctx: &mut Context, _res: &mut Resources) {
         self.content_grid = ctx.child(CONTENT_GRID).entity();
         self.event_adapter = ctx.event_adapter();
         self.init_master_detail(ctx)
     }
 
-    fn messages(&mut self, mut messages: MessageReader, _ctx: &mut Context, res: &mut Resources) {
+    fn messages(&mut self, mut messages: MessageReader, ctx: &mut Context, _res: &mut Resources) {
         for action in messages.read::<MasterDetailAction>() {
             let responsive = *MasterDetail::responsive_ref(&ctx.widget());
 
@@ -154,7 +154,7 @@ impl State for MasterDetailState {
         }
     }
 
-    fn update_post_layout(&mut self, _ctx: &mut Context, res: &mut Resources) {
+    fn update_post_layout(&mut self, ctx: &mut Context, _res: &mut Resources) {
         if !*MasterDetail::responsive_ref(&ctx.widget()) {
             return;
         }

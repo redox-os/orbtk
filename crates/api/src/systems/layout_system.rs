@@ -36,7 +36,7 @@ impl System<Tree> for LayoutSystem {
             .unwrap()
             .clone();
 
-        let mut rtx = res.get_mut::<RenderContext2D>();
+        let rtx = res.get_mut::<RenderContext2D>();
 
         self.context_provider.layouts.borrow()[&root].measure(
             rtx,

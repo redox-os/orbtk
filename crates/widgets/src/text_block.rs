@@ -22,15 +22,15 @@ impl TextBlockState {
 }
 
 impl State for TextBlockState {
-    fn init(&mut self, _ctx: &mut Context, res: &mut Resources) {
+    fn init(&mut self, ctx: &mut Context, _res: &mut Resources) {
         self.localize(ctx);
     }
 
-    fn update(&mut self, _ctx: &mut Context, res: &mut Resources) {
+    fn update(&mut self, ctx: &mut Context, _res: &mut Resources) {
         self.localize(ctx);
     }
 
-    fn messages(&mut self, mut messages: MessageReader, _ctx: &mut Context, res: &mut Resources) {
+    fn messages(&mut self, mut messages: MessageReader, ctx: &mut Context, _res: &mut Resources) {
         for message in messages.read::<TextAction>() {
             match message {
                 TextAction::Localize => self.localize(ctx),

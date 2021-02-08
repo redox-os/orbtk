@@ -1,7 +1,8 @@
 use std::{collections::VecDeque, rc::Rc};
 
 use crate::{
-    api::prelude::*, proc_macros::*, shell::prelude::WindowRequest, theme_default::prelude::*,
+    api::prelude::*, proc_macros::*, render::RenderContext2D, shell::prelude::WindowRequest,
+    theme_default::prelude::*,
 };
 
 // --- KEYS --
@@ -62,7 +63,7 @@ impl WindowState {
         Window::focus_state_set(&mut ctx.widget(), focus_state);
     }
 
-    fn set_background(&mut self, ctx: &mut Context) {
+    fn set_background(&mut self, ctx: &mut Context, rtx: &mut RenderContext2D) {
         let background: Brush = ctx.widget().clone("background");
         if let Brush::SolidColor(color) = background {
             rtx.set_background(color);
@@ -73,13 +74,13 @@ impl WindowState {
 
 impl State for WindowState {
     fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
-        self.set_background(ctx);
+        self.set_background(ctx, res.get_mut::<RenderContext2D>());
         self.title = ctx.widget().clone("title");
     }
 
     fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
         if self.background != *Window::background_ref(&ctx.widget()) {
-            self.set_background(ctx);
+            self.set_background(ctx, res.get_mut::<RenderContext2D>());
         }
 
         let window = ctx.widget();

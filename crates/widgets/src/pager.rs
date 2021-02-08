@@ -28,7 +28,7 @@ pub struct PagerState {
 }
 
 impl State for PagerState {
-    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
+    fn init(&mut self, ctx: &mut Context, _res: &mut Resources) {
         let current_index = Pager::correct_current_index(ctx);
 
         if let Some(count) = ctx.widget().children_count() {

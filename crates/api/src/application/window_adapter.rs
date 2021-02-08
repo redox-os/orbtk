@@ -6,7 +6,6 @@ use crate::{
     application::*,
     event::*,
     localization::Localization,
-    render,
     services::{Clipboard, Settings},
     shell,
     shell::{ShellRequest, WindowRequest, WindowSettings},

@@ -52,7 +52,7 @@ impl System<Tree> for RenderSystem {
         offsets.insert(root, (0.0, 0.0));
 
         // CONSOLE.time("render");
-        let mut rtx = res.get_mut::<RenderContext2D>();
+        let rtx = res.get_mut::<RenderContext2D>();
 
         rtx.start();
         rtx.begin_path();

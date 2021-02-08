@@ -1,6 +1,5 @@
 //! This module contains traits to inject custom logic into the window shell.
 
-use crate::render::RenderContext2D;
 use crate::{event::*, utils::Point};
 
 /// The `WindowAdapter` represents the bridge to the `Shell` backend.

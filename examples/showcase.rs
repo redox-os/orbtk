@@ -720,11 +720,11 @@ struct NavigationState {
 }
 
 impl State for NavigationState {
-    fn init(&mut self, _ctx: &mut Context, res: &mut Resources) {
+    fn init(&mut self, ctx: &mut Context, _res: &mut Resources) {
         self.master_detail = ctx.child(ID_NAVIGATION_MASTER_DETAIL).entity();
     }
 
-    fn messages(&mut self, mut messages: MessageReader, _ctx: &mut Context, res: &mut Resources) {
+    fn messages(&mut self, mut messages: MessageReader, ctx: &mut Context, _res: &mut Resources) {
         for message in messages.read::<MasterDetailAction>() {
             ctx.send_message(message, self.master_detail);
         }
@@ -743,7 +743,7 @@ impl LocalizationState {
 }
 
 impl State for LocalizationState {
-    fn update(&mut self, _ctx: &mut Context, res: &mut Resources) {
+    fn update(&mut self, ctx: &mut Context, _res: &mut Resources) {
         if !self.change_language {
             return;
         }
@@ -770,7 +770,7 @@ impl State for InteractiveState {
     fn messages(&mut self, mut messages: MessageReader, ctx: &mut Context, res: &mut Resources) {
         for message in messages.read::<InteractiveAction>() {
             match message {
-                InteractiveAction::LoadSettings => registry
+                InteractiveAction::LoadSettings => res
                     .get::<Settings>()
                     .load_async::<SettingsData>("settings_data".to_string(), ctx.entity()),
                 InteractiveAction::SaveSettings => {

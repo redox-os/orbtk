@@ -1,8 +1,6 @@
-use std::{cell::RefCell, rc::Rc};
-
 use dces::prelude::*;
 
-use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree};
+use crate::{prelude::*, theming::Theme, tree::Tree};
 
 /// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
 #[derive(Constructor)]

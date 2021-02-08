@@ -32,7 +32,7 @@ impl State for TabHeaderState {
         self.update(ctx, res);
     }
 
-    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
+    fn update(&mut self, ctx: &mut Context, _res: &mut Resources) {
         // set visibility of selection indicator bar
         // should be refactored after property converter are implemented
         // ```rust
@@ -462,7 +462,7 @@ impl State for TabWidgetState {
         self.update(ctx, res);
     }
 
-    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
+    fn update(&mut self, ctx: &mut Context, _res: &mut Resources) {
         let actions: Vec<TabWidgetAction> = self.actions.drain(..).collect();
         for action in actions {
             match action {

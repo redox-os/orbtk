@@ -23,7 +23,7 @@ impl State for BarState {
         self.update_post_layout(ctx, res);
     }
 
-    fn update_post_layout(&mut self, ctx: &mut Context, res: &mut Resources) {
+    fn update_post_layout(&mut self, ctx: &mut Context, _res: &mut Resources) {
         let val = ctx.widget().clone_or_default::<f64>("val");
 
         if val <= 0. {

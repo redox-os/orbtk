@@ -91,7 +91,7 @@ fn default_or(key: &str, default_value: f64, ctx: &mut Context) -> Decimal {
 }
 
 impl State for NumericBoxState {
-    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
+    fn init(&mut self, ctx: &mut Context, _res: &mut Resources) {
         self.input = ctx.entity_of_child(ID_INPUT).expect(
             "NumericBoxState
         .init(): the child input could not be found!",
@@ -107,7 +107,7 @@ impl State for NumericBoxState {
     }
 
     // TODO: let the user type the value, or select it for cut, copy, paste operations
-    fn update(&mut self, ctx: &mut Context, res: &mut Resources) {
+    fn update(&mut self, ctx: &mut Context, _res: &mut Resources) {
         if let Some(action) = &self.action {
             match action {
                 InputAction::Inc => {

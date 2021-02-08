@@ -373,14 +373,14 @@ impl TextBehaviorState {
     }
 
     // handles mouse down event
-    fn mouse_down(&mut self, ctx: &mut Context, mouse: Mouse) {
+    fn mouse_down(&mut self, ctx: &mut Context, rtx: &mut RenderContext2D, mouse: Mouse) {
         self.pressed = true;
         if !*TextBehavior::focused_ref(&ctx.widget()) {
             self.request_focus();
             return;
         }
 
-        let selection_start = self.get_new_selection_position(ctx, mouse.position);
+        let selection_start = self.get_new_selection_position(ctx, rtx, mouse.position);
         let mut selection = self.selection(ctx);
         selection.set(selection_start);
 
@@ -388,13 +388,13 @@ impl TextBehaviorState {
     }
 
     // handles mouse move
-    fn mouse_move(&mut self, ctx: &mut Context, position: Point) {
+    fn mouse_move(&mut self, ctx: &mut Context, rtx: &mut RenderContext2D, position: Point) {
         if !self.pressed || !*TextBehavior::focused_ref(&ctx.widget()) {
             return;
         }
 
         let mut selection = self.selection(ctx);
-        let new_start = self.get_new_selection_position(ctx, position);
+        let new_start = self.get_new_selection_position(ctx, rtx, position);
 
         if selection.start() == new_start {
             return;
@@ -688,7 +688,7 @@ impl TextBehaviorState {
 }
 
 impl State for TextBehaviorState {
-    fn init(&mut self, ctx: &mut Context, res: &mut Resources) {
+    fn init(&mut self, ctx: &mut Context, _res: &mut Resources) {
         self.cursor = Entity::from(*TextBehavior::cursor_ref(&ctx.widget()));
         self.target = Entity::from(*TextBehavior::target_ref(&ctx.widget()));
         self.text_block = Entity::from(*TextBehavior::text_block_ref(&ctx.widget()));
@@ -712,7 +712,9 @@ impl State for TextBehaviorState {
         for action in messages.read::<TextAction>() {
             match action {
                 TextAction::KeyDown(event) => self.key_down(ctx, res, event),
-                TextAction::MouseDown(p) => self.mouse_down(ctx, p),
+                TextAction::MouseDown(p) => {
+                    self.mouse_down(ctx, res.get_mut::<RenderContext2D>(), p)
+                }
                 TextAction::Drop(text, position) => {
                     if check_mouse_condition(position, &ctx.get_widget(self.target)) {
                         self.insert_text(text, ctx, res.get_mut::<RenderContext2D>());
@@ -720,7 +722,9 @@ impl State for TextBehaviorState {
                 }
                 TextAction::FocusedChanged => self.focused_changed(ctx),
                 TextAction::SelectionChanged => self.update_selection = true,
-                TextAction::MouseMove(position) => self.mouse_move(ctx, position),
+                TextAction::MouseMove(position) => {
+                    self.mouse_move(ctx, res.get_mut::<RenderContext2D>(), position)
+                }
                 TextAction::MouseUp => self.mouse_up(ctx),
                 TextAction::ForceUpdate(force) => self.force_update(ctx, force),
                 TextAction::TextInput(text) => {
