@@ -124,16 +124,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3d7b894f5411737b7867f4827955924d7c254fc9f4d91a6aad6b097804b1018b"
 
 [[package]]
-name = "console_error_panic_hook"
-version = "0.1.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8d976903543e0c48546a91908f21588a680a8c8f984df9a5d69feccb2b2a211"
-dependencies = [
- "cfg-if 0.1.10",
- "wasm-bindgen",
-]
-
-[[package]]
 name = "crc32fast"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -544,14 +534,12 @@ dependencies = [
  "raqote",
  "rusttype",
  "smallvec",
- "stdweb",
 ]
 
 [[package]]
 name = "orbtk_shell"
 version = "0.3.1-alpha4"
 dependencies = [
- "console_error_panic_hook",
  "image",
  "lazy_static",
  "orbclient",
@@ -559,7 +547,6 @@ dependencies = [
  "orbtk_utils",
  "raw-window-handle",
  "sdl2",
- "stdweb",
 ]
 
 [[package]]

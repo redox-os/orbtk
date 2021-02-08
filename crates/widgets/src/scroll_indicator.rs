@@ -22,7 +22,7 @@ impl State for ScrollIndicatorState {
             .expect("ScrollIndicatorState.init: scroll_bar_vertical child could not be found.");
     }
 
-    fn update_post_layout(&mut self, ctx: &mut Context, res: &mut Resources) {
+    fn update_post_layout(&mut self, ctx: &mut Context, _res: &mut Resources) {
         let mode = *ctx.widget().get::<ScrollViewerMode>("mode");
 
         if mode.vertical != ScrollMode::Auto && mode.horizontal != ScrollMode::Auto {

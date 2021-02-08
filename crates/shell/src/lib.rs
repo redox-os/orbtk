@@ -43,10 +43,6 @@ pub mod platform;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod native;
 
-#[cfg(target_arch = "wasm32")]
-#[path = "web/mod.rs"]
-pub mod platform;
-
 pub use orbtk_render::prelude as render;
 
 use std::{collections::HashMap, sync::mpsc};

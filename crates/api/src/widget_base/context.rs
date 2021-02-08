@@ -24,7 +24,7 @@ pub struct Context<'a> {
     entity: Entity,
     pub theme: Theme,
     pub(crate) provider: &'a ContextProvider,
-    new_states: BTreeMap<Entity, Box<dyn State>>,
+    new_states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     remove_widget_list: Vec<Entity>,
 }
 
@@ -33,7 +33,7 @@ impl<'a> Drop for Context<'a> {
         self.provider
             .states
             .borrow_mut()
-            .append(&mut self.new_states);
+            .append(&mut self.new_states.borrow_mut());
     }
 }
 
@@ -49,7 +49,7 @@ impl<'a> Context<'a> {
             ecm: ecs.1,
             theme: theme.clone(),
             provider,
-            new_states: BTreeMap::new(),
+            new_states: Rc::new(RefCell::new(BTreeMap::new())),
             remove_widget_list: vec![],
         }
     }
@@ -217,7 +217,7 @@ impl<'a> Context<'a> {
             &self.provider.render_objects,
             &self.provider.layouts,
             &self.provider.handler_map,
-            &mut self.new_states,
+            self.new_states.clone(),
             &self.theme,
             self.provider.event_adapter.clone(),
         )
@@ -433,7 +433,7 @@ impl<'a> Context<'a> {
 
     /// Returns a keys collection of new added states.
     pub fn new_states_keys(&self) -> Vec<Entity> {
-        self.new_states.keys().cloned().collect()
+        self.new_states.borrow().keys().cloned().collect()
     }
 
     /// Switch the current theme.

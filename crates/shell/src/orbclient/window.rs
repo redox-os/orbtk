@@ -9,7 +9,6 @@ use std::thread;
 use super::MouseState;
 use crate::{
     event::{ButtonState, Key, KeyEvent, MouseButton, MouseEvent},
-    render::RenderContext2D,
     window_adapter::WindowAdapter,
     WindowRequest,
 };
@@ -32,7 +31,6 @@ where
 {
     window: orbclient::Window,
     adapter: A,
-    render_context: RenderContext2D,
     request_receiver: Option<mpsc::Receiver<WindowRequest>>,
     //window_state: WindowState,
     mouse: MouseState,
@@ -79,7 +77,6 @@ where
     pub fn new(
         window: orbclient::Window,
         adapter: A,
-        render_context: RenderContext2D,
         request_receiver: Option<mpsc::Receiver<WindowRequest>>,
     ) -> Self {
         Window {
@@ -100,7 +97,6 @@ where
     pub fn new(
         window: orbclient::Window,
         adapter: A,
-        render_context: RenderContext2D,
         request_receiver: Option<mpsc::Receiver<WindowRequest>>,
     ) -> Self {
         let mut adapter = adapter;
@@ -120,7 +116,6 @@ where
         Window {
             window,
             adapter,
-            render_context,
             _sdl2_sync_thread,
             request_receiver,
             // window_state: WindowState::default(),
@@ -300,8 +295,6 @@ where
                 orbclient::EventOption::Move(_) => {}
                 orbclient::EventOption::Resize(event) => {
                     self.adapter.resize(event.width as f64, event.height as f64);
-                    self.render_context
-                        .resize(event.width as f64, event.height as f64);
                     self.update = true;
                     self.redraw.store(true, Ordering::Relaxed);
                 }
@@ -362,7 +355,7 @@ where
     /// Swaps the current frame buffer.
     pub fn render(&mut self) {
         if self.redraw.load(Ordering::Relaxed) {
-            let bytes = self.render_context.data_u8_mut();
+            let bytes = self.adapter.frame_buffer_mut();
             let color_data = unsafe {
                 std::slice::from_raw_parts_mut(
                     bytes.as_mut_ptr() as *mut orbclient::Color,
@@ -371,7 +364,7 @@ where
             };
 
             if color_data.len() == self.window.data().len() {
-                self.window.data_mut().clone_from_slice(color_data);
+                self.window.data_mut().copy_from_slice(color_data);
 
                 // CONSOLE.time_end("render");
                 self.redraw.store(false, Ordering::Relaxed)

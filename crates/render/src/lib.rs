@@ -19,13 +19,6 @@ pub use self::platform::*;
 #[path = "raqote/mod.rs"]
 pub mod platform;
 
-#[cfg(target_arch = "wasm32")]
-#[path = "web/mod.rs"]
-pub mod platform;
-
-#[cfg(target_arch = "wasm32")]
-pub use platform::RenderContext2D;
-
 pub use self::render_target::*;
 
 mod render_target;

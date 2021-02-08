@@ -46,4 +46,7 @@ pub trait WindowAdapter {
 
     /// Runs the inner logic of the shell adapter.
     fn run(&mut self);
+
+    /// Returns a  mutable reference to the frame buffer.
+    fn frame_buffer_mut(&mut self) -> &mut [u8];
 }

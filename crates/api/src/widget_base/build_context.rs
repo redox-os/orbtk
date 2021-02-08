@@ -9,18 +9,36 @@ use super::State;
 pub type WidgetBuildContext = Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>;
 
 /// Used to create an entity for a widget with its properties as components.
-#[derive(Constructor)]
 pub struct BuildContext<'a> {
     ecm: &'a mut EntityComponentManager<Tree>,
     render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
     layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
     handlers: &'a RefCell<EventHandlerMap>,
-    states: &'a mut BTreeMap<Entity, Box<dyn State>>,
+    states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
     theme: &'a Theme,
     event_adapter: EventAdapter,
 }
 
 impl<'a> BuildContext<'a> {
+    pub fn new(
+        ecm: &'a mut EntityComponentManager<Tree>,
+        render_objects: &'a RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>,
+        layouts: &'a RefCell<BTreeMap<Entity, Box<dyn Layout>>>,
+        handlers: &'a RefCell<EventHandlerMap>,
+        states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
+        theme: &'a Theme,
+        event_adapter: EventAdapter,
+    ) -> Self {
+        BuildContext {
+            ecm,
+            render_objects,
+            layouts,
+            handlers,
+            states,
+            theme,
+            event_adapter,
+        }
+    }
     /// Returns a specific widget.
     pub fn get_widget(&mut self, entity: Entity) -> WidgetContainer {
         WidgetContainer::new(entity, self.ecm, self.theme, Some(&self.event_adapter))
@@ -117,7 +135,7 @@ impl<'a> BuildContext<'a> {
 
     /// Registers a state with a widget.
     pub fn register_state(&mut self, widget: Entity, state: Box<dyn State>) {
-        self.states.insert(widget, state);
+        self.states.borrow_mut().insert(widget, state);
     }
 
     /// Registers a render object with a widget.

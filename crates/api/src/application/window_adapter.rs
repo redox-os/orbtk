@@ -6,6 +6,7 @@ use crate::{
     application::*,
     event::*,
     localization::Localization,
+    render::RenderContext2D,
     services::{Clipboard, Settings},
     shell,
     shell::{ShellRequest, WindowRequest, WindowSettings},
@@ -20,14 +21,20 @@ pub struct WindowAdapter {
     world: World<Tree>,
     ctx: ContextProvider,
     old_clipboard_value: Option<String>,
+    frame_buffer: Vec<u8>,
 }
 
 impl WindowAdapter {
     /// Creates a new WindowAdapter.
-    pub fn new(world: World<Tree>, ctx: ContextProvider) -> Self {
+    pub fn new(mut world: World<Tree>, ctx: ContextProvider, width: f64, height: f64) -> Self {
+        world
+            .resources_mut()
+            .insert(RenderContext2D::new(width, height));
+
         WindowAdapter {
             world,
             ctx,
+            frame_buffer: vec![0; width as usize * height as usize * 4],
             old_clipboard_value: None,
         }
     }
@@ -65,6 +72,7 @@ impl shell::WindowAdapter for WindowAdapter {
     }
 
     fn resize(&mut self, width: f64, height: f64) {
+        self.frame_buffer = vec![0; width as usize * height as usize * 4];
         let root = self.root();
         self.ctx
             .event_adapter
@@ -165,6 +173,14 @@ impl shell::WindowAdapter for WindowAdapter {
 
     fn run(&mut self) {
         self.world.run();
+
+        // swap frame buffer
+        self.frame_buffer.copy_from_slice(
+            self.world
+                .resources_mut()
+                .get_mut::<RenderContext2D>()
+                .data_u8_mut(),
+        );
     }
 
     fn file_drop_event(&mut self, file_name: String) {
@@ -191,6 +207,13 @@ impl shell::WindowAdapter for WindowAdapter {
 
     fn set_raw_window_handle(&mut self, raw_window_handle: raw_window_handle::RawWindowHandle) {
         self.ctx.raw_window_handle = Some(raw_window_handle);
+    }
+
+    fn frame_buffer_mut(&mut self) -> &mut [u8] {
+        self.world
+            .resources_mut()
+            .get_mut::<RenderContext2D>()
+            .data_u8_mut()
     }
 }
 
@@ -229,7 +252,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             &context_provider.render_objects,
             &context_provider.layouts,
             &context_provider.handler_map,
-            &mut *context_provider.states.borrow_mut(),
+            context_provider.states.clone(),
             &theme,
             context_provider.event_adapter.clone(),
         ));
@@ -244,7 +267,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             &context_provider.render_objects,
             &context_provider.layouts,
             &context_provider.handler_map,
-            &mut *context_provider.states.borrow_mut(),
+            context_provider.states.clone(),
             &theme,
             context_provider.event_adapter.clone(),
         ));
@@ -342,7 +365,12 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         .build();
 
     (
-        WindowAdapter::new(world, context_provider),
+        WindowAdapter::new(
+            world,
+            context_provider,
+            constraint.width(),
+            constraint.height(),
+        ),
         settings,
         receiver,
     )

@@ -1,10 +1,7 @@
 use std::{collections::HashMap, sync::mpsc};
 
 use super::{Shell, Window};
-use crate::{
-    render::RenderContext2D, utils::Rectangle, window_adapter::WindowAdapter, WindowRequest,
-    WindowSettings,
-};
+use crate::{utils::Rectangle, window_adapter::WindowAdapter, WindowRequest, WindowSettings};
 
 /// The `WindowBuilder` is used to construct a window shell for the minifb backend.
 pub struct WindowBuilder<'a, A: 'static>
@@ -100,8 +97,6 @@ where
 
     /// Builds the window shell and add it to the application `Shell`.
     pub fn build(self) {
-        let mut render_context = RenderContext2D::new(self.bounds.width(), self.bounds.height());
-
         let mut flags = vec![];
 
         if self.resizeable {
@@ -122,15 +117,8 @@ where
         )
         .expect("WindowBuilder: Could no create an orblient window.");
 
-        for (family, font) in self.fonts {
-            render_context.register_font(&family, font);
-        }
-
-        self.shell.window_shells.push(Window::new(
-            window,
-            self.adapter,
-            render_context,
-            self.request_receiver,
-        ));
+        self.shell
+            .window_shells
+            .push(Window::new(window, self.adapter, self.request_receiver));
     }
 }
