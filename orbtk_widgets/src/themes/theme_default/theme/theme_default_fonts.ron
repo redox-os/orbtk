@@ -1,0 +1,27 @@
+Theme (
+    resources: {
+        // fonts
+        "MEDIUM_FONT": "Roboto-Medium",
+        "REGULAR_FONT": "Roboto-Regular",
+        "ICON_FONT": "MaterialIcons-Regular",
+
+       // font sizes
+        "FONT_SIZE_12": 12,
+        "FONT_SIZE_13": 13,
+        "FONT_SIZE_14": 14,
+        "FONT_SIZE_16": 16,
+        "FONT_SIZE_24": 24,
+        "FONT_SIZE_32": 32,
+        "FONT_SIZE_36": 36,
+
+        // icon sizes
+        "ICON_SIZE_4": 4,
+        "ICON_SIZE_6": 6,
+        "ICON_SIZE_8": 8,
+        "ICON_SIZE_10": 10,
+        "ICON_SIZE_12": 12,
+        "ICON_SIZE_14": 14,
+        "ICON_SIZE_16": 16,
+        "ICON_SIZE_18": 18,
+    },
+)
