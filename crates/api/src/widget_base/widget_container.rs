@@ -488,6 +488,8 @@ impl<'a> WidgetContainer<'a> {
                             self.update_value::<Thickness, Value>(&key, Value(value));
                         } else if self.is::<String>(&key) {
                             self.update_value::<String, Value>(&key, Value(value));
+                        } else if self.is::<Alignment>(&key) {
+                            self.update_value::<Alignment, Value>(&key, Value(value));
                         }
                     }
                 }
