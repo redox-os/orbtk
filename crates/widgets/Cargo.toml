@@ -14,7 +14,7 @@ rust_decimal = "1.7"
 lazy_static = "1.4"
 
 # orbtk
-dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "develop" }
+dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "before_resource" }
 orbtk_api = { path = "../api", version = "0.3.1-alpha4" }
 orbtk_shell = { path = "../shell", version = "0.3.1-alpha4", default-features = false }
 orbtk_theme_default = { path = "../theme_default", version = "0.3.1-alpha4" }

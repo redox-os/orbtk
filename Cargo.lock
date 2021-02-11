@@ -145,6 +145,14 @@ dependencies = [
 [[package]]
 name = "dces"
 version = "0.3.1"
+source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=before_resource#f85e608e74105a8822294f55c823b89c4047a6f5"
+dependencies = [
+ "fxhash",
+]
+
+[[package]]
+name = "dces"
+version = "0.3.1"
 source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=develop#f85e608e74105a8822294f55c823b89c4047a6f5"
 dependencies = [
  "fxhash",
@@ -466,7 +474,7 @@ dependencies = [
 name = "orbtk"
 version = "0.3.1-alpha4"
 dependencies = [
- "dces",
+ "dces 0.3.1 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=develop)",
  "euc",
  "orbtk_api",
  "orbtk_localization",
@@ -489,7 +497,7 @@ dependencies = [
 name = "orbtk_api"
 version = "0.3.1-alpha4"
 dependencies = [
- "dces",
+ "dces 0.3.1 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=before_resource)",
  "derive_more",
  "dirs-next",
  "memchr",
@@ -595,7 +603,7 @@ dependencies = [
 name = "orbtk_tree"
 version = "0.3.1-alpha4"
 dependencies = [
- "dces",
+ "dces 0.3.1 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=before_resource)",
 ]
 
 [[package]]
@@ -614,7 +622,7 @@ dependencies = [
 name = "orbtk_widgets"
 version = "0.3.1-alpha4"
 dependencies = [
- "dces",
+ "dces 0.3.1 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=before_resource)",
  "lazy_static",
  "orbtk_api",
  "orbtk_proc_macros",
