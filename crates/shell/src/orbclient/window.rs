@@ -363,11 +363,9 @@ where
     pub fn render(&mut self) {
         if self.redraw.load(Ordering::Relaxed) {
             let bytes = self.render_context.data_u8_mut();
+            let len = bytes.len() / std::mem::size_of::<orbclient::Color>();
             let color_data = unsafe {
-                std::slice::from_raw_parts_mut(
-                    bytes.as_mut_ptr() as *mut orbclient::Color,
-                    bytes.len() / std::mem::size_of::<orbclient::Color>(),
-                )
+                std::slice::from_raw_parts_mut(bytes.as_mut_ptr() as *mut orbclient::Color, len)
             };
 
             if color_data.len() == self.window.data().len() {

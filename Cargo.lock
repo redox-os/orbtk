@@ -151,14 +151,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "dces"
-version = "0.3.1"
-source = "git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=develop#f85e608e74105a8822294f55c823b89c4047a6f5"
-dependencies = [
- "fxhash",
-]
-
-[[package]]
 name = "deflate"
 version = "0.7.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -474,7 +466,7 @@ dependencies = [
 name = "orbtk"
 version = "0.3.1-alpha4"
 dependencies = [
- "dces 0.3.1 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=develop)",
+ "dces",
  "euc",
  "orbtk_api",
  "orbtk_localization",
@@ -497,7 +489,7 @@ dependencies = [
 name = "orbtk_api"
 version = "0.3.1-alpha4"
 dependencies = [
- "dces 0.3.1 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=before_resource)",
+ "dces",
  "derive_more",
  "dirs-next",
  "memchr",
@@ -603,7 +595,7 @@ dependencies = [
 name = "orbtk_tree"
 version = "0.3.1-alpha4"
 dependencies = [
- "dces 0.3.1 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=before_resource)",
+ "dces",
 ]
 
 [[package]]
@@ -622,7 +614,7 @@ dependencies = [
 name = "orbtk_widgets"
 version = "0.3.1-alpha4"
 dependencies = [
- "dces 0.3.1 (git+https://gitlab.redox-os.org/redox-os/dces-rust.git?branch=before_resource)",
+ "dces",
  "lazy_static",
  "orbtk_api",
  "orbtk_proc_macros",
