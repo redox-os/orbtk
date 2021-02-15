@@ -643,7 +643,6 @@ impl TextBehaviorState {
 
         if *TextBehavior::focused_ref(&ctx.widget()) {
             self.update_focused_state(ctx);
-            return;
         }
     }
 
