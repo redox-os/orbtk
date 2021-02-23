@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add fluent design inspired theme (dark and light)
 * Add message example
 * Remove widgets example
+* Extend `popup` functionality (positioning, visibility)
 
 ### 0.3.1-alpha3
 
