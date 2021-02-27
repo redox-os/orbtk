@@ -312,7 +312,7 @@ impl ComboBoxState {
 impl State for ComboBoxState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.generate_items(ctx);
-   }
+    }
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         if self.action.is_none() || !(*ctx.widget().get::<bool>("selected")) {
