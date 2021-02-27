@@ -1,45 +1,68 @@
 Theme (
     styles: {
-        "combo_box_form": (
-            base: "combo_box",
-            properties: {
-                "width": 100,
-            },
-        ),
-        "container_form": (
-            base: "container",
-            properties: {
-                "background": "#0000FF",
-                "border_brush": "$CONTAINER_BORDER",
-                "border_radius": 3,
-                "border_width": 2,
-                "padding": 8,
-            },
-        ),
-        "popup_form": (
-            //base: "popup",
-            properties: {
-                "background": "#FFFFFF",
-                "border_brush": "#00FF00",
-                "border_radius": 3,
-                "border_width": 2,
-                "padding": 8,
-            },
-        ),
-        "popup_text_block": (
-            //base: "popup",
-            properties: {
-                "h_align": "center",
-                "v_align": "top",
-                "foreground": "#000000",
-            },
-        ),
-        "target_text_block": (
-            base: "small_text",
-            properties: {
-                "h_align": "center",
-                "v_align": "center",
-            },
-        ),
+	"combo_box": (
+	    base: "combo_box",
+	    properties: {
+		"hight": 40,
+		"width": 80,
+	    },
+	),
+	"combo_box_popup": (
+	    //base: "combo_box_popup",
+	    properties: {
+		"height": 100,
+		"min_height": 40,
+		"width": 80,
+	    },
+	),
+	"container_form": (
+	    base: "container",
+	    properties: {
+		"background": "$BUTTON_BACKGROUND",
+		"border_brush": "$CONTAINER_BORDER",
+		"border_radius": 3,
+		"border_width": 2,
+		"padding": 8,
+	    },
+	),
+	"popup_form": (
+	    base: "container_form",
+	    properties: {
+		"background": "#FFFFFF",
+		"border_brush": "#0000FF",
+	    },
+	),
+	"popup_text_block": (
+	    //base: "popup",
+	    properties: {
+		"h_align": "center",
+		"v_align": "top",
+		"foreground": "#000000",
+	    },
+	),
+	"target_text_block": (
+	    base: "small_text",
+	    properties: {
+		"h_align": "center",
+		"v_align": "center",
+	    },
+	),
+	"text_block": (
+	    //base: "text",
+	    properties: {
+		"margin": {
+		    "left": 0,
+		    "top": 6,
+		    "right": 0,
+		    "bottom": 0,
+		},
+	    },
+	),
+	"toggle_button": (
+	    base: "button",
+	    properties: {
+		"font_size": 12,
+	    },
+	),
     }
 )

@@ -3,7 +3,7 @@ use crate::{
     utils::{Point, Rectangle},
 };
 
-/// The target of the popup, that can be an entity or a fixed point
+/// The target of the popup, bound to an entity id or a bound to a fixed point
 #[derive(Clone, Debug, PartialEq)]
 pub enum PopupTarget {
     Entity(u32),
@@ -121,7 +121,10 @@ impl RenderObject for PopupRenderObject {
                 PopupTarget::Entity(entity) => {
                     let target_position: Point = ctx.get_widget(entity.into()).clone("position");
 
-                    //WARNING: this is true only if called during post_layout_update, otherwise the bounds will refere to space available to the widget, not the effective size
+                    // WARNING: this is true only if called during
+                    // post_layout_update, otherwise the bounds will
+                    // refere to space available to the widget, not
+                    // the effective size
                     let mut target_bounds: Rectangle =
                         ctx.get_widget(entity.into()).clone("bounds");
                     target_bounds.set_position(target_position);
@@ -137,7 +140,7 @@ impl RenderObject for PopupRenderObject {
             let relative_position: RelativePosition =
                 ctx.widget().clone_or_default("relative_position");
 
-            let new_popup_bounds = match relative_position {
+            let popup_bounds = match relative_position {
                 RelativePosition::Left(distance) => {
                     let current_v_align: Alignment = ctx.widget().clone("v_align");
 
@@ -221,8 +224,7 @@ impl RenderObject for PopupRenderObject {
                     Rectangle::new((x, y), current_constraint.perform((width, height)))
                 }
             };
-
-            ctx.widget().set::<Rectangle>("bounds", new_popup_bounds);
+            ctx.widget().set::<Rectangle>("bounds", popup_bounds);
         } else {
             println!("Target not found");
         }

@@ -74,7 +74,10 @@ impl Layout for PopupLayout {
                 PopupTarget::Entity(entity) => {
                     let target_position: Point = component(ecm, entity.into(), "position");
 
-                    //WARNING: this is true only if called during post_layout_update, otherwise the bounds will refere to space available to the widget, not the effective size
+                    // WARNING: this is true only if called during
+                    // post_layout_update, otherwise the bounds will
+                    // refere to space available to the widget, not
+                    // the effective size
                     let mut target_bounds: Rectangle = component(ecm, entity.into(), "bounds");
                     target_bounds.set_position(target_position);
                     target_bounds
@@ -91,9 +94,16 @@ impl Layout for PopupLayout {
 
             let new_popup_size = match relative_position {
                 RelativePosition::Left(_distance) => {
+                    let current_h_align: Alignment = component(ecm, entity, "h_align");
                     let current_v_align: Alignment = component(ecm, entity, "v_align");
 
-                    let width = current_bounds.width();
+                    //let width = current_bounds.width();
+                    let width = current_h_align.align_measure(
+                        real_target_bounds.width(),
+                        current_bounds.width(),
+                        0.0,
+                        0.0,
+                    );
                     let height = current_v_align.align_measure(
                         real_target_bounds.height(),
                         current_bounds.height(),

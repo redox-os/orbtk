@@ -337,7 +337,7 @@ widget!(
     /// The `ComboBox` implements a selection widget where selectable
     /// items are ordered in a drop-down list.
     ///
-    /// **style:** `combo_box`
+    /// **style:** `combo_box`, `combo_box_popup`
     ComboBox<ComboBoxState>: MouseHandler, KeyDownHandler {
         /// Sets or shares the background property.
         background: Brush,
@@ -452,10 +452,11 @@ impl Template for ComboBox {
             .build(ctx);
 
         let popup = Popup::new()
-            // WIP: calculate width default given as width bound from
-            //      parent (here: Grid::Column(0)
-            // BUG: if width isn't set explicitly => selected item background
-            //      will consume all available width
+            // WIP: derive width and height as default bounds from parent
+            //      (width: Grid::Column(0), height: count * items(hight))
+            // BUG: if properties aren't set explicitly => selected item background
+            //      height and width will consume bounds from parent widget
+            //      if set via style, overrides in theme extension doesn't take precedence
             .style("combo_box_popup")
             .open(("selected", id))
             .child(scroll_viewer)

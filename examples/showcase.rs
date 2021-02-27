@@ -194,6 +194,7 @@ impl Template for ItemsView {
                 .child(
                     ComboBox::new()
                         .count(count)
+                        .style("combo_box")
                         .items_builder(move |bc, index| {
                             let text = ItemsView::items_ref(&bc.get_widget(id))[index].clone();
                             TextBlock::new().v_align("center").text(text).build(bc)
@@ -399,6 +400,7 @@ impl Template for LocalizationView {
                 .child(
                     ComboBox::new()
                         .count(count)
+                        .style("combo_box")
                         .items_builder(move |bc, index| {
                             let text =
                                 LocalizationView::languages_ref(&bc.get_widget(id))[index].clone();

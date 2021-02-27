@@ -1,5 +1,6 @@
 use orbtk::{
     prelude::*,
+    shell::event::Key,
     theme_default::{THEME_DEFAULT, THEME_DEFAULT_COLORS_DARK, THEME_DEFAULT_FONTS},
     theming::config::ThemeConfig,
 };
@@ -15,10 +16,15 @@ fn theme() -> Theme {
     ))
 }
 
-static ID_GRID: &str = "GRID";
-static ID_BUTTON: &str = "BUTTON";
-static ID_COMBO_BOX: &str = "COMBO BOX";
-static ID_TARGET: &str = "TARGET";
+static ID_GRID: &str = "Grid";
+static ID_BUTTON: &str = "Button";
+static ID_COMBO_BOX: &str = "ComboBox";
+static ID_COMBO_BOX_LABEL: &str = "ComboBoxLabel";
+//static ID_DISTANCE: &str = "Distance";
+//static ID_DISTANCE_LABEL: &str = "DistanceLabel";
+static ID_POPUP: &str = "Popup";
+static ID_STACK: &str = "Stack";
+static ID_TARGET: &str = "Target";
 
 #[derive(Copy, Clone)]
 enum PopUpAction {
@@ -106,24 +112,25 @@ impl State for MainViewState {
 
 fn create_popup(target: Entity, text: &str, ctx: &mut BuildContext) -> Entity {
     Popup::new()
-        // Entity as target
+        .id(ID_POPUP)
+        .name(ID_POPUP)
+        // Reference target from given Entity
         .target(target.0)
-        // Point as target
+        // Reference target from given Point
         // .target(Point::new(200.0,200.0))
         // Specify the popup position relative to the target (the button in this case)
         // This is also the default value if no one is specified
         .relative_position(RelativePosition::Bottom(5.0))
         .open(true)
         .style("popup_form")
-        .width(150.0)
-        .height(150.0)
+        .width(195.0)
+        .height(195.0)
         .child(
             Container::new()
                 .child(
                     TextBlock::new()
                         .style("popup_text_block")
                         .h_align("center")
-                        //.v_align("top")
                         .text(text)
                         .build(ctx),
                 )
@@ -140,71 +147,132 @@ widget!(MainView<MainViewState>);
 
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        self.name("MainView").margin(16.0).child(
-            Grid::new()
-                .rows(Rows::create().push(50).push(200).push(200).push(200))
-                .columns(Columns::create().push(200).push(200).push(200))
-                .id(ID_GRID)
-                .child(
-                    ComboBox::new()
-                        .id(ID_COMBO_BOX)
-                        .attach(Grid::row(0))
-                        .attach(Grid::column(0))
-                        .style("combo_box_form")
-                        .h_align("center")
-                        //.v_align("center")
-                        //.width(100.0)
-                        .on_changed("selected_item", move |states, _entity| {
-                            states
-                                .get_mut::<MainViewState>(id)
-                                .update_relative_position()
-                        })
-                        .items_builder(|ictx, index| match index {
-                            0 => TextBlock::new()
-                                .text("Bottom")
-                                .v_align("center")
-                                .build(ictx),
-                            1 => TextBlock::new().text("Top").v_align("center").build(ictx),
-                            2 => TextBlock::new().text("Left").v_align("center").build(ictx),
-                            3 => TextBlock::new().text("Right").v_align("center").build(ictx),
-                            _ => panic!(),
-                        })
-                        .count(4)
-                        .selected_index(0)
-                        .build(ctx),
-                )
-                .child(
-                    Button::new()
-                        .id(ID_BUTTON)
-                        .attach(Grid::row(0))
-                        .attach(Grid::column(1))
-                        .style("button")
-                        //.h_align("center")
-                        .text("Click me to hide popup")
-                        .on_click(move |ctx, _| -> bool {
-                            ctx.get_mut::<MainViewState>(id).toggle_popup();
-                            true
-                        })
-                        .build(ctx),
-                )
-                .child(
-                    Container::new()
-                        .id(ID_TARGET)
-                        .attach(Grid::row(2))
-                        .attach(Grid::column(1))
-                        .style("container_form")
-                        .child(
-                            TextBlock::new()
-                                .style("target_text_block")
-                                .text("Target")
-                                .v_align("center")
-                                .h_align("center")
-                                .build(ctx),
-                        )
-                        .build(ctx),
-                )
-                .build(ctx),
-        )
+        self.name("MainView")
+            .margin(16.0)
+            .child(
+                Grid::new()
+                    .id(ID_GRID)
+                    .name(ID_GRID)
+                    .rows("50, 200, 200, 200")
+                    .columns("200, 200, 200")
+                    .child(
+                        Container::new()
+                            .attach(Grid::row(0))
+                            .attach(Grid::column(0))
+                            .attach(Grid::column_span(3))
+                            //.style("container_form")
+                            .child(
+                                Stack::new()
+                                    .id(ID_STACK)
+                                    .margin(8.0)
+                                    .orientation("Horizontal")
+                                    .spacing(16.0)
+                                    .v_align("bottom")
+                                    .child(
+                                        TextBlock::new()
+                                            .id(ID_COMBO_BOX_LABEL)
+                                            .style("text_block")
+                                            .text("Position:")
+                                            .build(ctx),
+                                    )
+                                    .child(
+                                        ComboBox::new()
+                                            .id(ID_COMBO_BOX)
+                                            //.style("combo_box_app")
+                                            //.style("combo_box")
+                                            .background("transparent")
+                                            .border_radius(5.0)
+                                            .border_width(1.0)
+                                            .font_size(12)
+                                            .font("Roboto-Medium")
+                                            .icon("$MD_KEYBOARD_ARROW_DOWN")
+                                            .icon_font("MaterialIcons-Regular")
+                                            .icon_size(16)
+                                            .padding(4)
+                                            .h_align("start")
+                                            .v_align("top")
+                                            //.height(40)
+                                            //.width(80)
+                                            .on_changed("selected_item", move |states, _entity| {
+                                                states
+                                                    .get_mut::<MainViewState>(id)
+                                                    .update_relative_position()
+                                            })
+                                            .count(4)
+                                            .items_builder(move |ictx, index| match index {
+                                                0 => TextBlock::new()
+                                                    .text("Bottom")
+                                                    .v_align("center")
+                                                    .build(ictx),
+                                                1 => TextBlock::new().text("Top").v_align("center").h_align("start").build(ictx),
+                                                2 => TextBlock::new().text("Left").v_align("center").h_align("start").build(ictx),
+                                                3 => TextBlock::new().text("Right").v_align("center").h_align("start").build(ictx),
+                                                _ => panic!(),
+                                            })
+                                            .selected_index(0)
+                                            .on_key_down(move |_, key_event| {
+                                                match key_event.key {
+                                                    Key::Down => {
+                                                        println!("key down: Down");
+                                                    },
+                                                    Key::Up => {
+                                                        println!("key down: Down");
+                                                    },
+                                                    _ => {
+                                                        println!("KeyHandler: unhandled key {:?}", key_event.key);
+                                                    },
+                                                };
+                                                true
+                                            })
+                                            .build(ctx),
+                                    )
+                                    // .child(
+                                    //     TextBlock::new()
+                                    //         .id(ID_DISTANCE_LABEL)
+                                    //         .style("text_block")
+                                    //         .text("Distance:")
+                                    //         .build(ctx),
+                                    // )
+                                    // .child(
+                                    //     TextBox::new()
+                                    //         .id(ID_DISTANCE)
+                                    //         .style("text_box")
+                                    //         .water_mark("in pixel")
+                                    //         .build(ctx),
+                                    // )
+                                    .child(
+                                        Button::new()
+                                            .id(ID_BUTTON)
+                                            .style("toggle_button")
+                                            .text("Click me to hide popup")
+                                            .on_click(move |ctx, _| -> bool {
+                                                ctx.get_mut::<MainViewState>(id).toggle_popup();
+                                                true
+                                            })
+                                            .build(ctx),
+                                    )
+                                    .build(ctx),
+                            )
+                            .build(ctx),
+                    )
+                    .child(
+                        Container::new()
+                            .id(ID_TARGET)
+                            .attach(Grid::row(2))
+                            .attach(Grid::column(1))
+                            .style("container_form")
+                            .child(
+                                TextBlock::new()
+                                    .style("target_text_block")
+                                    .text("Target")
+                                    .v_align("center")
+                                    .h_align("center")
+                                    .build(ctx),
+                            )
+                            .build(ctx),
+                    )
+                    .build(ctx),
+            )
     }
 }
 
@@ -215,7 +283,7 @@ fn main() {
             Window::new()
                 .title("OrbTk - Popup example")
                 .position((100.0, 100.0))
-                .size(750, 750.0)
+                .size(632, 682.0)
                 .resizeable(true)
                 .child(MainView::new().build(ctx))
                 .build(ctx)
