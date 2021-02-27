@@ -186,6 +186,12 @@ impl From<BlocksBuilder> for Blocks {
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct Blocks(pub Vec<Block>);
 
+/// Alias type for `Blocks` to don't break old api.
+pub type Columns = Blocks;
+
+/// Alias type for `Blocks` to don't break old api.
+pub type Rows = Blocks;
+
 impl Blocks {
     /// Creates a new `BlocksBuilder` object with default values.
     #[inline]

@@ -223,7 +223,7 @@ impl Template for MainView {
                 )
                 .child(
                     Container::new()
-                        .background("green")
+                        .style("content_container")
                         .padding(4)
                         .attach(Grid::row(1))
                         .child(

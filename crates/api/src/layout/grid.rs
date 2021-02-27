@@ -91,7 +91,7 @@ impl GridLayout {
             let child_size = self.children_sizes.borrow().get(&child).unwrap().1;
 
             if let Some(size) = block_sizes.get(&grid_block) {
-                if *size < child_size + margin.left() + margin.right() {
+                if *size < child_size + margin.top() + margin.bottom() {
                     block_sizes.insert(grid_block, child_size + margin.top() + margin.bottom());
                 }
             } else {
@@ -154,9 +154,9 @@ impl GridLayout {
             let mut block_sum = 0.0;
 
             blocks_cache.reserve(blocks.len());
-            for col in blocks.iter() {
-                blocks_cache.push((block_sum, col.current_size()));
-                block_sum += col.current_size();
+            for block in blocks.iter() {
+                blocks_cache.push((block_sum, block.current_size()));
+                block_sum += block.current_size();
             }
 
             // fix rounding gab
