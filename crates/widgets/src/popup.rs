@@ -166,11 +166,18 @@ impl State for PopupState {
         let actions: Vec<PopupAction> = self.actions.drain(..).collect();
         for action in actions {
             match action {
-                //PopupAction::UpdatePosition=>self.update_position_internal(registry,ctx),
+                //PopupAction::UpdatePosition=> self.update_position_internal(registry,ctx),
                 PopupAction::UpdateVisibility => self.update_visibility_internal(registry, ctx),
             }
         }
     }
+
+    // fn update_post_layout(&mut self, registry: &mut Registry, ctx: &mut Context) {
+    //     // never act, if popup isn't visible
+    //     if *ctx.widget().get::<Visibility>("visibility") != Visibility::Visible {
+    //         return;
+    //     }
+    // }
 }
 
 widget!(
@@ -188,17 +195,17 @@ widget!(
         /// Sets or shares the border brush property.
         border_brush: Brush,
 
+        /// Sets or shares the popup open state.
+        open: bool,
+
         /// Sets or shares the padding property.
         padding: Thickness,
-
-        /// Sets or shares the target id to place the popup.
-        target: PopupTarget,
 
         /// Sets or shares the popup position relative to the target.
         relative_position: RelativePosition,
 
-        /// Sets or shares the popup open state.
-        open: bool
+        /// Sets or shares the target id to place the popup.
+        target: PopupTarget
     }
 );
 
@@ -206,13 +213,13 @@ impl Template for Popup {
     fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("Popup")
             .style("popup")
-            .padding(0.0)
             .background("transparent")
-            .border_radius(0.0)
-            .border_width(0.0)
+            .border_radius(0)
+            .border_width(0)
             .border_brush("transparent")
-            .on_mouse_down(|_, _| true)
+            .padding(0)
             .open(false)
+            .on_mouse_down(|_, _| true)
             .on_changed("visibility", move |states, _| {
                 states.get_mut::<PopupState>(id).update_visibility()
             })

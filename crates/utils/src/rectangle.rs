@@ -17,6 +17,7 @@ pub struct Rectangle {
     /// Position of the rectangle.
     position: Point,
 
+    /// Size of the rectangle (width, height)
     size: Size,
 }
 

@@ -21,15 +21,16 @@ enum Action {
     CheckMouseUpOutside { position: Point },
 }
 
-/// The `ComboBoxItemState` handles the interaction an selection of a `ComboBoxItem`.
+/// The `ComboBoxItemState` provides functions that handle the
+/// selection of a `ComboBoxItem` members.
 #[derive(Default, AsAny)]
 pub struct ComboBoxItemState {
-    request_selection_toggle: Cell<bool>,
-    index: usize,
-    selected_container: Entity,
-    combo_box: Entity,
     // ugly work around for item builder context clone, todo make it better 😉
     builder: Option<Arc<RefCell<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
+    combo_box: Entity,
+    index: usize,
+    request_selection_toggle: Cell<bool>,
+    selected_container: Entity,
 }
 
 impl ComboBoxItemState {
@@ -40,6 +41,7 @@ impl ComboBoxItemState {
 
 impl State for ComboBoxItemState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+        // Mark the selected index inside the combo box.
         let selected_index = ctx
             .get_widget(self.combo_box)
             .clone_or_default::<i32>("selected_index");
@@ -56,7 +58,7 @@ impl State for ComboBoxItemState {
 
         let entity = ctx.entity();
 
-        // unselect previous selected item.
+        // Unselect previous selected item of the combo box.
         if let Some(item) = ctx
             .get_widget(self.combo_box)
             .clone::<SelectedItem>("selected_item")
@@ -68,6 +70,7 @@ impl State for ComboBoxItemState {
             ctx.get_widget(item).update(false);
         }
 
+        // Mark the selected item inside the combo box.
         ctx.widget().set("selected", true);
         ctx.widget()
             .get_mut::<Selector>("selector")
@@ -78,7 +81,7 @@ impl State for ComboBoxItemState {
         ctx.get_widget(self.combo_box)
             .set("selected_item", Some(entity));
 
-        // Add selected content to combobox
+        // Add selected content to combo_box
         let index = self.index;
         let selected_container = self.selected_container;
         if let Some(builder) = &self.builder {
@@ -111,10 +114,10 @@ impl State for ComboBoxItemState {
 }
 
 widget!(
-    /// The `ComboBoxItem` describes an item inside of a `ComboBox`.
+    /// The `ComboBoxItem` describes an item that is a member of a `ComboBox`.
     ///
-    /// **style:** `combo_box_item``
-    ComboBoxItem<ComboBoxItemState>: MouseHandler {
+    /// **style:** `combo_box_item`
+    ComboBoxItem<ComboBoxItemState>: MouseHandler, KeyDownHandler {
         /// Sets or shares the background property.
         background: Brush,
 
@@ -189,7 +192,7 @@ impl Template for ComboBoxItem {
             .border_width(0)
             .border_brush("transparent")
             .foreground(colors::LINK_WATER_COLOR)
-            .font_size(32)
+            .font_size(12)
             .font("Roboto-Regular")
             .child(
                 MouseBehavior::new()
@@ -213,14 +216,15 @@ impl Template for ComboBoxItem {
     }
 }
 
-/// The `ComboBoxState` is used to manipulate the position of the thumb of the slider widget.
+/// The `ComboBoxState` is used to manipulate the thumb position
+/// inside the slider widget.
 #[derive(Default, AsAny)]
 pub struct ComboBoxState {
-    popup: Entity,
     action: Option<Action>,
     builder: Option<Arc<RefCell<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
     count: usize,
     items_panel: Entity,
+    popup: Entity,
     selected_container: Entity,
 }
 
@@ -229,7 +233,7 @@ impl ComboBoxState {
         self.action = action.into();
     }
 
-    // closes the popup on mouse up outside of the combobox and popup.
+    // closes the popup on mouse up triggered outside of the bounds of combo_box and popup.
     fn close_popup(&mut self, ctx: &mut Context, p: Point) {
         let combo_box_position = ctx.widget().clone::<Point>("position");
         let combo_box_bounds = ctx.widget().clone::<Rectangle>("bounds");
@@ -247,14 +251,13 @@ impl ComboBoxState {
             ctx.widget().update(false);
         }
     }
-}
 
-impl State for ComboBoxState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+    // Builds the combo_box items
+    fn generate_items(&mut self, ctx: &mut Context) {
         let count = ctx.widget().clone_or_default::<usize>("count");
         let entity = ctx.entity();
 
-        // build the combobox items
+        // build the combo_box items
         if count != self.count {
             if let Some(builder) = &self.builder {
                 ctx.clear_children_of(self.items_panel);
@@ -291,6 +294,7 @@ impl State for ComboBoxState {
                         build_context.register_shared_property::<f32>("opacity", item, entity);
                         build_context.register_shared_property::<f32>("opacity", child, entity);
                         build_context.register_shared_property::<f64>("font_size", child, item);
+                        build_context.register_shared_property::<f64>("font", child, item);
                         build_context.append_child(self.items_panel, item);
                         build_context.append_child(mouse_behavior, child);
 
@@ -303,6 +307,12 @@ impl State for ComboBoxState {
             self.count = count;
         }
     }
+}
+
+impl State for ComboBoxState {
+    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+        self.generate_items(ctx);
+   }
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
         if self.action.is_none() || !(*ctx.widget().get::<bool>("selected")) {
@@ -323,15 +333,17 @@ impl State for ComboBoxState {
     }
 }
 
-// todo use code of list view item, by create combobox item insert entity of popup container
-
 widget!(
-    /// The `ComboBox` represents an selection widget with a drop-down list.
+    /// The `ComboBox` implements a selection widget where selectable
+    /// items are ordered in a drop-down list.
     ///
     /// **style:** `combo_box`
-    ComboBox<ComboBoxState>: MouseHandler {
+    ComboBox<ComboBoxState>: MouseHandler, KeyDownHandler {
         /// Sets or shares the background property.
         background: Brush,
+
+        /// Sets or shares the border brush property.
+        border_brush: Brush,
 
         /// Sets or shares the border radius property.
         border_radius: f64,
@@ -339,35 +351,20 @@ widget!(
         /// Sets or shares the border thickness property.
         border_width: Thickness,
 
-        /// Sets or shares the border brush property.
-        border_brush: Brush,
-
-        /// Sets or shares the foreground property.
-        foreground: Brush,
-
-        /// Sets or share the font size property.
-        font_size: f64,
+        /// Sets or shares the count.
+        count: usize,
 
         /// Sets or shares the font property.
         font: String,
 
-        /// Sets or shared the count.
-        count: usize,
+        /// Sets or shares the font size property.
+        font_size: f64,
 
-        /// Sets or shares the selected index. If the value is -1 no item is selected.
-        selected_index: i32,
+        /// Sets or shares the foreground property.
+        foreground: Brush,
 
-        /// The entity of the selected item.
-        selected_item: SelectedItem,
-
-        /// Sets or shares the padding property.
-        padding: Thickness,
-
-        /// Sets or shares the pressed property.
-        pressed: bool,
-
-        /// Sets or shares the flag if the drop down is open.
-        selected: bool,
+        /// Indicates if the widget is hovered by the mouse cursor.
+        hover: bool,
 
         /// Sets or shares the icon property.
         icon: String,
@@ -381,8 +378,20 @@ widget!(
         /// Sets or shares the icon font property.
         icon_font: String,
 
-        /// Indicates if the widget is hovered by the mouse cursor.
-        hover: bool
+        /// Sets or shares the padding property.
+        padding: Thickness,
+
+        /// Sets or shares the pressed property.
+        pressed: bool,
+
+        /// Sets or shares the flag if the drop down is open.
+        selected: bool,
+
+        /// Sets or shares the selected index. If the value is -1 no item is selected.
+        selected_index: i32,
+
+        /// The entity of the selected item.
+        selected_item: SelectedItem
     }
 );
 
@@ -399,6 +408,7 @@ impl ComboBox {
 
 impl Template for ComboBox {
     fn template(mut self, id: Entity, ctx: &mut BuildContext) -> Self {
+        // takes result value of selected item inside the combo
         let selected_container = Container::new().attach(Grid::column(0)).build(ctx);
 
         let container = Container::new()
@@ -409,8 +419,9 @@ impl Template for ComboBox {
             .border_brush(id)
             .padding(id)
             .child(
+                // column 0: items, column 2: seperator, column 3: slider
                 Grid::new()
-                    .columns("*, 4, 14")
+                    .columns("auto, 4, 14")
                     .child(selected_container)
                     .child(
                         FontIconBlock::new()
@@ -425,6 +436,7 @@ impl Template for ComboBox {
                     .build(ctx),
             )
             .build(ctx);
+
         self.state_mut().selected_container = selected_container;
 
         let items_panel = Stack::new()
@@ -440,7 +452,11 @@ impl Template for ComboBox {
             .build(ctx);
 
         let popup = Popup::new()
-            .height(200.0)
+            // WIP: calculate width default given as width bound from
+            //      parent (here: Grid::Column(0)
+            // BUG: if width isn't set explicitly => selected item background
+            //      will consume all available width
+            .style("combo_box_popup")
             .open(("selected", id))
             .child(scroll_viewer)
             .child(
@@ -461,11 +477,13 @@ impl Template for ComboBox {
 
         self.name("ComboBox")
             .style("combo_box")
+            .background("$BUTTON_BACKGROUND")
+            .foreground("$CONTENT_FORGROUND")
+            .height(32.0)
             .icon(material_icons_font::MD_ARROW_DROP_DOWN)
             .icon_font("MaterialIcons-Regular")
             .icon_size(fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
-            .height(32.0)
             .min_width(80.0)
             .selected(false)
             .selected_index(-1)

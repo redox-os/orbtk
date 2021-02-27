@@ -20,7 +20,9 @@ pub struct KeyUpEvent {
 
 pub type KeyHandler = dyn Fn(&mut StatesContext, KeyEvent) -> bool + 'static;
 
-/// Used to handle key down events. Could be attached to a widget.
+/// Respond on keyboard activity. If a user triggers a key down action
+/// on the keyboard (on_key_down), the handler takes care with a
+/// correponding event. The handler can be attached to a widget.
 #[derive(IntoHandler)]
 pub struct KeyDownEventHandler {
     handler: Rc<KeyHandler>,
