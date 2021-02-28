@@ -4,17 +4,22 @@ use std::{
 };
 
 use super::behaviors::MouseBehavior;
+
 use crate::{api::prelude::*, prelude::*, proc_macros::*, theme_default::prelude::*};
+
+// --- KEYS --
 
 static ITEMS_PANEL: &str = "items_panel";
 
-/// The `ListViewState` generates the list box items and handles the selected indices.
+// --- KEYS --
+
+/// The `ListViewState` generates list box items and handles the selected indices.
 #[derive(Default, AsAny)]
 pub struct ListViewState {
     builder: WidgetBuildContext,
     count: usize,
-    selected_entities: RefCell<HashSet<Entity>>,
     items_panel: Entity,
+    selected_entities: RefCell<HashSet<Entity>>,
 }
 
 impl ListViewState {

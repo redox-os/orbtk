@@ -1,5 +1,8 @@
 use orbtk::prelude::*;
 
+static ID_WINDOW: &str = "Showcase";
+static ID_MAINVIEW: &str = "Showcase_MainView";
+
 // German localization file.
 static SHOWCASE_DE_DE: &str = include_str!("../assets/showcase/showcase_de_DE.ron");
 
@@ -18,6 +21,7 @@ fn main() {
         .localization(localization)
         .window(|ctx| {
             Window::new()
+                .id(ID_WINDOW)
                 .title("OrbTk - showcase example")
                 .position((100, 100))
                 .size(1000, 730)
@@ -35,8 +39,9 @@ widget!(MainView {});
 
 impl Template for MainView {
     fn template(self, _id: Entity, ctx: &mut BuildContext) -> Self {
-        self.child(
+        self.id(ID_MAINVIEW).child(
             TabWidget::new()
+                .name(ID_MAINVIEW)
                 .tab("Buttons / Text", ButtonView::new().build(ctx))
                 .tab("Items", ItemsView::new().build(ctx))
                 .tab("Layouts", LayoutView::new().build(ctx))
@@ -144,8 +149,11 @@ impl Template for ItemsView {
         let items = vec![
             "Item 1".to_string(),
             "Item 2".to_string(),
+            "Item 3".to_string(),
             "Item 4".to_string(),
             "Item 5".to_string(),
+            " ....".to_string(),
+            "Item 5005".to_string(),
         ];
         let count = items.len();
         self.items(items).child(
@@ -186,6 +194,7 @@ impl Template for ItemsView {
                 .child(
                     ComboBox::new()
                         .count(count)
+                        .style("combo_box")
                         .items_builder(move |bc, index| {
                             let text = ItemsView::items_ref(&bc.get_widget(id))[index].clone();
                             TextBlock::new().v_align("center").text(text).build(bc)
@@ -391,6 +400,7 @@ impl Template for LocalizationView {
                 .child(
                     ComboBox::new()
                         .count(count)
+                        .style("combo_box")
                         .items_builder(move |bc, index| {
                             let text =
                                 LocalizationView::languages_ref(&bc.get_widget(id))[index].clone();

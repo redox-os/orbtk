@@ -132,7 +132,6 @@ impl<'a> BuildContext<'a> {
         if !self.handlers.borrow().contains_key(&widget) {
             self.handlers.borrow_mut().insert(widget, vec![]);
         }
-
         self.handlers
             .borrow_mut()
             .get_mut(&widget)

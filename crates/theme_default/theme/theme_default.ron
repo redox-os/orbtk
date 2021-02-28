@@ -1,552 +1,564 @@
 // Default theme of Orbtk.
 Theme (
     styles: {
-        // -- [START] Base --
+	// -- [START] Base --
 
-        "base": (
-            properties: {
-                "font_size": "$FONT_SIZE_12",
-                "font": "$MEDIUM_FONT",
-                "icon_size": "$ICON_SIZE_16",
-                "icon_font": "$ICON_FONT"
-            },
-            states: [
-                (
-                    key: "disabled",
-                    properties: {
-                        "opacity": 0.5
-                    }
-                )
-            ]
-        ),
-        "window": (
-             properties: {
-                "background": "$BACKGROUND_SECONDARY",
-             },
-        ),
-        "grid": (
-            base: "base",
-            properties: {
-                "background": "transparent",
-            },
-        ),
-        "container": (
-            base: "base",
-            properties: {
-                "padding": 4,
-            },
-        ),
+	"base": (
+	    properties: {
+		"font_size": "$FONT_SIZE_12",
+		"font": "$MEDIUM_FONT",
+		"icon_size": "$ICON_SIZE_16",
+		"icon_font": "$ICON_FONT"
+	    },
+	    states: [
+		(
+		    key: "disabled",
+		    properties: {
+			"opacity": 0.5
+		    }
+		)
+	    ]
+	),
+	"window": (
+	     properties: {
+		"background": "$BACKGROUND_SECONDARY",
+	     },
+	),
+	"grid": (
+	    base: "base",
+	    properties: {
+		"background": "transparent",
+	    },
+	),
+	"container": (
+	    base: "base",
+	    properties: {
+		"padding": 4,
+	    },
+	),
 
-        // -- [END] Base --
+	// -- [END] Base --
 
-        // -- [START] TextBlock --
+	// -- [START] TextBlock --
 
-        "body": (
-            properties: {
-                "foreground": "$CONTENT_FOREGROUND",
-                "font_size": "$FONT_SIZE_16",
-                "font": "$MEDIUM_FONT",
-            },
-        ),
-        "header": (
-            base: "body",
-            properties: {
-                "font_size": "$FONT_SIZE_24",
-            }
-        ),
-        "text_block_header": (
-            base: "base",
-            properties: {
-                "font_size": "$FONT_SIZE_24",
-            },
-        ),
-        "small_text": (
-            base: "body",
-             properties: {
-                "font_size": "$FONT_SIZE_12",
-                "foreground": "$CONTENT_FOREGROUND",
-            },
-        ),
+	"body": (
+	    properties: {
+		"foreground": "$CONTENT_FOREGROUND",
+		"font_size": "$FONT_SIZE_16",
+		"font": "$MEDIUM_FONT",
+	    },
+	),
+	"header": (
+	    base: "body",
+	    properties: {
+		"font_size": "$FONT_SIZE_24",
+	    }
+	),
+	"text_block_header": (
+	    base: "base",
+	    properties: {
+		"font_size": "$FONT_SIZE_24",
+	    },
+	),
+	"small_text": (
+	    base: "body",
+	     properties: {
+		"font_size": "$FONT_SIZE_12",
+		"foreground": "$CONTENT_FOREGROUND",
+	    },
+	),
 
-        // -- [END] TextBlock --
+	// -- [END] TextBlock --
 
-        // -- [START] Button --
+	// -- [START] Button --
 
-        "button": ( 
-            base: "base",
-            properties: {
-                "height": 32,
-                "foreground": "$CONTENT_FOREGROUND",
-                "icon_brush": "$CONTENT_FOREGROUND",
-                "background": "$BUTTON_BACKGROUND",
-                "border_radius": 1,
-                "border_width": 0,
-                "font_size": "$FONT_SIZE_12",
-                "icon_size": "$ICON_SIZE_16"
-            }, 
-            states: [
-                (
-                    key: "selected",
-                    properties: {
-                        "background": "$BUTTON_BACKGROUND_SELECTED",
-                    }
-                ),
-                (
-                    key: "hover",
-                    properties: {
-                        "background": "$BUTTON_BACKGROUND_HOVER",
-                    }
-                ),
-                (
-                    key: "pressed",
-                    properties: {
-                        "background": "$BUTTON_BACKGORUND_PRESSED",
-                    }
-                ),
-                (
-                    key: "disabled",
-                    properties: {
-                        "opacity": 1,
-                        "background": "$BUTTON_BACKGROUND_DISABLED",
-                        "foreground": "$BUTTON_FOREGROUND_DISABLED",
-                        "icon_brush": "$BUTTON_FOREGROUND_DISABLED"
-                    }
-                ),
-            ],
-        ),
-        "button_single_content": (
-            base: "button",
-            properties: {
-                "spacing": 0,
-            },
-        ),
-        "button_primary": (
-            base: "button",
-            properties: {
-                "background": "$ACCENT_COLOR",
-                "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
-            },
-            states: [
-                (
-                    key: "hover",
-                    properties: {
-                         "background": "$ACCENT_COLOR_DARK"
-                    }
-                ),
-                  (
-                    key: "pressed",
-                    properties: {
-                        "background": "$ACCENT_COLOR_LIGHTER",
-                    }
-                ),
-            ]
-        ),
-        "button_primary_single_content": (
-            base: "button_primary",
-            properties: {
-                "spacing": 0
-            },
-        ),
-        "button_icon_only": (
-            base: "button",
-            properties: {
-                "icon_size": "$ICON_SIZE_12",
-                "icon_brush": "$CONTENT_FOREGROUND",
-                "background": "transparent",
-                "spacing": 0,
-                "min_width": 24,
-                "height": 24
-            },
-        ),
-        "button_square": ( 
-            base: "button",
-            properties: {
-                "border_radius": 1,
-            }, 
-        ),
-        "button_small": (
-            base: "button",
-            properties: {
-                "border_radius": 0,
-                "icon_brush": "$CONTENT_FOREGROUND",
-                "font_size": "$ICON_SIZE_12",
-                "background": "transparent",
-                "height": 14,
-                "spacing": 0,
-                "padding": 0,
-            },
-        ),
-        "check_box": (
-            base: "base",
-            properties: {
-                "foreground": "$CONTENT_FOREGROUND",
-                "icon_size": "$ICON_SIZE_18",
-                "background": "transparent",
-                "border_radius": 1,
-                "border_width": 1,
-                "border_brush": "$CONTAINER_BORDER",
-                "icon_brush": "transparent",
-                "icon_font": "$ICON_FONT",
-                "icon": "$MD_CHECK"
-            },
-            states: [
-                (
-                    key: "selected",
-                    properties: {
-                        "background": "$ACCENT_COLOR",
-                        "border_brush": "$ACCENT_COLOR",
-                        "icon_brush": "$CONTENT_FOREGROUND_INVERTED",
-                    }
-                )
-            ]
-        ),
-        "switch": (
-            base: "base",
-            properties: {
-                "width": 36,
-                "height": 32,
-                "container_margin": {
-                    "left": 4,
-                    "top": 10,
-                    "right": 4,
-                    "bottom": 10,
-                },
-                "border_radius": 7,
-                "background": "$BUTTON_BACKGORUND_PRESSED",
-            },
-            states: [
-                (
-                    key: "disabled",
-                    properties: {
-                        "opacity": 0.5
-                    }
-                )
-            ]
-        ),
-        "switch_toggle": (
-            base: "base",
-            properties: {
-                "width": 20,
-                "height": 20,
-                "border_radius": 10,
-                "background": "$SWITCH_TOGGLE_BACKGROUND",
-                "border_brush": "$SWITCH_TOGGLE_BORDER",
-                "border_width": 1
-            },
-            states: [
-                (
-                    key: "selected",
-                    properties: {
-                        "border_width": 0,
-                        "background": "$ACCENT_COLOR",
-                    }
-                )
-            ]
-        ),
-        
-        // -- [END] Button --
+	"button": (
+	    base: "base",
+	    properties: {
+		"height": 32,
+		"foreground": "$CONTENT_FOREGROUND",
+		"icon_brush": "$CONTENT_FOREGROUND",
+		"background": "$BUTTON_BACKGROUND",
+		"border_radius": 1,
+		"border_width": 0,
+		"font_size": "$FONT_SIZE_12",
+		"icon_size": "$ICON_SIZE_16"
+	    },
+	    states: [
+		(
+		    key: "selected",
+		    properties: {
+			"background": "$BUTTON_BACKGROUND_SELECTED",
+		    }
+		),
+		(
+		    key: "hover",
+		    properties: {
+			"background": "$BUTTON_BACKGROUND_HOVER",
+		    }
+		),
+		(
+		    key: "pressed",
+		    properties: {
+			"background": "$BUTTON_BACKGORUND_PRESSED",
+		    }
+		),
+		(
+		    key: "disabled",
+		    properties: {
+			"opacity": 1,
+			"background": "$BUTTON_BACKGROUND_DISABLED",
+			"foreground": "$BUTTON_FOREGROUND_DISABLED",
+			"icon_brush": "$BUTTON_FOREGROUND_DISABLED"
+		    }
+		),
+	    ],
+	),
+	"button_single_content": (
+	    base: "button",
+	    properties: {
+		"spacing": 0,
+	    },
+	),
+	"button_primary": (
+	    base: "button",
+	    properties: {
+		"background": "$ACCENT_COLOR",
+		"foreground": "$CONTENT_FOREGROUND_INVERTED",
+		"icon_brush": "$CONTENT_FOREGROUND_INVERTED",
+	    },
+	    states: [
+		(
+		    key: "hover",
+		    properties: {
+			 "background": "$ACCENT_COLOR_DARK"
+		    }
+		),
+		  (
+		    key: "pressed",
+		    properties: {
+			"background": "$ACCENT_COLOR_LIGHTER",
+		    }
+		),
+	    ]
+	),
+	"button_primary_single_content": (
+	    base: "button_primary",
+	    properties: {
+		"spacing": 0
+	    },
+	),
+	"button_icon_only": (
+	    base: "button",
+	    properties: {
+		"icon_size": "$ICON_SIZE_12",
+		"icon_brush": "$CONTENT_FOREGROUND",
+		"background": "transparent",
+		"spacing": 0,
+		"min_width": 24,
+		"height": 24
+	    },
+	),
+	"button_square": (
+	    base: "button",
+	    properties: {
+		"border_radius": 1,
+	    },
+	),
+	"button_small": (
+	    base: "button",
+	    properties: {
+		"border_radius": 0,
+		"icon_brush": "$CONTENT_FOREGROUND",
+		"font_size": "$ICON_SIZE_12",
+		"background": "transparent",
+		"height": 14,
+		"spacing": 0,
+		"padding": 0,
+	    },
+	),
+	"check_box": (
+	    base: "base",
+	    properties: {
+		"foreground": "$CONTENT_FOREGROUND",
+		"icon_size": "$ICON_SIZE_18",
+		"background": "transparent",
+		"border_radius": 1,
+		"border_width": 1,
+		"border_brush": "$CONTAINER_BORDER",
+		"icon_brush": "transparent",
+		"icon_font": "$ICON_FONT",
+		"icon": "$MD_CHECK"
+	    },
+	    states: [
+		(
+		    key: "selected",
+		    properties: {
+			"background": "$ACCENT_COLOR",
+			"border_brush": "$ACCENT_COLOR",
+			"icon_brush": "$CONTENT_FOREGROUND_INVERTED",
+		    }
+		)
+	    ]
+	),
+	"switch": (
+	    base: "base",
+	    properties: {
+		"width": 36,
+		"height": 32,
+		"container_margin": {
+		    "left": 4,
+		    "top": 10,
+		    "right": 4,
+		    "bottom": 10,
+		},
+		"border_radius": 7,
+		"background": "$BUTTON_BACKGORUND_PRESSED",
+	    },
+	    states: [
+		(
+		    key: "disabled",
+		    properties: {
+			"opacity": 0.5
+		    }
+		)
+	    ]
+	),
+	"switch_toggle": (
+	    base: "base",
+	    properties: {
+		"width": 20,
+		"height": 20,
+		"border_radius": 10,
+		"background": "$SWITCH_TOGGLE_BACKGROUND",
+		"border_brush": "$SWITCH_TOGGLE_BORDER",
+		"border_width": 1
+	    },
+	    states: [
+		(
+		    key: "selected",
+		    properties: {
+			"border_width": 0,
+			"background": "$ACCENT_COLOR",
+		    }
+		)
+	    ]
+	),
 
-        "container": (
-            base: "base",
-            properties: {
-                "padding": 4,
-            },
-        ),
+	// -- [END] Button --
 
-        // -- [START] (Numeric)TextBox --
-       
-        "text_box": (
-            base: "base",
-            properties: {
-                "height": 32,
-                "foreground": "$CONTENT_FOREGROUND_SECONDARY",
-                "background": "$CONTAINER_BACKGROUND",
-                "border_brush": "$CONTAINER_BORDER",
-                "border_width": 1,
-                "border_radius": 2,
-                "padding": 6,
-                "padding_left": 6,
-                "padding_right": 6,
-            },
-            states: [
-                (
-                    key: "not_empty",
-                    properties: {
-                        "foreground": "$CONTENT_FOREGROUND",
-                    }
-                ),
-                (
-                    key: "hover",
-                    properties: {
-                         "background": "$TEXT_BOX_HOVER_BACKGROUND"
-                    }
-                ),
-                (
-                    key: "focused",
-                    properties: {
-                         "border_brush": "$TEXT_BOX_FOCUSED_BORDER",
-                    }
-                ),
-                (
-                    key: "not_empty_focused",
-                    properties: {
-                        "foreground": "$CONTENT_FOREGROUND",
-                        "border_brush": "$TEXT_BOX_FOCUSED_BORDER",
-                    }
-                ),
-            ]
-        ),
-        "numeric_box": (
-            base: "text_box",
-            properties: {
-                "foreground": "$CONTENT_FOREGROUND",
-                "icon_up": "$MD_KEYBOARD_ARROW_UP",
-                "icon_down": "$MD_KEYBOARD_ARROW_DOWN",
-            }
-        ),
-        "cursor": (
-            properties: {
-                "background_opacity": 0.3,
-                "background": "$ACCENT_COLOR_LIGHTER",
-                "border_brush": "$ACCENT_COLOR_LIGHTER",
-                "border_width": 1
-            }
-        ),
+	"container": (
+	    base: "base",
+	    properties: {
+		"padding": 4,
+	    },
+	),
 
-        // -- [END] (Numeric)TextBox --
+	// -- [START] (Numeric)TextBox --
 
-        // -- [START] Lists --
+	"text_box": (
+	    base: "base",
+	    properties: {
+		"height": 32,
+		"foreground": "$CONTENT_FOREGROUND_SECONDARY",
+		"background": "$CONTAINER_BACKGROUND",
+		"border_brush": "$CONTAINER_BORDER",
+		"border_width": 1,
+		"border_radius": 2,
+		"padding": 6,
+		"padding_left": 6,
+		"padding_right": 6,
+	    },
+	    states: [
+		(
+		    key: "not_empty",
+		    properties: {
+			"foreground": "$CONTENT_FOREGROUND",
+		    }
+		),
+		(
+		    key: "hover",
+		    properties: {
+			 "background": "$TEXT_BOX_HOVER_BACKGROUND"
+		    }
+		),
+		(
+		    key: "focused",
+		    properties: {
+			 "border_brush": "$TEXT_BOX_FOCUSED_BORDER",
+		    }
+		),
+		(
+		    key: "not_empty_focused",
+		    properties: {
+			"foreground": "$CONTENT_FOREGROUND",
+			"border_brush": "$TEXT_BOX_FOCUSED_BORDER",
+		    }
+		),
+	    ]
+	),
+	"numeric_box": (
+	    base: "text_box",
+	    properties: {
+		"foreground": "$CONTENT_FOREGROUND",
+		"icon_up": "$MD_KEYBOARD_ARROW_UP",
+		"icon_down": "$MD_KEYBOARD_ARROW_DOWN",
+	    }
+	),
+	"cursor": (
+	    properties: {
+		"background_opacity": 0.3,
+		"background": "$ACCENT_COLOR_LIGHTER",
+		"border_brush": "$ACCENT_COLOR_LIGHTER",
+		"border_width": 1
+	    }
+	),
 
-        "items_widget": (
-            properties: {
-                "background": "$CONTAINER_BACKGROUND",
-                "border_brush": "$CONTAINER_BORDER",
-                "foreground": "$CONTENT_FOREGROUND",
-                "border_width": 1,
-                "border_radius": 2,
-                "padding": 4,
-            }
-        ),
-         "list_view": (
-            base: "base",
-            properties: {
-                "foreground": "$CONTENT_FOREGROUND",
-                "background": "$CONTAINER_BACKGROUND",
-                "border_brush": "$CONTAINER_BORDER",
-                "border_width": 1,
-                "border_radius": 2,
-            },
-        ),
-        "list_view_item": (
-            properties: {
-                "font_size": "$FONT_SIZE_12",
-                "foreground": "$CONTENT_FOREGROUND",
-                "background": "transparent",
-                "padding_left": 8,
-                "padding_right": 8,
-            },
-            states: [
-                (
-                    key: "selected",
-                    properties: {
-                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "background": "$ACCENT_COLOR",
-                    }
-                ),
-                (
-                    key: "pressed",
-                    properties: {
-                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "background": "$ACCENT_COLOR",
-                    }
-                )
-            ]
-        ),
-        "combo_box": (
-            base: "base",
-            properties: {
-                "font_size": "$FONT_SIZE_12",
-                "foreground": "$CONTENT_FOREGROUND",
-                "icon_brush": "$CONTENT_FOREGROUND",
-                "background": "$BUTTON_BACKGROUND",
-                "border_width": 0,
-                "height": 32,
-                "padding_left": 6,
-                "padding_right": 6,
-                "icon": "$MD_KEYBOARD_ARROW_DOWN",
-            },
-            states: [
-                (
-                    key: "hover",
-                    properties: {
-                        "background": "$BUTTON_BACKGROUND_HOVER",
-                    }
-                ),
-                (
-                    key: "selected",
-                    properties: {
-                        "selection_indicator": "$ACCENT_COLOR",
-                        "background": "$BUTTON_BACKGORUND_PRESSED",
-                    }
-                )
-            ]
-        ),
-        "combo_box_item": (
-            properties: {
-                "font_size": "$FONT_SIZE_12",
-                "foreground": "$CONTENT_FOREGROUND",
-                "background": "transparent",
-                "padding_left": 8,
-                "padding_right": 8,
-            },
-            states: [
-                (
-                    key: "selected",
-                    properties: {
-                        "foreground": "$COMBO_BOX_ITEM_SELECTED",
-                        "background": "$ACCENT_COLOR",
-                    }
-                ),
-                (
-                    key: "pressed",
-                    properties: {
-                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
-                        "background": "$ACCENT_COLOR_DARK",
-                    }
-                )
-            ]
-        ),
+	// -- [END] (Numeric)TextBox --
 
-        // -- [END] Lists --
+	// -- [START] Lists --
 
-        // -- [START] TabWidget --
-        
-        "tab_widget": (
-            properties: {
-                "border_brush": "transparent",
-                "border_width": 1,
-                "background": "$BACKGROUND",
-            },
-        ),
-        "tab_header": (
-            base: "base",
-            properties: {
-                "height": 34,
-                "font_sze": "$FONT_SIZE_12",
-                "foreground": "$CONTENT_FOREGROUND_SECONDARY",
-                "font": "$REGULAR_FONT",
-                "background": "transparent",
-                "padding_left": 8,
-                "padding_right": 8,
-                "border_radius": 0,
-                "margin": 0
-            },
-            states: [
-                (
-                    key: "selected",
-                    properties: {
-                        "background": "$ACCENT_COLOR_LIGHT",
-                        "foreground": "$CONTENT_FOREGROUND",
-                    }
-                )
-            ]
-        ),
-        "tab_header_bar": (
-             properties: {
-                "background": "$ACCENT_COLOR",
-                "height": 2
-            }
-        ),
-        "tab_icon_only": (
-            base: "base",
-            properties: {
-                "icon_size": "$ICON_SIZE_12",
-                "icon_brush": "$CONTENT_FOREGROUND_SECONDARY",
-                "icon": "$MD_CLOSE",
-                "background": "transparent",
-                "spacing": 0,
-                "width": 16,
-                "height": 16
-            },
-            states: [
-                (
-                    key: "pressed",
-                    properties: {
-                        "background": "$BUTTON_BACKGORUND_PRESSED",
-                    }
-                )
-            ]
-        ),
+	"items_widget": (
+	    properties: {
+		"background": "$CONTAINER_BACKGROUND",
+		"border_brush": "$CONTAINER_BORDER",
+		"foreground": "$CONTENT_FOREGROUND",
+		"border_width": 1,
+		"border_radius": 2,
+		"padding": 4,
+	    }
+	),
+	 "list_view": (
+	    base: "base",
+	    properties: {
+		"foreground": "$CONTENT_FOREGROUND",
+		"background": "$CONTAINER_BACKGROUND",
+		"border_brush": "$CONTAINER_BORDER",
+		"border_width": 1,
+		"border_radius": 2,
+	    },
+	),
+	"list_view_item": (
+	    properties: {
+		"font_size": "$FONT_SIZE_12",
+		"foreground": "$CONTENT_FOREGROUND",
+		"background": "transparent",
+		"padding_left": 8,
+		"padding_right": 8,
+	    },
+	    states: [
+		(
+		    key: "selected",
+		    properties: {
+			"foreground": "$CONTENT_FOREGROUND_INVERTED",
+			"background": "$ACCENT_COLOR",
+		    }
+		),
+		(
+		    key: "pressed",
+		    properties: {
+			"foreground": "$CONTENT_FOREGROUND_INVERTED",
+			"background": "$ACCENT_COLOR",
+		    }
+		)
+	    ]
+	),
+	"combo_box": (
+	    base: "base",
+	    properties: {
+		"background": "$BUTTON_BACKGROUND",
+		"border_width": 1,
+		"border_radius": 2,
+		"foreground": "$CONTENT_FOREGROUND",
+		"height": 32,
+		"icon": "$MD_KEYBOARD_ARROW_DOWN",
+		"icon_brush": "$CONTENT_FOREGROUND",
+		"icon_font": "$MaterialIcons-Regular",
+		"icon_size": "$ICON_FONG_SIZE_12",
+		"padding_left": 6,
+		"padding_right": 6,
+		"width": 160,
+	    },
+	    states: [
+		(
+		    key: "hover",
+		    properties: {
+			"background": "$BUTTON_BACKGROUND_HOVER",
+		    }
+		),
+		(
+		    key: "selected",
+		    properties: {
+			"selection_indicator": "$ACCENT_COLOR",
+			"background": "$BUTTON_BACKGORUND_PRESSED",
+		    }
+		)
+	    ]
+	),
+	"combo_box_item": (
+	    properties: {
+		"font_size": "$FONT_SIZE_12",
+		"foreground": "$CONTENT_FOREGROUND",
+		"background": "transparent",
+		"padding_left": 8,
+		"padding_right": 8,
+	    },
+	    states: [
+		(
+		    key: "selected",
+		    properties: {
+			"foreground": "$COMBO_BOX_ITEM_SELECTED",
+			"background": "$ACCENT_COLOR",
+		    }
+		),
+		(
+		    key: "pressed",
+		    properties: {
+			"foreground": "$CONTENT_FOREGROUND_INVERTED",
+			"background": "$ACCENT_COLOR_DARK",
+		    }
+		)
+	    ]
+	),
+	"combo_box_popup": (
+	     base: "popup",
+	     properties: {
+		"height": 80,
+		"min_height": 80,
+		"width": 160,
+		"min_width": 80,
+	    },
+	),
 
-        // -- [END] TabWidget --
+	// -- [END] Lists --
 
-        // -- [START] Other widgets --
+	// -- [START] TabWidget --
 
-        "slider": (
-            properties: {
-                "height": 24,
-                "border_radius": 2,
-                "background": "$BLACK",
-                "container_margin": {
-                    "left": 0,
-                    "top": 11,
-                    "right": 0,
-                    "bottom": 11,
-                },
-                "accent_margin": {
-                    "left": 0,
-                    "top": 11,
-                    "right": 0,
-                    "bottom": 11,
-                },
-                "accent_brush": "$ACCENT_COLOR",
-            }
-        ),
-        "thumb": (
-            properties: {
-                "width": 24,
-                "height": 24,
-                "border_radius": 12,
-                "background": "$SLIDER_THUMB_BACKGROUND",
-                "border_brush": "$SLIDER_THUMB_BORDER",
-                "border_width": 1
-            },
-            states: [
-                (
-                    key: "pressed",
-                    properties: {
-                         "background": "$ACCENT_COLOR",
-                         "border_width": 0
-                    }
-                )
-            ],
-        ),
-        "progress_bar": (
-             properties: {
-                "background": "$PROGRESS_BAR_BACKGROUND",
-                "indicator_background": "$ACCENT_COLOR",
-                "indicator_border_radius": 6,
-                "border_radius": 6,
-                "border_width": 0,
-                "height": 12,
-                "padding": 0,
-             },
-        ),
-        "scroll_bar": (
-            properties: {
-                "background": "$BUTTON_BACKGORUND_PRESSED",
-                "border_radius": 2,
-            },
-        ),
-        "popup": ( 
-            properties: {
-                "background": "$POPUP_BACKGROUND",
-                "border_brush": "$POPUP_BORDER",
-                "border_width": 1,
-            },
-        ),
+	"tab_widget": (
+	    properties: {
+		"border_brush": "transparent",
+		"border_width": 1,
+		"background": "$BACKGROUND",
+	    },
+	),
+	"tab_header": (
+	    base: "base",
+	    properties: {
+		"height": 34,
+		"font_sze": "$FONT_SIZE_12",
+		"foreground": "$CONTENT_FOREGROUND_SECONDARY",
+		"font": "$REGULAR_FONT",
+		"background": "transparent",
+		"padding_left": 8,
+		"padding_right": 8,
+		"border_radius": 0,
+		"margin": 0
+	    },
+	    states: [
+		(
+		    key: "selected",
+		    properties: {
+			"background": "$ACCENT_COLOR_LIGHT",
+			"foreground": "$CONTENT_FOREGROUND",
+		    }
+		)
+	    ]
+	),
+	"tab_header_bar": (
+	     properties: {
+		"background": "$ACCENT_COLOR",
+		"height": 2
+	    }
+	),
+	"tab_icon_only": (
+	    base: "base",
+	    properties: {
+		"icon_size": "$ICON_SIZE_12",
+		"icon_brush": "$CONTENT_FOREGROUND_SECONDARY",
+		"icon": "$MD_CLOSE",
+		"background": "transparent",
+		"spacing": 0,
+		"width": 16,
+		"height": 16
+	    },
+	    states: [
+		(
+		    key: "pressed",
+		    properties: {
+			"background": "$BUTTON_BACKGORUND_PRESSED",
+		    }
+		)
+	    ]
+	),
 
-        // -- [END] Other widgets --
+	// -- [END] TabWidget --
+
+	// -- [START] Other widgets --
+
+	"slider": (
+	    properties: {
+		"height": 24,
+		"border_radius": 2,
+		"background": "$BLACK",
+		"container_margin": {
+		    "left": 0,
+		    "top": 11,
+		    "right": 0,
+		    "bottom": 11,
+		},
+		"accent_margin": {
+		    "left": 0,
+		    "top": 11,
+		    "right": 0,
+		    "bottom": 11,
+		},
+		"accent_brush": "$ACCENT_COLOR",
+	    }
+	),
+	"thumb": (
+	    properties: {
+		"width": 24,
+		"height": 24,
+		"border_radius": 12,
+		"background": "$SLIDER_THUMB_BACKGROUND",
+		"border_brush": "$SLIDER_THUMB_BORDER",
+		"border_width": 1
+	    },
+	    states: [
+		(
+		    key: "pressed",
+		    properties: {
+			 "background": "$ACCENT_COLOR",
+			 "border_width": 0
+		    }
+		)
+	    ],
+	),
+	"progress_bar": (
+	     properties: {
+		"background": "$PROGRESS_BAR_BACKGROUND",
+		"indicator_background": "$ACCENT_COLOR",
+		"indicator_border_radius": 6,
+		"border_radius": 6,
+		"border_width": 0,
+		"height": 12,
+		"padding": 0,
+	     },
+	),
+	"scroll_bar": (
+	    properties: {
+		"background": "$BUTTON_BACKGORUND_PRESSED",
+		"border_radius": 2,
+	    },
+	),
+	"popup": (
+	    properties: {
+		"background": "$POPUP_BACKGROUND",
+		"border_brush": "$POPUP_BORDER",
+		"border_width": 1,
+	    },
+	),
+
+	// -- [END] Other widgets --
     },
 )
