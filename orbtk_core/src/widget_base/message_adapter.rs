@@ -56,28 +56,34 @@ impl MessageBox {
     }
 }
 
-/// The `MessageAdapter` is the thread save entry point to sent and
-/// read widget messages that are handled by the `message` method of a
-/// widget `State`,
+/// The `MessageAdapter` provides a thread save entry point to sent
+/// and read messages inside widget entities. They are processed inside the
+/// method `message` defined in each widgets `State` code.
 ///
 /// # Example
 ///
+#[doc="The following code example ..."]
 /// ```rust
+/// // State
 /// fn say_hello(entity: Entity, message_adapter: MessageAdapter) {
-///     message_adapter.send_message(String::from("Hello"), entity);
-///     message_adapter.send_message(String::from("Hello 2"), entity);
+///     message_adapter.send_message(String::from("Hello rustician"), entity);
+///     message_adapter.send_message(String::from("Did you got my message?"), entity);
 /// }
 ///
+/// impl Mystate {}
+///
+/// // implementation fo the State
 /// impl State for MyState {
 ///     fn message(&mut self, mut messages: MessageReader, _registry: &mut Registry, _ctx: &mut Context) {
 ///         for message in messages.read::<String>() {
-///             // prints:
-///             // Hello
-///             // Hello 2
-///             println!("{}", message);
-///         }
+///         println!("{}", message);
+///     }
 /// }
 /// ```
+#[doc="will print two lines to stdout:"]
+#[doc="```text"]
+#[doc="$ Hello rustician,"]
+#[doc="$ Did you got my message?"]
 #[derive(Clone, Debug)]
 pub struct MessageAdapter {
     messages: Arc<Mutex<BTreeMap<Entity, HashMap<TypeId, Vec<MessageBox>>>>>,

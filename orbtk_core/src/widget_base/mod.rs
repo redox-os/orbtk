@@ -1,3 +1,5 @@
+//! The `base_widget` defines common properties that can be inherited by any widget module.
+
 use std::{fmt::Debug, rc::Rc};
 
 use dces::prelude::{Component, Entity};
