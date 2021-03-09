@@ -1,3 +1,4 @@
+//! This module contains the layout types of an OrbTk application (Absolute, Fixed, Grid, Padding, Popup, Stack).
 use std::{any::Any, collections::BTreeMap};
 
 use dces::prelude::*;
@@ -18,7 +19,16 @@ mod padding;
 mod popup;
 mod stack;
 
-/// A layout is used to dynamic order the children of a widget.
+/// The layout process will order the children of a given widget in a dynamic iteration.
+/// It will respect constraint values between its elements. The following image illustrates
+/// the relationship between known layout elements:
+/// ![layout_constraints.svg](../../layout_constraints.svg)
+///
+// ![layout_constraints.png](../../layout_constraints.png)
+// Until given version of rustdoc (v1.50), it can't copy a given
+// image programmatically inside this doc file. We need to do take care
+// in a manual fashion. Copy image to target/doc/orbtk!
+
 pub trait Layout: Any {
     // Measure all children before the arrangement.
     fn measure(

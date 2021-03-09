@@ -3,6 +3,7 @@
 pub use crate::{theming::*, utils::prelude::*};
 pub use dces::prelude::*;
 
+/// Derive macro generating an impl of the trait `into_property_source`.
 #[macro_export]
 macro_rules! into_property_source {
     ($type:ty $(: $( $ex_type:ty ),*)* ) => {
@@ -558,6 +559,7 @@ macro_rules! widget {
     };
 }
 
+/// Derive macro generating an impl of the trait `trigger_event`.
 #[macro_export]
 macro_rules! trigger_event {
     ($event:ident, $event_handler:ident, $trait:ident, $method:tt) => {
