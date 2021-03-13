@@ -67,68 +67,7 @@ pub struct TextBehaviorState {
 }
 
 impl TextBehaviorState {
-    fn request_focus(&self) {
-        self.event_adapter
-            .push_event_direct(self.window, FocusEvent::RequestFocus(self.target));
-    }
-
     // -- Text operations --
-
-    fn cut(&mut self, registry: &mut Registry, ctx: &mut Context) {
-        self.copy(registry, ctx);
-        self.clear_selection(ctx);
-    }
-
-    fn copy(&self, registry: &mut Registry, ctx: &mut Context) {
-        let selection = self.selection(ctx);
-
-        let (start, end) = self.selection_start_end(selection);
-
-        if selection.is_empty() {
-            return;
-        }
-
-        if let Some(copy_text) = String16::from(ctx.get_widget(self.target).clone::<String>("text"))
-            .get_string(start, end)
-        {
-            registry.get_mut::<Clipboard>("clipboard").set(copy_text);
-        }
-    }
-
-    fn paste(&mut self, registry: &mut Registry, ctx: &mut Context) {
-        if let Some(value) = registry.get::<Clipboard>("clipboard").get() {
-            self.insert_text(value, ctx);
-        }
-    }
-
-    fn insert_text(&mut self, insert_text: String, ctx: &mut Context) {
-        if insert_text.is_empty() || !self.focused(ctx) {
-            return;
-        }
-
-        let mut update_focus_state = self.len(ctx) == 0;
-
-        update_focus_state = update_focus_state || self.clear_selection(ctx);
-
-        let mut selection = self.selection(ctx);
-
-        let mut text = String16::from(ctx.get_widget(self.target).clone::<String>("text"));
-        text.insert_str(selection.start(), insert_text.as_str());
-
-        selection.set(selection.start() + insert_text.chars().count());
-        self.set_selection(ctx, selection);
-
-        self.update_selection = true;
-
-        self.set_text(ctx, text.to_string());
-
-        // used to trigger bounds adjustments
-        self.direction = Direction::Right;
-
-        if update_focus_state {
-            self.update_focused_state(ctx);
-        }
-    }
 
     // handle back space
     fn back_space(&mut self, ctx: &mut Context) {
@@ -166,24 +105,20 @@ impl TextBehaviorState {
         }
     }
 
-    // handle delete
-    fn delete(&mut self, ctx: &mut Context) {
-        if self.clear_selection(ctx) {
-            return;
-        }
-
+    fn copy(&self, registry: &mut Registry, ctx: &mut Context) {
         let selection = self.selection(ctx);
-        let len = self.len(ctx);
 
-        if len == 0 || selection.end() > self.len(ctx) || selection.start() >= self.len(ctx) {
+        let (start, end) = self.selection_start_end(selection);
+
+        if selection.is_empty() {
             return;
         }
 
-        let mut text = String16::from(ctx.get_widget(self.target).clone::<String>("text"));
-
-        text.remove(selection.start());
-
-        self.set_text(ctx, text.to_string());
+        if let Some(copy_text) = String16::from(ctx.get_widget(self.target).clone::<String>("text"))
+            .get_string(start, end)
+        {
+            registry.get_mut::<Clipboard>("clipboard").set(copy_text);
+        }
     }
 
     // clear all chars from the selection.
@@ -222,6 +157,32 @@ impl TextBehaviorState {
         true
     }
 
+    // copy to registry and delete the selection
+    fn cut(&mut self, registry: &mut Registry, ctx: &mut Context) {
+        self.copy(registry, ctx);
+        self.clear_selection(ctx);
+    }
+
+    // handle delete
+    fn delete(&mut self, ctx: &mut Context) {
+        if self.clear_selection(ctx) {
+            return;
+        }
+
+        let selection = self.selection(ctx);
+        let len = self.len(ctx);
+
+        if len == 0 || selection.end() > self.len(ctx) || selection.start() >= self.len(ctx) {
+            return;
+        }
+
+        let mut text = String16::from(ctx.get_widget(self.target).clone::<String>("text"));
+
+        text.remove(selection.start());
+
+        self.set_text(ctx, text.to_string());
+    }
+
     fn insert_conditional_line_brake(&mut self, ctx: &mut Context) {
             if !self.focused(ctx) {
             return;
@@ -249,6 +210,41 @@ impl TextBehaviorState {
 
         if update_focus_state {
             self.update_focused_state(ctx);
+        }
+    }
+
+    fn insert_text(&mut self, insert_text: String, ctx: &mut Context) {
+        if insert_text.is_empty() || !self.focused(ctx) {
+            return;
+        }
+
+        let mut update_focus_state = self.len(ctx) == 0;
+
+        update_focus_state = update_focus_state || self.clear_selection(ctx);
+
+        let mut selection = self.selection(ctx);
+
+        let mut text = String16::from(ctx.get_widget(self.target).clone::<String>("text"));
+        text.insert_str(selection.start(), insert_text.as_str());
+
+        selection.set(selection.start() + insert_text.chars().count());
+        self.set_selection(ctx, selection);
+
+        self.update_selection = true;
+
+        self.set_text(ctx, text.to_string());
+
+        // used to trigger bounds adjustments
+        self.direction = Direction::Right;
+
+        if update_focus_state {
+            self.update_focused_state(ctx);
+        }
+    }
+
+    fn paste(&mut self, registry: &mut Registry, ctx: &mut Context) {
+        if let Some(value) = registry.get::<Clipboard>("clipboard").get() {
+            self.insert_text(value, ctx);
         }
     }
 
@@ -513,32 +509,63 @@ impl TextBehaviorState {
 
     // -- Helpers --
 
-    // sets new text
-    fn set_text(&mut self, ctx: &mut Context, text: String) {
-        ctx.get_widget(self.target).set("text", text.clone());
-        ctx.send_message(TextResult::TextManipulated(text), self.target);
-        self.self_update = true;
-    }
-
-    fn set_selection(&mut self, ctx: &mut Context, selection: TextSelection) {
-        TextBehavior::selection_set(&mut ctx.widget(), selection);
-        self.update_selection = true;
-    }
-
-    // gets the len of the text
-    fn len(&self, ctx: &mut Context) -> usize {
-        TextBlock::text_ref(&ctx.get_widget(self.text_block))
-            .chars()
-            .count()
-    }
-
     // gets the focused state
+    fn adjust_selection(&mut self, ctx: &mut Context) {
+        let mut selection = self.selection(ctx);
+        let len = self.len(ctx);
+
+        if selection.start() <= len || selection.end() <= len {
+            return;
+        }
+
+        selection.set(len);
+
+        self.set_selection(ctx, selection);
+
+        if *TextBehavior::focused_ref(&ctx.widget()) {
+            self.update_focused_state(ctx);
+        }
+    }
+
     fn focused(&self, ctx: &mut Context) -> bool {
         *TextBehavior::focused_ref(&ctx.widget())
     }
 
-    fn selection(&self, ctx: &mut Context) -> TextSelection {
-        *TextBehavior::selection_ref(&ctx.widget())
+    fn force_update(&mut self, ctx: &mut Context, force: bool) {
+        let self_update = self.self_update;
+        self.self_update = false;
+
+        if self_update && !force {
+            return;
+        }
+
+        self.adjust_selection(ctx);
+
+        if self.len(ctx) == 0 {
+            Cursor::offset_set(&mut ctx.get_widget(self.cursor), 0.);
+            TextBlock::offset_set(&mut ctx.get_widget(self.text_block), 0.);
+
+            ctx.get_widget(self.target)
+                .get_mut::<Selector>("selector")
+                .remove_state(NOT_EMPTY_STATE);
+        } else {
+            ctx.get_widget(self.target)
+                .get_mut::<Selector>("selector")
+                .push_state(NOT_EMPTY_STATE);
+        }
+    }
+
+    // Get new position for the selection based on current mouse position
+    fn get_new_selection_position(&self, ctx: &mut Context, position: Point) -> usize {
+        if let Some((index, _x)) = self
+            .map_chars_index_to_position(ctx)
+            .iter()
+            .min_by_key(|(_index, x)| (position.x() - x).abs() as u64)
+        {
+            return *index;
+        }
+
+        0
     }
 
     // check if control is pressed or on macos home key
@@ -603,19 +630,6 @@ impl TextBehaviorState {
         false
     }
 
-    // Get new position for the selection based on current mouse position
-    fn get_new_selection_position(&self, ctx: &mut Context, position: Point) -> usize {
-        if let Some((index, _x)) = self
-            .map_chars_index_to_position(ctx)
-            .iter()
-            .min_by_key(|(_index, x)| (position.x() - x).abs() as u64)
-        {
-            return *index;
-        }
-
-        0
-    }
-
     // Returns a vector with a tuple of each char's starting index (usize) and position (f64)
     fn map_chars_index_to_position(&self, ctx: &mut Context) -> Vec<(usize, f64)> {
         let len = self.len(ctx);
@@ -640,6 +654,13 @@ impl TextBehaviorState {
         position_index
     }
 
+    // gets the len of the text
+    fn len(&self, ctx: &mut Context) -> usize {
+        TextBlock::text_ref(&ctx.get_widget(self.text_block))
+            .chars()
+            .count()
+    }
+
     // measure text part
     fn measure(&self, ctx: &mut Context, start: usize, end: usize) -> TextMetrics {
         let font = TextBehavior::font_clone(&ctx.widget());
@@ -657,11 +678,33 @@ impl TextBehaviorState {
         TextMetrics::default()
     }
 
+    fn request_focus(&self) {
+        self.event_adapter
+            .push_event_direct(self.window, FocusEvent::RequestFocus(self.target));
+    }
+
+    fn selection(&self, ctx: &mut Context) -> TextSelection {
+        *TextBehavior::selection_ref(&ctx.widget())
+    }
+
     fn selection_start_end(&self, selection: TextSelection) -> (usize, usize) {
         if selection.start() > selection.end() {
             return (selection.end(), selection.start());
         }
         (selection.start(), selection.end())
+    }
+
+    // sets new text
+    fn set_text(&mut self, ctx: &mut Context, text: String) {
+        ctx.get_widget(self.target).set("text", text.clone());
+        ctx.send_message(TextResult::TextManipulated(text), self.target);
+        self.self_update = true;
+    }
+
+    // sets and mark selected text
+    fn set_selection(&mut self, ctx: &mut Context, selection: TextSelection) {
+        TextBehavior::selection_set(&mut ctx.widget(), selection);
+        self.update_selection = true;
     }
 
     fn update_focused_state(&self, ctx: &mut Context) {
@@ -691,47 +734,6 @@ impl TextBehaviorState {
 
         // update the visual state of the target
         ctx.get_widget(self.target).update(false);
-    }
-
-    fn adjust_selection(&mut self, ctx: &mut Context) {
-        let mut selection = self.selection(ctx);
-        let len = self.len(ctx);
-
-        if selection.start() <= len || selection.end() <= len {
-            return;
-        }
-
-        selection.set(len);
-
-        self.set_selection(ctx, selection);
-
-        if *TextBehavior::focused_ref(&ctx.widget()) {
-            self.update_focused_state(ctx);
-        }
-    }
-
-    fn force_update(&mut self, ctx: &mut Context, force: bool) {
-        let self_update = self.self_update;
-        self.self_update = false;
-
-        if self_update && !force {
-            return;
-        }
-
-        self.adjust_selection(ctx);
-
-        if self.len(ctx) == 0 {
-            Cursor::offset_set(&mut ctx.get_widget(self.cursor), 0.);
-            TextBlock::offset_set(&mut ctx.get_widget(self.text_block), 0.);
-
-            ctx.get_widget(self.target)
-                .get_mut::<Selector>("selector")
-                .remove_state(NOT_EMPTY_STATE);
-        } else {
-            ctx.get_widget(self.target)
-                .get_mut::<Selector>("selector")
-                .push_state(NOT_EMPTY_STATE);
-        }
     }
 
     // -- Helpers --
@@ -793,23 +795,25 @@ impl State for TextBehaviorState {
 }
 
 widget!(
-    /// The TextBehavior widget shares the same logic of handling text input between
-    /// tex-related widgets.
+    /// The TextBehavior widget shares the same logic to handle text
+    /// input between text-related widgets.
     ///
-    /// Attaching to a widget makes it able to handle text input like:
-    /// * input characters by keyboard
+    /// If you attach TextBehavior to other widgets, they inherit
+    /// following functions to handle text input:
+    /// * insert characters via keyboard press
     /// * select all text with Ctrl+A key combination
     /// * delete selected text with Backspace or Delete
-    /// * move cursor by the left or right arrow keys or clicking with mouse
-    /// * delete characters by pressing the Backspace or the Delete key
-    /// * run on_activate() callback on pressing the Enter key
+    /// * move cursor left or right using arrow keys
+    /// * move cursor via mouse click to given position
+    /// * use Backspace- or Delete-Key to remove preceding characters
+    /// * press Enter-Key to run on_activate() callback
     ///
-    /// TextBehavior needs the following prerequisites to able to work:
+    /// The following entities must be attached to offer TextBehavior functionality:
     /// * a `cursor`: the [`Entity`] of a [`Cursor`] widget
     /// * a `target`: the [`Entity`] of the target widget
     /// * a `text_block`: the [`Entity`] of the [`TextBlock`] widget
     ///
-    /// * and must inherit the following properties from its target:
+    /// * Each entity must inherit the following properties from its target:
     ///     * focused
     ///     * font
     ///     * font_size
@@ -870,13 +874,13 @@ widget!(
     /// [`Entity`]: https://docs.rs/dces/0.2.0/dces/entity/struct.Entity.html
     /// [`Cursor`]: ../struct.Cursor.html
     TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler, TextInputHandler, DropHandler, MouseHandler {
-        /// Reference the target (parent) widget e.g. `TextBox` or `PasswordBox`.
+        /// The `target ` reference the parent widget (e.g. `TextBox` or `PasswordBox`).
         target: u32,
 
-        /// Reference text selection `Cursor`.
+        /// The `Cursor` reference will handle the text selection.
         cursor: u32,
 
-        /// Reference `TextBlock` that is used to display the text.
+        /// The `TextBlock` reference is used to display the text.
         text_block: u32,
 
         /// Sets or shares the focused property.
@@ -888,10 +892,13 @@ widget!(
         /// Sets or shares the font size property.
         font_size: f64,
 
-        /// Sets or shares ta value that describes if the widget should lose focus on activation (when Enter pressed).
+        /// Sets or shares a boolean, that describes what happens if
+        /// the widget will lose focus on activation (e.g Enter-Key
+        /// is pressed).
         lose_focus_on_activation: bool,
 
-        /// Sets or shares the request_focus property. Used to request focus from outside.Set to `true` to request focus.
+        /// Sets or shares a boolean. If `request_focus` value is
+        /// `true`, the widget will request focus from outside.
         request_focus: bool,
 
         /// Sets or shares the text property.
@@ -900,7 +907,8 @@ widget!(
         /// Sets or shares the text selection property.
         selection: TextSelection,
 
-        /// If set to `true` all character will be focused when the widget gets focus. Default is `true`
+        /// All character will be focused when the widget gets
+        /// focus. Default: `true`
         select_all_on_focus: bool
     }
 );
