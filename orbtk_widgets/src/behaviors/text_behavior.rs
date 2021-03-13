@@ -661,6 +661,11 @@ impl TextBehaviorState {
             .count()
     }
 
+    // controls if line wapping will be handled
+    fn line_wrap(&self, ctx: &mut Context) -> bool {
+        *TextBehavior::line_wrap_ref(&ctx.widget())
+    }
+
     // measure text part
     fn measure(&self, ctx: &mut Context, start: usize, end: usize) -> TextMetrics {
         let font = TextBehavior::font_clone(&ctx.widget());
@@ -768,18 +773,19 @@ impl State for TextBehaviorState {
     ) {
         for action in messages.read::<TextAction>() {
             match action {
-                TextAction::KeyDown(event) => self.key_down(registry, ctx, event),
-                TextAction::MouseDown(p) => self.mouse_down(ctx, p),
                 TextAction::Drop(text, position) => {
                     if check_mouse_condition(position, &ctx.get_widget(self.target)) {
                         self.insert_text(text, ctx);
                     }
                 }
                 TextAction::FocusedChanged => self.focused_changed(ctx),
-                TextAction::SelectionChanged => self.update_selection = true,
+                TextAction::ForceUpdate(force) => self.force_update(ctx, force),
+                TextAction::KeyDown(event) => self.key_down(registry, ctx, event),
+                TextAction::LineWrap => self.line_wrap = true,
+                TextAction::MouseDown(p) => self.mouse_down(ctx, p),
                 TextAction::MouseMove(position) => self.mouse_move(ctx, position),
                 TextAction::MouseUp => self.mouse_up(ctx),
-                TextAction::ForceUpdate(force) => self.force_update(ctx, force),
+                TextAction::SelectionChanged => self.update_selection = true,
                 TextAction::TextInput(text) => self.insert_text(text, ctx),
             }
         }
@@ -800,6 +806,7 @@ widget!(
     ///
     /// If you attach TextBehavior to other widgets, they inherit
     /// following functions to handle text input:
+    ///
     /// * insert characters via keyboard press
     /// * select all text with Ctrl+A key combination
     /// * delete selected text with Backspace or Delete
@@ -807,16 +814,19 @@ widget!(
     /// * move cursor via mouse click to given position
     /// * use Backspace- or Delete-Key to remove preceding characters
     /// * press Enter-Key to run on_activate() callback
+    /// * use Ctrl-Enter-Key to line wap the inserted text
     ///
     /// The following entities must be attached to offer TextBehavior functionality:
+    ///
     /// * a `cursor`: the [`Entity`] of a [`Cursor`] widget
     /// * a `target`: the [`Entity`] of the target widget
     /// * a `text_block`: the [`Entity`] of the [`TextBlock`] widget
     ///
-    /// * Each entity must inherit the following properties from its target:
+    /// Each entity must inherit the following properties from its target:
     ///     * focused
     ///     * font
     ///     * font_size
+    ///     * line_wrap
     ///     * lose_focus_on_activation
     ///     * request_focus
     ///     * text
@@ -825,7 +835,7 @@ widget!(
     /// # Example
     ///
     /// ```
-    /// use orbtk::prelude::*
+    /// use orbtk::prelude::*;
     ///
     /// widget!(MyInput {
     ///     // essential properties TextBehavior needs to inherit
@@ -874,14 +884,8 @@ widget!(
     /// [`Entity`]: https://docs.rs/dces/0.2.0/dces/entity/struct.Entity.html
     /// [`Cursor`]: ../struct.Cursor.html
     TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler, TextInputHandler, DropHandler, MouseHandler {
-        /// The `target ` reference the parent widget (e.g. `TextBox` or `PasswordBox`).
-        target: u32,
-
         /// The `Cursor` reference will handle the text selection.
         cursor: u32,
-
-        /// The `TextBlock` reference is used to display the text.
-        text_block: u32,
 
         /// Sets or shares the focused property.
         focused: bool,
@@ -892,24 +896,35 @@ widget!(
         /// Sets or shares the font size property.
         font_size: f64,
 
-        /// Sets or shares a boolean, that describes what happens if
+        /// Support line wrapping using Ctrl-Enter key.
+        /// Default: `true`
+        line_wrap: bool,
+
+        /// Sets or shares a `boolean`, that describes what happens
         /// the widget will lose focus on activation (e.g Enter-Key
         /// is pressed).
         lose_focus_on_activation: bool,
 
-        /// Sets or shares a boolean. If `request_focus` value is
+        /// Sets or shares a `boolean`. If `request_focus` value is
         /// `true`, the widget will request focus from outside.
         request_focus: bool,
-
-        /// Sets or shares the text property.
-        text: String,
 
         /// Sets or shares the text selection property.
         selection: TextSelection,
 
         /// All character will be focused when the widget gets
         /// focus. Default: `true`
-        select_all_on_focus: bool
+        select_all_on_focus: bool,
+
+        /// The `target ` reference the parent widget (e.g. `TextBox` or `PasswordBox`).
+        target: u32,
+
+        /// The `TextBlock` reference is used to display the text.
+        text_block: u32,
+
+        /// Sets or shares the text property.
+        text: String
+
     }
 );
 
@@ -921,6 +936,7 @@ impl Template for TextBehavior {
             .text("")
             .selection(TextSelection::default())
             .focused(false)
+            .line_wrap(true)
             .lose_focus_on_activation(true)
             .select_all_on_focus(false)
             .on_key_down(move |ctx, event| -> bool {
