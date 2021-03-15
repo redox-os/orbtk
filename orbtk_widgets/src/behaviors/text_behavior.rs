@@ -27,6 +27,7 @@ pub enum TextAction {
     /// Send message with key down event.
     KeyDown(KeyEvent),
     /// Send message with line_wrap has changed event.
+    LineWrapChanged,
     /// Send message with mouse down event.
     MouseDown(Mouse),
     /// Send message with mouse move event.
@@ -280,6 +281,13 @@ impl TextBehaviorState {
         }
 
         // adjust position
+        // WIP: adapt handling of `conditional_line_break`
+        // if self.line_wrap(ctx) {
+        //     let offset = *Cursor::offset_ref(&ctx.get_widget(self.cursor));
+        //     let width = Cursor::bounds_ref(&ctx.get_widget(self.cursor)).width();
+        //     let delta = width - offset;
+        // }
+
         let offset = *Cursor::offset_ref(&ctx.get_widget(self.cursor));
         let width = Cursor::bounds_ref(&ctx.get_widget(self.cursor)).width();
         let delta = width - offset;
@@ -387,8 +395,11 @@ impl TextBehaviorState {
             }
             Key::Enter => {
                 if self.is_ctrl_enter_down(ctx) {
-                    println!("is_ctrl_enter_down: true.");
-                    self.insert_conditional_line_brake(ctx);
+                    // just intercept, if `line_warp` is selected (true)
+                    if self.line_wrap(ctx) {
+                        println!("Line wrap: insert conditional_line_brake.");
+                        self.insert_conditional_line_brake(ctx);
+                    }
                 } else {
                     self.activate(ctx);
                 }
@@ -674,9 +685,20 @@ impl TextBehaviorState {
             .count()
     }
 
-    // controls if line wapping will be handled
+    // get a reference to the line_wrap property
     fn line_wrap(&self, ctx: &mut Context) -> bool {
         *TextBehavior::line_wrap_ref(&ctx.widget())
+    }
+
+    // toggles line wapping for given input text
+    fn toggle_line_wrap(&mut self, ctx: &mut Context) {
+        if self.line_wrap(ctx) {
+            println!("Line wrap toggled to `false`");
+            TextBehavior::line_wrap_set(&mut ctx.widget(), false);
+        } else {
+            println!("Line wrap toggled to `true`");
+            TextBehavior::line_wrap_set(&mut ctx.widget(), true);
+        }
     }
 
     // measure text part
@@ -794,7 +816,7 @@ impl State for TextBehaviorState {
                 TextAction::FocusedChanged => self.focused_changed(ctx),
                 TextAction::ForceUpdate(force) => self.force_update(ctx, force),
                 TextAction::KeyDown(event) => self.key_down(registry, ctx, event),
-                TextAction::LineWrap => self.line_wrap = true,
+                TextAction::LineWrapChanged => self.toggle_line_wrap(ctx),
                 TextAction::MouseDown(p) => self.mouse_down(ctx, p),
                 TextAction::MouseMove(position) => self.mouse_move(ctx, position),
                 TextAction::MouseUp => self.mouse_up(ctx),
@@ -860,6 +882,7 @@ widget!(
     ///     focused: bool,
     ///     font: String,
     ///     font_size: f64,
+    ///     line_wrap: bool,
     ///     lose_focus_on_activation: bool,
     ///     request_focus: bool,
     ///     selection: TextSelection
@@ -871,6 +894,7 @@ widget!(
     ///         let text_block = TextBlock::new()
     ///             .font(id)
     ///             .font_size(id)
+    ///             .line_wrap(id)
     ///             .text(id)
     ///             .water_mark(id)
     ///             .build(ctx);
@@ -889,6 +913,7 @@ widget!(
     ///            .focused(id)
     ///            .font(id)
     ///            .font_size(id)
+    ///            .line_wrap(id)
     ///            .lose_focus_on_activation(id)
     ///            .request_focus(id)
     ///            .selection(id)

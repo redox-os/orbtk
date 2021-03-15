@@ -50,6 +50,9 @@ widget!(
         /// Sets or shares the focused property.
         focused: bool,
 
+        /// Support line wrapping using Ctrl-Enter key.
+        line_wrap: bool,
+
         /// Sets or shares ta value that describes if the TextBox should lose focus on activation (enter).
         lose_focus_on_activation: bool,
 
@@ -87,6 +90,7 @@ impl Template for TextBox {
             .focused(id)
             .font(id)
             .font_size(id)
+            .line_wrap(id)
             .lose_focus_on_activation(id)
             .select_all_on_focus(id)
             .request_focus(id)
@@ -105,6 +109,7 @@ impl Template for TextBox {
             .focused(false)
             .foreground(colors::LINK_WATER_COLOR)
             .height(32.0)
+            .line_wrap(true)
             .lose_focus_on_activation(true)
             .min_width(128.0)
             .padding(4.0)

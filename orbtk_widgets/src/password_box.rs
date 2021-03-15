@@ -93,6 +93,9 @@ widget!(
         /// Indicates if the widget is hovered by the mouse cursor.
         hover: bool,
 
+        /// Support line wrapping using Ctrl-Enter key.
+        line_wrap: bool,
+
         /// Sets or shares ta value that describes if the PasswordBox
         /// should lose focus on activation (when Enter pressed).
         lose_focus_on_activation: bool,
@@ -138,6 +141,7 @@ impl Template for PasswordBox {
             .focused(id)
             .font(id)
             .font_size(id)
+            .line_wrap(id)
             .lose_focus_on_activation(id)
             .request_focus(id)
             .selection(id)
@@ -161,6 +165,7 @@ impl Template for PasswordBox {
             .font("Roboto-Regular")
             .foreground(colors::LINK_WATER_COLOR)
             .height(32.0)
+            .line_wrap(false) // make sure, password is a one-liner!
             .lose_focus_on_activation(true)
             .min_width(128.0)
             .padding(4.0)

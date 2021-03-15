@@ -67,6 +67,8 @@ widget!(
         /// Defines if the text is localizable. If set to `false` the text will not be localized.
         localizable: bool,
 
+        /// Support line wrapping using Ctrl-Enter key.
+        line_wrap: bool,
 
         /// If the `TextBlock` is localizable and the localized text
         /// is not empty, the localized_text will be drawn.
@@ -91,6 +93,7 @@ impl Template for TextBlock {
             .foreground(colors::LINK_WATER_COLOR)
             .font_size(orbtk_fonts::FONT_SIZE_12)
             .font("Roboto-Regular")
+            .line_wrap(true)
             .localizable(true)
             .text("")
             .on_changed("text", move |ctx, _| {
