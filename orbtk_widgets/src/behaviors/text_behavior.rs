@@ -874,11 +874,23 @@ widget!(
     ///
     /// # Example
     ///
-    /// ```
+    /// The following code example creates a new widget `MyInput`. Intantiate it
+    /// in you App as needed.
+    ///
+    /// ```rust
     /// use orbtk::prelude::*;
     ///
+    /// // --- CONSTANTS ---
+    /// pub static ID_MY_INPUT: &str = "MY_INPUT_WIDGET";
+    ///
     /// widget!(MyInput {
-    ///     // essential properties TextBehavior needs to inherit
+    ///     /// MyInput is an example widget that inherits its functionality from
+    ///     /// `TextBehavior`.
+    ///     ///
+    ///     /// To use the text handling functions, you need to define essential
+    ///     /// properties that inherit its values from the parent (here:
+    ///     /// `TextBehavior`). Interaction on the user input is offered via the
+    ///     /// `TextInputHandler`.
     ///     focused: bool,
     ///     font: String,
     ///     font_size: f64,
@@ -899,7 +911,7 @@ widget!(
     ///             .water_mark(id)
     ///             .build(ctx);
     ///
-    ///         // Cursor is a child of TextBehavior
+    ///         // Cursor widget is a child of TextBehavior
     ///         let cursor = Cursor::new()
     ///            // will inherit from its target `TextBlock`
     ///            .focused(id)
@@ -921,10 +933,60 @@ widget!(
     ///            .text(id)
     ///            .build(ctx);
     ///
-    ///        self.child(cursor)
+    ///        // creates the widget subtree
+    ///        self.id(ID_MY_INPUT)
+    ///            .child(cursor)
     ///            .child(text_behavior)
     /// }
     /// ```
+    ///
+    /// Here is a sample calling App code that makes use of `MyInput`.
+    ///
+    /// ```rust
+    /// use orbtk::{
+    ///     {api::prelude::*, proc_macros::*, theme_default::prelude::*},
+    ///     prelude::behaviors::TextBehavior,
+    ///     prelude::*,
+    /// };
+    ///
+    /// // --- CONSTANTS ---
+    /// pub static ID_HEADER: &str = "Text behavior widget";
+    ///
+    /// fn main() {
+    ///    // use this only if you want to run it as web application.
+    ///    orbtk::initialize();
+    ///
+    ///    Application::new()
+    ///        .window(|ctx| {
+    ///            let text_block = MyInput::new()
+    ///                .background(colors::LYNCH_COLOR)
+    ///                .text("Our TextBehavior widget text.")
+    ///                .build(ctx);
+    ///
+    ///            Window::new()
+    ///                .title("OrbTk - text behaviour sample")
+    ///                .position((100.0, 100.0))
+    ///                .size(420.0, 160.0)
+    ///                .child(
+    ///                    Container::new()
+    ///                        .margin(16)
+    ///                        .child(
+    ///                            Stack::new()
+    ///                                .orientation("vertical")
+    ///                                .spacing(8)
+    ///                                .clip(true)
+    ///                                .child(TextBlock::new()
+    ///                                       .style("header")
+    ///                                       .text(ID_HEADER)
+    ///                                       .build(ctx))
+    ///                                .child(text_block)
+    ///                                .build(ctx),
+    ///                        )
+    ///                        .build(ctx),
+    ///                )
+    ///                .build(ctx)
+    ///        })
+    ///        .run();
     ///
     /// [`Entity`]: https://docs.rs/dces/0.2.0/dces/entity/struct.Entity.html
     /// [`Cursor`]: ../struct.Cursor.html
