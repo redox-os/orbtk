@@ -37,7 +37,7 @@ pub enum TextAction {
     /// Send message with selection has changed event.
     SelectionChanged,
     /// Send message to insert new text.
-    TextInput(String)
+    TextInput(String),
 }
 
 /// Message that the behavior can sent to its target.
@@ -194,7 +194,7 @@ impl TextBehaviorState {
     }
 
     fn insert_conditional_line_brake(&mut self, ctx: &mut Context) {
-            if !self.focused(ctx) {
+        if !self.focused(ctx) {
             return;
         }
 
@@ -616,7 +616,7 @@ impl TextBehaviorState {
         false
     }
 
-   // check if control is pressed or on macos home key
+    // check if control is pressed or on macos home key
     fn is_ctrl_home_down(&self, ctx: &mut Context) -> bool {
         // todo move window to api
         if cfg!(target_os = "macos")
@@ -821,7 +821,7 @@ impl State for TextBehaviorState {
                 TextAction::MouseMove(position) => self.mouse_move(ctx, position),
                 TextAction::MouseUp => self.mouse_up(ctx),
                 TextAction::SelectionChanged => self.update_selection = true,
-                TextAction::TextInput(text) => self.insert_text(text, ctx)
+                TextAction::TextInput(text) => self.insert_text(text, ctx),
             }
         }
     }
@@ -975,10 +975,12 @@ widget!(
     ///                                .orientation("vertical")
     ///                                .spacing(8)
     ///                                .clip(true)
-    ///                                .child(TextBlock::new()
+    ///                                .child(
+    ///                                    TextBlock::new()
     ///                                       .style("header")
     ///                                       .text(ID_HEADER)
-    ///                                       .build(ctx))
+    ///                                       .build(ctx),
+    ///                                )
     ///                                .child(text_block)
     ///                                .build(ctx),
     ///                        )
