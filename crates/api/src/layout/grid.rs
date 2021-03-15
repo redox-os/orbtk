@@ -31,7 +31,7 @@ impl GridLayout {
         &self,
         columns_cache: &[(f64, f64)],
         entity: Entity,
-        store: &mut StringComponentStore,
+        store: &mut ComponentStore,
         grid_column: usize,
     ) -> (f64, f64) {
         let mut width = 0.0;
@@ -55,7 +55,7 @@ impl GridLayout {
         &self,
         rows_cache: &[(f64, f64)],
         entity: Entity,
-        store: &mut StringComponentStore,
+        store: &mut ComponentStore,
         grid_row: usize,
     ) -> (f64, f64) {
         let mut height = 0.0;
@@ -178,7 +178,7 @@ impl Layout for GridLayout {
         &self,
         render_context_2_d: &mut RenderContext2D,
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &Theme,
     ) -> DirtySize {
@@ -267,7 +267,7 @@ impl Layout for GridLayout {
         render_context_2_d: &mut RenderContext2D,
         parent_size: (f64, f64),
         entity: Entity,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &Theme,
     ) -> (f64, f64) {

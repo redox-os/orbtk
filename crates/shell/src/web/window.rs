@@ -127,7 +127,7 @@ where
             self.update = true;
         }
 
-        // todo tmp solution to map touch events to mouse vent
+        // TODO: cleanup given temporary solution to map touch events to mouse event
         while let Some(event) = self.event_state.touch_start_events.borrow_mut().pop() {
             self.adapter.mouse_event(MouseEvent {
                 position: Point::new(
@@ -310,25 +310,26 @@ fn get_key(code: &str, key: String) -> (Key, String) {
     let mut text = String::from("");
 
     let code = match code {
-        "Backspace" => Key::Backspace,
-        "Delete" => Key::Delete,
-        "ControlLeft" | "ControlRight" => Key::Control,
-        "ShiftLeft" => Key::ShiftL,
-        "ShiftRight" => Key::ShiftR,
         "AltLeft" => Key::Alt,
         "AltRight" => Key::Alt,
         "ArrowUp" => Key::Up,
         "ArrowLeft" => Key::Left,
         "ArrowRight" => Key::Right,
         "ArrowDown" => Key::Down,
-        "Escape" => Key::Escape,
-        "Enter" => Key::Enter,
-        "OSLeft" | "OSRight" => Key::Home,
+        "Backspace" => Key::Backspace,
         "CapsLock" => Key::CapsLock,
         _ => {
             text = key.clone();
             Key::from(key.chars().next().unwrap())
         }
+        "ControlLeft" | "ControlRight" => Key::Control,
+        "Delete" => Key::Delete,
+        "Enter" => Key::Enter,
+        "Escape" => Key::Escape,
+        "OSLeft" | "OSRight" => Key::Home,
+        "ShiftLeft" => Key::ShiftL,
+        "ShiftRight" => Key::ShiftR,
+        "Tab" => Key::Tab,
     };
 
     (code, text)

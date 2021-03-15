@@ -5,11 +5,7 @@ use dces::prelude::*;
 use crate::{event::ChangedEvent, event::*, theming::*, tree::*, utils::prelude::*};
 
 /// Mark the widget and shared widgets as dirty.
-pub fn mark_as_dirty(
-    key: &str,
-    entity: Entity,
-    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-) {
+pub fn mark_as_dirty(key: &str, entity: Entity, ecm: &mut EntityComponentManager<Tree>) {
     let root = ecm.entity_store().root();
 
     for entity in ecm.component_store().entities_of_component(key, entity) {
@@ -30,10 +26,7 @@ pub fn mark_as_dirty(
 }
 
 /// Mark the widget dirty.
-pub fn mark_as_dirty_self(
-    entity: Entity,
-    ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
-) {
+pub fn mark_as_dirty_self(entity: Entity, ecm: &mut EntityComponentManager<Tree>) {
     let root = ecm.entity_store().root();
 
     *ecm.component_store_mut()
@@ -53,7 +46,7 @@ pub fn mark_as_dirty_self(
 
 /// The `WidgetContainer` wraps the entity of a widget and provides access to its properties, its children properties and its parent properties.
 pub struct WidgetContainer<'a> {
-    ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
+    ecm: &'a mut EntityComponentManager<Tree>,
     current_node: Entity,
     theme: &'a Theme,
     event_adapter: Option<&'a EventAdapter>,
@@ -63,7 +56,7 @@ impl<'a> WidgetContainer<'a> {
     /// Creates a new widget container for the given `entity`.
     pub fn new(
         root: Entity,
-        ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &'a mut EntityComponentManager<Tree>,
         theme: &'a Theme,
         event_adapter: Option<&'a EventAdapter>,
     ) -> Self {
@@ -495,6 +488,8 @@ impl<'a> WidgetContainer<'a> {
                             self.update_value::<Thickness, Value>(&key, Value(value));
                         } else if self.is::<String>(&key) {
                             self.update_value::<String, Value>(&key, Value(value));
+                        } else if self.is::<Alignment>(&key) {
+                            self.update_value::<Alignment, Value>(&key, Value(value));
                         }
                     }
                 }

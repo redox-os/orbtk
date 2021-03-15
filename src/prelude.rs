@@ -9,6 +9,7 @@ pub use std::{
 pub use dces::prelude::*;
 
 pub use crate::{
+    api::macros::*,
     api::prelude::*,
     localization::prelude::*,
     proc_macros::*,

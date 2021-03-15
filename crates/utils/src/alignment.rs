@@ -1,3 +1,5 @@
+use crate::Value;
+
 /// Used to align a widget vertical or horizontal.
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum Alignment {
@@ -54,6 +56,19 @@ impl From<&str> for Alignment {
             "Start" | "start" => Alignment::Start,
             _ => Alignment::Stretch,
         }
+    }
+}
+
+impl From<String> for Alignment {
+    fn from(s: String) -> Alignment {
+        Self::from(&s[..])
+    }
+}
+
+impl From<Value> for Alignment {
+    fn from(v: Value) -> Self {
+        let value = v.get::<String>();
+        Alignment::from(value)
     }
 }
 
@@ -121,9 +136,15 @@ mod tests {
         );
     }
 
+    macro_rules! value {
+        ( $e:expr ) => {
+            Value(ron::Value::String(($e).to_string()))
+        };
+    }
+
     #[test]
     fn test_into() {
-        let alignment: Alignment = "start".into();
+        let alignment: Alignment = "Start".into();
         assert_eq!(alignment, Alignment::Start);
 
         let alignment: Alignment = "start".into();
@@ -135,7 +156,7 @@ mod tests {
         let alignment: Alignment = "center".into();
         assert_eq!(alignment, Alignment::Center);
 
-        let alignment: Alignment = "end".into();
+        let alignment: Alignment = "End".into();
         assert_eq!(alignment, Alignment::End);
 
         let alignment: Alignment = "end".into();
@@ -148,6 +169,33 @@ mod tests {
         assert_eq!(alignment, Alignment::Stretch);
 
         let alignment: Alignment = "other".into();
+        assert_eq!(alignment, Alignment::Stretch);
+
+        let alignment: Alignment = value!("Start").into();
+        assert_eq!(alignment, Alignment::Start);
+
+        let alignment: Alignment = value!("start").into();
+        assert_eq!(alignment, Alignment::Start);
+
+        let alignment: Alignment = value!("Center").into();
+        assert_eq!(alignment, Alignment::Center);
+
+        let alignment: Alignment = value!("center").into();
+        assert_eq!(alignment, Alignment::Center);
+
+        let alignment: Alignment = value!("End").into();
+        assert_eq!(alignment, Alignment::End);
+
+        let alignment: Alignment = value!("end").into();
+        assert_eq!(alignment, Alignment::End);
+
+        let alignment: Alignment = value!("Stretch").into();
+        assert_eq!(alignment, Alignment::Stretch);
+
+        let alignment: Alignment = value!("stretch").into();
+        assert_eq!(alignment, Alignment::Stretch);
+
+        let alignment: Alignment = value!("other").into();
         assert_eq!(alignment, Alignment::Stretch);
     }
 }

@@ -6,34 +6,18 @@ pub mod prelude;
 
 pub use orbtk_utils::prelude as utils;
 
-#[cfg(all(any(feature = "default", feature = "orbraq", feature = "miniraq")))]
+#[cfg(all(any(feature = "default", feature = "orbraq")))]
 mod common;
 
-#[cfg(all(
-    not(feature = "miniraq"),
-    any(feature = "default", feature = "orbraq", target_arch = "wasm32"),
-))]
+#[cfg(any(feature = "default", feature = "orbraq", target_arch = "wasm32"))]
 pub use self::platform::*;
 
 #[cfg(all(
     not(target_arch = "wasm32"),
-    any(feature = "default", feature = "orbraq", feature = "miniraq"),
+    any(feature = "default", feature = "orbraq"),
 ))]
 #[path = "raqote/mod.rs"]
 pub mod platform;
-
-#[cfg(all(not(target_arch = "wasm32"), feature = "miniraq"))]
-pub mod concurrent;
-
-#[cfg(all(
-    feature = "miniraq",
-    any(
-        not(target_arch = "wasm32"),
-        not(feature = "default"),
-        not(feature = "orbraq")
-    )
-))]
-pub use self::concurrent::*;
 
 #[cfg(target_arch = "wasm32")]
 #[path = "web/mod.rs"]

@@ -5,6 +5,7 @@ use std::ops::Div;
 ///
 /// # Examples
 /// ```rust
+/// # use orbtk_utils::Size;
 /// let size = Size::new(10., 10.);
 /// let other_size = Size::new(5., 7.);
 /// let result = size - other_size;

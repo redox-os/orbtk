@@ -6,9 +6,10 @@ use std::ops::{Add, Div, Mul, Neg};
 ///
 /// # Examples
 /// ```rust
+/// # use orbtk_utils::Point;
 /// let point = Point::new(10., 10.);
 /// let other_point = Point::new(5., 7.);
-/// let result = size - other_point;
+/// let result = point - other_point;
 ///
 /// assert_eq!(result.x(), 5.);
 /// assert_eq!(result.y(), 3.);

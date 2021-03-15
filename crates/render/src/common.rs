@@ -68,7 +68,9 @@ pub fn cubic_bezier_rect(p0: Point, p1: Point, p2: Point, p3: Point) -> Rectangl
     let coefficient_b = 1.0 * p0 - 2.0 * p1 + 1.0 * p2;
     let coefficient_a = -1.0 * p0 + 3.0 * p1 - 3.0 * p2 + 1.0 * p3;
 
-    let res = coefficient_b * coefficient_b - coefficient_a * coefficient_c;
+    // let res = coefficient_b * coefficient_b - coefficient_a * coefficient_c;
+    let mut res = coefficient_b * coefficient_b;
+    res = res - coefficient_a * coefficient_c;
     if res.x() > 0.0 || res.y() > 0.0 {
         // The control point is outside of the ends rectangle, possibly the AABB of the curve is larger.
         let sqrt = res.abs().sqrt();
@@ -240,7 +242,7 @@ impl PathRect {
 
     #[cfg(all(
         not(target_arch = "wasm32"),
-        any(feature = "default", feature = "orbraq", feature = "miniraq"),
+        any(feature = "default", feature = "orbraq"),
     ))]
     /// Checks if the current instance is enclosed.
     pub fn get_clip(&self) -> Option<Rectangle> {

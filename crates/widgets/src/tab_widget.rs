@@ -21,14 +21,13 @@ pub struct TabHeaderState {
     on_close_click_callback: Option<Box<dyn 'static + Fn(&mut StatesContext, Point) -> bool>>,
 
     header_bar: Entity,
-
-    tab_header_container: Entity,
+    // tab_header_container: Entity,
 }
 
 impl State for TabHeaderState {
     fn init(&mut self, registry: &mut Registry, ctx: &mut Context) {
         self.header_bar = ctx.child(HEADER_BAR).entity();
-        self.tab_header_container = ctx.child(TAB_HEADER_CONTAINER).entity();
+        // self.tab_header_container = ctx.child(TAB_HEADER_CONTAINER).entity();
         self.update(registry, ctx);
     }
 

@@ -1,6 +1,6 @@
 use std::{any::Any, collections::BTreeMap};
 
-use dces::prelude::{Component, Entity, EntityComponentManager, StringComponentStore};
+use dces::prelude::{Component, Entity, EntityComponentManager};
 
 use crate::{tree::Tree, widget_base::MessageAdapter};
 
@@ -9,7 +9,7 @@ use super::State;
 /// The `StatesContext` provides access to the widget states.
 pub struct StatesContext<'a> {
     states: &'a mut BTreeMap<Entity, Box<dyn State>>,
-    ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
+    ecm: &'a mut EntityComponentManager<Tree>,
     message_adapter: &'a MessageAdapter,
 }
 
@@ -17,7 +17,7 @@ impl<'a> StatesContext<'a> {
     /// Creates a new state context.
     pub fn new(
         states: &'a mut BTreeMap<Entity, Box<dyn State>>,
-        ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &'a mut EntityComponentManager<Tree>,
         message_adapter: &'a MessageAdapter,
     ) -> Self {
         StatesContext {

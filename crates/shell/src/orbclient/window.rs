@@ -195,22 +195,23 @@ where
                 key_event.character.to_string()
             } else {
                 match key_event.scancode {
-                    orbclient::K_BKSP => key = Key::Backspace,
-                    orbclient::K_LEFT => key = Key::Left,
-                    orbclient::K_RIGHT => key = Key::Right,
-                    orbclient::K_UP => key = Key::Up,
-                    orbclient::K_DOWN => key = Key::Down,
-                    orbclient::K_DEL => key = Key::Delete,
-                    orbclient::K_ENTER => key = Key::Enter,
-                    orbclient::K_CTRL => key = Key::Control,
-                    orbclient::K_LEFT_SHIFT => key = Key::ShiftL,
-                    orbclient::K_RIGHT_SHIFT => key = Key::ShiftR,
                     orbclient::K_ALT => key = Key::Alt,
-                    orbclient::K_ESC => key = Key::Escape,
+                    orbclient::K_BKSP => key = Key::Backspace,
                     orbclient::K_CAPS => key = Key::CapsLock,
+                    orbclient::K_CTRL => key = Key::Control,
+                    orbclient::K_DEL => key = Key::Delete,
+                    orbclient::K_DOWN => key = Key::Down,
+                    orbclient::K_ENTER => key = Key::Enter,
+                    orbclient::K_ESC => key = Key::Escape,
                     orbclient::K_HOME => {
                         key = Key::Home;
                     }
+                    orbclient::K_LEFT => key = Key::Left,
+                    orbclient::K_LEFT_SHIFT => key = Key::ShiftL,
+                    orbclient::K_RIGHT => key = Key::Right,
+                    orbclient::K_RIGHT_SHIFT => key = Key::ShiftR,
+                    orbclient::K_TAB => key = Key::Tab,
+                    orbclient::K_UP => key = Key::Up,
                     _ => key = Key::Unknown,
                 };
                 String::default()
@@ -319,6 +320,7 @@ where
                 }
                 orbclient::EventOption::Unknown(_) => {}
                 orbclient::EventOption::None => {}
+                orbclient::EventOption::Hover(_) => {}
             }
         }
     }
@@ -362,11 +364,9 @@ where
     pub fn render(&mut self) {
         if self.redraw.load(Ordering::Relaxed) {
             let bytes = self.render_context.data_u8_mut();
+            let len = bytes.len() / std::mem::size_of::<orbclient::Color>();
             let color_data = unsafe {
-                std::slice::from_raw_parts_mut(
-                    bytes.as_mut_ptr() as *mut orbclient::Color,
-                    bytes.len() / std::mem::size_of::<orbclient::Color>(),
-                )
+                std::slice::from_raw_parts_mut(bytes.as_mut_ptr() as *mut orbclient::Color, len)
             };
 
             if color_data.len() == self.window.data().len() {

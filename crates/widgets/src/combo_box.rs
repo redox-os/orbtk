@@ -95,11 +95,6 @@ impl State for ComboBoxItemState {
                 selected_content,
                 self.combo_box,
             );
-            build_context.register_shared_property::<f32>(
-                "opacity",
-                selected_content,
-                self.combo_box,
-            );
             build_context.register_shared_property::<f64>(
                 "font_size",
                 selected_content,
@@ -213,7 +208,8 @@ impl Template for ComboBoxItem {
     }
 }
 
-/// The `ComboBoxState` is used to manipulate the position of the thumb of the slider widget.
+/// The `ComboBoxState` is used to manipulate the thumb position
+/// inside the popup widget, that is annotated with a slider.
 #[derive(Default, AsAny)]
 pub struct ComboBoxState {
     popup: Entity,

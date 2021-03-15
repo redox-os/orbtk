@@ -21,7 +21,7 @@ use super::WidgetContainer;
 /// render context and theme. You can emit adaptions to the state of
 /// an entity.
 pub struct Context<'a> {
-    pub(crate) ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
+    pub(crate) ecm: &'a mut EntityComponentManager<Tree>,
     entity: Entity,
     pub theme: Theme,
     pub(crate) provider: &'a ContextProvider,
@@ -42,10 +42,7 @@ impl<'a> Drop for Context<'a> {
 impl<'a> Context<'a> {
     /// Creates a new container.
     pub fn new(
-        ecs: (
-            Entity,
-            &'a mut EntityComponentManager<Tree, StringComponentStore>,
-        ),
+        ecs: (Entity, &'a mut EntityComponentManager<Tree>),
         theme: &Theme,
         provider: &'a ContextProvider,
         render_context: &'a mut RenderContext2D,
@@ -66,8 +63,8 @@ impl<'a> Context<'a> {
         self.entity
     }
 
-    /// Changes the current `Context` into `another` widget's context.
-    /// Don't forget to change back to the original context after done using the altered context.
+    /// Switch current `Context` to context of given widget `another`.
+    /// Don't forget to change back to the original context once you are done.
     pub fn change_into(&mut self, another: Entity) {
         self.entity = another;
     }

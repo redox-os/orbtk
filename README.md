@@ -349,20 +349,12 @@ cargo node run --target android --example showcase
 
 At the moment will evaluate different backends for OrbTk. A OrbTk backend consists of two different parts, window / events and rendering. OrbTk provides at the moment the following backends:
 
-### orbraq
+### orbraq (default)
 
 * default backend for Redox, Linux, macOS and Windows (default feature)
 * window and events based on [OrbClient](https://gitlab.redox-os.org/redox-os/orbclient)
 * 2D rendering based on [raqote](https://github.com/jrmuizel/raqote)
 * Known issues: window does not redraw while resizing
-
-### miniraq
-
-* use with `miniraq` feature `cargo run --example showcase --features miniraq --no-default-features` 
-* window and events based on [minifb](https://github.com/emoon/rust_minifb)
-* 2D rendering based on [raqote](https://github.com/jrmuizel/raqote)
-* Dependencies on Linux: libxkbcommon-dev, libwayland-cursor0, libwayland-dev
-* Does not support all features of `orbraq` e.g. DropEvents, Clipboard access 
 
 ### stdweb
 
@@ -407,7 +399,7 @@ There is a (wip) OrbTk book check [OrbTk book](https://github.com/redox-os/orbtk
 
 ## Showcases
 
-* [Plural Planner](https://codeberg.org/PluralTools/Planner): Task app
+* [Plural Planner](https://codeberg.org/PluralTools/Plural): Task app
 * [Kanter](https://github.com/lukors/kanter): Node based texture editor 
 * [twin-commander](https://github.com/kivimango/twin-commander): A twin-panel file manager specifically for the Redox OS 
 * [Space Editor](https://codeberg.org/flovanco/space-editor): 2D Tile Map Editor compatible with OrbGame

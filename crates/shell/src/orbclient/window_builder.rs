@@ -112,6 +112,10 @@ where
             flags.push(orbclient::WindowFlag::Borderless);
         }
 
+        if self.always_on_top {
+            flags.push(orbclient::WindowFlag::Front);
+        }
+
         let window = orbclient::Window::new_flags(
             self.bounds.x() as i32,
             self.bounds.y() as i32,

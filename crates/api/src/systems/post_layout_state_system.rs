@@ -16,7 +16,7 @@ impl PostLayoutStateSystem {
         &self,
         entity: Entity,
         theme: &Theme,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
         render_context: &mut RenderContext2D,
     ) {
         {
@@ -48,10 +48,10 @@ impl PostLayoutStateSystem {
     }
 }
 
-impl System<Tree, StringComponentStore, RenderContext2D> for PostLayoutStateSystem {
+impl System<Tree, RenderContext2D> for PostLayoutStateSystem {
     fn run_with_context(
         &self,
-        ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
+        ecm: &mut EntityComponentManager<Tree>,
         render_context: &mut RenderContext2D,
     ) {
         // todo fix

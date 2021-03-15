@@ -157,10 +157,7 @@ impl From<&str> for Color {
         let clean_hex = s.trim_start_matches('#');
         match clean_hex.len() {
             3 | 4 => {
-                let num = match u32::from_str_radix(&clean_hex, 16) {
-                    Ok(x) => x,
-                    Err(_) => 0,
-                };
+                let num = u32::from_str_radix(&clean_hex, 16).unwrap_or(0);
 
                 let mut blue = (num & 0xF) << 4;
                 let mut green = ((num >> 4) & 0xF) << 4;
@@ -177,13 +174,10 @@ impl From<&str> for Color {
                 Color::rgba(red as u8, green as u8, blue as u8, alpha as u8)
             }
             6 | 8 => {
-                let mut x = match u32::from_str_radix(&clean_hex, 16) {
-                    Ok(x) => x,
-                    Err(_) => 0,
-                };
+                let mut x = u32::from_str_radix(&clean_hex, 16).unwrap_or(0);
 
                 if clean_hex.len() == 6 {
-                    x |= 0xFF_000_000;
+                    x |= 0xFF00_0000;
                 }
 
                 Color { data: x }

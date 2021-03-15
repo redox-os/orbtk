@@ -19,7 +19,7 @@ dirs-next = "2.0"
 derive_more = { version = "0.99", default-features = false, features = ["constructor"] }
 
 # orbtk
-dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "develop" }
+dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "before_resource" }
 orbtk_localization = { path = "../localization", version = "0.3.1-alpha4" }
 orbtk_proc_macros = { path = "../proc_macros", version = "0.3.1-alpha4" }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
@@ -39,5 +39,4 @@ stdweb = "0.4"
 [features]
 default = ["orbtk_shell/orbraq"]
 orbraq = ["orbtk_shell/orbraq"]
-miniraq = ["orbtk_shell/miniraq", "orbtk_render/miniraq"]
 debug = []

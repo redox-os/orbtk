@@ -4,6 +4,7 @@ use crate::{Point, Size};
 ///
 /// # Examples
 /// ```rust
+/// # use orbtk_utils::Rectangle;
 /// let rectangle = Rectangle::new((0., 5.),(10., 7.));
 ///
 /// assert_eq!(rectangle.x(), 0.);
