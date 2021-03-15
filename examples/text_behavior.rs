@@ -1,7 +1,7 @@
 use orbtk::{
-    {api::prelude::*, proc_macros::*},
     prelude::behaviors::TextBehavior,
     prelude::*,
+    {api::prelude::*, proc_macros::*},
 };
 
 //super::behaviors::{TextAction, TextBehavior, TextResult};
@@ -80,9 +80,7 @@ impl Template for MyInput {
             .build(ctx);
 
         // Cursor widget is a child of TextBehavior
-        let cursor = Cursor::new()
-            .selection(id)
-            .build(ctx);
+        let cursor = Cursor::new().selection(id).build(ctx);
 
         // TextBehavior widget is the parent
         let text_behavior = TextBehavior::new()
@@ -103,26 +101,25 @@ impl Template for MyInput {
             .text_block(text_block.0)
             .build(ctx);
 
-        self.name(ID_MY_INPUT)
-            .child(
-                Container::new()
-                    .background(id)
-                    .border_brush(id)
-                    .border_radius(id)
-                    .border_width(id)
-                    .padding(id)
-                    .v_align("center")
-                    .child(text_behavior)
-                    .child(
-                        Stack::new()
-                            .orientation("Vertical")
-                            .spacing(6)
-                            .child(cursor)
-                            .child(text_block)
-                            .build(ctx),
-                    )
-                    .build(ctx),
-            )
+        self.name(ID_MY_INPUT).child(
+            Container::new()
+                .background(id)
+                .border_brush(id)
+                .border_radius(id)
+                .border_width(id)
+                .padding(id)
+                .v_align("center")
+                .child(text_behavior)
+                .child(
+                    Stack::new()
+                        .orientation("vertical")
+                        .spacing(6)
+                        .child(cursor)
+                        .child(text_block)
+                        .build(ctx),
+                )
+                .build(ctx),
+        )
     }
 }
 
@@ -132,14 +129,6 @@ fn main() {
 
     Application::new()
         .window(|ctx| {
-            // let text_block = MyInput::new()
-            //     //.id(ID_MY_INPUT)
-            //     .background(colors::LYNCH_COLOR)
-            //     //.request_focus(true)
-            //     .text("")
-            //     .water_mark("Input goes here ...")
-            //     .build(ctx);
-
             Window::new()
                 .title("OrbTk - text behaviour example")
                 .position((100.0, 100.0))
@@ -152,29 +141,25 @@ fn main() {
                             Stack::new()
                                 .orientation("vertical")
                                 .spacing(8)
-                                //.max_height(120)
-                                //.max_width(300)
-                                //.clip(true)
-                                .child(MyInput::new()
-                                       .style("header")
-                                       //.max_height(120)
-                                       //.max_width(300)
-                                       .text(ID_HEADER)
-                                       .build(ctx))
-                                .child(TextBox::new()
-                                       .line_wrap(false)
-                                       .min_height(80)
-                                       .max_height(140)
-                                       .max_width(355)
-                                       .water_mark("Singleline text ...")
-                                       .build(ctx))
-                                .child(TextBox::new()
-                                       .line_wrap(true)
-                                       .min_height(80)
-                                       .max_height(140)
-                                       .max_width(355)
-                                       .water_mark("Multi line text (Delimiter: Ctrl-Enter) ...")
-                                       .build(ctx))
+                                .child(MyInput::new().style("header").text(ID_HEADER).build(ctx))
+                                .child(
+                                    TextBox::new()
+                                        .line_wrap(false)
+                                        .min_height(80)
+                                        .max_height(140)
+                                        .max_width(355)
+                                        .water_mark("Single line text ...")
+                                        .build(ctx),
+                                )
+                                .child(
+                                    TextBox::new()
+                                        .line_wrap(true)
+                                        .min_height(80)
+                                        .max_height(140)
+                                        .max_width(355)
+                                        .water_mark("Multi line text (Delimiter: Ctrl-Enter) ...")
+                                        .build(ctx),
+                                )
                                 .build(ctx),
                         )
                         .build(ctx),
