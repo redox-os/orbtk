@@ -204,7 +204,7 @@ impl TextBehaviorState {
 
         let mut selection = self.selection(ctx);
 
-        let mut text = String::from(ctx.get_widget(self.target).clone::<String>("text"));
+        let mut text = ctx.get_widget(self.target).clone::<String>("text");
         text.push_str(CONDITIONAL_LINE_BRAKE);
         //text.insert_str(selection.start(), insert_conditional_line_break.as_str());
 
@@ -213,7 +213,7 @@ impl TextBehaviorState {
 
         self.update_selection = true;
 
-        self.set_text(ctx, text.to_string());
+        self.set_text(ctx, text);
 
         // used to trigger bounds adjustments
         self.direction = CursorDirection::Right;
