@@ -11,25 +11,32 @@ use crate::{
 pub static NOT_EMPTY_STATE: &str = "not_empty";
 pub static NOT_EMPTY_FOCUSED_STATE: &str = "not_empty_focused";
 pub static FOCUSED_STATE: &str = "focused";
-// --- KEYS ---
 
 // --- CONSTANTS ---
 pub static CONDITIONAL_LINE_BRAKE: &str = "\n";
-// --- CONSTANTS ---
 
 /// Actions of TextBehaviorState
 #[derive(Clone, Debug)]
 pub enum TextAction {
-    KeyDown(KeyEvent),
-    TextInput(String),
-    MouseDown(Mouse),
-    MouseUp,
-    MouseMove(Point),
+    /// Send message with drop event
     Drop(String, Point),
+    /// Send message with focus has changed event.
     FocusedChanged,
-    SelectionChanged,
     /// Used to force an update on visual state and offset.
     ForceUpdate(bool),
+    /// Send message with key down event.
+    KeyDown(KeyEvent),
+    /// Send message with line_wrap has changed event.
+    /// Send message with mouse down event.
+    MouseDown(Mouse),
+    /// Send message with mouse move event.
+    MouseMove(Point),
+    /// Send message with mouse up event.
+    MouseUp,
+    /// Send message with selection has changed event.
+    SelectionChanged,
+    /// Send message to insert new text.
+    TextInput(String)
 }
 
 /// Message that the behavior can sent to its target.
@@ -40,36 +47,37 @@ pub enum TextResult {
 
 // helper enum
 #[derive(Debug, PartialEq)]
-enum Direction {
+enum CursorDirection {
     Left,
     Right,
     None,
 }
 
-impl Default for Direction {
+impl Default for CursorDirection {
     fn default() -> Self {
-        Direction::None
+        CursorDirection::None
     }
 }
 
-/// The `TextBehaviorState` handles the text processing of the `TextBehavior` widget.
+/// The `TextBehaviorState` handles the text processing of the
+/// `TextBehavior` widget.
 #[derive(Default, AsAny)]
 pub struct TextBehaviorState {
     cursor: Entity,
-    target: Entity,
-    text_block: Entity,
-    direction: Direction,
+    direction: CursorDirection,
+    event_adapter: EventAdapter,
     pressed: bool,
     self_update: bool,
+    target: Entity,
+    text_block: Entity,
     update_selection: bool,
-    event_adapter: EventAdapter,
     window: Entity, //mouse_up_count: usize,
 }
 
 impl TextBehaviorState {
     // -- Text operations --
 
-    // handle back space
+    // handle backspace key
     fn back_space(&mut self, ctx: &mut Context) {
         if self.clear_selection(ctx) {
             return;
@@ -105,6 +113,7 @@ impl TextBehaviorState {
         }
     }
 
+    // copy selected text to registry
     fn copy(&self, registry: &mut Registry, ctx: &mut Context) {
         let selection = self.selection(ctx);
 
@@ -163,7 +172,7 @@ impl TextBehaviorState {
         self.clear_selection(ctx);
     }
 
-    // handle delete
+    // clear text and remove from selection
     fn delete(&mut self, ctx: &mut Context) {
         if self.clear_selection(ctx) {
             return;
@@ -206,13 +215,14 @@ impl TextBehaviorState {
         self.set_text(ctx, text.to_string());
 
         // used to trigger bounds adjustments
-        self.direction = Direction::Right;
+        self.direction = CursorDirection::Right;
 
         if update_focus_state {
             self.update_focused_state(ctx);
         }
     }
 
+    // insert text from given selection
     fn insert_text(&mut self, insert_text: String, ctx: &mut Context) {
         if insert_text.is_empty() || !self.focused(ctx) {
             return;
@@ -235,13 +245,14 @@ impl TextBehaviorState {
         self.set_text(ctx, text.to_string());
 
         // used to trigger bounds adjustments
-        self.direction = Direction::Right;
+        self.direction = CursorDirection::Right;
 
         if update_focus_state {
             self.update_focused_state(ctx);
         }
     }
 
+    // paste in text from clipboard
     fn paste(&mut self, registry: &mut Registry, ctx: &mut Context) {
         if let Some(value) = registry.get::<Clipboard>("clipboard").get() {
             self.insert_text(value, ctx);
@@ -264,7 +275,7 @@ impl TextBehaviorState {
         let length_measure = self.measure(ctx, start, end);
         Cursor::selection_width_set(&mut ctx.get_widget(self.cursor), length_measure.width);
 
-        if self.direction == Direction::None {
+        if self.direction == CursorDirection::None {
             return;
         }
 
@@ -273,19 +284,19 @@ impl TextBehaviorState {
         let width = Cursor::bounds_ref(&ctx.get_widget(self.cursor)).width();
         let delta = width - offset;
 
-        if self.direction == Direction::Right && cursor_start_measure.width > delta {
+        if self.direction == CursorDirection::Right && cursor_start_measure.width > delta {
             let offset_delta = delta - cursor_start_measure.width;
             Cursor::offset_set(&mut ctx.get_widget(self.cursor), offset + offset_delta);
             TextBlock::offset_set(&mut ctx.get_widget(self.text_block), offset + offset_delta);
         }
 
-        if self.direction == Direction::Left && cursor_start_measure.width + offset < 0. {
+        if self.direction == CursorDirection::Left && cursor_start_measure.width + offset < 0. {
             let offset_delta = cursor_start_measure.width + offset;
             Cursor::offset_set(&mut ctx.get_widget(self.cursor), offset - offset_delta);
             TextBlock::offset_set(&mut ctx.get_widget(self.text_block), offset - offset_delta);
         }
 
-        self.direction = Direction::None;
+        self.direction = CursorDirection::None;
     }
 
     fn select_all(&mut self, ctx: &mut Context) {
@@ -303,7 +314,7 @@ impl TextBehaviorState {
     }
 
     fn expand_selection_left(&mut self, ctx: &mut Context) {
-        self.direction = Direction::Left;
+        self.direction = CursorDirection::Left;
         let mut selection = self.selection(ctx);
         if selection.start() as i32 > 0 {
             selection.set_start(selection.start() - 1);
@@ -312,7 +323,7 @@ impl TextBehaviorState {
     }
 
     fn expand_selection_right(&mut self, ctx: &mut Context) {
-        self.direction = Direction::Right;
+        self.direction = CursorDirection::Right;
         let mut selection = self.selection(ctx);
         if selection.start() < self.len(ctx) {
             selection.set_start(selection.start() + 1);
@@ -321,18 +332,20 @@ impl TextBehaviorState {
     }
 
     fn move_selection_left(&mut self, ctx: &mut Context) {
-        self.direction = Direction::Left;
+        self.direction = CursorDirection::Left;
         let selection = move_selection_left(self.selection(ctx));
         self.set_selection(ctx, selection);
     }
 
     fn move_selection_right(&mut self, ctx: &mut Context) {
-        self.direction = Direction::Right;
+        self.direction = CursorDirection::Right;
         let selection = move_selection_right(self.selection(ctx), self.len(ctx));
         self.set_selection(ctx, selection);
     }
 
     // -- Selection --
+
+    // -- Event handling --
 
     fn activate(&self, ctx: &mut Context) {
         if *ctx.widget().get::<bool>("lose_focus_on_activation") {
@@ -343,8 +356,6 @@ impl TextBehaviorState {
         self.event_adapter
             .push_event_direct(self.target, ActivateEvent(self.target));
     }
-
-    // -- Event handling --
 
     // handles the key down event
     fn key_down(&mut self, registry: &mut Registry, ctx: &mut Context, key_event: KeyEvent) {
@@ -437,9 +448,9 @@ impl TextBehaviorState {
         }
 
         if selection.start() < new_start {
-            self.direction = Direction::Right;
+            self.direction = CursorDirection::Right;
         } else {
-            self.direction = Direction::Left;
+            self.direction = CursorDirection::Left;
         }
 
         selection.set_start(new_start);
@@ -509,7 +520,7 @@ impl TextBehaviorState {
 
     // -- Helpers --
 
-    // gets the focused state
+    // get the focused state
     fn adjust_selection(&mut self, ctx: &mut Context) {
         let mut selection = self.selection(ctx);
         let len = self.len(ctx);
@@ -527,10 +538,12 @@ impl TextBehaviorState {
         }
     }
 
+    // get a reference to the focused property
     fn focused(&self, ctx: &mut Context) -> bool {
         *TextBehavior::focused_ref(&ctx.widget())
     }
 
+    // force update of the focused state
     fn force_update(&mut self, ctx: &mut Context, force: bool) {
         let self_update = self.self_update;
         self.self_update = false;
@@ -555,7 +568,7 @@ impl TextBehaviorState {
         }
     }
 
-    // Get new position for the selection based on current mouse position
+    // get new position for the selection based on current mouse position
     fn get_new_selection_position(&self, ctx: &mut Context, position: Point) -> usize {
         if let Some((index, _x)) = self
             .map_chars_index_to_position(ctx)
@@ -630,7 +643,7 @@ impl TextBehaviorState {
         false
     }
 
-    // Returns a vector with a tuple of each char's starting index (usize) and position (f64)
+    // returns a vector with a tuple of each char's starting index (usize) and position (f64)
     fn map_chars_index_to_position(&self, ctx: &mut Context) -> Vec<(usize, f64)> {
         let len = self.len(ctx);
 
@@ -786,7 +799,7 @@ impl State for TextBehaviorState {
                 TextAction::MouseMove(position) => self.mouse_move(ctx, position),
                 TextAction::MouseUp => self.mouse_up(ctx),
                 TextAction::SelectionChanged => self.update_selection = true,
-                TextAction::TextInput(text) => self.insert_text(text, ctx),
+                TextAction::TextInput(text) => self.insert_text(text, ctx)
             }
         }
     }
@@ -801,11 +814,11 @@ impl State for TextBehaviorState {
 }
 
 widget!(
-    /// The TextBehavior widget shares the same logic to handle text
-    /// input between text-related widgets.
-    ///
-    /// If you attach TextBehavior to other widgets, they inherit
-    /// following functions to handle text input:
+    /// The `TextBehavior` widget implements generic text handling
+    /// functionality, that can be inherited to any text-related
+    /// widgets (like TextBox, PasswordBox). Following associated
+    /// functions are implemented to control the behavior inside the
+    /// text property:
     ///
     /// * insert characters via keyboard press
     /// * select all text with Ctrl+A key combination
@@ -816,13 +829,18 @@ widget!(
     /// * press Enter-Key to run on_activate() callback
     /// * use Ctrl-Enter-Key to line wap the inserted text
     ///
-    /// The following entities must be attached to offer TextBehavior functionality:
+    /// Please take care to define and `attach` the next **listed
+    /// entities** to your text processing widgets. If not,
+    /// functionality is not inherited and can't be processed by
+    /// `TextBehavior`:
     ///
     /// * a `cursor`: the [`Entity`] of a [`Cursor`] widget
     /// * a `target`: the [`Entity`] of the target widget
     /// * a `text_block`: the [`Entity`] of the [`TextBlock`] widget
     ///
-    /// Each entity must inherit the following properties from its target:
+    /// Each of this building blog entities needs define the listed
+    /// properties to inherit them from its respective target:
+    ///
     ///     * focused
     ///     * font
     ///     * font_size
@@ -849,31 +867,33 @@ widget!(
     ///
     /// impl Template for MyInput {
     ///     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-    ///         // Cursor depends on a TextBlock
+    ///         // TextBlock widget is our target (a child of TextBehaviour)
     ///         let text_block = TextBlock::new()
-    ///             .text(id)
-    ///             .water_mark(id)
     ///             .font(id)
     ///             .font_size(id)
+    ///             .text(id)
+    ///             .water_mark(id)
     ///             .build(ctx);
     ///
+    ///         // Cursor is a child of TextBehavior
     ///         let cursor = Cursor::new()
-    ///            // use .0 because Entity wraps an u32
-    ///            .text_block(text_block.0)
+    ///            // will inherit from its target `TextBlock`
     ///            .focused(id)
     ///            .selection(id)
+    ///            .text_block(text_block.0) // .0 is needed to unwrap its u32
     ///            .build(ctx);
     ///
+    ///        // TextBehavior widget is the parent
     ///        let text_behavior = TextBehavior::new()
-    ///            .cursor(cursor.0)
+    ///            .cursor(cursor.0) // .0 is needed to unwrap its u32
     ///            .focused(id)
     ///            .font(id)
     ///            .font_size(id)
     ///            .lose_focus_on_activation(id)
-    ///            .target(id.0)
     ///            .request_focus(id)
-    ///            .text(id)
     ///            .selection(id)
+    ///            .target(id.0)
+    ///            .text(id)
     ///            .build(ctx);
     ///
     ///        self.child(cursor)
@@ -900,13 +920,14 @@ widget!(
         /// Default: `true`
         line_wrap: bool,
 
-        /// Sets or shares a `boolean`, that describes what happens
-        /// the widget will lose focus on activation (e.g Enter-Key
-        /// is pressed).
+        /// Sets or shares a `lose_focus_on_activation`
+        /// boolean. Describes what happens if the widget will lose
+        /// focus on activation (e.g Enter-Key is pressed).
         lose_focus_on_activation: bool,
 
-        /// Sets or shares a `boolean`. If `request_focus` value is
-        /// `true`, the widget will request focus from outside.
+        /// Sets or shares a `request_focus` property. If
+        /// `request_focus` value is `true`, the widget will request
+        /// focus from outside.
         request_focus: bool,
 
         /// Sets or shares the text selection property.
