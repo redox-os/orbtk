@@ -206,7 +206,6 @@ impl TextBehaviorState {
 
         let mut text = ctx.get_widget(self.target).clone::<String>("text");
         text.push_str(CONDITIONAL_LINE_BRAKE);
-        //text.insert_str(selection.start(), insert_conditional_line_break.as_str());
 
         selection.set(selection.start() + CONDITIONAL_LINE_BRAKE.len());
         self.set_selection(ctx, selection);
@@ -397,7 +396,6 @@ impl TextBehaviorState {
                 if self.is_ctrl_enter_down(ctx) {
                     // just intercept, if `line_warp` is selected (true)
                     if self.line_wrap(ctx) {
-                        println!("Line wrap: insert conditional_line_brake.");
                         self.insert_conditional_line_brake(ctx);
                     }
                 } else {
@@ -411,7 +409,6 @@ impl TextBehaviorState {
             }
             Key::C(..) => {
                 if self.is_ctrl_home_down(ctx) {
-                    println!("is_ctrl_home_down: true.");
                     self.copy(registry, ctx);
                 }
             }

@@ -1,10 +1,4 @@
-use orbtk::{
-    prelude::behaviors::TextBehavior,
-    prelude::*,
-    {api::prelude::*, proc_macros::*},
-};
-
-//super::behaviors::{TextAction, TextBehavior, TextResult};
+use orbtk::{prelude::behaviors::TextBehavior, prelude::*};
 
 // --- CONSTATNS ---
 pub static ID_HEADER: &str = "Text behavior example";
@@ -153,10 +147,12 @@ fn main() {
                                 )
                                 .child(
                                     TextBox::new()
+                                        .style("text_box_multiline")
+                                        .height(120.0)
                                         .line_wrap(true)
-                                        .min_height(80)
-                                        .max_height(140)
-                                        .max_width(355)
+                                        .min_height(80.0)
+                                        .max_height(140.0)
+                                        .max_width(355.0)
                                         .water_mark("Multi line text (Delimiter: Ctrl-Enter) ...")
                                         .build(ctx),
                                 )
@@ -168,3 +164,7 @@ fn main() {
         })
         .run();
 }
+
+// let parent = ctx.get_widget(self.target);
+// let bounds = parent.clone::<Rectangle>("bounds");
+// let parent_size = bounds.size();
