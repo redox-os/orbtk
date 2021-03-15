@@ -1,4 +1,5 @@
 use super::behaviors::{TextAction, TextBehavior, TextResult};
+
 use crate::prelude::*;
 use crate::{api::prelude::*, proc_macros::*, theme_default::prelude::*};
 
@@ -62,29 +63,11 @@ widget!(
     /// [`TextBox`]: ./struct.TextBox.html
     /// [`example`]: https://github.com/redox-os/orbtk/tree/develop/examples/login.rs
     PasswordBox<PasswordBoxState>: KeyDownHandler, TextInputHandler {
-        /// Sets or shares the echo character which used to mask the input
-        echo: char,
-
-        /// Sets or shares the text property.It holds the password.
-        text: String,
-
-        /// Sets or shares the water_mark text property.
-        water_mark: String,
-
-        /// Sets or shares the text selection property.
-        selection: TextSelection,
-
-        /// Sets or shares the foreground property.
-        foreground: Brush,
-
-        /// Sets or shares the font size property.
-        font_size: f64,
-
-        /// Sets or shares the font property.
-        font: String,
-
         /// Sets or shares the background property.
         background: Brush,
+
+        /// Sets or shares the border brush property.
+        border_brush: Brush,
 
         /// Sets or shares the border radius property.
         border_radius: f64,
@@ -92,39 +75,58 @@ widget!(
         /// Sets or shares the border thickness property.
         border_width: Thickness,
 
-        /// Sets or shares the border brush property.
-        border_brush: Brush,
-
-        /// Sets or shares the padding property.
-        padding: Thickness,
+        /// Sets or shares the echo character which used to mask the input
+        echo: char,
 
         /// Sets or shares the focused property.
         focused: bool,
 
-        /// Sets or shares ta value that describes if the PasswordBox should lose focus on activation (when Enter pressed).
+        /// Sets or shares the font property.
+        font: String,
+
+        /// Sets or shares the font size property.
+        font_size: f64,
+
+        /// Sets or shares the foreground property.
+        foreground: Brush,
+
+        /// Indicates if the widget is hovered by the mouse cursor.
+        hover: bool,
+
+        /// Sets or shares ta value that describes if the PasswordBox
+        /// should lose focus on activation (when Enter pressed).
         lose_focus_on_activation: bool,
+
+        /// Sets or shares the padding property.
+        padding: Thickness,
 
         /// Used to request focus from outside. Set to `true` tor request focus.
         request_focus: bool,
 
+        /// Sets or shares the text selection property.
+        selection: TextSelection,
+
         /// If set to `true` all character will be focused when the widget gets focus. Default is `true`
         select_all_on_focus: bool,
 
-        /// Indicates if the widget is hovered by the mouse cursor.
-        hover: bool
+        /// Sets or shares the text property.It holds the password.
+        text: String,
+
+        /// Sets or shares the water_mark text property.
+        water_mark: String
     }
 );
 
 impl Template for PasswordBox {
     fn template(mut self, id: Entity, ctx: &mut BuildContext) -> Self {
         let text_block = TextBlock::new()
-            .v_align("center")
-            .h_align("start")
-            .foreground(id)
-            .water_mark(id)
             .font(id)
             .font_size(id)
+            .foreground(id)
+            .h_align("start")
             .localizable(false)
+            .v_align("center")
+            .water_mark(id)
             .build(ctx);
 
         self.state_mut().text_block = text_block;
@@ -133,46 +135,46 @@ impl Template for PasswordBox {
 
         let text_behavior = TextBehavior::new()
             .cursor(cursor.0)
-            .target(id.0)
-            .text_block(text_block.0)
             .focused(id)
             .font(id)
             .font_size(id)
             .lose_focus_on_activation(id)
-            .select_all_on_focus(id)
             .request_focus(id)
-            .text(id)
             .selection(id)
+            .select_all_on_focus(id)
+            .target(id.0)
+            .text(id)
+            .text_block(text_block.0)
             .build(ctx);
 
         self.state_mut().text_behavior = text_behavior;
 
         self.name("PasswordBox")
             .style(STYLE_TEXT_BOX)
-            .echo('*')
-            .text("")
-            .water_mark("Password")
-            .foreground(colors::LINK_WATER_COLOR)
-            .font_size(fonts::FONT_SIZE_12)
-            .font("Roboto-Regular")
-            .selection(TextSelection::default())
-            .padding(4.0)
             .background(colors::LYNCH_COLOR)
             .border_brush("transparent")
             .border_width(0.0)
             .border_radius(2.0)
-            .min_width(128.0)
-            .height(32.0)
+            .echo('*')
             .focused(false)
+            .font_size(fonts::FONT_SIZE_12)
+            .font("Roboto-Regular")
+            .foreground(colors::LINK_WATER_COLOR)
+            .height(32.0)
             .lose_focus_on_activation(true)
+            .min_width(128.0)
+            .padding(4.0)
+            .selection(TextSelection::default())
             .select_all_on_focus(true)
+            .text("")
+            .water_mark("Password")
             .child(text_behavior)
             .child(
                 Container::new()
                     .background(id)
+                    .border_brush(id)
                     .border_radius(id)
                     .border_width(id)
-                    .border_brush(id)
                     .padding(id)
                     .child(
                         Grid::new()
