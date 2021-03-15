@@ -56,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Replaces Columns and Rows structs with Blocks
 * Set grid columns and rows also as string
 * Refactor grid layout code
+* Add `line_wrap` property to `TextBehavior`, controlling use of conditional line breaks.
 
 ### 0.3.1-alpha3
 
