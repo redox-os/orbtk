@@ -32,7 +32,7 @@ pub trait RenderObject: Any {
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree>,
         context_provider: &ContextProvider,
-        theme: &Theme,
+        theme: &Rc<Theme>,
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,
     ) {
@@ -105,7 +105,7 @@ pub trait RenderObject: Any {
             entity,
             ecm,
             context_provider,
-            theme,
+            &theme,
             offsets,
             debug,
         );
@@ -140,7 +140,7 @@ pub trait RenderObject: Any {
         entity: Entity,
         ecm: &mut EntityComponentManager<Tree>,
         context_provider: &ContextProvider,
-        theme: &Theme,
+        theme: &Rc<Theme>,
         offsets: &mut BTreeMap<Entity, (f64, f64)>,
         debug: bool,
     ) {
@@ -153,7 +153,7 @@ pub trait RenderObject: Any {
                     child,
                     ecm,
                     context_provider,
-                    theme,
+                    &theme,
                     offsets,
                     debug,
                 );

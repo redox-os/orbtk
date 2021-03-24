@@ -48,7 +48,7 @@ impl System<Tree, RenderContext2D> for RenderSystem {
         let root = ecm.entity_store().root();
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Rc<Theme>>("theme", root)
             .unwrap()
             .clone();
 

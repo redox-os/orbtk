@@ -35,7 +35,7 @@ impl System<Tree, RenderContext2D> for InitSystem {
         // init css ids
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Rc<Theme>>("theme", root)
             .unwrap()
             .clone();
 

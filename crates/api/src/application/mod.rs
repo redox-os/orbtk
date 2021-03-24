@@ -25,7 +25,7 @@ pub struct Application {
     request_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
     shell: Shell<WindowAdapter>,
     name: Box<str>,
-    theme: Theme,
+    theme: Rc<Theme>,
     localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
 }
 
@@ -43,7 +43,7 @@ impl Application {
 
     /// Sets the default theme for the application. Could be changed per window.
     pub fn theme(mut self, theme: Theme) -> Self {
-        self.theme = theme;
+        self.theme = Rc::new(theme);
         self
     }
 
@@ -63,7 +63,7 @@ impl Application {
             request_sender: sender,
             name: name.into(),
             shell: Shell::new(receiver),
-            theme: crate::theme_default::theme_default(),
+            theme: Rc::new(crate::theme_default::theme_default()),
             localization: None,
         }
     }
@@ -72,7 +72,7 @@ impl Application {
     pub fn window<F: Fn(&mut BuildContext) -> Entity + 'static>(mut self, create_fn: F) -> Self {
         let (adapter, settings, receiver) = create_window(
             self.name.clone(),
-            self.theme.clone(),
+            &self.theme,
             self.request_sender.clone(),
             create_fn,
             self.localization.clone(),

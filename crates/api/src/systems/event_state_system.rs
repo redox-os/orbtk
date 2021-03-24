@@ -77,7 +77,7 @@ impl EventStateSystem {
     fn remove_widget(
         &self,
         entity: Entity,
-        theme: &Theme,
+        theme: &Rc<Theme>,
         ecm: &mut EntityComponentManager<Tree>,
         render_context: &mut RenderContext2D,
     ) {
@@ -159,7 +159,7 @@ impl EventStateSystem {
 
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Rc<Theme>>("theme", root)
             .unwrap()
             .clone();
 
@@ -502,7 +502,7 @@ impl System<Tree, RenderContext2D> for EventStateSystem {
 
             let theme = ecm
                 .component_store()
-                .get::<Theme>("theme", root)
+                .get::<Rc<Theme>>("theme", root)
                 .unwrap()
                 .clone();
 
