@@ -36,7 +36,7 @@ impl System<Tree, RenderContext2D> for LayoutSystem {
 
         let theme = ecm
             .component_store()
-            .get::<Theme>("theme", root)
+            .get::<Rc<Theme>>("theme", root)
             .unwrap()
             .clone();
 

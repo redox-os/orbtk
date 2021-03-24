@@ -204,7 +204,7 @@ impl shell::WindowAdapter for WindowAdapter {
 /// Creates a `WindowAdapter` and a `WindowSettings` object from a window builder closure.
 pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     app_name: impl Into<String>,
-    theme: Theme,
+    theme: &Rc<Theme>,
     request_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
     create_fn: F,
     localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
@@ -316,7 +316,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     world
         .entity_component_manager()
         .component_store_mut()
-        .register("theme", window, theme);
+        .register("theme", window, Rc::clone(&theme));
     world
         .entity_component_manager()
         .component_store_mut()

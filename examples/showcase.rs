@@ -795,11 +795,11 @@ impl State for InteractiveState {
                     let theme_index = *InteractiveView::selected_index_ref(&ctx.widget());
 
                     match theme_index {
-                        0 => ctx.switch_theme(theme_default_dark()),
-                        1 => ctx.switch_theme(theme_default_light()),
-                        2 => ctx.switch_theme(theme_redox()),
-                        3 => ctx.switch_theme(theme_fluent_dark()),
-                        4 => ctx.switch_theme(theme_fluent_light()),
+                        0 => ctx.switch_theme(Rc::new(theme_default_dark())),
+                        1 => ctx.switch_theme(Rc::new(theme_default_light())),
+                        2 => ctx.switch_theme(Rc::new(theme_redox())),
+                        3 => ctx.switch_theme(Rc::new(theme_fluent_dark())),
+                        4 => ctx.switch_theme(Rc::new(theme_fluent_light())),
                         _ => {}
                     }
                 }

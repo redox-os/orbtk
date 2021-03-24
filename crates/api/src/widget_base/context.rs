@@ -23,7 +23,7 @@ use super::WidgetContainer;
 pub struct Context<'a> {
     pub(crate) ecm: &'a mut EntityComponentManager<Tree>,
     entity: Entity,
-    pub theme: Theme,
+    pub theme: Rc<Theme>,
     pub(crate) provider: &'a ContextProvider,
     new_states: BTreeMap<Entity, Box<dyn State>>,
     remove_widget_list: Vec<Entity>,
@@ -43,14 +43,14 @@ impl<'a> Context<'a> {
     /// Creates a new container.
     pub fn new(
         ecs: (Entity, &'a mut EntityComponentManager<Tree>),
-        theme: &Theme,
+        theme: &Rc<Theme>,
         provider: &'a ContextProvider,
         render_context: &'a mut RenderContext2D,
     ) -> Self {
         Context {
             entity: ecs.0,
             ecm: ecs.1,
-            theme: theme.clone(),
+            theme: Rc::clone(&theme),
             provider,
             new_states: BTreeMap::new(),
             remove_widget_list: vec![],
@@ -424,7 +424,7 @@ impl<'a> Context<'a> {
     pub fn show_window<F: Fn(&mut BuildContext) -> Entity + 'static>(&mut self, create_fn: F) {
         let (adapter, settings, receiver) = create_window(
             self.provider.application_name.clone(),
-            self.theme.clone(),
+            &self.theme,
             self.provider.shell_sender.clone(),
             create_fn,
             self.provider.localization.clone(),
@@ -446,10 +446,10 @@ impl<'a> Context<'a> {
     }
 
     /// Switch the current theme.
-    pub fn switch_theme(&mut self, theme: Theme) {
-        self.theme = theme.clone();
+    pub fn switch_theme(&mut self, theme: Rc<Theme>) {
+        self.theme = Rc::clone(&theme);
 
-        *self.window().get_mut::<Theme>("theme") = theme;
+        *self.window().get_mut::<Rc<Theme>>("theme") = theme;
 
         for (key, font) in self.theme.fonts() {
             self.render_context.register_font(key, *font);
