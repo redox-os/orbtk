@@ -320,6 +320,16 @@ Theme (
 		),
 	    ]
 	),
+	"text_box_multiline": (
+	    base: "text_box",
+	    properties: {
+		"height": 72.0,
+		"line_wrap": (true),
+		"min_height": 64.0,
+		"max_height": 140.0,
+		"water_mark": "Multi line text (Delimiter: Ctrl-Enter) ...",
+	    }
+	),
 	"numeric_box": (
 	    base: "text_box",
 	    properties: {
