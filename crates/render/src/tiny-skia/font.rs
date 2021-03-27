@@ -1,5 +1,5 @@
 use rusttype::OutlineBuilder;
-use tiny_skia::{Canvas, FillRule, Paint, PathBuilder};
+use tiny_skia::{FillRule, Paint, PathBuilder, Pixmap, Transform};
 
 #[derive(Debug)]
 struct GlyphTracer {
@@ -79,11 +79,11 @@ impl Font {
 
     pub fn render_text(
         &self,
-        text: &str,
-        canvas: &mut Canvas,
         font_size: f64,
         paint: &Paint,
+        pixmap: &mut Pixmap,
         position: (f64, f64),
+        text: &str,
     ) {
         let scale = rusttype::Scale::uniform(font_size as f32);
 
@@ -114,7 +114,7 @@ impl Font {
             g.build_outline(&mut glyph_tracer);
         }
         if let Some(path) = glyph_tracer.path_builder.finish() {
-            canvas.fill_path(&path, paint, FillRule::Winding);
+            pixmap.fill_path(&path, paint, FillRule::Winding, Transform::identity(), None);
         }
     }
 }

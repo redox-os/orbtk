@@ -2,10 +2,10 @@ use smallvec::SmallVec;
 use std::{
     collections::HashMap,
     f64::consts::{FRAC_PI_2, PI},
-    ptr, slice,
+    ptr,
 };
 use tiny_skia::{
-    Canvas, FillRule, Paint, PathBuilder, Pixmap, PixmapPaint, Shader, Stroke, Transform,
+    ClipMask, FillRule, Paint, PathBuilder, Pixmap, PixmapPaint, Shader, Stroke, Transform,
 };
 
 use crate::{common::*, utils::*, PipelineTrait, RenderConfig, RenderTarget, TextMetrics};
@@ -21,6 +21,7 @@ struct State {
     config: RenderConfig,
     path_rect: PathRect,
     clips_count: usize,
+    //clip_mask: ClipMask,
     transform: Transform,
 }
 
@@ -29,20 +30,48 @@ type StatesOnStack = [State; 2];
 /// The RenderContext2D trait, provides the rendering context (`ctx`). It is used
 /// for drawing shapes, text, images, and other objects.
 pub struct RenderContext2D {
-    canvas: Canvas,
+    background: Color,
+    clips_count: usize,
+    //clip_mask: ClipMask,
     config: RenderConfig,
-    saved_states: SmallVec<StatesOnStack>,
+    fill_paint: Paint<'static>,
     fonts: HashMap<String, Font>,
     path_builder: PathBuilder,
     path_rect: PathRect,
-    clips_count: usize,
-
-    background: Color,
-    fill_paint: Paint<'static>,
+    pixmap: Pixmap,
+    saved_states: SmallVec<StatesOnStack>,
     stroke_paint: Paint<'static>,
+    transform: Transform,
 }
 
 impl RenderContext2D {
+    /// Creates a new 2d render context.
+    pub fn new(width: f64, height: f64) -> Self {
+        let pixmap = Pixmap::new(width as u32, height as u32).unwrap();
+            RenderContext2D {
+            background: Color::default(),
+            clips_count: 0,
+            //clip_mask: ClipMask::default(),
+            config: RenderConfig::default(),
+            fill_paint: Self::paint_from_brush(
+                &Brush::default(),
+                Rectangle::new(Point::new(0.0, 0.0), Size::new(0.0, 0.0)),
+                1.0,
+            ),
+            fonts: HashMap::new(),
+            path_builder: PathBuilder::new(),
+            path_rect: PathRect::new(None),
+            pixmap,
+            saved_states: SmallVec::<StatesOnStack>::new(),
+            stroke_paint: Self::paint_from_brush(
+                &Brush::default(),
+                Rectangle::new(Point::new(0.0, 0.0), Size::new(0.0, 0.0)),
+                1.0,
+            ),
+            transform: Transform::identity(),
+        }
+    }
+
     fn paint_from_brush(brush: &Brush, frame: Rectangle, global_alpha: f32) -> Paint<'static> {
         let shader = match brush {
             Brush::SolidColor(color) => {
@@ -111,43 +140,6 @@ impl RenderContext2D {
         }
     }
 
-    /// Creates a new 2d render context.
-    pub fn new(width: f64, height: f64) -> Self {
-        let pixmap = Pixmap::new(width as u32, height as u32).unwrap();
-        let canvas = Canvas::from(pixmap);
-        RenderContext2D {
-            canvas,
-            config: RenderConfig::default(),
-            saved_states: SmallVec::<StatesOnStack>::new(),
-            fonts: HashMap::new(),
-            path_builder: PathBuilder::new(),
-            path_rect: PathRect::new(None),
-            clips_count: 0,
-            background: Color::default(),
-            fill_paint: Self::paint_from_brush(
-                &Brush::default(),
-                Rectangle::new(Point::new(0.0, 0.0), Size::new(0.0, 0.0)),
-                1.0,
-            ),
-            stroke_paint: Self::paint_from_brush(
-                &Brush::default(),
-                Rectangle::new(Point::new(0.0, 0.0), Size::new(0.0, 0.0)),
-                1.0,
-            ),
-        }
-    }
-
-    /// Set the background of the render context.
-    pub fn set_background(&mut self, background: Color) {
-        self.background = background;
-    }
-
-    pub fn resize(&mut self, width: f64, height: f64) {
-        let pixmap = Pixmap::new(width as u32, height as u32).unwrap();
-        let canvas = Canvas::from(pixmap);
-        self.canvas = canvas;
-    }
-
     /// Registers a new font file.
     pub fn register_font(&mut self, family: &str, font_file: &'static [u8]) {
         if self.fonts.contains_key(family) {
@@ -159,20 +151,37 @@ impl RenderContext2D {
         }
     }
 
+    /// Resizes pixmap with new height and width
+    pub fn resize(&mut self, width: f64, height: f64) {
+        self.pixmap = Pixmap::new(width as u32, height as u32).unwrap();
+    }
+
+    /// Set the background of the render context.
+    pub fn set_background(&mut self, background: Color) {
+        self.background = background;
+    }
+
     // Rectangles
 
     /// Draws a filled rectangle whose starting point is at the
     /// coordinates {x, y} with the specified width and height and
     /// whose style is determined by the fillStyle attribute.
     pub fn fill_rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.path_rect.record_rect(x, y, width, height);
-        let rect = self.path_rect.get_rect().unwrap();
-        self.fill_paint =
-            Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
-        self.canvas.fill_rect(
-            tiny_skia::Rect::from_xywh(x as f32, y as f32, width as f32, height as f32).unwrap(),
-            &self.fill_paint,
-        );
+        if width > 0.0 && height > 0.0 {
+            self.path_rect.record_rect(x, y, width, height);
+            let rect = self.path_rect.get_rect().unwrap();
+            self.fill_paint = Self::paint_from_brush(
+                &self.config.fill_style,
+                rect,
+                self.config.alpha as f32
+            );
+            self.pixmap.fill_rect(
+                tiny_skia::Rect::from_xywh(x as f32, y as f32, width as f32, height as f32).unwrap(),
+                &self.fill_paint,
+                tiny_skia::Transform::identity(),
+                None,
+            );
+        }
     }
 
     /// Draws a rectangle that is stroked (outlined) according to the
@@ -183,114 +192,6 @@ impl RenderContext2D {
     }
 
     // Text
-
-    /// Draws (fills) a given text at the given (x, y) position.
-    pub fn fill_text(&mut self, text: &str, x: f64, y: f64) {
-        if text.is_empty() {
-            return;
-        }
-
-        let tm = self.measure_text(text);
-        let rect = Rectangle::new(Point::new(x, y), Size::new(tm.width, tm.height));
-        self.fill_paint =
-            Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
-
-        if let Some(font) = self.fonts.get(&self.config.font_config.family) {
-            font.render_text(
-                text,
-                &mut self.canvas,
-                self.config.font_config.font_size,
-                &self.fill_paint,
-                (x, y),
-            );
-        }
-    }
-
-    pub fn measure(
-        &mut self,
-        text: &str,
-        font_size: f64,
-        family: impl Into<String>,
-    ) -> TextMetrics {
-        self.set_font_family(family);
-        self.set_font_size(font_size);
-        self.measure_text(text)
-    }
-
-    /// Returns a TextMetrics object.
-    pub fn measure_text(&mut self, text: &str) -> TextMetrics {
-        let mut text_metrics = TextMetrics::default();
-
-        if text.is_empty() {
-            return text_metrics;
-        }
-
-        if let Some(font) = self.fonts.get(&self.config.font_config.family) {
-            let (width, height) = font.measure_text(text, self.config.font_config.font_size);
-
-            text_metrics.width = width;
-            text_metrics.height = height;
-        }
-
-        text_metrics
-    }
-
-    /// Fills the current or given path with the current file style.
-    pub fn fill(&mut self) {
-        let rect = match self.path_rect.get_rect() {
-            Some(rect) => rect,
-            None => return, // The path is empty, do nothing
-        };
-        self.fill_paint =
-            Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
-        if let Some(path) = self.path_builder.clone().finish() {
-            self.canvas
-                .fill_path(&path, &self.fill_paint, FillRule::EvenOdd);
-        }
-    }
-
-    /// Strokes {outlines} the current or given path with the current stroke style.
-    pub fn stroke(&mut self) {
-        let rect = match self.path_rect.get_rect() {
-            Some(rect) => rect,
-            None => return, // The path is empty, do nothing
-        };
-        self.stroke_paint =
-            Self::paint_from_brush(&self.config.stroke_style, rect, self.config.alpha as f32);
-        if let Some(path) = self.path_builder.clone().finish() {
-            self.canvas.stroke_path(
-                &path,
-                &self.stroke_paint,
-                &Stroke {
-                    width: self.config.line_width as f32,
-                    ..Default::default()
-                },
-            );
-        }
-    }
-
-    /// Starts a new path by emptying the list of sub-paths. You should call this
-    /// method, if you want to create a new path.
-    pub fn begin_path(&mut self) {
-        self.path_builder = PathBuilder::new();
-        self.path_rect.rebirth();
-    }
-
-    /// When closing a path, the method attempts to add a straight
-    /// line starting from the current point to the start point of the
-    /// current sub-path. Nothing will happen, if the shape has
-    /// already been closed or only a single point is referenced.
-    pub fn close_path(&mut self) {
-        self.path_builder.close();
-        self.path_rect.record_path_close();
-    }
-
-    /// Adds a rectangle to the current path.
-    pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.path_builder
-            .push_rect(x as f32, y as f32, width as f32, height as f32);
-        self.path_rect.record_rect(x, y, width, height);
-    }
 
     /// Intern function to draw an arc segment minor or equal to 90°
     #[allow(clippy::many_single_char_names)]
@@ -413,25 +314,11 @@ impl RenderContext2D {
         }
     }
 
-    /// Begins a new sub-path at given `point`. The point is specified
-    /// by given {x, y} coordinates.
-    pub fn move_to(&mut self, x: f64, y: f64) {
-        self.path_builder.move_to(x as f32, y as f32);
-        self.path_rect.record_move_to(x, y);
-    }
-
-    /// Adds a straight line to the current sub-path by connecting the
-    /// sub-path's last point to the specified {x, y} coordinates.
-    pub fn line_to(&mut self, x: f64, y: f64) {
-        self.path_builder.line_to(x as f32, y as f32);
-        self.path_rect.record_line_to(x, y);
-    }
-
-    /// Adds a quadratic Bézier curve to the current sub-path.
-    pub fn quadratic_curve_to(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
-        self.path_builder
-            .quad_to(cpx as f32, cpy as f32, x as f32, y as f32);
-        self.path_rect.record_quadratic_curve_to(cpx, cpy, x, y);
+    /// Starts a new path by emptying the list of sub-paths. You should call this
+    /// method, if you want to create a new path.
+    pub fn begin_path(&mut self) {
+        self.path_builder = PathBuilder::new();
+        self.path_rect.rebirth();
     }
 
     /// Adds a cubic Bézier curve to the current sub-path.
@@ -452,19 +339,32 @@ impl RenderContext2D {
             .record_bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y);
     }
 
-    /// Draws a render target.
-    pub fn draw_render_target(&mut self, render_target: &RenderTarget, x: f64, y: f64) {
-        let mut pixmap =
-            Pixmap::new(render_target.width() as u32, render_target.height() as u32).unwrap();
-        unsafe {
-            ptr::copy_nonoverlapping(
-                render_target.data().as_ptr() as *const u8,
-                pixmap.data_mut().as_mut_ptr(),
-                render_target.data().len() * 4,
-            )
-        };
-        self.canvas
-            .draw_pixmap(x as i32, y as i32, &pixmap, &PixmapPaint::default());
+    /// Creates a clipping mask applied to the current
+    /// paths. Everything drawn after calling clip() will only act
+    /// inside the clipping path.
+    pub fn clip(&mut self) {
+        if let Some(clip_path) = self.path_builder.clone().finish() {
+            let mut clip_mask = ClipMask::new();
+            clip_mask.set_path(
+                self.pixmap.width() as u32,
+                self.pixmap.height() as u32,
+                &clip_path,
+                FillRule::EvenOdd,
+                true,
+            );
+            //self.clip_mask = clip_mask;
+        }
+        self.path_rect.record_clip();
+        self.clips_count += 1;
+    }
+
+    /// When closing a path, the method attempts to add a straight
+    /// line starting from the current point to the start point of the
+    /// current sub-path. Nothing will happen, if the shape has
+    /// already been closed or only a single point is referenced.
+    pub fn close_path(&mut self) {
+        self.path_builder.close();
+        self.path_rect.record_path_close();
     }
 
     /// Draws the image.
@@ -476,9 +376,15 @@ impl RenderContext2D {
                 pixmap.data_mut().as_mut_ptr(),
                 image.data().len() * 4,
             )
-        };
-        self.canvas
-            .draw_pixmap(x as i32, y as i32, &pixmap, &PixmapPaint::default());
+        }
+        self.pixmap.draw_pixmap(
+            x as i32,
+            y as i32,
+            pixmap.as_ref(),
+            &PixmapPaint::default(),
+            Transform::identity(),
+            None,
+        );
     }
 
     /// Draws the pipeline.
@@ -495,24 +401,159 @@ impl RenderContext2D {
         self.draw_render_target(&render_target, x, y);
     }
 
-    /// Creates a clipping path from the current sub-paths. Everything
-    /// drawn after clip() is called appears inside the clipping path
-    /// only.
-    pub fn clip(&mut self) {
-        // FIXME
+    /// Draws a render target.
+    pub fn draw_render_target(&mut self, render_target: &RenderTarget, x: f64, y: f64) {
+        let mut pixmap = Pixmap::new(
+            render_target.width() as u32,
+            render_target.height() as u32
+        ).unwrap();
+        unsafe {
+            ptr::copy_nonoverlapping(
+                render_target.data().as_ptr() as *const u8,
+                pixmap.data_mut().as_mut_ptr(),
+                render_target.data().len() * 4,
+            )
+        };
+        self.pixmap.draw_pixmap(
+                x as i32,
+                y as i32,
+                pixmap.as_ref(),
+                &PixmapPaint::default(),
+                Transform::identity(),
+                None,
+            );
+    }
+
+    /// Fills the current or given path with the current file style.
+    pub fn fill(&mut self) {
+        let rect = match self.path_rect.get_rect() {
+            Some(rect) => rect,
+            None => return, // The path is empty, do nothing
+        };
+        self.fill_paint =
+            Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
         if let Some(path) = self.path_builder.clone().finish() {
-            self.canvas.set_clip_path(&path, FillRule::EvenOdd, true);
+            self.pixmap.fill_path(
+                &path,
+                &self.fill_paint,
+                FillRule::EvenOdd,
+                Transform::identity(),
+                None
+            );
         }
-        self.path_rect.record_clip();
-        self.clips_count += 1;
+    }
+
+    /// Draws (fills) a given text at the given (x, y) position.
+    pub fn fill_text(&mut self, text: &str, x: f64, y: f64) {
+        if text.is_empty() {
+            return;
+        }
+
+        // TODO: multiline
+        let tm = self.measure_text(text);
+        let rect = Rectangle::new(
+            Point::new(x, y),
+            Size::new(tm.width, tm.height)
+        );
+        self.fill_paint =
+            Self::paint_from_brush(
+                &self.config.fill_style,
+                rect,
+                self.config.alpha as f32
+            );
+
+        if let Some(font) = self.fonts.get(&self.config.font_config.family) {
+            font.render_text(
+                self.config.font_config.font_size,
+                &self.fill_paint,
+                &mut self.pixmap,
+                (x, y),
+                text,
+            );
+        }
+    }
+
+    /// Adds a straight line to the current sub-path by connecting the
+    /// sub-path's last point to the specified {x, y} coordinates.
+    pub fn line_to(&mut self, x: f64, y: f64) {
+        self.path_builder.line_to(x as f32, y as f32);
+        self.path_rect.record_line_to(x, y);
+    }
+
+    /// Returns a TextMetrics object.
+    pub fn measure(
+        &mut self,
+        text: &str,
+        font_size: f64,
+        family: impl Into<String>,
+    ) -> TextMetrics {
+        self.set_font_family(family);
+        self.set_font_size(font_size);
+        self.measure_text(text)
+    }
+
+    /// Returns a TextMetrics object.
+    pub fn measure_text(&mut self, text: &str) -> TextMetrics {
+        let mut text_metrics = TextMetrics::default();
+
+        if text.is_empty() {
+            return text_metrics;
+        }
+
+        if let Some(font) = self.fonts.get(&self.config.font_config.family) {
+            let (width, height) = font.measure_text(text, self.config.font_config.font_size);
+
+            text_metrics.width = width;
+            text_metrics.height = height;
+        }
+
+        text_metrics
+    }
+
+    /// Begins a new sub-path at given `point`. The point is specified
+    /// by given {x, y} coordinates.
+    pub fn move_to(&mut self, x: f64, y: f64) {
+        self.path_builder.move_to(x as f32, y as f32);
+        self.path_rect.record_move_to(x, y);
+    }
+
+    /// Adds a quadratic Bézier curve to the current sub-path.
+    pub fn quadratic_curve_to(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
+        self.path_builder
+            .quad_to(cpx as f32, cpy as f32, x as f32, y as f32);
+        self.path_rect.record_quadratic_curve_to(cpx, cpy, x, y);
+    }
+
+    /// Strokes {outlines} the current or given path with the current stroke style.
+    pub fn stroke(&mut self) {
+        let rect = match self.path_rect.get_rect() {
+            Some(rect) => rect,
+            None => return, // The path is empty, do nothing
+        };
+        self.stroke_paint =
+            Self::paint_from_brush(&self.config.stroke_style, rect, self.config.alpha as f32);
+        if let Some(path) = self.path_builder.clone().finish() {
+            self.pixmap.stroke_path(
+                &path,
+                &self.stroke_paint,
+                &Stroke {
+                    width: self.config.line_width as f32,
+                    ..Default::default()
+                },
+                Transform::identity(),
+                None,
+            );
+        }
+    }
+
+    /// Adds a rectangle to the current path.
+    pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.path_builder
+            .push_rect(x as f32, y as f32, width as f32, height as f32);
+        self.path_rect.record_rect(x, y, width, height);
     }
 
     // Line styles
-
-    /// Sets the thickness of lines.
-    pub fn set_line_width(&mut self, line_width: f64) {
-        self.config.line_width = line_width;
-    }
 
     /// Sets the alpha value,
     pub fn set_alpha(&mut self, alpha: f32) {
@@ -529,6 +570,11 @@ impl RenderContext2D {
         self.config.font_config.font_size = size + 4.0;
     }
 
+    /// Sets the thickness of lines.
+    pub fn set_line_width(&mut self, line_width: f64) {
+        self.config.line_width = line_width;
+    }
+
     // Fill and stroke style
 
     /// Specifies the fill color to use inside shapes.
@@ -541,17 +587,57 @@ impl RenderContext2D {
         self.config.stroke_style = stroke_style.into();
     }
 
-    // Canvas states
+    // Pixmap states
 
-    /// Saves the entire state of the canvas by pushing the current
-    /// state onto a stack.
-    pub fn save(&mut self) {
-        self.saved_states.push(State {
-            config: self.config.clone(),
-            path_rect: self.path_rect,
-            clips_count: self.clips_count,
-            transform: self.canvas.get_transform(),
-        });
+    /// Clear the given `brush`.
+    pub fn clear(&mut self, brush: &Brush) {
+        if let Brush::SolidColor(color) = brush {
+            self.pixmap.fill(tiny_skia::Color::from_rgba8(
+                color.b(),
+                color.g(),
+                color.r(),
+                color.a(),
+            ));
+            return;
+        }
+        let _paint = Self::paint_from_brush(
+            brush,
+            Rectangle::new(
+                Point::new(0., 0.),
+                Size::new(
+                    self.pixmap.width() as f64,
+                    self.pixmap.height() as f64,
+                ),
+            ),
+            1.0,
+        );
+        self.fill_rect(
+            0.,
+            0.,
+            self.pixmap.width() as f64,
+            self.pixmap.height() as f64,
+        );
+    }
+
+    /// Return the pixmap data lenght as an [u8] reference value.
+    ///
+    /// Byteorder: RGBA
+    pub fn data(&self) -> &[u8] {
+        self.pixmap.data()
+    }
+
+    /// Return the pixmap data lenght as a mutable [u8] reference value.
+    ///
+    /// Byteorder: RGBA
+    pub fn data_mut(&mut self) -> &mut [u8] {
+       self.pixmap.data_mut()
+    }
+
+    /// Return the pixmap data lenght as a mutable [u8] reference value.
+    ///
+    /// Byteorder: RGBA
+    pub fn data_u8_mut(&mut self) -> &mut [u8] {
+       self.pixmap.data_mut()
     }
 
     /// Restores the most recently saved canvas state by popping the
@@ -562,76 +648,38 @@ impl RenderContext2D {
             config,
             path_rect,
             clips_count: former_clips_count,
+            //clip_mask,
             transform,
         }) = self.saved_states.pop()
         {
             self.config = config;
             self.path_rect = path_rect;
             // FIXME
-            /*for _ in former_clips_count..self.clips_count {
-                self.canvas.pop_clip();
+            /*for _ in former_clips_count.self.clips_count {
+                self.pixmap.pop_clip();
             }*/
-            self.canvas.reset_clip();
-            self.canvas.set_transform(transform);
+            //self.pixmap.reset_clip();
             self.clips_count = former_clips_count;
+            //self.clip_mask = clip_mask;
+            self.transform = transform;
         }
     }
 
-    /// Clear the given `brush`.
-    pub fn clear(&mut self, brush: &Brush) {
-        if let Brush::SolidColor(color) = brush {
-            self.canvas.pixmap.fill(tiny_skia::Color::from_rgba8(
-                color.b(),
-                color.g(),
-                color.r(),
-                color.a(),
-            ));
-            return;
-        }
-        let paint = Self::paint_from_brush(
-            brush,
-            Rectangle::new(
-                Point::new(0., 0.),
-                Size::new(
-                    self.canvas.pixmap.width() as f64,
-                    self.canvas.pixmap.height() as f64,
-                ),
-            ),
-            1.0,
-        );
-        self.canvas.fill_rect(
-            tiny_skia::Rect::from_xywh(
-                0.,
-                0.,
-                self.canvas.pixmap.width() as f32,
-                self.canvas.pixmap.height() as f32,
-            )
-            .unwrap(),
-            &paint,
-        );
+    /// Saves the entire state of the pixmap by pushing the current
+    /// state onto a stack.
+    pub fn save(&mut self) {
+        self.saved_states.push(State {
+            config: self.config.clone(),
+            path_rect: self.path_rect,
+            clips_count: self.clips_count,
+            //clip_mask: self.clip_mask,
+            transform: self.transform,
+        });
     }
-
-    /// Return the pixmap data lenght as an [u32] reference value.
-    pub fn data(&self) -> &[u32] {
-        unsafe {
-            slice::from_raw_parts(
-                self.canvas.pixmap.data().as_ptr() as *const u32,
-                self.canvas.pixmap.data().len() / 4,
-            )
-        }
-    }
-
-    // //pub fn data_mut(&mut self) -> &mut [u32] {
-    //    self.draw_target.get_data_mut()
-    //}
-
-    //pub fn data_u8_mut(&mut self) -> &mut [u8] {
-    //    self.draw_target.get_data_u8_mut()
-    //}
 
     /// Fill the background pixmap colors using their rgba8 values.
     pub fn start(&mut self) {
-        self.canvas.pixmap.fill(tiny_skia::Color::from_rgba8(
+        self.pixmap.fill(tiny_skia::Color::from_rgba8(
             self.background.b(),
             self.background.g(),
             self.background.r(),

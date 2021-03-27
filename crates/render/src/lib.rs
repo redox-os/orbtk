@@ -6,10 +6,24 @@ pub mod prelude;
 
 pub use orbtk_utils::prelude as utils;
 
-#[cfg(all(any(feature = "default", feature = "orbraq", feature = "orbskia")))]
+#[cfg(all(
+    any(
+        target_arch = "wasm32",
+        feature = "default",
+        feature = "orbraq",
+        feature = "orbskia",
+    )
+))]
 mod common;
 
-#[cfg(any(feature = "default", feature = "orbraq", feature = "orbskia", target_arch = "wasm32"))]
+#[cfg(all(
+    any(
+        target_arch = "wasm32",
+        feature = "default",
+        feature = "orbraq",
+        feature = "orbskia",
+    )
+))]
 pub use self::platform::*;
 
 #[cfg(all(
@@ -23,7 +37,6 @@ pub mod platform;
 #[cfg(all(
     not(target_arch = "wasm32"),
     not(feature = "orbraq"),
-    not(feature = "miniraq"),
     any(feature = "tiny-skia"),
 ))]
 #[path = "tiny-skia/mod.rs"]
@@ -43,10 +56,15 @@ mod render_target;
 /// Defines the current configuration of the render ctx.
 #[derive(Debug, Clone)]
 pub struct RenderConfig {
+    /// The fill style used to render the brush
     pub fill_style: utils::Brush,
+    /// The stroke style used to render the brush
     pub stroke_style: utils::Brush,
+    /// The line width defined as floating number
     pub line_width: f64,
+    /// The font configuration
     pub font_config: FontConfig,
+    /// The alpha channel defined as floating number
     pub alpha: f32,
 }
 

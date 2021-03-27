@@ -6,7 +6,7 @@ description = "2D Render library use by OrbTk."
 repository = "https://github.com/redox-os/orbtk"
 readme = "README.md"
 license = "MIT"
-keywords = ["2D", "render", "canvas"]
+keywords = ["2D", "render", "canvas", "pixmap"]
 edition = "2018"
 
 [target.wasm32-unknown-unknown.dependencies]
@@ -21,11 +21,9 @@ tiny-skia = { git = "https://github.com/RazrFalcon/tiny-skia.git", optional = tr
 
 # raqote depenencies
 raqote = { version = "0.8", default-features = false, optional = true }
-rusttype = { version = "0.9", optional = true }
-smallvec = "1"
-
 # tiny-skia and raqote dependencies
 rusttype = { version = "0.9", optional = true }
+smallvec = "1"
 
 [dependencies]
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
