@@ -48,7 +48,7 @@ impl RenderContext2D {
     /// Creates a new 2d render context.
     pub fn new(width: f64, height: f64) -> Self {
         let pixmap = Pixmap::new(width as u32, height as u32).unwrap();
-            RenderContext2D {
+        RenderContext2D {
             background: Color::default(),
             clips_count: 0,
             //clip_mask: ClipMask::default(),
@@ -170,13 +170,11 @@ impl RenderContext2D {
         if width > 0.0 && height > 0.0 {
             self.path_rect.record_rect(x, y, width, height);
             let rect = self.path_rect.get_rect().unwrap();
-            self.fill_paint = Self::paint_from_brush(
-                &self.config.fill_style,
-                rect,
-                self.config.alpha as f32
-            );
+            self.fill_paint =
+                Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
             self.pixmap.fill_rect(
-                tiny_skia::Rect::from_xywh(x as f32, y as f32, width as f32, height as f32).unwrap(),
+                tiny_skia::Rect::from_xywh(x as f32, y as f32, width as f32, height as f32)
+                    .unwrap(),
                 &self.fill_paint,
                 tiny_skia::Transform::identity(),
                 None,
@@ -403,10 +401,8 @@ impl RenderContext2D {
 
     /// Draws a render target.
     pub fn draw_render_target(&mut self, render_target: &RenderTarget, x: f64, y: f64) {
-        let mut pixmap = Pixmap::new(
-            render_target.width() as u32,
-            render_target.height() as u32
-        ).unwrap();
+        let mut pixmap =
+            Pixmap::new(render_target.width() as u32, render_target.height() as u32).unwrap();
         unsafe {
             ptr::copy_nonoverlapping(
                 render_target.data().as_ptr() as *const u8,
@@ -415,13 +411,13 @@ impl RenderContext2D {
             )
         };
         self.pixmap.draw_pixmap(
-                x as i32,
-                y as i32,
-                pixmap.as_ref(),
-                &PixmapPaint::default(),
-                Transform::identity(),
-                None,
-            );
+            x as i32,
+            y as i32,
+            pixmap.as_ref(),
+            &PixmapPaint::default(),
+            Transform::identity(),
+            None,
+        );
     }
 
     /// Fills the current or given path with the current file style.
@@ -438,7 +434,7 @@ impl RenderContext2D {
                 &self.fill_paint,
                 FillRule::EvenOdd,
                 Transform::identity(),
-                None
+                None,
             );
         }
     }
@@ -451,16 +447,9 @@ impl RenderContext2D {
 
         // TODO: multiline
         let tm = self.measure_text(text);
-        let rect = Rectangle::new(
-            Point::new(x, y),
-            Size::new(tm.width, tm.height)
-        );
+        let rect = Rectangle::new(Point::new(x, y), Size::new(tm.width, tm.height));
         self.fill_paint =
-            Self::paint_from_brush(
-                &self.config.fill_style,
-                rect,
-                self.config.alpha as f32
-            );
+            Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
 
         if let Some(font) = self.fonts.get(&self.config.font_config.family) {
             font.render_text(
@@ -604,10 +593,7 @@ impl RenderContext2D {
             brush,
             Rectangle::new(
                 Point::new(0., 0.),
-                Size::new(
-                    self.pixmap.width() as f64,
-                    self.pixmap.height() as f64,
-                ),
+                Size::new(self.pixmap.width() as f64, self.pixmap.height() as f64),
             ),
             1.0,
         );
@@ -630,14 +616,14 @@ impl RenderContext2D {
     ///
     /// Byteorder: RGBA
     pub fn data_mut(&mut self) -> &mut [u8] {
-       self.pixmap.data_mut()
+        self.pixmap.data_mut()
     }
 
     /// Return the pixmap data lenght as a mutable [u8] reference value.
     ///
     /// Byteorder: RGBA
     pub fn data_u8_mut(&mut self) -> &mut [u8] {
-       self.pixmap.data_mut()
+        self.pixmap.data_mut()
     }
 
     /// Restores the most recently saved canvas state by popping the

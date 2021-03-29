@@ -6,24 +6,20 @@ pub mod prelude;
 
 pub use orbtk_utils::prelude as utils;
 
-#[cfg(all(
-    any(
-        target_arch = "wasm32",
-        feature = "default",
-        feature = "orbraq",
-        feature = "orbskia",
-    )
-))]
+#[cfg(all(any(
+    target_arch = "wasm32",
+    feature = "default",
+    feature = "orbraq",
+    feature = "orbskia",
+)))]
 mod common;
 
-#[cfg(all(
-    any(
-        target_arch = "wasm32",
-        feature = "default",
-        feature = "orbraq",
-        feature = "orbskia",
-    )
-))]
+#[cfg(all(any(
+    target_arch = "wasm32",
+    feature = "default",
+    feature = "orbraq",
+    feature = "orbskia",
+)))]
 pub use self::platform::*;
 
 #[cfg(all(
