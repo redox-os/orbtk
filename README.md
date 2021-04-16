@@ -400,7 +400,6 @@ There is a (wip) OrbTk book check [OrbTk book](https://github.com/redox-os/orbtk
 ## Showcases
 
 * [Plural Planner](https://codeberg.org/PluralTools/Plural): Task app
-* [Kanter](https://github.com/lukors/kanter): Node based texture editor 
 * [twin-commander](https://github.com/kivimango/twin-commander): A twin-panel file manager specifically for the Redox OS 
 * [Space Editor](https://codeberg.org/flovanco/space-editor): 2D Tile Map Editor compatible with OrbGame
 
