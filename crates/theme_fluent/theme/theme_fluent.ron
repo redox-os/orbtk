@@ -404,6 +404,83 @@ Theme (
                 )
             ]
         ),
+        "table_view": (
+            base: "base",
+            properties: {
+                "background": "$CONTAINER_BACKGROUND",
+                "border_brush": "$CONTAINER_BORDER",
+                "border_width": 1,
+                "border_radius": 2,
+            }
+        ),
+        "table_column_header": (
+            base: "base",
+            properties: {
+                "height": 32,
+                "foreground": "$CONTENT_FOREGROUND",
+                "icon_brush": "$CONTENT_FOREGROUND",
+                "background": "$BUTTON_BACKGROUND",
+                "border_brush": "CONTAINER_BORDER",
+                "border_radius": 0,
+                "border_width": 1,
+                "font_size": "$FONT_SIZE_12",
+                "icon_size": "$ICON_SIZE_16"
+            },
+            states: [
+                (
+                    key: "selected",
+                    properties: {
+                        "background": "$BUTTON_BACKGROUND_SELECTED",
+                    }
+                ),
+                (
+                    key: "hover",
+                    properties: {
+                        "background": "$BUTTON_BACKGROUND_HOVER",
+                    }
+                ),
+                (
+                    key: "pressed",
+                    properties: {
+                        "background": "$BUTTON_BACKGORUND_PRESSED",
+                    }
+                ),
+                (
+                    key: "disabled",
+                    properties: {
+                        "opacity": 1,
+                        "background": "$BUTTON_BACKGROUND_DISABLED",
+                        "foreground": "$BUTTON_FOREGROUND_DISABLED",
+                        "icon_brush": "$BUTTON_FOREGROUND_DISABLED"
+                    }
+                ),
+            ],
+        ),
+        "table_cell": (
+            properties: {
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "$CONTENT_FOREGROUND",
+                "background": "transparent",
+                "padding_left": 8,
+                "padding_right": 8,
+            },
+            states: [
+                (
+                    key: "selected",
+                    properties: {
+                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
+                        "background": "$ACCENT_COLOR",
+                    }
+                ),
+                (
+                    key: "pressed",
+                    properties: {
+                        "foreground": "$CONTENT_FOREGROUND_INVERTED",
+                        "background": "$ACCENT_COLOR",
+                    }
+                )
+            ]
+        ),
         "combo_box": (
             base: "base",
             properties: {
