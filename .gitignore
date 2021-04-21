@@ -26,3 +26,6 @@ Thumbs.db
 static/
 
 book
+
+# web
+node_modules/

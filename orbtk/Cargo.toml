@@ -1,0 +1,28 @@
+[package]
+name = "orbtk"
+version = "0.4.0-alpha.1"
+authors = [
+    "Florian Blasius <flovanpt@posteo.de>",
+    "Jeremy Soller <jackpot51@gmail.com>"
+]
+description = "The Orbital Widget Toolkit"
+documentation = "https://docs.rs/orbtk"
+repository = "https://github.com/redox-os/orbtk"
+readme = "README.md"
+license = "MIT"
+keywords = [
+    "orbital",
+    "redox",
+    "ui",
+    "ecs"
+]
+edition = "2018"
+
+[lib]
+name = "orbtk"
+path = "src/lib.rs"
+
+[profile.dev]
+opt-level = 1
+
+[dependencies]

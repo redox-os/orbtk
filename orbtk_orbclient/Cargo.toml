@@ -1,0 +1,13 @@
+[package]
+name = "orbtk_orbclient"
+version = "0.4.0-alpha.1"
+authors = ["Florian Blasius <flovanpt@posteo.de>"]
+edition = "2018"
+description = "Ready to run (desktop and web) wrapper for OrbTk based on OrbClient."
+keywords = [
+    "ui",
+    "gui",
+]
+
+[dependencies]
+orbtk = { path = "../orbtk"}
