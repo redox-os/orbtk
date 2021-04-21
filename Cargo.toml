@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "orbtk",
+    "orbtk_core",
     "orbtk_orbclient"
 ]

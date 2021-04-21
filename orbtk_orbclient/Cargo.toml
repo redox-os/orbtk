@@ -10,4 +10,5 @@ keywords = [
 ]
 
 [dependencies]
-orbtk = { path = "../orbtk"}
+orbtk_core = { path = "../orbtk_core" }
+orbclient = "0.3.31"
