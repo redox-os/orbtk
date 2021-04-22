@@ -1,14 +1,23 @@
 use orbclient::{Color, Renderer};
 
+use orbtk_core::*;
+
 use crate::*;
 
 /// Defines a top-level window on the screen.
-pub struct Window {
+pub struct Window<S>
+where
+    S: Default + Clone + PartialEq,
+{
     pub(crate) inner: orbclient::Window,
+    pub(crate) ui: Option<Ui<S>>,
 }
 
-impl Window {
-    pub fn create() -> WindowBuilder {
+impl<S> Window<S>
+where
+    S: Default + Clone + PartialEq,
+{
+    pub fn create() -> WindowBuilder<S> {
         WindowBuilder::default()
     }
 
@@ -68,9 +77,14 @@ impl Window {
 
         Ok(())
     }
+}
 
+impl<S> Runner for Window<S>
+where
+    S: Default + Clone + PartialEq,
+{
     /// Runs the inner logic of the window.
-    pub fn run(&mut self) -> Result<bool, Error> {
+    fn run(&mut self) -> Result<bool, Error> {
         if !self.drain_events() {
             return Ok(false);
         }

@@ -1,18 +1,18 @@
 pub use orbtk::*;
 
-fn main() {
-    if let Ok(mut window) = Window::create()
-        .size(600, 480)
-        .centered(true)
-        .title("OrbTk: 01_hello_world")
-        .build()
-    {
-        loop {
-            let result = window.run();
+fn main() -> Result<(), Error> {
+    let width = 600;
+    let height = 480;
 
-            if result.is_err() || !result.unwrap() {
-                break;
-            }
-        }
-    }
+    App::new()
+        .window(
+            Window::create()
+                .title("OrbTk - 01_hello_world")
+                .size(width, height)
+                .centered(true)
+                .ui(Ui::new("Hello World".to_string())),
+        )?
+        .start()?;
+
+    Ok(())
 }

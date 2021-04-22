@@ -1,20 +1,35 @@
 use crate::*;
 
+use orbtk_core::*;
+
 /// Window builder is used to configure a window and create it.
-#[derive(Clone, Debug, Default)]
-pub struct WindowBuilder {
+#[derive(Debug, Default)]
+pub struct WindowBuilder<S>
+where
+    S: Default + Clone + PartialEq,
+{
     position: (i32, i32),
     size: (u32, u32),
     title: String,
     resizeable: bool,
     borderless: bool,
     centered: bool,
+    ui: Option<Ui<S>>,
 }
 
-impl WindowBuilder {
+impl<S> WindowBuilder<S>
+where
+    S: Default + Clone + PartialEq,
+{
     /// Creates a new window builder.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Builder method that is used to specify the ui of the window.
+    pub fn ui(mut self, ui: Ui<S>) -> Self {
+        self.ui = Some(ui);
+        self
     }
 
     /// Builder method that is used to specify the window position on the screen with x and y.
@@ -64,7 +79,7 @@ impl WindowBuilder {
     }
 
     /// Creates a new window with the given builder settings.
-    pub fn build(mut self) -> Result<Window, Error> {
+    pub fn build(mut self) -> Result<Window<S>, Error> {
         let mut flags = vec![];
 
         if self.resizeable {
@@ -99,7 +114,7 @@ impl WindowBuilder {
             self.title.as_str(),
             &flags,
         ) {
-            return Ok(Window { inner });
+            return Ok(Window { inner, ui: self.ui });
         }
 
         Err(Error::CannotCreateWindow)
