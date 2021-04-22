@@ -12,6 +12,13 @@ fn main() -> Result<(), Error> {
                 .centered(true)
                 .ui(Ui::new("Hello World".to_string())),
         )?
+        .window(
+            Window::create()
+                .title("test")
+                .size(width, height)
+                .centered(true)
+                .ui(Ui::new("Hello World".to_string())),
+        )?
         .start()?;
 
     Ok(())

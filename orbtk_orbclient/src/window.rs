@@ -1,3 +1,5 @@
+use std::marker::*;
+
 use orbclient::{Color, Renderer};
 
 use orbtk_core::*;
@@ -26,9 +28,11 @@ where
     /// If it return `false` the window should be closed.
     pub fn drain_events(&mut self) -> bool {
         for event in self.inner.events() {
+            println!("{:?}", event.to_option());
             // if let Some(shell) = &mut self.shell {
             match event.to_option() {
                 orbclient::EventOption::Quit(_) => {
+                    println!("close");
                     return false;
                 }
                 // orbclient::EventOption::Key(e) => {

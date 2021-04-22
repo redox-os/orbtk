@@ -49,6 +49,10 @@ impl App {
     // Runs the loops of the windows until no window is left.
     fn run(&mut self) -> Result<bool, Error> {
         for i in 0..self.windows.len() {
+            if i > self.windows.len() - 1 {
+                break;
+            }
+
             // removes the window from the list if run returns false
             if !self.windows[i].run()? {
                 self.windows.remove(i);
