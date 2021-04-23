@@ -1,5 +1,5 @@
 pub mod core {
-    //! Core components of OrbTk. Provides base elements to create a user interface.
+    //! Core components of OrbTk. Provides base elements to create an user interface.
     pub use orbtk_core::*;
 }
 
