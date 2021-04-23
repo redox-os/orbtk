@@ -12,15 +12,15 @@ where
     S: Default + Clone + PartialEq,
 {
     pub(crate) inner: orbclient::Window,
-    pub(crate) ui: Option<Ui<S>>,
+    pub(crate) ui: Ui<S>,
 }
 
 impl<S> Window<S>
 where
     S: Default + Clone + PartialEq,
 {
-    pub fn create() -> WindowBuilder<S> {
-        WindowBuilder::default()
+    pub fn create(state: S) -> WindowBuilder<S> {
+        WindowBuilder::new(state)
     }
 
     /// Drain events and propagate the events to the shell.

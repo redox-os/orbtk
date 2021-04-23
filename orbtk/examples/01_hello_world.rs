@@ -6,18 +6,10 @@ fn main() -> Result<(), Error> {
 
     App::new()
         .window(
-            Window::create()
+            Window::create("Hello World".to_string())
                 .title("OrbTk - 01_hello_world")
                 .size(width, height)
-                .centered(true)
-                .ui(Ui::new("Hello World".to_string())),
-        )?
-        .window(
-            Window::create()
-                .title("test")
-                .size(width, height)
-                .centered(true)
-                .ui(Ui::new("Hello World".to_string())),
+                .centered(true),
         )?
         .start()?;
 
