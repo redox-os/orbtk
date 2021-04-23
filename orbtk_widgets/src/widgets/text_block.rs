@@ -1,4 +1,4 @@
-use orbtk_core::components::*;
+use orbtk_core::{components::*, widget::*};
 
 #[derive(Default, Debug)]
 pub struct TextBlock {
@@ -31,5 +31,11 @@ impl TextBlock {
     pub fn font_size(mut self, font_size: u32) -> Self {
         self.font.size = font_size;
         self
+    }
+}
+
+impl Widget for TextBlock {
+    fn build(self, btx: &mut BuildContext) {
+        todo!()
     }
 }

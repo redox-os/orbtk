@@ -1,5 +1,9 @@
 pub use orbtk::*;
 
+fn view(state: &mut String) -> Box<dyn Widget + 'static> {
+    Box::new(TextBlock::new().text(state.clone()))
+}
+
 fn main() -> Result<(), Error> {
     let width = 600;
     let height = 480;
@@ -9,7 +13,8 @@ fn main() -> Result<(), Error> {
             Window::create("Hello World".to_string())
                 .title("OrbTk - 01_hello_world")
                 .size(width, height)
-                .centered(true),
+                .centered(true)
+                .view(view),
         )?
         .start()?;
 

@@ -5,7 +5,6 @@ use crate::*;
 use orbtk_core::*;
 
 /// Window builder is used to configure a window and create it.
-#[derive(Debug)]
 pub struct WindowBuilder<S>
 where
     S: Default + Clone + PartialEq,
@@ -79,6 +78,15 @@ where
     /// If set to `true` the window will be centered on the screen an position will be ignored.
     pub fn centered(mut self, centered: bool) -> Self {
         self.centered = centered;
+        self
+    }
+
+    /// Builder method that is used to
+    pub fn view<F>(mut self, view_builder: F) -> Self
+    where
+        F: Fn(&mut S) -> Box<dyn Widget + 'static> + 'static,
+    {
+        self.ui.set_view(view_builder);
         self
     }
 
