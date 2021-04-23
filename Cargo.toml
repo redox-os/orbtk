@@ -2,5 +2,6 @@
 members = [
     "orbtk",
     "orbtk_core",
-    "orbtk_orbclient"
+    "orbtk_orbclient",
+    "orbtk_widgets"
 ]

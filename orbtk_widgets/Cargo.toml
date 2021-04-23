@@ -1,11 +1,8 @@
 [package]
-name = "orbtk"
+name = "orbtk_widgets"
 version = "0.4.0-alpha.1"
-authors = [
-    "Florian Blasius <flovanpt@posteo.de>",
-    "Jeremy Soller <jackpot51@gmail.com>"
-]
-description = "The Orbital Widget Toolkit"
+authors = ["Florian Blasius <flovanpt@posteo.de>"]
+description = "Default widget library of OrbTk."
 documentation = "https://docs.rs/orbtk"
 repository = "https://github.com/redox-os/orbtk"
 readme = "README.md"
@@ -20,5 +17,3 @@ edition = "2018"
 
 [dependencies]
 orbtk_core = { path = "../orbtk_core" }
-orbtk_orbclient = { path = "../orbtk_orbclient" }
-orbtk_widgets = { path = "../orbtk_widgets" }

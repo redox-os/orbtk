@@ -359,6 +359,7 @@ version = "0.4.0-alpha.1"
 dependencies = [
  "orbtk_core",
  "orbtk_orbclient",
+ "orbtk_widgets",
 ]
 
 [[package]]
@@ -373,6 +374,13 @@ name = "orbtk_orbclient"
 version = "0.4.0-alpha.1"
 dependencies = [
  "orbclient",
+ "orbtk_core",
+]
+
+[[package]]
+name = "orbtk_widgets"
+version = "0.4.0-alpha.1"
+dependencies = [
  "orbtk_core",
 ]
 
