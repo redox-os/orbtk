@@ -1,0 +1,20 @@
+[package]
+name = "orbtk_tiny_skia"
+version = "0.4.0-alpha.1"
+authors = ["Florian Blasius <flovanpt@posteo.de>"]
+description = "2D render library for OrbTk based on tiny skia."
+documentation = "https://docs.rs/orbtk"
+repository = "https://github.com/redox-os/orbtk"
+readme = "README.md"
+license = "MIT"
+keywords = [
+    "orbital",
+    "redox",
+    "ui",
+    "ecs"
+]
+edition = "2018"
+
+[dependencies]
+orbtk_core = { path = "../orbtk_core" }
+tiny-skia = "0.5.1"

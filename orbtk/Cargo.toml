@@ -21,4 +21,5 @@ edition = "2018"
 [dependencies]
 orbtk_core = { path = "../orbtk_core" }
 orbtk_orbclient = { path = "../orbtk_orbclient" }
+orbtk_tiny_skia = { path = "../orbtk_tiny_skia" }
 orbtk_widgets = { path = "../orbtk_widgets" }
