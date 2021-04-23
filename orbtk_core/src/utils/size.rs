@@ -2,15 +2,16 @@ use std::ops::{Add, Div, Sub};
 
 /// A `Size` specified by width and height.
 ///
-/// # Examples
+/// # Example
+///
 /// ```rust
 /// # use orbtk_utils::Size;
-/// let size = Size::new(10., 10.);
-/// let other_size = Size::new(5., 7.);
+/// let size = Size::new(10, 10);
+/// let other_size = Size::new(5, 7);
 /// let result = size - other_size;
 ///
-/// assert_eq!(result.width(), 5.);
-/// assert_eq!(result.height(), 3.);
+/// assert_eq!(result.width(), 5);
+/// assert_eq!(result.height(), 3);
 /// ```
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct Size {
