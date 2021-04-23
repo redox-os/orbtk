@@ -9,6 +9,7 @@ where
     S: Default + Clone + PartialEq,
 {
     world: World,
+    resources: Resources,
     state: S,
     view_builder: Option<Box<dyn Fn(&mut S) -> Box<dyn Widget + 'static>>>,
 }
@@ -20,6 +21,7 @@ where
     pub fn new(state: S) -> Self {
         Self {
             world: World::default(),
+            resources: Resources::default(),
             state,
             view_builder: None,
         }
