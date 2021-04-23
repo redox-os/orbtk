@@ -4,8 +4,8 @@ pub trait Component: Send + Sync + 'static {}
 impl<T: Send + Sync + 'static> Component for T {}
 
 pub struct EntityBuilder<'a> {
-    entity: Entity,
-    world: &'a mut World,
+    pub(crate) entity: Entity,
+    pub(crate) world: &'a mut World,
 }
 
 impl<'a> EntityBuilder<'a> {
