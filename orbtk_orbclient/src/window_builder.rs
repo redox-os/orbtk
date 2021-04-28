@@ -97,15 +97,12 @@ where
     }
 
     /// Builder method that is used to register fonts to the window.
-    pub fn register_fonts<F>(
-        mut self,
-        register_fn: F,
-    ) -> Result<Self, orbtk_tiny_skia::error::Error>
+    pub fn register_fonts<F>(mut self, register_fn: F) -> Result<Self, Error>
     where
         F: Fn(AtomicRefMut<'_, FontLoader>) -> Result<(), orbtk_tiny_skia::error::Error>,
     {
         if let Some(font_loader) = self.ui.mut_resource() {
-            register_fn(font_loader)?;
+            register_fn(font_loader).map_err(|_| Error::CannotLoadFont)?;
         }
 
         Ok(self)

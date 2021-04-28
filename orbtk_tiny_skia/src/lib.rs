@@ -1,4 +1,6 @@
 pub mod error;
-mod font_loader;
+mod font;
+mod render_context_2d;
 
-pub use self::font_loader::*;
+pub use self::font::*;
+pub use self::render_context_2d::*;

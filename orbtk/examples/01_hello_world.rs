@@ -1,7 +1,11 @@
 pub use orbtk::*;
 
 fn view(state: &mut String) -> BuildContext {
-    TextBlock::new().text(state.clone()).into()
+    TextBlock::new()
+        .font_family("Roboto Regular")
+        .font_size(12)
+        .text(state.clone())
+        .into()
 }
 
 fn main() -> Result<(), Error> {
@@ -14,6 +18,15 @@ fn main() -> Result<(), Error> {
                 .title("OrbTk - 01_hello_world")
                 .size(width, height)
                 .centered(true)
+                .register_fonts(|mut font_loader| {
+                    font_loader.load_font_from_bytes(
+                        "Roboto Regular",
+                        orbtk::fonts::ROBOTO_REGULAR_FONT,
+                    )?;
+                    font_loader
+                        .load_font_from_bytes("Roboto Medium", orbtk::fonts::ROBOTO_MEDIUM_FONT)?;
+                    Ok(())
+                })?
                 .view(view),
         )?
         .start()?;

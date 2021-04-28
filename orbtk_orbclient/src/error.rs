@@ -7,4 +7,6 @@ pub enum Error {
     CannotReadScreenSize,
     /// The source frame buffer has the wrong size.
     WrongFrameBufferSize,
+    /// Cannot load a font.
+    CannotLoadFont,
 }
