@@ -2,6 +2,8 @@ use std::marker::*;
 
 use legion::*;
 
+use atomic_refcell::*;
+
 use crate::*;
 
 pub struct Ui<S>
@@ -40,6 +42,18 @@ where
             self.world = world;
             self.resources = resources;
         }
+    }
+
+    /// Inserts a global resource.
+    pub fn insert_resource<T: 'static>(&mut self, resource: T) {
+        self.resources.insert(resource);
+    }
+
+    pub fn resource<T: 'static>(&self) -> Option<AtomicRef<'_, T>> {
+        self.resources.get::<T>()
+    }
+    pub fn mut_resource<T: 'static>(&mut self) -> Option<AtomicRefMut<'_, T>> {
+        self.resources.get_mut::<T>()
     }
 
     pub fn set_view<F>(&mut self, view_builder: F)

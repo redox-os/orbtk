@@ -11,4 +11,6 @@ keywords = [
 
 [dependencies]
 orbtk_core = { path = "../orbtk_core" }
+orbtk_tiny_skia = { path = "../orbtk_tiny_skia" }
 orbclient = "0.3.31"
+atomic_refcell = "0.1.7"

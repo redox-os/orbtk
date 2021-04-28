@@ -17,3 +17,4 @@ edition = "2018"
 
 [dependencies]
 legion = "0.4.0"
+atomic_refcell = "0.1.7"

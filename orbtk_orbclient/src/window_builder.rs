@@ -1,8 +1,9 @@
-use std::marker::*;
+use atomic_refcell::*;
 
 use crate::*;
 
 use orbtk_core::*;
+use orbtk_tiny_skia::*;
 
 /// Window builder is used to configure a window and create it.
 pub struct WindowBuilder<S>
@@ -24,8 +25,13 @@ where
 {
     /// Creates a new window builder.
     pub fn new(state: S) -> Self {
+        let mut ui = Ui::new(state);
+        let font_loader = FontLoader::default();
+
+        ui.insert_resource(font_loader);
+
         Self {
-            ui: Ui::new(state),
+            ui,
             position: (0, 0),
             size: (100, 100),
             title: String::default(),
@@ -81,13 +87,28 @@ where
         self
     }
 
-    /// Builder method that is used to
+    /// Builder method that is used to define the view builder fn for the ui of the window.
     pub fn view<F>(mut self, view_builder: F) -> Self
     where
         F: Fn(&mut S) -> BuildContext + 'static,
     {
         self.ui.set_view(view_builder);
         self
+    }
+
+    /// Builder method that is used to register fonts to the window.
+    pub fn register_fonts<F>(
+        mut self,
+        register_fn: F,
+    ) -> Result<Self, orbtk_tiny_skia::error::Error>
+    where
+        F: Fn(AtomicRefMut<'_, FontLoader>) -> Result<(), orbtk_tiny_skia::error::Error>,
+    {
+        if let Some(font_loader) = self.ui.mut_resource() {
+            register_fn(font_loader)?;
+        }
+
+        Ok(self)
     }
 
     /// Creates a new window with the given builder settings.
