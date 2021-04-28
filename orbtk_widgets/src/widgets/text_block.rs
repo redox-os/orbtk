@@ -1,4 +1,4 @@
-use orbtk_core::{components::*, widget::*};
+use orbtk_core::{components::*, render::TextRenderObject, widget::*};
 
 #[derive(Default, Debug)]
 pub struct TextBlock {
@@ -36,8 +36,9 @@ impl TextBlock {
 
 impl Widget for TextBlock {
     fn build(self, btx: &mut BuildContext) {
-        let mut builder = btx.create_entity();
+        let mut builder = btx.create_entity::<Self>();
         builder.push(self.font);
         builder.push(self.text);
+        builder.push(RenderComponent::new(TextRenderObject));
     }
 }

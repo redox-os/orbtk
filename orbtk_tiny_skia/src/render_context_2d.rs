@@ -6,25 +6,27 @@ use orbtk_core::*;
 
 use crate::*;
 
-pub struct RenderContext2D<'a> {
+pub struct TinySkiaRenderContext2D<'a> {
     pix_map: Pixmap,
     font_loader: AtomicRefMut<'a, FontLoader>,
 }
 
-impl<'a> RenderContext2D<'a> {
+impl<'a> TinySkiaRenderContext2D<'a> {
     pub fn new(
         width: u32,
         height: u32,
         font_loader: AtomicRefMut<'a, FontLoader>,
     ) -> Result<Self, crate::error::Error> {
-        Ok(RenderContext2D {
+        Ok(TinySkiaRenderContext2D {
             pix_map: Pixmap::new(width, height)
                 .ok_or(crate::error::Error::CannotCreateTinySkiaDisplay)?,
             font_loader,
         })
     }
+}
 
-    pub fn draw_text(&mut self, text: &str, position: Point, font_size: u32, font_family: &str) {
+impl<'a> orbtk_core::RenderContext2D for TinySkiaRenderContext2D<'a> {
+    fn draw_text(&mut self, text: &str, position: Point, font_size: u32, font_family: &str) {
         if let Some(font) = self.font_loader.font(font_family) {
             let scale = rusttype::Scale::uniform(font_size as f32);
 

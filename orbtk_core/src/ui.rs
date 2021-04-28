@@ -31,7 +31,22 @@ where
 
     fn layout(&mut self) {}
 
-    fn draw(&mut self) {}
+    fn draw(&mut self) {
+        let mut render_query = <&components::RenderComponent>::query();
+        // let mut rtx = Ren
+
+        // for render in render_query.iter(&world) {
+        //     render.draw(world, rtx)
+        // }
+
+        // for bounds in render_query.iter(&self.world) {
+        //     println!("{:?}", bounds);
+
+        //     let mut test_query = <&components::TypeComponent>::query();
+
+        //     for type_com in test_query.iter(&self.world) {}
+        // }
+    }
 
     fn event(&mut self) {}
 
@@ -72,5 +87,7 @@ where
         if self.state != old_state {
             self.build();
         }
+
+        self.draw();
     }
 }

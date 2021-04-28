@@ -93,6 +93,8 @@ where
             return Ok(false);
         }
 
+        self.ui.run();
+
         // if let Some(shell) = &mut self.shell {
         //     shell.run().map_err(|_| Error::ShellRunError)?;
 
