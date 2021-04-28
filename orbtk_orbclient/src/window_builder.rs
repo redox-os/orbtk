@@ -84,14 +84,14 @@ where
     /// Builder method that is used to
     pub fn view<F>(mut self, view_builder: F) -> Self
     where
-        F: Fn(&mut S) -> Box<dyn Widget + 'static> + 'static,
+        F: Fn(&mut S) -> BuildContext + 'static,
     {
         self.ui.set_view(view_builder);
         self
     }
 
     /// Creates a new window with the given builder settings.
-    pub fn build(mut self) -> Result<Window<S>, Error> {
+    pub fn build(self) -> Result<Window<S>, Error> {
         let mut flags = vec![];
 
         if self.resizeable {

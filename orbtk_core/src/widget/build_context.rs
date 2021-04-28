@@ -2,13 +2,15 @@ use legion::*;
 
 use crate::{components::*, widget::*};
 
-pub struct BuildContext<'a> {
-    world: &'a mut World,
+#[derive(Default)]
+pub struct BuildContext {
+    world: World,
+    resources: Resources,
 }
 
-impl<'a> BuildContext<'a> {
-    pub fn new(world: &'a mut World) -> Self {
-        BuildContext { world }
+impl BuildContext {
+    pub fn new() -> Self {
+        Self::default()
     }
 
     pub fn create_entity(&mut self) -> EntityBuilder {
@@ -17,5 +19,9 @@ impl<'a> BuildContext<'a> {
             entity,
             world: &mut self.world,
         }
+    }
+
+    pub(crate) fn consume(self) -> (World, Resources) {
+        (self.world, self.resources)
     }
 }

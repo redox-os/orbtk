@@ -1,7 +1,7 @@
 pub use orbtk::*;
 
-fn view(state: &mut String) -> Box<dyn Widget + 'static> {
-    Box::new(TextBlock::new().text(state.clone()))
+fn view(state: &mut String) -> BuildContext {
+    TextBlock::new().text(state.clone()).into()
 }
 
 fn main() -> Result<(), Error> {
