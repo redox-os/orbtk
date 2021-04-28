@@ -9,4 +9,6 @@ pub enum Error {
     WrongFrameBufferSize,
     /// Cannot load a font.
     CannotLoadFont,
+    /// Cannot create the render context 2d.
+    CannotCreateRenderContext2d,
 }

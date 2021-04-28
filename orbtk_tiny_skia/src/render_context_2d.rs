@@ -8,14 +8,14 @@ use crate::*;
 
 pub struct TinySkiaRenderContext2D<'a> {
     pix_map: Pixmap,
-    font_loader: AtomicRefMut<'a, FontLoader>,
+    font_loader: &'a FontLoader,
 }
 
 impl<'a> TinySkiaRenderContext2D<'a> {
     pub fn new(
         width: u32,
         height: u32,
-        font_loader: AtomicRefMut<'a, FontLoader>,
+        font_loader: &'a FontLoader,
     ) -> Result<Self, crate::error::Error> {
         Ok(TinySkiaRenderContext2D {
             pix_map: Pixmap::new(width, height)
@@ -60,12 +60,29 @@ impl<'a> orbtk_core::RenderContext2D for TinySkiaRenderContext2D<'a> {
                 self.pix_map.fill_path(
                     &path,
                     // todo correct
-                    &Paint::default(),
+                    &Paint {
+                        shader: tiny_skia::Shader::SolidColor(tiny_skia::Color::WHITE),
+                        blend_mode: tiny_skia::BlendMode::default(),
+                        anti_alias: false,
+                        force_hq_pipeline: false,
+                    },
                     FillRule::Winding,
                     Transform::identity(),
                     None,
                 );
             }
         }
+    }
+
+    fn data(&self) -> &[u8] {
+        self.pix_map.data()
+    }
+
+    fn data_mut(&mut self) -> &mut [u8] {
+        self.pix_map.data_mut()
+    }
+
+    fn data_u8_mut(&mut self) -> &mut [u8] {
+        self.pix_map.data_mut()
     }
 }

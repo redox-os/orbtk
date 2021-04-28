@@ -31,13 +31,13 @@ where
 
     fn layout(&mut self) {}
 
-    fn draw(&mut self) {
+    fn draw(&mut self, rtx: &mut dyn RenderContext2D) {
         let mut render_query = <&components::RenderComponent>::query();
         // let mut rtx = Ren
 
-        // for render in render_query.iter(&world) {
-        //     render.draw(world, rtx)
-        // }
+        for render in render_query.iter(&self.world) {
+            render.draw(&self.world, rtx)
+        }
 
         // for bounds in render_query.iter(&self.world) {
         //     println!("{:?}", bounds);
@@ -79,7 +79,7 @@ where
         self.build();
     }
 
-    pub fn run(&mut self) {
+    pub fn run(&mut self, rtx: &mut dyn RenderContext2D) {
         let old_state = self.state.clone();
 
         self.event();
@@ -88,6 +88,6 @@ where
             self.build();
         }
 
-        self.draw();
+        self.draw(rtx);
     }
 }

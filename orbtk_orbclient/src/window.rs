@@ -3,6 +3,7 @@ use std::marker::*;
 use orbclient::{Color, Renderer};
 
 use orbtk_core::*;
+use orbtk_tiny_skia::{FontLoader, TinySkiaRenderContext2D};
 
 use crate::*;
 
@@ -13,6 +14,7 @@ where
 {
     pub(crate) inner: orbclient::Window,
     pub(crate) ui: Ui<S>,
+    pub(crate) font_loader: FontLoader,
 }
 
 impl<S> Window<S>
@@ -93,26 +95,22 @@ where
             return Ok(false);
         }
 
-        self.ui.run();
+        let mut rtx = TinySkiaRenderContext2D::new(
+            self.inner.width(),
+            self.inner.height(),
+            &self.font_loader,
+        )
+        .map_err(|_| crate::error::Error::CannotCreateRenderContext2d)?;
 
-        // if let Some(shell) = &mut self.shell {
-        //     shell.run().map_err(|_| Error::ShellRunError)?;
+        self.ui.run(&mut rtx);
 
-        //     if let Some(display) = shell.display_mut() {
-        //         let len = self.inner.data().len() * std::mem::size_of::<orbclient::Color>();
-        //         let color_data = unsafe {
-        //             std::slice::from_raw_parts_mut(
-        //                 self.inner.data_mut().as_mut_ptr() as *mut u8,
-        //                 len,
-        //             )
-        //         };
+        let bytes = rtx.data_u8_mut();
+        let len = bytes.len() / std::mem::size_of::<orbclient::Color>();
+        let color_data = unsafe {
+            std::slice::from_raw_parts_mut(bytes.as_mut_ptr() as *mut orbclient::Color, len)
+        };
 
-        //         if color_data.len() == display.data().len() {
-        //             display.flip(color_data);
-        //         }
-        //     }
-        //     self.inner.sync();
-        // }
+        self.swap_frame_buffer(color_data)?;
 
         Ok(true)
     }
